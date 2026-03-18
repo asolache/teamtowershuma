@@ -63,7 +63,7 @@ export default class PaperView {
                 .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                 .omni-widget-body { padding: 0; position: relative; }
                 
-                /* MINI CONSOLAS INTERACTIVAS (NUEVO) */
+                /* MINI CONSOLAS INTERACTIVAS */
                 .inline-console { padding: 1.5rem; display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.4); }
                 .inline-input { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-size: 0.95rem; outline: none; width: 100%; box-sizing: border-box;}
                 .inline-input:focus { border-color: var(--accent-blue); }
@@ -372,13 +372,20 @@ export default class PaperView {
     }
 
     // ==========================================
-    // UX DELUXE: EDITOR SEMÁNTICO FLOTANTE
+    // UX DELUXE: EDITOR SEMÁNTICO FLOTANTE (BLINDADO)
     // ==========================================
     setupSemanticEditor() {
         const input = this.dom.editor;
         const menu = this.dom.menu;
         const state = store.getState();
+        
         let lastKnownRect = null; 
+        let savedRange = null; // 🔥 FIX: Guardar el Range para que no se pierda al hacer click en el menú
+
+        // Evitamos que al clicar el menú se pierda el foco del editor contenteditable
+        menu.addEventListener('mousedown', (e) => {
+            e.preventDefault(); 
+        });
 
         document.addEventListener('click', (e) => {
             if (!input.contains(e.target) && !menu.contains(e.target) && !e.target.classList.contains('btn-inline-action')) {
@@ -391,12 +398,13 @@ export default class PaperView {
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
             
-            const range = selection.getRangeAt(0);
-            const textBeforeCursor = range.startContainer.textContent.substring(0, range.startOffset);
+            savedRange = selection.getRangeAt(0).cloneRange(); // Guardamos una copia exacta de dónde está el cursor
+            
+            const textBeforeCursor = savedRange.startContainer.textContent.substring(0, savedRange.startOffset);
             const words = textBeforeCursor.split(/\s/);
             this.currentWord = words[words.length - 1];
 
-            const rect = range.getBoundingClientRect();
+            const rect = savedRange.getBoundingClientRect();
             if (rect.top !== 0 && rect.left !== 0) lastKnownRect = rect;
             
             if (this.currentWord.startsWith('@')) {
@@ -444,7 +452,6 @@ export default class PaperView {
                 }
             } 
             else if (this.currentWord.startsWith('/')) {
-                // 🔥 NUEVAS CONSOLAS INTERACTIVAS (TOTAL FRONTEND)
                 menu.innerHTML = `
                     <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Forjar Estructura</div>
                     
@@ -489,22 +496,20 @@ export default class PaperView {
 
         menu.addEventListener('click', (e) => {
             const item = e.target.closest('.semantic-item');
-            if (item) {
+            if (item && savedRange) {
                 const replaceVal = item.getAttribute('data-val');
                 const type = item.getAttribute('data-type');
                 
-                const selection = window.getSelection();
-                const range = selection.getRangeAt(0);
-                range.setStart(selection.focusNode, range.endOffset - this.currentWord.length);
-                range.deleteContents();
+                // 🔥 FIX: Usamos el Range que guardamos antes de que se perdiera el foco
+                savedRange.setStart(savedRange.startContainer, savedRange.endOffset - this.currentWord.length);
+                savedRange.deleteContents();
                 
+                let el;
+
                 if (type === 'widget' || type === 'action') {
                     const widgetId = 'wid_' + Date.now();
-                    const el = document.createElement('div');
+                    el = document.createElement('div');
                     
-                    // ---------------------------------------------------------
-                    // 🏗️ MINI CONSOLAS INTERACTIVAS (NUEVO SPRINT 43)
-                    // ---------------------------------------------------------
                     if (replaceVal === '/agente') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false" id="${widgetId}">
@@ -518,7 +523,7 @@ export default class PaperView {
                                     </select>
                                     <button class="inline-btn btn-inline-action" data-action="create-agent" data-wid="${widgetId}">Añadir al Padrón Global</button>
                                 </div>
-                            </div><p><br></p>
+                            </div>
                         `;
                     } else if (replaceVal === '/rol') {
                         el.innerHTML = `
@@ -536,16 +541,16 @@ export default class PaperView {
                                     <input type="number" class="inline-input" id="role_fmv_${widgetId}" placeholder="Valor de Mercado (FMV €/h, ej: 45)" value="40">
                                     <button class="inline-btn btn-inline-action" data-action="create-role" data-wid="${widgetId}">Inyectar Rol en el Ecosistema</button>
                                 </div>
-                            </div><p><br></p>
+                            </div>
                         `;
                     } else if (replaceVal === '/tuberia') {
                         const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
                         const p = store.getState().projects.find(x => x.id === projId);
                         let roleOptions = '';
-                        if (p && p.roles) {
+                        if (p && p.roles && p.roles.length > 0) {
                             p.roles.forEach(r => { roleOptions += `<option value="${r.id}">[${r.levelId}] ${r.name}</option>`; });
                         } else {
-                            roleOptions = `<option value="">Sin red seleccionada</option>`;
+                            roleOptions = `<option value="">Sin Ecosistema activo o sin roles</option>`;
                         }
                         
                         el.innerHTML = `
@@ -567,93 +572,99 @@ export default class PaperView {
                                     </div>
                                     <button class="inline-btn btn-inline-action" data-action="create-flow" data-wid="${widgetId}">Trazar Tubería en Mapa</button>
                                 </div>
-                            </div><p><br></p>
+                            </div>
                         `;
-                    }
-                    // ---------------------------------------------------------
-                    // 📊 COMPONENTES DE RENDERIZADO (WIDGETS EXISTENTES)
-                    // ---------------------------------------------------------
-                    else if (replaceVal === '/mapa') {
-                        el.innerHTML = `
-                            <div class="omni-widget" contenteditable="false">
-                                <div class="omni-widget-header">🕸️ Topología VNA (Live Render)</div>
-                                <div class="omni-widget-body omni-map-canvas" id="canvas_${widgetId}" style="height:350px; position:relative; background:#050508;">
-                                    <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;">
-                                        <defs>
-                                            <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
-                                            <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
-                                        </defs>
-                                        <g id="svg_${widgetId}"></g>
-                                    </svg>
+                    } else if (replaceVal === '/mapa') {
+                        const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
+                        const p = store.getState().projects.find(x => x.id === projId);
+                        if (!p || !p.roles || p.roles.length === 0) {
+                            el.innerHTML = `<div class="omni-widget" contenteditable="false"><div class="omni-widget-header">🕸️ Mapa VNA</div><div class="omni-widget-body" style="padding:2rem; text-align:center; color:#888;">⚠️ El mapa está vacío. Traza tuberías primero.</div></div>`;
+                        } else {
+                            el.innerHTML = `
+                                <div class="omni-widget" contenteditable="false">
+                                    <div class="omni-widget-header">🕸️ Topología VNA (Live Render)</div>
+                                    <div class="omni-widget-body omni-map-canvas" id="canvas_${widgetId}" style="height:350px; position:relative; background:#050508;">
+                                        <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;">
+                                            <defs>
+                                                <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
+                                                <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                            </defs>
+                                            <g id="svg_${widgetId}"></g>
+                                        </svg>
+                                    </div>
                                 </div>
-                            </div><p><br></p>
-                        `;
+                            `;
+                            setTimeout(() => {
+                                const canvas = document.getElementById(`canvas_${widgetId}`);
+                                const svgG = document.getElementById(`svg_${widgetId}`);
+                                if(p && canvas && svgG) {
+                                    const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p.transactions || []);
+                                    const mr = new MapRenderer(canvas, svgG, { isMacro: true });
+                                    mr.setData(p.roles, flows);
+                                }
+                            }, 50);
+                        }
                     } else if (replaceVal === '/kanban') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">📋 Mercado Kanban PULL</div>
                                 <div class="omni-widget-body" id="kanban_${widgetId}" style="padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);">
                                 </div>
-                            </div><p><br></p>
+                            </div>
                         `;
+                        setTimeout(() => {
+                            const container = document.getElementById(`kanban_${widgetId}`);
+                            const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
+                            const p = store.getState().projects.find(x => x.id === projId);
+                            if(p && container) {
+                                const activeUserId = store.getState().session.activeUserId;
+                                const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
+                                const kr = new KanbanRenderer(container, { project: p, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
+                                kr.render();
+                            }
+                        }, 50);
                     } else if (replaceVal === '/ledger') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
                                 <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">⚖️ Slicing Pie (Cap Table)</div>
                                 <div class="omni-widget-body" id="ledger_${widgetId}" style="padding: 2rem; background: rgba(0,0,0,0.5);">
                                 </div>
-                            </div><p><br></p>
+                            </div>
                         `;
-                    } else if (replaceVal === '/deepwork') {
-                        if (!this.activeTx) return alert("❌ El Modo Focus requiere una Work Order asignada.");
-                        const activeHash = this.activeTx.id || this.activeTx.hash;
-                        
-                        el.innerHTML = `
-                            <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-orange); box-shadow: 0 10px 40px rgba(255,171,64,0.1);">
-                                <div class="omni-widget-body" id="focus_${widgetId}"></div>
-                            </div><p><br></p>
-                        `;
-                    }
-                    
-                    // Inyección común para Widgets y Actions
-                    range.insertNode(el);
-                    range.setStartAfter(el);
-
-                    // Hidratación diferida para Widgets
-                    if (type === 'widget') {
                         setTimeout(() => {
-                            const pId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                            const p = store.getState().projects.find(x => x.id === pId);
-                            if(!p) return;
-
-                            if (replaceVal === '/mapa') {
-                                const canvas = document.getElementById(`canvas_${widgetId}`);
-                                const svgG = document.getElementById(`svg_${widgetId}`);
-                                if(canvas && svgG) {
-                                    const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p.transactions || []);
-                                    const mr = new MapRenderer(canvas, svgG, { isMacro: true });
-                                    mr.setData(p.roles, flows);
-                                }
-                            } else if (replaceVal === '/kanban') {
-                                const container = document.getElementById(`kanban_${widgetId}`);
-                                if(container) {
-                                    const activeUserId = store.getState().session.activeUserId;
-                                    const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
-                                    const kr = new KanbanRenderer(container, { project: p, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
-                                    kr.render();
-                                }
-                            } else if (replaceVal === '/ledger') {
-                                const container = document.getElementById(`ledger_${widgetId}`);
-                                if(container) {
-                                    const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
-                                    lr.render();
-                                }
-                            } else if (replaceVal === '/deepwork') {
+                            const container = document.getElementById(`ledger_${widgetId}`);
+                            const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
+                            const p = store.getState().projects.find(x => x.id === projId);
+                            if(p && container) {
+                                const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
+                                lr.render();
+                            }
+                        }, 50);
+                    } else if (replaceVal === '/deepwork') {
+                        if (!this.activeTx) {
+                            // Estado Vacío estético si no hay tarea asignada
+                            el.innerHTML = `
+                                <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-red);">
+                                    <div class="omni-widget-header" style="background: rgba(255, 82, 82, 0.1); border-bottom-color: rgba(255, 82, 82, 0.2); color: var(--accent-red);">🍅 Modo DeepWork (Focus)</div>
+                                    <div class="omni-widget-body" style="padding: 2rem; text-align: center; color: #888;">
+                                        ⚠️ <b>Borrador Libre detectado.</b> Convierte este borrador en una Work Order (Botón Arriba a la derecha) para poder activar el temporizador Focus.
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            const activeHash = this.activeTx.id || this.activeTx.hash;
+                            el.innerHTML = `
+                                <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-orange); box-shadow: 0 10px 40px rgba(255,171,64,0.1);">
+                                    <div class="omni-widget-body" id="focus_${widgetId}"></div>
+                                </div>
+                            `;
+                            setTimeout(() => {
                                 const container = document.getElementById(`focus_${widgetId}`);
-                                if(container) {
+                                const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
+                                if(p && container) {
                                     const fr = new FocusRenderer(container, { 
                                         projectId: p.id, 
-                                        woHash: this.activeTx.id || this.activeTx.hash,
+                                        woHash: activeHash,
                                         onCompleteCallback: (hours) => {
                                             alert(`✅ Tarea Reportada al Ledger (${hours}h).`);
                                             this.loadTaskContext(); 
@@ -661,9 +672,18 @@ export default class PaperView {
                                     });
                                     fr.render();
                                 }
-                            }
-                        }, 50);
+                            }, 50);
+                        }
                     }
+                    
+                    // Inserción segura del Widget
+                    savedRange.insertNode(el);
+                    
+                    // Añadir un espacio tras el widget para no atrapar el cursor
+                    const pBr = document.createElement('p');
+                    pBr.innerHTML = '<br>';
+                    el.parentNode.insertBefore(pBr, el.nextSibling);
+                    savedRange.setStartAfter(pBr);
 
                 } else {
                     // Inserción de Enlaces (Meme o Mention)
@@ -675,14 +695,18 @@ export default class PaperView {
                     el.contentEditable = "false";
                     el.innerText = replaceVal;
                     
+                    // Inserción segura del Link
+                    savedRange.insertNode(el);
                     const space = document.createTextNode('\u00A0'); 
-                    range.insertNode(space);
-                    range.insertNode(el);
-                    range.setStartAfter(space);
+                    el.parentNode.insertBefore(space, el.nextSibling);
+                    savedRange.setStartAfter(space);
                 }
 
-                selection.removeAllRanges();
-                selection.addRange(range);
+                // Restaurar y limpiar el cursor
+                savedRange.collapse(true);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
                 
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
@@ -731,7 +755,7 @@ export default class PaperView {
             } 
             else if (action === 'create-role') {
                 const projId = this.activeTx ? this.activeTx.projectId : localStorage.getItem('tt_active_project');
-                if (!projId) throw new Error("No hay proyecto activo.");
+                if (!projId) throw new Error("No hay proyecto activo. Ve a Instanciar Red primero.");
                 
                 const level = document.getElementById(`role_level_${wid}`).value;
                 const name = document.getElementById(`role_name_${wid}`).value.trim();
