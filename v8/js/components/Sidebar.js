@@ -15,7 +15,6 @@ export const Sidebar = {
                 .sidebar.collapsed { width: 85px; padding: 2rem 10px; align-items: center;}
                 .sidebar.collapsed .side-link { justify-content: center; padding: 12px 0; border-left: none; border-radius: 50%; width: 45px; height: 45px; margin: 0 auto 10px auto;}
                 .sidebar.collapsed .link-text { display: none; }
-                /* 🔥 FIX UX: Forzar visibilidad y centrado de los iconos al colapsar */
                 .sidebar.collapsed .link-icon { margin-right: 0 !important; font-size: 1.5rem; display: flex; justify-content: center; align-items: center; width: 100%;}
                 .sidebar.collapsed .side-category { display: none; }
                 .sidebar.collapsed .logo-area { display: none; }
@@ -58,7 +57,7 @@ export const Sidebar = {
                         <span style="font-size: 1.8rem; filter: drop-shadow(0 0 10px rgba(0,176,255,0.5)); margin-right:10px;">🗼</span>
                         <div>
                             <div style="color: white; font-weight: 900; font-family: var(--font-main); font-size:1.1rem; line-height:1; letter-spacing:-0.5px;">TeamTowers</div>
-                            <div style="color: var(--accent-blue); font-family: var(--font-mono); font-size:0.7rem; font-weight:bold; letter-spacing:1px; margin-top:2px;">KERNEL V14</div>
+                            <div style="color: var(--accent-blue); font-family: var(--font-mono); font-size:0.7rem; font-weight:bold; letter-spacing:1px; margin-top:2px;">KERNEL V15</div>
                         </div>
                     </a>
                     <button id="btnToggleSidebar" class="btn-collapse" title="Expandir/Contraer">
@@ -91,8 +90,8 @@ export const Sidebar = {
                     <a href="/v8/lms" class="side-link ${currentPath === '/lms' ? 'active' : ''}" data-link title="La Forja (Cerebro LMS)">
                         <span class="link-icon">🧠</span> <span class="link-text">La Forja (LMS)</span>
                     </a>
-                    <a href="/v8/agents" class="side-link ${currentPath === '/agents' ? 'active' : ''}" data-link title="Sandbox TDD (Entrenar IA)">
-                        <span class="link-icon">🧪</span> <span class="link-text">Sandbox TDD</span>
+                    <a href="/v8/agents" class="side-link ${currentPath === '/agents' ? 'active' : ''}" data-link title="Padrón Neuronal">
+                        <span class="link-icon">🧪</span> <span class="link-text">Padrón Neuronal</span>
                     </a>
                     <a href="/v8/project" class="side-link ${currentPath === '/project' ? 'active' : ''}" data-link title="Mercado PULL (Kanban)">
                         <span class="link-icon">📋</span> <span class="link-text">Mercado PULL</span>
@@ -114,7 +113,7 @@ export const Sidebar = {
                 </div>
 
                 <div style="margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); width: 100%;">
-                    <button id="btnLogout" class="btn-logout" title="Suspender sesión del Nodo">
+                    <button id="btnLogout" class="btn-logout" title="Suspender sesión del Nodo" onclick="window.tt_forceLogout && window.tt_forceLogout()">
                         <span class="link-icon">🚪</span> <span class="link-text">Desconectar</span>
                     </button>
                 </div>
@@ -142,12 +141,5 @@ export const Sidebar = {
         });
 
         updateArrowIcon();
-
-        document.getElementById('btnLogout')?.addEventListener('click', async () => {
-            if(confirm('¿Suspender sesión del Nodo Humano? Los agentes seguirán procesando en Local.')) {
-                await store.dispatch({ type: 'LOGOUT_USER' });
-                window.location.href = '/v8/'; 
-            }
-        });
     }
 };
