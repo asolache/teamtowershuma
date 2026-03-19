@@ -1,5 +1,5 @@
 // v8/js/router.js
-import { store } from './core/store.js'; // 🔥 Importamos el Kernel State
+import { store } from './core/store.js'; 
 import { Orchestrator } from './core/Orchestrator.js'; 
 import HomeView from './views/HomeView.js';
 import ProfileView from './views/ProfileView.js';
@@ -49,26 +49,6 @@ const router = async () => {
         match = { route: routes[0], isMatch: true };
     }
 
-    // =================================================================
-    // 🛡️ AUTH GUARD: ESCUDO ZERO-TRUST
-    // =================================================================
-    const state = store.getState();
-    const isAuthRoute = match.route.path === '/v8/'; // La única ruta pública es el Login
-    
-    // Si no hay usuario activo y la ruta no es el Login... Patada al Login.
-    if (!state.session.activeUserId && !isAuthRoute) {
-        console.warn("🛡️ [AUTH GUARD] Intento de acceso sin sesión. Redirigiendo a Zero-Trust.");
-        navigateTo('/v8/');
-        return; 
-    }
-
-    // Si hay usuario activo y está en el Login... Patada al Dashboard o Paper.
-    if (state.session.activeUserId && isAuthRoute) {
-        navigateTo('/v8/dashboard');
-        return;
-    }
-    // =================================================================
-
     try {
         const view = new match.route.view();
         document.querySelector("#app").innerHTML = await view.getHtml();
@@ -83,7 +63,7 @@ const router = async () => {
                 <h1>⚠️ Error del Sistema Operativo</h1>
                 <p>La vista ha colapsado. Revisa la consola (F12).</p>
                 <code>${error.stack}</code>
-                <br><br><a href="/v8/" style="color:white; text-decoration:underline;">Volver al Inicio (Forzar recarga)</a>
+                <br><br><a href="/v8/" style="color:white; text-decoration:underline;">Volver al Inicio</a>
             </div>
         `;
     }
