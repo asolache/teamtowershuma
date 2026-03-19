@@ -5,18 +5,20 @@ import { Orchestrator } from '../core/Orchestrator.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
+import { SynapticCanvas } from '../components/SynapticCanvas.js'; // 🔥 NUEVO IMPORT
 
 export default class AgentEditorView {
     constructor() {
         document.title = "Padrón Neuronal | TeamTowers V15.5";
         this.selectedAgentId = null;
+        this.synapticCanvas = null;
     }
 
     async getHtml() {
         const headerConfig = {
-            title: "Padrón Neuronal (Agentes A2A)",
+            title: "Padrón Neuronal (IDE A2A)",
             subtitle: "Laboratorio de Consciencia",
-            tagline: "Forja la Identidad (System) y el Contexto (Memes) de tus Agentes."
+            tagline: "Forja el Alma (System) y arrastra Memes al cerebro del Agente para darle Contexto."
         };
 
         return `
@@ -60,8 +62,8 @@ export default class AgentEditorView {
                 .btn-save { background: var(--accent-blue); color: black; border: none; padding: 14px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 15px;}
                 .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,176,255,0.4);}
 
-                .sandbox-wrapper { background: #050508; border: 1px dashed var(--accent-purple); border-radius: 20px; height: 400px; position: relative; overflow: hidden;}
-                .sandbox-overlay-title { position: absolute; top: 15px; left: 20px; color: var(--accent-purple); font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; z-index: 10;}
+                /* CONTENEDOR DEL IDE VISUAL */
+                .sandbox-wrapper-main { height: 400px; position: relative; }
                 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #666; font-style: italic; padding: 2rem; text-align: center;}
 
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -112,7 +114,7 @@ export default class AgentEditorView {
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Motor Neuronal Preferido</label>
+                                        <label>Motor Neuronal</label>
                                         <select id="inpAgentEngine" class="form-control">
                                             <option value="deepseek">DeepSeek (V3/R1)</option>
                                             <option value="openai">OpenAI (GPT-4o)</option>
@@ -128,19 +130,16 @@ export default class AgentEditorView {
                                 </div>
                                 
                                 <div class="form-group" style="margin-top: 10px;">
-                                    <label style="color:var(--accent-green);">Context Prompt (Memoria A2A y Memes)</label>
-                                    <textarea id="inpAgentContext" class="form-control prompt-area" style="min-height: 80px; color: #8bc34a; background: rgba(0,230,118,0.05);" readonly placeholder="Aquí se inyectarán dinámicamente los Memes, SOPs y SOCs que este agente herede de la red visual inferior..."></textarea>
+                                    <label style="color:var(--accent-green);">Context Prompt (Memoria A2A y Memes Heredados)</label>
+                                    <textarea id="inpAgentContext" class="form-control prompt-area" style="min-height: 80px; color: #8bc34a; background: rgba(0,230,118,0.05);" readonly placeholder="Arrastra Memes al mapa neuronal de abajo y aparecerán aquí automáticamente..."></textarea>
                                 </div>
                                 
                                 <button class="btn-ai-forge" id="btnAiForge">🧠 Autocompletar System Prompt con @genesi_ai</button>
                                 <button class="btn-save" id="btnSaveAgent">💾 Sellar Mutación en el Kernel</button>
                             </div>
 
-                            <div class="sandbox-wrapper" id="agentSandbox">
-                                <div class="sandbox-overlay-title">🌌 Mapa Sináptico del Agente</div>
-                                <div id="d3Canvas" style="width:100%; height:100%;">
-                                    <div class="empty-state">Selecciona un Agente para visualizar su red de Memes.</div>
-                                </div>
+                            <div class="sandbox-wrapper-main" id="agentSynapticCanvas">
+                                <div class="empty-state">Selecciona un Agente para forjar sus Sinapsis.</div>
                             </div>
                         </div>
                     </div>
@@ -151,116 +150,109 @@ export default class AgentEditorView {
     }
 
     async executeViewScript() {
-        try {
-            Sidebar.initListeners();
-            PageHeader.execute();
+        Sidebar.initListeners();
+        PageHeader.execute();
 
-            this.dom = {
-                list: document.getElementById('agentList'),
-                editor: document.getElementById('editorPanel'),
-                btnNew: document.getElementById('btnNewAgent'),
-                btnSave: document.getElementById('btnSaveAgent'),
-                btnForge: document.getElementById('btnAiForge'),
-                inpId: document.getElementById('inpAgentId'),
-                inpName: document.getElementById('inpAgentName'),
-                inpGuardian: document.getElementById('inpAgentGuardian'),
-                inpEngine: document.getElementById('inpAgentEngine'),
-                inpPrompt: document.getElementById('inpAgentPrompt'),
-                inpContext: document.getElementById('inpAgentContext'), // NUEVO CONTEXTO
-                canvas: document.getElementById('d3Canvas')
+        this.dom = {
+            list: document.getElementById('agentList'),
+            editor: document.getElementById('editorPanel'),
+            btnNew: document.getElementById('btnNewAgent'),
+            btnSave: document.getElementById('btnSaveAgent'),
+            btnForge: document.getElementById('btnAiForge'),
+            inpId: document.getElementById('inpAgentId'),
+            inpName: document.getElementById('inpAgentName'),
+            inpGuardian: document.getElementById('inpAgentGuardian'),
+            inpEngine: document.getElementById('inpAgentEngine'),
+            inpPrompt: document.getElementById('inpAgentPrompt'),
+            inpContext: document.getElementById('inpAgentContext'),
+            canvasContainer: document.getElementById('agentSynapticCanvas')
+        };
+
+        this.renderList();
+
+        // Escuchador del Drop Visual
+        window.addEventListener('synapse-forged', async (e) => {
+            if (e.detail.agentId === this.selectedAgentId) {
+                await this.refreshContextPrompt(this.selectedAgentId);
+            }
+        });
+
+        this.dom.btnNew.addEventListener('click', () => {
+            this.selectedAgentId = null;
+            this.dom.inpId.value = '@';
+            this.dom.inpId.readOnly = false;
+            this.dom.inpName.value = '';
+            this.dom.inpPrompt.value = 'Eres un agente experto en...';
+            this.dom.inpContext.value = '';
+            this.dom.editor.classList.add('active');
+            this.dom.canvasContainer.innerHTML = '<div class="empty-state" style="border:1px dashed #555; border-radius:20px;">Guarda el agente para inicializar el IDE Neuronal.</div>';
+            
+            document.querySelectorAll('.agent-item').forEach(i => i.classList.remove('active'));
+        });
+
+        this.dom.btnSave.addEventListener('click', async () => {
+            let id = this.dom.inpId.value.trim();
+            if (!id || id === '@') return alert("El Alias del Agente no puede estar vacío.");
+            if (!id.startsWith('@')) id = '@' + id;
+
+            const newUserData = {
+                id: id,
+                name: this.dom.inpName.value.trim(),
+                globalRole: 'ai-agent',
+                profile: {
+                    isAi: true,
+                    guardian: this.dom.inpGuardian.value,
+                    preferredEngine: this.dom.inpEngine.value
+                }
             };
 
+            if (this.selectedAgentId) {
+                await store.dispatch({ type: 'UPDATE_USER', payload: newUserData });
+            } else {
+                await store.dispatch({ type: 'ADD_USER', payload: newUserData });
+            }
+
+            await KB.init();
+            const safeId = id.replace('@','');
+            await KB.saveNode({
+                id: `prompt_global_${safeId}`,
+                type: 'prompt_a2a',
+                category: 'meta_prompt',
+                targetId: id,
+                roleTarget: id,
+                title: `Alma de ${newUserData.name}`,
+                content: this.dom.inpPrompt.value.trim()
+            });
+
+            alert(`✅ Identidad de ${id} sellada correctamente.`);
+            this.selectedAgentId = id;
+            this.dom.inpId.readOnly = true;
             this.renderList();
+            this.loadAgentData(id);
+        });
 
-            // EVENTO: CREAR NUEVO AGENTE
-            this.dom.btnNew.addEventListener('click', () => {
-                this.selectedAgentId = null;
-                this.dom.inpId.value = '@';
-                this.dom.inpId.readOnly = false;
-                this.dom.inpName.value = '';
-                this.dom.inpPrompt.value = 'Eres un agente experto en...';
-                this.dom.inpContext.value = '';
-                this.dom.editor.classList.add('active');
-                this.dom.canvas.innerHTML = '<div class="empty-state">Guarda el agente para inicializar su red neuronal.</div>';
+        this.dom.btnForge.addEventListener('click', async () => {
+            const name = this.dom.inpName.value.trim() || 'Agente Desconocido';
+            const guardian = this.dom.inpGuardian.value;
+            
+            this.dom.btnForge.innerText = "⏳ @genesi_ai forjando el alma...";
+            this.dom.btnForge.disabled = true;
+
+            try {
+                const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+                const apiKey = localStorage.getItem(`tt_key_${provider}`);
                 
-                document.querySelectorAll('.agent-item').forEach(i => i.classList.remove('active'));
-            });
-
-            // EVENTO: GUARDAR AGENTE
-            this.dom.btnSave.addEventListener('click', async () => {
-                let id = this.dom.inpId.value.trim();
-                if (!id || id === '@') return alert("El Alias del Agente no puede estar vacío.");
-                if (!id.startsWith('@')) id = '@' + id;
-
-                const newUserData = {
-                    id: id,
-                    name: this.dom.inpName.value.trim(),
-                    globalRole: 'ai-agent',
-                    profile: {
-                        isAi: true,
-                        guardian: this.dom.inpGuardian.value,
-                        preferredEngine: this.dom.inpEngine.value
-                    }
-                };
-
-                if (this.selectedAgentId) {
-                    await store.dispatch({ type: 'UPDATE_USER', payload: newUserData });
-                } else {
-                    await store.dispatch({ type: 'ADD_USER', payload: newUserData });
-                }
-
-                await KB.init();
-                const safeId = id.replace('@','');
-                await KB.saveNode({
-                    id: `prompt_global_${safeId}`,
-                    type: 'prompt_a2a',
-                    category: 'meta_prompt',
-                    targetId: id,
-                    roleTarget: id,
-                    title: `Alma de ${newUserData.name}`,
-                    content: this.dom.inpPrompt.value.trim()
-                });
-
-                alert(`✅ Identidad de ${id} sellada correctamente.`);
-                this.selectedAgentId = id;
-                this.dom.inpId.readOnly = true;
-                this.renderList();
-                this.loadAgentData(id);
-            });
-
-            // EVENTO: FORJAR PROMPT CON IA
-            this.dom.btnForge.addEventListener('click', async () => {
-                const name = this.dom.inpName.value.trim() || 'Agente Desconocido';
-                const guardian = this.dom.inpGuardian.value;
+                const systemPrompt = `Eres @genesi_ai. Escribe un 'System Prompt' denso, profesional y W3C en primera persona para un Agente de IA llamado ${name}. Su arquetipo guardián es ${guardian}. El prompt debe programarlo para ser supereficiente, conciso y orientado a resultados. No uses markdown.`;
+                const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: "Forja el System Prompt.", responseFormat: "text", temperature: 0.4 });
                 
-                this.dom.btnForge.innerText = "⏳ @genesi_ai forjando el alma...";
-                this.dom.btnForge.disabled = true;
-
-                try {
-                    const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-                    const apiKey = localStorage.getItem(`tt_key_${provider}`);
-                    if (!apiKey) throw new Error("No hay API Key configurada en la Consola Global.");
-
-                    const systemPrompt = `Eres @genesi_ai. Escribe un 'System Prompt' denso, profesional y W3C en primera persona para un Agente de IA llamado ${name}. Su arquetipo guardián es ${guardian}. El prompt debe programarlo para ser supereficiente, conciso y orientado a resultados. No uses markdown.`;
-                    const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: "Forja el System Prompt.", responseFormat: "text", temperature: 0.4 });
-                    
-                    this.dom.inpPrompt.value = response.content;
-                } catch(e) {
-                    alert(`Fallo en la forja: ${e.message}`);
-                } finally {
-                    this.dom.btnForge.innerText = "🧠 Autocompletar System Prompt con @genesi_ai";
-                    this.dom.btnForge.disabled = false;
-                }
-            });
-        } catch (error) {
-            console.error("Fallo al inicializar AgentEditorView:", error);
-            document.querySelector('.workspace-agents').innerHTML = `
-                <div style="padding: 2rem; color: #ff5252; text-align: center;">
-                    <h2>⚠️ Error al cargar el Padrón Neuronal</h2>
-                    <p>${error.message}</p>
-                </div>
-            `;
-        }
+                this.dom.inpPrompt.value = response.content;
+            } catch(e) {
+                alert(`Fallo en la forja: ${e.message}`);
+            } finally {
+                this.dom.btnForge.innerText = "🧠 Autocompletar System Prompt con @genesi_ai";
+                this.dom.btnForge.disabled = false;
+            }
+        });
     }
 
     renderList() {
@@ -288,108 +280,36 @@ export default class AgentEditorView {
         });
     }
 
-    async loadAgentData(id) {
-        try {
-            const state = store.getState();
-            const agent = state.globalUsers.find(u => u.id === id);
-            if (!agent) return;
-
-            this.dom.inpId.value = agent.id;
-            this.dom.inpId.readOnly = true;
-            this.dom.inpName.value = agent.name;
-            this.dom.inpGuardian.value = agent.profile?.guardian || 'everyman';
-            this.dom.inpEngine.value = agent.profile?.preferredEngine || 'deepseek';
-
-            await KB.init();
-            const safeId = id.replace('@','');
-            const promptNode = await KB.getNode(`prompt_global_${safeId}`);
-            this.dom.inpPrompt.value = promptNode ? promptNode.content : `Eres ${agent.name}...`;
-
-            this.dom.editor.classList.add('active');
-            
-            // Renderizamos el mapa de la mente
-            await this.renderSandbox(id);
-        } catch (error) {
-            console.error("Error cargando datos del agente:", error);
-            this.dom.canvas.innerHTML = '<div class="empty-state">Error cargando el Sandbox Neuronal.</div>';
-        }
+    async refreshContextPrompt(agentId) {
+        await KB.init();
+        const allNodes = await KB.getAllNodes();
+        const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(agentId));
+        const contextText = relatedMemes.map(m => `[${m.category}] ${m.title}: ${m.content}`).join('\n\n');
+        this.dom.inpContext.value = contextText || 'Sin memoria heredada de la red. Busca un Meme en la paleta y arrástralo al cerebro del agente.';
     }
 
-    async renderSandbox(agentId) {
-        try {
-            await KB.init();
-            const allNodes = await KB.getAllNodes();
-            
-            // Buscamos los memes y el conocimiento enlazado a este Agente
-            const agentPrompts = allNodes.filter(n => n.targetId === agentId || n.roleTarget === agentId);
-            const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(agentId));
+    async loadAgentData(id) {
+        const state = store.getState();
+        const agent = state.globalUsers.find(u => u.id === id);
+        if (!agent) return;
 
-            // Extraemos el texto de los Memes heredados para la caja de Context Prompt
-            const contextText = relatedMemes.map(m => `[${m.category}] ${m.title}: ${m.content}`).join('\n\n');
-            this.dom.inpContext.value = contextText || 'Sin memoria heredada de la red. Etiqueta al agente en el Omni-Paper usando # y @.';
+        this.dom.inpId.value = agent.id;
+        this.dom.inpId.readOnly = true;
+        this.dom.inpName.value = agent.name;
+        this.dom.inpGuardian.value = agent.profile?.guardian || 'everyman';
+        this.dom.inpEngine.value = agent.profile?.preferredEngine || 'deepseek';
 
-            let nodesData = [
-                { id: 'center', name: agentId, group: 'agent', radius: 30, color: 'var(--accent-blue)' }
-            ];
-            let linksData = [];
+        await KB.init();
+        const safeId = id.replace('@','');
+        const promptNode = await KB.getNode(`prompt_global_${safeId}`);
+        this.dom.inpPrompt.value = promptNode ? promptNode.content : `Eres ${agent.name}...`;
 
-            agentPrompts.forEach((p, i) => {
-                nodesData.push({ id: `p_${i}`, name: p.category || 'Prompt', group: 'prompt', radius: 15, color: 'var(--accent-purple)' });
-                linksData.push({ source: 'center', target: `p_${i}` });
-            });
+        await this.refreshContextPrompt(id);
 
-            relatedMemes.forEach((m, i) => {
-                nodesData.push({ id: `m_${i}`, name: m.title.substring(0,12)+'...', group: 'meme', radius: 20, color: 'var(--accent-green)' });
-                linksData.push({ source: 'center', target: `m_${i}` });
-            });
-
-            if (nodesData.length === 1) {
-                this.dom.canvas.innerHTML = '<div class="empty-state">Este agente no tiene Memes conectados aún.<br>Usa el <b>Omni-Paper</b> para forjar conocimiento y etiquetarlo.</div>';
-                return;
-            }
-
-            this.dom.canvas.innerHTML = '';
-            
-            // Carga asíncrona segura de D3.js (Blindada con try/catch)
-            const d3Module = await import('https://cdn.jsdelivr.net/npm/d3@7/+esm');
-            const d3Core = d3Module.default || d3Module;
-            
-            const width = this.dom.canvas.clientWidth || 600;
-            const height = this.dom.canvas.clientHeight || 400;
-
-            const svg = d3Core.select(this.dom.canvas).append("svg")
-                .attr("width", "100%").attr("height", "100%")
-                .attr("viewBox", [0, 0, width, height]);
-
-            const simulation = d3Core.forceSimulation(nodesData)
-                .force("link", d3Core.forceLink(linksData).id(d => d.id).distance(100))
-                .force("charge", d3Core.forceManyBody().strength(-300))
-                .force("center", d3Core.forceCenter(width / 2, height / 2));
-
-            const link = svg.append("g").selectAll("line").data(linksData).join("line")
-                .attr("stroke", "rgba(255,255,255,0.2)").attr("stroke-width", 2);
-
-            const node = svg.append("g").selectAll("circle").data(nodesData).join("circle")
-                .attr("r", d => d.radius).attr("fill", d => d.color)
-                .call(d3Core.drag()
-                    .on("start", (event, d) => { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-                    .on("drag", (event, d) => { d.fx = event.x; d.fy = event.y; })
-                    .on("end", (event, d) => { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }));
-
-            const text = svg.append("g").selectAll("text").data(nodesData).join("text")
-                .attr("text-anchor", "middle").attr("dy", d => d.radius + 15)
-                .attr("fill", "white").attr("font-size", "10px").attr("font-family", "monospace")
-                .text(d => d.name);
-
-            simulation.on("tick", () => {
-                link.attr("x1", d => d.source.x).attr("y1", d => d.source.y).attr("x2", d => d.target.x).attr("y2", d => d.target.y);
-                node.attr("cx", d => d.x).attr("cy", d => d.y);
-                text.attr("x", d => d.x).attr("y", d => d.y);
-            });
-
-        } catch (error) {
-            console.error("Fallo al renderizar el Sandbox:", error);
-            this.dom.canvas.innerHTML = '<div class="empty-state">⚠️ Error de Red.<br>No se pudo cargar la librería gráfica D3.js.</div>';
-        }
+        this.dom.editor.classList.add('active');
+        
+        // 🚀 INICIAMOS EL IDE VISUAL
+        this.synapticCanvas = new SynapticCanvas(this.dom.canvasContainer, id);
+        await this.synapticCanvas.render();
     }
 }
