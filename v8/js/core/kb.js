@@ -1,7 +1,9 @@
 // v8/js/core/kb.js
 // Motor de Memoria Profunda (IndexedDB) y Auditoría Competencial Fractal (A2A)
 
+// ============================================================================
 // 1. GENOMA ONTOLÓGICO FRACTAL (VNA)
+// ============================================================================
 export const NATIVE_ONTOLOGY = {
     "tech_saas_platform": {
         label: "💻 Software & SaaS", meta: "Ecosistema orientado al ciclo de vida del software, escalabilidad y reducción de deuda técnica.",
@@ -35,35 +37,26 @@ const GLOBAL_AIS_ONTOLOGY = [
     { id: '@mestre_escola', title: 'Arquetipo: Mestre d\'Escola', content: 'Guardián del Árbol de Habilidades. Gobiernas y defines los estándares para los niveles Bronce, Plata y Oro.' }
 ];
 
-// 2. CATÁLOGO FRACTAL (Memes + Flujos + Prompts)
+// ============================================================================
+// 2. CATÁLOGO FRACTAL (Memes del Kernel)
+// ============================================================================
 export const CATALOGO_MEMES = [
-    // --- CORE OS ---
-    { id: 'meme_os_vna', type: 'meme', category: 'core_os', title: 'OS: Value Network Analysis', content: `Un ecosistema es una red de creación de valor. Todo entregable viaja por tuberías y se audita mediante SOCs.`, keywords: ['VNA', 'Value Conversion'], broader: 'root_ecosystem_laws', related: ['meme_os_pantheon'] },
-    
-    // 🔥 NUEVO: EL CODEX CASTELLER (Contexto Estructural para la IA)
-    { 
-        id: 'meme_os_codex_casteller', 
-        type: 'meme', 
-        category: 'core_os', 
-        title: 'OS: Codex Casteller (Topología de Roles)', 
-        content: `MANDAMIENTO ESTRUCTURAL: Toda red VNA debe dividirse en 5 niveles de responsabilidad inspirados en los Castells catalanes.
-1. @anxaneta: Cúspide. Dirección, visión estratégica y máximo riesgo. (Ej: CEO, Arquitecto Jefe).
-2. @aixecador: Táctica. Conecta la visión con la estructura. (Ej: CPO, Product Manager).
-3. @dosos: Auditoría y validación. Sostiene el peso del control de calidad. (Ej: Tech Lead, QA Senior).
-4. @baixos: Producción core. El motor de ejecución tangible. (Ej: Desarrollador, Diseñador, Operario).
-5. @pinya: Base comunitaria. Soporte, infraestructura y herramientas. (Ej: SysOps, Community Manager).
-Nunca inventes niveles fuera de estos 5. Toda transacción (SOP) viaja entre dos de estos niveles.`, 
-        keywords: ['Estructura', 'Roles', 'Castells', 'Jerarquía'], 
-        broader: 'root_ecosystem_laws', 
-        related: [] 
-    },
-    
-    // --- SKILLS Y GUARDIANES ---
-    { id: 'meme_skill_lvl_baixos', type: 'meme', category: 'skill', title: 'Nivel: @baixos (Producción)', content: `Ejecución técnica pura, trabajo de campo, desarrollo de producto.`, keywords: ['Producción'], broader: 'root_castell_levels', related: [] },
-    { id: 'meme_skill_lvl_dosos', type: 'meme', category: 'skill', title: 'Nivel: @dosos (Auditoría)', content: `Control de calidad (QA), evaluación de riesgos, revisión por pares.`, keywords: ['Auditoría'], broader: 'root_castell_levels', related: [] },
-    { id: 'meme_soc_code_quality', type: 'meme', category: 'soc', title: 'SOC: Calidad de Código (Clean Code)', content: `AUDITORÍA: 1. Sin 'Magic Numbers'. 2. Funciones < 20 líneas. 3. Cobertura >80%.`, keywords: ['SOC', 'Clean Code'], broader: 'root_quality_assurance', related: [] },
+    // --- CORE OS (Leyes Inmutables de la Matriz) ---
+    { id: 'meme_os_vna', type: 'meme', category: 'core_os', title: 'OS: Value Network Analysis', content: `Un ecosistema es una red de creación de valor. Todo entregable (Output) viaja por tuberías y se audita mediante SOCs. Ninguna acción sin valor demostrable debe ser procesada.`, keywords: ['VNA', '#kernel_sos'], broader: 'root_ecosystem_laws', related: [] },
+    { id: 'meme_os_codex_casteller', type: 'meme', category: 'core_os', title: 'OS: Codex Casteller (Topología de Roles)', content: `MANDAMIENTO ESTRUCTURAL: Toda red VNA debe dividirse en 5 niveles de responsabilidad:
+1. @anxaneta: Cúspide. Dirección, visión estratégica y máximo riesgo.
+2. @aixecador: Táctica. Conecta la visión con la estructura.
+3. @dosos: Auditoría y validación. Sostiene el peso del control de calidad.
+4. @baixos: Producción core. El motor de ejecución tangible.
+5. @pinya: Base comunitaria. Soporte e infraestructura.`, keywords: ['Estructura', 'Roles', '#kernel_sos'], broader: 'root_ecosystem_laws', related: [] },
+    { id: 'meme_os_slicing_pie', type: 'meme', category: 'core_os', title: 'OS: Slicing Pie (Ledger)', content: `Regla de Equidad: El capital se distribuye según el Fair Market Value (FMV) multiplicado por un factor de riesgo. Solo las tareas que superan sus SOCs generan "Slices" en el Ledger inmutable.`, keywords: ['Ledger', 'Equity', '#kernel_sos'], broader: 'root_ecosystem_laws', related: [] },
 
-    // --- FLUJOS DE METODOLOGÍA ---
+    // --- SKILLS Y GUARDIANES BASE ---
+    { id: 'meme_skill_lvl_baixos', type: 'meme', category: 'skill', title: 'Nivel: @baixos (Producción)', content: `Ejecución técnica pura, trabajo de campo, desarrollo de producto. Foco: Alta cadencia, Força pura.`, keywords: ['Producción'], broader: 'meme_os_codex_casteller', related: [] },
+    { id: 'meme_skill_lvl_dosos', type: 'meme', category: 'skill', title: 'Nivel: @dosos (Auditoría)', content: `Control de calidad (QA), evaluación de riesgos, revisión por pares. Foco: Seny y Equilibrio.`, keywords: ['Auditoría'], broader: 'meme_os_codex_casteller', related: [] },
+    { id: 'meme_soc_code_quality', type: 'meme', category: 'soc', title: 'SOC: Calidad W3C / Clean Code', content: `CRITERIOS ESTRICTOS: 1. Sin 'Magic Numbers'. 2. Funciones < 20 líneas. 3. Respetar DRY y SOLID. 4. Cero fallos de Linting.`, keywords: ['SOC', 'Clean Code'], broader: 'root_quality_assurance', related: [] },
+
+    // --- FLUJOS DE METODOLOGÍA (SOPs Nativos) ---
     {
         id: 'flow_tdd_implementation',
         type: 'methodology_flow',
@@ -72,79 +65,19 @@ Nunca inventes niveles fuera de estos 5. Toda transacción (SOP) viaja entre dos
         description: 'Implementación estricta de RED-GREEN-REFACTOR entre un productor y un auditor.',
         version: '1.0',
         transactions: [
-            { id: 'tx_tdd_1', step: 1, from: '@baixos', to: '@baixos', tipo: 'tangible', entregable: 'Tests Unitarios (Failing)', sop: 'Escribir tests que definan el comportamiento esperado antes de escribir código de producción.', socs: ['Tests fallan por razones correctas', 'Cobertura de casos límite (Edge cases)'] },
-            { id: 'tx_tdd_2', step: 2, from: '@baixos', to: '@dosos', tipo: 'tangible', depends_on: ['tx_tdd_1'], entregable: 'Código de Producción + Refactor (PR)', sop: 'Escribir código mínimo para pasar el test. Refactorizar respetando DRY y SOLID. Abrir Pull Request.', socs: ['Todos los tests pasan (Green)', 'Complejidad ciclomática reducida'] },
-            { id: 'tx_tdd_3', step: 3, from: '@dosos', to: '@baixos', tipo: 'intangible', depends_on: ['tx_tdd_2'], entregable: 'Code Review & Merge', sop: 'Auditar el PR asegurando que el código cumple Clean Code y no rompe tests de regresión.', socs: ['Sin vulnerabilidades obvias', 'Aprobado y Merged a main'] }
+            { id: 'tx_tdd_1', step: 1, from: '@baixos', to: '@baixos', tipo: 'tangible', entregable: 'Tests Unitarios (Failing)', sop: 'Escribir tests que definan el comportamiento esperado antes de escribir código.', socs: ['Tests fallan por razones correctas', 'Cobertura de Edge cases'] },
+            { id: 'tx_tdd_2', step: 2, from: '@baixos', to: '@dosos', tipo: 'tangible', depends_on: ['tx_tdd_1'], entregable: 'Código de Producción + Refactor', sop: 'Escribir código mínimo para pasar el test y refactorizar.', socs: ['Todos los tests pasan (Green)', 'Complejidad ciclomática reducida'] },
+            { id: 'tx_tdd_3', step: 3, from: '@dosos', to: '@baixos', tipo: 'intangible', depends_on: ['tx_tdd_2'], entregable: 'Code Review & Merge', sop: 'Auditar el PR asegurando Clean Code.', socs: ['Sin vulnerabilidades', 'Aprobado y Merged'] }
         ]
-    },
-
-    // --- META-PROMPTS ---
-    {
-        id: 'prompt_genesi_vna',
-        type: 'meme',
-        category: 'meta_prompt',
-        title: 'Meta-Prompt: Creador VNA (@genesi_ai)',
-        content: `Eres el Master Ecosystem Architect de TeamTowers V14. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto. Cero charla. Cero markdown.
-
-MANDAMIENTOS DE ARQUITECTURA (TDD):
-1. Crea EXACTAMENTE entre 15 y 18 transacciones (tuberías de valor). Esto es crítico para modelar el ecosistema completo.
-2. Las transacciones DEBEN distribuirse lógicamente en 5 ERAS secuenciales: "Kickoff", "Growth", "Scale", "Harvest", "Cierre".
-3. Lógica DAG estricta: Las transacciones de "Kickoff" NO tienen "depends_on" (array vacío []). Cualquier transacción en "Growth" o posterior DEBE tener en su "depends_on" el ID ("tx_N") de una transacción anterior.
-4. Tipo de Valor: Al menos el 30% de las transacciones deben ser "intangible" (Mentoria, auditoría, soporte). El resto "tangible" (código, diseño, entregable).
-5. Tríada de Skills: Cada transacción DEBE tener al menos 3 IDs de skills en "required_skills".
-6. Auditoría SOC: Cada transacción DEBE incluir al menos 2 validaciones en "soc_checklist" que respondan a la pregunta: "¿Cómo audito matemáticamente este entregable?".
-
-ESTRUCTURA JSON EXACTA REQUERIDA:
-{
-  "presentacion": "El manifiesto del proyecto...",
-  "tags": ["Tech", "Blockchain"],
-  "new_memes": [
-    { "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }
-  ],
-  "roles": [
-    { "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }
-  ],
-  "transactions": [
-    { 
-      "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [],
-      "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", 
-      "template": "...", "horas": 5,
-      "required_skills": ["meme_skill_x"],
-      "soc_checklist": [{ "text": "..." }, { "text": "..." }]
-    }
-  ]
-}
-
-REGLA DE ORO: Respeta estrictamente los "levelIds" definidos en el Codex Casteller de tu contexto. NUNCA inventes nuevos niveles.`,
-        keywords: ['System', 'Prompt', 'Genesi']
-    },
-    {
-        id: 'prompt_genesi_forge',
-        type: 'meme',
-        category: 'meta_prompt',
-        title: 'Meta-Prompt: Forjador de Nodos (@genesi_ai)',
-        content: `Eres @genesi_ai, el Meta-Agente Forjador. Tu misión es redactar el 'System Prompt' perfecto y determinista para un nuevo agente que va a operar en la Matriz V14.`,
-        keywords: ['System', 'Prompt', 'Forge']
-    },
-    {
-        id: 'prompt_mestre_research',
-        type: 'meme',
-        category: 'meta_prompt',
-        title: 'Meta-Prompt: Deep Research (@mestre_escola)',
-        content: `Actúa como @mestre_escola, el Investigador Jefe Académico y de Ingeniería de la Matriz V14.
-Tu directiva es extraer el conocimiento más veraz, estandarizado a nivel industrial y profundo sobre el tema solicitado. No simules ni inventes; accede a tu base de conocimiento global (patrones de diseño, normativas ISO, frameworks Agile/W3C, documentación técnica oficial).
-Debes destilar este conocimiento en un array de "Memes" (nodos de conocimiento).
-Si la categoría solicitada es "SOP" (Procedimientos), describe pasos ejecutables.
-Si es "SOC" (Condiciones), describe métricas de calidad estrictas y auditables.
-Si es "SKILL", describe las competencias técnicas reales necesarias.
-DEVUELVE ÚNICAMENTE JSON: { "memes": [ { "category": "XXX", "title": "Nombre del framework", "content": "Desarrollo técnico...", "keywords": ["tag1", "tag2"] } ] }`,
-        keywords: ['System', 'Prompt', 'Research', 'Mestre']
     }
 ];
 
+// ============================================================================
+// 3. MOTOR DE INDEXACIÓN Y ALQUIMIA (IndexedDB)
+// ============================================================================
 export const KB = {
-    dbName: 'TeamTowers_LMS_V14', 
-    dbVersion: 4, // 🔥 Subimos a v4 para forzar el re-seed del Codex Casteller
+    dbName: 'TeamTowers_LMS_V15', 
+    dbVersion: 5, // 🔥 Upgrade para re-seed de arquitectura V15.5
     db: null,
 
     init() {
@@ -163,7 +96,7 @@ export const KB = {
                     store.createIndex('type', 'type', { unique: false }); 
                     store.createIndex('projectId', 'projectId', { unique: false });
                     store.createIndex('targetId', 'targetId', { unique: false }); 
-                    store.createIndex('forkedFrom', 'forkedFrom', { unique: false }); 
+                    store.createIndex('keywords', 'keywords', { multiEntry: true, unique: false }); 
                 }
             };
         });
@@ -172,25 +105,25 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const nodes = await this.getAllNodes();
         
-        // Forzamos inyección si no está el codex_casteller (Upgrade v4)
+        // Inyectar el Core si no existe
         if (!nodes.find(n => n.id === 'meme_os_codex_casteller')) {
             for (const meme of CATALOGO_MEMES) { 
-                // Evitar duplicados si ya existen otros memes antiguos
                 if (!nodes.find(n => n.id === meme.id)) {
                     await this.saveNode(meme); 
                 }
             }
         }
 
+        // Inyectar la Ontología Nativa si está vacía
         if (nodes.filter(n => n.type === 'ontology').length === 0) {
             for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
-                await this.saveNode({ id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label, roleTarget: 'Global', title: `Ecosistema: ${sectorData.label}`, content: sectorData.meta });
+                await this.saveNode({ id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label, roleTarget: 'Global', title: `Sector: ${sectorData.label}`, content: sectorData.meta });
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
-                    const contentStr = `Rol: ${roleData.name} (${levelKey}). Guardian: ${roleData.guardian}. FMV Base: €${roleData.fmv}/h.`;
+                    const contentStr = `Rol: ${roleData.name} (${levelKey}). Guardian requerido: ${roleData.guardian}. FMV Base: €${roleData.fmv}/h.`;
                     await this.saveNode({ 
                         id: `onto_${sectorKey}_${levelKey.replace('@','')}`, 
                         type: 'ontology', sector: sectorKey, roleTarget: levelKey, 
-                        title: `Arquetipo Local: ${roleData.name}`, content: contentStr, 
+                        title: `Arquetipo: ${roleData.name}`, content: contentStr, 
                         core_flows: roleData.core_flows 
                     });
                 }
@@ -200,9 +133,6 @@ export const KB = {
             }
         }
     },
-
-    async saveDocument(doc) { return this.saveNode(doc); },
-    async getAllDocuments(projectId = null) { return this.getAllNodes({ projectId }); },
 
     async getNode(id) {
         if (!this.db) await this.init();
@@ -222,17 +152,19 @@ export const KB = {
             const store = transaction.objectStore('nodes');
             
             const semanticNode = {
-                ...node, id: node.id || 'node_' + Date.now(), lastUpdated: Date.now(),
-                projectId: node.projectId || 'global', targetId: node.targetId || 'global', type: node.type || 'custom',
-                forkedFrom: node.forkedFrom || null,
-                jsonLd: {
-                    "@context": "https://schema.org", "@type": "DefinedTerm",
-                    "name": node.title, "description": node.content || node.description, "inDefinedTermSet": "TeamTowers_Ontology",
-                    "keywords": node.keywords ? (Array.isArray(node.keywords) ? node.keywords.join(', ') : node.keywords) : "",
-                    "broader": node.broader || null, "relatedLink": node.related || [],
-                    "sprintId": node.sprintId || null 
-                }
+                ...node, 
+                id: node.id || 'node_' + Date.now(), 
+                lastUpdated: Date.now(),
+                projectId: node.projectId || 'global', 
+                targetId: node.targetId || 'global', 
+                type: node.type || 'custom'
             };
+            
+            // Si keywords es un string, lo convertimos en Array para indexarlo bien
+            if (semanticNode.keywords && typeof semanticNode.keywords === 'string') {
+                semanticNode.keywords = semanticNode.keywords.split(',').map(k => k.trim());
+            }
+
             const request = store.put(semanticNode);
             request.onsuccess = () => resolve(semanticNode);
             request.onerror = (e) => reject(e.target.error);
@@ -247,111 +179,108 @@ export const KB = {
             const request = store.getAll();
             request.onsuccess = () => {
                 let nodes = request.result || [];
+                
+                // Filtrado en memoria
                 if (filters.projectId) nodes = nodes.filter(n => n.projectId === filters.projectId || n.projectId === 'global');
                 if (filters.type) nodes = nodes.filter(n => n.type === filters.type);
                 if (filters.targetId) nodes = nodes.filter(n => n.targetId === filters.targetId || n.targetId === 'global');
-                if (filters.forkedFrom) nodes = nodes.filter(n => n.forkedFrom === filters.forkedFrom);
+                if (filters.broader) nodes = nodes.filter(n => n.broader === filters.broader);
+                
                 resolve(nodes);
             };
             request.onerror = (e) => reject(e.target.error);
         });
     },
 
-    async getAvailableSectors() {
-        const sectors = {};
-        Object.entries(NATIVE_ONTOLOGY).forEach(([sectorKey, sectorData]) => {
-            sectors[sectorKey] = { label: sectorData.label, roles: {} };
-            Object.entries(sectorData.roles).forEach(([levelKey, roleData]) => {
-                sectors[sectorKey].roles[levelKey] = { 
-                    name: roleData.name, guardian: roleData.guardian, 
-                    content: `Rol: ${roleData.name} (${levelKey}). Guardian requerido: ${roleData.guardian}. FMV: €${roleData.fmv}/h.`, 
-                    core_flows: roleData.core_flows || [] 
-                };
-            });
-        });
-        return sectors;
-    },
-
-    auditEcosystemCompetencies(projectData, globalUsers) {
-        const gapReport = { missingLevels: [], missingGuardians: [], aiAgentsToInject: [] };
-        const requiredLevels = projectData.roles.map(r => r.levelId);
-        const requiredGuardians = projectData.roles.map(r => r.guardian || 'everyman');
-        const humanMembers = projectData.usuarios.filter(u => !u.id.startsWith('@'));
-        
-        const coveredLevels = []; const coveredGuardians = [];
-        humanMembers.forEach(member => {
-            const globalProfile = globalUsers.find(gu => gu.id === member.id)?.profile || {};
-            if (globalProfile.structural_affinity) coveredLevels.push(...globalProfile.structural_affinity);
-            if (globalProfile.guardian_authority) coveredGuardians.push(...globalProfile.guardian_authority);
-        });
-
-        requiredLevels.forEach(reqLvl => { if (!coveredLevels.includes(reqLvl) && !gapReport.missingLevels.includes(reqLvl)) gapReport.missingLevels.push(reqLvl); });
-        requiredGuardians.forEach(reqGuard => { if (!coveredGuardians.includes(reqGuard) && !gapReport.missingGuardians.includes(reqGuard)) gapReport.missingGuardians.push(reqGuard); });
-
-        const AI_MAPPING = { '@anxaneta': '@genesi_ai', '@aixecador': '@cap_de_colla', '@dosos': '@notari_ledger', '@baixos': '@forca_worker', '@pinya': '@dharma_coach' };
-        gapReport.missingLevels.forEach(missingLvl => {
-            const aiToInject = AI_MAPPING[missingLvl];
-            if (aiToInject && !gapReport.aiAgentsToInject.includes(aiToInject)) {
-                if (!projectData.usuarios.find(u => u.id === aiToInject)) gapReport.aiAgentsToInject.push(aiToInject);
-            }
-        });
-
-        if (!projectData.usuarios.find(u => u.id === '@cap_de_colla')) gapReport.aiAgentsToInject.push('@cap_de_colla');
-        return gapReport;
-    },
-
-    async getAgentBrainGraph(projectId, roleObj, projectVision, archetype = 'startup') {
+    // ============================================================================
+    // 4. NEXUS COGNITIVO A2A (Extracción de Memoria para el LLM)
+    // ============================================================================
+    
+    // El Nexus escanea el Ecosistema y devuelve SOLO lo que el agente necesita saber HOY.
+    async getAgentBrainGraph(projectId, agentId, storeState) {
         await this.init();
-        const allNodes = await this.getAllNodes({ projectId });
-        const osMemes = allNodes.filter(n => n.type === 'meme' && n.category === 'core_os');
+        const allNodes = await this.getAllNodes();
         
-        let defaultDna = [];
-        let autoSkills = [];
-        let methodologyFlows = [];
+        // 1. Memoria Universal (Kernel SOS)
+        const kernelMemes = allNodes.filter(n => n.keywords && n.keywords.includes('#kernel_sos'));
         
-        if (roleObj.isGlobalAi) {
-            defaultDna = allNodes.filter(n => n.type === 'ontology' && n.roleTarget === roleObj.id);
-        } else {
-            const sectorData = allNodes.find(n => n.id === `onto_${projectId}_meta`) || allNodes.find(n => n.type === 'ontology' && n.id.includes(roleObj.levelId.replace('@','')));
-            if(sectorData) {
-                const sectorPrefix = sectorData.sector || 'general';
-                const roleOntologyNode = allNodes.find(n => n.type === 'ontology' && n.roleTarget === roleObj.levelId && (n.sector === sectorPrefix || n.sector === 'global'));
+        // 2. Identidad Core del Agente
+        const agentPrompt = allNodes.find(n => n.type === 'prompt_a2a' && n.targetId === agentId);
+        const agentMemes = allNodes.filter(n => n.type === 'meme' && n.keywords && n.keywords.includes(agentId));
+        
+        // 3. Memoria Situacional (El Ecosistema actual)
+        let projectContext = null;
+        if (projectId && storeState) {
+            const project = storeState.projects.find(p => p.id === projectId);
+            if (project) {
+                // Filtramos las tareas (Work Orders) asignadas a este agente en este proyecto
+                const agentTasks = (project.work_orders || []).filter(w => w.assigneeId === agentId && w.status !== 'consolidated');
                 
-                if (roleOntologyNode) {
-                    defaultDna.push(roleOntologyNode);
-                    if (roleOntologyNode.core_flows) {
-                        roleOntologyNode.core_flows.forEach(flowId => {
-                            const flowNode = allNodes.find(n => n.id === flowId && n.type === 'methodology_flow');
-                            if (flowNode) methodologyFlows.push(flowNode);
-                        });
-                    }
-                }
+                // Filtramos los roles que existen en este mapa
+                const projectRoles = project.roles || [];
+                
+                projectContext = {
+                    name: project.nombre,
+                    vision: project.vision || 'No definida.',
+                    roles: projectRoles,
+                    activeTasks: agentTasks,
+                    flows: project.vna_flows || []
+                };
             }
         }
-        
-        const customPrompts = allNodes.filter(n => n.targetId === roleObj.id && n.type === 'prompt_a2a');
-        const finalDna = [...defaultDna, ...customPrompts];
-
-        const attachedMemes = allNodes.filter(n => n.targetId === roleObj.id && n.type === 'meme');
-        const finalSkillsAndSocs = [...autoSkills, ...attachedMemes];
-
-        const memories = allNodes.filter(n => (n.type === 'manual' || n.type === 'memory') && n.roleTarget === roleObj.levelId);
 
         return {
-            id: roleObj.id, name: roleObj.name, level: roleObj.levelId, guardian: roleObj.guardian || 'everyman', archetype: archetype, mission: projectVision,
-            branches: [
-                { name: "🌐 Core OS & Arquetipo", nodes: osMemes.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content, isNative: true })) },
-                { name: "🧬 ADN (Ontología)", nodes: finalDna.map(p => ({ id: p.id, title: p.title || p.jsonLd?.name, content: p.content, isNative: true, originalNode: p })) },
-                { name: "🔄 Flujos VNA (SOPs)", nodes: methodologyFlows.map(f => ({ id: f.id, title: f.title, content: JSON.stringify(f.transactions, null, 2), isNative: true })) },
-                { name: "🎒 Skills & SOCs", nodes: finalSkillsAndSocs.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content, isNative: m.isNative })) },
-                { name: "📚 Memoria LMS", nodes: memories.map(m => ({ id: m.id, title: m.title || m.jsonLd?.name, content: m.content })) }
-            ]
+            agentId: agentId,
+            systemPrompt: agentPrompt ? agentPrompt.content : `Eres ${agentId}, un agente de IA operando en TeamTowers.`,
+            kernelMemes: kernelMemes,
+            agentMemes: agentMemes,
+            ecosystemContext: projectContext
         };
     },
 
-    async getAgentContextFlattened(projectId, roleObj, projectVision, archetype = 'startup') {
-        const tree = await this.getAgentBrainGraph(projectId, roleObj, projectVision, archetype);
-        let flatContext = `Eres un Agente en TeamTowers V14.\nMisión: ${tree.mission}\nArquetipo: ${tree.archetype}\nSilla: ${tree.name} (${tree.level})\nGuardián: ${tree.guardian}\n\n[OS]\n${tree.branches[0].nodes.map(n => n.content).join('\n')}\n\n[ADN]\n${tree.branches[1].nodes.map(n => n.content).join('\n')}\n\n[FLUJOS METODOLÓGICOS VNA]\n${tree.branches[2].nodes.map(n => n.content).join('\n')}\n\n[SKILLS/SOCs]\n${tree.branches[3].nodes.map(n => n.content).join('\n')}\n\n[MEMORIA]\n${tree.branches[4].nodes.map(n => n.content).join('\n')}`;
-        return flatContext.replace(/\s+/g, ' ').trim();
+    // Esta función ensambla el Prompt Dinámico que se enviará al proveedor de IA (OpenAI/Anthropic/DeepSeek)
+    async getDynamicContextPrompt(projectId, agentId, storeState) {
+        const brain = await this.getAgentBrainGraph(projectId, agentId, storeState);
+        
+        let prompt = `=====================================\n`;
+        prompt += `IDENTIDAD (SYSTEM)\n`;
+        prompt += `=====================================\n`;
+        prompt += `${brain.systemPrompt}\n\n`;
+
+        prompt += `=====================================\n`;
+        prompt += `REGLAS UNIVERSALES (KERNEL VNA)\n`;
+        prompt += `=====================================\n`;
+        brain.kernelMemes.forEach(m => {
+            prompt += `- [${m.title}]: ${m.content}\n`;
+        });
+        prompt += `\n`;
+
+        if (brain.agentMemes.length > 0) {
+            prompt += `=====================================\n`;
+            prompt += `MEMORIA HEREDADA (MEMES ASIGNADOS)\n`;
+            prompt += `=====================================\n`;
+            brain.agentMemes.forEach(m => {
+                prompt += `- [${m.category}] ${m.title}: ${m.content}\n`;
+            });
+            prompt += `\n`;
+        }
+
+        if (brain.ecosystemContext) {
+            prompt += `=====================================\n`;
+            prompt += `CONTEXTO DEL ECOSISTEMA (TIEMPO REAL)\n`;
+            prompt += `=====================================\n`;
+            prompt += `Estás operando en el proyecto: ${brain.ecosystemContext.name}\n`;
+            prompt += `Visión: ${brain.ecosystemContext.vision}\n`;
+            
+            if (brain.ecosystemContext.roles.length > 0) {
+                prompt += `Roles existentes en el mapa: ${brain.ecosystemContext.roles.map(r => r.name).join(', ')}.\n`;
+            }
+            
+            if (brain.ecosystemContext.activeTasks.length > 0) {
+                prompt += `ATENCIÓN: Tienes ${brain.ecosystemContext.activeTasks.length} Work Orders pendientes de ejecutar o auditar.\n`;
+            }
+        }
+
+        return prompt;
     }
 };
