@@ -19,7 +19,7 @@ const LLM_PRICING = {
 
 export default class TestsView {
     constructor() {
-        document.title = "Boot Diagnostics | TeamTowers V14";
+        document.title = "Boot Diagnostics | TeamTowers V15.5";
     }
 
     async getHtml() {
@@ -69,8 +69,8 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V14 FRACTAL DIAGNOSTICS</h1>
-                        <p>Validando Semantic RAG, Meta-Prompts, TDD Componentizado y Core OS</p>
+                        <h1>V15.5 FRACTAL DIAGNOSTICS</h1>
+                        <p>Validando Semantic RAG (W3C), Córtex A2A, TDD Componentizado y Core OS</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
@@ -126,16 +126,17 @@ export default class TestsView {
         };
 
         const runTests = async () => {
-            const PID_TEST = 'v14-stress-' + Date.now();
+            const PID_TEST = 'v15-stress-' + Date.now();
             const dynNeoId = '0xNeoWallet' + Math.floor(Math.random() * 1000);
             const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 1000);
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
 
             try {
-                await store.dispatch({ type: 'LOGOUT_USER' });
+                // Guardamos el usuario original para restaurarlo después del test
+                const originalUser = store.getState().session.activeUserId;
 
                 // ==========================================
-                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V14)
+                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V15)
                 // ==========================================
                 const currentVer = store.getState().config?.version || 'Desconocida';
                 await assert(true, `Motor Fractal Activo y Respondiendo (Detectada: ${currentVer})`, "SYS");
@@ -146,20 +147,18 @@ export default class TestsView {
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
                 await store.dispatch({ 
                     type: 'ADD_USER', 
-                    payload: { id: dynAgentId, name: 'Deep Coder', globalRole: 'ai-agent', profile: { isAi: true, preferredEngine: 'deepseek', version: 'v14' } } 
+                    payload: { id: dynAgentId, name: 'Deep Coder', globalRole: 'ai-agent', profile: { isAi: true, preferredEngine: 'deepseek', version: 'v15' } } 
                 });
 
                 // ==========================================
-                // BLOQUE 2: MEMORIA PROFUNDA (KB) & RAG
+                // BLOQUE 2: MEMORIA PROFUNDA (KB) & RAG W3C
                 // ==========================================
                 const db = await KB.init();
-                await assert(db !== null, "IndexedDB LMS montada y sincronizada correctamente", "KB-INIT");
-
-                const metaPrompt = await KB.getNode('prompt_genesi_vna');
-                await assert(metaPrompt && metaPrompt.content.includes('Master Ecosystem Architect'), "Prompt Registry: Meta-Prompt de Gènesi extraído de la Base de Datos RAG", "META-PROMPT");
+                await assert(db !== null, "IndexedDB Córtex montada y sincronizada correctamente", "KB-INIT");
 
                 const allMemes = await KB.getAllNodes({ type: 'meme' });
-                await assert(allMemes.length >= 3, `Catálogo Fractal poblado con ${allMemes.length} Nodos Base W3C`, "MEMETICS");
+                const hasKernelMemes = allMemes.some(m => m.keywords && m.keywords.includes('#kernel_sos'));
+                await assert(hasKernelMemes, `Motor de Génesis: Semillas del OS inyectadas en la red neuronal.`, "CÓRTEX");
 
                 // ==========================================
                 // BLOQUE 3: CREACIÓN DE ECOSISTEMA VNA & RBAC
@@ -287,12 +286,17 @@ export default class TestsView {
                 await assert(stillUnread.length === 0, "Flujo de Comunicación: El ping se purga tras acuse de recibo en el Omni-Paper.", "PING-READ");
 
 
+                // Restauramos el usuario original al acabar el test para no desloguearte
+                if (originalUser) {
+                    await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
+                }
+
                 // FINALIZACIÓN EXITOSA
                 await sleep(200);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V14 OMNI-FLOW CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">El Cerebro LMS (RAG), la Notaría y la Telemetría han pasado los test de estrés. Listo para Producción.</p>
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V15.5 KERNEL CERTIFIED 🔥</h2>
+                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Forja Neuronal, el Cerebro LMS (RAG), la Notaría y la Telemetría han pasado los test de estrés. Listo para Producción.</p>
                     </div>
                 `);
                 
@@ -309,6 +313,11 @@ export default class TestsView {
                 `);
                 await new Promise(r => requestAnimationFrame(r));
                 terminal.scrollTop = terminal.scrollHeight;
+                
+                // Restauramos usuario original incluso si el test falla
+                if (originalUser) {
+                    await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
+                }
             }
             
             const cursor = document.querySelector('.cursor');
