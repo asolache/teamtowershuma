@@ -7,7 +7,7 @@ import ValueMapView from './views/ValueMapView.js';
 import ProjectView from './views/ProjectView.js';
 import ProjectCreatorView from './views/ProjectCreatorView.js';
 import TestsView from './views/TestsView.js';
-import AgentEditorView from './views/AgentEditorView.js'; 
+import AgentEditorView from './views/AgentEditorView.js'; // 🔥 Importación Asegurada
 import PaperView from './views/PaperView.js'; 
 import SettingsView from './views/SettingsView.js'; 
 import LmsView from './views/LmsView.js';
@@ -19,7 +19,6 @@ const navigateTo = url => {
 };
 
 const router = async () => {
-    // Definición estricta del árbol de rutas de TeamTowers V15
     const routes = [
         { path: "/v8/", view: HomeView },
         { path: "/v8/profile", view: ProfileView },
@@ -28,52 +27,53 @@ const router = async () => {
         { path: "/v8/project", view: ProjectView },
         { path: "/v8/create", view: ProjectCreatorView },
         { path: "/v8/tests", view: TestsView },
-        { path: "/v8/agents", view: AgentEditorView }, // 🔥 AQUÍ ESTÁ EL PADRÓN NEURONAL
+        { path: "/v8/agents", view: AgentEditorView }, // 🔥 Ruta blindada
         { path: "/v8/paper", view: PaperView },
-        { path: "/v8/focus", view: PaperView }, // Redirige al Omni-Paper
+        { path: "/v8/focus", view: PaperView }, // Focus ahora apunta a Paper
         { path: "/v8/lms", view: LmsView },
         { path: "/v8/settings", view: SettingsView },
         { path: "/v8/ledger", view: LedgerView }
     ];
 
-    // Buscar coincidencia exacta con la URL actual
     const potentialMatches = routes.map(route => {
         return {
             route: route,
+            // Soporta URL con y sin barra final
             isMatch: location.pathname === route.path || location.pathname === route.path + '/'
         };
     });
 
     let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 
-    // Si la ruta no existe (404), redirigimos al Home (Zero-Trust Login)
     if (!match) {
-        console.warn("⚠️ Ruta no encontrada. Redirigiendo al Home.");
-        match = {
-            route: routes[0], 
-            isMatch: true
-        };
+        console.error("Ruta no encontrada:", location.pathname);
+        match = { route: routes[0], isMatch: true }; // Fallback a Home
     }
 
-    // Instanciar la vista correspondiente
-    const view = new match.route.view();
-
-    // 1. Inyectar el HTML pre-renderizado en el contenedor principal
-    document.querySelector("#app").innerHTML = await view.getHtml();
-    
-    // 2. Ejecutar los listeners y scripts dinámicos (D3, D&D, APIs)
-    if (typeof view.executeViewScript === 'function') {
-        view.executeViewScript();
+    try {
+        const view = new match.route.view();
+        document.querySelector("#app").innerHTML = await view.getHtml();
+        
+        if (typeof view.executeViewScript === 'function') {
+            view.executeViewScript();
+        }
+    } catch (error) {
+        console.error("🔥 Error crítico renderizando la vista:", error);
+        // Si una vista crashea (ej: AgentEditorView falla), mostramos error en pantalla
+        document.querySelector("#app").innerHTML = `
+            <div style="padding: 3rem; color: #ff5252; background: #111; height: 100vh;">
+                <h1>⚠️ Error del Sistema Operativo</h1>
+                <p>La vista ha colapsado. Revisa la consola (F12).</p>
+                <code>${error.stack}</code>
+                <br><br><a href="/v8/" data-link style="color:white; text-decoration:underline;">Volver al Inicio</a>
+            </div>
+        `;
     }
 };
 
-// Escuchar navegación por historial (Botón Atrás/Adelante del navegador)
 window.addEventListener("popstate", router);
 
-// Interceptar clics en enlaces internos (SPA behavior)
 document.addEventListener("DOMContentLoaded", () => {
-    
-    // Arrancar el Daemon de Auto-Respuesta A2A al cargar la App
     Orchestrator.initUsenetDaemon();
 
     document.body.addEventListener("click", e => {
