@@ -49,6 +49,20 @@ const router = async () => {
         match = { route: routes[0], isMatch: true };
     }
 
+    // =================================================================
+    // 🛡️ AUTH GUARD: EL PORTERO DE LA DISCOTECA
+    // =================================================================
+    const state = store.getState();
+    const isRootRoute = match.route.path === '/v8/';
+    
+    // Si NO ESTÁS logueado y tratas de ir a cualquier lado que no sea el Root... Patada al Root.
+    if (!state.session.activeUserId && !isRootRoute) {
+        console.warn("🛡️ Auth Guard: Acceso denegado. Volviendo a Root.");
+        window.location.replace('/v8/');
+        return; 
+    }
+    // =================================================================
+
     try {
         const view = new match.route.view();
         document.querySelector("#app").innerHTML = await view.getHtml();
@@ -61,7 +75,7 @@ const router = async () => {
         document.querySelector("#app").innerHTML = `
             <div style="padding: 3rem; color: #ff5252; background: #111; height: 100vh;">
                 <h1>⚠️ Error del Sistema Operativo</h1>
-                <p>La vista ha colapsado. Revisa la consola (F12).</p>
+                <p>La vista ha colapsado.</p>
                 <code>${error.stack}</code>
                 <br><br><a href="/v8/" style="color:white; text-decoration:underline;">Volver al Inicio</a>
             </div>
