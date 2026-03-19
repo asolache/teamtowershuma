@@ -1,6 +1,13 @@
 // v8/js/components/PageHeader.js
 import { store } from '../core/store.js';
 
+// 🔥 Override Global a prueba de balas para el Logout
+window.tt_forceLogout = async () => {
+    await store.dispatch({ type: 'LOGOUT_USER' });
+    localStorage.removeItem('tt_active_project');
+    window.location.href = '/v8/'; 
+};
+
 export const PageHeader = {
     getHtml: (config = {}) => {
         const state = store.getState();
@@ -26,20 +33,6 @@ export const PageHeader = {
             </div>
         ` : '';
 
-        const magicActionsHtml = config.magicActions ? `
-            <div class="ph-magic-menu">
-                <button class="ph-btn-magic" id="btnMagicMenu">✨ IA ▾</button>
-                <div class="ph-magic-dropdown" id="magicDropdown">
-                    ${config.magicActions.map(action => `
-                        <div class="ph-magic-item" data-action="${action.id}">
-                            <div class="ph-magic-icon">${action.icon}</div>
-                            <div class="ph-magic-text"><strong>${action.label}</strong></div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        ` : '';
-
         return `
             <style>
                 .page-header { 
@@ -51,7 +44,7 @@ export const PageHeader = {
                     position: relative; 
                     z-index: 100; 
                     width: 100%; 
-                    flex-wrap: nowrap !important; 
+                    flex-wrap: nowrap !important; /* 🔥 FIX: Prohíbe terminantemente el salto de línea */
                     gap: 15px;
                 }
                 
@@ -79,22 +72,14 @@ export const PageHeader = {
                 .ph-menu-item:hover { background: rgba(255,255,255,0.05); color: white; border-color: #333; }
                 .ph-menu-item.danger:hover { background: rgba(255,82,82,0.1); color: var(--accent-red); border-color: rgba(255,82,82,0.3); }
 
-                /* MAGIC ACTIONS (IA) */
-                .ph-magic-menu { position: relative; }
-                .ph-btn-magic { background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); color: var(--accent-purple); padding: 8px 15px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 0.9rem;}
-                .ph-btn-magic:hover { background: rgba(224, 64, 251, 0.2); box-shadow: 0 0 15px rgba(224, 64, 251, 0.3);}
-                .ph-magic-dropdown { position: absolute; top: 50px; right: 0; background: rgba(10,10,15,0.98); border: 1px solid var(--accent-purple); border-radius: 16px; width: 220px; padding: 10px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); backdrop-filter: blur(20px); display: none; flex-direction: column; gap: 5px;}
-                .ph-magic-dropdown.open { display: flex; animation: scaleIn 0.2s ease-out;}
-                .ph-magic-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; border: 1px solid transparent;}
-                .ph-magic-item:hover { background: rgba(224, 64, 251, 0.1); border-color: rgba(224, 64, 251, 0.3); }
-
                 @keyframes pulsePing { 0% { box-shadow: 0 0 0 0 rgba(255,82,82,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,82,82,0); } 100% { box-shadow: 0 0 0 0 rgba(255,82,82,0); } }
                 @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
                 @media (max-width: 1024px) {
-                    .page-header { flex-wrap: wrap !important; }
-                    .ph-left { min-width: 100%; }
-                    .ph-right { justify-content: space-between; width: 100%; }
+                    /* 🔥 FIX: Reducimos el tamaño del título en móvil pero MANTENEMOS todo en una línea */
+                    .page-header { flex-wrap: nowrap !important; }
+                    .ph-title { font-size: 1.2rem; }
+                    .ph-tagline { display: none; } /* Ocultamos la tagline en móvil para que quepa todo */
                 }
             </style>
 
@@ -105,7 +90,6 @@ export const PageHeader = {
                 </div>
                 <div class="ph-right">
                     ${tabsHtml}
-                    ${magicActionsHtml}
                     ${config.actionHtml ? config.actionHtml : ''}
                     
                     <div class="ph-avatar-container" id="phAvatarToggle">
@@ -123,7 +107,7 @@ export const PageHeader = {
                             <a href="/v8/settings" data-link class="ph-menu-item">⚙️ Consola Global</a>
                             <a href="/v8/tests" data-link class="ph-menu-item">🩺 Boot Diagnostics</a>
                             <div style="border-top: 1px solid #333; margin: 5px 0;"></div>
-                            <button class="ph-menu-item danger" id="btnLogoutAction">🚪 Desconectar Nodo</button>
+                            <button class="ph-menu-item danger" onclick="window.tt_forceLogout()">🚪 Desconectar Nodo</button>
                         </div>
                     </div>
                 </div>
@@ -132,33 +116,10 @@ export const PageHeader = {
     },
 
     execute: () => {
-        // Obtenemos los elementos directamente después del render
         const avatarToggle = document.getElementById('phAvatarToggle');
         const userMenu = document.getElementById('phUserMenu');
-        const btnLogout = document.getElementById('btnLogoutAction');
-        const btnMagic = document.getElementById('btnMagicMenu');
-        const magicDrop = document.getElementById('magicDropdown');
         const tabs = document.querySelectorAll('.ph-tab');
-        const magicItems = document.querySelectorAll('.ph-magic-item');
 
-        // 🔥 LOGOUT BLINDADO
-        if (btnLogout) {
-            // Removemos atributos data-link para que el router NO lo intercepte
-            btnLogout.removeAttribute('data-link');
-            btnLogout.addEventListener('click', async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Forzamos el logout en el store
-                await store.dispatch({ type: 'LOGOUT_USER' });
-                localStorage.removeItem('tt_active_project');
-                
-                // Redirección dura a la raíz (bypass del router SPA)
-                window.location.href = '/v8/'; 
-            });
-        }
-
-        // MENÚ AVATAR
         if (avatarToggle && userMenu) {
             avatarToggle.addEventListener('click', (e) => {
                 if (!e.target.closest('.ph-user-menu')) {
@@ -167,22 +128,6 @@ export const PageHeader = {
             });
         }
 
-        // MENÚ MAGIC IA
-        if (btnMagic && magicDrop) {
-            btnMagic.addEventListener('click', (e) => {
-                e.stopPropagation();
-                magicDrop.classList.toggle('open');
-            });
-            magicItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const actionId = e.currentTarget.dataset.action;
-                    magicDrop.classList.remove('open');
-                    window.dispatchEvent(new CustomEvent('ph-magic-action', { detail: { actionId } }));
-                });
-            });
-        }
-
-        // PESTAÑAS
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
                 tabs.forEach(t => t.classList.remove('active'));
@@ -191,13 +136,9 @@ export const PageHeader = {
             });
         });
 
-        // CIERRE GLOBAL DE MENÚS (Si haces click fuera)
         document.addEventListener('click', (e) => {
             if (avatarToggle && !avatarToggle.contains(e.target) && userMenu) {
                 userMenu.classList.remove('open');
-            }
-            if (btnMagic && !btnMagic.contains(e.target) && magicDrop) {
-                magicDrop.classList.remove('open');
             }
         });
     }
