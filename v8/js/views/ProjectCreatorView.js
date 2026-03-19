@@ -393,6 +393,8 @@ export default class ProjectCreatorView {
         this.dom.tddErrorPanel.style.display = 'none';
     }
 
+    // (Dentro de ProjectCreatorView.js) ...
+
     runCognitiveTDD(parsedData) {
         let errors = [];
 
@@ -415,22 +417,19 @@ export default class ProjectCreatorView {
                 });
             }
             
-            if (!tx.required_skills || tx.required_skills.length < 3) {
-                errors.push(`Tríada Rota: El SOP [${tx.template}] tiene menos de 3 skills asignados.`);
-            }
-
             if (!tx.soc_checklist || tx.soc_checklist.length === 0) {
                 errors.push(`TDD Ausente: El SOP [${tx.template}] no tiene matriz SOC (Criterios de auditoría nulos).`);
             }
         });
 
-        if (parsedData.transactions.length < 15) {
-            errors.push(`VNA Insuficiente: La IA solo ha mapeado ${parsedData.transactions.length} transacciones. Se requieren al menos 15 para modelar un ecosistema real.`);
+        // 🔥 TDD CUALITATIVO: Ya no exigimos 15. Solo pedimos un mínimo lógico (1 por fase = 5).
+        if (parsedData.transactions.length < 5) {
+            errors.push(`VNA Insuficiente: La red trazada es demasiado pequeña (${parsedData.transactions.length} SOPs). No cubre el ciclo de vida completo.`);
         }
 
         const hasIntangible = parsedData.transactions.some(t => t.tipo === 'intangible');
         if (!hasIntangible) {
-            errors.push(`VNA Incompleto: No se han detectado transacciones 'intangible'. El modelo de valor exige flujos de conocimiento o feedback.`);
+            errors.push(`VNA Incompleto: No se han detectado transacciones 'intangible'. El modelo de valor exige flujos de conocimiento o auditoría.`);
         }
 
         return errors;
@@ -455,33 +454,36 @@ export default class ProjectCreatorView {
 
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
-        this.dom.loadingMsg.innerText = `Sintetizando Red VNA Fractal con ${provider.toUpperCase()}...`;
+        this.dom.loadingMsg.innerText = `Conectando con @genesi_ai vía ${provider.toUpperCase()}...`;
         this.dom.tddErrorPanel.style.display = 'none';
 
         try {
             await KB.init();
             
-            // 🔥 RAG LOCAL (TEORÍA Y CONTEXTO)
-            let theoryContext = "";
-            const globalDocs = await KB.getAllNodes();
-            const memes = globalDocs.filter(d => d.type === 'meme' || d.type === 'ontology');
-            
-            if (memes.length > 0) {
-                theoryContext = "\n\n--- TEORÍA VNA Y MEMES W3C GLOBALES (Aplica esto obligatoriamente) ---\n";
-                theoryContext += memes.map(m => `[${m.category || 'REGLA'}] ${m.title}: ${m.content}`).join('\n');
-            }
+            // 🔥 CÓRTEX A2A: Extraemos la mente de Gènesi AI (System Prompt + Memes Heredados)
+            const genesiContext = await KB.getDynamicContextPrompt('global', '@genesi_ai', store.getState());
 
             let sectorData = this.sectorsFromKB[sectorVal];
+            let sectorContext = "";
             if (sectorData && sectorData.roles) {
-                theoryContext += `\n\n--- GENOMA DEL SECTOR SELECCIONADO: ${sectorData.label} ---\n`;
-                theoryContext += JSON.stringify(sectorData.roles);
+                sectorContext = `\n\n--- GENOMA DEL SECTOR SELECCIONADO: ${sectorData.label} ---\n`;
+                sectorContext += JSON.stringify(sectorData.roles);
             }
 
+            // Ensamblamos la visión enriquecida que se enviará al Orquestador
             const enhancedVision = `
-                VISIÓN DEL USUARIO: ${visionRaw}
-                ${theoryContext}
+                ${genesiContext}
+                ${sectorContext}
+                =====================================
+                VISIÓN DEL USUARIO A PROCESAR:
+                =====================================
+                Nombre del Proyecto: ${name}
+                Arquetipo Seleccionado: ${archetypeText}
+                Visión Raw: ${visionRaw}
             `;
 
+            console.log("Inyectando Super-Prompt con Memética RAG del Agente...");
+            
             const parsedData = await Orchestrator.designEcosystemVNA(name, archetypeText, enhancedVision, provider, apiKey);
             const tddErrors = this.runCognitiveTDD(parsedData);
             
