@@ -11,7 +11,7 @@ import { SandboxRenderer } from '../components/SandboxRenderer.js';
 
 export default class PaperView {
     constructor() {
-        document.title = "Omni-Paper | TeamTowers V15";
+        document.title = "Omni-Paper | TeamTowers V15.5";
         this.activeTx = null; 
         this.activeProjectId = null;
         this.isMenuOpen = false;
@@ -29,8 +29,8 @@ export default class PaperView {
 
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
-            subtitle: project ? project.nombre : 'Kernel V15',
-            tagline: "El lienzo cognitivo. Escribe @ para Nodos, # para Memes, y / para Comandos (Widgets, Arquetipos y Multimodal)."
+            subtitle: project ? project.nombre : 'Kernel V15.5',
+            tagline: "El lienzo cognitivo. Escribe @ para Nodos, # para Memes, y / para Comandos."
         };
 
         return `
@@ -160,7 +160,7 @@ export default class PaperView {
                         </div>
 
                         <div class="editor-wrapper">
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/deepwork, /mapa, /imagen, /video...)."><p><br></p></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/meme, /deepwork, /mapa, /imagen, /video...)."><p><br></p></div>
                         </div>
 
                         <div class="thread-container" id="threadWrapper" style="display:none;">
@@ -255,7 +255,7 @@ export default class PaperView {
         
         if (hashFromUrl) {
             const p = state.projects.find(x => x.id === this.activeProjectId);
-            const task = (p.work_orders || p.transactions || []).find(t => (t.id || t.hash) === hashFromUrl);
+            const task = (p?.work_orders || p?.transactions || []).find(t => (t.id || t.hash) === hashFromUrl);
             if (task) {
                 this.activeTx = task;
                 this.dom.omniSelector.value = hashFromUrl;
@@ -289,42 +289,6 @@ export default class PaperView {
                 await this.handleInlineConsoleAction(e.target);
             }
         });
-
-        window.addEventListener('sandbox-action', async (e) => {
-            const { action, god, btnElement } = e.detail;
-            if (action === 'invoke-mestre') {
-                btnElement.disabled = true;
-                btnElement.innerText = "⏳ El Oráculo está forjando el Arquetipo...";
-                try {
-                    const { Orchestrator } = await import('../core/Orchestrator.js');
-                    const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-                    const apiKey = localStorage.getItem(`tt_key_${provider}`);
-
-                    const systemPrompt = `Actúa como @mestre_escola, Master Architect y experto en VNA. Genera la ontología W3C para: ${god.name} (${god.domain}). Devuelve un JSON estricto con {"memes": [...]}`;
-                    const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: "Genera la ontología.", responseFormat: "json_object", temperature: 0.1 });
-                    
-                    if (response.content && response.content.memes) {
-                        const { KB } = await import('../core/kb.js');
-                        await KB.init();
-                        for (const meme of response.content.memes) {
-                            meme.keywords = meme.keywords || [];
-                            meme.keywords.push(god.name); 
-                            await KB.saveNode({
-                                id: meme.id || `meme_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-                                type: meme.type || 'meme', category: meme.category || 'RULE',
-                                projectId: 'global', targetId: 'global',
-                                title: meme.title, content: meme.content, keywords: meme.keywords, broader: meme.broader || null
-                            });
-                        }
-                        btnElement.innerText = `✅ Arquetipo ${god.name} inyectado (LMS)`;
-                    }
-                } catch (err) {
-                    alert(`Error IA: ${err.message}`);
-                    btnElement.disabled = false;
-                    btnElement.innerText = "🧠 Reintentar Asignación";
-                }
-            }
-        });
     }
 
     setDraftMode() {
@@ -345,7 +309,7 @@ export default class PaperView {
     }
 
     renderThread(project) {
-        if (!project.logs || !this.activeTx) return;
+        if (!project || !project.logs || !this.activeTx) return;
         const activeHash = this.activeTx.id || this.activeTx.hash;
         const thread = project.logs.filter(l => l.relatedTxHash === activeHash).sort((a,b) => a.date - b.date);
         
@@ -443,7 +407,6 @@ export default class PaperView {
         };
 
         input.addEventListener('input', updateDetectedContext);
-
         menu.addEventListener('mousedown', (e) => e.preventDefault());
 
         document.addEventListener('click', (e) => {
@@ -491,6 +454,8 @@ export default class PaperView {
                 const { KB } = await import('../core/kb.js'); 
                 await KB.init();
                 let memes = await KB.getAllNodes({ type: 'meme' });
+                // Filtramos memes globales o de este ecosistema
+                memes = memes.filter(m => m.projectId === 'global' || m.projectId === this.activeProjectId);
                 if (search.length > 0) memes = memes.filter(m => m.title.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(search))));
                 
                 if (memes.length > 0) {
@@ -512,8 +477,9 @@ export default class PaperView {
             else if (this.currentWord.startsWith('/')) {
                 menu.innerHTML = `
                     <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Forjar Estructura</div>
-                    <div class="semantic-item type-action" data-val="/agente" data-type="action"><span style="font-size:1.5rem;">👤</span> <div><b style="color:var(--accent-green);">Añadir Nodo / Agente</b><br><span style="font-size:0.75rem;color:#888;">Registra un nuevo talento en el Padrón.</span></div></div>
-                    <div class="semantic-item type-action" data-val="/rol" data-type="action"><span style="font-size:1.5rem;">🪑</span> <div><b style="color:var(--accent-green);">Forjar Rol VNA (Silla)</b><br><span style="font-size:0.75rem;color:#888;">Añade un nuevo rol estructural.</span></div></div>
+                    <div class="semantic-item type-action" data-val="/meme" data-type="action"><span style="font-size:1.5rem;">🧠</span> <div><b style="color:var(--accent-purple);">Forjar Meme W3C</b><br><span style="font-size:0.75rem;color:#888;">Crea conocimiento en el LMS.</span></div></div>
+                    <div class="semantic-item type-action" data-val="/agente" data-type="action"><span style="font-size:1.5rem;">👤</span> <div><b style="color:var(--accent-green);">Añadir Nodo / Agente</b><br><span style="font-size:0.75rem;color:#888;">Registra talento en el Padrón.</span></div></div>
+                    <div class="semantic-item type-action" data-val="/rol" data-type="action"><span style="font-size:1.5rem;">🪑</span> <div><b style="color:var(--accent-green);">Forjar Rol VNA (Silla)</b><br><span style="font-size:0.75rem;color:#888;">Añade un rol al ecosistema.</span></div></div>
                     <div class="semantic-item type-action" data-val="/tuberia" data-type="action"><span style="font-size:1.5rem;">🛤️</span> <div><b style="color:var(--accent-green);">Trazar Tubería (SOP)</b><br><span style="font-size:0.75rem;color:#888;">Define una entrega de valor.</span></div></div>
 
                     <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Generación Multimodal</div>
@@ -521,11 +487,11 @@ export default class PaperView {
                     <div class="semantic-item type-action" data-val="/video" data-type="action"><span style="font-size:1.5rem;">🎬</span> <div><b style="color:var(--accent-orange);">Generar Vídeo (Veo)</b><br><span style="font-size:0.75rem;color:#888;">Composición de vídeo generativo.</span></div></div>
 
                     <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Insertar Componentes</div>
-                    <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA (Constelación)</b><br><span style="font-size:0.75rem;color:#888;">Mapa D3 de Arquetipos y Ontología.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA</b><br><span style="font-size:0.75rem;color:#888;">Mapa D3 de Arquetipos.</span></div></div>
                     <div class="semantic-item type-widget" data-val="/deepwork" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + SOCs.</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/mapa" data-type="widget"><span style="font-size:1.5rem;">🕸️</span> <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Inyecta el grafo dinámico del Ecosistema.</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/kanban" data-type="widget"><span style="font-size:1.5rem;">📋</span> <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Renderiza oportunidades libres.</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/ledger" data-type="widget"><span style="font-size:1.5rem;">⚖️</span> <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Cap Table interactiva y auditada.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/mapa" data-type="widget"><span style="font-size:1.5rem;">🕸️</span> <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Grafo del Ecosistema.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/kanban" data-type="widget"><span style="font-size:1.5rem;">📋</span> <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Oportunidades libres.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/ledger" data-type="widget"><span style="font-size:1.5rem;">⚖️</span> <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Cap Table auditada.</span></div></div>
                 `;
                 this.showFloatingMenu(menu, lastKnownRect);
             } else {
@@ -549,7 +515,25 @@ export default class PaperView {
                     const widgetId = 'wid_' + Date.now();
                     el = document.createElement('div');
                     
-                    if (replaceVal === '/imagen') {
+                    if (replaceVal === '/meme') {
+                        el.innerHTML = `
+                            <div class="omni-widget" contenteditable="false" id="${widgetId}">
+                                <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">🧠 Forjar Meme W3C</div>
+                                <div class="inline-console">
+                                    <div style="display:flex; gap:10px;">
+                                        <select class="inline-input" id="meme_cat_${widgetId}" style="flex:1;">
+                                            <option value="RULE">RULE (Regla general)</option>
+                                            <option value="SOP">SOP (Procedimiento)</option>
+                                            <option value="SOC">SOC (Criterio Auditoría)</option>
+                                        </select>
+                                        <input type="text" class="inline-input" id="meme_title_${widgetId}" placeholder="Título del concepto..." style="flex:3;">
+                                    </div>
+                                    <textarea class="inline-input" id="meme_content_${widgetId}" placeholder="Desarrollo del conocimiento..." rows="3"></textarea>
+                                    <button class="inline-btn btn-inline-action" data-action="create-meme" data-wid="${widgetId}">Inyectar en el Cerebro LMS</button>
+                                </div>
+                            </div><p><br></p>
+                        `;
+                    } else if (replaceVal === '/imagen') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false" id="${widgetId}">
                                 <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">🍌 Generador Visual (Nano Banana 2)</div>
@@ -729,7 +713,7 @@ export default class PaperView {
                                         woHash: activeHash,
                                         onCompleteCallback: (hours) => {
                                             alert(`✅ Tarea Reportada al Ledger (${hours}h).`);
-                                            this.loadTaskContext(); 
+                                            this.setTaskMode(); 
                                         }
                                     });
                                     fr.render();
@@ -820,6 +804,27 @@ export default class PaperView {
                         </div>
                     `;
                 }
+            }
+            // CREACIÓN DE MEMES
+            else if (action === 'create-meme') {
+                const cat = document.getElementById(`meme_cat_${wid}`).value;
+                const title = document.getElementById(`meme_title_${wid}`).value.trim();
+                const content = document.getElementById(`meme_content_${wid}`).value.trim();
+                
+                if (!title || !content) throw new Error("Título y Contenido son obligatorios.");
+
+                const { KB } = await import('../core/kb.js');
+                await KB.init();
+                
+                // 🔥 Inyectamos en el ecosistema actual o en la red global
+                const targetProject = this.activeProjectId || 'global';
+                
+                await KB.saveNode({
+                    id: `meme_${Date.now()}`, type: 'meme', category: cat,
+                    projectId: targetProject, targetId: 'global',
+                    title: title, content: content, keywords: []
+                });
+                widgetContainer.innerHTML = `<div class="inline-success">✅ Concepto [${title}] forjado en el Ecosistema local.</div>`;
             }
             // SYSTEM STRUCTURING
             else if (action === 'create-agent') {
@@ -958,7 +963,7 @@ export default class PaperView {
 
         this.dom.editor.innerHTML = '<p><br></p>';
         this.dom.dynamicTags.innerHTML = `<span style="color:#555; font-style:italic; font-size:0.85rem;">Escribe @ o # para enlazar el conocimiento...</span>`;
-        this.loadTaskContext();
+        this.setTaskMode(); // 🔥 FIX: Actualiza el hilo y los widgets
         this.dom.btnSubmit.disabled = false;
         this.dom.btnSubmit.innerText = '⚖️ Enviar a Usenet (Sellar)';
     }
