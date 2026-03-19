@@ -8,7 +8,6 @@ export const PageHeader = {
         const userName = user ? user.name : 'Usuario';
         const userInitials = userName.substring(0, 2).toUpperCase();
         
-        // Pings (Notificaciones Usenet)
         let pingCount = 0;
         state.projects.forEach(p => {
             if (p.logs) {
@@ -43,7 +42,6 @@ export const PageHeader = {
 
         return `
             <style>
-                /* BLINDAJE FLEXBOX: Evita saltos de línea */
                 .page-header { 
                     display: flex !important; 
                     flex-direction: row !important; 
@@ -57,35 +55,12 @@ export const PageHeader = {
                     gap: 15px;
                 }
                 
-                .ph-left { 
-                    display: flex; 
-                    flex-direction: column; 
-                    gap: 5px; 
-                    flex: 1 1 auto; 
-                    min-width: 0; /* Permite que el texto largo se trunque */
-                }
-                .ph-title { 
-                    color: white; 
-                    font-size: 1.8rem; 
-                    font-weight: 900; 
-                    margin: 0; 
-                    letter-spacing: -1px; 
-                    display: flex; 
-                    align-items: center; 
-                    gap: 10px;
-                    white-space: nowrap; 
-                    overflow: hidden; 
-                    text-overflow: ellipsis; 
-                }
+                .ph-left { display: flex; flex-direction: column; gap: 5px; flex: 1 1 auto; min-width: 0; }
+                .ph-title { color: white; font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
                 .ph-subtitle { font-size: 0.8rem; background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); padding: 4px 10px; border-radius: 8px; font-family: var(--font-mono); font-weight: bold; border: 1px solid rgba(0, 176, 255, 0.3);}
                 .ph-tagline { color: var(--text-muted); font-size: 0.9rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
                 
-                .ph-right { 
-                    display: flex; 
-                    align-items: center; 
-                    gap: 15px; 
-                    flex-shrink: 0; /* Evita que el avatar se encoja o salte */
-                }
+                .ph-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
                 
                 .ph-tabs { display: flex; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px;}
                 .ph-tab { background: transparent; border: none; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.9rem;}
@@ -157,57 +132,73 @@ export const PageHeader = {
     },
 
     execute: () => {
-        // 🔥 DELEGACIÓN GLOBAL (Para que nunca se rompan los listeners al repintar)
-        if (!window._tt_ph_delegation_active) {
-            document.addEventListener('click', async (e) => {
+        // Obtenemos los elementos directamente después del render
+        const avatarToggle = document.getElementById('phAvatarToggle');
+        const userMenu = document.getElementById('phUserMenu');
+        const btnLogout = document.getElementById('btnLogoutAction');
+        const btnMagic = document.getElementById('btnMagicMenu');
+        const magicDrop = document.getElementById('magicDropdown');
+        const tabs = document.querySelectorAll('.ph-tab');
+        const magicItems = document.querySelectorAll('.ph-magic-item');
+
+        // 🔥 LOGOUT BLINDADO
+        if (btnLogout) {
+            // Removemos atributos data-link para que el router NO lo intercepte
+            btnLogout.removeAttribute('data-link');
+            btnLogout.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 
-                // 1. LÓGICA DE LOGOUT
-                const btnLogout = e.target.closest('#btnLogoutAction');
-                if (btnLogout) {
-                    e.preventDefault();
-                    await store.dispatch({ type: 'LOGOUT_USER' });
-                    localStorage.removeItem('tt_active_project');
-                    window.location.replace('/v8/'); // Reemplazo duro de URL hacia la home
-                    return;
-                }
+                // Forzamos el logout en el store
+                await store.dispatch({ type: 'LOGOUT_USER' });
+                localStorage.removeItem('tt_active_project');
+                
+                // Redirección dura a la raíz (bypass del router SPA)
+                window.location.href = '/v8/'; 
+            });
+        }
 
-                // 2. LÓGICA DEL MENÚ DE USUARIO
-                const avatarToggle = e.target.closest('#phAvatarToggle');
-                const userMenu = document.getElementById('phUserMenu');
-                if (avatarToggle) {
-                    if (!e.target.closest('.ph-user-menu')) {
-                        userMenu?.classList.toggle('open');
-                    }
-                } else if (userMenu && !userMenu.contains(e.target)) {
-                    userMenu.classList.remove('open');
-                }
-
-                // 3. LÓGICA DEL MENÚ IA (MAGIC)
-                const magicBtn = e.target.closest('#btnMagicMenu');
-                const magicDrop = document.getElementById('magicDropdown');
-                if (magicBtn) {
-                    magicDrop?.classList.toggle('open');
-                } else if (magicDrop && !magicDrop.contains(e.target)) {
-                    magicDrop.classList.remove('open');
-                }
-
-                // 4. DISPARAR ACCIONES MAGIC
-                const magicItem = e.target.closest('.ph-magic-item');
-                if (magicItem) {
-                    const actionId = magicItem.dataset.action;
-                    if (magicDrop) magicDrop.classList.remove('open');
-                    window.dispatchEvent(new CustomEvent('ph-magic-action', { detail: { actionId } }));
-                }
-
-                // 5. TABS LOGIC
-                const tabBtn = e.target.closest('.ph-tab');
-                if (tabBtn) {
-                    document.querySelectorAll('.ph-tab').forEach(t => t.classList.remove('active'));
-                    tabBtn.classList.add('active');
-                    window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: tabBtn.dataset.target } }));
+        // MENÚ AVATAR
+        if (avatarToggle && userMenu) {
+            avatarToggle.addEventListener('click', (e) => {
+                if (!e.target.closest('.ph-user-menu')) {
+                    userMenu.classList.toggle('open');
                 }
             });
-            window._tt_ph_delegation_active = true;
         }
+
+        // MENÚ MAGIC IA
+        if (btnMagic && magicDrop) {
+            btnMagic.addEventListener('click', (e) => {
+                e.stopPropagation();
+                magicDrop.classList.toggle('open');
+            });
+            magicItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const actionId = e.currentTarget.dataset.action;
+                    magicDrop.classList.remove('open');
+                    window.dispatchEvent(new CustomEvent('ph-magic-action', { detail: { actionId } }));
+                });
+            });
+        }
+
+        // PESTAÑAS
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                tabs.forEach(t => t.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: e.currentTarget.dataset.target } }));
+            });
+        });
+
+        // CIERRE GLOBAL DE MENÚS (Si haces click fuera)
+        document.addEventListener('click', (e) => {
+            if (avatarToggle && !avatarToggle.contains(e.target) && userMenu) {
+                userMenu.classList.remove('open');
+            }
+            if (btnMagic && !btnMagic.contains(e.target) && magicDrop) {
+                magicDrop.classList.remove('open');
+            }
+        });
     }
 };
