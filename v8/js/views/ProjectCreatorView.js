@@ -5,11 +5,11 @@ import { Orchestrator } from '../core/Orchestrator.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { BottomNav } from '../components/BottomNav.js';
-import { MapRenderer } from '../components/MapRenderer.js'; // 🔥 DRY Component
+import { MapRenderer } from '../components/MapRenderer.js';
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "Instanciar Red | TeamTowers V14";
+        document.title = "Instanciar Red | TeamTowers V15.5";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
@@ -44,7 +44,7 @@ export default class ProjectCreatorView {
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
-        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V14)">`;
+        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V15.5)">`;
         Object.keys(this.sectorsFromKB).forEach(k => {
             const sectorLabel = this.sectorsFromKB[k].label;
             sectorOptions += `<option value="${k}" ${preselectedSector === k ? 'selected' : ''}>${sectorLabel}</option>`;
@@ -145,14 +145,14 @@ export default class ProjectCreatorView {
 
                         <div id="step1">
                             <div class="wizard-header">
-                                <h1>Instanciar Castell V14</h1>
-                                <p>Genera una red neuronal de valor y SOPs extrayendo el ADN del Knowledge Base.</p>
+                                <h1>Instanciar Ecosistema</h1>
+                                <p>Genera una red neuronal de valor extrayendo el ADN del LMS.</p>
                             </div>
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 2rem;">
                                 <div class="form-group" style="margin: 0;">
                                     <label>Nombre de la Red</label>
-                                    <input type="text" id="inpName" class="lux-input" placeholder="Ej: Cooperativa Solar">
+                                    <input type="text" id="inpName" class="lux-input" placeholder="Ej: Protocolo DeFi Nexus">
                                 </div>
                                 <div class="form-group" style="margin: 0;">
                                     <label>Arquetipo Legal / Flow</label>
@@ -165,7 +165,7 @@ export default class ProjectCreatorView {
                                     </select>
                                 </div>
                                 <div class="form-group" style="margin: 0;">
-                                    <label>Genoma (LMS Data Base)</label>
+                                    <label>Genoma (Plantilla LMS)</label>
                                     <select id="inpSector" class="lux-input">
                                         ${sectorOptions}
                                     </select>
@@ -173,8 +173,8 @@ export default class ProjectCreatorView {
                             </div>
 
                             <div class="form-group">
-                                <label>Input Cognitivo (Visión Bruta para el Creador IA)</label>
-                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe la idea. El Orquestador absorberá el Genoma LMS seleccionado, trazará las tuberías de valor en 5 fases y generará los SOCs de auditoría..."></textarea>
+                                <label>Input Cognitivo (Propósito y Entregable Core)</label>
+                                <textarea id="inpVision" class="lux-input vision-box" placeholder="Describe la visión. El Orquestador usará este input para generar los SOPs, y el sistema lo forjará como el Meme Core del proyecto..."></textarea>
                             </div>
 
                             <details style="margin-bottom: 2rem;" ${!hasKey ? 'open' : ''}>
@@ -210,21 +210,21 @@ export default class ProjectCreatorView {
 
                             <div class="actions-row">
                                 <button class="btn-lux btn-lux-outline" id="btnStartBlank">📄 Lienzo en Blanco</button>
-                                <button class="btn-lux btn-lux-outline" id="btnLoadTemplate">🏗️ Inyectar Genoma (Offline)</button>
-                                <button class="btn-lux btn-lux-primary" id="btnGenerateAI">🧠 Diseñar Topología TDD</button>
+                                <button class="btn-lux btn-lux-outline" id="btnLoadTemplate">🏗️ Clonar Plantilla Rápida</button>
+                                <button class="btn-lux btn-lux-primary" id="btnGenerateAI">🧠 Diseñar Topología con IA</button>
                             </div>
                         </div>
 
                         <div id="aiLoading" class="ai-loading">
                             <span>🪐</span>
                             <p id="loadingMsg">Conectando con Orquestador Cognitivo...</p>
-                            <div style="font-size: 0.9rem; color: #888; margin-top: 10px;" id="loadingSubMsg">Inyectando Teoría VNA y Memes LMS para el Research Profundo...</div>
+                            <div style="font-size: 0.9rem; color: #888; margin-top: 10px;" id="loadingSubMsg">Generando VNA y Memes LMS...</div>
                         </div>
 
                         <div id="step2" style="display: none;">
                             <div class="wizard-header" style="margin-bottom: 2rem;">
-                                <h1>Validación de Arquitectura (DAG)</h1>
-                                <p>Revisa el mapeo de valor secuencial (5 Eras) antes de inyectarlo en el Kernel.</p>
+                                <h1>Validación de Arquitectura</h1>
+                                <p>Revisa el mapeo de valor antes de inyectarlo en el Kernel.</p>
                             </div>
 
                             <div class="map-container mini-map-container" id="miniMapContainer" style="display: none;">
@@ -255,7 +255,7 @@ export default class ProjectCreatorView {
 
                             <div class="actions-row" style="border-top: 1px solid var(--glass-border); padding-top: 2rem;">
                                 <button class="btn-lux btn-lux-outline" id="btnBack">&larr; Volver</button>
-                                <button class="btn-lux btn-lux-success" id="btnLaunch" disabled>🚀 Inyectar Red (Pendiente Certificación)</button>
+                                <button class="btn-lux btn-lux-success" id="btnLaunch" disabled>🚀 Inyectar Red y Memes al Kernel</button>
                             </div>
                         </div>
 
@@ -322,6 +322,7 @@ export default class ProjectCreatorView {
         this.dom.btnStartBlank.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre de la Red es obligatorio.");
             this.resetDrafts();
+            this.draftPresentation = this.dom.inpVision.value.trim();
             this.dom.btnLaunch.disabled = false; 
             this.dom.btnLaunch.innerText = '🚀 Inyectar Red en el Kernel';
             this.goToStep2();
@@ -460,9 +461,9 @@ export default class ProjectCreatorView {
         try {
             await KB.init();
             
-            // 🔥 LA GRAN INYECCIÓN: RAG LOCAL (TEORÍA Y CONTEXTO)
+            // 🔥 RAG LOCAL (TEORÍA Y CONTEXTO)
             let theoryContext = "";
-            const globalDocs = await KB.getAllDocuments('global');
+            const globalDocs = await KB.getAllNodes();
             const memes = globalDocs.filter(d => d.type === 'meme' || d.type === 'ontology');
             
             if (memes.length > 0) {
@@ -481,8 +482,6 @@ export default class ProjectCreatorView {
                 ${theoryContext}
             `;
 
-            console.log("Inyectando Super-Prompt con Memética RAG...");
-            
             const parsedData = await Orchestrator.designEcosystemVNA(name, archetypeText, enhancedVision, provider, apiKey);
             const tddErrors = this.runCognitiveTDD(parsedData);
             
@@ -672,7 +671,6 @@ export default class ProjectCreatorView {
             });
         });
 
-        // 🔥 MAPA INYECTADO (Renderizado DRY)
         if (this.draftRoles.length > 0 && this.mapVis) {
             this.dom.miniMapContainer.style.display = 'block';
             this.mapVis.setData(this.draftRoles, this.draftTxs);
@@ -681,18 +679,23 @@ export default class ProjectCreatorView {
         }
     }
 
+    // ==============================================================
+    // 🔥 EL MOTOR DE INYECCIÓN (CONEXIÓN CON EL LMS Y REDUX)
+    // ==============================================================
     async finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
-        const visionText = this.dom.inpVision.value.trim();
+        const visionText = this.dom.inpVision.value.trim() || this.draftPresentation;
         const arch = this.dom.inpArchetype.value; 
+        const name = this.dom.inpName.value.trim() || 'Nueva Red';
         
         this.dom.btnLaunch.disabled = true;
-        this.dom.btnLaunch.innerText = 'Instanciando Matriz VNA...';
+        this.dom.btnLaunch.innerText = 'Instanciando Matriz y LMS...';
 
+        // 1. Guardar en Redux
         await store.dispatch({ 
             type: 'CREATE_PROJECT', 
             payload: {
-                id: projectId, nombre: this.dom.inpName.value.trim() || 'Nueva Red', sector: this.dom.inpSector.value,
+                id: projectId, nombre: name, sector: this.dom.inpSector.value,
                 prompt: visionText, archetype: arch, roles: this.draftRoles, vna_flows: [], work_orders: []
             } 
         });
@@ -702,8 +705,35 @@ export default class ProjectCreatorView {
             payload: { projectId: projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
         });
 
+        await KB.init();
+
+        // 2. Inyectar MEME DEL PROYECTO (El Core Context)
+        await KB.saveNode({
+            id: `meme_project_${projectId}`,
+            type: 'meme',
+            category: 'project_core',
+            projectId: projectId,
+            targetId: 'global',
+            title: `Misión: ${name}`,
+            content: `VISIÓN DEL PROYECTO: ${visionText}\n\nARQUETIPO: ${arch}\n\nEste ecosistema ha sido forjado. El objetivo de los agentes A2A es trazar tuberías y ejecutar SOCs respetando el Genoma LMS.`,
+            keywords: ['#ecosystem', projectId, name]
+        });
+
+        // 3. Inyectar ROLES y PROMPTS en el LMS
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
+                // Generar un Meme de Skill automático para cada Rol creado
+                await KB.saveNode({
+                    id: `meme_skill_${projectId}_${rol.id}`,
+                    type: 'meme',
+                    category: 'skill',
+                    projectId: projectId,
+                    targetId: 'global',
+                    title: `Skill: ${rol.name}`,
+                    content: `Competencia requerida para ejercer como ${rol.name} en el nivel ${rol.levelId}. Regido por el arquetipo ${rol.guardian}.`,
+                    keywords: [rol.levelId, rol.guardian, projectId]
+                });
+
                 if (rol.ai_prompt && rol.ai_prompt.length > 10) {
                     await KB.saveNode({
                         id: `prompt_${projectId}_${rol.id}`, type: 'prompt_a2a',
@@ -714,16 +744,18 @@ export default class ProjectCreatorView {
             }
         }
 
+        // 4. Inyectar MEMES generados por la IA en el LMS
         if (this.draftNewMemes && this.draftNewMemes.length > 0) {
             for (const meme of this.draftNewMemes) {
                 await KB.saveNode({
                     id: meme.id, type: 'meme', category: meme.category || 'skill',
                     title: meme.title, content: meme.content, keywords: meme.keywords || [],
-                    projectId: 'global', targetId: 'global'
+                    projectId: projectId, targetId: 'global' // Ahora pertenecen al proyecto, no globales
                 });
             }
         }
 
+        // 5. Procesar las Tuberías (SOPs) generadas
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
@@ -746,6 +778,7 @@ export default class ProjectCreatorView {
                         }
                     });
 
+                    // Si es fase Kickoff, spawnear Work Order automáticamente
                     if (aiTx.phase === 'Kickoff' || aiTx.depends_on.length === 0) {
                         let kickoffComment = `SOP: Ejecutar [${templateName}].`;
                         if (aiTx.soc_checklist && aiTx.soc_checklist.length > 0) kickoffComment += ` | SOCs: ` + aiTx.soc_checklist.map(s => `✔️ ${s.text}`).join(' ');
@@ -768,6 +801,6 @@ export default class ProjectCreatorView {
         }
         
         localStorage.setItem('tt_active_project', projectId);
-        window.location.href = '/v8/project';
+        window.location.href = '/v8/dashboard';
     }
 }
