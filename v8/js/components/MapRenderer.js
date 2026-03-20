@@ -1,10 +1,11 @@
 // v8/js/components/MapRenderer.js
+import { store } from '../core/store.js'; // 🔥 Añadido para el Auto-Save global
 
 export class MapRenderer {
     /**
      * @param {HTMLElement} canvasEl - Contenedor HTML de los nodos (div)
      * @param {HTMLElement} svgEl - Contenedor SVG de las aristas (svg > g)
-     * @param {Object} options - Configuración y callbacks { isEditMode, isHeatmap, onNodeClick, onNodeDrop, onEdgeClick }
+     * @param {Object} options - Configuración y callbacks
      */
     constructor(canvasEl, svgEl, options = {}) {
         this.canvas = canvasEl;
@@ -75,7 +76,7 @@ export class MapRenderer {
                 font-size: 0.95rem;
                 color: white !important;
                 text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-                animation: simBadgeAnim 2.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+                animation: simBadgeAnim 2.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.8);
                 border: 2px solid white;
             }
@@ -86,7 +87,7 @@ export class MapRenderer {
             @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
             @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
             
-            /* 🔥 KEYFRAMES AÑADIDOS PARA SIMULACIÓN */
+            /* 🔥 KEYFRAMES PARA SIMULACIÓN */
             @keyframes drawLine { to { stroke-dashoffset: 0; } }
             @keyframes simBadgeAnim {
                 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
@@ -117,7 +118,7 @@ export class MapRenderer {
         
         const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
 
-        // 🔥 ALGORITMO ZIGZAG CASTELLER MEJORADO
+        // 🔥 ALGORITMO ZIGZAG CASTELLER
         const getInitialLayout = (level, totalInLevel, currentCount) => {
             const baseYLayout = { '@anxaneta': 12, '@aixecador': 32, '@dosos': 52, '@baixos': 72, '@pinya': 90 };
             
@@ -127,7 +128,6 @@ export class MapRenderer {
             let x = singleNodeX[level] || 50; 
 
             if (totalInLevel > 1) {
-                // Distribuimos el espacio disponible dejando margen a cada lado
                 const margin = 15;
                 const step = (100 - margin * 2) / (totalInLevel - 1);
                 x = margin + (step * currentCount);
@@ -152,8 +152,9 @@ export class MapRenderer {
             const pos = getInitialLayout(level, totalInLevel, levelCounts[level]);
             levelCounts[level]++;
 
-            const topPos = r.y !== undefined ? r.y : pos.y;
-            const leftPos = r.x !== undefined ? r.x : pos.x;
+            // 🔥 FIX DE RETROCOMPATIBILIDAD: Si el nodo no tiene el flag 'customPos', ignoramos sus coordenadas antiguas
+            const topPos = r.customPos ? parseFloat(r.y) : pos.y;
+            const leftPos = r.customPos ? parseFloat(r.x) : pos.x;
 
             const nodeDiv = this.buildNodeDOM(r, leftPos, topPos, false);
             this.canvas.appendChild(nodeDiv);
@@ -320,7 +321,7 @@ export class MapRenderer {
             x2 = x2_center - (dx/dist) * trim; y2 = y2_center - (dy/dist) * trim;
         }
 
-        // 1. Dibujar la línea animada
+        // 1. DIBUJAR LÍNEA ANIMADA
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
         
@@ -332,7 +333,7 @@ export class MapRenderer {
         path.style.cssText = `fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${dist}; stroke-dashoffset: ${dist}; animation: drawLine 1s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});`;
         this.svg.appendChild(path);
 
-        // 2. 🔥 INYECTAR LA CAJITA DEL ENTREGABLE (Sim Badge)
+        // 2. 🔥 INYECTAR CAJITA DE ENTREGABLE (Sim Badge)
         const txX = (x1_center + x2_center) / 2;
         const txY = (y1_center + y2_center) / 2;
 
@@ -342,16 +343,15 @@ export class MapRenderer {
         badge.style.top = `${txY}px`;
         badge.style.backgroundColor = strokeColor;
         
-        // Formato: [Número] Nombre del Entregable
         const stepName = tx.template || tx.entregable || 'SOP VNA';
         badge.innerHTML = `<span style="background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:4px; margin-right:5px;">${index + 1}</span> ${stepName}`;
         
         this.canvas.appendChild(badge);
 
-        // Limpieza: Desaparece la cajita tras la animación de 2.5s
+        // Limpieza de la cajita para que no se sature la pantalla
         setTimeout(() => {
             if (badge && badge.parentNode) badge.remove();
-        }, 2800);
+        }, 2700);
 
         return { x: txX, y: txY, color: strokeColor };
     }
@@ -384,7 +384,6 @@ export class MapRenderer {
     }
 
     initEvents() {
-        // Clic en Nodo
         this.canvas.addEventListener('click', (e) => {
             const node = e.target.closest('.node-wrapper');
             if (node) this.options.onNodeClick(node.dataset.id, e);
@@ -418,7 +417,7 @@ export class MapRenderer {
                 }
             });
 
-            window.addEventListener('mouseup', (e) => {
+            window.addEventListener('mouseup', async (e) => {
                 if (this.isDragging && this.draggedNode) {
                     this.isDragging = false;
                     this.draggedNode.style.zIndex = this.draggedNode.classList.contains('ghost-node') ? 1 : 5;
@@ -426,7 +425,22 @@ export class MapRenderer {
                     if (this.hasMoved) {
                         const newX = parseFloat(this.draggedNode.style.left);
                         const newY = parseFloat(this.draggedNode.style.top);
-                        this.options.onNodeDrop(this.draggedNode.dataset.id, newX, newY);
+                        const nodeId = this.draggedNode.dataset.id;
+                        
+                        this.options.onNodeDrop(nodeId, newX, newY);
+
+                        // 🔥 AUTO-SAVE GLOBAL: Guarda automáticamente la nueva posición en Redux
+                        const state = store.getState();
+                        const project = state.projects.find(p => p.roles && p.roles.some(r => r.id === nodeId));
+                        if (project) {
+                            const updatedRoles = project.roles.map(r => 
+                                r.id === nodeId ? { ...r, x: newX, y: newY, customPos: true } : r
+                            );
+                            await store.dispatch({
+                                type: 'UPDATE_PROJECT_INFO',
+                                payload: { projectId: project.id, updates: { roles: updatedRoles } }
+                            });
+                        }
                     }
                     this.draggedNode = null;
                 }
