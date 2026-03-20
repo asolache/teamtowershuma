@@ -3,16 +3,19 @@ import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
-import { KanbanRenderer } from '../components/KanbanRenderer.js'; // 🔥 Magia DRY
-import { Orchestrator } from '../core/Orchestrator.js'; // Para la ejecución de IA
+import { KanbanRenderer } from '../components/KanbanRenderer.js'; 
+import { Orchestrator } from '../core/Orchestrator.js'; 
 import { KB } from '../core/kb.js';
 
 export default class ProjectView {
     constructor() {
-        document.title = "Kanban PULL | TeamTowers V14";
+        document.title = "Kanban PULL | TeamTowers V15.8";
         this.activeProjectId = null;
         this.currentFilter = 'all'; 
         this.isProcessingAi = false; 
+        
+        this.pushTargetHash = null;
+        this.pushTargetIsLegacy = false;
     }
 
     async getHtml() {
@@ -70,9 +73,14 @@ export default class ProjectView {
             <option value="${sp.id}" ${sp.id === activeSprintId ? 'selected' : ''}>⏳ ${sp.name}</option>
         `).join('');
 
+        // Generar lista de usuarios para el modal PUSH
+        const globalUsersOptions = state.globalUsers.map(u => 
+            `<option value="${u.id}">${u.profile?.isAi ? '🤖' : '👤'} ${u.name} (${u.id})</option>`
+        ).join('');
+
         return `
             <style>
-                ${KanbanRenderer.getStyles()} /* Inyectamos el CSS universal del Kanban */
+                ${KanbanRenderer.getStyles()} 
                 
                 .workspace.is-open-to-work { box-shadow: inset 0 0 150px rgba(0, 230, 118, 0.03); }
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
@@ -96,9 +104,11 @@ export default class ProjectView {
                 .btn-create-task { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; white-space:nowrap; box-shadow: 0 5px 15px rgba(0,176,255,0.2); transition: 0.3s;}
                 .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224,64,251,0.4); filter: brightness(1.1);}
 
-                /* MODAL OVERLAY */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; }
-                .modal-content { background: var(--bg-panel); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 16px; width: 550px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
+                /* MODAL OVERLAY (Universal) */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; opacity:0; transition:opacity 0.2s;}
+                .modal-overlay.active { display: flex; opacity: 1;}
+                .modal-content { background: var(--bg-panel); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 16px; width: 550px; max-width: 95%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); transform: translateY(20px); transition: transform 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
+                .modal-overlay.active .modal-content { transform: translateY(0); }
                 
                 .form-group { margin-bottom: 15px; }
                 .form-group label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
@@ -110,7 +120,10 @@ export default class ProjectView {
                 .soc-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-green); margin-top: 2px; }
                 .soc-item span { color: #ccc; font-size: 0.9rem; line-height: 1.4; }
 
-                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                /* MODAL PUSH CIBERPUNK */
+                .modal-push-content { background: linear-gradient(180deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-top: 4px solid var(--accent-purple); padding: 2.5rem; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(224,64,251,0.2); }
+                .btn-push-action { background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 1rem; width: 100%; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(224,64,251,0.3);}
+                .btn-push-action:hover { filter: brightness(1.2); transform: translateY(-2px);}
 
                 @media (max-width: 768px) {
                     .controls-row { flex-direction: column; align-items: stretch; }
@@ -174,6 +187,27 @@ export default class ProjectView {
                     </div>
                 </div>
 
+                <div class="modal-overlay" id="pushModal">
+                    <div class="modal-push-content">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem; border-bottom: 1px dashed #333; padding-bottom: 1rem;">
+                            <h2 style="color: white; margin:0; font-weight:900; font-size: 1.3rem;">👤 Asignar Tarea (PUSH)</h2>
+                            <button id="btnClosePushModal" style="background:none; border:none; color:#888; font-size:2rem; line-height:1; cursor:pointer;">&times;</button>
+                        </div>
+                        <p style="color:#aaa; font-size:0.9rem; margin-bottom: 1.5rem;">Selecciona un humano o agente de la red global para asignar esta Work Order.</p>
+                        
+                        <select id="selPushTarget" class="form-control" style="font-weight:bold; margin-bottom:20px;">
+                            <option value="">-- Selecciona talento --</option>
+                            ${globalUsersOptions}
+                        </select>
+
+                        <button class="btn-push-action" id="btnConfirmPush">🚀 Despachar Work Order</button>
+                        
+                        <div style="text-align:center; margin-top: 15px;">
+                            <a href="/v8/lms" data-link style="color:var(--accent-blue); font-size:0.8rem; text-decoration:none; font-weight:bold;">¿Falta talento? Forja un Nodo en el LMS.</a>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal-overlay" id="reviewTaskModal">
                     <div class="modal-content" style="border-top-color: var(--accent-purple);">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:15px; margin-bottom:20px;">
@@ -225,41 +259,104 @@ export default class ProjectView {
                 activeUserId: activeUserId,
                 isPO: this.isPO,
                 currentFilter: this.currentFilter,
-                isMacroMode: false // 3 columnas completas
+                isMacroMode: false 
             });
             this.kanbanRenderer.render();
         }
 
-        // Listener del CustomEvent que dispara el componente Kanban
+        // LÓGICA DE FILTROS
+        const filterDropdown = document.getElementById('filterDropdown');
+        if (filterDropdown) {
+            filterDropdown.value = this.currentFilter;
+            filterDropdown.addEventListener('change', (e) => {
+                this.currentFilter = e.target.value;
+                this.kanbanRenderer.options.currentFilter = this.currentFilter;
+                this.refreshRenderer();
+            });
+        }
+
+        // ==========================================
+        // 🔥 LÓGICA DE ASIGNACIÓN: PULL / PUSH
+        // ==========================================
+        const pushModal = document.getElementById('pushModal');
+        document.getElementById('btnClosePushModal')?.addEventListener('click', () => {
+            pushModal.classList.remove('active');
+            this.pushTargetHash = null;
+        });
+
+        document.getElementById('btnConfirmPush')?.addEventListener('click', async () => {
+            const targetUserId = document.getElementById('selPushTarget').value;
+            if(!targetUserId) return alert("Selecciona un usuario o agente destino.");
+            
+            const btn = document.getElementById('btnConfirmPush');
+            btn.disabled = true; btn.innerText = "⏳ Asignando...";
+
+            const actionType = this.pushTargetIsLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
+            const payloadKey = this.pushTargetIsLegacy ? 'txHash' : 'hash';
+
+            await store.dispatch({
+                type: actionType,
+                payload: {
+                    projectId: this.activeProjectId,
+                    [payloadKey]: this.pushTargetHash,
+                    status: 'pinged',
+                    assigneeId: targetUserId
+                }
+            });
+
+            btn.disabled = false; btn.innerText = "🚀 Despachar Work Order";
+            pushModal.classList.remove('active');
+            this.refreshRenderer();
+        });
+
+        // 🔥 ESCUCHADOR UNIVERSAL DE ACCIONES DEL KANBAN
         window.addEventListener('kanban-action', async (e) => {
             const { action, hash, isLegacy, userId, agentId, element } = e.detail;
             
-            if (action === 'request') {
-                const actType = isLegacy ? 'REQUEST_TRANSACTION' : 'REQUEST_WORK_ORDER';
-                await store.dispatch({ type: actType, payload: isLegacy ? { projectId: project.id, txHash: hash, userId: activeUserId } : { projectId: project.id, woHash: hash, userId: activeUserId } });
+            // PULL MÍO AUTOMÁTICO
+            if (action === 'force-pull') {
+                const actType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
+                const pKey = isLegacy ? 'txHash' : 'hash';
+                await store.dispatch({ type: actType, payload: { projectId: this.activeProjectId, [pKey]: hash, status: 'pinged', assigneeId: userId } });
                 this.refreshRenderer();
-            } else if (action === 'push') {
-                if (!this.isPO) return alert("Solo el PO puede delegar.");
-                const targetUserId = prompt(`Introduce el ID del usuario al que asignarás esta tarea:`);
-                if (targetUserId) {
-                    const actType = isLegacy ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-                    await store.dispatch({ type: actType, payload: isLegacy ? { projectId: project.id, txHash: hash, userId: targetUserId } : { projectId: project.id, woHash: hash, userId: targetUserId } });
-                    this.refreshRenderer();
-                }
-            } else if (action === 'approve-pull') {
-                const actType = isLegacy ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-                await store.dispatch({ type: actType, payload: isLegacy ? { projectId: project.id, txHash: hash, userId } : { projectId: project.id, woHash: hash, userId } });
+                return;
+            }
+
+            // ABRIR MODAL PUSH
+            if (action === 'open-push-modal') {
+                if (!this.isPO) return alert("Solo el PO puede realizar PUSH.");
+                this.pushTargetHash = hash;
+                this.pushTargetIsLegacy = isLegacy;
+                pushModal.classList.add('active');
+                return;
+            }
+
+            // SOLTAR TAREA (REJECT)
+            if (action === 'reject') {
+                if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
+                const actType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
+                const pKey = isLegacy ? 'txHash' : 'hash';
+                await store.dispatch({ type: actType, payload: { projectId: this.activeProjectId, [pKey]: hash, status: 'theoretical', assigneeId: null } });
                 this.refreshRenderer();
-            } else if (action === 'ai-exec') {
-                await this.executeAIAgent(hash, element, store.getState().projects.find(p => p.id === this.activeProjectId));
-            } else if (action === 'review') {
+                return;
+            }
+
+            // AUDITORÍA
+            if (action === 'review') {
                 this.openReviewModal(hash);
+                return;
+            }
+
+            // EJECUCIÓN DE IA
+            if (action === 'ai-exec') {
+                await this.executeAIAgent(hash, element, store.getState().projects.find(p => p.id === this.activeProjectId), isLegacy);
+                return;
             }
         });
 
         window.addEventListener('swarm_update', () => this.refreshRenderer());
 
-        // FILTROS Y SPRINTS
+        // SPRINTS
         const selActiveSprint = document.getElementById('selActiveSprint');
         if (selActiveSprint) {
             selActiveSprint.addEventListener('change', async (e) => {
@@ -281,20 +378,8 @@ export default class ProjectView {
             });
         }
 
-        const filterDropdown = document.getElementById('filterDropdown');
-        if (filterDropdown) {
-            filterDropdown.value = this.currentFilter;
-            filterDropdown.addEventListener('change', (e) => {
-                this.currentFilter = e.target.value;
-                this.kanbanRenderer.options.currentFilter = this.currentFilter;
-                this.refreshRenderer();
-            });
-        }
-
-        // CREACIÓN WO
+        // CREACIÓN Y REVISIÓN WO
         this.setupCreationModal();
-        
-        // REVISIÓN WO
         this.setupReviewModal();
     }
 
@@ -307,7 +392,7 @@ export default class ProjectView {
     // ==========================================
     // EJECUCIÓN DE IA (MOTOR ORCHESTRATOR)
     // ==========================================
-    async executeAIAgent(txHash, btnElement, currProject) {
+    async executeAIAgent(txHash, btnElement, currProject, isLegacy) {
         if (this.isProcessingAi) return alert("Un Agente ya está trabajando en una Work Order. Espera.");
         this.isProcessingAi = true;
         
@@ -316,37 +401,40 @@ export default class ProjectView {
         btnElement.innerText = "⏳ Orquestando...";
         
         try {
-            const wo = currProject.work_orders.find(w => w.hash === txHash);
-            const flow = currProject.vna_flows.find(f => f.id === wo.flowId);
+            const flows = isLegacy ? currProject.transactions : currProject.work_orders;
+            const wo = flows.find(w => (w.hash || w.id) === txHash);
+            const parentFlow = currProject.vna_flows.find(f => f.id === wo.flowId) || wo; // Fallback for legacy
             
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
             if (!apiKey && provider !== 'custom') throw new Error("Configura tu API Key para ejecutar agentes.");
 
             await KB.init();
-            const customPrompt = await KB.getNode(`prompt_${currProject.id}_${flow.from}`);
-            const systemPrompt = customPrompt ? customPrompt.content : `Eres el agente ejecutor de la tarea: ${flow.template}. Haz el trabajo solicitado de la forma más profesional posible.`;
+            const aiContext = await KB.getDynamicContextPrompt(this.activeProjectId, wo.assigneeId, store.getState());
 
             const userPrompt = `
-                TAREA A EJECUTAR: ${flow.template}
-                CONTEXTO: ${wo.comentario || 'Ninguno adicional.'}
-                SOCs A CUMPLIR (Crítico): ${JSON.stringify(wo.soc_checklist.map(s => s.text))}
+                TAREA A EJECUTAR: ${parentFlow.template || parentFlow.entregable}
+                CONTEXTO ADICIONAL: ${wo.comentario || 'Ninguno.'}
+                SOCs A CUMPLIR (Crítico): ${JSON.stringify((wo.soc_checklist || []).map(s => s.text))}
                 
-                Redacta el entregable final. Sé breve, directo y asegúrate de cumplir con los SOCs para aprobar la auditoría.
+                Redacta el entregable final. Sé breve, directo y asegúrate de cumplir con los SOCs para aprobar la auditoría del Notario.
             `;
 
             const response = await Orchestrator.callLLM({
-                provider, apiKey, systemPrompt, userPrompt, responseFormat: "text", temperature: 0.3
+                provider, apiKey, systemPrompt: aiContext, userPrompt, responseFormat: "text", temperature: 0.3
             });
 
+            const actionType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
+            const payloadKey = isLegacy ? 'txHash' : 'hash';
+
             await store.dispatch({ 
-                type: 'REPORT_WORK_ORDER', 
+                type: actionType, 
                 payload: { 
                     projectId: currProject.id, 
-                    woHash: txHash, 
-                    realHours: flow.estimatedHours || 2, 
-                    comentario: response.content, 
-                    proofLink: 'Agent_Auto_Report' 
+                    [payloadKey]: txHash, 
+                    status: 'reported', 
+                    proofLink: 'Agent_Auto_Report', 
+                    comentario: response.content 
                 } 
             });
 
@@ -368,7 +456,7 @@ export default class ProjectView {
                 const flows = activeProject.vna_flows || [];
                 
                 if (flows.length === 0) {
-                    alert("Debes dibujar Tuberías en el Mapa VNA antes de poder generar tareas.");
+                    alert("Debes dibujar Tuberías permanentes en el Mapa VNA antes de poder generar Work Orders sueltas.");
                     window.location.href = '/v8/map';
                     return;
                 }
@@ -382,9 +470,8 @@ export default class ProjectView {
                 document.getElementById('newTaskFlowId').innerHTML = flowOpts;
 
                 let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
-                (activeProject.usuarios || []).forEach(u => {
-                    const gUser = store.getState().globalUsers.find(gu => gu.id === u.id);
-                    userOpts += `<option value="${u.id}">${gUser?.profile?.isAi ? '🤖 ' : ''}${gUser ? gUser.name : u.id}</option>`;
+                store.getState().globalUsers.forEach(gUser => {
+                    userOpts += `<option value="${gUser.id}">${gUser?.profile?.isAi ? '🤖 ' : ''}${gUser.name} (${gUser.id})</option>`;
                 });
                 document.getElementById('newTaskAssignee').innerHTML = userOpts;
 
@@ -421,7 +508,7 @@ export default class ProjectView {
             });
 
             if (assignee !== "") {
-                await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee } });
+                await store.dispatch({ type: 'UPDATE_WO_STATUS', payload: { projectId: this.activeProjectId, hash: newHash, status: 'pinged', assigneeId: assignee } });
             }
 
             createModal.style.display = 'none';
@@ -436,10 +523,13 @@ export default class ProjectView {
         this.openReviewModal = (hash) => {
             currentReviewHash = hash;
             const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const taskRef = currProject.work_orders.find(w => w.hash === hash);
+            
+            // Compatibilidad legacy (transacciones antiguas) y nuevas (work orders)
+            let taskRef = (currProject.work_orders || []).find(w => w.hash === hash);
+            if (!taskRef) taskRef = (currProject.transactions || []).find(t => t.id === hash);
             if(!taskRef) return;
 
-            document.getElementById('reviewTaskDeliverable').innerText = taskRef.comentario || 'Sin comentario adjunto.';
+            document.getElementById('reviewTaskDeliverable').innerHTML = (taskRef.comentario || 'Sin comentario adjunto.').replace(/\n/g, '<br>');
             
             const socsContainer = document.getElementById('reviewSocsContainer');
             if (taskRef.soc_checklist && taskRef.soc_checklist.length > 0) {
@@ -468,7 +558,8 @@ export default class ProjectView {
             btn.innerText = "🧠 Procesando Oráculo...";
             
             const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const wo = currProject.work_orders.find(w => w.hash === currentReviewHash);
+            let taskRef = (currProject.work_orders || []).find(w => w.hash === currentReviewHash);
+            if (!taskRef) taskRef = (currProject.transactions || []).find(t => t.id === currentReviewHash);
             
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
@@ -482,14 +573,14 @@ export default class ProjectView {
 
             const systemPrompt = `
                 Eres @notari_ledger, el Agente Auditor del ecosistema. Evalúa estrictamente si el entregable cumple con los SOCs.
-                Entregable: "${wo.comentario}"
-                Devuelve SOLO un objeto JSON con las claves de los SOCs y true/false.
-                SOCs a evaluar: ${JSON.stringify(wo.soc_checklist.map(s => ({id: s.id, text: s.text})))}
+                Entregable: "${taskRef.comentario}"
+                Devuelve SOLO un objeto JSON con las claves de los SOCs (id) y true/false.
+                SOCs a evaluar: ${JSON.stringify(taskRef.soc_checklist.map(s => ({id: s.id, text: s.text})))}
             `;
 
             try {
-                const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: "Evalúa el entregable.", responseFormat: "json_object", temperature: 0.1 });
-                const parsedAudit = response.content;
+                const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: "Evalúa el entregable. Sé estricto.", responseFormat: "json_object", temperature: 0.1 });
+                const parsedAudit = JSON.parse(response.content);
                 
                 document.querySelectorAll('.soc-checkbox').forEach(cb => {
                     const socId = cb.getAttribute('data-socid');
@@ -502,7 +593,7 @@ export default class ProjectView {
             btn.innerText = "🤖 Invocar Auditor IA (@notari_ledger)";
         });
 
-        // SELLAR WORK ORDER
+        // SELLAR WORK ORDER EN LEDGER
         document.getElementById('btnConfirmReview')?.addEventListener('click', async () => {
             if (!currentReviewHash) return;
             
@@ -511,20 +602,31 @@ export default class ProjectView {
                 socValidation[cb.getAttribute('data-socid')] = cb.checked;
             });
 
-            await store.dispatch({
-                type: 'REVIEW_WORK_ORDER',
-                payload: { projectId: this.activeProjectId, woHash: currentReviewHash, auditorId: store.getState().session.activeUserId, socValidation }
-            });
-
-            await store.dispatch({
-                type: 'APPROVE_WORK_ORDER',
-                payload: { projectId: this.activeProjectId, woHash: currentReviewHash }
-            });
+            const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const isLegacy = !(currProject.work_orders || []).find(w => w.hash === currentReviewHash);
+            
+            // Si es un proyecto moderno, usamos REVIEW_WORK_ORDER
+            if (!isLegacy) {
+                await store.dispatch({
+                    type: 'REVIEW_WORK_ORDER',
+                    payload: { projectId: this.activeProjectId, woHash: currentReviewHash, auditorId: store.getState().session.activeUserId, socValidation }
+                });
+                await store.dispatch({
+                    type: 'APPROVE_WORK_ORDER',
+                    payload: { projectId: this.activeProjectId, woHash: currentReviewHash }
+                });
+            } else {
+                // Compatibilidad con transacciones antiguas
+                await store.dispatch({
+                    type: 'UPDATE_TRANSACTION_STATUS',
+                    payload: { projectId: this.activeProjectId, txHash: currentReviewHash, status: 'consolidated' }
+                });
+            }
 
             const updatedProj = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const updatedWo = updatedProj.work_orders.find(w => w.hash === currentReviewHash);
+            const updatedTask = isLegacy ? updatedProj.transactions.find(t => t.id === currentReviewHash) : updatedProj.work_orders.find(w => w.hash === currentReviewHash);
 
-            if (updatedWo.status === 'reported') {
+            if (updatedTask.status === 'reported') {
                 alert("❌ Auditoría Rechazada: Todos los SOCs deben cumplirse para generar Equity en el Ledger.");
             } else {
                 reviewModal.style.display = 'none';
