@@ -4,7 +4,7 @@ export class MapRenderer {
     /**
      * @param {HTMLElement} canvasEl - Contenedor HTML de los nodos (div)
      * @param {HTMLElement} svgEl - Contenedor SVG de las aristas (svg > g)
-     * @param {Object} options - Configuración y callbacks
+     * @param {Object} options - Configuración y callbacks { isEditMode, isHeatmap, onNodeClick, onNodeDrop, onEdgeClick }
      */
     constructor(canvasEl, svgEl, options = {}) {
         this.canvas = canvasEl;
@@ -67,11 +67,34 @@ export class MapRenderer {
             .tx-badge:hover { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.2); z-index: 100; border-color: white;}
             .tx-badge.ghost { opacity: 0.3; }
 
+            /* 🔥 NUEVO: ANIMACIÓN DE SIMULACIÓN DE ENTREGABLES */
+            .sim-badge {
+                z-index: 100 !important;
+                white-space: nowrap;
+                padding: 6px 14px;
+                font-size: 0.95rem;
+                color: white !important;
+                text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+                animation: simBadgeAnim 2.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+                border: 2px solid white;
+            }
+
             .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 40px rgba(255, 171, 64, 0.6) !important; z-index: 20;}
 
             @keyframes dashAnim { to { stroke-dashoffset: -200; } }
             @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
             @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+            
+            /* 🔥 KEYFRAMES AÑADIDOS PARA SIMULACIÓN */
+            @keyframes drawLine { to { stroke-dashoffset: 0; } }
+            @keyframes simBadgeAnim {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+                10% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                20% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            }
         `;
     }
 
@@ -92,34 +115,32 @@ export class MapRenderer {
         const activeRoles = this.nodes.filter(r => !r.isArchived);
         const ghostRoles = this.nodes.filter(r => r.isArchived);
         
-        // Contadores por nivel para el algoritmo de distribución
         const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
 
-        // 🔥 ALGORITMO DE TENSEGRIDAD CASTELLER
+        // 🔥 ALGORITMO ZIGZAG CASTELLER MEJORADO
         const getInitialLayout = (level, totalInLevel, currentCount) => {
-            // Capas Y base (Alturas del Castell)
             const baseYLayout = { '@anxaneta': 12, '@aixecador': 32, '@dosos': 52, '@baixos': 72, '@pinya': 90 };
             
-            // X (Distribución Horizontal)
-            let x = 50; // Por defecto al centro
+            // X (Distribución Horizontal). Si hay solo 1, alternamos izquierda y derecha (Zigzag).
+            const singleNodeX = { '@anxaneta': 50, '@aixecador': 30, '@dosos': 70, '@baixos': 30, '@pinya': 50 };
+            
+            let x = singleNodeX[level] || 50; 
+
             if (totalInLevel > 1) {
-                // Distribuimos el espacio disponible (dejamos un 15% de margen a cada lado)
+                // Distribuimos el espacio disponible dejando margen a cada lado
                 const margin = 15;
                 const step = (100 - margin * 2) / (totalInLevel - 1);
                 x = margin + (step * currentCount);
             }
 
-            // Y (Micromovimiento vertical en zigzag)
+            // Y (Micromovimiento vertical en "Ola")
             let y = baseYLayout[level] || 50;
             if (totalInLevel > 2) {
-                // Si hay más de 2 nodos en un nivel, creamos un efecto de "ola" para que no se superpongan
-                // El nodo central sube un poco, los extremos bajan
                 const middleIndex = (totalInLevel - 1) / 2;
                 const distanceToCenter = Math.abs(currentCount - middleIndex);
-                y += (distanceToCenter * 4); // Desplazamiento Y basado en distancia al centro
+                y += (distanceToCenter * 4); 
             } else if (totalInLevel === 2) {
-                // Si son 2, uno sube ligeramente y otro baja
-                y += (currentCount === 0 ? -3 : 3);
+                y += (currentCount === 0 ? -4 : 4);
             }
 
             return { x, y };
@@ -131,7 +152,6 @@ export class MapRenderer {
             const pos = getInitialLayout(level, totalInLevel, levelCounts[level]);
             levelCounts[level]++;
 
-            // Si el nodo ya tiene X/Y forzados (porque lo guardó el usuario arrastrándolo), respeta su posición
             const topPos = r.y !== undefined ? r.y : pos.y;
             const leftPos = r.x !== undefined ? r.x : pos.x;
 
@@ -139,7 +159,6 @@ export class MapRenderer {
             this.canvas.appendChild(nodeDiv);
         });
 
-        // Nodos archivados o fantasmas (fuera del Castell principal)
         ghostRoles.forEach((r, i) => {
             const nodeDiv = this.buildNodeDOM(r, 10 + (i * 12), 95, true);
             this.canvas.appendChild(nodeDiv);
@@ -301,6 +320,7 @@ export class MapRenderer {
             x2 = x2_center - (dx/dist) * trim; y2 = y2_center - (dy/dist) * trim;
         }
 
+        // 1. Dibujar la línea animada
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
         
@@ -309,10 +329,31 @@ export class MapRenderer {
         
         const strokeColor = isSick ? '#ff5252' : (tx.tipo === 'tangible' ? '#00e676' : '#e040fb');
         
-        path.style.cssText = `fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${dist}; stroke-dashoffset: ${dist}; animation: drawLine 1.5s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});`;
+        path.style.cssText = `fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${dist}; stroke-dashoffset: ${dist}; animation: drawLine 1s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});`;
         this.svg.appendChild(path);
 
-        return { x: (x1_center + x2_center)/2, y: (y1_center + y2_center)/2, color: strokeColor };
+        // 2. 🔥 INYECTAR LA CAJITA DEL ENTREGABLE (Sim Badge)
+        const txX = (x1_center + x2_center) / 2;
+        const txY = (y1_center + y2_center) / 2;
+
+        const badge = document.createElement('div');
+        badge.className = 'tx-badge sim-badge';
+        badge.style.left = `${txX}px`;
+        badge.style.top = `${txY}px`;
+        badge.style.backgroundColor = strokeColor;
+        
+        // Formato: [Número] Nombre del Entregable
+        const stepName = tx.template || tx.entregable || 'SOP VNA';
+        badge.innerHTML = `<span style="background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:4px; margin-right:5px;">${index + 1}</span> ${stepName}`;
+        
+        this.canvas.appendChild(badge);
+
+        // Limpieza: Desaparece la cajita tras la animación de 2.5s
+        setTimeout(() => {
+            if (badge && badge.parentNode) badge.remove();
+        }, 2800);
+
+        return { x: txX, y: txY, color: strokeColor };
     }
 
     drawTempLine(fromId, mouseX, mouseY, zoom = 1) {
