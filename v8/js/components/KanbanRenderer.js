@@ -95,7 +95,6 @@ export class KanbanRenderer {
 
             const cardHtml = this.buildCardHTML(tx, flowData, project);
 
-            // Reclasificación de columnas
             if (tx.status === 'theoretical' || tx.status === 'requested') cols['oportunidades'].push(cardHtml);
             else if (tx.status === 'pinged' || tx.status === 'reported' || tx.status === 'in_review') cols['en-curso'].push(cardHtml);
             else if (tx.status === 'consolidated' || tx.status === 'approved') cols['contabilizado'].push(cardHtml);
@@ -135,8 +134,6 @@ export class KanbanRenderer {
         const receiverRole = project.roles.find(r => r.id === flowData.to) || { name: 'Destino', levelId: '?' };
         
         const color = this.colors[role.levelId] || '#aaa';
-        const tipoColor = flowData.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
-        const tipoEmoji = flowData.tipo === 'tangible' ? '🟢' : '🟣';
         
         const isLegacy = !tx.isWorkOrder;
         const hashAttr = `data-hash="${tx.hash || tx.id}" data-legacy="${isLegacy}"`;
@@ -167,7 +164,7 @@ export class KanbanRenderer {
 
             if (isMine) {
                 actionHtml = `
-                    <a href="/v8/paper?hash=${tx.hash || tx.id}&legacy=${isLegacy}" class="btn-focus" data-link>▶ OMNI-PAPER</a>
+                    <a href="/v8/paper?hash=${tx.hash || tx.id}&legacy=${isLegacy}" class="btn-focus" data-link>▶ PUBLICAR ENTREGABLE</a>
                     <button class="btn-reject kb-action" data-action="reject" ${hashAttr} title="Soltar Tarea">✖</button>
                 `;
             }
@@ -181,7 +178,6 @@ export class KanbanRenderer {
                 aiOutputHtml = `<div class="task-ai-output"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
             
-            // 🔥 El PO o Ecosystem Owner ahora SIEMPRE pueden auditar
             if (isPO) {
                 actionHtml = `<button class="btn-review kb-action" data-action="review" ${hashAttr}>🔎 Auditar SOCs (PO)</button>`;
             } else {
@@ -242,7 +238,6 @@ export class KanbanRenderer {
                 const userId = e.currentTarget.dataset.userid;
                 const agentId = e.currentTarget.dataset.agent;
                 
-                // Si el evento es PULL, disparamos el REQUEST pero lo forzamos a PINGED directamente.
                 if (action === 'request') {
                     window.dispatchEvent(new CustomEvent('kanban-action', { 
                         detail: { action: 'force-pull', hash, isLegacy, userId: this.options.activeUserId, element: e.currentTarget } 
