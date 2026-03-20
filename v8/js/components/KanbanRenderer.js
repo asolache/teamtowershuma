@@ -1,5 +1,4 @@
 // v8/js/components/KanbanRenderer.js
-
 export class KanbanRenderer {
     constructor(containerEl, options = {}) {
         this.container = containerEl;
@@ -40,7 +39,7 @@ export class KanbanRenderer {
             .task-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #888; background: rgba(0,0,0,0.4); padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-top: auto;}
             .soc-progress { display: flex; align-items: center; gap: 5px; font-weight: bold; font-family: var(--font-mono); color: var(--accent-blue); }
             
-            .task-actions { margin-top: 10px; display: flex; flex-direction: row; gap: 8px;}
+            .task-actions { margin-top: 10px; display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap;}
             
             .btn-pull, .btn-push { flex: 1; background: transparent; border: 1px solid #666; color: white; transition: 0.2s; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem;}
             .btn-pull:hover { background: white; color: black; border-color: white;}
@@ -93,10 +92,10 @@ export class KanbanRenderer {
             if (currentFilter === 'tangible' && flowData.tipo !== 'tangible') return;
             if (currentFilter === 'intangible' && flowData.tipo !== 'intangible') return;
             if (currentFilter === 'mine' && tx.status !== 'theoretical' && tx.assigneeId !== activeUserId) return;
-            if (!isPO && currentFilter === 'all' && tx.status !== 'theoretical' && tx.assigneeId !== activeUserId) return;
 
             const cardHtml = this.buildCardHTML(tx, flowData, project);
 
+            // Reclasificación de columnas
             if (tx.status === 'theoretical' || tx.status === 'requested') cols['oportunidades'].push(cardHtml);
             else if (tx.status === 'pinged' || tx.status === 'reported' || tx.status === 'in_review') cols['en-curso'].push(cardHtml);
             else if (tx.status === 'consolidated' || tx.status === 'approved') cols['contabilizado'].push(cardHtml);
@@ -140,7 +139,7 @@ export class KanbanRenderer {
         const tipoEmoji = flowData.tipo === 'tangible' ? '🟢' : '🟣';
         
         const isLegacy = !tx.isWorkOrder;
-        const hashAttr = `data-hash="${tx.hash}" data-legacy="${isLegacy}"`;
+        const hashAttr = `data-hash="${tx.hash || tx.id}" data-legacy="${isLegacy}"`;
 
         let actionHtml = ''; let statusTag = ''; let aiOutputHtml = '';
 
@@ -148,25 +147,19 @@ export class KanbanRenderer {
         const checkedCount = socs.filter(s => s.isChecked).length;
         const socHtml = socs.length > 0 ? `<div class="soc-progress">☑️ ${checkedCount}/${socs.length} SOCs</div>` : '';
 
-        if (tx.status === 'theoretical') {
+        // TAREA LIBRE
+        if (tx.status === 'theoretical' || !tx.status) {
             statusTag = `<span style="color:#aaa; font-size:0.65rem; border:1px solid #444; padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px;">LIBRE</span>`;
             if (isPO) {
                 actionHtml = `
-                    <button class="btn-pull kb-action" data-action="request" ${hashAttr} title="Adjudicarme la tarea">📥 PULL</button>
-                    <button class="btn-push kb-action" data-action="push" ${hashAttr} title="Asignar a un miembro">👤 PUSH (Asignar)</button>
+                    <button class="btn-pull kb-action" data-action="request" ${hashAttr} title="Adjudicarme la tarea">📥 PULL (Mío)</button>
+                    <button class="btn-push kb-action" data-action="open-push-modal" ${hashAttr} title="Asignar a un miembro o IA">👤 PUSH (Asignar)</button>
                 `;
             } else {
-                actionHtml = `<button class="btn-pull kb-action" data-action="request" ${hashAttr}>✋ Solicitar</button>`;
+                actionHtml = `<button class="btn-pull kb-action" data-action="request" ${hashAttr}>✋ Hacer PULL</button>`;
             }
         } 
-        else if (tx.status === 'requested') {
-            statusTag = `<span style="color:var(--accent-red); font-size:0.65rem; border:1px solid var(--accent-red); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,82,82,0.1);">SOLICITADO</span>`;
-            if (isPO) {
-                actionHtml = `<button class="btn-approve kb-action" data-action="approve-pull" ${hashAttr} data-userid="${tx.assigneeId}">✅ Aprobar PULL a ${tx.assigneeId}</button>`;
-            } else {
-                actionHtml = `<div style="color: var(--accent-orange); font-size: 0.8rem; text-align: center; padding: 8px; border: 1px dashed var(--accent-orange); border-radius: 8px;">✋ Esperando aprobación PO</div>`;
-            }
-        }
+        // EN CURSO
         else if (tx.status === 'pinged') {
             statusTag = `<span style="color:var(--accent-orange); font-size:0.65rem; border:1px solid var(--accent-orange); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,171,64,0.1);">WIP</span>`;
             const isMine = tx.assigneeId === activeUserId;
@@ -174,26 +167,32 @@ export class KanbanRenderer {
 
             if (isMine) {
                 actionHtml = `
-                    <a href="/v8/paper?hash=${tx.hash}&legacy=${isLegacy}" class="btn-focus" data-link>▶ OMNI-PAPER</a>
-                    <button class="btn-reject kb-action" data-action="reject" ${hashAttr} title="Rechazar Tarea">✖</button>
+                    <a href="/v8/paper?hash=${tx.hash || tx.id}&legacy=${isLegacy}" class="btn-focus" data-link>▶ OMNI-PAPER</a>
+                    <button class="btn-reject kb-action" data-action="reject" ${hashAttr} title="Soltar Tarea">✖</button>
                 `;
             }
-            else if (isAiAssignee && isPO) actionHtml = `<button class="btn-ai-exec kb-action" data-action="ai-exec" ${hashAttr} data-agent="${tx.assigneeId}">⚡ EJECUTAR (${tx.assigneeId})</button>`;
-            else actionHtml = `<div style="color: white; font-size: 0.8rem; text-align: center; padding: 8px; background:rgba(0,0,0,0.4); border-radius: 8px; border:1px solid #333;">Asignado: <b>${tx.assigneeId}</b></div>`;
+            else if (isAiAssignee && isPO) actionHtml = `<button class="btn-ai-exec kb-action" data-action="ai-exec" ${hashAttr} data-agent="${tx.assigneeId}">⚡ EJECUTAR IA (${tx.assigneeId})</button>`;
+            else actionHtml = `<div style="color: white; font-size: 0.8rem; text-align: center; padding: 8px; background:rgba(0,0,0,0.4); border-radius: 8px; border:1px solid #333; width:100%;">Asignado: <b>${tx.assigneeId}</b></div>`;
         } 
+        // EN AUDITORÍA
         else if (tx.status === 'reported' || tx.status === 'in_review') {
             statusTag = `<span style="color:var(--accent-blue); font-size:0.65rem; border:1px solid var(--accent-blue); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,176,255,0.1);">AUDITORÍA</span>`;
             if (tx.proofLink === 'Agent_Auto_Report' || tx.proofLink === 'Usenet_Thread') {
-                aiOutputHtml = `<div class="task-ai-output"><b>🤖 Resultado:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
+                aiOutputHtml = `<div class="task-ai-output"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
-            actionHtml = `
-                ${isPO ? `<button class="btn-review kb-action" data-action="review" ${hashAttr}>🔎 Auditar SOCs</button>` : `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px;">Pendiente de Notaría</div>`}
-            `;
+            
+            // 🔥 El PO o Ecosystem Owner ahora SIEMPRE pueden auditar
+            if (isPO) {
+                actionHtml = `<button class="btn-review kb-action" data-action="review" ${hashAttr}>🔎 Auditar SOCs (PO)</button>`;
+            } else {
+                actionHtml = `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px; width:100%;">Pendiente de Auditar por PO</div>`;
+            }
         }
+        // SELLADAS
         else if (tx.status === 'consolidated' || tx.status === 'approved') {
             statusTag = `<span style="color:var(--accent-green); font-size:0.65rem; border:1px solid var(--accent-green); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,230,118,0.1);">SELLADO</span>`;
             if (tx.proofLink === 'Agent_Auto_Report' || tx.proofLink === 'Usenet_Thread') {
-                aiOutputHtml = `<div class="task-ai-output" style="max-height:60px; opacity:0.7;"><b>🤖 Resultado:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
+                aiOutputHtml = `<div class="task-ai-output" style="max-height:60px; opacity:0.7;"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
             actionHtml = `
                 <div style="color: var(--accent-green); font-size: 1.1rem; font-weight: 900; font-family: var(--font-mono); text-align: center; padding: 10px; background: rgba(0, 230, 118, 0.05); border-radius: 8px; border: 1px dashed var(--accent-green); width: 100%;">
@@ -243,6 +242,14 @@ export class KanbanRenderer {
                 const userId = e.currentTarget.dataset.userid;
                 const agentId = e.currentTarget.dataset.agent;
                 
+                // Si el evento es PULL, disparamos el REQUEST pero lo forzamos a PINGED directamente.
+                if (action === 'request') {
+                    window.dispatchEvent(new CustomEvent('kanban-action', { 
+                        detail: { action: 'force-pull', hash, isLegacy, userId: this.options.activeUserId, element: e.currentTarget } 
+                    }));
+                    return;
+                }
+
                 window.dispatchEvent(new CustomEvent('kanban-action', { 
                     detail: { action, hash, isLegacy, userId, agentId, element: e.currentTarget } 
                 }));
