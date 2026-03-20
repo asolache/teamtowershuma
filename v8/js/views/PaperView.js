@@ -78,7 +78,7 @@ export default class PaperView {
                 
                 /* PANEL DE CHAT DEL WIDGET */
                 .widget-chat-panel { width: 0; background: rgba(5,5,8,0.95); border-left: 1px dashed #333; display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden; }
-                .widget-chat-panel.open { width: 350px; }
+                .widget-chat-panel.open { width: 380px; }
                 .widget-chat-history { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-family: var(--font-main); font-size: 0.9rem;}
                 .chat-bubble { padding: 12px; border-radius: 8px; max-width: 90%; line-height: 1.4; word-break: break-word;}
                 .chat-bubble.ai { background: rgba(255,255,255,0.05); color: #ddd; align-self: flex-start; border-top-left-radius: 0; border: 1px solid #333;}
@@ -661,7 +661,7 @@ export default class PaperView {
                             </div><p><br></p>
                         `;
                     } 
-                    // 🔥 LOS WIDGETS HABITADOS (Ahora Mestre está en Sandbox)
+                    // 🔥 LOS WIDGETS HABITADOS
                     else if (replaceVal === '/mapa') {
                         el.innerHTML = this.getHabitableWidgetHtml(widgetId, '🕸️ Topología VNA', 'canvas', '@genesi_ai', 'var(--accent-blue)', '350px', 'background:#050508;');
                     } else if (replaceVal === '/kanban') {
@@ -783,7 +783,6 @@ export default class PaperView {
             if (agentId === '@cap_de_colla') componentData = JSON.stringify({ oportunidades: project?.work_orders.filter(w => w.status === 'pinged') }, null, 2);
             if (agentId === '@notari_ledger') componentData = JSON.stringify({ capTable: project?.ledger }, null, 2);
             
-            // Extraer IDs de Memes/Prompts si estamos hablando con Mestre
             if (agentId === '@mestre_escola') {
                 await KB.init();
                 const allData = await KB.getAllNodes();
@@ -795,7 +794,7 @@ export default class PaperView {
             
             const agentContext = await KB.getDynamicContextPrompt('global', agentId, state);
             
-            // 🔥 INSTRUCCIÓN DE FUNCTION CALLING (AUTO-UPDATE)
+            // 🔥 INSTRUCCIÓN DE FUNCTION CALLING (ROOT PERMISSIONS)
             const systemPrompt = `
                 ${agentContext}
                 ===============================
@@ -804,8 +803,10 @@ export default class PaperView {
                 ${componentData}
                 
                 Instrucción: Eres ${agentId}. Responde a la duda del usuario de forma analítica. 
-                🚨 REGLA DE SISTEMA MUY IMPORTANTE: Si el usuario te pide EXPLÍCITAMENTE modificar, actualizar o crear el System Prompt de un agente o el texto de un Meme, DEBES incluir al final de tu respuesta de texto un bloque JSON exacto con este formato (no uses markdown para el json, ponlo tal cual):
-                {"action": "UPDATE_NODE", "nodeId": "id_del_nodo_a_modificar", "content": "el nuevo texto definitivo completo..."}
+                🚨 REGLA DE SISTEMA MUY IMPORTANTE: Tienes permisos ROOT para modificar el sistema. Si el usuario te pide EXPLÍCITAMENTE modificar, actualizar o crear el System Prompt de un agente o el texto de un Meme, DEBES hacer dos cosas:
+                1. Explica brevemente los cambios que vas a hacer.
+                2. Al final exacto de tu respuesta, INYECTA UN BLOQUE JSON PURO (sin markdown, sin comillas invertidas) con este formato exacto:
+                {"action": "UPDATE_NODE", "nodeId": "aqui_el_id_del_nodo_a_modificar", "content": "Aquí todo el texto nuevo completo..."}
             `;
 
             const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: userMsg, responseFormat: "text", temperature: 0.4 });
@@ -813,27 +814,31 @@ export default class PaperView {
             let rawResponse = response.content;
             let actionBlock = null;
 
-            // Intentar detectar el bloque JSON de acción en la respuesta de la IA
+            // Extraemos el JSON incluso si el LLM rebelde le pone Markdown
             const jsonMatch = rawResponse.match(/\{[\s\S]*"action"\s*:\s*"UPDATE_NODE"[\s\S]*\}/);
             if (jsonMatch) {
                 try {
                     actionBlock = JSON.parse(jsonMatch[0]);
-                    rawResponse = rawResponse.replace(jsonMatch[0], ''); // Quitamos el JSON sucio del texto visual
+                    rawResponse = rawResponse.replace(jsonMatch[0], ''); // Limpiamos el texto principal
                 } catch (e) { console.warn("Fallo al parsear JSON de acción de la IA", e); }
             }
 
             const bubbleEl = document.getElementById(loadingId);
             bubbleEl.innerText = rawResponse.trim();
             
-            // Si la IA ha devuelto una orden de acción, renderizamos el botón mágico
+            // 🔥 PREVISUALIZACIÓN Y BOTÓN MÁGICO (El Arquitecto Audita)
             if (actionBlock && actionBlock.action === 'UPDATE_NODE') {
                 const btnId = 'action_' + Date.now();
-                // Ocultamos la data en data-attributes seguros
                 const safeContent = encodeURIComponent(actionBlock.content);
+                
                 bubbleEl.innerHTML += `
-                    <button class="btn-ai-action" id="${btnId}" data-nodeid="${actionBlock.nodeId}" data-newcontent="${safeContent}">
-                        💾 Aplicar Actualización en el Kernel
-                    </button>
+                    <div style="margin-top: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 10px; font-size: 0.8rem;">
+                        <div style="color: var(--accent-purple); font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">📝 Previsualización de Mutación (Nodo: ${actionBlock.nodeId}):</div>
+                        <div style="color: #aaa; white-space: pre-wrap; font-family: monospace; max-height: 150px; overflow-y: auto; margin-bottom: 10px;">${actionBlock.content}</div>
+                        <button class="btn-ai-action" id="${btnId}" data-nodeid="${actionBlock.nodeId}" data-newcontent="${safeContent}">
+                            💾 Confirmar Inyección en el Kernel
+                        </button>
+                    </div>
                 `;
             }
 
@@ -862,7 +867,6 @@ export default class PaperView {
                 existingNode.lastUpdated = Date.now();
                 await KB.saveNode(existingNode);
             } else {
-                // Si el nodo no existe, forja uno nuevo como Meme
                 await KB.saveNode({
                     id: nodeId,
                     type: 'meme',
@@ -877,7 +881,7 @@ export default class PaperView {
 
             btnElement.style.background = "var(--accent-green)";
             btnElement.innerText = "✅ Mutación Sellada Exitosamente";
-            alert("La base de datos (KB) ha sido actualizada con el nuevo texto del Agente.");
+            
         } catch (error) {
             btnElement.style.background = "var(--accent-red)";
             btnElement.innerText = "❌ Fallo al Escribir";
