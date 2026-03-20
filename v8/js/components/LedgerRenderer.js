@@ -96,11 +96,13 @@ export class LedgerRenderer {
         const project = store.getState().projects.find(p => p.id === this.options.projectId);
         if (!project) return;
 
-        const harvest = store.calculateHarvest(this.options.projectId) || [];
+        const harvestData = store.calculateHarvest(this.options.projectId) || [];
         const colors = ['#00b0ff', '#e040fb', '#00e676', '#ff9100', '#ff5252', '#ffd740'];
         
         let totalSlices = 0;
-        harvest.forEach(h => totalSlices += h.slices);
+        harvestData.forEach(h => {
+            totalSlices += (h.totalSlices || 0);
+        });
 
         if (totalSlices === 0 || !project.ledger || project.ledger.length === 0) {
             this.container.innerHTML = `
@@ -115,9 +117,10 @@ export class LedgerRenderer {
         let conicGradientParts = [];
         let currentDegree = 0;
 
-        harvest.sort((a, b) => b.slices - a.slices).forEach((userHarvest, index) => {
+        harvestData.sort((a, b) => (b.totalSlices || 0) - (a.totalSlices || 0)).forEach((userHarvest, index) => {
             const user = this.globalUsers.find(u => u.id === userHarvest.userId) || { name: userHarvest.userId };
-            const percentageRaw = (userHarvest.slices / totalSlices) * 100;
+            const rawSlices = userHarvest.totalSlices || 0;
+            const percentageRaw = totalSlices > 0 ? (rawSlices / totalSlices) * 100 : 0;
             const percentageStr = percentageRaw.toFixed(2);
             const color = colors[index % colors.length];
 
@@ -126,7 +129,7 @@ export class LedgerRenderer {
             currentDegree = nextDegree;
 
             const userTxs = (project.ledger || []).filter(tx => tx.userId === userHarvest.userId);
-            const capitalSlices = userTxs.filter(tx => tx.roleId === 'CAPITAL_ASSET').reduce((sum, tx) => sum + tx.valorCongelado, 0);
+            const capitalSlices = userTxs.filter(tx => tx.roleId === 'CAPITAL_ASSET').reduce((sum, tx) => sum + (tx.valorCongelado || 0), 0);
             const capitalHtml = capitalSlices > 0 ? ` | <span style="color:var(--accent-green);">Inversor</span>` : '';
             const initial = user.name.charAt(0).toUpperCase();
 
@@ -136,15 +139,15 @@ export class LedgerRenderer {
                         <div class="avatar" style="border-color: ${color}; color: ${color};">${initial}</div>
                         <div class="user-info">
                             <div class="user-name">${user.name}</div>
-                            <div class="user-sub mobile-only">Slices: ${Math.round(userHarvest.slices).toLocaleString()}${capitalHtml}</div>
+                            <div class="user-sub mobile-only">Slices: ${Math.round(rawSlices).toLocaleString()}${capitalHtml}</div>
                         </div>
                     </div>
                     <div class="cap-bar-container desktop-only">
-                        <div class="cap-bar-fill" style="width: 0%; background: ${color};" data-target-width="${percentageStr}%"></div>
+                        <div class="cap-bar-fill" style="width: 0%; background: ${color}; box-shadow: 0 0 10px ${color};" data-target-width="${percentageStr}%"></div>
                     </div>
                     <div class="cap-stats">
                         <div class="cap-percent" style="color: ${color};">${percentageStr}%</div>
-                        <div class="cap-slices desktop-only">${Math.round(userHarvest.slices).toLocaleString()} Slices</div>
+                        <div class="cap-slices desktop-only">${Math.round(rawSlices).toLocaleString()} Slices</div>
                     </div>
                 </div>
             `;
@@ -158,7 +161,8 @@ export class LedgerRenderer {
             let mobileCards = '';
 
             reversedLedger.forEach(entry => {
-                const date = new Date(entry.timestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short' });
+                const safeTimestamp = entry.timestamp || entry.date || Date.now();
+                const dateStr = new Date(safeTimestamp).toLocaleString('es-ES', { day: '2-digit', month: 'short' });
                 const user = this.globalUsers.find(u => u.id === entry.userId) || { name: entry.userId };
                 
                 let roleName = entry.roleId === 'CAPITAL_ASSET' ? `<span style="color: var(--accent-green); font-weight:900;">💼 Capital</span>` : 'Nodo Base';
@@ -168,18 +172,21 @@ export class LedgerRenderer {
                 }
                 
                 const isCapital = entry.roleId === 'CAPITAL_ASSET';
-                const horasStr = isCapital ? '--' : `${entry.horas}h`;
-                const slicesFmt = `+${Math.round(entry.valorCongelado).toLocaleString()}`;
-                const hashShort = entry.hash.substring(0,8);
+                const horasStr = isCapital ? '--' : `${entry.horas || 1}h`;
+                const slicesFmt = `+${Math.round(entry.valorCongelado || 0).toLocaleString()}`;
+                
+                const txId = entry.id || entry.hash || 'tx_genesi_' + Math.floor(Math.random()*1000);
+                const hashShort = txId.substring(0, 8);
+                const evidence = entry.description || `Ejecución Role: ${roleName.replace(/<[^>]*>?/gm, '')}`;
 
                 trs += `
                     <tr>
-                        <td><span class="hash-badge" title="${entry.hash}">${hashShort}...</span></td>
-                        <td style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem;">${date}</td>
+                        <td><span class="hash-badge" title="${txId}">${hashShort}...</span></td>
+                        <td style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem;">${dateStr}</td>
                         <td style="font-weight: 900; color: white;">${user.name}</td>
                         <td>${roleName}</td>
-                        <td style="line-height:1.4;">${entry.description}</td>
-                        <td style="font-family: var(--font-mono); color: #aaa;">${horasStr}</td>
+                        <td style="line-height:1.4; color:#ccc;">${evidence}</td>
+                        <td style="font-family: var(--font-mono); color: #aaa; font-weight:bold;">${horasStr}</td>
                         <td style="text-align: right;"><span class="slice-badge">${slicesFmt}</span></td>
                     </tr>
                 `;
@@ -188,7 +195,7 @@ export class LedgerRenderer {
                     <div class="mlc-card" onclick="this.classList.toggle('expanded')">
                         <div class="mlc-top">
                             <span class="mlc-hash">${hashShort}...</span>
-                            <span class="mlc-date">${date}</span>
+                            <span class="mlc-date">${dateStr}</span>
                         </div>
                         <div class="mlc-main">
                             <div>
@@ -198,7 +205,7 @@ export class LedgerRenderer {
                             <div class="mlc-slices">${slicesFmt}</div>
                         </div>
                         <div class="mlc-details">
-                            <div class="mlc-desc">${entry.description}</div>
+                            <div class="mlc-desc">${evidence}</div>
                         </div>
                     </div>
                 `;
@@ -234,7 +241,10 @@ export class LedgerRenderer {
         `;
 
         setTimeout(() => {
-            this.container.querySelectorAll('.cap-bar-fill').forEach(bar => bar.style.width = bar.getAttribute('data-target-width'));
+            this.container.querySelectorAll('.cap-bar-fill').forEach(bar => {
+                const targetWidth = bar.getAttribute('data-target-width');
+                if (targetWidth) bar.style.width = targetWidth;
+            });
         }, 100);
     }
 }
