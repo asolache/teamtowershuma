@@ -124,10 +124,10 @@ export class MapRenderer {
         if (!this.canvas || !this.svg) return;
         this.renderNodes();
         
-        // 🔥 FIX 1: Retraso táctico para que el contenedor adquiera dimensiones antes de pintar flechas
+        // 🔥 FIX 3: Retraso táctico para que el DOM pinte los nodos antes de trazar flechas
         setTimeout(() => {
             this.renderEdges();
-        }, 100);
+        }, 150);
     }
 
     renderNodes() {
@@ -137,7 +137,7 @@ export class MapRenderer {
         
         const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
 
-        // 🔥 FIX 2: Normalizador Estricto
+        // 🔥 FIX 1: Normalizador de niveles (Protege contra variaciones de IA)
         const normalizeLevel = (lvl) => {
             if (!lvl) return '@baixos';
             let safe = lvl.toLowerCase().trim();
@@ -150,11 +150,13 @@ export class MapRenderer {
             return '@baixos';
         };
 
+        // 🔥 ALGORITMO ZIGZAG CASTELLER (Tensegridad)
         const getInitialLayout = (level, totalInLevel, currentCount) => {
-            const baseYLayout = { '@anxaneta': 15, '@aixecador': 32, '@dosos': 50, '@baixos': 68, '@pinya': 85 };
+            // Y: Alturas seguras (20% al 80% para que no se corten por arriba ni por abajo)
+            const baseYLayout = { '@anxaneta': 20, '@aixecador': 35, '@dosos': 50, '@baixos': 65, '@pinya': 80 };
             
-            // Zigzag Extremo para que se crucen perfectamente
-            const singleNodeX = { '@anxaneta': 50, '@aixecador': 20, '@dosos': 80, '@baixos': 20, '@pinya': 50 };
+            // X: Zigzag Extremo para cruce de flechas limpio
+            const singleNodeX = { '@anxaneta': 50, '@aixecador': 25, '@dosos': 75, '@baixos': 25, '@pinya': 50 };
             
             let x = singleNodeX[level] || 50; 
 
@@ -190,14 +192,15 @@ export class MapRenderer {
         });
 
         ghostRoles.forEach((r, i) => {
-            const nodeDiv = this.buildNodeDOM(r, 10 + (i * 12), 95, true);
+            const nodeDiv = this.buildNodeDOM(r, 10 + (i * 12), 90, true);
             this.canvas.appendChild(nodeDiv);
         });
     }
 
     buildNodeDOM(role, x, y, isGhost) {
-        const color = MapRenderer.getColor(role.levelId);
-        const icon = MapRenderer.getIcon(role.levelId);
+        const levelSafe = role.levelId ? role.levelId.toLowerCase() : '';
+        const color = MapRenderer.getColor(levelSafe);
+        const icon = MapRenderer.getIcon(levelSafe);
 
         const nodeDiv = document.createElement('div');
         nodeDiv.className = `node-wrapper ${isGhost ? 'ghost-node' : ''}`;
@@ -251,7 +254,7 @@ export class MapRenderer {
 
         const dx = x2_center - x1_center, dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
-        const trim = 50; 
+        const trim = 45; 
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
@@ -341,7 +344,7 @@ export class MapRenderer {
         const x2_center = dom2.offsetLeft, y2_center = dom2.offsetTop;
         const dx = x2_center - x1_center, dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
-        const trim = 50; 
+        const trim = 45; 
         
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
         if (dist > trim) {
@@ -437,6 +440,8 @@ export class MapRenderer {
                     
                     this.draggedNode.style.left = `${newX}%`;
                     this.draggedNode.style.top = `${newY}%`;
+                    
+                    // 🔥 FIX 4: Renderizado fluido de flechas mientras arrastras
                     this.renderEdges(); 
                 }
             });
@@ -453,16 +458,29 @@ export class MapRenderer {
                         
                         this.options.onNodeDrop(nodeId, newX, newY);
 
-                        const state = store.getState();
-                        const project = state.projects.find(p => p.roles && p.roles.some(r => r.id === nodeId));
-                        if (project) {
-                            const updatedRoles = project.roles.map(r => 
-                                r.id === nodeId ? { ...r, x: newX, y: newY, customPos: true } : r
-                            );
-                            await store.dispatch({
-                                type: 'UPDATE_PROJECT_INFO',
-                                payload: { projectId: project.id, updates: { roles: updatedRoles } }
-                            });
+                        // 🔥 FIX 2: MUTACIÓN DIRECTA EN MEMORIA LOCAL (Para el Wizard)
+                        const targetNode = this.nodes.find(n => n.id === nodeId);
+                        if (targetNode) {
+                            targetNode.x = newX;
+                            targetNode.y = newY;
+                            targetNode.customPos = true;
+                        }
+
+                        // INTENTO DE AUTO-GUARDADO (Solo si el proyecto ya existe en Redux)
+                        try {
+                            const state = store.getState();
+                            const project = state.projects.find(p => p.roles && p.roles.some(r => r.id === nodeId));
+                            if (project) {
+                                const updatedRoles = project.roles.map(r => 
+                                    r.id === nodeId ? { ...r, x: newX, y: newY, customPos: true } : r
+                                );
+                                await store.dispatch({
+                                    type: 'UPDATE_PROJECT_INFO',
+                                    payload: { projectId: project.id, updates: { roles: updatedRoles } }
+                                });
+                            }
+                        } catch(err) {
+                            // Ignoramos el error en silencio porque estamos en el Wizard de creación
                         }
                     }
                     this.draggedNode = null;
