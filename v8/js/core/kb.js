@@ -2,27 +2,139 @@
 // Motor de Memoria Profunda (IndexedDB) y Auditoría Competencial Fractal (A2A)
 
 // ============================================================================
-// 1. GENOMA ONTOLÓGICO FRACTAL (VNA)
+// 1. GENOMA ONTOLÓGICO FRACTAL (VNA) - LOS 12 ARQUETIPOS DEL PANTEÓN
 // ============================================================================
 export const NATIVE_ONTOLOGY = {
+    // 1. EL SABIO (Apol·lo) - Lógica y Datos
     "tech_saas_platform": {
-        label: "💻 Software & SaaS", meta: "Ecosistema orientado al ciclo de vida del software, escalabilidad y reducción de deuda técnica.",
+        label: "🦉 SaaS & Data Platforms", meta: "Ecosistema orientado a la lógica, analítica de datos y escalabilidad de software B2B.",
         roles: {
-            "@anxaneta": { name: "CEO / Visionario", multiplier: 3.0, fmv: 60, guardian: "ruler", core_flows: ['flow_bmc_creation'] },
-            "@aixecador": { name: "CPO / Product Lead", multiplier: 2.0, fmv: 50, guardian: "creator", core_flows: ['flow_prd_definition'] },
-            "@dosos": { name: "Tech Lead / Arquitecto", multiplier: 1.5, fmv: 45, guardian: "sage", core_flows: ['flow_sec_audit', 'flow_sys_arch'] },
-            "@baixos": { name: "Desarrollador Fullstack", multiplier: 1.2, fmv: 40, guardian: "hephaestus", core_flows: ['flow_tdd_implementation'] },
-            "@pinya": { name: "QA / Soporte IT", multiplier: 1.0, fmv: 30, guardian: "caregiver", core_flows: ['flow_e2e_testing'] }
+            "@anxaneta": { name: "CEO / Visionario", multiplier: 3.0, fmv: 60, guardian: "sage", core_flows: ['flow_bmc_creation'] },
+            "@aixecador": { name: "CPO / Product Lead", multiplier: 2.0, fmv: 50, guardian: "explorer", core_flows: ['flow_prd_definition'] },
+            "@dosos": { name: "Tech Lead / Arquitecto", multiplier: 1.5, fmv: 45, guardian: "ruler", core_flows: ['flow_sys_arch'] },
+            "@baixos": { name: "Desarrollador Fullstack", multiplier: 1.2, fmv: 40, guardian: "creator", core_flows: ['flow_tdd_implementation'] },
+            "@pinya": { name: "Data/QA Support", multiplier: 1.0, fmv: 30, guardian: "everyman", core_flows: ['flow_e2e_testing'] }
         }
     },
+    // 2. EL REBELDE (Hades/Eris) - Descentralización
     "web3_defi_protocol": {
-        label: "🌐 Web3 & Protocolos DAO", meta: "Ecosistema Trustless. Prioridad en auditoría on-chain y tokenomics.",
+        label: "🏴‍☠️ Web3 & Protocolos DAO", meta: "Ecosistema Trustless. Prioridad en auditoría on-chain, tokenomics y disrupción del status quo.",
         roles: {
-            "@anxaneta": { name: "Protocol Architect", multiplier: 3.0, fmv: 70, guardian: "magician", core_flows: ['flow_tokenomics'] },
-            "@aixecador": { name: "Governance Facilitator", multiplier: 2.0, fmv: 50, guardian: "ruler", core_flows: ['flow_bip_creation'] },
-            "@dosos": { name: "Smart Contract Auditor", multiplier: 1.5, fmv: 65, guardian: "sage", core_flows: ['flow_sc_audit'] },
-            "@baixos": { name: "Solidity Engineer", multiplier: 1.2, fmv: 55, guardian: "hephaestus", core_flows: ['flow_sc_dev'] },
+            "@anxaneta": { name: "Protocol Architect", multiplier: 3.0, fmv: 70, guardian: "outlaw", core_flows: ['flow_tokenomics'] },
+            "@aixecador": { name: "Governance Facilitator", multiplier: 2.0, fmv: 50, guardian: "sage", core_flows: ['flow_bip_creation'] },
+            "@dosos": { name: "Smart Contract Auditor", multiplier: 1.5, fmv: 65, guardian: "ruler", core_flows: ['flow_sc_audit'] },
+            "@baixos": { name: "Solidity Engineer", multiplier: 1.2, fmv: 55, guardian: "creator", core_flows: ['flow_sc_dev'] },
             "@pinya": { name: "Node Operator", multiplier: 1.0, fmv: 35, guardian: "everyman", core_flows: ['flow_node_setup'] }
+        }
+    },
+    // 3. EL CREADOR (Hefest) - Diseño y Agencias
+    "creative_design_agency": {
+        label: "🎨 Agencia Creativa & Diseño", meta: "Ecosistema enfocado en la estética, la innovación visual y la materialización de ideas.",
+        roles: {
+            "@anxaneta": { name: "Director Creativo", multiplier: 3.0, fmv: 65, guardian: "creator", core_flows: ['flow_creative_direction'] },
+            "@aixecador": { name: "Art Director", multiplier: 2.0, fmv: 50, guardian: "magician", core_flows: ['flow_moodboard'] },
+            "@dosos": { name: "Design Reviewer", multiplier: 1.5, fmv: 40, guardian: "sage", core_flows: ['flow_design_audit'] },
+            "@baixos": { name: "UI/UX & Motion Designer", multiplier: 1.2, fmv: 35, guardian: "lover", core_flows: ['flow_asset_production'] },
+            "@pinya": { name: "Copywriter / Asset Manager", multiplier: 1.0, fmv: 25, guardian: "everyman", core_flows: ['flow_copy_creation'] }
+        }
+    },
+    // 4. EL CUIDADOR (Hestia) - Salud y ONGs
+    "health_ngo_platform": {
+        label: "❤️ HealthTech & Impacto Social", meta: "Ecosistema centrado en el cuidado humano, la sostenibilidad y el impacto social positivo.",
+        roles: {
+            "@anxaneta": { name: "Impact Director", multiplier: 3.0, fmv: 55, guardian: "caregiver", core_flows: ['flow_impact_strategy'] },
+            "@aixecador": { name: "Program Manager", multiplier: 2.0, fmv: 45, guardian: "ruler", core_flows: ['flow_program_design'] },
+            "@dosos": { name: "Ethics & Compliance", multiplier: 1.5, fmv: 50, guardian: "sage", core_flows: ['flow_ethics_audit'] },
+            "@baixos": { name: "Health/Social Specialist", multiplier: 1.2, fmv: 35, guardian: "innocent", core_flows: ['flow_field_execution'] },
+            "@pinya": { name: "Community Care", multiplier: 1.0, fmv: 25, guardian: "lover", core_flows: ['flow_support_care'] }
+        }
+    },
+    // 5. EL GOBERNANTE (Zeus) - Finanzas y Corporativo
+    "fintech_corp_erp": {
+        label: "👑 FinTech & Corporate ERP", meta: "Ecosistema de alta jerarquía, control de riesgos, cumplimiento normativo y estabilidad financiera.",
+        roles: {
+            "@anxaneta": { name: "CEO / CFO", multiplier: 3.0, fmv: 80, guardian: "ruler", core_flows: ['flow_financial_strategy'] },
+            "@aixecador": { name: "VP of Engineering", multiplier: 2.0, fmv: 65, guardian: "sage", core_flows: ['flow_architecture_corp'] },
+            "@dosos": { name: "Risk & Compliance Auditor", multiplier: 1.5, fmv: 60, guardian: "hero", core_flows: ['flow_compliance_audit'] },
+            "@baixos": { name: "Backend Core Dev", multiplier: 1.2, fmv: 50, guardian: "creator", core_flows: ['flow_core_dev'] },
+            "@pinya": { name: "SysOps & Security", multiplier: 1.0, fmv: 40, guardian: "outlaw", core_flows: ['flow_sysops_maintenance'] }
+        }
+    },
+    // 6. EL BUFÓN (Dionís) - Entretenimiento y Gaming
+    "gaming_media_studio": {
+        label: "🃏 Gaming Studio & Media", meta: "Ecosistema diseñado para el engagement, la diversión, la viralidad y el entretenimiento puro.",
+        roles: {
+            "@anxaneta": { name: "Game Director / Showrunner", multiplier: 3.0, fmv: 70, guardian: "jester", core_flows: ['flow_game_design'] },
+            "@aixecador": { name: "Lead Producer", multiplier: 2.0, fmv: 55, guardian: "ruler", core_flows: ['flow_production_pipeline'] },
+            "@dosos": { name: "Playtester Lead", multiplier: 1.5, fmv: 35, guardian: "explorer", core_flows: ['flow_qa_playtest'] },
+            "@baixos": { name: "Unity/Unreal Dev & 3D", multiplier: 1.2, fmv: 45, guardian: "creator", core_flows: ['flow_asset_integration'] },
+            "@pinya": { name: "Community Manager", multiplier: 1.0, fmv: 25, guardian: "lover", core_flows: ['flow_community_engagement'] }
+        }
+    },
+    // 7. EL CIUDADANO (Demèter) - Retail y E-commerce
+    "ecommerce_b2c_retail": {
+        label: "🤝 E-commerce & Retail B2C", meta: "Ecosistema orientado a la accesibilidad, volumen de ventas, logística y satisfacción del usuario medio.",
+        roles: {
+            "@anxaneta": { name: "E-commerce Director", multiplier: 3.0, fmv: 55, guardian: "everyman", core_flows: ['flow_sales_strategy'] },
+            "@aixecador": { name: "Supply Chain Manager", multiplier: 2.0, fmv: 45, guardian: "ruler", core_flows: ['flow_logistics_setup'] },
+            "@dosos": { name: "CX Auditor", multiplier: 1.5, fmv: 35, guardian: "caregiver", core_flows: ['flow_cx_audit'] },
+            "@baixos": { name: "Store Manager / Dev", multiplier: 1.2, fmv: 30, guardian: "creator", core_flows: ['flow_store_ops'] },
+            "@pinya": { name: "Customer Support", multiplier: 1.0, fmv: 20, guardian: "innocent", core_flows: ['flow_ticket_resolution'] }
+        }
+    },
+    // 8. EL AMANTE (Afrodita) - Branding y Estilo de Vida
+    "branding_pr_lifestyle": {
+        label: "🔥 Branding, PR & Lifestyle", meta: "Ecosistema centrado en la conexión emocional, relaciones públicas, estética y construcción de marca.",
+        roles: {
+            "@anxaneta": { name: "Chief Brand Officer", multiplier: 3.0, fmv: 65, guardian: "lover", core_flows: ['flow_brand_identity'] },
+            "@aixecador": { name: "PR & Comms Lead", multiplier: 2.0, fmv: 50, guardian: "magician", core_flows: ['flow_pr_campaign'] },
+            "@dosos": { name: "Brand Guardian", multiplier: 1.5, fmv: 40, guardian: "sage", core_flows: ['flow_brand_audit'] },
+            "@baixos": { name: "Content Creator", multiplier: 1.2, fmv: 35, guardian: "creator", core_flows: ['flow_content_production'] },
+            "@pinya": { name: "Social Media Exec", multiplier: 1.0, fmv: 25, guardian: "jester", core_flows: ['flow_social_publishing'] }
+        }
+    },
+    // 9. EL HÉROE (Atenea/Ares) - Ciberseguridad y DevOps
+    "cybersec_devops_infra": {
+        label: "⚔️ Ciberseguridad & DevOps", meta: "Ecosistema de alta tensión, defensa perimetral, infraestructura crítica y resolución de crisis.",
+        roles: {
+            "@anxaneta": { name: "CISO / Head of Sec", multiplier: 3.0, fmv: 85, guardian: "hero", core_flows: ['flow_security_strategy'] },
+            "@aixecador": { name: "Lead SecOps Engineer", multiplier: 2.0, fmv: 70, guardian: "ruler", core_flows: ['flow_secops_pipeline'] },
+            "@dosos": { name: "Red Team / Pentester", multiplier: 1.5, fmv: 65, guardian: "outlaw", core_flows: ['flow_pentesting'] },
+            "@baixos": { name: "DevOps & Blue Team", multiplier: 1.2, fmv: 55, guardian: "creator", core_flows: ['flow_infra_deployment'] },
+            "@pinya": { name: "SOC Analyst L1", multiplier: 1.0, fmv: 35, guardian: "sage", core_flows: ['flow_log_monitoring'] }
+        }
+    },
+    // 10. EL MAGO (Hermes) - DeepTech e Inteligencia Artificial
+    "deeptech_ai_algorithms": {
+        label: "✨ IA, DeepTech & Algoritmia", meta: "Ecosistema transformacional. Foco en investigación matemática, machine learning y modelos predictivos.",
+        roles: {
+            "@anxaneta": { name: "AI Chief Scientist", multiplier: 3.0, fmv: 90, guardian: "magician", core_flows: ['flow_model_architecture'] },
+            "@aixecador": { name: "Lead Data Engineer", multiplier: 2.0, fmv: 70, guardian: "sage", core_flows: ['flow_data_pipeline'] },
+            "@dosos": { name: "Ethics & QA Auditor", multiplier: 1.5, fmv: 60, guardian: "caregiver", core_flows: ['flow_bias_audit'] },
+            "@baixos": { name: "ML Researcher", multiplier: 1.2, fmv: 55, guardian: "creator", core_flows: ['flow_model_training'] },
+            "@pinya": { name: "MLOps Support", multiplier: 1.0, fmv: 40, guardian: "everyman", core_flows: ['flow_gpu_provisioning'] }
+        }
+    },
+    // 11. EL INOCENTE (Perséfone) - EdTech y Educación
+    "edtech_learning_platform": {
+        label: "🕊️ EdTech & Educación", meta: "Ecosistema enfocado en el crecimiento personal, la transparencia, la accesibilidad y la pedagogía.",
+        roles: {
+            "@anxaneta": { name: "Chief Learning Officer", multiplier: 3.0, fmv: 50, guardian: "innocent", core_flows: ['flow_pedagogy_strategy'] },
+            "@aixecador": { name: "Head of Curriculum", multiplier: 2.0, fmv: 40, guardian: "sage", core_flows: ['flow_curriculum_design'] },
+            "@dosos": { name: "Academic Auditor", multiplier: 1.5, fmv: 35, guardian: "ruler", core_flows: ['flow_academic_review'] },
+            "@baixos": { name: "Instructional Designer", multiplier: 1.2, fmv: 30, guardian: "creator", core_flows: ['flow_course_production'] },
+            "@pinya": { name: "Student Success Rep", multiplier: 1.0, fmv: 20, guardian: "caregiver", core_flows: ['flow_student_support'] }
+        }
+    },
+    // 12. EL EXPLORADOR (Posidó) - TravelTech y R&D Ventures
+    "traveltech_rnd_ventures": {
+        label: "🧭 TravelTech & R&D Ventures", meta: "Ecosistema diseñado para romper fronteras, logística global, viajes e innovación abierta.",
+        roles: {
+            "@anxaneta": { name: "Venture Lead / Explorer", multiplier: 3.0, fmv: 65, guardian: "explorer", core_flows: ['flow_market_discovery'] },
+            "@aixecador": { name: "Operations Director", multiplier: 2.0, fmv: 55, guardian: "ruler", core_flows: ['flow_ops_deployment'] },
+            "@dosos": { name: "Risk & Viability Assessor", multiplier: 1.5, fmv: 45, guardian: "sage", core_flows: ['flow_viability_audit'] },
+            "@baixos": { name: "R&D Developer", multiplier: 1.2, fmv: 40, guardian: "creator", core_flows: ['flow_prototype_build'] },
+            "@pinya": { name: "Field Researcher", multiplier: 1.0, fmv: 30, guardian: "hero", core_flows: ['flow_data_collection'] }
         }
     }
 };
@@ -106,7 +218,7 @@ MANDAMIENTOS:
 // ============================================================================
 export const KB = {
     dbName: 'TeamTowers_LMS_V15', 
-    dbVersion: 6,
+    dbVersion: 7, // 🔥 Subimos a 7 para inyectar los 12 Genomas Maestros
     db: null,
 
     init() {
@@ -142,7 +254,8 @@ export const KB = {
             }
         }
 
-        if (nodes.filter(n => n.type === 'ontology').length === 0) {
+        // Sembrar Ontología (Genomas) si no existe la versión web3
+        if (!nodes.find(n => n.id === 'onto_web3_defi_protocol_meta')) {
             for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
                 await this.saveNode({ id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label, roleTarget: 'Global', title: `Sector: ${sectorData.label}`, content: sectorData.meta });
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
@@ -228,7 +341,6 @@ export const KB = {
         });
     },
 
-    // 🔥 LA FUNCIÓN RESTAURADA: Necesaria para el Wizard de Proyectos
     async getAvailableSectors() {
         const sectors = {};
         Object.entries(NATIVE_ONTOLOGY).forEach(([sectorKey, sectorData]) => {
