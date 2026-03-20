@@ -1,9 +1,9 @@
 // v8/js/core/store.js
-// Motor de Estado Global Inmutable (Redux Pattern) - V15.9.5
+// Motor de Estado Global Inmutable (Redux Pattern) - V15.9.6 (Strict Ledger)
 
 const initialState = {
     config: {
-        version: '15.9.5-Fractal',
+        version: '15.9.6-Fractal',
         theme: 'dark'
     },
     session: {
@@ -26,12 +26,10 @@ const initialState = {
 class Store {
     constructor() {
         const savedState = localStorage.getItem('tt_v9_kernel_state');
-        
         if (savedState) {
             this.state = JSON.parse(savedState);
             if (!this.state.config) this.state.config = { theme: 'dark' };
             this.state.config.version = initialState.config.version; 
-            
             if (!this.state.globalUsers) this.state.globalUsers = initialState.globalUsers;
             if (!this.state.projects) this.state.projects = [];
             
@@ -84,16 +82,11 @@ class Store {
             case 'LOGIN_USER':
                 newState.session.activeUserId = action.payload.userId;
                 const existingUser = newState.globalUsers.find(u => u.id === action.payload.userId);
-                if (!existingUser) {
-                    newState.globalUsers.push({ id: action.payload.userId, name: 'Anónimo', globalRole: 'network-user', profile: { sbt_skills: [] } });
-                }
+                if (!existingUser) newState.globalUsers.push({ id: action.payload.userId, name: 'Anónimo', globalRole: 'network-user', profile: { sbt_skills: [] } });
                 newState.session.role = existingUser ? existingUser.globalRole : 'network-user';
                 break;
             case 'LOGOUT_USER':
-                newState.session.activeUserId = null;
-                newState.session.role = 'guest';
-                break;
-            
+                newState.session.activeUserId = null; newState.session.role = 'guest'; break;
             case 'CREATE_PROJECT':
                 newState.projects.push({ ...action.payload, activeSprintId: 'sp_default', sprints: [{ id: 'sp_default', name: 'Sprint 1', startDate: Date.now() }], logs: [], telemetry: [] });
                 break;
@@ -101,7 +94,6 @@ class Store {
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) Object.assign(newState.projects[projIdx], action.payload.updates);
                 break;
-
             case 'CREATE_SPRINT':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
@@ -114,7 +106,6 @@ class Store {
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) newState.projects[projIdx].activeSprintId = action.payload.sprintId;
                 break;
-
             case 'ADD_ROLE':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
@@ -136,7 +127,6 @@ class Store {
                     if (rIdx > -1) newState.projects[projIdx].roles[rIdx].isArchived = !newState.projects[projIdx].roles[rIdx].isArchived;
                 }
                 break;
-
             case 'ADD_FLOW':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) newState.projects[projIdx].vna_flows.push(action.payload.flow);
@@ -150,23 +140,28 @@ class Store {
                 break;
             case 'DELETE_FLOW':
                 projIdx = findProject(action.payload.projectId);
-                if (projIdx > -1) {
-                    newState.projects[projIdx].vna_flows = newState.projects[projIdx].vna_flows.filter(f => f.id !== action.payload.flowId);
-                }
+                if (projIdx > -1) newState.projects[projIdx].vna_flows = newState.projects[projIdx].vna_flows.filter(f => f.id !== action.payload.flowId);
                 break;
-
             case 'SPAWN_WORK_ORDER':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) newState.projects[projIdx].work_orders.push(action.payload.workOrder);
                 break;
-            
+
+            case 'PING_WORK_ORDER':
             case 'UPDATE_WO_STATUS':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
-                    woIdx = newState.projects[projIdx].work_orders.findIndex(w => w.hash === action.payload.hash);
-                    if (woIdx > -1) {
+                    woIdx = newState.projects[projIdx].work_orders.findIndex(w => w.hash === (action.payload.woHash || action.payload.hash));
+                    if (woIdx === -1 && newState.projects[projIdx].transactions) {
+                        woIdx = newState.projects[projIdx].transactions.findIndex(t => (t.id || t.hash) === (action.payload.woHash || action.payload.hash));
+                        if (woIdx > -1) {
+                            newState.projects[projIdx].transactions[woIdx].status = action.payload.status || 'pinged';
+                            if(action.payload.assigneeId !== undefined) newState.projects[projIdx].transactions[woIdx].assigneeId = action.payload.assigneeId;
+                        }
+                    } else if (woIdx > -1) {
                         newState.projects[projIdx].work_orders[woIdx].status = action.payload.status || 'pinged';
                         if(action.payload.assigneeId !== undefined) newState.projects[projIdx].work_orders[woIdx].assigneeId = action.payload.assigneeId;
+                        if(action.payload.userId !== undefined) newState.projects[projIdx].work_orders[woIdx].assigneeId = action.payload.userId;
                         if(action.payload.sprintId !== undefined) newState.projects[projIdx].work_orders[woIdx].sprintId = action.payload.sprintId;
                     }
                 }
@@ -175,12 +170,17 @@ class Store {
             case 'REPORT_WORK_ORDER':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
-                    woIdx = newState.projects[projIdx].work_orders.findIndex(w => w.hash === action.payload.woHash);
+                    let taskList = newState.projects[projIdx].work_orders;
+                    woIdx = taskList.findIndex(w => w.hash === action.payload.woHash);
+                    if (woIdx === -1 && newState.projects[projIdx].transactions) {
+                        taskList = newState.projects[projIdx].transactions;
+                        woIdx = taskList.findIndex(t => (t.id || t.hash) === action.payload.woHash);
+                    }
                     if (woIdx > -1) {
-                        newState.projects[projIdx].work_orders[woIdx].status = 'reported';
-                        newState.projects[projIdx].work_orders[woIdx].realHours = action.payload.realHours;
-                        newState.projects[projIdx].work_orders[woIdx].comentario = action.payload.comentario;
-                        if (action.payload.proofLink) newState.projects[projIdx].work_orders[woIdx].proofLink = action.payload.proofLink;
+                        taskList[woIdx].status = 'reported';
+                        taskList[woIdx].realHours = action.payload.realHours;
+                        taskList[woIdx].comentario = action.payload.comentario;
+                        if (action.payload.proofLink) taskList[woIdx].proofLink = action.payload.proofLink;
                     }
                 }
                 break;
@@ -188,12 +188,17 @@ class Store {
             case 'REVIEW_WORK_ORDER':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
-                    woIdx = newState.projects[projIdx].work_orders.findIndex(w => w.hash === action.payload.woHash);
+                    let taskList = newState.projects[projIdx].work_orders;
+                    woIdx = taskList.findIndex(w => w.hash === action.payload.woHash);
+                    if (woIdx === -1 && newState.projects[projIdx].transactions) {
+                        taskList = newState.projects[projIdx].transactions;
+                        woIdx = taskList.findIndex(t => (t.id || t.hash) === action.payload.woHash);
+                    }
                     if (woIdx > -1) {
-                        newState.projects[projIdx].work_orders[woIdx].status = 'in_review';
-                        newState.projects[projIdx].work_orders[woIdx].auditorId = action.payload.auditorId;
-                        if (newState.projects[projIdx].work_orders[woIdx].soc_checklist) {
-                            newState.projects[projIdx].work_orders[woIdx].soc_checklist.forEach(soc => {
+                        taskList[woIdx].status = 'in_review';
+                        taskList[woIdx].auditorId = action.payload.auditorId;
+                        if (taskList[woIdx].soc_checklist) {
+                            taskList[woIdx].soc_checklist.forEach(soc => {
                                 if (action.payload.socValidation[soc.id] !== undefined) {
                                     soc.isChecked = action.payload.socValidation[soc.id];
                                 }
@@ -203,41 +208,62 @@ class Store {
                 }
                 break;
 
+            // 🔥 FIX: APROBACIÓN MATEMÁTICA ESTRICTA
             case 'APPROVE_WORK_ORDER':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
-                    woIdx = newState.projects[projIdx].work_orders.findIndex(w => w.hash === action.payload.woHash);
-                    const wo = newState.projects[projIdx].work_orders[woIdx];
+                    let isLegacy = false;
+                    let taskList = newState.projects[projIdx].work_orders;
+                    woIdx = taskList.findIndex(w => w.hash === action.payload.woHash);
                     
-                    if (wo) {
+                    if (woIdx === -1 && newState.projects[projIdx].transactions) {
+                        taskList = newState.projects[projIdx].transactions;
+                        woIdx = taskList.findIndex(t => (t.id || t.hash) === action.payload.woHash);
+                        isLegacy = true;
+                    }
+
+                    if (woIdx > -1) {
+                        const wo = taskList[woIdx];
                         let hasFailedSocs = false;
                         if (wo.soc_checklist && wo.soc_checklist.length > 0) {
                             if (wo.soc_checklist.filter(s => !s.isChecked).length > 0) hasFailedSocs = true;
                         }
 
                         if (hasFailedSocs) {
-                            wo.status = 'reported'; // Rechazado
+                            wo.status = 'reported'; // Rechazado por el SOC
                         } else {
                             wo.status = 'consolidated'; // Aprobado
                             
-                            const flow = newState.projects[projIdx].vna_flows.find(f => f.id === wo.flowId);
                             let fmv = 40;
                             let multiplier = 1.0;
                             let targetRoleId = 'general_role';
+                            let estimatedHours = 1.0;
 
-                            if (flow) {
-                                const role = newState.projects[projIdx].roles.find(r => r.id === flow.to);
+                            if (isLegacy) {
+                                const role = newState.projects[projIdx].roles.find(r => r.id === wo.to);
                                 if (role) {
                                     fmv = parseFloat(role.fmv) || 40;
                                     multiplier = parseFloat(role.multiplier) || 1.0;
                                     targetRoleId = role.id;
                                 }
+                                estimatedHours = parseFloat(wo.horas) || parseFloat(wo.estimatedHours) || 1.0;
+                            } else {
+                                const flow = newState.projects[projIdx].vna_flows.find(f => f.id === wo.flowId);
+                                if (flow) {
+                                    const role = newState.projects[projIdx].roles.find(r => r.id === flow.to);
+                                    if (role) {
+                                        fmv = parseFloat(role.fmv) || 40;
+                                        multiplier = parseFloat(role.multiplier) || 1.0;
+                                        targetRoleId = role.id;
+                                    }
+                                    estimatedHours = parseFloat(flow.estimatedHours) || 1.0;
+                                }
                             }
 
-                            // 🔥 FIX MATEMÁTICO: Si las horas reportadas son 0, tiramos del estimado o mínimo 1.
+                            // 🚨 PREVENCIÓN DE 0 SLICES: Si las horas son 0 o null, hereda del flow.
                             let calcHours = parseFloat(wo.realHours);
                             if (isNaN(calcHours) || calcHours <= 0) {
-                                calcHours = parseFloat(flow?.estimatedHours) || 1.0;
+                                calcHours = estimatedHours;
                                 wo.realHours = calcHours; 
                             }
 
@@ -253,14 +279,14 @@ class Store {
                             const userIdx = newState.globalUsers.findIndex(u => u.id === (wo.assigneeId || wo.workerId));
                             if (userIdx > -1 && newState.globalUsers[userIdx].profile) {
                                 if (!newState.globalUsers[userIdx].profile.sbt_skills) newState.globalUsers[userIdx].profile.sbt_skills = [];
-                                newState.globalUsers[userIdx].profile.sbt_skills.push({ flowId: wo.flowId, exp: calcHours, date: Date.now() });
+                                newState.globalUsers[userIdx].profile.sbt_skills.push({ flowId: wo.flowId || wo.id, exp: calcHours, date: Date.now() });
                             }
                         }
                     }
                 }
                 break;
 
-            // Soporte Legacy
+            // Soporte Legacy (Eliminar en V16)
             case 'UPDATE_TRANSACTION_STATUS':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
