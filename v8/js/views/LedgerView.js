@@ -3,14 +3,14 @@ import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
-import { LedgerRenderer } from '../components/LedgerRenderer.js'; // 🔥 INVOCAMOS AL MOTOR DRY
+import { LedgerRenderer } from '../components/LedgerRenderer.js?v=15.9.8'; // 🔥 CACHE BUSTER: Obliga al navegador a leer el archivo nuevo
 
 export default class LedgerView {
     constructor() {
         document.title = "Notaría & Cap Table | TeamTowers V15.9";
         this.activeProjectId = null;
         this.currentTab = 'project'; 
-        this.ledgerRenderer = null; // Guardamos la instancia del motor
+        this.ledgerRenderer = null; 
     }
 
     async getHtml() {
@@ -69,18 +69,16 @@ export default class LedgerView {
 
         return `
             <style>
-                ${LedgerRenderer.getStyles()} /* 🔥 INYECTAMOS LOS ESTILOS DEL RENDERER */
+                ${LedgerRenderer.getStyles()} 
 
                 .workspace-ledger { flex: 1; padding: 2rem 3rem; overflow-y: auto; background: var(--bg-dark); }
                 .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
                 .tab-content.active { display: block; }
 
-                /* PORTFOLIO GLOBAL TAB (Específico de la vista) */
                 .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; width: 100%; box-sizing: border-box;}
                 .portfolio-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 20px; transition: 0.3s; box-sizing: border-box;}
                 .portfolio-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
 
-                /* MODALS (Específico de la vista) */
                 .overlay-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 5000; display: none; justify-content: center; align-items: center;}
                 .card-modal { background: var(--bg-dark); border: 1px solid #444; border-radius: 24px; padding: 3rem; width: 100%; max-width: 500px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8); animation: slideUp 0.4s; box-sizing: border-box; max-height: 90vh; overflow-y:auto; border-top: 4px solid currentColor;}
                 .form-group { text-align: left; margin-bottom: 20px; }
@@ -167,7 +165,6 @@ export default class LedgerView {
         
         this.activeProjectId = project.id;
 
-        // 🔥 MONTAJE DEL MOTOR DRY (LedgerRenderer)
         const mountPoint = document.getElementById('ledgerMountPoint');
         if (mountPoint) {
             this.ledgerRenderer = new LedgerRenderer(mountPoint, { 
@@ -177,7 +174,6 @@ export default class LedgerView {
             this.ledgerRenderer.render();
         }
 
-        // TABS LOGIC
         window.addEventListener('ph-tab-changed', (e) => {
             this.currentTab = e.detail.tabId;
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -187,18 +183,16 @@ export default class LedgerView {
             if(this.currentTab === 'global') {
                 this.renderGlobalPortfolio(store.getState(), activeUserId);
             } else {
-                if (this.ledgerRenderer) this.ledgerRenderer.render(); // Refresca el componente
+                if (this.ledgerRenderer) this.ledgerRenderer.render();
             }
         });
 
-        // MAGIC ACTION
         window.addEventListener('ph-magic-action', (e) => {
             if(e.detail.actionId === 'audit_cap') {
                 alert("🧠 IA Auditora: Analizando Cap Table. El balance PoW vs Capital es óptimo.");
             }
         });
 
-        // LÓGICA MODAL CAPITAL
         const btnOpenCap = document.getElementById('btnOpenCapitalModal');
         const capModal = document.getElementById('capitalModal');
         if (btnOpenCap) {
@@ -228,7 +222,7 @@ export default class LedgerView {
             });
 
             capModal.style.display = 'none';
-            if (this.ledgerRenderer) this.ledgerRenderer.render(); // 🔥 Actualizamos el motor DRY
+            if (this.ledgerRenderer) this.ledgerRenderer.render(); 
         });
 
         document.getElementById('btnOpenExit')?.addEventListener('click', () => {
