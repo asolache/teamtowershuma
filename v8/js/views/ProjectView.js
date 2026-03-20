@@ -340,9 +340,12 @@ export default class ProjectView {
             const btn = document.getElementById('btnConfirmPush');
             btn.disabled = true; btn.innerText = "⏳ Asignando...";
 
+            const actionType = this.pushTargetIsLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
+            const payloadKey = this.pushTargetIsLegacy ? 'txHash' : 'hash';
+
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const wList = this.pushTargetIsLegacy ? currentProj.transactions : currentProj.work_orders;
-            const wItem = wList.find(w => (w.hash || w.id) === this.pushTargetHash);
+            const wList = this.pushTargetIsLegacy ? (currentProj.transactions || []) : (currentProj.work_orders || []);
+            const wItem = wList.find(w => (w.hash || w.id) === this.pushTargetHash) || {};
             const safeSprintId = wItem.sprintId || currentProj.activeSprintId;
 
             // FUERZA BRUTA UPDATE
@@ -368,14 +371,12 @@ export default class ProjectView {
             const { action, hash, isLegacy, userId, agentId, element } = e.detail;
             
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const wList = isLegacy ? currentProj.transactions : currentProj.work_orders;
-            const wItem = wList.find(w => (w.hash || w.id) === hash);
-            const safeSprintId = wItem ? (wItem.sprintId || currentProj.activeSprintId) : currentProj.activeSprintId;
+            const wList = isLegacy ? (currentProj.transactions || []) : (currentProj.work_orders || []);
 
             // PULL MÍO AUTOMÁTICO 
             if (action === 'force-pull') {
                 const updatedList = wList.map(w => {
-                    if ((w.hash || w.id) === hash) return { ...w, status: 'pinged', assigneeId: userId, sprintId: safeSprintId }; 
+                    if ((w.hash || w.id) === hash) return { ...w, status: 'pinged', assigneeId: userId, sprintId: w.sprintId || currentProj.activeSprintId }; 
                     return w;
                 });
                 await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } } });
@@ -397,7 +398,7 @@ export default class ProjectView {
                 if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
                 
                 const updatedList = wList.map(w => {
-                    if ((w.hash || w.id) === hash) return { ...w, status: 'theoretical', assigneeId: null, sprintId: safeSprintId }; 
+                    if ((w.hash || w.id) === hash) return { ...w, status: 'theoretical', assigneeId: null, sprintId: w.sprintId || currentProj.activeSprintId }; 
                     return w;
                 });
                 await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } } });
@@ -413,7 +414,7 @@ export default class ProjectView {
 
             // EJECUCIÓN DE IA
             if (action === 'ai-exec') {
-                await this.executeAIAgent(hash, element, currentProj, isLegacy);
+                await this.executeAIAgent(hash, element, store.getState().projects.find(p => p.id === this.activeProjectId), isLegacy);
                 return;
             }
         });
@@ -472,13 +473,20 @@ export default class ProjectView {
         btnElement.innerText = "⏳ Orquestando...";
         
         try {
-            const flows = isLegacy ? currProject.transactions : currProject.work_orders;
+            const flows = isLegacy ? (currProject.transactions||[]) : (currProject.work_orders||[]);
             const wo = flows.find(w => (w.hash || w.id) === txHash);
-            const parentFlow = (currProject.vna_flows || []).find(f => f.id === wo.flowId) || wo; 
+            const parentFlow = (currProject.vna_flows||[]).find(f => f.id === wo.flowId) || wo; 
             
-            const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-            const apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (!apiKey && provider !== 'custom') throw new Error("Configura tu API Key para ejecutar agentes.");
+            // 🔥 Ruteo Inteligente: Usamos la API configurada por defecto o ChatGPT si lo configuraste.
+            let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+            let apiKey = localStorage.getItem(`tt_key_${provider}`);
+            
+            if (!apiKey && provider !== 'custom') {
+                // Fallback automático por si configuraste OpenAI y está en deepseek por error
+                const testOpenAI = localStorage.getItem('tt_key_openai');
+                if(testOpenAI) { provider = 'openai'; apiKey = testOpenAI; localStorage.setItem('tt_ai_provider', 'openai'); }
+                else throw new Error("Configura tu API Key (OpenAI o DeepSeek) para ejecutar agentes.");
+            }
 
             await KB.init();
             const aiContext = await KB.getDynamicContextPrompt(this.activeProjectId, wo.assigneeId, store.getState());
@@ -495,10 +503,10 @@ export default class ProjectView {
                 provider, apiKey, systemPrompt: aiContext, userPrompt, responseFormat: "text", temperature: 0.3
             });
 
-            // 🔥 FIX: Actualización por Fuerza Bruta para inyectar el texto
+            // 🔥 FIX: Actualización por Fuerza Bruta para inyectar el texto sin amnesia de estado
             const updatedList = flows.map(w => {
                 if ((w.hash || w.id) === txHash) {
-                    return { ...w, status: 'reported', proofLink: 'Agent_Auto_Report', comentario: response.content };
+                    return { ...w, status: 'reported', proofLink: 'Agent_Auto_Report', comentario: response.content, sprintId: w.sprintId || currProject.activeSprintId };
                 }
                 return w;
             });
@@ -521,8 +529,54 @@ export default class ProjectView {
     // ==========================================
     setupCreationModal() {
         const createModal = document.getElementById('createTaskModal');
-        const btnOpenCreate = document.getElementById('btnOpenCreateTask');
         
+        // EVENT DELEGATION PARA BOTÓN CREAR (A prueba de fallos DOM)
+        document.body.addEventListener('click', (e) => {
+            if(e.target.closest('#btnOpenCreateTask')) {
+                const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+                
+                // Soporte a prueba de balas para Legacy y V15
+                const flows = (activeProject.vna_flows && activeProject.vna_flows.length > 0) ? activeProject.vna_flows : (activeProject.transactions || []);
+                
+                if (flows.length === 0) {
+                    alert("Debes dibujar Tuberías permanentes en el Mapa VNA antes de poder generar Work Orders sueltas.");
+                    window.location.href = '/v8/map';
+                    return;
+                }
+
+                const flowSelect = document.getElementById('newTaskFlowId');
+                let flowOpts = `<option value="NEW_FLOW" style="color:var(--accent-orange); font-weight:900;">✨ Trazar Nueva Tubería al vuelo...</option>`;
+                flowOpts += `<optgroup label="Tuberías Permanentes">`;
+                
+                flows.forEach(f => {
+                    const rFrom = (activeProject.roles||[]).find(r => r.id === f.from) || {name: 'Origen'};
+                    const rTo = (activeProject.roles||[]).find(r => r.id === f.to) || {name: 'Destino'};
+                    const title = f.template || f.entregable || 'SOP Sin Nombre';
+                    flowOpts += `<option value="${f.id || f.hash}">[${rFrom.name} -> ${rTo.name}] ${title}</option>`;
+                });
+                flowOpts += `</optgroup>`;
+                
+                flowSelect.innerHTML = flowOpts;
+                
+                const roleOpts = (activeProject.roles||[]).map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
+                document.getElementById('selNewFlowFrom').innerHTML = roleOpts;
+                document.getElementById('selNewFlowTo').innerHTML = roleOpts;
+
+                let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
+                store.getState().globalUsers.forEach(gUser => {
+                    userOpts += `<option value="${gUser.id}">${gUser?.profile?.isAi ? '🤖 ' : ''}${gUser.name} (${gUser.id})</option>`;
+                });
+                document.getElementById('newTaskAssignee').innerHTML = userOpts;
+
+                document.getElementById('newTaskDesc').value = '';
+                this.renderEditableSocs([]);
+                document.getElementById('newFlowContainer').style.display = 'block'; 
+                document.getElementById('mestreAiButtonContainer').style.display = 'block';
+
+                createModal.style.display = 'flex';
+            }
+        });
+
         const flowSelect = document.getElementById('newTaskFlowId');
         const newFlowContainer = document.getElementById('newFlowContainer');
         const mestreBtnContainer = document.getElementById('mestreAiButtonContainer');
@@ -562,46 +616,11 @@ export default class ProjectView {
             if(socsList.innerHTML.includes('No hay SOCs')) socsList.innerHTML = '';
             socsList.appendChild(this.createSocInput(''));
         });
-        
-        if (btnOpenCreate) {
-            btnOpenCreate.addEventListener('click', () => {
-                const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-                const flows = activeProject.vna_flows || [];
-                
-                let flowOpts = `<option value="NEW_FLOW" style="color:var(--accent-orange); font-weight:900;">✨ Trazar Nueva Tubería al vuelo...</option>`;
-                if (flows.length > 0) {
-                    flowOpts += `<optgroup label="Tuberías Permanentes">`;
-                    flows.forEach(f => {
-                        const rFrom = activeProject.roles.find(r => r.id === f.from);
-                        const rTo = activeProject.roles.find(r => r.id === f.to);
-                        flowOpts += `<option value="${f.id}">[${rFrom?.name} -> ${rTo?.name}] ${f.template}</option>`;
-                    });
-                    flowOpts += `</optgroup>`;
-                }
-                flowSelect.innerHTML = flowOpts;
-                
-                const roleOpts = activeProject.roles.map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
-                document.getElementById('selNewFlowFrom').innerHTML = roleOpts;
-                document.getElementById('selNewFlowTo').innerHTML = roleOpts;
-
-                let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
-                store.getState().globalUsers.forEach(gUser => {
-                    userOpts += `<option value="${gUser.id}">${gUser?.profile?.isAi ? '🤖 ' : ''}${gUser.name} (${gUser.id})</option>`;
-                });
-                document.getElementById('newTaskAssignee').innerHTML = userOpts;
-
-                descInput.value = '';
-                this.renderEditableSocs([]);
-                newFlowContainer.style.display = 'block'; 
-                mestreBtnContainer.style.display = 'block';
-
-                createModal.style.display = 'flex';
-            });
-        }
 
         flowSelect?.addEventListener('change', (e) => {
             const val = e.target.value;
             const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const flows = (activeProject.vna_flows && activeProject.vna_flows.length > 0) ? activeProject.vna_flows : (activeProject.transactions || []);
             
             if (val === 'NEW_FLOW') {
                 newFlowContainer.style.display = 'block';
@@ -611,9 +630,9 @@ export default class ProjectView {
             } else {
                 newFlowContainer.style.display = 'none';
                 mestreBtnContainer.style.display = 'none';
-                const parentFlow = activeProject.vna_flows.find(f => f.id === val);
+                const parentFlow = flows.find(f => (f.id || f.hash) === val);
                 if (parentFlow) {
-                    descInput.value = parentFlow.comentario || parentFlow.template || '';
+                    descInput.value = parentFlow.comentario || parentFlow.template || parentFlow.entregable || '';
                     this.renderEditableSocs(parentFlow.soc_checklist || []);
                 }
             }
@@ -628,15 +647,20 @@ export default class ProjectView {
             btnAiDraftSop.innerText = "🧠 Mestre d'Escola está forjando el SOP...";
 
             try {
-                const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-                const apiKey = localStorage.getItem(`tt_key_${provider}`);
-                if (!apiKey) throw new Error("Falta API Key para invocar a la IA.");
+                let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+                let apiKey = localStorage.getItem(`tt_key_${provider}`);
+                
+                if (!apiKey && provider !== 'custom') {
+                    const testOpenAI = localStorage.getItem('tt_key_openai');
+                    if(testOpenAI) { provider = 'openai'; apiKey = testOpenAI; localStorage.setItem('tt_ai_provider', 'openai'); }
+                    else throw new Error("Configura tu API Key de ChatGPT en el menú principal para invocar a Mestre.");
+                }
 
                 const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                 const fromId = document.getElementById('selNewFlowFrom').value;
                 const toId = document.getElementById('selNewFlowTo').value;
-                const rFrom = p.roles.find(r=>r.id===fromId)?.name || 'Origen';
-                const rTo = p.roles.find(r=>r.id===toId)?.name || 'Destino';
+                const rFrom = (p.roles||[]).find(r=>r.id===fromId)?.name || 'Origen';
+                const rTo = (p.roles||[]).find(r=>r.id===toId)?.name || 'Destino';
 
                 const sysPrompt = `
                     Eres @mestre_escola. Experto en diseñar SOPs y matrices de calidad (SOCs) W3C. 
@@ -667,7 +691,6 @@ export default class ProjectView {
             createModal.style.display = 'none';
         });
 
-        // 🔥 FIX CREACIÓN DE TAREA: Inyección Forzada
         document.getElementById('btnConfirmCreateTask')?.addEventListener('click', async (e) => {
             e.preventDefault();
             const rawFlowId = document.getElementById('newTaskFlowId').value;
@@ -768,8 +791,8 @@ export default class ProjectView {
             let taskRef = (currProject.work_orders || []).find(w => w.hash === currentReviewHash);
             if (!taskRef) taskRef = (currProject.transactions || []).find(t => t.id === currentReviewHash);
             
-            const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-            const apiKey = localStorage.getItem(`tt_key_${provider}`);
+            let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+            let apiKey = localStorage.getItem(`tt_key_${provider}`);
 
             if (!apiKey) {
                 alert("Simulando Auditoría Offline. Marcando todos los SOCs como válidos.");
@@ -810,6 +833,7 @@ export default class ProjectView {
 
             const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
             const isLegacy = !(currProject.work_orders || []).find(w => w.hash === currentReviewHash);
+            const taskObj = isLegacy ? currProject.transactions.find(t => t.id === currentReviewHash) : currProject.work_orders.find(w => w.hash === currentReviewHash);
             
             if (!isLegacy) {
                 await store.dispatch({
@@ -834,7 +858,7 @@ export default class ProjectView {
             if (updatedTask.status === 'reported') {
                 alert("❌ Auditoría Rechazada: Todos los SOCs deben cumplirse para generar Equity en el Ledger.");
             } else {
-                reviewModal.style.display = 'none';
+                document.getElementById('reviewTaskModal').style.display = 'none';
                 currentReviewHash = null;
             }
             
