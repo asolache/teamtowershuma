@@ -258,18 +258,19 @@ export default class PaperView {
             btnSaveTaskDraft: document.getElementById('btnSaveTaskDraft')
         };
 
+        this.dom.editor.focus();
+
         this.loadProjectTasks = (projId) => {
-            const p = store.getState().projects.find(x => x.id === projId);
+            const p = state.projects.find(x => x.id === projId);
             if (!p) return;
             
             let tasks = [];
             const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
             
-            // Filtramos tareas que estén asignadas a mí o en auditoría (para histórico)
-            if (store.getState().session.role === 'ecosystem-owner' || p.ownerId === activeUserId) {
-                tasks = tasksSource.filter(tx => tx.status !== 'theoretical'); // PO ve todo lo que no sea libre
+            if (state.session.role === 'ecosystem-owner' || p.ownerId === activeUserId) {
+                tasks = tasksSource.filter(tx => tx.status !== 'theoretical'); 
             } else {
-                tasks = tasksSource.filter(tx => tx.assigneeId === activeUserId || tx.workerId === activeUserId); // Worker ve las suyas
+                tasks = tasksSource.filter(tx => tx.assigneeId === activeUserId || tx.workerId === activeUserId); 
             }
 
             let selectHtml = `<option value="draft">📝 Borrador Libre (Draft Mode)</option>`;
@@ -296,7 +297,6 @@ export default class PaperView {
             this.setDraftMode();
         });
 
-        // Carga por URL (cuando vienes del Kanban)
         const urlParams = new URLSearchParams(window.location.search);
         const hashFromUrl = urlParams.get('hash');
         
@@ -353,7 +353,6 @@ export default class PaperView {
         const isLegacy = !this.activeTx.flowId;
         const parentFlow = isLegacy ? this.activeTx : (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
         
-        // 1. Rellenar Panel de Misión
         this.dom.taskPanel.style.display = 'block';
         this.dom.taskTitle.innerText = parentFlow ? (parentFlow.template || parentFlow.entregable || 'SOP') : 'Work Order';
         
@@ -363,7 +362,6 @@ export default class PaperView {
         this.dom.taskStatus.innerText = this.activeTx.status === 'pinged' ? 'EN CURSO' : (this.activeTx.status === 'reported' ? 'EN AUDITORÍA' : this.activeTx.status.toUpperCase());
         this.dom.taskDesc.innerHTML = (this.activeTx.comentario || parentFlow?.comentario || 'Sin instrucciones detalladas.').replace(/\n/g, '<br>');
 
-        // 2. Rellenar SOCs Checkboxes
         const socs = this.activeTx.soc_checklist && this.activeTx.soc_checklist.length > 0 ? this.activeTx.soc_checklist : (parentFlow?.soc_checklist || []);
         if (socs.length > 0) {
             let socHtml = '<label>Criterios de Calidad (Para tu verificación local):</label>';
@@ -380,12 +378,10 @@ export default class PaperView {
             this.dom.taskSocs.innerHTML = '<div style="color:#666; font-style:italic; font-size:0.85rem;">No hay SOCs asociados a este entregable.</div>';
         }
 
-        // 3. Rellenar Inputs de PoW (Si guardó borrador)
         this.dom.inpPowLink.value = this.activeTx.draftLink || this.activeTx.proofLink || '';
         this.dom.inpPowHours.value = this.activeTx.draftHours || this.activeTx.realHours || parentFlow?.estimatedHours || 1;
         this.dom.editor.innerHTML = this.activeTx.draftContent || '<p><br></p>';
 
-        // 4. Ajustar Vista y Botones
         this.dom.threadWrapper.style.display = 'flex';
         this.dom.editorLabel.style.display = 'block';
         this.dom.editor.setAttribute('data-placeholder', "Añade notas, comentarios para el Auditor o contexto sobre tu entregable aquí...");
@@ -396,7 +392,6 @@ export default class PaperView {
             this.dom.btnSubmit.style.display = 'block';
             this.dom.btnSaveTaskDraft.style.display = 'block';
         } else {
-            // Si ya está reportada o sellada, no se puede volver a reportar
             this.dom.btnSubmit.style.display = 'none';
             this.dom.btnSaveTaskDraft.style.display = 'none';
             this.dom.inpPowLink.disabled = true;
@@ -408,7 +403,6 @@ export default class PaperView {
         this.renderThread(p);
     }
 
-    // 🔥 ACCIÓN: Guardar el progreso sin enviarlo a auditar
     async saveTaskDraft() {
         if (!this.activeTx) return;
         this.dom.btnSaveTaskDraft.disabled = true;
@@ -418,7 +412,6 @@ export default class PaperView {
         const hours = parseFloat(this.dom.inpPowHours.value) || 0;
         const htmlContent = this.dom.editor.innerHTML.trim();
         
-        // Guardar estado de checkboxes
         const socs = [];
         this.dom.taskSocs.querySelectorAll('input[type="checkbox"]').forEach(cb => {
             socs.push({ id: cb.id, text: cb.nextElementSibling.innerText, isChecked: cb.checked });
@@ -502,8 +495,9 @@ export default class PaperView {
             }
         });
 
+        // 🔥 FIX REDIRECCIÓN AL KANBAN CORRECTO
         alert("✅ Proof of Work reportado exitosamente. La tarea ha pasado a Auditoría.");
-        window.location.href = '/v8/dashboard'; // Redirigir al Kanban para ver el cambio de columna
+        window.location.href = '/v8/project'; // Redirige al Kanban PULL (ProjectView)
     }
 
     renderThread(project) {
@@ -553,7 +547,7 @@ export default class PaperView {
 
     // ==========================================
     // EL RESTO ES EL CÓDIGO DEL EDITOR SEMÁNTICO Y WIDGETS
-    // (Mantenido intacto para la funcionalidad base del Paper)
+    // (Mantenido intacto)
     // ==========================================
     
     setupSemanticEditor() {
@@ -688,11 +682,6 @@ export default class PaperView {
                     savedRange.insertNode(el);
                     savedRange.setStartAfter(el.nextSibling);
                     
-                    if (['/mapa', '/kanban', '/ledger', '/sandbox'].includes(replaceVal)) {
-                        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                        this.hydrateWidgetsInDOM(el, p);
-                    }
-
                 } else {
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
                     el = document.createElement('a');
@@ -755,27 +744,6 @@ export default class PaperView {
                 </div>
             </div><p><br></p>
         `;
-    }
-
-    hydrateWidgetsInDOM(containerElement, project) {
-        setTimeout(() => {
-            containerElement.querySelectorAll('.omni-map-canvas').forEach(canvas => {
-                const svg = canvas.querySelector('svg > g');
-                if(svg && project) {
-                    const flows = project.vna_flows && project.vna_flows.length > 0 ? project.vna_flows : (project.transactions || []);
-                    const mr = new MapRenderer(canvas, svg, { isMacro: true });
-                    mr.setData(project.roles, flows);
-                }
-            });
-            containerElement.querySelectorAll('[id^="kanban_"]').forEach(container => {
-                if (project) {
-                    const activeUserId = store.getState().session.activeUserId;
-                    const isPO = project.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
-                    const kr = new KanbanRenderer(container, { project: project, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
-                    kr.render();
-                }
-            });
-        }, 100);
     }
 
     async convertDraftToTask() {
