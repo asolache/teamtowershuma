@@ -1,219 +1,207 @@
 // v8/js/components/PageHeader.js
 import { store } from '../core/store.js';
 
-export const PageHeader = {
-    getHtml: (config = {}) => {
+export class PageHeader {
+    static getHtml(options = {}) {
         const state = store.getState();
-        const user = state.globalUsers.find(u => u.id === state.session.activeUserId);
-        const userName = user ? user.name : 'Usuario';
-        const userInitials = userName.substring(0, 2).toUpperCase();
-        
-        let pingCount = 0;
-        state.projects.forEach(p => {
-            if (p.logs) {
-                const unread = p.logs.filter(l => l.mentions && l.mentions.includes(state.session.activeUserId) && (!l.readBy || !l.readBy.includes(state.session.activeUserId)));
-                pingCount += unread.length;
-            }
-        });
+        const activeUserId = state.session.activeUserId;
+        const user = state.globalUsers.find(u => u.id === activeUserId);
+        const initial = user ? user.name.charAt(0).toUpperCase() : '?';
 
-        const badgeHtml = pingCount > 0 ? `<div class="ping-badge">${pingCount}</div>` : '';
+        // Configuración por defecto
+        const config = Object.assign({
+            title: 'Kernel VNA',
+            subtitle: 'Dashboard',
+            tagline: '',
+            tabs: [],
+            actionHtml: '',
+            magicActions: [] 
+        }, options);
 
-        const tabsHtml = config.tabs ? `
-            <div class="ph-tabs">
-                ${config.tabs.map(tab => `
-                    <button class="ph-tab ${tab.active ? 'active' : ''}" data-target="${tab.id}">${tab.label}</button>
-                `).join('')}
-            </div>
-        ` : '';
+        let tabsHtml = '';
+        if (config.tabs && config.tabs.length > 0) {
+            tabsHtml = `
+                <div class="ph-tabs">
+                    ${config.tabs.map(t => `<button class="ph-tab ${t.active ? 'active' : ''}" data-tab="${t.id}">${t.label}</button>`).join('')}
+                </div>
+            `;
+        }
 
-        const magicActionsHtml = config.magicActions ? `
-            <div class="ph-magic-menu">
-                <button class="ph-btn-magic" id="btnMagicMenu">✨ IA ▾</button>
-                <div class="ph-magic-dropdown" id="magicDropdown">
-                    ${config.magicActions.map(action => `
-                        <div class="ph-magic-item" data-action="${action.id}">
-                            <div class="ph-magic-icon">${action.icon}</div>
-                            <div class="ph-magic-text"><strong>${action.label}</strong></div>
+        let magicBtnHtml = '';
+        if (config.magicActions && config.magicActions.length > 0) {
+            magicBtnHtml = `
+                <button class="ph-btn-magic" id="btnMagicDropdown">
+                    ✨ Acciones IA ▾
+                </button>
+                <div class="ph-magic-menu" id="magicMenu">
+                    ${config.magicActions.map(a => `
+                        <div class="ph-magic-item" data-action="${a.id}">
+                            <span class="ph-magic-icon">${a.icon}</span>
+                            <div class="ph-magic-text">
+                                <div class="ph-magic-title">${a.label}</div>
+                                <div class="ph-magic-cost">${a.tokens ? `⚡ ${a.tokens} tokens` : '⚙️ Acción de Sistema'}</div>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
-            </div>
-        ` : '';
+            `;
+        }
 
         return `
             <style>
-                .page-header { 
-                    display: flex !important; 
-                    flex-direction: row !important; 
-                    justify-content: space-between; 
-                    align-items: center; 
-                    margin-bottom: 2rem; 
-                    position: relative; 
-                    z-index: 100; 
-                    width: 100%; 
-                    flex-wrap: nowrap !important; 
-                    gap: 15px;
-                }
+                .page-header { background: linear-gradient(180deg, rgba(20,20,25,0.9), rgba(20,20,25,0.4)); border-bottom: 1px solid var(--glass-border); padding: 2rem 3rem; margin: -2rem -3rem 2rem -3rem; display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px);}
                 
-                .ph-left { display: flex; flex-direction: column; gap: 5px; flex: 1 1 auto; min-width: 0; }
-                .ph-title { color: white; font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-                .ph-subtitle { font-size: 0.8rem; background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); padding: 4px 10px; border-radius: 8px; font-family: var(--font-mono); font-weight: bold; border: 1px solid rgba(0, 176, 255, 0.3);}
-                .ph-tagline { color: var(--text-muted); font-size: 0.9rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+                .ph-top-row { display: flex; justify-content: space-between; align-items: flex-start;}
                 
-                .ph-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+                .ph-title-group { display: flex; flex-direction: column; gap: 5px; }
+                .ph-title { font-size: 2.2rem; font-weight: 900; color: white; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px;}
+                .ph-subtitle { font-size: 1rem; color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(0, 176, 255, 0.3); padding: 2px 8px; border-radius: 6px; background: rgba(0, 176, 255, 0.1);}
+                .ph-tagline { font-size: 0.95rem; color: var(--text-muted); font-style: italic; margin-top: 5px;}
+
+                .ph-actions-group { display: flex; align-items: center; gap: 15px; position: relative;}
                 
-                .ph-tabs { display: flex; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 5px;}
-                .ph-tab { background: transparent; border: none; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.9rem;}
-                .ph-tab:hover { color: white; background: rgba(255,255,255,0.05); }
-                .ph-tab.active { background: rgba(255,255,255,0.1); color: white; }
+                /* User Menu */
+                .ph-user-menu { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); border: 1px solid #333; padding: 5px 15px 5px 5px; border-radius: 30px; cursor: pointer; transition: 0.3s;}
+                .ph-user-menu:hover { border-color: var(--accent-blue); background: rgba(0,176,255,0.05);}
+                .ph-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--accent-purple); display: flex; justify-content: center; align-items: center; color: white; font-weight: 900;}
+                .ph-user-name { color: white; font-weight: bold; font-size: 0.9rem;}
 
-                .ph-avatar-container { position: relative; cursor: pointer; display: flex; align-items: center;}
-                .ph-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); display: flex; justify-content: center; align-items: center; color: white; font-weight: 900; font-size: 1.1rem; border: 2px solid #111; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s;}
-                .ph-avatar:hover { transform: scale(1.05); }
+                .ph-dropdown { position: absolute; top: 110%; right: 0; background: rgba(15,15,20,0.98); border: 1px solid #444; border-radius: 12px; width: 220px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); display: none; flex-direction: column; overflow: hidden; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top right;}
+                .ph-dropdown.active { display: flex; }
+                .ph-dd-item { padding: 12px 20px; color: #ddd; text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid #222; transition: 0.2s; display: flex; align-items: center; gap: 10px;}
+                .ph-dd-item:hover { background: rgba(255,255,255,0.05); color: white; padding-left: 25px;}
+                .ph-dd-item:last-child { border-bottom: none; }
+                .ph-dd-logout { color: var(--accent-red); font-weight: bold;}
+                .ph-dd-logout:hover { background: rgba(255,82,82,0.1); color: var(--accent-red);}
+
+                /* Magic Actions (AI) */
+                .ph-btn-magic { background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(0, 176, 255, 0.1)); border: 1px solid var(--accent-purple); color: white; padding: 8px 16px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;}
+                .ph-btn-magic:hover { box-shadow: 0 0 15px rgba(224, 64, 251, 0.3); border-color: var(--accent-blue);}
                 
-                .ping-badge { position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; font-size: 0.7rem; font-weight: bold; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 2px solid var(--bg-dark); box-shadow: 0 0 10px var(--accent-red); animation: pulsePing 2s infinite;}
+                .ph-magic-menu { position: absolute; top: 110%; right: 200px; background: rgba(15,15,20,0.98); border: 1px solid var(--accent-purple); border-radius: 12px; width: 280px; box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 20px rgba(224,64,251,0.2); display: none; flex-direction: column; overflow: hidden; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top right;}
+                .ph-magic-menu.active { display: flex; }
+                .ph-magic-item { padding: 12px 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid #333; transition: 0.2s;}
+                .ph-magic-item:hover { background: rgba(224,64,251,0.1); }
+                .ph-magic-item:last-child { border-bottom: none; }
+                .ph-magic-icon { font-size: 1.5rem; }
+                .ph-magic-text { display: flex; flex-direction: column; }
+                .ph-magic-title { color: white; font-weight: bold; font-size: 0.9rem;}
+                .ph-magic-cost { color: var(--accent-orange); font-size: 0.7rem; font-family: var(--font-mono);}
 
-                .ph-user-menu { position: absolute; top: 60px; right: 0; background: rgba(15,15,20,0.98); border: 1px solid var(--glass-border); border-radius: 16px; width: 240px; padding: 10px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); backdrop-filter: blur(20px); display: none; flex-direction: column; gap: 5px; transform-origin: top right; animation: scaleIn 0.2s ease-out;}
-                .ph-user-menu.open { display: flex; }
-                .ph-menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: #ccc; text-decoration: none; border-radius: 10px; transition: 0.2s; font-size: 0.9rem; font-weight: bold; border: 1px solid transparent; cursor: pointer; background: transparent; width: 100%; text-align: left; box-sizing: border-box;}
-                .ph-menu-item:hover { background: rgba(255,255,255,0.05); color: white; border-color: #333; }
-                .ph-menu-item.danger:hover { background: rgba(255,82,82,0.1); color: var(--accent-red); border-color: rgba(255,82,82,0.3); }
+                /* Tabs */
+                .ph-bottom-row { display: flex; gap: 20px; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; margin-top: 0.5rem;}
+                .ph-tabs { display: flex; gap: 10px; }
+                .ph-tab { background: transparent; border: none; color: #888; font-size: 0.95rem; font-weight: bold; padding: 8px 16px; cursor: pointer; border-radius: 8px; transition: 0.2s;}
+                .ph-tab:hover { color: white; background: rgba(255,255,255,0.05);}
+                .ph-tab.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); }
 
-                /* MAGIC ACTIONS (IA) */
-                .ph-magic-menu { position: relative; }
-                .ph-btn-magic { background: rgba(224, 64, 251, 0.1); border: 1px solid rgba(224, 64, 251, 0.3); color: var(--accent-purple); padding: 8px 15px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 0.9rem;}
-                .ph-btn-magic:hover { background: rgba(224, 64, 251, 0.2); box-shadow: 0 0 15px rgba(224, 64, 251, 0.3);}
-                .ph-magic-dropdown { position: absolute; top: 50px; right: 0; background: rgba(10,10,15,0.98); border: 1px solid var(--accent-purple); border-radius: 16px; width: 220px; padding: 10px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); backdrop-filter: blur(20px); display: none; flex-direction: column; gap: 5px;}
-                .ph-magic-dropdown.open { display: flex; animation: scaleIn 0.2s ease-out;}
-                .ph-magic-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; border: 1px solid transparent;}
-                .ph-magic-item:hover { background: rgba(224, 64, 251, 0.1); border-color: rgba(224, 64, 251, 0.3); }
+                @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-                @keyframes pulsePing { 0% { box-shadow: 0 0 0 0 rgba(255,82,82,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,82,82,0); } 100% { box-shadow: 0 0 0 0 rgba(255,82,82,0); } }
-                @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-                @media (max-width: 1024px) {
-                    .page-header { flex-wrap: nowrap !important; }
-                    .ph-title { font-size: 1.2rem; }
-                    .ph-tagline { display: none; }
+                @media (max-width: 768px) {
+                    .page-header { padding: 1.5rem; margin: -2rem -1rem 2rem -1rem; border-radius: 0 0 20px 20px; position: relative;}
+                    .ph-top-row { flex-direction: column; gap: 1rem;}
+                    .ph-title { font-size: 1.8rem; }
+                    .ph-actions-group { width: 100%; justify-content: space-between; flex-direction: row-reverse;}
+                    .ph-magic-menu { right: 0; left: 0; width: 100%; }
+                    .ph-bottom-row { overflow-x: auto; padding-bottom: 5px; }
                 }
             </style>
 
             <header class="page-header">
-                <div class="ph-left">
-                    <h1 class="ph-title">${config.title || 'TeamTowers'} ${config.subtitle ? `<span class="ph-subtitle">${config.subtitle}</span>` : ''}</h1>
-                    ${config.tagline ? `<p class="ph-tagline">${config.tagline}</p>` : ''}
-                </div>
-                <div class="ph-right">
-                    ${tabsHtml}
-                    ${magicActionsHtml}
-                    ${config.actionHtml ? config.actionHtml : ''}
+                <div class="ph-top-row">
+                    <div class="ph-title-group">
+                        <h1 class="ph-title">
+                            ${config.title}
+                            <span class="ph-subtitle">${config.subtitle}</span>
+                        </h1>
+                        ${config.tagline ? `<div class="ph-tagline">${config.tagline}</div>` : ''}
+                    </div>
                     
-                    <div class="ph-avatar-container" id="phAvatarToggle">
-                        <div class="ph-avatar">${userInitials}</div>
-                        ${badgeHtml}
-                        
-                        <div class="ph-user-menu" id="phUserMenu">
-                            <div style="padding: 10px 15px; border-bottom: 1px dashed #333; margin-bottom: 5px;">
-                                <div style="color: white; font-weight: bold;">${userName}</div>
-                                <div style="color: #888; font-size: 0.75rem; font-family: monospace;">${state.session.activeUserId}</div>
-                            </div>
-                            <a href="/v8/profile" data-link class="ph-menu-item">👤 Mi ADN (Perfil)</a>
-                            <a href="/v8/agents" data-link class="ph-menu-item">🤖 Padrón Neuronal</a>
-                            <a href="/v8/lms" data-link class="ph-menu-item">🧠 La Forja (LMS)</a>
-                            <a href="/v8/settings" data-link class="ph-menu-item">⚙️ Consola Global</a>
-                            <a href="/v8/tests" data-link class="ph-menu-item">🩺 Boot Diagnostics</a>
-                            <div style="border-top: 1px solid #333; margin: 5px 0;"></div>
-                            
-                            <button class="ph-menu-item danger" id="btnLogoutForceBtn">🚪 Desconectar Nodo</button>
+                    <div class="ph-actions-group">
+                        ${config.actionHtml}
+                        ${magicBtnHtml}
+
+                        <div class="ph-user-menu" id="btnUserMenu">
+                            <div class="ph-avatar">${initial}</div>
+                            <span class="ph-user-name">${user ? user.name : 'Invitado'}</span>
+                            <span style="color:#666; font-size:0.8rem;">▼</span>
+                        </div>
+
+                        <div class="ph-dropdown" id="userDropdown">
+                            <a href="/v8/profile" class="ph-dd-item" data-link>👤 Mi Perfil / SBTs</a>
+                            <a href="/v8/pantheon" class="ph-dd-item" data-link>⚙️ Configuración (API Keys)</a>
+                            <a href="/v8/team" class="ph-dd-item" data-link>👥 Nodos (Team)</a>
+                            <a href="/v8/manifesto" class="ph-dd-item" data-link>📜 Manifiesto VNA</a>
+                            <a href="/v8/tests" class="ph-dd-item" data-link>🩺 Diagnóstico de Sistema</a>
+                            <a href="#" class="ph-dd-item ph-dd-logout" id="btnLogout">🚪 Desconectar Ecosistema</a>
                         </div>
                     </div>
                 </div>
+                
+                ${tabsHtml ? `<div class="ph-bottom-row">${tabsHtml}</div>` : ''}
             </header>
         `;
-    },
+    }
 
-    execute: () => {
-        // 1. OBTENCIÓN DE ELEMENTOS
-        const avatarToggle = document.getElementById('phAvatarToggle');
-        const userMenu = document.getElementById('phUserMenu');
-        const btnLogout = document.getElementById('btnLogoutForceBtn');
-        const btnMagic = document.getElementById('btnMagicMenu');
-        const magicDrop = document.getElementById('magicDropdown');
-        const tabs = document.querySelectorAll('.ph-tab');
-        const magicItems = document.querySelectorAll('.ph-magic-item');
+    static execute() {
+        const btnMenu = document.getElementById('btnUserMenu');
+        const dropdown = document.getElementById('userDropdown');
+        const btnLogout = document.getElementById('btnLogout');
+        
+        const btnMagic = document.getElementById('btnMagicDropdown');
+        const magicMenu = document.getElementById('magicMenu');
 
-        // 2. LÓGICA DE LOGOUT BLINDADA (Fuerza bruta sobre localStorage)
+        if (btnMenu && dropdown) {
+            btnMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+                if (magicMenu) magicMenu.classList.remove('active');
+            });
+        }
+
+        if (btnMagic && magicMenu) {
+            btnMagic.addEventListener('click', (e) => {
+                e.stopPropagation();
+                magicMenu.classList.toggle('active');
+                if (dropdown) dropdown.classList.remove('active');
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (dropdown && !dropdown.contains(e.target) && !btnMenu.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+            if (magicMenu && !magicMenu.contains(e.target) && !btnMagic.contains(e.target)) {
+                magicMenu.classList.remove('active');
+            }
+        });
+
         if (btnLogout) {
             btnLogout.addEventListener('click', async (e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                console.log("🛑 [LOGOUT] Iniciando desconexión nativa...");
-
-                try {
-                    // A) Modificamos el Store
-                    await store.dispatch({ type: 'LOGOUT_USER' });
-                } catch(err) {
-                    console.warn("⚠️ Fallo en dispatch, forzando LocalStorage", err);
-                }
-
-                // B) Extirpamos los datos críticos a lo bruto
-                try {
-                    const rawState = localStorage.getItem('tt_v9_kernel_state');
-                    if (rawState) {
-                        const parsed = JSON.parse(rawState);
-                        parsed.session.activeUserId = null;
-                        parsed.session.role = 'guest';
-                        localStorage.setItem('tt_v9_kernel_state', JSON.stringify(parsed));
-                    }
-                    localStorage.removeItem('tt_active_project');
-                } catch(err) {}
-
-                // C) Redirección limpia mediante asignación directa
-                console.log("🚀 [LOGOUT] Redirigiendo...");
-                window.location.assign('/v8/'); 
+                await store.dispatch({ type: 'LOGOUT_USER' });
+                window.location.href = '/v8/login';
             });
         }
 
-        // 3. MENÚS DESPLEGABLES
-        if (avatarToggle && userMenu) {
-            avatarToggle.addEventListener('click', (e) => {
-                if (!e.target.closest('.ph-user-menu')) {
-                    userMenu.classList.toggle('open');
-                }
-            });
-        }
-
-        if (btnMagic && magicDrop) {
-            btnMagic.addEventListener('click', (e) => {
-                e.stopPropagation();
-                magicDrop.classList.toggle('open');
-            });
-            magicItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const actionId = e.currentTarget.dataset.action;
-                    magicDrop.classList.remove('open');
-                    window.dispatchEvent(new CustomEvent('ph-magic-action', { detail: { actionId } }));
-                });
-            });
-        }
-
-        // 4. PESTAÑAS
+        const tabs = document.querySelectorAll('.ph-tab');
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
                 tabs.forEach(t => t.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId: e.currentTarget.dataset.target } }));
+                e.target.classList.add('active');
+                const tabId = e.target.dataset.tab;
+                // Dispara un evento custom para que la vista principal reaccione
+                window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId } }));
             });
         });
 
-        // 5. CERRAR AL CLICAR FUERA
-        document.addEventListener('click', (e) => {
-            if (avatarToggle && !avatarToggle.contains(e.target) && userMenu) {
-                userMenu.classList.remove('open');
-            }
-            if (btnMagic && !btnMagic.contains(e.target) && magicDrop) {
-                magicDrop.classList.remove('open');
-            }
+        const magicItems = document.querySelectorAll('.ph-magic-item');
+        magicItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const actionId = e.currentTarget.dataset.action;
+                magicMenu.classList.remove('active');
+                window.dispatchEvent(new CustomEvent('ph-magic-action', { detail: { actionId } }));
+            });
         });
     }
-};
+}
