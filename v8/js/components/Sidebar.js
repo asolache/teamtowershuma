@@ -10,13 +10,21 @@ export class Sidebar {
         let currentActiveId = localStorage.getItem('tt_active_project');
         let project = state.projects.find(p => p.id === currentActiveId);
         
+        // Si no encuentra el proyecto activo pero hay proyectos, coge el último
+        if (!project && state.projects.length > 0) {
+            project = state.projects[state.projects.length - 1];
+        }
+        
         const activeUserName = activeUserId ? (state.globalUsers.find(u => u.id === activeUserId)?.name || activeUserId) : 'Guest';
-        const projectLabel = project ? project.nombre : 'Radar VNA';
+        
+        // 🔥 El nombre del proyecto dinámico (truncado por CSS)
+        const projectLabel = project ? project.nombre : 'Ecosistema VNA';
 
+        // 🔥 RENOMBRAMIENTO APLICADO
         const navItems = [
             { path: '/v8/dashboard', icon: '🏰', label: projectLabel },
             { path: '/v8/map', icon: '🕸️', label: 'Mapa Valor' },
-            { path: '/v8/project', icon: '📋', label: 'Work Orders' },
+            { path: '/v8/project', icon: '📋', label: 'Work orders' },
             { path: '/v8/paper', icon: '📝', label: 'Entregables' },
             { path: '/v8/lms', icon: '🧠', label: 'Conocimiento' },
             { path: '/v8/agentes', icon: '👥', label: 'Agentes IA' },
@@ -35,6 +43,11 @@ export class Sidebar {
             `;
         });
 
+        // Opciones del selector de Ecosistemas
+        let ecosystemOptions = state.projects.map(p => 
+            `<option value="${p.id}" ${p.id === (project ? project.id : '') ? 'selected' : ''}>${p.nombre}</option>`
+        ).join('');
+
         return `
             <style>
                 .sidebar { width: 260px; height: 100vh; background: var(--bg-panel); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 100; position: relative;}
@@ -46,18 +59,36 @@ export class Sidebar {
                 .sidebar.minimized .sb-brand-text { display: none; }
                 .sb-brand-icon { font-size: 1.5rem; }
 
-                /* 🔥 El botón mágico de colapsar/expandir */
+                /* 🔥 El botón de colapsar */
                 .btn-collapse { background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 5px; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px;}
                 .btn-collapse:hover { color: white; background: rgba(255,255,255,0.1); }
                 .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0 auto; }
                 
-                .sb-nav { flex: 1; padding: 1.5rem 0; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; overflow-x: hidden;}
+                /* 🔥 SELECTOR DE ECOSISTEMA */
+                .sb-ecosystem-wrapper { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; overflow: hidden;}
+                .sidebar.minimized .sb-ecosystem-wrapper { padding: 1rem 0; display: flex; justify-content: center;}
                 
-                .nav-item { display: flex; align-items: center; padding: 12px 1.5rem; color: #aaa; text-decoration: none; transition: 0.2s; white-space: nowrap; border-left: 3px solid transparent;}
+                .sb-eco-label { font-size: 0.7rem; color: var(--accent-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; display: block;}
+                .sidebar.minimized .sb-eco-label { display: none; }
+                
+                .sb-eco-select { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; font-size: 0.85rem; padding: 8px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; outline: none; transition: 0.3s; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+                .sb-eco-select:focus { border-color: var(--accent-blue); }
+                .sidebar.minimized .sb-eco-select { display: none; }
+                
+                .sb-eco-icon-min { display: none; color: var(--accent-blue); font-size: 1.2rem; cursor: pointer;}
+                .sidebar.minimized .sb-eco-icon-min { display: block; }
+
+                .sb-nav { flex: 1; padding: 1rem 0; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; overflow-x: hidden;}
+                
+                .nav-item { display: flex; align-items: center; padding: 12px 1.5rem; color: #aaa; text-decoration: none; transition: 0.2s; white-space: nowrap; border-left: 3px solid transparent; overflow: hidden;}
                 .nav-item:hover { background: rgba(255,255,255,0.03); color: white; }
                 .nav-item.active { background: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border-left-color: var(--accent-blue); font-weight: bold;}
                 
                 .nav-icon { font-size: 1.2rem; min-width: 35px; text-align: center; transition: 0.3s;}
+                
+                /* 🔥 TRUNCADO AUTOMÁTICO DEL NOMBRE */
+                .nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; font-size: 0.95rem; }
+                
                 .sidebar.minimized .nav-item { padding: 12px 0; justify-content: center; border-left: none; }
                 .sidebar.minimized .nav-item.active { border-left: 3px solid var(--accent-blue); }
                 .sidebar.minimized .nav-label { display: none; }
@@ -71,7 +102,7 @@ export class Sidebar {
                 .sb-user-role { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
 
                 @media (max-width: 768px) {
-                    .sidebar { display: none; } /* En móvil se usa el BottomNav */
+                    .sidebar { display: none; } 
                 }
             </style>
 
@@ -81,11 +112,17 @@ export class Sidebar {
                         <span class="sb-brand-icon">🏰</span>
                         <span class="sb-brand-text">TeamTowers</span>
                     </div>
-                    <button class="btn-collapse" id="btnToggleSidebar" title="Colapsar menú">
-                        ◀
-                    </button>
+                    <button class="btn-collapse" id="btnToggleSidebar" title="Colapsar menú">◀</button>
                 </div>
                 
+                <div class="sb-ecosystem-wrapper">
+                    <span class="sb-eco-label">Ecosistema</span>
+                    <select class="sb-eco-select" id="sbProjectSelect" title="Cambiar Ecosistema">
+                        ${ecosystemOptions || '<option value="">Sin ecosistemas</option>'}
+                    </select>
+                    <span class="sb-eco-icon-min" title="${projectLabel}">🌐</span>
+                </div>
+
                 <div class="sb-nav">
                     ${navHtml}
                 </div>
@@ -104,12 +141,22 @@ export class Sidebar {
     static initListeners() {
         const btnToggle = document.getElementById('btnToggleSidebar');
         const sidebar = document.getElementById('mainSidebar');
+        const selectProject = document.getElementById('sbProjectSelect');
         
         if (btnToggle && sidebar) {
             btnToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('minimized');
                 const isMin = sidebar.classList.contains('minimized');
                 localStorage.setItem('tt_sidebar_min', isMin);
+            });
+        }
+
+        if (selectProject) {
+            selectProject.addEventListener('change', (e) => {
+                if(e.target.value) {
+                    localStorage.setItem('tt_active_project', e.target.value);
+                    window.location.reload(); // Recarga la página para aplicar el contexto del nuevo proyecto
+                }
             });
         }
     }
