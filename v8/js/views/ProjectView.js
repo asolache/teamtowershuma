@@ -284,6 +284,7 @@ export default class ProjectView {
             this.pushTargetHash = null;
         });
 
+        // BOTÓN "DESPACHAR WORK ORDER" DEL MODAL PUSH
         document.getElementById('btnConfirmPush')?.addEventListener('click', async () => {
             const targetUserId = document.getElementById('selPushTarget').value;
             if(!targetUserId) return alert("Selecciona un usuario o agente destino.");
@@ -291,16 +292,17 @@ export default class ProjectView {
             const btn = document.getElementById('btnConfirmPush');
             btn.disabled = true; btn.innerText = "⏳ Asignando...";
 
-            // 🔥 FIX REDUX: Usamos PING_WORK_ORDER para atar al usuario correctamente
-            const actType = this.pushTargetIsLegacy ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-            const payloadKey = this.pushTargetIsLegacy ? 'txHash' : 'woHash';
+            // 🔥 FIX: USAMOS UPDATE_WO_STATUS (FORZA BRUTA DE ESTADO)
+            const actionType = this.pushTargetIsLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
+            const payloadKey = this.pushTargetIsLegacy ? 'txHash' : 'hash';
 
             await store.dispatch({
-                type: actType,
+                type: actionType,
                 payload: {
                     projectId: this.activeProjectId,
                     [payloadKey]: this.pushTargetHash,
-                    userId: targetUserId
+                    status: 'pinged',
+                    assigneeId: targetUserId
                 }
             });
 
@@ -313,14 +315,14 @@ export default class ProjectView {
         window.addEventListener('kanban-action', async (e) => {
             const { action, hash, isLegacy, userId, agentId, element } = e.detail;
             
-            // PULL MÍO AUTOMÁTICO (FIX REDUX: PING DIRECTO)
+            // PULL MÍO AUTOMÁTICO (FIX: USAMOS UPDATE DIRECTO)
             if (action === 'force-pull') {
-                const actType = isLegacy ? 'PING_TRANSACTION' : 'PING_WORK_ORDER';
-                const payloadKey = isLegacy ? 'txHash' : 'woHash';
+                const actType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
+                const payloadKey = isLegacy ? 'txHash' : 'hash';
                 
                 await store.dispatch({ 
                     type: actType, 
-                    payload: { projectId: this.activeProjectId, [payloadKey]: hash, userId: userId } 
+                    payload: { projectId: this.activeProjectId, [payloadKey]: hash, status: 'pinged', assigneeId: userId } 
                 });
                 this.refreshRenderer();
                 return;
@@ -339,12 +341,11 @@ export default class ProjectView {
             if (action === 'reject') {
                 if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
                 const actType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
-                const payloadKey = isLegacy ? 'txHash' : 'hash';
+                const pKey = isLegacy ? 'txHash' : 'hash';
                 
-                // Limpiamos el asignado y volvemos al estado inicial
                 await store.dispatch({ 
                     type: actType, 
-                    payload: { projectId: this.activeProjectId, [payloadKey]: hash, status: 'theoretical', assigneeId: null } 
+                    payload: { projectId: this.activeProjectId, [pKey]: hash, status: 'theoretical', assigneeId: null } 
                 });
                 this.refreshRenderer();
                 return;
@@ -517,7 +518,7 @@ export default class ProjectView {
             });
 
             if (assignee !== "") {
-                await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: this.activeProjectId, woHash: newHash, userId: assignee } });
+                await store.dispatch({ type: 'UPDATE_WO_STATUS', payload: { projectId: this.activeProjectId, hash: newHash, status: 'pinged', assigneeId: assignee } });
             }
 
             createModal.style.display = 'none';
