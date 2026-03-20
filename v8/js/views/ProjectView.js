@@ -17,7 +17,7 @@ export default class ProjectView {
         this.pushTargetHash = null;
         this.pushTargetIsLegacy = false;
         
-        this.draftedSopData = null; // Memoria temporal para el JSON de Mestre
+        this.draftedSopData = null; 
     }
 
     async getHtml() {
@@ -65,10 +65,10 @@ export default class ProjectView {
             ]
         };
 
-        const canCreateWO = store.canUserCreateWorkOrder(project.id, activeUserId);
         const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
 
-        const sprints = project.sprints || [{id: 'sp_default', name: 'Sprint 1', startDate: Date.now()}];
+        // 🔥 FIX SPRINT: Recuperar el histórico de Sprints completo
+        const sprints = project.sprints && project.sprints.length > 0 ? project.sprints : [{id: 'sp_default', name: 'Sprint 1', startDate: Date.now()}];
         const activeSprintId = project.activeSprintId || sprints[0].id;
         
         const sprintOptions = sprints.map(sp => `
@@ -132,6 +132,9 @@ export default class ProjectView {
                 .btn-mestre:hover { background: var(--accent-purple); color: white; box-shadow: 0 0 20px rgba(224,64,251,0.4);}
                 .btn-mestre:disabled { opacity: 0.5; cursor: not-allowed; }
 
+                /* SOC LIST EN MODAL */
+                .soc-edit-list { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
+
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
                 @media (max-width: 768px) {
@@ -162,7 +165,7 @@ export default class ProjectView {
                                     <option value="tangible">🟢 Solo Tangibles</option>
                                     <option value="intangible">🟣 Solo Intangibles</option>
                                 </select>
-                                ${canCreateWO ? `<button class="btn-create-task" id="btnOpenCreateTask">➕ Generar Work Order</button>` : ''}
+                                ${isPO ? `<button class="btn-create-task" id="btnOpenCreateTask">➕ Generar Work Order</button>` : ''}
                             </div>
                         </div>
                         
@@ -207,14 +210,21 @@ export default class ProjectView {
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Contexto / Instrucción Específica</label>
-                            <textarea id="newTaskDesc" class="form-control" rows="3" placeholder="Ej: Necesitamos auditar la base de datos de producción con urgencia..."></textarea>
+                        <div class="form-group" style="position:relative;">
+                            <label>SOP / Instrucciones (Work Order)</label>
+                            <textarea id="newTaskDesc" class="form-control" rows="3" placeholder="Define el contexto o pide a la IA que lo genere..."></textarea>
                         </div>
-
+                        
                         <div id="mestreAiButtonContainer" style="display:none; margin-bottom: 20px;">
                             <button id="btnAiDraftSop" class="btn-mestre">🧠 Pedir a @mestre_escola que redacte SOP y SOCs</button>
-                            <div id="draftAiPreview"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>Criterios de Aceptación (SOCs)</span>
+                                <button id="btnAddNewSoc" style="background:transparent; border:1px dashed var(--accent-green); color:var(--accent-green); border-radius:6px; cursor:pointer; font-size:0.7rem; padding: 3px 8px;">+ Añadir SOC</button>
+                            </label>
+                            <div id="newTaskSocsList" class="soc-edit-list"></div>
                         </div>
 
                         <div class="form-group" style="margin-top: 20px; border-top: 1px dashed #333; padding-top: 20px;">
@@ -245,10 +255,6 @@ export default class ProjectView {
                         </select>
 
                         <button class="btn-push-action" id="btnConfirmPush">🚀 Despachar Work Order</button>
-                        
-                        <div style="text-align:center; margin-top: 15px;">
-                            <a href="/v8/lms" data-link style="color:var(--accent-blue); font-size:0.8rem; text-decoration:none; font-weight:bold;">¿Falta talento? Forja un Nodo en el LMS.</a>
-                        </div>
                     </div>
                 </div>
 
@@ -328,7 +334,6 @@ export default class ProjectView {
             this.pushTargetHash = null;
         });
 
-        // BOTÓN "DESPACHAR WORK ORDER" DEL MODAL PUSH
         document.getElementById('btnConfirmPush')?.addEventListener('click', async () => {
             const targetUserId = document.getElementById('selPushTarget').value;
             if(!targetUserId) return alert("Selecciona un usuario o agente destino.");
@@ -339,7 +344,6 @@ export default class ProjectView {
             const actionType = this.pushTargetIsLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
             const payloadKey = this.pushTargetIsLegacy ? 'txHash' : 'hash';
 
-            // 🔥 FIX REDUX: Inyectamos el sprintId intacto para evitar "Amnesia de Estado"
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             const wList = this.pushTargetIsLegacy ? currentProj.transactions : currentProj.work_orders;
             const wItem = wList.find(w => (w.hash || w.id) === this.pushTargetHash);
@@ -352,7 +356,7 @@ export default class ProjectView {
                     [payloadKey]: this.pushTargetHash,
                     status: 'pinged',
                     assigneeId: targetUserId,
-                    sprintId: safeSprintId // Clave para que no desaparezca
+                    sprintId: safeSprintId 
                 }
             });
 
@@ -370,7 +374,7 @@ export default class ProjectView {
             const wItem = wList.find(w => (w.hash || w.id) === hash);
             const safeSprintId = wItem ? (wItem.sprintId || currentProj.activeSprintId) : currentProj.activeSprintId;
 
-            // PULL MÍO AUTOMÁTICO
+            // PULL MÍO AUTOMÁTICO 
             if (action === 'force-pull') {
                 const actType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
                 const payloadKey = isLegacy ? 'txHash' : 'hash';
@@ -392,16 +396,29 @@ export default class ProjectView {
                 return;
             }
 
-            // SOLTAR TAREA (REJECT)
+            // 🔥 FIX: SOLTAR TAREA (REJECT) - FUERZA BRUTA PARA PURGAR AMNESIA
             if (action === 'reject') {
                 if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
-                const actType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
-                const pKey = isLegacy ? 'txHash' : 'hash';
                 
-                await store.dispatch({ 
-                    type: actType, 
-                    payload: { projectId: this.activeProjectId, [pKey]: hash, status: 'theoretical', assigneeId: null, sprintId: safeSprintId } 
+                const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+                const list = isLegacy ? p.transactions : p.work_orders;
+                
+                // Hacemos el update inyectando en el JSON directamente
+                const updatedList = list.map(w => {
+                    if ((w.hash || w.id) === hash) {
+                        return { ...w, status: 'theoretical', assigneeId: '' }; 
+                    }
+                    return w;
                 });
+
+                await store.dispatch({ 
+                    type: 'UPDATE_PROJECT_INFO', 
+                    payload: { 
+                        projectId: this.activeProjectId, 
+                        updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } 
+                    } 
+                });
+                
                 this.refreshRenderer();
                 return;
             }
@@ -421,7 +438,7 @@ export default class ProjectView {
 
         window.addEventListener('swarm_update', () => this.refreshRenderer());
 
-        // 🔥 LÓGICA DE SPRINTS: Cambio Visual Automático al Crear
+        // 🔥 FIX SPRINT: HISTÓRICO CONSERVADO
         const selActiveSprint = document.getElementById('selActiveSprint');
         if (selActiveSprint) {
             selActiveSprint.addEventListener('change', async (e) => {
@@ -434,13 +451,15 @@ export default class ProjectView {
         if (btnCreateSprint) {
             btnCreateSprint.addEventListener('click', async () => {
                 const currentP = store.getState().projects.find(p => p.id === this.activeProjectId);
-                const nextNum = (currentP.sprints?.length || 0) + 1;
+                // Si ya había sprints, los conservamos. Si no, creamos la base del Sprint 1.
+                const currentSprints = currentP.sprints && currentP.sprints.length > 0 ? currentP.sprints : [{id: 'sp_default', name: 'Sprint 1', startDate: Date.now()}];
+                const nextNum = currentSprints.length + 1;
                 const spName = prompt("Nombre del nuevo ciclo temporal:", `Sprint ${nextNum}`);
+                
                 if (spName) {
                     const newSprintId = 'sp_' + Date.now();
-                    const newSprints = [...(currentP.sprints || []), { id: newSprintId, name: spName, startDate: Date.now() }];
+                    const newSprints = [...currentSprints, { id: newSprintId, name: spName, startDate: Date.now() }];
                     
-                    // Actualiza los Sprints y fija el nuevo como activo
                     await store.dispatch({ 
                         type: 'UPDATE_PROJECT_INFO', 
                         payload: { projectId: this.activeProjectId, updates: { sprints: newSprints, activeSprintId: newSprintId } } 
@@ -450,10 +469,7 @@ export default class ProjectView {
             });
         }
 
-        // CREACIÓN WO (GRIFO INTELIGENTE)
         this.setupCreationModal();
-        
-        // REVISIÓN WO
         this.setupReviewModal();
     }
 
@@ -509,7 +525,7 @@ export default class ProjectView {
                     status: 'reported', 
                     proofLink: 'Agent_Auto_Report', 
                     comentario: response.content,
-                    sprintId: wo.sprintId || currProject.activeSprintId // Mantenemos Sprint
+                    sprintId: wo.sprintId || currProject.activeSprintId 
                 } 
             });
 
@@ -522,7 +538,7 @@ export default class ProjectView {
     }
 
     // ==========================================
-    // 🔥 EL GRIFO INTELIGENTE (NUEVO MODAL)
+    // 🔥 EL GRIFO INTELIGENTE Y EDITABLE (NUEVO MODAL)
     // ==========================================
     setupCreationModal() {
         const createModal = document.getElementById('createTaskModal');
@@ -532,14 +548,47 @@ export default class ProjectView {
         const newFlowContainer = document.getElementById('newFlowContainer');
         const mestreBtnContainer = document.getElementById('mestreAiButtonContainer');
         const btnAiDraftSop = document.getElementById('btnAiDraftSop');
-        const previewSop = document.getElementById('draftAiPreview');
+        const descInput = document.getElementById('newTaskDesc');
+        const socsList = document.getElementById('newTaskSocsList');
+        
+        this.renderEditableSocs = (socsArray) => {
+            socsList.innerHTML = '';
+            if(!socsArray || socsArray.length === 0) {
+                socsList.innerHTML = '<div style="color:#666; font-size:0.8rem; font-style:italic;">No hay SOCs definidos. Añade uno para garantizar la calidad.</div>';
+                return;
+            }
+            socsArray.forEach((soc) => {
+                const text = typeof soc === 'string' ? soc : soc.text;
+                socsList.appendChild(this.createSocInput(text));
+            });
+        };
+
+        this.createSocInput = (text = '') => {
+            const div = document.createElement('div');
+            div.style.display = 'flex'; div.style.gap = '8px'; div.style.alignItems = 'center';
+            div.innerHTML = `
+                <input type="text" class="form-control soc-edit-input" value="${text}" style="padding:8px; margin-bottom:0; flex:1;" placeholder="Define un criterio de auditoría...">
+                <button class="btn-del-soc" style="background:rgba(255,82,82,0.1); border:1px solid var(--accent-red); color:var(--accent-red); border-radius:8px; cursor:pointer; width:35px; height:35px; display:flex; justify-content:center; align-items:center; font-size:1.2rem;">&times;</button>
+            `;
+            div.querySelector('.btn-del-soc').addEventListener('click', (e) => {
+                e.preventDefault();
+                div.remove();
+                if(socsList.children.length === 0) socsList.innerHTML = '<div style="color:#666; font-size:0.8rem; font-style:italic;">No hay SOCs. Añade uno.</div>';
+            });
+            return div;
+        };
+
+        document.getElementById('btnAddNewSoc')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if(socsList.innerHTML.includes('No hay SOCs')) socsList.innerHTML = '';
+            socsList.appendChild(this.createSocInput(''));
+        });
         
         if (btnOpenCreate) {
             btnOpenCreate.addEventListener('click', () => {
                 const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
                 const flows = activeProject.vna_flows || [];
                 
-                // 1. Llenamos el selector de flujos con la opción "NUEVA TUBERÍA" al principio
                 let flowOpts = `<option value="NEW_FLOW" style="color:var(--accent-orange); font-weight:900;">✨ Trazar Nueva Tubería al vuelo...</option>`;
                 if (flows.length > 0) {
                     flowOpts += `<optgroup label="Tuberías Permanentes">`;
@@ -552,43 +601,49 @@ export default class ProjectView {
                 }
                 flowSelect.innerHTML = flowOpts;
                 
-                // 2. Llenamos el selector de roles origen/destino (Por si forjamos nueva tubería)
                 const roleOpts = activeProject.roles.map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
                 document.getElementById('selNewFlowFrom').innerHTML = roleOpts;
                 document.getElementById('selNewFlowTo').innerHTML = roleOpts;
 
-                // 3. Llenamos el selector de asignación de usuarios
                 let userOpts = `<option value="">-- Dejar Libre en "Oportunidades" --</option>`;
                 store.getState().globalUsers.forEach(gUser => {
                     userOpts += `<option value="${gUser.id}">${gUser?.profile?.isAi ? '🤖 ' : ''}${gUser.name} (${gUser.id})</option>`;
                 });
                 document.getElementById('newTaskAssignee').innerHTML = userOpts;
 
-                // Resetear UI
-                this.draftedSopData = null;
-                previewSop.innerHTML = '';
-                newFlowContainer.style.display = 'block'; // Como 'NEW_FLOW' es la primera, mostramos
+                descInput.value = '';
+                this.renderEditableSocs([]);
+                newFlowContainer.style.display = 'block'; 
                 mestreBtnContainer.style.display = 'block';
 
                 createModal.style.display = 'flex';
             });
         }
 
-        // Lógica de mostrar/ocultar el Forjador de Tuberías
         flowSelect?.addEventListener('change', (e) => {
-            if (e.target.value === 'NEW_FLOW') {
+            const val = e.target.value;
+            const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
+            
+            if (val === 'NEW_FLOW') {
                 newFlowContainer.style.display = 'block';
                 mestreBtnContainer.style.display = 'block';
+                descInput.value = '';
+                this.renderEditableSocs([]);
             } else {
                 newFlowContainer.style.display = 'none';
                 mestreBtnContainer.style.display = 'none';
+                const parentFlow = activeProject.vna_flows.find(f => f.id === val);
+                if (parentFlow) {
+                    descInput.value = parentFlow.comentario || parentFlow.template || '';
+                    this.renderEditableSocs(parentFlow.soc_checklist || []);
+                }
             }
         });
 
-        // 🔥 MAGIA A2A: Mestre redactando el SOP
-        btnAiDraftSop?.addEventListener('click', async () => {
-            const desc = document.getElementById('newTaskDesc').value.trim();
-            if (!desc) return alert("Escribe en la caja de contexto qué necesitas que haga Mestre.");
+        btnAiDraftSop?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const desc = descInput.value.trim();
+            if (!desc) return alert("Escribe en la caja del SOP qué necesitas que haga Mestre.");
             
             btnAiDraftSop.disabled = true;
             btnAiDraftSop.innerText = "🧠 Mestre d'Escola está forjando el SOP...";
@@ -610,23 +665,16 @@ export default class ProjectView {
                     El usuario necesita: "${desc}".
                     
                     Responde ÚNICAMENTE con un JSON puro con este formato exacto:
-                    { "title": "Nombre corto del entregable (Ej: Auditoría de Seguridad)", "description": "Descripción paso a paso del flujo", "socs": ["Criterio medible 1", "Criterio medible 2", "Criterio 3"] }
+                    { "title": "Nombre del entregable", "description": "Descripción paso a paso del flujo", "socs": ["Criterio medible 1", "Criterio medible 2", "Criterio 3"] }
                 `;
 
                 const resp = await Orchestrator.callLLM({provider, apiKey, systemPrompt: sysPrompt, userPrompt: "Genera el JSON.", responseFormat: "json_object", temperature: 0.2});
                 const data = JSON.parse(resp.content);
 
                 this.draftedSopData = data; 
-                previewSop.innerHTML = `
-                    <div style="background:rgba(224,64,251,0.1); border:1px solid var(--accent-purple); padding:15px; border-radius:8px; margin-top:15px; animation: fadeIn 0.3s ease-out;">
-                        <h4 style="margin:0 0 10px 0; color:var(--accent-purple); font-size:1.1rem; text-transform:uppercase;">${data.title}</h4>
-                        <p style="font-size:0.85rem; color:#ccc; margin-bottom:10px; line-height:1.4;">${data.description}</p>
-                        <div style="font-weight:bold; font-size:0.75rem; color:var(--accent-green); margin-bottom:5px;">✅ Criterios de Auditoría (SOCs):</div>
-                        <ul style="font-size:0.8rem; color:#fff; padding-left:20px; margin:0;">
-                            ${data.socs.map(s => `<li>${s}</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
+                descInput.value = data.description;
+                this.renderEditableSocs(data.socs);
+
             } catch (err) {
                 alert("Error del Oráculo: " + err.message);
             } finally {
@@ -635,19 +683,25 @@ export default class ProjectView {
             }
         });
 
-        document.getElementById('btnCancelCreateTask')?.addEventListener('click', () => createModal.style.display = 'none');
+        document.getElementById('btnCancelCreateTask')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            createModal.style.display = 'none';
+        });
 
-        // 🔥 INYECTAR LA TAREA AL SPRINT (El Grifo)
-        document.getElementById('btnConfirmCreateTask')?.addEventListener('click', async () => {
+        document.getElementById('btnConfirmCreateTask')?.addEventListener('click', async (e) => {
+            e.preventDefault();
             const rawFlowId = document.getElementById('newTaskFlowId').value;
-            const desc = document.getElementById('newTaskDesc').value.trim();
+            const desc = descInput.value.trim();
             const assignee = document.getElementById('newTaskAssignee').value;
             
             const currProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             let targetFlowId = rawFlowId;
             let finalSocs = [];
             
-            // Si es una NUEVA TUBERÍA, la inyectamos primero en el MapRenderer de forma permanente
+            document.querySelectorAll('.soc-edit-input').forEach((input, idx) => {
+                if(input.value.trim()) finalSocs.push({ id: 'soc_'+Date.now()+'_'+idx, text: input.value.trim(), isChecked: false });
+            });
+
             if (rawFlowId === 'NEW_FLOW') {
                 targetFlowId = 'flow_' + Date.now();
                 const fromId = document.getElementById('selNewFlowFrom').value;
@@ -656,7 +710,6 @@ export default class ProjectView {
                 const hrs = parseFloat(document.getElementById('inpNewFlowHours').value) || 2;
                 
                 const title = this.draftedSopData ? this.draftedSopData.title : (desc.substring(0, 30) || 'SOP Ad-Hoc');
-                finalSocs = this.draftedSopData ? this.draftedSopData.socs.map((s, idx) => ({id: 'soc_'+Date.now()+'_'+idx, text: s, isChecked: false})) : [];
 
                 await store.dispatch({
                     type: 'ADD_FLOW',
@@ -665,30 +718,23 @@ export default class ProjectView {
                         flow: { id: targetFlowId, from: fromId, to: toId, template: title, tipo, estimatedHours: hrs, soc_checklist: finalSocs }
                     }
                 });
-            } else {
-                // Si es tubería existente, heredamos sus SOCs
-                const parentFlow = currProj.vna_flows.find(f => f.id === targetFlowId);
-                finalSocs = parentFlow.soc_checklist ? JSON.parse(JSON.stringify(parentFlow.soc_checklist)) : [];
             }
 
-            // Inyectamos la Work Order al Kanban
             const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
-            const contextText = this.draftedSopData ? `${desc}\n\nSOP Generado:\n${this.draftedSopData.description}` : desc;
 
             await store.dispatch({
                 type: 'SPAWN_WORK_ORDER',
                 payload: {
                     projectId: this.activeProjectId,
                     workOrder: {
-                        hash: newHash, flowId: targetFlowId, comentario: contextText,
+                        hash: newHash, flowId: targetFlowId, comentario: desc,
                         status: 'theoretical', realHours: 0,
-                        sprintId: currProj.activeSprintId, // 🔥 FIX: Grabado en piedra
+                        sprintId: currProj.activeSprintId,
                         soc_checklist: finalSocs, resources: []
                     }
                 }
             });
 
-            // Si el usuario marcó un asignado desde el modal, lo metemos en 'pinged' de una
             if (assignee !== "") {
                 await store.dispatch({ 
                     type: 'UPDATE_WO_STATUS', 
@@ -709,7 +755,6 @@ export default class ProjectView {
             currentReviewHash = hash;
             const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
             
-            // Compatibilidad legacy (transacciones antiguas) y nuevas (work orders)
             let taskRef = (currProject.work_orders || []).find(w => w.hash === hash);
             if (!taskRef) taskRef = (currProject.transactions || []).find(t => t.id === hash);
             if(!taskRef) return;
@@ -736,7 +781,6 @@ export default class ProjectView {
             currentReviewHash = null;
         });
 
-        // AUDITORÍA IA
         document.getElementById('btnAiAudit')?.addEventListener('click', async (e) => {
             if (!currentReviewHash) return;
             const btn = e.target;
@@ -778,7 +822,6 @@ export default class ProjectView {
             btn.innerText = "🤖 Invocar Auditor IA (@notari_ledger)";
         });
 
-        // SELLAR WORK ORDER EN LEDGER
         document.getElementById('btnConfirmReview')?.addEventListener('click', async () => {
             if (!currentReviewHash) return;
             
@@ -791,7 +834,6 @@ export default class ProjectView {
             const isLegacy = !(currProject.work_orders || []).find(w => w.hash === currentReviewHash);
             const taskObj = isLegacy ? currProject.transactions.find(t => t.id === currentReviewHash) : currProject.work_orders.find(w => w.hash === currentReviewHash);
             
-            // Si es un proyecto moderno, usamos REVIEW_WORK_ORDER
             if (!isLegacy) {
                 await store.dispatch({
                     type: 'REVIEW_WORK_ORDER',
@@ -804,7 +846,7 @@ export default class ProjectView {
             } else {
                 await store.dispatch({
                     type: 'UPDATE_TRANSACTION_STATUS',
-                    payload: { projectId: this.activeProjectId, txHash: currentReviewHash, status: 'consolidated', sprintId: taskObj.sprintId } // Fix amnesia
+                    payload: { projectId: this.activeProjectId, txHash: currentReviewHash, status: 'consolidated', sprintId: taskObj.sprintId } 
                 });
             }
 
