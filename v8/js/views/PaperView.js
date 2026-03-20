@@ -826,16 +826,16 @@ export default class PaperView {
             const bubbleEl = document.getElementById(loadingId);
             bubbleEl.innerText = rawResponse.trim();
             
-            // 🔥 PREVISUALIZACIÓN Y BOTÓN MÁGICO (El Arquitecto Audita)
+            // 🔥 PREVISUALIZACIÓN Y BOTÓN MÁGICO (El Arquitecto Audita y Edita)
             if (actionBlock && actionBlock.action === 'UPDATE_NODE') {
                 const btnId = 'action_' + Date.now();
-                const safeContent = encodeURIComponent(actionBlock.content);
+                const textareaId = 'edit_' + btnId;
                 
                 bubbleEl.innerHTML += `
                     <div style="margin-top: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 10px; font-size: 0.8rem;">
-                        <div style="color: var(--accent-purple); font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">📝 Previsualización de Mutación (Nodo: ${actionBlock.nodeId}):</div>
-                        <div style="color: #aaa; white-space: pre-wrap; font-family: monospace; max-height: 150px; overflow-y: auto; margin-bottom: 10px;">${actionBlock.content}</div>
-                        <button class="btn-ai-action" id="${btnId}" data-nodeid="${actionBlock.nodeId}" data-newcontent="${safeContent}">
+                        <div style="color: var(--accent-purple); font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">📝 Previsualización (Editable) - Nodo: ${actionBlock.nodeId}</div>
+                        <textarea id="${textareaId}" style="width: 100%; min-height: 120px; background: rgba(0,0,0,0.5); color: #ccc; border: 1px dashed #555; border-radius: 8px; padding: 10px; font-family: monospace; resize: vertical; margin-bottom: 10px; outline: none;">${actionBlock.content}</textarea>
+                        <button class="btn-ai-action" id="${btnId}" data-nodeid="${actionBlock.nodeId}" data-textid="${textareaId}">
                             💾 Confirmar Inyección en el Kernel
                         </button>
                     </div>
@@ -853,7 +853,11 @@ export default class PaperView {
     // Ejecuta la orden cuando el humano pulsa el botón mágico en el chat
     async executeAiDatabaseAction(btnElement) {
         const nodeId = btnElement.dataset.nodeid;
-        const newContent = decodeURIComponent(btnElement.dataset.newcontent);
+        const textareaId = btnElement.dataset.textid;
+        const textareaEl = document.getElementById(textareaId);
+        
+        if (!textareaEl) return alert("Error: No se encuentra el editor de contenido.");
+        const newContent = textareaEl.value.trim();
         
         btnElement.disabled = true;
         btnElement.innerText = "⏳ Escribiendo en el LMS...";
@@ -881,6 +885,8 @@ export default class PaperView {
 
             btnElement.style.background = "var(--accent-green)";
             btnElement.innerText = "✅ Mutación Sellada Exitosamente";
+            textareaEl.readOnly = true;
+            textareaEl.style.borderColor = "var(--accent-green)";
             
         } catch (error) {
             btnElement.style.background = "var(--accent-red)";
