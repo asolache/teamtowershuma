@@ -325,7 +325,7 @@ export default class ProjectView {
         }
 
         // ==========================================
-        // 🔥 LÓGICA DE ASIGNACIÓN: PULL / PUSH
+        // 🔥 LÓGICA DE ASIGNACIÓN Y EVENTOS
         // ==========================================
         const pushModal = document.getElementById('pushModal');
         document.getElementById('btnClosePushModal')?.addEventListener('click', () => {
@@ -342,21 +342,20 @@ export default class ProjectView {
 
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             const wList = this.pushTargetIsLegacy ? currentProj.transactions : currentProj.work_orders;
-            
-            // Hard-Update
+            const wItem = wList.find(w => (w.hash || w.id) === this.pushTargetHash);
+            const safeSprintId = wItem.sprintId || currentProj.activeSprintId;
+
+            // FUERZA BRUTA UPDATE
             const updatedList = wList.map(w => {
                 if ((w.hash || w.id) === this.pushTargetHash) {
-                    return { ...w, status: 'pinged', assigneeId: targetUserId }; 
+                    return { ...w, status: 'pinged', assigneeId: targetUserId, sprintId: safeSprintId }; 
                 }
                 return w;
             });
 
             await store.dispatch({ 
                 type: 'UPDATE_PROJECT_INFO', 
-                payload: { 
-                    projectId: this.activeProjectId, 
-                    updates: { [this.pushTargetIsLegacy ? 'transactions' : 'work_orders']: updatedList } 
-                } 
+                payload: { projectId: this.activeProjectId, updates: { [this.pushTargetIsLegacy ? 'transactions' : 'work_orders']: updatedList } } 
             });
 
             btn.disabled = false; btn.innerText = "🚀 Despachar Work Order";
@@ -370,11 +369,13 @@ export default class ProjectView {
             
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             const wList = isLegacy ? currentProj.transactions : currentProj.work_orders;
+            const wItem = wList.find(w => (w.hash || w.id) === hash);
+            const safeSprintId = wItem ? (wItem.sprintId || currentProj.activeSprintId) : currentProj.activeSprintId;
 
             // PULL MÍO AUTOMÁTICO 
             if (action === 'force-pull') {
                 const updatedList = wList.map(w => {
-                    if ((w.hash || w.id) === hash) return { ...w, status: 'pinged', assigneeId: userId }; 
+                    if ((w.hash || w.id) === hash) return { ...w, status: 'pinged', assigneeId: userId, sprintId: safeSprintId }; 
                     return w;
                 });
                 await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } } });
@@ -396,7 +397,7 @@ export default class ProjectView {
                 if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
                 
                 const updatedList = wList.map(w => {
-                    if ((w.hash || w.id) === hash) return { ...w, status: 'theoretical', assigneeId: null }; 
+                    if ((w.hash || w.id) === hash) return { ...w, status: 'theoretical', assigneeId: null, sprintId: safeSprintId }; 
                     return w;
                 });
                 await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } } });
@@ -410,7 +411,7 @@ export default class ProjectView {
                 return;
             }
 
-            // EJECUCIÓN DE IA (FIX: Sobrescribir comentario directo a la BD)
+            // EJECUCIÓN DE IA
             if (action === 'ai-exec') {
                 await this.executeAIAgent(hash, element, currentProj, isLegacy);
                 return;
@@ -666,6 +667,7 @@ export default class ProjectView {
             createModal.style.display = 'none';
         });
 
+        // 🔥 FIX CREACIÓN DE TAREA: Inyección Forzada
         document.getElementById('btnConfirmCreateTask')?.addEventListener('click', async (e) => {
             e.preventDefault();
             const rawFlowId = document.getElementById('newTaskFlowId').value;
@@ -680,39 +682,42 @@ export default class ProjectView {
                 if(input.value.trim()) finalSocs.push({ id: 'soc_'+Date.now()+'_'+idx, text: input.value.trim(), isChecked: false });
             });
 
+            // FUERZA BRUTA: Añadir flujo si es nuevo
             if (rawFlowId === 'NEW_FLOW') {
                 targetFlowId = 'flow_' + Date.now();
                 const fromId = document.getElementById('selNewFlowFrom').value;
                 const toId = document.getElementById('selNewFlowTo').value;
                 const tipo = document.getElementById('selNewFlowType').value;
                 const hrs = parseFloat(document.getElementById('inpNewFlowHours').value) || 2;
-                
                 const title = this.draftedSopData ? this.draftedSopData.title : (desc.substring(0, 30) || 'SOP Ad-Hoc');
 
+                const newFlow = { id: targetFlowId, from: fromId, to: toId, template: title, tipo, estimatedHours: hrs, soc_checklist: finalSocs };
+                const updatedFlows = [...(currProj.vna_flows || []), newFlow];
+                
                 await store.dispatch({
-                    type: 'ADD_FLOW',
-                    payload: {
-                        projectId: this.activeProjectId,
-                        flow: { id: targetFlowId, from: fromId, to: toId, template: title, tipo, estimatedHours: hrs, soc_checklist: finalSocs }
-                    }
+                    type: 'UPDATE_PROJECT_INFO',
+                    payload: { projectId: this.activeProjectId, updates: { vna_flows: updatedFlows } }
                 });
             }
 
+            // FUERZA BRUTA: Añadir Work Order
             const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
+            const newWo = {
+                hash: newHash, 
+                flowId: targetFlowId, 
+                comentario: desc,
+                status: assignee !== "" ? 'pinged' : 'theoretical', 
+                realHours: 0,
+                assigneeId: assignee || null,
+                sprintId: currProj.activeSprintId,
+                soc_checklist: finalSocs, 
+                resources: []
+            };
 
+            const updatedWOs = [...(currProj.work_orders || []), newWo];
             await store.dispatch({
-                type: 'SPAWN_WORK_ORDER',
-                payload: {
-                    projectId: this.activeProjectId,
-                    workOrder: {
-                        hash: newHash, flowId: targetFlowId, comentario: desc,
-                        status: assignee ? 'pinged' : 'theoretical', 
-                        realHours: 0,
-                        assigneeId: assignee || null,
-                        sprintId: currProj.activeSprintId,
-                        soc_checklist: finalSocs, resources: []
-                    }
-                }
+                type: 'UPDATE_PROJECT_INFO',
+                payload: { projectId: this.activeProjectId, updates: { work_orders: updatedWOs } }
             });
 
             createModal.style.display = 'none';
@@ -805,7 +810,6 @@ export default class ProjectView {
 
             const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
             const isLegacy = !(currProject.work_orders || []).find(w => w.hash === currentReviewHash);
-            const taskObj = isLegacy ? currProject.transactions.find(t => t.id === currentReviewHash) : currProject.work_orders.find(w => w.hash === currentReviewHash);
             
             if (!isLegacy) {
                 await store.dispatch({
