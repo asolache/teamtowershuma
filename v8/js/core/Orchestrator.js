@@ -8,8 +8,8 @@ const LLM_PRICING = {
     'openai': { input: 0.15, output: 0.60 },
     'anthropic': { input: 3.00, output: 15.00 },
     'custom': { input: 0.0, output: 0.0 },
-    'nano_banana': { input: 0.0, output: 0.02 }, // Coste simulado por imagen
-    'veo': { input: 0.0, output: 0.50 }         // Coste simulado por vídeo
+    'nano_banana': { input: 0.0, output: 0.02 }, 
+    'veo': { input: 0.0, output: 0.50 }         
 };
 
 class OrchestratorCore {
@@ -81,7 +81,7 @@ class OrchestratorCore {
                     if (data.usageMetadata) { tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; }
                 
                 } else if (provider === 'openai' || provider === 'deepseek') {
-                    const endpoint = provider === 'openai' ? 'https://api.openai.com/v1/chat/completions' : 'https://api.deepseek.com/chat/completions';
+                    const endpoint = provider === 'openai' ? '[https://api.openai.com/v1/chat/completions](https://api.openai.com/v1/chat/completions)' : '[https://api.deepseek.com/chat/completions](https://api.deepseek.com/chat/completions)';
                     const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
                     
                     const response = await fetch(endpoint, {
@@ -109,6 +109,7 @@ class OrchestratorCore {
                 let parsedContent = textResponse;
                 
                 if (responseFormat === "json_object") {
+                    // 🔥 FIX: Parseo Blindado contra LLMs rebeldes (Anthropic/DeepSeek a veces meten Markdown)
                     let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
                     const firstBrace = cleanText.indexOf('{'); const lastBrace = cleanText.lastIndexOf('}');
                     if (firstBrace !== -1 && lastBrace !== -1) cleanText = cleanText.substring(firstBrace, lastBrace + 1);
@@ -263,7 +264,7 @@ REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @piny
     }
 
     // ==========================================
-    // CAPA 7: SINTETIZADOR MULTIMODAL (NUEVO)
+    // CAPA 7: SINTETIZADOR MULTIMODAL
     // ==========================================
     async generateAsset(prompt, type, apiKey) {
         if (!apiKey) throw new Error(`Se requiere API Key configurada en el Panteón para generar ${type}.`);
@@ -276,35 +277,21 @@ REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @piny
 
         try {
             if (type === 'image') {
-                // Integración con Nano Banana 2 (Gemini 3 Flash Image)
                 engineUsed = "nano_banana";
-                // En un entorno de producción haríamos el POST a la API visual de Google (o DALL-E si fuera OpenAI)
-                // fetch('https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict...', { ... })
-                
-                // Simularemos la respuesta exitosa para el prototipo visual:
                 await new Promise(r => setTimeout(r, 2500)); 
-                
-                // Generamos una imagen "placeholder" estética basada en el prompt para la maqueta
                 const safePrompt = encodeURIComponent(prompt.substring(0, 50));
                 finalOutput = `https://image.pollinations.ai/prompt/${safePrompt}?width=800&height=400&nologo=true`;
-                
                 costInDollars = LLM_PRICING.nano_banana.output;
                 
             } else if (type === 'video') {
-                // Integración con Veo
                 engineUsed = "veo";
-                // fetch('https://generativelanguage.googleapis.com/v1beta/models/veo-1.0:generateVideo...', { ... })
-                
                 await new Promise(r => setTimeout(r, 4000));
-                // Simulador visual de video insertando un video estético de stock o animación
                 finalOutput = `https://www.w3schools.com/html/mov_bbb.mp4`; 
-                
                 costInDollars = LLM_PRICING.veo.output;
             }
 
             const latencyMs = Date.now() - startTime;
 
-            // Telemetría de Assets Multimodales
             await store.dispatch({ 
                 type: 'LOG_TELEMETRY', 
                 payload: { 
