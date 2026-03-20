@@ -13,7 +13,7 @@ import { KB } from '../core/kb.js';
 
 export default class PaperView {
     constructor() {
-        document.title = "Omni-Paper | TeamTowers V15.6";
+        document.title = "Omni-Paper | TeamTowers V15.7";
         this.activeTx = null; 
         this.activeProjectId = null;
         this.isMenuOpen = false;
@@ -31,7 +31,7 @@ export default class PaperView {
 
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
-            subtitle: project ? project.nombre : 'Kernel V15.6',
+            subtitle: project ? project.nombre : 'Kernel V15.7',
             tagline: "El lienzo cognitivo. Escribe @ para Nodos, # para Memes, y / para Comandos."
         };
 
@@ -70,7 +70,6 @@ export default class PaperView {
                 .omni-widget { margin: 1.5rem 0; border: 1px dashed var(--accent-blue); border-radius: 16px; background: rgba(10,10,15,0.8); overflow: hidden; user-select: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column;}
                 .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;}
                 
-                /* Botón del Agente Residente */
                 .resident-agent-btn { background: rgba(0,0,0,0.5); border: 1px solid currentColor; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; font-size: 0.75rem;}
                 .resident-agent-btn:hover { background: currentColor; color: #000 !important; }
                 
@@ -79,9 +78,9 @@ export default class PaperView {
                 
                 /* PANEL DE CHAT DEL WIDGET */
                 .widget-chat-panel { width: 0; background: rgba(5,5,8,0.95); border-left: 1px dashed #333; display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden; }
-                .widget-chat-panel.open { width: 320px; }
+                .widget-chat-panel.open { width: 350px; }
                 .widget-chat-history { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-family: var(--font-main); font-size: 0.9rem;}
-                .chat-bubble { padding: 10px; border-radius: 8px; max-width: 90%; line-height: 1.4; word-break: break-word;}
+                .chat-bubble { padding: 12px; border-radius: 8px; max-width: 90%; line-height: 1.4; word-break: break-word;}
                 .chat-bubble.ai { background: rgba(255,255,255,0.05); color: #ddd; align-self: flex-start; border-top-left-radius: 0; border: 1px solid #333;}
                 .chat-bubble.user { background: rgba(0,176,255,0.1); color: var(--accent-blue); align-self: flex-end; border-top-right-radius: 0; border: 1px solid rgba(0,176,255,0.3);}
                 .widget-chat-input-area { padding: 10px; border-top: 1px solid #333; display: flex; gap: 5px; background: #000;}
@@ -89,6 +88,10 @@ export default class PaperView {
                 .widget-chat-input:focus { border-color: var(--accent-blue); }
                 .widget-chat-send { background: var(--accent-blue); color: black; border: none; border-radius: 8px; padding: 0 12px; font-weight: bold; cursor: pointer;}
                 
+                /* 🔥 BOTONES DE ACCIÓN A2A DENTRO DEL CHAT */
+                .btn-ai-action { display: block; width: 100%; margin-top: 10px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 15px rgba(224,64,251,0.3); transition: 0.2s;}
+                .btn-ai-action:hover { filter: brightness(1.2); transform: translateY(-2px);}
+
                 /* MINI CONSOLAS INTERACTIVAS */
                 .inline-console { padding: 1.5rem; display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.4); }
                 .inline-input { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-size: 0.95rem; outline: none; width: 100%; box-sizing: border-box;}
@@ -316,6 +319,10 @@ export default class PaperView {
             if (e.target.classList.contains('widget-chat-send')) {
                 await this.handleWidgetChat(e.target);
             }
+            // 🔥 Botón de Acción Automática (Inyección A2A)
+            if (e.target.classList.contains('btn-ai-action')) {
+                await this.executeAiDatabaseAction(e.target);
+            }
         });
         
         // Soporte para Enter en los inputs de chat
@@ -391,7 +398,6 @@ export default class PaperView {
         this.hydrateWidgetsInDOM(this.dom.threadList, project);
     }
     
-    // Método auxiliar para renderizar los widgets estáticos en el DOM una vez cargados
     hydrateWidgetsInDOM(containerElement, project) {
         setTimeout(() => {
             containerElement.querySelectorAll('.omni-map-canvas').forEach(canvas => {
@@ -451,7 +457,7 @@ export default class PaperView {
         menu.addEventListener('mousedown', (e) => e.preventDefault());
 
         document.addEventListener('click', (e) => {
-            if (!input.contains(e.target) && !menu.contains(e.target) && !e.target.classList.contains('btn-inline-action') && !e.target.closest('.resident-agent-btn') && !e.target.closest('.widget-chat-panel')) {
+            if (!input.contains(e.target) && !menu.contains(e.target) && !e.target.classList.contains('btn-inline-action') && !e.target.closest('.resident-agent-btn') && !e.target.closest('.widget-chat-panel') && !e.target.classList.contains('btn-ai-action')) {
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
             }
@@ -494,7 +500,6 @@ export default class PaperView {
                 const search = this.currentWord.substring(1).toLowerCase();
                 await KB.init();
                 let memes = await KB.getAllNodes({ type: 'meme' });
-                // Filtramos memes globales o de este ecosistema
                 memes = memes.filter(m => m.projectId === 'global' || m.projectId === this.activeProjectId);
                 if (search.length > 0) memes = memes.filter(m => m.title.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(search))));
                 
@@ -520,7 +525,7 @@ export default class PaperView {
                     <div class="semantic-item type-widget" data-val="/mapa" data-type="widget"><span style="font-size:1.5rem;">🕸️</span> <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Habitado por @genesi_ai</span></div></div>
                     <div class="semantic-item type-widget" data-val="/kanban" data-type="widget"><span style="font-size:1.5rem;">📋</span> <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Habitado por @cap_de_colla</span></div></div>
                     <div class="semantic-item type-widget" data-val="/ledger" data-type="widget"><span style="font-size:1.5rem;">⚖️</span> <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Habitado por @notari_ledger</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA</b><br><span style="font-size:0.75rem;color:#888;">Mapa D3 de Arquetipos.</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA</b><br><span style="font-size:0.75rem;color:#888;">Habitado por @mestre_escola</span></div></div>
                     
                     <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Forjar Estructura</div>
                     <div class="semantic-item type-action" data-val="/meme" data-type="action"><span style="font-size:1.5rem;">🧠</span> <div><b style="color:var(--accent-purple);">Forjar Meme W3C</b><br><span style="font-size:0.75rem;color:#888;">Crea conocimiento en el LMS.</span></div></div>
@@ -655,27 +660,21 @@ export default class PaperView {
                                 </div>
                             </div><p><br></p>
                         `;
-                    } else if (replaceVal === '/sandbox') {
-                        el.innerHTML = `
-                            <div class="omni-widget" contenteditable="false">
-                                <div class="omni-widget-header">🌌 Sandbox VNA</div>
-                                <div class="omni-widget-body" id="sandbox_${widgetId}" style="padding:0;"></div>
-                            </div><p><br></p>
-                        `;
                     } 
-                    // 🔥 LOS WIDGETS HABITADOS
+                    // 🔥 LOS WIDGETS HABITADOS (Ahora Mestre está en Sandbox)
                     else if (replaceVal === '/mapa') {
                         el.innerHTML = this.getHabitableWidgetHtml(widgetId, '🕸️ Topología VNA', 'canvas', '@genesi_ai', 'var(--accent-blue)', '350px', 'background:#050508;');
                     } else if (replaceVal === '/kanban') {
                         el.innerHTML = this.getHabitableWidgetHtml(widgetId, '📋 Mercado Kanban PULL', 'kanban', '@cap_de_colla', 'var(--accent-purple)', 'auto', 'padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);');
                     } else if (replaceVal === '/ledger') {
                         el.innerHTML = this.getHabitableWidgetHtml(widgetId, '⚖️ Slicing Pie (Cap Table)', 'ledger', '@notari_ledger', 'var(--accent-green)', 'auto', 'padding: 2rem; background: rgba(0,0,0,0.5);');
+                    } else if (replaceVal === '/sandbox') {
+                        el.innerHTML = this.getHabitableWidgetHtml(widgetId, '🌌 Sandbox VNA (Arquetipos)', 'sandbox', '@mestre_escola', 'var(--accent-orange)', 'auto', 'padding:0;');
                     }
                     
                     savedRange.insertNode(el);
                     savedRange.setStartAfter(el.nextSibling);
                     
-                    // Renderizamos los contenidos asíncronos si es un widget complejo
                     if (['/mapa', '/kanban', '/ledger', '/sandbox'].includes(replaceVal)) {
                         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                         this.hydrateWidgetsInDOM(el, p);
@@ -708,7 +707,6 @@ export default class PaperView {
         });
     }
 
-    // Helper para generar el HTML base de los Widgets Habitados
     getHabitableWidgetHtml(widgetId, title, prefix, agentId, color, height, bodyStyle) {
         return `
             <div class="omni-widget" contenteditable="false" id="widget_${widgetId}" style="border-color:${color};">
@@ -757,7 +755,7 @@ export default class PaperView {
     }
 
     // ==========================================
-    // LOGICA DE CHAT DE LOS WIDGETS
+    // 🔥 MAGIA A2A: CHAT Y EJECUCIÓN AUTÓNOMA
     // ==========================================
     async handleWidgetChat(btnElement) {
         const widgetId = btnElement.dataset.wid;
@@ -768,31 +766,36 @@ export default class PaperView {
         const userMsg = inputEl.value.trim();
         if (!userMsg) return;
 
-        // 1. Mostrar mensaje del usuario
         inputEl.value = '';
         historyEl.innerHTML += `<div class="chat-bubble user">${userMsg}</div>`;
         historyEl.scrollTop = historyEl.scrollHeight;
         
-        // 2. Mostrar indicador de carga de la IA
         const loadingId = 'load_' + Date.now();
         historyEl.innerHTML += `<div class="chat-bubble ai" id="${loadingId}">...</div>`;
         historyEl.scrollTop = historyEl.scrollHeight;
 
         try {
-            // 3. Extraer el contexto dinámico del proyecto
             const state = store.getState();
             const project = state.projects.find(p => p.id === this.activeProjectId);
             
             let componentData = "No hay datos para este componente.";
-            if (agentId === '@genesi_ai') componentData = JSON.stringify({ roles: project.roles, tuberias: project.vna_flows }, null, 2);
-            if (agentId === '@cap_de_colla') componentData = JSON.stringify({ oportunidades: project.work_orders.filter(w => w.status === 'pinged') }, null, 2);
-            if (agentId === '@notari_ledger') componentData = JSON.stringify({ capTable: project.ledger }, null, 2);
+            if (agentId === '@genesi_ai') componentData = JSON.stringify({ roles: project?.roles, tuberias: project?.vna_flows }, null, 2);
+            if (agentId === '@cap_de_colla') componentData = JSON.stringify({ oportunidades: project?.work_orders.filter(w => w.status === 'pinged') }, null, 2);
+            if (agentId === '@notari_ledger') componentData = JSON.stringify({ capTable: project?.ledger }, null, 2);
+            
+            // Extraer IDs de Memes/Prompts si estamos hablando con Mestre
+            if (agentId === '@mestre_escola') {
+                await KB.init();
+                const allData = await KB.getAllNodes();
+                componentData = "Catálogo de Memes actuales: \n" + allData.map(n => `ID: ${n.id} | Tipo: ${n.type} | Título: ${n.title}`).join('\n');
+            }
 
-            // 4. Llamar al Orquestador con el Córtex A2A
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
             
             const agentContext = await KB.getDynamicContextPrompt('global', agentId, state);
+            
+            // 🔥 INSTRUCCIÓN DE FUNCTION CALLING (AUTO-UPDATE)
             const systemPrompt = `
                 ${agentContext}
                 ===============================
@@ -800,18 +803,85 @@ export default class PaperView {
                 ===============================
                 ${componentData}
                 
-                Instrucción: Eres ${agentId}. Responde a la duda del usuario de forma analítica y concisa.
+                Instrucción: Eres ${agentId}. Responde a la duda del usuario de forma analítica. 
+                🚨 REGLA DE SISTEMA MUY IMPORTANTE: Si el usuario te pide EXPLÍCITAMENTE modificar, actualizar o crear el System Prompt de un agente o el texto de un Meme, DEBES incluir al final de tu respuesta de texto un bloque JSON exacto con este formato (no uses markdown para el json, ponlo tal cual):
+                {"action": "UPDATE_NODE", "nodeId": "id_del_nodo_a_modificar", "content": "el nuevo texto definitivo completo..."}
             `;
 
             const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: userMsg, responseFormat: "text", temperature: 0.4 });
             
-            // 5. Actualizar respuesta de la IA
-            document.getElementById(loadingId).innerText = response.content;
+            let rawResponse = response.content;
+            let actionBlock = null;
+
+            // Intentar detectar el bloque JSON de acción en la respuesta de la IA
+            const jsonMatch = rawResponse.match(/\{[\s\S]*"action"\s*:\s*"UPDATE_NODE"[\s\S]*\}/);
+            if (jsonMatch) {
+                try {
+                    actionBlock = JSON.parse(jsonMatch[0]);
+                    rawResponse = rawResponse.replace(jsonMatch[0], ''); // Quitamos el JSON sucio del texto visual
+                } catch (e) { console.warn("Fallo al parsear JSON de acción de la IA", e); }
+            }
+
+            const bubbleEl = document.getElementById(loadingId);
+            bubbleEl.innerText = rawResponse.trim();
+            
+            // Si la IA ha devuelto una orden de acción, renderizamos el botón mágico
+            if (actionBlock && actionBlock.action === 'UPDATE_NODE') {
+                const btnId = 'action_' + Date.now();
+                // Ocultamos la data en data-attributes seguros
+                const safeContent = encodeURIComponent(actionBlock.content);
+                bubbleEl.innerHTML += `
+                    <button class="btn-ai-action" id="${btnId}" data-nodeid="${actionBlock.nodeId}" data-newcontent="${safeContent}">
+                        💾 Aplicar Actualización en el Kernel
+                    </button>
+                `;
+            }
+
             historyEl.scrollTop = historyEl.scrollHeight;
             
         } catch (e) {
             document.getElementById(loadingId).innerText = `[Error de Conexión: ${e.message}]`;
             document.getElementById(loadingId).style.color = "var(--accent-red)";
+        }
+    }
+
+    // Ejecuta la orden cuando el humano pulsa el botón mágico en el chat
+    async executeAiDatabaseAction(btnElement) {
+        const nodeId = btnElement.dataset.nodeid;
+        const newContent = decodeURIComponent(btnElement.dataset.newcontent);
+        
+        btnElement.disabled = true;
+        btnElement.innerText = "⏳ Escribiendo en el LMS...";
+
+        try {
+            await KB.init();
+            const existingNode = await KB.getNode(nodeId);
+            
+            if (existingNode) {
+                existingNode.content = newContent;
+                existingNode.lastUpdated = Date.now();
+                await KB.saveNode(existingNode);
+            } else {
+                // Si el nodo no existe, forja uno nuevo como Meme
+                await KB.saveNode({
+                    id: nodeId,
+                    type: 'meme',
+                    category: 'auto_generated',
+                    projectId: 'global',
+                    targetId: 'global',
+                    title: `Concepto Forjado por IA`,
+                    content: newContent,
+                    keywords: ['#ai_generated']
+                });
+            }
+
+            btnElement.style.background = "var(--accent-green)";
+            btnElement.innerText = "✅ Mutación Sellada Exitosamente";
+            alert("La base de datos (KB) ha sido actualizada con el nuevo texto del Agente.");
+        } catch (error) {
+            btnElement.style.background = "var(--accent-red)";
+            btnElement.innerText = "❌ Fallo al Escribir";
+            alert(`Error de escritura: ${error.message}`);
         }
     }
 
@@ -825,7 +895,6 @@ export default class PaperView {
         if (!widgetContainer) return;
 
         try {
-            // MULTIMODAL GENERATION
             if (action === 'generate-image' || action === 'generate-video') {
                 const isVideo = action === 'generate-video';
                 const promptInput = document.getElementById(isVideo ? `prompt_vid_${wid}` : `prompt_img_${wid}`);
@@ -838,6 +907,7 @@ export default class PaperView {
 
                 const apiKey = localStorage.getItem(isVideo ? 'tt_key_veo' : 'tt_key_nano_banana');
 
+                const { Orchestrator } = await import('../core/Orchestrator.js');
                 const asset = await Orchestrator.generateAsset(promptText, isVideo ? 'video' : 'image', apiKey);
                 
                 if (isVideo) {
@@ -856,7 +926,6 @@ export default class PaperView {
                     `;
                 }
             }
-            // CREACIÓN DE MEMES
             else if (action === 'create-meme') {
                 const cat = document.getElementById(`meme_cat_${wid}`).value;
                 const title = document.getElementById(`meme_title_${wid}`).value.trim();
@@ -874,7 +943,6 @@ export default class PaperView {
                 });
                 widgetContainer.innerHTML = `<div class="inline-success">✅ Concepto [${title}] forjado en el Ecosistema local.</div>`;
             }
-            // SYSTEM STRUCTURING
             else if (action === 'create-agent') {
                 let id = document.getElementById(`agent_id_${wid}`).value.trim();
                 const name = document.getElementById(`agent_name_${wid}`).value.trim();
