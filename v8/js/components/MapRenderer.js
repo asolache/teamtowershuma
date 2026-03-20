@@ -2,6 +2,11 @@
 import { store } from '../core/store.js';
 
 export class MapRenderer {
+    /**
+     * @param {HTMLElement} canvasEl - Contenedor HTML de los nodos (div)
+     * @param {HTMLElement} svgEl - Contenedor SVG de las aristas (svg > g)
+     * @param {Object} options - Configuración y callbacks
+     */
     constructor(canvasEl, svgEl, options = {}) {
         this.canvas = canvasEl;
         this.svg = svgEl;
@@ -16,7 +21,7 @@ export class MapRenderer {
 
         this.nodes = [];
         this.edges = [];
-        this.edgeCoordinates = {}; // 🔥 Memoria geométrica para curvas perfectas
+        this.edgeCoordinates = {}; 
         
         this.isDragging = false;
         this.draggedNode = null;
@@ -117,7 +122,7 @@ export class MapRenderer {
         if (!this.canvas || !this.svg) return;
         this.renderNodes();
         
-        // 🔥 FIX 1: Validamos que el DOM se haya repintado antes de tirar flechas
+        // Retraso de seguridad para que el DOM pinte los nodos
         requestAnimationFrame(() => {
             setTimeout(() => {
                 this.renderEdges();
@@ -157,13 +162,14 @@ export class MapRenderer {
 
             let y = baseYLayout[level] || 50;
             if (totalInLevel > 2) {
-                y += (currentCount % 2 === 0 ? -6 : 6); 
+                const middleIndex = (totalInLevel - 1) / 2;
+                const distanceToCenter = Math.abs(currentCount - middleIndex);
+                y += (distanceToCenter * 4); 
             } else if (totalInLevel === 2) {
                 y += (currentCount === 0 ? -4 : 4);
-                x = currentCount === 0 ? 30 : 70; // Forzar separación si solo hay 2
+                x = currentCount === 0 ? 30 : 70; 
             }
 
-            // 🔥 FIX 2: Clamper de seguridad (Nada sale de la pantalla)
             x = Math.max(10, Math.min(x, 90));
             y = Math.max(12, Math.min(y, 88));
 
@@ -216,12 +222,15 @@ export class MapRenderer {
     renderEdges() {
         this.svg.innerHTML = '';
         this.canvas.querySelectorAll('.tx-badge').forEach(b => b.remove());
-        this.edgeCoordinates = {}; // Limpiamos la memoria de coordenadas
+        this.edgeCoordinates = {}; 
 
         if (this.edges.length === 0) return;
-        
-        // Evitamos dibujar en canvas invisibles (ej: pestaña cerrada)
-        if (this.canvas.offsetWidth === 0) return;
+
+        // 🔥 FIX SUPREMO: Si el canvas no tiene ancho (ej. pestaña inactiva), reintenta en 100ms y aborta esta vuelta.
+        if (this.canvas.offsetWidth === 0) {
+            setTimeout(() => this.renderEdges(), 100);
+            return;
+        }
 
         let maxHours = 1;
         if (this.options.isHeatmap) {
@@ -252,12 +261,18 @@ export class MapRenderer {
         const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
 
-        const x1_center = dom1.offsetLeft, y1_center = dom1.offsetTop;
-        const x2_center = dom2.offsetLeft, y2_center = dom2.offsetTop;
+        // 🔥 FIX GEOMÉTRICO: Calculamos posiciones en base al porcentaje para no depender del DOM Box Model
+        const w = this.canvas.offsetWidth;
+        const h = this.canvas.offsetHeight;
+        const x1_center = (parseFloat(dom1.style.left) / 100) * w;
+        const y1_center = (parseFloat(dom1.style.top) / 100) * h;
+        const x2_center = (parseFloat(dom2.style.left) / 100) * w;
+        const y2_center = (parseFloat(dom2.style.top) / 100) * h;
 
         const dx = x2_center - x1_center, dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
-        const trim = 45; // Trim ajustado al borde de la caja
+        const trim = 45; 
+        
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
@@ -277,7 +292,6 @@ export class MapRenderer {
         const cx = (x1_center + x2_center) / 2 + nx * offset;
         const cy = (y1_center + y2_center) / 2 + ny * offset;
 
-        // 🔥 FIX 3: Guardamos la curva exacta para la animación posterior
         this.edgeCoordinates[index] = { x1, y1, cx, cy, x2, y2 };
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -338,14 +352,12 @@ export class MapRenderer {
     }
 
     drawAnimatedSimulationLine(tx, index, isSick) {
-        // Extraer las coordenadas exactas de la curva ya calculada
         const coords = this.edgeCoordinates[index];
-        if (!coords) return null; // Si no se renderizó la línea, no podemos animarla
+        if (!coords) return null; 
 
         const { x1, y1, cx, cy, x2, y2 } = coords;
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        // Dibujamos la misma curva exacta (Bézier Cuadrática)
         path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
         
         let markerId = isSick ? 'arrow-sick-vis' : (tx.tipo === 'tangible' ? 'arrow-tangible-vis' : 'arrow-intangible-vis');
@@ -353,11 +365,9 @@ export class MapRenderer {
         
         const strokeColor = isSick ? '#ff5252' : (tx.tipo === 'tangible' ? '#00e676' : '#e040fb');
         
-        // Animamos el stroke-dashoffset basándonos en una longitud aproximada (1000px es seguro para pantallas)
         path.style.cssText = `fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawCurveAnim 1.5s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});`;
         this.svg.appendChild(path);
 
-        // Posición exacta del centro matemático de la curva
         const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
         const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
 
@@ -423,7 +433,7 @@ export class MapRenderer {
                     let newX = ((e.clientX - rect.left) / rect.width) * 100;
                     let newY = ((e.clientY - rect.top) / rect.height) * 100;
                     newX = Math.max(5, Math.min(newX, 95));
-                    newY = Math.max(12, Math.min(newY, 88)); // Clamper en el Drag
+                    newY = Math.max(12, Math.min(newY, 88)); 
                     
                     this.draggedNode.style.left = `${newX}%`;
                     this.draggedNode.style.top = `${newY}%`;
