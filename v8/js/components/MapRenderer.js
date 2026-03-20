@@ -1,5 +1,5 @@
 // v8/js/components/MapRenderer.js
-import { store } from '../core/store.js'; // 🔥 Añadido para el Auto-Save global
+import { store } from '../core/store.js';
 
 export class MapRenderer {
     /**
@@ -31,8 +31,25 @@ export class MapRenderer {
     }
 
     // --- DICCIONARIOS DE DISEÑO ---
-    static getIcon(level) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[level] || '💠'; }
-    static getColor(level) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[level] || '#fff'; }
+    static getIcon(level) {
+        const l = (level || '').toLowerCase();
+        if(l.includes('anx')) return '👑';
+        if(l.includes('aix')) return '🧭';
+        if(l.includes('dos')) return '👁️';
+        if(l.includes('baix')) return '⚙️';
+        if(l.includes('pin')) return '🤝';
+        return '💠';
+    }
+    
+    static getColor(level) { 
+        const l = (level || '').toLowerCase();
+        if(l.includes('anx')) return 'var(--accent-red)';
+        if(l.includes('aix')) return '#ff4081';
+        if(l.includes('dos')) return 'var(--accent-purple)';
+        if(l.includes('baix')) return '#7c4dff';
+        if(l.includes('pin')) return '#536dfe';
+        return '#fff';
+    }
 
     static getStyles() {
         return `
@@ -68,7 +85,6 @@ export class MapRenderer {
             .tx-badge:hover { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.2); z-index: 100; border-color: white;}
             .tx-badge.ghost { opacity: 0.3; }
 
-            /* 🔥 NUEVO: ANIMACIÓN DE SIMULACIÓN DE ENTREGABLES */
             .sim-badge {
                 z-index: 100 !important;
                 white-space: nowrap;
@@ -87,7 +103,6 @@ export class MapRenderer {
             @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
             @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
             
-            /* 🔥 KEYFRAMES PARA SIMULACIÓN */
             @keyframes drawLine { to { stroke-dashoffset: 0; } }
             @keyframes simBadgeAnim {
                 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
@@ -108,7 +123,11 @@ export class MapRenderer {
     render() {
         if (!this.canvas || !this.svg) return;
         this.renderNodes();
-        this.renderEdges();
+        
+        // 🔥 FIX 1: Retraso táctico para que el contenedor adquiera dimensiones antes de pintar flechas
+        setTimeout(() => {
+            this.renderEdges();
+        }, 100);
     }
 
     renderNodes() {
@@ -118,12 +137,24 @@ export class MapRenderer {
         
         const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
 
-        // 🔥 ALGORITMO ZIGZAG CASTELLER
+        // 🔥 FIX 2: Normalizador Estricto
+        const normalizeLevel = (lvl) => {
+            if (!lvl) return '@baixos';
+            let safe = lvl.toLowerCase().trim();
+            if (!safe.startsWith('@')) safe = '@' + safe;
+            if (safe.includes('anx')) return '@anxaneta';
+            if (safe.includes('aix')) return '@aixecador';
+            if (safe.includes('dos')) return '@dosos';
+            if (safe.includes('baix')) return '@baixos';
+            if (safe.includes('pin')) return '@pinya';
+            return '@baixos';
+        };
+
         const getInitialLayout = (level, totalInLevel, currentCount) => {
-            const baseYLayout = { '@anxaneta': 12, '@aixecador': 32, '@dosos': 52, '@baixos': 72, '@pinya': 90 };
+            const baseYLayout = { '@anxaneta': 15, '@aixecador': 32, '@dosos': 50, '@baixos': 68, '@pinya': 85 };
             
-            // X (Distribución Horizontal). Si hay solo 1, alternamos izquierda y derecha (Zigzag).
-            const singleNodeX = { '@anxaneta': 50, '@aixecador': 30, '@dosos': 70, '@baixos': 30, '@pinya': 50 };
+            // Zigzag Extremo para que se crucen perfectamente
+            const singleNodeX = { '@anxaneta': 50, '@aixecador': 20, '@dosos': 80, '@baixos': 20, '@pinya': 50 };
             
             let x = singleNodeX[level] || 50; 
 
@@ -133,7 +164,6 @@ export class MapRenderer {
                 x = margin + (step * currentCount);
             }
 
-            // Y (Micromovimiento vertical en "Ola")
             let y = baseYLayout[level] || 50;
             if (totalInLevel > 2) {
                 const middleIndex = (totalInLevel - 1) / 2;
@@ -147,12 +177,11 @@ export class MapRenderer {
         };
 
         activeRoles.forEach(r => {
-            const level = r.levelId || '@baixos';
-            const totalInLevel = activeRoles.filter(role => role.levelId === level).length;
+            const level = normalizeLevel(r.levelId);
+            const totalInLevel = activeRoles.filter(role => normalizeLevel(role.levelId) === level).length;
             const pos = getInitialLayout(level, totalInLevel, levelCounts[level]);
             levelCounts[level]++;
 
-            // 🔥 FIX DE RETROCOMPATIBILIDAD: Si el nodo no tiene el flag 'customPos', ignoramos sus coordenadas antiguas
             const topPos = r.customPos ? parseFloat(r.y) : pos.y;
             const leftPos = r.customPos ? parseFloat(r.x) : pos.x;
 
@@ -270,7 +299,6 @@ export class MapRenderer {
         
         this.svg.appendChild(path);
 
-        // Badge Rendering
         const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
         const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
 
@@ -321,7 +349,6 @@ export class MapRenderer {
             x2 = x2_center - (dx/dist) * trim; y2 = y2_center - (dy/dist) * trim;
         }
 
-        // 1. DIBUJAR LÍNEA ANIMADA
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
         
@@ -333,7 +360,6 @@ export class MapRenderer {
         path.style.cssText = `fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${dist}; stroke-dashoffset: ${dist}; animation: drawLine 1s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});`;
         this.svg.appendChild(path);
 
-        // 2. 🔥 INYECTAR CAJITA DE ENTREGABLE (Sim Badge)
         const txX = (x1_center + x2_center) / 2;
         const txY = (y1_center + y2_center) / 2;
 
@@ -348,7 +374,6 @@ export class MapRenderer {
         
         this.canvas.appendChild(badge);
 
-        // Limpieza de la cajita para que no se sature la pantalla
         setTimeout(() => {
             if (badge && badge.parentNode) badge.remove();
         }, 2700);
@@ -389,7 +414,6 @@ export class MapRenderer {
             if (node) this.options.onNodeClick(node.dataset.id, e);
         });
 
-        // Drag & Drop Arquitecto
         if (this.options.isEditMode) {
             this.canvas.addEventListener('mousedown', (e) => {
                 if (window.innerWidth <= 768) return; 
@@ -429,7 +453,6 @@ export class MapRenderer {
                         
                         this.options.onNodeDrop(nodeId, newX, newY);
 
-                        // 🔥 AUTO-SAVE GLOBAL: Guarda automáticamente la nueva posición en Redux
                         const state = store.getState();
                         const project = state.projects.find(p => p.roles && p.roles.some(r => r.id === nodeId));
                         if (project) {
