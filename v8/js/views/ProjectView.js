@@ -393,7 +393,7 @@ export default class ProjectView {
                 return;
             }
 
-            // 🔥 FIX: SOLTAR TAREA (REJECT) - FUERZA BRUTA
+            // SOLTAR TAREA (REJECT)
             if (action === 'reject') {
                 if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
                 
@@ -475,14 +475,13 @@ export default class ProjectView {
         try {
             const flows = isLegacy ? (currProject.transactions||[]) : (currProject.work_orders||[]);
             const wo = flows.find(w => (w.hash || w.id) === txHash);
-            const parentFlow = (currProject.vna_flows||[]).find(f => f.id === wo.flowId) || wo; 
+            const parentFlow = (currProject.vna_flows || []).find(f => f.id === wo.flowId) || wo; 
             
-            // 🔥 Ruteo Inteligente: Usamos la API configurada por defecto o ChatGPT si lo configuraste.
+            // 🔥 Ruteo Inteligente (Fallback a OpenAI si no hay DeepSeek)
             let provider = localStorage.getItem('tt_ai_provider') || 'openai';
             let apiKey = localStorage.getItem(`tt_key_${provider}`);
             
             if (!apiKey && provider !== 'custom') {
-                // Fallback automático por si configuraste OpenAI y está en deepseek por error
                 const testOpenAI = localStorage.getItem('tt_key_openai');
                 if(testOpenAI) { provider = 'openai'; apiKey = testOpenAI; localStorage.setItem('tt_ai_provider', 'openai'); }
                 else throw new Error("Configura tu API Key (OpenAI o DeepSeek) para ejecutar agentes.");
@@ -503,7 +502,7 @@ export default class ProjectView {
                 provider, apiKey, systemPrompt: aiContext, userPrompt, responseFormat: "text", temperature: 0.3
             });
 
-            // 🔥 FIX: Actualización por Fuerza Bruta para inyectar el texto sin amnesia de estado
+            // 🔥 FIX: Inyección por Fuerza Bruta Inmutable
             const updatedList = flows.map(w => {
                 if ((w.hash || w.id) === txHash) {
                     return { ...w, status: 'reported', proofLink: 'Agent_Auto_Report', comentario: response.content, sprintId: w.sprintId || currProject.activeSprintId };
@@ -530,12 +529,11 @@ export default class ProjectView {
     setupCreationModal() {
         const createModal = document.getElementById('createTaskModal');
         
-        // EVENT DELEGATION PARA BOTÓN CREAR (A prueba de fallos DOM)
-        document.body.addEventListener('click', (e) => {
-            if(e.target.closest('#btnOpenCreateTask')) {
+        // EVENT DELEGATION PARA BOTÓN CREAR (A prueba de fallos y sin amnesia)
+        const openModalBtn = document.getElementById('btnOpenCreateTask');
+        if (openModalBtn) {
+            openModalBtn.addEventListener('click', () => {
                 const activeProject = store.getState().projects.find(p => p.id === this.activeProjectId);
-                
-                // Soporte a prueba de balas para Legacy y V15
                 const flows = (activeProject.vna_flows && activeProject.vna_flows.length > 0) ? activeProject.vna_flows : (activeProject.transactions || []);
                 
                 if (flows.length === 0) {
@@ -573,9 +571,9 @@ export default class ProjectView {
                 document.getElementById('newFlowContainer').style.display = 'block'; 
                 document.getElementById('mestreAiButtonContainer').style.display = 'block';
 
-                createModal.style.display = 'flex';
-            }
-        });
+                createModal.classList.add('active'); // 🔥 FIX: Usa classList active en lugar de style.display
+            });
+        }
 
         const flowSelect = document.getElementById('newTaskFlowId');
         const newFlowContainer = document.getElementById('newFlowContainer');
@@ -688,7 +686,7 @@ export default class ProjectView {
 
         document.getElementById('btnCancelCreateTask')?.addEventListener('click', (e) => {
             e.preventDefault();
-            createModal.style.display = 'none';
+            createModal.classList.remove('active'); // 🔥 FIX CSS MODAL
         });
 
         document.getElementById('btnConfirmCreateTask')?.addEventListener('click', async (e) => {
@@ -705,13 +703,14 @@ export default class ProjectView {
                 if(input.value.trim()) finalSocs.push({ id: 'soc_'+Date.now()+'_'+idx, text: input.value.trim(), isChecked: false });
             });
 
-            // FUERZA BRUTA: Añadir flujo si es nuevo
+            // FUERZA BRUTA: Añadir flujo permanente si es "NEW_FLOW"
             if (rawFlowId === 'NEW_FLOW') {
                 targetFlowId = 'flow_' + Date.now();
                 const fromId = document.getElementById('selNewFlowFrom').value;
                 const toId = document.getElementById('selNewFlowTo').value;
                 const tipo = document.getElementById('selNewFlowType').value;
                 const hrs = parseFloat(document.getElementById('inpNewFlowHours').value) || 2;
+                
                 const title = this.draftedSopData ? this.draftedSopData.title : (desc.substring(0, 30) || 'SOP Ad-Hoc');
 
                 const newFlow = { id: targetFlowId, from: fromId, to: toId, template: title, tipo, estimatedHours: hrs, soc_checklist: finalSocs };
@@ -723,7 +722,7 @@ export default class ProjectView {
                 });
             }
 
-            // FUERZA BRUTA: Añadir Work Order
+            // FUERZA BRUTA: Añadir la Work Order
             const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
             const newWo = {
                 hash: newHash, 
@@ -732,7 +731,7 @@ export default class ProjectView {
                 status: assignee !== "" ? 'pinged' : 'theoretical', 
                 realHours: 0,
                 assigneeId: assignee || null,
-                sprintId: currProj.activeSprintId,
+                sprintId: currProj.activeSprintId, // Mantenemos el historial sin amnesia
                 soc_checklist: finalSocs, 
                 resources: []
             };
@@ -743,7 +742,7 @@ export default class ProjectView {
                 payload: { projectId: this.activeProjectId, updates: { work_orders: updatedWOs } }
             });
 
-            createModal.style.display = 'none';
+            createModal.classList.remove('active');
             this.refreshRenderer();
         });
     }
@@ -774,11 +773,11 @@ export default class ProjectView {
                 socsContainer.innerHTML = `<div style="color:#888; font-style:italic;">No hay SOCs definidos para esta receta. Se puede aprobar directamente.</div>`;
             }
 
-            reviewModal.style.display = 'flex';
+            reviewModal.classList.add('active'); // 🔥 FIX CSS
         };
 
         document.getElementById('btnCancelReviewTask')?.addEventListener('click', () => {
-            reviewModal.style.display = 'none';
+            reviewModal.classList.remove('active');
             currentReviewHash = null;
         });
 
@@ -858,7 +857,7 @@ export default class ProjectView {
             if (updatedTask.status === 'reported') {
                 alert("❌ Auditoría Rechazada: Todos los SOCs deben cumplirse para generar Equity en el Ledger.");
             } else {
-                document.getElementById('reviewTaskModal').style.display = 'none';
+                reviewModal.classList.remove('active');
                 currentReviewHash = null;
             }
             
