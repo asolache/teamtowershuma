@@ -2,11 +2,6 @@
 import { store } from '../core/store.js';
 
 export class MapRenderer {
-    /**
-     * @param {HTMLElement} canvasEl - Contenedor HTML de los nodos (div)
-     * @param {HTMLElement} svgEl - Contenedor SVG de las aristas (svg > g)
-     * @param {Object} options - Configuración y callbacks
-     */
     constructor(canvasEl, svgEl, options = {}) {
         this.canvas = canvasEl;
         this.svg = svgEl;
@@ -27,7 +22,26 @@ export class MapRenderer {
         this.draggedNode = null;
         this.hasMoved = false;
 
+        // 🔥 FIX SUPREMO: Forzar al SVG a ocupar todo el mapa (Evita el clip de 300x150)
+        this.forceSvgDimensions();
+
         this.initEvents();
+    }
+
+    forceSvgDimensions() {
+        if (this.svg) {
+            let targetSvg = this.svg;
+            if (this.svg.tagName.toLowerCase() !== 'svg' && this.svg.ownerSVGElement) {
+                targetSvg = this.svg.ownerSVGElement;
+            }
+            targetSvg.style.width = '100%';
+            targetSvg.style.height = '100%';
+            targetSvg.style.position = 'absolute';
+            targetSvg.style.top = '0';
+            targetSvg.style.left = '0';
+            targetSvg.style.overflow = 'visible';
+            targetSvg.style.pointerEvents = 'none';
+        }
     }
 
     static getIcon(level) {
@@ -54,7 +68,9 @@ export class MapRenderer {
         return `
             .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); width: 100%; min-height: 500px; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);}
             .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; transform-origin: top left; transition: transform 0.2s ease-out; }
-            .map-svg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
+            
+            /* SVG Styles reforzados */
+            .map-canvas svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; z-index: 1; }
             
             .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.4s, opacity 0.4s, stroke-width 0.4s; }
             .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.5);}
@@ -120,9 +136,9 @@ export class MapRenderer {
 
     render() {
         if (!this.canvas || !this.svg) return;
+        this.forceSvgDimensions();
         this.renderNodes();
         
-        // Retraso de seguridad para que el DOM pinte los nodos
         requestAnimationFrame(() => {
             setTimeout(() => {
                 this.renderEdges();
@@ -226,11 +242,16 @@ export class MapRenderer {
 
         if (this.edges.length === 0) return;
 
-        // 🔥 FIX SUPREMO: Si el canvas no tiene ancho (ej. pestaña inactiva), reintenta en 100ms y aborta esta vuelta.
-        if (this.canvas.offsetWidth === 0) {
-            setTimeout(() => this.renderEdges(), 100);
+        // 🔥 FIX ANTICARRERAS: Si el lienzo mide 0, esperamos a que el CSS lo expanda y reintentamos.
+        if (this.canvas.offsetWidth === 0 || this.canvas.offsetHeight === 0) {
+            if (!this._retryCount) this._retryCount = 0;
+            if (this._retryCount < 20) {
+                this._retryCount++;
+                setTimeout(() => this.renderEdges(), 50);
+            }
             return;
         }
+        this._retryCount = 0;
 
         let maxHours = 1;
         if (this.options.isHeatmap) {
@@ -261,9 +282,10 @@ export class MapRenderer {
         const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
         if (!dom1 || !dom2 || tx.from === tx.to) return;
 
-        // 🔥 FIX GEOMÉTRICO: Calculamos posiciones en base al porcentaje para no depender del DOM Box Model
+        // 🔥 CÁLCULO GEOMÉTRICO BASADO EN PORCENTAJES (inmune a DOM lags)
         const w = this.canvas.offsetWidth;
         const h = this.canvas.offsetHeight;
+        
         const x1_center = (parseFloat(dom1.style.left) / 100) * w;
         const y1_center = (parseFloat(dom1.style.top) / 100) * h;
         const x2_center = (parseFloat(dom2.style.left) / 100) * w;
@@ -272,7 +294,6 @@ export class MapRenderer {
         const dx = x2_center - x1_center, dy = y2_center - y1_center;
         const dist = Math.sqrt(dx*dx + dy*dy);
         const trim = 45; 
-        
         let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
 
         if (dist > trim) {
@@ -292,6 +313,7 @@ export class MapRenderer {
         const cx = (x1_center + x2_center) / 2 + nx * offset;
         const cy = (y1_center + y2_center) / 2 + ny * offset;
 
+        // Guardamos curva matemática exacta
         this.edgeCoordinates[index] = { x1, y1, cx, cy, x2, y2 };
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
