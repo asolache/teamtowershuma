@@ -91,7 +91,7 @@ export class KanbanRenderer {
 
             if (currentFilter === 'tangible' && flowData.tipo !== 'tangible') return;
             if (currentFilter === 'intangible' && flowData.tipo !== 'intangible') return;
-            if (currentFilter === 'mine' && tx.status !== 'theoretical' && tx.assigneeId !== activeUserId) return;
+            if (currentFilter === 'mine' && tx.status !== 'theoretical' && tx.assigneeId !== activeUserId && tx.workerId !== activeUserId) return;
 
             const cardHtml = this.buildCardHTML(tx, flowData, project);
 
@@ -131,7 +131,7 @@ export class KanbanRenderer {
     buildCardHTML(tx, flowData, project) {
         const { isPO, activeUserId } = this.options;
         const role = project.roles.find(r => r.id === flowData.from) || { name: 'Nodo Borrado', levelId: '@baixos' };
-        const receiverRole = project.roles.find(r => r.id === flowData.to) || { name: 'Destino', levelId: '?' };
+        const receiverRole = project.roles.find(r => r.id === flowData.to) || { name: 'Destino', levelId: '?', fmv: 40, multiplier: 1 };
         
         const color = this.colors[role.levelId] || '#aaa';
         
@@ -159,7 +159,7 @@ export class KanbanRenderer {
         // EN CURSO
         else if (tx.status === 'pinged') {
             statusTag = `<span style="color:var(--accent-orange); font-size:0.65rem; border:1px solid var(--accent-orange); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(255,171,64,0.1);">WIP</span>`;
-            const isMine = tx.assigneeId === activeUserId;
+            const isMine = tx.assigneeId === activeUserId || tx.workerId === activeUserId;
             const isAiAssignee = tx.assigneeId && tx.assigneeId.startsWith('@') && !isMine; 
 
             if (isMine) {
@@ -169,7 +169,7 @@ export class KanbanRenderer {
                 `;
             }
             else if (isAiAssignee && isPO) actionHtml = `<button class="btn-ai-exec kb-action" data-action="ai-exec" ${hashAttr} data-agent="${tx.assigneeId}">⚡ EJECUTAR IA (${tx.assigneeId})</button>`;
-            else actionHtml = `<div style="color: white; font-size: 0.8rem; text-align: center; padding: 8px; background:rgba(0,0,0,0.4); border-radius: 8px; border:1px solid #333; width:100%;">Asignado: <b>${tx.assigneeId}</b></div>`;
+            else actionHtml = `<div style="color: white; font-size: 0.8rem; text-align: center; padding: 8px; background:rgba(0,0,0,0.4); border-radius: 8px; border:1px solid #333; width:100%;">Asignado: <b>${tx.assigneeId || tx.workerId}</b></div>`;
         } 
         // EN AUDITORÍA
         else if (tx.status === 'reported' || tx.status === 'in_review') {
@@ -184,15 +184,26 @@ export class KanbanRenderer {
                 actionHtml = `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px; width:100%;">Pendiente de Auditar por PO</div>`;
             }
         }
-        // SELLADAS
+        // SELLADAS (FIX: CÁLCULO AL VUELO PARA AMNESIA RETROACTIVA)
         else if (tx.status === 'consolidated' || tx.status === 'approved') {
             statusTag = `<span style="color:var(--accent-green); font-size:0.65rem; border:1px solid var(--accent-green); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,230,118,0.1);">SELLADO</span>`;
+            
             if (tx.proofLink === 'Agent_Auto_Report' || tx.proofLink === 'Usenet_Thread') {
                 aiOutputHtml = `<div class="task-ai-output" style="max-height:60px; opacity:0.7;"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
+
+            // 🔥 MAGIA RETROACTIVA: Si la tarjeta no tiene 'valorCongelado', lo calculamos leyendo su rol.
+            let earnedSlices = tx.valorCongelado;
+            if (!earnedSlices) {
+                const fmv = parseFloat(receiverRole.fmv) || 40;
+                const mult = parseFloat(receiverRole.multiplier) || 1.0;
+                const hrs = parseFloat(tx.realHours) || parseFloat(flowData.estimatedHours) || parseFloat(flowData.horas) || 1;
+                earnedSlices = hrs * fmv * mult;
+            }
+
             actionHtml = `
                 <div style="color: var(--accent-green); font-size: 1.1rem; font-weight: 900; font-family: var(--font-mono); text-align: center; padding: 10px; background: rgba(0, 230, 118, 0.05); border-radius: 8px; border: 1px dashed var(--accent-green); width: 100%;">
-                    +${Math.round(tx.valorCongelado || 0).toLocaleString()} Slices
+                    +${Math.round(earnedSlices).toLocaleString()} Slices
                 </div>
             `;
         }
