@@ -8,10 +8,12 @@ import { KanbanRenderer } from '../components/KanbanRenderer.js';
 import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
 import { FocusRenderer } from '../components/FocusRenderer.js';
 import { SandboxRenderer } from '../components/SandboxRenderer.js'; 
+import { Orchestrator } from '../core/Orchestrator.js';
+import { KB } from '../core/kb.js';
 
 export default class PaperView {
     constructor() {
-        document.title = "Omni-Paper | TeamTowers V15.5";
+        document.title = "Omni-Paper | TeamTowers V15.6";
         this.activeTx = null; 
         this.activeProjectId = null;
         this.isMenuOpen = false;
@@ -29,7 +31,7 @@ export default class PaperView {
 
         const headerConfig = {
             title: "Omni-Paper (Usenet)",
-            subtitle: project ? project.nombre : 'Kernel V15.5',
+            subtitle: project ? project.nombre : 'Kernel V15.6',
             tagline: "El lienzo cognitivo. Escribe @ para Nodos, # para Memes, y / para Comandos."
         };
 
@@ -46,9 +48,7 @@ export default class PaperView {
                 
                 .paper-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;}
                 
-                /* =========================================================
-                   BREADCRUMB & CONTEXT BAR
-                   ========================================================= */
+                /* BREADCRUMB & CONTEXT BAR */
                 .breadcrumb-bar { display: flex; align-items: center; background: rgba(10,10,15,0.8); padding: 10px 15px; border-radius: 12px 12px 0 0; border: 1px solid var(--glass-border); border-bottom: none; gap: 10px; flex-wrap: wrap;}
                 .bc-select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; font-size: 0.9rem; font-weight: bold; font-family: var(--font-main); outline: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: 0.3s;}
                 .bc-select:focus { border-color: var(--accent-blue); }
@@ -60,18 +60,34 @@ export default class PaperView {
                 .cb-mention { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); }
                 .cb-meme { background: rgba(224,64,251,0.1); color: var(--accent-purple); border: 1px solid rgba(224,64,251,0.3); }
 
-                /* =========================================================
-                   EL LIENZO EN BLANCO
-                   ========================================================= */
+                /* EL LIENZO EN BLANCO */
                 .editor-wrapper { position: relative; width: 100%; margin-top: 1rem;}
                 .semantic-editor { width: 100%; min-height: 40vh; background: transparent; border: none; color: #e0e0e0; font-family: 'Georgia', serif; font-size: 1.25rem; line-height: 1.8; outline: none; padding: 10px 0;}
                 .semantic-editor:empty:before { content: attr(data-placeholder); color: #555; font-style: italic; pointer-events: none;}
                 .semantic-editor p { margin: 0 0 1rem 0; }
 
-                /* WIDGETS INYECTADOS EN EL TEXTO */
-                .omni-widget { margin: 1.5rem 0; border: 1px dashed var(--accent-blue); border-radius: 16px; background: rgba(10,10,15,0.8); overflow: hidden; user-select: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-                .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-                .omni-widget-body { padding: 0; position: relative; }
+                /* WIDGETS COGNITIVOS (HABITADOS) */
+                .omni-widget { margin: 1.5rem 0; border: 1px dashed var(--accent-blue); border-radius: 16px; background: rgba(10,10,15,0.8); overflow: hidden; user-select: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column;}
+                .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;}
+                
+                /* Botón del Agente Residente */
+                .resident-agent-btn { background: rgba(0,0,0,0.5); border: 1px solid currentColor; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; font-size: 0.75rem;}
+                .resident-agent-btn:hover { background: currentColor; color: #000 !important; }
+                
+                .widget-content-area { display: flex; flex-direction: row; position: relative; }
+                .omni-widget-body { flex: 1; padding: 0; position: relative; overflow: hidden; transition: width 0.3s;}
+                
+                /* PANEL DE CHAT DEL WIDGET */
+                .widget-chat-panel { width: 0; background: rgba(5,5,8,0.95); border-left: 1px dashed #333; display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden; }
+                .widget-chat-panel.open { width: 320px; }
+                .widget-chat-history { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-family: var(--font-main); font-size: 0.9rem;}
+                .chat-bubble { padding: 10px; border-radius: 8px; max-width: 90%; line-height: 1.4; word-break: break-word;}
+                .chat-bubble.ai { background: rgba(255,255,255,0.05); color: #ddd; align-self: flex-start; border-top-left-radius: 0; border: 1px solid #333;}
+                .chat-bubble.user { background: rgba(0,176,255,0.1); color: var(--accent-blue); align-self: flex-end; border-top-right-radius: 0; border: 1px solid rgba(0,176,255,0.3);}
+                .widget-chat-input-area { padding: 10px; border-top: 1px solid #333; display: flex; gap: 5px; background: #000;}
+                .widget-chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; outline: none; font-family: var(--font-main);}
+                .widget-chat-input:focus { border-color: var(--accent-blue); }
+                .widget-chat-send { background: var(--accent-blue); color: black; border: none; border-radius: 8px; padding: 0 12px; font-weight: bold; cursor: pointer;}
                 
                 /* MINI CONSOLAS INTERACTIVAS */
                 .inline-console { padding: 1.5rem; display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.4); }
@@ -127,6 +143,7 @@ export default class PaperView {
                     .bc-separator { display: none; }
                     .action-bar-fixed { bottom: 80px; right: 20px; left: 20px; justify-content: space-between; gap:10px; }
                     .btn-action-pow, .btn-action-draft { width: 100%; padding: 14px 10px; font-size: 0.95rem; text-align: center; justify-content:center;}
+                    .widget-chat-panel.open { width: 100%; position: absolute; height: 100%; z-index: 10;}
                 }
             </style>
 
@@ -160,7 +177,7 @@ export default class PaperView {
                         </div>
 
                         <div class="editor-wrapper">
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/meme, /deepwork, /mapa, /imagen, /video...)."><p><br></p></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe tu Proof of Work o empieza a redactar un Borrador (Draft).\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS.\nUsa / para inyectar Componentes (/meme, /mapa, /kanban, /ledger...)."><p><br></p></div>
                         </div>
 
                         <div class="thread-container" id="threadWrapper" style="display:none;">
@@ -288,6 +305,26 @@ export default class PaperView {
             if (e.target.classList.contains('btn-inline-action')) {
                 await this.handleInlineConsoleAction(e.target);
             }
+            // Toggle Chat de Widgets
+            if (e.target.closest('.resident-agent-btn')) {
+                const btn = e.target.closest('.resident-agent-btn');
+                const widgetId = btn.dataset.wid;
+                const chatPanel = document.getElementById(`chat_panel_${widgetId}`);
+                if (chatPanel) chatPanel.classList.toggle('open');
+            }
+            // Enviar mensaje en Chat de Widget
+            if (e.target.classList.contains('widget-chat-send')) {
+                await this.handleWidgetChat(e.target);
+            }
+        });
+        
+        // Soporte para Enter en los inputs de chat
+        this.dom.editor.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter' && e.target.classList.contains('widget-chat-input')) {
+                e.preventDefault();
+                const sendBtn = e.target.nextElementSibling;
+                if(sendBtn) await this.handleWidgetChat(sendBtn);
+            }
         });
     }
 
@@ -351,9 +388,13 @@ export default class PaperView {
         });
 
         this.dom.threadList.innerHTML = html;
-        
+        this.hydrateWidgetsInDOM(this.dom.threadList, project);
+    }
+    
+    // Método auxiliar para renderizar los widgets estáticos en el DOM una vez cargados
+    hydrateWidgetsInDOM(containerElement, project) {
         setTimeout(() => {
-            this.dom.threadList.querySelectorAll('.omni-map-canvas').forEach(canvas => {
+            containerElement.querySelectorAll('.omni-map-canvas').forEach(canvas => {
                 const svg = canvas.querySelector('svg > g');
                 if(svg && project) {
                     const flows = project.vna_flows && project.vna_flows.length > 0 ? project.vna_flows : (project.transactions || []);
@@ -361,7 +402,7 @@ export default class PaperView {
                     mr.setData(project.roles, flows);
                 }
             });
-            this.dom.threadList.querySelectorAll('[id^="kanban_"]').forEach(container => {
+            containerElement.querySelectorAll('[id^="kanban_"]').forEach(container => {
                 if (project) {
                     const activeUserId = store.getState().session.activeUserId;
                     const isPO = project.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
@@ -369,13 +410,13 @@ export default class PaperView {
                     kr.render();
                 }
             });
-            this.dom.threadList.querySelectorAll('[id^="ledger_"]').forEach(container => {
+            containerElement.querySelectorAll('[id^="ledger_"]').forEach(container => {
                 if (project) {
                     const lr = new LedgerRenderer(container, { projectId: project.id, showHistory: false });
                     lr.render();
                 }
             });
-            this.dom.threadList.querySelectorAll('[id^="sandbox_"]').forEach(container => {
+            containerElement.querySelectorAll('[id^="sandbox_"]').forEach(container => {
                 const sr = new SandboxRenderer(container);
                 sr.render();
             });
@@ -410,7 +451,7 @@ export default class PaperView {
         menu.addEventListener('mousedown', (e) => e.preventDefault());
 
         document.addEventListener('click', (e) => {
-            if (!input.contains(e.target) && !menu.contains(e.target) && !e.target.classList.contains('btn-inline-action')) {
+            if (!input.contains(e.target) && !menu.contains(e.target) && !e.target.classList.contains('btn-inline-action') && !e.target.closest('.resident-agent-btn') && !e.target.closest('.widget-chat-panel')) {
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
             }
@@ -451,7 +492,6 @@ export default class PaperView {
             } 
             else if (this.currentWord.startsWith('#')) {
                 const search = this.currentWord.substring(1).toLowerCase();
-                const { KB } = await import('../core/kb.js'); 
                 await KB.init();
                 let memes = await KB.getAllNodes({ type: 'meme' });
                 // Filtramos memes globales o de este ecosistema
@@ -476,7 +516,13 @@ export default class PaperView {
             } 
             else if (this.currentWord.startsWith('/')) {
                 menu.innerHTML = `
-                    <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Forjar Estructura</div>
+                    <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Widgets Cognitivos Habitados</div>
+                    <div class="semantic-item type-widget" data-val="/mapa" data-type="widget"><span style="font-size:1.5rem;">🕸️</span> <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Habitado por @genesi_ai</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/kanban" data-type="widget"><span style="font-size:1.5rem;">📋</span> <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Habitado por @cap_de_colla</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/ledger" data-type="widget"><span style="font-size:1.5rem;">⚖️</span> <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Habitado por @notari_ledger</span></div></div>
+                    <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA</b><br><span style="font-size:0.75rem;color:#888;">Mapa D3 de Arquetipos.</span></div></div>
+                    
+                    <div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Forjar Estructura</div>
                     <div class="semantic-item type-action" data-val="/meme" data-type="action"><span style="font-size:1.5rem;">🧠</span> <div><b style="color:var(--accent-purple);">Forjar Meme W3C</b><br><span style="font-size:0.75rem;color:#888;">Crea conocimiento en el LMS.</span></div></div>
                     <div class="semantic-item type-action" data-val="/agente" data-type="action"><span style="font-size:1.5rem;">👤</span> <div><b style="color:var(--accent-green);">Añadir Nodo / Agente</b><br><span style="font-size:0.75rem;color:#888;">Registra talento en el Padrón.</span></div></div>
                     <div class="semantic-item type-action" data-val="/rol" data-type="action"><span style="font-size:1.5rem;">🪑</span> <div><b style="color:var(--accent-green);">Forjar Rol VNA (Silla)</b><br><span style="font-size:0.75rem;color:#888;">Añade un rol al ecosistema.</span></div></div>
@@ -485,13 +531,6 @@ export default class PaperView {
                     <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Generación Multimodal</div>
                     <div class="semantic-item type-action" data-val="/imagen" data-type="action"><span style="font-size:1.5rem;">🍌</span> <div><b style="color:var(--accent-green);">Generar Imagen (Nano Banana 2)</b><br><span style="font-size:0.75rem;color:#888;">Renderiza un asset visual con IA.</span></div></div>
                     <div class="semantic-item type-action" data-val="/video" data-type="action"><span style="font-size:1.5rem;">🎬</span> <div><b style="color:var(--accent-orange);">Generar Vídeo (Veo)</b><br><span style="font-size:0.75rem;color:#888;">Composición de vídeo generativo.</span></div></div>
-
-                    <div style="padding: 10px 15px 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px; margin-top: 10px;">Insertar Componentes</div>
-                    <div class="semantic-item type-widget" data-val="/sandbox" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-purple);">🌌</span> <div><b style="color:white;">Sandbox VNA</b><br><span style="font-size:0.75rem;color:#888;">Mapa D3 de Arquetipos.</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/deepwork" data-type="widget"><span style="font-size:1.5rem; color:var(--accent-orange);">🍅</span> <div><b style="color:white;">Modo DeepWork (Focus)</b><br><span style="font-size:0.75rem;color:#888;">Temporizador Inmersivo + SOCs.</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/mapa" data-type="widget"><span style="font-size:1.5rem;">🕸️</span> <div><b style="color:white;">Mapa VNA (Topología)</b><br><span style="font-size:0.75rem;color:#888;">Grafo del Ecosistema.</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/kanban" data-type="widget"><span style="font-size:1.5rem;">📋</span> <div><b style="color:white;">Mercado Kanban PULL</b><br><span style="font-size:0.75rem;color:#888;">Oportunidades libres.</span></div></div>
-                    <div class="semantic-item type-widget" data-val="/ledger" data-type="widget"><span style="font-size:1.5rem;">⚖️</span> <div><b style="color:white;">Ledger (Slicing Pie)</b><br><span style="font-size:0.75rem;color:#888;">Cap Table auditada.</span></div></div>
                 `;
                 this.showFloatingMenu(menu, lastKnownRect);
             } else {
@@ -619,111 +658,28 @@ export default class PaperView {
                     } else if (replaceVal === '/sandbox') {
                         el.innerHTML = `
                             <div class="omni-widget" contenteditable="false">
+                                <div class="omni-widget-header">🌌 Sandbox VNA</div>
                                 <div class="omni-widget-body" id="sandbox_${widgetId}" style="padding:0;"></div>
                             </div><p><br></p>
                         `;
-                        setTimeout(() => {
-                            const container = document.getElementById(`sandbox_${widgetId}`);
-                            if(container) { const sr = new SandboxRenderer(container); sr.render(); }
-                        }, 50);
-                    } else if (replaceVal === '/mapa') {
-                        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                        if (!p || !p.roles || p.roles.length === 0) {
-                            el.innerHTML = `<div class="omni-widget" contenteditable="false"><div class="omni-widget-header">🕸️ Mapa VNA</div><div class="omni-widget-body" style="padding:2rem; text-align:center; color:#888;">⚠️ El mapa está vacío. Traza tuberías primero.</div></div><p><br></p>`;
-                        } else {
-                            el.innerHTML = `
-                                <div class="omni-widget" contenteditable="false">
-                                    <div class="omni-widget-header">🕸️ Topología VNA (Live Render)</div>
-                                    <div class="omni-widget-body omni-map-canvas" id="canvas_${widgetId}" style="height:350px; position:relative; background:#050508;">
-                                        <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;">
-                                            <defs>
-                                                <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
-                                                <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
-                                            </defs>
-                                            <g id="svg_${widgetId}"></g>
-                                        </svg>
-                                    </div>
-                                </div><p><br></p>
-                            `;
-                            setTimeout(() => {
-                                const canvas = document.getElementById(`canvas_${widgetId}`);
-                                const svgG = document.getElementById(`svg_${widgetId}`);
-                                if(p && canvas && svgG) {
-                                    const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p.transactions || []);
-                                    const mr = new MapRenderer(canvas, svgG, { isMacro: true });
-                                    mr.setData(p.roles, flows);
-                                }
-                            }, 50);
-                        }
+                    } 
+                    // 🔥 LOS WIDGETS HABITADOS
+                    else if (replaceVal === '/mapa') {
+                        el.innerHTML = this.getHabitableWidgetHtml(widgetId, '🕸️ Topología VNA', 'canvas', '@genesi_ai', 'var(--accent-blue)', '350px', 'background:#050508;');
                     } else if (replaceVal === '/kanban') {
-                        el.innerHTML = `
-                            <div class="omni-widget" contenteditable="false">
-                                <div class="omni-widget-header" style="background: rgba(224, 64, 251, 0.1); border-bottom-color: rgba(224, 64, 251, 0.2); color: var(--accent-purple);">📋 Mercado Kanban PULL</div>
-                                <div class="omni-widget-body" id="kanban_${widgetId}" style="padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);"></div>
-                            </div><p><br></p>
-                        `;
-                        setTimeout(() => {
-                            const container = document.getElementById(`kanban_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                            if(p && container) {
-                                const activeUserId = store.getState().session.activeUserId;
-                                const isPO = p.ownerId === activeUserId || store.getState().session.role === 'ecosystem-owner';
-                                const kr = new KanbanRenderer(container, { project: p, activeUserId: activeUserId, isPO: isPO, currentTab: 'oportunidades', currentFilter: 'all', isMacroMode: true });
-                                kr.render();
-                            }
-                        }, 50);
+                        el.innerHTML = this.getHabitableWidgetHtml(widgetId, '📋 Mercado Kanban PULL', 'kanban', '@cap_de_colla', 'var(--accent-purple)', 'auto', 'padding: 1.5rem; background: radial-gradient(circle at top right, #111116 0%, #050505 100%);');
                     } else if (replaceVal === '/ledger') {
-                        el.innerHTML = `
-                            <div class="omni-widget" contenteditable="false">
-                                <div class="omni-widget-header" style="background: rgba(0, 230, 118, 0.1); border-bottom-color: rgba(0, 230, 118, 0.2); color: var(--accent-green);">⚖️ Slicing Pie (Cap Table)</div>
-                                <div class="omni-widget-body" id="ledger_${widgetId}" style="padding: 2rem; background: rgba(0,0,0,0.5);"></div>
-                            </div><p><br></p>
-                        `;
-                        setTimeout(() => {
-                            const container = document.getElementById(`ledger_${widgetId}`);
-                            const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                            if(p && container) {
-                                const lr = new LedgerRenderer(container, { projectId: p.id, showHistory: false });
-                                lr.render();
-                            }
-                        }, 50);
-                    } else if (replaceVal === '/deepwork') {
-                        if (!this.activeTx) {
-                            el.innerHTML = `
-                                <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-red);">
-                                    <div class="omni-widget-header" style="background: rgba(255, 82, 82, 0.1); border-bottom-color: rgba(255, 82, 82, 0.2); color: var(--accent-red);">🍅 Modo DeepWork (Focus)</div>
-                                    <div class="omni-widget-body" style="padding: 2rem; text-align: center; color: #888;">
-                                        ⚠️ <b>Borrador Libre detectado.</b> Convierte este borrador en una Work Order para activar el Focus.
-                                    </div>
-                                </div><p><br></p>
-                            `;
-                        } else {
-                            const activeHash = this.activeTx.id || this.activeTx.hash;
-                            el.innerHTML = `
-                                <div class="omni-widget" contenteditable="false" style="border-color:var(--accent-orange); box-shadow: 0 10px 40px rgba(255,171,64,0.1);">
-                                    <div class="omni-widget-body" id="focus_${widgetId}"></div>
-                                </div><p><br></p>
-                            `;
-                            setTimeout(() => {
-                                const container = document.getElementById(`focus_${widgetId}`);
-                                const p = store.getState().projects.find(x => x.id === this.activeTx.projectId);
-                                if(p && container) {
-                                    const fr = new FocusRenderer(container, { 
-                                        projectId: p.id, 
-                                        woHash: activeHash,
-                                        onCompleteCallback: (hours) => {
-                                            alert(`✅ Tarea Reportada al Ledger (${hours}h).`);
-                                            this.setTaskMode(); 
-                                        }
-                                    });
-                                    fr.render();
-                                }
-                            }, 50);
-                        }
+                        el.innerHTML = this.getHabitableWidgetHtml(widgetId, '⚖️ Slicing Pie (Cap Table)', 'ledger', '@notari_ledger', 'var(--accent-green)', 'auto', 'padding: 2rem; background: rgba(0,0,0,0.5);');
                     }
                     
                     savedRange.insertNode(el);
                     savedRange.setStartAfter(el.nextSibling);
+                    
+                    // Renderizamos los contenidos asíncronos si es un widget complejo
+                    if (['/mapa', '/kanban', '/ledger', '/sandbox'].includes(replaceVal)) {
+                        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+                        this.hydrateWidgetsInDOM(el, p);
+                    }
 
                 } else {
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
@@ -752,6 +708,43 @@ export default class PaperView {
         });
     }
 
+    // Helper para generar el HTML base de los Widgets Habitados
+    getHabitableWidgetHtml(widgetId, title, prefix, agentId, color, height, bodyStyle) {
+        return `
+            <div class="omni-widget" contenteditable="false" id="widget_${widgetId}" style="border-color:${color};">
+                <div class="omni-widget-header" style="background: ${color.replace(')', ', 0.1)').replace('var(', 'rgba(')}; border-bottom-color: ${color.replace(')', ', 0.2)').replace('var(', 'rgba(')}; color: ${color};">
+                    <span>${title}</span>
+                    <button class="resident-agent-btn" data-wid="${widgetId}" style="color: ${color};">
+                        🤖 Conversar con ${agentId} ▾
+                    </button>
+                </div>
+                <div class="widget-content-area">
+                    <div class="omni-widget-body ${prefix === 'canvas' ? 'omni-map-canvas' : ''}" id="${prefix}_${widgetId}" style="height:${height}; ${bodyStyle}">
+                        ${prefix === 'canvas' ? `
+                            <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;">
+                                <defs>
+                                    <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
+                                    <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
+                                </defs>
+                                <g id="svg_${widgetId}"></g>
+                            </svg>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="widget-chat-panel" id="chat_panel_${widgetId}">
+                        <div class="widget-chat-history" id="chat_history_${widgetId}">
+                            <div class="chat-bubble ai">Saludos. Soy ${agentId}. Estoy analizando los datos de este componente en tiempo real. ¿En qué te ayudo?</div>
+                        </div>
+                        <div class="widget-chat-input-area">
+                            <input type="text" class="widget-chat-input" id="chat_input_${widgetId}" placeholder="Pregunta a ${agentId}...">
+                            <button class="widget-chat-send" data-agent="${agentId}" data-wid="${widgetId}">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div><p><br></p>
+        `;
+    }
+
     showFloatingMenu(menu, rect) {
         if (!rect) {
             menu.style.top = '50%'; menu.style.left = '50%';
@@ -761,6 +754,65 @@ export default class PaperView {
         }
         menu.style.display = 'block';
         this.isMenuOpen = true;
+    }
+
+    // ==========================================
+    // LOGICA DE CHAT DE LOS WIDGETS
+    // ==========================================
+    async handleWidgetChat(btnElement) {
+        const widgetId = btnElement.dataset.wid;
+        const agentId = btnElement.dataset.agent;
+        const inputEl = document.getElementById(`chat_input_${widgetId}`);
+        const historyEl = document.getElementById(`chat_history_${widgetId}`);
+        
+        const userMsg = inputEl.value.trim();
+        if (!userMsg) return;
+
+        // 1. Mostrar mensaje del usuario
+        inputEl.value = '';
+        historyEl.innerHTML += `<div class="chat-bubble user">${userMsg}</div>`;
+        historyEl.scrollTop = historyEl.scrollHeight;
+        
+        // 2. Mostrar indicador de carga de la IA
+        const loadingId = 'load_' + Date.now();
+        historyEl.innerHTML += `<div class="chat-bubble ai" id="${loadingId}">...</div>`;
+        historyEl.scrollTop = historyEl.scrollHeight;
+
+        try {
+            // 3. Extraer el contexto dinámico del proyecto
+            const state = store.getState();
+            const project = state.projects.find(p => p.id === this.activeProjectId);
+            
+            let componentData = "No hay datos para este componente.";
+            if (agentId === '@genesi_ai') componentData = JSON.stringify({ roles: project.roles, tuberias: project.vna_flows }, null, 2);
+            if (agentId === '@cap_de_colla') componentData = JSON.stringify({ oportunidades: project.work_orders.filter(w => w.status === 'pinged') }, null, 2);
+            if (agentId === '@notari_ledger') componentData = JSON.stringify({ capTable: project.ledger }, null, 2);
+
+            // 4. Llamar al Orquestador con el Córtex A2A
+            const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+            const apiKey = localStorage.getItem(`tt_key_${provider}`);
+            
+            const agentContext = await KB.getDynamicContextPrompt('global', agentId, state);
+            const systemPrompt = `
+                ${agentContext}
+                ===============================
+                ESTADO ACTUAL DEL COMPONENTE:
+                ===============================
+                ${componentData}
+                
+                Instrucción: Eres ${agentId}. Responde a la duda del usuario de forma analítica y concisa.
+            `;
+
+            const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt: userMsg, responseFormat: "text", temperature: 0.4 });
+            
+            // 5. Actualizar respuesta de la IA
+            document.getElementById(loadingId).innerText = response.content;
+            historyEl.scrollTop = historyEl.scrollHeight;
+            
+        } catch (e) {
+            document.getElementById(loadingId).innerText = `[Error de Conexión: ${e.message}]`;
+            document.getElementById(loadingId).style.color = "var(--accent-red)";
+        }
     }
 
     // ==========================================
@@ -784,7 +836,6 @@ export default class PaperView {
                 btnElement.disabled = true;
                 btnElement.innerText = "⏳ Sintetizando con IA...";
 
-                const { Orchestrator } = await import('../core/Orchestrator.js');
                 const apiKey = localStorage.getItem(isVideo ? 'tt_key_veo' : 'tt_key_nano_banana');
 
                 const asset = await Orchestrator.generateAsset(promptText, isVideo ? 'video' : 'image', apiKey);
@@ -813,10 +864,7 @@ export default class PaperView {
                 
                 if (!title || !content) throw new Error("Título y Contenido son obligatorios.");
 
-                const { KB } = await import('../core/kb.js');
                 await KB.init();
-                
-                // 🔥 Inyectamos en el ecosistema actual o en la red global
                 const targetProject = this.activeProjectId || 'global';
                 
                 await KB.saveNode({
@@ -963,7 +1011,7 @@ export default class PaperView {
 
         this.dom.editor.innerHTML = '<p><br></p>';
         this.dom.dynamicTags.innerHTML = `<span style="color:#555; font-style:italic; font-size:0.85rem;">Escribe @ o # para enlazar el conocimiento...</span>`;
-        this.setTaskMode(); // 🔥 FIX: Actualiza el hilo y los widgets
+        this.setTaskMode(); 
         this.dom.btnSubmit.disabled = false;
         this.dom.btnSubmit.innerText = '⚖️ Enviar a Usenet (Sellar)';
     }
