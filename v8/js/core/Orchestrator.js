@@ -56,7 +56,10 @@ class OrchestratorCore {
 
                 if (provider === 'gemini') {
                     const targetModel = 'gemini-2.0-flash';
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
+                    // 🔥 FIX: String puro para evitar concatenaciones locas
+                    const urlStr = 'https://generativelanguage.googleapis.com/v1beta/models/' + targetModel + ':generateContent?key=' + apiKey;
+                    
+                    const response = await fetch(urlStr, {
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -81,18 +84,30 @@ class OrchestratorCore {
                     if (data.usageMetadata) { tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; }
                 
                 } else if (provider === 'openai' || provider === 'deepseek') {
-                    const endpoint = provider === 'openai' ? '[https://api.openai.com/v1/chat/completions](https://api.openai.com/v1/chat/completions)' : '[https://api.deepseek.com/chat/completions](https://api.deepseek.com/chat/completions)';
+                    // 🔥 FIX ENRUTADOR 404: Definición estricta de URL en string plano para evitar que fetch falle
+                    let endpointUrl = 'https://api.openai.com/v1/chat/completions';
+                    if (provider === 'deepseek') {
+                        endpointUrl = 'https://api.deepseek.com/chat/completions';
+                    }
+                    
                     const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
                     
-                    const response = await fetch(endpoint, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ 
-                            model: modelName, 
-                            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
-                            temperature, 
-                            max_tokens: 8192, 
-                            response_format: responseFormat === "json_object" ? { type: "json_object" } : null 
-                        })
+                    // Si el request es de texto, evitamos mandar null a OpenAI para no generar error
+                    const bodyData = { 
+                        model: modelName, 
+                        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
+                        temperature: temperature, 
+                        max_tokens: 8192
+                    };
+                    if (responseFormat === "json_object") bodyData.response_format = { type: "json_object" };
+                    
+                    const response = await fetch(endpointUrl, {
+                        method: 'POST', 
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Authorization': 'Bearer ' + apiKey 
+                        },
+                        body: JSON.stringify(bodyData)
                     });
                     
                     if (!response.ok) {
@@ -109,7 +124,6 @@ class OrchestratorCore {
                 let parsedContent = textResponse;
                 
                 if (responseFormat === "json_object") {
-                    // 🔥 FIX: Parseo Blindado contra LLMs rebeldes (Anthropic/DeepSeek a veces meten Markdown)
                     let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
                     const firstBrace = cleanText.indexOf('{'); const lastBrace = cleanText.lastIndexOf('}');
                     if (firstBrace !== -1 && lastBrace !== -1) cleanText = cleanText.substring(firstBrace, lastBrace + 1);
