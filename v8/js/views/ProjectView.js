@@ -67,7 +67,6 @@ export default class ProjectView {
 
         const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
 
-        // 🔥 FIX SPRINT: Recuperar el histórico de Sprints completo
         const sprints = project.sprints && project.sprints.length > 0 ? project.sprints : [{id: 'sp_default', name: 'Sprint 1', startDate: Date.now()}];
         const activeSprintId = project.activeSprintId || sprints[0].id;
         
@@ -341,23 +340,23 @@ export default class ProjectView {
             const btn = document.getElementById('btnConfirmPush');
             btn.disabled = true; btn.innerText = "⏳ Asignando...";
 
-            const actionType = this.pushTargetIsLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
-            const payloadKey = this.pushTargetIsLegacy ? 'txHash' : 'hash';
-
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             const wList = this.pushTargetIsLegacy ? currentProj.transactions : currentProj.work_orders;
-            const wItem = wList.find(w => (w.hash || w.id) === this.pushTargetHash);
-            const safeSprintId = wItem.sprintId || currentProj.activeSprintId;
-
-            await store.dispatch({
-                type: actionType,
-                payload: {
-                    projectId: this.activeProjectId,
-                    [payloadKey]: this.pushTargetHash,
-                    status: 'pinged',
-                    assigneeId: targetUserId,
-                    sprintId: safeSprintId 
+            
+            // Hard-Update
+            const updatedList = wList.map(w => {
+                if ((w.hash || w.id) === this.pushTargetHash) {
+                    return { ...w, status: 'pinged', assigneeId: targetUserId }; 
                 }
+                return w;
+            });
+
+            await store.dispatch({ 
+                type: 'UPDATE_PROJECT_INFO', 
+                payload: { 
+                    projectId: this.activeProjectId, 
+                    updates: { [this.pushTargetIsLegacy ? 'transactions' : 'work_orders']: updatedList } 
+                } 
             });
 
             btn.disabled = false; btn.innerText = "🚀 Despachar Work Order";
@@ -371,18 +370,14 @@ export default class ProjectView {
             
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             const wList = isLegacy ? currentProj.transactions : currentProj.work_orders;
-            const wItem = wList.find(w => (w.hash || w.id) === hash);
-            const safeSprintId = wItem ? (wItem.sprintId || currentProj.activeSprintId) : currentProj.activeSprintId;
 
             // PULL MÍO AUTOMÁTICO 
             if (action === 'force-pull') {
-                const actType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
-                const payloadKey = isLegacy ? 'txHash' : 'hash';
-                
-                await store.dispatch({ 
-                    type: actType, 
-                    payload: { projectId: this.activeProjectId, [payloadKey]: hash, status: 'pinged', assigneeId: userId, sprintId: safeSprintId } 
+                const updatedList = wList.map(w => {
+                    if ((w.hash || w.id) === hash) return { ...w, status: 'pinged', assigneeId: userId }; 
+                    return w;
                 });
+                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } } });
                 this.refreshRenderer();
                 return;
             }
@@ -396,29 +391,15 @@ export default class ProjectView {
                 return;
             }
 
-            // 🔥 FIX: SOLTAR TAREA (REJECT) - FUERZA BRUTA PARA PURGAR AMNESIA
+            // 🔥 FIX: SOLTAR TAREA (REJECT) - FUERZA BRUTA
             if (action === 'reject') {
                 if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
                 
-                const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-                const list = isLegacy ? p.transactions : p.work_orders;
-                
-                // Hacemos el update inyectando en el JSON directamente
-                const updatedList = list.map(w => {
-                    if ((w.hash || w.id) === hash) {
-                        return { ...w, status: 'theoretical', assigneeId: '' }; 
-                    }
+                const updatedList = wList.map(w => {
+                    if ((w.hash || w.id) === hash) return { ...w, status: 'theoretical', assigneeId: null }; 
                     return w;
                 });
-
-                await store.dispatch({ 
-                    type: 'UPDATE_PROJECT_INFO', 
-                    payload: { 
-                        projectId: this.activeProjectId, 
-                        updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } 
-                    } 
-                });
-                
+                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } } });
                 this.refreshRenderer();
                 return;
             }
@@ -429,16 +410,16 @@ export default class ProjectView {
                 return;
             }
 
-            // EJECUCIÓN DE IA
+            // EJECUCIÓN DE IA (FIX: Sobrescribir comentario directo a la BD)
             if (action === 'ai-exec') {
-                await this.executeAIAgent(hash, element, store.getState().projects.find(p => p.id === this.activeProjectId), isLegacy);
+                await this.executeAIAgent(hash, element, currentProj, isLegacy);
                 return;
             }
         });
 
         window.addEventListener('swarm_update', () => this.refreshRenderer());
 
-        // 🔥 FIX SPRINT: HISTÓRICO CONSERVADO
+        // 🔥 LÓGICA DE SPRINTS
         const selActiveSprint = document.getElementById('selActiveSprint');
         if (selActiveSprint) {
             selActiveSprint.addEventListener('change', async (e) => {
@@ -451,7 +432,6 @@ export default class ProjectView {
         if (btnCreateSprint) {
             btnCreateSprint.addEventListener('click', async () => {
                 const currentP = store.getState().projects.find(p => p.id === this.activeProjectId);
-                // Si ya había sprints, los conservamos. Si no, creamos la base del Sprint 1.
                 const currentSprints = currentP.sprints && currentP.sprints.length > 0 ? currentP.sprints : [{id: 'sp_default', name: 'Sprint 1', startDate: Date.now()}];
                 const nextNum = currentSprints.length + 1;
                 const spName = prompt("Nombre del nuevo ciclo temporal:", `Sprint ${nextNum}`);
@@ -493,7 +473,7 @@ export default class ProjectView {
         try {
             const flows = isLegacy ? currProject.transactions : currProject.work_orders;
             const wo = flows.find(w => (w.hash || w.id) === txHash);
-            const parentFlow = currProject.vna_flows.find(f => f.id === wo.flowId) || wo; 
+            const parentFlow = (currProject.vna_flows || []).find(f => f.id === wo.flowId) || wo; 
             
             const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
@@ -514,19 +494,17 @@ export default class ProjectView {
                 provider, apiKey, systemPrompt: aiContext, userPrompt, responseFormat: "text", temperature: 0.3
             });
 
-            const actionType = isLegacy ? 'UPDATE_TRANSACTION_STATUS' : 'UPDATE_WO_STATUS';
-            const payloadKey = isLegacy ? 'txHash' : 'hash';
+            // 🔥 FIX: Actualización por Fuerza Bruta para inyectar el texto
+            const updatedList = flows.map(w => {
+                if ((w.hash || w.id) === txHash) {
+                    return { ...w, status: 'reported', proofLink: 'Agent_Auto_Report', comentario: response.content };
+                }
+                return w;
+            });
 
-            await store.dispatch({ 
-                type: actionType, 
-                payload: { 
-                    projectId: currProject.id, 
-                    [payloadKey]: txHash, 
-                    status: 'reported', 
-                    proofLink: 'Agent_Auto_Report', 
-                    comentario: response.content,
-                    sprintId: wo.sprintId || currProject.activeSprintId 
-                } 
+            await store.dispatch({
+                type: 'UPDATE_PROJECT_INFO',
+                payload: { projectId: currProject.id, updates: { [isLegacy ? 'transactions' : 'work_orders']: updatedList } }
             });
 
         } catch (error) {
@@ -728,19 +706,14 @@ export default class ProjectView {
                     projectId: this.activeProjectId,
                     workOrder: {
                         hash: newHash, flowId: targetFlowId, comentario: desc,
-                        status: 'theoretical', realHours: 0,
+                        status: assignee ? 'pinged' : 'theoretical', 
+                        realHours: 0,
+                        assigneeId: assignee || null,
                         sprintId: currProj.activeSprintId,
                         soc_checklist: finalSocs, resources: []
                     }
                 }
             });
-
-            if (assignee !== "") {
-                await store.dispatch({ 
-                    type: 'UPDATE_WO_STATUS', 
-                    payload: { projectId: this.activeProjectId, hash: newHash, status: 'pinged', assigneeId: assignee, sprintId: currProj.activeSprintId } 
-                });
-            }
 
             createModal.style.display = 'none';
             this.refreshRenderer();
@@ -844,10 +817,11 @@ export default class ProjectView {
                     payload: { projectId: this.activeProjectId, woHash: currentReviewHash }
                 });
             } else {
-                await store.dispatch({
-                    type: 'UPDATE_TRANSACTION_STATUS',
-                    payload: { projectId: this.activeProjectId, txHash: currentReviewHash, status: 'consolidated', sprintId: taskObj.sprintId } 
+                const updatedList = currProject.transactions.map(w => {
+                    if (w.id === currentReviewHash) return { ...w, status: 'consolidated' };
+                    return w;
                 });
+                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { transactions: updatedList } } });
             }
 
             const updatedProj = store.getState().projects.find(p => p.id === this.activeProjectId);
