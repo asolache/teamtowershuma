@@ -19,7 +19,7 @@ const LLM_PRICING = {
 
 export default class TestsView {
     constructor() {
-        document.title = "Boot Diagnostics | TeamTowers V15.5";
+        document.title = "Boot Diagnostics | TeamTowers V15.9";
     }
 
     async getHtml() {
@@ -69,12 +69,12 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V15.5 FRACTAL DIAGNOSTICS</h1>
-                        <p>Validando Semantic RAG (W3C), Córtex A2A, TDD Componentizado y Core OS</p>
+                        <h1>V15.9 INMUTABLE KERNEL</h1>
+                        <p>Validando Redux, PULL/PUSH Mechanics, TDD y Core OS</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
-                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> CARGANDO VECTORES DE ESTRÉS... <span class="cursor"></span></div>
+                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> COMPILANDO ESTADOS INMUTABLES... <span class="cursor"></span></div>
                     </div>
 
                     <div class="action-footer">
@@ -132,14 +132,15 @@ export default class TestsView {
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
 
             try {
-                // Guardamos el usuario original para restaurarlo después del test
-                const originalUser = store.getState().session.activeUserId;
+                // Guardamos el usuario original
+                const st = store.getState();
+                const originalUser = st.session?.activeUserId;
 
                 // ==========================================
                 // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V15)
                 // ==========================================
                 const currentVer = store.getState().config?.version || 'Desconocida';
-                await assert(true, `Motor Fractal Activo y Respondiendo (Detectada: ${currentVer})`, "SYS");
+                await assert(true, `Motor Redux Inmutable Activo y Respondiendo (Detectada: ${currentVer})`, "SYS");
                 
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
                 await assert(store.getState().session.activeUserId === dynNeoId, "Identidad Web3 verificada en Storage Redux", "AUTH");
@@ -198,7 +199,7 @@ export default class TestsView {
                 });
 
                 // ==========================================
-                // BLOQUE 4: SOP, TDD = SOC Y EJECUCIÓN (NOTARÍA DIGITAL)
+                // BLOQUE 4: REDUX INMUTABLE (SOP, TDD = SOC Y EJECUCIÓN)
                 // ==========================================
                 const woHash = 'wo_' + Date.now();
                 await store.dispatch({ 
@@ -212,20 +213,20 @@ export default class TestsView {
                     } 
                 });
 
-                await store.dispatch({ type: 'PING_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, userId: dynAgentId } });
+                await store.dispatch({ type: 'UPDATE_WO_STATUS', payload: { projectId: PID_TEST, hash: woHash, status: 'pinged', assigneeId: dynAgentId } });
                 await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Commit Pushed' } });
                 
                 // Prueba TDD Fallida
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': false } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'reported', "TDD Activo: El Ledger rechaza consolidar si el SOC (Unit Test) falla.", "TDD-SOC");
+                await assert(p.work_orders[0].status === 'reported', "Redux TDD Activo: El Ledger rechaza consolidar si el SOC (Unit Test) falla.", "TDD-SOC");
 
                 // Prueba TDD Exitosa
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': true } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'consolidated', "Notaría Componentizada: TDD superado. SOP validado y sellado inmutablemente", "LEDGER");
+                await assert(p.work_orders[0].status === 'consolidated', "Redux Notaría Componentizada: TDD superado. SOP validado y sellado inmutablemente", "LEDGER");
 
                 // ==========================================
                 // BLOQUE 5: CÁLCULOS MATEMÁTICOS DE EQUIDAD (SLICING PIE)
@@ -295,8 +296,8 @@ export default class TestsView {
                 await sleep(200);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V15.5 KERNEL CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">La Forja Neuronal, el Cerebro LMS (RAG), la Notaría y la Telemetría han pasado los test de estrés. Listo para Producción.</p>
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V15.9 KERNEL CERTIFIED 🔥</h2>
+                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">Redux Inmutable, PULL/PUSH y Core OS han pasado los test de estrés. Listo para Producción.</p>
                     </div>
                 `);
                 
@@ -315,6 +316,7 @@ export default class TestsView {
                 terminal.scrollTop = terminal.scrollHeight;
                 
                 // Restauramos usuario original incluso si el test falla
+                const originalUser = store.getState().session?.activeUserId;
                 if (originalUser) {
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
                 }
