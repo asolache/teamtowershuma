@@ -4,7 +4,7 @@ export class MapRenderer {
     /**
      * @param {HTMLElement} canvasEl - Contenedor HTML de los nodos (div)
      * @param {HTMLElement} svgEl - Contenedor SVG de las aristas (svg > g)
-     * @param {Object} options - Configuración y callbacks { isEditMode, isHeatmap, onNodeClick, onNodeDrop, onEdgeClick }
+     * @param {Object} options - Configuración y callbacks
      */
     constructor(canvasEl, svgEl, options = {}) {
         this.canvas = canvasEl;
