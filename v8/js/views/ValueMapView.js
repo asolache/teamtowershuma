@@ -3,29 +3,28 @@ import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
+import { MapRenderer } from '../components/MapRenderer.js'; // 🔥 EL MOTOR ÚNICO
 
 export default class ValueMapView {
     constructor() {
-        document.title = "Mapa VNA | TeamTowers V8";
+        document.title = "Mapa VNA | TeamTowers V15.8";
         this.activeProjectId = null;
         this.selectedRoleId = null; 
         this.editingTxIndex = null; 
         
-        this.isDragging = false;
-        this.draggedElement = null;
-        this.hasMoved = false; 
         this.flowFromId = null;
-        this.tempVector = null;
 
         this.isSimulating = false;
         this.isHeatmapActive = false;
         this.currentSimIndex = 0;
-        this.currentSimBadge = null; // Para borrar el badge anterior en simulación
-
+        this.simTimeoutId = null;
+        
         this.zoomVis = 1;
         this.zoomEdit = 1;
 
-        this.levelHierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
+        this.mapVis = null;
+        this.mapEdit = null;
+
         this.resizeObserver = null;
         this.currentTab = 'visual';
     }
@@ -46,8 +45,8 @@ export default class ValueMapView {
                         <div class="glass-panel" style="text-align:center; max-width: 500px; margin: 0 auto;">
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🕸️</div>
                              <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Lienzo Vacío</h2>
-                             <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No tienes un Castell activo para dibujar.</p>
-                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Inicializar Red</a>
+                             <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No tienes un Ecosistema activo para visualizar.</p>
+                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Forjar Nuevo Ecosistema</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/map')}
@@ -55,7 +54,7 @@ export default class ValueMapView {
             `;
         }
 
-        const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
+        const isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
 
         const headerConfig = {
             title: "Topología VNA",
@@ -70,22 +69,18 @@ export default class ValueMapView {
             magicActions: [
                 { id: 'sim_flow', label: 'Simular Tuberías', icon: '▶', isAi: false },
                 { id: 'sim_heat', label: 'Heatmap de Carga', icon: '🔥', isAi: false },
-                { id: 'sim_stop', label: 'Detener Simulación', icon: '⏹', isAi: false }
+                { id: 'sim_stop', label: 'Detener Visualización', icon: '⏹', isAi: false }
             ]
         };
 
         return `
             <style>
+                ${MapRenderer.getStyles()} /* Importamos estilos del motor */
+                
                 .workspace-map { display: flex; flex-direction: column; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; position: relative; scroll-behavior: smooth; width: 100%; box-sizing: border-box;}
                 .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.4s ease-out; min-height: 500px; position: relative; width: 100%;}
                 .tab-content.active { display: flex; }
 
-                /* LIENZO PRINCIPAL */
-                .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); width: 100%; min-height: 500px; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);}
-                .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; transform-origin: top left; transition: transform 0.2s ease-out; }
-                #edges-svg-visual, #edges-svg-edit { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible;}
-                
-                /* MODO FULLSCREEN ARQUITECTO */
                 .map-container.fullscreen-mode {
                     position: fixed !important; top: 0 !important; left: 0 !important;
                     width: 100vw !important; height: 100vh !important; height: 100dvh !important;
@@ -93,45 +88,12 @@ export default class ValueMapView {
                     background: #050508 !important;
                 }
 
-                /* LÍNEAS SVG */
-                .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.4s, opacity 0.4s, stroke-width 0.4s; }
-                .edge-line:hover { opacity: 1; stroke-width: 6 !important; cursor: pointer; pointer-events: stroke; filter: brightness(1.5);}
-                .edge-tangible { stroke: var(--accent-green); filter: drop-shadow(0 0 3px rgba(0, 230, 118, 0.4));}
-                .edge-intangible { stroke: var(--accent-purple); stroke-dasharray: 8, 8; animation: dashAnim 20s linear infinite; filter: drop-shadow(0 0 3px rgba(224, 64, 251, 0.4));}
-                .edge-sick { stroke: var(--accent-red) !important; stroke-width: 4 !important; filter: drop-shadow(0 0 8px var(--accent-red)); }
-                .edge-temp { stroke: var(--accent-orange); stroke-width: 4; stroke-dasharray: 6, 6; animation: dashAnim 5s linear infinite; opacity: 0.9;}
-
-                /* ESTRUCTURA DE NODO */
-                .node-wrapper { position: absolute; z-index: 5; cursor: grab; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 140px; transition: filter 0.3s;}
-                .node-wrapper:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.05); }
-                .node-wrapper.selected { z-index: 10; }
-                .node-wrapper:hover { filter: brightness(1.2); z-index: 9;}
-                
-                .node-circle { position: relative; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(15px); border: 3px solid rgba(255,255,255,0.1); color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.6); width: 85px; height: 85px; box-sizing: border-box;}
-                .node-wrapper.selected .node-circle { border-color: var(--accent-blue) !important; box-shadow: 0 0 30px rgba(0, 176, 255, 0.6), inset 0 0 20px rgba(0, 176, 255, 0.2) !important; }
-                .node-wrapper.sick-node .node-circle { border-color: var(--accent-red) !important; box-shadow: 0 0 45px rgba(255, 82, 82, 0.9) !important; animation: pulseSick 1s infinite alternate; }
-                .node-wrapper.ghost-node { opacity: 0.4; filter: grayscale(100%); z-index: 1; }
-                .node-wrapper.ghost-node .node-circle { border-style: dashed;}
-                
-                .node-fmv { font-size: 1.1rem; font-weight: 900; font-family: var(--font-mono); line-height: 1; margin-bottom: 2px;}
-                .node-label-fmv { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
-                .node-level-badge { position: absolute; top: -12px; left: 12px; border-radius: 50%; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; background: #000; border: 2px solid; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 2; box-sizing: border-box;}
-                
-                .node-title { margin-top: 12px; font-size: 0.85rem; font-weight: 800; color: white; text-align: center; text-transform: uppercase; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; padding: 4px 8px; text-shadow: 0 4px 8px rgba(0,0,0,0.9); pointer-events: none; background: rgba(0,0,0,0.6); border-radius: 8px; backdrop-filter: blur(5px);}
-
                 #mapCanvasEdit .node-wrapper { cursor: pointer; } 
                 #mapCanvasEdit .node-wrapper:hover .node-circle { transform: scale(1.15); box-shadow: 0 0 25px rgba(0, 176, 255, 0.4); }
-                .node-wrapper.flow-source .node-circle { border-color: var(--accent-orange) !important; box-shadow: 0 0 40px rgba(255, 171, 64, 0.6) !important; z-index: 20;}
-
-                /* BADGES Y TOOLTIPS */
-                .tx-badge { position: absolute; transform: translate(-50%, -50%); z-index: 6; font-size: 0.8rem; font-weight: 900; font-family: var(--font-mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; pointer-events: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.6); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); color: black;}
-                .tx-badge:hover { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.2); z-index: 100; border-color: white;}
-                .tx-badge.ghost { opacity: 0.3; }
-
+                
                 .tx-tooltip { position: fixed; background: rgba(10, 10, 14, 0.95); border: 1px solid var(--accent-blue); color: white; padding: 20px; border-radius: 12px; font-size: 0.9rem; z-index: 999999; box-shadow: 0 20px 50px rgba(0,0,0,0.9); backdrop-filter: blur(15px); opacity: 0; visibility: hidden; transition: opacity 0.2s; min-width: 280px; max-width: 350px; line-height: 1.5; pointer-events: none;}
                 .tx-tooltip.visible { opacity: 1; visibility: visible; }
 
-                /* ZOOM Y CONTROLES ARQUITECTO */
                 .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; gap: 10px; z-index: 100;}
                 .btn-zoom { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; border-radius: 10px; width: 45px; height: 45px; font-size: 1.4rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); transition: 0.2s;}
                 .btn-zoom:hover { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
@@ -139,7 +101,6 @@ export default class ValueMapView {
                 .btn-fullscreen { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); border: 1px dashed var(--accent-orange); color: var(--accent-orange); padding: 10px 15px; border-radius: 10px; font-weight: 900; cursor: pointer; z-index: 100; transition: 0.3s; backdrop-filter: blur(10px);}
                 .btn-fullscreen:hover { background: var(--accent-orange); color: black; box-shadow: 0 0 20px rgba(255,171,64,0.4);}
 
-                /* PESTAÑAS (LUXURY LISTS) */
                 .roles-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap:15px;}
                 .roles-grid-tab { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; width: 100%;}
                 .role-list-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: 0.3s; backdrop-filter: blur(10px);}
@@ -166,9 +127,6 @@ export default class ValueMapView {
                 .btn-step.del:hover { background: rgba(255, 82, 82, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
                 .btn-step.edit { background: rgba(0, 176, 255, 0.05); color: var(--accent-blue); border-color: rgba(0,176,255,0.3); }
 
-                /* =========================================================
-                   AI SCAFFOLD (EL COPILOTO)
-                   ========================================================= */
                 .ai-scaffold {
                     position: fixed; right: 30px; bottom: 30px; width: 340px;
                     background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px);
@@ -184,7 +142,6 @@ export default class ValueMapView {
                 .ai-btn-close { background:transparent; border:none; color:#888; cursor:pointer; font-size:1.2rem; line-height:1;}
                 .ai-btn-close:hover { color:white; }
 
-                /* MODALS LUXURY */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 999999; }
                 .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-top: 4px solid var(--accent-blue); padding: 3rem; border-radius: 24px; width: 100%; max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
                 
@@ -193,19 +150,11 @@ export default class ValueMapView {
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.1);}
 
-                @keyframes dashAnim { to { stroke-dashoffset: -200; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
-                @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
-                /* MOBILE FIXES */
                 @media (max-width: 768px) {
                     .workspace-map { padding: 90px 1rem 120px 1rem; } 
                     .map-container { height: calc(100vh - 350px); min-height: 400px; border-radius: 16px;}
-                    .node-wrapper { width: 100px;}
-                    .node-circle { width: 60px; height: 60px; border-width: 2px;} 
-                    .node-level-badge { width: 28px; height: 28px; font-size: 0.9rem; top: -8px; left: 0px;}
-                    .node-title { font-size: 0.7rem; background: rgba(0,0,0,0.7);}
                     .flow-container { flex-direction: column; gap: 1.5rem;}
                     .sequence-panel { width: 100%; max-height: none; padding-right: 0;}
                     .flow-step { flex-direction: column; align-items: stretch; gap: 15px;}
@@ -220,7 +169,6 @@ export default class ValueMapView {
                 ${Sidebar.getHtml('/map')}
 
                 <main class="workspace-map">
-                    
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="tab-visual" class="tab-content ${this.currentTab === 'visual' ? 'active' : ''}">
@@ -307,12 +255,7 @@ export default class ValueMapView {
                         <span>🧠 Agente VNA Activo</span>
                         <button class="ai-btn-close" id="btnCloseCopilot">&times;</button>
                     </div>
-                    <div class="ai-body" id="aiCopilotBody">
-                        <div style="text-align:center; animation: pulse 1.5s infinite;">
-                            <span style="font-size:2rem; display:block; margin-bottom:10px;">👁️</span>
-                            Analizando la densidad de transacciones de la red...
-                        </div>
-                    </div>
+                    <div class="ai-body" id="aiCopilotBody"></div>
                 </div>
 
                 <div class="modal-overlay" id="txBuilderModal">
@@ -474,7 +417,34 @@ export default class ValueMapView {
             btnCloseCopilot: document.getElementById('btnCloseCopilot')
         };
 
-        // -- TABS LOGIC V8 GLOBAL EVENT --
+        // 🔥 INSTANCIACIÓN DE MAPRENDERER (Lienzo Visual)
+        this.mapVis = new MapRenderer(this.dom.canvasVis, this.dom.pathsVis, {
+            isEditMode: false,
+            isHeatmap: false
+        });
+        
+        // 🔥 INSTANCIACIÓN DE MAPRENDERER (Lienzo Arquitecto)
+        if(isPO && this.dom.canvasEdit) {
+            this.mapEdit = new MapRenderer(this.dom.canvasEdit, this.dom.pathsEdit, {
+                isEditMode: true,
+                onNodeClick: (nodeId) => this.handleNodeClick(nodeId),
+                onEdgeClick: (idx) => {
+                    this.editingTxIndex = idx;
+                    const pState = store.getState().projects.find(x => x.id === this.activeProjectId);
+                    const flows = pState.vna_flows && pState.vna_flows.length > 0 ? pState.vna_flows : pState.transactions;
+                    if(flows[idx]) this.openTxBuilderModal(flows[idx].from, flows[idx].to, flows[idx]);
+                }
+            });
+
+            // Trazado de línea temporal en Modo Arquitecto
+            this.dom.canvasEdit.addEventListener('mousemove', (e) => {
+                if (this.flowFromId && this.mapEdit) {
+                    this.mapEdit.drawTempLine(this.flowFromId, e.clientX, e.clientY, this.zoomEdit);
+                }
+            });
+        }
+
+        // Eventos TABS V8
         window.addEventListener('ph-tab-changed', (e) => {
             this.currentTab = e.detail.tabId;
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -482,20 +452,27 @@ export default class ValueMapView {
             if(target) target.classList.add('active');
 
             if(this.currentTab === 'visual' || this.currentTab === 'edit') {
-                setTimeout(() => { if(!this.isSimulating) this.drawEdges(); }, 50);
+                setTimeout(() => { 
+                    if(this.mapVis) this.mapVis.renderEdges();
+                    if(this.mapEdit) this.mapEdit.renderEdges();
+                }, 50);
             }
         });
 
-        // -- MAGIC ACTION EVENT V8 --
+        // Eventos MAGIC BUTTONS V8
         window.addEventListener('ph-magic-action', (e) => {
             if(e.detail.actionId === 'sim_flow') {
                 this.isHeatmapActive = false;
+                if(this.mapVis) this.mapVis.options.isHeatmap = false;
                 this.startSimulation();
             }
             if(e.detail.actionId === 'sim_heat') {
                 this.stopSimulation();
                 this.isHeatmapActive = true;
-                this.drawEdges(); 
+                if(this.mapVis) {
+                    this.mapVis.options.isHeatmap = true;
+                    this.mapVis.renderEdges();
+                }
                 this.triggerAiInsight("🔥 <b>Heatmap Activado.</b> Las líneas más gruesas indican las tuberías por donde ha fluido más Proof of Work auditado.");
             }
             if(e.detail.actionId === 'sim_stop') {
@@ -504,24 +481,21 @@ export default class ValueMapView {
             }
         });
 
-        // -- AI COPILOT LOGIC --
         if(this.dom.btnCloseCopilot) {
             this.dom.btnCloseCopilot.addEventListener('click', () => {
                 this.dom.aiCopilot.classList.remove('visible');
             });
         }
 
-        // -- FULLSCREEN ARCHITECT --
         if(this.dom.btnFullscreen) {
             this.dom.btnFullscreen.addEventListener('click', () => {
                 this.dom.editMapContainer.classList.toggle('fullscreen-mode');
                 const isFull = this.dom.editMapContainer.classList.contains('fullscreen-mode');
                 this.dom.btnFullscreen.innerText = isFull ? '✖ Salir Inmersión' : '🔲 Modo Inmersivo';
-                setTimeout(() => this.drawEdges(), 50);
+                setTimeout(() => { if(this.mapEdit) this.mapEdit.renderEdges(); }, 50);
             });
         }
 
-        // ZOOM LOGIC
         const setupZoom = (btnInId, btnOutId, canvasObj, propName) => {
             const btnIn = document.getElementById(btnInId);
             const btnOut = document.getElementById(btnOutId);
@@ -539,26 +513,14 @@ export default class ValueMapView {
         setupZoom('btnZoomInVis', 'btnZoomOutVis', this.dom.canvasVis, 'zoomVis');
         setupZoom('btnZoomInEdit', 'btnZoomOutEdit', this.dom.canvasEdit, 'zoomEdit');
 
-        // RENDER INICIAL
+        // 🔥 CARGA DE DATOS INICIAL
         setTimeout(() => {
-            this.renderMap(this.dom.canvasVis, false);
-            if(isPO) this.renderMap(this.dom.canvasEdit, true);
+            this.refreshDataFromStore();
             this.renderRolesTab();
             this.renderSequence();
-            setTimeout(() => { if(!this.isSimulating) this.drawEdges(); }, 100);
         }, 50);
 
-        if (window.ResizeObserver) {
-            this.resizeObserver = new ResizeObserver(() => {
-                if (!this.isSimulating) this.drawEdges();
-            });
-            this.resizeObserver.observe(this.dom.canvasVis);
-            if(this.dom.canvasEdit) this.resizeObserver.observe(this.dom.canvasEdit);
-        }
-
-        // EVENTOS CANVAS EDICIÓN (DRAG & CLICK)
         if (isPO && this.dom.canvasEdit) {
-            
             if(this.dom.btnUndoTx) {
                 this.dom.btnUndoTx.addEventListener('click', () => {
                     const pState = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -577,101 +539,10 @@ export default class ValueMapView {
                 });
             }
 
-            this.dom.canvasEdit.addEventListener('mousedown', (e) => {
-                if (window.innerWidth <= 768) return; 
-                const node = e.target.closest('.node-wrapper');
-                if (node) {
-                    this.isDragging = true;
-                    this.hasMoved = false;
-                    this.draggedElement = node;
-                    node.style.zIndex = 1000;
-                }
-            });
-
             this.dom.canvasEdit.addEventListener('dblclick', (e) => {
                 const node = e.target.closest('.node-wrapper');
                 this.cancelVisualFlow();
                 if(node) this.openRoleInspector(node.dataset.id);
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (this.isDragging && this.draggedElement) {
-                    this.hasMoved = true;
-                    const rect = this.dom.canvasEdit.getBoundingClientRect();
-                    let newX = ((e.clientX - rect.left) / rect.width) * 100;
-                    let newY = ((e.clientY - rect.top) / rect.height) * 100;
-                    newX = Math.max(5, Math.min(newX, 95));
-                    newY = Math.max(5, Math.min(newY, 95));
-                    
-                    this.draggedElement.style.left = `${newX}%`;
-                    this.draggedElement.style.top = `${newY}%`;
-                    this.drawEdges(); 
-                } 
-                else if (this.flowFromId && this.dom.canvasEdit && window.innerWidth > 768) {
-                    const originNode = this.dom.canvasEdit.querySelector(`.node-wrapper[data-id="${this.flowFromId}"]`);
-                    if (!originNode) return;
-
-                    const x1_center = originNode.offsetLeft;
-                    const y1_center = originNode.offsetTop;
-                    
-                    const canvRect = this.dom.canvasEdit.getBoundingClientRect();
-                    const zoom = this.zoomEdit;
-                    const x2_center = (e.clientX - canvRect.left) / zoom;
-                    const y2_center = (e.clientY - canvRect.top) / zoom;
-
-                    const dx = x2_center - x1_center;
-                    const dy = y2_center - y1_center;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    const trim = 50; 
-                    
-                    let x1 = x1_center, y1 = y1_center;
-                    if (dist > trim) {
-                        x1 = x1_center + (dx/dist) * trim;
-                        y1 = y1_center + (dy/dist) * trim;
-                    }
-
-                    if (!this.tempVector) {
-                        this.tempVector = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                        this.tempVector.setAttribute('class', 'edge-temp');
-                        this.tempVector.setAttribute('marker-end', 'url(#arrow-temp-edit)');
-                        if(this.dom.pathsEdit) this.dom.pathsEdit.appendChild(this.tempVector);
-                    }
-
-                    this.tempVector.setAttribute('x1', x1);
-                    this.tempVector.setAttribute('y1', y1);
-                    this.tempVector.setAttribute('x2', x2_center);
-                    this.tempVector.setAttribute('y2', y2_center);
-                }
-            });
-
-            window.addEventListener('mouseup', (e) => {
-                if (this.isDragging && this.draggedElement) {
-                    this.isDragging = false;
-                    this.draggedElement.style.zIndex = this.draggedElement.classList.contains('ghost-node') ? 1 : 5;
-                    
-                    if (!this.hasMoved) {
-                        this.handleNodeClick(this.draggedElement.dataset.id);
-                    } else {
-                        const newX = parseFloat(this.draggedElement.style.left);
-                        const newY = parseFloat(this.draggedElement.style.top);
-                        
-                        store.dispatch({
-                            type: 'UPDATE_ROLE',
-                            payload: { 
-                                projectId: this.activeProjectId, 
-                                roleId: this.draggedElement.dataset.id, 
-                                updates: { x: newX, y: newY } 
-                            }
-                        }).then(() => {
-                            const cloneNode = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${this.draggedElement.dataset.id}"]`);
-                            if(cloneNode) {
-                                cloneNode.style.left = `${newX}%`;
-                                cloneNode.style.top = `${newY}%`;
-                            }
-                        });
-                    }
-                    this.draggedElement = null;
-                }
             });
 
             document.getElementById('btnCloseTxBuilder').addEventListener('click', () => {
@@ -849,7 +720,7 @@ export default class ValueMapView {
             });
         }
 
-        // Tooltips 
+        // TOOLTIPS
         const showTooltip = (e) => {
             if (e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) {
                 const idx = e.target.getAttribute('data-idx');
@@ -912,13 +783,23 @@ export default class ValueMapView {
         }
     }
 
+    // ==========================================
+    // DELEGACIÓN A MAPRENDERER
+    // ==========================================
+    refreshDataFromStore() {
+        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+        if(!p) return;
+        const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : (p.transactions || []);
+        
+        if(this.mapVis) this.mapVis.setData(p.roles, flows);
+        if(this.mapEdit) this.mapEdit.setData(p.roles, flows);
+    }
+
     triggerAiInsight(message) {
         if(!this.dom.aiCopilot || !this.dom.aiCopilotBody) return;
         this.dom.aiCopilotBody.innerHTML = `<div style="font-size: 0.95rem;">${message}</div>`;
         this.dom.aiCopilot.classList.add('visible');
-        setTimeout(() => {
-            this.dom.aiCopilot.classList.remove('visible');
-        }, 8000);
+        setTimeout(() => { this.dom.aiCopilot.classList.remove('visible'); }, 8000);
     }
 
     handleNodeClick(nodeId) {
@@ -934,82 +815,6 @@ export default class ValueMapView {
         }
     }
 
-    renderMap(canvasObj, isEditMode) {
-        if(!canvasObj) return;
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        if (!p || !p.roles) return;
-
-        canvasObj.querySelectorAll('.node-wrapper').forEach(n => n.remove());
-
-        let activeRoles = p.roles.filter(r => !r.isArchived);
-        if (activeRoles.length === 0) return;
-
-        const levelCounts = { '@anxaneta':0, '@aixecador':0, '@dosos':0, '@baixos':0, '@pinya':0 };
-        
-        // Smart Grid Distribution for Initial Layout (Spread horizontal to avoid line overlaps)
-        const getInitialLayout = (level, totalInLevel, currentCount) => {
-            const baseLayout = { '@anxaneta': 15, '@aixecador': 35, '@dosos': 55, '@baixos': 75, '@pinya': 90 };
-            let y = baseLayout[level] || 50;
-            let x = 50;
-            if (totalInLevel > 1) {
-                const step = 80 / (totalInLevel - 1);
-                x = 10 + (step * currentCount);
-            }
-            // Micro-oscilación vertical para que las tuberías no crucen por en medio de otros nodos
-            y += (currentCount % 2 === 0 ? -3 : 3);
-            return { x, y };
-        };
-
-        activeRoles.forEach(r => {
-            const level = r.levelId || '@baixos';
-            const color = this.getColor(level);
-            const icon = this.getIcon(level);
-            
-            const totalInLevel = activeRoles.filter(role => role.levelId === level).length;
-            const pos = getInitialLayout(level, totalInLevel, levelCounts[level]);
-            levelCounts[level]++;
-
-            const nodeDiv = document.createElement('div');
-            nodeDiv.className = 'node-wrapper';
-            if (this.selectedRoleId === r.id) nodeDiv.classList.add('selected');
-            nodeDiv.dataset.id = r.id;
-
-            let topPos = r.y !== undefined ? r.y : pos.y;
-            let leftPos = r.x !== undefined ? r.x : pos.x;
-
-            nodeDiv.style.top = `${topPos}%`;
-            nodeDiv.style.left = `${leftPos}%`;
-
-            nodeDiv.innerHTML = `
-                <div class="node-circle">
-                    <div class="node-level-badge" style="color: ${color}; border-color: ${color};" title="${r.name}">${icon}</div>
-                    <div class="node-fmv" style="color: ${color};">${r.fmv}€</div>
-                    <div class="node-label-fmv">x${r.multiplier}</div>
-                </div>
-                <div class="node-title">${r.name}</div>
-            `;
-
-            canvasObj.appendChild(nodeDiv);
-        });
-
-        const ghostRoles = p.roles.filter(r => r.isArchived);
-        ghostRoles.forEach((r, i) => {
-            const nodeDiv = document.createElement('div');
-            nodeDiv.className = 'node-wrapper ghost-node';
-            nodeDiv.dataset.id = r.id;
-            nodeDiv.style.top = `90%`;
-            nodeDiv.style.left = `${10 + (i * 10)}%`;
-            nodeDiv.innerHTML = `
-                <div class="node-circle">
-                    <div class="node-level-badge" style="color: #666; border-color: #666;">👻</div>
-                    <div class="node-fmv" style="color: #666;">ARCH</div>
-                </div>
-                <div class="node-title">${r.name}</div>
-            `;
-            canvasObj.appendChild(nodeDiv);
-        });
-    }
-
     startSimulation() {
         if (this.isSimulating) return;
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -1020,9 +825,7 @@ export default class ValueMapView {
         if(this.currentSimIndex === undefined) this.currentSimIndex = 0;
         
         if(this.currentSimIndex === 0) {
-            if(this.currentSimBadge) { this.currentSimBadge.remove(); this.currentSimBadge = null; }
-            this.dom.canvasVis.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
-            this.drawEdges(); 
+            if(this.mapVis) this.mapVis.renderEdges(); 
         }
 
         const stepEls = this.dom.seqList.querySelectorAll('.flow-step');
@@ -1031,7 +834,7 @@ export default class ValueMapView {
             if(!this.isSimulating) return;
             if(this.currentSimIndex >= flows.length) {
                 this.stopSimulation();
-                this.triggerAiInsight("✅ <b>Simulación Completada.</b> El flujo estructural del valor en el Castell ha sido validado sin ciclos rotos.");
+                this.triggerAiInsight("✅ <b>Simulación Completada.</b> El flujo estructural del valor en el Castell ha sido validado.");
                 return;
             }
 
@@ -1049,24 +852,26 @@ export default class ValueMapView {
             let isSickFlow = false;
 
             if (r1 && r2) {
-                const level1 = this.levelHierarchy[r1.levelId];
-                const level2 = this.levelHierarchy[r2.levelId];
+                const hierarchy = { '@anxaneta': 1, '@aixecador': 2, '@dosos': 3, '@baixos': 4, '@pinya': 5 };
+                const level1 = hierarchy[r1.levelId];
+                const level2 = hierarchy[r2.levelId];
                 if (Math.abs(level1 - level2) > 1) {
                     isSickFlow = true;
                     const dom1 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${r1.id}"]`);
                     const dom2 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${r2.id}"]`);
                     if(dom1) dom1.classList.add('sick-node');
                     if(dom2) dom2.classList.add('sick-node');
-                    this.triggerAiInsight(`⚠️ <b>Cuello de Botella Detectado:</b> La tubería de ${r1.levelId} a ${r2.levelId} salta demasiados niveles jerárquicos de riesgo. Considere triangular el flujo.`);
+                    this.triggerAiInsight(`⚠️ <b>Cuello de Botella Detectado:</b> La tubería de ${r1.levelId} a ${r2.levelId} salta demasiados niveles jerárquicos.`);
                 } else {
                     this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('sick-node'));
                 }
             }
 
-            this.drawSingleEdgeAnim(flow, index, isSickFlow); 
+            // Delegamos en MapRenderer
+            if (this.mapVis) this.mapVis.drawAnimatedSimulationLine(flow, index, isSickFlow); 
             
             this.currentSimIndex++;
-            this.simTimeoutId = setTimeout(runNextStep, 2500);
+            this.simTimeoutId = setTimeout(runNextStep, 2800);
         };
 
         runNextStep();
@@ -1082,81 +887,7 @@ export default class ValueMapView {
         stepEls.forEach(el => el.classList.remove('simulating'));
 
         this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('sick-node'));
-        if(this.currentSimBadge) { this.currentSimBadge.remove(); this.currentSimBadge = null; }
-        this.dom.canvasVis.querySelectorAll('.sim-tx-badge').forEach(b => b.remove());
-
-        this.drawEdges(); 
-    }
-
-    drawSingleEdgeAnim(tx, index, isSick) {
-        const dom1 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
-        const dom2 = this.dom.canvasVis.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
-        if (!dom1 || !dom2) return;
-
-        const x1_center = dom1.offsetLeft;
-        const y1_center = dom1.offsetTop;
-        const x2_center = dom2.offsetLeft;
-        const y2_center = dom2.offsetTop;
-
-        const dx = x2_center - x1_center;
-        const dy = y2_center - y1_center;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-
-        const trim = 50; 
-        let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
-        if (dist > trim) {
-            x1 = x1_center + (dx/dist) * trim;
-            y1 = y1_center + (dy/dist) * trim;
-            x2 = x2_center - (dx/dist) * trim;
-            y2 = y2_center - (dy/dist) * trim;
-        }
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
-        
-        let markerId = isSick ? 'arrow-sick-vis' : (tx.tipo === 'tangible' ? 'arrow-tangible-vis' : 'arrow-intangible-vis');
-        path.setAttribute('marker-end', `url(#${markerId})`);
-        
-        const strokeColor = isSick ? '#ff5252' : (tx.tipo === 'tangible' ? '#00e676' : '#e040fb');
-        const realDist = dist; 
-        
-        path.style.cssText = `
-            fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: ${realDist}; stroke-dashoffset: ${realDist}; animation: drawLine 1.5s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});
-        `;
-
-        if(this.dom.pathsVis) this.dom.pathsVis.appendChild(path);
-
-        setTimeout(() => {
-            // FIX: Ocultar el badge anterior si existe
-            if (this.currentSimBadge) {
-                this.currentSimBadge.remove();
-            }
-
-            const txX = (x1_center + x2_center) / 2;
-            const txY = (y1_center + y2_center) / 2;
-
-            const badge = document.createElement('div');
-            badge.className = 'sim-tx-badge';
-            badge.style.position = 'absolute';
-            badge.style.left = `${txX}px`;
-            badge.style.top = `${txY}px`;
-            badge.style.backgroundColor = 'rgba(10,10,14,0.95)';
-            badge.style.border = `2px solid ${strokeColor}`;
-            badge.style.color = 'white';
-            badge.style.padding = '10px 15px';
-            badge.style.borderRadius = '10px';
-            badge.style.boxShadow = `0 10px 30px rgba(0,0,0,0.8), 0 0 20px ${strokeColor}`;
-            badge.style.zIndex = '1000';
-            badge.style.textAlign = 'center';
-            badge.style.animation = 'popIn 0.4s ease-out forwards';
-            badge.style.pointerEvents = 'none';
-
-            const delivName = tx.template || tx.entregable || 'Flow';
-            badge.innerHTML = `<div style="color:${strokeColor}; font-weight:900; font-size:0.75rem; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px;">Flujo ${index + 1}</div><div style="font-size:1rem; font-weight:bold; line-height:1.2;">${delivName}</div>`;
-            
-            this.currentSimBadge = badge;
-            this.dom.canvasVis.appendChild(badge);
-        }, 1000); 
+        if(this.mapVis) this.mapVis.renderEdges(); 
     }
 
     populateDropdowns(roles) {
@@ -1176,7 +907,6 @@ export default class ValueMapView {
         if(!role) return;
 
         let html = `<option value="">-- Elige un Blueprint --</option>`;
-        
         const templates = [
             { name: "Entrega Operativa Estándar", estimatedHours: 4, tipo: "tangible" },
             { name: "Auditoría o Revisión", estimatedHours: 2, tipo: "intangible" },
@@ -1233,10 +963,7 @@ export default class ValueMapView {
         if(this.dom.canvasEdit) {
             this.dom.canvasEdit.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('flow-source'));
         }
-        if (this.tempVector) {
-            this.tempVector.remove();
-            this.tempVector = null;
-        }
+        if (this.mapEdit) this.mapEdit.clearTempLine();
         if(this.dom.editTipText) {
             this.dom.editTipText.innerHTML = `💡 <b>Modo Arquitecto:</b> Haz clic en un nodo y luego en otro para trazar una tubería permanente. Arrástralos para moverlos.`;
         }
@@ -1271,13 +998,9 @@ export default class ValueMapView {
     forceSaveState(newState, highlightIndex = -1) {
         store.state = newState;
         localStorage.setItem('tt_sos_v8_state', JSON.stringify(store.state));
-        const pUpdate = store.state.projects.find(x => x.id === this.activeProjectId);
-        this.populateDropdowns(pUpdate.roles);
+        this.refreshDataFromStore();
         this.renderSequence(highlightIndex); 
         this.renderRolesTab(); 
-        if(this.dom.canvasEdit) this.renderMap(this.dom.canvasEdit, true);
-        this.renderMap(this.dom.canvasVis, false);
-        setTimeout(() => this.drawEdges(), 100); 
     }
 
     renderRolesTab() {
@@ -1290,8 +1013,8 @@ export default class ValueMapView {
 
         let html = '';
         p.roles.forEach(rol => {
-            const color = this.getColor(rol.levelId);
-            const icon = this.getIcon(rol.levelId);
+            const color = MapRenderer.getColor(rol.levelId);
+            const icon = MapRenderer.getIcon(rol.levelId);
             const isGhost = rol.isArchived ? 'opacity: 0.5; filter: grayscale(1); border-style:dashed;' : '';
             
             html += `
@@ -1376,160 +1099,4 @@ export default class ValueMapView {
             this.dom.seqList.appendChild(stepEl);
         });
     }
-
-    drawEdges() {
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        
-        if(this.dom.pathsVis) this.dom.pathsVis.innerHTML = '';
-        if(this.dom.pathsEdit) this.dom.pathsEdit.innerHTML = '';
-        
-        this.dom.canvasVis.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
-        if(this.dom.canvasEdit) this.dom.canvasEdit.querySelectorAll('.tx-badge').forEach(b => b.remove()); 
-        
-        let flows = p?.vna_flows || [];
-        if (flows.length === 0 && p?.transactions && p.transactions.length > 0) flows = p.transactions;
-
-        if (flows.length === 0) return;
-
-        let maxHours = 1;
-        if (this.isHeatmapActive) {
-            flows.forEach(tx => {
-                const h = tx.total_hours_processed || 0;
-                if (h > maxHours) maxHours = h;
-            });
-        }
-
-        const pairCounts = {};
-        flows.forEach((tx, i) => {
-            const key = tx.from < tx.to ? `${tx.from}-${tx.to}` : `${tx.to}-${tx.from}`;
-            if (!pairCounts[key]) pairCounts[key] = [];
-            pairCounts[key].push({ tx, index: i });
-        });
-
-        Object.keys(pairCounts).forEach(key => {
-            const edges = pairCounts[key];
-            edges.forEach((edgeData, multiIdx) => {
-                const { tx, index } = edgeData;
-                if (this.dom.canvasVis.offsetWidth > 0 && this.dom.pathsVis) {
-                    this.drawSingleEdgeForCanvas(this.dom.canvasVis, this.dom.pathsVis, tx, index, edges, multiIdx, false, maxHours);
-                }
-                if (this.dom.canvasEdit && this.dom.canvasEdit.offsetWidth > 0 && this.dom.pathsEdit) {
-                    this.drawSingleEdgeForCanvas(this.dom.canvasEdit, this.dom.pathsEdit, tx, index, edges, multiIdx, true, 1);
-                }
-            });
-        });
-    }
-
-    drawSingleEdgeForCanvas(canvas, pathsGroup, tx, index, edgesGroup, multiIdx, isEditCanvas, maxHours) {
-        const dom1 = canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
-        const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
-        if (!dom1 || !dom2 || tx.from === tx.to) return;
-
-        const x1_center = dom1.offsetLeft;
-        const y1_center = dom1.offsetTop;
-        const x2_center = dom2.offsetLeft;
-        const y2_center = dom2.offsetTop;
-
-        const dx = x2_center - x1_center;
-        const dy = y2_center - y1_center;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        
-        const trim = 50; 
-        let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
-
-        if (dist > trim) {
-            x1 = x1_center + (dx/dist) * trim;
-            y1 = y1_center + (dy/dist) * trim;
-            x2 = x2_center - (dx/dist) * trim;
-            y2 = y2_center - (dy/dist) * trim;
-        }
-
-        const nx = -dy / dist; 
-        const ny = dx / dist;
-        let offset = 0;
-        
-        if (edgesGroup.length > 1) {
-            const step = 60; 
-            if (multiIdx % 2 !== 0) {
-                offset = Math.ceil(multiIdx / 2) * step;
-            } else {
-                offset = -(Math.ceil(multiIdx / 2) * step);
-            }
-            if (tx.from > tx.to) offset = -offset;
-        }
-
-        const cx = (x1_center + x2_center) / 2 + nx * offset;
-        const cy = (y1_center + y2_center) / 2 + ny * offset;
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-        
-        const suffix = isEditCanvas ? 'edit' : 'vis';
-        let markerId = tx.tipo === 'tangible' ? `arrow-tangible-${suffix}` : `arrow-intangible-${suffix}`;
-        
-        const lineClass = tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible';
-        path.setAttribute('class', `edge-line ${lineClass}`);
-        
-        const strokeHex = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
-        path.style.stroke = strokeHex;
-        
-        // Heatmap V8
-        if (this.isHeatmapActive && !isEditCanvas) {
-            const hProcessed = tx.total_hours_processed || 0;
-            const normalizedWidth = 3 + (hProcessed / maxHours) * 15;
-            const opac = hProcessed > 0 ? 0.9 : 0.15;
-            
-            path.style.strokeWidth = `${normalizedWidth}px`;
-            path.style.opacity = opac;
-            
-            if (normalizedWidth < 10) path.setAttribute('marker-end', `url(#${markerId})`);
-        } else {
-            path.setAttribute('marker-end', `url(#${markerId})`);
-        }
-        
-        if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) {
-            path.style.opacity = '0.2';
-        }
-        
-        pathsGroup.appendChild(path);
-
-        const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
-        const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
-
-        const badge = document.createElement('div');
-        badge.className = 'tx-badge';
-        if (dom1.classList.contains('ghost-node') || dom2.classList.contains('ghost-node')) badge.classList.add('ghost');
-        
-        badge.style.left = `${txX}px`;
-        badge.style.top = `${txY}px`;
-        badge.style.backgroundColor = strokeHex;
-        
-        if (this.isHeatmapActive && !isEditCanvas) {
-            const h = tx.total_hours_processed || 0;
-            badge.innerText = `${h}h`;
-            badge.style.borderRadius = '50%';
-            badge.style.width = '30px';
-            badge.style.height = '30px';
-            badge.style.display = 'flex';
-            badge.style.justifyContent = 'center';
-            badge.style.alignItems = 'center';
-            badge.style.opacity = h > 0 ? 1 : 0.3;
-        } else {
-            badge.innerText = `[${index + 1}]`;
-        }
-        
-        badge.setAttribute('data-idx', index);
-        
-        if(isEditCanvas) {
-             badge.addEventListener('click', () => {
-                 this.editingTxIndex = index;
-                 this.openTxBuilderModal(tx.from, tx.to, tx);
-             });
-        }
-        
-        canvas.appendChild(badge);
-    }
-
-    getIcon(l) { return { '@anxaneta': '👑', '@aixecador': '🧭', '@dosos': '👁️', '@baixos': '⚙️', '@pinya': '🤝' }[l] || '💠'; }
-    getColor(l) { return { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': '#7c4dff', '@pinya': '#536dfe' }[l] || '#fff'; }
 }
