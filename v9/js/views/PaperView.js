@@ -203,7 +203,7 @@ export default class PaperView {
                                 <div class="pow-input-group" style="flex: 1;">
                                     <label>⏱ Tiempo (Horas)</label>
                                     <div style="display:flex; align-items:center; gap:5px;">
-                                        <input type="number" step="0.1" id="inpPowHours" class="pow-input mono" placeholder="Ej: 2.5" style="width:100px;">
+                                        <input type="number" step="0.01" id="inpPowHours" class="pow-input mono" placeholder="Ej: 0.5" style="width:100px;">
                                         <div class="pomodoro-widget">
                                             <div class="pomodoro-display" id="pomodoroDisplay">00:00</div>
                                             <button class="btn-pomodoro" id="btnPomodoroPlay" title="Iniciar/Pausar Focus Mode">▶</button>
@@ -286,6 +286,7 @@ export default class PaperView {
 
         this.dom.editor.focus();
 
+        // 🔥 FIX: TÍTULOS INTELIGENTES Y FILTRADO POR USUARIO
         this.loadProjectTasks = (projId) => {
             const p = state.projects.find(x => x.id === projId);
             if (!p) return;
@@ -293,9 +294,12 @@ export default class PaperView {
             let tasks = [];
             const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
             
+            // Solo mostramos tareas del usuario (asignadas a él) o creadas por él si es "libre"
             if (state.session.role === 'ecosystem-owner' || p.ownerId === activeUserId) {
+                // PO ve todas las activas
                 tasks = tasksSource.filter(tx => tx.status !== 'theoretical'); 
             } else {
+                // Nodo base solo ve las suyas
                 tasks = tasksSource.filter(tx => tx.assigneeId === activeUserId || tx.workerId === activeUserId); 
             }
 
@@ -305,7 +309,11 @@ export default class PaperView {
                 tasks.forEach(t => {
                     const parentFlow = (p.vna_flows || []).find(f => f.id === t.flowId) || t;
                     const roleTo = p.roles.find(r => r.id === parentFlow.to);
-                    const resolvedName = parentFlow.template || parentFlow.entregable || 'Work Order';
+                    
+                    // Extraer título inteligentemente
+                    let resolvedName = parentFlow.template || parentFlow.entregable || t.comentario?.substring(0, 30) || 'Work Order';
+                    if (resolvedName.length > 40) resolvedName = resolvedName.substring(0, 40) + '...';
+
                     selectHtml += `<option value="${t.id || t.hash}">[${roleTo ? roleTo.name : 'VNA'}] ${resolvedName}</option>`;
                 });
                 selectHtml += `</optgroup>`;
@@ -320,7 +328,7 @@ export default class PaperView {
             localStorage.setItem('tt_active_project', this.activeProjectId);
             this.loadProjectTasks(this.activeProjectId);
             this.activeTx = null;
-            this.stopPomodoro(); // Pausa si cambia de proyecto
+            this.stopPomodoro(); 
             this.setDraftMode();
         });
 
@@ -343,7 +351,7 @@ export default class PaperView {
 
         this.dom.omniSelector.addEventListener('change', (e) => {
             const val = e.target.value;
-            this.stopPomodoro(); // Pausa si cambia de tarea
+            this.stopPomodoro(); 
             
             if (val === 'draft') {
                 this.activeTx = null;
@@ -376,11 +384,13 @@ export default class PaperView {
 
         const updateInputs = () => {
             this.dom.pomoDisplay.innerText = formatTime(this.pomodoroSeconds);
-            // Convierte segundos a horas decimales (ej: 30 min = 0.5h). Máximo 2 decimales.
-            const hoursDecimal = (this.pomodoroSeconds / 3600).toFixed(2);
-            // Solo actualiza el input si el crono ha avanzado (para no machacar datos cargados de la BBDD a 0)
+            
+            // Calculamos decimales precisos.
+            const hoursDecimal = (this.pomodoroSeconds / 3600);
+            
+            // Solo sobrescribe la caja si el crono está activo o ha sumado algo
             if (this.pomodoroSeconds > 0) {
-                this.dom.inpPowHours.value = hoursDecimal > 0 ? hoursDecimal : 0.1; // Mínimo 0.1h
+                this.dom.inpPowHours.value = hoursDecimal.toFixed(3); 
             }
         };
 
@@ -400,7 +410,6 @@ export default class PaperView {
             }
         });
 
-        // La función global de tick
         this.tickPomodoro = () => {
             this.pomodoroSeconds++;
             updateInputs();
@@ -445,7 +454,11 @@ export default class PaperView {
         const parentFlow = isLegacy ? this.activeTx : (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
         
         this.dom.taskPanel.style.display = 'block';
-        this.dom.taskTitle.innerText = parentFlow ? (parentFlow.template || parentFlow.entregable || 'SOP') : 'Work Order';
+        
+        // Extracción inteligente
+        let resolvedTitle = parentFlow ? (parentFlow.template || parentFlow.entregable || this.activeTx.comentario) : 'Work Order';
+        if (!resolvedTitle || resolvedTitle === '') resolvedTitle = 'SOP Ad-Hoc';
+        this.dom.taskTitle.innerText = resolvedTitle;
         
         const roleTo = p.roles.find(r => r.id === (parentFlow ? parentFlow.to : this.activeTx.to));
         this.dom.taskRole.innerText = roleTo ? `${roleTo.levelId} - ${roleTo.name}` : '@ecosistema';
@@ -469,12 +482,11 @@ export default class PaperView {
             this.dom.taskSocs.innerHTML = '<div style="color:#666; font-style:italic; font-size:0.85rem;">No hay SOCs asociados a este entregable.</div>';
         }
 
-        // Cargar Horas del Draft si existen. Si no, arrancar el Pomo desde 0.
+        // Cargar Horas del Draft
         this.dom.inpPowLink.value = this.activeTx.draftLink || this.activeTx.proofLink || '';
         const savedHours = this.activeTx.draftHours || this.activeTx.realHours || 0;
         this.dom.inpPowHours.value = savedHours > 0 ? savedHours : ''; 
         
-        // Sincronizar Pomodoro con las horas cargadas
         if (savedHours > 0) {
             this.pomodoroSeconds = Math.floor(savedHours * 3600);
             const m = Math.floor(this.pomodoroSeconds / 60).toString().padStart(2, '0');
@@ -496,13 +508,13 @@ export default class PaperView {
         if (this.activeTx.status === 'pinged') {
             this.dom.btnSubmit.style.display = 'block';
             this.dom.btnSaveTaskDraft.style.display = 'block';
-            this.dom.btnPomoPlay.style.display = 'flex'; // Mostrar Pomodoro
+            this.dom.btnPomoPlay.style.display = 'flex'; 
         } else {
             this.dom.btnSubmit.style.display = 'none';
             this.dom.btnSaveTaskDraft.style.display = 'none';
             this.dom.inpPowLink.disabled = true;
             this.dom.inpPowHours.disabled = true;
-            this.dom.btnPomoPlay.style.display = 'none'; // Ocultar Pomodoro si está auditada
+            this.dom.btnPomoPlay.style.display = 'none'; 
             this.dom.btnPomoReset.style.display = 'none';
             this.dom.taskSocs.querySelectorAll('input').forEach(i => i.disabled = true);
             this.dom.editor.contentEditable = "false";
@@ -552,7 +564,6 @@ export default class PaperView {
     async reportDeliverable() {
         if (!this.activeTx) return;
         
-        // 🛑 Protección: Si el Pomodoro está corriendo, lo paramos antes de enviar.
         this.stopPomodoro();
 
         const link = this.dom.inpPowLink.value.trim();
