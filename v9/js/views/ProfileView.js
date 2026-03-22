@@ -7,11 +7,14 @@ import { BottomNav } from '../components/BottomNav.js';
 
 export default class ProfileView {
     constructor() {
-        document.title = "Mi Perfil | TeamTowers V9";
+        document.title = "Identidad & SBTs | TeamTowers V9";
         this.currentTab = 'identity'; // 'identity' o 'talent'
     }
 
     async getHtml() {
+        // 🔥 Esperamos a que la Base de Datos Asíncrona (KB) y el Store terminen de arrancar
+        await store.init();
+        
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         const user = state.globalUsers.find(u => u.id === activeUserId);
@@ -21,8 +24,12 @@ export default class ProfileView {
                 <div class="app-layout">
                     ${Sidebar.getHtml('/profile')}
                     <main class="workspace" style="display:flex; justify-content:center; align-items:center;">
-                        <h2 style="color:white;">Usuario no encontrado en la Matriz.</h2>
+                        <div style="text-align:center;">
+                            <h2 style="color:var(--accent-red);">Identidad no encontrada.</h2>
+                            <a href="/v8/" data-link style="color:var(--accent-blue);">Volver a Iniciar Sesión</a>
+                        </div>
                     </main>
+                    ${BottomNav.getHtml('/profile')}
                 </div>
             `;
         }
@@ -30,12 +37,12 @@ export default class ProfileView {
         const headerConfig = {
             title: "Identidad & Talento",
             subtitle: user.id,
-            tagline: "Gestiona tus coordenadas en la Matriz y tu historial criptográfico de Soulbound Tokens.",
+            tagline: "Tus coordenadas en la Red VNA y tu historial inmutable de Soulbound Tokens.",
             tabs: [
-                { id: 'identity', label: '⚙️ Identidad Criptográfica', active: this.currentTab === 'identity' },
+                { id: 'identity', label: '⚙️ Identidad (KYC)', active: this.currentTab === 'identity' },
                 { id: 'talent', label: '🏅 Árbol de Talento (SBT)', active: this.currentTab === 'talent' }
             ],
-            actionHtml: `<div class="status-badge" style="background: rgba(0, 176, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">${user.globalRole === 'ecosystem-owner' ? '👑 Master Architect' : '👤 Ciudadano'}</div>`
+            actionHtml: `<div class="status-badge" style="background: rgba(0, 176, 255, 0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">${user.globalRole === 'ecosystem-owner' ? '👑 Master Architect' : '👤 Ciudadano de la Red'}</div>`
         };
 
         // --- PROCESAMIENTO PESTAÑA TALENTO (SBT) ---
@@ -144,11 +151,11 @@ export default class ProfileView {
                     <div id="view-identity" class="tab-content ${this.currentTab === 'identity' ? 'active' : ''}">
                         <div class="glass-panel">
                             <h2 style="color:white; margin-top:0;">Configuración de Identidad</h2>
-                            <p style="color:#aaa; font-size:0.9rem; margin-bottom:2rem;">Actualiza tus datos para el Padrón Global. Tu ID principal no puede ser modificado una vez forjado.</p>
+                            <p style="color:#aaa; font-size:0.9rem; margin-bottom:2rem;">Actualiza tus datos para el Padrón Global. Tu ID de red no puede ser modificado una vez forjado.</p>
                             
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                                 <div class="form-group">
-                                    <label>Alias / ID de Matriz</label>
+                                    <label>Alias / ID de Red</label>
                                     <input type="text" class="tt-input" value="${user.id}" disabled title="El ID principal es inmutable.">
                                 </div>
                                 <div class="form-group">
@@ -173,7 +180,7 @@ export default class ProfileView {
                             </div>
 
                             <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
-                                <button id="btnSaveProfile" class="btn-save">💾 Guardar Cambios</button>
+                                <button id="btnSaveProfile" class="btn-save">💾 Guardar Identidad</button>
                             </div>
                         </div>
                     </div>
@@ -190,7 +197,7 @@ export default class ProfileView {
                             
                             <div class="stats-grid">
                                 <div class="stat-box">
-                                    <div class="stat-value highlight">${totalHours}h</div>
+                                    <div class="stat-value highlight">${Math.round(totalHours)}h</div>
                                     <div class="stat-label">PoW (Proof of Work)</div>
                                 </div>
                                 <div class="stat-box">
@@ -213,7 +220,7 @@ export default class ProfileView {
                             ${skillBadges.length === 0 ? `
                                 <div style="text-align:center; padding: 3rem; color: #666; font-style:italic; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px dashed #333; margin-top: 2rem;">
                                     <span>🌱</span><br><br>
-                                    Aún no has validado SOCs en el ecosistema.<br> Completa Work Orders en el Hiperpaper para ganar experiencia y forjar tus primeros Soulbound Tokens.
+                                    Aún no has validado SOCs en la red.<br> Completa Work Orders en el Omni-Paper para ganar experiencia y forjar tus primeros Soulbound Tokens.
                                 </div>
                             ` : `
                                 <div class="skills-grid">
@@ -224,7 +231,7 @@ export default class ProfileView {
                                                     <span class="skill-category">${(skill.category || 'skill').replace('root_', '')}</span>
                                                     <div class="skill-title">${skill.title}</div>
                                                 </div>
-                                                <div class="skill-badge" style="color: ${skill.color}; border-color: ${skill.color}; background: ${skill.color}15;">
+                                                <div class="skill-badge" style="color: ${skill.color}; border-color: ${color}; background: ${skill.color}15;">
                                                     ${skill.level}
                                                 </div>
                                             </div>
@@ -233,7 +240,7 @@ export default class ProfileView {
                                                     <div class="progress-fill" style="width: ${Math.min(skill.progress, 100)}%; background: ${skill.color}; box-shadow: 0 0 10px ${skill.color}80;"></div>
                                                 </div>
                                                 <div class="progress-text">
-                                                    <span>${skill.xp}h validadas</span>
+                                                    <span>${Math.round(skill.xp)}h validadas</span>
                                                     <span>Siguiente Hito: ${skill.nextMilestone}h</span>
                                                 </div>
                                             </div>
@@ -274,7 +281,7 @@ export default class ProfileView {
                 const userIndex = state.globalUsers.findIndex(u => u.id === state.session.activeUserId);
                 
                 if (userIndex !== -1) {
-                    // Actualizamos directamente en el estado y disparamos un guardado falso para que el Store lo pille
+                    // Actualizamos directamente en el estado y disparamos el persist
                     state.globalUsers[userIndex].name = newName;
                     state.globalUsers[userIndex].walletOrSocial = newWallet;
                     state.globalUsers[userIndex].email = newEmail;
@@ -282,15 +289,14 @@ export default class ProfileView {
                     if (!state.globalUsers[userIndex].profile) state.globalUsers[userIndex].profile = {};
                     state.globalUsers[userIndex].profile.vision = newVision;
 
-                    // Despachamos una acción vacía solo para forzar el guardado y la recarga de listeners
-                    await store.dispatch({ type: 'UPDATE_PROFILE_DUMMY' });
+                    // Despachamos una acción vacía para forzar la persistencia en IndexedDB
+                    await store.dispatch({ type: 'UPDATE_PROFILE_PERSIST' });
                     
-                    btnSave.innerText = "✅ Guardado";
+                    btnSave.innerText = "✅ Guardado (P2P)";
                     btnSave.style.background = "var(--accent-green)";
+                    btnSave.style.color = "black";
                     setTimeout(() => {
-                        btnSave.innerText = "💾 Guardar Cambios";
-                        btnSave.style.background = "";
-                        window.location.reload(); // Recarga para aplicar nombre en Sidebar/Header
+                        window.location.reload(); 
                     }, 1000);
                 }
             });
