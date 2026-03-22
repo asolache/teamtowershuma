@@ -18,6 +18,11 @@ export default class PaperView {
         this.activeProjectId = null;
         this.isMenuOpen = false;
         this.currentWord = "";
+        
+        // ⏱️ Variables del Pomodoro Tracker
+        this.pomodoroInterval = null;
+        this.pomodoroSeconds = 0;
+        this.isPomodoroRunning = false;
     }
 
     async getHtml() {
@@ -73,6 +78,13 @@ export default class PaperView {
                 .pow-input:focus { border-color: var(--accent-green); box-shadow: inset 0 0 10px rgba(0,230,118,0.1); }
                 .pow-input.mono { font-family: var(--font-mono); font-weight: bold; color: var(--accent-orange); }
 
+                /* ⏱️ POMODORO WIDGET */
+                .pomodoro-widget { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 8px; border: 1px solid #444; margin-top: 5px;}
+                .pomodoro-display { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 900; color: white; min-width: 65px; text-align: center; letter-spacing: 1px;}
+                .btn-pomodoro { background: rgba(255,255,255,0.1); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 0.9rem;}
+                .btn-pomodoro:hover { background: var(--accent-green); color: black; box-shadow: 0 0 10px rgba(0,230,118,0.4);}
+                .btn-pomodoro.active { background: var(--accent-orange); color: black; box-shadow: 0 0 10px rgba(255,171,64,0.4); animation: pulse 2s infinite;}
+
                 .soc-checklist-box { margin-top: 15px; }
                 .soc-checklist-box label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; }
                 .soc-item-check { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 5px; transition: 0.2s;}
@@ -124,6 +136,7 @@ export default class PaperView {
 
                 @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes pulse { 0% { box-shadow: 0 0 5px rgba(255,171,64,0.2); } 50% { box-shadow: 0 0 15px rgba(255,171,64,0.6); } 100% { box-shadow: 0 0 5px rgba(255,171,64,0.2); } }
 
                 @media (max-width: 768px) {
                     .workspace-paper { padding: 90px 1rem 120px 1rem; }
@@ -182,13 +195,21 @@ export default class PaperView {
                             <div id="taskSocsContainer" class="soc-checklist-box"></div>
 
                             <div class="pow-section">
-                                <div class="pow-input-group">
+                                <div class="pow-input-group" style="flex:2;">
                                     <label>🔗 Enlace al Entregable (Proof of Work)</label>
                                     <input type="text" id="inpPowLink" class="pow-input" placeholder="https://github.com/..., Figma, Drive...">
                                 </div>
-                                <div class="pow-input-group" style="flex: 0.5;">
-                                    <label>⏱ Tiempo Dedicado (Horas)</label>
-                                    <input type="number" step="0.5" id="inpPowHours" class="pow-input mono" placeholder="Ej: 2.5" title="Próximamente: Sincronización Automática con Pomodoro Timer">
+                                
+                                <div class="pow-input-group" style="flex: 1;">
+                                    <label>⏱ Tiempo (Horas)</label>
+                                    <div style="display:flex; align-items:center; gap:5px;">
+                                        <input type="number" step="0.1" id="inpPowHours" class="pow-input mono" placeholder="Ej: 2.5" style="width:100px;">
+                                        <div class="pomodoro-widget">
+                                            <div class="pomodoro-display" id="pomodoroDisplay">00:00</div>
+                                            <button class="btn-pomodoro" id="btnPomodoroPlay" title="Iniciar/Pausar Focus Mode">▶</button>
+                                            <button class="btn-pomodoro" id="btnPomodoroReset" title="Reiniciar Cronómetro" style="display:none; font-size:0.75rem;">↻</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -246,6 +267,11 @@ export default class PaperView {
             inpPowHours: document.getElementById('inpPowHours'),
             editorLabel: document.getElementById('editorLabel'),
 
+            // POMODORO DOM
+            pomoDisplay: document.getElementById('pomodoroDisplay'),
+            btnPomoPlay: document.getElementById('btnPomodoroPlay'),
+            btnPomoReset: document.getElementById('btnPomodoroReset'),
+
             editor: document.getElementById('semanticEditor'),
             menu: document.getElementById('semanticMenu'),
             
@@ -294,6 +320,7 @@ export default class PaperView {
             localStorage.setItem('tt_active_project', this.activeProjectId);
             this.loadProjectTasks(this.activeProjectId);
             this.activeTx = null;
+            this.stopPomodoro(); // Pausa si cambia de proyecto
             this.setDraftMode();
         });
 
@@ -316,6 +343,8 @@ export default class PaperView {
 
         this.dom.omniSelector.addEventListener('change', (e) => {
             const val = e.target.value;
+            this.stopPomodoro(); // Pausa si cambia de tarea
+            
             if (val === 'draft') {
                 this.activeTx = null;
                 this.setDraftMode();
@@ -327,12 +356,74 @@ export default class PaperView {
         });
 
         this.setupSemanticEditor();
+        this.setupPomodoro();
 
         // 🔥 BOTONES DE ACCIÓN
         this.dom.btnSubmit.addEventListener('click', () => this.reportDeliverable());
         this.dom.btnSaveTaskDraft.addEventListener('click', () => this.saveTaskDraft());
         this.dom.btnConvertDraft.addEventListener('click', () => this.convertDraftToTask());
     }
+
+    // ==========================================
+    // ⏱️ LÓGICA DEL POMODORO TRACKER
+    // ==========================================
+    setupPomodoro() {
+        const formatTime = (totalSeconds) => {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        };
+
+        const updateInputs = () => {
+            this.dom.pomoDisplay.innerText = formatTime(this.pomodoroSeconds);
+            // Convierte segundos a horas decimales (ej: 30 min = 0.5h). Máximo 2 decimales.
+            const hoursDecimal = (this.pomodoroSeconds / 3600).toFixed(2);
+            // Solo actualiza el input si el crono ha avanzado (para no machacar datos cargados de la BBDD a 0)
+            if (this.pomodoroSeconds > 0) {
+                this.dom.inpPowHours.value = hoursDecimal > 0 ? hoursDecimal : 0.1; // Mínimo 0.1h
+            }
+        };
+
+        this.dom.btnPomoPlay.addEventListener('click', () => {
+            if (this.isPomodoroRunning) {
+                this.stopPomodoro();
+            } else {
+                this.startPomodoro();
+            }
+        });
+
+        this.dom.btnPomoReset.addEventListener('click', () => {
+            if(confirm("¿Estás seguro de reiniciar el cronómetro a 0?")) {
+                this.stopPomodoro();
+                this.pomodoroSeconds = 0;
+                updateInputs();
+            }
+        });
+
+        // La función global de tick
+        this.tickPomodoro = () => {
+            this.pomodoroSeconds++;
+            updateInputs();
+        };
+    }
+
+    startPomodoro() {
+        if (this.isPomodoroRunning) return;
+        this.isPomodoroRunning = true;
+        this.dom.btnPomoPlay.innerText = "⏸";
+        this.dom.btnPomoPlay.classList.add('active');
+        this.dom.btnPomoReset.style.display = "flex";
+        this.pomodoroInterval = setInterval(this.tickPomodoro, 1000);
+    }
+
+    stopPomodoro() {
+        if (!this.isPomodoroRunning) return;
+        this.isPomodoroRunning = false;
+        this.dom.btnPomoPlay.innerText = "▶";
+        this.dom.btnPomoPlay.classList.remove('active');
+        clearInterval(this.pomodoroInterval);
+    }
+
 
     setDraftMode() {
         this.dom.taskPanel.style.display = 'none';
@@ -378,8 +469,22 @@ export default class PaperView {
             this.dom.taskSocs.innerHTML = '<div style="color:#666; font-style:italic; font-size:0.85rem;">No hay SOCs asociados a este entregable.</div>';
         }
 
+        // Cargar Horas del Draft si existen. Si no, arrancar el Pomo desde 0.
         this.dom.inpPowLink.value = this.activeTx.draftLink || this.activeTx.proofLink || '';
-        this.dom.inpPowHours.value = this.activeTx.draftHours || this.activeTx.realHours || parentFlow?.estimatedHours || 1;
+        const savedHours = this.activeTx.draftHours || this.activeTx.realHours || 0;
+        this.dom.inpPowHours.value = savedHours > 0 ? savedHours : ''; 
+        
+        // Sincronizar Pomodoro con las horas cargadas
+        if (savedHours > 0) {
+            this.pomodoroSeconds = Math.floor(savedHours * 3600);
+            const m = Math.floor(this.pomodoroSeconds / 60).toString().padStart(2, '0');
+            const s = (this.pomodoroSeconds % 60).toString().padStart(2, '0');
+            this.dom.pomoDisplay.innerText = `${m}:${s}`;
+        } else {
+            this.pomodoroSeconds = 0;
+            this.dom.pomoDisplay.innerText = "00:00";
+        }
+
         this.dom.editor.innerHTML = this.activeTx.draftContent || '<p><br></p>';
 
         this.dom.threadWrapper.style.display = 'flex';
@@ -391,11 +496,14 @@ export default class PaperView {
         if (this.activeTx.status === 'pinged') {
             this.dom.btnSubmit.style.display = 'block';
             this.dom.btnSaveTaskDraft.style.display = 'block';
+            this.dom.btnPomoPlay.style.display = 'flex'; // Mostrar Pomodoro
         } else {
             this.dom.btnSubmit.style.display = 'none';
             this.dom.btnSaveTaskDraft.style.display = 'none';
             this.dom.inpPowLink.disabled = true;
             this.dom.inpPowHours.disabled = true;
+            this.dom.btnPomoPlay.style.display = 'none'; // Ocultar Pomodoro si está auditada
+            this.dom.btnPomoReset.style.display = 'none';
             this.dom.taskSocs.querySelectorAll('input').forEach(i => i.disabled = true);
             this.dom.editor.contentEditable = "false";
         }
@@ -441,10 +549,12 @@ export default class PaperView {
         }, 500);
     }
 
-    // 🔥 ACCIÓN: Enviar el Entregable a Auditoría (Report)
     async reportDeliverable() {
         if (!this.activeTx) return;
         
+        // 🛑 Protección: Si el Pomodoro está corriendo, lo paramos antes de enviar.
+        this.stopPomodoro();
+
         const link = this.dom.inpPowLink.value.trim();
         const hours = parseFloat(this.dom.inpPowHours.value) || 0;
         const htmlContent = this.dom.editor.innerHTML.trim();
@@ -454,7 +564,7 @@ export default class PaperView {
         }
 
         if (hours <= 0) {
-            return alert("⚠️ Debes registrar un tiempo dedicado válido (Horas > 0).");
+            return alert("⚠️ Debes registrar un tiempo dedicado válido (Horas > 0). Puedes usar el Pomodoro Tracker o escribirlo a mano.");
         }
 
         this.dom.btnSubmit.disabled = true;
@@ -464,7 +574,6 @@ export default class PaperView {
         const payloadKey = isLegacy ? 'txHash' : 'woHash';
         const targetHash = this.activeTx.hash || this.activeTx.id;
 
-        // 1. Reportar Tarea (Cambia Status a 'reported' y asigna horas/link)
         await store.dispatch({
             type: 'REPORT_WORK_ORDER',
             payload: {
@@ -476,7 +585,6 @@ export default class PaperView {
             }
         });
 
-        // 2. Registrar en la Usenet (Log histórico)
         const contentLog = `Proof of Work subido. Horas: ${hours}h.\n${link ? `<a href="${link}" target="_blank" class="log-pow-link">🔗 Ver Entregable</a><br><br>` : ''}${htmlContent}`;
         
         await store.dispatch({
@@ -489,15 +597,14 @@ export default class PaperView {
                     authorId: store.getState().session.activeUserId,
                     relatedTxHash: targetHash,
                     content: contentLog, 
-                    mentions: ['@notari_ledger', '@cap_de_colla'], // Avisar a la IA y al PO
+                    mentions: ['@notari_ledger', '@cap_de_colla'], 
                     readBy: []
                 }
             }
         });
 
-        // 🔥 FIX REDIRECCIÓN AL KANBAN CORRECTO
         alert("✅ Proof of Work reportado exitosamente. La tarea ha pasado a Auditoría.");
-        window.location.href = '/v8/project'; // Redirige al Kanban PULL (ProjectView)
+        window.location.href = '/v8/project'; 
     }
 
     renderThread(project) {
@@ -547,7 +654,6 @@ export default class PaperView {
 
     // ==========================================
     // EL RESTO ES EL CÓDIGO DEL EDITOR SEMÁNTICO Y WIDGETS
-    // (Mantenido intacto)
     // ==========================================
     
     setupSemanticEditor() {
