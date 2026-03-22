@@ -6,7 +6,7 @@ import { BottomNav } from '../components/BottomNav.js';
 
 export default class HomeView {
     constructor() {
-        document.title = "Matriz Global | TeamTowers V15";
+        document.title = "Matriz Global | TeamTowers V15.9";
     }
 
     async getHtml() {
@@ -31,7 +31,7 @@ export default class HomeView {
                     <div class="login-terminal">
                         <div style="font-size: 4rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(0,176,255,0.5));">🗼</div>
                         <h1 style="font-family: var(--font-main); margin: 0 0 5px 0; font-weight: 900; font-size: 1.8rem;">TeamTowers</h1>
-                        <p style="color: #888; font-size: 0.85rem; margin: 0; letter-spacing: 2px;">KERNEL V15.5 // ZERO-TRUST</p>
+                        <p style="color: #888; font-size: 0.85rem; margin: 0; letter-spacing: 2px;">KERNEL V15.9 // ZERO-TRUST</p>
                         
                         <input type="text" id="loginUserId" class="login-input" placeholder="Alias (ej: @alvaro)" value="@alvaro">
                         
@@ -55,10 +55,10 @@ export default class HomeView {
                 <div style="font-size: 2rem; margin-bottom: 15px;">🏰</div>
                 <h3 style="color: white; margin: 0 0 10px 0; font-size: 1.2rem;">${p.nombre}</h3>
                 <div style="color: #888; font-size: 0.85rem; display: flex; gap: 10px; margin-bottom: 15px;">
-                    <span>👥 ${(p.roles || []).length} Roles</span>
-                    <span>🛤️ ${(p.vna_flows || []).length} Tuberías</span>
+                    <span>🪑 ${(p.roles || []).length} Sillas (Roles)</span>
+                    <span>🛤️ ${(p.vna_flows || []).length} Tuberías Valor</span>
                 </div>
-                <button style="background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 8px 15px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer;">Entrar al Castell</button>
+                <button style="background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 8px 15px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer;">Entrar al Ecosistema</button>
             </div>
         `).join('');
 
@@ -99,15 +99,15 @@ export default class HomeView {
             
             if (btnConnect && inputId) {
                 btnConnect.addEventListener('click', async () => {
-                    const id = inputId.value.trim();
+                    let id = inputId.value.trim();
                     if (!id) return alert("Identificación requerida.");
+                    if (!id.startsWith('@')) id = '@' + id; // Force @ for uniformity
                     
-                    // Conectamos y forzamos recarga dura para montar toda la UI
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: id } });
                     window.location.replace('/v8/'); 
                 });
             }
-            return; // Detenemos la ejecución para que no busque Sidebar ni Headers
+            return; 
         }
 
         // Lógica si ESTAMOS logueados
@@ -118,7 +118,7 @@ export default class HomeView {
             card.addEventListener('click', (e) => {
                 const projId = e.currentTarget.getAttribute('data-id');
                 localStorage.setItem('tt_active_project', projId);
-                // Redirigir al Dashboard del proyecto usando el router de la SPA
+                // Redirigimos siempre al Kanban PULL (Work Orders) al entrar a un proyecto
                 history.pushState(null, null, '/v8/dashboard');
                 window.dispatchEvent(new Event('popstate'));
             });
