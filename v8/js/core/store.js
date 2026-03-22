@@ -1,9 +1,9 @@
 // v8/js/core/store.js
-// Motor de Estado Global Inmutable (Redux Pattern) - V15.9.6 (Strict Ledger)
+// Motor de Estado Global Inmutable (Redux Pattern) - V15.9.8 (Precisión Pomodoro)
 
 const initialState = {
     config: {
-        version: '15.9.6-Fractal',
+        version: '15.9.8-Fractal',
         theme: 'dark'
     },
     session: {
@@ -178,9 +178,11 @@ class Store {
                     }
                     if (woIdx > -1) {
                         taskList[woIdx].status = 'reported';
-                        taskList[woIdx].realHours = action.payload.realHours;
+                        // 🔥 FIX POMODORO: Respetamos los decimales pequeños (ej. 0.04h) del Pomodoro
+                        taskList[woIdx].realHours = (action.payload.realHours !== undefined && action.payload.realHours !== null) ? action.payload.realHours : 0;
                         taskList[woIdx].comentario = action.payload.comentario;
                         if (action.payload.proofLink) taskList[woIdx].proofLink = action.payload.proofLink;
+                        taskList[woIdx].reportedDate = Date.now(); // Guardamos fecha de reporte
                     }
                 }
                 break;
@@ -208,7 +210,6 @@ class Store {
                 }
                 break;
 
-            // 🔥 FIX: APROBACIÓN MATEMÁTICA ESTRICTA
             case 'APPROVE_WORK_ORDER':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
@@ -230,9 +231,9 @@ class Store {
                         }
 
                         if (hasFailedSocs) {
-                            wo.status = 'reported'; // Rechazado por el SOC
+                            wo.status = 'reported'; 
                         } else {
-                            wo.status = 'consolidated'; // Aprobado
+                            wo.status = 'consolidated'; 
                             
                             let fmv = 40;
                             let multiplier = 1.0;
@@ -260,9 +261,9 @@ class Store {
                                 }
                             }
 
-                            // 🚨 PREVENCIÓN DE 0 SLICES: Si las horas son 0 o null, hereda del flow.
+                            // 🔥 FIX POMODORO: Respetamos horas minúsculas (ej: 0.04h) pero evitamos NaN o exactamente 0 estricto
                             let calcHours = parseFloat(wo.realHours);
-                            if (isNaN(calcHours) || calcHours <= 0) {
+                            if (isNaN(calcHours) || calcHours === 0) {
                                 calcHours = estimatedHours;
                                 wo.realHours = calcHours; 
                             }
@@ -307,7 +308,6 @@ class Store {
                 }
                 break;
 
-            // Subsistemas
             case 'ADD_CAPITAL_INJECTION':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
