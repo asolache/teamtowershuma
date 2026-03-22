@@ -9,7 +9,7 @@ import { MapRenderer } from '../components/MapRenderer.js';
 
 export default class ProjectCreatorView {
     constructor() {
-        document.title = "Instanciar Red | TeamTowers V15.5";
+        document.title = "Instanciar Red | TeamTowers V9-Antigravity";
         this.currentStep = 1;
         this.draftRoles = [];
         this.draftTxs = [];
@@ -44,7 +44,7 @@ export default class ProjectCreatorView {
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
-        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V15.5)">`;
+        let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base (V15.9)">`;
         Object.keys(this.sectorsFromKB).forEach(k => {
             const sectorLabel = this.sectorsFromKB[k].label;
             sectorOptions += `<option value="${k}" ${preselectedSector === k ? 'selected' : ''}>${sectorLabel}</option>`;
@@ -110,6 +110,11 @@ export default class ProjectCreatorView {
                 .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 15px 10px; border-bottom: 1px dashed #333; display: flex; flex-direction: column; gap: 10px;}
                 .tx-preview-item:last-child { border-bottom: none; }
 
+                /* 🔥 CASCADE TOGGLE (NUEVO) */
+                .cascade-toggle-box { background: rgba(0, 176, 255, 0.05); border: 1px dashed var(--accent-blue); padding: 15px 20px; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 15px;}
+                .cascade-toggle-box label { color: white; font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 10px; cursor: pointer;}
+                .cascade-toggle-box input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent-blue); cursor: pointer; }
+
                 .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; }
                 
                 .btn-lux { padding: 14px 24px; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: all 0.3s; border: none;}
@@ -130,6 +135,7 @@ export default class ProjectCreatorView {
                     .btn-del-role { align-self: stretch; background: rgba(255, 82, 82, 0.1); border-radius: 8px; padding: 10px; margin-top: 5px; width: 100%; border: 1px solid rgba(255,82,82,0.3);}
                     .actions-row { flex-direction: column; }
                     .actions-row .btn-lux { width: 100%; justify-content: center; }
+                    .cascade-toggle-box { flex-direction: column; align-items: flex-start; }
                 }
             </style>
 
@@ -253,6 +259,14 @@ export default class ProjectCreatorView {
                             
                             <button class="btn-lux btn-lux-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">➕ Instanciar Silla Adicional</button>
 
+                            <div class="cascade-toggle-box" id="cascadeToggleBox">
+                                <label>
+                                    <input type="checkbox" id="inpSpawnCascade" checked>
+                                    <span>🌊 Inyectar Cascada de Tareas en el Kanban</span>
+                                </label>
+                                <span style="color:#888; font-size:0.8rem; text-align:right;">Si lo activas, el Kanban nacerá lleno de Work Orders libres listas para ejecutar en el Sprint 1.</span>
+                            </div>
+
                             <div class="actions-row" style="border-top: 1px solid var(--glass-border); padding-top: 2rem;">
                                 <button class="btn-lux btn-lux-outline" id="btnBack">&larr; Volver</button>
                                 <button class="btn-lux btn-lux-success" id="btnLaunch" disabled>🚀 Inyectar Red y Memes al Kernel</button>
@@ -296,7 +310,8 @@ export default class ProjectCreatorView {
             tddErrorList: document.getElementById('tddErrorList'),
             miniMapContainer: document.getElementById('miniMapContainer'),
             miniMapCanvas: document.getElementById('miniMapCanvas'),
-            miniMapPaths: document.getElementById('miniMapPaths')
+            miniMapPaths: document.getElementById('miniMapPaths'),
+            inpSpawnCascade: document.getElementById('inpSpawnCascade') // 🔥 Referencia al Checkbox
         };
 
         Sidebar.initListeners();
@@ -393,8 +408,6 @@ export default class ProjectCreatorView {
         this.dom.tddErrorPanel.style.display = 'none';
     }
 
-    // (Dentro de ProjectCreatorView.js) ...
-
     runCognitiveTDD(parsedData) {
         let errors = [];
 
@@ -422,7 +435,6 @@ export default class ProjectCreatorView {
             }
         });
 
-        // 🔥 TDD CUALITATIVO: Ya no exigimos 15. Solo pedimos un mínimo lógico (1 por fase = 5).
         if (parsedData.transactions.length < 5) {
             errors.push(`VNA Insuficiente: La red trazada es demasiado pequeña (${parsedData.transactions.length} SOPs). No cubre el ciclo de vida completo.`);
         }
@@ -460,7 +472,6 @@ export default class ProjectCreatorView {
         try {
             await KB.init();
             
-            // 🔥 CÓRTEX A2A: Extraemos la mente de Gènesi AI (System Prompt + Memes Heredados)
             const genesiContext = await KB.getDynamicContextPrompt('global', '@genesi_ai', store.getState());
 
             let sectorData = this.sectorsFromKB[sectorVal];
@@ -470,7 +481,6 @@ export default class ProjectCreatorView {
                 sectorContext += JSON.stringify(sectorData.roles);
             }
 
-            // Ensamblamos la visión enriquecida que se enviará al Orquestador
             const enhancedVision = `
                 ${genesiContext}
                 ${sectorContext}
@@ -682,13 +692,16 @@ export default class ProjectCreatorView {
     }
 
     // ==============================================================
-    // 🔥 EL MOTOR DE INYECCIÓN (CONEXIÓN CON EL LMS Y REDUX)
+    // 🔥 EL MOTOR DE INYECCIÓN (CASCADA DE TAREAS)
     // ==============================================================
     async finalizeProject() {
         const projectId = 'proj_' + Math.random().toString(36).substr(2, 9);
         const visionText = this.dom.inpVision.value.trim() || this.draftPresentation;
         const arch = this.dom.inpArchetype.value; 
         const name = this.dom.inpName.value.trim() || 'Nueva Red';
+        
+        // Comprobamos si el Architect quiere la cascada de Work Orders
+        const triggerCascade = this.dom.inpSpawnCascade.checked;
         
         this.dom.btnLaunch.disabled = true;
         this.dom.btnLaunch.innerText = 'Instanciando Matriz y LMS...';
@@ -724,13 +737,9 @@ export default class ProjectCreatorView {
         // 3. Inyectar ROLES y PROMPTS en el LMS
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
-                // Generar un Meme de Skill automático para cada Rol creado
                 await KB.saveNode({
                     id: `meme_skill_${projectId}_${rol.id}`,
-                    type: 'meme',
-                    category: 'skill',
-                    projectId: projectId,
-                    targetId: 'global',
+                    type: 'meme', category: 'skill', projectId: projectId, targetId: 'global',
                     title: `Skill: ${rol.name}`,
                     content: `Competencia requerida para ejercer como ${rol.name} en el nivel ${rol.levelId}. Regido por el arquetipo ${rol.guardian}.`,
                     keywords: [rol.levelId, rol.guardian, projectId]
@@ -752,12 +761,12 @@ export default class ProjectCreatorView {
                 await KB.saveNode({
                     id: meme.id, type: 'meme', category: meme.category || 'skill',
                     title: meme.title, content: meme.content, keywords: meme.keywords || [],
-                    projectId: projectId, targetId: 'global' // Ahora pertenecen al proyecto, no globales
+                    projectId: projectId, targetId: 'global' 
                 });
             }
         }
 
-        // 5. Procesar las Tuberías (SOPs) generadas
+        // 5. Procesar las Tuberías (SOPs) y LA CASCADA
         const p = store.getState().projects.find(x => x.id === projectId);
         if (p && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
@@ -780,12 +789,13 @@ export default class ProjectCreatorView {
                         }
                     });
 
-                    // Si es fase Kickoff, spawnear Work Order automáticamente
-                    if (aiTx.phase === 'Kickoff' || aiTx.depends_on.length === 0) {
+                    // 🔥 LA CASCADA: Si el usuario activó la inyección, cada Tubería se convierte en una Work Order.
+                    // (Anteriormente, solo lo hacíamos con el Kickoff, ahora obedecemos al botón de la UI)
+                    if (triggerCascade) {
                         let kickoffComment = `SOP: Ejecutar [${templateName}].`;
                         if (aiTx.soc_checklist && aiTx.soc_checklist.length > 0) kickoffComment += ` | SOCs: ` + aiTx.soc_checklist.map(s => `✔️ ${s.text}`).join(' ');
 
-                        const woHash = 'wo_kickoff_' + Math.random().toString(36).substr(2, 9);
+                        const woHash = 'wo_cascade_' + Math.random().toString(36).substr(2, 9);
                         await store.dispatch({
                             type: 'SPAWN_WORK_ORDER',
                             payload: {
