@@ -1,4 +1,4 @@
-// v8/js/views/PaperView.js
+// v9/js/views/PaperView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js'; 
@@ -19,7 +19,6 @@ export default class PaperView {
         this.isMenuOpen = false;
         this.currentWord = "";
         
-        // ⏱️ Variables del Pomodoro Tracker
         this.pomodoroInterval = null;
         this.pomodoroSeconds = 0;
         this.isPomodoroRunning = false;
@@ -53,7 +52,6 @@ export default class PaperView {
                 
                 .paper-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; padding-bottom: 8rem;}
                 
-                /* BREADCRUMB & CONTEXT BAR */
                 .breadcrumb-bar { display: flex; align-items: center; background: rgba(10,10,15,0.8); padding: 10px 15px; border-radius: 12px 12px 0 0; border: 1px solid var(--glass-border); border-bottom: none; gap: 10px; flex-wrap: wrap;}
                 .bc-select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; font-size: 0.9rem; font-weight: bold; font-family: var(--font-main); outline: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: 0.3s;}
                 .bc-select:focus { border-color: var(--accent-blue); }
@@ -65,7 +63,6 @@ export default class PaperView {
                 .cb-mention { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); }
                 .cb-meme { background: rgba(224,64,251,0.1); color: var(--accent-purple); border: 1px solid rgba(224,64,251,0.3); }
 
-                /* 🔥 PANEL DE EJECUCIÓN (WORK ORDER) */
                 .task-context-panel { display:none; background: rgba(15,15,20,0.9); border: 1px solid var(--glass-border); border-left: 4px solid var(--accent-green); padding: 20px; border-radius: 12px; margin-top: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s ease-out;}
                 .task-context-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
                 .task-context-title { font-size: 1.3rem; color: white; font-weight: 900; margin: 0; }
@@ -78,7 +75,6 @@ export default class PaperView {
                 .pow-input:focus { border-color: var(--accent-green); box-shadow: inset 0 0 10px rgba(0,230,118,0.1); }
                 .pow-input.mono { font-family: var(--font-mono); font-weight: bold; color: var(--accent-orange); }
 
-                /* ⏱️ POMODORO WIDGET */
                 .pomodoro-widget { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 8px; border: 1px solid #444; margin-top: 5px;}
                 .pomodoro-display { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 900; color: white; min-width: 65px; text-align: center; letter-spacing: 1px;}
                 .btn-pomodoro { background: rgba(255,255,255,0.1); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 0.9rem;}
@@ -92,28 +88,23 @@ export default class PaperView {
                 .soc-item-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-green); margin-top: 2px; }
                 .soc-item-check span { color: #ddd; font-size: 0.9rem; line-height: 1.4; }
 
-                /* EL LIENZO EN BLANCO */
                 .editor-wrapper { position: relative; width: 100%; margin-top: 1rem;}
                 .semantic-editor { width: 100%; min-height: 25vh; background: transparent; border: none; color: #e0e0e0; font-family: 'Georgia', serif; font-size: 1.15rem; line-height: 1.6; outline: none; padding: 10px 0;}
                 .semantic-editor:empty:before { content: attr(data-placeholder); color: #555; font-style: italic; pointer-events: none;}
                 .semantic-editor p { margin: 0 0 1rem 0; }
 
-                /* WIDGETS COGNITIVOS */
                 .omni-widget { margin: 1.5rem 0; border: 1px dashed var(--accent-blue); border-radius: 16px; background: rgba(10,10,15,0.8); overflow: hidden; user-select: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column;}
                 .omni-widget-header { background: rgba(0,176,255,0.1); border-bottom: 1px solid rgba(0,176,255,0.2); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;}
                 .resident-agent-btn { background: rgba(0,0,0,0.5); border: 1px solid currentColor; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; font-size: 0.75rem;}
                 .resident-agent-btn:hover { background: currentColor; color: #000 !important; }
                 
-                /* UX DELUXE: MENÚ AUTOCOMPLETADO FLOTANTE */
                 .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 350px; overflow-y: auto; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); padding: 8px 0; min-width: 320px; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left;}
                 .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-family: var(--font-main); border-left: 2px solid transparent;}
                 .semantic-item:hover, .semantic-item.selected { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
                 
-                /* HIGHLIGHTS (LINKS) */
                 .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
                 .meme-highlight { color: var(--accent-purple); font-weight: bold; background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
 
-                /* HILO DE CONVERSACIÓN (REGISTRO HISTÓRICO) */
                 .thread-container { margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
                 .thread-title { color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: flex; justify-content: space-between;}
                 .log-bubble { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; position: relative; transition:0.3s;}
@@ -126,7 +117,6 @@ export default class PaperView {
                 .log-pow-link { display: inline-block; margin-top: 10px; background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 5px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-family: var(--font-mono); font-weight: bold; transition: 0.2s;}
                 .log-pow-link:hover { background: var(--accent-green); color: black;}
 
-                /* BOTONES DE ACCIÓN INFERIOR */
                 .action-bar-fixed { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000;}
                 .btn-action-pow { background: linear-gradient(135deg, var(--accent-green), #00b0ff); color: black; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 230, 118, 0.3);}
                 .btn-action-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5); filter: brightness(1.2);}
@@ -267,7 +257,6 @@ export default class PaperView {
             inpPowHours: document.getElementById('inpPowHours'),
             editorLabel: document.getElementById('editorLabel'),
 
-            // POMODORO DOM
             pomoDisplay: document.getElementById('pomodoroDisplay'),
             btnPomoPlay: document.getElementById('btnPomodoroPlay'),
             btnPomoReset: document.getElementById('btnPomodoroReset'),
@@ -286,7 +275,6 @@ export default class PaperView {
 
         this.dom.editor.focus();
 
-        // 🔥 FIX 1: Detección inteligente del nombre (Evita "VNA Work Order" genérico)
         this.loadProjectTasks = (projId) => {
             const p = state.projects.find(x => x.id === projId);
             if (!p) return;
@@ -307,7 +295,6 @@ export default class PaperView {
                     const parentFlow = (p.vna_flows || []).find(f => f.id === t.flowId) || t;
                     const roleTo = p.roles.find(r => r.id === parentFlow.to);
                     
-                    // Busca el nombre más descriptivo posible
                     let resolvedName = parentFlow.template || parentFlow.entregable || t.comentario?.substring(0, 30) || 'Work Order';
                     if (resolvedName.length > 40) resolvedName = resolvedName.substring(0, 40) + '...';
 
@@ -325,7 +312,7 @@ export default class PaperView {
             localStorage.setItem('tt_active_project', this.activeProjectId);
             this.loadProjectTasks(this.activeProjectId);
             this.activeTx = null;
-            this.stopPomodoro(); // Pausa si cambia de proyecto
+            this.stopPomodoro(); 
             this.setDraftMode();
         });
 
@@ -348,7 +335,7 @@ export default class PaperView {
 
         this.dom.omniSelector.addEventListener('change', (e) => {
             const val = e.target.value;
-            this.stopPomodoro(); // Pausa si cambia de tarea
+            this.stopPomodoro(); 
             
             if (val === 'draft') {
                 this.activeTx = null;
@@ -363,15 +350,11 @@ export default class PaperView {
         this.setupSemanticEditor();
         this.setupPomodoro();
 
-        // 🔥 BOTONES DE ACCIÓN
         this.dom.btnSubmit.addEventListener('click', () => this.reportDeliverable());
         this.dom.btnSaveTaskDraft.addEventListener('click', () => this.saveTaskDraft());
         this.dom.btnConvertDraft.addEventListener('click', () => this.convertDraftToTask());
     }
 
-    // ==========================================
-    // ⏱️ LÓGICA DEL POMODORO TRACKER
-    // ==========================================
     setupPomodoro() {
         const formatTime = (totalSeconds) => {
             const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -381,11 +364,8 @@ export default class PaperView {
 
         const updateInputs = () => {
             this.dom.pomoDisplay.innerText = formatTime(this.pomodoroSeconds);
-            // Convierte segundos a horas decimales. Permite decimales infinitos para precisión, redondea visual a 2.
             const hoursDecimal = (this.pomodoroSeconds / 3600);
-            
             if (this.pomodoroSeconds > 0) {
-                // Actualiza el input en vivo (ej: 0.01h)
                 this.dom.inpPowHours.value = hoursDecimal.toFixed(3); 
             }
         };
@@ -406,7 +386,6 @@ export default class PaperView {
             }
         });
 
-        // La función global de tick
         this.tickPomodoro = () => {
             this.pomodoroSeconds++;
             updateInputs();
@@ -430,7 +409,6 @@ export default class PaperView {
         clearInterval(this.pomodoroInterval);
     }
 
-
     setDraftMode() {
         this.dom.taskPanel.style.display = 'none';
         this.dom.threadWrapper.style.display = 'none';
@@ -452,7 +430,6 @@ export default class PaperView {
         
         this.dom.taskPanel.style.display = 'block';
         
-        // 🔥 FIX: Extracción inteligente del título
         let resolvedTitle = parentFlow ? (parentFlow.template || parentFlow.entregable || this.activeTx.comentario) : 'Work Order';
         if (!resolvedTitle || resolvedTitle === '') resolvedTitle = 'SOP Ad-Hoc';
         this.dom.taskTitle.innerText = resolvedTitle;
@@ -479,12 +456,10 @@ export default class PaperView {
             this.dom.taskSocs.innerHTML = '<div style="color:#666; font-style:italic; font-size:0.85rem;">No hay SOCs asociados a este entregable.</div>';
         }
 
-        // Cargar Horas del Draft si existen. Si no, arrancar el Pomo desde 0.
         this.dom.inpPowLink.value = this.activeTx.draftLink || this.activeTx.proofLink || '';
         const savedHours = this.activeTx.draftHours || this.activeTx.realHours || 0;
         this.dom.inpPowHours.value = savedHours > 0 ? savedHours : ''; 
         
-        // Sincronizar Pomodoro con las horas cargadas
         if (savedHours > 0) {
             this.pomodoroSeconds = Math.floor(savedHours * 3600);
             const m = Math.floor(this.pomodoroSeconds / 60).toString().padStart(2, '0');
@@ -506,13 +481,13 @@ export default class PaperView {
         if (this.activeTx.status === 'pinged') {
             this.dom.btnSubmit.style.display = 'block';
             this.dom.btnSaveTaskDraft.style.display = 'block';
-            this.dom.btnPomoPlay.style.display = 'flex'; // Mostrar Pomodoro
+            this.dom.btnPomoPlay.style.display = 'flex'; 
         } else {
             this.dom.btnSubmit.style.display = 'none';
             this.dom.btnSaveTaskDraft.style.display = 'none';
             this.dom.inpPowLink.disabled = true;
             this.dom.inpPowHours.disabled = true;
-            this.dom.btnPomoPlay.style.display = 'none'; // Ocultar Pomodoro si está auditada
+            this.dom.btnPomoPlay.style.display = 'none'; 
             this.dom.btnPomoReset.style.display = 'none';
             this.dom.taskSocs.querySelectorAll('input').forEach(i => i.disabled = true);
             this.dom.editor.contentEditable = "false";
@@ -562,7 +537,6 @@ export default class PaperView {
     async reportDeliverable() {
         if (!this.activeTx) return;
         
-        // 🛑 Protección: Si el Pomodoro está corriendo, lo paramos antes de enviar.
         this.stopPomodoro();
 
         const link = this.dom.inpPowLink.value.trim();
@@ -614,7 +588,8 @@ export default class PaperView {
         });
 
         alert("✅ Proof of Work reportado exitosamente. La tarea ha pasado a Auditoría.");
-        window.location.href = '/v8/project'; 
+        // 🔥 ENLACE MIGRADO A V9
+        window.location.href = '/v9/project'; 
     }
 
     renderThread(project) {
@@ -643,10 +618,12 @@ export default class PaperView {
             if (log.mentions) {
                 log.mentions.forEach(m => {
                     const rgx = new RegExp(`(?<!<[^>]*)${m}`, 'g');
-                    formattedContent = formattedContent.replace(rgx, `<a href="/v8/profile?id=${m}" data-link class="mention-highlight">${m}</a>`);
+                    // 🔥 ENLACE MIGRADO A V9
+                    formattedContent = formattedContent.replace(rgx, `<a href="/v9/profile?id=${m}" data-link class="mention-highlight">${m}</a>`);
                 });
             }
-            formattedContent = formattedContent.replace(/(?<!<[^>]*)(#[a-zA-Z0-9_]+)/g, `<a href="/v8/lms" data-link class="meme-highlight">$1</a>`);
+            // 🔥 ENLACE MIGRADO A V9
+            formattedContent = formattedContent.replace(/(?<!<[^>]*)(#[a-zA-Z0-9_]+)/g, `<a href="/v9/lms" data-link class="meme-highlight">$1</a>`);
 
             html += `
                 <div class="log-bubble ${isAi ? 'ai-reply' : 'human-reply'}">
@@ -661,10 +638,6 @@ export default class PaperView {
 
         this.dom.threadList.innerHTML = html;
     }
-
-    // ==========================================
-    // EL RESTO ES EL CÓDIGO DEL EDITOR SEMÁNTICO Y WIDGETS
-    // ==========================================
     
     setupSemanticEditor() {
         const input = this.dom.editor;
@@ -802,7 +775,8 @@ export default class PaperView {
                     const htmlClass = type === 'mention' ? 'mention-highlight' : 'meme-highlight';
                     el = document.createElement('a');
                     el.className = htmlClass;
-                    el.href = type === 'mention' ? `/v8/profile?id=${replaceVal}` : `/v8/lms`;
+                    // 🔥 ENLACE MIGRADO A V9
+                    el.href = type === 'mention' ? `/v9/profile?id=${replaceVal}` : `/v9/lms`;
                     el.setAttribute('data-link', '');
                     el.contentEditable = "false";
                     el.innerText = replaceVal;
@@ -896,6 +870,7 @@ export default class PaperView {
         });
 
         alert(`🚀 Borrador convertido en Work Order y asignado a ${assignee}. Refrescando interfaz...`);
-        window.location.href = `/v8/paper?hash=${newHash}`;
+        // 🔥 ENLACE MIGRADO A V9
+        window.location.href = `/v9/paper?hash=${newHash}`;
     }
 }
