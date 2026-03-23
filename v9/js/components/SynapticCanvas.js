@@ -69,7 +69,7 @@ export class SynapticCanvas {
                     </div>
                     <div class="meme-results" id="memeResultsList">
                         <div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">
-                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Usa el selector superior para inyectar conocimiento a este nodo.'}
+                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Usa el selector de arriba para inyectar conocimiento a este nodo.'}
                         </div>
                     </div>
                 </div>
@@ -100,16 +100,12 @@ export class SynapticCanvas {
             }
         };
 
-        // 🔥 FIX ANTIGRAVITY: VERIFICACIÓN DE INTEGRIDAD REFERENCIAL ESTRICTA
         const addLink = (source, target) => {
             if (!source || !target) return;
             const sourceExists = this.nodes.some(n => n.id === source);
             const targetExists = this.nodes.some(n => n.id === target);
-            
             if (sourceExists && targetExists) {
                 this.links.push({ source, target });
-            } else {
-                console.warn(`🌌 [Antigravity] Sinapsis purgada por nodo fantasma: ${source} -> ${target}`);
             }
         };
 
@@ -164,7 +160,7 @@ export class SynapticCanvas {
                         const fId = 'flow_' + p.id + '_' + f.id;
                         addNode(fId, f.template || 'SOP', 'SOP', 20, '#ff9100', { title: f.template, category: 'SOP', content: `Horas Est: ${f.estimatedHours}h` });
                         if (f.to) addLink(`role_${p.id}_${f.to}`, fId);
-                        if (f.from) addLink(`role_${p.id}_${f.from}`, fId); // Enlazamos ambos extremos para más cohesión 3D
+                        if (f.from) addLink(`role_${p.id}_${f.from}`, fId); 
                     });
                 }
             });
@@ -200,178 +196,19 @@ export class SynapticCanvas {
         const loader = this.container.querySelector('#loader3D');
         const tooltip = this.container.querySelector('#graphTooltip');
 
-        // 🔥 Carga dinámica de dependencias 3D (Antigravity performance)
-        await new Promise(r => { const s = document.createElement('script'); s.src = 'https://unpkg.com/three'; s.onload = r; document.head.appendChild(s); });
-        await new Promise(r => { const s = document.createElement('script'); s.src = 'https://unpkg.com/three-spritetext'; s.onload = r; document.head.appendChild(s); });
-        await new Promise(r => { const s = document.createElement('script'); s.src = 'https://unpkg.com/3d-force-graph'; s.onload = r; document.head.appendChild(s); });
-
-        if (loader) loader.style.display = 'none';
-
-        const gData = { nodes: this.nodes, links: this.links };
-
-        this.graph3D = ForceGraph3D()(canvasInner)
-            .graphData(gData)
-            .nodeLabel('') 
-            .linkColor(link => 'rgba(255, 255, 255, 0.15)')
-            .linkWidth(1.5)
-            .enableNodeDrag(false) 
-            // 🔥 Nodos 3D Compuestos: Esfera + Texto Interior
-            .nodeThreeObject(node => {
-                const group = new THREE.Group();
-                
-                // 1. La masa gravitacional (Esfera)
-                const geometry = new THREE.SphereGeometry(node.val * 0.8, 16, 16);
-                const material = new THREE.MeshLambertMaterial({ 
-                    color: node.color, 
-                    transparent: true, 
-                    opacity: 0.6,
-                    depthWrite: false
-                });
-                const sphere = new THREE.Mesh(geometry, material);
-                group.add(sphere);
-
-                // 2. El núcleo semántico (Texto interior)
-                const sprite = new SpriteText(node.name);
-                sprite.color = '#ffffff';
-                sprite.textHeight = Math.max(3, node.val * 0.25); 
-                sprite.fontWeight = 'bold';
-                group.add(sprite);
-
-                return group;
-            })
-            .onNodeHover(node => {
-                if (node) {
-                    canvasInner.style.cursor = 'pointer';
-                    tooltip.style.display = 'block';
-                    tooltip.innerHTML = `
-                        <div class="tt-cat" style="color:${node.color}">${node.rawNode?.category || node.group}</div>
-                        <div class="tt-title">${node.name}</div>
-                    `;
-                } else {
-                    canvasInner.style.cursor = 'crosshair';
-                    tooltip.style.display = 'none';
-                }
-            })
-            .onNodeClick(node => {
-                const distance = 150;
-                const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-                this.graph3D.cameraPosition({ x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, node, 2000);
-                this.showNodeDetailsInPalette(node);
+        // 🔥 FUNCIÓN SEGURA PARA INYECTAR SCRIPTS EXTERNOS SIN DUPLICAR NI ROMPER 'THREE'
+        const loadScript = (src, globalVar) => {
+            return new Promise((resolve, reject) => {
+                if (window[globalVar]) return resolve(); // Evita cargar dos veces (Mata el warning de Multiple Instances)
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error(`Failed to load ${src}`));
+                document.head.appendChild(script);
             });
+        };
 
-        // Iluminación para dar volumen
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(1, 1, 1);
-        this.graph3D.scene().add(ambientLight);
-        this.graph3D.scene().add(dirLight);
-
-        canvasInner.addEventListener('mousemove', (e) => {
-            if (tooltip.style.display === 'block') {
-                const rect = canvasInner.getBoundingClientRect();
-                tooltip.style.left = `${e.clientX - rect.left}px`;
-                tooltip.style.top = `${e.clientY - rect.top}px`;
-            }
-        });
-
-        this.resizeObserver = new ResizeObserver(() => {
-            if(canvasInner && this.graph3D) {
-                this.graph3D.width(canvasInner.clientWidth);
-                this.graph3D.height(canvasInner.clientHeight);
-            }
-        });
-        this.resizeObserver.observe(canvasInner);
-    }
-
-    showNodeDetailsInPalette(node3D) {
-        const resultsList = this.container.querySelector('#memeResultsList');
-        const m = node3D.rawNode;
-        if (!m) return;
-
-        const tagsHtml = (m.keywords || []).map(t => `<span class="dm-tag">#${t}</span>`).join('');
-        const safeColor = node3D.color || 'var(--accent-blue)';
-        
-        resultsList.innerHTML = `
-            <div style="margin-bottom: 15px;">
-                <button id="btnBackSearch" style="background:rgba(255,255,255,0.05); border:1px solid #444; color:#fff; border-radius:8px; cursor:pointer; font-family:var(--font-mono); font-size:0.8rem; padding:10px 15px; width:100%; transition:0.2s; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">&larr; Desanclar Cámara</button>
-            </div>
-            <div class="draggable-meme" style="--node-color: ${safeColor}; cursor: default;">
-                <div class="dm-cat" style="color: ${safeColor};">${m.category || node3D.group}</div>
-                <div class="dm-title" style="font-size:1.3rem;">${m.title || node3D.name}</div>
-                <div class="dm-content">${(m.content || '').replace(/\\n/g, '<br>')}</div>
-                <div class="dm-tags">${tagsHtml}</div>
-            </div>
-            ${!this.agentId ? `
-            <div style="margin-top: 15px; text-align:center;">
-                <button style="background:transparent; border:1px dashed ${safeColor}; color:${safeColor}; padding:8px 15px; border-radius:8px; font-weight:bold; font-size:0.8rem; cursor:pointer; width:100%; transition:0.2s;" onclick="window.location.href='/v9/paper'">✏️ Inyectar en Omni-Paper</button>
-            </div>` : ''}
-        `;
-
-        const btnBack = resultsList.querySelector('#btnBackSearch');
-        if (btnBack) {
-            btnBack.addEventListener('click', () => {
-                resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo del universo 3D para viajar hacia él y decodificar su estructura W3C.</div>';
-                this.container.querySelector('#memeSearchInput').value = '';
-                this.graph3D.cameraPosition({ x: 0, y: 0, z: 800 }, { x: 0, y: 0, z: 0 }, 2000);
-            });
-        }
-    }
-
-    setupInteractivity() {
-        const searchInput = this.container.querySelector('#memeSearchInput');
-        const resultsList = this.container.querySelector('#memeResultsList');
-        const btnInject = this.container.querySelector('#btnInjectSeeds');
-
-        if (btnInject) {
-            btnInject.addEventListener('click', async () => {
-                btnInject.disabled = true;
-                btnInject.innerText = "⏳ Forjando Big Bang...";
-                
-                await KB.init();
-                const antigravitySeeds = [
-                    { id: "meme_kernel_gtd", type: "meme", category: "core_os", projectId: "global", targetId: "global", title: "GTD & Pomodoro UX", content: "UX orientada a la acción inmutable. El Pomodoro Tracker garantiza la inyección de 'realHours' en el Ledger.", keywords: ["#kernel_sos", "#gtd", "#pomodoro"] },
-                    { id: "meme_kernel_slicing", type: "meme", category: "core_os", projectId: "global", targetId: "global", title: "Slicing Pie (Ledger)", content: "Ecuación: Slices = realHours * fmv * multiplier. Precisión estricta de 3 decimales.", keywords: ["#kernel_sos", "#equity"] },
-                    { id: "prompt_agent_janitor", type: "prompt_a2a", category: "prompt_a2a", projectId: "global", targetId: "@janitor", title: "Destilador: @janitor", content: "Extrae Evergreen Memes de SOPs sellados para optimizar el RAG.", keywords: ["#kernel_sos", "@janitor"] },
-                    { id: "prompt_agent_seny", type: "prompt_a2a", category: "prompt_a2a", projectId: "global", targetId: "@seny_analyst", title: "Bucle Imperial: @seny_analyst", content: "Auto-Sanación: Analiza los SOCs fallidos e invoca talento.", keywords: ["#kernel_sos", "@seny_analyst"] }
-                ];
-                for (const seed of antigravitySeeds) await KB.saveNode(seed);
-                alert("✅ Big Bang completado. Semillas Antigravity inyectadas.");
-                btnInject.style.display = 'none';
-                
-                await this.loadInitialData();
-                this.graph3D.graphData({ nodes: this.nodes, links: this.links });
-            });
-        }
-
-        searchInput.addEventListener('keyup', async (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            if (term.length < 2) return resultsList.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">Buscando en la inmensidad...</div>';
-            
-            await KB.init();
-            const allMemes = await KB.getAllNodes(); 
-            const filtered = allMemes.filter(m => m.title?.toLowerCase().includes(term) || m.category?.toLowerCase().includes(term) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(term))));
-            
-            if (filtered.length === 0) return resultsList.innerHTML = '<div style="color:#888; text-align:center; padding:30px;">No se encontró señal en esa frecuencia.</div>';
-
-            resultsList.innerHTML = filtered.slice(0, 15).map(m => {
-                return `<div class="draggable-meme" data-id="${m.id}" style="--node-color: var(--accent-blue);"><div class="dm-cat">${m.category || m.type}</div><div class="dm-title">${m.title}</div><div style="font-size:0.8rem; color:#888; font-style:italic; margin-top:5px;">(Clic para viajar al nodo)</div></div>`;
-            }).join('');
-
-            resultsList.querySelectorAll('.draggable-meme').forEach(el => {
-                el.addEventListener('click', () => {
-                    const targetNode = this.nodes.find(n => n.id === el.dataset.id);
-                    if (targetNode && this.graph3D) {
-                        const distRatio = 1 + 120/Math.hypot(targetNode.x, targetNode.y, targetNode.z);
-                        this.graph3D.cameraPosition({ x: targetNode.x * distRatio, y: targetNode.y * distRatio, z: targetNode.z * distRatio }, targetNode, 1500);
-                        this.showNodeDetailsInPalette(targetNode);
-                    }
-                });
-            });
-        });
-    }
-
-    destroy() {
-        if (this.resizeObserver) this.resizeObserver.disconnect();
-        if (this.graph3D) this.graph3D._destructor();
-    }
-}
+        try {
+            // 🔥 CONGELAMOS VERSIONES ESPECÍFICAS QUE EXPORTAN VARIABLES GLOBALES COMPATIBLES
+            await loadScript('https://unpkg.com/three@0.147.0/build/three.min.js', 'THREE');
+            await load
