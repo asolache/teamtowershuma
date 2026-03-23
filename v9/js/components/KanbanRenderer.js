@@ -1,4 +1,4 @@
-// v8/js/components/KanbanRenderer.js
+// v9/js/components/KanbanRenderer.js
 export class KanbanRenderer {
     constructor(containerEl, options = {}) {
         this.container = containerEl;
@@ -57,13 +57,15 @@ export class KanbanRenderer {
 
             .btn-review { flex: 1; background: var(--accent-blue); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.85rem;}
             .btn-review:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,176,255,0.4);}
-
-            .btn-approve { flex: 1; background: var(--accent-green); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.85rem;}
-            .btn-approve:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
+            
+            /* 🔥 FIX: Botón de Auditoría Humana (HITL) */
+            .btn-review-human { flex: 1; background: rgba(255,82,82,0.1); color: var(--accent-red); border: 1px solid var(--accent-red); padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.85rem; animation: hitlPulse 2s infinite;}
+            .btn-review-human:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,82,82,0.4);}
 
             .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.9rem; font-style: italic;}
 
             @keyframes aiPulse { 0% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } 50% { box-shadow: 0 0 30px rgba(224,64,251,0.6); } 100% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } }
+            @keyframes hitlPulse { 0% { border-color: rgba(255,82,82,0.3); } 50% { border-color: rgba(255,82,82,1); } 100% { border-color: rgba(255,82,82,0.3); } }
 
             @media (max-width: 1024px) {
                 .kanban-board-layout { grid-template-columns: 1fr; gap: 2rem;}
@@ -164,7 +166,7 @@ export class KanbanRenderer {
 
             if (isMine) {
                 actionHtml = `
-                    <a href="/v8/paper?hash=${tx.hash || tx.id}&legacy=${isLegacy}" class="btn-focus" data-link>▶ PUBLICAR ENTREGABLE</a>
+                    <a href="/v9/paper?hash=${tx.hash || tx.id}&legacy=${isLegacy}" class="btn-focus" data-link>▶ PUBLICAR ENTREGABLE</a>
                     <button class="btn-reject kb-action" data-action="reject" ${hashAttr} title="Soltar Tarea">✖</button>
                 `;
             }
@@ -174,17 +176,27 @@ export class KanbanRenderer {
         // EN AUDITORÍA
         else if (tx.status === 'reported' || tx.status === 'in_review') {
             statusTag = `<span style="color:var(--accent-blue); font-size:0.65rem; border:1px solid var(--accent-blue); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,176,255,0.1);">AUDITORÍA</span>`;
-            if (tx.proofLink === 'Agent_Auto_Report' || tx.proofLink === 'Usenet_Thread') {
+            
+            // Si lo hizo un Agente IA, lo mostramos
+            const isAiTask = tx.proofLink === 'Agent_Auto_Report' || tx.proofLink === 'Usenet_Thread';
+            if (isAiTask) {
                 aiOutputHtml = `<div class="task-ai-output"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
             
             if (isPO) {
-                actionHtml = `<button class="btn-review kb-action" data-action="review" ${hashAttr}>🔎 Auditar SOCs (PO)</button>`;
+                // 🔥 HITL: Si es una tarea hecha por IA y no hay SOCs deterministas, exigimos Auditoría Humana Obligatoria
+                const needsHumanAudit = isAiTask && (socs.length === 0 || socs.length > 5);
+                
+                if (needsHumanAudit) {
+                    actionHtml = `<button class="btn-review-human kb-action" data-action="review" ${hashAttr}>⚠️ Auditoría Humana (PO)</button>`;
+                } else {
+                    actionHtml = `<button class="btn-review kb-action" data-action="review" ${hashAttr}>🔎 Auditar SOCs (PO)</button>`;
+                }
             } else {
                 actionHtml = `<div style="font-size:0.8rem; color:#888; text-align:center; padding:10px; border:1px dashed #333; border-radius:8px; width:100%;">Pendiente de Auditar por PO</div>`;
             }
         }
-        // SELLADAS (FIX: CÁLCULO AL VUELO PARA AMNESIA RETROACTIVA)
+        // SELLADAS
         else if (tx.status === 'consolidated' || tx.status === 'approved') {
             statusTag = `<span style="color:var(--accent-green); font-size:0.65rem; border:1px solid var(--accent-green); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,230,118,0.1);">SELLADO</span>`;
             
@@ -192,7 +204,7 @@ export class KanbanRenderer {
                 aiOutputHtml = `<div class="task-ai-output" style="max-height:60px; opacity:0.7;"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
 
-            // 🔥 MAGIA RETROACTIVA: Si la tarjeta no tiene 'valorCongelado', lo calculamos leyendo su rol.
+            // MAGIA RETROACTIVA: Calcular Slices si no está en el JSON
             let earnedSlices = tx.valorCongelado;
             if (!earnedSlices) {
                 const fmv = parseFloat(receiverRole.fmv) || 40;
