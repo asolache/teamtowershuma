@@ -5,7 +5,7 @@ import { store } from '../core/store.js';
 export class SynapticCanvas {
     constructor(containerEl, agentId = null) {
         this.container = containerEl;
-        this.agentId = agentId; // Si es null, renderiza todo el Meta-Grafo del Kernel
+        this.agentId = agentId; 
         this.nodes = [];
         this.links = [];
         this.simulation = null;
@@ -29,34 +29,40 @@ export class SynapticCanvas {
                 
                 .meme-results { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;}
                 
-                /* CARJETAS DE MEMES Y LECTURA */
-                .draggable-meme { background: rgba(255,255,255,0.02); border: 1px dashed #555; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; user-select: none;}
+                /* TARJETAS DE MEMES Y LECTURA */
+                .draggable-meme { background: rgba(255,255,255,0.02); border: 1px dashed #555; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; user-select: none; word-break: break-word;}
                 .draggable-meme.can-drag { cursor: grab; border-color: var(--accent-purple); }
                 .draggable-meme.can-drag:active { cursor: grabbing; border-style: solid; background: var(--accent-purple); color: white;}
                 .draggable-meme:hover { background: rgba(255,255,255,0.05); transform: translateX(3px); }
                 
                 .dm-cat { font-size: 0.65rem; color: var(--accent-orange); font-family: monospace; font-weight: bold; pointer-events: none; text-transform: uppercase;}
                 .dm-title { font-size: 0.95rem; color: white; margin: 5px 0; font-weight: bold; pointer-events: none; line-height: 1.3;}
-                .dm-content { font-size: 0.8rem; color: #aaa; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; pointer-events: none; margin-bottom: 5px;}
-                .dm-tags { display: flex; gap: 5px; flex-wrap: wrap;}
+                .dm-content { font-size: 0.85rem; color: #ccc; line-height: 1.5; font-family: 'Georgia', serif; display: block; overflow-y: auto; max-height: 400px; padding-right: 5px; margin-top: 10px;}
+                .dm-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #444;}
                 .dm-tag { font-size: 0.65rem; background: rgba(0,0,0,0.5); border-radius: 4px; padding: 2px 6px; color: #888;}
 
-                /* BOTONES IMPERIALES */
                 .btn-inject-seeds { background: linear-gradient(135deg, rgba(0,230,118,0.1), rgba(0,176,255,0.1)); border: 1px solid var(--accent-green); color: white; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px; display: ${isGlobalMode ? 'block' : 'none'};}
                 .btn-inject-seeds:hover { background: var(--accent-green); color: black; box-shadow: 0 0 15px rgba(0,230,118,0.4);}
 
                 /* LIENZO D3 (EL CEREBRO) */
-                .synaptic-d3 { flex: 1; position: relative; overflow: hidden; }
+                .synaptic-d3 { flex: 1; position: relative; overflow: hidden; touch-action: none; /* Previene scroll nativo en iPad */ }
                 .d3-target { width: 100%; height: 100%; outline: none; }
                 
                 .drop-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(224,64,251,0.1); border: 3px dashed var(--accent-purple); box-sizing: border-box; display: none; justify-content: center; align-items: center; color: var(--accent-purple); font-weight: 900; font-size: 1.5rem; pointer-events: none; z-index: 5;}
                 .synaptic-d3.drag-over .drop-overlay { display: flex; }
                 
                 .node-circle { transition: filter 0.3s, transform 0.2s; stroke: #111; stroke-width: 2px; cursor: pointer;}
-                .node-circle:hover { filter: brightness(1.3); stroke: white; transform: scale(1.1);}
-                .node-text { font-family: var(--font-mono); font-size: 10px; fill: white; pointer-events: none; font-weight: bold; text-shadow: 0 2px 5px black;}
+                .node-circle:hover { filter: brightness(1.3); stroke: white; }
+                .node-circle.selected { stroke: var(--accent-blue); stroke-width: 4px; filter: brightness(1.5); }
+                .node-text { font-family: var(--font-mono); font-size: 10px; fill: white; pointer-events: none; font-weight: bold; text-shadow: 0 2px 5px black, 0 0 10px black;}
                 .link-line { stroke: rgba(255,255,255,0.1); stroke-width: 1.5px; transition: stroke 0.3s; }
                 .link-line:hover { stroke: var(--accent-blue); stroke-width: 3px; }
+
+                @media (max-width: 768px) {
+                    .synaptic-layout { flex-direction: column-reverse; }
+                    .synaptic-palette { width: 100%; height: 40%; border-right: none; border-top: 1px solid #333; }
+                    .synaptic-d3 { height: 60%; }
+                }
             </style>
 
             <div class="synaptic-layout">
@@ -68,7 +74,7 @@ export class SynapticCanvas {
                     </div>
                     <div class="meme-results" id="memeResultsList">
                         <div style="color:#666; font-size:0.8rem; text-align:center; padding:20px; font-style:italic;">
-                            ${isGlobalMode ? 'Doble clic en un nodo del mapa para inspeccionar su código.' : 'Arrastra Memes al mapa para forjar sinapsis con el Agente.'}
+                            ${isGlobalMode ? 'Haz tap/clic en un nodo del mapa para inspeccionar su código W3C.' : 'Arrastra Memes al mapa para forjar sinapsis con el Agente.'}
                         </div>
                     </div>
                 </div>
@@ -107,7 +113,7 @@ export class SynapticCanvas {
             const agentPrompts = allNodes.filter(n => n.targetId === this.agentId || n.roleTarget === this.agentId);
             const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(this.agentId));
 
-            this.nodes.push({ id: this.agentId, name: this.agentId, group: 'agent', radius: 35, color: 'var(--accent-blue)', rawNode: { content: "Nodo Raíz del Agente" } });
+            this.nodes.push({ id: this.agentId, name: this.agentId, group: 'agent', radius: 35, color: 'var(--accent-blue)', rawNode: { title: this.agentId, content: "Nodo Raíz del Agente" } });
 
             agentPrompts.forEach((p) => {
                 this.nodes.push({ id: p.id, name: 'System Prompt', group: 'prompt', radius: 20, color: 'var(--accent-purple)', rawNode: p });
@@ -121,17 +127,24 @@ export class SynapticCanvas {
             });
         } 
         // ==========================================
-        // MODO MACRO (El Meta-Grafo Universal)
+        // MODO MACRO (El Meta-Grafo Universal Interconectado)
         // ==========================================
         else {
-            // 1. Añadimos Proyectos como Nodos Centrales
+            // 🔥 NODO CENTRAL (El Sol del Universo Antigravity)
+            this.nodes.push({ 
+                id: 'core_kernel', name: 'Antigravity Kernel', group: 'system', radius: 45, color: '#ffffff', 
+                rawNode: { title: 'TeamTowers V9 Kernel', category: 'core_os', content: 'Núcleo central del Sistema Operativo de Sinergias. Gobierna el Ledger, la inmutabilidad de los datos y el enrutamiento P2P.' } 
+            });
+
+            // 1. Añadimos Proyectos y los conectamos al Kernel
             state.projects.forEach(p => {
                 this.nodes.push({ id: p.id, name: p.nombre, group: 'project', radius: 30, color: 'var(--accent-blue)', rawNode: { title: p.nombre, category: 'project_core', content: p.presentation || p.prompt || 'Ecosistema Activo' } });
-                
+                this.links.push({ source: 'core_kernel', target: p.id });
+
                 // 2. Añadimos Roles asociados al proyecto
                 if(p.roles) {
                     p.roles.forEach(r => {
-                        this.nodes.push({ id: r.id, name: r.name, group: 'role', radius: 20, color: 'var(--accent-purple)', rawNode: { title: r.name, category: 'role', content: `Nivel: ${r.levelId} | FMV: ${r.fmv}` } });
+                        this.nodes.push({ id: r.id, name: r.name, group: 'role', radius: 20, color: 'var(--accent-purple)', rawNode: { title: r.name, category: 'role', content: `Nivel Jerárquico: ${r.levelId}\\nValor de Mercado (FMV): ${r.fmv}€/h\\nMultiplicador de Riesgo: ${r.multiplier}x` } });
                         this.links.push({ source: p.id, target: r.id });
                     });
                 }
@@ -140,16 +153,15 @@ export class SynapticCanvas {
                 if(p.vna_flows) {
                     p.vna_flows.forEach(f => {
                         const fId = 'flow_' + f.id;
-                        this.nodes.push({ id: fId, name: (f.template||'').substring(0,10)+'...', group: 'sop', radius: 15, color: 'var(--accent-orange)', rawNode: { title: f.template, category: 'SOP', content: `Tipo: ${f.tipo} | Horas Est: ${f.estimatedHours}` } });
-                        // Linkamos el SOP a su rol de destino para no saturar
+                        this.nodes.push({ id: fId, name: (f.template||'').substring(0,10)+'...', group: 'sop', radius: 15, color: 'var(--accent-orange)', rawNode: { title: f.template, category: 'SOP', content: `Tipo de Valor: ${f.tipo}\\nHoras Estimadas: ${f.estimatedHours}h` } });
                         if (f.to) this.links.push({ source: f.to, target: fId });
                     });
                 }
             });
 
-            // 4. Añadimos Conocimiento W3C (Memes y Evergreen) del LMS
+            // 4. Añadimos Conocimiento W3C y Auto-Link Semántico
             allNodes.forEach(m => {
-                if (m.type === 'system_state' || m.id === 'global_kernel_state') return; // Excluimos el Redux crudo
+                if (m.type === 'system_state' || m.id === 'global_kernel_state') return;
                 
                 const isEvergreen = m.category === 'evergreen';
                 const color = isEvergreen ? '#ffd700' : (m.category === 'skill' ? 'var(--accent-green)' : '#888');
@@ -159,9 +171,28 @@ export class SynapticCanvas {
                     this.nodes.push({ id: m.id, name: (m.title||'').substring(0,12)+'...', group: 'meme', radius: radius, color: color, rawNode: m });
                 }
 
-                // Conectamos los memes a los proyectos si tienen la keyword
-                if (m.projectId && m.projectId !== 'global' && state.projects.find(p => p.id === m.projectId)) {
+                let linked = false;
+                
+                // Conexión Directa al Proyecto
+                if (m.projectId && m.projectId !== 'global' && this.nodes.find(n => n.id === m.projectId)) {
                     this.links.push({ source: m.projectId, target: m.id });
+                    linked = true;
+                }
+
+                // 🔥 Conexión Inteligente por Keywords (Si un tag coincide con un nodo, se enlazan)
+                if (m.keywords && Array.isArray(m.keywords)) {
+                    m.keywords.forEach(kw => {
+                        const targetNode = this.nodes.find(n => n.id === kw || n.name.toLowerCase() === kw.toLowerCase());
+                        if (targetNode && targetNode.id !== m.id) {
+                            this.links.push({ source: m.id, target: targetNode.id });
+                            linked = true;
+                        }
+                    });
+                }
+
+                // Si un meme global (ej: GTD, Pomodoro) no se ha conectado a nada, lo anclamos al Kernel para que no sea Polvo Espacial
+                if (!linked && m.projectId === 'global') {
+                    this.links.push({ source: 'core_kernel', target: m.id });
                 }
             });
         }
@@ -172,8 +203,8 @@ export class SynapticCanvas {
         const width = canvas.clientWidth || 800;
         const height = canvas.clientHeight || 600;
 
-        // Zoom setup
-        const zoom = this.d3.zoom()
+        // Soporte de Zoom Universal
+        this.zoomObj = this.d3.zoom()
             .scaleExtent([0.1, 4])
             .on("zoom", (e) => {
                 this.svgGroup.attr("transform", e.transform);
@@ -183,13 +214,12 @@ export class SynapticCanvas {
             .attr("width", "100%")
             .attr("height", "100%")
             .attr("viewBox", [0, 0, width, height])
-            .call(zoom);
+            .call(this.zoomObj);
 
         this.svgGroup = this.svg.append("g");
 
-        // Ajustamos las fuerzas para que el Macro Grafo no colapse en el centro
-        const linkDistance = this.agentId ? 120 : 80;
-        const chargeStrength = this.agentId ? -400 : -200;
+        const linkDistance = this.agentId ? 120 : 90;
+        const chargeStrength = this.agentId ? -400 : -250;
 
         this.simulation = this.d3.forceSimulation(this.nodes)
             .force("link", this.d3.forceLink(this.links).id(d => d.id).distance(linkDistance))
@@ -228,8 +258,23 @@ export class SynapticCanvas {
             .attr("dy", d => d.radius + 12)
             .text(d => d.name);
 
-        // 🔥 INSPECTOR DE CONOCIMIENTO (DOBLE CLIC)
-        this.nodeElements.on("dblclick", (event, d) => {
+        // 🔥 FIX: EVENTO CLICK UNIVERSAL (Soporta iPad, Móvil y PC previniendo colisión con el Drag)
+        this.nodeElements.on("click", (event, d) => {
+            if (event.defaultPrevented) return; // Se ignorará si se desencadenó al final de un arrastre (Drag)
+            
+            // Iluminación visual del nodo seleccionado
+            this.nodeElements.classed("selected", n => n.id === d.id);
+            
+            // Zoom inmersivo hacia el nodo clickado
+            const canvas = this.container.querySelector('#d3CanvasInner');
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            this.svg.transition().duration(750).call(
+                this.zoomObj.transform, 
+                this.d3.zoomIdentity.translate(width / 2, height / 2).scale(1.5).translate(-d.x, -d.y)
+            );
+
             this.showNodeDetailsInPalette(d);
         });
 
@@ -252,9 +297,17 @@ export class SynapticCanvas {
 
     dragD3() {
         return this.d3.drag()
-            .on("start", (event, d) => { if (!event.active) this.simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-            .on("drag", (event, d) => { d.fx = event.x; d.fy = event.y; })
-            .on("end", (event, d) => { if (!event.active) this.simulation.alphaTarget(0); d.fx = null; d.fy = null; });
+            .on("start", (event, d) => { 
+                if (!event.active) this.simulation.alphaTarget(0.3).restart(); 
+                d.fx = d.x; d.fy = d.y; 
+            })
+            .on("drag", (event, d) => { 
+                d.fx = event.x; d.fy = event.y; 
+            })
+            .on("end", (event, d) => { 
+                if (!event.active) this.simulation.alphaTarget(0); 
+                d.fx = null; d.fy = null; 
+            });
     }
 
     showNodeDetailsInPalette(d3Node) {
@@ -266,13 +319,13 @@ export class SynapticCanvas {
         
         resultsList.innerHTML = `
             <div style="margin-bottom: 15px;">
-                <button id="btnBackSearch" style="background:transparent; border:none; color:#888; cursor:pointer; font-family:var(--font-mono); font-size:0.8rem; padding:0;">&larr; Volver al buscador</button>
+                <button id="btnBackSearch" style="background:rgba(255,255,255,0.05); border:1px solid #444; color:#fff; border-radius:8px; cursor:pointer; font-family:var(--font-mono); font-size:0.8rem; padding:8px 12px; width:100%; transition:0.2s;">&larr; Volver al Explorador</button>
             </div>
             <div class="draggable-meme" style="border-color: ${d3Node.color}; cursor: default;">
                 <div class="dm-cat" style="color: ${d3Node.color};">${m.category || d3Node.group}</div>
-                <div class="dm-title" style="font-size:1.1rem; pointer-events:auto;">${m.title}</div>
-                <div class="dm-content" style="display:block; color:#ddd; font-size:0.9rem; pointer-events:auto; max-height: 300px; overflow-y:auto; white-space: pre-wrap;">${m.content}</div>
-                <div class="dm-tags" style="margin-top:10px; padding-top:10px; border-top:1px dashed #444;">${tagsHtml}</div>
+                <div class="dm-title" style="font-size:1.2rem; pointer-events:auto;">${m.title}</div>
+                <div class="dm-content">${(m.content || '').replace(/\\n/g, '<br>')}</div>
+                <div class="dm-tags">${tagsHtml}</div>
             </div>
             ${this.agentId ? `<div style="text-align:center; color:#888; font-size:0.75rem; margin-top:10px;">Arrastra memes desde la búsqueda para conectarlos.</div>` : ''}
         `;
@@ -280,7 +333,8 @@ export class SynapticCanvas {
         const btnBack = resultsList.querySelector('#btnBackSearch');
         if (btnBack) {
             btnBack.addEventListener('click', () => {
-                resultsList.innerHTML = '<div style="color:#666; font-size:0.8rem; text-align:center; padding:20px; font-style:italic;">Escribe arriba para buscar conocimiento en la Red.</div>';
+                this.nodeElements.classed("selected", false); // Quita la iluminación
+                resultsList.innerHTML = '<div style="color:#666; font-size:0.8rem; text-align:center; padding:20px; font-style:italic;">Escribe arriba para buscar conocimiento o haz tap en un nodo.</div>';
                 this.container.querySelector('#memeSearchInput').value = '';
             });
         }
@@ -331,10 +385,9 @@ export class SynapticCanvas {
                     await KB.saveNode(seed);
                 }
 
-                alert("✅ Semillas Antigravity y Prompts de Agentes Core inyectados exitosamente en la Red Neuronal Local (IndexedDB).");
+                alert("✅ Semillas Antigravity inyectadas en la Red Neuronal Local.");
                 btnInject.style.display = 'none';
                 
-                // Recargar el canvas para ver los nuevos nodos
                 this.loadInitialData().then(() => {
                     this.simulation.nodes(this.nodes);
                     this.simulation.force("link").links(this.links);
@@ -350,7 +403,7 @@ export class SynapticCanvas {
             if (term.length < 2) return resultsList.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">Escribe más...</div>';
             
             await KB.init();
-            const allMemes = await KB.getAllNodes(); // Busca en TODO
+            const allMemes = await KB.getAllNodes(); 
             const filtered = allMemes.filter(m => m.title?.toLowerCase().includes(term) || m.category?.toLowerCase().includes(term) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(term))));
             
             if (filtered.length === 0) return resultsList.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">No hay conocimiento para esa query.</div>';
@@ -361,12 +414,11 @@ export class SynapticCanvas {
                     <div class="draggable-meme ${canDrag}" ${this.agentId ? 'draggable="true"' : ''} data-id="${m.id}">
                         <div class="dm-cat">${m.category || m.type}</div>
                         <div class="dm-title">${m.title}</div>
-                        <div class="dm-content">${m.content}</div>
                     </div>
                 `;
             }).join('');
 
-            // DRAG START (Solo si estamos en modo agente)
+            // DRAG START (Solo Modo Agente)
             if (this.agentId) {
                 resultsList.querySelectorAll('.draggable-meme.can-drag').forEach(el => {
                     el.addEventListener('dragstart', (dragEvent) => {
@@ -374,28 +426,33 @@ export class SynapticCanvas {
                     });
                 });
             } else {
-                // En modo macro, el clic en el buscador te centra la cámara en el nodo
+                // Modo Macro: Clic en buscador centra la cámara en el nodo y abre el panel
                 resultsList.querySelectorAll('.draggable-meme').forEach(el => {
                     el.addEventListener('click', () => {
                         const targetId = el.dataset.id;
                         const targetNode = this.nodes.find(n => n.id === targetId);
                         if (targetNode) {
-                            this.svgGroup.transition().duration(750).attr("transform", `translate(${this.container.clientWidth/2 - targetNode.x}, ${this.container.clientHeight/2 - targetNode.y}) scale(1)`);
-                            this.nodeElements.attr("stroke", d => d.id === targetId ? "var(--accent-blue)" : "#111").attr("stroke-width", d => d.id === targetId ? 4 : 2);
+                            const canvas = this.container.querySelector('#d3CanvasInner');
+                            this.svg.transition().duration(750).call(
+                                this.zoomObj.transform, 
+                                this.d3.zoomIdentity.translate(canvas.clientWidth / 2, canvas.clientHeight / 2).scale(1.5).translate(-targetNode.x, -targetNode.y)
+                            );
+                            this.nodeElements.classed("selected", d => d.id === targetId);
+                            this.showNodeDetailsInPalette(targetNode);
                         }
                     });
                 });
             }
         });
 
-        // 3. Lógica del Drop Zone (D3 Canvas) - SOLO PARA MODO AGENTE
+        // 3. Drop Zone (Solo Modo Agente)
         if (this.agentId) {
             dropZone.addEventListener('dragover', (e) => {
                 e.preventDefault(); 
                 dropZone.classList.add('drag-over');
             });
 
-            dropZone.addEventListener('dragleave', (e) => {
+            dropZone.addEventListener('dragleave', () => {
                 dropZone.classList.remove('drag-over');
             });
 
@@ -405,7 +462,6 @@ export class SynapticCanvas {
                 
                 const memeId = e.dataTransfer.getData('text/plain');
                 if (!memeId) return;
-
                 if (this.nodes.find(n => n.id === memeId)) return;
 
                 await KB.init();
