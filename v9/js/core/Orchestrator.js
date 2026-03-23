@@ -1,4 +1,4 @@
-// v8/js/core/Orchestrator.js
+// v9/js/core/Orchestrator.js
 import { store } from './store.js';
 import { KB } from './kb.js';
 
@@ -56,7 +56,6 @@ class OrchestratorCore {
 
                 if (provider === 'gemini') {
                     const targetModel = 'gemini-2.0-flash';
-                    // 🔥 FIX: String puro para evitar concatenaciones locas
                     const urlStr = 'https://generativelanguage.googleapis.com/v1beta/models/' + targetModel + ':generateContent?key=' + apiKey;
                     
                     const response = await fetch(urlStr, {
@@ -84,7 +83,6 @@ class OrchestratorCore {
                     if (data.usageMetadata) { tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; }
                 
                 } else if (provider === 'openai' || provider === 'deepseek') {
-                    // 🔥 FIX ENRUTADOR 404: Definición estricta de URL en string plano para evitar que fetch falle
                     let endpointUrl = 'https://api.openai.com/v1/chat/completions';
                     if (provider === 'deepseek') {
                         endpointUrl = 'https://api.deepseek.com/chat/completions';
@@ -92,7 +90,6 @@ class OrchestratorCore {
                     
                     const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
                     
-                    // Si el request es de texto, evitamos mandar null a OpenAI para no generar error
                     const bodyData = { 
                         model: modelName, 
                         messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
@@ -324,6 +321,61 @@ REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @piny
 
         } catch (error) {
             throw new Error(`Fallo en la generación multimodal de ${type}: ${error.message}`);
+        }
+    }
+
+    // ==========================================
+    // 🔥 CAPA 8: LEARNING LOOP (@JANITOR)
+    // ==========================================
+    async harvestKnowledge(task, projectId) {
+        try {
+            let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+            let apiKey = localStorage.getItem(`tt_key_${provider}`);
+            if (!apiKey && provider !== 'custom') return null; // Abortar silenciosamente si no hay API
+
+            const systemPrompt = `
+                Eres @janitor, el destilador de conocimiento de TeamTowers V9 Antigravity.
+                Analiza este Entregable (Proof of Work) que acaba de ser validado y sellado en el Ledger.
+                Tu misión es extraer una "Mejor Práctica" (Best Practice) si aporta valor técnico, estratégico o de calidad.
+                Si la tarea es trivial o mecánica (ej: "hecho", "subido el excel"), devuelve {"isValuable": false}.
+                Si es valiosa, destila el aprendizaje en una KU (Knowledge Unit) accionable.
+                
+                Responde ÚNICAMENTE con este JSON:
+                { 
+                    "isValuable": boolean, 
+                    "title": "Título del aprendizaje (Corto)", 
+                    "content": "SOP o regla destilada en 2-3 líneas", 
+                    "tags": ["keyword1", "keyword2"] 
+                }
+            `;
+
+            const userPrompt = `Entregable a analizar:\n${task.comentario}\nEnlace: ${task.proofLink || 'Ninguno'}`;
+
+            const response = await this.callLLM({ 
+                provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 
+            });
+
+            const result = JSON.parse(response.content);
+
+            if (result.isValuable) {
+                await KB.init();
+                await KB.saveNode({
+                    id: `meme_evergreen_${Date.now()}`,
+                    type: 'meme',
+                    category: 'evergreen',
+                    projectId: projectId, 
+                    targetId: 'global',
+                    title: `🌟 ${result.title}`,
+                    content: result.content,
+                    keywords: [...(result.tags || []), '#evergreen']
+                });
+                console.log(`🧠 [@janitor] Nuevo conocimiento Evergreen cosechado: ${result.title}`);
+                return result.title;
+            }
+            return null;
+        } catch (error) {
+            console.warn("⚠️ [@janitor] Fallo en la cosecha de conocimiento:", error.message);
+            return null;
         }
     }
 }
