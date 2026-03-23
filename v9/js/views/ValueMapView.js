@@ -4,7 +4,8 @@ import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { MapRenderer } from '../components/MapRenderer.js'; 
-import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 Añadido para la Auditoría VNA
+import { Orchestrator } from '../core/Orchestrator.js'; 
+import { KB } from '../core/kb.js';
 
 export default class ValueMapView {
     constructor() {
@@ -32,7 +33,7 @@ export default class ValueMapView {
 
     async getHtml() {
         await store.init();
-        
+
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         
@@ -109,8 +110,8 @@ export default class ValueMapView {
                 .role-list-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: 0.3s; backdrop-filter: blur(10px);}
                 .role-list-card:hover { background: rgba(255,255,255,0.03); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
 
-                .flow-container { display: flex; flex-direction: column; gap: 1rem; flex: 1; align-items: stretch; margin-top: 10px;}
-                .sequence-panel { display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 300px); overflow-y: auto; padding-right: 15px;}
+                .flow-container { display: flex; gap: 2rem; flex: 1; align-items: flex-start; margin-top: 10px;}
+                .sequence-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 15px;}
                 
                 .flow-step { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
                 .flow-step:hover { background: rgba(255,255,255,0.03); border-color:#444;}
@@ -130,29 +131,29 @@ export default class ValueMapView {
                 .btn-step.del:hover { background: rgba(255, 82, 82, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
                 .btn-step.edit { background: rgba(0, 176, 255, 0.05); color: var(--accent-blue); border-color: rgba(0,176,255,0.3); }
 
-                /* 🔥 MEJORA AI COPILOT */
                 .ai-scaffold {
-                    position: fixed; right: 30px; bottom: 30px; width: 400px;
+                    position: fixed; right: 30px; bottom: 30px; width: 450px;
                     background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(20px);
                     border: 1px solid rgba(0, 230, 118, 0.4); border-radius: 16px;
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0, 230, 118, 0.1);
+                    box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,230,118,0.1);
                     z-index: 9000; display: flex; flex-direction: column; overflow: hidden;
                     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s;
                     transform: translateY(150%); opacity: 0;
                 }
                 .ai-scaffold.visible { transform: translateY(0); opacity: 1; }
-                .ai-header { background: rgba(0, 230, 118, 0.1); padding: 15px; font-weight: 900; color: var(--accent-green); display:flex; justify-content:space-between; border-bottom: 1px solid rgba(0, 230, 118, 0.2); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;}
-                .ai-body { padding: 20px; font-size: 0.9rem; color: #ccc; line-height: 1.5; font-family:var(--font-main); max-height: 400px; overflow-y: auto;}
+                .ai-header { background: rgba(0,230,118,0.1); padding: 15px; font-weight: 900; color: var(--accent-green); display:flex; justify-content:space-between; border-bottom: 1px solid rgba(0,230,118,0.2); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;}
+                .ai-body { padding: 20px; font-size: 0.9rem; color: #ccc; line-height: 1.5; font-family:var(--font-main); max-height:400px; overflow-y:auto;}
                 .ai-btn-close { background:transparent; border:none; color:#888; cursor:pointer; font-size:1.2rem; line-height:1;}
                 .ai-btn-close:hover { color:white; }
 
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 999999; }
-                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-top: 4px solid var(--accent-blue); padding: 3rem; border-radius: 24px; width: 100%; max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
+                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); border-top: 4px solid var(--accent-blue); padding: 3rem; border-radius: 24px; width: 100%; max-width: 600px; box-shadow: 0 25px 60px rgba(0,0,0,0.8); box-sizing: border-box; max-height: 90vh; overflow-y:auto;}
                 
                 .form-group { margin-bottom: 20px; }
                 .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.1);}
+                .form-control.textarea { resize: vertical; min-height: 120px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-purple); }
 
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -239,7 +240,7 @@ export default class ValueMapView {
                         <div class="roles-header">
                             <div>
                                 <h2 style="color:white; margin:0; font-weight:900;">Padrón de Nodos Estructurales</h2>
-                                <p style="color:#888; font-size:0.95rem; margin:5px 0 0 0;">Gestión directa de los actores que componen el mapa.</p>
+                                <p style="color:#888; font-size:0.95rem; margin:5px 0 0 0;">Gestión directa de los actores que componen el mapa y sus Context Prompts.</p>
                             </div>
                             ${isPO ? `<button class="btn-primary" id="btnOpenAddNodeRoles" style="height:40px; font-size:0.9rem;">➕ Instanciar Rol</button>` : ''}
                         </div>
@@ -247,9 +248,9 @@ export default class ValueMapView {
                     </div>
 
                     <div id="tab-flow" class="tab-content ${this.currentTab === 'flow' ? 'active' : ''}">
-                        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 1rem; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                            <h2 style="color:white; margin:0; font-size:1.2rem;">Secuencia de Flujos</h2>
-                            ${isPO ? `<button id="btnStrategicAudit" style="background:linear-gradient(135deg, rgba(0,230,118,0.1), rgba(0,176,255,0.1)); border:1px solid var(--accent-green); color:white; padding:8px 16px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.85rem; box-shadow: 0 0 15px rgba(0,230,118,0.2); transition: 0.3s;">🧠 Auditoría Estratégica VNA (@seny_analyst)</button>` : ''}
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                            <h2 style="color:white; margin:0; font-size:1.3rem;">Secuencia de Flujos VNA</h2>
+                            ${isPO ? `<button class="btn-primary" id="btnStrategicAudit" style="background: rgba(0,230,118,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); height:40px; padding:0 20px; font-size:0.85rem; font-weight:900; letter-spacing:1px; box-shadow: 0 0 15px rgba(0,230,118,0.2);">🧠 Bucle Imperial (Auditoría VNA)</button>` : ''}
                         </div>
                         <div class="flow-container">
                             <div class="sequence-panel" id="sequenceList"></div>
@@ -294,7 +295,7 @@ export default class ValueMapView {
                                 <label>Tipo de Valor</label>
                                 <select id="selType" class="form-control">
                                     <option value="tangible">🟢 Tangible (Contractual)</option>
-                                    <option value="intangible">🟣 Intangible (Soporte)</option>
+                                    <option value="intangible">🟣 Intangible (Soporte/Auditoría)</option>
                                 </select>
                             </div>
                             <div style="flex:1;">
@@ -364,8 +365,15 @@ export default class ValueMapView {
                                 <input type="number" step="0.1" id="inputMult" class="form-control" style="color:var(--accent-orange); font-weight:bold; font-family:var(--font-mono);">
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label>Context Prompt del Agente IA (Editable)</label>
+                            <textarea id="insPrompt" class="form-control textarea" placeholder="Cargando consciencia del nodo..."></textarea>
+                            <span style="font-size:0.7rem; color:#888;">Optimiza este prompt W3C para mejorar cómo la IA entiende este Rol en el ecosistema.</span>
+                        </div>
+
                         <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 2rem;">
-                            <button class="btn-primary" style="height:50px; font-size:1.05rem;" id="btnSaveRole">💾 Actualizar Rol</button>
+                            <button class="btn-primary" style="height:50px; font-size:1.05rem;" id="btnSaveRole">💾 Sellar Mutación en Kernel</button>
                             <button class="btn-primary" style="background:rgba(255,82,82,0.1); border:1px solid var(--accent-red); color: var(--accent-red); height:50px;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
                         </div>
                     </div>
@@ -416,6 +424,7 @@ export default class ValueMapView {
             insLevel: document.getElementById('insLevel'),
             inputFmv: document.getElementById('inputFmv'),
             inputMult: document.getElementById('inputMult'),
+            insPrompt: document.getElementById('insPrompt'), // 🔥 Referencia al Textarea del Prompt
             addNodeModal: document.getElementById('addNodeModal'),
             
             tooltip: document.getElementById('txTooltip'),
@@ -424,7 +433,8 @@ export default class ValueMapView {
             aiCopilotHeader: document.getElementById('aiCopilotHeader'),
             aiCopilotBody: document.getElementById('aiCopilotBody'),
             btnCloseCopilot: document.getElementById('btnCloseCopilot'),
-            btnStrategicAudit: document.getElementById('btnStrategicAudit') // 🔥 NUEVO BOTÓN
+            
+            btnStrategicAudit: document.getElementById('btnStrategicAudit') // 🔥 Botón Bucle Imperial
         };
 
         this.mapVis = new MapRenderer(this.dom.canvasVis, this.dom.pathsVis, {
@@ -681,20 +691,53 @@ export default class ValueMapView {
                 this.dom.canvasVis.querySelectorAll('.node-wrapper').forEach(n => n.classList.remove('selected'));
             });
             
-            document.getElementById('btnSaveRole').addEventListener('click', () => {
+            // 🔥 META-COGNICIÓN: Guardado de Prompts directamente en KB
+            document.getElementById('btnSaveRole').addEventListener('click', async () => {
                 const fmv = parseFloat(this.dom.inputFmv.value) || 0;
                 const mult = parseFloat(this.dom.inputMult.value) || 1.0;
                 const name = this.dom.insName.value.trim();
                 const level = this.dom.insLevel.value;
+                const newPrompt = this.dom.insPrompt.value.trim();
+                
                 if(!name) return alert("El nombre no puede estar vacío.");
                 
-                store.dispatch({
-                    type: 'UPDATE_ROLE',
-                    payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId, updates: { name: name, levelId: level, fmv: fmv, multiplier: mult } }
-                }).then(() => {
+                const btnSave = document.getElementById('btnSaveRole');
+                btnSave.innerText = "⏳ Sellando en Kernel...";
+                btnSave.disabled = true;
+
+                try {
+                    // 1. Guardar Datos Estructurales (Redux)
+                    await store.dispatch({
+                        type: 'UPDATE_ROLE',
+                        payload: { projectId: this.activeProjectId, roleId: this.selectedRoleId, updates: { name: name, levelId: level, fmv: fmv, multiplier: mult } }
+                    });
+
+                    // 2. Guardar Córtex Semántico (IndexedDB)
+                    await KB.init();
+                    const promptId = `prompt_${this.activeProjectId}_${this.selectedRoleId}`;
+                    let existingPrompt = await KB.getNode(promptId);
+                    
+                    if (existingPrompt || newPrompt) {
+                        await KB.saveNode({
+                            id: promptId,
+                            type: 'prompt_a2a',
+                            projectId: this.activeProjectId,
+                            targetId: this.selectedRoleId,
+                            roleTarget: level,
+                            title: `Prompt A2A Forjado: ${name}`,
+                            content: newPrompt || "Eres un nodo en el Ecosistema.",
+                            keywords: [level, this.activeProjectId]
+                        });
+                    }
+
                     this.forceSaveState(store.getState());
                     this.dom.inspectorModal.style.display = 'none';
-                });
+                } catch (e) {
+                    alert("Error al guardar: " + e.message);
+                } finally {
+                    btnSave.innerText = "💾 Sellar Mutación en Kernel";
+                    btnSave.disabled = false;
+                }
             });
 
             document.getElementById('btnDeleteRole').addEventListener('click', () => {
@@ -786,7 +829,7 @@ export default class ValueMapView {
             this.dom.canvasEdit.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         }
 
-        // 🔥 EVENTO AUDITORÍA ESTRATÉGICA VNA
+        // 🔥 EVENTO BUCLE IMPERIAL (@seny_analyst)
         if(this.dom.btnStrategicAudit) {
             this.dom.btnStrategicAudit.addEventListener('click', () => this.runVnaStrategicAudit());
         }
@@ -807,7 +850,6 @@ export default class ValueMapView {
         this.dom.aiCopilotBody.innerHTML = `<div style="font-size: 0.95rem;">${message}</div>`;
         this.dom.aiCopilot.classList.add('visible');
         
-        // Re-atar el evento de cierre porque hemos sobreescrito el header
         document.getElementById('btnCloseCopilot').addEventListener('click', () => {
             this.dom.aiCopilot.classList.remove('visible');
         });
@@ -932,7 +974,8 @@ export default class ValueMapView {
         this.dom.selTemplate.innerHTML = html;
     }
 
-    openRoleInspector(roleId) {
+    // 🔥 FIX: ABRIR INSPECTOR Y CARGAR EL PROMPT DESDE KB
+    async openRoleInspector(roleId) {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         if(!p) return;
         const rol = p.roles.find(r => r.id === roleId);
@@ -953,6 +996,16 @@ export default class ValueMapView {
         this.dom.insLevel.value = rol.levelId;
         this.dom.inputFmv.value = rol.fmv || 0;
         this.dom.inputMult.value = rol.multiplier || 1.0;
+
+        // 🔥 META-COGNICIÓN: Leer el prompt de la base de datos
+        this.dom.insPrompt.value = "Cargando...";
+        try {
+            await KB.init();
+            const promptNode = await KB.getNode(`prompt_${this.activeProjectId}_${rol.id}`);
+            this.dom.insPrompt.value = promptNode ? promptNode.content : '';
+        } catch(e) {
+            this.dom.insPrompt.value = '';
+        }
         
         const isLocked = rol.isArchived;
         this.dom.insName.disabled = isLocked;
@@ -1007,7 +1060,6 @@ export default class ValueMapView {
 
     forceSaveState(newState, highlightIndex = -1) {
         store.state = newState;
-        // 🔥 FIX V9: Forzamos persistencia en IndexedDB asíncronamente
         store.persistState().then(() => {
             this.refreshDataFromStore();
             this.renderSequence(highlightIndex); 
@@ -1081,6 +1133,9 @@ export default class ValueMapView {
             const color = flow.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)';
             const delivName = flow.template || flow.entregable;
             const hours = flow.estimatedHours || flow.horas || 1;
+            
+            // Calculo de Tokenomics humano (Baseline Value)
+            const humanCost = (rFrom.fmv || 50) * hours;
 
             const stepEl = document.createElement('div');
             stepEl.className = 'flow-step';
@@ -1098,7 +1153,11 @@ export default class ValueMapView {
 
             stepEl.innerHTML = `
                 <div class="step-info">
-                    <div class="step-meta" style="color: ${color};"><span style="background:#111; padding:2px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.1);">Paso ${i + 1}</span> ⏱ ${hours}h Est.</div>
+                    <div class="step-meta" style="color: ${color};">
+                        <span style="background:#111; padding:2px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.1);">Paso ${i + 1}</span> 
+                        <span>⏱ ${hours}h Est.</span>
+                        <span style="color:var(--accent-orange); font-size:0.7rem; font-family:var(--font-main); background:rgba(255,171,64,0.1); padding:2px 6px; border-radius:4px;">Valor Base: €${humanCost}</span>
+                    </div>
                     <div class="step-route-compact">
                         <span class="route-level">${rFrom.levelId}</span> <span class="route-name">${rFrom.name}</span>
                         <span class="route-arrow">&rarr;</span>
@@ -1113,7 +1172,7 @@ export default class ValueMapView {
     }
 
     // ==============================================================
-    // 🔥 EL ORÁCULO VNA: AUDITORÍA ESTRATÉGICA DE FLUJO (@seny_analyst)
+    // 🔥 EL BUCLE IMPERIAL: AUDITORÍA ESTRATÉGICA VNA (@seny_analyst)
     // ==============================================================
     async runVnaStrategicAudit() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -1121,11 +1180,11 @@ export default class ValueMapView {
         
         let provider = localStorage.getItem('tt_ai_provider') || 'openai';
         let apiKey = localStorage.getItem(`tt_key_${provider}`);
-        if (!apiKey) return alert("⚠️ Configura tu API Key en la Consola (Pantheon) para invocar al Seny Analyst.");
+        if (!apiKey && provider !== 'custom') return alert("⚠️ Configura tu API Key en la Consola (Pantheon) para invocar al Seny Analyst.");
 
-        this.triggerAiInsight(`⏳ <b>@seny_analyst está calculando...</b> Evaluando grafos dirigidos, densidades jerárquicas y redundancias de valor.`, "🧠 Auditoría Estratégica VNA");
+        this.triggerAiInsight(`⏳ <b>@seny_analyst está calculando...</b> Evaluando el grafo dirigido VNA, densidades jerárquicas y redundancias de valor.`, "🧠 Auditoría Estratégica VNA");
         
-        const btnAudit = this.dom.btnStrategicAudit;
+        const btnAudit = document.getElementById('btnStrategicAudit');
         if(btnAudit) {
             btnAudit.disabled = true;
             btnAudit.innerText = "⏳ Analizando DAG...";
@@ -1139,16 +1198,21 @@ export default class ValueMapView {
         });
 
         const systemPrompt = `
-            Eres @seny_analyst, el Arquitecto Analítico de TeamTowers V9. 
-            Evalúa esta topología de red VNA (Value Network Analysis).
-            Busca: Cuellos de botella, saltos jerárquicos peligrosos (ej: @anxaneta trabajando directo con @pinya), falta de tuberías intangibles (auditoría), o excesiva carga (horas) en un solo rol.
-            Devuelve un reporte en TEXTO PLANO con viñetas claras y accionables. No uses JSON.
+            Eres @seny_analyst, el Arquitecto Analítico de TeamTowers V9 Antigravity. 
+            Tu misión es ejecutar el "Bucle Imperial": Evaluar una topología de red VNA (Value Network Analysis).
+            Busca: 
+            - Cuellos de botella de ejecución.
+            - Saltos jerárquicos peligrosos (ej: @anxaneta trabajando directo con @pinya sin pasar por mando intermedio).
+            - Falta de tuberías intangibles (auditoría/revisión de calidad).
+            - Tareas con un "Valor Base" (Horas) inflado que podrían ser automatizadas.
+            
+            Devuelve un reporte en TEXTO PLANO estructurado con viñetas claras, enfocado al ROI y a la optimización de los Agentes. No uses JSON.
         `;
 
         const userPrompt = `
             Ecosistema: ${p.nombre}
             Roles activos: ${p.roles.map(r => `${r.name} (${r.levelId})`).join(', ')}
-            Secuencia de Flujos:
+            Secuencia de Flujos de Valor:
             ${mappedFlows.join('\n')}
         `;
 
@@ -1163,7 +1227,7 @@ export default class ValueMapView {
         } finally {
             if(btnAudit) {
                 btnAudit.disabled = false;
-                btnAudit.innerText = "🧠 Auditoría Estratégica VNA (@seny_analyst)";
+                btnAudit.innerText = "🧠 Bucle Imperial (Auditoría VNA)";
             }
         }
     }
