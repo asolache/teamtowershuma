@@ -1,9 +1,9 @@
-// v8/js/core/store.js
-// Motor de Estado Global Inmutable (Redux Pattern) - V15.9.8 (Precisión Pomodoro)
+// v9/js/core/store.js
+import { KB } from './kb.js'; 
 
 const initialState = {
     config: {
-        version: '15.9.8-Fractal',
+        version: 'v9-Antigravity',
         theme: 'dark'
     },
     session: {
@@ -25,10 +25,30 @@ const initialState = {
 
 class Store {
     constructor() {
-        const savedState = localStorage.getItem('tt_v9_kernel_state');
-        if (savedState) {
-            this.state = JSON.parse(savedState);
-            if (!this.state.config) this.state.config = { theme: 'dark' };
+        this.state = JSON.parse(JSON.stringify(initialState));
+        this.listeners = [];
+        this.isInitialized = false;
+    }
+
+    // 🔥 ARRANQUE ASÍNCRONO Y MIGRACIÓN (V9)
+    async init() {
+        if (this.isInitialized) return;
+        
+        await KB.init();
+        
+        try {
+            const savedNode = await KB.getNode('global_kernel_state');
+            
+            if (savedNode && savedNode.content) {
+                this.state = savedNode.content;
+            } else {
+                const legacyState = localStorage.getItem('tt_v9_kernel_state') || localStorage.getItem('tt_sos_v8_state');
+                if (legacyState) {
+                    this.state = JSON.parse(legacyState);
+                    await this.persistState(); 
+                }
+            }
+
             this.state.config.version = initialState.config.version; 
             if (!this.state.globalUsers) this.state.globalUsers = initialState.globalUsers;
             if (!this.state.projects) this.state.projects = [];
@@ -43,10 +63,23 @@ class Store {
                 if (!p.sprints) p.sprints = [{ id: 'sp_default', name: 'Sprint 1', startDate: Date.now() }];
                 if (!p.activeSprintId) p.activeSprintId = 'sp_default';
             });
-        } else {
-            this.state = JSON.parse(JSON.stringify(initialState));
+
+        } catch (e) {
+            console.warn("⚠️ [Antigravity] Error leyendo el estado. Arrancando Kernel limpio.", e);
         }
-        this.listeners = [];
+
+        this.isInitialized = true;
+    }
+
+    async persistState() {
+        await KB.saveNode({
+            id: 'global_kernel_state',
+            type: 'system_state',
+            projectId: 'global',
+            targetId: 'global',
+            title: 'Kernel State V9',
+            content: this.state
+        });
     }
 
     getState() { return this.state; }
@@ -58,7 +91,12 @@ class Store {
 
     async dispatch(action) {
         this.state = this._reducer(JSON.parse(JSON.stringify(this.state)), action);
+        
+        // Persistencia V9 en IndexedDB (KB)
+        await this.persistState();
+        // Backup temporal en LocalStorage por si alguna vista legacy lo busca
         localStorage.setItem('tt_v9_kernel_state', JSON.stringify(this.state));
+        
         this.listeners.forEach(listener => listener(this.state));
         return this.state;
     }
@@ -178,11 +216,10 @@ class Store {
                     }
                     if (woIdx > -1) {
                         taskList[woIdx].status = 'reported';
-                        // 🔥 FIX POMODORO: Respetamos los decimales pequeños (ej. 0.04h) del Pomodoro
                         taskList[woIdx].realHours = (action.payload.realHours !== undefined && action.payload.realHours !== null) ? action.payload.realHours : 0;
                         taskList[woIdx].comentario = action.payload.comentario;
                         if (action.payload.proofLink) taskList[woIdx].proofLink = action.payload.proofLink;
-                        taskList[woIdx].reportedDate = Date.now(); // Guardamos fecha de reporte
+                        taskList[woIdx].reportedDate = Date.now(); 
                     }
                 }
                 break;
@@ -261,7 +298,6 @@ class Store {
                                 }
                             }
 
-                            // 🔥 FIX POMODORO: Respetamos horas minúsculas (ej: 0.04h) pero evitamos NaN o exactamente 0 estricto
                             let calcHours = parseFloat(wo.realHours);
                             if (isNaN(calcHours) || calcHours === 0) {
                                 calcHours = estimatedHours;
@@ -287,7 +323,6 @@ class Store {
                 }
                 break;
 
-            // Soporte Legacy (Eliminar en V16)
             case 'UPDATE_TRANSACTION_STATUS':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
