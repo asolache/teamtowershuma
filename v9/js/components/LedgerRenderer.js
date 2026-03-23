@@ -1,4 +1,4 @@
-// v8/js/components/LedgerRenderer.js
+// v9/js/components/LedgerRenderer.js
 import { store } from '../core/store.js';
 
 export class LedgerRenderer {
@@ -35,6 +35,7 @@ export class LedgerRenderer {
             .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 1.2rem; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; background: rgba(0,0,0,0.5);}
             .user-info { display: flex; flex-direction: column; overflow: hidden; text-overflow: ellipsis; min-width: 0;}
             .user-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .ai-roi-badge { font-size: 0.7rem; font-family: var(--font-mono); color: var(--accent-purple); border: 1px solid rgba(224,64,251,0.3); background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;}
             
             .cap-bar-container { flex: 1; min-width: 50px; background: rgba(0,0,0,0.6); height: 12px; border-radius: 6px; overflow: hidden; position: relative; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
             .cap-bar-fill { height: 100%; border-radius: 6px; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); width: 0%; box-shadow: 0 0 10px currentColor;}
@@ -117,8 +118,17 @@ export class LedgerRenderer {
         let conicGradientParts = [];
         let currentDegree = 0;
 
+        // Pre-cálculo de costes de API para IAs en este proyecto
+        const agentCosts = {};
+        if (project.telemetry) {
+            project.telemetry.forEach(log => {
+                if (!agentCosts[log.agentId]) agentCosts[log.agentId] = 0;
+                agentCosts[log.agentId] += (log.costInDollars || 0);
+            });
+        }
+
         harvestData.sort((a, b) => (b.totalSlices || 0) - (a.totalSlices || 0)).forEach((userHarvest, index) => {
-            const user = this.globalUsers.find(u => u.id === userHarvest.userId) || { name: userHarvest.userId };
+            const user = this.globalUsers.find(u => u.id === userHarvest.userId) || { name: userHarvest.userId, profile: { isAi: false } };
             const rawSlices = userHarvest.totalSlices || 0;
             const percentageRaw = totalSlices > 0 ? (rawSlices / totalSlices) * 100 : 0;
             const percentageStr = percentageRaw.toFixed(2);
@@ -131,7 +141,16 @@ export class LedgerRenderer {
             const userTxs = (project.ledger || []).filter(tx => tx.userId === userHarvest.userId);
             const capitalSlices = userTxs.filter(tx => tx.roleId === 'CAPITAL_ASSET').reduce((sum, tx) => sum + (tx.valorCongelado || 0), 0);
             const capitalHtml = capitalSlices > 0 ? ` | <span style="color:var(--accent-green);">Inversor</span>` : '';
-            const initial = user.name.charAt(0).toUpperCase();
+            
+            // 🔥 Telemetría inyectada en la Cap Table
+            let aiRoiHtml = '';
+            if (user.profile?.isAi) {
+                const apiCost = agentCosts[user.id] || 0;
+                const rec = apiCost > 0 ? (rawSlices / apiCost).toFixed(0) : '0';
+                aiRoiHtml = `<div class="ai-roi-badge" title="Coste de Tokens de API: $${apiCost.toFixed(4)}">Coste: $${apiCost.toFixed(2)} | REC: ${rec}x</div>`;
+            }
+
+            const initial = user.profile?.isAi ? '🤖' : user.name.charAt(0).toUpperCase();
 
             capHtml += `
                 <div class="cap-row">
@@ -139,6 +158,7 @@ export class LedgerRenderer {
                         <div class="avatar" style="border-color: ${color}; color: ${color};">${initial}</div>
                         <div class="user-info">
                             <div class="user-name">${user.name}</div>
+                            ${aiRoiHtml}
                             <div class="user-sub mobile-only">Slices: ${Math.round(rawSlices).toLocaleString()}${capitalHtml}</div>
                         </div>
                     </div>
@@ -183,7 +203,7 @@ export class LedgerRenderer {
                     <tr>
                         <td><span class="hash-badge" title="${txId}">${hashShort}...</span></td>
                         <td style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem;">${dateStr}</td>
-                        <td style="font-weight: 900; color: white;">${user.name}</td>
+                        <td style="font-weight: 900; color: white;">${user.profile?.isAi ? '🤖 ' : ''}${user.name}</td>
                         <td>${roleName}</td>
                         <td style="line-height:1.4; color:#ccc;">${evidence}</td>
                         <td style="font-family: var(--font-mono); color: #aaa; font-weight:bold;">${horasStr}</td>
@@ -199,7 +219,7 @@ export class LedgerRenderer {
                         </div>
                         <div class="mlc-main">
                             <div>
-                                <div class="mlc-user">${user.name}</div>
+                                <div class="mlc-user">${user.profile?.isAi ? '🤖 ' : ''}${user.name}</div>
                                 <div class="mlc-role">${roleName} ${isCapital ? '' : ` | ⏱ ${horasStr}`}</div>
                             </div>
                             <div class="mlc-slices">${slicesFmt}</div>
