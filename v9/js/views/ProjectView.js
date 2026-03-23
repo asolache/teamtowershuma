@@ -21,6 +21,9 @@ export default class ProjectView {
     }
 
     async getHtml() {
+        // 🔥 ARRANQUE ASÍNCRONO DE INDEXEDDB (ANTIGRAVITY)
+        await store.init();
+
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         const user = state.globalUsers.find(u => u.id === activeUserId);
@@ -360,6 +363,79 @@ export default class ProjectView {
             this.refreshRenderer();
         });
 
+        // 🔥 MAGIA A2A: Auto-Asignación Inteligente (@cap_de_colla)
+        window.addEventListener('ph-magic-action', async (e) => {
+            if(e.detail.actionId === 'ai_assign') {
+                const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
+                const freeTasks = (currentProj.work_orders || []).filter(w => w.status === 'theoretical' || !w.status);
+                
+                if (freeTasks.length === 0) return alert("No hay Work Orders libres en la columna de Oportunidades.");
+
+                const btnMagic = document.getElementById('btnMagicDropdown');
+                const originalText = btnMagic.innerHTML;
+                btnMagic.innerHTML = "🧠 Orquestando...";
+                btnMagic.style.pointerEvents = 'none';
+
+                try {
+                    let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+                    let apiKey = localStorage.getItem(`tt_key_${provider}`);
+                    if (!apiKey) throw new Error("Configura una API Key en la configuración para usar la auto-asignación.");
+
+                    const availableAgents = store.getState().globalUsers.map(u => ({ id: u.id, name: u.name, isAi: u.profile?.isAi }));
+                    const rolesMap = currentProj.roles.map(r => ({ id: r.id, levelId: r.levelId, name: r.name }));
+                    
+                    const tasksToAssign = freeTasks.map(t => {
+                        const flow = (currentProj.vna_flows || []).find(f => f.id === t.flowId);
+                        const role = flow ? rolesMap.find(r => r.id === flow.to) : null;
+                        return { hash: t.hash, title: flow ? flow.template : t.comentario?.substring(0,20), requiredRole: role ? role.levelId : 'Cualquiera' };
+                    });
+
+                    const systemPrompt = `
+                        Eres @cap_de_colla, el Orquestador Manager.
+                        Tu misión es leer una lista de Tareas Libres y una lista de Nodos Disponibles, y emparejarlos buscando la máxima eficiencia.
+                        Nodos Disponibles: ${JSON.stringify(availableAgents)}
+                        REGLA: Intenta que las tareas de @baixos o @pinya vayan a @forca_worker. Las tareas de @anxaneta o @aixecador a @seny_analyst o humanos.
+                        DEVUELVE ÚNICAMENTE UN JSON PURO con el siguiente formato:
+                        { "assignments": [ { "hash": "id_tarea", "assigneeId": "id_del_nodo" } ] }
+                    `;
+
+                    const { Orchestrator } = await import('../core/Orchestrator.js');
+                    const response = await Orchestrator.callLLM({ 
+                        provider, apiKey, systemPrompt, 
+                        userPrompt: `Asigna estas tareas: ${JSON.stringify(tasksToAssign)}`, 
+                        responseFormat: "json_object", temperature: 0.1 
+                    });
+
+                    const assignments = response.content.assignments || [];
+                    
+                    let updatedList = [...currentProj.work_orders];
+                    let assignmentsCount = 0;
+
+                    assignments.forEach(assignment => {
+                        const idx = updatedList.findIndex(w => w.hash === assignment.hash);
+                        if (idx > -1 && assignment.assigneeId) {
+                            updatedList[idx] = { ...updatedList[idx], status: 'pinged', assigneeId: assignment.assigneeId };
+                            assignmentsCount++;
+                        }
+                    });
+
+                    await store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: this.activeProjectId, updates: { work_orders: updatedList } }
+                    });
+
+                    alert(`✅ @cap_de_colla ha orquestado y asignado ${assignmentsCount} tareas con éxito.`);
+                    this.refreshRenderer();
+
+                } catch (error) {
+                    alert("Fallo en la orquestación: " + error.message);
+                } finally {
+                    btnMagic.innerHTML = originalText;
+                    btnMagic.style.pointerEvents = 'auto';
+                }
+            }
+        });
+
         window.addEventListener('kanban-action', async (e) => {
             const { action, hash, isLegacy, userId, agentId, element } = e.detail;
             
@@ -516,7 +592,6 @@ export default class ProjectView {
                 
                 if (flows.length === 0) {
                     alert("Debes dibujar Tuberías permanentes en el Mapa VNA antes de poder generar Work Orders sueltas.");
-                    // 🔥 ENLACE MIGRADO A V9
                     window.location.href = '/v9/map';
                     return;
                 }
@@ -736,7 +811,28 @@ export default class ProjectView {
             if (!taskRef) taskRef = (currProject.transactions || []).find(t => t.id === hash);
             if(!taskRef) return;
 
-            document.getElementById('reviewTaskDeliverable').innerHTML = (taskRef.comentario || 'Sin comentario adjunto.').replace(/\n/g, '<br>');
+            // 🔥 FIX AUDITORÍA: Extracción de Horas, Fecha y Enlace PoW
+            const isLegacy = !taskRef.flowId;
+            const flowRef = isLegacy ? taskRef : (currProject.vna_flows || []).find(f => f.id === taskRef.flowId);
+            
+            const hoursReal = parseFloat(taskRef.realHours) || 0;
+            const hoursEst = parseFloat(flowRef?.estimatedHours) || parseFloat(flowRef?.horas) || 1;
+            const dateStr = taskRef.reportedDate ? new Date(taskRef.reportedDate).toLocaleString() : 'Fecha desconocida';
+
+            let reportHtml = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed #333; padding-bottom:10px;">
+                    <div><span style="color:#888;">📅 Reportado:</span> <span style="color:white; font-family:var(--font-mono);">${dateStr}</span></div>
+                    <div><span style="color:#888;">⏱ T. Real:</span> <span style="color:var(--accent-orange); font-family:var(--font-mono); font-weight:bold;">${hoursReal}h</span> <span style="color:#555; font-size:0.8rem;">(Est: ${hoursEst}h)</span></div>
+                </div>
+            `;
+
+            if (taskRef.proofLink) {
+                reportHtml += `<div style="margin-bottom:10px;"><a href="${taskRef.proofLink}" target="_blank" style="color:var(--accent-blue); font-weight:bold; text-decoration:none;">🔗 Abrir Enlace del Entregable (PoW)</a></div>`;
+            }
+
+            reportHtml += (taskRef.comentario || 'Sin comentario adjunto.').replace(/\n/g, '<br>');
+
+            document.getElementById('reviewTaskDeliverable').innerHTML = reportHtml;
             
             const socsContainer = document.getElementById('reviewSocsContainer');
             if (taskRef.soc_checklist && taskRef.soc_checklist.length > 0) {
@@ -835,6 +931,13 @@ export default class ProjectView {
             } else {
                 reviewModal.classList.remove('active');
                 currentReviewHash = null;
+                
+                // 🔥 LANZAR EL FEEDBACK LOOP EN SEGUNDO PLANO
+                Orchestrator.harvestKnowledge(updatedTask, this.activeProjectId).then(learnedTitle => {
+                    if (learnedTitle) {
+                        console.log(`[Antigravity] Cosecha completada: ${learnedTitle}`);
+                    }
+                });
             }
             
             this.refreshRenderer();
