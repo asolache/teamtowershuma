@@ -5,9 +5,6 @@ import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js'; 
 import { PageHeader } from '../components/PageHeader.js';
 
-// 🔥 Ya no necesitamos cargar todo el peso de los Renderers. El PaperView es solo para texto, menciones semánticas y Pomodoro.
-// Si alguien necesita ver el mapa, navega a /map. Zero Redundancy.
-
 export default class PaperView {
     constructor() {
         document.title = "Omni-Paper | TeamTowers V9";
@@ -17,6 +14,10 @@ export default class PaperView {
         this.isMenuOpen = false;
         this.currentWord = "";
         
+        // Estado del buscador semántico en vivo
+        this.currentMemesSearchResult = [];
+        this.activeMemeFilter = 'all';
+
         this.pomodoroInterval = null;
         this.pomodoroSeconds = 0;
         this.isPomodoroRunning = false;
@@ -35,7 +36,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Workspace)",
             subtitle: project ? project.nombre : 'Kernel V9',
-            tagline: "Lienzo de Ejecución GTD. Cronometra, documenta semánticamente y sella tu Proof of Work.",
+            tagline: "Lienzo de Ejecución GTD. Cronometra, invoca entidades y sella tu Proof of Work.",
             tabs: []
         };
 
@@ -46,25 +47,31 @@ export default class PaperView {
                 
                 .paper-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; padding-bottom: 8rem;}
                 
-                .breadcrumb-bar { display: flex; align-items: center; background: rgba(10,10,15,0.8); padding: 10px 15px; border-radius: 12px 12px 0 0; border: 1px solid var(--glass-border); border-bottom: none; gap: 10px; flex-wrap: wrap;}
+                .breadcrumb-bar { display: flex; align-items: center; background: rgba(10,10,15,0.8); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 10px; flex-wrap: wrap;}
                 .bc-select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; font-size: 0.9rem; font-weight: bold; font-family: var(--font-main); outline: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: 0.3s;}
                 .bc-select:focus { border-color: var(--accent-blue); }
                 .bc-separator { color: #555; font-weight: bold; }
                 
-                .live-context-bar { background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 0 0 12px 12px; display: flex; gap: 10px; align-items: center; min-height: 24px; transition: 0.3s; flex-wrap: wrap;}
-                .live-context-label { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-right: 10px;}
-                .context-badge { padding: 4px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; animation: popIn 0.3s ease-out;}
-                .cb-mention { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); }
-                .cb-meme { background: rgba(224,64,251,0.1); color: var(--accent-purple); border: 1px solid rgba(224,64,251,0.3); }
+                /* 🔥 LIVE CONTEXT BAR (TÁCTICO) */
+                .live-context-bar { background: rgba(10,10,15,0.95); border: 1px solid var(--accent-purple); padding: 12px 15px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 24px; transition: 0.3s; position: sticky; top: 10px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);}
+                .live-context-label { font-size: 0.75rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
+                
+                .action-chip-container { display: flex; flex-wrap: wrap; gap: 10px; }
+                .action-chip { display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 8px; padding: 4px; gap: 8px; animation: popIn 0.3s ease-out;}
+                .cb-mention { color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; padding-left: 5px;}
+                .btn-micro-action { background: rgba(0,0,0,0.5); border: 1px solid transparent; color: #ccc; font-size: 0.7rem; font-weight: bold; font-family: var(--font-main); padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+                .btn-micro-action.ping { border-color: var(--accent-green); color: var(--accent-green); }
+                .btn-micro-action.ping:hover { background: var(--accent-green); color: black;}
+                .btn-micro-action.assign { border-color: var(--accent-orange); color: var(--accent-orange); }
+                .btn-micro-action.assign:hover { background: var(--accent-orange); color: black;}
 
                 /* POMODORO TRACKER */
-                .pomodoro-panel { background: linear-gradient(145deg, rgba(20,20,25,0.9), rgba(10,10,15,0.95)); border: 1px solid var(--accent-orange); border-radius: 24px; padding: 2.5rem; text-align: center; box-shadow: 0 15px 35px rgba(255,171,64,0.15), inset 0 0 20px rgba(255,171,64,0.05); transition: 0.3s;}
+                .pomodoro-panel { background: linear-gradient(145deg, rgba(20,20,25,0.9), rgba(10,10,15,0.95)); border: 1px solid var(--accent-orange); border-radius: 24px; padding: 2rem; text-align: center; box-shadow: 0 15px 35px rgba(255,171,64,0.15), inset 0 0 20px rgba(255,171,64,0.05); transition: 0.3s;}
                 .pomodoro-panel.running { border-color: var(--accent-green); box-shadow: 0 15px 35px rgba(0,230,118,0.2), inset 0 0 30px rgba(0,230,118,0.1); animation: breathe 4s infinite;}
-                
-                .timer-display { font-size: 5.5rem; font-weight: 900; font-family: var(--font-mono); color: white; margin: 1rem 0; text-shadow: 0 5px 15px rgba(0,0,0,0.8); font-variant-numeric: tabular-nums;}
+                .timer-display { font-size: 5rem; font-weight: 900; font-family: var(--font-mono); color: white; margin: 0.5rem 0; text-shadow: 0 5px 15px rgba(0,0,0,0.8); font-variant-numeric: tabular-nums;}
                 .pomodoro-panel.running .timer-display { color: var(--accent-green); }
                 
-                .timer-controls { display: flex; justify-content: center; gap: 15px; margin-top: 1.5rem;}
+                .timer-controls { display: flex; justify-content: center; gap: 15px; margin-top: 1rem;}
                 .btn-timer { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
                 .btn-timer:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); }
                 .btn-timer.play { border-color: var(--accent-green); color: var(--accent-green); }
@@ -73,7 +80,7 @@ export default class PaperView {
                 .btn-timer.pause:hover { background: var(--accent-orange); color: black; box-shadow: 0 0 15px rgba(255,171,64,0.5); }
 
                 /* TASK CONTEXT PANEL */
-                .task-context-panel { display:none; background: rgba(15,15,20,0.9); border: 1px solid var(--glass-border); border-left: 4px solid var(--accent-green); padding: 20px; border-radius: 12px; margin-top: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s ease-out;}
+                .task-context-panel { display:none; background: rgba(15,15,20,0.9); border: 1px solid var(--glass-border); border-left: 4px solid var(--accent-green); padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
                 .task-context-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
                 .task-context-title { font-size: 1.3rem; color: white; font-weight: 900; margin: 0; }
                 .task-context-desc { font-size: 0.95rem; color: #ccc; line-height: 1.5; font-style: italic; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;}
@@ -88,35 +95,32 @@ export default class PaperView {
                 .soc-checklist-box { margin-top: 15px; }
                 .soc-checklist-box label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; }
                 .soc-item-check { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 5px; transition: 0.2s;}
-                .soc-item-check:hover { background: rgba(255,255,255,0.05); }
                 .soc-item-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-green); margin-top: 2px; }
                 .soc-item-check span { color: #ddd; font-size: 0.9rem; line-height: 1.4; }
 
-                /* SEMANTIC EDITOR (JSON-LD COMPATIBLE) */
-                .editor-wrapper { position: relative; width: 100%; margin-top: 1rem; background: rgba(10,10,15,0.8); border: 1px solid #333; border-radius: 16px; padding: 20px; box-sizing: border-box;}
-                .semantic-editor { width: 100%; min-height: 25vh; background: transparent; border: none; color: #e0e0e0; font-family: 'Georgia', serif; font-size: 1.15rem; line-height: 1.6; outline: none;}
+                /* SEMANTIC EDITOR */
+                .editor-wrapper { position: relative; width: 100%; background: rgba(10,10,15,0.8); border: 1px solid #444; border-radius: 16px; padding: 20px; box-sizing: border-box; transition: 0.3s;}
+                .editor-wrapper:focus-within { border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(224,64,251,0.1);}
+                .semantic-editor { width: 100%; min-height: 35vh; background: transparent; border: none; color: #e0e0e0; font-family: 'Georgia', serif; font-size: 1.15rem; line-height: 1.6; outline: none;}
                 .semantic-editor:empty:before { content: attr(data-placeholder); color: #555; font-style: italic; pointer-events: none;}
                 .semantic-editor p { margin: 0 0 1rem 0; }
                 
-                .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 350px; overflow-y: auto; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); padding: 8px 0; min-width: 320px; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left;}
+                /* 🔥 AJAX MENÚ FLOTANTE MEJORADO */
+                .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.15); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 40vh; overflow: hidden; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); min-width: 320px; max-width: 90vw; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left; flex-direction: column;}
+                
+                .sm-header { background: rgba(0,0,0,0.5); padding: 10px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10;}
+                .sm-title { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px;}
+                .sm-filters { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px;}
+                .sm-filters::-webkit-scrollbar { height: 2px; }
+                .sm-filter { background: #111; border: 1px solid #444; color: #aaa; font-family: var(--font-mono); font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: 0.2s;}
+                .sm-filter:hover { border-color: var(--accent-blue); color: white;}
+                .sm-filter.active { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
+                
+                .sm-results { overflow-y: auto; flex: 1; padding: 5px 0;}
                 .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-family: var(--font-main); border-left: 2px solid transparent;}
                 .semantic-item:hover, .semantic-item.selected { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
                 
                 .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
-                .meme-highlight { color: var(--accent-purple); font-weight: bold; background: rgba(224,64,251,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
-
-                /* BLOCKCHAIN THREAD */
-                .thread-container { margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-                .thread-title { color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: flex; justify-content: space-between;}
-                .log-bubble { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; position: relative; transition:0.3s;}
-                .log-bubble.ai-reply { border-left: 4px solid var(--accent-purple); background: rgba(224,64,251,0.05); }
-                .log-bubble.human-reply { border-left: 4px solid var(--accent-blue); }
-                .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
-                .log-author { font-weight: 900; color: white; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;}
-                .log-time { font-size: 0.75rem; color: #666; font-family: var(--font-mono);}
-                .log-content { color: #ccc; line-height: 1.6; font-family: 'Georgia', serif; font-size: 1.05rem; white-space: pre-wrap; word-break: break-word;}
-                .log-pow-link { display: inline-block; margin-top: 10px; background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 5px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-family: var(--font-mono); font-weight: bold; transition: 0.2s;}
-                .log-pow-link:hover { background: var(--accent-green); color: black;}
 
                 /* GTD ACTIONS */
                 .action-bar-fixed { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000;}
@@ -127,13 +131,11 @@ export default class PaperView {
                 .btn-action-draft:hover { background: var(--accent-orange); color: black; box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4); transform: translateY(-3px);}
 
                 @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes breathe { 0% { box-shadow: 0 15px 35px rgba(0,230,118,0.1), inset 0 0 20px rgba(0,230,118,0.05); } 50% { box-shadow: 0 15px 35px rgba(0,230,118,0.3), inset 0 0 40px rgba(0,230,118,0.15); } 100% { box-shadow: 0 15px 35px rgba(0,230,118,0.1), inset 0 0 20px rgba(0,230,118,0.05); } }
 
                 @media (max-width: 768px) {
                     .workspace-paper { padding: 90px 1rem 120px 1rem; }
-                    .breadcrumb-bar { flex-direction: column; align-items: stretch; border-radius: 12px; border-bottom: 1px solid var(--glass-border); margin-bottom: 10px;}
-                    .live-context-bar { border-radius: 12px; }
+                    .breadcrumb-bar { flex-direction: column; align-items: stretch; margin-bottom: 10px;}
                     .bc-separator { display: none; }
                     .action-bar-fixed { bottom: 80px; right: 20px; left: 20px; justify-content: space-between; gap:10px; }
                     .btn-action-pow, .btn-action-draft { width: 100%; padding: 14px 10px; font-size: 0.95rem; text-align: center; justify-content:center;}
@@ -162,17 +164,15 @@ export default class PaperView {
                             </select>
                         </div>
                         
-                        <div class="live-context-bar" id="liveContextBar">
-                            <span class="live-context-label">📌 Contexto Detectado:</span>
-                            <div id="dynamicTags" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                                <span style="color:#555; font-style:italic; font-size:0.85rem;">Escribe @ o # para enlazar el conocimiento W3C...</span>
-                            </div>
+                        <div class="live-context-bar" id="liveContextBar" style="display:none;">
+                            <span class="live-context-label">⚡ Acciones de Enjambre Disponibles:</span>
+                            <div id="dynamicTags" class="action-chip-container"></div>
                         </div>
 
                         <div class="pomodoro-panel" id="pomoPanel" style="display:none;">
                             <div style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">Tiempo de Foco Activo</div>
                             <div class="timer-display" id="timeDisplay">00:00:00</div>
-                            <div style="font-family: var(--font-mono); color: #888; font-size: 0.8rem;">La inyección automática en Slicing Pie está preparada.</div>
+                            <div style="font-family: var(--font-mono); color: #888; font-size: 0.8rem;">El tiempo se inyectará en el Slicing Pie al sellar.</div>
                             
                             <div class="timer-controls">
                                 <button class="btn-timer play" id="btnPlay" title="Iniciar Foco">▶</button>
@@ -202,35 +202,38 @@ export default class PaperView {
                                 </div>
                                 <div class="pow-input-group" style="flex: 1;">
                                     <label>⏱ Tiempo Imputado (Horas)</label>
-                                    <div style="display:flex; align-items:center; gap:5px;">
-                                        <input type="number" step="0.01" id="inpPowHours" class="pow-input mono" placeholder="Ej: 0.5" style="width:100px;" readonly title="El tiempo se inyecta desde el Pomodoro Tracker o se hereda de la estimación.">
-                                    </div>
+                                    <input type="number" step="0.01" id="inpPowHours" class="pow-input mono" placeholder="Ej: 0.5" readonly title="Heredado del Pomodoro o la estimación.">
                                 </div>
                             </div>
                         </div>
 
                         <div class="editor-wrapper">
                             <label id="editorLabel" style="display:none; font-size:0.75rem; color:#888; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">Cuerpo del Entregable (Proof of Work)</label>
-                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe aquí tus notas, o redacta tu Proof of Work.\n\nUsa @ para invocar a la Colla.\nUsa # para buscar e inyectar Nodos de Conocimiento del LMS."><p><br></p></div>
+                            <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe aquí tus notas, o redacta tu Proof of Work.\n\nUsa @ para invocar a la Colla y desplegar acciones (Pings / W.O.).\nUsa # para buscar e inyectar Nodos de Conocimiento del LMS."><p><br></p></div>
                         </div>
 
-                        <div class="thread-container" id="threadWrapper" style="display:none;">
-                            <div class="thread-title">
-                                <span>📡 Historial de Auditorías Notariales</span>
-                                <span id="threadCount" style="color:var(--accent-blue);">0 Logs</span>
-                            </div>
-                            <div id="threadList"></div>
-                        </div>
                     </div>
                     
                     <div class="action-bar-fixed">
-                        <button class="btn-action-draft" id="btnConvertDraft">🚀 Convertir a Work Order</button>
                         <button class="btn-action-draft" id="btnSaveTaskDraft" style="display:none;">💾 Guardar Borrador</button>
                         <button class="btn-action-pow" id="btnSubmitReport" style="display:none;">🚀 Sellar Proof of Work (Ledger)</button>
                     </div>
                 </main>
                 
-                <div id="semanticMenu" class="semantic-menu"></div>
+                <div id="semanticMenu" class="semantic-menu">
+                    <div class="sm-header">
+                        <div class="sm-title" id="smTitle">Inyectar Conocimiento W3C</div>
+                        <div class="sm-filters" id="smFilters" style="display:none;">
+                            <button class="sm-filter active" data-f="all">Todos</button>
+                            <button class="sm-filter" data-f="skill">Skills</button>
+                            <button class="sm-filter" data-f="SOP">SOPs</button>
+                            <button class="sm-filter" data-f="prompt_a2a">Prompts</button>
+                            <button class="sm-filter" data-f="evergreen">Evergreen</button>
+                        </div>
+                    </div>
+                    <div class="sm-results" id="smResults"></div>
+                </div>
+                
                 ${BottomNav.getHtml('/paper')}
             </div>
         `;
@@ -247,6 +250,7 @@ export default class PaperView {
             workspace: document.getElementById('paperWorkspace'),
             selProject: document.getElementById('selProject'),
             omniSelector: document.getElementById('omniSelector'),
+            liveContextBar: document.getElementById('liveContextBar'),
             dynamicTags: document.getElementById('dynamicTags'),
             
             pomoPanel: document.getElementById('pomoPanel'),
@@ -266,13 +270,11 @@ export default class PaperView {
 
             editor: document.getElementById('semanticEditor'),
             menu: document.getElementById('semanticMenu'),
-            
-            threadWrapper: document.getElementById('threadWrapper'),
-            threadList: document.getElementById('threadList'),
-            threadCount: document.getElementById('threadCount'),
+            smTitle: document.getElementById('smTitle'),
+            smFilters: document.getElementById('smFilters'),
+            smResults: document.getElementById('smResults'),
             
             btnSubmit: document.getElementById('btnSubmitReport'),
-            btnConvertDraft: document.getElementById('btnConvertDraft'),
             btnSaveTaskDraft: document.getElementById('btnSaveTaskDraft')
         };
 
@@ -284,7 +286,6 @@ export default class PaperView {
             
             let tasks = [];
             const tasksSource = p.work_orders && p.work_orders.length > 0 ? p.work_orders : (p.transactions || []);
-            
             if (state.session.role === 'ecosystem-owner' || p.ownerId === activeUserId) {
                 tasks = tasksSource.filter(tx => tx.status !== 'theoretical'); 
             } else {
@@ -296,12 +297,8 @@ export default class PaperView {
                 selectHtml += `<optgroup label="🎯 Tareas Asignadas">`;
                 tasks.forEach(t => {
                     const parentFlow = (p.vna_flows || []).find(f => f.id === t.flowId) || t;
-                    const roleTo = p.roles.find(r => r.id === parentFlow.to);
-                    
                     let resolvedName = parentFlow.template || parentFlow.entregable || t.comentario?.substring(0, 30) || 'Work Order';
-                    if (resolvedName.length > 40) resolvedName = resolvedName.substring(0, 40) + '...';
-
-                    selectHtml += `<option value="${t.id || t.hash}">[${roleTo ? roleTo.name : 'VNA'}] ${resolvedName}</option>`;
+                    selectHtml += `<option value="${t.id || t.hash}">[WO] ${resolvedName.substring(0,40)}</option>`;
                 });
                 selectHtml += `</optgroup>`;
             }
@@ -329,17 +326,12 @@ export default class PaperView {
                 this.activeTx = task;
                 this.dom.omniSelector.value = hashFromUrl;
                 this.setTaskMode();
-            } else {
-                this.setDraftMode();
-            }
-        } else {
-            this.setDraftMode();
-        }
+            } else { this.setDraftMode(); }
+        } else { this.setDraftMode(); }
 
         this.dom.omniSelector.addEventListener('change', (e) => {
             const val = e.target.value;
             this.stopPomodoro(); 
-            
             if (val === 'draft') {
                 this.activeTx = null;
                 this.setDraftMode();
@@ -355,11 +347,10 @@ export default class PaperView {
 
         this.dom.btnSubmit.addEventListener('click', () => this.reportDeliverable());
         this.dom.btnSaveTaskDraft.addEventListener('click', () => this.saveTaskDraft());
-        this.dom.btnConvertDraft.addEventListener('click', () => this.convertDraftToTask());
     }
 
     // ==========================================
-    // 🔥 POMODORO TRACKER NATIVO (Antigravity)
+    // 🔥 POMODORO TRACKER NATIVO
     // ==========================================
     setupPomodoro() {
         const updateInputs = () => {
@@ -368,9 +359,8 @@ export default class PaperView {
             const secs = this.pomodoroSeconds % 60;
             this.dom.timeDisplay.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             
-            const hoursDecimal = (this.pomodoroSeconds / 3600);
             if (this.pomodoroSeconds > 0) {
-                this.dom.inpPowHours.value = hoursDecimal.toFixed(3); 
+                this.dom.inpPowHours.value = (this.pomodoroSeconds / 3600).toFixed(3); 
             }
         };
 
@@ -388,9 +378,7 @@ export default class PaperView {
             this.pomodoroInterval = setInterval(this.tickPomodoro, 1000);
         });
 
-        this.dom.btnPause.addEventListener('click', () => {
-            this.stopPomodoro();
-        });
+        this.dom.btnPause.addEventListener('click', () => this.stopPomodoro());
     }
 
     stopPomodoro() {
@@ -405,20 +393,16 @@ export default class PaperView {
     setDraftMode() {
         this.dom.taskPanel.style.display = 'none';
         this.dom.pomoPanel.style.display = 'none';
-        this.dom.threadWrapper.style.display = 'none';
-        
         this.dom.btnSubmit.style.display = 'none';
         this.dom.btnSaveTaskDraft.style.display = 'none';
-        this.dom.btnConvertDraft.style.display = 'block';
         
-        this.dom.editor.setAttribute('data-placeholder', "El lienzo está en blanco.\n\nEscribe tu Borrador Libre.\n\nUsa @ para invocar a la Colla.\nUsa # para buscar Memes/SOPs del Cerebro LMS (W3C).");
+        this.dom.editor.setAttribute('data-placeholder', "Borrador Libre.\nEscribe @ para invocar al equipo y asignar tareas.\nEscribe # para inyectar Nodos W3C.");
         this.dom.editorLabel.style.display = 'none';
         this.dom.editor.innerHTML = '<p><br></p>';
     }
 
     setTaskMode() {
         if (!this.activeTx) return;
-        
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         const isLegacy = !this.activeTx.flowId;
         const parentFlow = isLegacy ? this.activeTx : (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
@@ -426,29 +410,23 @@ export default class PaperView {
         this.dom.taskPanel.style.display = 'block';
         this.dom.pomoPanel.style.display = 'block';
         
-        let resolvedTitle = parentFlow ? (parentFlow.template || parentFlow.entregable || this.activeTx.comentario) : 'Work Order';
-        this.dom.taskTitle.innerText = resolvedTitle;
+        this.dom.taskTitle.innerText = parentFlow ? (parentFlow.template || parentFlow.entregable || this.activeTx.comentario) : 'Work Order';
         
         const roleTo = p.roles.find(r => r.id === (parentFlow ? parentFlow.to : this.activeTx.to));
         this.dom.taskRole.innerText = roleTo ? `${roleTo.levelId} - ${roleTo.name}` : '@ecosistema';
-        
-        this.dom.taskStatus.innerText = this.activeTx.status === 'pinged' ? 'EN CURSO' : (this.activeTx.status === 'reported' ? 'EN AUDITORÍA' : this.activeTx.status.toUpperCase());
-        this.dom.taskDesc.innerHTML = (this.activeTx.comentario || parentFlow?.comentario || 'Aplica GTD: Inicia el Pomodoro, completa la tarea y sella la evidencia.').replace(/\n/g, '<br>');
+        this.dom.taskStatus.innerText = this.activeTx.status === 'pinged' ? 'EN CURSO' : this.activeTx.status.toUpperCase();
+        this.dom.taskDesc.innerHTML = (this.activeTx.comentario || parentFlow?.comentario || 'Inicia el Pomodoro, completa la tarea y sella la evidencia.').replace(/\n/g, '<br>');
 
         const socs = this.activeTx.soc_checklist && this.activeTx.soc_checklist.length > 0 ? this.activeTx.soc_checklist : (parentFlow?.soc_checklist || []);
         if (socs.length > 0) {
-            let socHtml = '<label>Criterios de Calidad (Para tu verificación local):</label>';
-            socs.forEach(soc => {
-                socHtml += `
-                    <div class="soc-item-check">
-                        <input type="checkbox" id="${soc.id}" ${soc.isChecked ? 'checked' : ''}>
-                        <span>${soc.text}</span>
-                    </div>
-                `;
-            });
-            this.dom.taskSocs.innerHTML = socHtml;
+            this.dom.taskSocs.innerHTML = '<label>Criterios de Calidad (Para tu verificación local):</label>' + socs.map(soc => `
+                <div class="soc-item-check">
+                    <input type="checkbox" id="${soc.id}" ${soc.isChecked ? 'checked' : ''}>
+                    <span>${soc.text}</span>
+                </div>
+            `).join('');
         } else {
-            this.dom.taskSocs.innerHTML = '<div style="color:#666; font-style:italic; font-size:0.85rem;">No hay SOCs asociados a este entregable.</div>';
+            this.dom.taskSocs.innerHTML = '<div style="color:#666; font-style:italic; font-size:0.85rem;">No hay SOCs asociados.</div>';
         }
 
         this.dom.inpPowLink.value = this.activeTx.draftLink || this.activeTx.proofLink || '';
@@ -468,10 +446,8 @@ export default class PaperView {
         }
 
         this.dom.editor.innerHTML = this.activeTx.draftContent || '<p><br></p>';
-        this.dom.threadWrapper.style.display = 'flex';
         this.dom.editorLabel.style.display = 'block';
         this.dom.editor.setAttribute('data-placeholder', "Documenta tu Proof of Work aquí...");
-        this.dom.btnConvertDraft.style.display = 'none';
         
         if (this.activeTx.status === 'pinged') {
             this.dom.btnSubmit.style.display = 'block';
@@ -484,12 +460,10 @@ export default class PaperView {
             this.dom.taskSocs.querySelectorAll('input').forEach(i => i.disabled = true);
             this.dom.editor.contentEditable = "false";
         }
-
-        this.renderThread(p);
     }
 
     // ==========================================
-    // 🧠 EDITOR SEMÁNTICO JSON-LD (Antigravity)
+    // 🧠 EDITOR SEMÁNTICO Y ACCIONES TÁCTICAS
     // ==========================================
     setupSemanticEditor() {
         const input = this.dom.editor;
@@ -499,20 +473,67 @@ export default class PaperView {
         let lastKnownRect = null; 
         let savedRange = null; 
 
+        // 🔥 LA BARRA DE ACCIÓN (PING / DELEGAR)
         const updateDetectedContext = () => {
             const text = input.innerText;
             const mentions = [...new Set(text.match(/@\w+/g) || [])];
-            const tags = [...new Set(text.match(/#\w+/g) || [])];
             
-            if (mentions.length === 0 && tags.length === 0) {
-                this.dom.dynamicTags.innerHTML = `<span style="color:#555; font-style:italic; font-size:0.85rem;">Escribe @ o # para inyectar conocimiento W3C...</span>`;
+            if (mentions.length === 0) {
+                this.dom.liveContextBar.style.display = 'none';
+                this.dom.dynamicTags.innerHTML = '';
             } else {
+                this.dom.liveContextBar.style.display = 'flex';
                 let html = '';
-                mentions.forEach(m => html += `<span class="context-badge cb-mention">${m}</span>`);
-                tags.forEach(t => html += `<span class="context-badge cb-meme">${t}</span>`);
+                mentions.forEach(m => {
+                    const cleanM = m.substring(1);
+                    const user = state.globalUsers.find(u => u.id === m || u.name === cleanM);
+                    if (user) {
+                        html += `
+                            <div class="action-chip">
+                                <span class="cb-mention">${m}</span>
+                                <button class="btn-micro-action ping" data-action="ping" data-target="${m}">🔔 Ping</button>
+                                <button class="btn-micro-action assign" data-action="assign" data-target="${m}">🎯 Asignar (WO)</button>
+                            </div>
+                        `;
+                    }
+                });
                 this.dom.dynamicTags.innerHTML = html;
             }
         };
+
+        // Eventos delegados para los Micro-Botones Tácticos
+        this.dom.dynamicTags.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.btn-micro-action');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            const targetId = btn.dataset.target;
+            const textContent = input.innerText.trim();
+
+            if (action === 'assign') {
+                if (!textContent) return alert("Escribe el contenido de la tarea antes de asignarla.");
+                if (!this.activeProjectId) return alert("Selecciona un Ecosistema arriba.");
+                
+                const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+                const newHash = 'wo_draft_' + Math.random().toString(36).substr(2, 9);
+                
+                await store.dispatch({
+                    type: 'SPAWN_WORK_ORDER',
+                    payload: {
+                        projectId: this.activeProjectId,
+                        workOrder: {
+                            hash: newHash, flowId: null, status: 'pinged', realHours: 0, sprintId: p.activeSprintId,
+                            comentario: textContent, soc_checklist: [], assigneeId: targetId
+                        }
+                    }
+                });
+                alert(`🚀 Tarea inyectada en el Kanban para ${targetId}.`);
+                input.innerHTML = '<p><br></p>';
+                updateDetectedContext();
+            } else if (action === 'ping') {
+                alert(`🔔 Ping simulado hacia ${targetId}. El Orquestador será notificado.`);
+                // Aquí podrías añadir el LOG entry si fuera necesario.
+            }
+        });
 
         input.addEventListener('input', updateDetectedContext);
         menu.addEventListener('mousedown', (e) => e.preventDefault());
@@ -521,6 +542,53 @@ export default class PaperView {
             if (!input.contains(e.target) && !menu.contains(e.target)) {
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
+            }
+        });
+
+        // Renderizador de resultados del Menú AJAX
+        const renderMenuResults = (type, items) => {
+            if (items.length === 0) {
+                this.dom.smResults.innerHTML = '<div style="padding:15px; color:#888; text-align:center;">No se encontró información.</div>';
+                return;
+            }
+            if (type === 'users') {
+                this.dom.smResults.innerHTML = items.map(u => `
+                    <div class="semantic-item type-mention" data-val="${u.id}" data-type="mention">
+                        <span style="font-size:1.5rem;">${u.profile?.isAi ? '🤖' : '👤'}</span> 
+                        <div>
+                            <div style="font-weight:900;">${u.name}</div>
+                            <div style="font-size:0.75rem; color:#888;">${u.profile?.isAi ? 'Agente A2A' : 'Humano'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else if (type === 'memes') {
+                this.dom.smResults.innerHTML = items.map(m => {
+                    const jsonPayload = encodeURIComponent(JSON.stringify(m)); 
+                    return `
+                    <div class="semantic-item type-meme" data-val="${m.id}" data-type="jsonld" data-payload="${jsonPayload}">
+                        <span style="font-size:1.2rem; color:var(--accent-purple);">🧠</span> 
+                        <div>
+                            <div style="font-weight:900; font-size:0.85rem;">${m.title}</div>
+                            <div style="font-size:0.7rem; color:#888; font-family:monospace;">[${m.category}]</div>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+        };
+
+        // Escucha de Filtros AJAX
+        this.dom.smFilters.addEventListener('click', (e) => {
+            if (e.target.classList.contains('sm-filter')) {
+                this.dom.smFilters.querySelectorAll('.sm-filter').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.activeMemeFilter = e.target.dataset.f;
+                
+                // Filtrar en memoria
+                const filtered = this.activeMemeFilter === 'all' 
+                    ? this.currentMemesSearchResult 
+                    : this.currentMemesSearchResult.filter(m => m.category === this.activeMemeFilter || m.type === this.activeMemeFilter);
+                
+                renderMenuResults('memes', filtered);
             }
         });
 
@@ -536,28 +604,19 @@ export default class PaperView {
             const rect = savedRange.getBoundingClientRect();
             if (rect.top !== 0 && rect.left !== 0) lastKnownRect = rect;
             
-            // Invocación de Nodos / Agentes
+            // MENCIONES (@)
             if (this.currentWord.startsWith('@')) {
                 const search = this.currentWord.substring(1).toLowerCase();
                 const users = state.globalUsers.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
                 
                 if (users.length > 0) {
-                    menu.innerHTML = `<div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Invocar Nodo / Agente IA</div>`;
-                    menu.innerHTML += users.map(u => `
-                        <div class="semantic-item type-mention" data-val="${u.id}" data-type="mention">
-                            <span style="font-size:1.5rem;">${u.profile?.isAi ? '🤖' : '👤'}</span> 
-                            <div>
-                                <div style="font-weight:900;">${u.name}</div>
-                                <div style="font-size:0.75rem; color:#888;">${u.profile?.isAi ? 'Agente A2A' : 'Humano'}</div>
-                            </div>
-                        </div>
-                    `).join('');
+                    this.dom.smTitle.innerText = "Invocar Nodo / Agente";
+                    this.dom.smFilters.style.display = 'none';
+                    renderMenuResults('users', users);
                     this.showFloatingMenu(menu, lastKnownRect);
-                } else {
-                    menu.style.display = 'none';
-                }
+                } else { menu.style.display = 'none'; }
             } 
-            // 🔥 RAG QUIRÚRGICO: Inyección W3C Directa en el Canvas
+            // CONOCIMIENTO (#)
             else if (this.currentWord.startsWith('#')) {
                 const search = this.currentWord.substring(1).toLowerCase();
                 await KB.init();
@@ -566,29 +625,24 @@ export default class PaperView {
                 if (search.length > 0) memes = memes.filter(m => m.title?.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(search))));
                 
                 if (memes.length > 0) {
-                    menu.innerHTML = `<div style="padding: 5px 15px; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">Inyectar Conocimiento W3C</div>`;
-                    menu.innerHTML += memes.slice(0, 8).map(m => {
-                        const jsonPayload = encodeURIComponent(JSON.stringify(m)); // Empaquetamos todo el JSON-LD
-                        return `
-                        <div class="semantic-item type-meme" data-val="${m.id}" data-type="jsonld" data-payload="${jsonPayload}" title="${m.content}">
-                            <span style="font-size:1.2rem; color:var(--accent-purple);">🧠</span> 
-                            <div>
-                                <div style="font-weight:900; font-size:0.85rem;">${m.title}</div>
-                                <div style="font-size:0.7rem; color:#888; font-family:monospace;">[${m.category}]</div>
-                            </div>
-                        </div>
-                    `}).join('');
+                    this.currentMemesSearchResult = memes; // Cache para AJAX
+                    this.activeMemeFilter = 'all'; // Reset filter UI
+                    this.dom.smFilters.querySelectorAll('.sm-filter').forEach(b => b.classList.remove('active'));
+                    this.dom.smFilters.querySelector('[data-f="all"]').classList.add('active');
+
+                    this.dom.smTitle.innerText = "Inyectar Conocimiento W3C";
+                    this.dom.smFilters.style.display = 'flex';
+                    renderMenuResults('memes', memes.slice(0, 10)); // Límite de renderizado para velocidad
                     this.showFloatingMenu(menu, lastKnownRect);
-                } else {
-                    menu.style.display = 'none';
-                }
+                } else { menu.style.display = 'none'; }
             } else {
                 menu.style.display = 'none';
                 this.isMenuOpen = false;
             }
         });
 
-        menu.addEventListener('click', (e) => {
+        // Inserción en el DOM
+        this.dom.smResults.addEventListener('click', (e) => {
             const item = e.target.closest('.semantic-item');
             if (item && savedRange) {
                 const replaceVal = item.getAttribute('data-val');
@@ -598,8 +652,7 @@ export default class PaperView {
                 savedRange.deleteContents();
                 
                 let el;
-
-                // 🔥 INYECCIÓN DE WEB COMPONENT SEMÁNTICO
+                // INYECCIÓN DE WEB COMPONENT SEMÁNTICO
                 if (type === 'jsonld') {
                     const rawJson = decodeURIComponent(item.getAttribute('data-payload'));
                     const memeObj = JSON.parse(rawJson);
@@ -610,16 +663,15 @@ export default class PaperView {
                     el.setAttribute('data-category', memeObj.category);
                     el.setAttribute('data-content', memeObj.content);
                     el.setAttribute('data-jsonld', rawJson);
-                    
-                    // Aseguramos que no se pueda borrar a medias en el editor
                     el.contentEditable = "false";
                     
                     savedRange.insertNode(el);
                     const br = document.createElement('br');
                     el.parentNode.insertBefore(br, el.nextSibling);
                     savedRange.setStartAfter(br);
-
-                } else if (type === 'mention') {
+                } 
+                // INYECCIÓN DE MENCIÓN
+                else if (type === 'mention') {
                     el = document.createElement('a');
                     el.className = 'mention-highlight';
                     el.href = `/v9/profile?id=${replaceVal}`;
@@ -649,15 +701,24 @@ export default class PaperView {
         if (!rect) {
             menu.style.top = '50%'; menu.style.left = '50%';
         } else {
+            // Asegurarse de que no se salga de la pantalla en móvil
+            const screenWidth = window.innerWidth;
+            const menuWidth = 320;
+            let leftPos = rect.left;
+            
+            if (leftPos + menuWidth > screenWidth) {
+                leftPos = screenWidth - menuWidth - 20;
+            }
+            
             menu.style.top = `${rect.bottom + 10}px`;
-            menu.style.left = `${rect.left}px`;
+            menu.style.left = `${Math.max(10, leftPos)}px`;
         }
-        menu.style.display = 'block';
+        menu.style.display = 'flex';
         this.isMenuOpen = true;
     }
 
     // ==========================================
-    // 💾 ACCIONES DE REDUX (GTD PUSH)
+    // 💾 ACCIONES DE REDUX (LEDGER)
     // ==========================================
     async saveTaskDraft() {
         if (!this.activeTx) return;
@@ -701,10 +762,9 @@ export default class PaperView {
         this.stopPomodoro();
 
         const link = this.dom.inpPowLink.value.trim();
-        // 🔥 MAGIA ANTIGRAVITY: Si no pusiste horas manuales, coge las del Pomodoro, si es 0, coge las del input (que trae las estimadas)
         let hoursToReport = this.pomodoroSeconds > 0 ? (this.pomodoroSeconds / 3600) : parseFloat(this.dom.inpPowHours.value);
-        if (isNaN(hoursToReport) || hoursToReport <= 0) hoursToReport = 1; // Fallback extremo
-        hoursToReport = parseFloat(hoursToReport.toFixed(3)); // Precisión Slicing Pie
+        if (isNaN(hoursToReport) || hoursToReport <= 0) hoursToReport = 1; 
+        hoursToReport = parseFloat(hoursToReport.toFixed(3)); 
 
         const htmlContent = this.dom.editor.innerHTML.trim();
         
@@ -720,7 +780,6 @@ export default class PaperView {
             const payloadKey = isLegacy ? 'txHash' : 'woHash';
             const targetHash = this.activeTx.hash || this.activeTx.id;
 
-            // 1. Reportar Tarea (Cambio de estado a 'reported')
             await store.dispatch({
                 type: 'REPORT_WORK_ORDER',
                 payload: {
@@ -732,7 +791,6 @@ export default class PaperView {
                 }
             });
 
-            // 2. Registrar Log en la Blockchain (Hilo)
             const contentLog = `Proof of Work subido. Horas Inyectadas: ${hoursToReport}h.\n${link ? `<a href="${link}" target="_blank" class="log-pow-link">🔗 Ver Entregable</a><br><br>` : ''}${htmlContent}`;
             
             await store.dispatch({
@@ -754,83 +812,5 @@ export default class PaperView {
             alert("✅ Proof of Work reportado exitosamente. La tarea ha pasado a Auditoría.");
             window.location.href = '/v9/project'; 
         }
-    }
-
-    async convertDraftToTask() {
-        const textContent = this.dom.editor.innerText.trim(); 
-        if (!textContent) return alert("⚠️ Escribe algo en el borrador antes de convertirlo.");
-        if (!this.activeProjectId) return alert("Selecciona un Ecosistema en el selector superior.");
-        
-        const project = store.getState().projects.find(p => p.id === this.activeProjectId);
-        if (!project) return;
-
-        const words = textContent.split(/\s/);
-        let assignee = store.getState().session.activeUserId; 
-        for (const w of words) {
-            if (w.startsWith('@') && w.length > 1) { assignee = w; break; }
-        }
-
-        const newHash = 'wo_draft_' + Math.random().toString(36).substr(2, 9);
-        
-        await store.dispatch({
-            type: 'SPAWN_WORK_ORDER',
-            payload: {
-                projectId: this.activeProjectId,
-                workOrder: {
-                    hash: newHash, flowId: null, status: 'pinged', realHours: 0, sprintId: project.activeSprintId,
-                    comentario: textContent, soc_checklist: [], assigneeId: assignee
-                }
-            }
-        });
-
-        window.location.href = `/v9/paper?hash=${newHash}`;
-    }
-
-    renderThread(project) {
-        if (!project || !project.logs || !this.activeTx) return;
-        const activeHash = this.activeTx.id || this.activeTx.hash;
-        const thread = project.logs.filter(l => l.relatedTxHash === activeHash).sort((a,b) => a.date - b.date);
-        
-        this.dom.threadCount.innerText = `${thread.length} Logs P2P`;
-
-        if (thread.length === 0) {
-            this.dom.threadList.innerHTML = `<div style="text-align:center; color:#555; font-style:italic; padding: 2rem;">No hay historial de entregas o auditorías para esta Work Order.</div>`;
-            return;
-        }
-
-        const state = store.getState();
-        let html = '';
-        
-        thread.forEach(log => {
-            const user = state.globalUsers.find(u => u.id === log.authorId);
-            const isAi = user?.profile?.isAi;
-            const authorName = user ? user.name : log.authorId;
-            const authorIcon = isAi ? '🤖' : '👤';
-            const timeStr = new Date(log.date).toLocaleDateString() + ' ' + new Date(log.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            let formattedContent = log.content;
-            if (log.mentions) {
-                log.mentions.forEach(m => {
-                    const rgx = new RegExp(`(?<!<[^>]*)${m}`, 'g');
-                    formattedContent = formattedContent.replace(rgx, `<a href="/v9/profile?id=${m}" data-link class="mention-highlight">${m}</a>`);
-                });
-            }
-
-            html += `
-                <div class="log-bubble ${isAi ? 'ai-reply' : 'human-reply'}">
-                    <div class="log-header">
-                        <div class="log-author">${authorIcon} ${authorName}</div>
-                        <div class="log-time">${timeStr}</div>
-                    </div>
-                    <div class="log-content">${formattedContent}</div>
-                </div>
-            `;
-        });
-
-        this.dom.threadList.innerHTML = html;
-    }
-
-    destroy() {
-        if (this.timerInterval) clearInterval(this.timerInterval);
     }
 }
