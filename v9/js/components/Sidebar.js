@@ -1,4 +1,4 @@
-// v8/js/components/Sidebar.js
+// v9/js/components/Sidebar.js
 import { store } from '../core/store.js';
 
 export class Sidebar {
@@ -17,24 +17,25 @@ export class Sidebar {
         
         const activeUserName = activeUserId ? (state.globalUsers.find(u => u.id === activeUserId)?.name || activeUserId) : 'Guest';
         
-        // 🔥 El nombre del proyecto dinámico (truncado por CSS)
         const projectLabel = project ? project.nombre : 'Ecosistema VNA';
 
-        // 🔥 RENOMBRAMIENTO APLICADO
+        // 🔥 ENLACES V9 ACTUALIZADOS Y PURGADOS
         const navItems = [
-            { path: '/v8/dashboard', icon: '🏰', label: projectLabel },
-            { path: '/v8/map', icon: '🕸️', label: 'Mapa Valor' },
-            { path: '/v8/project', icon: '📋', label: 'Work orders' },
-            { path: '/v8/paper', icon: '📝', label: 'Entregables' },
-            { path: '/v8/lms', icon: '🧠', label: 'Conocimiento' },
-            { path: '/v8/agentes', icon: '👥', label: 'Agentes IA' },
-            { path: '/v8/ledger', icon: '⚖️', label: 'Monedero' },
-            { path: '/v8/pantheon', icon: '⚙️', label: 'Configuración' }
+            { path: '/v9/dashboard', icon: '🏰', label: projectLabel },
+            { path: '/v9/map', icon: '🕸️', label: 'Mapa Valor' },
+            { path: '/v9/project', icon: '📋', label: 'Work Orders' },
+            { path: '/v9/paper', icon: '📝', label: 'Entregables' },
+            { path: '/v9/team', icon: '👥', label: 'Equipo' },
+            { path: '/v9/ledger', icon: '⚖️', label: 'Monedero' },
+            { path: '/v9/pantheon', icon: '⚙️', label: 'Configuración' },
+            { path: '/v9/manifesto', icon: '📜', label: 'Manifiesto VNA' },
+            { path: '/v9/tests', icon: '🩺', label: 'Diagnóstico de Sistema' }
         ];
 
         let navHtml = '';
         navItems.forEach(item => {
-            const isActive = currentPath === item.path.replace('/v8', '') ? 'active' : '';
+            // 🔥 CORRECCIÓN: Detectar ruta activa en V9
+            const isActive = currentPath === item.path.replace('/v9', '') ? 'active' : '';
             navHtml += `
                 <a href="${item.path}" class="nav-item ${isActive}" data-link title="${item.label}">
                     <span class="nav-icon">${item.icon}</span>
@@ -59,12 +60,10 @@ export class Sidebar {
                 .sidebar.minimized .sb-brand-text { display: none; }
                 .sb-brand-icon { font-size: 1.5rem; }
 
-                /* 🔥 El botón de colapsar */
                 .btn-collapse { background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 5px; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px;}
                 .btn-collapse:hover { color: white; background: rgba(255,255,255,0.1); }
                 .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0 auto; }
                 
-                /* 🔥 SELECTOR DE ECOSISTEMA */
                 .sb-ecosystem-wrapper { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; overflow: hidden;}
                 .sidebar.minimized .sb-ecosystem-wrapper { padding: 1rem 0; display: flex; justify-content: center;}
                 
@@ -86,7 +85,6 @@ export class Sidebar {
                 
                 .nav-icon { font-size: 1.2rem; min-width: 35px; text-align: center; transition: 0.3s;}
                 
-                /* 🔥 TRUNCADO AUTOMÁTICO DEL NOMBRE */
                 .nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; font-size: 0.95rem; }
                 
                 .sidebar.minimized .nav-item { padding: 12px 0; justify-content: center; border-left: none; }
@@ -155,7 +153,7 @@ export class Sidebar {
             selectProject.addEventListener('change', (e) => {
                 if(e.target.value) {
                     localStorage.setItem('tt_active_project', e.target.value);
-                    window.location.reload(); // Recarga la página para aplicar el contexto del nuevo proyecto
+                    window.location.reload(); 
                 }
             });
         }
