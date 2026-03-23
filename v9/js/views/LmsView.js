@@ -4,7 +4,8 @@ import { KB } from '../core/kb.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
-import { SynapticCanvas } from '../components/SynapticCanvas.js'; // 🔥 MOTOR D3.JS INYECTADO
+import { SynapticCanvas } from '../components/SynapticCanvas.js'; 
+import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 IMPORT CRÍTICO RESTAURADO
 
 export default class LmsView {
     constructor() {
@@ -20,10 +21,10 @@ export default class LmsView {
         const headerConfig = {
             title: "La Forja (Cerebro LMS)",
             subtitle: "Conocimiento W3C & Meta-Grafo",
-            tagline: "Explora la memoria profunda, forja habilidades y visualiza la topología del conocimiento.",
+            tagline: "Explora la memoria profunda, forja habilidades y visualiza la topología cuántica.",
             tabs: [
                 { id: 'list', label: '🗂️ Padrón W3C (Lista)', active: this.currentTab === 'list' },
-                { id: 'graph', label: '🌌 Meta-Grafo Visual', active: this.currentTab === 'graph' }
+                { id: 'graph', label: '🌌 Meta-Grafo 3D', active: this.currentTab === 'graph' }
             ],
             actionHtml: `<button class="ph-btn-magic" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="window.location.href='/v9/paper'">+ Crear en Omni-Paper</button>`
         };
@@ -38,10 +39,14 @@ export default class LmsView {
                 .tab-content.graph-active { display: flex; flex-direction: column; height: calc(100vh - 180px); padding-bottom: 0; }
 
                 /* LISTA VIEW */
-                .filters-bar { display: flex; gap: 10px; margin-bottom: 2rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); overflow-x: auto;}
+                .lms-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px;}
+                .filters-bar { display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); overflow-x: auto;}
                 .filter-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; font-family: var(--font-mono); font-size: 0.8rem;}
                 .filter-btn:hover { border-color: var(--accent-blue); color: white;}
                 .filter-btn.active { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
+
+                .btn-deep-research { background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(224,64,251,0.1)); border: 1px solid var(--accent-blue); color: white; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; gap: 8px; align-items: center; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,176,255,0.15);}
+                .btn-deep-research:hover { background: var(--accent-blue); color: black; box-shadow: 0 8px 20px rgba(0,176,255,0.4); transform: translateY(-2px);}
 
                 .lms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;}
                 
@@ -82,16 +87,24 @@ export default class LmsView {
                 .form-control:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224,64,251,0.1);}
                 .form-control.textarea { min-height: 150px; resize: vertical; font-family: 'Georgia', serif; line-height: 1.6;}
                 
-                .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem; border-top: 1px dashed #333; padding-top: 1.5rem;}
+                .modal-actions { display: flex; justify-content: flex-end; flex-wrap:wrap; gap: 10px; margin-top: 2rem; border-top: 1px dashed #333; padding-top: 1.5rem;}
                 .btn-modal { padding: 12px 24px; border-radius: 10px; font-weight: 900; font-size: 0.9rem; cursor: pointer; transition: 0.3s; border: none;}
                 .btn-save { background: var(--accent-purple); color: white; box-shadow: 0 5px 15px rgba(224,64,251,0.3);}
                 .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(224,64,251,0.5); filter: brightness(1.2);}
                 .btn-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red);}
                 .btn-danger:hover { background: rgba(255,82,82,0.1); transform: translateY(-2px);}
+                
+                /* 🔥 BOTÓN ANTIGRAVITY RESTAURADO */
+                .btn-antigravity { background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); color: black; box-shadow: 0 5px 15px rgba(0,176,255,0.3); }
+                .btn-antigravity:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,230,118,0.5); filter: brightness(1.2); }
 
                 @media (max-width: 768px) {
                     .workspace-lms { padding: 90px 1rem 120px 1rem; }
+                    .lms-controls-row { flex-direction: column; align-items: stretch; }
+                    .btn-deep-research { justify-content: center; }
                     .modal-card { padding: 1.5rem; border-radius: 16px; margin: 10px; }
+                    .modal-actions { flex-direction: column; }
+                    .btn-modal { width: 100%; text-align: center; }
                 }
             </style>
 
@@ -101,13 +114,20 @@ export default class LmsView {
                     ${PageHeader.getHtml(headerConfig)}
                     
                     <div id="tab-list" class="tab-content ${this.currentTab === 'list' ? 'active' : ''}">
-                        <div class="filters-bar" id="lmsFilters">
-                            <button class="filter-btn active" data-filter="all">Todos los Registros</button>
-                            <button class="filter-btn" data-filter="core_os">🔧 OS Kernel</button>
-                            <button class="filter-btn" data-filter="project_core">🏰 Misiones</button>
-                            <button class="filter-btn" data-filter="skill">🎒 Skills</button>
-                            <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
-                            <button class="filter-btn" data-filter="evergreen">🌟 Evergreen</button>
+                        
+                        <div class="lms-controls-row">
+                            <div class="filters-bar" id="lmsFilters">
+                                <button class="filter-btn active" data-filter="all">Todos los Registros</button>
+                                <button class="filter-btn" data-filter="core_os">🔧 OS Kernel</button>
+                                <button class="filter-btn" data-filter="project_core">🏰 Misiones</button>
+                                <button class="filter-btn" data-filter="skill">🎒 Skills</button>
+                                <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
+                                <button class="filter-btn" data-filter="evergreen">🌟 Evergreen</button>
+                            </div>
+                            
+                            <button class="btn-deep-research" id="btnOpenResearch">
+                                <span style="font-size:1.2rem;">🧠</span> Deep Research (IA)
+                            </button>
                         </div>
 
                         <div class="lms-grid" id="lmsGrid">
@@ -149,12 +169,42 @@ export default class LmsView {
                             <div class="form-group">
                                 <label>Tags / Keywords (Separados por coma)</label>
                                 <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); color:var(--accent-green);" placeholder="tag1, tag2, proyectoX">
+                                <div style="font-size:0.7rem; color:#888; margin-top:4px;">*Los Tags crean la gravedad que enlaza este nodo en el Mapa 3D.</div>
                             </div>
 
                             <div class="modal-actions">
                                 <button class="btn-modal btn-danger" id="btnDeleteNode">🗑️ Purgar Nodo</button>
                                 <div style="flex:1;"></div>
+                                <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Optimizar Semántica (IA)</button>
                                 <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar Mutación</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-overlay" id="researchModal">
+                        <div class="modal-card" style="border-top-color: var(--accent-blue);">
+                            <div class="modal-header">
+                                <h2>🔍 Deep Research (@mestre_escola)</h2>
+                                <button class="btn-close" id="btnCloseResearch">&times;</button>
+                            </div>
+                            <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px; line-height:1.5;">Ordena al Mestre que investigue un tema profundo y lo destile en Nodos de Conocimiento (JSON-LD) listos para inyectar en el Grafo 3D.</p>
+                            
+                            <div class="form-group">
+                                <label>Tema a Investigar</label>
+                                <input type="text" id="inpResearchTopic" class="form-control" placeholder="Ej: Clean Architecture, VNA, Mecánica Cuántica...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Categoría Ontológica Deseada</label>
+                                <select id="inpResearchCat" class="form-control">
+                                    <option value="skill">🎒 Skill (Habilidad Técnica o Cognitiva)</option>
+                                    <option value="SOP">⚙️ SOP (Procedimiento o Flujo)</option>
+                                    <option value="evergreen">🌟 Evergreen (Mejor Práctica/Principio Universal)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="modal-actions" style="margin-top: 1.5rem;">
+                                <button class="btn-modal" id="btnRunResearch" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; width: 100%;">🚀 Iniciar Minado Neuronal</button>
                             </div>
                         </div>
                     </div>
@@ -172,10 +222,12 @@ export default class LmsView {
         this.dom = {
             grid: document.getElementById('lmsGrid'),
             filters: document.getElementById('lmsFilters'),
+            
             modal: document.getElementById('editModal'),
             btnClose: document.getElementById('btnCloseModal'),
             btnSave: document.getElementById('btnSaveNode'),
             btnDelete: document.getElementById('btnDeleteNode'),
+            btnAntigravity: document.getElementById('btnAntigravity'),
             
             inpId: document.getElementById('editNodeId'),
             inpType: document.getElementById('editNodeType'),
@@ -185,10 +237,17 @@ export default class LmsView {
             inpContent: document.getElementById('editNodeContent'),
             inpKeywords: document.getElementById('editNodeKeywords'),
 
-            synapticMount: document.getElementById('synapticMountPoint')
+            synapticMount: document.getElementById('synapticMountPoint'),
+
+            // Deep Research DOM
+            btnOpenResearch: document.getElementById('btnOpenResearch'),
+            researchModal: document.getElementById('researchModal'),
+            btnCloseResearch: document.getElementById('btnCloseResearch'),
+            btnRunResearch: document.getElementById('btnRunResearch'),
+            inpResearchTopic: document.getElementById('inpResearchTopic'),
+            inpResearchCat: document.getElementById('inpResearchCat')
         };
 
-        // Lógica de Pestañas y Carga Diferida del Canvas
         window.addEventListener('ph-tab-changed', async (e) => {
             this.currentTab = e.detail.tabId;
             document.querySelectorAll('.tab-content').forEach(c => {
@@ -201,10 +260,9 @@ export default class LmsView {
                 if (this.currentTab === 'graph') target.classList.add('graph-active');
             }
 
-            // 🔥 Instanciar el SynapticCanvas SOLO cuando se abre la pestaña (Rendimiento)
             if (this.currentTab === 'graph' && !this.synapticInstance) {
-                this.dom.synapticMount.innerHTML = '<div style="color:#888; padding:2rem; text-align:center;">Iniciando Motor Gráfico D3.js...</div>';
-                this.synapticInstance = new SynapticCanvas(this.dom.synapticMount, null); // null = Modo Global Meta-Grafo
+                this.dom.synapticMount.innerHTML = '<div style="color:#888; padding:2rem; text-align:center;">Iniciando Motor WebGL 3D...</div>';
+                this.synapticInstance = new SynapticCanvas(this.dom.synapticMount, null); 
                 await this.synapticInstance.render();
             }
         });
@@ -212,6 +270,7 @@ export default class LmsView {
         await this.loadData();
         this.setupFilters();
         this.setupModalEvents();
+        this.setupDeepResearchEvents();
     }
 
     async loadData() {
@@ -228,11 +287,9 @@ export default class LmsView {
 
     renderNodes(filterCategory) {
         let nodesToRender = this.allNodes;
-
         if (filterCategory !== 'all') {
             nodesToRender = this.allNodes.filter(n => n.category === filterCategory || n.type === filterCategory);
         }
-
         nodesToRender.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
 
         if (nodesToRender.length === 0) {
@@ -240,7 +297,7 @@ export default class LmsView {
                 <div class="empty-lms">
                     <div style="font-size: 3rem; margin-bottom: 10px;">🕳️</div>
                     <h3>Vacío Cognitivo</h3>
-                    <p>No hay Memes en esta categoría. Utiliza el <b>Omni-Paper</b> y el comando <b>/meme</b> para forjar conocimiento.</p>
+                    <p>No hay Memes en esta categoría. Utiliza el Deep Research o el Omni-Paper para minar conocimiento.</p>
                 </div>
             `;
             return;
@@ -249,10 +306,8 @@ export default class LmsView {
         this.dom.grid.innerHTML = nodesToRender.map(node => {
             const safeCat = node.type === 'prompt_a2a' ? 'prompt_a2a' : (node.category || 'MEME');
             const tags = (node.keywords && Array.isArray(node.keywords)) ? node.keywords : [];
-            
             let tagsHtml = tags.slice(0, 3).map(t => `<span class="meme-tag">#${t}</span>`).join('');
             if (tags.length > 3) tagsHtml += `<span class="meme-tag">+${tags.length - 3}</span>`;
-
             const safeId = node.id.replace(/"/g, '&quot;');
 
             return `
@@ -269,10 +324,7 @@ export default class LmsView {
         }).join('');
 
         this.dom.grid.querySelectorAll('.meme-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                const nodeId = e.currentTarget.dataset.id;
-                this.openEditor(nodeId);
-            });
+            card.addEventListener('click', (e) => this.openEditor(e.currentTarget.dataset.id));
         });
     }
 
@@ -294,15 +346,12 @@ export default class LmsView {
         this.dom.inpId.value = node.id;
         this.dom.inpType.value = node.type || 'meme';
         this.dom.inpProjId.value = node.projectId || 'global';
-        
         this.dom.inpCat.value = node.category || '';
         this.dom.inpTitle.value = node.title || '';
         this.dom.inpContent.value = node.content || '';
-        
-        const tags = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
-        this.dom.inpKeywords.value = tags;
+        this.dom.inpKeywords.value = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
 
-        const isKernel = tags.includes('#kernel_sos');
+        const isKernel = this.dom.inpKeywords.value.includes('#kernel_sos');
         this.dom.btnDelete.style.display = isKernel ? 'none' : 'block';
 
         this.dom.modal.classList.add('active');
@@ -312,32 +361,114 @@ export default class LmsView {
         this.dom.modal.classList.remove('active');
     }
 
+    async forceGraphRefresh() {
+        if (this.synapticInstance) {
+            await this.synapticInstance.loadInitialData();
+            if (this.synapticInstance.graph3D) {
+                this.synapticInstance.graph3D.graphData({ 
+                    nodes: this.synapticInstance.nodes, 
+                    links: this.synapticInstance.links 
+                });
+            }
+        }
+    }
+
+    setupDeepResearchEvents() {
+        this.dom.btnOpenResearch.addEventListener('click', () => {
+            this.dom.researchModal.classList.add('active');
+        });
+
+        this.dom.btnCloseResearch.addEventListener('click', () => {
+            this.dom.researchModal.classList.remove('active');
+        });
+
+        this.dom.btnRunResearch.addEventListener('click', async () => {
+            const topic = this.dom.inpResearchTopic.value.trim();
+            const cat = this.dom.inpResearchCat.value;
+
+            if (!topic) return alert("Escribe un tema para investigar.");
+
+            this.dom.btnRunResearch.disabled = true;
+            this.dom.btnRunResearch.innerText = "⏳ @mestre_escola está minando conocimiento...";
+
+            try {
+                // Ejecuta la investigación llamando al Orquestador (Que interactúa con el LLM e IndexedDB)
+                await Orchestrator.runDeepResearch(topic, cat, 3);
+                
+                alert("✅ Investigación completada. Nuevos nodos inyectados en la Forja.");
+                this.dom.researchModal.classList.remove('active');
+                this.dom.inpResearchTopic.value = '';
+                
+                await this.loadData();
+                await this.forceGraphRefresh();
+                
+            } catch (e) {
+                alert("Fallo en la investigación: " + e.message);
+            } finally {
+                this.dom.btnRunResearch.disabled = false;
+                this.dom.btnRunResearch.innerText = "🚀 Iniciar Minado Neuronal";
+            }
+        });
+    }
+
     setupModalEvents() {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
-        
-        this.dom.modal.addEventListener('click', (e) => {
-            if (e.target === this.dom.modal) this.closeEditor();
-        });
+        this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
+
+        // 🔥 OPTIMIZADOR ANTIGRAVITY PARA EDICIÓN DE MEMES
+        if (this.dom.btnAntigravity) {
+            this.dom.btnAntigravity.addEventListener('click', async () => {
+                const title = this.dom.inpTitle.value.trim();
+                const content = this.dom.inpContent.value.trim();
+                const cat = this.dom.inpCat.value.trim();
+                const tags = this.dom.inpKeywords.value.trim();
+                
+                if (!content) return alert("El nodo debe tener contenido para ser optimizado.");
+
+                let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+                let apiKey = localStorage.getItem(`tt_key_${provider}`);
+                if (!apiKey && provider !== 'custom') return alert("⚠️ Configura tu API Key para usar el Optimizador.");
+
+                this.dom.btnAntigravity.disabled = true;
+                this.dom.btnAntigravity.innerText = "⏳ Comprimiendo Semántica...";
+
+                const systemPrompt = `
+                    Eres el Agente de Optimización Antigravity del Kernel V9. 
+                    Misión: Elevar la densidad semántica de este Nodo W3C.
+                    REGLAS:
+                    1. Comprime el texto para reducir la carga de tokens sin perder valor técnico.
+                    2. Genera los 'Tags' óptimos para conectarlo en el Grafo 3D.
+                    Devuelve JSON: { "title": "Título Mejorado", "content": "Contenido comprimido...", "keywords": ["tag1", "tag2"] }
+                `;
+
+                const userPrompt = `Título: ${title}\nCategoría: ${cat}\nTags Actuales: ${tags}\nContenido:\n${content}`;
+
+                try {
+                    const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
+                    const optimizedData = response.content;
+                    
+                    this.dom.inpTitle.value = optimizedData.title;
+                    this.dom.inpContent.value = optimizedData.content;
+                    this.dom.inpKeywords.value = optimizedData.keywords.join(', ');
+                    
+                    alert("✨ Nodo optimizado para el modelo Antigravity.");
+                } catch (error) {
+                    alert("Fallo en la optimización: " + error.message);
+                } finally {
+                    this.dom.btnAntigravity.disabled = false;
+                    this.dom.btnAntigravity.innerText = "✨ Optimizar Semántica (IA)";
+                }
+            });
+        }
 
         this.dom.btnSave.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
             const title = this.dom.inpTitle.value.trim();
             const content = this.dom.inpContent.value.trim();
-            
             if (!title || !content) return alert("Título y contenido son obligatorios.");
 
-            const rawKeywords = this.dom.inpKeywords.value;
-            const keywordsArray = rawKeywords.split(',').map(k => k.trim()).filter(k => k !== '');
-
-            const updatedNode = {
-                id: id,
-                type: this.dom.inpType.value,
-                projectId: this.dom.inpProjId.value,
-                category: this.dom.inpCat.value.trim(),
-                title: title,
-                content: content,
-                keywords: keywordsArray
-            };
+            const keywordsArray = this.dom.inpKeywords.value.split(',').map(k => k.trim()).filter(k => k !== '');
+            const updatedNode = { id, type: this.dom.inpType.value, projectId: this.dom.inpProjId.value, category: this.dom.inpCat.value.trim(), title, content, keywords: keywordsArray };
 
             this.dom.btnSave.disabled = true;
             this.dom.btnSave.innerText = "⏳ Sellando...";
@@ -346,19 +477,10 @@ export default class LmsView {
                 await KB.init();
                 await KB.saveNode(updatedNode);
                 await this.loadData(); 
-                
-                // Si el canvas está abierto, forzamos un refresh de los nodos visuales
-                if (this.synapticInstance) {
-                    await this.synapticInstance.loadInitialData();
-                    this.synapticInstance.simulation.nodes(this.synapticInstance.nodes);
-                    this.synapticInstance.simulation.force("link").links(this.synapticInstance.links);
-                    this.synapticInstance.renderGraphElements();
-                    this.synapticInstance.simulation.alpha(0.5).restart();
-                }
-
+                await this.forceGraphRefresh();
                 this.closeEditor();
             } catch (e) {
-                alert(`Error al guardar en la BD: ${e.message}`);
+                alert(`Error al guardar: ${e.message}`);
             } finally {
                 this.dom.btnSave.disabled = false;
                 this.dom.btnSave.innerText = "💾 Sellar Mutación";
@@ -374,6 +496,7 @@ export default class LmsView {
                 await KB.init();
                 await KB.deleteNode(id);
                 await this.loadData();
+                await this.forceGraphRefresh();
                 this.closeEditor();
             } catch (e) {
                 alert(`Error al purgar nodo: ${e.message}`);
