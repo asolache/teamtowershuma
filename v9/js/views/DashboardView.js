@@ -60,6 +60,7 @@ export default class DashboardView {
             `;
         }
 
+        // --- CÁLCULOS CORE V9 ANTIGRAVITY ---
         const harvest = store.calculateHarvest(project.id) || [];
         const totalSlices = harvest.reduce((sum, h) => sum + h.totalSlices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
@@ -69,14 +70,20 @@ export default class DashboardView {
         const asignaciones = project.asignaciones || [];
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
 
+        // --- CÁLCULO DE TELEMETRÍA Y ECONOMÍA ANTIGRAVITY ---
         let aiGrossValue = 0; 
         let realApiCost = 0;  
         let totalTokens = 0;
+        let humanEquivalentCost = 0;
 
         (project.ledger || []).forEach(tx => {
             const user = state.globalUsers.find(u => u.id === tx.userId);
+            const valueGenerated = (tx.fmv || 50) * (tx.multiplier || 1) * (tx.horas || 1);
+            
             if (user && user.profile?.isAi) {
-                aiGrossValue += (tx.fmv || 50) * (tx.multiplier || 1) * (tx.horas || 1); 
+                aiGrossValue += valueGenerated; 
+            } else {
+                humanEquivalentCost += valueGenerated;
             }
         });
 
@@ -86,12 +93,31 @@ export default class DashboardView {
                 totalTokens += (log.tokens?.total_tokens || log.tokens?.prompt_tokens + log.tokens?.completion_tokens) || 0;
             });
         }
-        const recRatio = realApiCost > 0 ? (aiGrossValue / realApiCost) : 0;
         
+        const recRatio = realApiCost > 0 ? (aiGrossValue / realApiCost) : 0;
+        // Simulamos un coste humano equivalente si la IA no hubiera hecho el trabajo (asumiendo un FMV medio de 50€/h)
+        const hypotheticalHumanCost = aiGrossValue > 0 ? aiGrossValue : 0; 
+        const savingsPercent = hypotheticalHumanCost > 0 ? ((hypotheticalHumanCost - realApiCost) / hypotheticalHumanCost * 100).toFixed(2) : 0;
+
+        // --- IDENTIFICACIÓN DEL ENJAMBRE IA ASIGNADO ---
         const projectUsers = project.usuarios || [];
         const aisInProject = projectUsers.map(u => state.globalUsers.find(gu => gu.id === u.id)).filter(u => u && u.profile?.isAi);
+        
+        // Agrupamos las IAs por motor para mostrar los iconos correctamente
+        const aiEngines = new Set(aisInProject.map(ai => ai.profile?.preferredEngine || 'openai'));
+        
+        const getEngineIcon = (engine) => {
+            switch(engine) {
+                case 'deepseek': return '🐋';
+                case 'openai': return '🧠';
+                case 'gemini': return '✨';
+                case 'anthropic': return '🦉';
+                default: return '🤖';
+            }
+        };
+
         const aiAvatarsHtml = aisInProject.length > 0 
-            ? aisInProject.map(ai => `<div class="ai-avatar-badge" title="${ai.name} (${ai.id})">🤖</div>`).join('')
+            ? Array.from(aiEngines).map(engine => `<div class="ai-avatar-badge" title="${engine}" style="background:var(--accent-purple);">${getEngineIcon(engine)}</div>`).join('')
             : `<div style="color:#888; font-size:0.8rem; font-style:italic;">No hay Agentes IA en la Colla.</div>`;
 
         let vacantesHtml = sillasVacias.length === 0 
@@ -162,11 +188,16 @@ export default class DashboardView {
                 .kpi-val { font-size: 2.2rem; font-weight: 900; display: block; margin-bottom: 5px; font-family: var(--font-mono); line-height: 1;}
                 .kpi-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-                .ai-arbitrage-panel { background: rgba(0,0,0,0.4); border: 1px dashed var(--accent-blue); padding: 1.5rem; border-radius: 16px; display: flex; flex-direction:column; gap: 15px;}
+                /* 🔥 MEJORA: TELEMETRÍA Y ECONOMÍA ANTIGRAVITY */
+                .ai-arbitrage-panel { background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 1.5rem; border-radius: 16px; display: flex; flex-direction:column; gap: 15px;}
                 .ai-stat-row { display: flex; align-items: center; justify-content: space-between;}
-                .ai-stat-lbl { font-size: 0.7rem; color: #aaa; text-transform: uppercase; font-weight: bold;}
-                .ai-stat-val { font-size: 1.4rem; font-weight: 900; font-family: var(--font-mono); color: white; }
-                .ai-avatar-badge { width: 35px; height: 35px; border-radius: 50%; background: var(--accent-purple); display:flex; justify-content:center; align-items:center; font-size: 1.2rem; border: 2px solid #111; margin-left: -10px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
+                .ai-stat-lbl { font-size: 0.7rem; color: #aaa; text-transform: uppercase; font-weight: bold; display: flex; align-items: center; gap: 5px;}
+                .ai-stat-val { font-size: 1.2rem; font-weight: 900; font-family: var(--font-mono); color: white; }
+                
+                .savings-bar-container { width: 100%; height: 8px; background: rgba(255,82,82,0.2); border-radius: 4px; margin-top: 10px; overflow: hidden; position: relative;}
+                .savings-bar-fill { height: 100%; background: var(--accent-green); position: absolute; left: 0; top: 0;}
+                
+                .ai-avatar-badge { width: 35px; height: 35px; border-radius: 50%; display:flex; justify-content:center; align-items:center; font-size: 1.2rem; border: 2px solid #111; margin-left: -10px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
                 .ai-avatar-badge:first-child { margin-left: 0; }
 
                 .modal-ia { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px);}
@@ -183,6 +214,7 @@ export default class DashboardView {
                     ${PageHeader.getHtml(headerConfig)}
 
                     <div id="tab-overview" class="tab-content ${this.currentTab === 'overview' ? 'active' : ''}">
+                        
                         <div class="dash-grid">
                             <div>
                                 <div class="dash-panel" style="border-top: 4px solid var(--accent-purple); margin-bottom: 2rem;">
@@ -214,26 +246,40 @@ export default class DashboardView {
 
                             <div>
                                 <div class="dash-panel" style="border-top: 4px solid var(--accent-green); margin-bottom: 2rem;">
-                                    <div class="panel-title">🤖 Enjambre IA Activo</div>
-                                    <div style="display:flex; margin-bottom:1rem;">
-                                        ${aiAvatarsHtml}
+                                    <div class="panel-title" style="margin-bottom:1rem;">📈 Economía Antigravity</div>
+                                    <div style="display:flex; align-items:center; gap: 10px; margin-bottom:1.5rem;">
+                                        <span style="font-size:0.8rem; color:#888;">Agentes en el Ledger:</span>
+                                        <div style="display:flex;">${aiAvatarsHtml}</div>
                                     </div>
+                                    
                                     <div class="ai-arbitrage-panel">
                                         <div class="ai-stat-row">
-                                            <span class="ai-stat-lbl">Tokens Consumidos</span>
-                                            <span class="ai-stat-val" style="color:var(--accent-blue);">${(totalTokens / 1000).toFixed(1)}k</span>
-                                        </div>
-                                        <div class="ai-stat-row">
-                                            <span class="ai-stat-lbl">Gasto API (USD)</span>
-                                            <span class="ai-stat-val" style="color:var(--accent-red);">$${realApiCost.toFixed(4)}</span>
-                                        </div>
-                                        <div class="ai-stat-row" style="border-top: 1px dashed #444; padding-top: 15px; margin-top: 5px;">
-                                            <span class="ai-stat-lbl" style="color:var(--accent-green);">Valor (Slices) IA</span>
+                                            <span class="ai-stat-lbl" title="Suma del FMV de las Work Orders ejecutadas por Agentes IA">💼 Valor Generado (IA)</span>
                                             <span class="ai-stat-val" style="color:var(--accent-green);">€${aiGrossValue.toLocaleString()}</span>
                                         </div>
-                                        <div class="ai-stat-row">
-                                            <span class="ai-stat-lbl" style="color:var(--accent-purple);">Ratio (REC)</span>
-                                            <span class="ai-stat-val" style="color:var(--accent-purple);">${recRatio > 0 ? recRatio.toFixed(0) + 'x' : '0'}</span>
+                                        <div class="ai-stat-row" style="margin-top:5px;">
+                                            <span class="ai-stat-lbl" title="Coste real en USD pagado a OpenAI/DeepSeek/Gemini">💸 Gasto Real API</span>
+                                            <span class="ai-stat-val" style="color:var(--accent-red);">$${realApiCost.toFixed(4)}</span>
+                                        </div>
+                                        
+                                        <div style="margin-top:10px;">
+                                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#aaa; margin-bottom:5px;">
+                                                <span>Ahorro Estimado vs Humano</span>
+                                                <span style="color:var(--accent-green); font-weight:bold;">${savingsPercent}%</span>
+                                            </div>
+                                            <div class="savings-bar-container">
+                                                <div class="savings-bar-fill" style="width: ${Math.min(savingsPercent, 100)}%;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="ai-stat-row" style="border-top: 1px dashed #444; padding-top: 15px; margin-top: 10px;">
+                                            <span class="ai-stat-lbl" style="color:var(--accent-purple);" title="Retorno de Eficiencia Cognitiva: Cuántos euros se generan por cada dólar gastado en API">🔮 Multiplicador R.E.C.</span>
+                                            <span class="ai-stat-val" style="color:var(--accent-purple); font-size: 1.6rem;">${recRatio > 0 ? recRatio.toFixed(0) + 'x' : '0'}</span>
+                                        </div>
+                                        
+                                        <div class="ai-stat-row" style="margin-top: 5px;">
+                                            <span class="ai-stat-lbl">Tokens Consumidos</span>
+                                            <span class="ai-stat-val" style="color:var(--text-muted); font-size:0.9rem;">${(totalTokens / 1000).toFixed(1)}k</span>
                                         </div>
                                     </div>
                                 </div>
@@ -373,7 +419,6 @@ export default class DashboardView {
         const btnAcceptEvo = document.getElementById('btnAcceptEvolution');
         const modalCloseBtn = document.getElementById('aiModalClose');
 
-        // Variable global para almacenar el JSON procesado si es el modo Evolución
         let latestEvolutionData = null;
 
         if (modalCloseBtn) modalCloseBtn.onclick = () => modal.style.display = 'none';
@@ -431,7 +476,6 @@ export default class DashboardView {
                 systemPrompt += `\nRedacta un Pacto de Socios formal (Smart Contract / Legal Draft) basado en el Cap Table adjunto.`;
             } else if (type === 'evolve') {
                 isEvolveMode = true;
-                // 🔥 EL BUCLE META-COGNITIVO
                 systemPrompt += `
                     El proyecto ha avanzado. Evalúa el "Data Payload" actual y tu objetivo es la META-OPTIMIZACIÓN.
                     Devuelve UNICAMENTE un objeto JSON estricto con las siguientes claves:
@@ -449,7 +493,7 @@ export default class DashboardView {
                     systemPrompt, 
                     userPrompt: `Data Payload: ${JSON.stringify(dataPayload)}`, 
                     responseFormat: responseFormat, 
-                    temperature: isEvolveMode ? 0.3 : 0.2 // Más bajo en JSON para evitar alucinaciones sintácticas
+                    temperature: isEvolveMode ? 0.3 : 0.2 
                 });
                 
                 if (isEvolveMode) {
@@ -476,13 +520,11 @@ export default class DashboardView {
                         btnAcceptEvo.innerText = "⏳ Inyectando nueva visión y actualizando Córtex...";
                         btnAcceptEvo.disabled = true;
                         
-                        // 1. Guardar nueva presentación en Redux
                         await store.dispatch({
                             type: 'UPDATE_PROJECT_INFO',
                             payload: { projectId: this.activeProjectId, updates: { presentation: latestEvolutionData.new_vision } }
                         });
 
-                        // 2. 🔥 META-COGNICIÓN: Guardar el nuevo prompt mejorado en IndexedDB para el Orquestador
                         await KB.init();
                         await KB.saveNode({
                             id: `prompt_project_genesi_vna_${this.activeProjectId}`,
