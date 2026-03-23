@@ -2,12 +2,14 @@
 import { store } from '../core/store.js';
 import { KB } from '../core/kb.js';
 import { Orchestrator } from '../core/Orchestrator.js';
+import { SynapticCanvas } from './SynapticCanvas.js'; // 🔥 MOTOR 3D IMPORTADO A LA FORJA
 
 export class IdentityForge {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.activeNodeId = null;
         this.isAiNode = true;
+        this.synapticCanvas = null;
     }
 
     async render(nodeId = null) {
@@ -56,12 +58,18 @@ export class IdentityForge {
                 .btn-forge { background: linear-gradient(135deg, rgba(224,64,251,0.1), rgba(224,64,251,0.2)); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 12px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; margin-bottom: 15px;}
                 .btn-forge:hover:not(:disabled) { background: var(--accent-purple); color: white; box-shadow: 0 5px 20px rgba(224,64,251,0.4);}
                 
-                .btn-save { background: var(--accent-blue); color: black; border: none; padding: 14px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%;}
+                .btn-save { background: var(--accent-blue); color: black; border: none; padding: 14px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; margin-bottom: 2rem;}
                 .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,176,255,0.4);}
                 
                 .toggle-type { display: flex; gap: 10px; margin-bottom: 20px; background: #111; padding: 5px; border-radius: 12px; border: 1px solid #333;}
                 .toggle-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-radius: 8px; font-weight: bold; color: #888; transition: 0.3s;}
                 .toggle-btn.active { background: var(--accent-blue); color: black; }
+
+                /* CONTENEDOR DEL CÓRTEX 3D */
+                .cortex-container { border: 1px solid #333; border-radius: 16px; overflow: hidden; background: #000; }
+                .cortex-header { background: rgba(0,0,0,0.8); padding: 15px; border-bottom: 1px dashed #333; color: var(--accent-green); font-weight: bold; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content: space-between;}
+                #agentSynapticCanvas { height: 500px; width: 100%; }
+                .empty-cortex { display: flex; justify-content: center; align-items: center; height: 100%; color: #666; font-style: italic; text-align: center; padding: 2rem;}
             </style>
 
             <div class="forge-card">
@@ -105,23 +113,23 @@ export class IdentityForge {
                     </div>
                     <div class="form-group">
                         <label style="color:#e91e63;">Lo que amas (Pasión)</label>
-                        <textarea id="ikiPasion" class="form-control" rows="2" placeholder="Ej: Optimizar arquitecturas complejas...">${ikigai.pasion || ''}</textarea>
+                        <textarea id="ikiPasion" class="form-control" rows="2">${ikigai.pasion || ''}</textarea>
                     </div>
                     <div class="form-group">
                         <label style="color:#00bcd4;">Lo que el mundo necesita (Misión)</label>
-                        <textarea id="ikiMision" class="form-control" rows="2" placeholder="Ej: Sistemas sin redundancia...">${ikigai.mision || ''}</textarea>
+                        <textarea id="ikiMision" class="form-control" rows="2">${ikigai.mision || ''}</textarea>
                     </div>
                     <div class="form-group">
                         <label style="color:#ff9800;">Por lo que te pagan (Profesión)</label>
-                        <textarea id="ikiProfesion" class="form-control" rows="2" placeholder="Ej: DevOps, Arquitectura Cloud...">${ikigai.profesion || ''}</textarea>
+                        <textarea id="ikiProfesion" class="form-control" rows="2">${ikigai.profesion || ''}</textarea>
                     </div>
                     <div class="form-group">
                         <label style="color:#4caf50;">En lo que eres bueno (Vocación)</label>
-                        <textarea id="ikiVocacion" class="form-control" rows="2" placeholder="Ej: TDD, Refactorización estricta...">${ikigai.vocacion || ''}</textarea>
+                        <textarea id="ikiVocacion" class="form-control" rows="2">${ikigai.vocacion || ''}</textarea>
                     </div>
                 </div>
 
-                <button class="btn-forge" id="btnEvalPrompt">✨ Evaluar y Sintetizar Antigravity (IA)</button>
+                <button class="btn-forge" id="btnEvalPrompt">✨ Evaluar y Asimilar Conocimiento (IA)</button>
 
                 <div class="eval-panel" id="evalPanel">
                     <div class="eval-grade" id="evalGrade">A+</div>
@@ -129,20 +137,40 @@ export class IdentityForge {
                 </div>
 
                 <div class="form-group">
-                    <label>System Prompt (Identidad y Directrices Base)</label>
-                    <textarea id="ifPrompt" class="form-control prompt-area" placeholder="Instrucciones inmutables generadas o escritas manualmente...">${promptContent}</textarea>
+                    <label>System Prompt (Identidad Core Inmutable)</label>
+                    <textarea id="ifPrompt" class="form-control prompt-area" placeholder="Instrucciones inmutables...">${promptContent}</textarea>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 20px;">
-                    <label>Tags Semánticos (Gravedad 3D)</label>
-                    <input type="text" id="ifTags" class="form-control" placeholder="#backend, #javascript, #frontend..." style="color:var(--accent-green); font-family:var(--font-mono);">
+                    <label>Tags Semánticos (Fuerza de Gravedad)</label>
+                    <input type="text" id="ifTags" class="form-control" placeholder="#backend, #javascript..." style="color:var(--accent-green); font-family:var(--font-mono);">
                 </div>
 
                 <button class="btn-save" id="btnSaveIdentity">💾 Sellar Identidad en el Padrón</button>
+
+                <div class="cortex-container">
+                    <div class="cortex-header">
+                        <span>🧠 Córtex 3D (Memoria Asignada)</span>
+                        <span style="color:#888;">Arrastra nodos desde el explorador</span>
+                    </div>
+                    <div id="agentSynapticCanvas">
+                        ${this.activeNodeId ? '<div style="color:#888; text-align:center; padding:3rem;">Cargando motor WebGL...</div>' : '<div class="empty-cortex">Guarda la identidad primero para inicializar su cerebro 3D.</div>'}
+                    </div>
+                </div>
             </div>
         `;
 
         this.attachEvents();
+        
+        // Carga diferida del WebGL 3D solo si el nodo ya existe
+        if (this.activeNodeId) {
+            setTimeout(async () => {
+                const canvasContainer = this.container.querySelector('#agentSynapticCanvas');
+                canvasContainer.innerHTML = ''; // Limpiamos el loader
+                this.synapticCanvas = new SynapticCanvas(canvasContainer, this.activeNodeId);
+                await this.synapticCanvas.render();
+            }, 100);
+        }
     }
 
     attachEvents() {
@@ -154,19 +182,17 @@ export class IdentityForge {
 
         btnTypeAi.addEventListener('click', () => {
             this.isAiNode = true;
-            btnTypeAi.classList.add('active');
-            btnTypeHuman.classList.remove('active');
+            btnTypeAi.classList.add('active'); btnTypeHuman.classList.remove('active');
             engineGroup.style.display = 'flex';
         });
 
         btnTypeHuman.addEventListener('click', () => {
             this.isAiNode = false;
-            btnTypeHuman.classList.add('active');
-            btnTypeAi.classList.remove('active');
+            btnTypeHuman.classList.add('active'); btnTypeAi.classList.remove('active');
             engineGroup.style.display = 'none';
         });
 
-        // 🔥 EL EVALUADOR ANTIGRAVITY
+        // 🔥 EL EVALUADOR ANTIGRAVITY (CON ASIMILACIÓN RAG)
         btnEval.addEventListener('click', async () => {
             const ikigaiData = {
                 pasion: this.container.querySelector('#ikiPasion').value.trim(),
@@ -177,28 +203,35 @@ export class IdentityForge {
             
             const currentPrompt = this.container.querySelector('#ifPrompt').value.trim();
             const name = this.container.querySelector('#ifName').value.trim();
+            const id = this.container.querySelector('#ifId').value.trim();
 
-            if (!name || (!ikigaiData.pasion && !currentPrompt)) {
-                return alert("Rellena el Nombre y al menos una dimensión del Ikigai o el Prompt base para que el Oráculo pueda evaluar.");
-            }
+            if (!name) return alert("El nombre es obligatorio.");
 
             btnEval.disabled = true;
-            btnEval.innerText = "⏳ Orquestador Evaluando Densidad Semántica...";
+            btnEval.innerText = "⏳ Orquestador Asimilando Contexto...";
 
             try {
                 let provider = localStorage.getItem('tt_ai_provider') || 'openai';
                 let apiKey = localStorage.getItem(`tt_key_${provider}`);
                 if (!apiKey && provider !== 'custom') throw new Error("API Key requerida.");
 
+                // Leer contexto del IndexedDB (Memes anclados al agente)
+                await KB.init();
+                const allNodes = await KB.getAllNodes();
+                const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(id));
+                const contextText = relatedMemes.map(m => `[Habilidad/Meme Aprendido] ${m.title}: ${m.content}`).join('\n\n');
+
                 const systemPrompt = `
                     Eres el Evaluador Antigravity del Kernel V9.
-                    Analiza la información del Nodo (Humano o IA) y redacta un System Prompt condensado (Máxima densidad, mínimo gasto de tokens).
-                    Si el input del usuario es redundante o pobre, mejóralo. Evalúa la calidad de la identidad resultante con una nota (A, B, C, D, F).
+                    Analiza la información del Nodo y asimila las habilidades (Memes) que ha aprendido.
+                    Genera un System Prompt condensado (Máxima densidad, mínimo gasto de tokens).
+                    NO cites los memes literalmente, FUSIONA su conocimiento en la "consciencia" o instrucciones directas del Agente.
+                    Evalúa la calidad del nuevo prompt con una nota (A, B, C, D, F).
                     Devuelve UNICAMENTE un JSON:
                     {
                         "grade": "A",
-                        "feedback": "Comentario corto sobre por qué tiene esta nota y qué se ha optimizado.",
-                        "optimizedPrompt": "Eres [Nombre]. Tu misión es... [Instrucciones directas, usando GTD].",
+                        "feedback": "Comentario sobre qué habilidades se han asimilado.",
+                        "optimizedPrompt": "Eres [Nombre]. Tu misión es... [Instrucciones asimilando los memes]",
                         "tags": ["#tag1", "#tag2"]
                     }
                 `;
@@ -206,6 +239,7 @@ export class IdentityForge {
                 const userPrompt = `
                     Nodo: ${name} (${this.isAiNode ? 'IA' : 'Humano'})
                     Ikigai: ${JSON.stringify(ikigaiData)}
+                    Memes a Asimilar: ${contextText || 'Ninguno nuevo'}
                     Prompt Original: ${currentPrompt || 'Ninguno'}
                 `;
 
@@ -222,10 +256,10 @@ export class IdentityForge {
                 this.container.querySelector('#ifTags').value = result.tags.join(', ');
 
             } catch (error) {
-                alert(`Fallo en la evaluación: ${error.message}`);
+                alert(`Fallo en la asimilación: ${error.message}`);
             } finally {
                 btnEval.disabled = false;
-                btnEval.innerText = "✨ Evaluar y Sintetizar Antigravity (IA)";
+                btnEval.innerText = "✨ Evaluar y Asimilar Conocimiento (IA)";
             }
         });
 
@@ -238,18 +272,11 @@ export class IdentityForge {
                 id: id,
                 name: this.container.querySelector('#ifName').value.trim(),
                 globalRole: this.isAiNode ? 'ai-agent' : 'network-user',
-                profile: {
-                    isAi: this.isAiNode,
-                    guardian: this.container.querySelector('#ifGuardian').value,
-                    preferredEngine: this.isAiNode ? this.container.querySelector('#ifEngine').value : null
-                }
+                profile: { isAi: this.isAiNode, guardian: this.container.querySelector('#ifGuardian').value, preferredEngine: this.isAiNode ? this.container.querySelector('#ifEngine').value : null }
             };
 
-            if (this.activeNodeId) {
-                await store.dispatch({ type: 'UPDATE_USER', payload: newUserData });
-            } else {
-                await store.dispatch({ type: 'ADD_USER', payload: newUserData });
-            }
+            if (this.activeNodeId) await store.dispatch({ type: 'UPDATE_USER', payload: newUserData });
+            else await store.dispatch({ type: 'ADD_USER', payload: newUserData });
 
             await KB.init();
             const rawTags = this.container.querySelector('#ifTags').value;
@@ -265,18 +292,28 @@ export class IdentityForge {
 
             await KB.saveNode({
                 id: `prompt_global_${id.replace('@','')}`,
-                type: 'prompt_a2a',
-                category: 'meta_prompt',
-                targetId: id,
-                roleTarget: id,
+                type: 'prompt_a2a', category: 'meta_prompt', targetId: id, roleTarget: id,
                 title: `Identidad de ${newUserData.name}`,
                 content: this.container.querySelector('#ifPrompt').value.trim(),
-                ikigai: ikigaiData,
-                keywords: keywordsArray
+                ikigai: ikigaiData, keywords: keywordsArray
             });
 
-            alert(`✅ Identidad sellada. El nodo ${id} ya existe en el Meta-Grafo.`);
+            alert(`✅ Identidad sellada. El nodo ${id} está sincronizado.`);
             window.dispatchEvent(new CustomEvent('identity-forged', { detail: { id } }));
+            
+            // Si es un nuevo agente, recargamos para que aparezca su Córtex 3D
+            if (!this.activeNodeId) this.render(id);
+        });
+
+        // Refresco de Evaluador cuando se forja una sinapsis en 3D
+        window.addEventListener('synapse-forged', (e) => {
+            if (e.detail.agentId === this.activeNodeId) {
+                const evalPanel = this.container.querySelector('#evalPanel');
+                evalPanel.style.display = 'flex';
+                this.container.querySelector('#evalGrade').innerText = "❗";
+                this.container.querySelector('#evalGrade').style.color = "var(--accent-orange)";
+                this.container.querySelector('#evalFeedback').innerHTML = "<b>Nuevo conocimiento detectado en el Córtex.</b> Pulsa 'Evaluar' para asimilar los Memes y fusionarlos en tu System Prompt.";
+            }
         });
     }
 }
