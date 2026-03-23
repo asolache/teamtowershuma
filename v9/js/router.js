@@ -20,7 +20,7 @@ const navigateTo = url => {
 };
 
 const router = async () => {
-    // 🔥 FIX RUTAS: Migración completa a /v9
+    // 🔥 MIGRACIÓN V9 Y NUEVAS RUTAS
     const routes = [
         { path: "/v9/", view: HomeView },
         { path: "/v9/profile", view: ProfileView },
@@ -29,10 +29,13 @@ const router = async () => {
         { path: "/v9/project", view: ProjectView },
         { path: "/v9/create", view: ProjectCreatorView },
         { path: "/v9/tests", view: TestsView },
-        { path: "/v9/agents", view: AgentEditorView }, 
+        { path: "/v9/agentes", view: AgentEditorView }, // Redirección legacy por si acaso
+        { path: "/v9/team", view: AgentEditorView }, // 🔥 Nueva ruta Team
         { path: "/v9/paper", view: PaperView },
         { path: "/v9/focus", view: PaperView }, 
         { path: "/v9/lms", view: LmsView },
+        { path: "/v9/manifesto", view: LmsView }, // 🔥 Nueva ruta Manifesto
+        { path: "/v9/pantheon", view: SettingsView }, // 🔥 Corrección de ruta Settings
         { path: "/v9/settings", view: SettingsView },
         { path: "/v9/ledger", view: LedgerView }
     ];
