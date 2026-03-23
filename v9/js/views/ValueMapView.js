@@ -1,13 +1,14 @@
-// v8/js/views/ValueMapView.js
+// v9/js/views/ValueMapView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
-import { MapRenderer } from '../components/MapRenderer.js'; // 🔥 EL MOTOR ÚNICO
+import { MapRenderer } from '../components/MapRenderer.js'; 
+import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 Añadido para la Auditoría VNA
 
 export default class ValueMapView {
     constructor() {
-        document.title = "Mapa VNA | TeamTowers V15.8";
+        document.title = "Mapa VNA | TeamTowers V9";
         this.activeProjectId = null;
         this.selectedRoleId = null; 
         this.editingTxIndex = null; 
@@ -30,6 +31,8 @@ export default class ValueMapView {
     }
 
     async getHtml() {
+        await store.init();
+        
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
         
@@ -46,7 +49,7 @@ export default class ValueMapView {
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">🕸️</div>
                              <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Lienzo Vacío</h2>
                              <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No tienes un Ecosistema activo para visualizar.</p>
-                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Forjar Nuevo Ecosistema</a>
+                             <a href="/v9/create" data-link class="btn-primary" style="text-decoration:none;">➕ Forjar Nuevo Ecosistema</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/map')}
@@ -75,7 +78,7 @@ export default class ValueMapView {
 
         return `
             <style>
-                ${MapRenderer.getStyles()} /* Importamos estilos del motor */
+                ${MapRenderer.getStyles()} 
                 
                 .workspace-map { display: flex; flex-direction: column; flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; position: relative; scroll-behavior: smooth; width: 100%; box-sizing: border-box;}
                 .tab-content { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.4s ease-out; min-height: 500px; position: relative; width: 100%;}
@@ -106,8 +109,8 @@ export default class ValueMapView {
                 .role-list-card { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: 0.3s; backdrop-filter: blur(10px);}
                 .role-list-card:hover { background: rgba(255,255,255,0.03); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
 
-                .flow-container { display: flex; gap: 2rem; flex: 1; align-items: flex-start; margin-top: 10px;}
-                .sequence-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 15px;}
+                .flow-container { display: flex; flex-direction: column; gap: 1rem; flex: 1; align-items: stretch; margin-top: 10px;}
+                .sequence-panel { display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 300px); overflow-y: auto; padding-right: 15px;}
                 
                 .flow-step { background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 15px; transition: all 0.3s;}
                 .flow-step:hover { background: rgba(255,255,255,0.03); border-color:#444;}
@@ -127,18 +130,19 @@ export default class ValueMapView {
                 .btn-step.del:hover { background: rgba(255, 82, 82, 0.15); color: var(--accent-red); border-color: var(--accent-red); }
                 .btn-step.edit { background: rgba(0, 176, 255, 0.05); color: var(--accent-blue); border-color: rgba(0,176,255,0.3); }
 
+                /* 🔥 MEJORA AI COPILOT */
                 .ai-scaffold {
-                    position: fixed; right: 30px; bottom: 30px; width: 340px;
-                    background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px);
-                    border: 1px solid rgba(224, 64, 251, 0.4); border-radius: 16px;
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 20px rgba(224,64,251,0.1);
+                    position: fixed; right: 30px; bottom: 30px; width: 400px;
+                    background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(20px);
+                    border: 1px solid rgba(0, 230, 118, 0.4); border-radius: 16px;
+                    box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0, 230, 118, 0.1);
                     z-index: 9000; display: flex; flex-direction: column; overflow: hidden;
                     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s;
                     transform: translateY(150%); opacity: 0;
                 }
                 .ai-scaffold.visible { transform: translateY(0); opacity: 1; }
-                .ai-header { background: rgba(224,64,251,0.1); padding: 15px; font-weight: 900; color: var(--accent-purple); display:flex; justify-content:space-between; border-bottom: 1px solid rgba(224,64,251,0.2); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;}
-                .ai-body { padding: 20px; font-size: 0.9rem; color: #ccc; line-height: 1.5; font-family:var(--font-main);}
+                .ai-header { background: rgba(0, 230, 118, 0.1); padding: 15px; font-weight: 900; color: var(--accent-green); display:flex; justify-content:space-between; border-bottom: 1px solid rgba(0, 230, 118, 0.2); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;}
+                .ai-body { padding: 20px; font-size: 0.9rem; color: #ccc; line-height: 1.5; font-family:var(--font-main); max-height: 400px; overflow-y: auto;}
                 .ai-btn-close { background:transparent; border:none; color:#888; cursor:pointer; font-size:1.2rem; line-height:1;}
                 .ai-btn-close:hover { color:white; }
 
@@ -243,6 +247,10 @@ export default class ValueMapView {
                     </div>
 
                     <div id="tab-flow" class="tab-content ${this.currentTab === 'flow' ? 'active' : ''}">
+                        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 1rem; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                            <h2 style="color:white; margin:0; font-size:1.2rem;">Secuencia de Flujos</h2>
+                            ${isPO ? `<button id="btnStrategicAudit" style="background:linear-gradient(135deg, rgba(0,230,118,0.1), rgba(0,176,255,0.1)); border:1px solid var(--accent-green); color:white; padding:8px 16px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.85rem; box-shadow: 0 0 15px rgba(0,230,118,0.2); transition: 0.3s;">🧠 Auditoría Estratégica VNA (@seny_analyst)</button>` : ''}
+                        </div>
                         <div class="flow-container">
                             <div class="sequence-panel" id="sequenceList"></div>
                         </div>
@@ -251,8 +259,8 @@ export default class ValueMapView {
                 </main>
 
                 <div id="aiCopilot" class="ai-scaffold">
-                    <div class="ai-header">
-                        <span>🧠 Agente VNA Activo</span>
+                    <div class="ai-header" id="aiCopilotHeader">
+                        <span>🧠 Informe Estratégico</span>
                         <button class="ai-btn-close" id="btnCloseCopilot">&times;</button>
                     </div>
                     <div class="ai-body" id="aiCopilotBody"></div>
@@ -357,7 +365,7 @@ export default class ValueMapView {
                             </div>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 2rem;">
-                            <button class="btn-primary" style="height:50px; font-size:1.05rem;" id="btnSaveRole">✓ Actualizar Kernel</button>
+                            <button class="btn-primary" style="height:50px; font-size:1.05rem;" id="btnSaveRole">💾 Actualizar Rol</button>
                             <button class="btn-primary" style="background:rgba(255,82,82,0.1); border:1px solid var(--accent-red); color: var(--accent-red); height:50px;" id="btnDeleteRole">🗑️ Archivar Nodo</button>
                         </div>
                     </div>
@@ -379,7 +387,7 @@ export default class ValueMapView {
         
         if (!project) return;
         this.activeProjectId = project.id;
-        const isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
+        this.isPO = project.ownerId === state.session.activeUserId || state.session.role === 'ecosystem-owner';
         
         this.dom = {
             canvasVis: document.getElementById('mapCanvasVisual'),
@@ -413,18 +421,18 @@ export default class ValueMapView {
             tooltip: document.getElementById('txTooltip'),
             
             aiCopilot: document.getElementById('aiCopilot'),
+            aiCopilotHeader: document.getElementById('aiCopilotHeader'),
             aiCopilotBody: document.getElementById('aiCopilotBody'),
-            btnCloseCopilot: document.getElementById('btnCloseCopilot')
+            btnCloseCopilot: document.getElementById('btnCloseCopilot'),
+            btnStrategicAudit: document.getElementById('btnStrategicAudit') // 🔥 NUEVO BOTÓN
         };
 
-        // 🔥 INSTANCIACIÓN DE MAPRENDERER (Lienzo Visual)
         this.mapVis = new MapRenderer(this.dom.canvasVis, this.dom.pathsVis, {
             isEditMode: false,
             isHeatmap: false
         });
         
-        // 🔥 INSTANCIACIÓN DE MAPRENDERER (Lienzo Arquitecto)
-        if(isPO && this.dom.canvasEdit) {
+        if(this.isPO && this.dom.canvasEdit) {
             this.mapEdit = new MapRenderer(this.dom.canvasEdit, this.dom.pathsEdit, {
                 isEditMode: true,
                 onNodeClick: (nodeId) => this.handleNodeClick(nodeId),
@@ -436,7 +444,6 @@ export default class ValueMapView {
                 }
             });
 
-            // Trazado de línea temporal en Modo Arquitecto
             this.dom.canvasEdit.addEventListener('mousemove', (e) => {
                 if (this.flowFromId && this.mapEdit) {
                     this.mapEdit.drawTempLine(this.flowFromId, e.clientX, e.clientY, this.zoomEdit);
@@ -444,7 +451,6 @@ export default class ValueMapView {
             });
         }
 
-        // Eventos TABS V8
         window.addEventListener('ph-tab-changed', (e) => {
             this.currentTab = e.detail.tabId;
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -459,7 +465,6 @@ export default class ValueMapView {
             }
         });
 
-        // Eventos MAGIC BUTTONS V8
         window.addEventListener('ph-magic-action', (e) => {
             if(e.detail.actionId === 'sim_flow') {
                 this.isHeatmapActive = false;
@@ -513,14 +518,13 @@ export default class ValueMapView {
         setupZoom('btnZoomInVis', 'btnZoomOutVis', this.dom.canvasVis, 'zoomVis');
         setupZoom('btnZoomInEdit', 'btnZoomOutEdit', this.dom.canvasEdit, 'zoomEdit');
 
-        // 🔥 CARGA DE DATOS INICIAL
         setTimeout(() => {
             this.refreshDataFromStore();
             this.renderRolesTab();
             this.renderSequence();
         }, 50);
 
-        if (isPO && this.dom.canvasEdit) {
+        if (this.isPO && this.dom.canvasEdit) {
             if(this.dom.btnUndoTx) {
                 this.dom.btnUndoTx.addEventListener('click', () => {
                     const pState = store.getState().projects.find(x => x.id === this.activeProjectId);
@@ -777,15 +781,17 @@ export default class ValueMapView {
         this.dom.canvasVis.addEventListener('mouseover', showTooltip);
         this.dom.canvasVis.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge') || e.target.classList.contains('sim-tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         
-        if (isPO && this.dom.canvasEdit) {
+        if (this.isPO && this.dom.canvasEdit) {
             this.dom.canvasEdit.addEventListener('mouseover', showTooltip);
             this.dom.canvasEdit.addEventListener('mouseout', (e) => { if(e.target.classList.contains('tx-badge')) this.dom.tooltip.classList.remove('visible'); });
         }
+
+        // 🔥 EVENTO AUDITORÍA ESTRATÉGICA VNA
+        if(this.dom.btnStrategicAudit) {
+            this.dom.btnStrategicAudit.addEventListener('click', () => this.runVnaStrategicAudit());
+        }
     }
 
-    // ==========================================
-    // DELEGACIÓN A MAPRENDERER
-    // ==========================================
     refreshDataFromStore() {
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         if(!p) return;
@@ -795,11 +801,16 @@ export default class ValueMapView {
         if(this.mapEdit) this.mapEdit.setData(p.roles, flows);
     }
 
-    triggerAiInsight(message) {
+    triggerAiInsight(message, headerTitle = "🧠 Informe Estratégico") {
         if(!this.dom.aiCopilot || !this.dom.aiCopilotBody) return;
+        this.dom.aiCopilotHeader.innerHTML = `<span>${headerTitle}</span><button class="ai-btn-close" id="btnCloseCopilot">&times;</button>`;
         this.dom.aiCopilotBody.innerHTML = `<div style="font-size: 0.95rem;">${message}</div>`;
         this.dom.aiCopilot.classList.add('visible');
-        setTimeout(() => { this.dom.aiCopilot.classList.remove('visible'); }, 8000);
+        
+        // Re-atar el evento de cierre porque hemos sobreescrito el header
+        document.getElementById('btnCloseCopilot').addEventListener('click', () => {
+            this.dom.aiCopilot.classList.remove('visible');
+        });
     }
 
     handleNodeClick(nodeId) {
@@ -867,7 +878,6 @@ export default class ValueMapView {
                 }
             }
 
-            // Delegamos en MapRenderer
             if (this.mapVis) this.mapVis.drawAnimatedSimulationLine(flow, index, isSickFlow); 
             
             this.currentSimIndex++;
@@ -997,10 +1007,12 @@ export default class ValueMapView {
 
     forceSaveState(newState, highlightIndex = -1) {
         store.state = newState;
-        localStorage.setItem('tt_sos_v8_state', JSON.stringify(store.state));
-        this.refreshDataFromStore();
-        this.renderSequence(highlightIndex); 
-        this.renderRolesTab(); 
+        // 🔥 FIX V9: Forzamos persistencia en IndexedDB asíncronamente
+        store.persistState().then(() => {
+            this.refreshDataFromStore();
+            this.renderSequence(highlightIndex); 
+            this.renderRolesTab(); 
+        });
     }
 
     renderRolesTab() {
@@ -1098,5 +1110,61 @@ export default class ValueMapView {
             `;
             this.dom.seqList.appendChild(stepEl);
         });
+    }
+
+    // ==============================================================
+    // 🔥 EL ORÁCULO VNA: AUDITORÍA ESTRATÉGICA DE FLUJO (@seny_analyst)
+    // ==============================================================
+    async runVnaStrategicAudit() {
+        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
+        if (!p || (!p.vna_flows && !p.transactions)) return alert("No hay suficientes tuberías dibujadas para analizar.");
+        
+        let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+        let apiKey = localStorage.getItem(`tt_key_${provider}`);
+        if (!apiKey) return alert("⚠️ Configura tu API Key en la Consola (Pantheon) para invocar al Seny Analyst.");
+
+        this.triggerAiInsight(`⏳ <b>@seny_analyst está calculando...</b> Evaluando grafos dirigidos, densidades jerárquicas y redundancias de valor.`, "🧠 Auditoría Estratégica VNA");
+        
+        const btnAudit = this.dom.btnStrategicAudit;
+        if(btnAudit) {
+            btnAudit.disabled = true;
+            btnAudit.innerText = "⏳ Analizando DAG...";
+        }
+
+        const flows = p.vna_flows && p.vna_flows.length > 0 ? p.vna_flows : p.transactions;
+        const mappedFlows = flows.map(f => {
+            const r1 = p.roles.find(r => r.id === f.from);
+            const r2 = p.roles.find(r => r.id === f.to);
+            return `${r1 ? r1.levelId : '?'} -> ${r2 ? r2.levelId : '?'} | Tipo: ${f.tipo} | Hrs: ${f.estimatedHours} | SOP: ${f.template || f.entregable}`;
+        });
+
+        const systemPrompt = `
+            Eres @seny_analyst, el Arquitecto Analítico de TeamTowers V9. 
+            Evalúa esta topología de red VNA (Value Network Analysis).
+            Busca: Cuellos de botella, saltos jerárquicos peligrosos (ej: @anxaneta trabajando directo con @pinya), falta de tuberías intangibles (auditoría), o excesiva carga (horas) en un solo rol.
+            Devuelve un reporte en TEXTO PLANO con viñetas claras y accionables. No uses JSON.
+        `;
+
+        const userPrompt = `
+            Ecosistema: ${p.nombre}
+            Roles activos: ${p.roles.map(r => `${r.name} (${r.levelId})`).join(', ')}
+            Secuencia de Flujos:
+            ${mappedFlows.join('\n')}
+        `;
+
+        try {
+            const response = await Orchestrator.callLLM({ 
+                provider, apiKey, systemPrompt, userPrompt, responseFormat: "text", temperature: 0.3 
+            });
+
+            this.triggerAiInsight(response.content.replace(/\n/g, '<br>'), "🧠 Informe Estratégico (@seny_analyst)");
+        } catch (error) {
+            this.triggerAiInsight(`❌ Fallo en la matriz neuronal: ${error.message}`, "Error Estratégico");
+        } finally {
+            if(btnAudit) {
+                btnAudit.disabled = false;
+                btnAudit.innerText = "🧠 Auditoría Estratégica VNA (@seny_analyst)";
+            }
+        }
     }
 }
