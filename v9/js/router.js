@@ -1,4 +1,4 @@
-// v8/js/router.js
+// v9/js/router.js
 import { store } from './core/store.js'; 
 import { Orchestrator } from './core/Orchestrator.js'; 
 import HomeView from './views/HomeView.js';
@@ -20,20 +20,21 @@ const navigateTo = url => {
 };
 
 const router = async () => {
+    // 🔥 FIX RUTAS: Migración completa a /v9
     const routes = [
-        { path: "/v8/", view: HomeView },
-        { path: "/v8/profile", view: ProfileView },
-        { path: "/v8/dashboard", view: DashboardView },
-        { path: "/v8/map", view: ValueMapView },
-        { path: "/v8/project", view: ProjectView },
-        { path: "/v8/create", view: ProjectCreatorView },
-        { path: "/v8/tests", view: TestsView },
-        { path: "/v8/agents", view: AgentEditorView }, 
-        { path: "/v8/paper", view: PaperView },
-        { path: "/v8/focus", view: PaperView }, 
-        { path: "/v8/lms", view: LmsView },
-        { path: "/v8/settings", view: SettingsView },
-        { path: "/v8/ledger", view: LedgerView }
+        { path: "/v9/", view: HomeView },
+        { path: "/v9/profile", view: ProfileView },
+        { path: "/v9/dashboard", view: DashboardView },
+        { path: "/v9/map", view: ValueMapView },
+        { path: "/v9/project", view: ProjectView },
+        { path: "/v9/create", view: ProjectCreatorView },
+        { path: "/v9/tests", view: TestsView },
+        { path: "/v9/agents", view: AgentEditorView }, 
+        { path: "/v9/paper", view: PaperView },
+        { path: "/v9/focus", view: PaperView }, 
+        { path: "/v9/lms", view: LmsView },
+        { path: "/v9/settings", view: SettingsView },
+        { path: "/v9/ledger", view: LedgerView }
     ];
 
     const potentialMatches = routes.map(route => {
@@ -50,15 +51,15 @@ const router = async () => {
     }
 
     // =================================================================
-    // 🛡️ AUTH GUARD: EL PORTERO DE LA DISCOTECA
+    // 🛡️ AUTH GUARD: EL PORTERO DE LA DISCOTECA (V9)
     // =================================================================
     const state = store.getState();
-    const isRootRoute = match.route.path === '/v8/';
+    const isRootRoute = match.route.path === '/v9/';
     
     // Si NO ESTÁS logueado y tratas de ir a cualquier lado que no sea el Root... Patada al Root.
     if (!state.session.activeUserId && !isRootRoute) {
         console.warn("🛡️ Auth Guard: Acceso denegado. Volviendo a Root.");
-        window.location.replace('/v8/');
+        window.location.replace('/v9/');
         return; 
     }
     // =================================================================
@@ -77,7 +78,7 @@ const router = async () => {
                 <h1>⚠️ Error del Sistema Operativo</h1>
                 <p>La vista ha colapsado.</p>
                 <code>${error.stack}</code>
-                <br><br><a href="/v8/" style="color:white; text-decoration:underline;">Volver al Inicio</a>
+                <br><br><a href="/v9/" style="color:white; text-decoration:underline;">Volver al Inicio</a>
             </div>
         `;
     }
