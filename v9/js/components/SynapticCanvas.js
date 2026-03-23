@@ -69,7 +69,7 @@ export class SynapticCanvas {
                     </div>
                     <div class="meme-results" id="memeResultsList">
                         <div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">
-                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Usa el selector de arriba para inyectar conocimiento a este nodo.'}
+                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Usa el selector superior para inyectar conocimiento a este nodo.'}
                         </div>
                     </div>
                 </div>
@@ -106,6 +106,8 @@ export class SynapticCanvas {
             const targetExists = this.nodes.some(n => n.id === target);
             if (sourceExists && targetExists) {
                 this.links.push({ source, target });
+            } else {
+                console.warn(`🌌 [Antigravity] Sinapsis purgada por nodo fantasma: ${source} -> ${target}`);
             }
         };
 
@@ -195,7 +197,6 @@ export class SynapticCanvas {
         const tooltip = this.container.querySelector('#graphTooltip');
 
         // 🔥 MOTOR DE INYECCIÓN BLINDADO CON FALLBACKS AUTOMÁTICOS
-        // Si una CDN falla por CORS o MIME, el Kernel salta a la siguiente
         const loadScriptWithFallback = async (urls, globalVar) => {
             if (window[globalVar]) return; 
             
@@ -209,7 +210,7 @@ export class SynapticCanvas {
                         script.onerror = () => reject(new Error(`Fallo de red/MIME en ${url}`));
                         document.head.appendChild(script);
                     });
-                    console.log(`🌌 [Antigravity] Motor ${globalVar} cargado con éxito.`);
+                    console.log(`🌌 [Antigravity] Motor ${globalVar} cargado con éxito desde CDN.`);
                     return; 
                 } catch (e) {
                     console.warn(`[Antigravity] CDN corrupta, aplicando Auto-Sanación para ${globalVar}...`);
@@ -219,7 +220,6 @@ export class SynapticCanvas {
         };
 
         try {
-            // Intentamos primero con Cloudflare (el más estable con MIME types), luego NPM, luego UNPKG
             await loadScriptWithFallback([
                 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
                 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js',
