@@ -1,13 +1,13 @@
-// v8/js/views/LedgerView.js
+// v9/js/views/LedgerView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
-import { LedgerRenderer } from '../components/LedgerRenderer.js?v=15.9.8'; // 🔥 CACHE BUSTER: Obliga al navegador a leer el archivo nuevo
+import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
 
 export default class LedgerView {
     constructor() {
-        document.title = "Notaría & Cap Table | TeamTowers V15.9";
+        document.title = "Notaría & Cap Table | TeamTowers V9";
         this.activeProjectId = null;
         this.currentTab = 'project'; 
         this.ledgerRenderer = null; 
@@ -34,11 +34,11 @@ export default class LedgerView {
                 <div class="app-layout">
                     ${Sidebar.getHtml('/ledger')}
                     <main class="workspace" style="justify-content:center; align-items:center;">
-                        <div class="glass-panel" style="text-align:center; max-width: 500px; margin: 0 auto;">
+                        <div class="glass-panel" style="text-align:center; max-width: 500px; margin: 0 auto; padding: 4rem;">
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">⚖️</div>
                              <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Wallet Vacía</h2>
-                             <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No tienes participación en ningún Ecosistema.</p>
-                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Inicializar Red</a>
+                             <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No tienes participación (Slices) en ningún Ecosistema.</p>
+                             <a href="/v9/create" data-link class="btn-primary" style="text-decoration:none;">➕ Inicializar Red</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/ledger')}
@@ -51,7 +51,7 @@ export default class LedgerView {
         const headerConfig = {
             title: "Slicing Pie Wallet",
             subtitle: project.nombre,
-            tagline: "Libro mayor inmutable. Tu trabajo y riesgo convertido en Equity.",
+            tagline: "Libro mayor inmutable. Tu trabajo (realHours) y riesgo matemático convertido en Equity.",
             tabs: [
                 { id: 'project', label: 'Ecosistema Actual', active: this.currentTab === 'project' },
                 { id: 'global', label: '🌐 Mi Portfolio Global', active: this.currentTab === 'global' }
@@ -71,7 +71,7 @@ export default class LedgerView {
             <style>
                 ${LedgerRenderer.getStyles()} 
 
-                .workspace-ledger { flex: 1; padding: 2rem 3rem; overflow-y: auto; background: var(--bg-dark); }
+                .workspace-ledger { flex: 1; padding: 2rem 3rem; overflow-y: auto; background: radial-gradient(circle at center, #111116 0%, #050505 100%); }
                 .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
                 .tab-content.active { display: block; }
 
@@ -113,15 +113,15 @@ export default class LedgerView {
                     <div id="capitalModal" class="overlay-modal">
                         <div class="card-modal" style="color: var(--accent-green);">
                             <h2 style="color: var(--accent-green); margin-top: 0; font-size: 1.8rem; font-weight:900; letter-spacing:-1px;">Inyección de Capital</h2>
-                            <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 2.5rem; line-height:1.5;">El motor aplicará el multiplicador matemático correspondiente.</p>
+                            <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 2.5rem; line-height:1.5;">El motor aplicará el multiplicador matemático correspondiente al tipo de riesgo.</p>
                             
                             <div class="form-group">
-                                <label>Inversor (Nodo)</label>
+                                <label>Inversor (Nodo del Ecosistema)</label>
                                 <select id="inpCapUser" class="form-control" style="font-weight:bold; color:var(--accent-green);"></select>
                             </div>
                             
                             <div class="form-group">
-                                <label>Tipo de Activo</label>
+                                <label>Tipo de Activo Inyectado</label>
                                 <select id="inpCapType" class="form-control">
                                     <option value="cash">💶 Efectivo / Fiat (Riesgo x4)</option>
                                     <option value="equipment">💻 Equipamiento Físico (Riesgo x2)</option>
@@ -130,18 +130,18 @@ export default class LedgerView {
                             </div>
 
                             <div class="form-group">
-                                <label>Valor Mercado Justo (€)</label>
+                                <label>Valor de Mercado Justo (€)</label>
                                 <input type="number" id="inpCapAmount" class="form-control" placeholder="Ej: 1500" min="1" style="font-size:1.2rem; font-weight:bold;">
                             </div>
 
                             <div class="form-group">
                                 <label>Concepto</label>
-                                <input type="text" id="inpCapDesc" class="form-control" placeholder="Ej: Factura Servidor AWS 2026">
+                                <input type="text" id="inpCapDesc" class="form-control" placeholder="Ej: Pago de Servidor AWS Anual">
                             </div>
 
                             <div style="display:flex; gap:15px; margin-top: 2.5rem;">
                                 <button class="btn-primary" style="flex: 1; background:transparent; border:1px solid #555; color:white;" id="btnCancelCap">Cancelar</button>
-                                <button class="btn-primary" style="flex: 2; background: var(--accent-green); color: black;" id="btnConfirmCap">Sellar Bloque</button>
+                                <button class="btn-primary" style="flex: 2; background: var(--accent-green); color: black;" id="btnConfirmCap">Sellar Bloque Inmutable</button>
                             </div>
                         </div>
                     </div>
@@ -189,7 +189,7 @@ export default class LedgerView {
 
         window.addEventListener('ph-magic-action', (e) => {
             if(e.detail.actionId === 'audit_cap') {
-                alert("🧠 IA Auditora: Analizando Cap Table. El balance PoW vs Capital es óptimo.");
+                alert("🧠 IA Auditora (@notari_ledger): Cap Table validada. Todos los Slices derivan de Work Orders auditadas o Inyecciones de Capital selladas.");
             }
         });
 
@@ -197,11 +197,17 @@ export default class LedgerView {
         const capModal = document.getElementById('capitalModal');
         if (btnOpenCap) {
             btnOpenCap.addEventListener('click', () => {
-                const users = project.usuarios || [];
+                // Muestra tanto usuarios asignados como dueños
+                let users = [...(project.usuarios || [])];
+                if (project.ownerId && !users.find(u => u.id === project.ownerId)) {
+                    users.push({ id: project.ownerId });
+                }
+
                 document.getElementById('inpCapUser').innerHTML = users.map(u => {
                     const gUser = state.globalUsers.find(gu => gu.id === u.id);
                     return `<option value="${u.id}">${gUser ? gUser.name : u.id}</option>`;
                 }).join('');
+                
                 capModal.style.display = 'flex';
             });
         }
@@ -213,8 +219,12 @@ export default class LedgerView {
             const amount = parseFloat(document.getElementById('inpCapAmount').value);
             const desc = document.getElementById('inpCapDesc').value.trim();
 
-            if (!amount || amount <= 0) return alert("Introduce un valor válido.");
-            if (!desc) return alert("Describe el concepto.");
+            if (!amount || amount <= 0) return alert("Introduce un valor en euros mayor que cero.");
+            if (!desc) return alert("El concepto es obligatorio para la trazabilidad.");
+
+            const btn = document.getElementById('btnConfirmCap');
+            btn.disabled = true;
+            btn.innerText = "⏳ Inyectando...";
 
             await store.dispatch({
                 type: 'ADD_CAPITAL_INJECTION',
@@ -222,15 +232,18 @@ export default class LedgerView {
             });
 
             capModal.style.display = 'none';
+            btn.disabled = false;
+            btn.innerText = "Sellar Bloque Inmutable";
+            
             if (this.ledgerRenderer) this.ledgerRenderer.render(); 
         });
 
         document.getElementById('btnOpenExit')?.addEventListener('click', () => {
-            alert("Esta función requiere conectar una Wallet Web3 (MetaMask/Phantom). Integración programada para el siguiente ciclo.");
+            alert("Esta función requiere conectar una Wallet Web3 (Ethereum/Solana). Integración en desarrollo para la fase P2P.");
         });
         
         document.getElementById('btnOpenPermaweb')?.addEventListener('click', () => {
-            alert("Congelando Hash de la Cap Table en Arweave... [Modo Simulación V15]");
+            alert("Congelando Hash de la Cap Table en Arweave... [Modo Simulación V9 Antigravity]");
         });
     }
 
@@ -242,27 +255,36 @@ export default class LedgerView {
 
         state.projects.forEach(p => {
             const harvest = store.calculateHarvest(p.id) || [];
-            const myHarvest = harvest.find(h => h.userId === userId);
+            const myHarvest = harvest.find(h => h.userId === userId || h.user === userId); // Soporte retroactivo para V8
             
-            if (myHarvest && myHarvest.slices > 0) {
-                totalGlobalSlices += myHarvest.slices;
+            if (myHarvest && myHarvest.totalSlices > 0) {
+                totalGlobalSlices += myHarvest.totalSlices;
+                
+                // Determinamos el rol principal del usuario en este proyecto
+                const userTxs = (p.ledger || []).filter(tx => tx.userId === userId);
+                const hasCapital = userTxs.some(tx => tx.type === 'CAPITAL');
+                let roleTag = hasCapital ? `<span style="color:var(--accent-green);">Capital (Inversor)</span>` : `Trabajo (Sweat Equity)`;
+
                 html += `
                     <div class="portfolio-card">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <strong style="color:white; font-size:1.2rem; font-weight:900;">${p.nombre}</strong>
-                            <span style="font-size:0.75rem; color:var(--accent-purple); border:1px solid rgba(224,64,251,0.3); background:rgba(224,64,251,0.1); padding:4px 10px; border-radius:8px; font-weight:bold;">${p.archetype}</span>
+                            <span style="font-size:0.75rem; color:var(--accent-purple); border:1px solid rgba(224,64,251,0.3); background:rgba(224,64,251,0.1); padding:4px 10px; border-radius:8px; font-weight:bold;">${p.archetype || 'SOS'}</span>
                         </div>
                         <div style="font-size: 2.2rem; font-family: var(--font-mono); color: var(--accent-green); font-weight: 900; margin: 15px 0;">
-                            ${Math.round(myHarvest.slices).toLocaleString()} <span style="font-size:0.9rem; color:#888; font-weight:normal;">Slices</span>
+                            ${Math.round(myHarvest.totalSlices).toLocaleString()} <span style="font-size:0.9rem; color:#888; font-weight:normal;">Slices</span>
                         </div>
-                        <div style="font-size:0.85rem; color:#ccc;">Participación (Equity): <strong style="color:white;">${myHarvest.percentage}%</strong></div>
+                        <div style="font-size:0.85rem; color:#ccc; display:flex; justify-content:space-between; align-items:center;">
+                            <span>Participación (Equity): <strong style="color:white;">${myHarvest.percentage}%</strong></span>
+                            ${roleTag}
+                        </div>
                     </div>
                 `;
             }
         });
 
         if (html === '') {
-            grid.innerHTML = `<div style="grid-column: 1/-1; padding: 4rem; text-align:center; color:#666; border: 1px dashed var(--glass-border); border-radius:20px;">No tienes patrimonio en ningún ecosistema.</div>`;
+            grid.innerHTML = `<div style="grid-column: 1/-1; padding: 4rem; text-align:center; color:#666; border: 1px dashed var(--glass-border); border-radius:20px;">No tienes patrimonio consolidado en ningún ecosistema de la red.</div>`;
         } else {
             const summaryHtml = `
                 <div class="portfolio-card" style="background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(224, 64, 251, 0.1)); border-color: var(--accent-blue);">
@@ -270,6 +292,7 @@ export default class LedgerView {
                     <div style="font-size: 2.8rem; font-family: var(--font-mono); color: white; font-weight: 900; margin: 15px 0; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
                         ${Math.round(totalGlobalSlices).toLocaleString()} <span style="font-size:1rem; color:#888; font-weight:normal;">Total Slices</span>
                     </div>
+                    <div style="font-size:0.8rem; color:#aaa; font-style:italic;">Suma de tu valor aportado a través de todos los Ecosistemas del Kernel V9.</div>
                 </div>
             `;
             grid.innerHTML = summaryHtml + html;
