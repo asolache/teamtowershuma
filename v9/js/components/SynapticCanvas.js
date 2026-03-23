@@ -43,7 +43,7 @@ export class SynapticCanvas {
                 .btn-inject-seeds { background: linear-gradient(135deg, rgba(0,230,118,0.1), rgba(0,176,255,0.1)); border: 1px solid var(--accent-green); color: white; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 0.85rem; transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px; display: ${isGlobalMode ? 'block' : 'none'}; box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
                 .btn-inject-seeds:hover { background: var(--accent-green); color: black; box-shadow: 0 0 20px rgba(0,230,118,0.5); transform: translateY(-2px);}
 
-                .synaptic-3d-container { flex: 1; position: relative; overflow: hidden; background: radial-gradient(circle at center, #111116 0%, #000000 100%); }
+                .synaptic-3d-container { flex: 1; position: relative; overflow: hidden; background: radial-gradient(circle at center, #0a0a10 0%, #000000 100%); }
                 .webgl-target { width: 100%; height: 100%; outline: none; cursor: crosshair;}
                 
                 .graph-tooltip { position: absolute; background: rgba(10, 10, 15, 0.95); border: 1px solid #555; color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-size: 0.85rem; pointer-events: none; z-index: 100; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.8); display: none; transform: translate(-50%, -150%); white-space: nowrap;}
@@ -74,7 +74,7 @@ export class SynapticCanvas {
                     </div>
                 </div>
                 <div class="synaptic-3d-container" id="d3DropZone">
-                    <div class="loader-3d" id="loader3D">Iniciando Inyección WebGL...</div>
+                    <div class="loader-3d" id="loader3D">Iniciando Motor WebGL...</div>
                     <div class="webgl-target" id="webglCanvasInner"></div>
                     <div class="graph-tooltip" id="graphTooltip"></div>
                 </div>
@@ -106,9 +106,6 @@ export class SynapticCanvas {
             const targetExists = this.nodes.some(n => n.id === target);
             if (sourceExists && targetExists) {
                 this.links.push({ source, target });
-            } else {
-                // Silenciamos el warning para no ensuciar la consola, es un comportamiento seguro.
-                // console.warn(`🌌 [Antigravity] Sinapsis purgada por nodo fantasma: ${source} -> ${target}`);
             }
         };
 
@@ -197,10 +194,8 @@ export class SynapticCanvas {
         const loader = this.container.querySelector('#loader3D');
         const tooltip = this.container.querySelector('#graphTooltip');
 
-        // 🔥 MOTOR DE INYECCIÓN BLINDADO CON FALLBACKS AUTOMÁTICOS
         const loadScriptWithFallback = async (urls, globalVar) => {
             if (window[globalVar]) return; 
-            
             for (const url of urls) {
                 try {
                     await new Promise((resolve, reject) => {
@@ -213,7 +208,7 @@ export class SynapticCanvas {
                     });
                     return; 
                 } catch (e) {
-                    console.warn(`[Antigravity] CDN corrupta, saltando...`);
+                    console.warn(`[Antigravity] CDN corrupta, aplicando Auto-Sanación para ${globalVar}...`);
                 }
             }
             throw new Error(`Colapso CDN: Imposible inyectar ${globalVar} en el navegador.`);
@@ -250,17 +245,22 @@ export class SynapticCanvas {
         this.graph3D = ForceGraph3D()(canvasInner)
             .graphData(gData)
             .nodeLabel('') 
-            .linkColor(() => 'rgba(255, 255, 255, 0.12)')
-            .linkWidth(1.2)
-            .enableNodeDrag(true) 
-            // 🔥 EXPANSION DEL UNIVERSO (FÍSICAS ANTIGRAVITY)
-            .d3Force('charge', window.d3 ? window.d3.forceManyBody().strength(-400) : null) // Separación electromagnética (Por defecto -100)
-            .d3Force('link', window.d3 ? window.d3.forceLink().distance(80) : null) // Distancia de las sinapsis
+            // 🔥 FÍSICA Y VISUALIDAD DELUX RESTAURADA 🔥
+            .linkColor(link => {
+                // El enlace hereda el color del nodo de origen
+                const sourceNode = typeof link.source === 'object' ? link.source : this.nodes.find(n => n.id === link.source);
+                const color = sourceNode ? sourceNode.color : 'rgba(0,176,255,1)';
+                return color.replace(')', ', 0.3)').replace('rgb', 'rgba'); // Le aplicamos transparencia
+            })
+            .linkWidth(1.5)
+            .linkDirectionalParticles(3) // ✨ Fotones de energía viajando por las sinapsis
+            .linkDirectionalParticleWidth(2.5) // Grosor de los fotones
+            .enableNodeDrag(false) // 🔒 Desactivado el free-drag para que el algoritmo mantenga la estructura de Constelación
             .nodeThreeObject(node => {
                 const group = new window.THREE.Group();
-                const geometry = new window.THREE.SphereGeometry(node.val * 0.8, 16, 16);
+                const geometry = new window.THREE.SphereGeometry(node.val * 0.8, 24, 24);
                 const material = new window.THREE.MeshLambertMaterial({ 
-                    color: node.color, transparent: true, opacity: 0.6, depthWrite: false
+                    color: node.color, transparent: true, opacity: 0.8, depthWrite: false
                 });
                 const sphere = new window.THREE.Mesh(geometry, material);
                 group.add(sphere);
@@ -286,20 +286,22 @@ export class SynapticCanvas {
                 }
             })
             .onNodeClick(node => {
-                const distance = 150;
+                const distance = 120;
                 const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
                 this.graph3D.cameraPosition({ x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, node, 2000);
                 this.showNodeDetailsInPalette(node);
             });
 
-        // Si d3 está cargado localmente en el window por 3d-force-graph, inyectamos las físicas
-        if (this.graph3D.d3Force && this.graph3D.d3Force('charge')) {
-            this.graph3D.d3Force('charge').strength(-400); // Fuerte repulsión
-            this.graph3D.d3Force('link').distance(80); // Cuerdas largas
+        // 🔥 APLICACIÓN CORRECTA DE LA REPULSIÓN GRAVITACIONAL
+        if (this.graph3D.d3Force('charge')) {
+            this.graph3D.d3Force('charge').strength(-400); // Fuerte repulsión para separar las bolas
+        }
+        if (this.graph3D.d3Force('link')) {
+            this.graph3D.d3Force('link').distance(70); // Alargamos las cuerdas (links)
         }
 
-        const ambientLight = new window.THREE.AmbientLight(0xffffff, 0.6);
-        const dirLight = new window.THREE.DirectionalLight(0xffffff, 0.8);
+        const ambientLight = new window.THREE.AmbientLight(0xffffff, 0.7);
+        const dirLight = new window.THREE.DirectionalLight(0xffffff, 0.9);
         dirLight.position.set(1, 1, 1);
         this.graph3D.scene().add(ambientLight);
         this.graph3D.scene().add(dirLight);
