@@ -61,7 +61,6 @@ class OrchestratorCore {
                 let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
                 const startTime = Date.now();
 
-                // 1. ENRUTAMIENTO GEMINI
                 if (provider === 'gemini') {
                     const urlStr = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                     const response = await fetch(urlStr, {
@@ -83,7 +82,6 @@ class OrchestratorCore {
                         tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; 
                     }
                 } 
-                // 2. ENRUTAMIENTO ANTHROPIC (CLAUDE)
                 else if (provider === 'anthropic') {
                     const response = await fetch('https://api.anthropic.com/v1/messages', {
                         method: 'POST',
@@ -91,14 +89,10 @@ class OrchestratorCore {
                             'x-api-key': apiKey,
                             'anthropic-version': '2023-06-01',
                             'content-type': 'application/json',
-                            'anthropic-cors-bypass': 'true' // Frontend-only allowance
+                            'anthropic-cors-bypass': 'true'
                         },
                         body: JSON.stringify({
-                            model: 'claude-3-5-sonnet-20241022',
-                            max_tokens: 8192,
-                            temperature: temperature,
-                            system: systemPrompt,
-                            messages: [{ role: 'user', content: userPrompt }]
+                            model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }]
                         })
                     });
                     
@@ -108,33 +102,17 @@ class OrchestratorCore {
                     tokenUsage.prompt_tokens = data.usage?.input_tokens || 0;
                     tokenUsage.completion_tokens = data.usage?.output_tokens || 0;
                 }
-                // 3. ENRUTAMIENTO OPENAI / DEEPSEEK / CUSTOM
                 else {
                     let endpointUrl = 'https://api.openai.com/v1/chat/completions';
                     let modelName = 'gpt-4o';
                     
-                    if (provider === 'deepseek') {
-                        endpointUrl = 'https://api.deepseek.com/chat/completions';
-                        modelName = 'deepseek-chat';
-                    } else if (provider === 'custom') {
-                        endpointUrl = document.getElementById('inpCustomUrl')?.value || 'http://localhost:1234/v1/chat/completions';
-                        modelName = 'local-model';
-                    }
+                    if (provider === 'deepseek') { endpointUrl = 'https://api.deepseek.com/chat/completions'; modelName = 'deepseek-chat'; } 
+                    else if (provider === 'custom') { endpointUrl = document.getElementById('inpCustomUrl')?.value || 'http://localhost:1234/v1/chat/completions'; modelName = 'local-model'; }
                     
-                    const bodyData = { 
-                        model: modelName, 
-                        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], 
-                        temperature: temperature, 
-                        max_tokens: 8192
-                    };
+                    const bodyData = { model: modelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], temperature: temperature, max_tokens: 8192 };
                     if (responseFormat === "json_object") bodyData.response_format = { type: "json_object" };
                     
-                    const response = await fetch(endpointUrl, {
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify(bodyData)
-                    });
-                    
+                    const response = await fetch(endpointUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify(bodyData) });
                     if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
                     const data = await response.json();
                     textResponse = data.choices[0].message.content;
@@ -144,7 +122,6 @@ class OrchestratorCore {
                 const latencyMs = Date.now() - startTime;
                 let parsedContent = textResponse;
                 
-                // 🧹 Limpieza JSON Antigravity (Previene fallos de sintaxis MD)
                 if (responseFormat === "json_object") {
                     let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
                     const firstBrace = cleanText.indexOf('{'); const lastBrace = cleanText.lastIndexOf('}');
@@ -155,18 +132,14 @@ class OrchestratorCore {
                 return { content: parsedContent, telemetry: { provider, tokens: tokenUsage, latencyMs } };
             
             } catch (error) {
-                lastError = error; 
-                attempt++; 
+                lastError = error; attempt++; 
                 console.warn(`⚠️ [Orchestrator] Fallo cognitivo (Intento ${attempt}). Relanzando...`, error.message);
-                await new Promise(r => setTimeout(r, 1000 * attempt)); // Exponential backoff
+                await new Promise(r => setTimeout(r, 1000 * attempt));
             }
         }
         throw new Error(`Colapso Neural: ${lastError.message}`);
     }
 
-    // ==========================================
-    // 🌍 COMPRESIÓN RAG (Baja Carga de Tokens)
-    // ==========================================
     async _buildLightweightContext(projectId, agentId) {
         await KB.init();
         let contextText = `Leyes del Ecosistema: GTD (Orientación a Acción) y TDD (Validación Estricta).\n`;
@@ -223,37 +196,38 @@ class OrchestratorCore {
     // ==========================================
     async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
         await KB.init();
-        // Extraemos memoria semántica existente (Catálogos del LMS) para inyectarlo en el Prompt
         const allSkills = await KB.getAllNodes({ category: 'skill' });
         const allSops = await KB.getAllNodes({ category: 'SOP' });
         
         const catalogContext = `
-            Nodos W3C Disponibles en el Kernel (Úsalos en el array "new_memes" o "required_skills" si encajan):
+            Nodos W3C Disponibles (Úsalos si encajan en "new_memes" o "required_skills"):
             Skills: ${allSkills.slice(0,10).map(s => s.title).join(', ')}
-            SOPs Típicos: ${allSops.slice(0,5).map(s => s.title).join(', ')}
+            SOPs: ${allSops.slice(0,5).map(s => s.title).join(', ')}
         `;
 
+        // 🔥 KERNEL INTELIGENTE: Calidad de Flujo > Restricciones Rígidas
         const systemPrompt = `
-            Eres Master Ecosystem Architect (@genesi_ai). Tu trabajo es forjar topologías VNA (Value Network Analysis).
+            Eres Master Ecosystem Architect (@genesi_ai). Forja topologías VNA (Value Network Analysis) de ALTA CALIDAD Y COHERENCIA.
             
-            MANDAMIENTOS DE DISEÑO ANTIGRAVITY:
-            1. Máxima Eficiencia: Define roles y tareas estrictamente necesarios para cumplir la Visión. Aplica filosofía GTD.
-            2. Fases de Valor (5 ERAS): Reparte las transacciones en (Kickoff, Growth, Scale, Harvest, Cierre).
-            3. Ikigai de Roles: Genera el "ai_prompt" para cada Rol, detallando su propósito, misión y actitud.
-            4. TDD Riguroso: Cada transacción DEBE tener una matriz "soc_checklist" (Criterios de auditoría medibles).
-            5. Inyección Semántica: Define "new_memes" (Unidades de conocimiento W3C) si el ecosistema requiere habilidades nuevas no listadas.
+            MANDAMIENTOS DE DISEÑO (CALIDAD ANTIGRAVITY):
+            1. FLUJO ÓPTIMO DE VALOR: No recortes eslabones vitales por ahorrar tokens. Diseña el flujo exacto que garantice el éxito. Un ecosistema complejo requerirá muchos SOPs; uno simple, menos.
+            2. INFERENCIA DE FASE: Analiza la visión del usuario y deduce en qué fase de madurez está el proyecto. Adapta las "phases" de las transacciones a esta realidad (ej. si deduce un MVP, enfócate en 'Ideación', 'Construcción', 'Lanzamiento'; si deduce un sistema empresarial, usa fases maduras).
+            3. Ikigai de Roles: Genera el "ai_prompt" para cada Rol con profundidad técnica y orientación a GTD.
+            4. TDD Riguroso: Cada transacción DEBE tener una matriz "soc_checklist" (Criterios de auditoría medibles). La calidad del SOC define la supervivencia del sistema.
             
             FORMATO JSON ESTRICTO ESPERADO:
             { 
-                "presentacion": "Pitch elevador de la red...", 
-                "tags": ["sector_x", "tech_y"], 
-                "new_memes": [{ "id": "meme_gen_1", "category": "skill", "title": "Nombre Skill", "content": "Descripción..." }],
+                "presentacion": "Pitch de la red y fase deducida...", 
+                "tags": ["sector_x"], 
+                "new_memes": [{ "id": "meme_gen_1", "category": "skill", "title": "Nombre", "content": "..." }],
                 "roles": [{ "levelId": "@anxaneta", "name": "...", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "Tu Ikigai es..." }], 
-                "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "template": "SOP...", "horas": 5, "required_skills": ["meme_gen_1"], "soc_checklist": [{ "text": "Validación medible 1" }] }] 
+                "transactions": [
+                    { "id": "tx_1", "phase": "Fase_Deducida", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "template": "SOP...", "horas": 5, "required_skills": ["meme_gen_1"], "soc_checklist": [{ "text": "Validación 1" }] }
+                ] 
             }
         `;
 
-        const userPrompt = `Proyecto: ${projectName}\nArquetipo Legal: ${archetypeText}\n${catalogContext}\nVisión Fundacional:\n${vision}`;
+        const userPrompt = `Proyecto: ${projectName}\nArquetipo Legal: ${archetypeText}\n${catalogContext}\nVisión Fundacional:\n${vision}\n\nRECUERDA: Diseña un flujo de valor óptimo, deduciendo la fase actual del proyecto para establecer transacciones coherentes y de alta calidad.`;
         
         const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
         this._logTelemetry('global', '@genesi_ai', provider, 'VNA_DESIGN', response.telemetry);
@@ -277,41 +251,26 @@ class OrchestratorCore {
             {
                 "research_summary": "Resumen ejecutivo del hallazgo...",
                 "nodes": [
-                    {
-                        "category": "${expectedCategory}",
-                        "title": "Nombre del concepto o habilidad...",
-                        "content": "Desarrollo técnico profundo...",
-                        "keywords": ["tag1", "tag2"]
-                    }
+                    { "category": "${expectedCategory}", "title": "Nombre del concepto o habilidad...", "content": "Desarrollo técnico profundo...", "keywords": ["tag1", "tag2"] }
                 ]
             }
             Genera un máximo de ${maxNodes} nodos.
         `;
 
         const userPrompt = `TEMA DE INVESTIGACIÓN: "${topic}"\nProcesa esto y genera los Nodos para el Meta-Grafo.`;
-
         const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
         this._logTelemetry('global', '@mestre_escola', provider, 'DEEP_RESEARCH', response.telemetry);
         
         const result = response.content;
-        
-        // Guardamos los nodos generados directamente en la Base de Datos
         if (result.nodes && result.nodes.length > 0) {
             await KB.init();
             for (const node of result.nodes) {
                 await KB.saveNode({
-                    id: `meme_research_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-                    type: 'meme',
-                    category: node.category || expectedCategory,
-                    projectId: 'global',
-                    targetId: 'global',
-                    title: `📖 ${node.title}`,
-                    content: node.content,
-                    keywords: node.keywords || []
+                    id: `meme_research_${Date.now()}_${Math.floor(Math.random() * 1000)}`, type: 'meme', category: node.category || expectedCategory, projectId: 'global', targetId: 'global',
+                    title: `📖 ${node.title}`, content: node.content, keywords: node.keywords || []
                 });
             }
         }
-        
         return result;
     }
 
@@ -345,44 +304,25 @@ class OrchestratorCore {
 
             await KB.init();
             const allPrompts = await KB.getAllNodes({ category: 'meta_prompt' }); 
-            const nodeDirectory = allPrompts.map(p => ({
-                id: p.targetId,
-                name: p.title,
-                skills: p.keywords,
-                ikigai: p.ikigai
-            }));
-
+            const nodeDirectory = allPrompts.map(p => ({ id: p.targetId, name: p.title, skills: p.keywords, ikigai: p.ikigai }));
             if (nodeDirectory.length === 0) return null;
 
             const systemPrompt = `
                 Eres @seny_analyst, el auditor estratégico del Kernel V9.
                 Una Work Order acaba de ser devuelta porque fracasó en la auditoría TDD (SOCs incumplidos).
-                Misión: Revisa el Padrón Neuronal (Nodos Humanos e IAs) evaluando sus 'Ikigais' y 'skills' (Tags semánticos).
-                Busca al nodo más capacitado del padrón para resolver esta falla específica y asístelo.
-                Devuelve ÚNICAMENTE JSON:
-                { "assignedNode": "@id_del_nodo", "reason": "Motivo corto de por qué su Ikigai/Skills es un match perfecto", "actionPlan": "Sugerencia rápida de GTD para el nodo" }
+                Misión: Revisa el Padrón Neuronal evaluando los 'Ikigais' y 'skills'.
+                Busca al nodo más capacitado del padrón para resolver esta falla específica.
+                Devuelve ÚNICAMENTE JSON: { "assignedNode": "@id_del_nodo", "reason": "Motivo corto...", "actionPlan": "Sugerencia rápida" }
                 PADRÓN DISPONIBLE: ${JSON.stringify(nodeDirectory)}
             `;
 
-            const userPrompt = `La tarea "${task.comentario.substring(0,60)}..." ha fallado los siguientes SOCs: ${JSON.stringify(failedSocs)}. ¿A qué nodo del Padrón debemos invocar para la auto-sanación?`;
-
+            const userPrompt = `La tarea "${task.comentario.substring(0,60)}..." ha fallado los siguientes SOCs: ${JSON.stringify(failedSocs)}. ¿A qué nodo debemos invocar?`;
             const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
             const result = response.content;
 
             if (result.assignedNode) {
-                const contentLog = `⚕️ **Protocolo de Auto-Sanación Activado.**\nLa auditoría Notarial falló en: *${failedSocs.join(', ')}*.\n\n@seny_analyst solicita asistencia técnica de <a href="/v9/profile?id=${result.assignedNode.replace('@','')}" data-link class="mention-highlight">${result.assignedNode}</a>.\n\n**Motivo (Matching Ikigai):** ${result.reason}\n**Plan de Acción:** ${result.actionPlan}`;
-                
-                await store.dispatch({
-                    type: 'ADD_LOG_ENTRY',
-                    payload: {
-                        projectId,
-                        log: {
-                            id: 'log_heal_' + Date.now(), date: Date.now(), authorId: '@seny_analyst',
-                            relatedTxHash: task.hash || task.id, content: contentLog, mentions: [result.assignedNode, task.assigneeId], readBy: []
-                        }
-                    }
-                });
-                
+                const contentLog = `⚕️ **Protocolo de Auto-Sanación Activado.**\nLa auditoría Notarial falló en: *${failedSocs.join(', ')}*.\n\n@seny_analyst solicita asistencia de <a href="/v9/profile?id=${result.assignedNode.replace('@','')}" data-link class="mention-highlight">${result.assignedNode}</a>.\n\n**Motivo:** ${result.reason}\n**Plan:** ${result.actionPlan}`;
+                await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId, log: { id: 'log_heal_' + Date.now(), date: Date.now(), authorId: '@seny_analyst', relatedTxHash: task.hash || task.id, content: contentLog, mentions: [result.assignedNode, task.assigneeId], readBy: [] } } });
                 this._logTelemetry(projectId, '@seny_analyst', provider, 'AUTO_HEAL', response.telemetry);
                 return result;
             }
