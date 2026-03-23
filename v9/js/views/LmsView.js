@@ -1,4 +1,4 @@
-// v8/js/views/LmsView.js
+// v9/js/views/LmsView.js
 import { store } from '../core/store.js';
 import { KB } from '../core/kb.js';
 import { Sidebar } from '../components/Sidebar.js';
@@ -7,16 +7,20 @@ import { PageHeader } from '../components/PageHeader.js';
 
 export default class LmsView {
     constructor() {
-        document.title = "La Forja LMS | TeamTowers V15.6";
+        document.title = "La Forja LMS | TeamTowers V9";
         this.allNodes = [];
     }
 
     async getHtml() {
+        // 🔥 ARRANQUE ASÍNCRONO DE INDEXEDDB (ANTIGRAVITY)
+        await store.init();
+
         const headerConfig = {
             title: "La Forja (Cerebro LMS)",
             subtitle: "Conocimiento W3C",
             tagline: "Explora y edita la memoria profunda del sistema. OS Kernel, Memes, Skills y Prompts.",
-            actionHtml: `<button class="ph-btn-magic" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="window.location.href='/v8/paper'">+ Crear en Omni-Paper</button>`
+            // 🔥 ENLACE MIGRADO A V9
+            actionHtml: `<button class="ph-btn-magic" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="window.location.href='/v9/paper'">+ Crear en Omni-Paper</button>`
         };
 
         return `
@@ -38,6 +42,8 @@ export default class LmsView {
                 .meme-category.core_os { background: rgba(0,230,118,0.1); color: var(--accent-green); border-color: rgba(0,230,118,0.3);}
                 .meme-category.project_core { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
                 .meme-category.prompt_a2a { background: rgba(255,171,64,0.1); color: var(--accent-orange); border-color: rgba(255,171,64,0.3);}
+                /* 🔥 ESTILO PARA LA COSECHA DEL JANITOR */
+                .meme-category.evergreen { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); text-shadow: 0 0 10px rgba(255,215,0,0.5);}
 
                 .meme-title { font-size: 1.1rem; color: white; margin: 10px 0 0 0; font-weight: 900;}
                 .meme-content { color: #aaa; font-size: 0.9rem; line-height: 1.5; font-family: 'Georgia', serif; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;}
@@ -88,8 +94,7 @@ export default class LmsView {
                         <button class="filter-btn" data-filter="project_core">🏰 Misiones</button>
                         <button class="filter-btn" data-filter="skill">🎒 Skills</button>
                         <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
-                        <button class="filter-btn" data-filter="SOP">📜 SOPs</button>
-                        <button class="filter-btn" data-filter="SOC">⚖️ SOCs</button>
+                        <button class="filter-btn" data-filter="evergreen">🌟 Evergreen (Aprendidos)</button>
                     </div>
 
                     <div class="lms-grid" id="lmsGrid">
@@ -209,7 +214,6 @@ export default class LmsView {
             let tagsHtml = tags.slice(0, 3).map(t => `<span class="meme-tag">#${t}</span>`).join('');
             if (tags.length > 3) tagsHtml += `<span class="meme-tag">+${tags.length - 3}</span>`;
 
-            // Codificamos el ID para pasarlo seguro por el DOM
             const safeId = node.id.replace(/"/g, '&quot;');
 
             return `
@@ -225,7 +229,6 @@ export default class LmsView {
             `;
         }).join('');
 
-        // Evento de clic en cada tarjeta para abrir el editor
         this.dom.grid.querySelectorAll('.meme-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 const nodeId = e.currentTarget.dataset.id;
@@ -245,9 +248,6 @@ export default class LmsView {
         });
     }
 
-    // ==========================================
-    // LÓGICA DEL CRUD (MODAL)
-    // ==========================================
     openEditor(nodeId) {
         const node = this.allNodes.find(n => n.id === nodeId);
         if (!node) return;
@@ -260,11 +260,9 @@ export default class LmsView {
         this.dom.inpTitle.value = node.title || '';
         this.dom.inpContent.value = node.content || '';
         
-        // Convertir array de keywords a string con comas
         const tags = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
         this.dom.inpKeywords.value = tags;
 
-        // Proteger Nodos del Kernel contra borrado accidental
         const isKernel = tags.includes('#kernel_sos');
         this.dom.btnDelete.style.display = isKernel ? 'none' : 'block';
 
@@ -278,12 +276,10 @@ export default class LmsView {
     setupModalEvents() {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         
-        // Cerrar al hacer clic fuera del modal
         this.dom.modal.addEventListener('click', (e) => {
             if (e.target === this.dom.modal) this.closeEditor();
         });
 
-        // GUARDAR NODO
         this.dom.btnSave.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
             const title = this.dom.inpTitle.value.trim();
@@ -291,7 +287,6 @@ export default class LmsView {
             
             if (!title || !content) return alert("Título y contenido son obligatorios.");
 
-            // Limpiar y separar keywords
             const rawKeywords = this.dom.inpKeywords.value;
             const keywordsArray = rawKeywords.split(',').map(k => k.trim()).filter(k => k !== '');
 
@@ -311,7 +306,7 @@ export default class LmsView {
             try {
                 await KB.init();
                 await KB.saveNode(updatedNode);
-                await this.loadData(); // Recarga toda la matriz
+                await this.loadData(); 
                 this.closeEditor();
             } catch (e) {
                 alert(`Error al guardar en la BD: ${e.message}`);
@@ -321,7 +316,6 @@ export default class LmsView {
             }
         });
 
-        // BORRAR NODO
         this.dom.btnDelete.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
             if (!confirm("⚠️ ¿Purgar este nodo de la base de datos?\nEsta acción es irreversible y puede generar huecos en la memoria de los Agentes.")) return;
