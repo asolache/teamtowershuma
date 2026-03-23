@@ -69,7 +69,7 @@ export class SynapticCanvas {
                     </div>
                     <div class="meme-results" id="memeResultsList">
                         <div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">
-                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Usa el selector de arriba para inyectar conocimiento a este nodo.'}
+                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Usa el selector superior para inyectar conocimiento a este nodo.'}
                         </div>
                     </div>
                 </div>
@@ -104,8 +104,11 @@ export class SynapticCanvas {
             if (!source || !target) return;
             const sourceExists = this.nodes.some(n => n.id === source);
             const targetExists = this.nodes.some(n => n.id === target);
+            
             if (sourceExists && targetExists) {
                 this.links.push({ source, target });
+            } else {
+                console.warn(`🌌 [Antigravity] Sinapsis purgada por nodo fantasma: ${source} -> ${target}`);
             }
         };
 
@@ -124,7 +127,6 @@ export class SynapticCanvas {
         };
 
         if (this.agentId) {
-            // MODO CÓRTEX 3D DE AGENTE/HUMANO
             const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(this.agentId));
             addNode(this.agentId, this.agentId, 'agent', 50, 'var(--accent-blue)', { title: this.agentId, content: "Núcleo de la Identidad" });
 
@@ -141,7 +143,6 @@ export class SynapticCanvas {
                 addLink(this.agentId, m.id);
             });
         } else {
-            // MODO META-GRAFO GLOBAL
             addNode('core_kernel', 'OS KERNEL', 'core_os', 70, '#ffffff', { title: 'TeamTowers V9 Kernel', category: 'core_os', content: 'Punto Cero del Sistema Operativo de Sinergias.' });
 
             state.projects.forEach(p => {
@@ -196,10 +197,10 @@ export class SynapticCanvas {
         const loader = this.container.querySelector('#loader3D');
         const tooltip = this.container.querySelector('#graphTooltip');
 
-        // 🔥 FUNCIÓN SEGURA PARA INYECTAR SCRIPTS EXTERNOS SIN DUPLICAR NI ROMPER 'THREE'
+        // 🔥 FIX JSDELIVR CDN: Resolviendo el problema de MIME mismatch de UNPKG
         const loadScript = (src, globalVar) => {
             return new Promise((resolve, reject) => {
-                if (window[globalVar]) return resolve(); // Evita cargar dos veces (Mata el warning de Multiple Instances)
+                if (window[globalVar]) return resolve(); 
                 const script = document.createElement('script');
                 script.src = src;
                 script.onload = () => resolve();
@@ -209,13 +210,12 @@ export class SynapticCanvas {
         };
 
         try {
-            // 🔥 CONGELAMOS VERSIONES ESPECÍFICAS QUE EXPORTAN VARIABLES GLOBALES COMPATIBLES
-            await loadScript('https://unpkg.com/three@0.147.0/build/three.min.js', 'THREE');
-            await loadScript('https://unpkg.com/three-spritetext@2.1.2/dist/three-spritetext.min.js', 'SpriteText');
-            await loadScript('https://unpkg.com/3d-force-graph@1.73.3/dist/3d-force-graph.min.js', 'ForceGraph3D');
+            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js', 'THREE');
+            await loadScript('https://cdn.jsdelivr.net/npm/three-spritetext@2.1.2/dist/three-spritetext.min.js', 'SpriteText');
+            await loadScript('https://cdn.jsdelivr.net/npm/3d-force-graph@1.73.3/dist/3d-force-graph.min.js', 'ForceGraph3D');
         } catch (e) {
             console.error("Error al cargar motores WebGL:", e);
-            if (loader) loader.innerText = "Error cargando Córtex 3D.";
+            if (loader) loader.innerText = "Error cargando Córtex 3D. Revisa la consola.";
             return;
         }
 
