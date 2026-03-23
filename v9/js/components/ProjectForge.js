@@ -284,7 +284,7 @@ export class ProjectForge {
                             this.draftTxs.push({
                                 id: `tx_base_${levelKey}_${idx}`, phase: "Kickoff", step_order: idx + 1, depends_on: [],
                                 fromLevel: levelKey, toLevel: toLevel, tipo: deliv.tipo || 'tangible', template: deliv.name, horas: deliv.estimatedHours || 4,
-                                soc_checklist: [{text:"Cumple calidad estándar W3C"}], resources: [], required_skills: deliv.required_skills || []
+                                soc_checklist: [{text:"Cumple calidad estándar W3C", isChecked: false}], resources: [], required_skills: deliv.required_skills || []
                             });
                         });
                     }
@@ -313,13 +313,21 @@ export class ProjectForge {
         this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
     }
 
+    // 🔥 EL NUEVO VALIDADOR COGNITIVO (TDD RELAJADO PERO EFECTIVO)
     runCognitiveTDD(parsedData) {
         let errors = [];
-        const expectedPhases = ['Kickoff', 'Growth', 'Scale', 'Harvest', 'Cierre'];
-        const generatedPhases = [...new Set(parsedData.transactions.map(t => t.phase))];
-        const missingPhases = expectedPhases.filter(p => !generatedPhases.includes(p));
-        if (missingPhases.length > 0) errors.push(`Faltan las eras de Verna Allee (${missingPhases.join(', ')}).`);
-        if (parsedData.transactions.length < 5) errors.push(`Red demasiado pequeña (${parsedData.transactions.length} SOPs).`);
+        
+        // 1. Verificamos que al menos haya un flujo útil (mínimo 3 transacciones)
+        if (!parsedData.transactions || parsedData.transactions.length < 3) {
+            errors.push(`Red demasiado pequeña (${parsedData.transactions ? parsedData.transactions.length : 0} SOPs). El Ecosistema debe tener un flujo mínimo viable.`);
+        } else {
+            // 2. Auditoría de Calidad: Todas las transacciones DEBEN tener Checklist SOC para poder ejecutarlas en Kanban
+            const txsWithoutSocs = parsedData.transactions.filter(t => !t.soc_checklist || t.soc_checklist.length === 0);
+            if (txsWithoutSocs.length > 0) {
+                errors.push(`Vulnerabilidad TDD: Se detectaron ${txsWithoutSocs.length} transacciones sin Criterios de Aceptación (soc_checklist). La calidad de la red peligra.`);
+            }
+        }
+        
         return errors;
     }
 
@@ -342,7 +350,6 @@ export class ProjectForge {
         try {
             await KB.init();
             
-            // 🔥 SUPER-PROMPT ESTRUCTURADO CON IKIGAI
             const enhancedVision = `
                 =====================================
                 CÓDIGO DE INYECCIÓN VNA (IKIGAI MODE):
@@ -374,14 +381,14 @@ export class ProjectForge {
             this.draftRoles = parsedData.roles.map((r, i) => ({
                 id: r.id || ('draft_role_' + i + '_' + Math.random().toString(36).substr(2, 5)),
                 levelId: r.levelId, name: r.name, fmv: r.fmv || 50, multiplier: r.multiplier || 1.0, 
-                guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || '', assignee: '' // Nuevo campo assignee
+                guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || '', assignee: '' 
             }));
             
             this.draftTxs = (parsedData.transactions || []).map((tx, i) => {
                 const rFrom = this.draftRoles.find(r => r.levelId === tx.fromLevel || r.name === tx.fromLevel) || this.draftRoles[0];
                 const rTo = this.draftRoles.find(r => r.levelId === tx.toLevel || r.name === tx.toLevel) || this.draftRoles[this.draftRoles.length - 1];
                 return {
-                    id: tx.id || `tx_${i}`, phase: tx.phase || 'Kickoff', step_order: tx.step_order || 1, depends_on: tx.depends_on || [],
+                    id: tx.id || `tx_${i}`, phase: tx.phase || 'Fase Activa', step_order: tx.step_order || 1, depends_on: tx.depends_on || [],
                     fromLevel: tx.fromLevel, toLevel: tx.toLevel, from: rFrom ? rFrom.id : null, to: rTo ? rTo.id : null,
                     tipo: tx.tipo, template: tx.template || tx.entregable, horas: tx.horas,
                     soc_checklist: (tx.soc_checklist || []).map((soc, i) => ({ id: `soc_${i}_${Date.now()}`, text: soc.text, isChecked: false })),
@@ -408,11 +415,13 @@ export class ProjectForge {
         // Render Txs Preview
         if (this.draftTxs.length > 0) {
             let listHtml = '';
-            const phases = ['Kickoff', 'Growth', 'Scale', 'Harvest', 'Cierre'];
-            phases.forEach(p => {
+            // Agrupamos por las fases que el LLM haya deducido (ya no son estáticas)
+            const generatedPhases = [...new Set(this.draftTxs.map(t => t.phase))];
+            
+            generatedPhases.forEach(p => {
                 const txsInPhase = this.draftTxs.filter(t => t.phase === p).sort((a,b) => a.step_order - b.step_order);
                 if (txsInPhase.length > 0) {
-                    listHtml += `<div style="margin-top: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--accent-blue); font-weight: bold;">🌐 ERA: ${p}</div>`;
+                    listHtml += `<div style="margin-top: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--accent-blue); font-weight: bold; text-transform: uppercase;">🌐 ERA: ${p}</div>`;
                     listHtml += txsInPhase.map((tx) => `
                         <div class="tx-preview-item">
                             <span style="color:#aaa; font-size:0.8rem;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
@@ -469,7 +478,6 @@ export class ProjectForge {
             this.dom.rolesContainer.appendChild(row);
         });
 
-        // Bindeo de eventos dinámicos
         this.dom.rolesContainer.querySelectorAll('.inp-role-level').forEach(sel => {
             sel.addEventListener('change', (e) => {
                 const idx = e.target.dataset.idx;
@@ -520,7 +528,7 @@ export class ProjectForge {
             payload: {
                 id: projectId, nombre: name, sector: this.dom.inpSector.value,
                 prompt: this.draftPresentation, archetype: arch, roles: this.draftRoles, vna_flows: [], work_orders: [],
-                usuarios: [] // Aquí se inyectarán los asignados
+                usuarios: [] 
             } 
         });
 
@@ -531,7 +539,6 @@ export class ProjectForge {
 
         await KB.init();
 
-        // 1. Guardar Roles e IKIGAIS
         const uniqueAssignees = new Set();
         if (this.draftRoles.length > 0) {
             for (const rol of this.draftRoles) {
@@ -551,7 +558,6 @@ export class ProjectForge {
             }
         }
 
-        // 2. Inyectar Usuarios al Proyecto
         const state = store.getState();
         const pCurrent = state.projects.find(p => p.id === projectId);
         if (pCurrent) {
@@ -559,7 +565,6 @@ export class ProjectForge {
             pCurrent.asignaciones = this.draftRoles.filter(r => r.assignee).map(r => ({ roleId: r.id, userId: r.assignee }));
         }
 
-        // 3. Procesar Tuberías y CASCADA (Con pre-asignación)
         if (pCurrent && this.draftTxs && this.draftTxs.length > 0) {
             for (const aiTx of this.draftTxs) {
                 const roleFrom = pCurrent.roles.find(r => r.id === aiTx.from);
@@ -583,11 +588,10 @@ export class ProjectForge {
                     if (triggerCascade) {
                         const woHash = 'wo_cascade_' + Math.random().toString(36).substr(2, 9);
                         
-                        // 🔥 Pre-asignación si el rol tiene humano/IA asignado
                         let woStatus = 'theoretical';
                         let assigneeId = null;
                         if (roleFrom.assignee) {
-                            woStatus = 'pinged'; // Pasa directo a "En Curso"
+                            woStatus = 'pinged'; 
                             assigneeId = roleFrom.assignee;
                         }
 
