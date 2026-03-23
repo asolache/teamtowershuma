@@ -2,7 +2,7 @@
 import { store } from '../core/store.js';
 import { KB } from '../core/kb.js';
 import { Orchestrator } from '../core/Orchestrator.js';
-import { SynapticCanvas } from './SynapticCanvas.js'; // 🔥 MOTOR 3D IMPORTADO A LA FORJA
+import { SynapticCanvas } from './SynapticCanvas.js'; 
 
 export class IdentityForge {
     constructor(containerId) {
@@ -58,18 +58,42 @@ export class IdentityForge {
                 .btn-forge { background: linear-gradient(135deg, rgba(224,64,251,0.1), rgba(224,64,251,0.2)); border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 12px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; margin-bottom: 15px;}
                 .btn-forge:hover:not(:disabled) { background: var(--accent-purple); color: white; box-shadow: 0 5px 20px rgba(224,64,251,0.4);}
                 
-                .btn-save { background: var(--accent-blue); color: black; border: none; padding: 14px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; margin-bottom: 2rem;}
+                .btn-save { background: var(--accent-blue); color: black; border: none; padding: 14px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; margin-bottom: 1rem;}
                 .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,176,255,0.4);}
                 
                 .toggle-type { display: flex; gap: 10px; margin-bottom: 20px; background: #111; padding: 5px; border-radius: 12px; border: 1px solid #333;}
                 .toggle-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-radius: 8px; font-weight: bold; color: #888; transition: 0.3s;}
                 .toggle-btn.active { background: var(--accent-blue); color: black; }
 
-                /* CONTENEDOR DEL CÓRTEX 3D */
-                .cortex-container { border: 1px solid #333; border-radius: 16px; overflow: hidden; background: #000; }
-                .cortex-header { background: rgba(0,0,0,0.8); padding: 15px; border-bottom: 1px dashed #333; color: var(--accent-green); font-weight: bold; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content: space-between;}
-                #agentSynapticCanvas { height: 500px; width: 100%; }
-                .empty-cortex { display: flex; justify-content: center; align-items: center; height: 100%; color: #666; font-style: italic; text-align: center; padding: 2rem;}
+                /* 🔥 CÓRTEX 3D DELUX UX */
+                .cortex-container { 
+                    border: 1px solid rgba(0,176,255,0.3); 
+                    border-radius: 20px; 
+                    overflow: hidden; 
+                    background: radial-gradient(circle at center, #1a1a24 0%, #050508 100%); 
+                    box-shadow: inset 0 0 40px rgba(0,176,255,0.05), 0 10px 30px rgba(0,0,0,0.5);
+                    margin-top: 2rem;
+                    transition: 0.3s;
+                }
+                .cortex-container:hover { border-color: var(--accent-blue); box-shadow: inset 0 0 60px rgba(0,176,255,0.1), 0 15px 40px rgba(0,0,0,0.6); }
+                
+                .cortex-header { 
+                    background: rgba(0,176,255,0.1); 
+                    padding: 15px 20px; 
+                    border-bottom: 1px solid rgba(0,176,255,0.2); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 15px;
+                }
+                
+                .cortex-actions { display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;}
+                .btn-inject { background: var(--accent-blue); color: black; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer; transition: 0.2s; white-space: nowrap;}
+                .btn-inject:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,176,255,0.4); }
+
+                #agentSynapticCanvas { height: 500px; width: 100%; outline: none; }
+                .empty-cortex { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: #888; font-style: italic; text-align: center; padding: 3rem; gap: 15px;}
             </style>
 
             <div class="forge-card">
@@ -150,11 +174,23 @@ export class IdentityForge {
 
                 <div class="cortex-container">
                     <div class="cortex-header">
-                        <span>🧠 Córtex 3D (Memoria Asignada)</span>
-                        <span style="color:#888;">Arrastra nodos desde el explorador</span>
+                        <div>
+                            <div style="font-weight: 900; font-size: 1.1rem; color: var(--accent-blue);">🧠 Córtex 3D (Memoria Asignada)</div>
+                            <div style="font-size: 0.75rem; color: #aaa; margin-top: 3px;">Visualiza y vincula Nodos W3C a esta identidad.</div>
+                        </div>
+                        <div class="cortex-actions" style="display: ${this.activeNodeId ? 'flex' : 'none'};">
+                            <select id="selAssignMeme" class="form-control" style="width: 100%; max-width: 250px; padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.6);">
+                                <option value="">Cargando catálogo...</option>
+                            </select>
+                            <button class="btn-inject" id="btnAssignMeme">Inyectar Nodo</button>
+                        </div>
                     </div>
                     <div id="agentSynapticCanvas">
-                        ${this.activeNodeId ? '<div style="color:#888; text-align:center; padding:3rem;">Cargando motor WebGL...</div>' : '<div class="empty-cortex">Guarda la identidad primero para inicializar su cerebro 3D.</div>'}
+                        ${this.activeNodeId ? '<div style="color:var(--accent-blue); text-align:center; padding:3rem; font-weight:bold; font-family:var(--font-mono);">Inicializando Motor WebGL...</div>' : `
+                        <div class="empty-cortex">
+                            <span style="font-size:3rem; color:#444;">🌐</span>
+                            <span>Guarda la identidad primero para inicializar su cerebro 3D.</span>
+                        </div>`}
                     </div>
                 </div>
             </div>
@@ -162,14 +198,58 @@ export class IdentityForge {
 
         this.attachEvents();
         
-        // Carga diferida del WebGL 3D solo si el nodo ya existe
         if (this.activeNodeId) {
+            this.loadAvailableMemes();
             setTimeout(async () => {
                 const canvasContainer = this.container.querySelector('#agentSynapticCanvas');
-                canvasContainer.innerHTML = ''; // Limpiamos el loader
+                canvasContainer.innerHTML = ''; 
                 this.synapticCanvas = new SynapticCanvas(canvasContainer, this.activeNodeId);
                 await this.synapticCanvas.render();
             }, 100);
+        }
+    }
+
+    // 🔥 Carga los Memes del LMS para el desplegable de inyección
+    async loadAvailableMemes() {
+        await KB.init();
+        const allNodes = await KB.getAllNodes();
+        const currentProjectId = localStorage.getItem('tt_active_project') || 'global';
+        
+        // Filtramos Memes que pertenecen a global o al proyecto actual, y que NO están ya vinculados a este agente
+        const assignableMemes = allNodes.filter(n => 
+            n.type === 'meme' && 
+            (n.projectId === 'global' || n.projectId === currentProjectId) &&
+            !(n.keywords && n.keywords.includes(this.activeNodeId))
+        ).sort((a, b) => a.title.localeCompare(b.title));
+
+        const selectEl = this.container.querySelector('#selAssignMeme');
+        if (!selectEl) return;
+
+        if (assignableMemes.length === 0) {
+            selectEl.innerHTML = '<option value="">No hay nodos W3C libres disponibles.</option>';
+            selectEl.disabled = true;
+            this.container.querySelector('#btnAssignMeme').disabled = true;
+        } else {
+            selectEl.disabled = false;
+            this.container.querySelector('#btnAssignMeme').disabled = false;
+            let optionsHtml = '<option value="">+ Vincular Conocimiento (Skill/SOP)...</option>';
+            
+            // Agrupamos por categoría para UX Delux
+            const grouped = assignableMemes.reduce((acc, obj) => {
+                const cat = obj.category || 'otros';
+                if (!acc[cat]) acc[cat] = [];
+                acc[cat].push(obj);
+                return acc;
+            }, {});
+
+            for (const [cat, nodes] of Object.entries(grouped)) {
+                optionsHtml += `<optgroup label="Categoría: ${cat.toUpperCase()}">`;
+                nodes.forEach(n => {
+                    optionsHtml += `<option value="${n.id}">${n.title}</option>`;
+                });
+                optionsHtml += `</optgroup>`;
+            }
+            selectEl.innerHTML = optionsHtml;
         }
     }
 
@@ -179,6 +259,7 @@ export class IdentityForge {
         const engineGroup = this.container.querySelector('#ifEngineGroup');
         const btnEval = this.container.querySelector('#btnEvalPrompt');
         const btnSave = this.container.querySelector('#btnSaveIdentity');
+        const btnAssignMeme = this.container.querySelector('#btnAssignMeme'); // Nuevo Botón
 
         btnTypeAi.addEventListener('click', () => {
             this.isAiNode = true;
@@ -192,7 +273,48 @@ export class IdentityForge {
             engineGroup.style.display = 'none';
         });
 
-        // 🔥 EL EVALUADOR ANTIGRAVITY (CON ASIMILACIÓN RAG)
+        // 🔥 INYECTOR DIRECTO DE MEMORIA
+        if (btnAssignMeme) {
+            btnAssignMeme.addEventListener('click', async () => {
+                const sel = this.container.querySelector('#selAssignMeme');
+                const memeId = sel.value;
+                if (!memeId) return alert("Selecciona un nodo de la lista primero.");
+
+                btnAssignMeme.disabled = true;
+                btnAssignMeme.innerText = "⏳ Inyectando...";
+
+                try {
+                    await KB.init();
+                    const meme = await KB.getNode(memeId);
+                    if (meme) {
+                        if (!meme.keywords) meme.keywords = [];
+                        if (!meme.keywords.includes(this.activeNodeId)) {
+                            meme.keywords.push(this.activeNodeId);
+                            await KB.saveNode(meme);
+                        }
+                        
+                        // Disparamos la recarga 3D y el aviso de evaluación
+                        window.dispatchEvent(new CustomEvent('synapse-forged', { detail: { agentId: this.activeNodeId } }));
+                        
+                        // Recargamos el canvas
+                        if (this.synapticCanvas) {
+                            await this.synapticCanvas.loadInitialData();
+                            this.synapticCanvas.graph3D.graphData({ nodes: this.synapticCanvas.nodes, links: this.synapticCanvas.links });
+                        }
+                        
+                        // Actualizamos la lista del dropdown
+                        this.loadAvailableMemes();
+                    }
+                } catch (e) {
+                    alert("Error inyectando nodo: " + e.message);
+                } finally {
+                    btnAssignMeme.disabled = false;
+                    btnAssignMeme.innerText = "Inyectar Nodo";
+                }
+            });
+        }
+
+        // EVALUADOR ANTIGRAVITY
         btnEval.addEventListener('click', async () => {
             const ikigaiData = {
                 pasion: this.container.querySelector('#ikiPasion').value.trim(),
@@ -215,7 +337,6 @@ export class IdentityForge {
                 let apiKey = localStorage.getItem(`tt_key_${provider}`);
                 if (!apiKey && provider !== 'custom') throw new Error("API Key requerida.");
 
-                // Leer contexto del IndexedDB (Memes anclados al agente)
                 await KB.init();
                 const allNodes = await KB.getAllNodes();
                 const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(id));
@@ -301,11 +422,9 @@ export class IdentityForge {
             alert(`✅ Identidad sellada. El nodo ${id} está sincronizado.`);
             window.dispatchEvent(new CustomEvent('identity-forged', { detail: { id } }));
             
-            // Si es un nuevo agente, recargamos para que aparezca su Córtex 3D
             if (!this.activeNodeId) this.render(id);
         });
 
-        // Refresco de Evaluador cuando se forja una sinapsis en 3D
         window.addEventListener('synapse-forged', (e) => {
             if (e.detail.agentId === this.activeNodeId) {
                 const evalPanel = this.container.querySelector('#evalPanel');
