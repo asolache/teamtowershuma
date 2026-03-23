@@ -1,4 +1,4 @@
-// v8/js/views/TestsView.js
+// v9/js/views/TestsView.js
 import { store } from '../core/store.js';
 import { KB } from '../core/kb.js';
 
@@ -19,7 +19,7 @@ const LLM_PRICING = {
 
 export default class TestsView {
     constructor() {
-        document.title = "Boot Diagnostics | TeamTowers V15.9";
+        document.title = "Diagnóstico de Sistema | TeamTowers V9";
     }
 
     async getHtml() {
@@ -69,8 +69,8 @@ export default class TestsView {
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
-                        <h1>V15.9 INMUTABLE KERNEL</h1>
-                        <p>Validando Redux, PULL/PUSH Mechanics, TDD y Core OS</p>
+                        <h1>V9 ANTIGRAVITY KERNEL</h1>
+                        <p>Validando IndexedDB, Redux Inmutable, PULL/PUSH Mechanics y TDD</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
@@ -79,7 +79,7 @@ export default class TestsView {
 
                     <div class="action-footer">
                         <div class="score-display" id="testScore">0/0</div>
-                        <a href="/v8/dashboard" data-link class="btn-enter-matrix" id="btnEnterOS">ENTRAR AL KERNEL →</a>
+                        <a href="/v9/dashboard" data-link class="btn-enter-matrix" id="btnEnterOS">ENTRAR AL KERNEL →</a>
                     </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@ export default class TestsView {
         };
 
         const runTests = async () => {
-            const PID_TEST = 'v15-stress-' + Date.now();
+            const PID_TEST = 'v9-stress-' + Date.now();
             const dynNeoId = '0xNeoWallet' + Math.floor(Math.random() * 1000);
             const dynLauraId = '@laura_dev_' + Math.floor(Math.random() * 1000);
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
@@ -137,7 +137,7 @@ export default class TestsView {
                 const originalUser = st.session?.activeUserId;
 
                 // ==========================================
-                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V15)
+                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V9)
                 // ==========================================
                 const currentVer = store.getState().config?.version || 'Desconocida';
                 await assert(true, `Motor Redux Inmutable Activo y Respondiendo (Detectada: ${currentVer})`, "SYS");
@@ -148,7 +148,7 @@ export default class TestsView {
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
                 await store.dispatch({ 
                     type: 'ADD_USER', 
-                    payload: { id: dynAgentId, name: 'Deep Coder', globalRole: 'ai-agent', profile: { isAi: true, preferredEngine: 'deepseek', version: 'v15' } } 
+                    payload: { id: dynAgentId, name: 'Deep Coder', globalRole: 'ai-agent', profile: { isAi: true, preferredEngine: 'deepseek', version: 'v9' } } 
                 });
 
                 // ==========================================
@@ -296,8 +296,8 @@ export default class TestsView {
                 await sleep(200);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V15.9 KERNEL CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">Redux Inmutable, PULL/PUSH y Core OS han pasado los test de estrés. Listo para Producción.</p>
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V9 ANTIGRAVITY KERNEL CERTIFIED 🔥</h2>
+                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">Redux Inmutable, PULL/PUSH, IndexedDB y Core OS han pasado los test de estrés. Listo para Malla P2P.</p>
                     </div>
                 `);
                 
