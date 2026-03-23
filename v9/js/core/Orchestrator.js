@@ -2,22 +2,26 @@
 import { store } from './store.js';
 import { KB } from './kb.js';
 
+// Matriz de Costes (USD por 1M de tokens) para Telemetría Antigravity
 const LLM_PRICING = {
-    'deepseek': { input: 0.14, output: 0.28 },
-    'gemini': { input: 0.075, output: 0.30 },
-    'openai': { input: 0.15, output: 0.60 },
-    'anthropic': { input: 3.00, output: 15.00 },
-    'custom': { input: 0.0, output: 0.0 },
+    'deepseek': { input: 0.14, output: 0.28 }, 
+    'gemini': { input: 0.075, output: 0.30 },  
+    'openai': { input: 2.50, output: 10.00 },  
+    'anthropic': { input: 3.00, output: 15.00 }, 
+    'custom': { input: 0.0, output: 0.0 },     
     'nano_banana': { input: 0.0, output: 0.02 }, 
-    'veo': { input: 0.0, output: 0.50 }         
+    'veo': { input: 0.0, output: 0.50 }        
 };
 
 class OrchestratorCore {
     constructor() {
-        this.version = "16.0-MultimodalEra";
+        this.version = "V9.0-Antigravity-Beta";
         this.isListening = false;
     }
 
+    // ==========================================
+    // 🛡️ EL DAEMON DE USENET (ESCUCHA PASIVA P2P)
+    // ==========================================
     initUsenetDaemon() {
         if (this.isListening) return;
         this.isListening = true;
@@ -43,52 +47,79 @@ class OrchestratorCore {
     }
 
     // ==========================================
-    // CAPA 1: GATEWAY NEURONAL (TEXTO / JSON)
+    // 🧠 MOTOR COGNITIVO BASE (ENRUTADOR RAG)
     // ==========================================
     async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
-        if (!apiKey && provider !== 'custom') throw new Error(`API Key requerida para el Orquestador (${provider}).`);
-        let attempt = 0; let lastError = null;
+        if (!apiKey && provider !== 'custom') throw new Error(`[KERNEL PANIC] API Key requerida para el motor ${provider}.`);
+        
+        let attempt = 0; 
+        let lastError = null;
         
         while (attempt <= maxRetries) {
             try {
-                let textResponse = ""; let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+                let textResponse = ""; 
+                let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
                 const startTime = Date.now();
 
+                // 1. ENRUTAMIENTO GEMINI
                 if (provider === 'gemini') {
-                    const targetModel = 'gemini-2.0-flash';
-                    const urlStr = 'https://generativelanguage.googleapis.com/v1beta/models/' + targetModel + ':generateContent?key=' + apiKey;
-                    
+                    const urlStr = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                     const response = await fetch(urlStr, {
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
-                            contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT DEL USUARIO:\n${userPrompt}` }] }], 
-                            generationConfig: { 
-                                temperature, 
-                                maxOutputTokens: 8192, 
-                                responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" 
-                            } 
+                            contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT:\n${userPrompt}` }] }], 
+                            generationConfig: { temperature, maxOutputTokens: 8192, responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" } 
                         })
                     });
                     
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`[HTTP ${response.status}] ${errorText || response.statusText}`);
-                    }
-                    
+                    if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
                     const data = await response.json();
-                    if (!data.candidates || data.candidates.length === 0) throw new Error("Gemini devolvió una respuesta vacía.");
+                    if (!data.candidates || data.candidates.length === 0) throw new Error("Respuesta vacía.");
                     
                     textResponse = data.candidates[0].content.parts[0].text;
-                    if (data.usageMetadata) { tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; }
-                
-                } else if (provider === 'openai' || provider === 'deepseek') {
+                    if (data.usageMetadata) { 
+                        tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; 
+                        tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; 
+                    }
+                } 
+                // 2. ENRUTAMIENTO ANTHROPIC (CLAUDE)
+                else if (provider === 'anthropic') {
+                    const response = await fetch('https://api.anthropic.com/v1/messages', {
+                        method: 'POST',
+                        headers: {
+                            'x-api-key': apiKey,
+                            'anthropic-version': '2023-06-01',
+                            'content-type': 'application/json',
+                            'anthropic-cors-bypass': 'true' // Frontend-only allowance
+                        },
+                        body: JSON.stringify({
+                            model: 'claude-3-5-sonnet-20241022',
+                            max_tokens: 8192,
+                            temperature: temperature,
+                            system: systemPrompt,
+                            messages: [{ role: 'user', content: userPrompt }]
+                        })
+                    });
+                    
+                    if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
+                    const data = await response.json();
+                    textResponse = data.content[0].text;
+                    tokenUsage.prompt_tokens = data.usage?.input_tokens || 0;
+                    tokenUsage.completion_tokens = data.usage?.output_tokens || 0;
+                }
+                // 3. ENRUTAMIENTO OPENAI / DEEPSEEK / CUSTOM
+                else {
                     let endpointUrl = 'https://api.openai.com/v1/chat/completions';
+                    let modelName = 'gpt-4o';
+                    
                     if (provider === 'deepseek') {
                         endpointUrl = 'https://api.deepseek.com/chat/completions';
+                        modelName = 'deepseek-chat';
+                    } else if (provider === 'custom') {
+                        endpointUrl = document.getElementById('inpCustomUrl')?.value || 'http://localhost:1234/v1/chat/completions';
+                        modelName = 'local-model';
                     }
-                    
-                    const modelName = provider === 'openai' ? "gpt-4o" : "deepseek-chat";
                     
                     const bodyData = { 
                         model: modelName, 
@@ -100,18 +131,11 @@ class OrchestratorCore {
                     
                     const response = await fetch(endpointUrl, {
                         method: 'POST', 
-                        headers: { 
-                            'Content-Type': 'application/json', 
-                            'Authorization': 'Bearer ' + apiKey 
-                        },
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                         body: JSON.stringify(bodyData)
                     });
                     
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`[HTTP ${response.status}] ${errorText || response.statusText}`);
-                    }
-                    
+                    if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
                     const data = await response.json();
                     textResponse = data.choices[0].message.content;
                     if (data.usage) tokenUsage = data.usage;
@@ -120,263 +144,169 @@ class OrchestratorCore {
                 const latencyMs = Date.now() - startTime;
                 let parsedContent = textResponse;
                 
+                // 🧹 Limpieza JSON Antigravity (Previene fallos de sintaxis MD)
                 if (responseFormat === "json_object") {
                     let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
                     const firstBrace = cleanText.indexOf('{'); const lastBrace = cleanText.lastIndexOf('}');
                     if (firstBrace !== -1 && lastBrace !== -1) cleanText = cleanText.substring(firstBrace, lastBrace + 1);
                     parsedContent = JSON.parse(cleanText);
                 }
+                
                 return { content: parsedContent, telemetry: { provider, tokens: tokenUsage, latencyMs } };
             
             } catch (error) {
-                lastError = error; attempt++; 
-                console.warn(`⚠️ [Orquestador] Fallo en intento ${attempt}/${maxRetries + 1}. Error:`, error.message);
-                await new Promise(r => setTimeout(r, 1500)); 
+                lastError = error; 
+                attempt++; 
+                console.warn(`⚠️ [Orchestrator] Fallo cognitivo (Intento ${attempt}). Relanzando sinapsis...`, error.message);
+                await new Promise(r => setTimeout(r, 1000 * attempt)); // Exponential backoff
             }
         }
-        throw new Error(`${lastError.message}`);
+        throw new Error(`Colapso Neural del Orquestador: ${lastError.message}`);
     }
 
     // ==========================================
-    // CAPA 2: DISEÑADOR VNA (Agile RAG)
+    // 🌍 COMPRESIÓN RAG (Baja Carga de Tokens)
+    // ==========================================
+    async _buildLightweightContext(projectId, agentId) {
+        await KB.init();
+        let contextText = `Leyes del Ecosistema: GTD (Orientación a Acción) y TDD (Validación Estricta).\n`;
+        
+        // Extraemos solo el prompt exacto del agente, ignorando el resto de la BD pesada
+        const promptNode = await KB.getNode(`prompt_${projectId}_${agentId}`);
+        if (promptNode) contextText += `\nTU CONSCIENCIA DIRECTRIZ:\n${promptNode.content}\n`;
+        
+        // Extraemos solo Evergreen Memes relevantes (limitado a 3 para ahorrar tokens)
+        const allMemes = await KB.getAllNodes({ category: 'evergreen' });
+        const relevantMemes = allMemes.filter(m => m.projectId === projectId || m.projectId === 'global').slice(0,3);
+        if (relevantMemes.length > 0) {
+            contextText += `\nSABIDURÍA EVERGREEN COSECHADA:\n`;
+            relevantMemes.forEach(m => contextText += `- ${m.title}: ${m.content}\n`);
+        }
+        return contextText;
+    }
+
+    // ==========================================
+    // 👑 BUCLE IMPERIAL 1: LA AUDITORÍA NOTARIAL (@notari_ledger)
+    // ==========================================
+    async notarizeWorkOrder(projectId, taskComment, socChecklist) {
+        const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+        const apiKey = localStorage.getItem(`tt_key_${provider}`);
+        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para el Notario.");
+
+        const systemPrompt = `
+            Eres @notari_ledger, el Juez Inmutable del sistema Antigravity.
+            Aplica Cognitive TDD. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones de Operación Estándar (SOCs).
+            Si un SOC no se cumple, la Work Order será devuelta al ejecutor (No se minarán Slices).
+            
+            Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }
+            SOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}
+        `;
+
+        const response = await this.callLLM({ 
+            provider, apiKey, systemPrompt, 
+            userPrompt: `ENTREGABLE DEL NODO:\n"${taskComment}"\n\nJuzga la evidencia.`, 
+            responseFormat: "json_object", temperature: 0.1 
+        });
+
+        // La telemetría la registramos aquí directamente para que la vista no tenga que hacerlo
+        this._logTelemetry(projectId, '@notari_ledger', provider, 'TDD_AUDIT', response.telemetry);
+        return response.content;
+    }
+
+    // ==========================================
+    // 👑 BUCLE IMPERIAL 2: EL DESTILADOR (@janitor)
+    // ==========================================
+    async harvestKnowledge(task, projectId) {
+        try {
+            const provider = localStorage.getItem('tt_ai_provider') || 'openai';
+            const apiKey = localStorage.getItem(`tt_key_${provider}`);
+            if (!apiKey && provider !== 'custom') return null; 
+
+            const systemPrompt = `
+                Eres @janitor, el destilador del Learning Loop.
+                Misión: Extraer una "Mejor Práctica" de este Proof of Work validado.
+                Si la tarea es trivial (ej: "corregido el bug"), devuelve {"isValuable": false}.
+                Si contiene estrategia, código valioso o estructura W3C, destila una KU (Knowledge Unit) accionable.
+                
+                JSON Requerido: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }
+            `;
+
+            const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
+            const result = response.content;
+
+            if (result.isValuable) {
+                await KB.init();
+                await KB.saveNode({
+                    id: `meme_evergreen_${Date.now()}`, type: 'meme', category: 'evergreen',
+                    projectId: projectId, targetId: 'global',
+                    title: `🌟 ${result.title}`, content: result.content, keywords: [...(result.tags || []), '#evergreen']
+                });
+                this._logTelemetry(projectId, '@janitor', provider, 'HARVEST', response.telemetry);
+                return result.title;
+            }
+            return null;
+        } catch (error) {
+            console.warn("⚠️ [@janitor] Fallo en la cosecha:", error.message);
+            return null;
+        }
+    }
+
+    // ==========================================
+    // 👑 BUCLE IMPERIAL 3: EL ARQUITECTO (@genesi_ai)
     // ==========================================
     async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
         await KB.init();
         const promptNode = await KB.getNode('prompt_genesi_vna');
         
         let systemPrompt = promptNode ? promptNode.content : `
-Eres el Master Ecosystem Architect. Diseña una arquitectura VNA devolviendo EXCLUSIVAMENTE un objeto JSON estricto.
-MANDAMIENTOS: 1. Crea EXACTAMENTE entre 8 y 10 transacciones. 2. 5 ERAS: Kickoff, Growth, Scale, Harvest, Cierre. 3. Mínimo 2 required_skills por tx. 4. 2 soc_checklist por tx.
-ESTRUCTURA JSON EXACTA: { "presentacion": "...", "tags": ["Tech"], "new_memes": [{ "id": "meme_skill_x", "category": "skill", "title": "X", "content": "..." }], "roles": [{ "levelId": "@anxaneta", "name": "CEO", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "..." }], "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "intangible", "template": "...", "horas": 5, "required_skills": ["meme_skill_x"], "soc_checklist": [{ "text": "..." }] }] }
-REGLA DE ORO: Usa roles estándar (@anxaneta, @aixecador, @dosos, @baixos, @pinya).
-`;
-        const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, responseFormat: "json_object", temperature: 0.1 });
-        return result.content; 
+            Eres Master Ecosystem Architect (@genesi_ai). Diseña topología VNA en JSON estricto.
+            MANDAMIENTOS: 
+            1. Aplica GTD: Tareas accionables. 
+            2. 5 ERAS de valor (Kickoff, Growth, Scale, Harvest, Cierre). 
+            3. Genera SOPs que exijan entregables claros.
+            FORMATO: { "presentacion": "...", "tags": ["Tech"], "roles": [{ "levelId": "@anxaneta", "name": "...", "fmv": 80, "multiplier": 3.0, "guardian": "explorer" }], "transactions": [{ "id": "tx_1", "phase": "Kickoff", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "template": "SOP...", "horas": 5, "soc_checklist": [{ "text": "Validación 1" }] }] }
+        `;
+        const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión: ${vision}`, responseFormat: "json_object", temperature: 0.2 });
+        this._logTelemetry('global', '@genesi_ai', provider, 'VNA_DESIGN', response.telemetry);
+        return response.content; 
     }
 
     // ==========================================
-    // CAPA 3: LA FORJA FRACTAL
-    // ==========================================
-    async forgeProjectColla(projectId, provider, apiKey) {
-        await KB.init();
-        const state = store.getState();
-        const project = state.projects.find(p => p.id === projectId);
-        if (!project) throw new Error("Proyecto no encontrado en el Kernel.");
-
-        const promptNode = await KB.getNode('prompt_genesi_forge');
-        const systemPrompt = promptNode ? promptNode.content : `Eres @genesi_ai, redacta un System Prompt en primera persona.`;
-        
-        const forgedAgents = [];
-
-        for (const role of project.roles) {
-            const flatContext = await KB.getAgentContextFlattened(projectId, role, project.prompt, project.archetype);
-            const roleFlows = project.vna_flows.filter(f => f.from === role.id || f.to === role.id);
-            const flowsContext = roleFlows.map(f => `- [${f.tipo.toUpperCase()}] ${f.template}`).join('\n');
-
-            const userPrompt = `
-                Crea el SYSTEM PROMPT definitivo para el rol de "${role.name}" (${role.levelId}).
-                CONTEXTO ONTOLÓGICO: ${flatContext}
-                TUBERÍAS VNA: ${flowsContext || "Ninguna aún."}
-                Instrucciones: Texto estricto en primera persona para ejecutar SOPs. NO JSON.
-            `;
-
-            const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "text", temperature: 0.4 });
-
-            const newPromptNode = await KB.saveNode({ id: `prompt_${projectId}_${role.id}`, type: 'prompt_a2a', projectId: projectId, targetId: role.id, roleTarget: role.levelId, title: `Prompt A2A Forjado: ${role.name}`, content: result.content });
-
-            const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
-            const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
-
-            await store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId: projectId, agentId: '@genesi_ai', engine: provider, actionType: 'FORGE_IDENTITY', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs } });
-
-            forgedAgents.push({ roleId: role.id, roleName: role.name, promptId: newPromptNode.id });
-        }
-        return forgedAgents;
-    }
-
-    // ==========================================
-    // CAPA 4: USENET DAEMON
+    // 🤖 HERRAMIENTAS ADICIONALES (Legacy Comm)
     // ==========================================
     async autoRespondUsenet(project, incomingLog, agentNode) {
         try {
             let provider = agentNode.profile?.preferredEngine || localStorage.getItem('tt_ai_provider') || 'deepseek';
             let apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (!apiKey) { provider = localStorage.getItem('tt_ai_provider') || 'deepseek'; apiKey = localStorage.getItem(`tt_key_${provider}`); }
             if (!apiKey) return;
 
-            let contextStr = `Ecosistema: ${project.nombre}\n\n`;
-            if (incomingLog.relatedTxHash) {
-                const wo = project.work_orders.find(w => w.hash === incomingLog.relatedTxHash);
-                if (wo) {
-                    const flow = project.vna_flows.find(f => f.id === wo.flowId);
-                    contextStr += `ESTADO ACTUAL:\n- Tarea: ${flow ? flow.template : 'Desconocida'}\n- SOCs: ${JSON.stringify(wo.soc_checklist)}\n\n`;
-                }
-            }
-            const thread = project.logs.filter(l => l.relatedTxHash === incomingLog.relatedTxHash).slice(-5);
-            contextStr += `HILO RECIENTE:\n`;
-            thread.forEach(l => { const author = store.getState().globalUsers.find(u => u.id === l.authorId)?.name || l.authorId; contextStr += `[${author}]: ${l.content}\n`; });
+            const contextStr = await this._buildLightweightContext(project.id, agentNode.id);
+            const systemPrompt = `Eres ${agentNode.name}.\n\n${contextStr}\nResponde al ping del hilo con acción inmediata (GTD). No uses JSON ni markdown puro.`;
 
-            await KB.init();
-            let agentPrompt = `Eres ${agentNode.name} (${agentNode.id}).`;
-            const customPrompt = await KB.getNode(`prompt_${project.id}_${agentNode.id}`);
-            if (customPrompt) agentPrompt = customPrompt.content;
-
-            const systemPrompt = `${agentPrompt}\n\nCONTEXTO:\n${contextStr}\nMisión: Responde al ping de forma profesional. Firma la respuesta. NO uses JSON. NO uses markdown \`\`\`.`;
-
-            const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Responde al ping de ${incomingLog.authorId}.`, responseFormat: "text", temperature: 0.7 });
+            const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Ping de ${incomingLog.authorId}: ${incomingLog.content}`, responseFormat: "text", temperature: 0.5 });
 
             await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId: project.id, log: { id: 'log_' + Date.now(), date: Date.now(), authorId: agentNode.id, relatedTxHash: incomingLog.relatedTxHash, content: result.content, mentions: [incomingLog.authorId], readBy: [] } } });
+            this._logTelemetry(project.id, agentNode.id, provider, 'USENET_PING', result.telemetry);
 
-            const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
-            const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
-            await store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId: project.id, agentId: agentNode.id, engine: provider, actionType: 'USENET_PING', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs } });
-
-        } catch (error) { console.error(`[Usenet Daemon] Fallo al responder con ${agentNode.id}:`, error); }
+        } catch (error) { console.error(`[Usenet] Fallo P2P con ${agentNode.id}:`, error); }
     }
 
-    // ==========================================
-    // CAPA 5: DEEP RESEARCH ACADÉMICO
-    // ==========================================
-    async deepResearch(topic, category, provider, apiKey) {
-        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para Deep Research.");
+    // Función interna para despachar telemetría exacta del Slicing Pie y Coste API
+    _logTelemetry(projectId, agentId, engine, actionType, telemetryData) {
+        if (!telemetryData) return;
+        const priceMatrix = LLM_PRICING[engine] || { input: 0, output: 0 };
+        const costInDollars = ((telemetryData.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((telemetryData.tokens.completion_tokens / 1000000) * priceMatrix.output);
 
-        await KB.init();
-        const promptNode = await KB.getNode('prompt_mestre_research');
-        const systemPrompt = promptNode ? promptNode.content : `Actúa como @mestre_escola. Extrae SOCs/SOPs en JSON.`;
-
-        const userPrompt = `INVESTIGA Y EXTRAE CONOCIMIENTO VERAZ SOBRE: "${topic}"\nCategoría de salida deseada: ${category.toUpperCase()}. Extrae al menos 3 nodos de alta densidad informativa.`;
-
-        const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
-
-        const priceMatrix = LLM_PRICING[provider] || { input: 0, output: 0 };
-        const costInDollars = ((result.telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((result.telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
-
-        await store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId: 'global', agentId: '@mestre_escola', engine: provider, actionType: 'DEEP_RESEARCH', tokens: result.telemetry.tokens, costInDollars: costInDollars, recRatio: 0, latencyMs: result.telemetry.latencyMs } });
-
-        return result.content;
-    }
-
-    // ==========================================
-    // CAPA 6: MEME ENRICHER
-    // ==========================================
-    async enrichMeme(memeData, provider, apiKey) {
-        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para Enriquecer Memes.");
-        
-        const systemPrompt = `
-            Actúa como @mestre_escola, el Investigador y Optimizador Académico.
-            Tu tarea es coger un "Meme W3C" (una unidad de conocimiento básica o cruda) y enriquecerlo profesionalmente a nivel industrial.
-            DEVUELVE ÚNICAMENTE un objeto JSON con el siguiente formato exacto:
-            { "title": "Nuevo Título", "content": "Contenido expandido...", "keywords": ["tags"] }
-        `;
-        const userPrompt = `MEJORA Y EXPANDE ESTE MEME:\nTítulo: ${memeData.title}\nCategoría: ${memeData.category}\nContenido Actual: ${memeData.content}`;
-
-        const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
-        return result.content;
-    }
-
-    // ==========================================
-    // CAPA 7: SINTETIZADOR MULTIMODAL
-    // ==========================================
-    async generateAsset(prompt, type, apiKey) {
-        if (!apiKey) throw new Error(`Se requiere API Key configurada en el Panteón para generar ${type}.`);
-        
-        const startTime = Date.now();
-        let finalOutput = "";
-        let tokensLog = { prompt_tokens: 0, completion_tokens: 1 };
-        let engineUsed = "";
-        let costInDollars = 0;
-
-        try {
-            if (type === 'image') {
-                engineUsed = "nano_banana";
-                await new Promise(r => setTimeout(r, 2500)); 
-                const safePrompt = encodeURIComponent(prompt.substring(0, 50));
-                finalOutput = `https://image.pollinations.ai/prompt/${safePrompt}?width=800&height=400&nologo=true`;
-                costInDollars = LLM_PRICING.nano_banana.output;
-                
-            } else if (type === 'video') {
-                engineUsed = "veo";
-                await new Promise(r => setTimeout(r, 4000));
-                finalOutput = `https://www.w3schools.com/html/mov_bbb.mp4`; 
-                costInDollars = LLM_PRICING.veo.output;
-            }
-
-            const latencyMs = Date.now() - startTime;
-
-            await store.dispatch({ 
-                type: 'LOG_TELEMETRY', 
-                payload: { 
-                    projectId: 'global', 
-                    agentId: `@${engineUsed}_engine`, 
-                    engine: engineUsed, 
-                    actionType: `GENERATE_${type.toUpperCase()}`, 
-                    tokens: tokensLog, 
-                    costInDollars: costInDollars, 
-                    recRatio: 0, 
-                    latencyMs 
-                } 
-            });
-
-            return { url: finalOutput, type: type, engine: engineUsed };
-
-        } catch (error) {
-            throw new Error(`Fallo en la generación multimodal de ${type}: ${error.message}`);
-        }
-    }
-
-    // ==========================================
-    // 🔥 CAPA 8: LEARNING LOOP (@JANITOR)
-    // ==========================================
-    async harvestKnowledge(task, projectId) {
-        try {
-            let provider = localStorage.getItem('tt_ai_provider') || 'openai';
-            let apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (!apiKey && provider !== 'custom') return null; // Abortar silenciosamente si no hay API
-
-            const systemPrompt = `
-                Eres @janitor, el destilador de conocimiento de TeamTowers V9 Antigravity.
-                Analiza este Entregable (Proof of Work) que acaba de ser validado y sellado en el Ledger.
-                Tu misión es extraer una "Mejor Práctica" (Best Practice) si aporta valor técnico, estratégico o de calidad.
-                Si la tarea es trivial o mecánica (ej: "hecho", "subido el excel"), devuelve {"isValuable": false}.
-                Si es valiosa, destila el aprendizaje en una KU (Knowledge Unit) accionable.
-                
-                Responde ÚNICAMENTE con este JSON:
-                { 
-                    "isValuable": boolean, 
-                    "title": "Título del aprendizaje (Corto)", 
-                    "content": "SOP o regla destilada en 2-3 líneas", 
-                    "tags": ["keyword1", "keyword2"] 
-                }
-            `;
-
-            const userPrompt = `Entregable a analizar:\n${task.comentario}\nEnlace: ${task.proofLink || 'Ninguno'}`;
-
-            const response = await this.callLLM({ 
-                provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 
-            });
-
-            const result = JSON.parse(response.content);
-
-            if (result.isValuable) {
-                await KB.init();
-                await KB.saveNode({
-                    id: `meme_evergreen_${Date.now()}`,
-                    type: 'meme',
-                    category: 'evergreen',
-                    projectId: projectId, 
-                    targetId: 'global',
-                    title: `🌟 ${result.title}`,
-                    content: result.content,
-                    keywords: [...(result.tags || []), '#evergreen']
-                });
-                console.log(`🧠 [@janitor] Nuevo conocimiento Evergreen cosechado: ${result.title}`);
-                return result.title;
-            }
-            return null;
-        } catch (error) {
-            console.warn("⚠️ [@janitor] Fallo en la cosecha de conocimiento:", error.message);
-            return null;
-        }
+        store.dispatch({ 
+            type: 'LOG_TELEMETRY', 
+            payload: { 
+                projectId, agentId, engine, actionType, 
+                tokens: telemetryData.tokens, 
+                costInDollars: costInDollars, 
+                recRatio: 0, // Se calcula dinámicamente en las vistas
+                latencyMs: telemetryData.latencyMs 
+            } 
+        });
     }
 }
 
