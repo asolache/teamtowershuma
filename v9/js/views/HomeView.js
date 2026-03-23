@@ -1,4 +1,4 @@
-// v8/js/views/HomeView.js
+// v9/js/views/HomeView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { PageHeader } from '../components/PageHeader.js';
@@ -6,10 +6,13 @@ import { BottomNav } from '../components/BottomNav.js';
 
 export default class HomeView {
     constructor() {
-        document.title = "Matriz Global | TeamTowers V15.9";
+        document.title = "Matriz Global | TeamTowers V9";
     }
 
     async getHtml() {
+        // 🔥 ARRANQUE ASÍNCRONO DE INDEXEDDB (ANTIGRAVITY)
+        await store.init();
+
         const state = store.getState();
         const isLogged = !!state.session.activeUserId;
 
@@ -31,7 +34,7 @@ export default class HomeView {
                     <div class="login-terminal">
                         <div style="font-size: 4rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(0,176,255,0.5));">🗼</div>
                         <h1 style="font-family: var(--font-main); margin: 0 0 5px 0; font-weight: 900; font-size: 1.8rem;">TeamTowers</h1>
-                        <p style="color: #888; font-size: 0.85rem; margin: 0; letter-spacing: 2px;">KERNEL V15.9 // ZERO-TRUST</p>
+                        <p style="color: #888; font-size: 0.85rem; margin: 0; letter-spacing: 2px;">KERNEL V9 // ZERO-TRUST</p>
                         
                         <input type="text" id="loginUserId" class="login-input" placeholder="Alias (ej: @alvaro)" value="@alvaro">
                         
@@ -78,7 +81,7 @@ export default class HomeView {
                     
                     <div class="eco-grid">
                         ${projectsHtml}
-                        <a href="/v8/create" data-link class="eco-create">
+                        <a href="/v9/create" data-link class="eco-create">
                             <span style="font-size: 2rem; margin-bottom: 10px;">+</span>
                             <strong>Forjar Nuevo Ecosistema</strong>
                         </a>
@@ -101,10 +104,11 @@ export default class HomeView {
                 btnConnect.addEventListener('click', async () => {
                     let id = inputId.value.trim();
                     if (!id) return alert("Identificación requerida.");
-                    if (!id.startsWith('@')) id = '@' + id; // Force @ for uniformity
+                    if (!id.startsWith('@')) id = '@' + id; 
                     
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: id } });
-                    window.location.replace('/v8/'); 
+                    // 🔥 REDIRECCIÓN MIGRADA A V9
+                    window.location.replace('/v9/'); 
                 });
             }
             return; 
@@ -118,8 +122,8 @@ export default class HomeView {
             card.addEventListener('click', (e) => {
                 const projId = e.currentTarget.getAttribute('data-id');
                 localStorage.setItem('tt_active_project', projId);
-                // Redirigimos siempre al Kanban PULL (Work Orders) al entrar a un proyecto
-                history.pushState(null, null, '/v8/dashboard');
+                // 🔥 REDIRECCIÓN MIGRADA A V9
+                history.pushState(null, null, '/v9/dashboard');
                 window.dispatchEvent(new Event('popstate'));
             });
         });
