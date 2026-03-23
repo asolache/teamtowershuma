@@ -1,4 +1,4 @@
-// v8/js/views/ProjectView.js
+// v9/js/views/ProjectView.js
 import { store } from '../core/store.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
@@ -9,7 +9,7 @@ import { KB } from '../core/kb.js';
 
 export default class ProjectView {
     constructor() {
-        document.title = "Kanban PULL | TeamTowers V15.9";
+        document.title = "Kanban PULL | TeamTowers V9";
         this.activeProjectId = null;
         this.currentFilter = 'all'; 
         this.isProcessingAi = false; 
@@ -43,7 +43,7 @@ export default class ProjectView {
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">📋</div>
                              <h2 style="color:white; margin-top:0;">Radar Vacío</h2>
                              <p style="color:var(--text-muted); margin-bottom: 2.5rem;">No hay redes activas para mostrar el Kanban.</p>
-                             <a href="/v8/create" data-link class="btn-primary" style="text-decoration:none;">➕ Inicializar Red</a>
+                             <a href="/v9/create" data-link class="btn-primary" style="text-decoration:none;">➕ Inicializar Red</a>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/project')}
@@ -300,7 +300,6 @@ export default class ProjectView {
         this.activeProjectId = project.id;
         this.isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
 
-        // 🔥 MONTAJE DEL COMPONENTE KANBAN DRY
         const mountPoint = document.getElementById('kanbanMountPoint');
         if (mountPoint) {
             this.kanbanRenderer = new KanbanRenderer(mountPoint, {
@@ -313,7 +312,6 @@ export default class ProjectView {
             this.kanbanRenderer.render();
         }
 
-        // LÓGICA DE FILTROS
         const filterDropdown = document.getElementById('filterDropdown');
         if (filterDropdown) {
             filterDropdown.value = this.currentFilter;
@@ -324,9 +322,6 @@ export default class ProjectView {
             });
         }
 
-        // ==========================================
-        // 🔥 LÓGICA DE ASIGNACIÓN Y EVENTOS
-        // ==========================================
         const pushModal = document.getElementById('pushModal');
         document.getElementById('btnClosePushModal')?.addEventListener('click', () => {
             pushModal.classList.remove('active');
@@ -348,7 +343,6 @@ export default class ProjectView {
             const wItem = wList.find(w => (w.hash || w.id) === this.pushTargetHash) || {};
             const safeSprintId = wItem.sprintId || currentProj.activeSprintId;
 
-            // FUERZA BRUTA UPDATE
             const updatedList = wList.map(w => {
                 if ((w.hash || w.id) === this.pushTargetHash) {
                     return { ...w, status: 'pinged', assigneeId: targetUserId, sprintId: safeSprintId }; 
@@ -366,14 +360,12 @@ export default class ProjectView {
             this.refreshRenderer();
         });
 
-        // 🔥 ESCUCHADOR UNIVERSAL DE ACCIONES DEL KANBAN
         window.addEventListener('kanban-action', async (e) => {
             const { action, hash, isLegacy, userId, agentId, element } = e.detail;
             
             const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
             const wList = isLegacy ? (currentProj.transactions || []) : (currentProj.work_orders || []);
 
-            // PULL MÍO AUTOMÁTICO 
             if (action === 'force-pull') {
                 const updatedList = wList.map(w => {
                     if ((w.hash || w.id) === hash) return { ...w, status: 'pinged', assigneeId: userId, sprintId: w.sprintId || currentProj.activeSprintId }; 
@@ -384,7 +376,6 @@ export default class ProjectView {
                 return;
             }
 
-            // ABRIR MODAL PUSH
             if (action === 'open-push-modal') {
                 if (!this.isPO) return alert("Solo el PO puede realizar PUSH.");
                 this.pushTargetHash = hash;
@@ -393,7 +384,6 @@ export default class ProjectView {
                 return;
             }
 
-            // SOLTAR TAREA (REJECT)
             if (action === 'reject') {
                 if(!confirm("¿Estás seguro de soltar esta tarea y devolverla a Oportunidades?")) return;
                 
@@ -406,13 +396,11 @@ export default class ProjectView {
                 return;
             }
 
-            // AUDITORÍA
             if (action === 'review') {
                 this.openReviewModal(hash);
                 return;
             }
 
-            // EJECUCIÓN DE IA
             if (action === 'ai-exec') {
                 await this.executeAIAgent(hash, element, store.getState().projects.find(p => p.id === this.activeProjectId), isLegacy);
                 return;
@@ -421,7 +409,6 @@ export default class ProjectView {
 
         window.addEventListener('swarm_update', () => this.refreshRenderer());
 
-        // 🔥 LÓGICA DE SPRINTS
         const selActiveSprint = document.getElementById('selActiveSprint');
         if (selActiveSprint) {
             selActiveSprint.addEventListener('change', async (e) => {
@@ -461,9 +448,6 @@ export default class ProjectView {
         this.kanbanRenderer.render();
     }
 
-    // ==========================================
-    // EJECUCIÓN DE IA (MOTOR ORCHESTRATOR)
-    // ==========================================
     async executeAIAgent(txHash, btnElement, currProject, isLegacy) {
         if (this.isProcessingAi) return alert("Un Agente ya está trabajando en una Work Order. Espera.");
         this.isProcessingAi = true;
@@ -477,7 +461,6 @@ export default class ProjectView {
             const wo = flows.find(w => (w.hash || w.id) === txHash);
             const parentFlow = (currProject.vna_flows || []).find(f => f.id === wo.flowId) || wo; 
             
-            // 🔥 Ruteo Inteligente (Fallback a OpenAI si no hay DeepSeek)
             let provider = localStorage.getItem('tt_ai_provider') || 'openai';
             let apiKey = localStorage.getItem(`tt_key_${provider}`);
             
@@ -502,7 +485,6 @@ export default class ProjectView {
                 provider, apiKey, systemPrompt: aiContext, userPrompt, responseFormat: "text", temperature: 0.3
             });
 
-            // 🔥 FIX: Inyección por Fuerza Bruta Inmutable
             const updatedList = flows.map(w => {
                 if ((w.hash || w.id) === txHash) {
                     return { ...w, status: 'reported', proofLink: 'Agent_Auto_Report', comentario: response.content, sprintId: w.sprintId || currProject.activeSprintId };
@@ -523,13 +505,9 @@ export default class ProjectView {
         }
     }
 
-    // ==========================================
-    // 🔥 EL GRIFO INTELIGENTE Y EDITABLE (NUEVO MODAL)
-    // ==========================================
     setupCreationModal() {
         const createModal = document.getElementById('createTaskModal');
         
-        // EVENT DELEGATION PARA BOTÓN CREAR (A prueba de fallos y sin amnesia)
         const openModalBtn = document.getElementById('btnOpenCreateTask');
         if (openModalBtn) {
             openModalBtn.addEventListener('click', () => {
@@ -538,7 +516,8 @@ export default class ProjectView {
                 
                 if (flows.length === 0) {
                     alert("Debes dibujar Tuberías permanentes en el Mapa VNA antes de poder generar Work Orders sueltas.");
-                    window.location.href = '/v8/map';
+                    // 🔥 ENLACE MIGRADO A V9
+                    window.location.href = '/v9/map';
                     return;
                 }
 
@@ -571,7 +550,7 @@ export default class ProjectView {
                 document.getElementById('newFlowContainer').style.display = 'block'; 
                 document.getElementById('mestreAiButtonContainer').style.display = 'block';
 
-                createModal.classList.add('active'); // 🔥 FIX: Usa classList active en lugar de style.display
+                createModal.classList.add('active'); 
             });
         }
 
@@ -686,7 +665,7 @@ export default class ProjectView {
 
         document.getElementById('btnCancelCreateTask')?.addEventListener('click', (e) => {
             e.preventDefault();
-            createModal.classList.remove('active'); // 🔥 FIX CSS MODAL
+            createModal.classList.remove('active'); 
         });
 
         document.getElementById('btnConfirmCreateTask')?.addEventListener('click', async (e) => {
@@ -703,7 +682,6 @@ export default class ProjectView {
                 if(input.value.trim()) finalSocs.push({ id: 'soc_'+Date.now()+'_'+idx, text: input.value.trim(), isChecked: false });
             });
 
-            // FUERZA BRUTA: Añadir flujo permanente si es "NEW_FLOW"
             if (rawFlowId === 'NEW_FLOW') {
                 targetFlowId = 'flow_' + Date.now();
                 const fromId = document.getElementById('selNewFlowFrom').value;
@@ -722,7 +700,6 @@ export default class ProjectView {
                 });
             }
 
-            // FUERZA BRUTA: Añadir la Work Order
             const newHash = 'wo_' + Math.random().toString(36).substr(2, 9);
             const newWo = {
                 hash: newHash, 
@@ -731,7 +708,7 @@ export default class ProjectView {
                 status: assignee !== "" ? 'pinged' : 'theoretical', 
                 realHours: 0,
                 assigneeId: assignee || null,
-                sprintId: currProj.activeSprintId, // Mantenemos el historial sin amnesia
+                sprintId: currProj.activeSprintId, 
                 soc_checklist: finalSocs, 
                 resources: []
             };
@@ -773,7 +750,7 @@ export default class ProjectView {
                 socsContainer.innerHTML = `<div style="color:#888; font-style:italic;">No hay SOCs definidos para esta receta. Se puede aprobar directamente.</div>`;
             }
 
-            reviewModal.classList.add('active'); // 🔥 FIX CSS
+            reviewModal.classList.add('active'); 
         };
 
         document.getElementById('btnCancelReviewTask')?.addEventListener('click', () => {
@@ -832,7 +809,6 @@ export default class ProjectView {
 
             const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
             const isLegacy = !(currProject.work_orders || []).find(w => w.hash === currentReviewHash);
-            const taskObj = isLegacy ? currProject.transactions.find(t => t.id === currentReviewHash) : currProject.work_orders.find(w => w.hash === currentReviewHash);
             
             if (!isLegacy) {
                 await store.dispatch({
