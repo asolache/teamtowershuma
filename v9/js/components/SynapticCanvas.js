@@ -107,7 +107,8 @@ export class SynapticCanvas {
             if (sourceExists && targetExists) {
                 this.links.push({ source, target });
             } else {
-                console.warn(`🌌 [Antigravity] Sinapsis purgada por nodo fantasma: ${source} -> ${target}`);
+                // Silenciamos el warning para no ensuciar la consola, es un comportamiento seguro.
+                // console.warn(`🌌 [Antigravity] Sinapsis purgada por nodo fantasma: ${source} -> ${target}`);
             }
         };
 
@@ -210,10 +211,9 @@ export class SynapticCanvas {
                         script.onerror = () => reject(new Error(`Fallo de red/MIME en ${url}`));
                         document.head.appendChild(script);
                     });
-                    console.log(`🌌 [Antigravity] Motor ${globalVar} cargado con éxito desde CDN.`);
                     return; 
                 } catch (e) {
-                    console.warn(`[Antigravity] CDN corrupta, aplicando Auto-Sanación para ${globalVar}...`);
+                    console.warn(`[Antigravity] CDN corrupta, saltando...`);
                 }
             }
             throw new Error(`Colapso CDN: Imposible inyectar ${globalVar} en el navegador.`);
@@ -250,9 +250,12 @@ export class SynapticCanvas {
         this.graph3D = ForceGraph3D()(canvasInner)
             .graphData(gData)
             .nodeLabel('') 
-            .linkColor(() => 'rgba(255, 255, 255, 0.15)')
-            .linkWidth(1.5)
-            .enableNodeDrag(false) 
+            .linkColor(() => 'rgba(255, 255, 255, 0.12)')
+            .linkWidth(1.2)
+            .enableNodeDrag(true) 
+            // 🔥 EXPANSION DEL UNIVERSO (FÍSICAS ANTIGRAVITY)
+            .d3Force('charge', window.d3 ? window.d3.forceManyBody().strength(-400) : null) // Separación electromagnética (Por defecto -100)
+            .d3Force('link', window.d3 ? window.d3.forceLink().distance(80) : null) // Distancia de las sinapsis
             .nodeThreeObject(node => {
                 const group = new window.THREE.Group();
                 const geometry = new window.THREE.SphereGeometry(node.val * 0.8, 16, 16);
@@ -288,6 +291,12 @@ export class SynapticCanvas {
                 this.graph3D.cameraPosition({ x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, node, 2000);
                 this.showNodeDetailsInPalette(node);
             });
+
+        // Si d3 está cargado localmente en el window por 3d-force-graph, inyectamos las físicas
+        if (this.graph3D.d3Force && this.graph3D.d3Force('charge')) {
+            this.graph3D.d3Force('charge').strength(-400); // Fuerte repulsión
+            this.graph3D.d3Force('link').distance(80); // Cuerdas largas
+        }
 
         const ambientLight = new window.THREE.AmbientLight(0xffffff, 0.6);
         const dirLight = new window.THREE.DirectionalLight(0xffffff, 0.8);
