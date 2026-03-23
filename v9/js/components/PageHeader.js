@@ -1,4 +1,4 @@
-// v8/js/components/PageHeader.js
+// v9/js/components/PageHeader.js
 import { store } from '../core/store.js';
 
 export class PageHeader {
@@ -128,11 +128,11 @@ export class PageHeader {
                         </div>
 
                         <div class="ph-dropdown" id="userDropdown">
-                            <a href="/v8/profile" class="ph-dd-item" data-link>👤 Mi Perfil / SBTs</a>
-                            <a href="/v8/pantheon" class="ph-dd-item" data-link>⚙️ Configuración (API Keys)</a>
-                            <a href="/v8/team" class="ph-dd-item" data-link>👥 Nodos (Team)</a>
-                            <a href="/v8/manifesto" class="ph-dd-item" data-link>📜 Manifiesto VNA</a>
-                            <a href="/v8/tests" class="ph-dd-item" data-link>🩺 Diagnóstico de Sistema</a>
+                            <a href="/v9/profile" class="ph-dd-item" data-link>👤 Mi Perfil / SBTs</a>
+                            <a href="/v9/pantheon" class="ph-dd-item" data-link>⚙️ Configuración (API Keys)</a>
+                            <a href="/v9/team" class="ph-dd-item" data-link>👥 Nodos (Team)</a>
+                            <a href="/v9/manifesto" class="ph-dd-item" data-link>📜 Manifiesto VNA</a>
+                            <a href="/v9/tests" class="ph-dd-item" data-link>🩺 Diagnóstico de Sistema</a>
                             <a href="#" class="ph-dd-item ph-dd-logout" id="btnLogout">🚪 Desconectar Ecosistema</a>
                         </div>
                     </div>
@@ -180,7 +180,8 @@ export class PageHeader {
             btnLogout.addEventListener('click', async (e) => {
                 e.preventDefault();
                 await store.dispatch({ type: 'LOGOUT_USER' });
-                window.location.href = '/v8/login';
+                // 🔥 REDIRECCIÓN MIGRADA AL LOGIN ZERO-TRUST DE LA V9
+                window.location.href = '/v9/';
             });
         }
 
@@ -190,7 +191,6 @@ export class PageHeader {
                 tabs.forEach(t => t.classList.remove('active'));
                 e.target.classList.add('active');
                 const tabId = e.target.dataset.tab;
-                // Dispara un evento custom para que la vista principal reaccione
                 window.dispatchEvent(new CustomEvent('ph-tab-changed', { detail: { tabId } }));
             });
         });
