@@ -4,22 +4,27 @@ import { KB } from '../core/kb.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
+import { SynapticCanvas } from '../components/SynapticCanvas.js'; // 🔥 MOTOR D3.JS INYECTADO
 
 export default class LmsView {
     constructor() {
         document.title = "La Forja LMS | TeamTowers V9";
         this.allNodes = [];
+        this.currentTab = 'list';
+        this.synapticInstance = null;
     }
 
     async getHtml() {
-        // 🔥 ARRANQUE ASÍNCRONO DE INDEXEDDB (ANTIGRAVITY)
         await store.init();
 
         const headerConfig = {
             title: "La Forja (Cerebro LMS)",
-            subtitle: "Conocimiento W3C",
-            tagline: "Explora y edita la memoria profunda del sistema. OS Kernel, Memes, Skills y Prompts.",
-            // 🔥 ENLACE MIGRADO A V9
+            subtitle: "Conocimiento W3C & Meta-Grafo",
+            tagline: "Explora la memoria profunda, forja habilidades y visualiza la topología del conocimiento.",
+            tabs: [
+                { id: 'list', label: '🗂️ Padrón W3C (Lista)', active: this.currentTab === 'list' },
+                { id: 'graph', label: '🌌 Meta-Grafo Visual', active: this.currentTab === 'graph' }
+            ],
             actionHtml: `<button class="ph-btn-magic" style="border-color:var(--accent-green); color:var(--accent-green);" onclick="window.location.href='/v9/paper'">+ Crear en Omni-Paper</button>`
         };
 
@@ -28,12 +33,17 @@ export default class LmsView {
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width: 100%;}
                 .workspace-lms { flex: 1; padding: 2rem 3rem; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; box-sizing: border-box; position: relative;}
                 
+                .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
+                .tab-content.active { display: block; }
+                .tab-content.graph-active { display: flex; flex-direction: column; height: calc(100vh - 180px); padding-bottom: 0; }
+
+                /* LISTA VIEW */
                 .filters-bar { display: flex; gap: 10px; margin-bottom: 2rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); overflow-x: auto;}
                 .filter-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; font-family: var(--font-mono); font-size: 0.8rem;}
                 .filter-btn:hover { border-color: var(--accent-blue); color: white;}
                 .filter-btn.active { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
 
-                .lms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding-bottom: 100px;}
+                .lms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;}
                 
                 .meme-card { background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: 0.3s; position: relative; overflow: hidden; cursor: pointer;}
                 .meme-card:hover { border-color: var(--accent-purple); background: rgba(224,64,251,0.05); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(224,64,251,0.1);}
@@ -42,7 +52,6 @@ export default class LmsView {
                 .meme-category.core_os { background: rgba(0,230,118,0.1); color: var(--accent-green); border-color: rgba(0,230,118,0.3);}
                 .meme-category.project_core { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
                 .meme-category.prompt_a2a { background: rgba(255,171,64,0.1); color: var(--accent-orange); border-color: rgba(255,171,64,0.3);}
-                /* 🔥 ESTILO PARA LA COSECHA DEL JANITOR */
                 .meme-category.evergreen { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); text-shadow: 0 0 10px rgba(255,215,0,0.5);}
 
                 .meme-title { font-size: 1.1rem; color: white; margin: 10px 0 0 0; font-weight: 900;}
@@ -53,7 +62,10 @@ export default class LmsView {
 
                 .empty-lms { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #666; border: 1px dashed #333; border-radius: 20px;}
 
-                /* 🔥 MODAL DE EDICIÓN W3C */
+                /* SYNAPTIC CANVAS CONTAINER */
+                #synapticMountPoint { width: 100%; flex: 1; min-height: 500px; border-radius: 20px; overflow: hidden; }
+
+                /* MODAL OVERLAY */
                 .modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(5,5,8,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;}
                 .modal-overlay.active { display: flex; opacity: 1; }
                 .modal-card { background: linear-gradient(145deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 650px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(224,64,251,0.2); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 90vh; overflow-y: auto;}
@@ -88,17 +100,23 @@ export default class LmsView {
                 <main class="workspace-lms">
                     ${PageHeader.getHtml(headerConfig)}
                     
-                    <div class="filters-bar" id="lmsFilters">
-                        <button class="filter-btn active" data-filter="all">Todos los Registros</button>
-                        <button class="filter-btn" data-filter="core_os">🔧 OS Kernel</button>
-                        <button class="filter-btn" data-filter="project_core">🏰 Misiones</button>
-                        <button class="filter-btn" data-filter="skill">🎒 Skills</button>
-                        <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
-                        <button class="filter-btn" data-filter="evergreen">🌟 Evergreen (Aprendidos)</button>
+                    <div id="tab-list" class="tab-content ${this.currentTab === 'list' ? 'active' : ''}">
+                        <div class="filters-bar" id="lmsFilters">
+                            <button class="filter-btn active" data-filter="all">Todos los Registros</button>
+                            <button class="filter-btn" data-filter="core_os">🔧 OS Kernel</button>
+                            <button class="filter-btn" data-filter="project_core">🏰 Misiones</button>
+                            <button class="filter-btn" data-filter="skill">🎒 Skills</button>
+                            <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
+                            <button class="filter-btn" data-filter="evergreen">🌟 Evergreen</button>
+                        </div>
+
+                        <div class="lms-grid" id="lmsGrid">
+                            <div class="empty-lms">Cargando Memoria Profunda...</div>
+                        </div>
                     </div>
 
-                    <div class="lms-grid" id="lmsGrid">
-                        <div class="empty-lms">Cargando Memoria Profunda...</div>
+                    <div id="tab-graph" class="tab-content ${this.currentTab === 'graph' ? 'active graph-active' : ''}">
+                        <div id="synapticMountPoint"></div>
                     </div>
 
                     <div class="modal-overlay" id="editModal">
@@ -165,8 +183,31 @@ export default class LmsView {
             inpCat: document.getElementById('editNodeCat'),
             inpTitle: document.getElementById('editNodeTitle'),
             inpContent: document.getElementById('editNodeContent'),
-            inpKeywords: document.getElementById('editNodeKeywords')
+            inpKeywords: document.getElementById('editNodeKeywords'),
+
+            synapticMount: document.getElementById('synapticMountPoint')
         };
+
+        // Lógica de Pestañas y Carga Diferida del Canvas
+        window.addEventListener('ph-tab-changed', async (e) => {
+            this.currentTab = e.detail.tabId;
+            document.querySelectorAll('.tab-content').forEach(c => {
+                c.classList.remove('active');
+                c.classList.remove('graph-active');
+            });
+            const target = document.getElementById(`tab-${this.currentTab}`);
+            if(target) {
+                target.classList.add('active');
+                if (this.currentTab === 'graph') target.classList.add('graph-active');
+            }
+
+            // 🔥 Instanciar el SynapticCanvas SOLO cuando se abre la pestaña (Rendimiento)
+            if (this.currentTab === 'graph' && !this.synapticInstance) {
+                this.dom.synapticMount.innerHTML = '<div style="color:#888; padding:2rem; text-align:center;">Iniciando Motor Gráfico D3.js...</div>';
+                this.synapticInstance = new SynapticCanvas(this.dom.synapticMount, null); // null = Modo Global Meta-Grafo
+                await this.synapticInstance.render();
+            }
+        });
 
         await this.loadData();
         this.setupFilters();
@@ -177,7 +218,6 @@ export default class LmsView {
         try {
             await KB.init();
             this.allNodes = await KB.getAllNodes();
-            // Por defecto, mostrar filtro activo actual o 'all'
             const activeFilter = this.dom.filters.querySelector('.active')?.dataset.filter || 'all';
             this.renderNodes(activeFilter);
         } catch (error) {
@@ -193,7 +233,6 @@ export default class LmsView {
             nodesToRender = this.allNodes.filter(n => n.category === filterCategory || n.type === filterCategory);
         }
 
-        // Ordenamos: Los más nuevos primero (Fallback a ID si no hay fecha)
         nodesToRender.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
 
         if (nodesToRender.length === 0) {
@@ -307,6 +346,16 @@ export default class LmsView {
                 await KB.init();
                 await KB.saveNode(updatedNode);
                 await this.loadData(); 
+                
+                // Si el canvas está abierto, forzamos un refresh de los nodos visuales
+                if (this.synapticInstance) {
+                    await this.synapticInstance.loadInitialData();
+                    this.synapticInstance.simulation.nodes(this.synapticInstance.nodes);
+                    this.synapticInstance.simulation.force("link").links(this.synapticInstance.links);
+                    this.synapticInstance.renderGraphElements();
+                    this.synapticInstance.simulation.alpha(0.5).restart();
+                }
+
                 this.closeEditor();
             } catch (e) {
                 alert(`Error al guardar en la BD: ${e.message}`);
