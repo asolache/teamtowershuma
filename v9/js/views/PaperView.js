@@ -6,7 +6,6 @@ import { PageHeader } from '../components/PageHeader.js';
 import { MapRenderer } from '../components/MapRenderer.js'; 
 import { KanbanRenderer } from '../components/KanbanRenderer.js'; 
 import { LedgerRenderer } from '../components/LedgerRenderer.js'; 
-import { FocusRenderer } from '../components/FocusRenderer.js';
 import { SandboxRenderer } from '../components/SandboxRenderer.js'; 
 import { Orchestrator } from '../core/Orchestrator.js';
 import { KB } from '../core/kb.js';
@@ -44,7 +43,6 @@ export default class PaperView {
                 ${MapRenderer.getStyles()}
                 ${KanbanRenderer.getStyles()} 
                 ${LedgerRenderer.getStyles()} 
-                ${FocusRenderer.getStyles()}
                 ${SandboxRenderer ? SandboxRenderer.getStyles() : ''}
 
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width:100%;}
