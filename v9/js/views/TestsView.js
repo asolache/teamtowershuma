@@ -25,61 +25,63 @@ export default class TestsView {
     async getHtml() {
         return `
             <style>
-                .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-mono); justify-content: center; align-items: center; }
+                .app-layout { display: flex; height: 100vh; overflow: hidden; background: radial-gradient(circle at center, #111116 0%, #050505 100%); font-family: var(--font-mono); justify-content: center; align-items: center; }
                 .test-container { width: 100%; max-width: 900px; padding: 2rem; }
                 
                 .matrix-header { text-align: center; margin-bottom: 2rem; }
-                .matrix-header h1 { color: var(--accent-green); font-size: 2.5rem; letter-spacing: 2px; margin: 0; text-transform: uppercase; text-shadow: 0 0 15px rgba(0, 230, 118, 0.4); }
-                .matrix-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
+                .matrix-header h1 { color: var(--accent-green); font-size: 2.8rem; letter-spacing: 2px; margin: 0; text-transform: uppercase; text-shadow: 0 0 25px rgba(0, 230, 118, 0.4); font-weight: 900; }
+                .matrix-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 10px; font-family: var(--font-main); }
 
                 .log-terminal { 
-                    background: rgba(5, 5, 7, 0.95); border: 1px solid rgba(0, 230, 118, 0.3); 
-                    border-radius: 12px; padding: 1.5rem; height: 500px; overflow-y: auto; 
-                    color: #a0a0a0; font-size: 0.9rem; line-height: 1.6; 
-                    box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 30px rgba(0,230,118,0.05); 
+                    background: rgba(5, 5, 8, 0.95); border: 1px solid rgba(0, 230, 118, 0.3); 
+                    border-radius: 16px; padding: 2rem; height: 500px; overflow-y: auto; 
+                    color: #a0a0a0; font-size: 0.95rem; line-height: 1.6; 
+                    box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 15px 40px rgba(0,230,118,0.05); 
                     scroll-behavior: smooth;
+                    backdrop-filter: blur(10px);
                 }
                 
-                .test-row { margin-bottom: 10px; display: flex; align-items: flex-start; animation: fadeIn 0.2s ease-in; }
-                .test-icon { margin-right: 12px; font-size: 1.1rem; }
+                .test-row { margin-bottom: 12px; display: flex; align-items: flex-start; animation: fadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+                .test-icon { margin-right: 15px; font-size: 1.2rem; }
                 .test-msg { flex: 1; color: #ddd; }
-                .test-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: var(--text-muted); margin-left: 10px; white-space: nowrap; font-weight: bold; }
+                .test-badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 8px; background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--text-muted); margin-left: 15px; white-space: nowrap; font-weight: bold; }
                 
-                .pass-row { border-left: 2px solid var(--accent-green); padding-left: 10px; }
-                .fail-row { border-left: 2px solid var(--accent-red); padding-left: 10px; }
+                .pass-row { border-left: 3px solid var(--accent-green); padding-left: 15px; }
+                .fail-row { border-left: 3px solid var(--accent-red); padding-left: 15px; }
 
                 .action-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
-                .score-display { font-size: 2rem; font-weight: 900; color: var(--text-muted); }
+                .score-display { font-size: 2.5rem; font-weight: 900; color: var(--text-muted); }
                 
                 .btn-enter-matrix { 
                     background: transparent; border: 2px solid var(--accent-green); color: var(--accent-green); 
-                    padding: 12px 30px; font-family: var(--font-mono); font-weight: bold; font-size: 1.1rem; 
-                    border-radius: 8px; cursor: pointer; transition: 0.3s; opacity: 0; pointer-events: none;
-                    text-transform: uppercase; letter-spacing: 1px; text-decoration: none;
+                    padding: 14px 35px; font-family: var(--font-mono); font-weight: 900; font-size: 1.2rem; 
+                    border-radius: 12px; cursor: pointer; transition: 0.3s; opacity: 0; pointer-events: none;
+                    text-transform: uppercase; letter-spacing: 2px; text-decoration: none;
+                    box-shadow: 0 0 20px rgba(0,230,118,0.1);
                 }
                 .btn-enter-matrix.visible { opacity: 1; pointer-events: auto; }
-                .btn-enter-matrix.visible:hover { background: var(--accent-green); color: black; box-shadow: 0 0 20px rgba(0,230,118,0.4); }
+                .btn-enter-matrix.visible:hover { background: var(--accent-green); color: black; box-shadow: 0 0 30px rgba(0,230,118,0.5); transform: translateY(-2px);}
 
-                @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
                 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
                 
-                .cursor { display: inline-block; width: 8px; height: 15px; background: var(--accent-green); animation: pulse 1s infinite; vertical-align: middle; margin-left: 5px;}
+                .cursor { display: inline-block; width: 10px; height: 18px; background: var(--accent-green); animation: pulse 1s infinite; vertical-align: middle; margin-left: 8px;}
             </style>
 
             <div class="app-layout">
                 <div class="test-container">
                     <div class="matrix-header">
                         <h1>V9 ANTIGRAVITY KERNEL</h1>
-                        <p>Validando IndexedDB, Redux Inmutable, PULL/PUSH Mechanics y TDD</p>
+                        <p>Validando Inmutabilidad Redux, Semantic WebGL y PULL/PUSH Mechanics</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
-                        <div style="color: var(--accent-green); margin-bottom: 15px; font-weight:bold;">> COMPILANDO ESTADOS INMUTABLES... <span class="cursor"></span></div>
+                        <div style="color: var(--accent-green); margin-bottom: 20px; font-weight:900; font-size: 1.1rem;">> INICIANDO DIAGNÓSTICO DE ESTRÉS... <span class="cursor"></span></div>
                     </div>
 
                     <div class="action-footer">
                         <div class="score-display" id="testScore">0/0</div>
-                        <a href="/v9/dashboard" data-link class="btn-enter-matrix" id="btnEnterOS">ENTRAR AL KERNEL →</a>
+                        <a href="/v9/dashboard" data-link class="btn-enter-matrix" id="btnEnterOS">Entrar al Kernel &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -93,6 +95,7 @@ export default class TestsView {
         
         let passed = 0; 
         let total = 0;
+        let originalUser = null;
 
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -101,7 +104,7 @@ export default class TestsView {
             const isPass = !!condition;
             if(isPass) passed++;
             
-            await sleep(50); 
+            await sleep(80); // Ligeramente más pausado para dar drama a la terminal
             
             const icon = isPass ? '🟢' : '🔴';
             const rowClass = isPass ? 'pass-row' : 'fail-row';
@@ -132,18 +135,18 @@ export default class TestsView {
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
 
             try {
-                // Guardamos el usuario original
-                const st = store.getState();
-                const originalUser = st.session?.activeUserId;
+                // GUARDADO DE IDENTIDAD CRÍTICO (Anti-bloqueo)
+                await store.init();
+                originalUser = store.getState().session?.activeUserId;
 
                 // ==========================================
-                // BLOQUE 1: KERNEL LEGACY & IDENTIDAD (V9)
+                // BLOQUE 1: KERNEL V9 & IDENTIDAD
                 // ==========================================
                 const currentVer = store.getState().config?.version || 'Desconocida';
-                await assert(true, `Motor Redux Inmutable Activo y Respondiendo (Detectada: ${currentVer})`, "SYS");
+                await assert(currentVer.includes('v9') || currentVer.includes('Antigravity'), `Motor Redux Inmutable V9 Activo (Detectada: ${currentVer})`, "SYS");
                 
                 await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeoId } });
-                await assert(store.getState().session.activeUserId === dynNeoId, "Identidad Web3 verificada en Storage Redux", "AUTH");
+                await assert(store.getState().session.activeUserId === dynNeoId, "Identidad Web3 inyectada temporalmente en Storage Redux", "AUTH");
 
                 await store.dispatch({ type: 'ADD_USER', payload: { id: dynLauraId, name: 'Laura Dev', globalRole: 'network-user' } });
                 await store.dispatch({ 
@@ -155,11 +158,11 @@ export default class TestsView {
                 // BLOQUE 2: MEMORIA PROFUNDA (KB) & RAG W3C
                 // ==========================================
                 const db = await KB.init();
-                await assert(db !== null, "IndexedDB Córtex montada y sincronizada correctamente", "KB-INIT");
+                await assert(db !== null, "IndexedDB Córtex (kb.js) montada y sincronizada correctamente", "KB-INIT");
 
                 const allMemes = await KB.getAllNodes({ type: 'meme' });
                 const hasKernelMemes = allMemes.some(m => m.keywords && m.keywords.includes('#kernel_sos'));
-                await assert(hasKernelMemes, `Motor de Génesis: Semillas del OS inyectadas en la red neuronal.`, "CÓRTEX");
+                await assert(hasKernelMemes, `Motor de Génesis: Semillas Antigravity inyectadas en la red neuronal`, "SEMANTIC");
 
                 // ==========================================
                 // BLOQUE 3: CREACIÓN DE ECOSISTEMA VNA & RBAC
@@ -214,30 +217,30 @@ export default class TestsView {
                 });
 
                 await store.dispatch({ type: 'UPDATE_WO_STATUS', payload: { projectId: PID_TEST, hash: woHash, status: 'pinged', assigneeId: dynAgentId } });
-                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8, comentario: 'Commit Pushed' } });
+                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, realHours: 8.42, comentario: 'Commit Pushed' } });
                 
                 // Prueba TDD Fallida
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': false } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'reported', "Redux TDD Activo: El Ledger rechaza consolidar si el SOC (Unit Test) falla.", "TDD-SOC");
+                await assert(p.work_orders[0].status === 'reported', "Notaría Componentizada: El Ledger rechaza consolidar si el SOC TDD falla", "TDD-FAIL");
 
                 // Prueba TDD Exitosa
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': true } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'consolidated', "Redux Notaría Componentizada: TDD superado. SOP validado y sellado inmutablemente", "LEDGER");
+                await assert(p.work_orders[0].status === 'consolidated', "Notaría Componentizada: TDD superado. SOP validado inmutablemente", "TDD-PASS");
 
                 // ==========================================
                 // BLOQUE 5: CÁLCULOS MATEMÁTICOS DE EQUIDAD (SLICING PIE)
                 // ==========================================
-                const expectedSlices = 8 * 40 * 1.2; 
-                await assert(p.ledger[0].valorCongelado === expectedSlices, `Slicing Pie: Ecuación de Equidad resuelta (${expectedSlices} Slices)`, "MATH");
+                const expectedSlices = parseFloat((8.42 * 40 * 1.2).toFixed(3)); // Precisión Antigravity V9
+                await assert(p.ledger[0].valorCongelado === expectedSlices, `Slicing Pie V9: Equidad resuelta con precisión decimal (${expectedSlices} Slices)`, "MATH");
                 
                 await store.dispatch({ type: 'ADD_CAPITAL_INJECTION', payload: { projectId: PID_TEST, userId: dynNeoId, assetType: 'cash', amount: 1000, description: "Seed" } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 const capTx = p.ledger.find(l => l.roleId === 'CAPITAL_ASSET');
-                await assert(capTx !== undefined && capTx.valorCongelado > 1000, "Ledger Cash: Multiplicador de riesgo 4x aplicado al FIAT", "LEDGER-CASH");
+                await assert(capTx !== undefined && capTx.valorCongelado === 4000, "Ledger Cash: Multiplicador de riesgo FIAT (x4.0) aplicado", "LEDGER");
 
                 // ==========================================
                 // BLOQUE 6: TELEMETRÍA Y EFICIENCIA COGNITIVA (REC)
@@ -246,7 +249,7 @@ export default class TestsView {
                 const selectedEngine = 'deepseek'; 
                 const priceMatrix = LLM_PRICING[selectedEngine];
                 const costInDollars = ((mockApiUsage.prompt_tokens / 1000000) * priceMatrix.input) + ((mockApiUsage.completion_tokens / 1000000) * priceMatrix.output);
-                const valueCreated = 8 * 40; 
+                const valueCreated = 8.42 * 40; 
                 const REC = valueCreated / costInDollars;
 
                 await store.dispatch({
@@ -258,8 +261,8 @@ export default class TestsView {
                 });
 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.telemetry.length === 1, `Telemetría: Gasto API registrado (${mockApiUsage.prompt_tokens + mockApiUsage.completion_tokens} tokens)`, "TELEMETRY");
-                await assert(REC > 10000, `Eficiencia REC: Retorno masivo. Generados 320€ con un coste de $${costInDollars.toFixed(4)}`, "OPTIMIZER");
+                await assert(p.telemetry.length === 1, `Telemetría Dashboard: Gasto API registrado ($${costInDollars.toFixed(4)})`, "TELEMETRY");
+                await assert(REC > 10000, `Eficiencia REC: Retorno masivo. Generados 336.8€ con un coste Mínimo`, "ROI");
 
                 // ==========================================
                 // BLOQUE 7: USENET PINGS & OMNI-FLOW
@@ -273,10 +276,10 @@ export default class TestsView {
                 });
 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.logs.length === 1 && p.logs[0].mentions.includes(dynLauraId), "Omni-Flow Usenet: Mención detectada e inyectada en Log", "USENET");
+                await assert(p.logs.length === 1 && p.logs[0].mentions.includes(dynLauraId), "Omni-Flow P2P: Mención Semántica detectada e inyectada en Log", "USENET");
                 
                 const unreadPings = p.logs.filter(l => l.mentions && l.mentions.includes(dynLauraId) && !l.readBy?.includes(dynLauraId));
-                await assert(unreadPings.length === 1, "PageHeader Radar: El Nodo receptor suma +1 en su bandeja de Pings pendientes.", "RADAR-PING");
+                await assert(unreadPings.length === 1, "Omni-Paper Radar: El Nodo receptor suma +1 en su bandeja táctica", "PING");
 
                 await store.dispatch({
                     type: 'MARK_LOG_READ',
@@ -284,20 +287,19 @@ export default class TestsView {
                 });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 const stillUnread = p.logs.filter(l => l.mentions && l.mentions.includes(dynLauraId) && !l.readBy?.includes(dynLauraId));
-                await assert(stillUnread.length === 0, "Flujo de Comunicación: El ping se purga tras acuse de recibo en el Omni-Paper.", "PING-READ");
+                await assert(stillUnread.length === 0, "Limpieza de Flujo: El ping se purga tras acuse de recibo.", "PING-READ");
 
-
-                // Restauramos el usuario original al acabar el test para no desloguearte
+                // TEARDOWN: Restauramos la identidad del PO
                 if (originalUser) {
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
                 }
 
                 // FINALIZACIÓN EXITOSA
-                await sleep(200);
+                await sleep(400);
                 terminal.insertAdjacentHTML('beforeend', `
-                    <div style="margin-top: 30px; padding: 25px; background: rgba(0, 230, 118, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s ease-out;">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2rem; letter-spacing:-1px;">🔥 V9 ANTIGRAVITY KERNEL CERTIFIED 🔥</h2>
-                        <p style="color: white; font-size: 1.05rem; margin-top: 10px;">Redux Inmutable, PULL/PUSH, IndexedDB y Core OS han pasado los test de estrés. Listo para Malla P2P.</p>
+                    <div style="margin-top: 30px; padding: 30px; background: rgba(0, 230, 118, 0.05); border: 1px solid var(--accent-green); border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);">
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2.2rem; letter-spacing:-1px; text-shadow: 0 0 20px rgba(0,230,118,0.5);">🔥 KERNEL V9 ANTIGRAVITY CERTIFICADO 🔥</h2>
+                        <p style="color: #ccc; font-size: 1.1rem; margin-top: 15px; line-height: 1.6;">El Sistema Operativo de Sinergias (SOS) ha superado la auditoría de estrés. La inmutabilidad del Redux, la precisión del Slicing Pie, y el enrutamiento cognitivo RAG operan a nivel Imperial.</p>
                     </div>
                 `);
                 
@@ -307,16 +309,14 @@ export default class TestsView {
 
             } catch (error) {
                 terminal.insertAdjacentHTML('beforeend', `
-                    <div style="margin-top: 20px; padding: 20px; background: rgba(255, 82, 82, 0.1); border: 1px solid var(--accent-red); border-radius: 12px;">
-                        <h3 style="color: var(--accent-red); margin: 0;">💥 KERNEL PANIC</h3>
-                        <p style="color: white; font-size: 0.9rem; margin-top: 10px; font-family: monospace;">${error.message}</p>
+                    <div style="margin-top: 30px; padding: 30px; background: rgba(255, 82, 82, 0.05); border: 1px solid var(--accent-red); border-radius: 16px;">
+                        <h3 style="color: var(--accent-red); margin: 0; font-size: 1.8rem;">💥 COLAPSO NEURAL (KERNEL PANIC)</h3>
+                        <p style="color: white; font-size: 1rem; margin-top: 15px; font-family: var(--font-mono); background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px;">${error.message}</p>
                     </div>
                 `);
                 await new Promise(r => requestAnimationFrame(r));
                 terminal.scrollTop = terminal.scrollHeight;
                 
-                // Restauramos usuario original incluso si el test falla
-                const originalUser = store.getState().session?.activeUserId;
                 if (originalUser) {
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
                 }
@@ -326,6 +326,6 @@ export default class TestsView {
             if(cursor) cursor.remove();
         };
 
-        setTimeout(runTests, 400);
+        setTimeout(runTests, 800);
     }
 }
