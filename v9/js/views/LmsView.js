@@ -38,7 +38,6 @@ export default class LmsView {
                 .tab-content.active { display: block; }
                 .tab-content.graph-active { display: flex; flex-direction: column; height: calc(100vh - 180px); padding-bottom: 0; }
 
-                /* LISTA VIEW & DROPZONE */
                 .lms-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 15px;}
                 .filters-bar { display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); overflow-x: auto;}
                 .filter-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; font-family: var(--font-mono); font-size: 0.8rem;}
@@ -111,7 +110,7 @@ export default class LmsView {
                 .btn-export { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
                 .btn-export:hover { background: rgba(224,64,251,0.1); }
 
-                /* 🔥 Píldoras AgentSkills Clickables */
+                /* Píldoras AgentSkills Clickables */
                 .ref-badge { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; }
                 .ref-badge:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 10px rgba(0,176,255,0.4); transform: translateY(-1px); }
                 
@@ -124,7 +123,6 @@ export default class LmsView {
                 @media (max-width: 768px) {
                     .workspace-lms { padding: 90px 1rem 120px 1rem; }
                     .lms-controls-row { flex-direction: column; align-items: stretch; }
-                    .btn-deep-research { justify-content: center; }
                     .modal-card { padding: 1.5rem; border-radius: 16px; margin: 10px; }
                     .modal-body-grid { grid-template-columns: 1fr; }
                     .modal-actions { flex-direction: column; }
@@ -144,7 +142,7 @@ export default class LmsView {
                                 <button class="filter-btn active" data-filter="all">Todos</button>
                                 <button class="filter-btn" data-filter="skill">🎒 Skills</button>
                                 <button class="filter-btn" data-filter="reference">📚 References</button>
-                                <button class="filter-btn" data-filter="eval">📋 Evals (SOCs)</button>
+                                <button class="filter-btn" data-filter="eval">📋 Evals</button>
                                 <button class="filter-btn" data-filter="script">⚡ Scripts</button>
                             </div>
                             
@@ -180,6 +178,7 @@ export default class LmsView {
                             </div>
                             
                             <input type="hidden" id="editNodeId">
+                            <input type="hidden" id="editNodeType">
                             <input type="hidden" id="editNodeProjectId">
                             
                             <div class="modal-body-grid">
@@ -208,7 +207,6 @@ export default class LmsView {
                                 </div>
 
                                 <div style="background: rgba(0,0,0,0.3); border: 1px solid #333; padding: 15px; border-radius: 12px; height: fit-content;">
-                                    
                                     <div class="form-group">
                                         <label style="color:var(--accent-blue);">📚 References (IDs)</label>
                                         <input type="text" id="editNodeReferences" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="ref_1, ref_2">
@@ -247,7 +245,7 @@ export default class LmsView {
                     </div>
 
                     <div class="modal-overlay" id="researchModal">
-                        <div class="modal-card" style="border-top-color: var(--accent-blue);">
+                        <div class="modal-card" style="border-top-color: var(--accent-blue); max-width: 600px;">
                             <div class="modal-header">
                                 <h2>🔍 Deep Research (@mestre_escola)</h2>
                                 <button class="btn-close" id="btnCloseResearch">&times;</button>
@@ -307,8 +305,11 @@ export default class LmsView {
             btnExpand: document.getElementById('btnExpandNode'),
             btnExport: document.getElementById('btnExportSkill'),
             
+            // 🔥 FIX: Variables reasignadas correctamente
             inpId: document.getElementById('editNodeId'),
+            inpType: document.getElementById('editNodeType'),
             inpProjId: document.getElementById('editNodeProjectId'),
+            
             inpCat: document.getElementById('editNodeCat'),
             inpTitle: document.getElementById('editNodeTitle'),
             inpDesc: document.getElementById('editNodeDesc'),
@@ -396,7 +397,6 @@ export default class LmsView {
         }, false);
     }
 
-    // 🔥 IMPORTADOR AGENTSKILLS COMPATIBLE CON ANTHROPIC (EVALS & SCRIPTS)
     async parseZipSkillFile(file) {
         if (!window.JSZip) await this.loadJSZip();
         try {
@@ -565,7 +565,6 @@ export default class LmsView {
         });
     }
 
-    // 🔥 GENERADOR GENÉRICO DE PÍLDORAS ENLAZADAS (UX)
     renderLinkedNodes(idsArray, container, cssClass, icon) {
         if (!container) return;
         container.innerHTML = '';
@@ -591,6 +590,7 @@ export default class LmsView {
         if (!node) return;
 
         this.dom.inpId.value = node.id;
+        this.dom.inpType.value = node.type || 'custom'; // 🔥 FIX: Set type
         this.dom.inpProjId.value = node.projectId || 'global';
         this.dom.inpCat.value = node.category || '';
         this.dom.inpTitle.value = node.title || '';
@@ -660,6 +660,7 @@ export default class LmsView {
         if (this.dom.btnNewNode) {
             this.dom.btnNewNode.addEventListener('click', () => {
                 this.dom.inpId.value = '';
+                this.dom.inpType.value = 'custom'; // 🔥 FIX: Set new node type
                 this.dom.inpProjId.value = 'global';
                 this.dom.inpCat.value = 'skill';
                 this.dom.inpTitle.value = '';
@@ -679,12 +680,10 @@ export default class LmsView {
             });
         }
 
-        // Live updates for link pills
         this.dom.inpReferences.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.refLinksContainer, 'ref-badge', '📚'));
         this.dom.inpEvals.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.evalLinksContainer, 'eval-badge', '📋'));
         this.dom.inpScripts.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.scriptLinksContainer, 'script-badge', '⚡'));
 
-        // 🔥 EXPORTADOR OFICIAL AGENTSKILLS (MULTI-CARPETA)
         this.dom.btnExport.addEventListener('click', async () => {
             if (!window.JSZip) await this.loadJSZip();
             const zip = new window.JSZip();
@@ -705,7 +704,6 @@ export default class LmsView {
 
             await KB.init();
 
-            // 1. Empaquetar /references/
             if (refArray.length > 0) {
                 const resourcesFolder = rootFolder.folder("references");
                 for (const refId of refArray) {
@@ -718,7 +716,6 @@ export default class LmsView {
                 }
             }
 
-            // 2. Empaquetar /evals/
             if (evalArray.length > 0) {
                 const evalsFolder = rootFolder.folder("evals");
                 let allEvalsJson = [];
@@ -730,7 +727,6 @@ export default class LmsView {
                             if (Array.isArray(parsed)) allEvalsJson.push(...parsed);
                             else allEvalsJson.push(parsed);
                         } catch(e) {
-                            // Si el nodo de evals no era un JSON puro, lo forzamos a un objeto de test básico
                             allEvalsJson.push({ id: evalNode.id, prompt: evalNode.title, description: evalNode.description });
                         }
                     }
@@ -741,7 +737,6 @@ export default class LmsView {
                 }
             }
 
-            // 3. Empaquetar /scripts/
             if (scriptArray.length > 0) {
                 const scriptsFolder = rootFolder.folder("scripts");
                 for (const scriptId of scriptArray) {
@@ -757,7 +752,7 @@ export default class LmsView {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${safeTitle}.skill`; // 🔥 Extensión oficial .skill
+            a.download = `${safeTitle}.skill`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -845,6 +840,7 @@ export default class LmsView {
             });
         }
 
+        // 🔥 FIX: LÓGICA DE GUARDADO QUE RESPETA EL TIPO
         this.dom.btnSave.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
             const title = this.dom.inpTitle.value.trim();
@@ -870,8 +866,8 @@ export default class LmsView {
                 content: content, 
                 keywords: keywordsArray, 
                 references: referencesArray,
-                evals: evalsArray,     // 🔥 Guardamos enlaces a Evals
-                scripts: scriptsArray  // 🔥 Guardamos enlaces a Scripts
+                evals: evalsArray,     
+                scripts: scriptsArray  
             };
 
             this.dom.btnSave.disabled = true; 
