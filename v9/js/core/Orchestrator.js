@@ -176,7 +176,36 @@ class OrchestratorCore {
             return null;
         } catch (error) { return null; }
     }
+// ==========================================
+    // 👑 BUCLE MAYÉUTICO (PRE-EVALUACIÓN VNA)
+    // ==========================================
+    async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
+        const { provider, apiKey } = this._getBestProvider(overrideProvider || 'anthropic'); // Claude es el mejor evaluando contexto sistémico
 
+        const systemPrompt = `
+            Eres @genesi_ai, Master Ecosystem Architect. Tu deber es aplicar Value Network Analysis (VNA).
+            Se te ha entregado la visión inicial de un ecosistema. 
+            Antes de forjar la topología, debes evaluar si tienes suficiente claridad sobre:
+            1. Quiénes son los actores clave (roles).
+            2. Cuál es el intercambio de valor TANGIBLE (dinero, servicios, productos).
+            3. Cuál es el intercambio de valor INTANGIBLE (conocimiento, confianza, reputación).
+            
+            Si la visión es genérica, ambigua o le faltan patas fundamentales del modelo de negocio, NO estás listo.
+            Genera un máximo de 3 preguntas quirúrgicas y directas para el Master Architect.
+            
+            Devuelve ÚNICAMENTE un JSON estricto:
+            {
+                "isReady": boolean,
+                "questions": ["Pregunta 1...", "Pregunta 2..."] // Vacío si isReady es true
+            }
+        `;
+
+        const userPrompt = `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión Fundacional:\n${vision}`;
+        
+        const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+        this._logTelemetry('global', '@genesi_ai', provider, 'VNA_EVALUATION', response.telemetry);
+        return response.content; 
+    }
     // 🔥 FIX: Permite inyectar el overrideProvider desde la UI
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
         const { provider, apiKey } = this._getBestProvider(overrideProvider || 'anthropic');
