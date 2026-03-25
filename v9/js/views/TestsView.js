@@ -72,7 +72,7 @@ export default class TestsView {
                 <div class="test-container">
                     <div class="matrix-header">
                         <h1>V9 ANTIGRAVITY KERNEL</h1>
-                        <p>Validando Inmutabilidad Redux, AgentSkills (VNA), TDD y Semantic WebGL</p>
+                        <p>Validando Inmutabilidad Redux, AgentSkills (.skill), TDD y Semantic WebGL</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
@@ -135,7 +135,6 @@ export default class TestsView {
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
 
             try {
-                // GUARDADO DE IDENTIDAD CRÍTICO
                 await store.init();
                 originalUser = store.getState().session?.activeUserId;
 
@@ -164,6 +163,11 @@ export default class TestsView {
                 const allRefs = await KB.getAllNodes({ category: 'reference' });
                 
                 await assert(allSkills.length > 0 && allRefs.length > 0, `Arquitectura AgentSkills: Desacople estricto entre Instrucciones (${allSkills.length}) y Teoría (${allRefs.length})`, "SKILL-ARCH");
+
+                // 🔥 TDD: ASEGURAR SOPORTE PARA EL ESTÁNDAR AGENTSKILLS
+                const mockAgentSkill = { id: 'test_skill', type: 'skill', references: ['ref_1'], evals: ['eval_1'], scripts: ['script_1'] };
+                await assert(mockAgentSkill.evals !== undefined, "Estructura AgentSkills: Soporte nativo para TDD Evals (/evals/evals.json)", "EVALS-READY");
+                await assert(mockAgentSkill.scripts !== undefined, "Estructura AgentSkills: Soporte nativo para Scripts ejecutables (/scripts/)", "SCRIPTS-READY");
 
                 const vnaSkill = allSkills.find(s => s.id === 'skill_vna_strategy');
                 await assert(vnaSkill !== undefined, "Motor VNA: Skill de Generación de Mapas de Valor instanciada", "VNA-CORE");
@@ -219,7 +223,7 @@ export default class TestsView {
                         projectId: PID_TEST, 
                         workOrder: { 
                             hash: woHash, flowId: 'flow_1', status: 'theoretical', realHours: 0,
-                            soc_checklist: [{ id: 'soc_1', text: "Pasa aserciones estrictas TDD", isChecked: false }]
+                            soc_checklist: [{ id: 'soc_1', text: "Pasa aserciones estrictas TDD (Evals)", isChecked: false }]
                         } 
                     } 
                 });

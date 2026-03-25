@@ -24,6 +24,8 @@ export const CATALOGO_MEMES = [
         id: 'skill_vna_strategy', type: 'skill', category: 'skill', title: 'Skill: Value Map Prompt Generator (VNA)', 
         description: 'USA ESTA SKILL SIEMPRE que el usuario mencione "crear proyecto", "topología", "VNA" o instanciar un ecosistema. Deduce modelos de negocio, mapea flujos atemporales y crea aserciones SOC rigurosas.',
         references: ['ref_os_codex', 'ref_immortal_tdd', 'ref_vna_methodology'],
+        evals: [],
+        scripts: [],
         keywords: ['Estrategia', 'VNA', '@genesi_ai', 'AgentSkills'],
         content: `### 1. VNA Flow
 - **Inputs Requeridos:** Sector, Tipo de Organización, Visión y Objetivos (Si falta info, haz PREGUNTAS PREVIAS).
@@ -41,6 +43,29 @@ export const CATALOGO_MEMES = [
 - [ ] Los SOCs generados para las transacciones no contienen lenguaje subjetivo (ej. prohibido usar "que sea bonito" o "adecuado").` 
     },
     
+    // 🔥 META-SKILL: SKILL CREATOR (Basado en el estándar AgentSkills de Anthropic)
+    { 
+        id: 'skill_creator_master', type: 'skill', category: 'skill', title: 'Skill Creator (AgentSkills Standard)', 
+        description: 'USAR SIEMPRE que el usuario quiera crear, editar, testear (evals) o mejorar una skill, prompt, o flujo de trabajo. Transforma ideas difusas en cápsulas de conocimiento estructuradas compatibles con Claude y TeamTowers.',
+        references: ['ref_immortal_tdd'],
+        evals: [],
+        scripts: [],
+        keywords: ['Meta', 'Skill Creator', 'AgentSkills', 'Evals'],
+        content: `### Anatomía Oficial de una Skill
+Toda skill generada debe respetar esta estructura de Progressive Disclosure (Revelación Progresiva):
+- \`SKILL.md\` (Requerido): El núcleo. Frontmatter YAML (name, description) + Instrucciones en Markdown (SOPs). Máximo 500 líneas. Formato imperativo.
+- \`/references/\` (Opcional): Documentos teóricos profundos, guías de estilo, metodologías.
+- \`/scripts/\` (Opcional): Código ejecutable.
+- \`/evals/\` (Opcional): Casos de prueba (\`evals.json\`) con "prompts" de testeo y "assertions" (SOCs).
+
+### Flujo de Trabajo del Skill Creator
+1. **Captura de Intención:** Define qué hace la skill y cuál es el formato de salida esperado.
+2. **Descripciones Agresivas (Pushy):** La "description" del YAML es el trigger del RAG. Hazla agresiva. Ej: "Usa esta skill SIEMPRE que el usuario mencione dashboards, datos o gráficas, aunque no lo pida explícitamente".
+3. **Escritura del SKILL.md:** Usa "Theory of Mind". Explica el *por qué* de las cosas en lugar de usar "MUST" dictatoriales. Sé conciso.
+4. **Draft de Evals (Test Cases):** Diseña 2-3 prompts de prueba realistas ("evals.json"). Define aserciones objetivas verificables.
+5. **Multi-Archivo:** Si hay teoría extensa o ejemplos de código muy largos, sácalos del SKILL.md y referéncialos explícitamente pidiendo que se guarden en \`/references/\`.` 
+    },
+
     {
         id: 'prompt_global_genesi_ai', type: 'prompt_a2a', category: 'meta_prompt', targetId: '@genesi_ai', roleTarget: '@genesi_ai',
         title: 'Alma de Gènesi AI (Ecosystem Architect)',
@@ -51,7 +76,7 @@ export const CATALOGO_MEMES = [
 
 export const KB = {
     dbName: 'TeamTowers_LMS_V15', 
-    dbVersion: 15, // 🔥 Subimos versión para inyectar la nueva mente de Gènesi
+    dbVersion: 16, // 🔥 Subimos versión para inyectar Schema Evals & Scripts
     db: null,
 
     init() {
@@ -80,7 +105,7 @@ export const KB = {
         const nodes = await this.getAllNodes();
         for (const meme of CATALOGO_MEMES) { 
             const exists = nodes.find(n => n.id === meme.id);
-            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'prompt_global_genesi_ai') {
+            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'skill_creator_master' || meme.id === 'prompt_global_genesi_ai') {
                 await this.saveNode(meme); 
             }
         }
@@ -108,7 +133,20 @@ export const KB = {
     async saveNode(node) {
         if (!this.db) await this.init();
         return new Promise((resolve, reject) => {
-            const semanticNode = { ...node, id: node.id || 'node_' + Date.now(), lastUpdated: Date.now(), projectId: node.projectId || 'global', targetId: node.targetId || 'global', type: node.type || 'custom', description: node.description || '', references: node.references || [], dependencies: node.dependencies || [] };
+            // 🔥 NUEVO SCHEMA: Incluye evals y scripts para AgentSkills
+            const semanticNode = { 
+                ...node, 
+                id: node.id || 'node_' + Date.now(), 
+                lastUpdated: Date.now(), 
+                projectId: node.projectId || 'global', 
+                targetId: node.targetId || 'global', 
+                type: node.type || 'custom', 
+                description: node.description || '', 
+                references: node.references || [], 
+                dependencies: node.dependencies || [],
+                evals: node.evals || [],     
+                scripts: node.scripts || []  
+            };
             if (semanticNode.keywords && typeof semanticNode.keywords === 'string') semanticNode.keywords = semanticNode.keywords.split(',').map(k => k.trim());
             const request = this.db.transaction(['nodes'], 'readwrite').objectStore('nodes').put(semanticNode);
             request.onsuccess = () => resolve(semanticNode);
