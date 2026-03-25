@@ -16,18 +16,24 @@ class OrchestratorCore {
         this.isListening = false;
     }
 
-    _getBestProvider(preferredEngine) {
-        const fallbackChain = [preferredEngine, 'anthropic', 'openai', 'gemini', 'deepseek', 'custom'];
-        const uniqueChain = [...new Set(fallbackChain)];
+    // 🔥 LA VERDADERA CASCADA: Devuelve todos los motores con clave, ordenados por preferencia
+    _getAvailableProviders(preferredEngine) {
+        // Ponemos anthropic al final por sus estrictas políticas CORS en navegadores
+        const fallbackChain = [preferredEngine, 'openai', 'gemini', 'deepseek', 'custom', 'anthropic'];
+        const uniqueChain = [...new Set(fallbackChain)]; 
+        const available = [];
 
         for (const provider of uniqueChain) {
-            if (provider === 'custom') return { provider: 'custom', apiKey: 'local_or_custom_mode' };
+            if (provider === 'custom') { available.push({ provider: 'custom', apiKey: 'local_mode' }); continue; }
+            
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
             if (apiKey && apiKey.trim().length > 10) {
-                return { provider, apiKey };
+                available.push({ provider, apiKey });
             }
         }
-        throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en la Consola Global.");
+        
+        if (available.length === 0) throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en el Panteón.");
+        return available;
     }
 
     initUsenetDaemon() {
@@ -54,88 +60,104 @@ class OrchestratorCore {
         });
     }
 
-    async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
-        let attempt = 0; 
+    // 🔥 MOTOR COGNITIVO INDESTRUCTIBLE (CORS & FALLBACK SURVIVAL)
+    async callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2 }) {
+        const availableProviders = this._getAvailableProviders(preferredEngine);
         let lastError = null;
-        
-        while (attempt <= maxRetries) {
-            try {
-                let textResponse = ""; 
-                let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
-                const startTime = Date.now();
 
-                if (provider === 'gemini') {
-                    // 🔥 FIX: Bajamos a 1.5-flash para asegurar compatibilidad con todas las API Keys
-                    const urlStr = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-                    const response = await fetch(urlStr, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT:\n${userPrompt}` }] }], 
-                            generationConfig: { temperature, maxOutputTokens: 8192, responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" } 
-                        })
-                    });
-                    
-                    if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
-                    const data = await response.json();
-                    if (!data.candidates || data.candidates.length === 0) throw new Error("Respuesta vacía de Gemini.");
-                    
-                    textResponse = data.candidates[0].content.parts[0].text;
-                    if (data.usageMetadata) { 
-                        tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; 
-                        tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; 
+        for (const p of availableProviders) {
+            const { provider, apiKey } = p;
+            let attempt = 0;
+            const maxRetries = 1; // Solo reintenta 1 vez por motor para no bloquear la UI
+
+            while (attempt <= maxRetries) {
+                try {
+                    let textResponse = ""; 
+                    let tokenUsage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+                    const startTime = Date.now();
+
+                    if (provider === 'gemini') {
+                        const urlStr = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                        const response = await fetch(urlStr, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT:\n${userPrompt}` }] }], 
+                                generationConfig: { temperature, maxOutputTokens: 8192, responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" } 
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
+                        const data = await response.json();
+                        if (!data.candidates || data.candidates.length === 0) throw new Error("Respuesta vacía de Gemini.");
+                        
+                        textResponse = data.candidates[0].content.parts[0].text;
+                        if (data.usageMetadata) { 
+                            tokenUsage.prompt_tokens = data.usageMetadata.promptTokenCount || 0; 
+                            tokenUsage.completion_tokens = data.usageMetadata.candidatesTokenCount || 0; 
+                        }
+                    } 
+                    else if (provider === 'anthropic') {
+                        const response = await fetch('https://api.anthropic.com/v1/messages', {
+                            method: 'POST',
+                            headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+                            body: JSON.stringify({
+                                model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }]
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
+                        const data = await response.json();
+                        textResponse = data.content[0].text;
+                        tokenUsage.prompt_tokens = data.usage?.input_tokens || 0;
+                        tokenUsage.completion_tokens = data.usage?.output_tokens || 0;
                     }
-                } 
-                else if (provider === 'anthropic') {
-                    const response = await fetch('https://api.anthropic.com/v1/messages', {
-                        method: 'POST',
-                        headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-cors-bypass': 'true' },
-                        body: JSON.stringify({
-                            model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }]
-                        })
-                    });
-                    
-                    if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
-                    const data = await response.json();
-                    textResponse = data.content[0].text;
-                    tokenUsage.prompt_tokens = data.usage?.input_tokens || 0;
-                    tokenUsage.completion_tokens = data.usage?.output_tokens || 0;
-                }
-                else {
-                    let endpointUrl = 'https://api.openai.com/v1/chat/completions';
-                    let modelName = 'gpt-4o';
-                    
-                    if (provider === 'deepseek') { endpointUrl = 'https://api.deepseek.com/chat/completions'; modelName = 'deepseek-chat'; } 
-                    else if (provider === 'custom') { endpointUrl = document.getElementById('inpCustomUrl')?.value || 'http://localhost:1234/v1/chat/completions'; modelName = 'local-model'; }
-                    
-                    const bodyData = { model: modelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], temperature: temperature, max_tokens: 8192 };
-                    if (responseFormat === "json_object") bodyData.response_format = { type: "json_object" };
-                    
-                    const response = await fetch(endpointUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify(bodyData) });
-                    if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
-                    const data = await response.json();
-                    textResponse = data.choices[0].message.content;
-                    if (data.usage) tokenUsage = data.usage;
-                }
+                    else {
+                        let endpointUrl = 'https://api.openai.com/v1/chat/completions';
+                        let modelName = 'gpt-4o';
+                        
+                        if (provider === 'deepseek') { endpointUrl = 'https://api.deepseek.com/chat/completions'; modelName = 'deepseek-chat'; } 
+                        else if (provider === 'custom') { endpointUrl = document.getElementById('inpCustomUrl')?.value || 'http://localhost:1234/v1/chat/completions'; modelName = 'local-model'; }
+                        
+                        const bodyData = { model: modelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], temperature: temperature, max_tokens: 8192 };
+                        if (responseFormat === "json_object") bodyData.response_format = { type: "json_object" };
+                        
+                        const response = await fetch(endpointUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify(bodyData) });
+                        if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
+                        const data = await response.json();
+                        textResponse = data.choices[0].message.content;
+                        if (data.usage) tokenUsage = data.usage;
+                    }
 
-                const latencyMs = Date.now() - startTime;
-                let parsedContent = textResponse;
+                    const latencyMs = Date.now() - startTime;
+                    let parsedContent = textResponse;
+                    
+                    if (responseFormat === "json_object") {
+                        let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+                        const firstBrace = cleanText.indexOf('{'); const lastBrace = cleanText.lastIndexOf('}');
+                        if (firstBrace !== -1 && lastBrace !== -1) cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+                        parsedContent = JSON.parse(cleanText);
+                    }
+                    
+                    return { content: parsedContent, telemetry: { provider, tokens: tokenUsage, latencyMs } };
                 
-                if (responseFormat === "json_object") {
-                    let cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
-                    const firstBrace = cleanText.indexOf('{'); const lastBrace = cleanText.lastIndexOf('}');
-                    if (firstBrace !== -1 && lastBrace !== -1) cleanText = cleanText.substring(firstBrace, lastBrace + 1);
-                    parsedContent = JSON.parse(cleanText);
+                } catch (error) {
+                    lastError = error; 
+                    
+                    // Si el error es de RED (CORS, Endpoint caído, etc), NO reintentes con el mismo motor.
+                    // Rompe el bucle de intentos (break) y pasa inmediatamente al SIGUIENTE proveedor.
+                    if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                        console.warn(`🛡️ [Antigravity Shield] Muro CORS o caída de red en ${provider}. Saltando al siguiente motor...`);
+                        break; 
+                    }
+
+                    attempt++; 
+                    console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt})...`, error.message);
+                    if (attempt <= maxRetries) await new Promise(r => setTimeout(r, 1000 * attempt));
                 }
-                
-                return { content: parsedContent, telemetry: { provider, tokens: tokenUsage, latencyMs } };
-            
-            } catch (error) {
-                lastError = error; attempt++; 
-                console.warn(`⚠️ [Orchestrator] Fallo con ${provider} (Intento ${attempt}):`, error.message);
-                await new Promise(r => setTimeout(r, 1000 * attempt));
             }
         }
-        throw new Error(`Error definitivo con ${provider}: ${lastError.message}`);
+        
+        throw new Error(`Todos los motores han colapsado. Último error: ${lastError.message}`);
     }
 
     async _buildLightweightContext(projectId, agentId) {
@@ -152,35 +174,11 @@ class OrchestratorCore {
         return contextText;
     }
 
-    async notarizeWorkOrder(projectId, taskComment, socChecklist) {
-        const { provider, apiKey } = this._getBestProvider('deepseek');
-        const systemPrompt = `Eres @notari_ledger, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
-        const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
-        this._logTelemetry(projectId, '@notari_ledger', provider, 'TDD_AUDIT', response.telemetry);
-        return JSON.stringify(response.content);
-    }
-
-    async harvestKnowledge(task, projectId) {
-        try {
-            const { provider, apiKey } = this._getBestProvider('openai');
-            const systemPrompt = `Eres @janitor, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
-            const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
-            const result = response.content;
-
-            if (result.isValuable) {
-                await KB.init();
-                await KB.saveNode({ id: `meme_evergreen_${Date.now()}`, type: 'meme', category: 'evergreen', projectId: projectId, targetId: 'global', title: `🌟 ${result.title}`, content: result.content, keywords: [...(result.tags || []), '#evergreen'] });
-                this._logTelemetry(projectId, '@janitor', provider, 'HARVEST', response.telemetry);
-                return result.title;
-            }
-            return null;
-        } catch (error) { return null; }
-    }
-// ==========================================
+    // ==========================================
     // 👑 BUCLE MAYÉUTICO (PRE-EVALUACIÓN VNA)
     // ==========================================
     async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
-        const { provider, apiKey } = this._getBestProvider(overrideProvider || 'anthropic'); // Claude es el mejor evaluando contexto sistémico
+        const preferredEngine = overrideProvider || 'openai'; // Cambiado a OpenAI por defecto por el CORS de Anthropic
 
         const systemPrompt = `
             Eres @genesi_ai, Master Ecosystem Architect. Tu deber es aplicar Value Network Analysis (VNA).
@@ -202,13 +200,36 @@ class OrchestratorCore {
 
         const userPrompt = `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión Fundacional:\n${vision}`;
         
-        const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
-        this._logTelemetry('global', '@genesi_ai', provider, 'VNA_EVALUATION', response.telemetry);
+        const response = await this.callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+        this._logTelemetry('global', '@genesi_ai', response.telemetry.provider, 'VNA_EVALUATION', response.telemetry);
         return response.content; 
     }
-    // 🔥 FIX: Permite inyectar el overrideProvider desde la UI
+
+    async notarizeWorkOrder(projectId, taskComment, socChecklist) {
+        const systemPrompt = `Eres @notari_ledger, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
+        const response = await this.callLLM({ preferredEngine: 'deepseek', systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
+        this._logTelemetry(projectId, '@notari_ledger', response.telemetry.provider, 'TDD_AUDIT', response.telemetry);
+        return JSON.stringify(response.content);
+    }
+
+    async harvestKnowledge(task, projectId) {
+        try {
+            const systemPrompt = `Eres @janitor, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
+            const response = await this.callLLM({ preferredEngine: 'gemini', systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
+            const result = response.content;
+
+            if (result.isValuable) {
+                await KB.init();
+                await KB.saveNode({ id: `meme_evergreen_${Date.now()}`, type: 'meme', category: 'evergreen', projectId: projectId, targetId: 'global', title: `🌟 ${result.title}`, content: result.content, keywords: [...(result.tags || []), '#evergreen'] });
+                this._logTelemetry(projectId, '@janitor', response.telemetry.provider, 'HARVEST', response.telemetry);
+                return result.title;
+            }
+            return null;
+        } catch (error) { return null; }
+    }
+
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
-        const { provider, apiKey } = this._getBestProvider(overrideProvider || 'anthropic');
+        const preferredEngine = overrideProvider || 'openai';
 
         await KB.init();
         const allSkills = await KB.getAllNodes({ category: 'skill' });
@@ -243,14 +264,13 @@ class OrchestratorCore {
 
         const userPrompt = `Proyecto: ${projectName}\nArquetipo Legal: ${archetypeText}\n${catalogContext}\nVisión Fundacional:\n${vision}`;
         
-        const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
-        this._logTelemetry('global', '@genesi_ai', provider, 'VNA_DESIGN', response.telemetry);
+        const response = await this.callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
+        this._logTelemetry('global', '@genesi_ai', response.telemetry.provider, 'VNA_DESIGN', response.telemetry);
         return response.content; 
     }
 
-    // 🔥 FIX: Permite inyectar el overrideProvider desde la UI
     async runDeepResearch(topic, expectedCategory, maxNodes = 3, overrideProvider = null) {
-        const { provider, apiKey } = this._getBestProvider(overrideProvider || 'gemini');
+        const preferredEngine = overrideProvider || 'gemini';
 
         const systemPrompt = `
             Eres @mestre_escola, el Investigador Ontológico y Creador de Memes W3C del Kernel.
@@ -267,8 +287,8 @@ class OrchestratorCore {
         `;
 
         const userPrompt = `TEMA DE INVESTIGACIÓN: "${topic}"\nProcesa esto y genera los Nodos para el Meta-Grafo.`;
-        const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
-        this._logTelemetry('global', '@mestre_escola', provider, 'DEEP_RESEARCH', response.telemetry);
+        const response = await this.callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
+        this._logTelemetry('global', '@mestre_escola', response.telemetry.provider, 'DEEP_RESEARCH', response.telemetry);
         
         const result = response.content;
         if (result.nodes && result.nodes.length > 0) {
@@ -285,21 +305,18 @@ class OrchestratorCore {
 
     async autoRespondUsenet(project, incomingLog, agentNode) {
         try {
-            const profileEngine = agentNode.profile?.preferredEngine || 'openai';
-            const { provider, apiKey } = this._getBestProvider(profileEngine);
-
+            const preferredEngine = agentNode.profile?.preferredEngine || 'openai';
             const contextStr = await this._buildLightweightContext(project.id, agentNode.id);
             const systemPrompt = `Eres ${agentNode.name}.\n\n${contextStr}\nResponde al ping del hilo con acción inmediata (GTD). No uses JSON ni markdown puro.`;
-            const result = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `Ping de ${incomingLog.authorId}: ${incomingLog.content}`, responseFormat: "text", temperature: 0.5 });
+            const result = await this.callLLM({ preferredEngine, systemPrompt, userPrompt: `Ping de ${incomingLog.authorId}: ${incomingLog.content}`, responseFormat: "text", temperature: 0.5 });
             
             await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId: project.id, log: { id: 'log_' + Date.now(), date: Date.now(), authorId: agentNode.id, relatedTxHash: incomingLog.relatedTxHash, content: result.content, mentions: [incomingLog.authorId], readBy: [] } } });
-            this._logTelemetry(project.id, agentNode.id, provider, 'USENET_PING', result.telemetry);
+            this._logTelemetry(project.id, agentNode.id, result.telemetry.provider, 'USENET_PING', result.telemetry);
         } catch (error) { console.error(`[Usenet] Fallo P2P con ${agentNode.id}:`, error); }
     }
 
     async autoHealNetwork(task, projectId) {
         try {
-            const { provider, apiKey } = this._getBestProvider('deepseek');
             const failedSocs = (task.soc_checklist || []).filter(s => !s.isChecked).map(s => s.text);
             if (failedSocs.length === 0) return null;
 
@@ -315,13 +332,13 @@ class OrchestratorCore {
             `;
 
             const userPrompt = `La tarea "${task.comentario.substring(0,60)}..." falló los SOCs: ${JSON.stringify(failedSocs)}. ¿A qué nodo invocamos?`;
-            const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+            const response = await this.callLLM({ preferredEngine: 'deepseek', systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
             const result = response.content;
 
             if (result.assignedNode) {
                 const contentLog = `⚕️ **Protocolo de Auto-Sanación Activado.**\nLa auditoría Notarial falló en: *${failedSocs.join(', ')}*.\n\n@seny_analyst solicita asistencia de <a href="/v9/profile?id=${result.assignedNode.replace('@','')}" data-link class="mention-highlight">${result.assignedNode}</a>.\n\n**Motivo:** ${result.reason}\n**Plan:** ${result.actionPlan}`;
                 await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId, log: { id: 'log_heal_' + Date.now(), date: Date.now(), authorId: '@seny_analyst', relatedTxHash: task.hash || task.id, content: contentLog, mentions: [result.assignedNode, task.assigneeId], readBy: [] } } });
-                this._logTelemetry(projectId, '@seny_analyst', provider, 'AUTO_HEAL', response.telemetry);
+                this._logTelemetry(projectId, '@seny_analyst', response.telemetry.provider, 'AUTO_HEAL', response.telemetry);
                 return result;
             }
             return null;
