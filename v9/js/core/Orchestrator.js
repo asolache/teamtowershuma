@@ -16,23 +16,18 @@ class OrchestratorCore {
         this.isListening = false;
     }
 
-    // 🔥 ENRUTADOR ESTRICTO: Respeta el Panteón y luego aplica Cascada
     _getAvailableProviders(overrideEngine = null) {
         const globalEngine = localStorage.getItem('tt_ai_provider') || 'openai';
         const actualPreference = overrideEngine || globalEngine;
         
-        // Ponemos anthropic al final por sus conocidas políticas de bloqueo CORS en el navegador
         const fallbackChain = [actualPreference, globalEngine, 'openai', 'deepseek', 'gemini', 'custom', 'anthropic'];
         const uniqueChain = [...new Set(fallbackChain)]; 
         const available = [];
 
         for (const provider of uniqueChain) {
             if (provider === 'custom') { available.push({ provider: 'custom', apiKey: 'local_or_custom_mode' }); continue; }
-            
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (apiKey && apiKey.trim().length > 10) {
-                available.push({ provider, apiKey });
-            }
+            if (apiKey && apiKey.trim().length > 10) available.push({ provider, apiKey });
         }
         
         if (available.length === 0) throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en el Panteón.");
@@ -63,7 +58,6 @@ class OrchestratorCore {
         });
     }
 
-    // 🔥 MOTOR COGNITIVO INDESTRUCTIBLE (CORS & FALLBACK SURVIVAL)
     async callLLM({ preferredEngine = null, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2 }) {
         const availableProviders = this._getAvailableProviders(preferredEngine);
         let lastError = null;
@@ -71,7 +65,7 @@ class OrchestratorCore {
         for (const p of availableProviders) {
             const { provider, apiKey } = p;
             let attempt = 0;
-            const maxRetries = 1; // Solo 1 reintento para no colgar la UI
+            const maxRetries = 1;
 
             while (attempt <= maxRetries) {
                 try {
@@ -146,20 +140,15 @@ class OrchestratorCore {
                 } catch (error) {
                     lastError = error; 
                     const errMsg = (error.message || "").toLowerCase();
-                    
-                    // 🔥 FIX: Corte Cuántico Inmediato si detecta CORS o fallo de red
                     if (errMsg.includes('networkerror') || errMsg.includes('failed to fetch') || errMsg.includes('cors') || errMsg.includes('network')) {
-                        console.warn(`🛡️ [Antigravity Shield] Muro CORS en ${provider}. Descartando y saltando al siguiente motor...`);
-                        break; // Rompe el bucle while y pasa al siguiente provider del array
+                        console.warn(`🛡️ [Antigravity Shield] Muro CORS en ${provider}. Saltando al siguiente motor...`);
+                        break; 
                     }
-
                     attempt++; 
-                    console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt}):`, error.message);
                     if (attempt <= maxRetries) await new Promise(r => setTimeout(r, 1000 * attempt));
                 }
             }
         }
-        
         throw new Error(`Todos los motores colapsaron. Último error: ${lastError.message}`);
     }
 
@@ -177,7 +166,6 @@ class OrchestratorCore {
         return contextText;
     }
 
-    // 🔥 VACUNA CONTRA EL SÍNDROME DE SABELOTODO (GPT-4o)
     async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
         const systemPrompt = `
             Eres @genesi_ai, Master Ecosystem Architect. Vas a aplicar Value Network Analysis (VNA).
@@ -220,11 +208,9 @@ class OrchestratorCore {
         } catch (error) { return null; }
     }
 
-    // 🔥 DESACOPLE ARQUITECTÓNICO: Extrae las reglas VNA y TDD de la Skill del Padrón LMS
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
         await KB.init();
         
-        // Carga la Skill Maestra de VNA directamente desde la Base de Datos
         const vnaSkill = await KB.getNode('skill_vna_strategy');
         const vnaInstructions = vnaSkill ? vnaSkill.content : 'Diseña un mapa de valor detallado con un mínimo de 5 transacciones.';
 
@@ -294,33 +280,44 @@ class OrchestratorCore {
         return result;
     }
 
-    // 🔥 BUCLE DE EXPANSIÓN COGNITIVA (DEEP RESEARCH MULTI-ARCHIVO / PROGRESSIVE DISCLOSURE)
+    // 🔥 BUCLE DE EXPANSIÓN COGNITIVA (META-SKILL CREATOR VNA)
     async expandNodeSemantics(title, category, content, tags, overrideProvider = null) {
+        const available = this._getAvailableProviders(overrideProvider || 'openai');
+        const { provider, apiKey } = available[0];
+
         const systemPrompt = `
-            Eres el Agente de Expansión Cognitiva del Kernel V9 (Modelo AgentSkills).
-            Misión: Desarrollar un concepto aplicando la "Revelación Progresiva" (Progressive Disclosure).
+            Eres el "Skill Creator" del Kernel V9 (Inspirado en el estándar AgentSkills de Anthropic).
+            Misión: Tomar un concepto semilla y forjar una cápsula de conocimiento altamente estructurada.
             
-            REGLAS DE EXPANSIÓN MULTI-ARCHIVO:
-            1. EL NODO PRINCIPAL (La Skill/Referencia): Debe ser CONCISO, directo y accionable. Contendrá las instrucciones, pasos a seguir (SOPs) y reglas de validación (SOCs). NO pongas teoría extensa aquí.
-            2. DOCUMENTOS DE REFERENCIA (Resources): Si el tema requiere teoría profunda, metodologías, historia, tablas complejas o ejemplos, EXTRAE esa información y divídela en documentos dentro del array "reference_docs".
-            3. Markdown: Todo el contenido debe estar en Markdown bien estructurado.
+            SI EL NODO ES UNA "SKILL" (Categoría: skill), DEBES ESTRUCTURAR EL CONTENT ASÍ:
+            
+            ### 1. VNA Flow (Flujo de Valor)
+            - **Inputs Requeridos (Tangibles/Intangibles):** ¿Qué necesita el agente antes de empezar? (ej: Datos en bruto, acceso a un repo, feedback del usuario).
+            - **Outputs Generados (Tangibles/Intangibles):** ¿Qué devuelve a la red? (ej: Archivo JSON, código refactorizado, confianza del cliente).
+            
+            ### 2. SOP (Standard Operating Procedure)
+            Instrucciones en imperativo. Paso a paso. Concisas y accionables. CERO teoría (la teoría va a los reference_docs). Incluye patrones y formatos de salida esperados (ej: "ALWAYS use this exact template...").
+            
+            ### 3. SOC (Standard Operating Conditions / Evals)
+            Criterios de éxito y aserciones TDD. Lista de verificación medible que un agente evaluador (Grader) pueda usar para aprobar o rechazar el trabajo resultante.
+            
+            REGLA DE REVELACIÓN PROGRESIVA (Progressive Disclosure):
+            Si la Skill requiere teoría, ejemplos largos, metodologías de respaldo o historia, NO lo pongas en el "content". Extráelo y mételo en el array JSON "reference_docs" para que se guarden como archivos separados.
             
             Devuelve ÚNICAMENTE JSON estricto: 
             { 
                 "title": "Título Mejorado", 
-                "description": "Resumen indexable corto para RAG...", 
-                "content": "Instrucciones concisas y accionables (Skill principal)...", 
+                "description": "Resumen indexable corto para enrutamiento RAG (Explica CUÁNDO debe usarse esta skill)...", 
+                "content": "Estructura VNA Flow + SOP + SOC en Markdown...", 
                 "keywords": ["tag1", "tag2"],
-                "reference_docs": [
-                    { "title": "Nombre Referencia 1", "description": "Breve resumen", "content": "Teoría/Ejemplos profundos en Markdown..." }
-                ]
+                "reference_docs": [ { "title": "Referencia 1", "description": "Breve resumen", "content": "Teoría profunda en Markdown..." } ]
             }
         `;
 
         const userPrompt = `Título Original: ${title}\nCategoría: ${category}\nTags Actuales: ${tags}\nContenido Semilla:\n${content}`;
         
-        const response = await this.callLLM({ preferredEngine: overrideProvider || 'openai', systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.5 });
-        this._logTelemetry('global', '@mestre_escola', response.telemetry.provider, 'KNOWLEDGE_EXPANSION', response.telemetry);
+        const response = await this.callLLM({ preferredEngine: provider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.4 });
+        this._logTelemetry('global', '@mestre_escola', provider, 'KNOWLEDGE_EXPANSION', response.telemetry);
         
         return response.content;
     }
