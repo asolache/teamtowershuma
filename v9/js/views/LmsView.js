@@ -21,7 +21,7 @@ export default class LmsView {
         const headerConfig = {
             title: "La Forja (Cerebro LMS)",
             subtitle: "Conocimiento W3C & Meta-Grafo",
-            tagline: "Explora la memoria, forja habilidades y empaqueta AgentSkills (.zip / .skill) para la red.",
+            tagline: "Explora la memoria, forja habilidades y empaqueta AgentSkills (.zip) para la red.",
             tabs: [
                 { id: 'list', label: '🗂️ Padrón W3C (Lista)', active: this.currentTab === 'list' },
                 { id: 'graph', label: '🌌 Meta-Grafo 3D', active: this.currentTab === 'graph' }
@@ -77,7 +77,7 @@ export default class LmsView {
                 /* MODAL OVERLAY */
                 .modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(5,5,8,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;}
                 .modal-overlay.active { display: flex; opacity: 1; }
-                .modal-card { background: linear-gradient(145deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 650px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(224,64,251,0.2); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 90vh; overflow-y: auto;}
+                .modal-card { background: linear-gradient(145deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 750px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(224,64,251,0.2); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 90vh; overflow-y: auto;}
                 .modal-overlay.active .modal-card { transform: translateY(0); }
                 
                 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px dashed #333; padding-bottom: 1rem;}
@@ -89,7 +89,7 @@ export default class LmsView {
                 .form-group label { color: var(--accent-blue); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px; border-radius: 10px; font-family: var(--font-main); font-size: 0.95rem; outline: none; transition: 0.2s;}
                 .form-control:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224,64,251,0.1);}
-                .form-control.textarea { min-height: 150px; resize: vertical; font-family: 'Georgia', serif; line-height: 1.6;}
+                .form-control.textarea { min-height: 180px; resize: vertical; font-family: 'Georgia', serif; line-height: 1.6;}
                 
                 .modal-actions { display: flex; justify-content: flex-end; flex-wrap:wrap; gap: 10px; margin-top: 2rem; border-top: 1px dashed #333; padding-top: 1.5rem;}
                 .btn-modal { padding: 12px 24px; border-radius: 10px; font-weight: 900; font-size: 0.9rem; cursor: pointer; transition: 0.3s; border: none;}
@@ -106,6 +106,10 @@ export default class LmsView {
 
                 .btn-export { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
                 .btn-export:hover { background: rgba(224,64,251,0.1); }
+
+                /* 🔥 Estilo de las Píldoras de Referencias Clickables */
+                .ref-badge { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); }
+                .ref-badge:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 10px rgba(0,176,255,0.4); transform: translateY(-1px); }
 
                 @media (max-width: 768px) {
                     .workspace-lms { padding: 90px 1rem 120px 1rem; }
@@ -132,7 +136,15 @@ export default class LmsView {
                                 <button class="filter-btn" data-filter="reference">📚 Referencias</button>
                                 <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
                             </div>
-                            <button class="btn-deep-research" id="btnOpenResearch"><span style="font-size:1.2rem;">🧠</span> Deep Research (IA)</button>
+                            
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button class="btn-deep-research" id="btnNewNode" style="background:transparent; border-color:var(--accent-green); color:var(--accent-green);">
+                                    <span style="font-size:1.2rem;">➕</span> Instanciar Nodo
+                                </button>
+                                <button class="btn-deep-research" id="btnOpenResearch">
+                                    <span style="font-size:1.2rem;">🧠</span> Deep Research (IA)
+                                </button>
+                            </div>
                         </div>
 
                         <div class="dropzone-area" id="skillDropzone">
@@ -184,6 +196,7 @@ export default class LmsView {
                             <div class="form-group">
                                 <label>Dependencias / Referencias Requeridas (IDs separados por coma)</label>
                                 <input type="text" id="editNodeReferences" class="form-control" style="font-family:var(--font-mono); color:var(--accent-blue);" placeholder="ref_os_vna, ref_os_codex">
+                                <div id="refLinksContainer" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"></div>
                             </div>
                             
                             <div class="form-group">
@@ -270,9 +283,11 @@ export default class LmsView {
             inpContent: document.getElementById('editNodeContent'),
             inpKeywords: document.getElementById('editNodeKeywords'),
             inpReferences: document.getElementById('editNodeReferences'),
+            refLinksContainer: document.getElementById('refLinksContainer'), // 🔥 Enlaces Mapeados
 
             synapticMount: document.getElementById('synapticMountPoint'),
 
+            btnNewNode: document.getElementById('btnNewNode'), // 🔥 Botón Instanciar
             btnOpenResearch: document.getElementById('btnOpenResearch'),
             researchModal: document.getElementById('researchModal'),
             btnCloseResearch: document.getElementById('btnCloseResearch'),
@@ -330,7 +345,6 @@ export default class LmsView {
             const dt = e.dataTransfer;
             const file = dt.files[0];
             
-            // 🔥 Añadido soporte nativo para '.skill'
             if (file && (file.name.endsWith('.zip') || file.name.endsWith('.skill'))) {
                 dropzone.innerHTML = "⏳ Desempaquetando Paquete...";
                 await this.parseZipSkillFile(file);
@@ -362,8 +376,9 @@ export default class LmsView {
                     const refText = await f.async("text");
                     const refParsed = this.extractFrontmatter(refText, f.name.split('/').pop().replace('.md', ''));
                     
+                    const cleanRefName = refParsed.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().substring(0, 25);
                     const refNode = {
-                        id: `ref_imported_${Date.now()}_${Math.random().toString(36).substr(2,5)}`,
+                        id: `ref_imp_${cleanRefName}_${Math.random().toString(36).substr(2,4)}`,
                         type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
                         title: refParsed.title, description: refParsed.description, content: refParsed.content, keywords: ['#imported_ref']
                     };
@@ -480,6 +495,27 @@ export default class LmsView {
         });
     }
 
+    // 🔥 PINTAR ENLACES A LAS REFERENCIAS
+    renderReferenceLinks(refIds) {
+        if (!this.dom.refLinksContainer) return;
+        this.dom.refLinksContainer.innerHTML = '';
+        if (!refIds || refIds.length === 0) return;
+        
+        refIds.forEach(refId => {
+            const refNode = this.allNodes.find(n => n.id === refId);
+            const title = refNode ? refNode.title : refId;
+            const badge = document.createElement('span');
+            badge.className = 'ref-badge';
+            badge.innerHTML = `📚 ${title} ↗`;
+            badge.title = "Click para inspeccionar esta referencia";
+            badge.onclick = () => {
+                this.closeEditor(); // Cierra el modal actual
+                setTimeout(() => this.openEditor(refId), 350); // Abre la referencia tras la animación
+            };
+            this.dom.refLinksContainer.appendChild(badge);
+        });
+    }
+
     openEditor(nodeId) {
         const node = this.allNodes.find(n => n.id === nodeId);
         if (!node) return;
@@ -492,7 +528,12 @@ export default class LmsView {
         this.dom.inpDesc.value = node.description || '';
         this.dom.inpContent.value = node.content || '';
         this.dom.inpKeywords.value = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
-        this.dom.inpReferences.value = (node.references && Array.isArray(node.references)) ? node.references.join(', ') : '';
+        
+        const refStr = (node.references && Array.isArray(node.references)) ? node.references.join(', ') : '';
+        this.dom.inpReferences.value = refStr;
+        
+        // Pinta los botones azules
+        this.renderReferenceLinks(node.references);
 
         const isKernel = this.dom.inpKeywords.value.includes('#kernel_sos');
         this.dom.btnDelete.style.display = isKernel ? 'none' : 'block';
@@ -541,7 +582,30 @@ export default class LmsView {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
 
-        // 🔥 EXPORTADOR DE PAQUETES ZIP (AgentSkills Standard Strict)
+        // 🔥 BOTÓN INSTANCIAR NODO (CREACIÓN MANUAL)
+        if (this.dom.btnNewNode) {
+            this.dom.btnNewNode.addEventListener('click', () => {
+                this.dom.inpId.value = '';
+                this.dom.inpType.value = 'custom';
+                this.dom.inpProjId.value = 'global';
+                this.dom.inpCat.value = 'skill';
+                this.dom.inpTitle.value = '';
+                this.dom.inpDesc.value = '';
+                this.dom.inpContent.value = '';
+                this.dom.inpKeywords.value = '';
+                this.dom.inpReferences.value = '';
+                this.renderReferenceLinks([]);
+                this.dom.btnDelete.style.display = 'none';
+                this.dom.modal.classList.add('active');
+            });
+        }
+
+        // Si editas las referencias a mano, actualiza los botones visuales (Bonus UX)
+        this.dom.inpReferences.addEventListener('input', (e) => {
+            const arr = e.target.value.split(',').map(k => k.trim()).filter(k => k !== '');
+            this.renderReferenceLinks(arr);
+        });
+
         this.dom.btnExport.addEventListener('click', async () => {
             if (!window.JSZip) await this.loadJSZip();
             const zip = new window.JSZip();
@@ -552,7 +616,6 @@ export default class LmsView {
             const refString = this.dom.inpReferences.value.trim();
             const refArray = refString ? refString.split(',').map(r => r.trim()).filter(r => r !== '') : [];
 
-            // 🔥 CREAR CARPETA RAÍZ OBLIGATORIA (Estándar Claude)
             const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
             const rootFolder = zip.folder(safeTitle);
 
@@ -560,7 +623,6 @@ export default class LmsView {
             rootFolder.file("Skill.md", skillContent);
 
             if (refArray.length > 0) {
-                // 🔥 La carpeta "resources" debe estar DENTRO de la carpeta de la skill
                 const resourcesFolder = rootFolder.folder("resources");
                 await KB.init();
                 for (const refId of refArray) {
@@ -609,7 +671,10 @@ export default class LmsView {
                         let currentRefs = this.dom.inpReferences.value.split(',').map(r => r.trim()).filter(r => r !== '');
                         
                         for (const refDoc of optimizedData.reference_docs) {
-                            const newRefId = `ref_ai_${Date.now()}_${Math.random().toString(36).substr(2,5)}`;
+                            // 🔥 NOMENCLATURA SEMÁNTICA CLARA Y COMPRENSIBLE
+                            const cleanName = refDoc.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().substring(0, 25);
+                            const newRefId = `ref_ai_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
+                            
                             await KB.saveNode({
                                 id: newRefId, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
                                 title: refDoc.title, description: refDoc.description, content: refDoc.content, keywords: ['#ai_generated', '#reference']
@@ -618,6 +683,8 @@ export default class LmsView {
                         }
                         
                         this.dom.inpReferences.value = currentRefs.join(', ');
+                        this.renderReferenceLinks(currentRefs); // Actualiza los botones visuales al instante
+                        
                         await this.loadData();
                         await this.forceGraphRefresh();
                         alert(`🌱 Skill expandida. Se han generado ${optimizedData.reference_docs.length} referencias teóricas adjuntas.`);
@@ -661,6 +728,7 @@ export default class LmsView {
             });
         }
 
+        // 🔥 SELLADO SEGURO (MANTIENE LA INTEGRIDAD DEL NODO)
         this.dom.btnSave.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
             const title = this.dom.inpTitle.value.trim();
@@ -671,18 +739,37 @@ export default class LmsView {
             const keywordsArray = this.dom.inpKeywords.value.split(',').map(k => k.trim()).filter(k => k !== '');
             const referencesArray = this.dom.inpReferences.value.split(',').map(k => k.trim()).filter(k => k !== '');
             
+            // Si el nodo ya existe, lo recuperamos para no borrar sus propiedades ajenas (ej: core_skills, dependencies)
+            const oldNode = this.allNodes.find(n => n.id === id) || {};
+            
             const updatedNode = { 
-                id, type: this.dom.inpType.value, projectId: this.dom.inpProjId.value, category: this.dom.inpCat.value.trim(), 
-                title, description: desc, content, keywords: keywordsArray, references: referencesArray 
+                ...oldNode, // <- EL FIX MAGISTRAL: Preserva las tripas del nodo
+                id: id || `custom_${Date.now()}_${Math.random().toString(36).substr(2,4)}`, 
+                type: this.dom.inpType.value || oldNode.type || 'custom', 
+                projectId: this.dom.inpProjId.value || oldNode.projectId || 'global', 
+                category: this.dom.inpCat.value.trim() || oldNode.category || 'skill', 
+                title: title, 
+                description: desc, 
+                content: content, 
+                keywords: keywordsArray, 
+                references: referencesArray 
             };
 
-            this.dom.btnSave.disabled = true; this.dom.btnSave.innerText = "⏳ Sellando...";
+            this.dom.btnSave.disabled = true; 
+            this.dom.btnSave.innerText = "⏳ Sellando...";
+            
             try {
-                await KB.init(); await KB.saveNode(updatedNode);
-                await this.loadData(); await this.forceGraphRefresh();
+                await KB.init(); 
+                await KB.saveNode(updatedNode);
+                await this.loadData(); 
+                await this.forceGraphRefresh();
                 this.closeEditor();
-            } catch (e) { alert(`Error: ${e.message}`); } 
-            finally { this.dom.btnSave.disabled = false; this.dom.btnSave.innerText = "💾 Sellar Mutación"; }
+            } catch (e) { 
+                alert(`Error al guardar: ${e.message}`); 
+            } finally { 
+                this.dom.btnSave.disabled = false; 
+                this.dom.btnSave.innerText = "💾 Sellar Mutación"; 
+            }
         });
 
         this.dom.btnDelete.addEventListener('click', async () => {
