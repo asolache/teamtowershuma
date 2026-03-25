@@ -16,15 +16,18 @@ class OrchestratorCore {
         this.isListening = false;
     }
 
-    // 🔥 LA VERDADERA CASCADA: Devuelve todos los motores con clave, ordenados por preferencia
-    _getAvailableProviders(preferredEngine) {
-        // Ponemos anthropic al final por sus estrictas políticas CORS en navegadores
-        const fallbackChain = [preferredEngine, 'openai', 'gemini', 'deepseek', 'custom', 'anthropic'];
+    // 🔥 ENRUTADOR ESTRICTO: Respeta el Panteón y luego aplica Cascada
+    _getAvailableProviders(overrideEngine = null) {
+        const globalEngine = localStorage.getItem('tt_ai_provider') || 'openai';
+        const actualPreference = overrideEngine || globalEngine;
+        
+        // Ponemos anthropic al final por sus conocidas políticas de bloqueo CORS en el navegador
+        const fallbackChain = [actualPreference, globalEngine, 'openai', 'deepseek', 'gemini', 'custom', 'anthropic'];
         const uniqueChain = [...new Set(fallbackChain)]; 
         const available = [];
 
         for (const provider of uniqueChain) {
-            if (provider === 'custom') { available.push({ provider: 'custom', apiKey: 'local_mode' }); continue; }
+            if (provider === 'custom') { available.push({ provider: 'custom', apiKey: 'local_or_custom_mode' }); continue; }
             
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
             if (apiKey && apiKey.trim().length > 10) {
@@ -60,15 +63,14 @@ class OrchestratorCore {
         });
     }
 
-    // 🔥 MOTOR COGNITIVO INDESTRUCTIBLE (CORS & FALLBACK SURVIVAL)
-    async callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2 }) {
+    async callLLM({ preferredEngine = null, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2 }) {
         const availableProviders = this._getAvailableProviders(preferredEngine);
         let lastError = null;
 
         for (const p of availableProviders) {
             const { provider, apiKey } = p;
             let attempt = 0;
-            const maxRetries = 1; // Solo reintenta 1 vez por motor para no bloquear la UI
+            const maxRetries = 1; // Solo 1 reintento para no colgar la UI
 
             while (attempt <= maxRetries) {
                 try {
@@ -99,7 +101,7 @@ class OrchestratorCore {
                     else if (provider === 'anthropic') {
                         const response = await fetch('https://api.anthropic.com/v1/messages', {
                             method: 'POST',
-                            headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+                            headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-cors-bypass': 'true' },
                             body: JSON.stringify({
                                 model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }]
                             })
@@ -142,22 +144,22 @@ class OrchestratorCore {
                 
                 } catch (error) {
                     lastError = error; 
+                    const errMsg = (error.message || "").toLowerCase();
                     
-                    // Si el error es de RED (CORS, Endpoint caído, etc), NO reintentes con el mismo motor.
-                    // Rompe el bucle de intentos (break) y pasa inmediatamente al SIGUIENTE proveedor.
-                    if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                        console.warn(`🛡️ [Antigravity Shield] Muro CORS o caída de red en ${provider}. Saltando al siguiente motor...`);
-                        break; 
+                    // 🔥 FIX: Corte Cuántico Inmediato si detecta CORS o fallo de red
+                    if (errMsg.includes('networkerror') || errMsg.includes('failed to fetch') || errMsg.includes('cors') || errMsg.includes('network')) {
+                        console.warn(`🛡️ [Antigravity Shield] Muro CORS en ${provider}. Descartando y saltando al siguiente motor...`);
+                        break; // Rompe el bucle while y pasa al siguiente provider del array
                     }
 
                     attempt++; 
-                    console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt})...`, error.message);
+                    console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt}):`, error.message);
                     if (attempt <= maxRetries) await new Promise(r => setTimeout(r, 1000 * attempt));
                 }
             }
         }
         
-        throw new Error(`Todos los motores han colapsado. Último error: ${lastError.message}`);
+        throw new Error(`Todos los motores colapsaron. Último error: ${lastError.message}`);
     }
 
     async _buildLightweightContext(projectId, agentId) {
@@ -174,40 +176,31 @@ class OrchestratorCore {
         return contextText;
     }
 
-    // ==========================================
-    // 👑 BUCLE MAYÉUTICO (PRE-EVALUACIÓN VNA)
-    // ==========================================
     async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
-        const preferredEngine = overrideProvider || 'openai'; // Cambiado a OpenAI por defecto por el CORS de Anthropic
-
         const systemPrompt = `
             Eres @genesi_ai, Master Ecosystem Architect. Tu deber es aplicar Value Network Analysis (VNA).
             Se te ha entregado la visión inicial de un ecosistema. 
             Antes de forjar la topología, debes evaluar si tienes suficiente claridad sobre:
             1. Quiénes son los actores clave (roles).
-            2. Cuál es el intercambio de valor TANGIBLE (dinero, servicios, productos).
-            3. Cuál es el intercambio de valor INTANGIBLE (conocimiento, confianza, reputación).
+            2. Cuál es el intercambio de valor TANGIBLE.
+            3. Cuál es el intercambio de valor INTANGIBLE.
             
-            Si la visión es genérica, ambigua o le faltan patas fundamentales del modelo de negocio, NO estás listo.
-            Genera un máximo de 3 preguntas quirúrgicas y directas para el Master Architect.
+            Si la visión es genérica, ambigua o le faltan patas fundamentales, NO estás listo.
+            Genera un máximo de 3 preguntas quirúrgicas y directas.
             
             Devuelve ÚNICAMENTE un JSON estricto:
-            {
-                "isReady": boolean,
-                "questions": ["Pregunta 1...", "Pregunta 2..."] // Vacío si isReady es true
-            }
+            { "isReady": boolean, "questions": ["Pregunta 1...", "Pregunta 2..."] }
         `;
 
         const userPrompt = `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión Fundacional:\n${vision}`;
-        
-        const response = await this.callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+        const response = await this.callLLM({ preferredEngine: overrideProvider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
         this._logTelemetry('global', '@genesi_ai', response.telemetry.provider, 'VNA_EVALUATION', response.telemetry);
         return response.content; 
     }
 
     async notarizeWorkOrder(projectId, taskComment, socChecklist) {
         const systemPrompt = `Eres @notari_ledger, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
-        const response = await this.callLLM({ preferredEngine: 'deepseek', systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
+        const response = await this.callLLM({ preferredEngine: null, systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
         this._logTelemetry(projectId, '@notari_ledger', response.telemetry.provider, 'TDD_AUDIT', response.telemetry);
         return JSON.stringify(response.content);
     }
@@ -215,7 +208,7 @@ class OrchestratorCore {
     async harvestKnowledge(task, projectId) {
         try {
             const systemPrompt = `Eres @janitor, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
-            const response = await this.callLLM({ preferredEngine: 'gemini', systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
+            const response = await this.callLLM({ preferredEngine: null, systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
             const result = response.content;
 
             if (result.isValuable) {
@@ -229,8 +222,6 @@ class OrchestratorCore {
     }
 
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
-        const preferredEngine = overrideProvider || 'openai';
-
         await KB.init();
         const allSkills = await KB.getAllNodes({ category: 'skill' });
         const allSops = await KB.getAllNodes({ category: 'SOP' });
@@ -264,14 +255,12 @@ class OrchestratorCore {
 
         const userPrompt = `Proyecto: ${projectName}\nArquetipo Legal: ${archetypeText}\n${catalogContext}\nVisión Fundacional:\n${vision}`;
         
-        const response = await this.callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
+        const response = await this.callLLM({ preferredEngine: overrideProvider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
         this._logTelemetry('global', '@genesi_ai', response.telemetry.provider, 'VNA_DESIGN', response.telemetry);
         return response.content; 
     }
 
     async runDeepResearch(topic, expectedCategory, maxNodes = 3, overrideProvider = null) {
-        const preferredEngine = overrideProvider || 'gemini';
-
         const systemPrompt = `
             Eres @mestre_escola, el Investigador Ontológico y Creador de Memes W3C del Kernel.
             Se te ha pedido investigar un tema profundo. Devuelve Nodos de Conocimiento (JSON-LD Semántico).
@@ -287,7 +276,7 @@ class OrchestratorCore {
         `;
 
         const userPrompt = `TEMA DE INVESTIGACIÓN: "${topic}"\nProcesa esto y genera los Nodos para el Meta-Grafo.`;
-        const response = await this.callLLM({ preferredEngine, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
+        const response = await this.callLLM({ preferredEngine: overrideProvider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
         this._logTelemetry('global', '@mestre_escola', response.telemetry.provider, 'DEEP_RESEARCH', response.telemetry);
         
         const result = response.content;
@@ -305,7 +294,7 @@ class OrchestratorCore {
 
     async autoRespondUsenet(project, incomingLog, agentNode) {
         try {
-            const preferredEngine = agentNode.profile?.preferredEngine || 'openai';
+            const preferredEngine = agentNode.profile?.preferredEngine || null;
             const contextStr = await this._buildLightweightContext(project.id, agentNode.id);
             const systemPrompt = `Eres ${agentNode.name}.\n\n${contextStr}\nResponde al ping del hilo con acción inmediata (GTD). No uses JSON ni markdown puro.`;
             const result = await this.callLLM({ preferredEngine, systemPrompt, userPrompt: `Ping de ${incomingLog.authorId}: ${incomingLog.content}`, responseFormat: "text", temperature: 0.5 });
@@ -332,7 +321,7 @@ class OrchestratorCore {
             `;
 
             const userPrompt = `La tarea "${task.comentario.substring(0,60)}..." falló los SOCs: ${JSON.stringify(failedSocs)}. ¿A qué nodo invocamos?`;
-            const response = await this.callLLM({ preferredEngine: 'deepseek', systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+            const response = await this.callLLM({ preferredEngine: null, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
             const result = response.content;
 
             if (result.assignedNode) {
@@ -353,6 +342,3 @@ class OrchestratorCore {
         const priceMatrix = LLM_PRICING[engine] || { input: 0, output: 0 };
         const costInDollars = ((telemetryData.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((telemetryData.tokens.completion_tokens / 1000000) * priceMatrix.output);
         store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId, agentId, engine, actionType, tokens: telemetryData.tokens, costInDollars, recRatio: 0, latencyMs: telemetryData.latencyMs } });
-    }
-}
-export const Orchestrator = new OrchestratorCore();
