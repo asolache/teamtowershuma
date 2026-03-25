@@ -16,23 +16,18 @@ class OrchestratorCore {
         this.isListening = false;
     }
 
-    // 🔥 ENRUTADOR ESTRICTO: Respeta el Panteón y luego aplica Cascada
     _getAvailableProviders(overrideEngine = null) {
         const globalEngine = localStorage.getItem('tt_ai_provider') || 'openai';
         const actualPreference = overrideEngine || globalEngine;
         
-        // Ponemos anthropic al final por sus conocidas políticas de bloqueo CORS en el navegador
         const fallbackChain = [actualPreference, globalEngine, 'openai', 'deepseek', 'gemini', 'custom', 'anthropic'];
         const uniqueChain = [...new Set(fallbackChain)]; 
         const available = [];
 
         for (const provider of uniqueChain) {
             if (provider === 'custom') { available.push({ provider: 'custom', apiKey: 'local_or_custom_mode' }); continue; }
-            
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (apiKey && apiKey.trim().length > 10) {
-                available.push({ provider, apiKey });
-            }
+            if (apiKey && apiKey.trim().length > 10) available.push({ provider, apiKey });
         }
         
         if (available.length === 0) throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en el Panteón.");
@@ -70,7 +65,7 @@ class OrchestratorCore {
         for (const p of availableProviders) {
             const { provider, apiKey } = p;
             let attempt = 0;
-            const maxRetries = 1; // Solo 1 reintento para no colgar la UI
+            const maxRetries = 1;
 
             while (attempt <= maxRetries) {
                 try {
@@ -145,20 +140,15 @@ class OrchestratorCore {
                 } catch (error) {
                     lastError = error; 
                     const errMsg = (error.message || "").toLowerCase();
-                    
-                    // 🔥 FIX: Corte Cuántico Inmediato si detecta CORS o fallo de red
                     if (errMsg.includes('networkerror') || errMsg.includes('failed to fetch') || errMsg.includes('cors') || errMsg.includes('network')) {
-                        console.warn(`🛡️ [Antigravity Shield] Muro CORS en ${provider}. Descartando y saltando al siguiente motor...`);
-                        break; // Rompe el bucle while y pasa al siguiente provider del array
+                        console.warn(`🛡️ [Antigravity Shield] Muro CORS en ${provider}. Saltando al siguiente motor...`);
+                        break; 
                     }
-
                     attempt++; 
-                    console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt}):`, error.message);
                     if (attempt <= maxRetries) await new Promise(r => setTimeout(r, 1000 * attempt));
                 }
             }
         }
-        
         throw new Error(`Todos los motores colapsaron. Último error: ${lastError.message}`);
     }
 
@@ -176,20 +166,18 @@ class OrchestratorCore {
         return contextText;
     }
 
+    // 🔥 VACUNA CONTRA EL SÍNDROME DE SABELOTODO (GPT-4o)
     async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
         const systemPrompt = `
-            Eres @genesi_ai, Master Ecosystem Architect. Tu deber es aplicar Value Network Analysis (VNA).
-            Se te ha entregado la visión inicial de un ecosistema. 
-            Antes de forjar la topología, debes evaluar si tienes suficiente claridad sobre:
-            1. Quiénes son los actores clave (roles).
-            2. Cuál es el intercambio de valor TANGIBLE.
-            3. Cuál es el intercambio de valor INTANGIBLE.
+            Eres @genesi_ai, Master Ecosystem Architect. Vas a aplicar Value Network Analysis (VNA).
+            Eres EXTREMADAMENTE EXIGENTE y HOSTIL a la ambigüedad. Los humanos suelen dar visiones vagas.
             
-            Si la visión es genérica, ambigua o le faltan patas fundamentales, NO estás listo.
-            Genera un máximo de 3 preguntas quirúrgicas y directas.
+            REGLA DE ORO DE SUPERVIVENCIA:
+            Si el texto de la Visión tiene menos de 50 palabras, o NO detalla claramente el modelo de negocio, quién paga a quién, y qué intangibles se intercambian, ESTÁS OBLIGADO a devolver "isReady": false.
+            NUNCA asumas detalles. Si falta info, genera hasta 3 preguntas quirúrgicas para el usuario.
             
             Devuelve ÚNICAMENTE un JSON estricto:
-            { "isReady": boolean, "questions": ["Pregunta 1...", "Pregunta 2..."] }
+            { "isReady": boolean, "questions": ["Pregunta 1...", "Pregunta 2..."] } // Vacío solo si la visión es muy profunda y perfecta.
         `;
 
         const userPrompt = `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión Fundacional:\n${vision}`;
@@ -200,7 +188,7 @@ class OrchestratorCore {
 
     async notarizeWorkOrder(projectId, taskComment, socChecklist) {
         const systemPrompt = `Eres @notari_ledger, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
-        const response = await this.callLLM({ preferredEngine: null, systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
+        const response = await this.callLLM({ preferredEngine: 'deepseek', systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
         this._logTelemetry(projectId, '@notari_ledger', response.telemetry.provider, 'TDD_AUDIT', response.telemetry);
         return JSON.stringify(response.content);
     }
@@ -208,7 +196,7 @@ class OrchestratorCore {
     async harvestKnowledge(task, projectId) {
         try {
             const systemPrompt = `Eres @janitor, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
-            const response = await this.callLLM({ preferredEngine: null, systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
+            const response = await this.callLLM({ preferredEngine: 'gemini', systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
             const result = response.content;
 
             if (result.isValuable) {
@@ -221,8 +209,14 @@ class OrchestratorCore {
         } catch (error) { return null; }
     }
 
+    // 🔥 DESACOPLE ARQUITECTÓNICO: Extrae las reglas VNA y TDD de la Skill del Padrón LMS
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
         await KB.init();
+        
+        // Carga la Skill Maestra de VNA directamente desde la Base de Datos
+        const vnaSkill = await KB.getNode('skill_vna_strategy');
+        const vnaInstructions = vnaSkill ? vnaSkill.content : 'Diseña un mapa de valor detallado con un mínimo de 5 transacciones.';
+
         const allSkills = await KB.getAllNodes({ category: 'skill' });
         const allSops = await KB.getAllNodes({ category: 'SOP' });
         
@@ -233,13 +227,10 @@ class OrchestratorCore {
         `;
 
         const systemPrompt = `
-            Eres Master Ecosystem Architect (@genesi_ai). Forja topologías VNA (Value Network Analysis) de ALTA CALIDAD Y COHERENCIA.
+            Eres Master Ecosystem Architect (@genesi_ai).
             
-            MANDAMIENTOS DE DISEÑO (CALIDAD ANTIGRAVITY):
-            1. FLUJO ÓPTIMO DE VALOR: No recortes eslabones vitales.
-            2. INFERENCIA DE FASE: Analiza la visión del usuario y deduce en qué fase de madurez está el proyecto.
-            3. Ikigai de Roles: Genera el "ai_prompt" para cada Rol con profundidad técnica.
-            4. TDD Riguroso: Cada transacción DEBE tener una matriz "soc_checklist".
+            Basado en tu Skill Operativa de VNA, debes seguir estrictamente estas reglas:
+            ${vnaInstructions}
             
             FORMATO JSON ESTRICTO ESPERADO:
             { 
@@ -248,7 +239,7 @@ class OrchestratorCore {
                 "new_memes": [{ "id": "meme_gen_1", "category": "skill", "title": "Nombre", "content": "..." }],
                 "roles": [{ "levelId": "@anxaneta", "name": "...", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "Tu Ikigai es..." }], 
                 "transactions": [
-                    { "id": "tx_1", "phase": "Fase_Deducida", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "template": "SOP...", "horas": 5, "required_skills": ["meme_gen_1"], "soc_checklist": [{ "text": "Validación 1" }] }
+                    { "id": "tx_1", "phase": "Fase", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "template": "SOP...", "horas": 5, "required_skills": ["meme_gen_1"], "soc_checklist": [{ "text": "Validación 1" }] }
                 ] 
             }
         `;
@@ -321,7 +312,7 @@ class OrchestratorCore {
             `;
 
             const userPrompt = `La tarea "${task.comentario.substring(0,60)}..." falló los SOCs: ${JSON.stringify(failedSocs)}. ¿A qué nodo invocamos?`;
-            const response = await this.callLLM({ preferredEngine: null, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
+            const response = await this.callLLM({ preferredEngine: 'deepseek', systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
             const result = response.content;
 
             if (result.assignedNode) {
@@ -342,3 +333,6 @@ class OrchestratorCore {
         const priceMatrix = LLM_PRICING[engine] || { input: 0, output: 0 };
         const costInDollars = ((telemetryData.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((telemetryData.tokens.completion_tokens / 1000000) * priceMatrix.output);
         store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId, agentId, engine, actionType, tokens: telemetryData.tokens, costInDollars, recRatio: 0, latencyMs: telemetryData.latencyMs } });
+    }
+}
+export const Orchestrator = new OrchestratorCore();
