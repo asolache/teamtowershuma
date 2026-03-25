@@ -216,6 +216,18 @@ export default class LmsView {
                                     <option value="skill">🎒 Skill (Instrucciones Ejecutables)</option>
                                 </select>
                             </div>
+                            
+                            <div class="form-group">
+                                <label>Motor de Investigación Cognitiva</label>
+                                <select id="inpResearchEngine" class="form-control" style="font-family:var(--font-mono); color:var(--accent-blue); font-weight:bold;">
+                                    <option value="">🧠 Motor Óptimo (Auto)</option>
+                                    <option value="openai">OpenAI (GPT-4o)</option>
+                                    <option value="gemini">Google Gemini (Lectura Masiva)</option>
+                                    <option value="anthropic">Anthropic (Claude 3.5)</option>
+                                    <option value="deepseek">DeepSeek</option>
+                                </select>
+                            </div>
+
                             <div class="modal-actions" style="margin-top: 1.5rem;">
                                 <button class="btn-modal" id="btnRunResearch" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; width: 100%;">🚀 Iniciar Minado Neuronal</button>
                             </div>
@@ -231,7 +243,7 @@ export default class LmsView {
     async executeViewScript() {
         Sidebar.initListeners();
         PageHeader.execute();
-        await this.loadJSZip(); // 🔥 CARGA LA LIBRERÍA DE COMPRESIÓN AL VUELO
+        await this.loadJSZip(); 
 
         this.dom = {
             grid: document.getElementById('lmsGrid'),
@@ -262,7 +274,8 @@ export default class LmsView {
             btnCloseResearch: document.getElementById('btnCloseResearch'),
             btnRunResearch: document.getElementById('btnRunResearch'),
             inpResearchTopic: document.getElementById('inpResearchTopic'),
-            inpResearchCat: document.getElementById('inpResearchCat')
+            inpResearchCat: document.getElementById('inpResearchCat'),
+            inpResearchEngine: document.getElementById('inpResearchEngine') // 🔥 REFERENCIA AÑADIDA
         };
 
         window.addEventListener('ph-tab-changed', async (e) => {
@@ -291,7 +304,6 @@ export default class LmsView {
         this.setupDragAndDrop();
     }
 
-    // 🔥 INYECTOR FRONTEND DE JSZIP
     loadJSZip() {
         return new Promise((resolve) => {
             if (window.JSZip) return resolve();
@@ -302,7 +314,6 @@ export default class LmsView {
         });
     }
 
-    // 🔥 IMPORTADOR DE PAQUETES .ZIP (AGENT SKILLS)
     setupDragAndDrop() {
         const dropzone = this.dom.dropzone;
         if (!dropzone) return;
@@ -343,18 +354,15 @@ export default class LmsView {
             const zip = new window.JSZip();
             const contents = await zip.loadAsync(file);
             
-            // 1. Extraer Skill.md Principal
             const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('Skill.md'));
             if (!skillFileKey) return alert("ZIP Inválido: No se encontró 'Skill.md' en el paquete.");
             
             const skillText = await contents.files[skillFileKey].async("text");
             const parsedSkill = this.extractFrontmatter(skillText, file.name.replace('.zip',''));
             
-            // 2. Extraer Referencias (Carpeta resources/ o references/)
             const referenceIds = [];
             for (const relativePath in contents.files) {
                 const f = contents.files[relativePath];
-                // Ignorar el Skill.md y buscar solo archivos .md dentro de carpetas
                 if (!f.dir && relativePath.includes('/') && relativePath.endsWith('.md') && !relativePath.endsWith('Skill.md')) {
                     const refText = await f.async("text");
                     const refParsed = this.extractFrontmatter(refText, f.name.split('/').pop().replace('.md', ''));
@@ -370,7 +378,6 @@ export default class LmsView {
                 }
             }
 
-            // 3. Guardar la Skill anclando las Referencias
             const skillNode = {
                 id: `skill_imported_${Date.now()}`,
                 type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
@@ -511,16 +518,20 @@ export default class LmsView {
     setupDeepResearchEvents() {
         this.dom.btnOpenResearch.addEventListener('click', () => this.dom.researchModal.classList.add('active'));
         this.dom.btnCloseResearch.addEventListener('click', () => this.dom.researchModal.classList.remove('active'));
+        
         this.dom.btnRunResearch.addEventListener('click', async () => {
             const topic = this.dom.inpResearchTopic.value.trim();
             const cat = this.dom.inpResearchCat.value;
+            const engine = this.dom.inpResearchEngine.value || null; // 🔥 Captura del Engine
+
             if (!topic) return alert("Escribe un tema para investigar.");
 
             this.dom.btnRunResearch.disabled = true;
             this.dom.btnRunResearch.innerText = "⏳ @mestre_escola está minando conocimiento...";
 
             try {
-                await Orchestrator.runDeepResearch(topic, cat, 3);
+                // 🔥 Pasamos el engine override al orquestador
+                await Orchestrator.runDeepResearch(topic, cat, 3, engine);
                 alert("✅ Investigación completada.");
                 this.dom.researchModal.classList.remove('active');
                 await this.loadData(); await this.forceGraphRefresh();
@@ -537,7 +548,6 @@ export default class LmsView {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
 
-        // 🔥 EXPORTADOR DE PAQUETES ZIP (AgentSkills Standard)
         this.dom.btnExport.addEventListener('click', async () => {
             if (!window.JSZip) await this.loadJSZip();
             const zip = new window.JSZip();
@@ -548,11 +558,9 @@ export default class LmsView {
             const refString = this.dom.inpReferences.value.trim();
             const refArray = refString ? refString.split(',').map(r => r.trim()).filter(r => r !== '') : [];
 
-            // 1. Añadimos el Frontmatter YAML
             const skillContent = `---\nname: ${title}\ndescription: ${desc}\n---\n\n${content}`;
             zip.file("Skill.md", skillContent);
 
-            // 2. Si tiene Referencias, las empaquetamos en una subcarpeta
             if (refArray.length > 0) {
                 const refFolder = zip.folder("references");
                 await KB.init();
@@ -566,7 +574,6 @@ export default class LmsView {
                 }
             }
 
-            // 3. Generamos la descarga en memoria
             const blob = await zip.generateAsync({type:"blob"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
