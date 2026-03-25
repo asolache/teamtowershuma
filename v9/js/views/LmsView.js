@@ -21,7 +21,7 @@ export default class LmsView {
         const headerConfig = {
             title: "La Forja (Cerebro LMS)",
             subtitle: "Conocimiento W3C & Meta-Grafo",
-            tagline: "Explora la memoria profunda, forja habilidades y visualiza la topología cuántica.",
+            tagline: "Explora la memoria, forja habilidades y empaqueta AgentSkills (.zip) para la red.",
             tabs: [
                 { id: 'list', label: '🗂️ Padrón W3C (Lista)', active: this.currentTab === 'list' },
                 { id: 'graph', label: '🌌 Meta-Grafo 3D', active: this.currentTab === 'graph' }
@@ -48,9 +48,9 @@ export default class LmsView {
                 .btn-deep-research { background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(224,64,251,0.1)); border: 1px solid var(--accent-blue); color: white; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; gap: 8px; align-items: center; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,176,255,0.15);}
                 .btn-deep-research:hover { background: var(--accent-blue); color: black; box-shadow: 0 8px 20px rgba(0,176,255,0.4); transform: translateY(-2px);}
 
-                /* 🔥 Estilos para el Importador AgentSkills */
+                /* 🔥 Dropzone AgentSkills (.zip) */
                 .dropzone-area { border: 2px dashed #444; border-radius: 16px; padding: 15px; text-align: center; color: #888; margin-bottom: 2rem; background: rgba(255,255,255,0.02); transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;}
-                .dropzone-area.drag-over { border-color: var(--accent-blue); background: rgba(0,176,255,0.05); color: var(--accent-blue); transform: scale(1.02);}
+                .dropzone-area.drag-over { border-color: var(--accent-purple); background: rgba(224,64,251,0.05); color: white; transform: scale(1.02);}
 
                 .lms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;}
                 
@@ -73,7 +73,6 @@ export default class LmsView {
 
                 .empty-lms { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #666; border: 1px dashed #333; border-radius: 20px;}
 
-                /* SYNAPTIC CANVAS CONTAINER */
                 #synapticMountPoint { width: 100%; flex: 1; min-height: 500px; border-radius: 20px; overflow: hidden; }
 
                 /* MODAL OVERLAY */
@@ -103,8 +102,8 @@ export default class LmsView {
                 .btn-antigravity { background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); color: black; box-shadow: 0 5px 15px rgba(0,176,255,0.3); }
                 .btn-antigravity:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,230,118,0.5); filter: brightness(1.2); }
                 
-                .btn-export { background: transparent; border: 1px dashed var(--accent-blue); color: var(--accent-blue); }
-                .btn-export:hover { background: rgba(0,176,255,0.1); }
+                .btn-export { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
+                .btn-export:hover { background: rgba(224,64,251,0.1); }
 
                 @media (max-width: 768px) {
                     .workspace-lms { padding: 90px 1rem 120px 1rem; }
@@ -125,21 +124,18 @@ export default class LmsView {
                         
                         <div class="lms-controls-row">
                             <div class="filters-bar" id="lmsFilters">
-                                <button class="filter-btn active" data-filter="all">Todos los Registros</button>
+                                <button class="filter-btn active" data-filter="all">Todos</button>
                                 <button class="filter-btn" data-filter="core_os">🔧 OS Kernel</button>
                                 <button class="filter-btn" data-filter="skill">🎒 Skills</button>
                                 <button class="filter-btn" data-filter="reference">📚 Referencias</button>
                                 <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
                             </div>
-                            
-                            <button class="btn-deep-research" id="btnOpenResearch">
-                                <span style="font-size:1.2rem;">🧠</span> Deep Research (IA)
-                            </button>
+                            <button class="btn-deep-research" id="btnOpenResearch"><span style="font-size:1.2rem;">🧠</span> Deep Research (IA)</button>
                         </div>
 
                         <div class="dropzone-area" id="skillDropzone">
                             <span style="font-size:1.5rem;">📥</span>
-                            <span style="font-weight:bold;">Arrastra aquí un archivo Skill.md para inyectarlo en el Ecosistema.</span>
+                            <span style="font-weight:bold;">Arrastra aquí un .zip (Paquete de Skill) o un .md para inyectarlo.</span>
                         </div>
 
                         <div class="lms-grid" id="lmsGrid">
@@ -168,31 +164,36 @@ export default class LmsView {
                                     <input type="text" id="editNodeCat" class="form-control" placeholder="Ej: skill, reference...">
                                 </div>
                                 <div class="form-group" style="flex:2;">
-                                    <label>Título del Meme</label>
+                                    <label>Título del Nodo</label>
                                     <input type="text" id="editNodeTitle" class="form-control" placeholder="Título descriptivo">
                                 </div>
                             </div>
                             
                             <div class="form-group">
-                                <label>Descripción Corta (Para el ruteo del Agente)</label>
+                                <label>Descripción Corta (Enrutamiento RAG)</label>
                                 <input type="text" id="editNodeDesc" class="form-control" placeholder="Explica cuándo el agente debe invocar esta skill...">
                             </div>
 
                             <div class="form-group">
-                                <label>Contenido Cognitivo (Memoria Semántica)</label>
+                                <label>Contenido Cognitivo (Instrucciones)</label>
                                 <textarea id="editNodeContent" class="form-control textarea" placeholder="Desarrollo del concepto..."></textarea>
                             </div>
                             
                             <div class="form-group">
-                                <label>Tags / Keywords (Separados por coma)</label>
-                                <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); color:var(--accent-green);" placeholder="tag1, tag2, proyectoX">
+                                <label>Dependencias / Referencias Requeridas (IDs separados por coma)</label>
+                                <input type="text" id="editNodeReferences" class="form-control" style="font-family:var(--font-mono); color:var(--accent-blue);" placeholder="ref_os_vna, ref_os_codex">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tags (Gravedad 3D)</label>
+                                <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); color:var(--accent-green);" placeholder="tag1, tag2">
                             </div>
 
                             <div class="modal-actions">
                                 <button class="btn-modal btn-danger" id="btnDeleteNode">🗑️ Purgar Nodo</button>
-                                <button class="btn-modal btn-export" id="btnExportSkill">⬇️ Exportar (.md)</button>
+                                <button class="btn-modal btn-export" id="btnExportSkill">📦 Exportar Paquete (.zip)</button>
                                 <div style="flex:1;"></div>
-                                <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Optimizar Semántica (IA)</button>
+                                <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Optimizar Semántica</button>
                                 <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar Mutación</button>
                             </div>
                         </div>
@@ -204,21 +205,17 @@ export default class LmsView {
                                 <h2>🔍 Deep Research (@mestre_escola)</h2>
                                 <button class="btn-close" id="btnCloseResearch">&times;</button>
                             </div>
-                            <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px; line-height:1.5;">Ordena al Mestre que investigue un tema profundo y lo destile en Nodos de Conocimiento (JSON-LD) listos para inyectar en el Grafo 3D.</p>
-                            
                             <div class="form-group">
                                 <label>Tema a Investigar</label>
                                 <input type="text" id="inpResearchTopic" class="form-control" placeholder="Ej: Clean Architecture, VNA, Mecánica Cuántica...">
                             </div>
-                            
                             <div class="form-group">
-                                <label>Categoría Ontológica Deseada</label>
+                                <label>Categoría Ontológica</label>
                                 <select id="inpResearchCat" class="form-control">
                                     <option value="reference">📚 Reference (Teoría y Metodología)</option>
                                     <option value="skill">🎒 Skill (Instrucciones Ejecutables)</option>
                                 </select>
                             </div>
-                            
                             <div class="modal-actions" style="margin-top: 1.5rem;">
                                 <button class="btn-modal" id="btnRunResearch" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; width: 100%;">🚀 Iniciar Minado Neuronal</button>
                             </div>
@@ -234,6 +231,7 @@ export default class LmsView {
     async executeViewScript() {
         Sidebar.initListeners();
         PageHeader.execute();
+        await this.loadJSZip(); // 🔥 CARGA LA LIBRERÍA DE COMPRESIÓN AL VUELO
 
         this.dom = {
             grid: document.getElementById('lmsGrid'),
@@ -255,6 +253,7 @@ export default class LmsView {
             inpDesc: document.getElementById('editNodeDesc'),
             inpContent: document.getElementById('editNodeContent'),
             inpKeywords: document.getElementById('editNodeKeywords'),
+            inpReferences: document.getElementById('editNodeReferences'),
 
             synapticMount: document.getElementById('synapticMountPoint'),
 
@@ -292,7 +291,18 @@ export default class LmsView {
         this.setupDragAndDrop();
     }
 
-    // 🔥 PARSER YAML & DRAG/DROP PARA AGENTSKILLS
+    // 🔥 INYECTOR FRONTEND DE JSZIP
+    loadJSZip() {
+        return new Promise((resolve) => {
+            if (window.JSZip) return resolve();
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+    }
+
+    // 🔥 IMPORTADOR DE PAQUETES .ZIP (AGENT SKILLS)
     setupDragAndDrop() {
         const dropzone = this.dom.dropzone;
         if (!dropzone) return;
@@ -311,63 +321,105 @@ export default class LmsView {
             dropzone.addEventListener(eventName, () => dropzone.classList.remove('drag-over'), false);
         });
 
-        dropzone.addEventListener('drop', (e) => {
+        dropzone.addEventListener('drop', async (e) => {
             const dt = e.dataTransfer;
             const file = dt.files[0];
-            if (file && file.name.endsWith('.md')) {
+            
+            if (file && file.name.endsWith('.zip')) {
+                dropzone.innerHTML = "⏳ Desempaquetando ZIP...";
+                await this.parseZipSkillFile(file);
+                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un .zip (Paquete de Skill) o un .md para inyectarlo.</span>`;
+            } else if (file && file.name.endsWith('.md')) {
                 this.parseMarkdownSkillFile(file);
             } else {
-                alert("Formato denegado. Solo se admiten archivos Markdown (.md) que sigan el estándar AgentSkills.");
+                alert("Formato denegado. Solo se admiten archivos .zip (AgentSkills completos) o .md individuales.");
             }
         }, false);
+    }
+
+    async parseZipSkillFile(file) {
+        if (!window.JSZip) await this.loadJSZip();
+        try {
+            const zip = new window.JSZip();
+            const contents = await zip.loadAsync(file);
+            
+            // 1. Extraer Skill.md Principal
+            const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('Skill.md'));
+            if (!skillFileKey) return alert("ZIP Inválido: No se encontró 'Skill.md' en el paquete.");
+            
+            const skillText = await contents.files[skillFileKey].async("text");
+            const parsedSkill = this.extractFrontmatter(skillText, file.name.replace('.zip',''));
+            
+            // 2. Extraer Referencias (Carpeta resources/ o references/)
+            const referenceIds = [];
+            for (const relativePath in contents.files) {
+                const f = contents.files[relativePath];
+                // Ignorar el Skill.md y buscar solo archivos .md dentro de carpetas
+                if (!f.dir && relativePath.includes('/') && relativePath.endsWith('.md') && !relativePath.endsWith('Skill.md')) {
+                    const refText = await f.async("text");
+                    const refParsed = this.extractFrontmatter(refText, f.name.split('/').pop().replace('.md', ''));
+                    
+                    const refNode = {
+                        id: `ref_imported_${Date.now()}_${Math.random().toString(36).substr(2,5)}`,
+                        type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
+                        title: refParsed.title, description: refParsed.description, content: refParsed.content, keywords: ['#imported_ref']
+                    };
+                    await KB.init();
+                    await KB.saveNode(refNode);
+                    referenceIds.push(refNode.id);
+                }
+            }
+
+            // 3. Guardar la Skill anclando las Referencias
+            const skillNode = {
+                id: `skill_imported_${Date.now()}`,
+                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
+                title: parsedSkill.title, description: parsedSkill.description, content: parsedSkill.content,
+                references: referenceIds, keywords: ['#imported_skill']
+            };
+
+            await KB.saveNode(skillNode);
+            alert(`✅ Paquete Inyectado: ${parsedSkill.title} (${referenceIds.length} referencias asociadas)`);
+            await this.loadData();
+            await this.forceGraphRefresh();
+
+        } catch (error) {
+            alert("Error al desempaquetar el ZIP: " + error.message);
+        }
     }
 
     parseMarkdownSkillFile(file) {
         const reader = new FileReader();
         reader.onload = async (e) => {
-            const text = e.target.result;
-            let name = file.name.replace('.md', '');
-            let description = '';
-            let content = text;
-
-            // Extraemos YAML Frontmatter (Estándar Claude)
-            const yamlRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-            const match = text.match(yamlRegex);
-            
-            if (match) {
-                const yaml = match[1];
-                content = match[2].trim();
-                
-                const nameMatch = yaml.match(/name:\s*(.+)/);
-                if (nameMatch) name = nameMatch[1].trim();
-                
-                const descMatch = yaml.match(/description:\s*(.+)/);
-                if (descMatch) description = descMatch[1].trim();
-            }
-
+            const parsed = this.extractFrontmatter(e.target.result, file.name.replace('.md', ''));
             const newNode = {
-                id: `skill_imported_${Date.now()}`,
-                type: 'meme',
-                category: 'skill',
-                projectId: 'global',
-                targetId: 'global',
-                title: name,
-                description: description,
-                content: content,
-                keywords: ['#imported', '#agentskills']
+                id: `skill_imported_${Date.now()}`, type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
+                title: parsed.title, description: parsed.description, content: parsed.content, keywords: ['#imported']
             };
-
             try {
-                await KB.init();
-                await KB.saveNode(newNode);
-                alert(`✅ Skill Inyectada: ${name}`);
-                await this.loadData();
-                await this.forceGraphRefresh();
-            } catch (err) {
-                alert("Fallo inyectando la Skill: " + err.message);
-            }
+                await KB.init(); await KB.saveNode(newNode);
+                alert(`✅ Skill individual inyectada: ${parsed.title}`);
+                await this.loadData(); await this.forceGraphRefresh();
+            } catch (err) { alert("Fallo inyectando: " + err.message); }
         };
         reader.readAsText(file);
+    }
+
+    extractFrontmatter(text, defaultTitle) {
+        let title = defaultTitle;
+        let description = '';
+        let content = text;
+        const yamlRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+        const match = text.match(yamlRegex);
+        if (match) {
+            const yaml = match[1];
+            content = match[2].trim();
+            const nameMatch = yaml.match(/name:\s*(.+)/);
+            if (nameMatch) title = nameMatch[1].trim();
+            const descMatch = yaml.match(/description:\s*(.+)/);
+            if (descMatch) description = descMatch[1].trim();
+        }
+        return { title, description, content };
     }
 
     async loadData() {
@@ -377,26 +429,17 @@ export default class LmsView {
             const activeFilter = this.dom.filters.querySelector('.active')?.dataset.filter || 'all';
             this.renderNodes(activeFilter);
         } catch (error) {
-            console.error("Error cargando LMS:", error);
-            this.dom.grid.innerHTML = `<div class="empty-lms" style="color:var(--accent-red); border-color:var(--accent-red);">⚠️ Error crítico leyendo la Base de Datos IndexedDB.</div>`;
+            this.dom.grid.innerHTML = `<div class="empty-lms">⚠️ Error crítico leyendo IndexedDB.</div>`;
         }
     }
 
     renderNodes(filterCategory) {
         let nodesToRender = this.allNodes;
-        if (filterCategory !== 'all') {
-            nodesToRender = this.allNodes.filter(n => n.category === filterCategory || n.type === filterCategory);
-        }
+        if (filterCategory !== 'all') nodesToRender = this.allNodes.filter(n => n.category === filterCategory || n.type === filterCategory);
         nodesToRender.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
 
         if (nodesToRender.length === 0) {
-            this.dom.grid.innerHTML = `
-                <div class="empty-lms">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">🕳️</div>
-                    <h3>Vacío Cognitivo</h3>
-                    <p>No hay Nodos en esta categoría. Importa una AgentSkill o usa el Deep Research.</p>
-                </div>
-            `;
+            this.dom.grid.innerHTML = `<div class="empty-lms"><div style="font-size: 3rem; margin-bottom: 10px;">🕳️</div><h3>Vacío Cognitivo</h3></div>`;
             return;
         }
 
@@ -404,26 +447,25 @@ export default class LmsView {
             const safeCat = node.type === 'prompt_a2a' ? 'prompt_a2a' : (node.category || 'MEME');
             const tags = (node.keywords && Array.isArray(node.keywords)) ? node.keywords : [];
             let tagsHtml = tags.slice(0, 3).map(t => `<span class="meme-tag">#${t}</span>`).join('');
-            if (tags.length > 3) tagsHtml += `<span class="meme-tag">+${tags.length - 3}</span>`;
             const safeId = node.id.replace(/"/g, '&quot;');
+            const refCount = (node.references && Array.isArray(node.references)) ? node.references.length : 0;
 
             return `
                 <div class="meme-card" data-id="${safeId}">
                     <div class="meme-category ${safeCat}">${safeCat}</div>
-                    <h4 class="meme-title">${node.title || 'Nodo Sin Título'}</h4>
+                    <h4 class="meme-title">${node.title || 'Sin Título'}</h4>
                     ${node.description ? `<div style="color:var(--accent-blue); font-size:0.75rem; font-weight:bold; margin-bottom:5px;">${node.description}</div>` : ''}
-                    <div class="meme-content">${node.content || 'Sin contenido detallado.'}</div>
+                    <div class="meme-content">${node.content || ''}</div>
                     <div class="meme-footer">
                         <span class="meme-tag" style="color:var(--accent-blue);">✏️ Editar</span>
+                        ${refCount > 0 ? `<span class="meme-tag" style="color:var(--accent-orange);">📚 ${refCount} Refs</span>` : ''}
                         ${tagsHtml}
                     </div>
                 </div>
             `;
         }).join('');
 
-        this.dom.grid.querySelectorAll('.meme-card').forEach(card => {
-            card.addEventListener('click', (e) => this.openEditor(e.currentTarget.dataset.id));
-        });
+        this.dom.grid.querySelectorAll('.meme-card').forEach(card => card.addEventListener('click', (e) => this.openEditor(e.currentTarget.dataset.id)));
     }
 
     setupFilters() {
@@ -449,6 +491,7 @@ export default class LmsView {
         this.dom.inpDesc.value = node.description || '';
         this.dom.inpContent.value = node.content || '';
         this.dom.inpKeywords.value = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
+        this.dom.inpReferences.value = (node.references && Array.isArray(node.references)) ? node.references.join(', ') : '';
 
         const isKernel = this.dom.inpKeywords.value.includes('#kernel_sos');
         this.dom.btnDelete.style.display = isKernel ? 'none' : 'block';
@@ -456,35 +499,21 @@ export default class LmsView {
         this.dom.modal.classList.add('active');
     }
 
-    closeEditor() {
-        this.dom.modal.classList.remove('active');
-    }
+    closeEditor() { this.dom.modal.classList.remove('active'); }
 
     async forceGraphRefresh() {
         if (this.synapticInstance) {
             await this.synapticInstance.loadInitialData();
-            if (this.synapticInstance.graph3D) {
-                this.synapticInstance.graph3D.graphData({ 
-                    nodes: this.synapticInstance.nodes, 
-                    links: this.synapticInstance.links 
-                });
-            }
+            if (this.synapticInstance.graph3D) this.synapticInstance.graph3D.graphData({ nodes: this.synapticInstance.nodes, links: this.synapticInstance.links });
         }
     }
 
     setupDeepResearchEvents() {
-        this.dom.btnOpenResearch.addEventListener('click', () => {
-            this.dom.researchModal.classList.add('active');
-        });
-
-        this.dom.btnCloseResearch.addEventListener('click', () => {
-            this.dom.researchModal.classList.remove('active');
-        });
-
+        this.dom.btnOpenResearch.addEventListener('click', () => this.dom.researchModal.classList.add('active'));
+        this.dom.btnCloseResearch.addEventListener('click', () => this.dom.researchModal.classList.remove('active'));
         this.dom.btnRunResearch.addEventListener('click', async () => {
             const topic = this.dom.inpResearchTopic.value.trim();
             const cat = this.dom.inpResearchCat.value;
-
             if (!topic) return alert("Escribe un tema para investigar.");
 
             this.dom.btnRunResearch.disabled = true;
@@ -492,15 +521,11 @@ export default class LmsView {
 
             try {
                 await Orchestrator.runDeepResearch(topic, cat, 3);
-                alert("✅ Investigación completada. Nuevos nodos inyectados en la Forja.");
+                alert("✅ Investigación completada.");
                 this.dom.researchModal.classList.remove('active');
-                this.dom.inpResearchTopic.value = '';
-                
-                await this.loadData();
-                await this.forceGraphRefresh();
-                
+                await this.loadData(); await this.forceGraphRefresh();
             } catch (e) {
-                alert("Fallo en la investigación: " + e.message);
+                alert("Fallo: " + e.message);
             } finally {
                 this.dom.btnRunResearch.disabled = false;
                 this.dom.btnRunResearch.innerText = "🚀 Iniciar Minado Neuronal";
@@ -512,73 +537,71 @@ export default class LmsView {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
 
-        // 🔥 EXPORTADOR AGENTSKILLS (CLAUDE COMPATIBLE)
-        this.dom.btnExport.addEventListener('click', () => {
+        // 🔥 EXPORTADOR DE PAQUETES ZIP (AgentSkills Standard)
+        this.dom.btnExport.addEventListener('click', async () => {
+            if (!window.JSZip) await this.loadJSZip();
+            const zip = new window.JSZip();
+
             const title = this.dom.inpTitle.value.trim() || 'Custom_Skill';
             const desc = this.dom.inpDesc.value.trim() || 'Skill generada por TeamTowers V9';
             const content = this.dom.inpContent.value.trim();
+            const refString = this.dom.inpReferences.value.trim();
+            const refArray = refString ? refString.split(',').map(r => r.trim()).filter(r => r !== '') : [];
 
-            const fileContent = `---
-name: ${title}
-description: ${desc}
----
+            // 1. Añadimos el Frontmatter YAML
+            const skillContent = `---\nname: ${title}\ndescription: ${desc}\n---\n\n${content}`;
+            zip.file("Skill.md", skillContent);
 
-${content}`;
+            // 2. Si tiene Referencias, las empaquetamos en una subcarpeta
+            if (refArray.length > 0) {
+                const refFolder = zip.folder("references");
+                await KB.init();
+                for (const refId of refArray) {
+                    const refNode = await KB.getNode(refId);
+                    if (refNode) {
+                        const refNameSafe = (refNode.title || refNode.id).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                        const refContent = `---\nname: ${refNode.title}\ndescription: ${refNode.description || ''}\n---\n\n${refNode.content}`;
+                        refFolder.file(`${refNameSafe}.md`, refContent);
+                    }
+                }
+            }
 
-            const blob = new Blob([fileContent], { type: 'text/markdown' });
+            // 3. Generamos la descarga en memoria
+            const blob = await zip.generateAsync({type:"blob"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${title.replace(/\s+/g, '_')}.md`;
+            a.download = `${title.replace(/\s+/g, '_')}.zip`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         });
 
-        // OPTIMIZADOR ANTIGRAVITY PARA EDICIÓN DE MEMES
         if (this.dom.btnAntigravity) {
             this.dom.btnAntigravity.addEventListener('click', async () => {
                 const title = this.dom.inpTitle.value.trim();
                 const content = this.dom.inpContent.value.trim();
                 const cat = this.dom.inpCat.value.trim();
-                const tags = this.dom.inpKeywords.value.trim();
-                
-                if (!content) return alert("El nodo debe tener contenido para ser optimizado.");
+                if (!content) return alert("El nodo debe tener contenido para optimizarse.");
 
                 this.dom.btnAntigravity.disabled = true;
                 this.dom.btnAntigravity.innerText = "⏳ Comprimiendo...";
 
-                const systemPrompt = `
-                    Eres el Agente de Optimización Antigravity del Kernel V9. 
-                    Misión: Elevar la densidad semántica de este Nodo W3C.
-                    REGLAS:
-                    1. Comprime el texto para reducir la carga de tokens sin perder valor.
-                    2. Escribe una descripción corta (max 150 chars) para indexación RAG.
-                    3. Genera los 'Tags' óptimos.
-                    Devuelve JSON: { "title": "Título Mejorado", "description": "Resumen indexable...", "content": "Contenido comprimido...", "keywords": ["tag1", "tag2"] }
-                `;
-
-                const userPrompt = `Título: ${title}\nCategoría: ${cat}\nTags Actuales: ${tags}\nContenido:\n${content}`;
+                const systemPrompt = `Eres el Agente de Optimización Antigravity. Eleva la densidad semántica de este Nodo W3C. Comprime el texto, escribe una 'description' corta y genera 'keywords'. Devuelve JSON: { "title": "Título", "description": "Resumen...", "content": "Contenido...", "keywords": ["tag1"] }`;
+                const userPrompt = `Título: ${title}\nCategoría: ${cat}\nContenido:\n${content}`;
 
                 try {
                     let provider = localStorage.getItem('tt_ai_provider') || 'openai';
                     let apiKey = localStorage.getItem(`tt_key_${provider}`);
                     const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
-                    const optimizedData = response.content;
                     
-                    this.dom.inpTitle.value = optimizedData.title;
-                    this.dom.inpDesc.value = optimizedData.description || '';
-                    this.dom.inpContent.value = optimizedData.content;
-                    this.dom.inpKeywords.value = optimizedData.keywords.join(', ');
-                    
-                    alert("✨ Nodo optimizado para el modelo Antigravity.");
-                } catch (error) {
-                    alert("Fallo en la optimización: " + error.message);
-                } finally {
-                    this.dom.btnAntigravity.disabled = false;
-                    this.dom.btnAntigravity.innerText = "✨ Optimizar Semántica (IA)";
-                }
+                    this.dom.inpTitle.value = response.content.title;
+                    this.dom.inpDesc.value = response.content.description || '';
+                    this.dom.inpContent.value = response.content.content;
+                    this.dom.inpKeywords.value = response.content.keywords.join(', ');
+                } catch (error) { alert("Fallo: " + error.message); } 
+                finally { this.dom.btnAntigravity.disabled = false; this.dom.btnAntigravity.innerText = "✨ Optimizar Semántica"; }
             });
         }
 
@@ -590,41 +613,32 @@ ${content}`;
             if (!title || !content) return alert("Título y contenido son obligatorios.");
 
             const keywordsArray = this.dom.inpKeywords.value.split(',').map(k => k.trim()).filter(k => k !== '');
-            const updatedNode = { id, type: this.dom.inpType.value, projectId: this.dom.inpProjId.value, category: this.dom.inpCat.value.trim(), title, description: desc, content, keywords: keywordsArray };
+            const referencesArray = this.dom.inpReferences.value.split(',').map(k => k.trim()).filter(k => k !== '');
+            
+            const updatedNode = { 
+                id, type: this.dom.inpType.value, projectId: this.dom.inpProjId.value, category: this.dom.inpCat.value.trim(), 
+                title, description: desc, content, keywords: keywordsArray, references: referencesArray 
+            };
 
-            this.dom.btnSave.disabled = true;
-            this.dom.btnSave.innerText = "⏳ Sellando...";
-
+            this.dom.btnSave.disabled = true; this.dom.btnSave.innerText = "⏳ Sellando...";
             try {
-                await KB.init();
-                await KB.saveNode(updatedNode);
-                await this.loadData(); 
-                await this.forceGraphRefresh();
+                await KB.init(); await KB.saveNode(updatedNode);
+                await this.loadData(); await this.forceGraphRefresh();
                 this.closeEditor();
-            } catch (e) {
-                alert(`Error al guardar: ${e.message}`);
-            } finally {
-                this.dom.btnSave.disabled = false;
-                this.dom.btnSave.innerText = "💾 Sellar Mutación";
-            }
+            } catch (e) { alert(`Error: ${e.message}`); } 
+            finally { this.dom.btnSave.disabled = false; this.dom.btnSave.innerText = "💾 Sellar Mutación"; }
         });
 
         this.dom.btnDelete.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
-            if (!confirm("⚠️ ¿Purgar este nodo de la base de datos?\nEsta acción es irreversible y puede generar huecos en la memoria de los Agentes.")) return;
-
+            if (!confirm("⚠️ ¿Purgar este nodo?")) return;
             this.dom.btnDelete.disabled = true;
             try {
-                await KB.init();
-                await KB.deleteNode(id);
-                await this.loadData();
-                await this.forceGraphRefresh();
+                await KB.init(); await KB.deleteNode(id);
+                await this.loadData(); await this.forceGraphRefresh();
                 this.closeEditor();
-            } catch (e) {
-                alert(`Error al purgar nodo: ${e.message}`);
-            } finally {
-                this.dom.btnDelete.disabled = false;
-            }
+            } catch (e) { alert(`Error: ${e.message}`); } 
+            finally { this.dom.btnDelete.disabled = false; }
         });
     }
 }
