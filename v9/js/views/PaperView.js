@@ -4,17 +4,18 @@ import { KB } from '../core/kb.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js'; 
 import { PageHeader } from '../components/PageHeader.js';
+import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 Importamos el cerebro
 
 export default class PaperView {
     constructor() {
         document.title = "Omni-Paper | TeamTowers V9";
         this.woHash = new URLSearchParams(window.location.search).get('hash');
         this.activeTx = null; 
+        this.activeSkillLab = null; // 🔥 Nueva variable para el Modo Laboratorio
         this.activeProjectId = null;
         this.isMenuOpen = false;
         this.currentWord = "";
         
-        // Estado del buscador semántico en vivo
         this.currentMemesSearchResult = [];
         this.activeMemeFilter = 'all';
 
@@ -36,7 +37,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Workspace)",
             subtitle: project ? project.nombre : 'Kernel V9',
-            tagline: "Lienzo de Ejecución GTD. Cronometra, invoca entidades y sella tu Proof of Work.",
+            tagline: "Lienzo Dual: Ejecuta Work Orders (GTD) o testea AgentSkills en el Laboratorio.",
             tabs: []
         };
 
@@ -45,17 +46,15 @@ export default class PaperView {
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: var(--bg-dark); font-family: var(--font-main); width:100%;}
                 .workspace-paper { flex: 1; display: flex; flex-direction: column; position: relative; background: radial-gradient(circle at center, #111116 0%, #050505 100%); overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding: 2rem 3rem; box-sizing: border-box; width: 100%; align-items: center;}
                 
-                .paper-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; padding-bottom: 8rem;}
+                .paper-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; padding-bottom: 8rem;}
                 
                 .breadcrumb-bar { display: flex; align-items: center; background: rgba(10,10,15,0.8); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--glass-border); gap: 10px; flex-wrap: wrap;}
                 .bc-select { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; font-size: 0.9rem; font-weight: bold; font-family: var(--font-main); outline: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: 0.3s;}
                 .bc-select:focus { border-color: var(--accent-blue); }
                 .bc-separator { color: #555; font-weight: bold; }
                 
-                /* 🔥 LIVE CONTEXT BAR (TÁCTICO) */
                 .live-context-bar { background: rgba(10,10,15,0.95); border: 1px solid var(--accent-purple); padding: 12px 15px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 24px; transition: 0.3s; position: sticky; top: 10px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);}
                 .live-context-label { font-size: 0.75rem; color: var(--accent-purple); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
-                
                 .action-chip-container { display: flex; flex-wrap: wrap; gap: 10px; }
                 .action-chip { display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 8px; padding: 4px; gap: 8px; animation: popIn 0.3s ease-out;}
                 .cb-mention { color: var(--accent-blue); font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; padding-left: 5px;}
@@ -98,6 +97,20 @@ export default class PaperView {
                 .soc-item-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-green); margin-top: 2px; }
                 .soc-item-check span { color: #ddd; font-size: 0.9rem; line-height: 1.4; }
 
+                /* 🔥 LAB CONTEXT PANEL (AGENT SKILLS VIEWER) */
+                .lab-context-panel { display:none; background: rgba(15,15,20,0.9); border: 1px solid var(--accent-orange); border-top: 4px solid var(--accent-orange); padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(255,171,64,0.15);}
+                .lab-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
+                .lab-title { font-size: 1.5rem; color: white; font-weight: 900; margin: 0; display:flex; align-items:center; gap:10px;}
+                .lab-desc { font-size: 0.9rem; color: #ccc; line-height: 1.5; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border-left: 3px solid var(--accent-orange); margin-bottom: 20px;}
+                .lab-results-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+                .lab-eval-item { background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 12px; overflow: hidden; }
+                .lab-eval-header { padding: 15px; background: rgba(255,255,255,0.02); display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #333;}
+                .lab-eval-prompt { font-family: var(--font-mono); color: var(--accent-blue); font-size: 0.9rem; }
+                .lab-eval-body { padding: 15px; color: #ccc; font-family: 'Georgia', serif; font-size: 0.95rem; line-height: 1.6; }
+                .lab-eval-footer { padding: 10px 15px; background: rgba(0,0,0,0.8); border-top: 1px solid #333; display: flex; gap: 15px; font-size: 0.8rem; font-family: var(--font-mono); }
+                .metric { color: #888; }
+                .metric span { color: white; font-weight: bold; }
+
                 /* SEMANTIC EDITOR */
                 .editor-wrapper { position: relative; width: 100%; background: rgba(10,10,15,0.8); border: 1px solid #444; border-radius: 16px; padding: 20px; box-sizing: border-box; transition: 0.3s;}
                 .editor-wrapper:focus-within { border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(224,64,251,0.1);}
@@ -105,21 +118,13 @@ export default class PaperView {
                 .semantic-editor:empty:before { content: attr(data-placeholder); color: #555; font-style: italic; pointer-events: none;}
                 .semantic-editor p { margin: 0 0 1rem 0; }
                 
-                /* 🔥 AJAX MENÚ FLOTANTE MEJORADO */
+                /* AJAX MENÚ FLOTANTE MEJORADO */
                 .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.15); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 40vh; overflow: hidden; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); min-width: 320px; max-width: 90vw; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left; flex-direction: column;}
-                
                 .sm-header { background: rgba(0,0,0,0.5); padding: 10px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10;}
                 .sm-title { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px;}
-                .sm-filters { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px;}
-                .sm-filters::-webkit-scrollbar { height: 2px; }
-                .sm-filter { background: #111; border: 1px solid #444; color: #aaa; font-family: var(--font-mono); font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: 0.2s;}
-                .sm-filter:hover { border-color: var(--accent-blue); color: white;}
-                .sm-filter.active { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
-                
                 .sm-results { overflow-y: auto; flex: 1; padding: 5px 0;}
                 .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-family: var(--font-main); border-left: 2px solid transparent;}
-                .semantic-item:hover, .semantic-item.selected { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
-                
+                .semantic-item:hover { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
                 .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
 
                 /* GTD ACTIONS */
@@ -127,6 +132,9 @@ export default class PaperView {
                 .btn-action-pow { background: linear-gradient(135deg, var(--accent-green), #00b0ff); color: black; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 230, 118, 0.3);}
                 .btn-action-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5); filter: brightness(1.2);}
                 
+                .btn-action-lab { background: linear-gradient(135deg, var(--accent-orange), #ff3d00); color: white; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(255, 171, 64, 0.3);}
+                .btn-action-lab:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 171, 64, 0.5); filter: brightness(1.2);}
+
                 .btn-action-draft { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);}
                 .btn-action-draft:hover { background: var(--accent-orange); color: black; box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4); transform: translateY(-3px);}
 
@@ -138,7 +146,7 @@ export default class PaperView {
                     .breadcrumb-bar { flex-direction: column; align-items: stretch; margin-bottom: 10px;}
                     .bc-separator { display: none; }
                     .action-bar-fixed { bottom: 80px; right: 20px; left: 20px; justify-content: space-between; gap:10px; }
-                    .btn-action-pow, .btn-action-draft { width: 100%; padding: 14px 10px; font-size: 0.95rem; text-align: center; justify-content:center;}
+                    .btn-action-pow, .btn-action-draft, .btn-action-lab { width: 100%; padding: 14px 10px; font-size: 0.95rem; text-align: center; justify-content:center;}
                     .pow-section { flex-direction: column; }
                     .timer-display { font-size: 4rem; }
                 }
@@ -173,7 +181,6 @@ export default class PaperView {
                             <div style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">Tiempo de Foco Activo</div>
                             <div class="timer-display" id="timeDisplay">00:00:00</div>
                             <div style="font-family: var(--font-mono); color: #888; font-size: 0.8rem;">El tiempo se inyectará en el Slicing Pie al sellar.</div>
-                            
                             <div class="timer-controls">
                                 <button class="btn-timer play" id="btnPlay" title="Iniciar Foco">▶</button>
                                 <button class="btn-timer pause" id="btnPause" title="Pausar Foco" style="display:none;">⏸</button>
@@ -207,7 +214,15 @@ export default class PaperView {
                             </div>
                         </div>
 
-                        <div class="editor-wrapper">
+                        <div id="labContextPanel" class="lab-context-panel">
+                            <div class="lab-header">
+                                <h2 id="labTitle" class="lab-title"><span>🧪</span> Benchmark AgentSkills</h2>
+                            </div>
+                            <div id="labDesc" class="lab-desc">Cargando instrucciones del agente...</div>
+                            <div id="labResults" class="lab-results-grid"></div>
+                        </div>
+
+                        <div class="editor-wrapper" id="editorWrapper">
                             <label id="editorLabel" style="display:none; font-size:0.75rem; color:#888; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">Cuerpo del Entregable (Proof of Work)</label>
                             <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="El lienzo está en blanco.\n\nEscribe aquí tus notas, o redacta tu Proof of Work.\n\nUsa @ para invocar a la Colla y desplegar acciones (Pings / W.O.).\nUsa # para buscar e inyectar Nodos de Conocimiento del LMS."><p><br></p></div>
                         </div>
@@ -216,20 +231,15 @@ export default class PaperView {
                     
                     <div class="action-bar-fixed">
                         <button class="btn-action-draft" id="btnSaveTaskDraft" style="display:none;">💾 Guardar Borrador</button>
-                        <button class="btn-action-pow" id="btnSubmitReport" style="display:none;">🚀 Sellar Proof of Work (Ledger)</button>
+                        <button class="btn-action-pow" id="btnSubmitReport" style="display:none;">🚀 Sellar Proof of Work</button>
+                        
+                        <button class="btn-action-lab" id="btnRunBenchmark" style="display:none;">🎯 Iniciar Benchmark (Evals)</button>
                     </div>
                 </main>
                 
                 <div id="semanticMenu" class="semantic-menu">
                     <div class="sm-header">
                         <div class="sm-title" id="smTitle">Inyectar Conocimiento W3C</div>
-                        <div class="sm-filters" id="smFilters" style="display:none;">
-                            <button class="sm-filter active" data-f="all">Todos</button>
-                            <button class="sm-filter" data-f="skill">Skills</button>
-                            <button class="sm-filter" data-f="SOP">SOPs</button>
-                            <button class="sm-filter" data-f="prompt_a2a">Prompts</button>
-                            <button class="sm-filter" data-f="evergreen">Evergreen</button>
-                        </div>
                     </div>
                     <div class="sm-results" id="smResults"></div>
                 </div>
@@ -266,12 +276,20 @@ export default class PaperView {
             taskSocs: document.getElementById('taskSocsContainer'),
             inpPowLink: document.getElementById('inpPowLink'),
             inpPowHours: document.getElementById('inpPowHours'),
-            editorLabel: document.getElementById('editorLabel'),
+            
+            // 🔥 DOM DEL LABORATORIO
+            labPanel: document.getElementById('labContextPanel'),
+            labTitle: document.getElementById('labTitle'),
+            labDesc: document.getElementById('labDesc'),
+            labResults: document.getElementById('labResults'),
+            btnRunBenchmark: document.getElementById('btnRunBenchmark'),
 
+            editorWrapper: document.getElementById('editorWrapper'),
+            editorLabel: document.getElementById('editorLabel'),
             editor: document.getElementById('semanticEditor'),
+            
             menu: document.getElementById('semanticMenu'),
             smTitle: document.getElementById('smTitle'),
-            smFilters: document.getElementById('smFilters'),
             smResults: document.getElementById('smResults'),
             
             btnSubmit: document.getElementById('btnSubmitReport'),
@@ -280,7 +298,7 @@ export default class PaperView {
 
         this.dom.editor.focus();
 
-        this.loadProjectTasks = (projId) => {
+        this.loadProjectTasks = async (projId) => {
             const p = state.projects.find(x => x.id === projId);
             if (!p) return;
             
@@ -292,9 +310,15 @@ export default class PaperView {
                 tasks = tasksSource.filter(tx => tx.assigneeId === activeUserId || tx.workerId === activeUserId); 
             }
 
+            // 🔥 Búsqueda de Skills Testeables (AgentSkills con Evals)
+            await KB.init();
+            const allNodes = await KB.getAllNodes();
+            const labSkills = allNodes.filter(n => n.type === 'skill' && n.evals && n.evals.length > 0 && (n.projectId === projId || n.projectId === 'global'));
+
             let selectHtml = `<option value="draft">📝 Borrador Libre (Draft Mode)</option>`;
+            
             if (tasks.length > 0) {
-                selectHtml += `<optgroup label="🎯 Tareas Asignadas">`;
+                selectHtml += `<optgroup label="🎯 Tareas Asignadas (GTD)">`;
                 tasks.forEach(t => {
                     const parentFlow = (p.vna_flows || []).find(f => f.id === t.flowId) || t;
                     let resolvedName = parentFlow.template || parentFlow.entregable || t.comentario?.substring(0, 30) || 'Work Order';
@@ -302,16 +326,26 @@ export default class PaperView {
                 });
                 selectHtml += `</optgroup>`;
             }
+
+            if (labSkills.length > 0) {
+                selectHtml += `<optgroup label="🧪 Laboratorio de Agentes (Evals)">`;
+                labSkills.forEach(s => {
+                    selectHtml += `<option value="lab_${s.id}">[LAB] Skill: ${s.title.substring(0,40)}</option>`;
+                });
+                selectHtml += `</optgroup>`;
+            }
+
             this.dom.omniSelector.innerHTML = selectHtml;
         };
 
-        this.loadProjectTasks(this.activeProjectId);
+        await this.loadProjectTasks(this.activeProjectId);
 
-        this.dom.selProject.addEventListener('change', (e) => {
+        this.dom.selProject.addEventListener('change', async (e) => {
             this.activeProjectId = e.target.value;
             localStorage.setItem('tt_active_project', this.activeProjectId);
-            this.loadProjectTasks(this.activeProjectId);
+            await this.loadProjectTasks(this.activeProjectId);
             this.activeTx = null;
+            this.activeSkillLab = null;
             this.stopPomodoro(); 
             this.setDraftMode();
         });
@@ -329,13 +363,23 @@ export default class PaperView {
             } else { this.setDraftMode(); }
         } else { this.setDraftMode(); }
 
-        this.dom.omniSelector.addEventListener('change', (e) => {
+        this.dom.omniSelector.addEventListener('change', async (e) => {
             const val = e.target.value;
             this.stopPomodoro(); 
+            
             if (val === 'draft') {
                 this.activeTx = null;
+                this.activeSkillLab = null;
                 this.setDraftMode();
+            } else if (val.startsWith('lab_')) {
+                // 🔥 ENRUTADOR: Entramos al Laboratorio
+                this.activeTx = null;
+                const skillId = val.replace('lab_', '');
+                this.activeSkillLab = await KB.getNode(skillId);
+                this.setLabMode();
             } else {
+                // Modo Kanban (Work Order)
+                this.activeSkillLab = null;
                 const p = store.getState().projects.find(x => x.id === this.activeProjectId);
                 this.activeTx = (p.work_orders || p.transactions || []).find(t => (t.id || t.hash) === val);
                 this.setTaskMode();
@@ -344,50 +388,131 @@ export default class PaperView {
 
         this.setupPomodoro();
         this.setupSemanticEditor();
+        this.setupLabEngine();
 
         this.dom.btnSubmit.addEventListener('click', () => this.reportDeliverable());
         this.dom.btnSaveTaskDraft.addEventListener('click', () => this.saveTaskDraft());
     }
 
     // ==========================================
-    // 🔥 POMODORO TRACKER NATIVO
+    // 🧪 MOTOR DE LABORATORIO (BENCHMARKING)
     // ==========================================
-    setupPomodoro() {
-        const updateInputs = () => {
-            const hrs = Math.floor(this.pomodoroSeconds / 3600);
-            const mins = Math.floor((this.pomodoroSeconds % 3600) / 60);
-            const secs = this.pomodoroSeconds % 60;
-            this.dom.timeDisplay.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    setupLabEngine() {
+        this.dom.btnRunBenchmark.addEventListener('click', async () => {
+            if (!this.activeSkillLab) return;
             
-            if (this.pomodoroSeconds > 0) {
-                this.dom.inpPowHours.value = (this.pomodoroSeconds / 3600).toFixed(3); 
+            this.dom.btnRunBenchmark.disabled = true;
+            this.dom.btnRunBenchmark.innerText = "⏳ Ejecutando Pruebas...";
+            
+            this.dom.labResults.innerHTML = `<div style="text-align:center; padding:20px; color:#888;">Levantando entorno de pruebas aislado...</div>`;
+
+            try {
+                // 1. Recuperar los nodos Eval asociados a esta skill
+                let testCases = [];
+                for (const evalId of this.activeSkillLab.evals) {
+                    const evalNode = await KB.getNode(evalId);
+                    if (evalNode) {
+                        try {
+                            const parsed = JSON.parse(evalNode.content);
+                            if (Array.isArray(parsed)) testCases.push(...parsed);
+                            else testCases.push(parsed);
+                        } catch(e) { console.warn("Eval inválido:", evalId); }
+                    }
+                }
+
+                if (testCases.length === 0) throw new Error("No hay Test Cases (Evals) JSON válidos vinculados a esta Skill.");
+
+                let htmlResults = '';
+                let totalTokens = 0;
+                let totalTime = 0;
+                let totalPassed = 0;
+
+                // 2. Ejecutar el Benchmark
+                for (let i = 0; i < testCases.length; i++) {
+                    const test = testCases[i];
+                    
+                    // a) El Agente resuelve el problema
+                    const response = await Orchestrator.callLLM({ 
+                        preferredEngine: 'deepseek', // O el motor configurado
+                        systemPrompt: `Eres un agente experto.\nINSTRUCCIONES DE TU SKILL:\n${this.activeSkillLab.content}`, 
+                        userPrompt: `TEST PROMPT:\n${test.prompt || test.query}`, 
+                        responseFormat: "text", 
+                        temperature: 0.2 
+                    });
+
+                    const agentOutput = response.content;
+                    const latency = response.telemetry.latencyMs;
+                    const tokens = response.telemetry.tokens.total_tokens || 0;
+                    
+                    totalTime += latency;
+                    totalTokens += tokens;
+
+                    // b) El Notario audita el resultado basado en las aserciones del test
+                    const socs = test.assertions || test.expected_output ? [{id: 'assert_1', text: test.expected_output || JSON.stringify(test.assertions)}] : [];
+                    let passed = false;
+                    let auditNote = "Auditado manualmente.";
+
+                    if (socs.length > 0) {
+                        const auditRaw = await Orchestrator.notarizeWorkOrder('global', agentOutput, socs);
+                        const auditResult = JSON.parse(auditRaw);
+                        passed = auditResult['assert_1'];
+                        auditNote = passed ? '✅ Aserciones Superadas' : '❌ Aserciones Fallidas';
+                        if (passed) totalPassed++;
+                    }
+
+                    const borderCol = passed ? 'var(--accent-green)' : 'var(--accent-red)';
+                    htmlResults += `
+                        <div class="lab-eval-item" style="border-left: 4px solid ${borderCol};">
+                            <div class="lab-eval-header">
+                                <span style="color:white; font-weight:bold;">Test Case #${i+1}</span>
+                                <span style="font-size:0.8rem; color:${borderCol};">${auditNote}</span>
+                            </div>
+                            <div class="lab-eval-body">
+                                <div style="color:var(--accent-blue); margin-bottom:10px; font-family:var(--font-mono); font-size:0.8rem;">> ${test.prompt || test.query}</div>
+                                <div>${agentOutput.replace(/\n/g, '<br>')}</div>
+                            </div>
+                            <div class="lab-eval-footer">
+                                <div class="metric">Latencia: <span>${(latency/1000).toFixed(2)}s</span></div>
+                                <div class="metric">Tokens: <span>${tokens}</span></div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // 3. Mostrar Resumen de la Ronda
+                const passRate = ((totalPassed / testCases.length) * 100).toFixed(0);
+                this.dom.labResults.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; background:rgba(255,171,64,0.1); padding:15px; border-radius:8px; border:1px solid var(--accent-orange); margin-bottom:15px;">
+                        <div style="text-align:center;"><div style="font-size:1.5rem; font-weight:900; color:var(--accent-orange);">${passRate}%</div><div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Pass Rate</div></div>
+                        <div style="text-align:center;"><div style="font-size:1.5rem; font-weight:900; color:white;">${testCases.length}</div><div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Tests</div></div>
+                        <div style="text-align:center;"><div style="font-size:1.5rem; font-weight:900; color:white;">${totalTokens}</div><div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Tokens Totales</div></div>
+                        <div style="text-align:center;"><div style="font-size:1.5rem; font-weight:900; color:white;">${(totalTime/1000).toFixed(1)}s</div><div style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">Latencia Total</div></div>
+                    </div>
+                    ${htmlResults}
+                `;
+
+            } catch (error) {
+                this.dom.labResults.innerHTML = `<div style="color:var(--accent-red); padding:20px; text-align:center; border:1px solid var(--accent-red); border-radius:12px; background:rgba(255,82,82,0.1);">Error de Benchmarking: ${error.message}</div>`;
+            } finally {
+                this.dom.btnRunBenchmark.disabled = false;
+                this.dom.btnRunBenchmark.innerText = "🎯 Iniciar Benchmark (Evals)";
             }
-        };
-
-        this.tickPomodoro = () => {
-            this.pomodoroSeconds++;
-            updateInputs();
-        };
-
-        this.dom.btnPlay.addEventListener('click', () => {
-            if (this.isPomodoroRunning) return;
-            this.isPomodoroRunning = true;
-            this.dom.btnPlay.style.display = 'none';
-            this.dom.btnPause.style.display = 'flex';
-            this.dom.pomoPanel.classList.add('running');
-            this.pomodoroInterval = setInterval(this.tickPomodoro, 1000);
         });
-
-        this.dom.btnPause.addEventListener('click', () => this.stopPomodoro());
     }
 
-    stopPomodoro() {
-        if (!this.isPomodoroRunning) return;
-        this.isPomodoroRunning = false;
-        this.dom.btnPlay.style.display = 'flex';
-        this.dom.btnPause.style.display = 'none';
-        this.dom.pomoPanel.classList.remove('running');
-        clearInterval(this.pomodoroInterval);
+    setLabMode() {
+        this.dom.taskPanel.style.display = 'none';
+        this.dom.pomoPanel.style.display = 'none';
+        this.dom.btnSubmit.style.display = 'none';
+        this.dom.btnSaveTaskDraft.style.display = 'none';
+        this.dom.editorWrapper.style.display = 'none'; // Ocultamos el editor porque es modo lectura/test
+        
+        this.dom.labPanel.style.display = 'block';
+        this.dom.btnRunBenchmark.style.display = 'block';
+
+        this.dom.labTitle.innerHTML = `<span>🧪</span> Agent Studio: ${this.activeSkillLab.title}`;
+        this.dom.labDesc.innerText = this.activeSkillLab.description || 'Sin descripción en el SKILL.md.';
+        this.dom.labResults.innerHTML = '<div style="text-align:center; padding:2rem; color:#888;">Pulsa "Iniciar Benchmark" para lanzar la batería de pruebas y que @notari_ledger audite los resultados.</div>';
     }
 
     setDraftMode() {
@@ -395,6 +520,9 @@ export default class PaperView {
         this.dom.pomoPanel.style.display = 'none';
         this.dom.btnSubmit.style.display = 'none';
         this.dom.btnSaveTaskDraft.style.display = 'none';
+        this.dom.labPanel.style.display = 'none';
+        this.dom.btnRunBenchmark.style.display = 'none';
+        this.dom.editorWrapper.style.display = 'block';
         
         this.dom.editor.setAttribute('data-placeholder', "Borrador Libre.\nEscribe @ para invocar al equipo y asignar tareas.\nEscribe # para inyectar Nodos W3C.");
         this.dom.editorLabel.style.display = 'none';
@@ -407,6 +535,10 @@ export default class PaperView {
         const isLegacy = !this.activeTx.flowId;
         const parentFlow = isLegacy ? this.activeTx : (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
         
+        this.dom.labPanel.style.display = 'none';
+        this.dom.btnRunBenchmark.style.display = 'none';
+        this.dom.editorWrapper.style.display = 'block';
+
         this.dom.taskPanel.style.display = 'block';
         this.dom.pomoPanel.style.display = 'block';
         
@@ -462,9 +594,38 @@ export default class PaperView {
         }
     }
 
-    // ==========================================
-    // 🧠 EDITOR SEMÁNTICO Y ACCIONES TÁCTICAS
-    // ==========================================
+    setupPomodoro() {
+        const updateInputs = () => {
+            const hrs = Math.floor(this.pomodoroSeconds / 3600);
+            const mins = Math.floor((this.pomodoroSeconds % 3600) / 60);
+            const secs = this.pomodoroSeconds % 60;
+            this.dom.timeDisplay.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            if (this.pomodoroSeconds > 0) this.dom.inpPowHours.value = (this.pomodoroSeconds / 3600).toFixed(3); 
+        };
+
+        this.tickPomodoro = () => { this.pomodoroSeconds++; updateInputs(); };
+
+        this.dom.btnPlay.addEventListener('click', () => {
+            if (this.isPomodoroRunning) return;
+            this.isPomodoroRunning = true;
+            this.dom.btnPlay.style.display = 'none';
+            this.dom.btnPause.style.display = 'flex';
+            this.dom.pomoPanel.classList.add('running');
+            this.pomodoroInterval = setInterval(this.tickPomodoro, 1000);
+        });
+
+        this.dom.btnPause.addEventListener('click', () => this.stopPomodoro());
+    }
+
+    stopPomodoro() {
+        if (!this.isPomodoroRunning) return;
+        this.isPomodoroRunning = false;
+        this.dom.btnPlay.style.display = 'flex';
+        this.dom.btnPause.style.display = 'none';
+        this.dom.pomoPanel.classList.remove('running');
+        clearInterval(this.pomodoroInterval);
+    }
+
     setupSemanticEditor() {
         const input = this.dom.editor;
         const menu = this.dom.menu;
@@ -473,7 +634,6 @@ export default class PaperView {
         let lastKnownRect = null; 
         let savedRange = null; 
 
-        // 🔥 LA BARRA DE ACCIÓN (PING / DELEGAR)
         const updateDetectedContext = () => {
             const text = input.innerText;
             const mentions = [...new Set(text.match(/@\w+/g) || [])];
@@ -501,7 +661,6 @@ export default class PaperView {
             }
         };
 
-        // Eventos delegados para los Micro-Botones Tácticos
         this.dom.dynamicTags.addEventListener('click', async (e) => {
             const btn = e.target.closest('.btn-micro-action');
             if (!btn) return;
@@ -531,7 +690,6 @@ export default class PaperView {
                 updateDetectedContext();
             } else if (action === 'ping') {
                 alert(`🔔 Ping simulado hacia ${targetId}. El Orquestador será notificado.`);
-                // Aquí podrías añadir el LOG entry si fuera necesario.
             }
         });
 
@@ -545,7 +703,6 @@ export default class PaperView {
             }
         });
 
-        // Renderizador de resultados del Menú AJAX
         const renderMenuResults = (type, items) => {
             if (items.length === 0) {
                 this.dom.smResults.innerHTML = '<div style="padding:15px; color:#888; text-align:center;">No se encontró información.</div>';
@@ -576,22 +733,6 @@ export default class PaperView {
             }
         };
 
-        // Escucha de Filtros AJAX
-        this.dom.smFilters.addEventListener('click', (e) => {
-            if (e.target.classList.contains('sm-filter')) {
-                this.dom.smFilters.querySelectorAll('.sm-filter').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                this.activeMemeFilter = e.target.dataset.f;
-                
-                // Filtrar en memoria
-                const filtered = this.activeMemeFilter === 'all' 
-                    ? this.currentMemesSearchResult 
-                    : this.currentMemesSearchResult.filter(m => m.category === this.activeMemeFilter || m.type === this.activeMemeFilter);
-                
-                renderMenuResults('memes', filtered);
-            }
-        });
-
         input.addEventListener('keyup', async (e) => {
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
@@ -604,19 +745,16 @@ export default class PaperView {
             const rect = savedRange.getBoundingClientRect();
             if (rect.top !== 0 && rect.left !== 0) lastKnownRect = rect;
             
-            // MENCIONES (@)
             if (this.currentWord.startsWith('@')) {
                 const search = this.currentWord.substring(1).toLowerCase();
                 const users = state.globalUsers.filter(u => u.name.toLowerCase().includes(search) || u.id.toLowerCase().includes(search));
                 
                 if (users.length > 0) {
                     this.dom.smTitle.innerText = "Invocar Nodo / Agente";
-                    this.dom.smFilters.style.display = 'none';
                     renderMenuResults('users', users);
                     this.showFloatingMenu(menu, lastKnownRect);
                 } else { menu.style.display = 'none'; }
             } 
-            // CONOCIMIENTO (#)
             else if (this.currentWord.startsWith('#')) {
                 const search = this.currentWord.substring(1).toLowerCase();
                 await KB.init();
@@ -625,14 +763,8 @@ export default class PaperView {
                 if (search.length > 0) memes = memes.filter(m => m.title?.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(search))));
                 
                 if (memes.length > 0) {
-                    this.currentMemesSearchResult = memes; // Cache para AJAX
-                    this.activeMemeFilter = 'all'; // Reset filter UI
-                    this.dom.smFilters.querySelectorAll('.sm-filter').forEach(b => b.classList.remove('active'));
-                    this.dom.smFilters.querySelector('[data-f="all"]').classList.add('active');
-
                     this.dom.smTitle.innerText = "Inyectar Conocimiento W3C";
-                    this.dom.smFilters.style.display = 'flex';
-                    renderMenuResults('memes', memes.slice(0, 10)); // Límite de renderizado para velocidad
+                    renderMenuResults('memes', memes.slice(0, 10));
                     this.showFloatingMenu(menu, lastKnownRect);
                 } else { menu.style.display = 'none'; }
             } else {
@@ -641,7 +773,6 @@ export default class PaperView {
             }
         });
 
-        // Inserción en el DOM
         this.dom.smResults.addEventListener('click', (e) => {
             const item = e.target.closest('.semantic-item');
             if (item && savedRange) {
@@ -652,7 +783,6 @@ export default class PaperView {
                 savedRange.deleteContents();
                 
                 let el;
-                // INYECCIÓN DE WEB COMPONENT SEMÁNTICO
                 if (type === 'jsonld') {
                     const rawJson = decodeURIComponent(item.getAttribute('data-payload'));
                     const memeObj = JSON.parse(rawJson);
@@ -670,7 +800,6 @@ export default class PaperView {
                     el.parentNode.insertBefore(br, el.nextSibling);
                     savedRange.setStartAfter(br);
                 } 
-                // INYECCIÓN DE MENCIÓN
                 else if (type === 'mention') {
                     el = document.createElement('a');
                     el.className = 'mention-highlight';
@@ -701,15 +830,10 @@ export default class PaperView {
         if (!rect) {
             menu.style.top = '50%'; menu.style.left = '50%';
         } else {
-            // Asegurarse de que no se salga de la pantalla en móvil
             const screenWidth = window.innerWidth;
             const menuWidth = 320;
             let leftPos = rect.left;
-            
-            if (leftPos + menuWidth > screenWidth) {
-                leftPos = screenWidth - menuWidth - 20;
-            }
-            
+            if (leftPos + menuWidth > screenWidth) leftPos = screenWidth - menuWidth - 20;
             menu.style.top = `${rect.bottom + 10}px`;
             menu.style.left = `${Math.max(10, leftPos)}px`;
         }
@@ -717,9 +841,6 @@ export default class PaperView {
         this.isMenuOpen = true;
     }
 
-    // ==========================================
-    // 💾 ACCIONES DE REDUX (LEDGER)
-    // ==========================================
     async saveTaskDraft() {
         if (!this.activeTx) return;
         this.dom.btnSaveTaskDraft.disabled = true;
