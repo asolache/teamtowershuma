@@ -5,7 +5,7 @@ import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { SynapticCanvas } from '../components/SynapticCanvas.js'; 
-import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 IMPORT CRÍTICO RESTAURADO
+import { Orchestrator } from '../core/Orchestrator.js';
 
 export default class LmsView {
     constructor() {
@@ -38,8 +38,8 @@ export default class LmsView {
                 .tab-content.active { display: block; }
                 .tab-content.graph-active { display: flex; flex-direction: column; height: calc(100vh - 180px); padding-bottom: 0; }
 
-                /* LISTA VIEW */
-                .lms-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px;}
+                /* LISTA VIEW & DROPZONE */
+                .lms-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 15px;}
                 .filters-bar { display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); overflow-x: auto;}
                 .filter-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; font-family: var(--font-mono); font-size: 0.8rem;}
                 .filter-btn:hover { border-color: var(--accent-blue); color: white;}
@@ -47,6 +47,10 @@ export default class LmsView {
 
                 .btn-deep-research { background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(224,64,251,0.1)); border: 1px solid var(--accent-blue); color: white; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; gap: 8px; align-items: center; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,176,255,0.15);}
                 .btn-deep-research:hover { background: var(--accent-blue); color: black; box-shadow: 0 8px 20px rgba(0,176,255,0.4); transform: translateY(-2px);}
+
+                /* 🔥 Estilos para el Importador AgentSkills */
+                .dropzone-area { border: 2px dashed #444; border-radius: 16px; padding: 15px; text-align: center; color: #888; margin-bottom: 2rem; background: rgba(255,255,255,0.02); transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;}
+                .dropzone-area.drag-over { border-color: var(--accent-blue); background: rgba(0,176,255,0.05); color: var(--accent-blue); transform: scale(1.02);}
 
                 .lms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;}
                 
@@ -58,6 +62,8 @@ export default class LmsView {
                 .meme-category.project_core { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
                 .meme-category.prompt_a2a { background: rgba(255,171,64,0.1); color: var(--accent-orange); border-color: rgba(255,171,64,0.3);}
                 .meme-category.evergreen { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); text-shadow: 0 0 10px rgba(255,215,0,0.5);}
+                .meme-category.skill { background: rgba(0,230,118,0.1); color: var(--accent-green); border-color: rgba(0,230,118,0.3);}
+                .meme-category.reference { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
 
                 .meme-title { font-size: 1.1rem; color: white; margin: 10px 0 0 0; font-weight: 900;}
                 .meme-content { color: #aaa; font-size: 0.9rem; line-height: 1.5; font-family: 'Georgia', serif; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;}
@@ -94,9 +100,11 @@ export default class LmsView {
                 .btn-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red);}
                 .btn-danger:hover { background: rgba(255,82,82,0.1); transform: translateY(-2px);}
                 
-                /* 🔥 BOTÓN ANTIGRAVITY RESTAURADO */
                 .btn-antigravity { background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); color: black; box-shadow: 0 5px 15px rgba(0,176,255,0.3); }
                 .btn-antigravity:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,230,118,0.5); filter: brightness(1.2); }
+                
+                .btn-export { background: transparent; border: 1px dashed var(--accent-blue); color: var(--accent-blue); }
+                .btn-export:hover { background: rgba(0,176,255,0.1); }
 
                 @media (max-width: 768px) {
                     .workspace-lms { padding: 90px 1rem 120px 1rem; }
@@ -119,15 +127,19 @@ export default class LmsView {
                             <div class="filters-bar" id="lmsFilters">
                                 <button class="filter-btn active" data-filter="all">Todos los Registros</button>
                                 <button class="filter-btn" data-filter="core_os">🔧 OS Kernel</button>
-                                <button class="filter-btn" data-filter="project_core">🏰 Misiones</button>
                                 <button class="filter-btn" data-filter="skill">🎒 Skills</button>
+                                <button class="filter-btn" data-filter="reference">📚 Referencias</button>
                                 <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
-                                <button class="filter-btn" data-filter="evergreen">🌟 Evergreen</button>
                             </div>
                             
                             <button class="btn-deep-research" id="btnOpenResearch">
                                 <span style="font-size:1.2rem;">🧠</span> Deep Research (IA)
                             </button>
+                        </div>
+
+                        <div class="dropzone-area" id="skillDropzone">
+                            <span style="font-size:1.5rem;">📥</span>
+                            <span style="font-weight:bold;">Arrastra aquí un archivo Skill.md para inyectarlo en el Ecosistema.</span>
                         </div>
 
                         <div class="lms-grid" id="lmsGrid">
@@ -153,12 +165,17 @@ export default class LmsView {
                             <div style="display:flex; gap:15px;">
                                 <div class="form-group" style="flex:1;">
                                     <label>Categoría W3C</label>
-                                    <input type="text" id="editNodeCat" class="form-control" placeholder="Ej: skill, SOP, RULE...">
+                                    <input type="text" id="editNodeCat" class="form-control" placeholder="Ej: skill, reference...">
                                 </div>
                                 <div class="form-group" style="flex:2;">
                                     <label>Título del Meme</label>
                                     <input type="text" id="editNodeTitle" class="form-control" placeholder="Título descriptivo">
                                 </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Descripción Corta (Para el ruteo del Agente)</label>
+                                <input type="text" id="editNodeDesc" class="form-control" placeholder="Explica cuándo el agente debe invocar esta skill...">
                             </div>
 
                             <div class="form-group">
@@ -169,11 +186,11 @@ export default class LmsView {
                             <div class="form-group">
                                 <label>Tags / Keywords (Separados por coma)</label>
                                 <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); color:var(--accent-green);" placeholder="tag1, tag2, proyectoX">
-                                <div style="font-size:0.7rem; color:#888; margin-top:4px;">*Los Tags crean la gravedad que enlaza este nodo en el Mapa 3D.</div>
                             </div>
 
                             <div class="modal-actions">
                                 <button class="btn-modal btn-danger" id="btnDeleteNode">🗑️ Purgar Nodo</button>
+                                <button class="btn-modal btn-export" id="btnExportSkill">⬇️ Exportar (.md)</button>
                                 <div style="flex:1;"></div>
                                 <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Optimizar Semántica (IA)</button>
                                 <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar Mutación</button>
@@ -197,9 +214,8 @@ export default class LmsView {
                             <div class="form-group">
                                 <label>Categoría Ontológica Deseada</label>
                                 <select id="inpResearchCat" class="form-control">
-                                    <option value="skill">🎒 Skill (Habilidad Técnica o Cognitiva)</option>
-                                    <option value="SOP">⚙️ SOP (Procedimiento o Flujo)</option>
-                                    <option value="evergreen">🌟 Evergreen (Mejor Práctica/Principio Universal)</option>
+                                    <option value="reference">📚 Reference (Teoría y Metodología)</option>
+                                    <option value="skill">🎒 Skill (Instrucciones Ejecutables)</option>
                                 </select>
                             </div>
                             
@@ -222,24 +238,26 @@ export default class LmsView {
         this.dom = {
             grid: document.getElementById('lmsGrid'),
             filters: document.getElementById('lmsFilters'),
+            dropzone: document.getElementById('skillDropzone'),
             
             modal: document.getElementById('editModal'),
             btnClose: document.getElementById('btnCloseModal'),
             btnSave: document.getElementById('btnSaveNode'),
             btnDelete: document.getElementById('btnDeleteNode'),
             btnAntigravity: document.getElementById('btnAntigravity'),
+            btnExport: document.getElementById('btnExportSkill'),
             
             inpId: document.getElementById('editNodeId'),
             inpType: document.getElementById('editNodeType'),
             inpProjId: document.getElementById('editNodeProjectId'),
             inpCat: document.getElementById('editNodeCat'),
             inpTitle: document.getElementById('editNodeTitle'),
+            inpDesc: document.getElementById('editNodeDesc'),
             inpContent: document.getElementById('editNodeContent'),
             inpKeywords: document.getElementById('editNodeKeywords'),
 
             synapticMount: document.getElementById('synapticMountPoint'),
 
-            // Deep Research DOM
             btnOpenResearch: document.getElementById('btnOpenResearch'),
             researchModal: document.getElementById('researchModal'),
             btnCloseResearch: document.getElementById('btnCloseResearch'),
@@ -271,6 +289,85 @@ export default class LmsView {
         this.setupFilters();
         this.setupModalEvents();
         this.setupDeepResearchEvents();
+        this.setupDragAndDrop();
+    }
+
+    // 🔥 PARSER YAML & DRAG/DROP PARA AGENTSKILLS
+    setupDragAndDrop() {
+        const dropzone = this.dom.dropzone;
+        if (!dropzone) return;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.remove('drag-over'), false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            if (file && file.name.endsWith('.md')) {
+                this.parseMarkdownSkillFile(file);
+            } else {
+                alert("Formato denegado. Solo se admiten archivos Markdown (.md) que sigan el estándar AgentSkills.");
+            }
+        }, false);
+    }
+
+    parseMarkdownSkillFile(file) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const text = e.target.result;
+            let name = file.name.replace('.md', '');
+            let description = '';
+            let content = text;
+
+            // Extraemos YAML Frontmatter (Estándar Claude)
+            const yamlRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+            const match = text.match(yamlRegex);
+            
+            if (match) {
+                const yaml = match[1];
+                content = match[2].trim();
+                
+                const nameMatch = yaml.match(/name:\s*(.+)/);
+                if (nameMatch) name = nameMatch[1].trim();
+                
+                const descMatch = yaml.match(/description:\s*(.+)/);
+                if (descMatch) description = descMatch[1].trim();
+            }
+
+            const newNode = {
+                id: `skill_imported_${Date.now()}`,
+                type: 'meme',
+                category: 'skill',
+                projectId: 'global',
+                targetId: 'global',
+                title: name,
+                description: description,
+                content: content,
+                keywords: ['#imported', '#agentskills']
+            };
+
+            try {
+                await KB.init();
+                await KB.saveNode(newNode);
+                alert(`✅ Skill Inyectada: ${name}`);
+                await this.loadData();
+                await this.forceGraphRefresh();
+            } catch (err) {
+                alert("Fallo inyectando la Skill: " + err.message);
+            }
+        };
+        reader.readAsText(file);
     }
 
     async loadData() {
@@ -297,7 +394,7 @@ export default class LmsView {
                 <div class="empty-lms">
                     <div style="font-size: 3rem; margin-bottom: 10px;">🕳️</div>
                     <h3>Vacío Cognitivo</h3>
-                    <p>No hay Memes en esta categoría. Utiliza el Deep Research o el Omni-Paper para minar conocimiento.</p>
+                    <p>No hay Nodos en esta categoría. Importa una AgentSkill o usa el Deep Research.</p>
                 </div>
             `;
             return;
@@ -314,6 +411,7 @@ export default class LmsView {
                 <div class="meme-card" data-id="${safeId}">
                     <div class="meme-category ${safeCat}">${safeCat}</div>
                     <h4 class="meme-title">${node.title || 'Nodo Sin Título'}</h4>
+                    ${node.description ? `<div style="color:var(--accent-blue); font-size:0.75rem; font-weight:bold; margin-bottom:5px;">${node.description}</div>` : ''}
                     <div class="meme-content">${node.content || 'Sin contenido detallado.'}</div>
                     <div class="meme-footer">
                         <span class="meme-tag" style="color:var(--accent-blue);">✏️ Editar</span>
@@ -348,6 +446,7 @@ export default class LmsView {
         this.dom.inpProjId.value = node.projectId || 'global';
         this.dom.inpCat.value = node.category || '';
         this.dom.inpTitle.value = node.title || '';
+        this.dom.inpDesc.value = node.description || '';
         this.dom.inpContent.value = node.content || '';
         this.dom.inpKeywords.value = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
 
@@ -392,9 +491,7 @@ export default class LmsView {
             this.dom.btnRunResearch.innerText = "⏳ @mestre_escola está minando conocimiento...";
 
             try {
-                // Ejecuta la investigación llamando al Orquestador (Que interactúa con el LLM e IndexedDB)
                 await Orchestrator.runDeepResearch(topic, cat, 3);
-                
                 alert("✅ Investigación completada. Nuevos nodos inyectados en la Forja.");
                 this.dom.researchModal.classList.remove('active');
                 this.dom.inpResearchTopic.value = '';
@@ -415,7 +512,31 @@ export default class LmsView {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
 
-        // 🔥 OPTIMIZADOR ANTIGRAVITY PARA EDICIÓN DE MEMES
+        // 🔥 EXPORTADOR AGENTSKILLS (CLAUDE COMPATIBLE)
+        this.dom.btnExport.addEventListener('click', () => {
+            const title = this.dom.inpTitle.value.trim() || 'Custom_Skill';
+            const desc = this.dom.inpDesc.value.trim() || 'Skill generada por TeamTowers V9';
+            const content = this.dom.inpContent.value.trim();
+
+            const fileContent = `---
+name: ${title}
+description: ${desc}
+---
+
+${content}`;
+
+            const blob = new Blob([fileContent], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title.replace(/\s+/g, '_')}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // OPTIMIZADOR ANTIGRAVITY PARA EDICIÓN DE MEMES
         if (this.dom.btnAntigravity) {
             this.dom.btnAntigravity.addEventListener('click', async () => {
                 const title = this.dom.inpTitle.value.trim();
@@ -425,29 +546,29 @@ export default class LmsView {
                 
                 if (!content) return alert("El nodo debe tener contenido para ser optimizado.");
 
-                let provider = localStorage.getItem('tt_ai_provider') || 'openai';
-                let apiKey = localStorage.getItem(`tt_key_${provider}`);
-                if (!apiKey && provider !== 'custom') return alert("⚠️ Configura tu API Key para usar el Optimizador.");
-
                 this.dom.btnAntigravity.disabled = true;
-                this.dom.btnAntigravity.innerText = "⏳ Comprimiendo Semántica...";
+                this.dom.btnAntigravity.innerText = "⏳ Comprimiendo...";
 
                 const systemPrompt = `
                     Eres el Agente de Optimización Antigravity del Kernel V9. 
                     Misión: Elevar la densidad semántica de este Nodo W3C.
                     REGLAS:
-                    1. Comprime el texto para reducir la carga de tokens sin perder valor técnico.
-                    2. Genera los 'Tags' óptimos para conectarlo en el Grafo 3D.
-                    Devuelve JSON: { "title": "Título Mejorado", "content": "Contenido comprimido...", "keywords": ["tag1", "tag2"] }
+                    1. Comprime el texto para reducir la carga de tokens sin perder valor.
+                    2. Escribe una descripción corta (max 150 chars) para indexación RAG.
+                    3. Genera los 'Tags' óptimos.
+                    Devuelve JSON: { "title": "Título Mejorado", "description": "Resumen indexable...", "content": "Contenido comprimido...", "keywords": ["tag1", "tag2"] }
                 `;
 
                 const userPrompt = `Título: ${title}\nCategoría: ${cat}\nTags Actuales: ${tags}\nContenido:\n${content}`;
 
                 try {
+                    let provider = localStorage.getItem('tt_ai_provider') || 'openai';
+                    let apiKey = localStorage.getItem(`tt_key_${provider}`);
                     const response = await Orchestrator.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
                     const optimizedData = response.content;
                     
                     this.dom.inpTitle.value = optimizedData.title;
+                    this.dom.inpDesc.value = optimizedData.description || '';
                     this.dom.inpContent.value = optimizedData.content;
                     this.dom.inpKeywords.value = optimizedData.keywords.join(', ');
                     
@@ -464,11 +585,12 @@ export default class LmsView {
         this.dom.btnSave.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
             const title = this.dom.inpTitle.value.trim();
+            const desc = this.dom.inpDesc.value.trim();
             const content = this.dom.inpContent.value.trim();
             if (!title || !content) return alert("Título y contenido son obligatorios.");
 
             const keywordsArray = this.dom.inpKeywords.value.split(',').map(k => k.trim()).filter(k => k !== '');
-            const updatedNode = { id, type: this.dom.inpType.value, projectId: this.dom.inpProjId.value, category: this.dom.inpCat.value.trim(), title, content, keywords: keywordsArray };
+            const updatedNode = { id, type: this.dom.inpType.value, projectId: this.dom.inpProjId.value, category: this.dom.inpCat.value.trim(), title, description: desc, content, keywords: keywordsArray };
 
             this.dom.btnSave.disabled = true;
             this.dom.btnSave.innerText = "⏳ Sellando...";
