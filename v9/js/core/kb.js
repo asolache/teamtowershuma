@@ -1,10 +1,6 @@
 // v9/js/core/kb.js
 // Motor de Memoria Profunda (IndexedDB) con Arquitectura AgentSkills y Referencias Reusables
 
-// ============================================================================
-// 1. GENOMA ONTOLÓGICO FRACTAL (VNA) - LOS 12 ARQUETIPOS DEL PANTEÓN
-// ============================================================================
-// 🔥 EVOLUCIÓN: Los roles ahora se anclan a 'core_skills' en lugar de flujos estáticos.
 export const NATIVE_ONTOLOGY = {
     "tech_saas_platform": {
         label: "🦉 SaaS & Data Platforms", meta: "Ecosistema orientado a la lógica, analítica de datos y escalabilidad de software B2B.",
@@ -36,7 +32,6 @@ export const NATIVE_ONTOLOGY = {
             "@pinya": { name: "Copywriter / Asset Manager", multiplier: 1.0, fmv: 25, guardian: "everyman", core_skills: ['skill_copywriting'] }
         }
     }
-    // Nota: El resto de los 12 arquetipos siguen la misma lógica estructural.
 };
 
 const GLOBAL_AIS_ONTOLOGY = [
@@ -49,77 +44,96 @@ const GLOBAL_AIS_ONTOLOGY = [
     { id: '@mestre_escola', title: 'Arquetipo: Mestre d\'Escola', content: 'Guardián del Árbol de Habilidades. Gobiernas y defines los estándares para los niveles Bronce, Plata y Oro.' }
 ];
 
-// ============================================================================
-// 2. CATÁLOGO FRACTAL (Referencias Puras y Skills Ejecutables)
-// ============================================================================
 export const CATALOGO_MEMES = [
-    // --- CAPA 1: REFERENCIAS (El Saber Estático y Reutilizable) ---
     { 
-        id: 'ref_os_vna', type: 'reference', category: 'methodology', title: 'VNA (Value Network Analysis)', 
-        description: 'Metodología de Verna Allee para mapear intercambios tangibles e intangibles.',
-        content: `Un ecosistema es una red de creación de valor. Todo entregable (Output) viaja por tuberías y se audita mediante SOCs. Ninguna acción sin valor demostrable debe ser procesada.`, 
-        keywords: ['VNA', '#kernel_sos'] 
-    },
-    { 
-        id: 'ref_os_codex', type: 'reference', category: 'methodology', title: 'Codex Casteller (Roles)', 
+        id: 'ref_os_codex', type: 'reference', category: 'reference', title: 'Codex Casteller (Roles)', 
         description: 'Estructura jerárquica de 5 niveles para la responsabilidad de red.',
         content: `MANDAMIENTO ESTRUCTURAL: Toda red VNA debe dividirse en 5 niveles: @anxaneta (Dirección), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte).`, 
         keywords: ['Estructura', 'Roles', '#kernel_sos'] 
     },
-    { 
-        id: 'ref_os_slicing_pie', type: 'reference', category: 'methodology', title: 'Slicing Pie (Ledger)', 
-        description: 'Fórmula de equidad dinámica para distribución de valor.',
-        content: `Regla de Equidad: El capital se distribuye según el FMV multiplicado por un factor de riesgo. Solo las tareas validadas generan Slices.`, 
-        keywords: ['Ledger', 'Equity', '#kernel_sos'] 
+    
+    // 🔥 NUEVA REFERENCIA 1: METODOLOGÍA VNA
+    {
+        id: 'ref_vna_methodology', type: 'reference', category: 'reference', title: 'Metodología VNA (Verna Allee)',
+        description: 'Fundamentos, elementos y principios de Value Network Analysis (VNA).',
+        keywords: ['VNA', 'Metodología', 'Verna Allee', '#kernel_sos'],
+        content: `## 1. Fundamentos conceptuales
+Value Network Analysis (VNA) modela organizaciones y ecosistemas como redes vivas de intercambio de valor. El valor real —visible e invisible— fluye entre actores a través de intercambios tangibles e intangibles.
+
+## 2. Elementos del modelo VNA
+### 2.1 Roles / Actores (Nodos)
+Cualquier entidad que participa activamente. Se define por lo que aporta y recibe.
+### 2.2 Intercambios Tangibles
+Tienen forma física, financiera o contractual (Pago, Producto, Documento formal, Dato estructurado).
+### 2.3 Intercambios Intangibles
+La economía invisible de la red. Conocimiento tácito, Confianza, Beneficio estratégico, Motivación, Feedback, Innovación.
+Regla de oro: Por cada intercambio tangible, busca el intangible que lo precede o lo sigue.
+
+### 2.4 Metaskill de la Red
+El propósito compartido que da coherencia a todos los flujos (Misión, Visión, Objetivos estratégicos).
+
+## 3. Principios de análisis VNA
+- Principio de reciprocidad: Todo intercambio saludable es bidireccional.
+- Principio de flujo emergente: Los intangibles generan valor emergente.
+- Principio de roles faltantes: Un flujo roto indica un rol faltante.
+- Principio de multiplicadores intangibles: Los intangibles apalancan los tangibles.
+
+## 6. VNA en TeamTowers
+Cada rol tiene asociado un POOL DE SKILLS. Los Memes son unidades de conocimiento compartido. Los intercambios intangibles activan memes en la red neuronal.`
     },
 
-    // --- CAPA 2: SKILLS (El Saber Hacer que consume Referencias) ---
-    { 
-        id: 'skill_vna_strategy', type: 'skill', category: 'strategic', title: 'Diseño Estratégico VNA', 
-        description: 'Capacidad para diseñar y evaluar redes de valor completas.',
-        content: `Utiliza la metodología VNA para trazar mapas de valor. Identifica flujos rotos y asegura que todos los roles aporten tanto intangibles como tangibles.`, 
-        references: ['ref_os_vna', 'ref_os_codex'], // 🔥 GRAVEDAD: Esta Skill depende de estas 2 referencias
-        keywords: ['Estrategia', 'VNA'] 
+    // 🔥 NUEVA REFERENCIA 2: EJEMPLOS VNA
+    {
+        id: 'ref_vna_examples', type: 'reference', category: 'reference', title: 'Ejemplos Mapas de Valor Sectoriales',
+        description: 'Patrones de flujos frecuentes y roles faltantes típicos por ecosistema.',
+        keywords: ['VNA', 'Patrones', 'Ejemplos', '#kernel_sos'],
+        content: `Ejemplos de ecosistemas modelados con VNA:
+
+1. Ecosistema de Innovación / Startup:
+- Roles: Emprendedor, Inversor, Aceleradora, Cliente temprano, Mentor.
+- Flujos: Inversor a Emprendedor (Tangible: Capital) | Emprendedor a Inversor (Intangible: Visión, tracción).
+- Desequilibrio típico: Cliente temprano no involucrado como co-creador.
+
+2. Red de Valor Interna (Organización / Empresa):
+- Roles: Producto, Ventas, Ingeniería, Liderazgo, Cliente.
+- Flujos: Ventas a Producto (Intangible: Señal de mercado) | Producto a Ingeniería (Intangible: Criterios de éxito).
+- Flujo frecuentemente roto: Ingeniería a Producto (limitaciones técnicas).
+
+Patrones transversales en todos los sectores:
+1. El cliente como nodo infrautilizado (solo recibe tangibles, no se modelan sus intangibles como feedback).
+2. El conocimiento tácito como flujo invisible.
+3. La legitimidad como lubricante de flujos (sin ella los tangibles no fluyen).`
     },
+
+    // 🔥 SKILL MAESTRA DE DISEÑO VNA (Utiliza las 2 Referencias anteriores)
     { 
-        id: 'skill_tdd_execution', type: 'skill', category: 'technical', title: 'Ejecución TDD / Clean Code', 
-        description: 'Desarrollo de entregables guiado por pruebas y estándares W3C.',
-        content: `CRITERIOS ESTRICTOS: 1. Sin 'Magic Numbers'. 2. Funciones < 20 líneas. 3. Respetar DRY y SOLID. 4. Cero fallos de Linting.`, 
-        references: [],
-        keywords: ['Producción', 'Clean Code'] 
+        id: 'skill_vna_strategy', type: 'skill', category: 'skill', title: 'Skill: Value Map Prompt Generator (VNA)', 
+        description: 'Genera mapas de valor completos y precisos según la metodología Verna Allee.',
+        references: ['ref_vna_methodology', 'ref_vna_examples', 'ref_os_codex'],
+        keywords: ['Estrategia', 'VNA', '@genesi_ai', 'Mapas de Valor'],
+        content: `Esta skill guía la construcción de topologías para el agente creador de mapas de valor.
+
+PROCESO DE CONSTRUCCIÓN (MANDAMIENTOS):
+1. Anclaje a METASKILL: Entiende la Misión, Visión y Objetivos. Si no están claros, haz preguntas de clarificación (Bucle Mayéutico).
+2. Identificación de ROLES/ACTORES: Lista todos los actores internos y externos.
+3. Mapeo de FLUJOS TANGIBLES E INTANGIBLES: Para cada par de roles, define qué fluye física/económicamente (T) y qué fluye como conocimiento/confianza (I).
+4. Verificación de RECIPROCIDAD: Valida que cada intercambio tenga sentido respecto a la Metaskill.
+5. INTEGRACIÓN CON SISTEMA DE SKILLS (Para TeamTowers): Para cada rol, define el POOL DE SKILLS y qué MEMES son relevantes.
+6. FORMATO DE SALIDA (TDD RIGUROSO): El mapa debe traducirse a un JSON estricto con la matriz "soc_checklist" (Criterios de validación) para cada transacción.` 
     },
     
-    // --- CAPA 3: PROMPTS DE AGENTES (Que usarán las Skills) ---
     {
         id: 'prompt_global_genesi_ai', type: 'prompt_a2a', category: 'meta_prompt', targetId: '@genesi_ai', roleTarget: '@genesi_ai',
         title: 'Alma de Gènesi AI (Ecosystem Architect)',
         keywords: ['System', 'Prompt', 'Genesi', 'Architect'],
         content: `Eres @genesi_ai, Master Ecosystem Architect de TeamTowers V9. 
-Tu misión es diseñar arquitecturas VNA apoyándote en las Skills y Referencias del LMS.
-MANDAMIENTOS:
-1. Analiza las tuberías de valor de forma crítica. Si ves una dependencia rota, señálalo.
-2. Aboga siempre por la automatización: tareas mecánicas a la IA, estrategia a humanos.
-3. Sé conciso, técnico y directo. Utiliza metáforas arquitectónicas.`
-    },
-    {
-        id: 'prompt_global_notari_ledger', type: 'prompt_a2a', category: 'meta_prompt', targetId: '@notari_ledger', roleTarget: '@notari_ledger',
-        title: 'Alma del Notari Ledger (Auditor de Equidad)',
-        keywords: ['System', 'Prompt', 'Notari', 'Ledger', 'Auditor'],
-        content: `Eres @notari_ledger, el Juez Imparcial y Auditor del Slicing Pie en TeamTowers.
-Tu misión es auditar la tabla de capitalización y evaluar Entregables contra sus SOCs.
-MANDAMIENTOS:
-1. La justicia es ciega y matemática. Mide el valor por: Horas × FMV × Multiplicador.
-2. Si un entregable no cumple los SOCs, recomienda una MERMA en el multiplicador.
-3. Habla con tono solemne, legal y numérico.`
+Tu misión es diseñar arquitecturas VNA apoyándote en tu Skill de Diseño Estratégico (skill_vna_strategy) y sus referencias (Verna Allee). Eres riguroso, holístico, y no assumes información que no tienes. Siempre equilibras los flujos tangibles con los intangibles.`
     }
 ];
 
-// ============================================================================
-// 3. MOTOR DE INDEXACIÓN Y ALQUIMIA (IndexedDB V9)
-// ============================================================================
 export const KB = {
     dbName: 'TeamTowers_LMS_V15', 
-    dbVersion: 9, // 🔥 Subimos a 9 para soportar el campo "references"
+    dbVersion: 11, // 🔥 Subimos a 11 para forzar la inyección de la nueva triada VNA
     db: null,
 
     init() {
@@ -142,7 +156,6 @@ export const KB = {
                     store.createIndex('targetId', 'targetId', { unique: false }); 
                     store.createIndex('keywords', 'keywords', { multiEntry: true, unique: false }); 
                 }
-                console.log(`🌌 [Antigravity] IndexedDB forjado. Versión: ${this.dbVersion} (Refs & Skills Support)`);
             };
         });
     },
@@ -150,16 +163,14 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const nodes = await this.getAllNodes();
         
-        // Inyectamos Catálogo Core si no existe
-        if (!nodes.find(n => n.id === 'ref_os_codex')) {
-            for (const meme of CATALOGO_MEMES) { 
-                if (!nodes.find(n => n.id === meme.id)) {
-                    await this.saveNode(meme); 
-                }
+        // Forzar actualización de los Memes Maestros de VNA
+        for (const meme of CATALOGO_MEMES) { 
+            const exists = nodes.find(n => n.id === meme.id);
+            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'ref_vna_methodology' || meme.id === 'ref_vna_examples' || meme.id === 'prompt_global_genesi_ai') {
+                await this.saveNode(meme); 
             }
         }
 
-        // Inyectamos Ontología VNA (Genomas)
         if (!nodes.find(n => n.id === 'onto_web3_defi_protocol_meta')) {
             for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
                 await this.saveNode({ id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label, roleTarget: 'Global', title: `Sector: ${sectorData.label}`, content: sectorData.meta });
@@ -169,7 +180,7 @@ export const KB = {
                         id: `onto_${sectorKey}_${levelKey.replace('@','')}`, 
                         type: 'ontology', sector: sectorKey, roleTarget: levelKey, 
                         title: `Arquetipo: ${roleData.name}`, content: contentStr, 
-                        core_skills: roleData.core_skills || [] // 🔥 Soporte nativo para Skills en la BD
+                        core_skills: roleData.core_skills || [] 
                     });
                 }
             }
@@ -203,10 +214,8 @@ export const KB = {
                 projectId: node.projectId || 'global', 
                 targetId: node.targetId || 'global', 
                 type: node.type || 'custom',
-                
-                // AgentSkills & Reference Expansion
                 description: node.description || '',
-                references: node.references || [], // 🔥 Array de IDs que apunta a nodos tipo 'reference'
+                references: node.references || [], 
                 dependencies: node.dependencies || [],
             };
             
@@ -228,12 +237,10 @@ export const KB = {
             const request = store.getAll();
             request.onsuccess = () => {
                 let nodes = request.result || [];
-                
                 if (filters.projectId) nodes = nodes.filter(n => n.projectId === filters.projectId || n.projectId === 'global');
                 if (filters.type) nodes = nodes.filter(n => n.type === filters.type);
                 if (filters.targetId) nodes = nodes.filter(n => n.targetId === filters.targetId || n.targetId === 'global');
                 if (filters.category) nodes = nodes.filter(n => n.category === filters.category);
-                
                 resolve(nodes);
             };
             request.onerror = (e) => reject(e.target.error);
@@ -266,7 +273,6 @@ export const KB = {
         return sectors;
     },
 
-    // Enrutador de Contexto Avanzado (Resolución recursiva de Referencias)
     async getAgentBrainGraph(projectId, agentId, storeState) {
         await this.init();
         const allNodes = await this.getAllNodes();
@@ -274,7 +280,6 @@ export const KB = {
         const agentPrompt = allNodes.find(n => n.type === 'prompt_a2a' && n.targetId === agentId);
         const agentSkillsAndMemes = allNodes.filter(n => (n.type === 'skill' || n.type === 'meme') && n.keywords && n.keywords.includes(agentId));
         
-        // 🔥 Resolutor Cuántico: Extraemos las Referencias que necesitan las Skills del agente
         const activeReferences = [];
         agentSkillsAndMemes.forEach(node => {
             if (node.references && Array.isArray(node.references)) {
@@ -309,43 +314,24 @@ export const KB = {
 
     async getDynamicContextPrompt(projectId, agentId, storeState) {
         const brain = await this.getAgentBrainGraph(projectId, agentId, storeState);
-        
-        let prompt = `=====================================\n`;
-        prompt += `IDENTIDAD (SYSTEM)\n`;
-        prompt += `=====================================\n`;
-        prompt += `${brain.systemPrompt}\n\n`;
-
+        let prompt = `=====================================\nIDENTIDAD (SYSTEM)\n=====================================\n${brain.systemPrompt}\n\n`;
         if (brain.references.length > 0) {
-            prompt += `=====================================\n`;
-            prompt += `LIBRERÍA DE REFERENCIAS (W3C / VNA)\n`;
-            prompt += `=====================================\n`;
-            brain.references.forEach(r => {
-                prompt += `- [REF: ${r.title}]: ${r.content}\n`;
-            });
+            prompt += `=====================================\nLIBRERÍA DE REFERENCIAS (W3C / VNA)\n=====================================\n`;
+            brain.references.forEach(r => { prompt += `- [REF: ${r.title}]: ${r.content}\n`; });
             prompt += `\n`;
         }
-
         if (brain.skills.length > 0) {
-            prompt += `=====================================\n`;
-            prompt += `CAPACIDADES (AGENT SKILLS)\n`;
-            prompt += `=====================================\n`;
-            brain.skills.forEach(s => {
-                prompt += `- [SKILL: ${s.title}]: ${s.content}\n`;
-            });
+            prompt += `=====================================\nCAPACIDADES (AGENT SKILLS)\n=====================================\n`;
+            brain.skills.forEach(s => { prompt += `- [SKILL: ${s.title}]: ${s.content}\n`; });
             prompt += `\n`;
         }
-
         if (brain.ecosystemContext) {
-            prompt += `=====================================\n`;
-            prompt += `CONTEXTO DEL ECOSISTEMA (TIEMPO REAL)\n`;
-            prompt += `=====================================\n`;
-            prompt += `Proyecto: ${brain.ecosystemContext.name}\n`;
-            prompt += `Visión: ${brain.ecosystemContext.vision}\n`;
+            prompt += `=====================================\nCONTEXTO DEL ECOSISTEMA (TIEMPO REAL)\n=====================================\n`;
+            prompt += `Proyecto: ${brain.ecosystemContext.name}\nVisión: ${brain.ecosystemContext.vision}\n`;
             if (brain.ecosystemContext.activeTasks.length > 0) {
                 prompt += `ATENCIÓN: Tienes ${brain.ecosystemContext.activeTasks.length} Work Orders pendientes.\n`;
             }
         }
-
         return prompt;
     }
 };
