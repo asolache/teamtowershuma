@@ -26,7 +26,7 @@ export default class TestsView {
         return `
             <style>
                 .app-layout { display: flex; height: 100vh; overflow: hidden; background: radial-gradient(circle at center, #111116 0%, #050505 100%); font-family: var(--font-mono); justify-content: center; align-items: center; }
-                .test-container { width: 100%; max-width: 900px; padding: 2rem; }
+                .test-container { width: 100%; max-width: 950px; padding: 2rem; }
                 
                 .matrix-header { text-align: center; margin-bottom: 2rem; }
                 .matrix-header h1 { color: var(--accent-green); font-size: 2.8rem; letter-spacing: 2px; margin: 0; text-transform: uppercase; text-shadow: 0 0 25px rgba(0, 230, 118, 0.4); font-weight: 900; }
@@ -72,11 +72,11 @@ export default class TestsView {
                 <div class="test-container">
                     <div class="matrix-header">
                         <h1>V9 ANTIGRAVITY KERNEL</h1>
-                        <p>Validando Inmutabilidad Redux, Semantic WebGL y PULL/PUSH Mechanics</p>
+                        <p>Validando Inmutabilidad Redux, AgentSkills (VNA), TDD y Semantic WebGL</p>
                     </div>
 
                     <div class="log-terminal" id="terminalLog">
-                        <div style="color: var(--accent-green); margin-bottom: 20px; font-weight:900; font-size: 1.1rem;">> INICIANDO DIAGNÓSTICO DE ESTRÉS... <span class="cursor"></span></div>
+                        <div style="color: var(--accent-green); margin-bottom: 20px; font-weight:900; font-size: 1.1rem;">> INICIANDO DIAGNÓSTICO DE ESTRÉS COGNITIVO... <span class="cursor"></span></div>
                     </div>
 
                     <div class="action-footer">
@@ -104,7 +104,7 @@ export default class TestsView {
             const isPass = !!condition;
             if(isPass) passed++;
             
-            await sleep(80); // Ligeramente más pausado para dar drama a la terminal
+            await sleep(80); 
             
             const icon = isPass ? '🟢' : '🔴';
             const rowClass = isPass ? 'pass-row' : 'fail-row';
@@ -135,7 +135,7 @@ export default class TestsView {
             const dynAgentId = '@deep_coder_' + Math.floor(Math.random() * 1000);
 
             try {
-                // GUARDADO DE IDENTIDAD CRÍTICO (Anti-bloqueo)
+                // GUARDADO DE IDENTIDAD CRÍTICO
                 await store.init();
                 originalUser = store.getState().session?.activeUserId;
 
@@ -155,14 +155,22 @@ export default class TestsView {
                 });
 
                 // ==========================================
-                // BLOQUE 2: MEMORIA PROFUNDA (KB) & RAG W3C
+                // BLOQUE 2: MEMORIA PROFUNDA (AGENTSKILLS & VNA)
                 // ==========================================
                 const db = await KB.init();
                 await assert(db !== null, "IndexedDB Córtex (kb.js) montada y sincronizada correctamente", "KB-INIT");
 
-                const allMemes = await KB.getAllNodes({ type: 'meme' });
-                const hasKernelMemes = allMemes.some(m => m.keywords && m.keywords.includes('#kernel_sos'));
-                await assert(hasKernelMemes, `Motor de Génesis: Semillas Antigravity inyectadas en la red neuronal`, "SEMANTIC");
+                const allSkills = await KB.getAllNodes({ category: 'skill' });
+                const allRefs = await KB.getAllNodes({ category: 'reference' });
+                
+                await assert(allSkills.length > 0 && allRefs.length > 0, `Arquitectura AgentSkills: Desacople estricto entre Instrucciones (${allSkills.length}) y Teoría (${allRefs.length})`, "SKILL-ARCH");
+
+                const vnaSkill = allSkills.find(s => s.id === 'skill_vna_strategy');
+                await assert(vnaSkill !== undefined, "Motor VNA: Skill de Generación de Mapas de Valor instanciada", "VNA-CORE");
+                await assert(vnaSkill.references.includes('ref_immortal_tdd'), "Constitución TDD: La Skill VNA hereda la inmutabilidad del Kernel (ref_immortal_tdd)", "TDD-LINK");
+                
+                const metaSkill = allSkills.find(s => s.id === 'skill_creator_master');
+                await assert(metaSkill !== undefined, "Recursividad Cognitiva: Meta-Skill Forjadora de Skills activa", "META-SKILL");
 
                 // ==========================================
                 // BLOQUE 3: CREACIÓN DE ECOSISTEMA VNA & RBAC
@@ -196,7 +204,7 @@ export default class TestsView {
                         projectId: PID_TEST, 
                         flow: { 
                             id: 'flow_1', from: rAnx.id, to: rBaix.id, template: "Backend Microservice", tipo: "tangible", estimatedHours: 10,
-                            required_skills: ['meme_skill_core_tdd', 'meme_soc_code_quality'] 
+                            required_skills: ['skill_vna_strategy', 'skill_creator_master'] 
                         } 
                     } 
                 });
@@ -211,7 +219,7 @@ export default class TestsView {
                         projectId: PID_TEST, 
                         workOrder: { 
                             hash: woHash, flowId: 'flow_1', status: 'theoretical', realHours: 0,
-                            soc_checklist: [{ id: 'soc_1', text: "Pasa tests TDD", isChecked: false }]
+                            soc_checklist: [{ id: 'soc_1', text: "Pasa aserciones estrictas TDD", isChecked: false }]
                         } 
                     } 
                 });
@@ -223,18 +231,18 @@ export default class TestsView {
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': false } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'reported', "Notaría Componentizada: El Ledger rechaza consolidar si el SOC TDD falla", "TDD-FAIL");
+                await assert(p.work_orders[0].status === 'reported', "Notaría Componentizada: El Ledger bloquea la consolidación si el SOC Eval falla", "EVAL-FAIL");
 
                 // Prueba TDD Exitosa
                 await store.dispatch({ type: 'REVIEW_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash, auditorId: '@notari_ledger', socValidation: { 'soc_1': true } } });
                 await store.dispatch({ type: 'APPROVE_WORK_ORDER', payload: { projectId: PID_TEST, woHash: woHash } });
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.work_orders[0].status === 'consolidated', "Notaría Componentizada: TDD superado. SOP validado inmutablemente", "TDD-PASS");
+                await assert(p.work_orders[0].status === 'consolidated', "Notaría Componentizada: Eval superado. SOP inyectado inmutablemente en la red", "EVAL-PASS");
 
                 // ==========================================
                 // BLOQUE 5: CÁLCULOS MATEMÁTICOS DE EQUIDAD (SLICING PIE)
                 // ==========================================
-                const expectedSlices = parseFloat((8.42 * 40 * 1.2).toFixed(3)); // Precisión Antigravity V9
+                const expectedSlices = parseFloat((8.42 * 40 * 1.2).toFixed(3)); 
                 await assert(p.ledger[0].valorCongelado === expectedSlices, `Slicing Pie V9: Equidad resuelta con precisión decimal (${expectedSlices} Slices)`, "MATH");
                 
                 await store.dispatch({ type: 'ADD_CAPITAL_INJECTION', payload: { projectId: PID_TEST, userId: dynNeoId, assetType: 'cash', amount: 1000, description: "Seed" } });
@@ -262,7 +270,7 @@ export default class TestsView {
 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
                 await assert(p.telemetry.length === 1, `Telemetría Dashboard: Gasto API registrado ($${costInDollars.toFixed(4)})`, "TELEMETRY");
-                await assert(REC > 10000, `Eficiencia REC: Retorno masivo. Generados 336.8€ con un coste Mínimo`, "ROI");
+                await assert(REC > 10000, `Eficiencia REC: Retorno masivo. Generados 336.8€ con coste mínimo`, "ROI");
 
                 // ==========================================
                 // BLOQUE 7: USENET PINGS & OMNI-FLOW
@@ -271,12 +279,12 @@ export default class TestsView {
                     type: 'ADD_LOG_ENTRY',
                     payload: {
                         projectId: PID_TEST,
-                        log: { id: 'log_1', authorId: dynAgentId, relatedTxHash: woHash, content: "SOP ejecutado. Revisa el código @laura_dev_", mentions: [dynLauraId], readBy: [] }
+                        log: { id: 'log_1', authorId: dynAgentId, relatedTxHash: woHash, content: "SOP ejecutado. Revisa aserciones @laura_dev_", mentions: [dynLauraId], readBy: [] }
                     }
                 });
 
                 p = store.getState().projects.find(x => x.id === PID_TEST);
-                await assert(p.logs.length === 1 && p.logs[0].mentions.includes(dynLauraId), "Omni-Flow P2P: Mención Semántica detectada e inyectada en Log", "USENET");
+                await assert(p.logs.length === 1 && p.logs[0].mentions.includes(dynLauraId), "Omni-Flow P2P: Mención Semántica inyectada en Log", "USENET");
                 
                 const unreadPings = p.logs.filter(l => l.mentions && l.mentions.includes(dynLauraId) && !l.readBy?.includes(dynLauraId));
                 await assert(unreadPings.length === 1, "Omni-Paper Radar: El Nodo receptor suma +1 en su bandeja táctica", "PING");
@@ -289,7 +297,7 @@ export default class TestsView {
                 const stillUnread = p.logs.filter(l => l.mentions && l.mentions.includes(dynLauraId) && !l.readBy?.includes(dynLauraId));
                 await assert(stillUnread.length === 0, "Limpieza de Flujo: El ping se purga tras acuse de recibo.", "PING-READ");
 
-                // TEARDOWN: Restauramos la identidad del PO
+                // TEARDOWN
                 if (originalUser) {
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
                 }
@@ -298,8 +306,8 @@ export default class TestsView {
                 await sleep(400);
                 terminal.insertAdjacentHTML('beforeend', `
                     <div style="margin-top: 30px; padding: 30px; background: rgba(0, 230, 118, 0.05); border: 1px solid var(--accent-green); border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0, 230, 118, 0.15); animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);">
-                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2.2rem; letter-spacing:-1px; text-shadow: 0 0 20px rgba(0,230,118,0.5);">🔥 KERNEL V9 ANTIGRAVITY CERTIFICADO 🔥</h2>
-                        <p style="color: #ccc; font-size: 1.1rem; margin-top: 15px; line-height: 1.6;">El Sistema Operativo de Sinergias (SOS) ha superado la auditoría de estrés. La inmutabilidad del Redux, la precisión del Slicing Pie, y el enrutamiento cognitivo RAG operan a nivel Imperial.</p>
+                        <h2 style="color: var(--accent-green); margin: 0; font-size: 2.2rem; letter-spacing:-1px; text-shadow: 0 0 20px rgba(0,230,118,0.5);">🔥 KERNEL V9 INMORTAL 🔥</h2>
+                        <p style="color: #ccc; font-size: 1.1rem; margin-top: 15px; line-height: 1.6;">El Sistema Operativo de Sinergias (SOS) ha superado la auditoría. La arquitectura AgentSkills, la inmutabilidad Redux y las Evals operan a nivel estructural profundo.</p>
                     </div>
                 `);
                 
