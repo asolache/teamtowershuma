@@ -103,10 +103,27 @@ Patrones transversales en todos los sectores:
 3. La legitimidad como lubricante de flujos (sin ella los tangibles no fluyen).`
     },
 
+    // 🔥 NUEVA REFERENCIA: KERNEL INMORTAL (TDD & EVALS)
+    {
+        id: 'ref_immortal_tdd', type: 'reference', category: 'reference', title: 'El Kernel Inmortal (TDD & Evals)',
+        description: 'Metodología estricta para forjar SOCs (Standard Operating Conditions) inmutables.',
+        keywords: ['TDD', 'Evals', 'SOC', 'Calidad', '#kernel_sos'],
+        content: `## El Principio de Inmortalidad
+Un sistema solo es inmortal si es auditable. En TeamTowers, la auditoría se logra mediante Evals estrictos (SOCs - Standard Operating Conditions). Toda acción (SOP) carece de valor si no tiene un SOC que demuestre su ejecución.
+
+## Reglas para Forjar Evals (SOCs) Perfectos
+1. **Verificabilidad Objetiva:** Un SOC nunca puede ser subjetivo ("Que el diseño sea bonito"). Debe ser binario y demostrable ("El diseño utiliza los 3 colores hexadecimales de la guía de marca").
+2. **Atomicidad:** Cada aserción debe evaluar una sola cosa. Si falla, el Agente debe saber exactamente qué línea o concepto corregir.
+3. **Independencia del Ejecutor:** Un SOC debe poder ser evaluado por un agente externo ciego (@notari_ledger) que solo disponga del Output final y de las instrucciones de la aserción.
+
+## Integración con AgentSkills
+Cuando se forja una nueva Skill, el apartado de SOC debe listar aserciones claras que sirvan como 'Test Cases' automatizados. Si el output pasa las aserciones, la red muta y avanza; si falla, se rechaza y protege al Kernel de la entropía.`
+    },
+
     { 
         id: 'skill_vna_strategy', type: 'skill', category: 'skill', title: 'Skill: Value Map Prompt Generator (VNA)', 
         description: 'Genera mapas de valor completos y precisos según la metodología Verna Allee.',
-        references: ['ref_vna_methodology', 'ref_vna_examples', 'ref_os_codex'],
+        references: ['ref_vna_methodology', 'ref_vna_examples', 'ref_os_codex', 'ref_immortal_tdd'],
         keywords: ['Estrategia', 'VNA', '@genesi_ai', 'Mapas de Valor'],
         content: `Esta skill guía la construcción de topologías para el agente creador de mapas de valor.
 
@@ -116,7 +133,7 @@ PROCESO DE CONSTRUCCIÓN (MANDAMIENTOS):
 3. Mapeo de FLUJOS TANGIBLES E INTANGIBLES: Para cada par de roles, define qué fluye física/económicamente (T) y qué fluye como conocimiento/confianza (I).
 4. Verificación de RECIPROCIDAD: Valida que cada intercambio tenga sentido respecto a la Metaskill.
 5. INTEGRACIÓN CON SISTEMA DE SKILLS (Para TeamTowers): Para cada rol, define el POOL DE SKILLS y qué MEMES son relevantes.
-6. FORMATO DE SALIDA (TDD RIGUROSO): El mapa debe traducirse a un JSON estricto con la matriz "soc_checklist" (Criterios de validación) para cada transacción.` 
+6. FORMATO DE SALIDA (TDD RIGUROSO): El mapa debe traducirse a un JSON estricto con la matriz "soc_checklist" (Criterios de validación objetivos basados en ref_immortal_tdd) para cada transacción.` 
     },
     
     {
@@ -131,7 +148,7 @@ Tu misión es diseñar arquitecturas VNA apoyándote en tu Skill de Diseño Estr
     { 
         id: 'skill_creator_master', type: 'skill', category: 'skill', title: 'Skill Creator (Meta-Skill)', 
         description: 'Instrucciones para crear, iterar y evaluar nuevas Skills en el ecosistema. Úsala cuando necesites empaquetar un flujo de trabajo.',
-        references: ['ref_os_vna'],
+        references: ['ref_os_vna', 'ref_immortal_tdd'],
         keywords: ['Meta', 'Skill Creator', 'AgentSkills', 'TDD'],
         content: `### 1. VNA Flow (Flujo de Valor)
 - **Inputs Requeridos:** Concepto crudo del usuario, ejemplos de outputs deseados (Tangible), Entendimiento del objetivo (Intangible).
@@ -148,13 +165,13 @@ Tu misión es diseñar arquitecturas VNA apoyándote en tu Skill de Diseño Estr
 - [ ] La "Description" explica claramente cuándo debe dispararse la skill.
 - [ ] Las instrucciones usan voz imperativa y evitan bucles teóricos.
 - [ ] El nodo declara explícitamente sus dependencias o referencias requeridas.
-- [ ] La skill incluye un modelo de evaluación (Evals) medible por un agente externo.` 
+- [ ] La skill incluye un modelo de evaluación objetiva (Evals) medible por un agente externo ciego (@notari_ledger).` 
     }
 ];
 
 export const KB = {
     dbName: 'TeamTowers_LMS_V15', 
-    dbVersion: 12, // 🔥 Forzamos la inyección de la Meta-Skill
+    dbVersion: 13, // 🔥 Forzamos la actualización para inyectar la referencia del Kernel Inmortal
     db: null,
 
     init() {
@@ -184,10 +201,10 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const nodes = await this.getAllNodes();
         
-        // Forzar actualización de los Memes Maestros de VNA y Meta-Skill
+        // Forzar actualización de los Memes Maestros de VNA, Meta-Skill y TDD Immortal
         for (const meme of CATALOGO_MEMES) { 
             const exists = nodes.find(n => n.id === meme.id);
-            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'ref_vna_methodology' || meme.id === 'ref_vna_examples' || meme.id === 'prompt_global_genesi_ai' || meme.id === 'skill_creator_master') {
+            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'ref_vna_methodology' || meme.id === 'ref_vna_examples' || meme.id === 'prompt_global_genesi_ai' || meme.id === 'skill_creator_master' || meme.id === 'ref_immortal_tdd') {
                 await this.saveNode(meme); 
             }
         }
