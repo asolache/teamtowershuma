@@ -53,6 +53,12 @@ export class SynapticCanvas {
                 .loader-3d { position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; animation: pulse 1.5s infinite; pointer-events: none; z-index: 20;}
                 @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; text-shadow: 0 0 20px var(--accent-blue); } 100% { opacity: 0.5; } }
 
+                /* AgentSkills Visual Guides in Palette */
+                .badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-right: 5px; }
+                .badge.ref { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); }
+                .badge.eval { background: rgba(255,145,0,0.1); color: var(--accent-orange); border: 1px solid rgba(255,145,0,0.3); }
+                .badge.script { background: rgba(255,82,82,0.1); color: var(--accent-red); border: 1px solid rgba(255,82,82,0.3); }
+
                 @media (max-width: 768px) {
                     .synaptic-layout { flex-direction: column-reverse; }
                     .synaptic-palette { width: 100%; height: 45%; border-right: none; border-top: 1px solid #333; }
@@ -100,32 +106,42 @@ export class SynapticCanvas {
             }
         };
 
-        const addLink = (source, target) => {
+        const addLink = (source, target, isDependencies = false) => {
             if (!source || !target) return;
-            const sourceExists = this.nodes.some(n => n.id === source);
-            const targetExists = this.nodes.some(n => n.id === target);
-            if (sourceExists && targetExists) {
-                this.links.push({ source, target });
+            if (this.nodes.some(n => n.id === source) && this.nodes.some(n => n.id === target)) {
+                // Si es una dependencia (AgentSkill), el link viaja de la Referencia hacia la Skill
+                this.links.push({ source, target, isDependencies });
             }
         };
 
+        // 🔥 FÍSICA COLORIMÉTRICA Y GRAVITACIONAL V9 (AgentSkills)
         const getColorAndMass = (category) => {
             switch(category) {
+                // Core Network
                 case 'core_os': return { c: '#ffffff', m: 50 };
-                case 'project_core': return { c: '#00b0ff', m: 45 };
-                case 'evergreen': return { c: '#ffd700', m: 35 };
-                case 'prompt_a2a': return { c: '#e040fb', m: 30 };
-                case 'meta_prompt': return { c: '#e040fb', m: 35 };
-                case 'skill': return { c: '#00e676', m: 25 };
-                case 'SOP': return { c: '#ff9100', m: 20 };
-                case 'role': return { c: '#ff4081', m: 30 };
-                default: return { c: '#888888', m: 15 };
+                case 'project_core': return { c: '#7c4dff', m: 45 }; // Púrpura Profundo
+                case 'role': return { c: '#ff4081', m: 35 }; // Rosa Neón
+                case 'SOP': return { c: '#e040fb', m: 25 }; 
+                case 'agent': return { c: '#00b0ff', m: 40 }; 
+                
+                // AgentSkills Anatomy
+                case 'skill': return { c: '#00e676', m: 30 }; // Verde Neón
+                case 'reference': return { c: '#00b0ff', m: 18 }; // Azul Cibernético
+                case 'eval': return { c: '#ff9100', m: 22 }; // Naranja Plasma
+                case 'script': return { c: '#ff5252', m: 20 }; // Rojo Láser
+                
+                // Legacy
+                case 'evergreen': return { c: '#ffd700', m: 25 };
+                case 'prompt_a2a': return { c: '#e040fb', m: 20 };
+                case 'meta_prompt': return { c: '#e040fb', m: 25 };
+                default: return { c: '#888888', m: 12 };
             }
         };
 
+        // 1. MODO AGENTE INDIVIDUAL
         if (this.agentId) {
             const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(this.agentId));
-            addNode(this.agentId, this.agentId, 'agent', 50, 'var(--accent-blue)', { title: this.agentId, content: "Núcleo de la Identidad" });
+            addNode(this.agentId, this.agentId, 'agent', 50, '#00b0ff', { title: this.agentId, content: "Núcleo de la Identidad" });
 
             const safeAgentId = this.agentId.replace('@','');
             const promptNode = allNodes.find(n => n.id === `prompt_global_${safeAgentId}`);
@@ -139,11 +155,15 @@ export class SynapticCanvas {
                 addNode(m.id, m.title, m.category, mass, c, m);
                 addLink(this.agentId, m.id);
             });
-        } else {
+        } 
+        
+        // 2. MODO GALAXIA (Global)
+        else {
             addNode('core_kernel', 'OS KERNEL', 'core_os', 70, '#ffffff', { title: 'TeamTowers V9 Kernel', category: 'core_os', content: 'Punto Cero del Sistema Operativo de Sinergias.' });
 
+            // Redes (Proyectos)
             state.projects.forEach(p => {
-                addNode(p.id, p.nombre, 'project_core', 45, '#00b0ff', { title: p.nombre, category: 'project_core', content: p.presentation || 'Ecosistema' });
+                addNode(p.id, p.nombre, 'project_core', 45, '#7c4dff', { title: p.nombre, category: 'project_core', content: p.presentation || 'Ecosistema' });
                 addLink('core_kernel', p.id);
 
                 if(p.roles) {
@@ -156,35 +176,57 @@ export class SynapticCanvas {
                 if(p.vna_flows) {
                     p.vna_flows.forEach(f => {
                         const fId = 'flow_' + p.id + '_' + f.id;
-                        addNode(fId, f.template || 'SOP', 'SOP', 20, '#ff9100', { title: f.template, category: 'SOP', content: `Horas Est: ${f.estimatedHours}h` });
+                        addNode(fId, f.template || 'SOP', 'SOP', 20, '#e040fb', { title: f.template, category: 'SOP', content: `Horas Est: ${f.estimatedHours}h` });
                         if (f.to) addLink(`role_${p.id}_${f.to}`, fId);
                         if (f.from) addLink(`role_${p.id}_${f.from}`, fId); 
                     });
                 }
             });
 
+            // Nodos Cognitivos (Memes, Skills, Evals...)
             allNodes.forEach(m => {
                 if (m.type === 'system_state' || m.id === 'global_kernel_state') return;
                 const { c, m: mass } = getColorAndMass(m.category);
                 addNode(m.id, m.title, m.category, mass, c, m);
 
-                let linked = false;
+                let linkedToProject = false;
                 if (m.projectId && m.projectId !== 'global' && this.nodes.find(n => n.id === m.projectId)) {
                     addLink(m.projectId, m.id);
-                    linked = true;
+                    linkedToProject = true;
                 }
 
+                // Enlaces por Keywords (Legacy)
                 if (m.keywords && Array.isArray(m.keywords)) {
                     m.keywords.forEach(kw => {
                         const targetNode = this.nodes.find(n => n.id === kw || n.name.toLowerCase() === kw.toLowerCase() || n.id.includes(`role_${m.projectId}_${kw}`));
                         if (targetNode && targetNode.id !== m.id) {
                             addLink(m.id, targetNode.id);
-                            linked = true;
+                            linkedToProject = true;
                         }
                     });
                 }
 
-                if (!linked && m.projectId === 'global') addLink('core_kernel', m.id);
+                if (!linkedToProject && m.projectId === 'global') addLink('core_kernel', m.id);
+            });
+
+            // 🔥 SEGUNDA PASADA: DIBUJAR LA ANATOMÍA AGENTSKILLS
+            // Iteramos sobre las Skills y conectamos sus dependencias (Refs, Evals, Scripts) gravitacionalmente
+            allNodes.forEach(skillNode => {
+                if (skillNode.type === 'skill') {
+                    const dependencies = [
+                        ...(skillNode.references || []),
+                        ...(skillNode.evals || []),
+                        ...(skillNode.scripts || [])
+                    ];
+
+                    dependencies.forEach(depId => {
+                        const targetExists = this.nodes.some(n => n.id === depId);
+                        if (targetExists) {
+                            // Linkeamos el recurso (Ej: Eval) hacia la Skill que lo consume
+                            addLink(depId, skillNode.id, true);
+                        }
+                    });
+                }
             });
         }
     }
@@ -215,23 +257,9 @@ export class SynapticCanvas {
         };
 
         try {
-            await loadScriptWithFallback([
-                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-                'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js',
-                'https://unpkg.com/three@0.147.0/build/three.min.js'
-            ], 'THREE');
-            
-            await loadScriptWithFallback([
-                'https://unpkg.com/three-spritetext', 
-                'https://cdn.jsdelivr.net/npm/three-spritetext'
-            ], 'SpriteText');
-            
-            await loadScriptWithFallback([
-                'https://cdnjs.cloudflare.com/ajax/libs/3d-force-graph/1.73.3/3d-force-graph.min.js',
-                'https://unpkg.com/3d-force-graph',
-                'https://cdn.jsdelivr.net/npm/3d-force-graph'
-            ], 'ForceGraph3D');
-
+            await loadScriptWithFallback(['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js', 'https://unpkg.com/three@0.147.0/build/three.min.js'], 'THREE');
+            await loadScriptWithFallback(['https://unpkg.com/three-spritetext', 'https://cdn.jsdelivr.net/npm/three-spritetext'], 'SpriteText');
+            await loadScriptWithFallback(['https://cdnjs.cloudflare.com/ajax/libs/3d-force-graph/1.73.3/3d-force-graph.min.js', 'https://unpkg.com/3d-force-graph', 'https://cdn.jsdelivr.net/npm/3d-force-graph'], 'ForceGraph3D');
         } catch (e) {
             console.error("Error definitivo al cargar WebGL:", e);
             if (loader) loader.innerText = "Error cargando Córtex 3D. Tu red bloquea las librerías.";
@@ -245,30 +273,38 @@ export class SynapticCanvas {
         this.graph3D = ForceGraph3D()(canvasInner)
             .graphData(gData)
             .nodeLabel('') 
-            // 🔥 FÍSICA Y VISUALIDAD DELUX RESTAURADA 🔥
             .linkColor(link => {
-                // El enlace hereda el color del nodo de origen
                 const sourceNode = typeof link.source === 'object' ? link.source : this.nodes.find(n => n.id === link.source);
                 const color = sourceNode ? sourceNode.color : 'rgba(0,176,255,1)';
-                return color.replace(')', ', 0.3)').replace('rgb', 'rgba'); // Le aplicamos transparencia
+                
+                // 🔥 ENLACES AGENTSKILLS: Si es una dependencia (Eval/Ref hacia Skill), pintamos la línea semitransparente con guiones (visualmente lo hace el color dashed)
+                return link.isDependencies ? color.replace(')', ', 0.15)').replace('rgb', 'rgba') : color.replace(')', ', 0.4)').replace('rgb', 'rgba'); 
             })
-            .linkWidth(1.5)
-            .linkDirectionalParticles(3) // ✨ Fotones de energía viajando por las sinapsis
-            .linkDirectionalParticleWidth(2.5) // Grosor de los fotones
-            .enableNodeDrag(false) // 🔒 Desactivado el free-drag para que el algoritmo mantenga la estructura de Constelación
+            .linkWidth(link => link.isDependencies ? 0.8 : 1.5)
+            .linkDirectionalParticles(link => link.isDependencies ? 1 : 3) 
+            .linkDirectionalParticleWidth(2.5) 
+            .linkDirectionalParticleColor(link => {
+                const sourceNode = typeof link.source === 'object' ? link.source : this.nodes.find(n => n.id === link.source);
+                return sourceNode ? sourceNode.color : '#ffffff';
+            })
+            .enableNodeDrag(false) 
             .nodeThreeObject(node => {
                 const group = new window.THREE.Group();
                 const geometry = new window.THREE.SphereGeometry(node.val * 0.8, 24, 24);
+                
+                // Hacemos el núcleo Kernel y Proyectos más opacos
+                const isCore = node.group === 'core_os' || node.group === 'project_core';
                 const material = new window.THREE.MeshLambertMaterial({ 
-                    color: node.color, transparent: true, opacity: 0.8, depthWrite: false
+                    color: node.color, transparent: true, opacity: isCore ? 0.95 : 0.7, depthWrite: false
                 });
+                
                 const sphere = new window.THREE.Mesh(geometry, material);
                 group.add(sphere);
 
                 const sprite = new window.SpriteText(node.name);
                 sprite.color = '#ffffff';
                 sprite.textHeight = Math.max(3, node.val * 0.25); 
-                sprite.fontWeight = 'bold';
+                sprite.fontWeight = isCore ? '900' : 'normal';
                 group.add(sprite);
                 return group;
             })
@@ -292,13 +328,8 @@ export class SynapticCanvas {
                 this.showNodeDetailsInPalette(node);
             });
 
-        // 🔥 APLICACIÓN CORRECTA DE LA REPULSIÓN GRAVITACIONAL
-        if (this.graph3D.d3Force('charge')) {
-            this.graph3D.d3Force('charge').strength(-400); // Fuerte repulsión para separar las bolas
-        }
-        if (this.graph3D.d3Force('link')) {
-            this.graph3D.d3Force('link').distance(70); // Alargamos las cuerdas (links)
-        }
+        if (this.graph3D.d3Force('charge')) this.graph3D.d3Force('charge').strength(-400); 
+        if (this.graph3D.d3Force('link')) this.graph3D.d3Force('link').distance(70); 
 
         const ambientLight = new window.THREE.AmbientLight(0xffffff, 0.7);
         const dirLight = new window.THREE.DirectionalLight(0xffffff, 0.9);
@@ -331,6 +362,16 @@ export class SynapticCanvas {
         const tagsHtml = (m.keywords || []).map(t => `<span class="dm-tag">#${t}</span>`).join('');
         const safeColor = node3D.color || 'var(--accent-blue)';
         
+        let badgesHtml = '';
+        if (m.type === 'skill') {
+            const r = (m.references || []).length;
+            const e = (m.evals || []).length;
+            const s = (m.scripts || []).length;
+            if (r>0) badgesHtml += `<span class="badge ref">📚 ${r}</span>`;
+            if (e>0) badgesHtml += `<span class="badge eval">📋 ${e}</span>`;
+            if (s>0) badgesHtml += `<span class="badge script">⚡ ${s}</span>`;
+        }
+        
         resultsList.innerHTML = `
             <div style="margin-bottom: 15px;">
                 <button id="btnBackSearch" style="background:rgba(255,255,255,0.05); border:1px solid #444; color:#fff; border-radius:8px; cursor:pointer; font-family:var(--font-mono); font-size:0.8rem; padding:10px 15px; width:100%; transition:0.2s; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">&larr; Desanclar Cámara</button>
@@ -338,6 +379,7 @@ export class SynapticCanvas {
             <div class="draggable-meme" style="--node-color: ${safeColor}; cursor: default;">
                 <div class="dm-cat" style="color: ${safeColor};">${m.category || node3D.group}</div>
                 <div class="dm-title" style="font-size:1.3rem;">${m.title || node3D.name}</div>
+                ${badgesHtml ? `<div style="margin-bottom:10px;">${badgesHtml}</div>` : ''}
                 <div class="dm-content">${(m.content || '').replace(/\\n/g, '<br>')}</div>
                 <div class="dm-tags">${tagsHtml}</div>
             </div>
