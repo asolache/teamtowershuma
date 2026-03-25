@@ -52,7 +52,6 @@ export const CATALOGO_MEMES = [
         keywords: ['Estructura', 'Roles', '#kernel_sos'] 
     },
     
-    // 🔥 NUEVA REFERENCIA 1: METODOLOGÍA VNA
     {
         id: 'ref_vna_methodology', type: 'reference', category: 'reference', title: 'Metodología VNA (Verna Allee)',
         description: 'Fundamentos, elementos y principios de Value Network Analysis (VNA).',
@@ -82,7 +81,6 @@ El propósito compartido que da coherencia a todos los flujos (Misión, Visión,
 Cada rol tiene asociado un POOL DE SKILLS. Los Memes son unidades de conocimiento compartido. Los intercambios intangibles activan memes en la red neuronal.`
     },
 
-    // 🔥 NUEVA REFERENCIA 2: EJEMPLOS VNA
     {
         id: 'ref_vna_examples', type: 'reference', category: 'reference', title: 'Ejemplos Mapas de Valor Sectoriales',
         description: 'Patrones de flujos frecuentes y roles faltantes típicos por ecosistema.',
@@ -105,7 +103,6 @@ Patrones transversales en todos los sectores:
 3. La legitimidad como lubricante de flujos (sin ella los tangibles no fluyen).`
     },
 
-    // 🔥 SKILL MAESTRA DE DISEÑO VNA (Utiliza las 2 Referencias anteriores)
     { 
         id: 'skill_vna_strategy', type: 'skill', category: 'skill', title: 'Skill: Value Map Prompt Generator (VNA)', 
         description: 'Genera mapas de valor completos y precisos según la metodología Verna Allee.',
@@ -128,12 +125,36 @@ PROCESO DE CONSTRUCCIÓN (MANDAMIENTOS):
         keywords: ['System', 'Prompt', 'Genesi', 'Architect'],
         content: `Eres @genesi_ai, Master Ecosystem Architect de TeamTowers V9. 
 Tu misión es diseñar arquitecturas VNA apoyándote en tu Skill de Diseño Estratégico (skill_vna_strategy) y sus referencias (Verna Allee). Eres riguroso, holístico, y no assumes información que no tienes. Siempre equilibras los flujos tangibles con los intangibles.`
+    },
+
+    // 🔥 META-SKILL: EL FORJADOR DE SKILLS
+    { 
+        id: 'skill_creator_master', type: 'skill', category: 'skill', title: 'Skill Creator (Meta-Skill)', 
+        description: 'Instrucciones para crear, iterar y evaluar nuevas Skills en el ecosistema. Úsala cuando necesites empaquetar un flujo de trabajo.',
+        references: ['ref_os_vna'],
+        keywords: ['Meta', 'Skill Creator', 'AgentSkills', 'TDD'],
+        content: `### 1. VNA Flow (Flujo de Valor)
+- **Inputs Requeridos:** Concepto crudo del usuario, ejemplos de outputs deseados (Tangible), Entendimiento del objetivo (Intangible).
+- **Outputs Generados:** Archivo Skill.md estructurado (Tangible), Documentos de referencia separados (Tangible), TDD Assertions para el evaluador (Intangible).
+
+### 2. SOP (Standard Operating Procedure)
+1. **Captura de Intención:** Pregunta al usuario qué debe hacer la skill, cuándo debe activarse y qué formato de salida espera.
+2. **Entrevista y Casos Límite:** Identifica si la skill es determinista (código/datos) o subjetiva (redacción). Define Edge Cases.
+3. **Drafting (Revelación Progresiva):** - Redacta el "Description" de forma agresiva para asegurar que el Orquestador la active (Ej: "Usa esta skill SIEMPRE que el usuario mencione X").
+   - Extrae toda la teoría pesada a la carpeta \`/references\`.
+4. **Iteración:** Ejecuta casos de prueba (Test Cases) y pide feedback al usuario antes de sellar la skill.
+
+### 3. SOC (Standard Operating Conditions / Evals)
+- [ ] La "Description" explica claramente cuándo debe dispararse la skill.
+- [ ] Las instrucciones usan voz imperativa y evitan bucles teóricos.
+- [ ] El nodo declara explícitamente sus dependencias o referencias requeridas.
+- [ ] La skill incluye un modelo de evaluación (Evals) medible por un agente externo.` 
     }
 ];
 
 export const KB = {
     dbName: 'TeamTowers_LMS_V15', 
-    dbVersion: 11, // 🔥 Subimos a 11 para forzar la inyección de la nueva triada VNA
+    dbVersion: 12, // 🔥 Forzamos la inyección de la Meta-Skill
     db: null,
 
     init() {
@@ -163,10 +184,10 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const nodes = await this.getAllNodes();
         
-        // Forzar actualización de los Memes Maestros de VNA
+        // Forzar actualización de los Memes Maestros de VNA y Meta-Skill
         for (const meme of CATALOGO_MEMES) { 
             const exists = nodes.find(n => n.id === meme.id);
-            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'ref_vna_methodology' || meme.id === 'ref_vna_examples' || meme.id === 'prompt_global_genesi_ai') {
+            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'ref_vna_methodology' || meme.id === 'ref_vna_examples' || meme.id === 'prompt_global_genesi_ai' || meme.id === 'skill_creator_master') {
                 await this.saveNode(meme); 
             }
         }
