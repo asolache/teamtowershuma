@@ -15,33 +15,27 @@ export const NATIVE_ONTOLOGY = {
     "web3_defi_protocol": {
         label: "🏴‍☠️ Web3 & Protocolos DAO", meta: "Ecosistema Trustless. Prioridad en auditoría on-chain, tokenomics y disrupción del status quo.",
         roles: {
-            "@anxaneta": { name: "Protocol Architect", multiplier: 3.0, fmv: 70, guardian: "outlaw", core_skills: ['skill_tokenomics_design'] },
-            "@aixecador": { name: "Governance Facilitator", multiplier: 2.0, fmv: 50, guardian: "sage", core_skills: ['skill_dao_governance'] },
-            "@dosos": { name: "Smart Contract Auditor", multiplier: 1.5, fmv: 65, guardian: "ruler", core_skills: ['skill_sc_security'] },
-            "@baixos": { name: "Solidity Engineer", multiplier: 1.2, fmv: 55, guardian: "creator", core_skills: ['skill_solidity_dev'] },
-            "@pinya": { name: "Node Operator", multiplier: 1.0, fmv: 35, guardian: "everyman", core_skills: ['skill_node_ops'] }
+            "@anxaneta": { name: "Protocol Architect", multiplier: 3.0, fmv: 70, guardian: "outlaw", core_skills: ['skill_tokenomics_design'] }
         }
     },
     "creative_design_agency": {
         label: "🎨 Agencia Creativa & Diseño", meta: "Ecosistema enfocado en la estética, la innovación visual y la materialización de ideas.",
         roles: {
-            "@anxaneta": { name: "Director Creativo", multiplier: 3.0, fmv: 65, guardian: "creator", core_skills: ['skill_creative_direction'] },
-            "@aixecador": { name: "Art Director", multiplier: 2.0, fmv: 50, guardian: "magician", core_skills: ['skill_visual_storytelling'] },
-            "@dosos": { name: "Design Reviewer", multiplier: 1.5, fmv: 40, guardian: "sage", core_skills: ['skill_uiux_audit'] },
-            "@baixos": { name: "UI/UX & Motion Designer", multiplier: 1.2, fmv: 35, guardian: "lover", core_skills: ['skill_asset_production'] },
-            "@pinya": { name: "Copywriter / Asset Manager", multiplier: 1.0, fmv: 25, guardian: "everyman", core_skills: ['skill_copywriting'] }
+            "@anxaneta": { name: "Director Creativo", multiplier: 3.0, fmv: 65, guardian: "creator", core_skills: ['skill_creative_direction'] }
         }
+    },
+    "blank_canvas": {
+        label: "🌌 Lienzo en Blanco (Inferencia IA Pura)", meta: "Sin roles predefinidos. El Arquitecto IA deducirá la topología exacta desde cero basándose en la Visión Fundacional.",
+        roles: {}
     }
 };
 
 const GLOBAL_AIS_ONTOLOGY = [
-    { id: '@cap_de_colla', title: 'Arquetipo: Cap de Colla', content: 'Orquestador maestro. Asignas tareas, conectas a los agentes y aseguras que el Castell se levante en armonía y seny. Tienes visión total del proyecto y los Gaps de competencias.' },
-    { id: '@genesi_ai', title: 'Arquetipo: Gènesi', content: 'Creador de mundos. Generas las topologías VNA de 5 fases, anclas competencias y plasmas la visión inicial del ecosistema en Sprints ejecutables.' },
-    { id: '@notari_ledger', title: 'Arquetipo: Notari', content: 'Juez imparcial. Evalúas estrictamente los SOCs. Si hay una falla, aplicas una MERMA al multiplicador FMV. Otorga XP para subir niveles de Skill.' },
-    { id: '@seny_analyst', title: 'Arquetipo: Seny', content: 'Sintetizador de Memoria Zero-Noise. Destilas la experiencia de la red en keywords y resúmenes de 1 línea.' },
-    { id: '@dharma_coach', title: 'Arquetipo: Dharma', content: 'Guía Ikigai. Alinear el talento humano con las necesidades de la red mediante los arquetipos de Pantheon.' },
-    { id: '@forca_worker', title: 'Arquetipo: Força', content: 'Fuerza bruta algorítmica. Ejecutas cualquier SOP que se te asigne: código, redacción, análisis.' },
-    { id: '@mestre_escola', title: 'Arquetipo: Mestre d\'Escola', content: 'Guardián del Árbol de Habilidades. Gobiernas y defines los estándares para los niveles Bronce, Plata y Oro.' }
+    { id: '@cap_de_colla', title: 'Arquetipo: Cap de Colla', content: 'Orquestador maestro. Asignas tareas, conectas a los agentes y aseguras que el Castell se levante en armonía y seny.' },
+    { id: '@genesi_ai', title: 'Arquetipo: Gènesi', content: 'Creador de mundos. Generas topologías VNA desde cero, sin restricciones, infiriendo el modelo de negocio ideal.' },
+    { id: '@notari_ledger', title: 'Arquetipo: Notari', content: 'Juez imparcial. Evalúas estrictamente los SOCs (Evals). Si falla, aplicas una MERMA.' },
+    { id: '@seny_analyst', title: 'Arquetipo: Seny', content: 'Destilador de datos y benchmark. Analiza los evals.json y genera insights cualitativos.' },
+    { id: '@mestre_escola', title: 'Arquetipo: Mestre d\'Escola', content: 'Guardián del Árbol de Habilidades. Ejecuta Deep Research y formatea Skills.' }
 ];
 
 export const CATALOGO_MEMES = [
@@ -51,127 +45,66 @@ export const CATALOGO_MEMES = [
         content: `MANDAMIENTO ESTRUCTURAL: Toda red VNA debe dividirse en 5 niveles: @anxaneta (Dirección), @aixecador (Táctica), @dosos (Auditoría), @baixos (Producción), @pinya (Soporte).`, 
         keywords: ['Estructura', 'Roles', '#kernel_sos'] 
     },
-    
-    {
-        id: 'ref_vna_methodology', type: 'reference', category: 'reference', title: 'Metodología VNA (Verna Allee)',
-        description: 'Fundamentos, elementos y principios de Value Network Analysis (VNA).',
-        keywords: ['VNA', 'Metodología', 'Verna Allee', '#kernel_sos'],
-        content: `## 1. Fundamentos conceptuales
-Value Network Analysis (VNA) modela organizaciones y ecosistemas como redes vivas de intercambio de valor. El valor real —visible e invisible— fluye entre actores a través de intercambios tangibles e intangibles.
-
-## 2. Elementos del modelo VNA
-### 2.1 Roles / Actores (Nodos)
-Cualquier entidad que participa activamente. Se define por lo que aporta y recibe.
-### 2.2 Intercambios Tangibles
-Tienen forma física, financiera o contractual (Pago, Producto, Documento formal, Dato estructurado).
-### 2.3 Intercambios Intangibles
-La economía invisible de la red. Conocimiento tácito, Confianza, Beneficio estratégico, Motivación, Feedback, Innovación.
-Regla de oro: Por cada intercambio tangible, busca el intangible que lo precede o lo sigue.
-
-### 2.4 Metaskill de la Red
-El propósito compartido que da coherencia a todos los flujos (Misión, Visión, Objetivos estratégicos).
-
-## 3. Principios de análisis VNA
-- Principio de reciprocidad: Todo intercambio saludable es bidireccional.
-- Principio de flujo emergente: Los intangibles generan valor emergente.
-- Principio de roles faltantes: Un flujo roto indica un rol faltante.
-- Principio de multiplicadores intangibles: Los intangibles apalancan los tangibles.
-
-## 6. VNA en TeamTowers
-Cada rol tiene asociado un POOL DE SKILLS. Los Memes son unidades de conocimiento compartido. Los intercambios intangibles activan memes en la red neuronal.`
-    },
-
-    {
-        id: 'ref_vna_examples', type: 'reference', category: 'reference', title: 'Ejemplos Mapas de Valor Sectoriales',
-        description: 'Patrones de flujos frecuentes y roles faltantes típicos por ecosistema.',
-        keywords: ['VNA', 'Patrones', 'Ejemplos', '#kernel_sos'],
-        content: `Ejemplos de ecosistemas modelados con VNA:
-
-1. Ecosistema de Innovación / Startup:
-- Roles: Emprendedor, Inversor, Aceleradora, Cliente temprano, Mentor.
-- Flujos: Inversor a Emprendedor (Tangible: Capital) | Emprendedor a Inversor (Intangible: Visión, tracción).
-- Desequilibrio típico: Cliente temprano no involucrado como co-creador.
-
-2. Red de Valor Interna (Organización / Empresa):
-- Roles: Producto, Ventas, Ingeniería, Liderazgo, Cliente.
-- Flujos: Ventas a Producto (Intangible: Señal de mercado) | Producto a Ingeniería (Intangible: Criterios de éxito).
-- Flujo frecuentemente roto: Ingeniería a Producto (limitaciones técnicas).
-
-Patrones transversales en todos los sectores:
-1. El cliente como nodo infrautilizado (solo recibe tangibles, no se modelan sus intangibles como feedback).
-2. El conocimiento tácito como flujo invisible.
-3. La legitimidad como lubricante de flujos (sin ella los tangibles no fluyen).`
-    },
-
-    // 🔥 NUEVA REFERENCIA: KERNEL INMORTAL (TDD & EVALS)
     {
         id: 'ref_immortal_tdd', type: 'reference', category: 'reference', title: 'El Kernel Inmortal (TDD & Evals)',
         description: 'Metodología estricta para forjar SOCs (Standard Operating Conditions) inmutables.',
         keywords: ['TDD', 'Evals', 'SOC', 'Calidad', '#kernel_sos'],
         content: `## El Principio de Inmortalidad
-Un sistema solo es inmortal si es auditable. En TeamTowers, la auditoría se logra mediante Evals estrictos (SOCs - Standard Operating Conditions). Toda acción (SOP) carece de valor si no tiene un SOC que demuestre su ejecución.
-
-## Reglas para Forjar Evals (SOCs) Perfectos
-1. **Verificabilidad Objetiva:** Un SOC nunca puede ser subjetivo ("Que el diseño sea bonito"). Debe ser binario y demostrable ("El diseño utiliza los 3 colores hexadecimales de la guía de marca").
-2. **Atomicidad:** Cada aserción debe evaluar una sola cosa. Si falla, el Agente debe saber exactamente qué línea o concepto corregir.
-3. **Independencia del Ejecutor:** Un SOC debe poder ser evaluado por un agente externo ciego (@notari_ledger) que solo disponga del Output final y de las instrucciones de la aserción.
-
-## Integración con AgentSkills
-Cuando se forja una nueva Skill, el apartado de SOC debe listar aserciones claras que sirvan como 'Test Cases' automatizados. Si el output pasa las aserciones, la red muta y avanza; si falla, se rechaza y protege al Kernel de la entropía.`
+Un sistema solo es inmortal si es auditable. La auditoría se logra mediante Evals (SOCs).
+Toda Skill debe tener un directorio virtual \`/evals/evals.json\` con casos de prueba (prompts) y aserciones programáticas (evaluaciones objetivas).`
     },
 
+    // 🔥 SKILL ACTUALIZADA: GÈNESI DESENCADENADO (VNA 2.0)
     { 
         id: 'skill_vna_strategy', type: 'skill', category: 'skill', title: 'Skill: Value Map Prompt Generator (VNA)', 
-        description: 'Genera mapas de valor completos y precisos según la metodología Verna Allee.',
-        references: ['ref_vna_methodology', 'ref_vna_examples', 'ref_os_codex', 'ref_immortal_tdd'],
+        description: 'USA ESTA SKILL SIEMPRE que el usuario mencione "crear proyecto", "topología", "VNA", "red de valor" o cuando pida instanciar un ecosistema. Incluso si no pide explícitamente un mapa, úsala para estructurar el modelo de negocio subyacente.',
+        references: ['ref_os_codex', 'ref_immortal_tdd'],
         keywords: ['Estrategia', 'VNA', '@genesi_ai', 'Mapas de Valor'],
-        content: `Esta skill guía la construcción de topologías para el agente creador de mapas de valor.
+        content: `Eres el motor de creación de ecosistemas. NO estás limitado por plantillas predefinidas. Eres un creador desde cero.
 
-PROCESO DE CONSTRUCCIÓN (MANDAMIENTOS):
-1. Anclaje a METASKILL: Entiende la Misión, Visión y Objetivos. Si no están claros, haz preguntas de clarificación (Bucle Mayéutico).
-2. Identificación de ROLES/ACTORES: Lista todos los actores internos y externos.
-3. Mapeo de FLUJOS TANGIBLES E INTANGIBLES: Para cada par de roles, define qué fluye física/económicamente (T) y qué fluye como conocimiento/confianza (I).
-4. Verificación de RECIPROCIDAD: Valida que cada intercambio tenga sentido respecto a la Metaskill.
-5. INTEGRACIÓN CON SISTEMA DE SKILLS (Para TeamTowers): Para cada rol, define el POOL DE SKILLS y qué MEMES son relevantes.
-6. FORMATO DE SALIDA (TDD RIGUROSO): El mapa debe traducirse a un JSON estricto con la matriz "soc_checklist" (Criterios de validación objetivos basados en ref_immortal_tdd) para cada transacción.` 
+INSTRUCCIONES DE CONSTRUCCIÓN:
+1. DEDUCE EL SECTOR Y LOS ROLES: Lee la misión y el público objetivo. Inventa los roles (humanos o IA) EXACTOS que necesita este negocio para funcionar. No uses roles genéricos; usa nomenclatura específica del dominio. Asigna a cada rol un nivel del Codex Casteller (@anxaneta a @pinya).
+2. MAPEA LA MATRIZ DE INTERCAMBIOS: Por cada par de roles, establece qué se intercambia:
+   - TANGIBLES (T): Pagos, contratos, código, entregables.
+   - INTANGIBLES (I): Confianza, conocimiento, feedback, reputación.
+   *Asegura que haya reciprocidad (bucle cerrado).*
+3. CREACIÓN DE SKILLS: Especifica el "Pool de Skills" (capacidades) necesarias para cada rol inventado.
+4. BENCHMARK / EVALS (SOCs): Define 3-4 métricas cualitativas o aserciones estrictas para auditar el éxito de este ecosistema en el tiempo.` 
     },
     
+    // 🔥 NUEVA META-SKILL: SKILL CREATOR (Basado en el estándar AgentSkills de Anthropic)
+    { 
+        id: 'skill_creator_master', type: 'skill', category: 'skill', title: 'Skill Creator (AgentSkills Standard)', 
+        description: 'USAR SIEMPRE que el usuario quiera crear, editar, testear (evals) o mejorar una skill, prompt, o flujo de trabajo. Transforma ideas difusas en cápsulas de conocimiento estructuradas compatibles con Claude y TeamTowers.',
+        references: ['ref_immortal_tdd'],
+        keywords: ['Meta', 'Skill Creator', 'AgentSkills', 'Evals'],
+        content: `### Anatomía Oficial de una Skill
+Toda skill generada debe respetar esta estructura de Progressive Disclosure (Revelación Progresiva):
+- \`SKILL.md\` (Requerido): El núcleo. Frontmatter YAML (name, description) + Instrucciones en Markdown (SOPs). Máximo 500 líneas. Formato imperativo.
+- \`/references/\` (Opcional): Documentos teóricos profundos, guías de estilo, metodologías.
+- \`/scripts/\` (Opcional): Código ejecutable.
+- \`/evals/\` (Opcional): Casos de prueba (\`evals.json\`) con "prompts" de testeo y "assertions" (SOCs).
+
+### Flujo de Trabajo del Skill Creator
+1. **Captura de Intención:** Define qué hace la skill y cuál es el formato de salida esperado.
+2. **Descripciones Agresivas (Pushy):** La "description" del YAML es el trigger del RAG. Hazla agresiva. Ej: "Usa esta skill SIEMPRE que el usuario mencione dashboards, datos o gráficas, aunque no lo pida explícitamente".
+3. **Escritura del SKILL.md:** Usa "Theory of Mind". Explica el *por qué* de las cosas en lugar de usar "MUST" dictatoriales. Sé conciso.
+4. **Draft de Evals (Test Cases):** Diseña 2-3 prompts de prueba realistas ("evals.json"). Define aserciones objetivas verificables.
+5. **Multi-Archivo:** Si hay teoría extensa o ejemplos de código muy largos, sácalos del SKILL.md y referéncialos explícitamente pidiendo que se guarden en \`/references/\`.` 
+    },
+
     {
         id: 'prompt_global_genesi_ai', type: 'prompt_a2a', category: 'meta_prompt', targetId: '@genesi_ai', roleTarget: '@genesi_ai',
         title: 'Alma de Gènesi AI (Ecosystem Architect)',
         keywords: ['System', 'Prompt', 'Genesi', 'Architect'],
         content: `Eres @genesi_ai, Master Ecosystem Architect de TeamTowers V9. 
-Tu misión es diseñar arquitecturas VNA apoyándote en tu Skill de Diseño Estratégico (skill_vna_strategy) y sus referencias (Verna Allee). Eres riguroso, holístico, y no assumes información que no tienes. Siempre equilibras los flujos tangibles con los intangibles.`
-    },
-
-    // 🔥 META-SKILL: EL FORJADOR DE SKILLS
-    { 
-        id: 'skill_creator_master', type: 'skill', category: 'skill', title: 'Skill Creator (Meta-Skill)', 
-        description: 'Instrucciones para crear, iterar y evaluar nuevas Skills en el ecosistema. Úsala cuando necesites empaquetar un flujo de trabajo.',
-        references: ['ref_os_vna', 'ref_immortal_tdd'],
-        keywords: ['Meta', 'Skill Creator', 'AgentSkills', 'TDD'],
-        content: `### 1. VNA Flow (Flujo de Valor)
-- **Inputs Requeridos:** Concepto crudo del usuario, ejemplos de outputs deseados (Tangible), Entendimiento del objetivo (Intangible).
-- **Outputs Generados:** Archivo Skill.md estructurado (Tangible), Documentos de referencia separados (Tangible), TDD Assertions para el evaluador (Intangible).
-
-### 2. SOP (Standard Operating Procedure)
-1. **Captura de Intención:** Pregunta al usuario qué debe hacer la skill, cuándo debe activarse y qué formato de salida espera.
-2. **Entrevista y Casos Límite:** Identifica si la skill es determinista (código/datos) o subjetiva (redacción). Define Edge Cases.
-3. **Drafting (Revelación Progresiva):** - Redacta el "Description" de forma agresiva para asegurar que el Orquestador la active (Ej: "Usa esta skill SIEMPRE que el usuario mencione X").
-   - Extrae toda la teoría pesada a la carpeta \`/references\`.
-4. **Iteración:** Ejecuta casos de prueba (Test Cases) y pide feedback al usuario antes de sellar la skill.
-
-### 3. SOC (Standard Operating Conditions / Evals)
-- [ ] La "Description" explica claramente cuándo debe dispararse la skill.
-- [ ] Las instrucciones usan voz imperativa y evitan bucles teóricos.
-- [ ] El nodo declara explícitamente sus dependencias o referencias requeridas.
-- [ ] La skill incluye un modelo de evaluación objetiva (Evals) medible por un agente externo ciego (@notari_ledger).` 
+Tu misión es diseñar arquitecturas VNA apoyándote en tu Skill de Diseño Estratégico (skill_vna_strategy). Eres un INFERIDOR ABSOLUTO. Si el usuario te da una visión en blanco, tú deduces el ecosistema entero desde los primeros principios. Generas roles únicos, no te limitas a plantillas aburridas.`
     }
 ];
 
 export const KB = {
     dbName: 'TeamTowers_LMS_V15', 
-    dbVersion: 13, // 🔥 Forzamos la actualización para inyectar la referencia del Kernel Inmortal
+    dbVersion: 14, // 🔥 Subida de versión para el nuevo Genoma (Anthropic AgentSkills + VNA Libre)
     db: null,
 
     init() {
@@ -201,15 +134,14 @@ export const KB = {
     async seedDatabaseIfNeeded() {
         const nodes = await this.getAllNodes();
         
-        // Forzar actualización de los Memes Maestros de VNA, Meta-Skill y TDD Immortal
         for (const meme of CATALOGO_MEMES) { 
             const exists = nodes.find(n => n.id === meme.id);
-            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'ref_vna_methodology' || meme.id === 'ref_vna_examples' || meme.id === 'prompt_global_genesi_ai' || meme.id === 'skill_creator_master' || meme.id === 'ref_immortal_tdd') {
+            if (!exists || meme.id === 'skill_vna_strategy' || meme.id === 'skill_creator_master' || meme.id === 'prompt_global_genesi_ai') {
                 await this.saveNode(meme); 
             }
         }
 
-        if (!nodes.find(n => n.id === 'onto_web3_defi_protocol_meta')) {
+        if (!nodes.find(n => n.id === 'onto_blank_canvas_meta')) {
             for (const [sectorKey, sectorData] of Object.entries(NATIVE_ONTOLOGY)) {
                 await this.saveNode({ id: `onto_${sectorKey}_meta`, type: 'ontology', sector: sectorKey, sectorLabel: sectorData.label, roleTarget: 'Global', title: `Sector: ${sectorData.label}`, content: sectorData.meta });
                 for (const [levelKey, roleData] of Object.entries(sectorData.roles)) {
