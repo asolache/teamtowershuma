@@ -21,7 +21,7 @@ export default class LmsView {
         const headerConfig = {
             title: "La Forja (Cerebro LMS)",
             subtitle: "Conocimiento W3C & Meta-Grafo",
-            tagline: "Explora la memoria, forja habilidades y empaqueta AgentSkills (.zip) para la red.",
+            tagline: "Explora la memoria, forja habilidades y empaqueta AgentSkills (.zip / .skill) para la red.",
             tabs: [
                 { id: 'list', label: '🗂️ Padrón W3C (Lista)', active: this.currentTab === 'list' },
                 { id: 'graph', label: '🌌 Meta-Grafo 3D', active: this.currentTab === 'graph' }
@@ -98,7 +98,6 @@ export default class LmsView {
                 .btn-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red);}
                 .btn-danger:hover { background: rgba(255,82,82,0.1); transform: translateY(-2px);}
                 
-                /* 🔥 BOTONES ANTIGRAVITY Y EXPANSION */
                 .btn-antigravity { background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); color: black; box-shadow: 0 5px 15px rgba(0,176,255,0.3); }
                 .btn-antigravity:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,230,118,0.5); filter: brightness(1.2); }
                 
@@ -138,7 +137,7 @@ export default class LmsView {
 
                         <div class="dropzone-area" id="skillDropzone">
                             <span style="font-size:1.5rem;">📥</span>
-                            <span style="font-weight:bold;">Arrastra aquí un .zip (Paquete de Skill) o un .md para inyectarlo.</span>
+                            <span style="font-weight:bold;">Arrastra aquí un .skill, .zip o .md para inyectarlo en el Padrón.</span>
                         </div>
 
                         <div class="lms-grid" id="lmsGrid">
@@ -331,14 +330,15 @@ export default class LmsView {
             const dt = e.dataTransfer;
             const file = dt.files[0];
             
-            if (file && file.name.endsWith('.zip')) {
-                dropzone.innerHTML = "⏳ Desempaquetando ZIP...";
+            // 🔥 Añadido soporte nativo para '.skill'
+            if (file && (file.name.endsWith('.zip') || file.name.endsWith('.skill'))) {
+                dropzone.innerHTML = "⏳ Desempaquetando Paquete...";
                 await this.parseZipSkillFile(file);
-                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un .zip o .md para inyectarlo.</span>`;
+                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un .skill, .zip o .md para inyectarlo.</span>`;
             } else if (file && file.name.endsWith('.md')) {
                 this.parseMarkdownSkillFile(file);
             } else {
-                alert("Solo se admiten archivos .zip (AgentSkills completos) o .md individuales.");
+                alert("Formato denegado. Solo se admiten paquetes (.zip, .skill) o archivos markdown individuales (.md).");
             }
         }, false);
     }
@@ -350,10 +350,10 @@ export default class LmsView {
             const contents = await zip.loadAsync(file);
             
             const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('Skill.md'));
-            if (!skillFileKey) return alert("ZIP Inválido: No se encontró 'Skill.md' en el paquete.");
+            if (!skillFileKey) return alert("Paquete Inválido: No se encontró 'Skill.md' en el archivo.");
             
             const skillText = await contents.files[skillFileKey].async("text");
-            const parsedSkill = this.extractFrontmatter(skillText, file.name.replace('.zip',''));
+            const parsedSkill = this.extractFrontmatter(skillText, file.name.replace('.zip','').replace('.skill',''));
             
             const referenceIds = [];
             for (const relativePath in contents.files) {
@@ -385,7 +385,7 @@ export default class LmsView {
             await this.loadData();
             await this.forceGraphRefresh();
         } catch (error) {
-            alert("Error al desempaquetar el ZIP: " + error.message);
+            alert("Error al desempaquetar: " + error.message);
         }
     }
 
@@ -399,7 +399,7 @@ export default class LmsView {
             };
             try {
                 await KB.init(); await KB.saveNode(newNode);
-                alert(`✅ Skill inyectada: ${parsed.title}`);
+                alert(`✅ Archivo individual inyectado: ${parsed.title}`);
                 await this.loadData(); await this.forceGraphRefresh();
             } catch (err) { alert("Fallo inyectando: " + err.message); }
         };
@@ -541,6 +541,7 @@ export default class LmsView {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
 
+        // 🔥 EXPORTADOR DE PAQUETES ZIP (AgentSkills Standard Strict)
         this.dom.btnExport.addEventListener('click', async () => {
             if (!window.JSZip) await this.loadJSZip();
             const zip = new window.JSZip();
@@ -551,18 +552,23 @@ export default class LmsView {
             const refString = this.dom.inpReferences.value.trim();
             const refArray = refString ? refString.split(',').map(r => r.trim()).filter(r => r !== '') : [];
 
+            // 🔥 CREAR CARPETA RAÍZ OBLIGATORIA (Estándar Claude)
+            const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const rootFolder = zip.folder(safeTitle);
+
             const skillContent = `---\nname: ${title}\ndescription: ${desc}\n---\n\n${content}`;
-            zip.file("Skill.md", skillContent);
+            rootFolder.file("Skill.md", skillContent);
 
             if (refArray.length > 0) {
-                const refFolder = zip.folder("references");
+                // 🔥 La carpeta "resources" debe estar DENTRO de la carpeta de la skill
+                const resourcesFolder = rootFolder.folder("resources");
                 await KB.init();
                 for (const refId of refArray) {
                     const refNode = await KB.getNode(refId);
                     if (refNode) {
-                        const refNameSafe = (refNode.title || refNode.id).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                        const refNameSafe = (refNode.title || refNode.id).replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
                         const refContent = `---\nname: ${refNode.title}\ndescription: ${refNode.description || ''}\n---\n\n${refNode.content}`;
-                        refFolder.file(`${refNameSafe}.md`, refContent);
+                        resourcesFolder.file(`${refNameSafe}.md`, refContent);
                     }
                 }
             }
@@ -571,14 +577,13 @@ export default class LmsView {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${title.replace(/\s+/g, '_')}.zip`;
+            a.download = `${safeTitle}.zip`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         });
 
-        // 🔥 EXPANSIÓN MULTI-ARCHIVO (PROGRESSIVE DISCLOSURE)
         if (this.dom.btnExpand) {
             this.dom.btnExpand.addEventListener('click', async () => {
                 const title = this.dom.inpTitle.value.trim();
@@ -599,7 +604,6 @@ export default class LmsView {
                     this.dom.inpContent.value = optimizedData.content;
                     this.dom.inpKeywords.value = optimizedData.keywords.join(', ');
                     
-                    // Procesar referencias generadas y enlazarlas
                     if (optimizedData.reference_docs && optimizedData.reference_docs.length > 0) {
                         await KB.init();
                         let currentRefs = this.dom.inpReferences.value.split(',').map(r => r.trim()).filter(r => r !== '');
