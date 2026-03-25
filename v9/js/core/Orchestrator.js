@@ -2,15 +2,12 @@
 import { store } from './store.js';
 import { KB } from './kb.js';
 
-// Matriz de Costes (USD por 1M de tokens) para Telemetría Antigravity
 const LLM_PRICING = {
     'deepseek': { input: 0.14, output: 0.28 }, 
     'gemini': { input: 0.075, output: 0.30 },  
     'openai': { input: 2.50, output: 10.00 },  
     'anthropic': { input: 3.00, output: 15.00 }, 
-    'custom': { input: 0.0, output: 0.0 },     
-    'nano_banana': { input: 0.0, output: 0.02 }, 
-    'veo': { input: 0.0, output: 0.50 }        
+    'custom': { input: 0.0, output: 0.0 }
 };
 
 class OrchestratorCore {
@@ -19,28 +16,20 @@ class OrchestratorCore {
         this.isListening = false;
     }
 
-    // ==========================================
-    // 🛡️ ENRUTADOR RAG EN CASCADA (WATERFALL FALLBACK)
-    // ==========================================
     _getBestProvider(preferredEngine) {
-        // Cadena de supervivencia estricta: Si el preferido falla, baja por la jerarquía de calidad
         const fallbackChain = [preferredEngine, 'anthropic', 'openai', 'gemini', 'deepseek', 'custom'];
-        const uniqueChain = [...new Set(fallbackChain)]; // Eliminamos duplicados
+        const uniqueChain = [...new Set(fallbackChain)];
 
         for (const provider of uniqueChain) {
             if (provider === 'custom') return { provider: 'custom', apiKey: 'local_or_custom_mode' };
-            
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
             if (apiKey && apiKey.trim().length > 10) {
                 return { provider, apiKey };
             }
         }
-        throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en el Panteón para operar.");
+        throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en la Consola Global.");
     }
 
-    // ==========================================
-    // 🛡️ EL DAEMON DE USENET (ESCUCHA PASIVA P2P)
-    // ==========================================
     initUsenetDaemon() {
         if (this.isListening) return;
         this.isListening = true;
@@ -65,9 +54,6 @@ class OrchestratorCore {
         });
     }
 
-    // ==========================================
-    // 🧠 MOTOR COGNITIVO BASE (ENRUTADOR RAG)
-    // ==========================================
     async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
         let attempt = 0; 
         let lastError = null;
@@ -79,7 +65,8 @@ class OrchestratorCore {
                 const startTime = Date.now();
 
                 if (provider === 'gemini') {
-                    const urlStr = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    // 🔥 FIX: Bajamos a 1.5-flash para asegurar compatibilidad con todas las API Keys
+                    const urlStr = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                     const response = await fetch(urlStr, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -90,7 +77,7 @@ class OrchestratorCore {
                     
                     if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
                     const data = await response.json();
-                    if (!data.candidates || data.candidates.length === 0) throw new Error("Respuesta vacía.");
+                    if (!data.candidates || data.candidates.length === 0) throw new Error("Respuesta vacía de Gemini.");
                     
                     textResponse = data.candidates[0].content.parts[0].text;
                     if (data.usageMetadata) { 
@@ -144,11 +131,11 @@ class OrchestratorCore {
             
             } catch (error) {
                 lastError = error; attempt++; 
-                console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt})...`, error.message);
+                console.warn(`⚠️ [Orchestrator] Fallo con ${provider} (Intento ${attempt}):`, error.message);
                 await new Promise(r => setTimeout(r, 1000 * attempt));
             }
         }
-        throw new Error(`Colapso Neural: ${lastError.message}`);
+        throw new Error(`Error definitivo con ${provider}: ${lastError.message}`);
     }
 
     async _buildLightweightContext(projectId, agentId) {
@@ -165,25 +152,17 @@ class OrchestratorCore {
         return contextText;
     }
 
-    // ==========================================
-    // 👑 BUCLE IMPERIAL 1: LA AUDITORÍA NOTARIAL (@notari_ledger)
-    // ==========================================
     async notarizeWorkOrder(projectId, taskComment, socChecklist) {
-        const { provider, apiKey } = this._getBestProvider('deepseek'); // Preferencia: Lógica TDD implacable
-
+        const { provider, apiKey } = this._getBestProvider('deepseek');
         const systemPrompt = `Eres @notari_ledger, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
         const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
         this._logTelemetry(projectId, '@notari_ledger', provider, 'TDD_AUDIT', response.telemetry);
         return JSON.stringify(response.content);
     }
 
-    // ==========================================
-    // 👑 BUCLE IMPERIAL 2: EL DESTILADOR (@janitor)
-    // ==========================================
     async harvestKnowledge(task, projectId) {
         try {
-            const { provider, apiKey } = this._getBestProvider('gemini'); // Preferencia: Ventana de contexto rápida
-
+            const { provider, apiKey } = this._getBestProvider('openai');
             const systemPrompt = `Eres @janitor, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
             const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
             const result = response.content;
@@ -198,11 +177,9 @@ class OrchestratorCore {
         } catch (error) { return null; }
     }
 
-    // ==========================================
-    // 👑 BUCLE IMPERIAL 3: EL ARQUITECTO (@genesi_ai)
-    // ==========================================
-    async designEcosystemVNA(projectName, archetypeText, vision) {
-        const { provider, apiKey } = this._getBestProvider('anthropic'); // Preferencia: Claude 3.5/3.7 para VNA Sistémico
+    // 🔥 FIX: Permite inyectar el overrideProvider desde la UI
+    async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
+        const { provider, apiKey } = this._getBestProvider(overrideProvider || 'anthropic');
 
         await KB.init();
         const allSkills = await KB.getAllNodes({ category: 'skill' });
@@ -218,10 +195,10 @@ class OrchestratorCore {
             Eres Master Ecosystem Architect (@genesi_ai). Forja topologías VNA (Value Network Analysis) de ALTA CALIDAD Y COHERENCIA.
             
             MANDAMIENTOS DE DISEÑO (CALIDAD ANTIGRAVITY):
-            1. FLUJO ÓPTIMO DE VALOR: No recortes eslabones vitales por ahorrar tokens. Diseña el flujo exacto que garantice el éxito.
-            2. INFERENCIA DE FASE: Analiza la visión del usuario y deduce en qué fase de madurez está el proyecto. Adapta las "phases" de las transacciones a esta realidad.
-            3. Ikigai de Roles: Genera el "ai_prompt" para cada Rol con profundidad técnica y orientación a GTD.
-            4. TDD Riguroso: Cada transacción DEBE tener una matriz "soc_checklist" (Criterios de auditoría medibles).
+            1. FLUJO ÓPTIMO DE VALOR: No recortes eslabones vitales.
+            2. INFERENCIA DE FASE: Analiza la visión del usuario y deduce en qué fase de madurez está el proyecto.
+            3. Ikigai de Roles: Genera el "ai_prompt" para cada Rol con profundidad técnica.
+            4. TDD Riguroso: Cada transacción DEBE tener una matriz "soc_checklist".
             
             FORMATO JSON ESTRICTO ESPERADO:
             { 
@@ -235,29 +212,26 @@ class OrchestratorCore {
             }
         `;
 
-        const userPrompt = `Proyecto: ${projectName}\nArquetipo Legal: ${archetypeText}\n${catalogContext}\nVisión Fundacional:\n${vision}\n\nRECUERDA: Diseña un flujo de valor óptimo, deduciendo la fase actual del proyecto para establecer transacciones coherentes y de alta calidad.`;
+        const userPrompt = `Proyecto: ${projectName}\nArquetipo Legal: ${archetypeText}\n${catalogContext}\nVisión Fundacional:\n${vision}`;
         
         const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
         this._logTelemetry('global', '@genesi_ai', provider, 'VNA_DESIGN', response.telemetry);
         return response.content; 
     }
 
-    // ==========================================
-    // 👑 BUCLE IMPERIAL 4: EL INVESTIGADOR ACADÉMICO (@mestre_escola)
-    // ==========================================
-    async runDeepResearch(topic, expectedCategory, maxNodes = 3) {
-        const { provider, apiKey } = this._getBestProvider('gemini'); // Preferencia: Gemini (Ventana masiva)
+    // 🔥 FIX: Permite inyectar el overrideProvider desde la UI
+    async runDeepResearch(topic, expectedCategory, maxNodes = 3, overrideProvider = null) {
+        const { provider, apiKey } = this._getBestProvider(overrideProvider || 'gemini');
 
         const systemPrompt = `
             Eres @mestre_escola, el Investigador Ontológico y Creador de Memes W3C del Kernel.
-            Se te ha pedido investigar un tema profundo. No devuelvas texto plano. Devuelve Nodos de Conocimiento (JSON-LD Semántico).
-            Tu objetivo es generar "Memes" de muy alta densidad de información que los Agentes puedan usar en el futuro.
+            Se te ha pedido investigar un tema profundo. Devuelve Nodos de Conocimiento (JSON-LD Semántico).
             
             FORMATO JSON ESTRICTO:
             {
                 "research_summary": "Resumen ejecutivo del hallazgo...",
                 "nodes": [
-                    { "category": "${expectedCategory}", "title": "Nombre del concepto o habilidad...", "content": "Desarrollo técnico profundo...", "keywords": ["tag1", "tag2"] }
+                    { "category": "${expectedCategory}", "title": "Nombre del concepto...", "content": "Desarrollo técnico profundo...", "keywords": ["tag1", "tag2"] }
                 ]
             }
             Genera un máximo de ${maxNodes} nodos.
@@ -280,13 +254,10 @@ class OrchestratorCore {
         return result;
     }
 
-    // ==========================================
-    // 🤖 COMUNICACIÓN P2P (USENET)
-    // ==========================================
     async autoRespondUsenet(project, incomingLog, agentNode) {
         try {
             const profileEngine = agentNode.profile?.preferredEngine || 'openai';
-            const { provider, apiKey } = this._getBestProvider(profileEngine); // Respeta el motor forjado en el Ikigai
+            const { provider, apiKey } = this._getBestProvider(profileEngine);
 
             const contextStr = await this._buildLightweightContext(project.id, agentNode.id);
             const systemPrompt = `Eres ${agentNode.name}.\n\n${contextStr}\nResponde al ping del hilo con acción inmediata (GTD). No uses JSON ni markdown puro.`;
@@ -297,11 +268,9 @@ class OrchestratorCore {
         } catch (error) { console.error(`[Usenet] Fallo P2P con ${agentNode.id}:`, error); }
     }
 
-    // 🔥 BUCLE DE AUTO-SANACIÓN SEMÁNTICA (IKIGAI MATCHING)
     async autoHealNetwork(task, projectId) {
         try {
-            const { provider, apiKey } = this._getBestProvider('deepseek'); // Preferencia: DeepSeek para análisis de SOCs
-
+            const { provider, apiKey } = this._getBestProvider('deepseek');
             const failedSocs = (task.soc_checklist || []).filter(s => !s.isChecked).map(s => s.text);
             if (failedSocs.length === 0) return null;
 
@@ -311,15 +280,12 @@ class OrchestratorCore {
             if (nodeDirectory.length === 0) return null;
 
             const systemPrompt = `
-                Eres @seny_analyst, el auditor estratégico del Kernel V9.
-                Una Work Order acaba de ser devuelta porque fracasó en la auditoría TDD (SOCs incumplidos).
-                Misión: Revisa el Padrón Neuronal evaluando los 'Ikigais' y 'skills'.
-                Busca al nodo más capacitado del padrón para resolver esta falla específica.
+                Eres @seny_analyst. Una Work Order falló en la auditoría TDD. Busca al nodo más capacitado del padrón para resolver esta falla.
                 Devuelve ÚNICAMENTE JSON: { "assignedNode": "@id_del_nodo", "reason": "Motivo corto...", "actionPlan": "Sugerencia rápida" }
                 PADRÓN DISPONIBLE: ${JSON.stringify(nodeDirectory)}
             `;
 
-            const userPrompt = `La tarea "${task.comentario.substring(0,60)}..." ha fallado los siguientes SOCs: ${JSON.stringify(failedSocs)}. ¿A qué nodo debemos invocar?`;
+            const userPrompt = `La tarea "${task.comentario.substring(0,60)}..." falló los SOCs: ${JSON.stringify(failedSocs)}. ¿A qué nodo invocamos?`;
             const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
             const result = response.content;
 
