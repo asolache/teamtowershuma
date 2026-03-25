@@ -166,17 +166,23 @@ class OrchestratorCore {
         return contextText;
     }
 
+    // 🔥 BUCLE MAYÉUTICO: Exige Contexto Sectorial
     async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
         const systemPrompt = `
             Eres @genesi_ai, Master Ecosystem Architect. Vas a aplicar Value Network Analysis (VNA).
-            Eres EXTREMADAMENTE EXIGENTE y HOSTIL a la ambigüedad. Los humanos suelen dar visiones vagas.
+            Eres EXTREMADAMENTE EXIGENTE y HOSTIL a la ambigüedad. Tienes que actuar como un consultor experto.
             
             REGLA DE ORO DE SUPERVIVENCIA:
-            Si el texto de la Visión tiene menos de 50 palabras, o NO detalla claramente el modelo de negocio, quién paga a quién, y qué intangibles se intercambian, ESTÁS OBLIGADO a devolver "isReady": false.
-            NUNCA asumas detalles. Si falta info, genera hasta 3 preguntas quirúrgicas para el usuario.
+            Si el usuario no te ha especificado claramente:
+            1. El Sector de Actividad y el Tipo de Organización exacta.
+            2. Los Arquetipos de Roles o departamentos que asume que existen en la red.
+            3. Qué tangibles e intangibles principales se van a intercambiar.
+            
+            ESTÁS OBLIGADO a devolver "isReady": false y generar hasta 3 preguntas quirúrgicas para investigar este contexto.
+            NUNCA asumas el modelo de negocio si la visión es muy genérica (ej: "Hacer una web").
             
             Devuelve ÚNICAMENTE un JSON estricto:
-            { "isReady": boolean, "questions": ["Pregunta 1...", "Pregunta 2..."] } // Vacío solo si la visión es muy profunda y perfecta.
+            { "isReady": boolean, "questions": ["Pregunta 1...", "Pregunta 2..."] }
         `;
 
         const userPrompt = `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión Fundacional:\n${vision}`;
@@ -208,6 +214,7 @@ class OrchestratorCore {
         } catch (error) { return null; }
     }
 
+    // 🔥 GÈNESI DESATADO (Sin Eras Temporales)
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
         await KB.init();
         
@@ -228,15 +235,17 @@ class OrchestratorCore {
             
             Basado en tu Skill Operativa de VNA, debes seguir estrictamente estas reglas:
             ${vnaInstructions}
+
+            ATENCIÓN: NO SEPARES EL MAPA EN FASES O ERAS TEMPORALES. Diseña la red en su estado estacionario continuo. El tiempo se gestionará en Sprints (Kanban), no en la topología.
             
             FORMATO JSON ESTRICTO ESPERADO:
             { 
-                "presentacion": "Pitch de la red y fase deducida...", 
+                "presentacion": "Pitch de la red y su modelo de negocio...", 
                 "tags": ["sector_x"], 
                 "new_memes": [{ "id": "meme_gen_1", "category": "skill", "title": "Nombre", "content": "..." }],
                 "roles": [{ "levelId": "@anxaneta", "name": "...", "fmv": 80, "multiplier": 3.0, "guardian": "explorer", "ai_prompt": "Tu Ikigai es..." }], 
                 "transactions": [
-                    { "id": "tx_1", "phase": "Fase", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "template": "SOP...", "horas": 5, "required_skills": ["meme_gen_1"], "soc_checklist": [{ "text": "Validación 1" }] }
+                    { "id": "tx_1", "step_order": 1, "depends_on": [], "fromLevel": "@anxaneta", "toLevel": "@baixos", "tipo": "tangible", "template": "SOP a ejecutar...", "horas": 5, "required_skills": ["meme_gen_1"], "soc_checklist": [{ "text": "Aserción TDD Binaria 1" }] }
                 ] 
             }
         `;
