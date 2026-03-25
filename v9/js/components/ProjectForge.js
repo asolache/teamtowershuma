@@ -69,18 +69,21 @@ export class ProjectForge {
                 .maieutic-a { background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--accent-blue); padding: 12px; border-radius: 8px; font-family: 'Georgia', serif; width: 100%; box-sizing: border-box; margin-bottom: 15px; outline: none; resize: vertical;}
                 .maieutic-a:focus { border-color: var(--accent-blue); }
 
-                /* 🔥 NUEVO DISEÑO GRID PARA PASO 2 */
+                /* 🔥 DISEÑO GRID PASO 2 */
                 .step2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; align-items: start;}
                 
                 .role-draft-list { display: flex; flex-direction: column; gap: 12px; max-height: 500px; overflow-y: auto; padding-right: 10px;}
                 .role-draft-item { display: flex; flex-direction: column; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; gap: 10px; transition: 0.2s;}
-                .role-draft-item:hover { border-color: rgba(255,255,255,0.2); }
+                .role-draft-item:hover { border-color: var(--accent-blue); background: rgba(0,176,255,0.02); box-shadow: 0 5px 15px rgba(0,176,255,0.1); }
                 
                 .role-inputs { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;}
-                .inp-role-level, .inp-role-guardian { background: #050505; border: 1px solid #333; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: bold; outline: none; cursor: pointer; color: white;}
+                .inp-role-level { background: #050505; border: 1px solid #333; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: bold; outline: none; cursor: pointer; color: white;}
                 .inp-role-name { background: transparent; border: none; color: white; font-size: 1rem; border-bottom: 1px solid #444; padding: 6px 5px; flex: 1; min-width: 120px; font-weight: bold;}
                 .inp-role-name:focus { border-bottom-color: var(--accent-blue); outline: none; }
                 .fmv-input { width: 60px; min-width: 60px; text-align: center; color: var(--accent-green); font-family: var(--font-mono); background: transparent; border: none; border-bottom: 1px solid #444; font-size: 1rem; font-weight: bold;}
+                
+                .btn-role-action { background: rgba(224,64,251,0.1); border: 1px solid var(--accent-purple); color: var(--accent-purple); border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: 0.2s;}
+                .btn-role-action:hover { background: var(--accent-purple); color: black; box-shadow: 0 0 10px rgba(224,64,251,0.4);}
                 
                 .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 0 5px; border-radius: 8px;}
                 .btn-del-role:hover { background: rgba(255,82,82,0.1); }
@@ -100,6 +103,15 @@ export class ProjectForge {
                 .btn-lux-outline { background: transparent; border: 1px solid #555; color: white;}
                 .btn-lux:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
+                /* 🔥 MODAL AGENT STUDIO */
+                .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 5000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;}
+                .modal-overlay.active { display: flex; opacity: 1; }
+                .modal-card { background: linear-gradient(145deg, #111, #050505); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 800px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(224,64,251,0.15); max-height: 90vh; overflow-y: auto; display:flex; flex-direction:column;}
+                .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px dashed #333; padding-bottom: 1rem;}
+                .modal-header h2 { margin: 0; color: white; font-size: 1.5rem; font-weight: 900;}
+                .btn-close-modal { background: transparent; border: none; color: #888; font-size: 1.5rem; cursor: pointer; transition: 0.2s;}
+                .btn-close-modal:hover { color: var(--accent-red); transform: scale(1.1);}
+
                 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes pulse { 0% { opacity:0.8; transform:scale(0.95); } 50% { opacity:1; transform:scale(1.05); } 100% { opacity:0.8; transform:scale(0.95); } }
 
@@ -108,7 +120,6 @@ export class ProjectForge {
                     .step2-grid { grid-template-columns: 1fr; }
                     .actions-row { flex-direction: column; }
                     .actions-row .btn-lux { width: 100%; justify-content: center; }
-                    .cascade-toggle-box { flex-direction: column; align-items: flex-start; }
                 }
             </style>
 
@@ -197,7 +208,7 @@ export class ProjectForge {
                 <div id="pf-step2" style="display: none;">
                     <div class="pf-header" style="margin-bottom: 2rem;">
                         <h1>Alineación de Equipo</h1>
-                        <p>Audita la estructura y asigna Humanos o IAs a las sillas antes de inyectar en el Kernel.</p>
+                        <p>Audita la estructura y forja el cerebro de las IAs (AgentSkills) antes de inyectar la red.</p>
                     </div>
 
                     <div class="step2-grid">
@@ -223,6 +234,54 @@ export class ProjectForge {
                     <div class="actions-row" style="border-top: 1px solid var(--glass-border); padding-top: 2rem;">
                         <button class="btn-lux btn-lux-outline" id="btnBack">&larr; Volver</button>
                         <button class="btn-lux btn-lux-success" id="btnLaunch">🚀 Inyectar Ecosistema V9</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-overlay" id="agentStudioModal">
+                <div class="modal-card">
+                    <div class="modal-header">
+                        <h2>🧠 Forjar Cerebro del Agente</h2>
+                        <button class="btn-close-modal" id="btnCloseAgentStudio">&times;</button>
+                    </div>
+                    
+                    <input type="hidden" id="asRoleId">
+                    
+                    <div style="display:flex; gap:15px;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Nombre del Rol</label>
+                            <input type="text" id="asRoleName" class="lux-input" disabled style="color:#888; border-color:#333;">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Description (Trigger RAG)</label>
+                            <input type="text" id="asRoleDesc" class="lux-input" placeholder="Cuándo debe actuar este agente...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>SKILL.md (Instrucciones SOP)</label>
+                        <textarea id="asRolePrompt" class="lux-input" style="min-height: 180px; font-family:var(--font-mono); font-size:0.85rem;" placeholder="Escribe el System Prompt o instrucciones VNA para este Agente..."></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                        <div class="form-group" style="margin:0;">
+                            <label style="color:var(--accent-orange);">📋 Evals (SOCs Requeridos)</label>
+                            <input type="text" id="asRoleEvals" class="lux-input" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="eval_1, eval_2...">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label style="color:var(--accent-blue);">📚 References (IDs)</label>
+                            <input type="text" id="asRoleRefs" class="lux-input" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="ref_1, ref_2...">
+                        </div>
+                        <div class="form-group" style="margin:0; grid-column: 1 / -1;">
+                            <label style="color:var(--accent-green);">⚡ Scripts Autonomos (IDs)</label>
+                            <input type="text" id="asRoleScripts" class="lux-input" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="script_api_1...">
+                        </div>
+                    </div>
+
+                    <div class="actions-row" style="margin-top:0;">
+                        <button class="btn-lux" id="btnAiAgentForger" style="background: linear-gradient(135deg, var(--accent-orange), #ff3d00); color:white; border:none; width:auto; font-size:0.9rem;">🌱 IA Agent Forger</button>
+                        <div style="flex:1;"></div>
+                        <button class="btn-lux btn-lux-primary" id="btnSaveAgentBrain" style="font-size:0.9rem;">💾 Guardar Cerebro</button>
                     </div>
                 </div>
             </div>
@@ -259,7 +318,20 @@ export class ProjectForge {
             maieuticPanel: this.container.querySelector('#maieuticPanel'),
             maieuticQuestionsList: this.container.querySelector('#maieuticQuestionsList'),
             initialActionsRow: this.container.querySelector('#initialActionsRow'),
-            inpSpawnCascade: this.container.querySelector('#inpSpawnCascade')
+            inpSpawnCascade: this.container.querySelector('#inpSpawnCascade'),
+            
+            // Agent Studio Modal DOM
+            agentModal: this.container.querySelector('#agentStudioModal'),
+            btnCloseStudio: this.container.querySelector('#btnCloseAgentStudio'),
+            btnSaveStudio: this.container.querySelector('#btnSaveAgentBrain'),
+            btnAiForger: this.container.querySelector('#btnAiAgentForger'),
+            asRoleId: this.container.querySelector('#asRoleId'),
+            asRoleName: this.container.querySelector('#asRoleName'),
+            asRoleDesc: this.container.querySelector('#asRoleDesc'),
+            asRolePrompt: this.container.querySelector('#asRolePrompt'),
+            asRoleRefs: this.container.querySelector('#asRoleRefs'),
+            asRoleEvals: this.container.querySelector('#asRoleEvals'),
+            asRoleScripts: this.container.querySelector('#asRoleScripts')
         };
 
         this.dom.btnLoadTemplate.addEventListener('click', () => {
@@ -283,7 +355,8 @@ export class ProjectForge {
                     this.draftRoles.push({
                         id: 'draft_' + Math.random().toString(36).substr(2, 9),
                         levelId: levelKey, name: data.name || levelKey, fmv: 50, multiplier: m[levelKey] || 1.0,
-                        guardian: data.guardian || 'everyman', ai_prompt: data.content || '', assignee: '' 
+                        guardian: data.guardian || 'everyman', ai_prompt: data.content || '', assignee: '',
+                        description: '', references: [], evals: [], scripts: []
                     });
 
                     if (data.deliverables) {
@@ -314,12 +387,67 @@ export class ProjectForge {
         this.dom.btnAddCustom.addEventListener('click', () => {
             this.draftRoles.push({
                 id: 'draft_' + Math.random().toString(36).substr(2, 9),
-                levelId: '@baixos', name: 'Nueva Actividad', fmv: 40, multiplier: 1.2, guardian: 'everyman', ai_prompt: '', assignee: ''
+                levelId: '@baixos', name: 'Nueva Actividad', fmv: 40, multiplier: 1.2, guardian: 'everyman', 
+                ai_prompt: '', assignee: '', description: '', references: [], evals: [], scripts: []
             });
             this.renderDraftRoles();
         });
 
         this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
+
+        // 🔥 Eventos Agent Studio Modal
+        this.dom.btnCloseStudio.addEventListener('click', () => this.dom.agentModal.classList.remove('active'));
+        
+        this.dom.btnSaveStudio.addEventListener('click', () => {
+            const roleId = this.dom.asRoleId.value;
+            const rIdx = this.draftRoles.findIndex(r => r.id === roleId);
+            if (rIdx > -1) {
+                this.draftRoles[rIdx].description = this.dom.asRoleDesc.value.trim();
+                this.draftRoles[rIdx].ai_prompt = this.dom.asRolePrompt.value.trim();
+                this.draftRoles[rIdx].references = this.dom.asRoleRefs.value.split(',').map(s=>s.trim()).filter(s=>s);
+                this.draftRoles[rIdx].evals = this.dom.asRoleEvals.value.split(',').map(s=>s.trim()).filter(s=>s);
+                this.draftRoles[rIdx].scripts = this.dom.asRoleScripts.value.split(',').map(s=>s.trim()).filter(s=>s);
+                
+                this.dom.agentModal.classList.remove('active');
+                this.renderDraftRoles(); // Refrescar UI (colores de botón si hay cerebro)
+            }
+        });
+
+        this.dom.btnAiForger.addEventListener('click', async () => {
+            const roleName = this.dom.asRoleName.value;
+            const currentPrompt = this.dom.asRolePrompt.value.trim();
+            
+            this.dom.btnAiForger.disabled = true;
+            this.dom.btnAiForger.innerText = "⏳ Forjando...";
+
+            try {
+                // Usamos la misma función de LmsView (expandNodeSemantics)
+                const optimizedData = await Orchestrator.expandNodeSemantics(`Rol: ${roleName}`, 'skill', currentPrompt || 'Generar SOPs y SOCs para este rol', 'AgentSkills');
+                
+                this.dom.asRoleDesc.value = optimizedData.description || '';
+                this.dom.asRolePrompt.value = optimizedData.content || '';
+                
+                if (optimizedData.reference_docs && optimizedData.reference_docs.length > 0) {
+                    await KB.init();
+                    let currentRefs = this.dom.asRoleRefs.value.split(',').map(r => r.trim()).filter(r => r !== '');
+                    for (const refDoc of optimizedData.reference_docs) {
+                        const cleanName = refDoc.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().substring(0, 20);
+                        const newRefId = `ref_ai_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
+                        await KB.saveNode({
+                            id: newRefId, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
+                            title: refDoc.title, description: refDoc.description, content: refDoc.content, keywords: ['#ai_generated']
+                        });
+                        currentRefs.push(newRefId);
+                    }
+                    this.dom.asRoleRefs.value = currentRefs.join(', ');
+                }
+            } catch(e) {
+                alert("Error de Forja: " + e.message);
+            } finally {
+                this.dom.btnAiForger.disabled = false;
+                this.dom.btnAiForger.innerText = "🌱 IA Agent Forger";
+            }
+        });
     }
 
     runCognitiveTDD(parsedData) {
@@ -427,7 +555,8 @@ export class ProjectForge {
             this.draftRoles = parsedData.roles.map((r, i) => ({
                 id: r.id || ('draft_role_' + i + '_' + Math.random().toString(36).substr(2, 5)),
                 levelId: r.levelId, name: r.name, fmv: r.fmv || 50, multiplier: r.multiplier || 1.0, 
-                guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || '', assignee: '' 
+                guardian: r.guardian || 'everyman', ai_prompt: r.ai_prompt || '', assignee: '',
+                description: '', references: [], evals: [], scripts: []
             }));
             
             this.draftTxs = (parsedData.transactions || []).map((tx, i) => {
@@ -480,6 +609,23 @@ export class ProjectForge {
         this.renderDraftRoles();
     }
 
+    // 🔥 ABRIR EL CEREBRO DEL AGENTE (MODAL)
+    openAgentStudio(roleId) {
+        const role = this.draftRoles.find(r => r.id === roleId);
+        if (!role) return;
+
+        this.dom.asRoleId.value = role.id;
+        this.dom.asRoleName.value = role.name;
+        this.dom.asRoleDesc.value = role.description || '';
+        this.dom.asRolePrompt.value = role.ai_prompt || '';
+        
+        this.dom.asRoleRefs.value = (role.references || []).join(', ');
+        this.dom.asRoleEvals.value = (role.evals || []).join(', ');
+        this.dom.asRoleScripts.value = (role.scripts || []).join(', ');
+
+        this.dom.agentModal.classList.add('active');
+    }
+
     renderDraftRoles() {
         this.dom.rolesContainer.innerHTML = '';
         const colors = { '@anxaneta': 'var(--accent-red)', '@aixecador': '#ff4081', '@dosos': 'var(--accent-purple)', '@baixos': 'var(--accent-blue)', '@pinya': 'var(--accent-green)' };
@@ -506,10 +652,15 @@ export class ProjectForge {
                 ${userOptions.replace(`value="${role.assignee}"`, `value="${role.assignee}" selected`)}
             </select>`;
 
+            // Highlight button if brain is configured
+            const hasBrain = role.ai_prompt && role.ai_prompt.length > 5;
+            const btnBrainClass = hasBrain ? 'background: var(--accent-purple); color: black;' : 'background: rgba(224,64,251,0.1); color: var(--accent-purple);';
+
             row.innerHTML = `
                 <div class="role-inputs">
                     ${selectLevel}
                     <input type="text" value="${role.name}" class="inp-role-name" data-idx="${index}" title="Actividad del Rol">
+                    <button class="btn-role-action btn-brain" data-id="${role.id}" style="${btnBrainClass}">🧠 Forjar Cerebro</button>
                     <button class="btn-del-role" data-idx="${index}" title="Eliminar Rol">&times;</button>
                 </div>
                 <div style="display:flex; align-items:center; gap: 10px; margin-top:5px;">
@@ -522,6 +673,11 @@ export class ProjectForge {
                 </div>
             `;
             this.dom.rolesContainer.appendChild(row);
+        });
+
+        // Lógica eventos
+        this.dom.rolesContainer.querySelectorAll('.btn-brain').forEach(btn => {
+            btn.addEventListener('click', (e) => this.openAgentStudio(e.target.dataset.id));
         });
 
         this.dom.rolesContainer.querySelectorAll('.inp-role-level').forEach(sel => {
@@ -583,15 +739,23 @@ export class ProjectForge {
             for (const rol of this.draftRoles) {
                 if (rol.assignee) uniqueAssignees.add(rol.assignee);
                 
-                await KB.saveNode({
-                    id: `meme_skill_${projectId}_${rol.id}`, type: 'meme', category: 'skill', projectId: projectId, targetId: 'global',
-                    title: `Skill: ${rol.name}`, content: `Competencia para ${rol.name} (${rol.levelId}).`, keywords: [rol.levelId, projectId]
-                });
-
-                if (rol.ai_prompt && rol.ai_prompt.length > 10) {
+                // 🔥 EL CEREBRO SE GUARDA COMO AGENTSKILL COMPLETO
+                if (rol.ai_prompt && rol.ai_prompt.length > 5) {
                     await KB.saveNode({
-                        id: `prompt_${projectId}_${rol.id}`, type: 'prompt_a2a', projectId: projectId, targetId: rol.id, roleTarget: rol.levelId,
-                        title: `Ikigai Prompt: ${rol.name}`, content: rol.ai_prompt
+                        id: `skill_${projectId}_${rol.id}`, type: 'skill', category: 'skill', projectId: projectId, targetId: rol.id,
+                        title: `Skill Agente: ${rol.name}`, 
+                        description: rol.description || `Competencia operativa de ${rol.name}`,
+                        content: rol.ai_prompt,
+                        references: rol.references || [],
+                        evals: rol.evals || [],
+                        scripts: rol.scripts || [],
+                        keywords: [rol.levelId, projectId, 'agent_skill']
+                    });
+                } else {
+                    // Si no tiene cerebro detallado, se guarda un nodo skill mínimo
+                    await KB.saveNode({
+                        id: `skill_${projectId}_${rol.id}`, type: 'skill', category: 'skill', projectId: projectId, targetId: 'global',
+                        title: `Skill: ${rol.name}`, content: `Competencia estructural para ${rol.name}.`, keywords: [rol.levelId, projectId]
                     });
                 }
             }
