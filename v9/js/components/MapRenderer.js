@@ -1,4 +1,4 @@
-// v8/js/components/MapRenderer.js
+// v9/js/components/MapRenderer.js
 import { store } from '../core/store.js';
 
 export class MapRenderer {
@@ -22,9 +22,7 @@ export class MapRenderer {
         this.draggedNode = null;
         this.hasMoved = false;
 
-        // 🔥 FIX SUPREMO: Forzar al SVG a ocupar todo el mapa (Evita el clip de 300x150)
         this.forceSvgDimensions();
-
         this.initEvents();
     }
 
@@ -69,7 +67,6 @@ export class MapRenderer {
             .map-container { flex: 1; position: relative; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 20px; background: linear-gradient(180deg, rgba(15,15,20,0.9) 0%, rgba(5,5,8,1) 100%); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); width: 100%; min-height: 500px; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);}
             .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 50px 50px; transform-origin: top left; transition: transform 0.2s ease-out; }
             
-            /* SVG Styles reforzados */
             .map-canvas svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; z-index: 1; }
             
             .edge-line { fill: none; stroke-width: 3; opacity: 0.8; transition: stroke 0.4s, opacity 0.4s, stroke-width 0.4s; }
@@ -115,8 +112,6 @@ export class MapRenderer {
 
             @keyframes dashAnim { to { stroke-dashoffset: -200; } }
             @keyframes pulseSick { 0% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.5); } 100% { box-shadow: 0 0 50px rgba(255, 82, 82, 0.9); } }
-            @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-            
             @keyframes drawCurveAnim { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
             @keyframes simBadgeAnim {
                 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
@@ -242,7 +237,6 @@ export class MapRenderer {
 
         if (this.edges.length === 0) return;
 
-        // 🔥 FIX ANTICARRERAS: Si el lienzo mide 0, esperamos a que el CSS lo expanda y reintentamos.
         if (this.canvas.offsetWidth === 0 || this.canvas.offsetHeight === 0) {
             if (!this._retryCount) this._retryCount = 0;
             if (this._retryCount < 20) {
@@ -280,51 +274,79 @@ export class MapRenderer {
     drawSingleEdgeForCanvas(canvas, pathsGroup, tx, index, edgesGroup, multiIdx, isEditCanvas, maxHours) {
         const dom1 = canvas.querySelector(`.node-wrapper[data-id="${tx.from}"]`);
         const dom2 = canvas.querySelector(`.node-wrapper[data-id="${tx.to}"]`);
-        if (!dom1 || !dom2 || tx.from === tx.to) return;
+        if (!dom1 || !dom2) return;
 
-        // 🔥 CÁLCULO GEOMÉTRICO BASADO EN PORCENTAJES (inmune a DOM lags)
         const w = this.canvas.offsetWidth;
         const h = this.canvas.offsetHeight;
         
         const x1_center = (parseFloat(dom1.style.left) / 100) * w;
         const y1_center = (parseFloat(dom1.style.top) / 100) * h;
-        const x2_center = (parseFloat(dom2.style.left) / 100) * w;
-        const y2_center = (parseFloat(dom2.style.top) / 100) * h;
-
-        const dx = x2_center - x1_center, dy = y2_center - y1_center;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const trim = 45; 
-        let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
-
-        if (dist > trim) {
-            x1 = x1_center + (dx/dist) * trim; y1 = y1_center + (dy/dist) * trim;
-            x2 = x2_center - (dx/dist) * trim; y2 = y2_center - (dy/dist) * trim;
-        }
-
-        const nx = -dy / dist, ny = dx / dist;
-        let offset = 0;
         
-        if (edgesGroup.length > 1) {
-            const step = 40; 
-            offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
-            if (tx.from > tx.to) offset = -offset;
-        }
-
-        const cx = (x1_center + x2_center) / 2 + nx * offset;
-        const cy = (y1_center + y2_center) / 2 + ny * offset;
-
-        // Guardamos curva matemática exacta
-        this.edgeCoordinates[index] = { x1, y1, cx, cy, x2, y2 };
-
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-        
         const suffix = isEditCanvas ? 'edit' : 'vis';
         let markerId = tx.tipo === 'tangible' ? `arrow-tangible-${suffix}` : `arrow-intangible-${suffix}`;
-        
         const strokeHex = tx.tipo === 'tangible' ? '#00e676' : '#e040fb';
+        
         path.setAttribute('class', `edge-line ${tx.tipo === 'tangible' ? 'edge-tangible' : 'edge-intangible'}`);
         path.style.stroke = strokeHex;
+
+        let txX, txY;
+
+        // 🔥 FIX: DIBUJADO DE BUCLES (SELF-LOOPS)
+        if (tx.from === tx.to) {
+            // Dibujamos un arco bonito por encima del nodo
+            const loopRadiusX = 40;
+            const loopRadiusY = 60;
+            
+            const startX = x1_center - 15;
+            const startY = y1_center - 30;
+            const endX = x1_center + 15;
+            const endY = y1_center - 30;
+            
+            // Incrementamos el offset si hay varios bucles en el mismo nodo
+            const offset = multiIdx * 15;
+            
+            path.setAttribute('d', `M ${startX} ${startY} C ${x1_center - loopRadiusX - offset} ${y1_center - loopRadiusY - offset}, ${x1_center + loopRadiusX + offset} ${y1_center - loopRadiusY - offset}, ${endX} ${endY}`);
+            
+            txX = x1_center;
+            txY = y1_center - loopRadiusY + 10 - offset;
+            
+            this.edgeCoordinates[index] = { isLoop: true, startX, startY, endX, endY, cx: x1_center, cy: y1_center - loopRadiusY - offset };
+        } 
+        else {
+            // Lógica normal de nodo A a nodo B
+            const x2_center = (parseFloat(dom2.style.left) / 100) * w;
+            const y2_center = (parseFloat(dom2.style.top) / 100) * h;
+
+            const dx = x2_center - x1_center, dy = y2_center - y1_center;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const trim = 45; 
+            let x1 = x1_center, y1 = y1_center, x2 = x2_center, y2 = y2_center;
+
+            if (dist > trim) {
+                x1 = x1_center + (dx/dist) * trim; y1 = y1_center + (dy/dist) * trim;
+                x2 = x2_center - (dx/dist) * trim; y2 = y2_center - (dy/dist) * trim;
+            }
+
+            const nx = -dy / dist, ny = dx / dist;
+            let offset = 0;
+            
+            if (edgesGroup.length > 1) {
+                const step = 40; 
+                offset = (multiIdx % 2 !== 0 ? 1 : -1) * Math.ceil(multiIdx / 2) * step;
+                if (tx.from > tx.to) offset = -offset;
+            }
+
+            const cx = (x1_center + x2_center) / 2 + nx * offset;
+            const cy = (y1_center + y2_center) / 2 + ny * offset;
+
+            this.edgeCoordinates[index] = { x1, y1, cx, cy, x2, y2, isLoop: false };
+
+            path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+            
+            txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+            txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+        }
         
         if (this.options.isHeatmap && !isEditCanvas) {
             const hProcessed = tx.total_hours_processed || 0;
@@ -340,9 +362,6 @@ export class MapRenderer {
             path.style.opacity = '0.2';
         }
         pathsGroup.appendChild(path);
-
-        const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
-        const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
 
         const badge = document.createElement('div');
         badge.className = 'tx-badge';
@@ -377,21 +396,26 @@ export class MapRenderer {
         const coords = this.edgeCoordinates[index];
         if (!coords) return null; 
 
-        const { x1, y1, cx, cy, x2, y2 } = coords;
-
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
-        
         let markerId = isSick ? 'arrow-sick-vis' : (tx.tipo === 'tangible' ? 'arrow-tangible-vis' : 'arrow-intangible-vis');
         path.setAttribute('marker-end', `url(#${markerId})`);
-        
         const strokeColor = isSick ? '#ff5252' : (tx.tipo === 'tangible' ? '#00e676' : '#e040fb');
-        
         path.style.cssText = `fill: none; stroke: ${strokeColor}; stroke-width: 5; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawCurveAnim 1.5s ease-out forwards; filter: drop-shadow(0 0 10px ${strokeColor});`;
-        this.svg.appendChild(path);
+        
+        let txX, txY;
 
-        const txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
-        const txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+        if (coords.isLoop) {
+            const { startX, startY, endX, endY, cx, cy } = coords;
+            path.setAttribute('d', `M ${startX} ${startY} C ${cx - 40} ${cy}, ${cx + 40} ${cy}, ${endX} ${endY}`);
+            txX = cx; txY = cy + 10;
+        } else {
+            const { x1, y1, cx, cy, x2, y2 } = coords;
+            path.setAttribute('d', `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+            txX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+            txY = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+        }
+
+        this.svg.appendChild(path);
 
         const badge = document.createElement('div');
         badge.className = 'tx-badge sim-badge';
