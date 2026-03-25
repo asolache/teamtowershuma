@@ -2,7 +2,6 @@
 import { store } from '../core/store.js';
 import { KB } from '../core/kb.js'; 
 import { Orchestrator } from '../core/Orchestrator.js';
-import { MapRenderer } from './MapRenderer.js';
 
 export class ProjectForge {
     constructor(containerId) {
@@ -13,7 +12,7 @@ export class ProjectForge {
         this.draftTags = []; 
         this.draftNewMemes = []; 
         this.sectorsFromKB = {}; 
-        this.enrichedVision = ""; // 🔥 Almacenará la visión + respuestas del usuario
+        this.enrichedVision = ""; 
         
         this.guardians = [
             { id: 'creator', label: '🎨 Creador' }, { id: 'caregiver', label: '❤️ Cuidador' },
@@ -23,7 +22,6 @@ export class ProjectForge {
             { id: 'magician', label: '✨ Mago' }, { id: 'innocent', label: '🕊️ Inocente' },
             { id: 'explorer', label: '🧭 Explorador' }, { id: 'sage', label: '🦉 Sabio' }
         ];
-        this.mapVis = null;
     }
 
     async render() {
@@ -31,7 +29,6 @@ export class ProjectForge {
         await KB.init();
         this.sectorsFromKB = await KB.getAvailableSectors();
 
-        const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
@@ -43,7 +40,7 @@ export class ProjectForge {
 
         this.container.innerHTML = `
             <style>
-                .pf-card { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 900px; padding: 3rem; position: relative; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(15px); box-sizing: border-box; margin: 0 auto;}
+                .pf-card { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 950px; padding: 3rem; position: relative; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(15px); box-sizing: border-box; margin: 0 auto;}
                 .pf-header { text-align: center; margin-bottom: 2.5rem; }
                 .pf-header h1 { font-size: 2.2rem; color: white; margin: 0; letter-spacing: -1px; font-weight: 900; }
                 .pf-header p { color: var(--text-muted); margin-top: 10px; font-size: 1rem; }
@@ -54,7 +51,7 @@ export class ProjectForge {
 
                 .form-group { margin-bottom: 20px; }
                 .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; }
-                .lux-input { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); box-sizing: border-box;}
+                .lux-input { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; width: 100%; transition: all 0.3s; box-sizing: border-box;}
                 .lux-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 176, 255, 0.1); }
                 .vision-box { min-height: 80px; resize: vertical; line-height: 1.5; font-family: 'Georgia', serif;}
                 
@@ -66,29 +63,31 @@ export class ProjectForge {
                 .tdd-error-title { color: var(--accent-red); font-weight: 900; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
                 .tdd-error-list { margin: 0; padding-left: 20px; color: white; font-family: var(--font-mono); font-size: 0.85rem;}
 
-                /* 🔥 TERMINAL MAYÉUTICA */
                 .maieutic-panel { display: none; background: rgba(224,64,251,0.05); border: 1px solid var(--accent-purple); border-radius: 16px; padding: 20px; margin-bottom: 2rem; animation: slideDown 0.4s ease-out;}
                 .maieutic-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent-purple); font-weight: 900; font-size: 1.1rem;}
                 .maieutic-q { color: white; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; line-height: 1.4;}
                 .maieutic-a { background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--accent-blue); padding: 12px; border-radius: 8px; font-family: 'Georgia', serif; width: 100%; box-sizing: border-box; margin-bottom: 15px; outline: none; resize: vertical;}
                 .maieutic-a:focus { border-color: var(--accent-blue); }
 
-                .role-draft-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
-                .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; gap: 15px; transition: transform 0.2s;}
+                /* 🔥 NUEVO DISEÑO GRID PARA PASO 2 */
+                .step2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; align-items: start;}
                 
-                .role-inputs { display: flex; gap: 12px; flex: 1; align-items: center; flex-wrap: wrap;}
-                .inp-role-level, .inp-role-guardian { background: #050505; border: 1px solid #333; border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; font-weight: bold; outline: none; cursor: pointer; color: white;}
-                .inp-role-name { background: transparent; border: none; color: white; font-size: 1rem; border-bottom: 1px solid #444; padding: 8px 5px; flex: 1; min-width: 150px; font-weight: bold;}
+                .role-draft-list { display: flex; flex-direction: column; gap: 12px; max-height: 500px; overflow-y: auto; padding-right: 10px;}
+                .role-draft-item { display: flex; flex-direction: column; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; gap: 10px; transition: 0.2s;}
+                .role-draft-item:hover { border-color: rgba(255,255,255,0.2); }
+                
+                .role-inputs { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;}
+                .inp-role-level, .inp-role-guardian { background: #050505; border: 1px solid #333; border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; font-weight: bold; outline: none; cursor: pointer; color: white;}
+                .inp-role-name { background: transparent; border: none; color: white; font-size: 1rem; border-bottom: 1px solid #444; padding: 6px 5px; flex: 1; min-width: 120px; font-weight: bold;}
                 .inp-role-name:focus { border-bottom-color: var(--accent-blue); outline: none; }
-                .fmv-input { width: 70px; min-width: 70px; text-align: center; color: var(--accent-green); font-family: var(--font-mono); background: transparent; border: none; border-bottom: 1px solid #444; font-size: 1rem; font-weight: bold;}
+                .fmv-input { width: 60px; min-width: 60px; text-align: center; color: var(--accent-green); font-family: var(--font-mono); background: transparent; border: none; border-bottom: 1px solid #444; font-size: 1rem; font-weight: bold;}
                 
-                .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.5rem; padding: 5px 10px; border-radius: 8px;}
+                .btn-del-role { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.2rem; padding: 0 5px; border-radius: 8px;}
                 .btn-del-role:hover { background: rgba(255,82,82,0.1); }
 
-                .mini-map-container { width: 100%; height: 350px; position: relative; margin-bottom: 2rem; border-radius:16px; border:1px solid #333; overflow:hidden;}
-                
-                .tx-preview-list { display: none; margin-bottom: 2rem; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;}
-                .tx-preview-item { font-size: 0.85rem; color: #ccc; padding: 15px 10px; border-bottom: 1px dashed #333; display: flex; flex-direction: column; gap: 10px;}
+                .tx-preview-list { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 12px; padding: 15px; max-height: 500px; overflow-y: auto;}
+                .tx-preview-item { padding: 15px; border-bottom: 1px dashed #333; display: flex; flex-direction: column; gap: 5px; transition: 0.2s; border-radius: 8px;}
+                .tx-preview-item:hover { background: rgba(255,255,255,0.02); }
                 
                 .cascade-toggle-box { background: rgba(0, 176, 255, 0.05); border: 1px dashed var(--accent-blue); padding: 15px 20px; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 15px;}
                 .cascade-toggle-box label { color: white; font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 10px; cursor: pointer;}
@@ -106,7 +105,7 @@ export class ProjectForge {
 
                 @media (max-width: 768px) {
                     .pf-card { padding: 1.5rem; border-radius: 16px; }
-                    .role-inputs { flex-direction: column; align-items: stretch; }
+                    .step2-grid { grid-template-columns: 1fr; }
                     .actions-row { flex-direction: column; }
                     .actions-row .btn-lux { width: 100%; justify-content: center; }
                     .cascade-toggle-box { flex-direction: column; align-items: flex-start; }
@@ -201,27 +200,17 @@ export class ProjectForge {
                         <p>Audita la estructura y asigna Humanos o IAs a las sillas antes de inyectar en el Kernel.</p>
                     </div>
 
-                    <div class="map-container mini-map-container" id="miniMapContainer" style="display: none;">
-                        <div class="map-canvas map-svg-layer" id="miniMapCanvas">
-                            <svg id="miniMapSvg">
-                                <defs>
-                                    <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
-                                    <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
-                                </defs>
-                                <g id="miniMapPaths"></g>
-                            </svg>
+                    <div class="step2-grid">
+                        <div>
+                            <h3 style="color:white; margin-top:0;">1. Nodos de la Red (Sillas)</h3>
+                            <div class="role-draft-list" id="draftRolesContainer"></div>
+                            <button class="btn-lux btn-lux-outline" id="btnAddCustomRole" style="width: 100%; border-style: dashed; padding: 10px;">➕ Instanciar Silla Adicional</button>
+                        </div>
+                        <div>
+                            <h3 style="color:white; margin-top:0;">2. Tuberías VNA (Flujos de Valor)</h3>
+                            <div id="txPreviewList" class="tx-preview-list"></div>
                         </div>
                     </div>
-
-                    <div style="margin-bottom: 10px; font-weight:bold; color:white; display:flex; justify-content:space-between;">
-                        <span>Asignación de Sillas (Roles)</span>
-                        <span style="color:var(--accent-blue); font-size:0.8rem; cursor:pointer;" id="btnViewTxs">👁️ Ver Tuberías Generadas</span>
-                    </div>
-                    
-                    <div id="txPreviewList" class="tx-preview-list"></div>
-
-                    <div class="role-draft-list" id="draftRolesContainer"></div>
-                    <button class="btn-lux btn-lux-outline" id="btnAddCustomRole" style="width: 100%; margin-bottom: 2rem; border-style: dashed;">➕ Instanciar Silla Adicional</button>
 
                     <div class="cascade-toggle-box">
                         <label>
@@ -270,22 +259,8 @@ export class ProjectForge {
             maieuticPanel: this.container.querySelector('#maieuticPanel'),
             maieuticQuestionsList: this.container.querySelector('#maieuticQuestionsList'),
             initialActionsRow: this.container.querySelector('#initialActionsRow'),
-            miniMapContainer: this.container.querySelector('#miniMapContainer'),
-            miniMapCanvas: this.container.querySelector('#miniMapCanvas'),
-            miniMapPaths: this.container.querySelector('#miniMapPaths'),
-            inpSpawnCascade: this.container.querySelector('#inpSpawnCascade'),
-            btnViewTxs: this.container.querySelector('#btnViewTxs')
+            inpSpawnCascade: this.container.querySelector('#inpSpawnCascade')
         };
-
-        if (this.dom.miniMapCanvas && this.dom.miniMapPaths) {
-            this.mapVis = new MapRenderer(this.dom.miniMapCanvas, this.dom.miniMapPaths, {
-                isEditMode: false, isHeatmap: false, markerSuffix: 'vis', trimSize: 35, spreadBadges: false 
-            });
-        }
-
-        this.dom.btnViewTxs.addEventListener('click', () => {
-            this.dom.txPreviewList.style.display = this.dom.txPreviewList.style.display === 'block' ? 'none' : 'block';
-        });
 
         this.dom.btnLoadTemplate.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre de la Red es obligatorio.");
@@ -295,7 +270,6 @@ export class ProjectForge {
             this.draftTags = [sectorVal, this.dom.inpArchetype.value];
             this.draftPresentation = `Misión: ${this.dom.inpMission.value}\nPúblico: ${this.dom.inpTarget.value}`;
 
-            // 🔥 FIX: Bypass si es "Lienzo en Blanco". Dejamos que la IA lo deduzca TODO en el paso 2.
             if (sectorVal === 'blank_canvas') {
                 alert("🌌 Modo Lienzo en Blanco activado.\nSe omiten las plantillas base. Pulsa 'Diseñar Topología VNA' para que el Agente infiera la arquitectura desde cero.");
                 return;
@@ -327,7 +301,6 @@ export class ProjectForge {
             this.goToStep2();
         });
 
-        // 🔥 FLUJO MAYÉUTICO: Evaluación en dos pasos
         this.dom.btnEvaluateAI.addEventListener('click', () => this.evaluateVisionWithAI());
         this.dom.btnAnswerAndForge.addEventListener('click', () => this.executeFinalForgeWithAI());
 
@@ -362,7 +335,6 @@ export class ProjectForge {
         return errors;
     }
 
-    // 🔥 PASO 1: EVALUACIÓN MAYÉUTICA
     async evaluateVisionWithAI() {
         const name = this.dom.inpName.value.trim();
         const mission = this.dom.inpMission.value.trim();
@@ -379,17 +351,13 @@ export class ProjectForge {
             const target = this.dom.inpTarget.value.trim();
             const success = this.dom.inpSuccess.value.trim();
             
-            // Guardamos la visión base
             this.enrichedVision = `MISIÓN: ${mission}\nPÚBLICO: ${target}\nKPIs: ${success}`;
 
-            // Llamamos a la sonda del Orquestador
             const evaluation = await Orchestrator.evaluateContextForVNA(name, this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text, this.enrichedVision, selectedEngine);
 
             if (evaluation.isReady || !evaluation.questions || evaluation.questions.length === 0) {
-                // Si la IA dice que está lista, saltamos directamente a forjar el ecosistema
                 await this.executeFinalForgeWithAI();
             } else {
-                // Si no está lista, pintamos las preguntas en la UI
                 this.dom.maieuticQuestionsList.innerHTML = evaluation.questions.map((q, idx) => `
                     <div style="margin-bottom:10px;">
                         <div class="maieutic-q">${idx + 1}. ${q}</div>
@@ -399,8 +367,8 @@ export class ProjectForge {
                 
                 this.dom.loading.style.display = 'none';
                 this.dom.step1.style.display = 'block';
-                this.dom.initialActionsRow.style.display = 'none'; // Ocultamos el botón original
-                this.dom.maieuticPanel.style.display = 'block'; // Mostramos el panel de preguntas
+                this.dom.initialActionsRow.style.display = 'none'; 
+                this.dom.maieuticPanel.style.display = 'block'; 
             }
 
         } catch (error) {
@@ -410,12 +378,10 @@ export class ProjectForge {
         }
     }
 
-    // 🔥 PASO 2: EJECUCIÓN DEFINITIVA
     async executeFinalForgeWithAI() {
         const name = this.dom.inpName.value.trim();
         const selectedEngine = this.dom.inpForgeEngine.value || null;
 
-        // Recopilamos las respuestas si el panel estaba abierto
         if (this.dom.maieuticPanel.style.display === 'block') {
             const answers = this.dom.maieuticQuestionsList.querySelectorAll('.q-answer');
             let qaText = "\n\n--- RESPUESTAS ADICIONALES DEL ARQUITECTO ---\n";
@@ -495,21 +461,19 @@ export class ProjectForge {
         this.dom.dot2.classList.add('active');
         
         if (this.draftTxs.length > 0) {
-            let listHtml = '';
-            const generatedPhases = [...new Set(this.draftTxs.map(t => t.phase))];
+            let listHtml = '<div style="margin-bottom: 15px; color: var(--accent-blue); font-weight: bold; text-transform: uppercase;">🌐 RED DE VALOR CONTINUA (ATEMPORAL)</div>';
             
-            generatedPhases.forEach(p => {
-                const txsInPhase = this.draftTxs.filter(t => t.phase === p).sort((a,b) => a.step_order - b.step_order);
-                if (txsInPhase.length > 0) {
-                    listHtml += `<div style="margin-top: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--accent-blue); font-weight: bold; text-transform: uppercase;">🌐 ERA: ${p}</div>`;
-                    listHtml += txsInPhase.map((tx) => `
-                        <div class="tx-preview-item">
-                            <span style="color:#aaa; font-size:0.8rem;">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
-                            <div style="color:white; font-weight:bold;">${tx.template} (${tx.horas}h)</div>
-                        </div>
-                    `).join('');
-                }
-            });
+            const sortedTxs = this.draftTxs.sort((a,b) => a.step_order - b.step_order);
+            listHtml += sortedTxs.map((tx) => `
+                <div class="tx-preview-item">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#aaa; font-size:0.8rem; font-family:var(--font-mono);">${tx.fromLevel} &rarr; ${tx.toLevel}</span>
+                        <span style="color:${tx.tipo === 'tangible' ? 'var(--accent-green)' : 'var(--accent-purple)'}; font-size:0.75rem; font-weight:bold;">[${tx.tipo.toUpperCase()}]</span>
+                    </div>
+                    <div style="color:white; font-weight:bold; font-size: 1rem; margin-top: 4px;">${tx.template} (${tx.horas}h)</div>
+                </div>
+            `).join('');
+            
             this.dom.txPreviewList.innerHTML = listHtml;
         }
         
@@ -523,7 +487,7 @@ export class ProjectForge {
         
         const state = store.getState();
         const systemUsers = state.globalUsers || [];
-        let userOptions = `<option value="">-- Sin asignar (Mercado Libre) --</option>`;
+        let userOptions = `<option value="">-- Sin asignar (Libre) --</option>`;
         systemUsers.forEach(u => {
             const icon = u.profile?.isAi ? '🤖' : '👤';
             userOptions += `<option value="${u.id}">${icon} ${u.name}</option>`;
@@ -546,6 +510,9 @@ export class ProjectForge {
                 <div class="role-inputs">
                     ${selectLevel}
                     <input type="text" value="${role.name}" class="inp-role-name" data-idx="${index}" title="Actividad del Rol">
+                    <button class="btn-del-role" data-idx="${index}" title="Eliminar Rol">&times;</button>
+                </div>
+                <div style="display:flex; align-items:center; gap: 10px; margin-top:5px;">
                     <div style="display:flex; align-items:center; gap: 5px;">
                         <span style="color: var(--text-muted); font-size: 0.75rem; font-weight:bold;">FMV:</span>
                         <input type="number" value="${role.fmv}" class="fmv-input inp-role-fmv" data-idx="${index}">
@@ -553,7 +520,6 @@ export class ProjectForge {
                     </div>
                     ${selectUser}
                 </div>
-                <button class="btn-del-role" data-idx="${index}" title="Eliminar Rol">&times;</button>
             `;
             this.dom.rolesContainer.appendChild(row);
         });
@@ -585,13 +551,6 @@ export class ProjectForge {
                 this.renderDraftRoles();
             });
         });
-
-        if (this.draftRoles.length > 0 && this.mapVis) {
-            this.dom.miniMapContainer.style.display = 'block';
-            this.mapVis.setData(this.draftRoles, this.draftTxs);
-        } else {
-            this.dom.miniMapContainer.style.display = 'none';
-        }
     }
 
     async finalizeProject() {
