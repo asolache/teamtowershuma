@@ -16,18 +16,23 @@ class OrchestratorCore {
         this.isListening = false;
     }
 
+    // 🔥 ENRUTADOR ESTRICTO: Respeta el Panteón y luego aplica Cascada
     _getAvailableProviders(overrideEngine = null) {
         const globalEngine = localStorage.getItem('tt_ai_provider') || 'openai';
         const actualPreference = overrideEngine || globalEngine;
         
+        // Ponemos anthropic al final por sus conocidas políticas de bloqueo CORS en el navegador
         const fallbackChain = [actualPreference, globalEngine, 'openai', 'deepseek', 'gemini', 'custom', 'anthropic'];
         const uniqueChain = [...new Set(fallbackChain)]; 
         const available = [];
 
         for (const provider of uniqueChain) {
             if (provider === 'custom') { available.push({ provider: 'custom', apiKey: 'local_or_custom_mode' }); continue; }
+            
             const apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (apiKey && apiKey.trim().length > 10) available.push({ provider, apiKey });
+            if (apiKey && apiKey.trim().length > 10) {
+                available.push({ provider, apiKey });
+            }
         }
         
         if (available.length === 0) throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en el Panteón.");
@@ -58,6 +63,7 @@ class OrchestratorCore {
         });
     }
 
+    // 🔥 MOTOR COGNITIVO INDESTRUCTIBLE (CORS & FALLBACK SURVIVAL)
     async callLLM({ preferredEngine = null, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2 }) {
         const availableProviders = this._getAvailableProviders(preferredEngine);
         let lastError = null;
@@ -65,7 +71,7 @@ class OrchestratorCore {
         for (const p of availableProviders) {
             const { provider, apiKey } = p;
             let attempt = 0;
-            const maxRetries = 1;
+            const maxRetries = 1; // Solo 1 reintento para no colgar la UI
 
             while (attempt <= maxRetries) {
                 try {
@@ -140,15 +146,20 @@ class OrchestratorCore {
                 } catch (error) {
                     lastError = error; 
                     const errMsg = (error.message || "").toLowerCase();
+                    
+                    // 🔥 FIX: Corte Cuántico Inmediato si detecta CORS o fallo de red
                     if (errMsg.includes('networkerror') || errMsg.includes('failed to fetch') || errMsg.includes('cors') || errMsg.includes('network')) {
-                        console.warn(`🛡️ [Antigravity Shield] Muro CORS en ${provider}. Saltando al siguiente motor...`);
-                        break; 
+                        console.warn(`🛡️ [Antigravity Shield] Muro CORS en ${provider}. Descartando y saltando al siguiente motor...`);
+                        break; // Rompe el bucle while y pasa al siguiente provider del array
                     }
+
                     attempt++; 
+                    console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt}):`, error.message);
                     if (attempt <= maxRetries) await new Promise(r => setTimeout(r, 1000 * attempt));
                 }
             }
         }
+        
         throw new Error(`Todos los motores colapsaron. Último error: ${lastError.message}`);
     }
 
@@ -281,6 +292,37 @@ class OrchestratorCore {
             }
         }
         return result;
+    }
+
+    // 🔥 BUCLE DE EXPANSIÓN COGNITIVA (DEEP RESEARCH MULTI-ARCHIVO / PROGRESSIVE DISCLOSURE)
+    async expandNodeSemantics(title, category, content, tags, overrideProvider = null) {
+        const systemPrompt = `
+            Eres el Agente de Expansión Cognitiva del Kernel V9 (Modelo AgentSkills).
+            Misión: Desarrollar un concepto aplicando la "Revelación Progresiva" (Progressive Disclosure).
+            
+            REGLAS DE EXPANSIÓN MULTI-ARCHIVO:
+            1. EL NODO PRINCIPAL (La Skill/Referencia): Debe ser CONCISO, directo y accionable. Contendrá las instrucciones, pasos a seguir (SOPs) y reglas de validación (SOCs). NO pongas teoría extensa aquí.
+            2. DOCUMENTOS DE REFERENCIA (Resources): Si el tema requiere teoría profunda, metodologías, historia, tablas complejas o ejemplos, EXTRAE esa información y divídela en documentos dentro del array "reference_docs".
+            3. Markdown: Todo el contenido debe estar en Markdown bien estructurado.
+            
+            Devuelve ÚNICAMENTE JSON estricto: 
+            { 
+                "title": "Título Mejorado", 
+                "description": "Resumen indexable corto para RAG...", 
+                "content": "Instrucciones concisas y accionables (Skill principal)...", 
+                "keywords": ["tag1", "tag2"],
+                "reference_docs": [
+                    { "title": "Nombre Referencia 1", "description": "Breve resumen", "content": "Teoría/Ejemplos profundos en Markdown..." }
+                ]
+            }
+        `;
+
+        const userPrompt = `Título Original: ${title}\nCategoría: ${category}\nTags Actuales: ${tags}\nContenido Semilla:\n${content}`;
+        
+        const response = await this.callLLM({ preferredEngine: overrideProvider || 'openai', systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.5 });
+        this._logTelemetry('global', '@mestre_escola', response.telemetry.provider, 'KNOWLEDGE_EXPANSION', response.telemetry);
+        
+        return response.content;
     }
 
     async autoRespondUsenet(project, incomingLog, agentNode) {
