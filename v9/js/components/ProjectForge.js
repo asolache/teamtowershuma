@@ -290,12 +290,18 @@ export class ProjectForge {
         this.dom.btnLoadTemplate.addEventListener('click', () => {
             if (!this.dom.inpName.value.trim()) return alert("El nombre de la Red es obligatorio.");
             const sectorVal = this.dom.inpSector.value; 
-            let sectorData = this.sectorsFromKB[sectorVal];
 
             this.draftRoles = []; this.draftTxs = [];
             this.draftTags = [sectorVal, this.dom.inpArchetype.value];
             this.draftPresentation = `Misión: ${this.dom.inpMission.value}\nPúblico: ${this.dom.inpTarget.value}`;
-            
+
+            // 🔥 FIX: Bypass si es "Lienzo en Blanco". Dejamos que la IA lo deduzca TODO en el paso 2.
+            if (sectorVal === 'blank_canvas') {
+                alert("🌌 Modo Lienzo en Blanco activado.\nSe omiten las plantillas base. Pulsa 'Diseñar Topología VNA' para que el Agente infiera la arquitectura desde cero.");
+                return;
+            }
+
+            let sectorData = this.sectorsFromKB[sectorVal];
             if (sectorData && sectorData.roles) {
                 Object.keys(sectorData.roles).forEach(levelKey => {
                     const data = sectorData.roles[levelKey];
