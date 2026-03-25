@@ -20,6 +20,25 @@ class OrchestratorCore {
     }
 
     // ==========================================
+    // 🛡️ ENRUTADOR RAG EN CASCADA (WATERFALL FALLBACK)
+    // ==========================================
+    _getBestProvider(preferredEngine) {
+        // Cadena de supervivencia estricta: Si el preferido falla, baja por la jerarquía de calidad
+        const fallbackChain = [preferredEngine, 'anthropic', 'openai', 'gemini', 'deepseek', 'custom'];
+        const uniqueChain = [...new Set(fallbackChain)]; // Eliminamos duplicados
+
+        for (const provider of uniqueChain) {
+            if (provider === 'custom') return { provider: 'custom', apiKey: 'local_or_custom_mode' };
+            
+            const apiKey = localStorage.getItem(`tt_key_${provider}`);
+            if (apiKey && apiKey.trim().length > 10) {
+                return { provider, apiKey };
+            }
+        }
+        throw new Error("[KERNEL PANIC] No hay ninguna API Key configurada en el Panteón para operar.");
+    }
+
+    // ==========================================
     // 🛡️ EL DAEMON DE USENET (ESCUCHA PASIVA P2P)
     // ==========================================
     initUsenetDaemon() {
@@ -50,8 +69,6 @@ class OrchestratorCore {
     // 🧠 MOTOR COGNITIVO BASE (ENRUTADOR RAG)
     // ==========================================
     async callLLM({ provider, apiKey, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, maxRetries = 2 }) {
-        if (!apiKey && provider !== 'custom') throw new Error(`[KERNEL PANIC] API Key requerida para el motor ${provider}.`);
-        
         let attempt = 0; 
         let lastError = null;
         
@@ -64,8 +81,7 @@ class OrchestratorCore {
                 if (provider === 'gemini') {
                     const urlStr = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                     const response = await fetch(urlStr, {
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
                             contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT:\n${userPrompt}` }] }], 
                             generationConfig: { temperature, maxOutputTokens: 8192, responseMimeType: responseFormat === "json_object" ? "application/json" : "text/plain" } 
@@ -85,12 +101,7 @@ class OrchestratorCore {
                 else if (provider === 'anthropic') {
                     const response = await fetch('https://api.anthropic.com/v1/messages', {
                         method: 'POST',
-                        headers: {
-                            'x-api-key': apiKey,
-                            'anthropic-version': '2023-06-01',
-                            'content-type': 'application/json',
-                            'anthropic-cors-bypass': 'true'
-                        },
+                        headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-cors-bypass': 'true' },
                         body: JSON.stringify({
                             model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }]
                         })
@@ -133,7 +144,7 @@ class OrchestratorCore {
             
             } catch (error) {
                 lastError = error; attempt++; 
-                console.warn(`⚠️ [Orchestrator] Fallo cognitivo (Intento ${attempt}). Relanzando...`, error.message);
+                console.warn(`⚠️ [Orchestrator] Fallo cognitivo con ${provider} (Intento ${attempt})...`, error.message);
                 await new Promise(r => setTimeout(r, 1000 * attempt));
             }
         }
@@ -158,9 +169,7 @@ class OrchestratorCore {
     // 👑 BUCLE IMPERIAL 1: LA AUDITORÍA NOTARIAL (@notari_ledger)
     // ==========================================
     async notarizeWorkOrder(projectId, taskComment, socChecklist) {
-        const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-        const apiKey = localStorage.getItem(`tt_key_${provider}`);
-        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida.");
+        const { provider, apiKey } = this._getBestProvider('deepseek'); // Preferencia: Lógica TDD implacable
 
         const systemPrompt = `Eres @notari_ledger, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
         const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
@@ -173,9 +182,7 @@ class OrchestratorCore {
     // ==========================================
     async harvestKnowledge(task, projectId) {
         try {
-            const provider = localStorage.getItem('tt_ai_provider') || 'openai';
-            const apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (!apiKey && provider !== 'custom') return null; 
+            const { provider, apiKey } = this._getBestProvider('gemini'); // Preferencia: Ventana de contexto rápida
 
             const systemPrompt = `Eres @janitor, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
             const response = await this.callLLM({ provider, apiKey, systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
@@ -194,7 +201,9 @@ class OrchestratorCore {
     // ==========================================
     // 👑 BUCLE IMPERIAL 3: EL ARQUITECTO (@genesi_ai)
     // ==========================================
-    async designEcosystemVNA(projectName, archetypeText, vision, provider, apiKey) {
+    async designEcosystemVNA(projectName, archetypeText, vision) {
+        const { provider, apiKey } = this._getBestProvider('anthropic'); // Preferencia: Claude 3.5/3.7 para VNA Sistémico
+
         await KB.init();
         const allSkills = await KB.getAllNodes({ category: 'skill' });
         const allSops = await KB.getAllNodes({ category: 'SOP' });
@@ -205,15 +214,14 @@ class OrchestratorCore {
             SOPs: ${allSops.slice(0,5).map(s => s.title).join(', ')}
         `;
 
-        // 🔥 KERNEL INTELIGENTE: Calidad de Flujo > Restricciones Rígidas
         const systemPrompt = `
             Eres Master Ecosystem Architect (@genesi_ai). Forja topologías VNA (Value Network Analysis) de ALTA CALIDAD Y COHERENCIA.
             
             MANDAMIENTOS DE DISEÑO (CALIDAD ANTIGRAVITY):
-            1. FLUJO ÓPTIMO DE VALOR: No recortes eslabones vitales por ahorrar tokens. Diseña el flujo exacto que garantice el éxito. Un ecosistema complejo requerirá muchos SOPs; uno simple, menos.
-            2. INFERENCIA DE FASE: Analiza la visión del usuario y deduce en qué fase de madurez está el proyecto. Adapta las "phases" de las transacciones a esta realidad (ej. si deduce un MVP, enfócate en 'Ideación', 'Construcción', 'Lanzamiento'; si deduce un sistema empresarial, usa fases maduras).
+            1. FLUJO ÓPTIMO DE VALOR: No recortes eslabones vitales por ahorrar tokens. Diseña el flujo exacto que garantice el éxito.
+            2. INFERENCIA DE FASE: Analiza la visión del usuario y deduce en qué fase de madurez está el proyecto. Adapta las "phases" de las transacciones a esta realidad.
             3. Ikigai de Roles: Genera el "ai_prompt" para cada Rol con profundidad técnica y orientación a GTD.
-            4. TDD Riguroso: Cada transacción DEBE tener una matriz "soc_checklist" (Criterios de auditoría medibles). La calidad del SOC define la supervivencia del sistema.
+            4. TDD Riguroso: Cada transacción DEBE tener una matriz "soc_checklist" (Criterios de auditoría medibles).
             
             FORMATO JSON ESTRICTO ESPERADO:
             { 
@@ -238,9 +246,7 @@ class OrchestratorCore {
     // 👑 BUCLE IMPERIAL 4: EL INVESTIGADOR ACADÉMICO (@mestre_escola)
     // ==========================================
     async runDeepResearch(topic, expectedCategory, maxNodes = 3) {
-        const provider = localStorage.getItem('tt_ai_provider') || 'openai';
-        const apiKey = localStorage.getItem(`tt_key_${provider}`);
-        if (!apiKey && provider !== 'custom') throw new Error("API Key requerida para Deep Research.");
+        const { provider, apiKey } = this._getBestProvider('gemini'); // Preferencia: Gemini (Ventana masiva)
 
         const systemPrompt = `
             Eres @mestre_escola, el Investigador Ontológico y Creador de Memes W3C del Kernel.
@@ -275,13 +281,12 @@ class OrchestratorCore {
     }
 
     // ==========================================
-    // 🤖 HERRAMIENTAS ADICIONALES Y COMUNICACIÓN P2P
+    // 🤖 COMUNICACIÓN P2P (USENET)
     // ==========================================
     async autoRespondUsenet(project, incomingLog, agentNode) {
         try {
-            let provider = agentNode.profile?.preferredEngine || localStorage.getItem('tt_ai_provider') || 'deepseek';
-            let apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (!apiKey) return;
+            const profileEngine = agentNode.profile?.preferredEngine || 'openai';
+            const { provider, apiKey } = this._getBestProvider(profileEngine); // Respeta el motor forjado en el Ikigai
 
             const contextStr = await this._buildLightweightContext(project.id, agentNode.id);
             const systemPrompt = `Eres ${agentNode.name}.\n\n${contextStr}\nResponde al ping del hilo con acción inmediata (GTD). No uses JSON ni markdown puro.`;
@@ -295,9 +300,7 @@ class OrchestratorCore {
     // 🔥 BUCLE DE AUTO-SANACIÓN SEMÁNTICA (IKIGAI MATCHING)
     async autoHealNetwork(task, projectId) {
         try {
-            let provider = localStorage.getItem('tt_ai_provider') || 'openai';
-            let apiKey = localStorage.getItem(`tt_key_${provider}`);
-            if (!apiKey && provider !== 'custom') return null;
+            const { provider, apiKey } = this._getBestProvider('deepseek'); // Preferencia: DeepSeek para análisis de SOCs
 
             const failedSocs = (task.soc_checklist || []).filter(s => !s.isChecked).map(s => s.text);
             if (failedSocs.length === 0) return null;
