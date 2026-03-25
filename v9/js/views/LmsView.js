@@ -21,7 +21,7 @@ export default class LmsView {
         const headerConfig = {
             title: "La Forja (Cerebro LMS)",
             subtitle: "Conocimiento W3C & Meta-Grafo",
-            tagline: "Explora la memoria, forja habilidades y empaqueta AgentSkills (.zip) para la red.",
+            tagline: "Explora la memoria, forja habilidades y empaqueta AgentSkills (.zip / .skill) para la red.",
             tabs: [
                 { id: 'list', label: '🗂️ Padrón W3C (Lista)', active: this.currentTab === 'list' },
                 { id: 'graph', label: '🌌 Meta-Grafo 3D', active: this.currentTab === 'graph' }
@@ -63,6 +63,8 @@ export default class LmsView {
                 .meme-category.evergreen { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); text-shadow: 0 0 10px rgba(255,215,0,0.5);}
                 .meme-category.skill { background: rgba(0,230,118,0.1); color: var(--accent-green); border-color: rgba(0,230,118,0.3);}
                 .meme-category.reference { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
+                .meme-category.script { background: rgba(255,82,82,0.1); color: var(--accent-red); border-color: rgba(255,82,82,0.3);}
+                .meme-category.eval { background: rgba(255,171,64,0.1); color: var(--accent-orange); border-color: rgba(255,171,64,0.3);}
 
                 .meme-title { font-size: 1.1rem; color: white; margin: 10px 0 0 0; font-weight: 900;}
                 .meme-content { color: #aaa; font-size: 0.9rem; line-height: 1.5; font-family: 'Georgia', serif; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;}
@@ -77,7 +79,7 @@ export default class LmsView {
                 /* MODAL OVERLAY */
                 .modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(5,5,8,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;}
                 .modal-overlay.active { display: flex; opacity: 1; }
-                .modal-card { background: linear-gradient(145deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 750px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(224,64,251,0.2); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 90vh; overflow-y: auto;}
+                .modal-card { background: linear-gradient(145deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 850px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(224,64,251,0.2); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 95vh; overflow-y: auto; display:flex; flex-direction:column;}
                 .modal-overlay.active .modal-card { transform: translateY(0); }
                 
                 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px dashed #333; padding-bottom: 1rem;}
@@ -85,11 +87,13 @@ export default class LmsView {
                 .btn-close { background: transparent; border: none; color: #888; font-size: 1.5rem; cursor: pointer; transition: 0.2s;}
                 .btn-close:hover { color: var(--accent-red); transform: scale(1.1);}
 
+                .modal-body-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; flex: 1;}
+
                 .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;}
                 .form-group label { color: var(--accent-blue); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px; border-radius: 10px; font-family: var(--font-main); font-size: 0.95rem; outline: none; transition: 0.2s;}
                 .form-control:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224,64,251,0.1);}
-                .form-control.textarea { min-height: 180px; resize: vertical; font-family: 'Georgia', serif; line-height: 1.6;}
+                .form-control.textarea { min-height: 250px; resize: vertical; font-family: 'Georgia', serif; line-height: 1.6;}
                 
                 .modal-actions { display: flex; justify-content: flex-end; flex-wrap:wrap; gap: 10px; margin-top: 2rem; border-top: 1px dashed #333; padding-top: 1.5rem;}
                 .btn-modal { padding: 12px 24px; border-radius: 10px; font-weight: 900; font-size: 0.9rem; cursor: pointer; transition: 0.3s; border: none;}
@@ -107,15 +111,22 @@ export default class LmsView {
                 .btn-export { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
                 .btn-export:hover { background: rgba(224,64,251,0.1); }
 
-                /* 🔥 Estilo de las Píldoras de Referencias Clickables */
-                .ref-badge { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); }
+                /* 🔥 Píldoras AgentSkills Clickables */
+                .ref-badge { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; }
                 .ref-badge:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 10px rgba(0,176,255,0.4); transform: translateY(-1px); }
+                
+                .eval-badge { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; }
+                .eval-badge:hover { background: var(--accent-orange); color: black; box-shadow: 0 0 10px rgba(255,171,64,0.4); transform: translateY(-1px); }
+
+                .script-badge { background: rgba(0,230,118,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; }
+                .script-badge:hover { background: var(--accent-green); color: black; box-shadow: 0 0 10px rgba(0,230,118,0.4); transform: translateY(-1px); }
 
                 @media (max-width: 768px) {
                     .workspace-lms { padding: 90px 1rem 120px 1rem; }
                     .lms-controls-row { flex-direction: column; align-items: stretch; }
                     .btn-deep-research { justify-content: center; }
                     .modal-card { padding: 1.5rem; border-radius: 16px; margin: 10px; }
+                    .modal-body-grid { grid-template-columns: 1fr; }
                     .modal-actions { flex-direction: column; }
                     .btn-modal { width: 100%; text-align: center; }
                 }
@@ -131,15 +142,15 @@ export default class LmsView {
                         <div class="lms-controls-row">
                             <div class="filters-bar" id="lmsFilters">
                                 <button class="filter-btn active" data-filter="all">Todos</button>
-                                <button class="filter-btn" data-filter="core_os">🔧 OS Kernel</button>
                                 <button class="filter-btn" data-filter="skill">🎒 Skills</button>
-                                <button class="filter-btn" data-filter="reference">📚 Referencias</button>
-                                <button class="filter-btn" data-filter="prompt_a2a">🤖 Prompts AI</button>
+                                <button class="filter-btn" data-filter="reference">📚 References</button>
+                                <button class="filter-btn" data-filter="eval">📋 Evals (SOCs)</button>
+                                <button class="filter-btn" data-filter="script">⚡ Scripts</button>
                             </div>
                             
                             <div style="display:flex; gap:10px; flex-wrap:wrap;">
                                 <button class="btn-deep-research" id="btnNewNode" style="background:transparent; border-color:var(--accent-green); color:var(--accent-green);">
-                                    <span style="font-size:1.2rem;">➕</span> Instanciar Nodo
+                                    <span style="font-size:1.2rem;">➕</span> Forjar Nodo
                                 </button>
                                 <button class="btn-deep-research" id="btnOpenResearch">
                                     <span style="font-size:1.2rem;">🧠</span> Deep Research (IA)
@@ -149,7 +160,7 @@ export default class LmsView {
 
                         <div class="dropzone-area" id="skillDropzone">
                             <span style="font-size:1.5rem;">📥</span>
-                            <span style="font-weight:bold;">Arrastra aquí un .skill, .zip o .md para inyectarlo en el Padrón.</span>
+                            <span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>
                         </div>
 
                         <div class="lms-grid" id="lmsGrid">
@@ -169,48 +180,68 @@ export default class LmsView {
                             </div>
                             
                             <input type="hidden" id="editNodeId">
-                            <input type="hidden" id="editNodeType">
                             <input type="hidden" id="editNodeProjectId">
                             
-                            <div style="display:flex; gap:15px;">
-                                <div class="form-group" style="flex:1;">
-                                    <label>Categoría W3C</label>
-                                    <input type="text" id="editNodeCat" class="form-control" placeholder="Ej: skill, reference...">
-                                </div>
-                                <div class="form-group" style="flex:2;">
-                                    <label>Título del Nodo</label>
-                                    <input type="text" id="editNodeTitle" class="form-control" placeholder="Título descriptivo">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Descripción Corta (Enrutamiento RAG)</label>
-                                <input type="text" id="editNodeDesc" class="form-control" placeholder="Explica cuándo el agente debe invocar esta skill...">
-                            </div>
+                            <div class="modal-body-grid">
+                                
+                                <div>
+                                    <div style="display:flex; gap:15px;">
+                                        <div class="form-group" style="flex:1;">
+                                            <label>Categoría (W3C)</label>
+                                            <input type="text" id="editNodeCat" class="form-control" placeholder="skill, reference, eval, script...">
+                                        </div>
+                                        <div class="form-group" style="flex:2;">
+                                            <label>Título del Nodo</label>
+                                            <input type="text" id="editNodeTitle" class="form-control" placeholder="Título descriptivo">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Descripción Corta (Trigger para RAG)</label>
+                                        <input type="text" id="editNodeDesc" class="form-control" placeholder="Explica CUÁNDO debe invocar la IA esta skill...">
+                                    </div>
 
-                            <div class="form-group">
-                                <label>Contenido Cognitivo (Instrucciones)</label>
-                                <textarea id="editNodeContent" class="form-control textarea" placeholder="Desarrollo del concepto..."></textarea>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Dependencias / Referencias Requeridas (IDs separados por coma)</label>
-                                <input type="text" id="editNodeReferences" class="form-control" style="font-family:var(--font-mono); color:var(--accent-blue);" placeholder="ref_os_vna, ref_os_codex">
-                                <div id="refLinksContainer" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"></div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Tags (Gravedad 3D)</label>
-                                <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); color:var(--accent-green);" placeholder="tag1, tag2">
+                                    <div class="form-group" style="flex:1; display:flex; flex-direction:column;">
+                                        <label>Instrucciones (SOPs / Content)</label>
+                                        <textarea id="editNodeContent" class="form-control textarea" placeholder="Desarrollo del concepto, instrucciones o código..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div style="background: rgba(0,0,0,0.3); border: 1px solid #333; padding: 15px; border-radius: 12px; height: fit-content;">
+                                    
+                                    <div class="form-group">
+                                        <label style="color:var(--accent-blue);">📚 References (IDs)</label>
+                                        <input type="text" id="editNodeReferences" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="ref_1, ref_2">
+                                        <div id="refLinksContainer" style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label style="color:var(--accent-orange);">📋 Evals (Test Cases - IDs)</label>
+                                        <input type="text" id="editNodeEvals" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="eval_1, eval_2">
+                                        <div id="evalLinksContainer" style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label style="color:var(--accent-green);">⚡ Scripts (Executable - IDs)</label>
+                                        <input type="text" id="editNodeScripts" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="script_1">
+                                        <div id="scriptLinksContainer" style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label style="color:var(--accent-purple);">🏷️ Tags (Gravedad 3D)</label>
+                                        <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="tag1, tag2">
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="modal-actions">
                                 <button class="btn-modal btn-danger" id="btnDeleteNode">🗑️ Purgar</button>
-                                <button class="btn-modal btn-export" id="btnExportSkill">📦 Exportar (.zip)</button>
+                                <button class="btn-modal btn-export" id="btnExportSkill">📦 Exportar Package (.skill)</button>
                                 <div style="flex:1;"></div>
-                                <button class="btn-modal btn-expand" id="btnExpandNode">🌱 Desarrollar Skill (IA)</button>
-                                <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Comprimir</button>
-                                <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar</button>
+                                <button class="btn-modal btn-expand" id="btnExpandNode">🌱 IA Agent Forger</button>
+                                <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Sintetizar</button>
+                                <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar Mutación</button>
                             </div>
                         </div>
                     </div>
@@ -230,6 +261,8 @@ export default class LmsView {
                                 <select id="inpResearchCat" class="form-control">
                                     <option value="reference">📚 Reference (Teoría y Metodología)</option>
                                     <option value="skill">🎒 Skill (Instrucciones Ejecutables)</option>
+                                    <option value="eval">📋 Eval (Aserciones y Tests JSON)</option>
+                                    <option value="script">⚡ Script (Código fuente)</option>
                                 </select>
                             </div>
                             
@@ -275,19 +308,25 @@ export default class LmsView {
             btnExport: document.getElementById('btnExportSkill'),
             
             inpId: document.getElementById('editNodeId'),
-            inpType: document.getElementById('editNodeType'),
             inpProjId: document.getElementById('editNodeProjectId'),
             inpCat: document.getElementById('editNodeCat'),
             inpTitle: document.getElementById('editNodeTitle'),
             inpDesc: document.getElementById('editNodeDesc'),
             inpContent: document.getElementById('editNodeContent'),
             inpKeywords: document.getElementById('editNodeKeywords'),
+            
             inpReferences: document.getElementById('editNodeReferences'),
-            refLinksContainer: document.getElementById('refLinksContainer'), // 🔥 Enlaces Mapeados
+            refLinksContainer: document.getElementById('refLinksContainer'), 
+            
+            inpEvals: document.getElementById('editNodeEvals'),
+            evalLinksContainer: document.getElementById('evalLinksContainer'),
+            
+            inpScripts: document.getElementById('editNodeScripts'),
+            scriptLinksContainer: document.getElementById('scriptLinksContainer'),
 
             synapticMount: document.getElementById('synapticMountPoint'),
 
-            btnNewNode: document.getElementById('btnNewNode'), // 🔥 Botón Instanciar
+            btnNewNode: document.getElementById('btnNewNode'), 
             btnOpenResearch: document.getElementById('btnOpenResearch'),
             researchModal: document.getElementById('researchModal'),
             btnCloseResearch: document.getElementById('btnCloseResearch'),
@@ -346,45 +385,68 @@ export default class LmsView {
             const file = dt.files[0];
             
             if (file && (file.name.endsWith('.zip') || file.name.endsWith('.skill'))) {
-                dropzone.innerHTML = "⏳ Desempaquetando Paquete...";
+                dropzone.innerHTML = "⏳ Desempaquetando Architectura AgentSkills...";
                 await this.parseZipSkillFile(file);
-                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un .skill, .zip o .md para inyectarlo.</span>`;
+                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectarlo.</span>`;
             } else if (file && file.name.endsWith('.md')) {
                 this.parseMarkdownSkillFile(file);
             } else {
-                alert("Formato denegado. Solo se admiten paquetes (.zip, .skill) o archivos markdown individuales (.md).");
+                alert("Formato denegado. Se requiere un paquete (.skill, .zip) o archivo markdown (.md).");
             }
         }, false);
     }
 
+    // 🔥 IMPORTADOR AGENTSKILLS COMPATIBLE CON ANTHROPIC (EVALS & SCRIPTS)
     async parseZipSkillFile(file) {
         if (!window.JSZip) await this.loadJSZip();
         try {
             const zip = new window.JSZip();
             const contents = await zip.loadAsync(file);
             
-            const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('Skill.md'));
-            if (!skillFileKey) return alert("Paquete Inválido: No se encontró 'Skill.md' en el archivo.");
+            const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('SKILL.md') || k.endsWith('Skill.md'));
+            if (!skillFileKey) return alert("Paquete Inválido: No se encontró 'SKILL.md' en el archivo.");
             
             const skillText = await contents.files[skillFileKey].async("text");
             const parsedSkill = this.extractFrontmatter(skillText, file.name.replace('.zip','').replace('.skill',''));
             
-            const referenceIds = [];
+            const refIds = [];
+            const evalIds = [];
+            const scriptIds = [];
+
+            await KB.init();
+
             for (const relativePath in contents.files) {
                 const f = contents.files[relativePath];
-                if (!f.dir && relativePath.includes('/') && relativePath.endsWith('.md') && !relativePath.endsWith('Skill.md')) {
-                    const refText = await f.async("text");
-                    const refParsed = this.extractFrontmatter(refText, f.name.split('/').pop().replace('.md', ''));
-                    
-                    const cleanRefName = refParsed.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().substring(0, 25);
-                    const refNode = {
-                        id: `ref_imp_${cleanRefName}_${Math.random().toString(36).substr(2,4)}`,
-                        type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
-                        title: refParsed.title, description: refParsed.description, content: refParsed.content, keywords: ['#imported_ref']
-                    };
-                    await KB.init();
-                    await KB.saveNode(refNode);
-                    referenceIds.push(refNode.id);
+                if (f.dir || relativePath === skillFileKey) continue;
+
+                const rawText = await f.async("text");
+                const fileName = f.name.split('/').pop();
+                const cleanName = fileName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+
+                if (relativePath.includes('references/') || relativePath.includes('resources/')) {
+                    const parsed = this.extractFrontmatter(rawText, fileName.replace('.md', ''));
+                    const id = `ref_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
+                    await KB.saveNode({
+                        id, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
+                        title: parsed.title, description: parsed.description, content: parsed.content, keywords: ['#imported_ref']
+                    });
+                    refIds.push(id);
+                } 
+                else if (relativePath.includes('evals/')) {
+                    const id = `eval_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
+                    await KB.saveNode({
+                        id, type: 'eval', category: 'eval', projectId: 'global', targetId: 'global',
+                        title: fileName, description: `Test Cases for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_eval']
+                    });
+                    evalIds.push(id);
+                }
+                else if (relativePath.includes('scripts/')) {
+                    const id = `script_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
+                    await KB.saveNode({
+                        id, type: 'script', category: 'script', projectId: 'global', targetId: 'global',
+                        title: fileName, description: `Executable code for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_script']
+                    });
+                    scriptIds.push(id);
                 }
             }
 
@@ -392,15 +454,15 @@ export default class LmsView {
                 id: `skill_imported_${Date.now()}`,
                 type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
                 title: parsedSkill.title, description: parsedSkill.description, content: parsedSkill.content,
-                references: referenceIds, keywords: ['#imported_skill']
+                references: refIds, evals: evalIds, scripts: scriptIds, keywords: ['#imported_skill']
             };
 
             await KB.saveNode(skillNode);
-            alert(`✅ Paquete Inyectado: ${parsedSkill.title} (${referenceIds.length} referencias asociadas)`);
+            alert(`✅ AgentSkill Instalada: ${parsedSkill.title} (${refIds.length} Refs, ${evalIds.length} Evals, ${scriptIds.length} Scripts)`);
             await this.loadData();
             await this.forceGraphRefresh();
         } catch (error) {
-            alert("Error al desempaquetar: " + error.message);
+            alert("Error al desempaquetar la Skill: " + error.message);
         }
     }
 
@@ -464,7 +526,15 @@ export default class LmsView {
             const tags = (node.keywords && Array.isArray(node.keywords)) ? node.keywords : [];
             let tagsHtml = tags.slice(0, 3).map(t => `<span class="meme-tag">#${t}</span>`).join('');
             const safeId = node.id.replace(/"/g, '&quot;');
+            
             const refCount = (node.references && Array.isArray(node.references)) ? node.references.length : 0;
+            const evalsCount = (node.evals && Array.isArray(node.evals)) ? node.evals.length : 0;
+            const scriptsCount = (node.scripts && Array.isArray(node.scripts)) ? node.scripts.length : 0;
+
+            let countsHtml = '';
+            if (refCount > 0) countsHtml += `<span class="meme-tag" style="color:var(--accent-blue);">📚 ${refCount}</span>`;
+            if (evalsCount > 0) countsHtml += `<span class="meme-tag" style="color:var(--accent-orange);">📋 ${evalsCount}</span>`;
+            if (scriptsCount > 0) countsHtml += `<span class="meme-tag" style="color:var(--accent-green);">⚡ ${scriptsCount}</span>`;
 
             return `
                 <div class="meme-card" data-id="${safeId}">
@@ -473,8 +543,8 @@ export default class LmsView {
                     ${node.description ? `<div style="color:var(--accent-blue); font-size:0.75rem; font-weight:bold; margin-bottom:5px;">${node.description}</div>` : ''}
                     <div class="meme-content">${node.content || ''}</div>
                     <div class="meme-footer">
-                        <span class="meme-tag" style="color:var(--accent-blue);">✏️ Editar</span>
-                        ${refCount > 0 ? `<span class="meme-tag" style="color:var(--accent-orange);">📚 ${refCount} Refs</span>` : ''}
+                        <span class="meme-tag" style="color:var(--accent-purple);">✏️ Editar</span>
+                        ${countsHtml}
                         ${tagsHtml}
                     </div>
                 </div>
@@ -495,24 +565,24 @@ export default class LmsView {
         });
     }
 
-    // 🔥 PINTAR ENLACES A LAS REFERENCIAS
-    renderReferenceLinks(refIds) {
-        if (!this.dom.refLinksContainer) return;
-        this.dom.refLinksContainer.innerHTML = '';
-        if (!refIds || refIds.length === 0) return;
+    // 🔥 GENERADOR GENÉRICO DE PÍLDORAS ENLAZADAS (UX)
+    renderLinkedNodes(idsArray, container, cssClass, icon) {
+        if (!container) return;
+        container.innerHTML = '';
+        if (!idsArray || idsArray.length === 0) return;
         
-        refIds.forEach(refId => {
-            const refNode = this.allNodes.find(n => n.id === refId);
-            const title = refNode ? refNode.title : refId;
+        idsArray.forEach(id => {
+            const node = this.allNodes.find(n => n.id === id);
+            const title = node ? node.title : id;
             const badge = document.createElement('span');
-            badge.className = 'ref-badge';
-            badge.innerHTML = `📚 ${title} ↗`;
-            badge.title = "Click para inspeccionar esta referencia";
+            badge.className = cssClass;
+            badge.innerHTML = `${icon} ${title} ↗`;
+            badge.title = `Inspeccionar: ${id}`;
             badge.onclick = () => {
-                this.closeEditor(); // Cierra el modal actual
-                setTimeout(() => this.openEditor(refId), 350); // Abre la referencia tras la animación
+                this.closeEditor(); 
+                setTimeout(() => this.openEditor(id), 350); 
             };
-            this.dom.refLinksContainer.appendChild(badge);
+            container.appendChild(badge);
         });
     }
 
@@ -521,7 +591,6 @@ export default class LmsView {
         if (!node) return;
 
         this.dom.inpId.value = node.id;
-        this.dom.inpType.value = node.type || 'meme';
         this.dom.inpProjId.value = node.projectId || 'global';
         this.dom.inpCat.value = node.category || '';
         this.dom.inpTitle.value = node.title || '';
@@ -529,11 +598,17 @@ export default class LmsView {
         this.dom.inpContent.value = node.content || '';
         this.dom.inpKeywords.value = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
         
-        const refStr = (node.references && Array.isArray(node.references)) ? node.references.join(', ') : '';
-        this.dom.inpReferences.value = refStr;
+        const refArr = (node.references && Array.isArray(node.references)) ? node.references : [];
+        const evalArr = (node.evals && Array.isArray(node.evals)) ? node.evals : [];
+        const scriptArr = (node.scripts && Array.isArray(node.scripts)) ? node.scripts : [];
+
+        this.dom.inpReferences.value = refArr.join(', ');
+        this.dom.inpEvals.value = evalArr.join(', ');
+        this.dom.inpScripts.value = scriptArr.join(', ');
         
-        // Pinta los botones azules
-        this.renderReferenceLinks(node.references);
+        this.renderLinkedNodes(refArr, this.dom.refLinksContainer, 'ref-badge', '📚');
+        this.renderLinkedNodes(evalArr, this.dom.evalLinksContainer, 'eval-badge', '📋');
+        this.renderLinkedNodes(scriptArr, this.dom.scriptLinksContainer, 'script-badge', '⚡');
 
         const isKernel = this.dom.inpKeywords.value.includes('#kernel_sos');
         this.dom.btnDelete.style.display = isKernel ? 'none' : 'block';
@@ -582,11 +657,9 @@ export default class LmsView {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
 
-        // 🔥 BOTÓN INSTANCIAR NODO (CREACIÓN MANUAL)
         if (this.dom.btnNewNode) {
             this.dom.btnNewNode.addEventListener('click', () => {
                 this.dom.inpId.value = '';
-                this.dom.inpType.value = 'custom';
                 this.dom.inpProjId.value = 'global';
                 this.dom.inpCat.value = 'skill';
                 this.dom.inpTitle.value = '';
@@ -594,18 +667,24 @@ export default class LmsView {
                 this.dom.inpContent.value = '';
                 this.dom.inpKeywords.value = '';
                 this.dom.inpReferences.value = '';
-                this.renderReferenceLinks([]);
+                this.dom.inpEvals.value = '';
+                this.dom.inpScripts.value = '';
+                
+                this.renderLinkedNodes([], this.dom.refLinksContainer, '', '');
+                this.renderLinkedNodes([], this.dom.evalLinksContainer, '', '');
+                this.renderLinkedNodes([], this.dom.scriptLinksContainer, '', '');
+                
                 this.dom.btnDelete.style.display = 'none';
                 this.dom.modal.classList.add('active');
             });
         }
 
-        // Si editas las referencias a mano, actualiza los botones visuales (Bonus UX)
-        this.dom.inpReferences.addEventListener('input', (e) => {
-            const arr = e.target.value.split(',').map(k => k.trim()).filter(k => k !== '');
-            this.renderReferenceLinks(arr);
-        });
+        // Live updates for link pills
+        this.dom.inpReferences.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.refLinksContainer, 'ref-badge', '📚'));
+        this.dom.inpEvals.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.evalLinksContainer, 'eval-badge', '📋'));
+        this.dom.inpScripts.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.scriptLinksContainer, 'script-badge', '⚡'));
 
+        // 🔥 EXPORTADOR OFICIAL AGENTSKILLS (MULTI-CARPETA)
         this.dom.btnExport.addEventListener('click', async () => {
             if (!window.JSZip) await this.loadJSZip();
             const zip = new window.JSZip();
@@ -613,18 +692,22 @@ export default class LmsView {
             const title = this.dom.inpTitle.value.trim() || 'Custom_Skill';
             const desc = this.dom.inpDesc.value.trim() || 'Skill generada por TeamTowers V9';
             const content = this.dom.inpContent.value.trim();
-            const refString = this.dom.inpReferences.value.trim();
-            const refArray = refString ? refString.split(',').map(r => r.trim()).filter(r => r !== '') : [];
+            
+            const refArray = this.dom.inpReferences.value.split(',').map(r => r.trim()).filter(r => r !== '');
+            const evalArray = this.dom.inpEvals.value.split(',').map(r => r.trim()).filter(r => r !== '');
+            const scriptArray = this.dom.inpScripts.value.split(',').map(r => r.trim()).filter(r => r !== '');
 
             const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
             const rootFolder = zip.folder(safeTitle);
 
             const skillContent = `---\nname: ${title}\ndescription: ${desc}\n---\n\n${content}`;
-            rootFolder.file("Skill.md", skillContent);
+            rootFolder.file("SKILL.md", skillContent);
 
+            await KB.init();
+
+            // 1. Empaquetar /references/
             if (refArray.length > 0) {
-                const resourcesFolder = rootFolder.folder("resources");
-                await KB.init();
+                const resourcesFolder = rootFolder.folder("references");
                 for (const refId of refArray) {
                     const refNode = await KB.getNode(refId);
                     if (refNode) {
@@ -635,11 +718,46 @@ export default class LmsView {
                 }
             }
 
+            // 2. Empaquetar /evals/
+            if (evalArray.length > 0) {
+                const evalsFolder = rootFolder.folder("evals");
+                let allEvalsJson = [];
+                for (const evalId of evalArray) {
+                    const evalNode = await KB.getNode(evalId);
+                    if (evalNode) {
+                        try {
+                            const parsed = JSON.parse(evalNode.content);
+                            if (Array.isArray(parsed)) allEvalsJson.push(...parsed);
+                            else allEvalsJson.push(parsed);
+                        } catch(e) {
+                            // Si el nodo de evals no era un JSON puro, lo forzamos a un objeto de test básico
+                            allEvalsJson.push({ id: evalNode.id, prompt: evalNode.title, description: evalNode.description });
+                        }
+                    }
+                }
+                if (allEvalsJson.length > 0) {
+                    const finalEvalFile = { skill_name: safeTitle, evals: allEvalsJson };
+                    evalsFolder.file("evals.json", JSON.stringify(finalEvalFile, null, 2));
+                }
+            }
+
+            // 3. Empaquetar /scripts/
+            if (scriptArray.length > 0) {
+                const scriptsFolder = rootFolder.folder("scripts");
+                for (const scriptId of scriptArray) {
+                    const scriptNode = await KB.getNode(scriptId);
+                    if (scriptNode) {
+                        const sName = scriptNode.title.includes('.') ? scriptNode.title : `${scriptNode.title}.py`;
+                        scriptsFolder.file(sName.replace(/[^a-zA-Z0-9_.-]/g, '_'), scriptNode.content);
+                    }
+                }
+            }
+
             const blob = await zip.generateAsync({type:"blob"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${safeTitle}.zip`;
+            a.download = `${safeTitle}.skill`; // 🔥 Extensión oficial .skill
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -656,7 +774,7 @@ export default class LmsView {
                 if (!title) return alert("Se necesita al menos un título para que la IA sepa qué desarrollar.");
 
                 this.dom.btnExpand.disabled = true;
-                this.dom.btnExpand.innerText = "⏳ Forjando Skill y Referencias...";
+                this.dom.btnExpand.innerText = "⏳ Forjando Arquitectura AgentSkill...";
 
                 try {
                     const optimizedData = await Orchestrator.expandNodeSemantics(title, cat, content, tags);
@@ -671,7 +789,6 @@ export default class LmsView {
                         let currentRefs = this.dom.inpReferences.value.split(',').map(r => r.trim()).filter(r => r !== '');
                         
                         for (const refDoc of optimizedData.reference_docs) {
-                            // 🔥 NOMENCLATURA SEMÁNTICA CLARA Y COMPRENSIBLE
                             const cleanName = refDoc.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().substring(0, 25);
                             const newRefId = `ref_ai_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
                             
@@ -683,20 +800,20 @@ export default class LmsView {
                         }
                         
                         this.dom.inpReferences.value = currentRefs.join(', ');
-                        this.renderReferenceLinks(currentRefs); // Actualiza los botones visuales al instante
+                        this.renderLinkedNodes(currentRefs, this.dom.refLinksContainer, 'ref-badge', '📚'); 
                         
                         await this.loadData();
                         await this.forceGraphRefresh();
-                        alert(`🌱 Skill expandida. Se han generado ${optimizedData.reference_docs.length} referencias teóricas adjuntas.`);
+                        alert(`🌱 Skill expandida. Se han generado ${optimizedData.reference_docs.length} referencias teóricas asociadas.`);
                     } else {
-                        alert("🌱 Skill expandida. No se requirieron referencias adicionales.");
+                        alert("🌱 Skill expandida de forma pura (Sin referencias externas).");
                     }
                     
                 } catch (error) { 
                     alert("Fallo en la expansión: " + error.message); 
                 } finally { 
                     this.dom.btnExpand.disabled = false; 
-                    this.dom.btnExpand.innerText = "🌱 Desarrollar Skill (IA)"; 
+                    this.dom.btnExpand.innerText = "🌱 IA Agent Forger"; 
                 }
             });
         }
@@ -709,7 +826,7 @@ export default class LmsView {
                 if (!content) return alert("El nodo debe tener contenido para optimizarse.");
 
                 this.dom.btnAntigravity.disabled = true;
-                this.dom.btnAntigravity.innerText = "⏳ Comprimiendo...";
+                this.dom.btnAntigravity.innerText = "⏳ Sintetizando...";
 
                 const systemPrompt = `Eres el Agente de Optimización Antigravity. Eleva la densidad semántica de este Nodo W3C. Comprime el texto, escribe una 'description' corta y genera 'keywords'. Devuelve JSON: { "title": "Título", "description": "Resumen...", "content": "Contenido...", "keywords": ["tag1"] }`;
                 const userPrompt = `Título: ${title}\nCategoría: ${cat}\nContenido:\n${content}`;
@@ -724,11 +841,10 @@ export default class LmsView {
                     this.dom.inpContent.value = response.content.content;
                     this.dom.inpKeywords.value = response.content.keywords.join(', ');
                 } catch (error) { alert("Fallo: " + error.message); } 
-                finally { this.dom.btnAntigravity.disabled = false; this.dom.btnAntigravity.innerText = "✨ Comprimir"; }
+                finally { this.dom.btnAntigravity.disabled = false; this.dom.btnAntigravity.innerText = "✨ Sintetizar"; }
             });
         }
 
-        // 🔥 SELLADO SEGURO (MANTIENE LA INTEGRIDAD DEL NODO)
         this.dom.btnSave.addEventListener('click', async () => {
             const id = this.dom.inpId.value;
             const title = this.dom.inpTitle.value.trim();
@@ -738,12 +854,13 @@ export default class LmsView {
 
             const keywordsArray = this.dom.inpKeywords.value.split(',').map(k => k.trim()).filter(k => k !== '');
             const referencesArray = this.dom.inpReferences.value.split(',').map(k => k.trim()).filter(k => k !== '');
+            const evalsArray = this.dom.inpEvals.value.split(',').map(k => k.trim()).filter(k => k !== '');
+            const scriptsArray = this.dom.inpScripts.value.split(',').map(k => k.trim()).filter(k => k !== '');
             
-            // Si el nodo ya existe, lo recuperamos para no borrar sus propiedades ajenas (ej: core_skills, dependencies)
             const oldNode = this.allNodes.find(n => n.id === id) || {};
             
             const updatedNode = { 
-                ...oldNode, // <- EL FIX MAGISTRAL: Preserva las tripas del nodo
+                ...oldNode, 
                 id: id || `custom_${Date.now()}_${Math.random().toString(36).substr(2,4)}`, 
                 type: this.dom.inpType.value || oldNode.type || 'custom', 
                 projectId: this.dom.inpProjId.value || oldNode.projectId || 'global', 
@@ -752,7 +869,9 @@ export default class LmsView {
                 description: desc, 
                 content: content, 
                 keywords: keywordsArray, 
-                references: referencesArray 
+                references: referencesArray,
+                evals: evalsArray,     // 🔥 Guardamos enlaces a Evals
+                scripts: scriptsArray  // 🔥 Guardamos enlaces a Scripts
             };
 
             this.dom.btnSave.disabled = true; 
