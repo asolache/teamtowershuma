@@ -48,7 +48,6 @@ export default class LmsView {
                 .btn-deep-research { background: linear-gradient(135deg, rgba(0,176,255,0.1), rgba(224,64,251,0.1)); border: 1px solid var(--accent-blue); color: white; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; gap: 8px; align-items: center; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,176,255,0.15);}
                 .btn-deep-research:hover { background: var(--accent-blue); color: black; box-shadow: 0 8px 20px rgba(0,176,255,0.4); transform: translateY(-2px);}
 
-                /* 🔥 Dropzone AgentSkills (.zip) */
                 .dropzone-area { border: 2px dashed #444; border-radius: 16px; padding: 15px; text-align: center; color: #888; margin-bottom: 2rem; background: rgba(255,255,255,0.02); transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;}
                 .dropzone-area.drag-over { border-color: var(--accent-purple); background: rgba(224,64,251,0.05); color: white; transform: scale(1.02);}
 
@@ -99,9 +98,13 @@ export default class LmsView {
                 .btn-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red);}
                 .btn-danger:hover { background: rgba(255,82,82,0.1); transform: translateY(-2px);}
                 
+                /* 🔥 BOTONES ANTIGRAVITY Y EXPANSION */
                 .btn-antigravity { background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); color: black; box-shadow: 0 5px 15px rgba(0,176,255,0.3); }
                 .btn-antigravity:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,230,118,0.5); filter: brightness(1.2); }
                 
+                .btn-expand { background: linear-gradient(135deg, var(--accent-orange), #ff3d00); color: white; box-shadow: 0 5px 15px rgba(255,171,64,0.3); }
+                .btn-expand:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,171,64,0.5); filter: brightness(1.2); }
+
                 .btn-export { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
                 .btn-export:hover { background: rgba(224,64,251,0.1); }
 
@@ -190,11 +193,12 @@ export default class LmsView {
                             </div>
 
                             <div class="modal-actions">
-                                <button class="btn-modal btn-danger" id="btnDeleteNode">🗑️ Purgar Nodo</button>
-                                <button class="btn-modal btn-export" id="btnExportSkill">📦 Exportar Paquete (.zip)</button>
+                                <button class="btn-modal btn-danger" id="btnDeleteNode">🗑️ Purgar</button>
+                                <button class="btn-modal btn-export" id="btnExportSkill">📦 Exportar (.zip)</button>
                                 <div style="flex:1;"></div>
-                                <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Optimizar Semántica</button>
-                                <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar Mutación</button>
+                                <button class="btn-modal btn-expand" id="btnExpandNode">🌱 Desarrollar Skill (IA)</button>
+                                <button class="btn-modal btn-antigravity" id="btnAntigravity">✨ Comprimir</button>
+                                <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar</button>
                             </div>
                         </div>
                     </div>
@@ -255,6 +259,7 @@ export default class LmsView {
             btnSave: document.getElementById('btnSaveNode'),
             btnDelete: document.getElementById('btnDeleteNode'),
             btnAntigravity: document.getElementById('btnAntigravity'),
+            btnExpand: document.getElementById('btnExpandNode'),
             btnExport: document.getElementById('btnExportSkill'),
             
             inpId: document.getElementById('editNodeId'),
@@ -275,7 +280,7 @@ export default class LmsView {
             btnRunResearch: document.getElementById('btnRunResearch'),
             inpResearchTopic: document.getElementById('inpResearchTopic'),
             inpResearchCat: document.getElementById('inpResearchCat'),
-            inpResearchEngine: document.getElementById('inpResearchEngine') // 🔥 REFERENCIA AÑADIDA
+            inpResearchEngine: document.getElementById('inpResearchEngine') 
         };
 
         window.addEventListener('ph-tab-changed', async (e) => {
@@ -318,19 +323,9 @@ export default class LmsView {
         const dropzone = this.dom.dropzone;
         if (!dropzone) return;
 
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.add('drag-over'), false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.remove('drag-over'), false);
-        });
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropzone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false));
+        ['dragenter', 'dragover'].forEach(eventName => dropzone.addEventListener(eventName, () => dropzone.classList.add('drag-over'), false));
+        ['dragleave', 'drop'].forEach(eventName => dropzone.addEventListener(eventName, () => dropzone.classList.remove('drag-over'), false));
 
         dropzone.addEventListener('drop', async (e) => {
             const dt = e.dataTransfer;
@@ -339,11 +334,11 @@ export default class LmsView {
             if (file && file.name.endsWith('.zip')) {
                 dropzone.innerHTML = "⏳ Desempaquetando ZIP...";
                 await this.parseZipSkillFile(file);
-                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un .zip (Paquete de Skill) o un .md para inyectarlo.</span>`;
+                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un .zip o .md para inyectarlo.</span>`;
             } else if (file && file.name.endsWith('.md')) {
                 this.parseMarkdownSkillFile(file);
             } else {
-                alert("Formato denegado. Solo se admiten archivos .zip (AgentSkills completos) o .md individuales.");
+                alert("Solo se admiten archivos .zip (AgentSkills completos) o .md individuales.");
             }
         }, false);
     }
@@ -389,7 +384,6 @@ export default class LmsView {
             alert(`✅ Paquete Inyectado: ${parsedSkill.title} (${referenceIds.length} referencias asociadas)`);
             await this.loadData();
             await this.forceGraphRefresh();
-
         } catch (error) {
             alert("Error al desempaquetar el ZIP: " + error.message);
         }
@@ -405,7 +399,7 @@ export default class LmsView {
             };
             try {
                 await KB.init(); await KB.saveNode(newNode);
-                alert(`✅ Skill individual inyectada: ${parsed.title}`);
+                alert(`✅ Skill inyectada: ${parsed.title}`);
                 await this.loadData(); await this.forceGraphRefresh();
             } catch (err) { alert("Fallo inyectando: " + err.message); }
         };
@@ -522,7 +516,7 @@ export default class LmsView {
         this.dom.btnRunResearch.addEventListener('click', async () => {
             const topic = this.dom.inpResearchTopic.value.trim();
             const cat = this.dom.inpResearchCat.value;
-            const engine = this.dom.inpResearchEngine.value || null; // 🔥 Captura del Engine
+            const engine = this.dom.inpResearchEngine.value || null; 
 
             if (!topic) return alert("Escribe un tema para investigar.");
 
@@ -530,7 +524,6 @@ export default class LmsView {
             this.dom.btnRunResearch.innerText = "⏳ @mestre_escola está minando conocimiento...";
 
             try {
-                // 🔥 Pasamos el engine override al orquestador
                 await Orchestrator.runDeepResearch(topic, cat, 3, engine);
                 alert("✅ Investigación completada.");
                 this.dom.researchModal.classList.remove('active');
@@ -585,6 +578,58 @@ export default class LmsView {
             URL.revokeObjectURL(url);
         });
 
+        // 🔥 EXPANSIÓN MULTI-ARCHIVO (PROGRESSIVE DISCLOSURE)
+        if (this.dom.btnExpand) {
+            this.dom.btnExpand.addEventListener('click', async () => {
+                const title = this.dom.inpTitle.value.trim();
+                const content = this.dom.inpContent.value.trim();
+                const cat = this.dom.inpCat.value.trim();
+                const tags = this.dom.inpKeywords.value.trim();
+                
+                if (!title) return alert("Se necesita al menos un título para que la IA sepa qué desarrollar.");
+
+                this.dom.btnExpand.disabled = true;
+                this.dom.btnExpand.innerText = "⏳ Forjando Skill y Referencias...";
+
+                try {
+                    const optimizedData = await Orchestrator.expandNodeSemantics(title, cat, content, tags);
+                    
+                    this.dom.inpTitle.value = optimizedData.title;
+                    this.dom.inpDesc.value = optimizedData.description || '';
+                    this.dom.inpContent.value = optimizedData.content;
+                    this.dom.inpKeywords.value = optimizedData.keywords.join(', ');
+                    
+                    // Procesar referencias generadas y enlazarlas
+                    if (optimizedData.reference_docs && optimizedData.reference_docs.length > 0) {
+                        await KB.init();
+                        let currentRefs = this.dom.inpReferences.value.split(',').map(r => r.trim()).filter(r => r !== '');
+                        
+                        for (const refDoc of optimizedData.reference_docs) {
+                            const newRefId = `ref_ai_${Date.now()}_${Math.random().toString(36).substr(2,5)}`;
+                            await KB.saveNode({
+                                id: newRefId, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
+                                title: refDoc.title, description: refDoc.description, content: refDoc.content, keywords: ['#ai_generated', '#reference']
+                            });
+                            currentRefs.push(newRefId);
+                        }
+                        
+                        this.dom.inpReferences.value = currentRefs.join(', ');
+                        await this.loadData();
+                        await this.forceGraphRefresh();
+                        alert(`🌱 Skill expandida. Se han generado ${optimizedData.reference_docs.length} referencias teóricas adjuntas.`);
+                    } else {
+                        alert("🌱 Skill expandida. No se requirieron referencias adicionales.");
+                    }
+                    
+                } catch (error) { 
+                    alert("Fallo en la expansión: " + error.message); 
+                } finally { 
+                    this.dom.btnExpand.disabled = false; 
+                    this.dom.btnExpand.innerText = "🌱 Desarrollar Skill (IA)"; 
+                }
+            });
+        }
+
         if (this.dom.btnAntigravity) {
             this.dom.btnAntigravity.addEventListener('click', async () => {
                 const title = this.dom.inpTitle.value.trim();
@@ -608,7 +653,7 @@ export default class LmsView {
                     this.dom.inpContent.value = response.content.content;
                     this.dom.inpKeywords.value = response.content.keywords.join(', ');
                 } catch (error) { alert("Fallo: " + error.message); } 
-                finally { this.dom.btnAntigravity.disabled = false; this.dom.btnAntigravity.innerText = "✨ Optimizar Semántica"; }
+                finally { this.dom.btnAntigravity.disabled = false; this.dom.btnAntigravity.innerText = "✨ Comprimir"; }
             });
         }
 
