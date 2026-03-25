@@ -4,14 +4,14 @@ import { KB } from '../core/kb.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js'; 
 import { PageHeader } from '../components/PageHeader.js';
-import { Orchestrator } from '../core/Orchestrator.js'; // 🔥 Importamos el cerebro
+import { Orchestrator } from '../core/Orchestrator.js'; 
 
 export default class PaperView {
     constructor() {
         document.title = "Omni-Paper | TeamTowers V9";
         this.woHash = new URLSearchParams(window.location.search).get('hash');
         this.activeTx = null; 
-        this.activeSkillLab = null; // 🔥 Nueva variable para el Modo Laboratorio
+        this.activeSkillLab = null; 
         this.activeProjectId = null;
         this.isMenuOpen = false;
         this.currentWord = "";
@@ -122,9 +122,16 @@ export default class PaperView {
                 .semantic-menu { position: fixed; background: rgba(10,10,15,0.98); border: 1px solid rgba(255,255,255,0.15); border-top: 3px solid var(--accent-blue); border-radius: 16px; max-height: 40vh; overflow: hidden; display: none; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,176,255,0.15); backdrop-filter: blur(20px); min-width: 320px; max-width: 90vw; animation: popIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left; flex-direction: column;}
                 .sm-header { background: rgba(0,0,0,0.5); padding: 10px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10;}
                 .sm-title { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px;}
+                .sm-filters { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px;}
+                .sm-filters::-webkit-scrollbar { height: 2px; }
+                .sm-filter { background: #111; border: 1px solid #444; color: #aaa; font-family: var(--font-mono); font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: 0.2s;}
+                .sm-filter:hover { border-color: var(--accent-blue); color: white;}
+                .sm-filter.active { background: rgba(0,176,255,0.1); border-color: var(--accent-blue); color: var(--accent-blue);}
+                
                 .sm-results { overflow-y: auto; flex: 1; padding: 5px 0;}
                 .semantic-item { padding: 12px 20px; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-family: var(--font-main); border-left: 2px solid transparent;}
-                .semantic-item:hover { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
+                .semantic-item:hover, .semantic-item.selected { background: rgba(255,255,255,0.05); border-left-color: var(--accent-blue);}
+                
                 .mention-highlight { color: var(--accent-blue); font-weight: bold; background: rgba(0,176,255,0.1); padding: 2px 6px; border-radius: 6px; font-family: var(--font-mono); font-size: 1rem; cursor: pointer; transition: 0.2s; text-decoration: none;}
 
                 /* GTD ACTIONS */
@@ -181,6 +188,7 @@ export default class PaperView {
                             <div style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">Tiempo de Foco Activo</div>
                             <div class="timer-display" id="timeDisplay">00:00:00</div>
                             <div style="font-family: var(--font-mono); color: #888; font-size: 0.8rem;">El tiempo se inyectará en el Slicing Pie al sellar.</div>
+                            
                             <div class="timer-controls">
                                 <button class="btn-timer play" id="btnPlay" title="Iniciar Foco">▶</button>
                                 <button class="btn-timer pause" id="btnPause" title="Pausar Foco" style="display:none;">⏸</button>
@@ -240,6 +248,13 @@ export default class PaperView {
                 <div id="semanticMenu" class="semantic-menu">
                     <div class="sm-header">
                         <div class="sm-title" id="smTitle">Inyectar Conocimiento W3C</div>
+                        <div class="sm-filters" id="smFilters" style="display:none;">
+                            <button class="sm-filter active" data-f="all">Todos</button>
+                            <button class="sm-filter" data-f="skill">Skills</button>
+                            <button class="sm-filter" data-f="SOP">SOPs</button>
+                            <button class="sm-filter" data-f="prompt_a2a">Prompts</button>
+                            <button class="sm-filter" data-f="evergreen">Evergreen</button>
+                        </div>
                     </div>
                     <div class="sm-results" id="smResults"></div>
                 </div>
@@ -290,6 +305,7 @@ export default class PaperView {
             
             menu: document.getElementById('semanticMenu'),
             smTitle: document.getElementById('smTitle'),
+            smFilters: document.getElementById('smFilters'),
             smResults: document.getElementById('smResults'),
             
             btnSubmit: document.getElementById('btnSubmitReport'),
@@ -310,10 +326,10 @@ export default class PaperView {
                 tasks = tasksSource.filter(tx => tx.assigneeId === activeUserId || tx.workerId === activeUserId); 
             }
 
-            // 🔥 Búsqueda de Skills Testeables (AgentSkills con Evals)
+            // 🔥 Búsqueda de Skills para Laboratorio (AHORA MUESTRA TODAS)
             await KB.init();
             const allNodes = await KB.getAllNodes();
-            const labSkills = allNodes.filter(n => n.type === 'skill' && n.evals && n.evals.length > 0 && (n.projectId === projId || n.projectId === 'global'));
+            const labSkills = allNodes.filter(n => n.type === 'skill' && (n.projectId === projId || n.projectId === 'global'));
 
             let selectHtml = `<option value="draft">📝 Borrador Libre (Draft Mode)</option>`;
             
@@ -395,7 +411,7 @@ export default class PaperView {
     }
 
     // ==========================================
-    // 🧪 MOTOR DE LABORATORIO (BENCHMARKING)
+    // 🧪 MOTOR DE LABORATORIO (BENCHMARKING & META-SKILL)
     // ==========================================
     setupLabEngine() {
         this.dom.btnRunBenchmark.addEventListener('click', async () => {
@@ -403,13 +419,11 @@ export default class PaperView {
             
             this.dom.btnRunBenchmark.disabled = true;
             this.dom.btnRunBenchmark.innerText = "⏳ Ejecutando Pruebas...";
-            
             this.dom.labResults.innerHTML = `<div style="text-align:center; padding:20px; color:#888;">Levantando entorno de pruebas aislado...</div>`;
 
             try {
-                // 1. Recuperar los nodos Eval asociados a esta skill
                 let testCases = [];
-                for (const evalId of this.activeSkillLab.evals) {
+                for (const evalId of (this.activeSkillLab.evals || [])) {
                     const evalNode = await KB.getNode(evalId);
                     if (evalNode) {
                         try {
@@ -420,20 +434,18 @@ export default class PaperView {
                     }
                 }
 
-                if (testCases.length === 0) throw new Error("No hay Test Cases (Evals) JSON válidos vinculados a esta Skill.");
+                if (testCases.length === 0) throw new Error("No hay Test Cases.");
 
                 let htmlResults = '';
                 let totalTokens = 0;
                 let totalTime = 0;
                 let totalPassed = 0;
 
-                // 2. Ejecutar el Benchmark
                 for (let i = 0; i < testCases.length; i++) {
                     const test = testCases[i];
                     
-                    // a) El Agente resuelve el problema
                     const response = await Orchestrator.callLLM({ 
-                        preferredEngine: 'deepseek', // O el motor configurado
+                        preferredEngine: 'openai', 
                         systemPrompt: `Eres un agente experto.\nINSTRUCCIONES DE TU SKILL:\n${this.activeSkillLab.content}`, 
                         userPrompt: `TEST PROMPT:\n${test.prompt || test.query}`, 
                         responseFormat: "text", 
@@ -447,7 +459,6 @@ export default class PaperView {
                     totalTime += latency;
                     totalTokens += tokens;
 
-                    // b) El Notario audita el resultado basado en las aserciones del test
                     const socs = test.assertions || test.expected_output ? [{id: 'assert_1', text: test.expected_output || JSON.stringify(test.assertions)}] : [];
                     let passed = false;
                     let auditNote = "Auditado manualmente.";
@@ -479,7 +490,6 @@ export default class PaperView {
                     `;
                 }
 
-                // 3. Mostrar Resumen de la Ronda
                 const passRate = ((totalPassed / testCases.length) * 100).toFixed(0);
                 this.dom.labResults.innerHTML = `
                     <div style="display:flex; justify-content:space-between; background:rgba(255,171,64,0.1); padding:15px; border-radius:8px; border:1px solid var(--accent-orange); margin-bottom:15px;">
@@ -500,19 +510,86 @@ export default class PaperView {
         });
     }
 
+    // 🔥 EL INVOCADOR DE EVALS IN-SITU
+    async autoForgeEvals() {
+        const btn = document.getElementById('btnAutoForgeEvals');
+        if(btn) { btn.disabled = true; btn.innerText = "⏳ Invocando Skill Creator..."; }
+        
+        try {
+            const systemPrompt = `
+                Eres el "Skill Creator". El usuario necesita generar casos de prueba cuantitativos (Evals) para una Skill específica.
+                Analiza las instrucciones de la Skill y genera 3 casos de prueba realistas (prompts que un usuario final haría).
+                Devuelve ÚNICAMENTE un objeto JSON estricto con esta estructura exacta:
+                {
+                    "evals": [
+                        { "prompt": "Petición del usuario simulada...", "expected_output": "Aserción u objetivo claro que debe cumplirse (Ej: El texto contiene 3 viñetas)" }
+                    ]
+                }
+            `;
+            
+            const response = await Orchestrator.callLLM({
+                preferredEngine: 'openai',
+                systemPrompt,
+                userPrompt: `Forja los Evals para esta Skill:\nTÍTULO: ${this.activeSkillLab.title}\nCONTENIDO:\n${this.activeSkillLab.content}`,
+                responseFormat: "json_object",
+                temperature: 0.3
+            });
+            
+            let evalsArray = response.content.evals;
+            if (!evalsArray || !Array.isArray(evalsArray)) {
+                throw new Error("El Orquestador no devolvió el array de Evals correctamente.");
+            }
+
+            await KB.init();
+            const evalNode = await KB.saveNode({
+                id: `eval_ai_${Date.now()}`,
+                type: 'eval', category: 'eval', projectId: 'global', targetId: 'global',
+                title: `Evals (SOCs) auto-generados para ${this.activeSkillLab.title}`,
+                content: JSON.stringify(evalsArray, null, 2),
+                keywords: ['#ai_generated', '#eval']
+            });
+
+            if (!this.activeSkillLab.evals) this.activeSkillLab.evals = [];
+            this.activeSkillLab.evals.push(evalNode.id);
+            await KB.saveNode(this.activeSkillLab); 
+            
+            alert("✅ Evals generados e inyectados en la Skill.");
+            this.setLabMode(); // Recargar la vista del lab
+            
+        } catch(e) {
+            alert("Fallo al forjar Evals: " + e.message);
+            if(btn) { btn.disabled = false; btn.innerText = "🌱 Auto-Forjar Evals (IA)"; }
+        }
+    }
+
     setLabMode() {
         this.dom.taskPanel.style.display = 'none';
         this.dom.pomoPanel.style.display = 'none';
         this.dom.btnSubmit.style.display = 'none';
         this.dom.btnSaveTaskDraft.style.display = 'none';
-        this.dom.editorWrapper.style.display = 'none'; // Ocultamos el editor porque es modo lectura/test
+        this.dom.editorWrapper.style.display = 'none'; 
         
         this.dom.labPanel.style.display = 'block';
-        this.dom.btnRunBenchmark.style.display = 'block';
-
         this.dom.labTitle.innerHTML = `<span>🧪</span> Agent Studio: ${this.activeSkillLab.title}`;
         this.dom.labDesc.innerText = this.activeSkillLab.description || 'Sin descripción en el SKILL.md.';
-        this.dom.labResults.innerHTML = '<div style="text-align:center; padding:2rem; color:#888;">Pulsa "Iniciar Benchmark" para lanzar la batería de pruebas y que @notari_ledger audite los resultados.</div>';
+
+        // 🔥 LOGICA DINÁMICA: Si no hay Evals, muestra el botón de Forja In-Situ
+        this.dom.labResults.innerHTML = '';
+        if (!this.activeSkillLab.evals || this.activeSkillLab.evals.length === 0) {
+            this.dom.labResults.innerHTML = `
+                <div style="text-align:center; padding:2rem; background:rgba(255,171,64,0.05); border:1px dashed var(--accent-orange); border-radius:12px;">
+                    <div style="font-size:3rem; margin-bottom:1rem;">⚠️</div>
+                    <h3 style="color:var(--accent-orange); margin-top:0;">Faltan Test Cases (Evals)</h3>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom:1.5rem;">Esta Skill no tiene SOCs cuantitativos asignados. El Notario no puede auditarla.</p>
+                    <button class="btn-action-draft" id="btnAutoForgeEvals" style="font-size:0.9rem; padding:10px 20px;">🌱 Auto-Forjar Evals (IA)</button>
+                </div>
+            `;
+            document.getElementById('btnAutoForgeEvals').onclick = () => this.autoForgeEvals();
+            this.dom.btnRunBenchmark.style.display = 'none';
+        } else {
+            this.dom.btnRunBenchmark.style.display = 'block';
+            this.dom.labResults.innerHTML = '<div style="text-align:center; padding:2rem; color:#888;">Pulsa "Iniciar Benchmark" para lanzar la batería de pruebas y que @notari_ledger audite los resultados.</div>';
+        }
     }
 
     setDraftMode() {
@@ -733,6 +810,20 @@ export default class PaperView {
             }
         };
 
+        this.dom.smFilters.addEventListener('click', (e) => {
+            if (e.target.classList.contains('sm-filter')) {
+                this.dom.smFilters.querySelectorAll('.sm-filter').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.activeMemeFilter = e.target.dataset.f;
+                
+                const filtered = this.activeMemeFilter === 'all' 
+                    ? this.currentMemesSearchResult 
+                    : this.currentMemesSearchResult.filter(m => m.category === this.activeMemeFilter || m.type === this.activeMemeFilter);
+                
+                renderMenuResults('memes', filtered);
+            }
+        });
+
         input.addEventListener('keyup', async (e) => {
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
@@ -751,6 +842,7 @@ export default class PaperView {
                 
                 if (users.length > 0) {
                     this.dom.smTitle.innerText = "Invocar Nodo / Agente";
+                    this.dom.smFilters.style.display = 'none';
                     renderMenuResults('users', users);
                     this.showFloatingMenu(menu, lastKnownRect);
                 } else { menu.style.display = 'none'; }
@@ -763,8 +855,14 @@ export default class PaperView {
                 if (search.length > 0) memes = memes.filter(m => m.title?.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(search))));
                 
                 if (memes.length > 0) {
+                    this.currentMemesSearchResult = memes; 
+                    this.activeMemeFilter = 'all'; 
+                    this.dom.smFilters.querySelectorAll('.sm-filter').forEach(b => b.classList.remove('active'));
+                    this.dom.smFilters.querySelector('[data-f="all"]').classList.add('active');
+
                     this.dom.smTitle.innerText = "Inyectar Conocimiento W3C";
-                    renderMenuResults('memes', memes.slice(0, 10));
+                    this.dom.smFilters.style.display = 'flex';
+                    renderMenuResults('memes', memes.slice(0, 10)); 
                     this.showFloatingMenu(menu, lastKnownRect);
                 } else { menu.style.display = 'none'; }
             } else {
@@ -833,7 +931,11 @@ export default class PaperView {
             const screenWidth = window.innerWidth;
             const menuWidth = 320;
             let leftPos = rect.left;
-            if (leftPos + menuWidth > screenWidth) leftPos = screenWidth - menuWidth - 20;
+            
+            if (leftPos + menuWidth > screenWidth) {
+                leftPos = screenWidth - menuWidth - 20;
+            }
+            
             menu.style.top = `${rect.bottom + 10}px`;
             menu.style.left = `${Math.max(10, leftPos)}px`;
         }
