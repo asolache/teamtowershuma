@@ -13,6 +13,7 @@ export class ProjectForge {
         this.draftTags = []; 
         this.draftNewMemes = []; 
         this.sectorsFromKB = {}; 
+        this.enrichedVision = ""; // 🔥 Almacenará la visión + respuestas del usuario
         
         this.guardians = [
             { id: 'creator', label: '🎨 Creador' }, { id: 'caregiver', label: '❤️ Cuidador' },
@@ -31,8 +32,6 @@ export class ProjectForge {
         this.sectorsFromKB = await KB.getAvailableSectors();
 
         const savedProvider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-        const savedKey = localStorage.getItem(`tt_key_${savedProvider}`) || '';
-        const hasKey = savedKey.length > 5 || savedProvider === 'custom';
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
@@ -67,6 +66,13 @@ export class ProjectForge {
                 .tdd-error-title { color: var(--accent-red); font-weight: 900; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
                 .tdd-error-list { margin: 0; padding-left: 20px; color: white; font-family: var(--font-mono); font-size: 0.85rem;}
 
+                /* 🔥 TERMINAL MAYÉUTICA */
+                .maieutic-panel { display: none; background: rgba(224,64,251,0.05); border: 1px solid var(--accent-purple); border-radius: 16px; padding: 20px; margin-bottom: 2rem; animation: slideDown 0.4s ease-out;}
+                .maieutic-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent-purple); font-weight: 900; font-size: 1.1rem;}
+                .maieutic-q { color: white; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; line-height: 1.4;}
+                .maieutic-a { background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--accent-blue); padding: 12px; border-radius: 8px; font-family: 'Georgia', serif; width: 100%; box-sizing: border-box; margin-bottom: 15px; outline: none; resize: vertical;}
+                .maieutic-a:focus { border-color: var(--accent-blue); }
+
                 .role-draft-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; max-height: 400px; overflow-y: auto; padding-right: 10px;}
                 .role-draft-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; gap: 15px; transition: transform 0.2s;}
                 
@@ -88,7 +94,7 @@ export class ProjectForge {
                 .cascade-toggle-box label { color: white; font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 10px; cursor: pointer;}
                 .cascade-toggle-box input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent-blue); cursor: pointer; }
 
-                .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; }
+                .actions-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.5rem; align-items: center;}
                 .btn-lux { padding: 14px 24px; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: all 0.3s; border: none;}
                 .btn-lux-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; box-shadow: 0 5px 15px rgba(0,176,255,0.2);}
                 .btn-lux-success { background: var(--accent-green); color: black; box-shadow: 0 5px 15px rgba(0,230,118,0.2);}
@@ -161,15 +167,31 @@ export class ProjectForge {
                         <div style="margin-top: 10px; font-size: 0.8rem; color: #888;">El Orquestador ha devuelto una topología inválida. Revisa los inputs y vuelve a intentar.</div>
                     </div>
 
-                    <div class="actions-row">
+                    <div class="maieutic-panel" id="maieuticPanel">
+                        <div class="maieutic-header"><span>🤖</span> @genesi_ai requiere más contexto:</div>
+                        <p style="color:#ccc; font-size:0.9rem; margin-top:0;">La visión actual es ambigua para un Análisis VNA estricto. Por favor, aclara estos puntos para forjar un mapa de valor perfecto:</p>
+                        <div id="maieuticQuestionsList"></div>
+                        <div style="text-align: right; margin-top: 15px;">
+                            <button class="btn-lux btn-lux-success" id="btnAnswerAndForge">✨ Confirmar y Forjar Ecosistema</button>
+                        </div>
+                    </div>
+
+                    <div class="actions-row" id="initialActionsRow">
+                        <select id="inpForgeEngine" class="lux-input" style="width:auto; min-width:150px; font-weight:bold; color:var(--accent-blue);">
+                            <option value="">🧠 Motor Óptimo (Auto)</option>
+                            <option value="anthropic">Anthropic (Claude)</option>
+                            <option value="openai">OpenAI (GPT-4o)</option>
+                            <option value="deepseek">DeepSeek (Coder)</option>
+                            <option value="gemini">Google Gemini</option>
+                        </select>
                         <button class="btn-lux btn-lux-outline" id="btnLoadTemplate">🏗️ Clonar Plantilla Base</button>
-                        <button class="btn-lux btn-lux-primary" id="btnGenerateAI">🧠 Diseñar Topología VNA (Ikigai)</button>
+                        <button class="btn-lux btn-lux-primary" id="btnEvaluateAI">🧠 Diseñar Topología VNA</button>
                     </div>
                 </div>
 
                 <div id="pf-loading" class="ai-loading">
                     <span>🪐</span>
-                    <p>Conectando con Orquestador Cognitivo...</p>
+                    <p id="pf-loading-text">Conectando con Orquestador Cognitivo...</p>
                     <div style="font-size: 0.9rem; color: #888; margin-top: 10px;">Forjando Ikigais y Tuberías VNA...</div>
                 </div>
 
@@ -224,11 +246,13 @@ export class ProjectForge {
         this.dom = {
             step1: this.container.querySelector('#pf-step1'),
             loading: this.container.querySelector('#pf-loading'),
+            loadingText: this.container.querySelector('#pf-loading-text'),
             step2: this.container.querySelector('#pf-step2'),
             dot1: this.container.querySelector('#pf-dot1'),
             dot2: this.container.querySelector('#pf-dot2'),
             btnLoadTemplate: this.container.querySelector('#btnLoadTemplate'),
-            btnGenerateAI: this.container.querySelector('#btnGenerateAI'),
+            btnEvaluateAI: this.container.querySelector('#btnEvaluateAI'),
+            btnAnswerAndForge: this.container.querySelector('#btnAnswerAndForge'),
             btnBack: this.container.querySelector('#btnBack'),
             btnLaunch: this.container.querySelector('#btnLaunch'),
             btnAddCustom: this.container.querySelector('#btnAddCustomRole'),
@@ -239,9 +263,13 @@ export class ProjectForge {
             inpMission: this.container.querySelector('#inpMission'),
             inpTarget: this.container.querySelector('#inpTarget'),
             inpSuccess: this.container.querySelector('#inpSuccess'),
+            inpForgeEngine: this.container.querySelector('#inpForgeEngine'),
             txPreviewList: this.container.querySelector('#txPreviewList'),
             tddErrorPanel: this.container.querySelector('#tddErrorPanel'),
             tddErrorList: this.container.querySelector('#tddErrorList'),
+            maieuticPanel: this.container.querySelector('#maieuticPanel'),
+            maieuticQuestionsList: this.container.querySelector('#maieuticQuestionsList'),
+            initialActionsRow: this.container.querySelector('#initialActionsRow'),
             miniMapContainer: this.container.querySelector('#miniMapContainer'),
             miniMapCanvas: this.container.querySelector('#miniMapCanvas'),
             miniMapPaths: this.container.querySelector('#miniMapPaths'),
@@ -293,7 +321,9 @@ export class ProjectForge {
             this.goToStep2();
         });
 
-        this.dom.btnGenerateAI.addEventListener('click', () => this.generateWithAI());
+        // 🔥 FLUJO MAYÉUTICO: Evaluación en dos pasos
+        this.dom.btnEvaluateAI.addEventListener('click', () => this.evaluateVisionWithAI());
+        this.dom.btnAnswerAndForge.addEventListener('click', () => this.executeFinalForgeWithAI());
 
         this.dom.btnBack.addEventListener('click', () => {
             this.dom.step2.style.display = 'none';
@@ -313,39 +343,85 @@ export class ProjectForge {
         this.dom.btnLaunch.addEventListener('click', () => this.finalizeProject());
     }
 
-    // 🔥 EL NUEVO VALIDADOR COGNITIVO (TDD RELAJADO PERO EFECTIVO)
     runCognitiveTDD(parsedData) {
         let errors = [];
-        
-        // 1. Verificamos que al menos haya un flujo útil (mínimo 3 transacciones)
         if (!parsedData.transactions || parsedData.transactions.length < 3) {
             errors.push(`Red demasiado pequeña (${parsedData.transactions ? parsedData.transactions.length : 0} SOPs). El Ecosistema debe tener un flujo mínimo viable.`);
         } else {
-            // 2. Auditoría de Calidad: Todas las transacciones DEBEN tener Checklist SOC para poder ejecutarlas en Kanban
             const txsWithoutSocs = parsedData.transactions.filter(t => !t.soc_checklist || t.soc_checklist.length === 0);
             if (txsWithoutSocs.length > 0) {
                 errors.push(`Vulnerabilidad TDD: Se detectaron ${txsWithoutSocs.length} transacciones sin Criterios de Aceptación (soc_checklist). La calidad de la red peligra.`);
             }
         }
-        
         return errors;
     }
 
-    async generateWithAI() {
+    // 🔥 PASO 1: EVALUACIÓN MAYÉUTICA
+    async evaluateVisionWithAI() {
         const name = this.dom.inpName.value.trim();
         const mission = this.dom.inpMission.value.trim();
-        const target = this.dom.inpTarget.value.trim();
-        const success = this.dom.inpSuccess.value.trim();
-        
         if (!name || !mission) return alert("Nombre y Misión son obligatorios para el Orquestador.");
-        
-        const provider = localStorage.getItem('tt_ai_provider') || 'openai';
-        const apiKey = localStorage.getItem(`tt_key_${provider}`);
-        if (provider !== 'custom' && !apiKey) return alert("Falta configurar la API Key en el Panteón.");
 
         this.dom.step1.style.display = 'none';
         this.dom.loading.style.display = 'flex';
+        this.dom.loadingText.innerText = "Evaluando Viabilidad del Ecosistema...";
         this.dom.tddErrorPanel.style.display = 'none';
+        this.dom.maieuticPanel.style.display = 'none';
+
+        try {
+            const selectedEngine = this.dom.inpForgeEngine.value || null;
+            const target = this.dom.inpTarget.value.trim();
+            const success = this.dom.inpSuccess.value.trim();
+            
+            // Guardamos la visión base
+            this.enrichedVision = `MISIÓN: ${mission}\nPÚBLICO: ${target}\nKPIs: ${success}`;
+
+            // Llamamos a la sonda del Orquestador
+            const evaluation = await Orchestrator.evaluateContextForVNA(name, this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text, this.enrichedVision, selectedEngine);
+
+            if (evaluation.isReady || !evaluation.questions || evaluation.questions.length === 0) {
+                // Si la IA dice que está lista, saltamos directamente a forjar el ecosistema
+                await this.executeFinalForgeWithAI();
+            } else {
+                // Si no está lista, pintamos las preguntas en la UI
+                this.dom.maieuticQuestionsList.innerHTML = evaluation.questions.map((q, idx) => `
+                    <div style="margin-bottom:10px;">
+                        <div class="maieutic-q">${idx + 1}. ${q}</div>
+                        <textarea class="maieutic-a q-answer" data-q="${q}" placeholder="Respuesta..."></textarea>
+                    </div>
+                `).join('');
+                
+                this.dom.loading.style.display = 'none';
+                this.dom.step1.style.display = 'block';
+                this.dom.initialActionsRow.style.display = 'none'; // Ocultamos el botón original
+                this.dom.maieuticPanel.style.display = 'block'; // Mostramos el panel de preguntas
+            }
+
+        } catch (error) {
+            alert(`Fallo en la pre-evaluación: ${error.message}`);
+            this.dom.loading.style.display = 'none';
+            this.dom.step1.style.display = 'block';
+        }
+    }
+
+    // 🔥 PASO 2: EJECUCIÓN DEFINITIVA
+    async executeFinalForgeWithAI() {
+        const name = this.dom.inpName.value.trim();
+        const selectedEngine = this.dom.inpForgeEngine.value || null;
+
+        // Recopilamos las respuestas si el panel estaba abierto
+        if (this.dom.maieuticPanel.style.display === 'block') {
+            const answers = this.dom.maieuticQuestionsList.querySelectorAll('.q-answer');
+            let qaText = "\n\n--- RESPUESTAS ADICIONALES DEL ARQUITECTO ---\n";
+            answers.forEach(a => {
+                if (a.value.trim()) qaText += `Q: ${a.dataset.q}\nA: ${a.value.trim()}\n\n`;
+            });
+            this.enrichedVision += qaText;
+        }
+
+        this.dom.step1.style.display = 'none';
+        this.dom.loading.style.display = 'flex';
+        this.dom.loadingText.innerText = "Forjando Topología VNA y Skills...";
 
         try {
             await KB.init();
@@ -356,14 +432,12 @@ export class ProjectForge {
                 =====================================
                 - Nombre Ecosistema: ${name}
                 - Arquetipo: ${this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text}
-                - MISIÓN FUNDACIONAL: ${mission}
-                - PÚBLICO OBJETIVO: ${target || 'Mercado Abierto'}
-                - CRITERIOS DE ÉXITO (KPIs): ${success || 'Aumento de eficiencia y calidad'}
+                ${this.enrichedVision}
                 
-                NOTA IKIGAI: Para cada "role" que generes, debes rellenar el campo "ai_prompt" redactando su "Ikigai" (Propósito vital) alineado estrictamente con la Misión y el Público Objetivo.
+                NOTA IKIGAI: Para cada "role" que generes, debes rellenar el campo "ai_prompt" redactando su "Ikigai" (Propósito vital).
             `;
             
-            const parsedData = await Orchestrator.designEcosystemVNA(name, "Agile Setup", enhancedVision, provider, apiKey);
+            const parsedData = await Orchestrator.designEcosystemVNA(name, "Agile Setup", enhancedVision, selectedEngine);
             const tddErrors = this.runCognitiveTDD(parsedData);
             
             if (tddErrors.length > 0) {
@@ -374,7 +448,7 @@ export class ProjectForge {
                 return;
             }
 
-            this.draftPresentation = parsedData.presentacion || `Misión: ${mission}`;
+            this.draftPresentation = parsedData.presentacion || `Visión Enriquecida...`;
             this.draftTags = parsedData.tags || [];
             this.draftNewMemes = parsedData.new_memes || []; 
             
@@ -399,9 +473,11 @@ export class ProjectForge {
             this.goToStep2();
 
         } catch (error) {
-            alert(`Fallo en la comunicación con el Orquestador: ${error.message}`);
+            alert(`Fallo en la forja final: ${error.message}`);
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display = 'block';
+            this.dom.initialActionsRow.style.display = 'flex';
+            this.dom.maieuticPanel.style.display = 'none';
         }
     }
 
@@ -412,10 +488,8 @@ export class ProjectForge {
         this.dom.dot1.classList.remove('active');
         this.dom.dot2.classList.add('active');
         
-        // Render Txs Preview
         if (this.draftTxs.length > 0) {
             let listHtml = '';
-            // Agrupamos por las fases que el LLM haya deducido (ya no son estáticas)
             const generatedPhases = [...new Set(this.draftTxs.map(t => t.phase))];
             
             generatedPhases.forEach(p => {
