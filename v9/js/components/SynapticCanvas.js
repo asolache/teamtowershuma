@@ -53,7 +53,6 @@ export class SynapticCanvas {
                 .loader-3d { position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; animation: pulse 1.5s infinite; pointer-events: none; z-index: 20;}
                 @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; text-shadow: 0 0 20px var(--accent-blue); } 100% { opacity: 0.5; } }
 
-                /* AgentSkills Visual Guides in Palette */
                 .badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-right: 5px; }
                 .badge.ref { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); }
                 .badge.eval { background: rgba(255,145,0,0.1); color: var(--accent-orange); border: 1px solid rgba(255,145,0,0.3); }
@@ -109,28 +108,21 @@ export class SynapticCanvas {
         const addLink = (source, target, isDependencies = false) => {
             if (!source || !target) return;
             if (this.nodes.some(n => n.id === source) && this.nodes.some(n => n.id === target)) {
-                // Si es una dependencia (AgentSkill), el link viaja de la Referencia hacia la Skill
                 this.links.push({ source, target, isDependencies });
             }
         };
 
-        // 🔥 FÍSICA COLORIMÉTRICA Y GRAVITACIONAL V9 (AgentSkills)
         const getColorAndMass = (category) => {
             switch(category) {
-                // Core Network
                 case 'core_os': return { c: '#ffffff', m: 50 };
-                case 'project_core': return { c: '#7c4dff', m: 45 }; // Púrpura Profundo
-                case 'role': return { c: '#ff4081', m: 35 }; // Rosa Neón
+                case 'project_core': return { c: '#7c4dff', m: 45 }; 
+                case 'role': return { c: '#ff4081', m: 35 }; 
                 case 'SOP': return { c: '#e040fb', m: 25 }; 
                 case 'agent': return { c: '#00b0ff', m: 40 }; 
-                
-                // AgentSkills Anatomy
-                case 'skill': return { c: '#00e676', m: 30 }; // Verde Neón
-                case 'reference': return { c: '#00b0ff', m: 18 }; // Azul Cibernético
-                case 'eval': return { c: '#ff9100', m: 22 }; // Naranja Plasma
-                case 'script': return { c: '#ff5252', m: 20 }; // Rojo Láser
-                
-                // Legacy
+                case 'skill': return { c: '#00e676', m: 30 }; 
+                case 'reference': return { c: '#00b0ff', m: 18 }; 
+                case 'eval': return { c: '#ff9100', m: 22 }; 
+                case 'script': return { c: '#ff5252', m: 20 }; 
                 case 'evergreen': return { c: '#ffd700', m: 25 };
                 case 'prompt_a2a': return { c: '#e040fb', m: 20 };
                 case 'meta_prompt': return { c: '#e040fb', m: 25 };
@@ -138,7 +130,6 @@ export class SynapticCanvas {
             }
         };
 
-        // 1. MODO AGENTE INDIVIDUAL
         if (this.agentId) {
             const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(this.agentId));
             addNode(this.agentId, this.agentId, 'agent', 50, '#00b0ff', { title: this.agentId, content: "Núcleo de la Identidad" });
@@ -156,12 +147,9 @@ export class SynapticCanvas {
                 addLink(this.agentId, m.id);
             });
         } 
-        
-        // 2. MODO GALAXIA (Global)
         else {
             addNode('core_kernel', 'OS KERNEL', 'core_os', 70, '#ffffff', { title: 'TeamTowers V9 Kernel', category: 'core_os', content: 'Punto Cero del Sistema Operativo de Sinergias.' });
 
-            // Redes (Proyectos)
             state.projects.forEach(p => {
                 addNode(p.id, p.nombre, 'project_core', 45, '#7c4dff', { title: p.nombre, category: 'project_core', content: p.presentation || 'Ecosistema' });
                 addLink('core_kernel', p.id);
@@ -183,7 +171,6 @@ export class SynapticCanvas {
                 }
             });
 
-            // Nodos Cognitivos (Memes, Skills, Evals...)
             allNodes.forEach(m => {
                 if (m.type === 'system_state' || m.id === 'global_kernel_state') return;
                 const { c, m: mass } = getColorAndMass(m.category);
@@ -195,7 +182,6 @@ export class SynapticCanvas {
                     linkedToProject = true;
                 }
 
-                // Enlaces por Keywords (Legacy)
                 if (m.keywords && Array.isArray(m.keywords)) {
                     m.keywords.forEach(kw => {
                         const targetNode = this.nodes.find(n => n.id === kw || n.name.toLowerCase() === kw.toLowerCase() || n.id.includes(`role_${m.projectId}_${kw}`));
@@ -209,8 +195,6 @@ export class SynapticCanvas {
                 if (!linkedToProject && m.projectId === 'global') addLink('core_kernel', m.id);
             });
 
-            // 🔥 SEGUNDA PASADA: DIBUJAR LA ANATOMÍA AGENTSKILLS
-            // Iteramos sobre las Skills y conectamos sus dependencias (Refs, Evals, Scripts) gravitacionalmente
             allNodes.forEach(skillNode => {
                 if (skillNode.type === 'skill') {
                     const dependencies = [
@@ -222,7 +206,6 @@ export class SynapticCanvas {
                     dependencies.forEach(depId => {
                         const targetExists = this.nodes.some(n => n.id === depId);
                         if (targetExists) {
-                            // Linkeamos el recurso (Ej: Eval) hacia la Skill que lo consume
                             addLink(depId, skillNode.id, true);
                         }
                     });
@@ -236,6 +219,7 @@ export class SynapticCanvas {
         const loader = this.container.querySelector('#loader3D');
         const tooltip = this.container.querySelector('#graphTooltip');
 
+        // 🔥 FIX CDN: Priorizamos unpkg.com y jsdelivr que NO fallan con MIME TYPES, quitamos cdnjs
         const loadScriptWithFallback = async (urls, globalVar) => {
             if (window[globalVar]) return; 
             for (const url of urls) {
@@ -245,21 +229,21 @@ export class SynapticCanvas {
                         script.src = url;
                         script.crossOrigin = "anonymous"; 
                         script.onload = () => resolve();
-                        script.onerror = () => reject(new Error(`Fallo de red/MIME en ${url}`));
+                        script.onerror = () => reject(new Error(`Fallo en ${url}`));
                         document.head.appendChild(script);
                     });
                     return; 
                 } catch (e) {
-                    console.warn(`[Antigravity] CDN corrupta, aplicando Auto-Sanación para ${globalVar}...`);
+                    console.warn(`[Antigravity] CDN saltada: ${url}`);
                 }
             }
-            throw new Error(`Colapso CDN: Imposible inyectar ${globalVar} en el navegador.`);
+            throw new Error(`Colapso CDN para ${globalVar}.`);
         };
 
         try {
-            await loadScriptWithFallback(['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js', 'https://unpkg.com/three@0.147.0/build/three.min.js'], 'THREE');
+            await loadScriptWithFallback(['https://unpkg.com/three@0.147.0/build/three.min.js', 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js'], 'THREE');
             await loadScriptWithFallback(['https://unpkg.com/three-spritetext', 'https://cdn.jsdelivr.net/npm/three-spritetext'], 'SpriteText');
-            await loadScriptWithFallback(['https://cdnjs.cloudflare.com/ajax/libs/3d-force-graph/1.73.3/3d-force-graph.min.js', 'https://unpkg.com/3d-force-graph', 'https://cdn.jsdelivr.net/npm/3d-force-graph'], 'ForceGraph3D');
+            await loadScriptWithFallback(['https://unpkg.com/3d-force-graph', 'https://cdn.jsdelivr.net/npm/3d-force-graph'], 'ForceGraph3D');
         } catch (e) {
             console.error("Error definitivo al cargar WebGL:", e);
             if (loader) loader.innerText = "Error cargando Córtex 3D. Tu red bloquea las librerías.";
@@ -270,14 +254,12 @@ export class SynapticCanvas {
 
         const gData = { nodes: this.nodes, links: this.links };
 
-        this.graph3D = ForceGraph3D()(canvasInner)
+        this.graph3D = window.ForceGraph3D()(canvasInner)
             .graphData(gData)
             .nodeLabel('') 
             .linkColor(link => {
                 const sourceNode = typeof link.source === 'object' ? link.source : this.nodes.find(n => n.id === link.source);
                 const color = sourceNode ? sourceNode.color : 'rgba(0,176,255,1)';
-                
-                // 🔥 ENLACES AGENTSKILLS: Si es una dependencia (Eval/Ref hacia Skill), pintamos la línea semitransparente con guiones (visualmente lo hace el color dashed)
                 return link.isDependencies ? color.replace(')', ', 0.15)').replace('rgb', 'rgba') : color.replace(')', ', 0.4)').replace('rgb', 'rgba'); 
             })
             .linkWidth(link => link.isDependencies ? 0.8 : 1.5)
@@ -292,7 +274,6 @@ export class SynapticCanvas {
                 const group = new window.THREE.Group();
                 const geometry = new window.THREE.SphereGeometry(node.val * 0.8, 24, 24);
                 
-                // Hacemos el núcleo Kernel y Proyectos más opacos
                 const isCore = node.group === 'core_os' || node.group === 'project_core';
                 const material = new window.THREE.MeshLambertMaterial({ 
                     color: node.color, transparent: true, opacity: isCore ? 0.95 : 0.7, depthWrite: false
