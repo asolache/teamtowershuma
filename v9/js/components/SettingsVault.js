@@ -27,7 +27,7 @@ export class SettingsVault {
             return;
         }
 
-        const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
+        const provider = localStorage.getItem('tt_ai_provider') || 'openai'; // Por defecto OpenAI para evitar CORS
         const keyDeepSeek = localStorage.getItem('tt_key_deepseek') || '';
         const keyOpenAI = localStorage.getItem('tt_key_openai') || '';
         const keyGemini = localStorage.getItem('tt_key_gemini') || '';
@@ -96,26 +96,26 @@ export class SettingsVault {
                     <div class="form-group">
                         <label>Motor NLP Primario (Preferencia Global)</label>
                         <select id="inpProvider" class="form-control" style="font-family:var(--font-main); font-weight:bold; color:var(--accent-purple);">
+                            <option value="openai" ${provider === 'openai' ? 'selected' : ''}>OpenAI (GPT-4o) - Uso General Seguro</option>
                             <option value="deepseek" ${provider === 'deepseek' ? 'selected' : ''}>DeepSeek (V3/R1) - Optimizado para Código</option>
-                            <option value="openai" ${provider === 'openai' ? 'selected' : ''}>OpenAI (GPT-4o) - Uso General</option>
                             <option value="gemini" ${provider === 'gemini' ? 'selected' : ''}>Google Gemini (1.5 / 2.0) - Multimodal Rápido</option>
-                            <option value="anthropic" ${provider === 'anthropic' ? 'selected' : ''}>Anthropic (Claude 3.5/3.7) - Análisis Profundo (VNA)</option>
+                            <option value="anthropic" ${provider === 'anthropic' ? 'selected' : ''}>Anthropic (Claude 3.5/3.7) - VNA (¡Atención: Da error CORS en navegador!)</option>
                             <option value="custom" ${provider === 'custom' ? 'selected' : ''}>Local / Custom API (Ollama)</option>
                         </select>
                     </div>
 
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                         <div class="form-group">
-                            <label>Anthropic API Key</label>
-                            <input type="password" id="inpKeyAnthropic" class="form-control" value="${keyAnthropic}" placeholder="sk-ant-...">
+                            <label>OpenAI API Key</label>
+                            <input type="password" id="inpKeyOpenAI" class="form-control" value="${keyOpenAI}" placeholder="sk-proj-...">
                         </div>
                         <div class="form-group">
                             <label>DeepSeek API Key</label>
                             <input type="password" id="inpKeyDeepSeek" class="form-control" value="${keyDeepSeek}" placeholder="sk-...">
                         </div>
                         <div class="form-group">
-                            <label>OpenAI API Key</label>
-                            <input type="password" id="inpKeyOpenAI" class="form-control" value="${keyOpenAI}" placeholder="sk-proj-...">
+                            <label>Anthropic API Key</label>
+                            <input type="password" id="inpKeyAnthropic" class="form-control" value="${keyAnthropic}" placeholder="sk-ant-...">
                         </div>
                         <div class="form-group">
                             <label>Google Gemini API Key</label>
@@ -169,11 +169,13 @@ export class SettingsVault {
             });
         });
 
-        // 🔥 GUARDADO DE BÓVEDA IA
+        // 🔥 GUARDADO DE BÓVEDA IA SANEADO
         const btnSaveAi = this.container.querySelector('#btnSaveAi');
         if (btnSaveAi) {
             btnSaveAi.addEventListener('click', () => {
-                const provider = this.container.querySelector('#inpProvider').value;
+                const providerSelect = this.container.querySelector('#inpProvider');
+                const provider = providerSelect.options[providerSelect.selectedIndex].value;
+                
                 const kDs = this.container.querySelector('#inpKeyDeepSeek').value.trim();
                 const kOai = this.container.querySelector('#inpKeyOpenAI').value.trim();
                 const kGem = this.container.querySelector('#inpKeyGemini').value.trim();
