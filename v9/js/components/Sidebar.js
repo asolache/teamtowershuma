@@ -45,6 +45,10 @@ export class Sidebar {
         let ecosystemOptions = state.projects.map(p => 
             `<option value="${p.id}" ${p.id === (project ? project.id : '') ? 'selected' : ''}>${p.nombre}</option>`
         ).join('');
+        
+        // 🔥 AÑADIDO: Opción rápida para forjar nuevo ecosistema desde cualquier vista
+        ecosystemOptions += `<option disabled>──────────</option>`;
+        ecosystemOptions += `<option value="__CREATE_NEW__" style="color:var(--accent-green); font-weight:bold;">➕ Instanciar Nuevo Ecosistema</option>`;
 
         return `
             <style>
@@ -53,7 +57,8 @@ export class Sidebar {
                 
                 .sb-header { padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
                 
-                .sb-brand { color: white; font-weight: 900; font-size: 1.2rem; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; display: flex; align-items: center; gap: 10px; transition: opacity 0.2s;}
+                .sb-brand { color: white; font-weight: 900; font-size: 1.2rem; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; display: flex; align-items: center; gap: 10px; transition: opacity 0.2s; text-decoration: none;}
+                .sb-brand:hover { color: var(--accent-blue); }
                 .sidebar.minimized .sb-brand-text { display: none; }
                 .sb-brand-icon { font-size: 1.5rem; }
 
@@ -71,8 +76,9 @@ export class Sidebar {
                 .sb-eco-select:focus { box-shadow: inset 0 0 10px rgba(0,176,255,0.2); }
                 .sidebar.minimized .sb-eco-select { display: none; }
                 
-                .sb-eco-icon-min { display: none; color: var(--accent-blue); font-size: 1.2rem; cursor: pointer;}
+                .sb-eco-icon-min { display: none; color: var(--accent-blue); font-size: 1.2rem; cursor: pointer; text-decoration: none;}
                 .sidebar.minimized .sb-eco-icon-min { display: block; }
+                .sb-eco-icon-min:hover { transform: scale(1.1); }
 
                 .sb-nav { flex: 1; padding: 1rem 0; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; overflow-x: hidden;}
                 
@@ -103,10 +109,10 @@ export class Sidebar {
 
             <nav class="sidebar ${isMin ? 'minimized' : ''}" id="mainSidebar">
                 <div class="sb-header">
-                    <div class="sb-brand">
+                    <a href="/v9/" data-link class="sb-brand" title="Ir a Panteón Inicial">
                         <span class="sb-brand-icon">🏰</span>
                         <span class="sb-brand-text">TeamTowers</span>
-                    </div>
+                    </a>
                     <button class="btn-collapse" id="btnToggleSidebar" title="Colapsar menú">◀</button>
                 </div>
                 
@@ -115,7 +121,7 @@ export class Sidebar {
                     <select class="sb-eco-select" id="sbProjectSelect" title="Cambiar Ecosistema">
                         ${ecosystemOptions || '<option value="">Sin ecosistemas</option>'}
                     </select>
-                    <span class="sb-eco-icon-min" title="${projectLabel}">🌐</span>
+                    <a href="/v9/dashboard" data-link class="sb-eco-icon-min" title="${projectLabel}">🌐</a>
                 </div>
 
                 <div class="sb-nav">
@@ -148,8 +154,19 @@ export class Sidebar {
 
         if (selectProject) {
             selectProject.addEventListener('change', (e) => {
-                if(e.target.value) {
-                    localStorage.setItem('tt_active_project', e.target.value);
+                const targetValue = e.target.value;
+                
+                // 🔥 FIX: Interceptor de creación de proyecto
+                if (targetValue === "__CREATE_NEW__") {
+                    e.target.value = localStorage.getItem('tt_active_project') || ""; // Revertir visualmente
+                    // Hacemos pushState manual para no recargar W3C style
+                    window.history.pushState(null, null, '/v9/create');
+                    window.dispatchEvent(new Event('popstate'));
+                    return;
+                }
+
+                if(targetValue) {
+                    localStorage.setItem('tt_active_project', targetValue);
                     window.location.reload(); 
                 }
             });
