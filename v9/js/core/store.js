@@ -51,12 +51,22 @@ class Store {
     async init() {
         if (this.isInitialized) return;
         
-        await KB.init();
-        
-        // 🔥 INYECTAR ADN EN LA BASE DE DATOS (Si está vacía)
-        await CoreSeed.inject(KB);
-        
+        console.log("🚀 [Kernel] Iniciando secuencia de arranque...");
         try {
+            await KB.init();
+            console.log("📂 [Kernel] IndexedDB conectada exitosamente.");
+            
+            // 🔥 INYECTAR ADN BLINDADO (Si falla, el kernel no colapsa)
+            try {
+                console.log("🌱 [Kernel] Verificando ADN Semilla...");
+                if (CoreSeed && CoreSeed.inject) {
+                    await CoreSeed.inject(KB);
+                }
+            } catch (seedErr) {
+                console.error("⚠️ [Kernel] Fallo no crítico inyectando ADN de Skills:", seedErr);
+            }
+            
+            console.log("🧠 [Kernel] Restaurando Memoria Global...");
             const savedNode = await KB.getNode('global_kernel_state');
             
             if (savedNode && savedNode.content) {
@@ -69,10 +79,10 @@ class Store {
                 }
             }
 
+            // Normalización de estados profundos
             this.state.config.version = initialState.config.version; 
             if (!this.state.config.economics) this.state.config.economics = initialState.config.economics;
 
-            // Asegurar que los 12 Guardianes existen en el estado (sin borrar a los usuarios humanos registrados)
             if (!this.state.globalUsers) this.state.globalUsers = [];
             initialState.globalUsers.forEach(coreAgent => {
                 if (!this.state.globalUsers.find(u => u.id === coreAgent.id)) {
@@ -93,11 +103,15 @@ class Store {
                 if (!p.activeSprintId) p.activeSprintId = 'sp_default';
             });
 
-        } catch (e) {
-            console.warn("⚠️ [Antigravity] Error leyendo el estado. Arrancando Kernel limpio.", e);
-        }
+            console.log("✅ [Kernel] Secuencia de arranque completada. Sistema en línea.");
+            this.isInitialized = true;
 
-        this.isInitialized = true;
+        } catch (e) {
+            console.error("💥 [KERNEL PANIC] Colapso total leyendo el estado:", e);
+            // Fallback de emergencia por si la DB está corrupta o bloqueada
+            this.state = JSON.parse(JSON.stringify(initialState));
+            this.isInitialized = true; 
+        }
     }
 
     async persistState() {
