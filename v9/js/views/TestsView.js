@@ -164,7 +164,6 @@ export default class TestsView {
                 
                 await assert(allSkills.length > 0 && allRefs.length > 0, `Arquitectura AgentSkills: Desacople estricto entre Instrucciones (${allSkills.length}) y Teoría (${allRefs.length})`, "SKILL-ARCH");
 
-                // 🔥 TDD: ASEGURAR SOPORTE PARA EL ESTÁNDAR AGENTSKILLS
                 const mockAgentSkill = { id: 'test_skill', type: 'skill', references: ['ref_1'], evals: ['eval_1'], scripts: ['script_1'] };
                 await assert(mockAgentSkill.evals !== undefined, "Estructura AgentSkills: Soporte nativo para TDD Evals (/evals/evals.json)", "EVALS-READY");
                 await assert(mockAgentSkill.scripts !== undefined, "Estructura AgentSkills: Soporte nativo para Scripts ejecutables (/scripts/)", "SCRIPTS-READY");
@@ -301,10 +300,16 @@ export default class TestsView {
                 const stillUnread = p.logs.filter(l => l.mentions && l.mentions.includes(dynLauraId) && !l.readBy?.includes(dynLauraId));
                 await assert(stillUnread.length === 0, "Limpieza de Flujo: El ping se purga tras acuse de recibo.", "PING-READ");
 
-                // TEARDOWN
+                // ==========================================
+                // TEARDOWN (Limpieza del Sandbox)
+                // ==========================================
                 if (originalUser) {
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
                 }
+                
+                // 🔥 PURGA DEL SANDBOX
+                await store.dispatch({ type: 'DELETE_PROJECT', payload: { projectId: PID_TEST } });
+                terminal.insertAdjacentHTML('beforeend', `<div style="color:#888; font-size:0.8rem; margin-top:10px;">> Purga de Matrix Sandbox ejecutada exitosamente.</div>`);
 
                 // FINALIZACIÓN EXITOSA
                 await sleep(400);
@@ -326,12 +331,15 @@ export default class TestsView {
                         <p style="color: white; font-size: 1rem; margin-top: 15px; font-family: var(--font-mono); background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px;">${error.message}</p>
                     </div>
                 `);
-                await new Promise(r => requestAnimationFrame(r));
-                terminal.scrollTop = terminal.scrollHeight;
                 
+                // 🔥 TEARDOWN EN CASO DE ERROR (Asegurar que el Sandbox se purga aunque falle el test)
                 if (originalUser) {
                     await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
                 }
+                await store.dispatch({ type: 'DELETE_PROJECT', payload: { projectId: PID_TEST } });
+                
+                await new Promise(r => requestAnimationFrame(r));
+                terminal.scrollTop = terminal.scrollHeight;
             }
             
             const cursor = document.querySelector('.cursor');
