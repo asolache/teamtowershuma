@@ -3,7 +3,7 @@ import { store } from '../core/store.js';
 import { KB } from '../core/kb.js';
 import { Orchestrator } from '../core/Orchestrator.js';
 
-export default class IdentityForge {
+export class IdentityForge {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.activeAgentId = null;
