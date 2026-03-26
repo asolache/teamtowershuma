@@ -1,12 +1,14 @@
 // v9/js/views/LmsView.js
 import { store } from '../core/store.js';
-import { KB } from '../core/kb.js';
 import { Sidebar } from '../components/Sidebar.js';
 import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { SynapticCanvas } from '../components/SynapticCanvas.js'; 
 import { Orchestrator } from '../core/Orchestrator.js';
-import { SkillExplorer } from '../components/SkillExplorer.js'; // INYECCIÓN DEL MICRO-FRONTEND
+
+// Micro-Frontends
+import { SkillExplorer } from '../components/SkillExplorer.js'; 
+import { SkillForgeModal } from '../components/SkillForgeModal.js'; 
 
 export default class LmsView {
     constructor() {
@@ -14,10 +16,7 @@ export default class LmsView {
         this.currentTab = 'list';
         this.synapticInstance = null;
         this.skillExplorer = null;
-        
-        // Mantendremos esto temporalmente hasta extraer el Modal en la Fase A.2
-        this.draftMemory = null; 
-        this.allNodes = []; 
+        this.skillForgeModal = null;
     }
 
     async getHtml() {
@@ -43,7 +42,7 @@ export default class LmsView {
                 .tab-content.active { display: block; }
                 .tab-content.graph-active { display: flex; flex-direction: column; height: calc(100vh - 180px); padding-bottom: 0; }
 
-                /* CSS compartido del Explorer */
+                /* Estilos compartidos para Botones y Layout general */
                 .lms-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 15px;}
                 .filters-bar { display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); overflow-x: auto;}
                 .filter-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; font-family: var(--font-mono); font-size: 0.8rem;}
@@ -61,6 +60,9 @@ export default class LmsView {
                 .meme-card:hover { border-color: var(--accent-purple); background: rgba(224,64,251,0.05); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(224,64,251,0.1);}
                 .meme-category { position: absolute; top: 0; right: 0; background: rgba(224,64,251,0.1); color: var(--accent-purple); padding: 5px 15px; border-radius: 0 0 0 12px; font-size: 0.7rem; font-family: var(--font-mono); font-weight: bold; border-left: 1px solid rgba(224,64,251,0.3); border-bottom: 1px solid rgba(224,64,251,0.3);}
                 .meme-category.skill { background: rgba(0,230,118,0.1); color: var(--accent-green); border-color: rgba(0,230,118,0.3);}
+                .meme-category.reference { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
+                .meme-category.script { background: rgba(255,82,82,0.1); color: var(--accent-red); border-color: rgba(255,82,82,0.3);}
+                .meme-category.eval { background: rgba(255,171,64,0.1); color: var(--accent-orange); border-color: rgba(255,171,64,0.3);}
                 .meme-title { font-size: 1.1rem; color: white; margin: 10px 0 0 0; font-weight: 900;}
                 .meme-content { color: #aaa; font-size: 0.9rem; line-height: 1.5; font-family: 'Georgia', serif; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;}
                 .meme-footer { margin-top: auto; padding-top: 15px; border-top: 1px dashed #333; display: flex; flex-wrap: wrap; gap: 5px; align-items: center;}
@@ -69,7 +71,7 @@ export default class LmsView {
 
                 #synapticMountPoint { width: 100%; flex: 1; min-height: 500px; border-radius: 20px; overflow: hidden; }
 
-                /* MODAL OVERLAY CSS (Se mantendrá hasta la Fase A.2) */
+                /* MODALES GLOBALES */
                 .modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(5,5,8,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;}
                 .modal-overlay.active { display: flex; opacity: 1; }
                 .modal-card { background: linear-gradient(145deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 1000px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(224,64,251,0.2); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 95vh; overflow-y: auto; display:flex; flex-direction:column;}
@@ -110,6 +112,15 @@ export default class LmsView {
                 .ref-badge { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; margin-bottom:5px; margin-right:5px;}
                 .eval-badge { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; margin-bottom:5px; margin-right:5px;}
                 .script-badge { background: rgba(0,230,118,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; margin-bottom:5px; margin-right:5px;}
+
+                @media (max-width: 768px) {
+                    .workspace-lms { padding: 90px 1rem 120px 1rem; }
+                    .lms-controls-row { flex-direction: column; align-items: stretch; }
+                    .modal-card { padding: 1.5rem; border-radius: 16px; margin: 10px; }
+                    .modal-body-grid { grid-template-columns: 1fr; }
+                    .modal-actions { flex-direction: column; }
+                    .btn-modal { width: 100%; text-align: center; }
+                }
             </style>
 
             <div class="app-layout">
@@ -125,87 +136,7 @@ export default class LmsView {
                         <div id="synapticMountPoint"></div>
                     </div>
 
-                    <div class="modal-overlay" id="editModal">
-                        <div class="modal-card">
-                            <div class="modal-header">
-                                <h2>🧠 Forja de Conocimiento (Control de Versiones)</h2>
-                                <button class="btn-close" id="btnCloseModal">&times;</button>
-                            </div>
-                            
-                            <input type="hidden" id="editNodeId">
-                            <input type="hidden" id="editNodeType">
-                            <input type="hidden" id="editNodeProjectId">
-                            
-                            <div class="draft-banner" id="draftBanner">
-                                <div class="draft-header">
-                                    <span class="draft-title">✨ Mutación Propuesta por la IA</span>
-                                    <div class="draft-actions">
-                                        <button class="btn-micro discard" id="btnDiscardDraft">Descartar</button>
-                                        <button class="btn-micro apply" id="btnApplyDraft">Aceptar Mutación</button>
-                                    </div>
-                                </div>
-                                <div style="font-size: 0.9rem; margin-bottom: 10px;">Revisa los cambios en los campos de abajo. Si no te gustan, puedes editarlos antes de aceptar, o descartarlos para volver a la versión anterior.</div>
-                            </div>
-
-                            <div class="modal-body-grid">
-                                <div>
-                                    <div style="display:flex; gap:15px;">
-                                        <div class="form-group" style="flex:1;">
-                                            <label>Categoría (W3C)</label>
-                                            <input type="text" id="editNodeCat" class="form-control" placeholder="skill, reference, eval, script...">
-                                        </div>
-                                        <div class="form-group" style="flex:2;">
-                                            <label>Título del Nodo</label>
-                                            <input type="text" id="editNodeTitle" class="form-control" placeholder="Título descriptivo">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label>Descripción Corta (Trigger para RAG)</label>
-                                        <input type="text" id="editNodeDesc" class="form-control" placeholder="Explica CUÁNDO debe invocar la IA esta skill...">
-                                    </div>
-
-                                    <div class="form-group" style="flex:1; display:flex; flex-direction:column;">
-                                        <label>Instrucciones (SOPs / Content)</label>
-                                        <textarea id="editNodeContent" class="form-control textarea" placeholder="Desarrollo del concepto, instrucciones o código..."></textarea>
-                                    </div>
-                                </div>
-
-                                <div style="background: rgba(0,0,0,0.3); border: 1px solid #333; padding: 15px; border-radius: 12px; height: fit-content;">
-                                    <div class="form-group">
-                                        <label style="color:var(--accent-blue);">📚 References (IDs)</label>
-                                        <input type="text" id="editNodeReferences" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="ref_1, ref_2">
-                                        <div id="refLinksContainer" style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label style="color:var(--accent-orange);">📋 Evals (Test Cases - IDs)</label>
-                                        <input type="text" id="editNodeEvals" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="eval_1, eval_2">
-                                        <div id="evalLinksContainer" style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label style="color:var(--accent-green);">⚡ Scripts (Executable - IDs)</label>
-                                        <input type="text" id="editNodeScripts" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="script_1">
-                                        <div id="scriptLinksContainer" style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label style="color:var(--accent-purple);">🏷️ Tags (Gravedad 3D)</label>
-                                        <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="tag1, tag2">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="modal-actions">
-                                <button class="btn-modal btn-danger" id="btnDeleteNode">🗑️ Purgar</button>
-                                <button class="btn-modal btn-export" id="btnExportSkill">📦 Exportar Package (.skill)</button>
-                                <div style="flex:1;"></div>
-                                <button class="btn-modal btn-expand" id="btnExpandNode">🌱 Solicitar Mejora a IA</button>
-                                <button class="btn-modal btn-save" id="btnSaveNode">💾 Sellar Mutación Definitiva</button>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="mount-forge-modal"></div>
 
                     <div class="modal-overlay" id="researchModal">
                         <div class="modal-card" style="border-top-color: var(--accent-blue); max-width: 600px;">
@@ -226,7 +157,6 @@ export default class LmsView {
                                     <option value="script">⚡ Script (Código fuente)</option>
                                 </select>
                             </div>
-                            
                             <div class="form-group">
                                 <label>Motor de Investigación Cognitiva</label>
                                 <select id="inpResearchEngine" class="form-control" style="font-family:var(--font-mono); color:var(--accent-blue); font-weight:bold;">
@@ -237,7 +167,6 @@ export default class LmsView {
                                     <option value="deepseek">DeepSeek</option>
                                 </select>
                             </div>
-
                             <div class="modal-actions" style="margin-top: 1.5rem;">
                                 <button class="btn-modal" id="btnRunResearch" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; width: 100%;">🚀 Iniciar Minado Neuronal</button>
                             </div>
@@ -253,42 +182,17 @@ export default class LmsView {
     async executeViewScript() {
         Sidebar.initListeners();
         PageHeader.execute();
-        await this.loadJSZip(); 
 
-        // 🔥 Instanciamos y montamos el nuevo Micro-Frontend
+        // 1. Instanciamos el Modal de Edición (Micro-Frontend)
+        this.skillForgeModal = new SkillForgeModal('mount-forge-modal');
+        await this.skillForgeModal.render();
+
+        // 2. Instanciamos el Explorer (Micro-Frontend)
         this.skillExplorer = new SkillExplorer('mount-skill-explorer');
         await this.skillExplorer.render();
 
         this.dom = {
-            modal: document.getElementById('editModal'),
-            btnClose: document.getElementById('btnCloseModal'),
-            btnSave: document.getElementById('btnSaveNode'),
-            btnDelete: document.getElementById('btnDeleteNode'),
-            btnExpand: document.getElementById('btnExpandNode'),
-            btnExport: document.getElementById('btnExportSkill'),
-            
-            inpId: document.getElementById('editNodeId'),
-            inpType: document.getElementById('editNodeType'),
-            inpProjId: document.getElementById('editNodeProjectId'),
-            inpCat: document.getElementById('editNodeCat'),
-            inpTitle: document.getElementById('editNodeTitle'),
-            inpDesc: document.getElementById('editNodeDesc'),
-            inpContent: document.getElementById('editNodeContent'),
-            inpKeywords: document.getElementById('editNodeKeywords'),
-            
-            inpReferences: document.getElementById('editNodeReferences'),
-            refLinksContainer: document.getElementById('refLinksContainer'), 
-            inpEvals: document.getElementById('editNodeEvals'),
-            evalLinksContainer: document.getElementById('evalLinksContainer'),
-            inpScripts: document.getElementById('editNodeScripts'),
-            scriptLinksContainer: document.getElementById('scriptLinksContainer'),
-
-            draftBanner: document.getElementById('draftBanner'),
-            btnApplyDraft: document.getElementById('btnApplyDraft'),
-            btnDiscardDraft: document.getElementById('btnDiscardDraft'),
-
             synapticMount: document.getElementById('synapticMountPoint'),
-            
             researchModal: document.getElementById('researchModal'),
             btnCloseResearch: document.getElementById('btnCloseResearch'),
             btnRunResearch: document.getElementById('btnRunResearch'),
@@ -316,197 +220,29 @@ export default class LmsView {
             }
         });
 
-        // Eventos delegados por los componentes hijos
-        window.addEventListener('open-forge-modal', (e) => {
-            if (e.detail.nodeId) this.openEditor(e.detail.nodeId);
-            else this.openNewEditor();
+        // 3. Eventos de Orquestación entre Micro-Frontends
+        window.addEventListener('refresh-lms-data', async () => {
+            if (this.skillExplorer) await this.skillExplorer.loadData();
+            if (this.synapticInstance) {
+                await this.synapticInstance.loadInitialData();
+                if (this.synapticInstance.graph3D) this.synapticInstance.graph3D.graphData({ nodes: this.synapticInstance.nodes, links: this.synapticInstance.links });
+            }
+        });
+
+        window.addEventListener('process-skill-file', async (e) => {
+            // Reutilizamos el parser del modal porque tiene las utilidades de JSZip y extracción 
+            // (En el futuro, esto iría a un PackageEngine puro sin UI)
+            if (this.skillForgeModal) {
+                await this.skillForgeModal.parseZipSkillFile(e.detail.file, e.detail.dropzone);
+                window.dispatchEvent(new CustomEvent('refresh-lms-data'));
+            }
         });
 
         window.addEventListener('open-research-modal', () => {
             this.dom.researchModal.classList.add('active');
         });
 
-        window.addEventListener('process-skill-file', async (e) => {
-            await this.parseZipSkillFile(e.detail.file, e.detail.dropzone);
-        });
-
-        this.setupModalEvents();
         this.setupDeepResearchEvents();
-    }
-
-    loadJSZip() {
-        return new Promise((resolve) => {
-            if (window.JSZip) return resolve();
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-            script.onload = resolve;
-            document.head.appendChild(script);
-        });
-    }
-
-    async parseZipSkillFile(file, dropzone) {
-        if (!window.JSZip) await this.loadJSZip();
-        try {
-            const zip = new window.JSZip();
-            const contents = await zip.loadAsync(file);
-            
-            const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('SKILL.md') || k.endsWith('Skill.md'));
-            if (!skillFileKey) {
-                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>`;
-                return alert("Paquete Inválido: No se encontró 'SKILL.md' en el archivo.");
-            }
-            
-            const skillText = await contents.files[skillFileKey].async("text");
-            const parsedSkill = this.extractFrontmatter(skillText, file.name.replace('.zip','').replace('.skill',''));
-            
-            const refIds = []; const evalIds = []; const scriptIds = [];
-
-            await KB.init();
-
-            for (const relativePath in contents.files) {
-                const f = contents.files[relativePath];
-                if (f.dir || relativePath === skillFileKey) continue;
-
-                const rawText = await f.async("text");
-                const fileName = f.name.split('/').pop();
-                const cleanName = fileName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-
-                if (relativePath.includes('references/') || relativePath.includes('resources/')) {
-                    const parsed = this.extractFrontmatter(rawText, fileName.replace('.md', ''));
-                    const id = `ref_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
-                    await KB.saveNode({ id, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global', title: parsed.title, description: parsed.description, content: parsed.content, keywords: ['#imported_ref'] });
-                    refIds.push(id);
-                } 
-                else if (relativePath.includes('evals/')) {
-                    const id = `eval_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
-                    await KB.saveNode({ id, type: 'eval', category: 'eval', projectId: 'global', targetId: 'global', title: fileName, description: `Test Cases for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_eval'] });
-                    evalIds.push(id);
-                }
-                else if (relativePath.includes('scripts/')) {
-                    const id = `script_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
-                    await KB.saveNode({ id, type: 'script', category: 'script', projectId: 'global', targetId: 'global', title: fileName, description: `Executable code for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_script'] });
-                    scriptIds.push(id);
-                }
-            }
-
-            const skillNode = { id: `skill_imported_${Date.now()}`, type: 'skill', category: 'skill', projectId: 'global', targetId: 'global', title: parsedSkill.title, description: parsedSkill.description, content: parsedSkill.content, references: refIds, evals: evalIds, scripts: scriptIds, keywords: ['#imported_skill'] };
-
-            await KB.saveNode(skillNode);
-            alert(`✅ AgentSkill Instalada: ${parsedSkill.title} (${refIds.length} Refs, ${evalIds.length} Evals, ${scriptIds.length} Scripts)`);
-            
-            // Refrescar el micro-frontend
-            if (this.skillExplorer) await this.skillExplorer.loadData();
-            await this.forceGraphRefresh();
-            dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>`;
-        } catch (error) {
-            alert("Error al desempaquetar la Skill: " + error.message);
-            dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>`;
-        }
-    }
-
-    extractFrontmatter(text, defaultTitle) {
-        let title = defaultTitle; let description = ''; let content = text;
-        const yamlRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-        const match = text.match(yamlRegex);
-        if (match) {
-            const yaml = match[1]; content = match[2].trim();
-            const nameMatch = yaml.match(/name:\s*(.+)/); if (nameMatch) title = nameMatch[1].trim();
-            const descMatch = yaml.match(/description:\s*(.+)/); if (descMatch) description = descMatch[1].trim();
-        }
-        return { title, description, content };
-    }
-
-    renderLinkedNodes(idsArray, container, cssClass, icon) {
-        if (!container) return;
-        container.innerHTML = '';
-        if (!idsArray || idsArray.length === 0) return;
-        
-        idsArray.forEach(id => {
-            // Obtenemos del explorer ya cargado
-            const node = this.skillExplorer?.allNodes.find(n => n.id === id);
-            const title = node ? node.title : id;
-            const badge = document.createElement('span');
-            badge.className = cssClass;
-            badge.innerHTML = `${icon} ${title} ↗`;
-            badge.title = `Inspeccionar: ${id}`;
-            badge.onclick = () => {
-                this.closeEditor(); 
-                setTimeout(() => this.openEditor(id), 350); 
-            };
-            container.appendChild(badge);
-        });
-    }
-
-    async openEditor(nodeId) {
-        await KB.init();
-        this.allNodes = await KB.getAllNodes(); // Actualizamos memoria local del modal
-        const node = this.allNodes.find(n => n.id === nodeId);
-        if (!node) return;
-
-        this.draftMemory = null;
-        this.dom.draftBanner.classList.remove('active');
-
-        this.dom.inpId.value = node.id;
-        this.dom.inpType.value = node.type || 'custom'; 
-        this.dom.inpProjId.value = node.projectId || 'global';
-        this.dom.inpCat.value = node.category || '';
-        this.dom.inpTitle.value = node.title || '';
-        this.dom.inpDesc.value = node.description || '';
-        this.dom.inpContent.value = node.content || '';
-        this.dom.inpKeywords.value = (node.keywords && Array.isArray(node.keywords)) ? node.keywords.join(', ') : (node.keywords || '');
-        
-        const refArr = (node.references && Array.isArray(node.references)) ? node.references : [];
-        const evalArr = (node.evals && Array.isArray(node.evals)) ? node.evals : [];
-        const scriptArr = (node.scripts && Array.isArray(node.scripts)) ? node.scripts : [];
-
-        this.dom.inpReferences.value = refArr.join(', ');
-        this.dom.inpEvals.value = evalArr.join(', ');
-        this.dom.inpScripts.value = scriptArr.join(', ');
-        
-        this.renderLinkedNodes(refArr, this.dom.refLinksContainer, 'ref-badge', '📚');
-        this.renderLinkedNodes(evalArr, this.dom.evalLinksContainer, 'eval-badge', '📋');
-        this.renderLinkedNodes(scriptArr, this.dom.scriptLinksContainer, 'script-badge', '⚡');
-
-        const isKernel = this.dom.inpKeywords.value.includes('#kernel_sos');
-        this.dom.btnDelete.style.display = isKernel ? 'none' : 'block';
-
-        this.dom.modal.classList.add('active');
-    }
-
-    openNewEditor() {
-        this.dom.inpId.value = '';
-        this.dom.inpType.value = 'custom';
-        this.dom.inpProjId.value = 'global';
-        this.dom.inpCat.value = 'skill';
-        this.dom.inpTitle.value = '';
-        this.dom.inpDesc.value = '';
-        this.dom.inpContent.value = '';
-        this.dom.inpKeywords.value = '';
-        this.dom.inpReferences.value = '';
-        this.dom.inpEvals.value = '';
-        this.dom.inpScripts.value = '';
-        
-        this.renderLinkedNodes([], this.dom.refLinksContainer, '', '');
-        this.renderLinkedNodes([], this.dom.evalLinksContainer, '', '');
-        this.renderLinkedNodes([], this.dom.scriptLinksContainer, '', '');
-        
-        this.dom.btnDelete.style.display = 'none';
-        this.draftMemory = null;
-        this.dom.draftBanner.classList.remove('active');
-        this.dom.modal.classList.add('active');
-    }
-
-    closeEditor() { 
-        this.dom.modal.classList.remove('active'); 
-        this.draftMemory = null;
-        this.dom.draftBanner.classList.remove('active');
-    }
-
-    async forceGraphRefresh() {
-        if (this.synapticInstance) {
-            await this.synapticInstance.loadInitialData();
-            if (this.synapticInstance.graph3D) this.synapticInstance.graph3D.graphData({ nodes: this.synapticInstance.nodes, links: this.synapticInstance.links });
-        }
     }
 
     setupDeepResearchEvents() {
@@ -526,254 +262,13 @@ export default class LmsView {
                 await Orchestrator.runDeepResearch(topic, cat, 3, engine);
                 alert("✅ Investigación completada.");
                 this.dom.researchModal.classList.remove('active');
-                if (this.skillExplorer) await this.skillExplorer.loadData();
-                await this.forceGraphRefresh();
+                window.dispatchEvent(new CustomEvent('refresh-lms-data'));
             } catch (e) {
                 alert("Fallo: " + e.message);
             } finally {
                 this.dom.btnRunResearch.disabled = false;
                 this.dom.btnRunResearch.innerText = "🚀 Iniciar Minado Neuronal";
             }
-        });
-    }
-
-    setupModalEvents() {
-        this.dom.btnClose.addEventListener('click', () => this.closeEditor());
-        this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
-
-        this.dom.inpReferences.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.refLinksContainer, 'ref-badge', '📚'));
-        this.dom.inpEvals.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.evalLinksContainer, 'eval-badge', '📋'));
-        this.dom.inpScripts.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.scriptLinksContainer, 'script-badge', '⚡'));
-
-        this.dom.btnExport.addEventListener('click', async () => {
-            if (!window.JSZip) await this.loadJSZip();
-            const zip = new window.JSZip();
-
-            const title = this.dom.inpTitle.value.trim() || 'Custom_Skill';
-            const desc = this.dom.inpDesc.value.trim() || 'Skill generada por TeamTowers V9';
-            const content = this.dom.inpContent.value.trim();
-            
-            const refArray = this.dom.inpReferences.value.split(',').map(r => r.trim()).filter(r => r !== '');
-            const evalArray = this.dom.inpEvals.value.split(',').map(r => r.trim()).filter(r => r !== '');
-            const scriptArray = this.dom.inpScripts.value.split(',').map(r => r.trim()).filter(r => r !== '');
-
-            const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
-            const rootFolder = zip.folder(safeTitle);
-
-            const skillContent = `---\nname: ${title}\ndescription: ${desc}\n---\n\n${content}`;
-            rootFolder.file("SKILL.md", skillContent);
-
-            await KB.init();
-
-            if (refArray.length > 0) {
-                const resourcesFolder = rootFolder.folder("references");
-                for (const refId of refArray) {
-                    const refNode = await KB.getNode(refId);
-                    if (refNode) {
-                        const refNameSafe = (refNode.title || refNode.id).replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
-                        const refContent = `---\nname: ${refNode.title}\ndescription: ${refNode.description || ''}\n---\n\n${refNode.content}`;
-                        resourcesFolder.file(`${refNameSafe}.md`, refContent);
-                    }
-                }
-            }
-
-            if (evalArray.length > 0) {
-                const evalsFolder = rootFolder.folder("evals");
-                let allEvalsJson = [];
-                for (const evalId of evalArray) {
-                    const evalNode = await KB.getNode(evalId);
-                    if (evalNode) {
-                        try {
-                            const parsed = JSON.parse(evalNode.content);
-                            if (Array.isArray(parsed)) allEvalsJson.push(...parsed);
-                            else allEvalsJson.push(parsed);
-                        } catch(e) {
-                            allEvalsJson.push({ id: evalNode.id, prompt: evalNode.title, description: evalNode.description });
-                        }
-                    }
-                }
-                if (allEvalsJson.length > 0) {
-                    const finalEvalFile = { skill_name: safeTitle, evals: allEvalsJson };
-                    evalsFolder.file("evals.json", JSON.stringify(finalEvalFile, null, 2));
-                }
-            }
-
-            if (scriptArray.length > 0) {
-                const scriptsFolder = rootFolder.folder("scripts");
-                for (const scriptId of scriptArray) {
-                    const scriptNode = await KB.getNode(scriptId);
-                    if (scriptNode) {
-                        const sName = scriptNode.title.includes('.') ? scriptNode.title : `${scriptNode.title}.py`;
-                        scriptsFolder.file(sName.replace(/[^a-zA-Z0-9_.-]/g, '_'), scriptNode.content);
-                    }
-                }
-            }
-
-            const blob = await zip.generateAsync({type:"blob"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${safeTitle}.skill`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
-
-        // 🔥 LÓGICA DE DRAFTS Y CONTROL DE VERSIONES VISUAL
-        if (this.dom.btnExpand) {
-            this.dom.btnExpand.addEventListener('click', async () => {
-                const title = this.dom.inpTitle.value.trim();
-                const content = this.dom.inpContent.value.trim();
-                const cat = this.dom.inpCat.value.trim();
-                const tags = this.dom.inpKeywords.value.trim();
-                
-                if (!title) return alert("Se necesita al menos un título para que la IA sepa qué desarrollar.");
-
-                // Guardamos el estado original antes de mutar
-                this.draftMemory = {
-                    title: title,
-                    desc: this.dom.inpDesc.value,
-                    content: content,
-                    keywords: tags,
-                    references: this.dom.inpReferences.value
-                };
-
-                this.dom.btnExpand.disabled = true;
-                this.dom.btnExpand.innerText = "⏳ El Synaptic Weaver está meditando...";
-
-                try {
-                    const optimizedData = await Orchestrator.expandNodeSemantics(title, cat, content, tags);
-                    
-                    // Inyectamos la mutación en la UI (Modo Vista Previa)
-                    this.dom.inpTitle.value = optimizedData.title;
-                    this.dom.inpDesc.value = optimizedData.description || '';
-                    this.dom.inpContent.value = optimizedData.content;
-                    this.dom.inpKeywords.value = optimizedData.keywords.join(', ');
-                    
-                    if (optimizedData.reference_docs && optimizedData.reference_docs.length > 0) {
-                        await KB.init();
-                        let currentRefs = this.dom.inpReferences.value.split(',').map(r => r.trim()).filter(r => r !== '');
-                        
-                        for (const refDoc of optimizedData.reference_docs) {
-                            const cleanName = refDoc.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().substring(0, 25);
-                            const newRefId = `ref_draft_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
-                            
-                            // Guardamos las referencias generadas temporalmente (se purgarán si descartas)
-                            await KB.saveNode({
-                                id: newRefId, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
-                                title: refDoc.title, description: refDoc.description, content: refDoc.content, keywords: ['#ai_draft_ref']
-                            });
-                            currentRefs.push(newRefId);
-                        }
-                        
-                        this.dom.inpReferences.value = currentRefs.join(', ');
-                        this.renderLinkedNodes(currentRefs, this.dom.refLinksContainer, 'ref-badge', '📚'); 
-                    }
-                    
-                    // Activamos el Banner de Control de Versiones
-                    this.dom.draftBanner.classList.add('active');
-                    this.dom.btnExpand.style.display = 'none'; 
-                    
-                } catch (error) { 
-                    alert("Fallo en la expansión: " + error.message); 
-                    this.draftMemory = null;
-                } finally { 
-                    this.dom.btnExpand.disabled = false; 
-                    this.dom.btnExpand.innerText = "🌱 Solicitar Mejora a IA"; 
-                }
-            });
-        }
-
-        this.dom.btnDiscardDraft.addEventListener('click', async () => {
-            if (!this.draftMemory) return;
-            
-            // Restauramos los valores originales
-            this.dom.inpTitle.value = this.draftMemory.title;
-            this.dom.inpDesc.value = this.draftMemory.desc;
-            this.dom.inpContent.value = this.draftMemory.content;
-            this.dom.inpKeywords.value = this.draftMemory.keywords;
-            this.dom.inpReferences.value = this.draftMemory.references;
-            
-            this.renderLinkedNodes(this.draftMemory.references.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.refLinksContainer, 'ref-badge', '📚');
-
-            // Limpieza de UI
-            this.dom.draftBanner.classList.remove('active');
-            this.dom.btnExpand.style.display = 'block';
-            this.draftMemory = null;
-        });
-
-        this.dom.btnApplyDraft.addEventListener('click', () => {
-            // El humano aprueba el Draft. Limpiamos la UI y le indicamos que ahora debe Sellar (Guardar)
-            this.dom.draftBanner.classList.remove('active');
-            this.dom.btnExpand.style.display = 'block';
-            this.draftMemory = null;
-            
-            // Destacamos el botón de Guardado
-            this.dom.btnSave.style.boxShadow = "0 0 30px rgba(0, 230, 118, 0.8)";
-            setTimeout(() => this.dom.btnSave.style.boxShadow = "", 1500);
-        });
-
-        this.dom.btnSave.addEventListener('click', async () => {
-            if (this.draftMemory) return alert("Tienes una mutación de la IA pendiente. Acéptala o descártala antes de sellar.");
-
-            const id = this.dom.inpId.value;
-            const title = this.dom.inpTitle.value.trim();
-            const desc = this.dom.inpDesc.value.trim();
-            const content = this.dom.inpContent.value.trim();
-            if (!title || !content) return alert("Título y contenido son obligatorios.");
-
-            const keywordsArray = this.dom.inpKeywords.value.split(',').map(k => k.trim()).filter(k => k !== '');
-            const referencesArray = this.dom.inpReferences.value.split(',').map(k => k.trim()).filter(k => k !== '');
-            const evalsArray = this.dom.inpEvals.value.split(',').map(k => k.trim()).filter(k => k !== '');
-            const scriptsArray = this.dom.inpScripts.value.split(',').map(k => k.trim()).filter(k => k !== '');
-            
-            await KB.init();
-            this.allNodes = await KB.getAllNodes();
-            const oldNode = this.allNodes.find(n => n.id === id) || {};
-            
-            const updatedNode = { 
-                ...oldNode, 
-                id: id || `custom_${Date.now()}_${Math.random().toString(36).substr(2,4)}`, 
-                type: this.dom.inpType.value || oldNode.type || 'custom', 
-                projectId: this.dom.inpProjId.value || oldNode.projectId || 'global', 
-                category: this.dom.inpCat.value.trim() || oldNode.category || 'skill', 
-                title: title, 
-                description: desc, 
-                content: content, 
-                keywords: keywordsArray, 
-                references: referencesArray,
-                evals: evalsArray,     
-                scripts: scriptsArray  
-            };
-
-            this.dom.btnSave.disabled = true; 
-            this.dom.btnSave.innerText = "⏳ Sellando...";
-            
-            try {
-                await KB.saveNode(updatedNode);
-                if (this.skillExplorer) await this.skillExplorer.loadData(); 
-                await this.forceGraphRefresh();
-                this.closeEditor();
-            } catch (e) { 
-                alert(`Error al guardar: ${e.message}`); 
-            } finally { 
-                this.dom.btnSave.disabled = false; 
-                this.dom.btnSave.innerText = "💾 Sellar Mutación Definitiva"; 
-            }
-        });
-
-        this.dom.btnDelete.addEventListener('click', async () => {
-            const id = this.dom.inpId.value;
-            if (!confirm("⚠️ ¿Purgar este nodo?")) return;
-            this.dom.btnDelete.disabled = true;
-            try {
-                await KB.init(); await KB.deleteNode(id);
-                if (this.skillExplorer) await this.skillExplorer.loadData();
-                await this.forceGraphRefresh();
-                this.closeEditor();
-            } catch (e) { alert(`Error: ${e.message}`); } 
-            finally { this.dom.btnDelete.disabled = false; }
         });
     }
 }
