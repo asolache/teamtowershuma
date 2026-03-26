@@ -1,14 +1,14 @@
 // v9/js/core/store.js
 import { KB } from './kb.js'; 
+import { CoreSeed } from './seed.js'; // 🔥 INYECCIÓN DEL ADN
 
 const initialState = {
     config: {
         version: 'v9-Antigravity',
         theme: 'dark',
-        // 🔥 Modelo Económico Dinámico de la Open DAO
         economics: {
-            markup_margin: 0.30, // 30% de beneficio base para el protocolo
-            premium_features_fee: 0.05, // +5% fee por servicios Permaweb / Triple Accounting
+            markup_margin: 0.30, 
+            premium_features_fee: 0.05, 
             base_pricing: {
                 'deepseek': { input: 0.14, output: 0.28 }, 
                 'gemini': { input: 0.075, output: 0.30 },  
@@ -22,15 +22,21 @@ const initialState = {
         activeUserId: null,
         role: 'guest'
     },
+    // 🔥 EL PADRÓN DE LOS 12 GUARDIANES (PANTHEON.WORK)
     globalUsers: [
-        { id: '@genesi_ai', name: 'Gènesi AI', email: 'genesi@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'creator', active_skills: ['skill_vna_strategy'], scripts_allowed: true } },
-        { id: '@cap_de_colla', name: 'Cap de Colla', email: 'cap@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: [], scripts_allowed: false } },
-        { id: '@notari_ledger', name: 'Notari Ledger', email: 'notari@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: [], scripts_allowed: true } },
-        { id: '@seny_analyst', name: 'Seny Analyst', email: 'seny@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: [], scripts_allowed: false } },
-        { id: '@dharma_coach', name: 'Dharma Coach', email: 'dharma@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'caregiver', active_skills: [], scripts_allowed: false } },
-        { id: '@forca_worker', name: 'Força Worker', email: 'forca@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero', active_skills: [], scripts_allowed: true } },
-        { id: '@mestre_escola', name: 'Mestre d\'Escola', email: 'mestre@teamtowers.ai', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: ['skill_creator_master'], scripts_allowed: true } },
-        { id: '@alvaro', name: 'Alvaro (Master Architect)', email: 'alvaro@teamtowers.ai', globalRole: 'ecosystem-owner', profile: { sbt_skills: [] } }
+        { id: '@agent_genesis_architect', name: 'Genesis Architect', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'creator', active_skills: ['skill_vna_architect'] } },
+        { id: '@agent_dharma_ontologist', name: 'Dharma Ontologist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'caregiver', active_skills: ['skill_ikigai_ontologist'] } },
+        { id: '@agent_skill_crafter', name: 'Skill Crafter', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: [] } },
+        { id: '@agent_prompt_synthesizer', name: 'Prompt Synthesizer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: [] } },
+        { id: '@agent_tdd_auditor', name: 'TDD Auditor', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: ['skill_slicing_pie_notary', 'skill_legal_drafting'] } },
+        { id: '@agent_synaptic_weaver', name: 'Synaptic Weaver', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'explorer', active_skills: [] } },
+        { id: '@agent_token_economist', name: 'Token Economist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: [] } },
+        { id: '@agent_media_generator', name: 'Media Generator', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero', active_skills: [] } },
+        { id: '@agent_web_deployer', name: 'Web Deployer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: [] } },
+        { id: '@agent_codex_developer', name: 'Codex Developer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: [] } },
+        { id: '@kaos_tester', name: 'Kaos Tester', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'outlaw', active_skills: [] } },
+        { id: '@bard_narrator', name: 'Bard Narrator', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'jester', active_skills: [] } },
+        { id: '@alvaro', name: 'Alvaro (Master Architect)', globalRole: 'ecosystem-owner', profile: { sbt_skills: [] } }
     ],
     projects: []
 };
@@ -42,11 +48,13 @@ class Store {
         this.isInitialized = false;
     }
 
-    // 🔥 ARRANQUE ASÍNCRONO Y MIGRACIÓN (V9)
     async init() {
         if (this.isInitialized) return;
         
         await KB.init();
+        
+        // 🔥 INYECTAR ADN EN LA BASE DE DATOS (Si está vacía)
+        await CoreSeed.inject(KB);
         
         try {
             const savedNode = await KB.getNode('global_kernel_state');
@@ -62,10 +70,16 @@ class Store {
             }
 
             this.state.config.version = initialState.config.version; 
-            // Inyectamos el economics si no venía en estados anteriores
             if (!this.state.config.economics) this.state.config.economics = initialState.config.economics;
 
-            if (!this.state.globalUsers) this.state.globalUsers = initialState.globalUsers;
+            // Asegurar que los 12 Guardianes existen en el estado (sin borrar a los usuarios humanos registrados)
+            if (!this.state.globalUsers) this.state.globalUsers = [];
+            initialState.globalUsers.forEach(coreAgent => {
+                if (!this.state.globalUsers.find(u => u.id === coreAgent.id)) {
+                    this.state.globalUsers.push(coreAgent);
+                }
+            });
+
             if (!this.state.projects) this.state.projects = [];
             
             this.state.projects.forEach(p => {
@@ -106,12 +120,8 @@ class Store {
 
     async dispatch(action) {
         this.state = this._reducer(JSON.parse(JSON.stringify(this.state)), action);
-        
-        // Persistencia V9 en IndexedDB (KB)
         await this.persistState();
-        // Backup temporal en LocalStorage por si alguna vista legacy lo busca
         localStorage.setItem('tt_v9_kernel_state', JSON.stringify(this.state));
-        
         this.listeners.forEach(listener => listener(this.state));
         return this.state;
     }
@@ -331,7 +341,6 @@ class Store {
                                 valorCongelado: finalSlices, date: Date.now()
                             });
                             
-                            // 🔥 CERTIFICACIÓN SBT V9
                             const userIdx = newState.globalUsers.findIndex(u => u.id === (wo.assigneeId || wo.workerId));
                             if (userIdx > -1 && newState.globalUsers[userIdx].profile) {
                                 if (!newState.globalUsers[userIdx].profile.sbt_skills) newState.globalUsers[userIdx].profile.sbt_skills = [];
