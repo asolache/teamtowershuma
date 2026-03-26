@@ -4,162 +4,196 @@ export const CoreSeed = {
         const check = await KB.getNode('skill_vna_architect');
         if (check) return; 
 
-        console.log("🌱 [Antigravity Kernel] Inyectando ADN de Skills Core (Incluyendo Codex & UI) en la Matriz...");
+        console.log("🌱 [Antigravity Kernel] Inyectando Códice A2A (Alta Densidad Cognitiva)...");
 
+        // 🔥 TEORÍA ULTRA-COMPRIMIDA (SOLO CARGADA SI SE REQUIERE)
+        const coreRefs = [
+            {
+                id: 'ref_vna_core', type: 'reference', category: 'core.architecture', projectId: 'global', targetId: 'global',
+                title: 'VNA Matrix Rules', keywords: ['#theory', '#vna'],
+                content: `[VNA_AXIOMS]\n1. Nodos = Roles (Capital humano/IA).\n2. Enlaces = Txs (PULL). Nodo B pide a Nodo A.\n3. Tangible = Entregable (Código, Docs). Intangible = Status (Aprobación, Confianza).\n4. SlicingPie = Esfuerzo * FMV * Multiplicador_Riesgo.\n5. Cero Eras: Diseño estacionario y fractal.`
+            },
+            {
+                id: 'ref_tdd_matrix', type: 'reference', category: 'core.economy', projectId: 'global', targetId: 'global',
+                title: 'TDD Audit Protocol', keywords: ['#theory', '#audit'],
+                content: `[TDD_AXIOMS]\n1. Carga de prueba: El ejecutor aporta evidencia.\n2. Inferencia Cero: Si no se ve, no existe (False).\n3. SOC Binario: 1 (Pasa) | 0 (Falla).\n4. Fallo = Bloqueo de Slices. Retorno al worker.`
+            },
+            {
+                id: 'ref_antigravity_css', type: 'reference', category: 'core.execution', projectId: 'global', targetId: 'global',
+                title: 'Antigravity UI/UX Specs', keywords: ['#theory', '#ui'],
+                content: `[UI_AXIOMS]\n1. Frameworks=0 (No React, No Tailwind).\n2. DOM: Semántico HTML5.\n3. Layout: CSS Grid auto-fit.\n4. Paleta: var(--bg-dark), var(--bg-panel), var(--accent-blue/green/purple/orange/red).\n5. Glass: rgba(20,20,25,0.8), backdrop-filter:blur(15px), border:1px solid var(--glass-border).`
+            }
+        ];
+
+        // 🔥 SKILLS EJECUTABLES (AGENT-TO-AGENT)
         const coreSkills = [
+            // ==========================================
+            // 🌌 CORE: ARCHITECTURE
+            // ==========================================
             {
-                id: 'skill_vna_architect',
-                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: 'Arquitecto VNA (Value Network Analysis)',
-                description: 'Diseña topologías de red, nodos y flujos de valor a partir de una visión fundacional.',
-                keywords: ['#vna', '#architecture', '#core_sos'],
+                id: 'skill_vna_architect', type: 'skill', category: 'core.architecture', projectId: 'global', targetId: 'global',
+                title: 'Arquitecto VNA (Value Network Analysis)', description: 'Generador de Topologías JSON-LD.', keywords: ['#vna', '#genesis'], references: ['ref_vna_core'],
                 content: `
-### 1. VNA Flow (Flujo de Valor)
-- **Inputs Requeridos:** Nombre del proyecto, Arquetipo y Visión Fundacional (Pitch).
-- **Outputs Generados:** Un JSON estructurado con roles (sillas) y transacciones (flujos tangibles e intangibles).
+[VNA_NODE]
+IN: {vision, sector, archetype} -> OUT: {JSON_Topology} | METRIC: NodeDensity
 
-### 2. SOP (Standard Operating Procedure)
-1. Analiza la visión del usuario. Si es ambigua, detente y exige contexto.
-2. Identifica los Nodos (Roles) necesarios para sostener el ecosistema. Asigna a cada uno un multiplicador de riesgo (Slicing Pie) y un arquetipo (Guardian).
-3. Traza las transacciones PULL entre los nodos. Toda transacción debe tener un entregable claro (template) y un tiempo estimado (horas).
-4. No dividas la red en eras temporales. Diseña la máquina en estado estacionario.
-5. Devuelve ÚNICAMENTE el formato JSON esperado por el Kernel.
+[SOP]
+1. Parse(vision). IF ambiguity > 20% -> YIELD {isReady: false, questions: [...]}. HALT.
+2. MAP Roles: Assign {levelId, guardian, FMV, SlicingMultiplier}.
+3. MAP Txs: Connect Roles (PULL logic). Define {template, horas, SOC_Array}.
+4. RETURN JSON. Cero texto adicional.
 
-### 3. SOC (Criterios de Aceptación)
-- [ ] El JSON devuelto es válido y parseable.
-- [ ] Contiene un mínimo de 3 roles estructurales.
-- [ ] Existen transacciones PULL donde el entregable de un nodo es el input del siguiente.
+[SOC]
+- isJSON(output) === true
+- nodes.length >= 3
+- txs.every(hasSoc) === true
+                `.trim()
+            },
+            
+            // ==========================================
+            // ⚖️ CORE: ECONOMY & LAW
+            // ==========================================
+            {
+                id: 'skill_slicing_pie_notary', type: 'skill', category: 'core.economy', projectId: 'global', targetId: 'global',
+                title: 'Notaría TDD (Slicing Pie)', description: 'Auditor binario de SOCs.', keywords: ['#tdd', '#audit'], references: ['ref_tdd_matrix'],
+                content: `
+[VNA_NODE]
+IN: {ProofOfWork, SOC_Checklist} -> OUT: {JSON_Eval} | METRIC: Strictness
+
+[SOP]
+1. EVALUATE PoW AGAINST SOC_Checklist.
+2. IF explicit_proof(SOC[n]) === false -> SOC[n] = false.
+3. EMOTION = 0. INFERENCE = 0.
+4. RETURN { "soc_id_1": boolean, "soc_id_2": boolean }.
+
+[SOC]
+- output.keys === input.soc_keys
+- isDeterministic === true
                 `.trim()
             },
             {
-                id: 'skill_slicing_pie_notary',
-                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: 'Notaría TDD (Slicing Pie)',
-                description: 'Audita el Proof of Work (entregables) contra los SOCs y certifica el minado de Slices.',
-                keywords: ['#tdd', '#audit', '#slicing_pie', '#core_sos'],
+                id: 'skill_legal_drafting', type: 'skill', category: 'core.economy', projectId: 'global', targetId: 'global',
+                title: 'Pacto de Socios (Smart Contract)', description: 'Redacta legal docs vía Cap Table.', keywords: ['#legal', '#dao'], references: [],
                 content: `
-### 1. VNA Flow
-- **Inputs Requeridos:** Entregable del usuario (Proof of Work) y Checklist de SOCs (Condiciones).
-- **Outputs Generados:** Validación TDD (JSON booleano) que autoriza o bloquea el Slicing Pie.
+[VNA_NODE]
+IN: {CapTable, Roles} -> OUT: {Markdown_Contract} | METRIC: LegalSolidity
 
-### 2. SOP (Standard Operating Procedure)
-1. Lee el entregable (texto, link a PR, o documento).
-2. Lee cada punto del \`soc_checklist\`.
-3. Actúa como un juez inmutable: Si el entregable NO demuestra explícitamente que cumple un SOC, márcalo como \`false\`.
-4. No asumas ni infieras éxito. La carga de la prueba recae en el trabajador.
-5. Devuelve el JSON con las aserciones: \`{ "soc_id": true/false }\`.
+[SOP]
+1. EXTRACT(Percentages) from CapTable.
+2. DRAFT(GoodLeaver/BadLeaver_Clauses) tied to Ledger ID.
+3. DRAFT(Governance) == Proportional_to_Slices.
+4. RETURN Markdown.
 
-### 3. SOC (Criterios de Aceptación)
-- [ ] La evaluación es determinista (Cero ambigüedad emocional).
-- [ ] Se devuelven todos los IDs de los SOCs solicitados.
+[SOC]
+- math.sum(percentages) === 100
+- output.includes('Slicing Pie') === true
                 `.trim()
             },
             {
-                id: 'skill_ikigai_ontologist',
-                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: 'Ontología y Propósito Humano',
-                description: 'Analiza el Soulbound Token (SBT) de un nodo y genera su matriz Ikigai.',
-                keywords: ['#ikigai', '#dharma', '#core_sos'],
+                id: 'skill_vault_monetization', type: 'skill', category: 'core.economy', projectId: 'global', targetId: 'global',
+                title: 'Bóvedas de Liquidez (Stripe/Web3)', description: 'Generador de JS para Checkouts y Splitters.', keywords: ['#monetization', '#web3'], references: [],
                 content: `
-### 1. VNA Flow
-- **Inputs Requeridos:** Historial de Slices, Skills adquiridas (SBTs) y borrador de intereses.
-- **Outputs Generados:** Propuesta poética pero accionable de Ikigai y un plan de inversión en la red.
+[VNA_NODE]
+IN: {ProjectId, ConfigEco} -> OUT: {JS_Vault_Module} | METRIC: Security
 
-### 2. SOP (Standard Operating Procedure)
-1. Analiza las horas minadas por el nodo para detectar en qué es objetivamente bueno (Vocación).
-2. Cruza esto con sus intereses declarados (Pasión).
-3. Identifica dónde la red tiene huecos rentables (Profesión/Misión).
-4. Redacta los 4 cuadrantes del Ikigai con un tono inspirador (Arquetipo Caregiver/Sage).
-5. Genera tags semánticos para anclar al usuario en el Córtex 3D.
+[SOP]
+1. DEFINE class TreasuryVault.
+2. METHOD payWithCrypto(): TRY eth_requestAccounts. SEND tx to SplitterContract. CATCH -> yield error.
+3. METHOD payWithFiat(): FETCH /api/checkout WITH application_fee (Protocol Margin).
+4. RETURN raw JS.
 
-### 3. SOC (Criterios de Aceptación)
-- [ ] El tono es empático y constructivo.
-- [ ] Las sugerencias están basadas en datos reales del Ledger (si existen).
+[SOC]
+- js.includes('window.ethereum') === true
+- secrets.hardcoded === false
+                `.trim()
+            },
+
+            // ==========================================
+            // 🧠 CORE: COGNITION & KNOWLEDGE
+            // ==========================================
+            {
+                id: 'skill_ikigai_ontologist', type: 'skill', category: 'core.cognition', projectId: 'global', targetId: 'global',
+                title: 'Matriz Ikigai', description: 'Perfilador de Nodos (Human/AI).', keywords: ['#ikigai', '#dharma'], references: [],
+                content: `
+[VNA_NODE]
+IN: {SBT_History, Draft_Interests} -> OUT: {JSON_Ikigai, ActionPlan} | METRIC: Clarity
+
+[SOP]
+1. EXTRACT(Vocacion) FROM SBT_History (Horas minadas).
+2. EXTRACT(Pasion) FROM Draft_Interests.
+3. MAP(Mision/Profesion) TO Network_Needs.
+4. RETURN JSON: {pasion, mision, profesion, vocacion, tags[]}.
+
+[SOC]
+- json.keys.includes('pasion') === true
+- tags.length >= 3
                 `.trim()
             },
             {
-                id: 'skill_legal_drafting',
-                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: 'Pacto de Socios Dinámico',
-                description: 'Genera contratos legales y cláusulas de Slicing Pie basados en el Ledger actual.',
-                keywords: ['#legal', '#smart_contract', '#core_sos'],
+                id: 'skill_crafter_master', type: 'skill', category: 'core.cognition', projectId: 'global', targetId: 'global',
+                title: 'Skill Forger (A2A Standard)', description: 'Empaquetador de conocimiento (AgentSkills).', keywords: ['#skills', '#dry'], references: ['ref_vna_core'],
                 content: `
-### 1. VNA Flow
-- **Inputs Requeridos:** Cap Table del proyecto y roles activos.
-- **Outputs Generados:** Documento Legal (Markdown) listo para firma.
+[VNA_NODE]
+IN: {Raw_Concept} -> OUT: {JSON_Skill} | METRIC: CompressionRatio
 
-### 2. SOP (Standard Operating Procedure)
-1. Extrae los porcentajes actuales del Cap Table.
-2. Redacta las cláusulas de "Recuperación de Slices" (Good Leaver / Bad Leaver).
-3. Estipula que la gobernanza es proporcional a los Slices minados hasta la serie A.
-4. Formatea el texto como un contrato profesional y blindado.
+[SOP]
+1. EXTRACT(Theory) -> MOVE TO reference_docs[].
+2. DRAFT(SOP) -> Imperative, A2A syntax, zero fluff.
+3. DRAFT(SOC) -> Binary assertions.
+4. RETURN {title, description, content(SOP+SOC), keywords, reference_docs}.
 
-### 3. SOC (Criterios de Aceptación)
-- [ ] Refleja exactamente la matemática del Slicing Pie.
-- [ ] No inventa cláusulas fuera de la equidad dinámica.
-                `.trim()
-            },
-            // 🔥 FRENTE B: SKILLS PARA OMNI-PAPER Y CÓDIGO 🔥
-            {
-                id: 'skill_ui_component_forge',
-                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: 'Forja de UI Antigravity (@web_deployer)',
-                description: 'Genera código frontend (HTML/CSS) limpio, responsivo y visualmente deslumbrante, adaptado a la identidad de un ecosistema pero siguiendo las leyes del Codex TeamTowers.',
-                keywords: ['#ui', '#frontend', '#antigravity', '#web_deployer'],
-                content: `
-### 1. VNA Flow
-- **Inputs Requeridos:** Propósito del componente (ej: "Landing Page", "Dashboard de Afiliados"), Paleta/Identidad del cliente, Datos de la red.
-- **Outputs Generados:** JSON estricto conteniendo campos \`html\`, \`css\` y \`js\` separados, listos para ser inyectados y renderizados a pantalla completa en el Omni-Paper.
-
-### 2. SOP (Standard Operating Procedure)
-1. **Leyes Antigravity:** PROHIBIDO usar frameworks como React, Vue, Tailwind o librerías CDN externas. Todo el código debe ser HTML5 Semántico y CSS3 puro.
-2. **Variables del Sistema:** La interfaz debe heredar los colores de la red usando variables CSS globales si están disponibles. Asume la existencia de:
-   - \`var(--bg-dark)\`, \`var(--bg-panel)\`.
-   - \`var(--accent-blue)\`, \`var(--accent-green)\`, \`var(--accent-purple)\`, \`var(--accent-orange)\`.
-   - \`var(--font-main)\`, \`var(--font-mono)\`.
-3. **Glassmorphism:** Para tarjetas y paneles, usa el patrón visual estándar del Kernel: 
-   \`background: rgba(20,20,25,0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px;\`
-4. **Responsividad Suprema:** Obligatorio usar CSS Grid (ej: \`grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\`) para que las vistas se adapten perfectamente a dispositivos móviles y al modo pantalla completa.
-5. **Formato de Salida:** Devuelve el código encapsulado en el siguiente formato JSON para que el Omni-Paper lo ejecute en el Sandbox:
-   \`{ "type": "web_component", "html": "...", "css": "...", "js": "..." }\`
-
-### 3. SOC (Criterios de Aceptación / Evals)
-- [ ] El JSON devuelto es estrictamente válido (Cuidado con escapar comillas dobles en el HTML).
-- [ ] No contiene la etiqueta \`<style>\` dentro del \`html\` (el CSS debe ir en su campo correspondiente).
-- [ ] Las clases CSS son únicas (usa prefijos, ej: \`.lp-card\` en vez de \`.card\`) para no colisionar con el Kernel.
+[SOC]
+- output.content.includes('Theory') === false
+- output.reference_docs.type === Array
                 `.trim()
             },
             {
-                id: 'skill_vault_monetization',
-                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: 'Bóvedas de Liquidez (Fiat/Web3)',
-                description: 'Desarrolla la lógica transaccional de pagos (Stripe MVP y MetaMask) conectada al sistema de comisiones (Afiliados).',
-                keywords: ['#monetization', '#web3', '#stripe', '#codex_developer'],
+                id: 'skill_prompt_synthesizer', type: 'skill', category: 'core.cognition', projectId: 'global', targetId: 'global',
+                title: 'Prompt Mutator', description: 'Inyecta tools en AGENT.md.', keywords: ['#prompting', '#mcp'], references: [],
                 content: `
-### 1. VNA Flow
-- **Inputs Requeridos:** Identificador de proyecto, coste del servicio, ID del afiliado (si aplica).
-- **Outputs Generados:** Script \`js\` modular para gestionar el checkout.
+[VNA_NODE]
+IN: {Current_AGENT.md, New_Tool_Docs} -> OUT: {Updated_AGENT.md} | METRIC: ContextPreservation
 
-### 2. SOP (Standard Operating Procedure)
-1. **El Margen del Protocolo:** Todo script de cobro debe contemplar el *Protocol Fee* de TeamTowers (ej: 35%).
-2. **Sistema Web3 (MetaMask):**
-   - Comprueba \`if(typeof window.ethereum !== 'undefined')\`.
-   - Programa la solicitud de cuentas \`eth_requestAccounts\`.
-   - La transacción debe enviar fondos a un "Splitter Smart Contract" si existe, o simular la división de la liquidez.
-3. **Sistema Fiat (Stripe MVP):**
-   - Programa un mock o llamada \`fetch\` al endpoint \`/api/checkout\` enviando el \`projectId\` y el \`application_fee_amount\` necesario para el routing del dinero.
-4. **Respuesta Visual:** El JS debe contener lógica para modificar el DOM y mostrar "⏳ Procesando..." o "✅ Pago completado" al usuario final.
+[SOP]
+1. PARSE(Current_AGENT.md) -> Preserve Core Identity.
+2. APPEND "## MCP Tools".
+3. SYNTHESIZE(New_Tool_Docs) -> Add "WHEN to use" & "HOW to use" in 2 lines.
+4. RETURN Raw Markdown.
 
-### 3. SOC (Criterios de Aceptación / Evals)
-- [ ] El script contiene un bloque \`try/catch\` para gestionar rechazos de conexión (ej: usuario cierra MetaMask).
-- [ ] El script no bloquea el Event Loop del navegador.
+[SOC]
+- output.includes(Core_Identity) === true
+- text.length < (input.length + 300)
+                `.trim()
+            },
+
+            // ==========================================
+            // ⚡ CORE: EXECUTION
+            // ==========================================
+            {
+                id: 'skill_ui_component_forge', type: 'skill', category: 'core.execution', projectId: 'global', targetId: 'global',
+                title: 'Antigravity UI/UX (Web Deployer)', description: 'Generador de WebComponents puros.', keywords: ['#ui', '#frontend'], references: ['ref_antigravity_css'],
+                content: `
+[VNA_NODE]
+IN: {Specs, Branding} -> OUT: {JSON_Component} | METRIC: RenderSpeed
+
+[SOP]
+1. BUILD HTML5. CSS Grid auto-fit.
+2. INJECT CSS variables (var(--bg-dark), etc).
+3. APPLY Glassmorphism.
+4. NO REACT. NO TAILWIND.
+5. RETURN JSON: { "type": "web_component", "html": "...", "css": "...", "js": "..." }.
+
+[SOC]
+- output.css.includes('var(') === true
+- output.html.includes('class=') === true
                 `.trim()
             }
         ];
 
-        for (const skill of coreSkills) {
-            await KB.saveNode(skill);
-        }
-        console.log("🌳 [Antigravity Kernel] ADN inyectado con éxito (Codex & Deployer operativos).");
+        // Inyección masiva iterativa
+        for (const ref of coreRefs) await KB.saveNode(ref);
+        for (const skill of coreSkills) await KB.saveNode(skill);
+        
+        console.log("🌳 [Antigravity Kernel] Códice A2A Universal inyectado y acoplado.");
     }
 };
