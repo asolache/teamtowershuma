@@ -51,7 +51,10 @@ export default class HomeView {
             tagline: "Bienvenido, Master Architect. Los ecosistemas operan bajo parámetros nominales."
         };
 
-        const projectsHtml = state.projects.map(p => {
+        // 🔥 FILTRADO ANTIGRAVITY: Solo mostramos ecosistemas vivos
+        const activeProjects = state.projects.filter(p => !p.isArchived);
+
+        const projectsHtml = activeProjects.map(p => {
             const hasActivity = p.work_orders?.some(w => w.status !== 'consolidated');
             return `
                 <div class="ecosystem-card" data-id="${p.id}">
@@ -126,8 +129,8 @@ export default class HomeView {
                             <h2>Domina la Matriz de Sinergias</h2>
                             <p>Bienvenido a TeamTowers V9. El sistema operativo fractal diseñado para orquestar humanos e IAs mediante flujos de valor inmutables.</p>
                             <div style="display:flex; gap:15px;">
-                                <a href="/v9/create" data-link class="btn-primary" style="text-decoration:none; padding: 12px 25px;">⚡ Forjar Ecosistema</a>
-                                <a href="/v9/lms" data-link class="btn-outline" style="text-decoration:none; padding: 12px 25px; border: 1px solid #444; color:#888;">🧠 Consultar Córtex</a>
+                                <a href="/v9/create" data-link class="btn-primary" style="text-decoration:none; padding: 12px 25px; border-radius: 12px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; font-weight: bold; box-shadow: 0 10px 20px rgba(0,176,255,0.3);">⚡ Forjar Ecosistema</a>
+                                <a href="/v9/lms" data-link class="btn-outline" style="text-decoration:none; padding: 12px 25px; border: 1px solid #444; border-radius: 12px; color:#888; font-weight: bold;">🧠 Consultar Córtex</a>
                             </div>
                         </div>
                         <div class="guide-steps">
@@ -157,7 +160,7 @@ export default class HomeView {
 
                     <section class="section-header">
                         <h3>Tus Ecosistemas en Ejecución</h3>
-                        <div style="color: #444; font-size: 0.8rem; font-weight: bold;">${state.projects.length} REDES DETECTADAS</div>
+                        <div style="color: #444; font-size: 0.8rem; font-weight: bold;">${activeProjects.length} REDES ACTIVAS</div>
                     </section>
 
                     <div class="eco-grid">
