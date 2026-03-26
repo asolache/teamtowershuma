@@ -22,6 +22,7 @@ const initialState = {
         activeUserId: null,
         role: 'guest'
     },
+    // 🔥 EL PADRÓN MAESTRO (CON SKILLS ENLAZADAS)
     globalUsers: [
         { id: '@agent_genesis_architect', name: 'Genesis Architect', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'creator', active_skills: ['skill_vna_architect'] } },
         { id: '@agent_dharma_ontologist', name: 'Dharma Ontologist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'caregiver', active_skills: ['skill_ikigai_ontologist'] } },
@@ -29,7 +30,7 @@ const initialState = {
         { id: '@agent_prompt_synthesizer', name: 'Prompt Synthesizer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: ['skill_prompt_synthesizer'] } },
         { id: '@agent_tdd_auditor', name: 'TDD Auditor', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: ['skill_slicing_pie_notary', 'skill_legal_drafting'] } },
         { id: '@agent_synaptic_weaver', name: 'Synaptic Weaver', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'explorer', active_skills: ['skill_knowledge_harvest'] } },
-        { id: '@agent_token_economist', name: 'Token Economist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: ['skill_antifragile_compressor'] } },
+        { id: '@agent_token_economist', name: 'Token Economist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: ['skill_antifragile_compressor', 'skill_vault_monetization'] } },
         { id: '@agent_media_generator', name: 'Media Generator', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero', active_skills: [] } },
         { id: '@agent_web_deployer', name: 'Web Deployer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: ['skill_ui_component_forge'] } },
         { id: '@agent_codex_developer', name: 'Codex Developer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: ['skill_vault_monetization'] } },
@@ -76,7 +77,6 @@ class Store {
                 const legacyState = localStorage.getItem('tt_v9_kernel_state') || localStorage.getItem('tt_sos_v8_state');
                 if (legacyState) {
                     this.state = JSON.parse(legacyState);
-                    await this.persistState(); 
                 }
             }
 
@@ -84,9 +84,19 @@ class Store {
             if (!this.state.config.economics) this.state.config.economics = initialState.config.economics;
 
             if (!this.state.globalUsers) this.state.globalUsers = [];
+            
+            // 🔥 HARD SYNC NEURONAL: Forzamos la actualización de los Agentes Core
             initialState.globalUsers.forEach(coreAgent => {
-                if (!this.state.globalUsers.find(u => u.id === coreAgent.id)) {
-                    this.state.globalUsers.push(coreAgent);
+                const existingIdx = this.state.globalUsers.findIndex(u => u.id === coreAgent.id);
+                if (existingIdx === -1) {
+                    // Si no existe, lo creamos
+                    this.state.globalUsers.push(JSON.parse(JSON.stringify(coreAgent)));
+                } else if (coreAgent.profile?.isAi) {
+                    // Si ya existe en la BD y es IA, le APLASTAMOS el cerebro con el actual del código
+                    // Esto asegura que los enlaces a las skills nunca se rompan
+                    this.state.globalUsers[existingIdx].profile.active_skills = coreAgent.profile.active_skills;
+                    this.state.globalUsers[existingIdx].profile.guardian = coreAgent.profile.guardian;
+                    this.state.globalUsers[existingIdx].name = coreAgent.name;
                 }
             });
 
@@ -102,8 +112,6 @@ class Store {
                 if (!p.sprints) p.sprints = [{ id: 'sp_default', name: 'Sprint 1', startDate: Date.now() }];
                 if (!p.activeSprintId) p.activeSprintId = 'sp_default';
                 
-                // 🔥 PROTOCOLO DE OMNIPRESENCIA (AUTO-HEALING PARA PROYECTOS EXISTENTES)
-                // Inyectamos automáticamente todos los Agentes IA del Padrón en el proyecto si no existen.
                 if (!p.usuarios) p.usuarios = [];
                 this.state.globalUsers.filter(u => u.profile?.isAi).forEach(ai => {
                     if (!p.usuarios.find(pu => pu.id === ai.id)) {
@@ -112,7 +120,8 @@ class Store {
                 });
             });
 
-            console.log("✅ [Kernel] Secuencia de arranque completada. Sistema en línea.");
+            await this.persistState(); // Guardamos el estado purgado y corregido
+            console.log("✅ [Kernel] Secuencia de arranque completada. Sincronización Neuronal Exitosa.");
             this.isInitialized = true;
 
         } catch (e) {
@@ -179,7 +188,6 @@ class Store {
             case 'CREATE_PROJECT':
                 const newProj = { ...action.payload, activeSprintId: 'sp_default', sprints: [{ id: 'sp_default', name: 'Sprint 1', startDate: Date.now() }], logs: [], telemetry: [] };
                 if (!newProj.usuarios) newProj.usuarios = [];
-                // 🔥 Asegurar IAs en proyectos de nueva creación
                 newState.globalUsers.filter(u => u.profile?.isAi).forEach(ai => {
                     if (!newProj.usuarios.find(pu => pu.id === ai.id)) {
                         newProj.usuarios.push({ id: ai.id, permissions: { canCreateWO: true, canApprove: false } });
@@ -190,7 +198,6 @@ class Store {
             case 'UPDATE_PROJECT_INFO':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
-                    // 🔥 ESCUDO: Si se actualizan los usuarios del proyecto, evitar que borren a las IAs Core.
                     if (action.payload.updates.usuarios) {
                         const incomingUsers = action.payload.updates.usuarios;
                         newState.globalUsers.filter(u => u.profile?.isAi).forEach(ai => {
