@@ -6,14 +6,18 @@ import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { SynapticCanvas } from '../components/SynapticCanvas.js'; 
 import { Orchestrator } from '../core/Orchestrator.js';
+import { SkillExplorer } from '../components/SkillExplorer.js'; // INYECCIÓN DEL MICRO-FRONTEND
 
 export default class LmsView {
     constructor() {
         document.title = "La Forja LMS | TeamTowers V9";
-        this.allNodes = [];
         this.currentTab = 'list';
         this.synapticInstance = null;
-        this.draftMemory = null; // Memoria volátil para el Control de Versiones Visual
+        this.skillExplorer = null;
+        
+        // Mantendremos esto temporalmente hasta extraer el Modal en la Fase A.2
+        this.draftMemory = null; 
+        this.allNodes = []; 
     }
 
     async getHtml() {
@@ -39,6 +43,7 @@ export default class LmsView {
                 .tab-content.active { display: block; }
                 .tab-content.graph-active { display: flex; flex-direction: column; height: calc(100vh - 180px); padding-bottom: 0; }
 
+                /* CSS compartido del Explorer */
                 .lms-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 15px;}
                 .filters-bar { display: flex; gap: 10px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border); overflow-x: auto;}
                 .filter-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; font-family: var(--font-mono); font-size: 0.8rem;}
@@ -52,51 +57,34 @@ export default class LmsView {
                 .dropzone-area.drag-over { border-color: var(--accent-purple); background: rgba(224,64,251,0.05); color: white; transform: scale(1.02);}
 
                 .lms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;}
-                
                 .meme-card { background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: 0.3s; position: relative; overflow: hidden; cursor: pointer;}
                 .meme-card:hover { border-color: var(--accent-purple); background: rgba(224,64,251,0.05); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(224,64,251,0.1);}
-                
                 .meme-category { position: absolute; top: 0; right: 0; background: rgba(224,64,251,0.1); color: var(--accent-purple); padding: 5px 15px; border-radius: 0 0 0 12px; font-size: 0.7rem; font-family: var(--font-mono); font-weight: bold; border-left: 1px solid rgba(224,64,251,0.3); border-bottom: 1px solid rgba(224,64,251,0.3);}
-                .meme-category.core_os { background: rgba(0,230,118,0.1); color: var(--accent-green); border-color: rgba(0,230,118,0.3);}
-                .meme-category.project_core { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
-                .meme-category.prompt_a2a { background: rgba(255,171,64,0.1); color: var(--accent-orange); border-color: rgba(255,171,64,0.3);}
-                .meme-category.evergreen { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); text-shadow: 0 0 10px rgba(255,215,0,0.5);}
                 .meme-category.skill { background: rgba(0,230,118,0.1); color: var(--accent-green); border-color: rgba(0,230,118,0.3);}
-                .meme-category.reference { background: rgba(0,176,255,0.1); color: var(--accent-blue); border-color: rgba(0,176,255,0.3);}
-                .meme-category.script { background: rgba(255,82,82,0.1); color: var(--accent-red); border-color: rgba(255,82,82,0.3);}
-                .meme-category.eval { background: rgba(255,171,64,0.1); color: var(--accent-orange); border-color: rgba(255,171,64,0.3);}
-
                 .meme-title { font-size: 1.1rem; color: white; margin: 10px 0 0 0; font-weight: 900;}
                 .meme-content { color: #aaa; font-size: 0.9rem; line-height: 1.5; font-family: 'Georgia', serif; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;}
-                
                 .meme-footer { margin-top: auto; padding-top: 15px; border-top: 1px dashed #333; display: flex; flex-wrap: wrap; gap: 5px; align-items: center;}
                 .meme-tag { background: rgba(0,0,0,0.6); color: #888; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-family: var(--font-mono);}
-
                 .empty-lms { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #666; border: 1px dashed #333; border-radius: 20px;}
 
                 #synapticMountPoint { width: 100%; flex: 1; min-height: 500px; border-radius: 20px; overflow: hidden; }
 
-                /* MODAL OVERLAY - VERSION CONTROL UX */
+                /* MODAL OVERLAY CSS (Se mantendrá hasta la Fase A.2) */
                 .modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(5,5,8,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;}
                 .modal-overlay.active { display: flex; opacity: 1; }
                 .modal-card { background: linear-gradient(145deg, rgba(20,20,25,0.95), rgba(10,10,15,0.98)); border: 1px solid var(--accent-purple); border-radius: 20px; width: 100%; max-width: 1000px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(224,64,251,0.2); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); max-height: 95vh; overflow-y: auto; display:flex; flex-direction:column;}
                 .modal-overlay.active .modal-card { transform: translateY(0); }
-                
                 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px dashed #333; padding-bottom: 1rem;}
                 .modal-header h2 { margin: 0; color: white; font-size: 1.5rem; font-weight: 900;}
                 .btn-close { background: transparent; border: none; color: #888; font-size: 1.5rem; cursor: pointer; transition: 0.2s;}
                 .btn-close:hover { color: var(--accent-red); transform: scale(1.1);}
-
-                /* DOS COLUMNAS EN EDICIÓN */
                 .modal-body-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; flex: 1;}
-
                 .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;}
                 .form-group label { color: var(--accent-blue); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px; border-radius: 10px; font-family: var(--font-main); font-size: 0.95rem; outline: none; transition: 0.2s;}
                 .form-control:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(224,64,251,0.1);}
                 .form-control.textarea { min-height: 250px; resize: vertical; font-family: 'Georgia', serif; line-height: 1.6;}
                 
-                /* DRAFT BANNER - ANTIFRAGILITY */
                 .draft-banner { display:none; background: rgba(255,145,0,0.1); border: 1px solid var(--accent-orange); border-radius: 12px; padding: 15px; margin-bottom: 20px; color: #fff;}
                 .draft-banner.active { display: block; animation: fadeIn 0.3s; }
                 .draft-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;}
@@ -115,25 +103,13 @@ export default class LmsView {
                 .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(224,64,251,0.5); filter: brightness(1.2);}
                 .btn-danger { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red);}
                 .btn-danger:hover { background: rgba(255,82,82,0.1); transform: translateY(-2px);}
-                
                 .btn-expand { background: linear-gradient(135deg, var(--accent-orange), #ff3d00); color: white; box-shadow: 0 5px 15px rgba(255,171,64,0.3); }
                 .btn-expand:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,171,64,0.5); filter: brightness(1.2); }
-
                 .btn-export { background: transparent; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
                 .btn-export:hover { background: rgba(224,64,251,0.1); }
-
                 .ref-badge { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; margin-bottom:5px; margin-right:5px;}
                 .eval-badge { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; margin-bottom:5px; margin-right:5px;}
                 .script-badge { background: rgba(0,230,118,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-mono); display:inline-block; margin-bottom:5px; margin-right:5px;}
-
-                @media (max-width: 768px) {
-                    .workspace-lms { padding: 90px 1rem 120px 1rem; }
-                    .lms-controls-row { flex-direction: column; align-items: stretch; }
-                    .modal-card { padding: 1.5rem; border-radius: 16px; margin: 10px; }
-                    .modal-body-grid { grid-template-columns: 1fr; }
-                    .modal-actions { flex-direction: column; }
-                    .btn-modal { width: 100%; text-align: center; }
-                }
             </style>
 
             <div class="app-layout">
@@ -142,34 +118,7 @@ export default class LmsView {
                     ${PageHeader.getHtml(headerConfig)}
                     
                     <div id="tab-list" class="tab-content ${this.currentTab === 'list' ? 'active' : ''}">
-                        
-                        <div class="lms-controls-row">
-                            <div class="filters-bar" id="lmsFilters">
-                                <button class="filter-btn active" data-filter="all">Todos</button>
-                                <button class="filter-btn" data-filter="skill">🎒 Skills</button>
-                                <button class="filter-btn" data-filter="reference">📚 References</button>
-                                <button class="filter-btn" data-filter="eval">📋 Evals</button>
-                                <button class="filter-btn" data-filter="script">⚡ Scripts</button>
-                            </div>
-                            
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                <button class="btn-deep-research" id="btnNewNode" style="background:transparent; border-color:var(--accent-green); color:var(--accent-green);">
-                                    <span style="font-size:1.2rem;">➕</span> Forjar Nodo
-                                </button>
-                                <button class="btn-deep-research" id="btnOpenResearch">
-                                    <span style="font-size:1.2rem;">🧠</span> Deep Research (IA)
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="dropzone-area" id="skillDropzone">
-                            <span style="font-size:1.5rem;">📥</span>
-                            <span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>
-                        </div>
-
-                        <div class="lms-grid" id="lmsGrid">
-                            <div class="empty-lms">Cargando Memoria Profunda...</div>
-                        </div>
+                        <div id="mount-skill-explorer"></div>
                     </div>
 
                     <div id="tab-graph" class="tab-content ${this.currentTab === 'graph' ? 'active graph-active' : ''}">
@@ -199,7 +148,6 @@ export default class LmsView {
                             </div>
 
                             <div class="modal-body-grid">
-                                
                                 <div>
                                     <div style="display:flex; gap:15px;">
                                         <div class="form-group" style="flex:1;">
@@ -247,7 +195,6 @@ export default class LmsView {
                                         <input type="text" id="editNodeKeywords" class="form-control" style="font-family:var(--font-mono); font-size:0.8rem;" placeholder="tag1, tag2">
                                     </div>
                                 </div>
-
                             </div>
 
                             <div class="modal-actions">
@@ -308,11 +255,11 @@ export default class LmsView {
         PageHeader.execute();
         await this.loadJSZip(); 
 
+        // 🔥 Instanciamos y montamos el nuevo Micro-Frontend
+        this.skillExplorer = new SkillExplorer('mount-skill-explorer');
+        await this.skillExplorer.render();
+
         this.dom = {
-            grid: document.getElementById('lmsGrid'),
-            filters: document.getElementById('lmsFilters'),
-            dropzone: document.getElementById('skillDropzone'),
-            
             modal: document.getElementById('editModal'),
             btnClose: document.getElementById('btnCloseModal'),
             btnSave: document.getElementById('btnSaveNode'),
@@ -341,9 +288,7 @@ export default class LmsView {
             btnDiscardDraft: document.getElementById('btnDiscardDraft'),
 
             synapticMount: document.getElementById('synapticMountPoint'),
-
-            btnNewNode: document.getElementById('btnNewNode'), 
-            btnOpenResearch: document.getElementById('btnOpenResearch'),
+            
             researchModal: document.getElementById('researchModal'),
             btnCloseResearch: document.getElementById('btnCloseResearch'),
             btnRunResearch: document.getElementById('btnRunResearch'),
@@ -371,11 +316,22 @@ export default class LmsView {
             }
         });
 
-        await this.loadData();
-        this.setupFilters();
+        // Eventos delegados por los componentes hijos
+        window.addEventListener('open-forge-modal', (e) => {
+            if (e.detail.nodeId) this.openEditor(e.detail.nodeId);
+            else this.openNewEditor();
+        });
+
+        window.addEventListener('open-research-modal', () => {
+            this.dom.researchModal.classList.add('active');
+        });
+
+        window.addEventListener('process-skill-file', async (e) => {
+            await this.parseZipSkillFile(e.detail.file, e.detail.dropzone);
+        });
+
         this.setupModalEvents();
         this.setupDeepResearchEvents();
-        this.setupDragAndDrop();
     }
 
     loadJSZip() {
@@ -388,43 +344,22 @@ export default class LmsView {
         });
     }
 
-    setupDragAndDrop() {
-        const dropzone = this.dom.dropzone;
-        if (!dropzone) return;
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropzone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false));
-        ['dragenter', 'dragover'].forEach(eventName => dropzone.addEventListener(eventName, () => dropzone.classList.add('drag-over'), false));
-        ['dragleave', 'drop'].forEach(eventName => dropzone.addEventListener(eventName, () => dropzone.classList.remove('drag-over'), false));
-
-        dropzone.addEventListener('drop', async (e) => {
-            const dt = e.dataTransfer;
-            const file = dt.files[0];
-            
-            if (file && (file.name.endsWith('.zip') || file.name.endsWith('.skill'))) {
-                dropzone.innerHTML = "⏳ Desempaquetando Architectura AgentSkills...";
-                await this.parseZipSkillFile(file);
-                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>`;
-            } else {
-                alert("Formato denegado. Se requiere un paquete (.skill o .zip).");
-            }
-        }, false);
-    }
-
-    async parseZipSkillFile(file) {
+    async parseZipSkillFile(file, dropzone) {
         if (!window.JSZip) await this.loadJSZip();
         try {
             const zip = new window.JSZip();
             const contents = await zip.loadAsync(file);
             
             const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('SKILL.md') || k.endsWith('Skill.md'));
-            if (!skillFileKey) return alert("Paquete Inválido: No se encontró 'SKILL.md' en el archivo.");
+            if (!skillFileKey) {
+                dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>`;
+                return alert("Paquete Inválido: No se encontró 'SKILL.md' en el archivo.");
+            }
             
             const skillText = await contents.files[skillFileKey].async("text");
             const parsedSkill = this.extractFrontmatter(skillText, file.name.replace('.zip','').replace('.skill',''));
             
-            const refIds = [];
-            const evalIds = [];
-            const scriptIds = [];
+            const refIds = []; const evalIds = []; const scriptIds = [];
 
             await KB.init();
 
@@ -439,126 +374,46 @@ export default class LmsView {
                 if (relativePath.includes('references/') || relativePath.includes('resources/')) {
                     const parsed = this.extractFrontmatter(rawText, fileName.replace('.md', ''));
                     const id = `ref_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
-                    await KB.saveNode({
-                        id, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global',
-                        title: parsed.title, description: parsed.description, content: parsed.content, keywords: ['#imported_ref']
-                    });
+                    await KB.saveNode({ id, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global', title: parsed.title, description: parsed.description, content: parsed.content, keywords: ['#imported_ref'] });
                     refIds.push(id);
                 } 
                 else if (relativePath.includes('evals/')) {
                     const id = `eval_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
-                    await KB.saveNode({
-                        id, type: 'eval', category: 'eval', projectId: 'global', targetId: 'global',
-                        title: fileName, description: `Test Cases for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_eval']
-                    });
+                    await KB.saveNode({ id, type: 'eval', category: 'eval', projectId: 'global', targetId: 'global', title: fileName, description: `Test Cases for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_eval'] });
                     evalIds.push(id);
                 }
                 else if (relativePath.includes('scripts/')) {
                     const id = `script_imp_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
-                    await KB.saveNode({
-                        id, type: 'script', category: 'script', projectId: 'global', targetId: 'global',
-                        title: fileName, description: `Executable code for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_script']
-                    });
+                    await KB.saveNode({ id, type: 'script', category: 'script', projectId: 'global', targetId: 'global', title: fileName, description: `Executable code for ${parsedSkill.title}`, content: rawText, keywords: ['#imported_script'] });
                     scriptIds.push(id);
                 }
             }
 
-            const skillNode = {
-                id: `skill_imported_${Date.now()}`,
-                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: parsedSkill.title, description: parsedSkill.description, content: parsedSkill.content,
-                references: refIds, evals: evalIds, scripts: scriptIds, keywords: ['#imported_skill']
-            };
+            const skillNode = { id: `skill_imported_${Date.now()}`, type: 'skill', category: 'skill', projectId: 'global', targetId: 'global', title: parsedSkill.title, description: parsedSkill.description, content: parsedSkill.content, references: refIds, evals: evalIds, scripts: scriptIds, keywords: ['#imported_skill'] };
 
             await KB.saveNode(skillNode);
             alert(`✅ AgentSkill Instalada: ${parsedSkill.title} (${refIds.length} Refs, ${evalIds.length} Evals, ${scriptIds.length} Scripts)`);
-            await this.loadData();
+            
+            // Refrescar el micro-frontend
+            if (this.skillExplorer) await this.skillExplorer.loadData();
             await this.forceGraphRefresh();
+            dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>`;
         } catch (error) {
             alert("Error al desempaquetar la Skill: " + error.message);
+            dropzone.innerHTML = `<span style="font-size:1.5rem;">📥</span><span style="font-weight:bold;">Arrastra aquí un paquete (.skill o .zip) para inyectar su estructura en el Padrón.</span>`;
         }
     }
 
     extractFrontmatter(text, defaultTitle) {
-        let title = defaultTitle;
-        let description = '';
-        let content = text;
+        let title = defaultTitle; let description = ''; let content = text;
         const yamlRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
         const match = text.match(yamlRegex);
         if (match) {
-            const yaml = match[1];
-            content = match[2].trim();
-            const nameMatch = yaml.match(/name:\s*(.+)/);
-            if (nameMatch) title = nameMatch[1].trim();
-            const descMatch = yaml.match(/description:\s*(.+)/);
-            if (descMatch) description = descMatch[1].trim();
+            const yaml = match[1]; content = match[2].trim();
+            const nameMatch = yaml.match(/name:\s*(.+)/); if (nameMatch) title = nameMatch[1].trim();
+            const descMatch = yaml.match(/description:\s*(.+)/); if (descMatch) description = descMatch[1].trim();
         }
         return { title, description, content };
-    }
-
-    async loadData() {
-        try {
-            await KB.init();
-            this.allNodes = await KB.getAllNodes();
-            const activeFilter = this.dom.filters.querySelector('.active')?.dataset.filter || 'all';
-            this.renderNodes(activeFilter);
-        } catch (error) {
-            this.dom.grid.innerHTML = `<div class="empty-lms">⚠️ Error crítico leyendo IndexedDB.</div>`;
-        }
-    }
-
-    renderNodes(filterCategory) {
-        let nodesToRender = this.allNodes;
-        if (filterCategory !== 'all') nodesToRender = this.allNodes.filter(n => n.category === filterCategory || n.type === filterCategory);
-        nodesToRender.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
-
-        if (nodesToRender.length === 0) {
-            this.dom.grid.innerHTML = `<div class="empty-lms"><div style="font-size: 3rem; margin-bottom: 10px;">🕳️</div><h3>Vacío Cognitivo</h3></div>`;
-            return;
-        }
-
-        this.dom.grid.innerHTML = nodesToRender.map(node => {
-            const safeCat = node.type === 'prompt_a2a' ? 'prompt_a2a' : (node.category || 'MEME');
-            const tags = (node.keywords && Array.isArray(node.keywords)) ? node.keywords : [];
-            let tagsHtml = tags.slice(0, 3).map(t => `<span class="meme-tag">#${t}</span>`).join('');
-            const safeId = node.id.replace(/"/g, '&quot;');
-            
-            const refCount = (node.references && Array.isArray(node.references)) ? node.references.length : 0;
-            const evalsCount = (node.evals && Array.isArray(node.evals)) ? node.evals.length : 0;
-            const scriptsCount = (node.scripts && Array.isArray(node.scripts)) ? node.scripts.length : 0;
-
-            let countsHtml = '';
-            if (refCount > 0) countsHtml += `<span class="meme-tag" style="color:var(--accent-blue);">📚 ${refCount}</span>`;
-            if (evalsCount > 0) countsHtml += `<span class="meme-tag" style="color:var(--accent-orange);">📋 ${evalsCount}</span>`;
-            if (scriptsCount > 0) countsHtml += `<span class="meme-tag" style="color:var(--accent-green);">⚡ ${scriptsCount}</span>`;
-
-            return `
-                <div class="meme-card" data-id="${safeId}">
-                    <div class="meme-category ${safeCat}">${safeCat}</div>
-                    <h4 class="meme-title">${node.title || 'Sin Título'}</h4>
-                    ${node.description ? `<div style="color:var(--accent-blue); font-size:0.75rem; font-weight:bold; margin-bottom:5px;">${node.description}</div>` : ''}
-                    <div class="meme-content">${node.content || ''}</div>
-                    <div class="meme-footer">
-                        <span class="meme-tag" style="color:var(--accent-purple);">✏️ Editar</span>
-                        ${countsHtml}
-                        ${tagsHtml}
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        this.dom.grid.querySelectorAll('.meme-card').forEach(card => card.addEventListener('click', (e) => this.openEditor(e.currentTarget.dataset.id)));
-    }
-
-    setupFilters() {
-        const btns = this.dom.filters.querySelectorAll('.filter-btn');
-        btns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                btns.forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                this.renderNodes(e.target.dataset.filter);
-            });
-        });
     }
 
     renderLinkedNodes(idsArray, container, cssClass, icon) {
@@ -567,7 +422,8 @@ export default class LmsView {
         if (!idsArray || idsArray.length === 0) return;
         
         idsArray.forEach(id => {
-            const node = this.allNodes.find(n => n.id === id);
+            // Obtenemos del explorer ya cargado
+            const node = this.skillExplorer?.allNodes.find(n => n.id === id);
             const title = node ? node.title : id;
             const badge = document.createElement('span');
             badge.className = cssClass;
@@ -581,11 +437,12 @@ export default class LmsView {
         });
     }
 
-    openEditor(nodeId) {
+    async openEditor(nodeId) {
+        await KB.init();
+        this.allNodes = await KB.getAllNodes(); // Actualizamos memoria local del modal
         const node = this.allNodes.find(n => n.id === nodeId);
         if (!node) return;
 
-        // Limpiamos memoria del Draft al abrir uno nuevo
         this.draftMemory = null;
         this.dom.draftBanner.classList.remove('active');
 
@@ -616,6 +473,29 @@ export default class LmsView {
         this.dom.modal.classList.add('active');
     }
 
+    openNewEditor() {
+        this.dom.inpId.value = '';
+        this.dom.inpType.value = 'custom';
+        this.dom.inpProjId.value = 'global';
+        this.dom.inpCat.value = 'skill';
+        this.dom.inpTitle.value = '';
+        this.dom.inpDesc.value = '';
+        this.dom.inpContent.value = '';
+        this.dom.inpKeywords.value = '';
+        this.dom.inpReferences.value = '';
+        this.dom.inpEvals.value = '';
+        this.dom.inpScripts.value = '';
+        
+        this.renderLinkedNodes([], this.dom.refLinksContainer, '', '');
+        this.renderLinkedNodes([], this.dom.evalLinksContainer, '', '');
+        this.renderLinkedNodes([], this.dom.scriptLinksContainer, '', '');
+        
+        this.dom.btnDelete.style.display = 'none';
+        this.draftMemory = null;
+        this.dom.draftBanner.classList.remove('active');
+        this.dom.modal.classList.add('active');
+    }
+
     closeEditor() { 
         this.dom.modal.classList.remove('active'); 
         this.draftMemory = null;
@@ -630,7 +510,6 @@ export default class LmsView {
     }
 
     setupDeepResearchEvents() {
-        this.dom.btnOpenResearch.addEventListener('click', () => this.dom.researchModal.classList.add('active'));
         this.dom.btnCloseResearch.addEventListener('click', () => this.dom.researchModal.classList.remove('active'));
         
         this.dom.btnRunResearch.addEventListener('click', async () => {
@@ -647,7 +526,8 @@ export default class LmsView {
                 await Orchestrator.runDeepResearch(topic, cat, 3, engine);
                 alert("✅ Investigación completada.");
                 this.dom.researchModal.classList.remove('active');
-                await this.loadData(); await this.forceGraphRefresh();
+                if (this.skillExplorer) await this.skillExplorer.loadData();
+                await this.forceGraphRefresh();
             } catch (e) {
                 alert("Fallo: " + e.message);
             } finally {
@@ -660,31 +540,6 @@ export default class LmsView {
     setupModalEvents() {
         this.dom.btnClose.addEventListener('click', () => this.closeEditor());
         this.dom.modal.addEventListener('click', (e) => { if (e.target === this.dom.modal) this.closeEditor(); });
-
-        if (this.dom.btnNewNode) {
-            this.dom.btnNewNode.addEventListener('click', () => {
-                this.dom.inpId.value = '';
-                this.dom.inpType.value = 'custom';
-                this.dom.inpProjId.value = 'global';
-                this.dom.inpCat.value = 'skill';
-                this.dom.inpTitle.value = '';
-                this.dom.inpDesc.value = '';
-                this.dom.inpContent.value = '';
-                this.dom.inpKeywords.value = '';
-                this.dom.inpReferences.value = '';
-                this.dom.inpEvals.value = '';
-                this.dom.inpScripts.value = '';
-                
-                this.renderLinkedNodes([], this.dom.refLinksContainer, '', '');
-                this.renderLinkedNodes([], this.dom.evalLinksContainer, '', '');
-                this.renderLinkedNodes([], this.dom.scriptLinksContainer, '', '');
-                
-                this.dom.btnDelete.style.display = 'none';
-                this.draftMemory = null;
-                this.dom.draftBanner.classList.remove('active');
-                this.dom.modal.classList.add('active');
-            });
-        }
 
         this.dom.inpReferences.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.refLinksContainer, 'ref-badge', '📚'));
         this.dom.inpEvals.addEventListener('input', (e) => this.renderLinkedNodes(e.target.value.split(',').map(k=>k.trim()).filter(k=>k!==''), this.dom.evalLinksContainer, 'eval-badge', '📋'));
@@ -818,7 +673,7 @@ export default class LmsView {
                     
                     // Activamos el Banner de Control de Versiones
                     this.dom.draftBanner.classList.add('active');
-                    this.dom.btnExpand.style.display = 'none'; // Ocultamos el botón de pedir mejoras para no apilar drafts
+                    this.dom.btnExpand.style.display = 'none'; 
                     
                 } catch (error) { 
                     alert("Fallo en la expansión: " + error.message); 
@@ -846,8 +701,6 @@ export default class LmsView {
             this.dom.draftBanner.classList.remove('active');
             this.dom.btnExpand.style.display = 'block';
             this.draftMemory = null;
-            
-            // Nota: Aquí se podrían purgar de la KB las #ai_draft_ref creadas
         });
 
         this.dom.btnApplyDraft.addEventListener('click', () => {
@@ -875,6 +728,8 @@ export default class LmsView {
             const evalsArray = this.dom.inpEvals.value.split(',').map(k => k.trim()).filter(k => k !== '');
             const scriptsArray = this.dom.inpScripts.value.split(',').map(k => k.trim()).filter(k => k !== '');
             
+            await KB.init();
+            this.allNodes = await KB.getAllNodes();
             const oldNode = this.allNodes.find(n => n.id === id) || {};
             
             const updatedNode = { 
@@ -896,9 +751,8 @@ export default class LmsView {
             this.dom.btnSave.innerText = "⏳ Sellando...";
             
             try {
-                await KB.init(); 
                 await KB.saveNode(updatedNode);
-                await this.loadData(); 
+                if (this.skillExplorer) await this.skillExplorer.loadData(); 
                 await this.forceGraphRefresh();
                 this.closeEditor();
             } catch (e) { 
@@ -915,7 +769,8 @@ export default class LmsView {
             this.dom.btnDelete.disabled = true;
             try {
                 await KB.init(); await KB.deleteNode(id);
-                await this.loadData(); await this.forceGraphRefresh();
+                if (this.skillExplorer) await this.skillExplorer.loadData();
+                await this.forceGraphRefresh();
                 this.closeEditor();
             } catch (e) { alert(`Error: ${e.message}`); } 
             finally { this.dom.btnDelete.disabled = false; }
