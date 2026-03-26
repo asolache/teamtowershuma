@@ -2,14 +2,6 @@
 import { store } from './store.js';
 import { KB } from './kb.js';
 
-const LLM_PRICING = {
-    'deepseek': { input: 0.14, output: 0.28 }, 
-    'gemini': { input: 0.075, output: 0.30 },  
-    'openai': { input: 2.50, output: 10.00 },  
-    'anthropic': { input: 3.00, output: 15.00 }, 
-    'custom': { input: 0.0, output: 0.0 }
-};
-
 // 🔥 PADRÓN UNIVERSAL DE AGENTES CORE (V9 Antigravity)
 const CORE_AGENTS = {
     ARCHITECT: '@agent_genesis_architect',
@@ -177,10 +169,10 @@ class OrchestratorCore {
         return contextText;
     }
 
-    // 🔥 NUEVA FUNCIONALIDAD: SINTETIZADOR DE PROMPTS (Agent_Prompt_Synthesizer)
+    // 🔥 SINTETIZADOR DE PROMPTS (Agent_Prompt_Synthesizer)
     async synthesizeAgentPrompt(currentPrompt, newSkillContent) {
         const systemPrompt = `
-            Eres el 'Agent_Prompt_Synthesizer'. Tu misión es actualizar el System Prompt de un Agente (AGENT.md) porque se le acaba de añadir una nueva Herramienta/Skill.
+            Eres el '${CORE_AGENTS.SYNTHESIZER}'. Tu misión es actualizar el System Prompt de un Agente (AGENT.md) porque se le acaba de añadir una nueva Herramienta/Skill.
             
             Reglas estrictas (agentskills.io standards):
             1. NO borres ni alteres el propósito original, tono o reglas previas del agente.
@@ -327,7 +319,6 @@ class OrchestratorCore {
         return result;
     }
 
-    // 🔥 BUCLE DE EXPANSIÓN COGNITIVA (AGENT_SKILL_CRAFTER VNA)
     async expandNodeSemantics(title, category, content, tags, overrideProvider = null) {
         const available = this._getAvailableProviders(overrideProvider || 'openai');
         const { provider, apiKey } = available[0];
@@ -339,22 +330,22 @@ class OrchestratorCore {
             SI EL NODO ES UNA "SKILL" (Categoría: skill), DEBES ESTRUCTURAR EL CONTENT ASÍ:
             
             ### 1. VNA Flow (Flujo de Valor)
-            - **Inputs Requeridos (Tangibles/Intangibles):** ¿Qué necesita el agente antes de empezar? (ej: Datos en bruto, acceso a un repo, feedback del usuario).
-            - **Outputs Generados (Tangibles/Intangibles):** ¿Qué devuelve a la red? (ej: Archivo JSON, código refactorizado, confianza del cliente).
+            - **Inputs Requeridos (Tangibles/Intangibles):** ¿Qué necesita el agente antes de empezar?
+            - **Outputs Generados (Tangibles/Intangibles):** ¿Qué devuelve a la red?
             
             ### 2. SOP (Standard Operating Procedure)
-            Instrucciones en imperativo. Paso a paso. Concisas y accionables. CERO teoría (la teoría va a los reference_docs). Incluye patrones y formatos de salida esperados (ej: "ALWAYS use this exact template...").
+            Instrucciones en imperativo. Paso a paso. CERO teoría (la teoría va a los reference_docs).
             
             ### 3. SOC (Standard Operating Conditions / Evals)
-            Criterios de éxito y aserciones TDD. Lista de verificación medible que un agente evaluador (Grader) pueda usar para aprobar o rechazar el trabajo resultante.
+            Criterios de éxito y aserciones TDD.
             
             REGLA DE REVELACIÓN PROGRESIVA (Progressive Disclosure):
-            Si la Skill requiere teoría, ejemplos largos, metodologías de respaldo o historia, NO lo pongas en el "content". Extráelo y mételo en el array JSON "reference_docs" para que se guarden como archivos separados.
+            Si la Skill requiere teoría, extráelo y mételo en el array JSON "reference_docs".
             
             Devuelve ÚNICAMENTE JSON estricto: 
             { 
                 "title": "Título Mejorado", 
-                "description": "Resumen indexable corto para enrutamiento RAG (Explica CUÁNDO debe usarse esta skill)...", 
+                "description": "Resumen indexable corto...", 
                 "content": "Estructura VNA Flow + SOP + SOC en Markdown...", 
                 "keywords": ["tag1", "tag2"],
                 "reference_docs": [ { "title": "Referencia 1", "description": "Breve resumen", "content": "Teoría profunda en Markdown..." } ]
@@ -367,18 +358,6 @@ class OrchestratorCore {
         this._logTelemetry('global', CORE_AGENTS.CRAFTER, provider, 'KNOWLEDGE_EXPANSION', response.telemetry);
         
         return response.content;
-    }
-
-    async autoRespondUsenet(project, incomingLog, agentNode) {
-        try {
-            const preferredEngine = agentNode.profile?.preferredEngine || null;
-            const contextStr = await this._buildLightweightContext(project.id, agentNode.id);
-            const systemPrompt = `Eres ${agentNode.name}.\n\n${contextStr}\nResponde al ping del hilo con acción inmediata (GTD). No uses JSON ni markdown puro.`;
-            const result = await this.callLLM({ preferredEngine, systemPrompt, userPrompt: `Ping de ${incomingLog.authorId}: ${incomingLog.content}`, responseFormat: "text", temperature: 0.5 });
-            
-            await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId: project.id, log: { id: 'log_' + Date.now(), date: Date.now(), authorId: agentNode.id, relatedTxHash: incomingLog.relatedTxHash, content: result.content, mentions: [incomingLog.authorId], readBy: [] } } });
-            this._logTelemetry(project.id, agentNode.id, result.telemetry.provider, 'USENET_PING', result.telemetry);
-        } catch (error) { console.error(`[Usenet] Fallo P2P con ${agentNode.id}:`, error); }
     }
 
     async autoHealNetwork(task, projectId) {
@@ -414,11 +393,46 @@ class OrchestratorCore {
         }
     }
 
+    // 🔥 CÁLCULO ECONÓMICO DINÁMICO (Conectado a Redux y Modelo de DAO)
     _logTelemetry(projectId, agentId, engine, actionType, telemetryData) {
         if (!telemetryData) return;
-        const priceMatrix = LLM_PRICING[engine] || { input: 0, output: 0 };
-        const costInDollars = ((telemetryData.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((telemetryData.tokens.completion_tokens / 1000000) * priceMatrix.output);
-        store.dispatch({ type: 'LOG_TELEMETRY', payload: { projectId, agentId, engine, actionType, tokens: telemetryData.tokens, costInDollars, recRatio: 0, latencyMs: telemetryData.latencyMs } });
+        
+        // Extraemos el modelo económico de la DAO desde Redux
+        const state = store.getState();
+        const ecoConfig = state.config?.economics || {
+            markup_margin: 0.0,
+            premium_features_fee: 0.0,
+            base_pricing: {
+                'deepseek': { input: 0.14, output: 0.28 }, 
+                'gemini': { input: 0.075, output: 0.30 },  
+                'openai': { input: 2.50, output: 10.00 },  
+                'anthropic': { input: 3.00, output: 15.00 }, 
+                'custom': { input: 0.0, output: 0.0 }
+            }
+        };
+
+        const priceMatrix = ecoConfig.base_pricing[engine] || { input: 0, output: 0 };
+        
+        // 1. Coste base (Lo que te cobra OpenAI)
+        const baseCost = ((telemetryData.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
+                         ((telemetryData.tokens.completion_tokens / 1000000) * priceMatrix.output);
+        
+        // 2. Aplicamos tu Margen Corporativo (Markup + Premium Fee)
+        const finalCostInDollars = baseCost * (1 + ecoConfig.markup_margin + ecoConfig.premium_features_fee);
+
+        store.dispatch({ 
+            type: 'LOG_TELEMETRY', 
+            payload: { 
+                projectId, 
+                agentId, 
+                engine, 
+                actionType, 
+                tokens: telemetryData.tokens, 
+                costInDollars: finalCostInDollars, // 🔥 Ahora el Dashboard reflejará tu facturación real
+                recRatio: 0, 
+                latencyMs: telemetryData.latencyMs 
+            } 
+        });
     }
 }
 export const Orchestrator = new OrchestratorCore();
