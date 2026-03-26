@@ -40,7 +40,6 @@ export class Sidebar {
             `;
         });
 
-        // 🔥 MOSTRAMOS SOLO PROYECTOS ACTIVOS EN EL SIDEBAR (y el seleccionado aunque esté archivado para que no falle el select)
         const visibleProjects = state.projects.filter(p => !p.isArchived || p.id === currentActiveId);
         
         let ecosystemOptions = visibleProjects.map(p => 
@@ -55,9 +54,10 @@ export class Sidebar {
                 .sidebar { width: 260px; height: 100vh; background: var(--bg-panel); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 100; position: relative;}
                 .sidebar.minimized { width: 80px; }
                 
-                .sb-header { padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
+                /* 🔥 FIX: Cambio de orientación al minimizar para que quepan ambos elementos */
+                .sb-header { padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+                .sidebar.minimized .sb-header { flex-direction: column; padding: 1.5rem 0; gap: 15px; }
                 
-                /* 🔥 MUTACIÓN DEL LOGO W3C: Filter Invert para hacerlo blanco puro */
                 .sb-brand { display: flex; align-items: center; justify-content: center; text-decoration: none; width: 100%; transition: 0.3s; cursor: pointer;}
                 .sb-brand-img { height: 28px; width: auto; object-fit: contain; display: block; transition: 0.3s; filter: invert(1) brightness(100) drop-shadow(0 0 10px rgba(255,255,255,0.2));}
                 .sb-brand-icon { font-size: 1.8rem; display: none; text-shadow: 0 0 15px rgba(0,176,255,0.4);}
@@ -66,9 +66,10 @@ export class Sidebar {
                 .sidebar.minimized .sb-brand-img { display: none; }
                 .sidebar.minimized .sb-brand-icon { display: block; }
                 
+                /* 🔥 FIX: El botón vuelve a ser visible y rota correctamente */
                 .btn-collapse { background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 5px; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px;}
                 .btn-collapse:hover { color: white; background: rgba(255,255,255,0.1); }
-                .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0 auto; margin-top: 15px; display: none;}
+                .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0; }
                 
                 .sb-ecosystem-wrapper { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; overflow: hidden; background: rgba(0,0,0,0.2);}
                 .sidebar.minimized .sb-ecosystem-wrapper { padding: 1rem 0; display: flex; justify-content: center;}
@@ -117,7 +118,7 @@ export class Sidebar {
                         <span class="sb-brand-icon">🏰</span>
                         <img src="https://raw.githubusercontent.com/asolache/teamtowershuma/main/v9/logoteamtowers.png" alt="TeamTowers" class="sb-brand-img">
                     </a>
-                    <button class="btn-collapse" id="btnToggleSidebar" title="Colapsar menú">◀</button>
+                    <button class="btn-collapse" id="btnToggleSidebar" title="Colapsar/Expandir menú">◀</button>
                 </div>
                 
                 <div class="sb-ecosystem-wrapper">
@@ -145,7 +146,6 @@ export class Sidebar {
 
     static initListeners() {
         const btnToggle = document.getElementById('btnToggleSidebar');
-        // Eliminado btnLogoToggle de la lógica de colapso
         const sidebar = document.getElementById('mainSidebar');
         const selectProject = document.getElementById('sbProjectSelect');
         
