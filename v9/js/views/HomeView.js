@@ -51,13 +51,14 @@ export default class HomeView {
             tagline: "Bienvenido, Master Architect. Los ecosistemas operan bajo parámetros nominales."
         };
 
-        // 🔥 FILTRADO ANTIGRAVITY: Solo mostramos ecosistemas vivos
         const activeProjects = state.projects.filter(p => !p.isArchived);
+        const archivedProjects = state.projects.filter(p => p.isArchived);
 
         const projectsHtml = activeProjects.map(p => {
             const hasActivity = p.work_orders?.some(w => w.status !== 'consolidated');
             return `
                 <div class="ecosystem-card" data-id="${p.id}">
+                    <button class="btn-archive-macro" data-id="${p.id}" data-action="archive" title="Archivar Ecosistema">📦</button>
                     <div class="card-status ${hasActivity ? 'active' : ''}"></div>
                     <div class="card-icon">🏰</div>
                     <h3 class="card-title">${p.nombre}</h3>
@@ -69,6 +70,16 @@ export default class HomeView {
                 </div>
             `;
         }).join('');
+
+        const archivedHtml = archivedProjects.map(p => `
+            <div class="archived-row">
+                <div>
+                    <div style="color:white; font-weight:900; font-size:1.1rem;">🗄️ ${p.nombre}</div>
+                    <div style="color:#888; font-size:0.8rem; font-family:var(--font-mono); margin-top:5px;">${p.roles?.length || 0} Roles | ${p.work_orders?.length || 0} Entregables</div>
+                </div>
+                <button class="btn-archive-macro-text" data-id="${p.id}" data-action="unarchive">✨ Restaurar</button>
+            </div>
+        `).join('');
 
         return `
             <style>
@@ -102,6 +113,10 @@ export default class HomeView {
                 .card-status { position: absolute; top: 20px; right: 20px; width: 10px; height: 10px; border-radius: 50%; background: #444; }
                 .card-status.active { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
                 
+                .btn-archive-macro { position: absolute; top: 12px; right: 40px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: #888; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.9rem; opacity: 0;}
+                .ecosystem-card:hover .btn-archive-macro { opacity: 1; }
+                .btn-archive-macro:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; transform: scale(1.1);}
+                
                 .card-icon { font-size: 2.5rem; margin-bottom: 20px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
                 .card-title { color: white; font-size: 1.4rem; font-weight: 900; margin: 0 0 15px 0; }
                 
@@ -116,8 +131,16 @@ export default class HomeView {
                 .eco-create:hover { border-color: var(--accent-green); color: var(--accent-green); background: rgba(0,230,118,0.02); }
                 .eco-create .plus-icon { font-size: 3rem; margin-bottom: 10px; }
 
+                /* THE CRYPT (ARCHIVE) */
+                .crypt-section { margin-top: 4rem; background: rgba(0,0,0,0.3); border: 1px solid #222; border-radius: 24px; padding: 2rem;}
+                .archived-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; transition: 0.2s;}
+                .archived-row:last-child { border-bottom: none; }
+                .archived-row:hover { background: rgba(255,255,255,0.02); }
+                .btn-archive-macro-text { background: transparent; border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+                .btn-archive-macro-text:hover { background: rgba(0,176,255,0.1); border-style: solid;}
+
                 @media (max-width: 1024px) { .hero-guide { grid-template-columns: 1fr; } }
-                @media (max-width: 768px) { .workspace-home { padding: 90px 1rem 120px 1rem; } }
+                @media (max-width: 768px) { .workspace-home { padding: 90px 1rem 120px 1rem; } .ecosystem-card .btn-archive-macro { opacity: 1; } }
             </style>
             <div class="app-layout">
                 ${Sidebar.getHtml('/')}
@@ -159,7 +182,7 @@ export default class HomeView {
                     </section>
 
                     <section class="section-header">
-                        <h3>Tus Ecosistemas en Ejecución</h3>
+                        <h3>🚀 Ecosistemas en Ejecución</h3>
                         <div style="color: #444; font-size: 0.8rem; font-weight: bold;">${activeProjects.length} REDES ACTIVAS</div>
                     </section>
 
@@ -170,6 +193,15 @@ export default class HomeView {
                             <strong>Forjar Nueva Topología</strong>
                         </a>
                     </div>
+
+                    ${archivedProjects.length > 0 ? `
+                    <div class="crypt-section">
+                        <section class="section-header" style="margin-bottom: 1rem; border-bottom: none; padding-bottom: 0;">
+                            <h3 style="color: #888;">🗄️ La Cripta (Ecosistemas Archivados)</h3>
+                        </section>
+                        <div>${archivedHtml}</div>
+                    </div>
+                    ` : ''}
                 </main>
             </div>
         `;
@@ -196,12 +228,43 @@ export default class HomeView {
             return; 
         }
 
-        // Lógica Dashboard
+        // Lógica HomeView
         Sidebar.initListeners();
         PageHeader.execute();
 
+        // Evitar que el clic en el botón de archivar dispare la navegación a la card
+        document.querySelectorAll('.btn-archive-macro').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation(); // Detener propagación
+                const pId = e.currentTarget.getAttribute('data-id');
+                if (confirm('¿Archivar este ecosistema y moverlo a la Cripta?')) {
+                    await store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: pId, updates: { isArchived: true } }
+                    });
+                    window.location.reload();
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-archive-macro-text').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const pId = e.currentTarget.getAttribute('data-id');
+                if (confirm('¿Restaurar este ecosistema a la red activa?')) {
+                    await store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: pId, updates: { isArchived: false } }
+                    });
+                    window.location.reload();
+                }
+            });
+        });
+
         document.querySelectorAll('.ecosystem-card').forEach(card => {
             card.addEventListener('click', (e) => {
+                // Solo navega si no hemos hecho clic en un botón interno
+                if (e.target.closest('.btn-archive-macro')) return;
+                
                 const projId = e.currentTarget.getAttribute('data-id');
                 localStorage.setItem('tt_active_project', projId);
                 history.pushState(null, null, '/v9/dashboard');
