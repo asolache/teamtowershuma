@@ -9,6 +9,7 @@ import ProjectView from './views/ProjectView.js';
 import ProjectCreatorView from './views/ProjectCreatorView.js';
 import TestsView from './views/TestsView.js';
 import AgentEditorView from './views/AgentEditorView.js'; 
+import TeamView from './views/TeamView.js'; // 🔥 IMPORTACIÓN CORREGIDA
 import PaperView from './views/PaperView.js'; 
 import SettingsView from './views/SettingsView.js'; 
 import LmsView from './views/LmsView.js';
@@ -29,13 +30,14 @@ const router = async () => {
         { path: "/v9/project", view: ProjectView },
         { path: "/v9/create", view: ProjectCreatorView },
         { path: "/v9/tests", view: TestsView },
-        { path: "/v9/agentes", view: AgentEditorView }, // Redirección legacy por si acaso
-        { path: "/v9/team", view: AgentEditorView }, // 🔥 Nueva ruta Team
+        { path: "/v9/agentes", view: AgentEditorView }, // Redirección legacy
+        { path: "/v9/identity", view: AgentEditorView }, // 🔥 Enlace al IdentityForge
+        { path: "/v9/team", view: TeamView }, // 🔥 AHORA SÍ APUNTA A LA VISTA CORRECTA
         { path: "/v9/paper", view: PaperView },
         { path: "/v9/focus", view: PaperView }, 
         { path: "/v9/lms", view: LmsView },
-        { path: "/v9/manifesto", view: LmsView }, // 🔥 Nueva ruta Manifesto
-        { path: "/v9/pantheon", view: SettingsView }, // 🔥 Corrección de ruta Settings
+        { path: "/v9/manifesto", view: LmsView }, 
+        { path: "/v9/pantheon", view: SettingsView }, 
         { path: "/v9/settings", view: SettingsView },
         { path: "/v9/ledger", view: LedgerView }
     ];
