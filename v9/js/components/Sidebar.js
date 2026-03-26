@@ -11,14 +11,12 @@ export class Sidebar {
         let project = state.projects.find(p => p.id === currentActiveId);
         
         if (!project && state.projects.length > 0) {
-            project = state.projects[state.projects.length - 1];
+            project = state.projects.find(p => !p.isArchived) || state.projects[0];
         }
         
         const activeUserName = activeUserId ? (state.globalUsers.find(u => u.id === activeUserId)?.name || activeUserId) : 'Guest';
-        
         const projectLabel = project ? project.nombre : 'Ecosistema Inactivo';
 
-        // 🔥 COPIES LEGENDARIOS Y RUTAS ANTIGRAVITY V9
         const navItems = [
             { path: '/v9/dashboard', icon: '🛰️', label: 'Ojo del Castell' },
             { path: '/v9/map', icon: '🕸️', label: 'Topología VNA' },
@@ -26,7 +24,7 @@ export class Sidebar {
             { path: '/v9/paper', icon: '📝', label: 'Omni-Paper (Ejecutar)' },
             { path: '/v9/team', icon: '👥', label: 'Padrón de Nodos' },
             { path: '/v9/ledger', icon: '⚖️', label: 'Notaría (Slicing Pie)' },
-            { path: '/v9/lms', icon: '🧠', label: 'La Forja (Córtex W3C)' }, // Agrupa el Manifiesto y Memes
+            { path: '/v9/lms', icon: '🧠', label: 'La Forja (Córtex W3C)' }, 
             { path: '/v9/pantheon', icon: '⚙️', label: 'Panteón Global' },
             { path: '/v9/tests', icon: '🩺', label: 'Test Antigravity' }
         ];
@@ -42,11 +40,13 @@ export class Sidebar {
             `;
         });
 
-        let ecosystemOptions = state.projects.map(p => 
-            `<option value="${p.id}" ${p.id === (project ? project.id : '') ? 'selected' : ''}>${p.nombre}</option>`
+        // 🔥 MOSTRAMOS SOLO PROYECTOS ACTIVOS EN EL SIDEBAR (y el seleccionado aunque esté archivado para que no falle el select)
+        const visibleProjects = state.projects.filter(p => !p.isArchived || p.id === currentActiveId);
+        
+        let ecosystemOptions = visibleProjects.map(p => 
+            `<option value="${p.id}" ${p.id === (project ? project.id : '') ? 'selected' : ''}>${p.isArchived ? '🗄️ ' : ''}${p.nombre}</option>`
         ).join('');
         
-        // 🔥 AÑADIDO: Opción rápida para forjar nuevo ecosistema desde cualquier vista
         ecosystemOptions += `<option disabled>──────────</option>`;
         ecosystemOptions += `<option value="__CREATE_NEW__" style="color:var(--accent-green); font-weight:bold;">➕ Instanciar Nuevo Ecosistema</option>`;
 
@@ -57,14 +57,18 @@ export class Sidebar {
                 
                 .sb-header { padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
                 
-                .sb-brand { color: white; font-weight: 900; font-size: 1.2rem; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; display: flex; align-items: center; gap: 10px; transition: opacity 0.2s; text-decoration: none;}
-                .sb-brand:hover { color: var(--accent-blue); }
-                .sidebar.minimized .sb-brand-text { display: none; }
-                .sb-brand-icon { font-size: 1.5rem; }
-
+                /* 🔥 MUTACIÓN DEL LOGO W3C */
+                .sb-brand { display: flex; align-items: center; justify-content: center; text-decoration: none; width: 100%; transition: 0.3s; }
+                .sb-brand-img { height: 24px; width: auto; object-fit: contain; display: block; transition: 0.3s; filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.1));}
+                .sb-brand-icon { font-size: 1.8rem; display: none; text-shadow: 0 0 15px rgba(0,176,255,0.4);}
+                
+                .sidebar:not(.minimized) .sb-brand-icon { display: none; }
+                .sidebar.minimized .sb-brand-img { display: none; }
+                .sidebar.minimized .sb-brand-icon { display: block; }
+                
                 .btn-collapse { background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 5px; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px;}
                 .btn-collapse:hover { color: white; background: rgba(255,255,255,0.1); }
-                .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0 auto; }
+                .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0 auto; margin-top: 15px; display: none;} /* Ocultamos el botón al minimizar para que el logo brille solo, clickando en el icono se restaura */
                 
                 .sb-ecosystem-wrapper { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; overflow: hidden; background: rgba(0,0,0,0.2);}
                 .sidebar.minimized .sb-ecosystem-wrapper { padding: 1rem 0; display: flex; justify-content: center;}
@@ -109,9 +113,9 @@ export class Sidebar {
 
             <nav class="sidebar ${isMin ? 'minimized' : ''}" id="mainSidebar">
                 <div class="sb-header">
-                    <a href="/v9/" data-link class="sb-brand" title="Ir a Panteón Inicial">
+                    <a href="#" class="sb-brand" id="btnSidebarLogo" title="Colapsar/Expandir Menú">
                         <span class="sb-brand-icon">🏰</span>
-                        <span class="sb-brand-text">TeamTowers</span>
+                        <img src="https://raw.githubusercontent.com/asolache/teamtowershuma/main/v9/logoteamtowers.png" alt="TeamTowers" class="sb-brand-img">
                     </a>
                     <button class="btn-collapse" id="btnToggleSidebar" title="Colapsar menú">◀</button>
                 </div>
@@ -141,25 +145,31 @@ export class Sidebar {
 
     static initListeners() {
         const btnToggle = document.getElementById('btnToggleSidebar');
+        const btnLogoToggle = document.getElementById('btnSidebarLogo');
         const sidebar = document.getElementById('mainSidebar');
         const selectProject = document.getElementById('sbProjectSelect');
         
+        const toggleSidebarAction = (e) => {
+            e.preventDefault();
+            sidebar.classList.toggle('minimized');
+            const isMin = sidebar.classList.contains('minimized');
+            localStorage.setItem('tt_sidebar_min', isMin);
+        };
+
         if (btnToggle && sidebar) {
-            btnToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('minimized');
-                const isMin = sidebar.classList.contains('minimized');
-                localStorage.setItem('tt_sidebar_min', isMin);
-            });
+            btnToggle.addEventListener('click', toggleSidebarAction);
+        }
+        
+        if (btnLogoToggle && sidebar) {
+            btnLogoToggle.addEventListener('click', toggleSidebarAction);
         }
 
         if (selectProject) {
             selectProject.addEventListener('change', (e) => {
                 const targetValue = e.target.value;
                 
-                // 🔥 FIX: Interceptor de creación de proyecto
                 if (targetValue === "__CREATE_NEW__") {
-                    e.target.value = localStorage.getItem('tt_active_project') || ""; // Revertir visualmente
-                    // Hacemos pushState manual para no recargar W3C style
+                    e.target.value = localStorage.getItem('tt_active_project') || ""; 
                     window.history.pushState(null, null, '/v9/create');
                     window.dispatchEvent(new Event('popstate'));
                     return;
