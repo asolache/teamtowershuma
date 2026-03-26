@@ -1,6 +1,6 @@
 // v9/js/core/store.js
 import { KB } from './kb.js'; 
-import { CoreSeed } from './seed.js'; // 🔥 INYECCIÓN DEL ADN
+import { CoreSeed } from './seed.js'; 
 
 const initialState = {
     config: {
@@ -22,7 +22,6 @@ const initialState = {
         activeUserId: null,
         role: 'guest'
     },
-    // 🔥 EL PADRÓN DE LOS 12 GUARDIANES (PANTHEON.WORK)
     globalUsers: [
         { id: '@agent_genesis_architect', name: 'Genesis Architect', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'creator', active_skills: ['skill_vna_architect'] } },
         { id: '@agent_dharma_ontologist', name: 'Dharma Ontologist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'caregiver', active_skills: ['skill_ikigai_ontologist'] } },
@@ -53,17 +52,24 @@ class Store {
         
         console.log("🚀 [Kernel] Iniciando secuencia de arranque...");
         try {
-            await KB.init();
+            console.log("⏳ [Kernel] Conectando con IndexedDB...");
+            
+            // 🔥 ESCUDO ANTI-DEADLOCK: Si KB.init tarda más de 4 segundos, lanza error y no se cuelga.
+            const kbPromise = KB.init();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Timeout (4s): IndexedDB bloqueada por el navegador. Ve a Application > IndexedDB y bórrala manualmente.")), 4000)
+            );
+            
+            await Promise.race([kbPromise, timeoutPromise]);
             console.log("📂 [Kernel] IndexedDB conectada exitosamente.");
             
-            // 🔥 INYECTAR ADN BLINDADO (Si falla, el kernel no colapsa)
             try {
                 console.log("🌱 [Kernel] Verificando ADN Semilla...");
                 if (CoreSeed && CoreSeed.inject) {
                     await CoreSeed.inject(KB);
                 }
             } catch (seedErr) {
-                console.error("⚠️ [Kernel] Fallo no crítico inyectando ADN de Skills:", seedErr);
+                console.error("⚠️ [Kernel] Fallo inyectando ADN de Skills:", seedErr);
             }
             
             console.log("🧠 [Kernel] Restaurando Memoria Global...");
@@ -79,7 +85,6 @@ class Store {
                 }
             }
 
-            // Normalización de estados profundos
             this.state.config.version = initialState.config.version; 
             if (!this.state.config.economics) this.state.config.economics = initialState.config.economics;
 
@@ -108,21 +113,25 @@ class Store {
 
         } catch (e) {
             console.error("💥 [KERNEL PANIC] Colapso total leyendo el estado:", e);
-            // Fallback de emergencia por si la DB está corrupta o bloqueada
+            // Fallback de emergencia para que la app cargue de todas formas (aunque sin persistencia)
             this.state = JSON.parse(JSON.stringify(initialState));
             this.isInitialized = true; 
         }
     }
 
     async persistState() {
-        await KB.saveNode({
-            id: 'global_kernel_state',
-            type: 'system_state',
-            projectId: 'global',
-            targetId: 'global',
-            title: 'Kernel State V9',
-            content: this.state
-        });
+        try {
+            await KB.saveNode({
+                id: 'global_kernel_state',
+                type: 'system_state',
+                projectId: 'global',
+                targetId: 'global',
+                title: 'Kernel State V9',
+                content: this.state
+            });
+        } catch (e) {
+            console.warn("No se pudo persistir el estado (posible DB bloqueada).");
+        }
     }
 
     getState() { return this.state; }
