@@ -10,9 +10,20 @@ const LLM_PRICING = {
     'custom': { input: 0.0, output: 0.0 }
 };
 
+// 🔥 PADRÓN UNIVERSAL DE AGENTES CORE (V9 Antigravity)
+const CORE_AGENTS = {
+    ARCHITECT: '@agent_genesis_architect',
+    ONTOLOGIST: '@agent_dharma_ontologist',
+    CRAFTER: '@agent_skill_crafter',
+    SYNTHESIZER: '@agent_prompt_synthesizer',
+    AUDITOR: '@agent_tdd_auditor',
+    WEAVER: '@agent_synaptic_weaver',
+    ECONOMIST: '@agent_token_economist'
+};
+
 class OrchestratorCore {
     constructor() {
-        this.version = "V9.0-Antigravity-Beta";
+        this.version = "V9.1-Antigravity-Swarm";
         this.isListening = false;
     }
 
@@ -166,10 +177,37 @@ class OrchestratorCore {
         return contextText;
     }
 
+    // 🔥 NUEVA FUNCIONALIDAD: SINTETIZADOR DE PROMPTS (Agent_Prompt_Synthesizer)
+    async synthesizeAgentPrompt(currentPrompt, newSkillContent) {
+        const systemPrompt = `
+            Eres el 'Agent_Prompt_Synthesizer'. Tu misión es actualizar el System Prompt de un Agente (AGENT.md) porque se le acaba de añadir una nueva Herramienta/Skill.
+            
+            Reglas estrictas (agentskills.io standards):
+            1. NO borres ni alteres el propósito original, tono o reglas previas del agente.
+            2. Añade una sección concisa (ej: "## Uso de Herramientas" o intégralo de forma natural) explicando CUÁNDO y CÓMO debe invocar la nueva Skill, basándote en la descripción de la misma.
+            3. Sé directo. Usa frases imperativas ("Usa esta tool cuando..."). No des opciones ambiguas.
+            4. Devuelve ÚNICAMENTE el texto final del nuevo AGENT.md en crudo (sin bloques de código markdown ni JSON).
+        `;
+
+        const userPrompt = `
+            === AGENT.md ACTUAL ===
+            ${currentPrompt || "Eres un agente asistente."}
+            
+            === NUEVA SKILL AÑADIDA AL CINTURÓN ===
+            ${newSkillContent}
+            
+            Actualiza el AGENT.md para que sepa usar esta skill.
+        `;
+
+        const response = await this.callLLM({ preferredEngine: 'openai', systemPrompt, userPrompt, responseFormat: "text", temperature: 0.3 });
+        this._logTelemetry('global', CORE_AGENTS.SYNTHESIZER, response.telemetry.provider, 'PROMPT_SYNTHESIS', response.telemetry);
+        return response.content.replace(/^```markdown\n/, '').replace(/```$/, '').trim();
+    }
+
     // 🔥 BUCLE MAYÉUTICO: Exige Contexto Sectorial
     async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
         const systemPrompt = `
-            Eres @genesi_ai, Master Ecosystem Architect. Vas a aplicar Value Network Analysis (VNA).
+            Eres ${CORE_AGENTS.ARCHITECT}, Master Ecosystem Architect. Vas a aplicar Value Network Analysis (VNA).
             Eres EXTREMADAMENTE EXIGENTE y HOSTIL a la ambigüedad. Tienes que actuar como un consultor experto.
             
             REGLA DE ORO DE SUPERVIVENCIA:
@@ -187,34 +225,34 @@ class OrchestratorCore {
 
         const userPrompt = `Proyecto: ${projectName}\nArquetipo: ${archetypeText}\nVisión Fundacional:\n${vision}`;
         const response = await this.callLLM({ preferredEngine: overrideProvider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.1 });
-        this._logTelemetry('global', '@genesi_ai', response.telemetry.provider, 'VNA_EVALUATION', response.telemetry);
+        this._logTelemetry('global', CORE_AGENTS.ARCHITECT, response.telemetry.provider, 'VNA_EVALUATION', response.telemetry);
         return response.content; 
     }
 
     async notarizeWorkOrder(projectId, taskComment, socChecklist) {
-        const systemPrompt = `Eres @notari_ledger, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
+        const systemPrompt = `Eres ${CORE_AGENTS.AUDITOR}, el Juez Inmutable Antigravity. Evalúa ESTRICTAMENTE si el Entregable cumple con las Condiciones (SOCs). Devuelve ÚNICAMENTE un JSON: { "soc_id_1": true, "soc_id_2": false }\nSOCs a evaluar: ${JSON.stringify(socChecklist.map(s => ({id: s.id, text: s.text})))}`;
         const response = await this.callLLM({ preferredEngine: 'deepseek', systemPrompt, userPrompt: `ENTREGABLE:\n"${taskComment}"\n\nJuzga la evidencia.`, responseFormat: "json_object", temperature: 0.1 });
-        this._logTelemetry(projectId, '@notari_ledger', response.telemetry.provider, 'TDD_AUDIT', response.telemetry);
+        this._logTelemetry(projectId, CORE_AGENTS.AUDITOR, response.telemetry.provider, 'TDD_AUDIT', response.telemetry);
         return JSON.stringify(response.content);
     }
 
     async harvestKnowledge(task, projectId) {
         try {
-            const systemPrompt = `Eres @janitor, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
+            const systemPrompt = `Eres ${CORE_AGENTS.WEAVER}, el destilador del Learning Loop. Misión: Extraer una "Mejor Práctica" W3C. Si es trivial, devuelve {"isValuable": false}. Si es valioso, devuelve JSON: { "isValuable": boolean, "title": "Título Corto", "content": "Regla destilada...", "tags": ["tag1", "tag2"] }`;
             const response = await this.callLLM({ preferredEngine: 'gemini', systemPrompt, userPrompt: `PoW:\n${task.comentario}`, responseFormat: "json_object", temperature: 0.2 });
             const result = response.content;
 
             if (result.isValuable) {
                 await KB.init();
                 await KB.saveNode({ id: `meme_evergreen_${Date.now()}`, type: 'meme', category: 'evergreen', projectId: projectId, targetId: 'global', title: `🌟 ${result.title}`, content: result.content, keywords: [...(result.tags || []), '#evergreen'] });
-                this._logTelemetry(projectId, '@janitor', response.telemetry.provider, 'HARVEST', response.telemetry);
+                this._logTelemetry(projectId, CORE_AGENTS.WEAVER, response.telemetry.provider, 'HARVEST', response.telemetry);
                 return result.title;
             }
             return null;
         } catch (error) { return null; }
     }
 
-    // 🔥 GÈNESI DESATADO (Sin Eras Temporales)
+    // 🔥 ARCHITECT DESATADO (Sin Eras Temporales)
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
         await KB.init();
         
@@ -231,7 +269,7 @@ class OrchestratorCore {
         `;
 
         const systemPrompt = `
-            Eres Master Ecosystem Architect (@genesi_ai).
+            Eres Master Ecosystem Architect (${CORE_AGENTS.ARCHITECT}).
             
             Basado en tu Skill Operativa de VNA, debes seguir estrictamente estas reglas:
             ${vnaInstructions}
@@ -253,13 +291,13 @@ class OrchestratorCore {
         const userPrompt = `Proyecto: ${projectName}\nArquetipo Legal: ${archetypeText}\n${catalogContext}\nVisión Fundacional:\n${vision}`;
         
         const response = await this.callLLM({ preferredEngine: overrideProvider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.2 });
-        this._logTelemetry('global', '@genesi_ai', response.telemetry.provider, 'VNA_DESIGN', response.telemetry);
+        this._logTelemetry('global', CORE_AGENTS.ARCHITECT, response.telemetry.provider, 'VNA_DESIGN', response.telemetry);
         return response.content; 
     }
 
     async runDeepResearch(topic, expectedCategory, maxNodes = 3, overrideProvider = null) {
         const systemPrompt = `
-            Eres @mestre_escola, el Investigador Ontológico y Creador de Memes W3C del Kernel.
+            Eres ${CORE_AGENTS.CRAFTER}, el Investigador Ontológico y Creador de Memes W3C del Kernel.
             Se te ha pedido investigar un tema profundo. Devuelve Nodos de Conocimiento (JSON-LD Semántico).
             
             FORMATO JSON ESTRICTO:
@@ -274,7 +312,7 @@ class OrchestratorCore {
 
         const userPrompt = `TEMA DE INVESTIGACIÓN: "${topic}"\nProcesa esto y genera los Nodos para el Meta-Grafo.`;
         const response = await this.callLLM({ preferredEngine: overrideProvider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.3 });
-        this._logTelemetry('global', '@mestre_escola', response.telemetry.provider, 'DEEP_RESEARCH', response.telemetry);
+        this._logTelemetry('global', CORE_AGENTS.CRAFTER, response.telemetry.provider, 'DEEP_RESEARCH', response.telemetry);
         
         const result = response.content;
         if (result.nodes && result.nodes.length > 0) {
@@ -289,13 +327,13 @@ class OrchestratorCore {
         return result;
     }
 
-    // 🔥 BUCLE DE EXPANSIÓN COGNITIVA (META-SKILL CREATOR VNA)
+    // 🔥 BUCLE DE EXPANSIÓN COGNITIVA (AGENT_SKILL_CRAFTER VNA)
     async expandNodeSemantics(title, category, content, tags, overrideProvider = null) {
         const available = this._getAvailableProviders(overrideProvider || 'openai');
         const { provider, apiKey } = available[0];
 
         const systemPrompt = `
-            Eres el "Skill Creator" del Kernel V9 (Inspirado en el estándar AgentSkills de Anthropic).
+            Eres ${CORE_AGENTS.CRAFTER} del Kernel V9 (Inspirado en el estándar AgentSkills de Anthropic).
             Misión: Tomar un concepto semilla y forjar una cápsula de conocimiento altamente estructurada.
             
             SI EL NODO ES UNA "SKILL" (Categoría: skill), DEBES ESTRUCTURAR EL CONTENT ASÍ:
@@ -326,7 +364,7 @@ class OrchestratorCore {
         const userPrompt = `Título Original: ${title}\nCategoría: ${category}\nTags Actuales: ${tags}\nContenido Semilla:\n${content}`;
         
         const response = await this.callLLM({ preferredEngine: provider, systemPrompt, userPrompt, responseFormat: "json_object", temperature: 0.4 });
-        this._logTelemetry('global', '@mestre_escola', provider, 'KNOWLEDGE_EXPANSION', response.telemetry);
+        this._logTelemetry('global', CORE_AGENTS.CRAFTER, provider, 'KNOWLEDGE_EXPANSION', response.telemetry);
         
         return response.content;
     }
@@ -354,7 +392,7 @@ class OrchestratorCore {
             if (nodeDirectory.length === 0) return null;
 
             const systemPrompt = `
-                Eres @seny_analyst. Una Work Order falló en la auditoría TDD. Busca al nodo más capacitado del padrón para resolver esta falla.
+                Eres ${CORE_AGENTS.SYNTHESIZER}. Una Work Order falló en la auditoría TDD. Busca al nodo más capacitado del padrón para resolver esta falla.
                 Devuelve ÚNICAMENTE JSON: { "assignedNode": "@id_del_nodo", "reason": "Motivo corto...", "actionPlan": "Sugerencia rápida" }
                 PADRÓN DISPONIBLE: ${JSON.stringify(nodeDirectory)}
             `;
@@ -364,9 +402,9 @@ class OrchestratorCore {
             const result = response.content;
 
             if (result.assignedNode) {
-                const contentLog = `⚕️ **Protocolo de Auto-Sanación Activado.**\nLa auditoría Notarial falló en: *${failedSocs.join(', ')}*.\n\n@seny_analyst solicita asistencia de <a href="/v9/profile?id=${result.assignedNode.replace('@','')}" data-link class="mention-highlight">${result.assignedNode}</a>.\n\n**Motivo:** ${result.reason}\n**Plan:** ${result.actionPlan}`;
-                await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId, log: { id: 'log_heal_' + Date.now(), date: Date.now(), authorId: '@seny_analyst', relatedTxHash: task.hash || task.id, content: contentLog, mentions: [result.assignedNode, task.assigneeId], readBy: [] } } });
-                this._logTelemetry(projectId, '@seny_analyst', response.telemetry.provider, 'AUTO_HEAL', response.telemetry);
+                const contentLog = `⚕️ **Protocolo de Auto-Sanación Activado.**\nLa auditoría Notarial falló en: *${failedSocs.join(', ')}*.\n\n${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/v9/profile?id=${result.assignedNode.replace('@','')}" data-link class="mention-highlight">${result.assignedNode}</a>.\n\n**Motivo:** ${result.reason}\n**Plan:** ${result.actionPlan}`;
+                await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: { projectId, log: { id: 'log_heal_' + Date.now(), date: Date.now(), authorId: CORE_AGENTS.SYNTHESIZER, relatedTxHash: task.hash || task.id, content: contentLog, mentions: [result.assignedNode, task.assigneeId], readBy: [] } } });
+                this._logTelemetry(projectId, CORE_AGENTS.SYNTHESIZER, response.telemetry.provider, 'AUTO_HEAL', response.telemetry);
                 return result;
             }
             return null;
