@@ -4,7 +4,19 @@ import { KB } from './kb.js';
 const initialState = {
     config: {
         version: 'v9-Antigravity',
-        theme: 'dark'
+        theme: 'dark',
+        // 🔥 Modelo Económico Dinámico de la Open DAO
+        economics: {
+            markup_margin: 0.30, // 30% de beneficio base para el protocolo
+            premium_features_fee: 0.05, // +5% fee por servicios Permaweb / Triple Accounting
+            base_pricing: {
+                'deepseek': { input: 0.14, output: 0.28 }, 
+                'gemini': { input: 0.075, output: 0.30 },  
+                'openai': { input: 2.50, output: 10.00 },  
+                'anthropic': { input: 3.00, output: 15.00 }, 
+                'custom': { input: 0.0, output: 0.0 }
+            }
+        }
     },
     session: {
         activeUserId: null,
@@ -50,6 +62,9 @@ class Store {
             }
 
             this.state.config.version = initialState.config.version; 
+            // Inyectamos el economics si no venía en estados anteriores
+            if (!this.state.config.economics) this.state.config.economics = initialState.config.economics;
+
             if (!this.state.globalUsers) this.state.globalUsers = initialState.globalUsers;
             if (!this.state.projects) this.state.projects = [];
             
@@ -132,7 +147,6 @@ class Store {
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) Object.assign(newState.projects[projIdx], action.payload.updates);
                 break;
-            // 🔥 NUEVA ACCIÓN: PURGA DEL SANDBOX Y PROYECTOS MUERTOS
             case 'DELETE_PROJECT':
                 newState.projects = newState.projects.filter(p => p.id !== action.payload.projectId);
                 break;
@@ -317,10 +331,33 @@ class Store {
                                 valorCongelado: finalSlices, date: Date.now()
                             });
                             
+                            // 🔥 CERTIFICACIÓN SBT V9
                             const userIdx = newState.globalUsers.findIndex(u => u.id === (wo.assigneeId || wo.workerId));
                             if (userIdx > -1 && newState.globalUsers[userIdx].profile) {
                                 if (!newState.globalUsers[userIdx].profile.sbt_skills) newState.globalUsers[userIdx].profile.sbt_skills = [];
-                                newState.globalUsers[userIdx].profile.sbt_skills.push({ flowId: wo.flowId || wo.id, exp: calcHours, date: Date.now() });
+                                
+                                let skillNameToCertify = wo.flowId || wo.id;
+                                if (!isLegacy) {
+                                    const flow = newState.projects[projIdx].vna_flows.find(f => f.id === wo.flowId);
+                                    if (flow && flow.required_skills && flow.required_skills.length > 0) {
+                                        skillNameToCertify = flow.required_skills.join(' | ');
+                                    } else if (flow && flow.template) {
+                                        skillNameToCertify = flow.template;
+                                    }
+                                }
+
+                                const existingSbtIndex = newState.globalUsers[userIdx].profile.sbt_skills.findIndex(s => s.skillName === skillNameToCertify || s.flowId === skillNameToCertify);
+                                
+                                if (existingSbtIndex > -1) {
+                                    newState.globalUsers[userIdx].profile.sbt_skills[existingSbtIndex].exp += calcHours;
+                                    newState.globalUsers[userIdx].profile.sbt_skills[existingSbtIndex].date = Date.now();
+                                } else {
+                                    newState.globalUsers[userIdx].profile.sbt_skills.push({ 
+                                        skillName: skillNameToCertify, 
+                                        exp: calcHours, 
+                                        date: Date.now() 
+                                    });
+                                }
                             }
                         }
                     }
