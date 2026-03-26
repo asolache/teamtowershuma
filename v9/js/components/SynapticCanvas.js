@@ -10,6 +10,7 @@ export class SynapticCanvas {
         this.links = [];
         this.graph3D = null;
         this.resizeObserver = null;
+        this.isFullscreen = false;
     }
 
     async render() {
@@ -18,8 +19,14 @@ export class SynapticCanvas {
 
         this.container.innerHTML = `
             <style>
-                .synaptic-layout { display: flex; width: 100%; height: 100%; background: #050508; border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: inset 0 0 50px rgba(0,0,0,0.8); position: relative;}
+                .synaptic-layout { display: flex; width: 100%; height: 100%; background: #050508; border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: inset 0 0 50px rgba(0,0,0,0.8); position: relative; transition: all 0.4s ease;}
                 
+                /* MODO PANTALLA COMPLETA */
+                .synaptic-layout.fullscreen-mode { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; border-radius: 0; border: none; }
+                
+                .btn-fullscreen { position: absolute; top: 20px; right: 20px; z-index: 50; background: rgba(0,0,0,0.5); border: 1px solid #555; color: white; border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: 0.2s; font-size: 1.2rem;}
+                .btn-fullscreen:hover { background: rgba(255,255,255,0.1); border-color: white;}
+
                 .synaptic-palette { width: 340px; background: linear-gradient(90deg, rgba(5,5,8,0.95) 0%, rgba(10,10,15,0.8) 100%); border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; z-index: 10; backdrop-filter: blur(15px); box-shadow: 10px 0 30px rgba(0,0,0,0.5);}
                 .palette-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; gap:15px;}
                 .palette-title { color: white; font-weight: 900; font-size: 1.2rem; margin: 0; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.2);}
@@ -30,8 +37,6 @@ export class SynapticCanvas {
                 
                 .draggable-meme { background: rgba(255,255,255,0.03); border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); user-select: none; word-break: break-word; position: relative; overflow: hidden;}
                 .draggable-meme::before { content: ''; position: absolute; top:0; left:0; width:4px; height:100%; background: var(--node-color, #444); }
-                .draggable-meme.can-drag { cursor: grab; border-color: var(--accent-purple); }
-                .draggable-meme.can-drag:active { cursor: grabbing; border-style: solid; background: var(--accent-purple); color: white;}
                 .draggable-meme:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--node-color, #888);}
                 
                 .dm-cat { font-size: 0.7rem; color: var(--node-color, var(--accent-orange)); font-family: var(--font-mono); font-weight: bold; pointer-events: none; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;}
@@ -56,7 +61,7 @@ export class SynapticCanvas {
                 .badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-right: 5px; }
                 .badge.ref { background: rgba(0,176,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,176,255,0.3); }
                 .badge.eval { background: rgba(255,145,0,0.1); color: var(--accent-orange); border: 1px solid rgba(255,145,0,0.3); }
-                .badge.script { background: rgba(255,82,82,0.1); color: var(--accent-red); border: 1px solid rgba(255,82,82,0.3); }
+                .badge.script { background: rgba(0,230,118,0.1); color: var(--accent-green); border: 1px solid rgba(0,230,118,0.3); }
 
                 @media (max-width: 768px) {
                     .synaptic-layout { flex-direction: column-reverse; }
@@ -65,16 +70,17 @@ export class SynapticCanvas {
                 }
             </style>
 
-            <div class="synaptic-layout">
+            <div class="synaptic-layout" id="synapticMainLayout">
+                <button class="btn-fullscreen" id="btnToggleFullscreen" title="Pantalla Completa">⛶</button>
                 <div class="synaptic-palette">
                     <div class="palette-header">
                         <h3 class="palette-title">${panelTitle}</h3>
-                        <input type="text" id="memeSearchInput" class="palette-search" placeholder="🔍 Buscar Memes, Roles o SOPs...">
+                        <input type="text" id="memeSearchInput" class="palette-search" placeholder="🔍 Buscar Memes, Agentes o Skills...">
                         <button class="btn-inject-seeds" id="btnInjectSeeds">✨ Forjar Semillas Antigravity</button>
                     </div>
                     <div class="meme-results" id="memeResultsList">
                         <div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">
-                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Usa el selector superior para inyectar conocimiento a este nodo.'}
+                            ${isGlobalMode ? 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.' : 'Explora el cerebro del Agente y sus ramificaciones de conocimiento.'}
                         </div>
                     </div>
                 </div>
@@ -113,43 +119,74 @@ export class SynapticCanvas {
         };
 
         const getColorAndMass = (category) => {
+            if (!category) return { c: '#888888', m: 12 };
+            // Taxonomía Core
+            if (category.startsWith('core.architecture')) return { c: '#00b0ff', m: 30 };
+            if (category.startsWith('core.economy')) return { c: '#00e676', m: 30 };
+            if (category.startsWith('core.cognition')) return { c: '#e040fb', m: 30 };
+            if (category.startsWith('core.execution')) return { c: '#ff9100', m: 30 };
+            if (category.startsWith('core.culture')) return { c: '#ff5252', m: 30 };
+            
+            // Entidades específicas
             switch(category) {
                 case 'core_os': return { c: '#ffffff', m: 50 };
                 case 'project_core': return { c: '#7c4dff', m: 45 }; 
                 case 'role': return { c: '#ff4081', m: 35 }; 
-                case 'SOP': return { c: '#e040fb', m: 25 }; 
-                case 'agent': return { c: '#00b0ff', m: 40 }; 
-                case 'skill': return { c: '#00e676', m: 30 }; 
-                case 'reference': return { c: '#00b0ff', m: 18 }; 
-                case 'eval': return { c: '#ff9100', m: 22 }; 
-                case 'script': return { c: '#ff5252', m: 20 }; 
+                case 'agent': return { c: '#e040fb', m: 45 }; 
+                case 'skill': return { c: '#00e676', m: 25 }; 
+                case 'reference': return { c: '#00b0ff', m: 15 }; 
+                case 'eval': return { c: '#ff9100', m: 18 }; 
+                case 'script': return { c: '#ff5252', m: 18 }; 
                 case 'evergreen': return { c: '#ffd700', m: 25 };
-                case 'prompt_a2a': return { c: '#e040fb', m: 20 };
-                case 'meta_prompt': return { c: '#e040fb', m: 25 };
+                case 'meta_prompt': return { c: '#ffffff', m: 35 };
                 default: return { c: '#888888', m: 12 };
             }
         };
 
+        // 🔥 MODOS DE VISUALIZACIÓN 🔥
         if (this.agentId) {
-            const relatedMemes = allNodes.filter(n => n.keywords && n.keywords.includes(this.agentId));
-            addNode(this.agentId, this.agentId, 'agent', 50, '#00b0ff', { title: this.agentId, content: "Núcleo de la Identidad" });
+            // MODO: PERFIL NEURONAL (Un Agente específico)
+            addNode(this.agentId, this.agentId, 'agent', 60, '#e040fb', { title: this.agentId, content: "Núcleo Biológico / Sintético" });
 
             const safeAgentId = this.agentId.replace('@','');
             const promptNode = allNodes.find(n => n.id === `prompt_global_${safeAgentId}`);
+            
             if (promptNode) {
-                addNode(promptNode.id, 'System Prompt', 'meta_prompt', 35, '#e040fb', promptNode);
+                addNode(promptNode.id, 'Cerebro (AGENT.md)', 'meta_prompt', 40, '#ffffff', promptNode);
                 addLink(this.agentId, promptNode.id);
-            }
+                
+                // Mapear el cinturón de Skills del Agente (A2A Dependencies)
+                if (promptNode.dependencies && Array.isArray(promptNode.dependencies)) {
+                    promptNode.dependencies.forEach(skillId => {
+                        const sNode = allNodes.find(n => n.id === skillId);
+                        if (sNode) {
+                            const { c, m: mass } = getColorAndMass(sNode.category);
+                            addNode(sNode.id, sNode.title, sNode.category, mass, c, sNode);
+                            addLink(promptNode.id, sNode.id, true);
 
-            relatedMemes.forEach(m => {
-                const { c, m: mass } = getColorAndMass(m.category);
-                addNode(m.id, m.title, m.category, mass, c, m);
-                addLink(this.agentId, m.id);
-            });
+                            // Mapear los hijos de la Skill (Referencias, Evals, Scripts)
+                            ['references', 'evals', 'scripts'].forEach(depType => {
+                                if (sNode[depType] && Array.isArray(sNode[depType])) {
+                                    sNode[depType].forEach(childId => {
+                                        const childNode = allNodes.find(n => n.id === childId);
+                                        if (childNode) {
+                                            const childData = getColorAndMass(childNode.type || childNode.category);
+                                            addNode(childNode.id, childNode.title, childNode.type, childData.m, childData.c, childNode);
+                                            addLink(sNode.id, childNode.id, true);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            }
         } 
         else {
-            addNode('core_kernel', 'OS KERNEL', 'core_os', 70, '#ffffff', { title: 'TeamTowers V9 Kernel', category: 'core_os', content: 'Punto Cero del Sistema Operativo de Sinergias.' });
+            // MODO: META-GRAFO GLOBAL (Todo el universo)
+            addNode('core_kernel', 'V9 KERNEL', 'core_os', 80, '#ffffff', { title: 'TeamTowers V9', category: 'core_os', content: 'Singularidad Antigravity.' });
 
+            // 1. Proyectos y Roles
             state.projects.forEach(p => {
                 addNode(p.id, p.nombre, 'project_core', 45, '#7c4dff', { title: p.nombre, category: 'project_core', content: p.presentation || 'Ecosistema' });
                 addLink('core_kernel', p.id);
@@ -161,54 +198,61 @@ export class SynapticCanvas {
                         addLink(p.id, rId);
                     });
                 }
-                if(p.vna_flows) {
-                    p.vna_flows.forEach(f => {
-                        const fId = 'flow_' + p.id + '_' + f.id;
-                        addNode(fId, f.template || 'SOP', 'SOP', 20, '#e040fb', { title: f.template, category: 'SOP', content: `Horas Est: ${f.estimatedHours}h` });
-                        if (f.to) addLink(`role_${p.id}_${f.to}`, fId);
-                        if (f.from) addLink(`role_${p.id}_${f.from}`, fId); 
-                    });
+            });
+
+            // 2. Agentes y sus Cerebros
+            state.globalUsers.forEach(u => {
+                if (u.profile?.isAi) {
+                    addNode(u.id, u.name, 'agent', 45, '#e040fb', { title: u.name, category: 'agent', content: 'Agente Core Autonómo' });
+                    addLink('core_kernel', u.id);
+
+                    const promptNode = allNodes.find(n => n.id === `prompt_global_${u.id.replace('@','')}`);
+                    if (promptNode) {
+                        addNode(promptNode.id, 'AGENT.md', 'meta_prompt', 25, '#ffffff', promptNode);
+                        addLink(u.id, promptNode.id);
+                    }
                 }
             });
 
+            // 3. Base de Conocimiento (LMS W3C) - Skills, Referencias, Memes
             allNodes.forEach(m => {
                 if (m.type === 'system_state' || m.id === 'global_kernel_state') return;
-                const { c, m: mass } = getColorAndMass(m.category);
+                if (m.id.startsWith('prompt_global')) return; // Ya mapeados
+                
+                const { c, m: mass } = getColorAndMass(m.category || m.type);
                 addNode(m.id, m.title, m.category, mass, c, m);
 
-                let linkedToProject = false;
+                let linked = false;
+
+                // Conectar Skills a los Prompts de los agentes que las usan
+                state.globalUsers.forEach(u => {
+                    const pNode = allNodes.find(n => n.id === `prompt_global_${u.id.replace('@','')}`);
+                    if (pNode && pNode.dependencies && pNode.dependencies.includes(m.id)) {
+                        addLink(pNode.id, m.id, true);
+                        linked = true;
+                    }
+                });
+
+                // Conectar hijos (Referencias/Evals) a sus Skills padres
+                ['references', 'evals', 'scripts'].forEach(depType => {
+                    if (m[depType] && Array.isArray(m[depType])) {
+                        m[depType].forEach(childId => {
+                            if (allNodes.find(n => n.id === childId)) {
+                                addLink(m.id, childId, true);
+                            }
+                        });
+                    }
+                });
+
+                // Conectar a Proyectos vía Keywords o ProjectId
                 if (m.projectId && m.projectId !== 'global' && this.nodes.find(n => n.id === m.projectId)) {
                     addLink(m.projectId, m.id);
-                    linkedToProject = true;
+                    linked = true;
                 }
 
-                if (m.keywords && Array.isArray(m.keywords)) {
-                    m.keywords.forEach(kw => {
-                        const targetNode = this.nodes.find(n => n.id === kw || n.name.toLowerCase() === kw.toLowerCase() || n.id.includes(`role_${m.projectId}_${kw}`));
-                        if (targetNode && targetNode.id !== m.id) {
-                            addLink(m.id, targetNode.id);
-                            linkedToProject = true;
-                        }
-                    });
-                }
-
-                if (!linkedToProject && m.projectId === 'global') addLink('core_kernel', m.id);
-            });
-
-            allNodes.forEach(skillNode => {
-                if (skillNode.type === 'skill') {
-                    const dependencies = [
-                        ...(skillNode.references || []),
-                        ...(skillNode.evals || []),
-                        ...(skillNode.scripts || [])
-                    ];
-
-                    dependencies.forEach(depId => {
-                        const targetExists = this.nodes.some(n => n.id === depId);
-                        if (targetExists) {
-                            addLink(depId, skillNode.id, true);
-                        }
-                    });
+                // Nodos huérfanos orbitan el Kernel
+                if (!linked && m.projectId === 'global' && m.type === 'skill') {
+                    addLink('core_kernel', m.id, true);
                 }
             });
         }
@@ -219,7 +263,6 @@ export class SynapticCanvas {
         const loader = this.container.querySelector('#loader3D');
         const tooltip = this.container.querySelector('#graphTooltip');
 
-        // 🔥 FIX CDN: Priorizamos unpkg.com y jsdelivr que NO fallan con MIME TYPES, quitamos cdnjs
         const loadScriptWithFallback = async (urls, globalVar) => {
             if (window[globalVar]) return; 
             for (const url of urls) {
@@ -260,7 +303,7 @@ export class SynapticCanvas {
             .linkColor(link => {
                 const sourceNode = typeof link.source === 'object' ? link.source : this.nodes.find(n => n.id === link.source);
                 const color = sourceNode ? sourceNode.color : 'rgba(0,176,255,1)';
-                return link.isDependencies ? color.replace(')', ', 0.15)').replace('rgb', 'rgba') : color.replace(')', ', 0.4)').replace('rgb', 'rgba'); 
+                return link.isDependencies ? color.replace(')', ', 0.2)').replace('rgb', 'rgba') : color.replace(')', ', 0.5)').replace('rgb', 'rgba'); 
             })
             .linkWidth(link => link.isDependencies ? 0.8 : 1.5)
             .linkDirectionalParticles(link => link.isDependencies ? 1 : 3) 
@@ -274,7 +317,7 @@ export class SynapticCanvas {
                 const group = new window.THREE.Group();
                 const geometry = new window.THREE.SphereGeometry(node.val * 0.8, 24, 24);
                 
-                const isCore = node.group === 'core_os' || node.group === 'project_core';
+                const isCore = node.group === 'core_os' || node.group === 'agent' || node.group === 'project_core';
                 const material = new window.THREE.MeshLambertMaterial({ 
                     color: node.color, transparent: true, opacity: isCore ? 0.95 : 0.7, depthWrite: false
                 });
@@ -294,7 +337,7 @@ export class SynapticCanvas {
                     canvasInner.style.cursor = 'pointer';
                     tooltip.style.display = 'block';
                     tooltip.innerHTML = `
-                        <div class="tt-cat" style="color:${node.color}">${node.rawNode?.category || node.group}</div>
+                        <div class="tt-cat" style="color:${node.color}">${node.rawNode?.category || node.rawNode?.type || node.group}</div>
                         <div class="tt-title">${node.name}</div>
                     `;
                 } else {
@@ -348,32 +391,38 @@ export class SynapticCanvas {
             const r = (m.references || []).length;
             const e = (m.evals || []).length;
             const s = (m.scripts || []).length;
-            if (r>0) badgesHtml += `<span class="badge ref">📚 ${r}</span>`;
-            if (e>0) badgesHtml += `<span class="badge eval">📋 ${e}</span>`;
-            if (s>0) badgesHtml += `<span class="badge script">⚡ ${s}</span>`;
+            if (r>0) badgesHtml += `<span class="badge ref">📚 ${r} Referencias</span>`;
+            if (e>0) badgesHtml += `<span class="badge eval">📋 ${e} Evals</span>`;
+            if (s>0) badgesHtml += `<span class="badge script">⚡ ${s} Scripts</span>`;
         }
+        
+        // Formateo visual del contenido VNA
+        let contentHtml = (m.content || '').replace(/\\n/g, '<br>');
+        contentHtml = contentHtml.replace(/\[VNA_NODE\]/g, '<strong style="color:var(--accent-blue); display:block; margin-top:10px;">[VNA_NODE]</strong>');
+        contentHtml = contentHtml.replace(/\[SOP\]/g, '<strong style="color:var(--accent-purple); display:block; margin-top:10px;">[SOP]</strong>');
+        contentHtml = contentHtml.replace(/\[SOC\]/g, '<strong style="color:var(--accent-orange); display:block; margin-top:10px;">[SOC]</strong>');
         
         resultsList.innerHTML = `
             <div style="margin-bottom: 15px;">
                 <button id="btnBackSearch" style="background:rgba(255,255,255,0.05); border:1px solid #444; color:#fff; border-radius:8px; cursor:pointer; font-family:var(--font-mono); font-size:0.8rem; padding:10px 15px; width:100%; transition:0.2s; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">&larr; Desanclar Cámara</button>
             </div>
             <div class="draggable-meme" style="--node-color: ${safeColor}; cursor: default;">
-                <div class="dm-cat" style="color: ${safeColor};">${m.category || node3D.group}</div>
+                <div class="dm-cat" style="color: ${safeColor};">${m.category || m.type || node3D.group}</div>
                 <div class="dm-title" style="font-size:1.3rem;">${m.title || node3D.name}</div>
                 ${badgesHtml ? `<div style="margin-bottom:10px;">${badgesHtml}</div>` : ''}
-                <div class="dm-content">${(m.content || '').replace(/\\n/g, '<br>')}</div>
+                <div class="dm-content">${contentHtml}</div>
                 <div class="dm-tags">${tagsHtml}</div>
             </div>
-            ${!this.agentId ? `
+            ${m.type === 'skill' || m.type === 'reference' || m.type === 'eval' ? `
             <div style="margin-top: 15px; text-align:center;">
-                <button style="background:transparent; border:1px dashed ${safeColor}; color:${safeColor}; padding:8px 15px; border-radius:8px; font-weight:bold; font-size:0.8rem; cursor:pointer; width:100%; transition:0.2s;" onclick="window.location.href='/v9/paper'">✏️ Inyectar en Omni-Paper</button>
+                <button style="background:var(--accent-purple); border:none; color:white; padding:10px 15px; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer; width:100%; transition:0.2s;" onclick="window.dispatchEvent(new CustomEvent('open-forge-modal', {detail:{nodeId:'${m.id}'}}))">🧠 Evolucionar en la Forja</button>
             </div>` : ''}
         `;
 
         const btnBack = resultsList.querySelector('#btnBackSearch');
         if (btnBack) {
             btnBack.addEventListener('click', () => {
-                resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo del universo 3D para viajar hacia él y decodificar su estructura W3C.</div>';
+                resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo del universo 3D para viajar hacia él y decodificar su estructura.</div>';
                 this.container.querySelector('#memeSearchInput').value = '';
                 this.graph3D.cameraPosition({ x: 0, y: 0, z: 800 }, { x: 0, y: 0, z: 0 }, 2000);
             });
@@ -384,25 +433,35 @@ export class SynapticCanvas {
         const searchInput = this.container.querySelector('#memeSearchInput');
         const resultsList = this.container.querySelector('#memeResultsList');
         const btnInject = this.container.querySelector('#btnInjectSeeds');
+        const btnFullscreen = this.container.querySelector('#btnToggleFullscreen');
+        const mainLayout = this.container.querySelector('#synapticMainLayout');
+
+        // Toggle Fullscreen Mágico
+        if (btnFullscreen && mainLayout) {
+            btnFullscreen.addEventListener('click', () => {
+                this.isFullscreen = !this.isFullscreen;
+                if (this.isFullscreen) {
+                    mainLayout.classList.add('fullscreen-mode');
+                    btnFullscreen.innerHTML = '🗗 Reducir';
+                    btnFullscreen.style.backgroundColor = 'rgba(255,82,82,0.2)';
+                    btnFullscreen.style.borderColor = 'var(--accent-red)';
+                } else {
+                    mainLayout.classList.remove('fullscreen-mode');
+                    btnFullscreen.innerHTML = '⛶';
+                    btnFullscreen.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    btnFullscreen.style.borderColor = '#555';
+                }
+                // Trigger resize observer manually via CSS transition trickery
+                setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+            });
+        }
 
         if (btnInject) {
             btnInject.addEventListener('click', async () => {
                 btnInject.disabled = true;
-                btnInject.innerText = "⏳ Forjando Big Bang...";
-                
-                await KB.init();
-                const antigravitySeeds = [
-                    { id: "meme_kernel_gtd", type: "meme", category: "core_os", projectId: "global", targetId: "global", title: "GTD & Pomodoro UX", content: "UX orientada a la acción inmutable. El Pomodoro Tracker garantiza la inyección de 'realHours' en el Ledger.", keywords: ["#kernel_sos", "#gtd", "#pomodoro"] },
-                    { id: "meme_kernel_slicing", type: "meme", category: "core_os", projectId: "global", targetId: "global", title: "Slicing Pie (Ledger)", content: "Ecuación: Slices = realHours * fmv * multiplier. Precisión estricta de 3 decimales.", keywords: ["#kernel_sos", "#equity"] },
-                    { id: "prompt_agent_janitor", type: "prompt_a2a", category: "prompt_a2a", projectId: "global", targetId: "@janitor", title: "Destilador: @janitor", content: "Extrae Evergreen Memes de SOPs sellados para optimizar el RAG.", keywords: ["#kernel_sos", "@janitor"] },
-                    { id: "prompt_agent_seny", type: "prompt_a2a", category: "prompt_a2a", projectId: "global", targetId: "@seny_analyst", title: "Bucle Imperial: @seny_analyst", content: "Auto-Sanación: Analiza los SOCs fallidos e invoca talento.", keywords: ["#kernel_sos", "@seny_analyst"] }
-                ];
-                for (const seed of antigravitySeeds) await KB.saveNode(seed);
-                alert("✅ Big Bang completado. Semillas Antigravity inyectadas.");
+                btnInject.innerText = "⏳ Inyectando...";
+                alert("Semillas gestionadas ahora desde el CoreSeed en el arranque del Kernel.");
                 btnInject.style.display = 'none';
-                
-                await this.loadInitialData();
-                this.graph3D.graphData({ nodes: this.nodes, links: this.links });
             });
         }
 
