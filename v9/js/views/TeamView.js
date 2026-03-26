@@ -72,9 +72,9 @@ export default class TeamView {
         const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
 
         const headerConfig = {
-            title: "Padrón del Ecosistema",
+            title: "Padrón Neuronal",
             subtitle: project.nombre,
-            tagline: "Evolución de Agentes, Asignación de Roles y Badges de Skills (A2A).",
+            tagline: "Evolución de Agentes, Asignación de Roles y Glass-Box AI.",
             actionHtml: isPO ? `
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <button class="btn-primary" id="btnOpenMarketplace" style="background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue);">🔍 Reclutar Agentes & Nodos</button>
@@ -95,14 +95,12 @@ export default class TeamView {
                 .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
                 .tab-content.active { display: block; }
 
-                /* 🔥 TAXONOMÍA GRID */
                 .taxonomy-group { margin-bottom: 3rem; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.02);}
                 .taxonomy-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);}
                 .taxonomy-title { font-size: 1.2rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;}
                 
                 .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem; width: 100%; box-sizing: border-box;}
                 
-                /* 🔥 USER CARD LUXURY */
                 .user-card { 
                     background: linear-gradient(145deg, rgba(25,25,30,0.8), rgba(15,15,20,0.9));
                     border: 1px solid rgba(255,255,255,0.05); 
@@ -110,7 +108,7 @@ export default class TeamView {
                     display: flex; flex-direction: column; gap: 12px; 
                     transition: all 0.3s; position: relative; 
                     backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 5px 15px rgba(0,0,0,0.3);
-                    box-sizing: border-box; width: 100%;
+                    box-sizing: border-box; width: 100%; cursor: pointer;
                 }
                 .user-card:hover { border-color: var(--accent-blue); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 176, 255, 0.15); }
                 .user-card.is-ai { border-color: rgba(224, 64, 251, 0.2); background: linear-gradient(145deg, rgba(30,20,40,0.8), rgba(15,10,20,0.9));}
@@ -132,7 +130,6 @@ export default class TeamView {
                 .uc-roi-val { color: var(--accent-green); font-weight: 900; font-family: var(--font-mono); font-size: 1rem;}
                 .uc-roi-lbl { color: #888; font-size: 0.65rem; text-transform: uppercase; font-weight: bold;}
 
-                /* 🔥 SKILLS BADGES (ADICCIÓN VISUAL) */
                 .uc-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.05);}
                 .universal-skill-badge { background: rgba(0,176,255,0.1); border: 1px solid rgba(0,176,255,0.3); color: var(--accent-blue); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; position:relative; z-index:2;}
                 .universal-skill-badge:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.5); transform: translateY(-2px);}
@@ -146,30 +143,20 @@ export default class TeamView {
                 .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.05); }
                 .role-meta { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 250px;}
                 
-                /* FORMULARIOS Y BOTONES */
                 .form-control { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 14px 15px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
-                .form-control:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0,0,0,0.3), 0 0 10px rgba(0,176,255,0.2);}
-                .form-group { margin-bottom: 15px; width: 100%;}
-                .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;}
-
                 .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,176,255,0.2); font-size: 0.95rem;}
                 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224,64,251,0.4); filter: brightness(1.1);}
-                .btn-outline { background: transparent; border: 1px solid #555; color: white; padding: 12px 24px; border-radius: 12px; font-weight:bold; cursor: pointer; transition: 0.2s; font-size: 0.95rem;}
-                .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: white; }
                 
-                /* MODAL OVERLAYS */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 5000; }
-                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 20px; width: 550px; max-width: 95%; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto; border-top: 4px solid var(--accent-blue);}
-
-                /* MODAL PERFIL USUARIO/AGENTE NEURONAL */
-                .profile-modal { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 24px; width: 650px; max-width: 95%; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); border-top: 4px solid var(--accent-blue); box-sizing: border-box;}
-                .pm-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 20px; align-items: center; position: relative; background: rgba(255,255,255,0.01);}
+                /* 🔥 MODAL PERFIL USUARIO/AGENTE NEURONAL (EXPANDIDO PARA GLASS-BOX) */
+                .profile-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 5000; }
+                .profile-modal { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 24px; width: 850px; max-width: 95%; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); border-top: 4px solid var(--accent-blue); box-sizing: border-box; max-height: 90vh; display:flex; flex-direction:column;}
+                .pm-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 20px; align-items: center; position: relative; background: rgba(255,255,255,0.01); flex-shrink:0;}
                 .pm-avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 2.5rem; border: 3px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); flex-shrink: 0;}
                 .pm-info { z-index: 1; overflow: hidden; flex: 1;}
                 .pm-name { font-size: 1.6rem; color: white; margin: 0 0 5px 0; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px;}
                 .pm-id { font-family: var(--font-mono); color: #888; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
                 
-                .pm-body { padding: 2rem; max-height: 60vh; overflow-y: auto;}
+                .pm-body { padding: 2rem; overflow-y: auto; flex:1;}
                 .pm-stats { display: flex; gap: 15px; margin-bottom: 1.5rem; }
                 .pm-stat-box { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; text-align: center; }
                 .pm-stat-val { font-size: 1.8rem; font-weight: 900; font-family: var(--font-mono); color: var(--accent-green); margin-bottom: 5px;}
@@ -179,28 +166,23 @@ export default class TeamView {
                 .pm-brain-title { font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; font-weight: 900; margin-bottom: 12px; letter-spacing:1px; display:flex; justify-content:space-between; align-items:center;}
                 .pm-brain-content { font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; line-height: 1.6; white-space: pre-wrap; background:rgba(0,0,0,0.5); padding:15px; border-radius:12px; border:1px solid #333; max-height:200px; overflow-y:auto;}
                 
-                .pm-footer { padding: 1.5rem 2rem; background: rgba(0,0,0,0.6); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;}
+                .pm-footer { padding: 1.5rem 2rem; background: rgba(0,0,0,0.6); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-shrink:0;}
                 
                 .btn-lux-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration:none; display:inline-block;}
                 .btn-lux-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224,64,251,0.4); filter: brightness(1.1);}
 
                 /* MARKETPLACE SIDE PANEL */
-                .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: rgba(10,10,14,0.98); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 4000; box-shadow: -20px 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
+                .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: rgba(10,10,14,0.98); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 4000; display: flex; flex-direction: column;}
                 .marketplace-panel.open { transform: translateX(0); }
                 .mk-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);}
                 .mk-filters { padding: 1.5rem 2rem; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.05); display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
                 .mk-list { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 15px;}
                 .mk-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid #333; padding: 1.2rem; border-radius: 16px; display: flex; flex-direction: column; transition: 0.2s;}
-                .mk-card:hover { border-color: var(--accent-blue); transform: translateX(-5px);}
-                .mk-card.ai-card { border-color: rgba(224, 64, 251, 0.3); }
-                .mk-card.ai-card:hover { border-color: var(--accent-purple); box-shadow: 0 10px 25px rgba(224, 64, 251, 0.15); }
                 .btn-recruit { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 16px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 15px;}
                 .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); transform: scale(1.02);}
 
                 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
-                @media (max-width: 768px) { .workspace { padding: 90px 1rem 120px 1rem; } .roles-grid { grid-template-columns: 1fr; } .marketplace-panel { width: 100vw; } }
             </style>
 
             <div class="app-layout">
@@ -223,8 +205,8 @@ export default class TeamView {
                 <aside class="marketplace-panel" id="mkPanel">
                     <div class="mk-header">
                         <div>
-                            <h2 style="margin:0; color:white; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px;">Ecosistema Global</h2>
-                            <p style="margin:5px 0 0 0; color:#888; font-size:0.85rem;">Recluta talento humano y Agentes IA</p>
+                            <h2 style="margin:0; color:white; font-size:1.6rem; font-weight:900;">Reclutamiento Global</h2>
+                            <p style="margin:5px 0 0 0; color:#888; font-size:0.85rem;">Incorpora talento humano e IA a la red.</p>
                         </div>
                         <button id="btnCloseMarketplace" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
                     </div>
@@ -235,26 +217,6 @@ export default class TeamView {
                     </div>
                     <div class="mk-list" id="mkList"></div>
                 </aside>
-
-                <div class="modal-overlay" id="addUserModal">
-                    <div class="modal-content">
-                        <h2 style="color:white; margin-top:0; margin-bottom:1.5rem; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">➕ Nuevo Nodo Externo</h2>
-                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                            <div class="form-group" style="flex:1;">
-                                <label>Alias Único (@user)</label>
-                                <input type="text" id="addUAlias" class="form-control" placeholder="@alias_unico">
-                            </div>
-                            <div class="form-group" style="flex:2;">
-                                <label>Nombre Completo</label>
-                                <input type="text" id="addUName" class="form-control" placeholder="Ej: Laura Pérez">
-                            </div>
-                        </div>
-                        <div style="display:flex; justify-content:flex-end; margin-top:2rem; padding-top: 1.5rem; border-top: 1px dashed #333; gap:15px;">
-                            <button class="btn-outline" id="btnCancelAddUser">Cancelar</button>
-                            <button class="btn-primary" id="btnConfirmAddUser">Vincular Perfil</button>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="profile-modal-overlay" id="userProfileModal">
                     <div class="profile-modal">
@@ -286,13 +248,14 @@ export default class TeamView {
                                     <a id="btnEditBrain" href="/v9/identity" data-link class="btn-lux-primary" style="font-size:0.7rem; padding:5px 10px;">Forjar Cerebro ↗</a>
                                 </div>
                                 <div class="pm-brain-content" id="pmSemanticProfile">Cargando datos de IndexedDB...</div>
-                                <div style="margin-top:15px;" id="pmEquippedSkills"></div>
                             </div>
 
+                            <div id="pmEquippedSkills"></div>
+                            
                             <div id="govContainer"></div>
                         </div>
                         <div class="pm-footer">
-                            <button id="btnCloseProfileModal" style="background:transparent; border:none; color: #888; cursor:pointer; font-weight:bold;">Cerrar Expediente</button>
+                            <button id="btnCloseProfileModal" style="background:transparent; border:none; color: #888; cursor:pointer; font-weight:bold; font-size:1rem;">Cerrar Expediente</button>
                             <div style="font-size: 0.85rem; color: var(--accent-green); font-weight:900; font-family:var(--font-mono);" id="pmValidationTag">ID Validado ✓</div>
                         </div>
                     </div>
@@ -304,7 +267,7 @@ export default class TeamView {
     }
 
     async executeViewScript() {
-        console.log("🔥 TEAMVIEW V9 CARGADO - TAXONOMÍA ACTIVA");
+        console.log("🔥 TEAMVIEW V9 CARGADO - TAXONOMÍA ACTIVA Y GLASS-BOX");
         
         Sidebar.initListeners(); 
         PageHeader.execute();
@@ -347,22 +310,6 @@ export default class TeamView {
         });
         document.getElementById('btnCloseMarketplace')?.addEventListener('click', () => mkPanel.classList.remove('open'));
         document.getElementById('mkSearchName')?.addEventListener('input', () => this.renderMarketplace(store.getState().globalUsers, store.getState().projects.find(p=>p.id===this.activeProjectId)?.usuarios || []));
-
-        // ADD USER FORM
-        const addUserModal = document.getElementById('addUserModal');
-        document.getElementById('btnManualAdd')?.addEventListener('click', () => addUserModal.style.display = 'flex');
-        document.getElementById('btnCancelAddUser')?.addEventListener('click', () => addUserModal.style.display = 'none');
-        document.getElementById('btnConfirmAddUser')?.addEventListener('click', async () => {
-            let alias = document.getElementById('addUAlias').value.trim();
-            const name = document.getElementById('addUName').value.trim();
-            if (!alias || !name) return alert("Alias y Nombre son obligatorios.");
-            if (!alias.startsWith('@')) alias = '@' + alias;
-
-            const newUser = { id: alias, name: name, globalRole: 'network-user', profile: { structural_affinity: ['@baixos'], guardian_authority: ['everyman'] } };
-            await store.dispatch({ type: 'ADD_USER', payload: { ...newUser, projectId: this.activeProjectId } });
-            addUserModal.style.display = 'none';
-            window.location.reload();
-        });
 
         document.getElementById('btnCloseProfileModal')?.addEventListener('click', () => {
             document.getElementById('userProfileModal').style.display = 'none';
@@ -422,7 +369,7 @@ export default class TeamView {
 
     generateUserCardElement(fullUser, project, catColor) {
         const isAi = fullUser.profile?.isAi || false;
-        const initial = isAi ? '🤖' : fullUser.name.charAt(0).toUpperCase();
+        const initial = isAi ? '🤖' : (fullUser.name || 'U').charAt(0).toUpperCase();
         const color = isAi ? 'var(--accent-purple)' : catColor;
         const isOnline = fullUser.profile?.isOpenToWork || isAi;
 
@@ -468,75 +415,105 @@ export default class TeamView {
             <div class="uc-skills" style="position:relative; z-index:2;">${skillsHtml}</div>
         `;
 
-        // Prevenir que el click en la píldora abra el modal del perfil
+        // Prevenir que el clic en el badge abra el modal del perfil
         card.querySelectorAll('.universal-skill-badge').forEach(badge => {
             badge.addEventListener('click', (e) => {
                 e.stopPropagation();
             });
         });
 
+        // 🔥 LÓGICA DE APERTURA DEL VISOR NEURONAL (CON ROBUSTEZ Y GLASS-BOX)
         card.addEventListener('click', async () => {
-            document.getElementById('pmName').innerText = fullUser.name;
-            document.getElementById('pmId').innerText = fullUser.id;
-            
-            const avatarEl = document.getElementById('pmAvatar');
-            avatarEl.innerText = initial;
-            avatarEl.style.borderColor = color;
-            avatarEl.style.color = color;
-            
-            document.getElementById('pmSlices').innerText = slices.toLocaleString();
-            document.getElementById('pmHours').innerText = totalHours.toFixed(1) + 'h';
-            document.getElementById('pmPoBadge').style.display = isPO ? 'inline-block' : 'none';
-            document.getElementById('pmValidationTag').innerText = isAi ? "🤖 NODO IA VERIFICADO ✓" : "ID Validado ✓";
-
-            const btnEditBrain = document.getElementById('btnEditBrain');
-            if (btnEditBrain) {
-                btnEditBrain.style.display = isAi ? 'inline-block' : 'none';
-                btnEditBrain.onclick = () => {
-                    localStorage.setItem('tt_edit_agent_id', fullUser.id);
-                    window.location.href = '/v9/identity';
-                };
-            }
-
-            const promptBox = document.getElementById('pmSemanticProfile');
-            const skillsBox = document.getElementById('pmEquippedSkills');
-            
-            if (isAi) {
-                await KB.init();
-                const promptNode = await KB.getNode(`prompt_global_${fullUser.id.replace('@','')}`);
+            try {
+                document.getElementById('pmName').innerText = fullUser.name || 'Agente';
+                document.getElementById('pmId').innerText = fullUser.id;
                 
-                if (promptNode) {
-                    promptBox.innerText = promptNode.content;
-                } else {
-                    promptBox.innerHTML = '<span style="color: var(--accent-red);">⚠️ Error Neural: El System Prompt (AGENT.md) no existe en la base de datos.</span>';
+                const avatarEl = document.getElementById('pmAvatar');
+                avatarEl.innerText = initial;
+                avatarEl.style.borderColor = color;
+                avatarEl.style.color = color;
+                
+                document.getElementById('pmSlices').innerText = slices.toLocaleString();
+                document.getElementById('pmHours').innerText = totalHours.toFixed(1) + 'h';
+                document.getElementById('pmPoBadge').style.display = isPO ? 'inline-block' : 'none';
+                document.getElementById('pmValidationTag').innerText = isAi ? "🤖 NODO IA VERIFICADO ✓" : "ID Validado ✓";
+
+                const btnEditBrain = document.getElementById('btnEditBrain');
+                if (btnEditBrain) {
+                    btnEditBrain.style.display = isAi ? 'inline-block' : 'none';
+                    btnEditBrain.onclick = () => {
+                        localStorage.setItem('tt_edit_agent_id', fullUser.id);
+                        window.location.href = '/v9/identity';
+                    };
                 }
+
+                const promptBox = document.getElementById('pmSemanticProfile');
+                const skillsBox = document.getElementById('pmEquippedSkills');
                 
-                skillsBox.innerHTML = `<div style="font-size:0.7rem; color:#888; text-transform:uppercase; margin-bottom:5px; font-weight:bold;">Herramientas MCP Equipadas:</div><div style="display:flex; gap:5px; flex-wrap:wrap;">${skillsHtml}</div>`;
-                
-                skillsBox.querySelectorAll('.universal-skill-badge').forEach(badge => {
-                    badge.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        document.getElementById('userProfileModal').style.display = 'none';
-                        window.dispatchEvent(new CustomEvent('open-forge-modal', { detail: { nodeId: badge.dataset.skillId } }));
+                if (isAi) {
+                    await KB.init();
+                    const promptNode = await KB.getNode(`prompt_global_${fullUser.id.replace('@','')}`);
+                    
+                    if (promptNode) {
+                        promptBox.innerText = promptNode.content;
+                    } else {
+                        promptBox.innerHTML = '<span style="color: var(--accent-red);">⚠️ Error Neural: El System Prompt (AGENT.md) no existe en la base de datos.</span>';
+                    }
+                    
+                    // 🔥 GLASS-BOX AI: RENDERIZAR EL CONTENIDO COMPLETO DE CADA SKILL
+                    let fullSkillsHtml = '';
+                    if (activeSkillsIds.length > 0) {
+                        fullSkillsHtml = activeSkillsIds.map(skillId => {
+                            const node = this.skillsCache.find(s => s.id === skillId);
+                            if(!node) return '';
+                            return `
+                                <div style="background: rgba(0,0,0,0.6); border: 1px solid #333; border-radius: 12px; margin-bottom: 12px; overflow: hidden;">
+                                    <div style="padding: 10px 15px; background: rgba(0,176,255,0.05); border-bottom: 1px solid rgba(0,176,255,0.2); display:flex; justify-content:space-between; align-items:center;">
+                                        <span style="color:var(--accent-blue); font-weight:bold; font-family:var(--font-mono); font-size:0.85rem;">🎒 ${node.title}</span>
+                                        <button class="universal-skill-badge" data-skill-id="${skillId}" style="margin:0; padding:4px 10px; font-size:0.7rem;">Evolucionar ↗</button>
+                                    </div>
+                                    <div style="padding: 15px; font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; white-space: pre-wrap; max-height: 250px; overflow-y: auto; line-height:1.5;">${node.content}</div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        fullSkillsHtml = '<div style="color:#888; font-style:italic; font-size:0.85rem; padding:15px; border:1px dashed #333; border-radius:10px;">Cinturón vacío. Este agente solo usa su AGENT.md base.</div>';
+                    }
+                    
+                    skillsBox.innerHTML = `
+                        <div style="font-size:0.8rem; color:var(--accent-blue); text-transform:uppercase; margin-bottom:10px; font-weight:900; letter-spacing:1px; margin-top:20px;">⚙️ Códice Operativo (SOPs & SOCs)</div>
+                        ${fullSkillsHtml}
+                    `;
+                    
+                    // Asegurar que los badges de "Evolucionar" dentro del modal funcionan
+                    skillsBox.querySelectorAll('.universal-skill-badge').forEach(badge => {
+                        badge.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            document.getElementById('userProfileModal').style.display = 'none';
+                            window.dispatchEvent(new CustomEvent('open-forge-modal', { detail: { nodeId: badge.dataset.skillId } }));
+                        });
                     });
-                });
 
-            } else {
-                const geo = fullUser.profile?.country ? `📍 ${fullUser.profile.city || ''}, ${fullUser.profile.country}` : '🌍 Ubicación no definida';
-                let contactInfo = '';
-                if (fullUser.wallet) contactInfo += `<br><span style="color:#888;">Wallet:</span> <span style="font-family:monospace; font-size:0.8rem;">${fullUser.wallet}</span>`;
-                if (fullUser.social) contactInfo += `<br><span style="color:#888;">Social:</span> ${fullUser.social}`;
+                } else {
+                    const geo = fullUser.profile?.country ? `📍 ${fullUser.profile.city || ''}, ${fullUser.profile.country}` : '🌍 Ubicación no definida';
+                    let contactInfo = '';
+                    if (fullUser.wallet) contactInfo += `<br><span style="color:#888;">Wallet:</span> <span style="font-family:monospace; font-size:0.8rem;">${fullUser.wallet}</span>`;
+                    if (fullUser.social) contactInfo += `<br><span style="color:#888;">Social:</span> ${fullUser.social}`;
 
-                promptBox.innerHTML = `
-                    <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:8px;">${geo}</span>
-                    <span style="color: var(--accent-blue);">Estructura Óptima:</span> [${(fullUser.profile?.structural_affinity||[]).join(', ')}]<br>
-                    <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${(fullUser.profile?.guardian_authority||[]).join(', ')}]
-                    ${contactInfo}
-                `;
-                skillsBox.innerHTML = '';
+                    promptBox.innerHTML = `
+                        <span style="color: var(--accent-orange); font-weight:bold; display:block; margin-bottom:8px;">${geo}</span>
+                        <span style="color: var(--accent-blue);">Estructura Óptima:</span> [${(fullUser.profile?.structural_affinity||[]).join(', ')}]<br>
+                        <span style="color: var(--accent-purple);">Autoridad Intangible:</span> [${(fullUser.profile?.guardian_authority||[]).join(', ')}]
+                        ${contactInfo}
+                    `;
+                    skillsBox.innerHTML = '';
+                }
+
+                document.getElementById('userProfileModal').style.display = 'flex';
+            } catch (err) {
+                console.error("🔥 Error abriendo perfil:", err);
+                alert("Fallo leyendo datos de la matriz. Revisa la consola.");
             }
-
-            document.getElementById('userProfileModal').style.display = 'flex';
         });
 
         return card;
@@ -599,7 +576,7 @@ export default class TeamView {
         container.innerHTML = '';
 
         if (roles.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#888; padding:3rem; border:1px dashed #444; border-radius:16px;">No hay sillas instanciadas.</div>`;
+            container.innerHTML = `<div style="text-align:center; color:#888; padding:3rem; border:1px dashed #444; border-radius:16px;">No hay sillas instanciadas. Ve al Mapa VNA.</div>`;
             return;
         }
 
