@@ -152,6 +152,13 @@ export default class TestsView {
                     type: 'ADD_USER', 
                     payload: { id: dynAgentId, name: 'Deep Coder', globalRole: 'ai-agent', profile: { isAi: true, preferredEngine: 'deepseek', version: 'v9' } } 
                 });
+                
+                // Inyectamos a los agentes de Antifragilidad para validar su estructura en el store
+                await store.dispatch({ type: 'ADD_USER', payload: { id: '@synaptic_weaver', name: 'Synaptic Weaver', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician' } } });
+                await store.dispatch({ type: 'ADD_USER', payload: { id: '@token_economist', name: 'Token Economist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler' } } });
+                
+                const weaverExists = store.getState().globalUsers.find(u => u.id === '@synaptic_weaver');
+                await assert(weaverExists !== undefined, "Enjambre Evolucionado: Agentes Antifrágiles inyectados en la red neuronal.", "SWARM-V9");
 
                 // ==========================================
                 // BLOQUE 2: MEMORIA PROFUNDA (AGENTSKILLS & VNA)
