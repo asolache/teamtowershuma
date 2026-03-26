@@ -6,6 +6,18 @@ import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { SkillForgeModal } from '../components/SkillForgeModal.js'; 
 
+const GEO_DATA = {
+    "España": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Zaragoza", "Málaga", "Bilbao", "Alicante", "Palma", "Otra..."],
+    "México": ["Ciudad de México", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "Mérida", "Otra..."],
+    "Argentina": ["Buenos Aires", "Córdoba", "Rosario", "Mendoza", "Tucumán", "La Plata", "Otra..."],
+    "Colombia": ["Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Otra..."],
+    "Chile": ["Santiago", "Valparaíso", "Concepción", "La Serena", "Antofagasta", "Otra..."],
+    "Perú": ["Lima", "Arequipa", "Trujillo", "Chiclayo", "Piura", "Otra..."],
+    "Estados Unidos": ["Miami", "New York", "San Francisco", "Los Angeles", "Austin", "Otra..."],
+    "Otro País...": ["Otra..."]
+};
+
+// 🌌 TAXONOMÍA UNIVERSAL DEL PANTEÓN V9
 const TAXONOMY = {
     'core.architecture': { icon: '🌌', label: 'Arquitectura & VNA', color: 'var(--accent-blue)' },
     'core.economy': { icon: '⚖️', label: 'Economía & Ledger', color: 'var(--accent-green)' },
@@ -46,12 +58,16 @@ export default class TeamView {
                         <div class="glass-panel" style="text-align:center; max-width: 500px; margin: 0 auto; border:1px solid #333; padding:4rem; border-radius:20px;">
                              <div style="font-size: 5rem; margin-bottom: 1.5rem; line-height:1;">👥</div>
                              <h2 style="color:white; margin-top:0; font-weight:900; font-size:2rem;">Sin Red Asignada</h2>
+                             <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-size:1.1rem;">No tienes un Castell activo para gestionar talento.</p>
                         </div>
                     </main>
                     ${BottomNav.getHtml('/team')}
                 </div>
             `;
         }
+
+        let countryOptions = `<option value="">Todos los Países</option>`;
+        Object.keys(GEO_DATA).forEach(c => { countryOptions += `<option value="${c}">${c}</option>`; });
 
         const isPO = project && (project.ownerId === activeUserId || state.session.role === 'ecosystem-owner');
 
@@ -62,6 +78,7 @@ export default class TeamView {
             actionHtml: isPO ? `
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <button class="btn-primary" id="btnOpenMarketplace" style="background:transparent; border:1px solid var(--accent-blue); color:var(--accent-blue);">🔍 Reclutar Agentes & Nodos</button>
+                    <button class="btn-primary" id="btnManualAdd" style="background:transparent; border:1px dashed #888; color:#ccc;">➕ Humano</button>
                 </div>
             ` : '',
             tabs: [
@@ -78,12 +95,14 @@ export default class TeamView {
                 .tab-content { display: none; animation: fadeIn 0.3s ease-out; padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
                 .tab-content.active { display: block; }
 
+                /* 🔥 TAXONOMÍA GRID */
                 .taxonomy-group { margin-bottom: 3rem; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.02);}
                 .taxonomy-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);}
                 .taxonomy-title { font-size: 1.2rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;}
                 
                 .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem; width: 100%; box-sizing: border-box;}
                 
+                /* 🔥 USER CARD LUXURY */
                 .user-card { 
                     background: linear-gradient(145deg, rgba(25,25,30,0.8), rgba(15,15,20,0.9));
                     border: 1px solid rgba(255,255,255,0.05); 
@@ -91,7 +110,7 @@ export default class TeamView {
                     display: flex; flex-direction: column; gap: 12px; 
                     transition: all 0.3s; position: relative; 
                     backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 5px 15px rgba(0,0,0,0.3);
-                    box-sizing: border-box; width: 100%; cursor: pointer;
+                    box-sizing: border-box; width: 100%;
                 }
                 .user-card:hover { border-color: var(--accent-blue); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 176, 255, 0.15); }
                 .user-card.is-ai { border-color: rgba(224, 64, 251, 0.2); background: linear-gradient(145deg, rgba(30,20,40,0.8), rgba(15,10,20,0.9));}
@@ -113,8 +132,9 @@ export default class TeamView {
                 .uc-roi-val { color: var(--accent-green); font-weight: 900; font-family: var(--font-mono); font-size: 1rem;}
                 .uc-roi-lbl { color: #888; font-size: 0.65rem; text-transform: uppercase; font-weight: bold;}
 
+                /* 🔥 SKILLS BADGES (ADICCIÓN VISUAL) */
                 .uc-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.05);}
-                .universal-skill-badge { background: rgba(0,176,255,0.1); border: 1px solid rgba(0,176,255,0.3); color: var(--accent-blue); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px;}
+                .universal-skill-badge { background: rgba(0,176,255,0.1); border: 1px solid rgba(0,176,255,0.3); color: var(--accent-blue); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; position:relative; z-index:2;}
                 .universal-skill-badge:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.5); transform: translateY(-2px);}
                 .universal-skill-badge.core-skill { background: rgba(224,64,251,0.1); border-color: rgba(224,64,251,0.3); color: var(--accent-purple);}
                 .universal-skill-badge.core-skill:hover { background: var(--accent-purple); color: black; box-shadow: 0 0 15px rgba(224,64,251,0.5);}
@@ -126,10 +146,22 @@ export default class TeamView {
                 .role-slot.assigned { border-style: solid; border-color: rgba(0, 230, 118, 0.3); background: rgba(0, 230, 118, 0.05); }
                 .role-meta { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 250px;}
                 
+                /* FORMULARIOS Y BOTONES */
                 .form-control { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 14px 15px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; width: 100%; transition: border-color 0.3s; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+                .form-control:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0,0,0,0.3), 0 0 10px rgba(0,176,255,0.2);}
+                .form-group { margin-bottom: 15px; width: 100%;}
+                .form-group label { display: block; font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;}
+
+                .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,176,255,0.2); font-size: 0.95rem;}
+                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224,64,251,0.4); filter: brightness(1.1);}
+                .btn-outline { background: transparent; border: 1px solid #555; color: white; padding: 12px 24px; border-radius: 12px; font-weight:bold; cursor: pointer; transition: 0.2s; font-size: 0.95rem;}
+                .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: white; }
                 
-                /* 🔥 MODAL PERFIL USUARIO/AGENTE NEURONAL */
-                .profile-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 5000; }
+                /* MODAL OVERLAYS */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 5000; }
+                .modal-content { background: var(--bg-dark); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: 20px; width: 550px; max-width: 95%; box-shadow: 0 30px 60px rgba(0,0,0,0.9); animation: slideUp 0.3s ease-out; box-sizing: border-box; max-height: 90vh; overflow-y: auto; border-top: 4px solid var(--accent-blue);}
+
+                /* MODAL PERFIL USUARIO/AGENTE NEURONAL */
                 .profile-modal { background: var(--bg-dark); border: 1px solid var(--glass-border); border-radius: 24px; width: 650px; max-width: 95%; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); border-top: 4px solid var(--accent-blue); box-sizing: border-box;}
                 .pm-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 20px; align-items: center; position: relative; background: rgba(255,255,255,0.01);}
                 .pm-avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 2.5rem; border: 3px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); flex-shrink: 0;}
@@ -152,10 +184,23 @@ export default class TeamView {
                 .btn-lux-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration:none; display:inline-block;}
                 .btn-lux-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224,64,251,0.4); filter: brightness(1.1);}
 
+                /* MARKETPLACE SIDE PANEL */
+                .marketplace-panel { position: fixed; top: 0; right: 0; width: 450px; max-width: 100vw; height: 100vh; background: rgba(10,10,14,0.98); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 4000; box-shadow: -20px 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column;}
+                .marketplace-panel.open { transform: translateX(0); }
+                .mk-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);}
+                .mk-filters { padding: 1.5rem 2rem; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.05); display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+                .mk-list { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 15px;}
+                .mk-card { background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); border: 1px solid #333; padding: 1.2rem; border-radius: 16px; display: flex; flex-direction: column; transition: 0.2s;}
+                .mk-card:hover { border-color: var(--accent-blue); transform: translateX(-5px);}
+                .mk-card.ai-card { border-color: rgba(224, 64, 251, 0.3); }
+                .mk-card.ai-card:hover { border-color: var(--accent-purple); box-shadow: 0 10px 25px rgba(224, 64, 251, 0.15); }
+                .btn-recruit { background: transparent; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 10px 16px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 15px;}
+                .btn-recruit:hover { background: rgba(0, 230, 118, 0.1); transform: scale(1.02);}
+
                 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-                @media (max-width: 768px) { .workspace { padding: 90px 1rem 120px 1rem; } .roles-grid { grid-template-columns: 1fr; } }
+                @media (max-width: 768px) { .workspace { padding: 90px 1rem 120px 1rem; } .roles-grid { grid-template-columns: 1fr; } .marketplace-panel { width: 100vw; } }
             </style>
 
             <div class="app-layout">
@@ -174,6 +219,42 @@ export default class TeamView {
                 </main>
 
                 <div id="mount-forge-modal"></div>
+
+                <aside class="marketplace-panel" id="mkPanel">
+                    <div class="mk-header">
+                        <div>
+                            <h2 style="margin:0; color:white; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px;">Ecosistema Global</h2>
+                            <p style="margin:5px 0 0 0; color:#888; font-size:0.85rem;">Recluta talento humano y Agentes IA</p>
+                        </div>
+                        <button id="btnCloseMarketplace" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
+                    </div>
+                    <div class="mk-filters">
+                        <div class="form-group" style="grid-column: 1 / -1; margin:0;">
+                            <input type="text" id="mkSearchName" class="form-control" placeholder="Buscar por nombre o @alias...">
+                        </div>
+                    </div>
+                    <div class="mk-list" id="mkList"></div>
+                </aside>
+
+                <div class="modal-overlay" id="addUserModal">
+                    <div class="modal-content">
+                        <h2 style="color:white; margin-top:0; margin-bottom:1.5rem; font-weight:900; font-size:1.8rem; letter-spacing:-1px;">➕ Nuevo Nodo Externo</h2>
+                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                            <div class="form-group" style="flex:1;">
+                                <label>Alias Único (@user)</label>
+                                <input type="text" id="addUAlias" class="form-control" placeholder="@alias_unico">
+                            </div>
+                            <div class="form-group" style="flex:2;">
+                                <label>Nombre Completo</label>
+                                <input type="text" id="addUName" class="form-control" placeholder="Ej: Laura Pérez">
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:2rem; padding-top: 1.5rem; border-top: 1px dashed #333; gap:15px;">
+                            <button class="btn-outline" id="btnCancelAddUser">Cancelar</button>
+                            <button class="btn-primary" id="btnConfirmAddUser">Vincular Perfil</button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="profile-modal-overlay" id="userProfileModal">
                     <div class="profile-modal">
@@ -223,6 +304,8 @@ export default class TeamView {
     }
 
     async executeViewScript() {
+        console.log("🔥 TEAMVIEW V9 CARGADO - TAXONOMÍA ACTIVA");
+        
         Sidebar.initListeners(); 
         PageHeader.execute();
 
@@ -232,9 +315,11 @@ export default class TeamView {
         if (!project) return;
         this.activeProjectId = project.id;
 
+        // INICIALIZAR CHAT EVOLVER MODAL
         this.skillForgeModal = new SkillForgeModal('mount-forge-modal');
         await this.skillForgeModal.render();
 
+        // CACHEAR SKILLS
         await KB.init();
         this.skillsCache = await KB.getAllNodes({ type: 'skill' });
 
@@ -250,8 +335,34 @@ export default class TeamView {
             this.renderTaxonomicUsers(project, store.getState().globalUsers);
         });
 
+        // 🔥 RENDERIZAR TABLERO TAXONÓMICO
         this.renderTaxonomicUsers(project, state.globalUsers);
         this.renderRoles(project, state.globalUsers);
+
+        // MARKETPLACE LOGIC
+        const mkPanel = document.getElementById('mkPanel');
+        document.getElementById('btnOpenMarketplace')?.addEventListener('click', () => {
+            mkPanel.classList.add('open');
+            this.renderMarketplace(store.getState().globalUsers, project.usuarios || []);
+        });
+        document.getElementById('btnCloseMarketplace')?.addEventListener('click', () => mkPanel.classList.remove('open'));
+        document.getElementById('mkSearchName')?.addEventListener('input', () => this.renderMarketplace(store.getState().globalUsers, store.getState().projects.find(p=>p.id===this.activeProjectId)?.usuarios || []));
+
+        // ADD USER FORM
+        const addUserModal = document.getElementById('addUserModal');
+        document.getElementById('btnManualAdd')?.addEventListener('click', () => addUserModal.style.display = 'flex');
+        document.getElementById('btnCancelAddUser')?.addEventListener('click', () => addUserModal.style.display = 'none');
+        document.getElementById('btnConfirmAddUser')?.addEventListener('click', async () => {
+            let alias = document.getElementById('addUAlias').value.trim();
+            const name = document.getElementById('addUName').value.trim();
+            if (!alias || !name) return alert("Alias y Nombre son obligatorios.");
+            if (!alias.startsWith('@')) alias = '@' + alias;
+
+            const newUser = { id: alias, name: name, globalRole: 'network-user', profile: { structural_affinity: ['@baixos'], guardian_authority: ['everyman'] } };
+            await store.dispatch({ type: 'ADD_USER', payload: { ...newUser, projectId: this.activeProjectId } });
+            addUserModal.style.display = 'none';
+            window.location.reload();
+        });
 
         document.getElementById('btnCloseProfileModal')?.addEventListener('click', () => {
             document.getElementById('userProfileModal').style.display = 'none';
@@ -302,8 +413,7 @@ export default class TeamView {
             
             const grid = groupHtml.querySelector('.team-grid');
             usersInCat.forEach(user => {
-                const card = this.generateUserCardElement(user, project, taxConfig.color);
-                grid.appendChild(card);
+                grid.appendChild(this.generateUserCardElement(user, project, taxConfig.color));
             });
             
             container.appendChild(groupHtml);
@@ -332,7 +442,7 @@ export default class TeamView {
                 const node = this.skillsCache.find(s => s.id === skillId);
                 const title = node ? node.title.replace(' (', '<br>(') : skillId;
                 const isCore = node && node.keywords && node.keywords.includes('#core_sos');
-                return `<span class="universal-skill-badge ${isCore ? 'core-skill' : ''}" data-skill-id="${skillId}" onclick="event.stopPropagation()">🎒 ${title}</span>`;
+                return `<span class="universal-skill-badge ${isCore ? 'core-skill' : ''}" data-skill-id="${skillId}">🎒 ${title}</span>`;
             }).join('');
         }
 
@@ -355,10 +465,16 @@ export default class TeamView {
                     <div class="uc-roi-lbl">Slices</div>
                 </div>
             </div>
-            <div class="uc-skills">${skillsHtml}</div>
+            <div class="uc-skills" style="position:relative; z-index:2;">${skillsHtml}</div>
         `;
 
-        // 🔥 CLICK EN LA TARJETA: ABRE EL MODAL Y LEE DE LA BASE DE DATOS
+        // Prevenir que el click en la píldora abra el modal del perfil
+        card.querySelectorAll('.universal-skill-badge').forEach(badge => {
+            badge.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
         card.addEventListener('click', async () => {
             document.getElementById('pmName').innerText = fullUser.name;
             document.getElementById('pmId').innerText = fullUser.id;
@@ -373,7 +489,6 @@ export default class TeamView {
             document.getElementById('pmPoBadge').style.display = isPO ? 'inline-block' : 'none';
             document.getElementById('pmValidationTag').innerText = isAi ? "🤖 NODO IA VERIFICADO ✓" : "ID Validado ✓";
 
-            // Enlace para ir al IdentityForge con el agente precargado
             const btnEditBrain = document.getElementById('btnEditBrain');
             if (btnEditBrain) {
                 btnEditBrain.style.display = isAi ? 'inline-block' : 'none';
@@ -387,19 +502,17 @@ export default class TeamView {
             const skillsBox = document.getElementById('pmEquippedSkills');
             
             if (isAi) {
-                // Buscamos el Prompt del Agente en la IndexedDB
                 await KB.init();
                 const promptNode = await KB.getNode(`prompt_global_${fullUser.id.replace('@','')}`);
                 
                 if (promptNode) {
                     promptBox.innerText = promptNode.content;
                 } else {
-                    promptBox.innerHTML = '<span style="color: var(--accent-red);">⚠️ Error Neural: El System Prompt (AGENT.md) no existe en la base de datos. El agente es un cascarón vacío.</span>';
+                    promptBox.innerHTML = '<span style="color: var(--accent-red);">⚠️ Error Neural: El System Prompt (AGENT.md) no existe en la base de datos.</span>';
                 }
                 
                 skillsBox.innerHTML = `<div style="font-size:0.7rem; color:#888; text-transform:uppercase; margin-bottom:5px; font-weight:bold;">Herramientas MCP Equipadas:</div><div style="display:flex; gap:5px; flex-wrap:wrap;">${skillsHtml}</div>`;
                 
-                // Aseguramos que los badges dentro del modal también sean clicables
                 skillsBox.querySelectorAll('.universal-skill-badge').forEach(badge => {
                     badge.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -409,7 +522,6 @@ export default class TeamView {
                 });
 
             } else {
-                // Es un humano
                 const geo = fullUser.profile?.country ? `📍 ${fullUser.profile.city || ''}, ${fullUser.profile.country}` : '🌍 Ubicación no definida';
                 let contactInfo = '';
                 if (fullUser.wallet) contactInfo += `<br><span style="color:#888;">Wallet:</span> <span style="font-family:monospace; font-size:0.8rem;">${fullUser.wallet}</span>`;
@@ -430,8 +542,54 @@ export default class TeamView {
         return card;
     }
 
+    renderMarketplace(globalUsers, projUsers) {
+        const listContainer = document.getElementById('mkList');
+        if(!listContainer) return;
+        const sName = document.getElementById('mkSearchName').value.toLowerCase();
+        listContainer.innerHTML = '';
+
+        let candidates = globalUsers.filter(gu => !projUsers.find(pu => pu.id === gu.id));
+        candidates = candidates.filter(gu => gu.name.toLowerCase().includes(sName) || gu.id.toLowerCase().includes(sName));
+
+        if (candidates.length === 0) {
+            listContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#666; font-size:0.9rem;">No hay candidatos disponibles.</div>`;
+            return;
+        }
+
+        candidates.forEach(gu => {
+            const isAi = gu.profile?.isAi || false;
+            const geoText = isAi ? '🌐 AGI Node (Vertex / Local)' : '🌍 Remoto Global';
+            
+            const card = document.createElement('div');
+            card.className = `mk-card ${isAi ? 'ai-card' : ''}`;
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; width: 100%;">
+                    <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+                        <div style="color: white; font-weight: 900; font-size: 1.1rem; display:flex; align-items:center; gap:10px;">
+                            <div style="width:32px; height:32px; background:${isAi ? 'var(--accent-purple)' : '#444'}; color:${isAi ? 'black' : 'white'}; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:1rem; flex-shrink:0;">
+                                ${isAi ? '🤖' : gu.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${gu.name}</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--accent-orange); font-family: var(--font-mono); font-weight:bold;">${geoText}</div>
+                    </div>
+                </div>
+                <button class="btn-recruit" data-id="${gu.id}">+ Reclutar Nodo</button>
+            `;
+
+            card.querySelector('.btn-recruit').addEventListener('click', async () => {
+                await store.dispatch({
+                    type: 'UPDATE_PROJECT_INFO',
+                    payload: { projectId: this.activeProjectId, updates: { usuarios: [...projUsers, { id: gu.id, permissions: { canCreateWO: isAi } }] } }
+                });
+                window.location.reload(); 
+            });
+
+            listContainer.appendChild(card);
+        });
+    }
+
     renderRoles(project, globalUsers) {
-        // Render de sillas mantenido para simplicidad en esta iteración
         const container = document.getElementById('rolesList');
         if(!container) return;
         const roles = project.roles.filter(r => !r.isArchived);
@@ -441,7 +599,7 @@ export default class TeamView {
         container.innerHTML = '';
 
         if (roles.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#888; padding:3rem; border:1px dashed #444; border-radius:16px;">No hay sillas instanciadas. Ve al Mapa VNA.</div>`;
+            container.innerHTML = `<div style="text-align:center; color:#888; padding:3rem; border:1px dashed #444; border-radius:16px;">No hay sillas instanciadas.</div>`;
             return;
         }
 
