@@ -132,6 +132,10 @@ class Store {
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) Object.assign(newState.projects[projIdx], action.payload.updates);
                 break;
+            // 🔥 NUEVA ACCIÓN: PURGA DEL SANDBOX Y PROYECTOS MUERTOS
+            case 'DELETE_PROJECT':
+                newState.projects = newState.projects.filter(p => p.id !== action.payload.projectId);
+                break;
             case 'CREATE_SPRINT':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
