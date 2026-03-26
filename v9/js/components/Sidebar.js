@@ -57,9 +57,9 @@ export class Sidebar {
                 
                 .sb-header { padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
                 
-                /* 🔥 MUTACIÓN DEL LOGO W3C */
-                .sb-brand { display: flex; align-items: center; justify-content: center; text-decoration: none; width: 100%; transition: 0.3s; }
-                .sb-brand-img { height: 24px; width: auto; object-fit: contain; display: block; transition: 0.3s; filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.1));}
+                /* 🔥 MUTACIÓN DEL LOGO W3C: Filter Invert para hacerlo blanco puro */
+                .sb-brand { display: flex; align-items: center; justify-content: center; text-decoration: none; width: 100%; transition: 0.3s; cursor: pointer;}
+                .sb-brand-img { height: 28px; width: auto; object-fit: contain; display: block; transition: 0.3s; filter: invert(1) brightness(100) drop-shadow(0 0 10px rgba(255,255,255,0.2));}
                 .sb-brand-icon { font-size: 1.8rem; display: none; text-shadow: 0 0 15px rgba(0,176,255,0.4);}
                 
                 .sidebar:not(.minimized) .sb-brand-icon { display: none; }
@@ -68,7 +68,7 @@ export class Sidebar {
                 
                 .btn-collapse { background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 5px; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px;}
                 .btn-collapse:hover { color: white; background: rgba(255,255,255,0.1); }
-                .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0 auto; margin-top: 15px; display: none;} /* Ocultamos el botón al minimizar para que el logo brille solo, clickando en el icono se restaura */
+                .sidebar.minimized .btn-collapse { transform: rotate(180deg); margin: 0 auto; margin-top: 15px; display: none;}
                 
                 .sb-ecosystem-wrapper { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; overflow: hidden; background: rgba(0,0,0,0.2);}
                 .sidebar.minimized .sb-ecosystem-wrapper { padding: 1rem 0; display: flex; justify-content: center;}
@@ -113,7 +113,7 @@ export class Sidebar {
 
             <nav class="sidebar ${isMin ? 'minimized' : ''}" id="mainSidebar">
                 <div class="sb-header">
-                    <a href="#" class="sb-brand" id="btnSidebarLogo" title="Colapsar/Expandir Menú">
+                    <a href="/v9/" data-link class="sb-brand" id="btnSidebarLogo" title="Volver a la Matriz Global">
                         <span class="sb-brand-icon">🏰</span>
                         <img src="https://raw.githubusercontent.com/asolache/teamtowershuma/main/v9/logoteamtowers.png" alt="TeamTowers" class="sb-brand-img">
                     </a>
@@ -145,7 +145,7 @@ export class Sidebar {
 
     static initListeners() {
         const btnToggle = document.getElementById('btnToggleSidebar');
-        const btnLogoToggle = document.getElementById('btnSidebarLogo');
+        // Eliminado btnLogoToggle de la lógica de colapso
         const sidebar = document.getElementById('mainSidebar');
         const selectProject = document.getElementById('sbProjectSelect');
         
@@ -158,10 +158,6 @@ export class Sidebar {
 
         if (btnToggle && sidebar) {
             btnToggle.addEventListener('click', toggleSidebarAction);
-        }
-        
-        if (btnLogoToggle && sidebar) {
-            btnLogoToggle.addEventListener('click', toggleSidebarAction);
         }
 
         if (selectProject) {
