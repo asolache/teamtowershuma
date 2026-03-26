@@ -60,7 +60,6 @@ export default class DashboardView {
             `;
         }
 
-        // --- CÁLCULOS CORE V9 ANTIGRAVITY ---
         const harvest = store.calculateHarvest(project.id) || [];
         const totalSlices = harvest.reduce((sum, h) => sum + h.totalSlices, 0);
         const totalHours = (project.ledger || []).reduce((sum, l) => sum + (l.horas || 0), 0);
@@ -71,11 +70,10 @@ export default class DashboardView {
         const sillasVacias = rolesActivos.filter(r => !asignaciones.find(a => a.roleId === r.id));
         const tareasPendientes = (project.work_orders || []).filter(w => w.status !== 'consolidated' && w.status !== 'rejected').length;
 
-        // --- INSIGHTS ESTRATÉGICOS (UX) ---
         let insightMessage = "";
         let insightColor = "var(--accent-blue)";
         if (project.isArchived) {
-            insightMessage = `🗄️ MODO CRIPTA: Este ecosistema está archivado. Es de solo lectura para preservar el Proof of Work.`;
+            insightMessage = `🗄️ MODO CRIPTA: Este ecosistema está archivado. Es de solo lectura para preservar el Proof of Work. (Restauralo desde la Matriz Global)`;
             insightColor = "#888888";
         } else if (sillasVacias.length > 0) {
             insightMessage = `Tienes ${sillasVacias.length} roles estructurales vacíos. Ve al Mercado Interno para asignar Humanos o IAs.`;
@@ -91,7 +89,6 @@ export default class DashboardView {
             insightColor = "var(--accent-purple)";
         }
 
-        // --- CÁLCULO DE TELEMETRÍA Y ECONOMÍA ANTIGRAVITY ---
         let aiGrossValue = 0; 
         let realApiCost = 0;  
         let totalTokens = 0;
@@ -157,24 +154,6 @@ export default class DashboardView {
             ? project.tags.map(t => `<span class="badge-tag">#${t}</span>`).join('') 
             : `<span class="badge-tag">#VNA</span>`;
 
-        // 🔥 HTML DE LA CRIPTA (Proyectos Históricos y Activos)
-        const renderProjectRow = (p) => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid #333; background:rgba(0,0,0,0.4); border-radius:12px; margin-bottom:10px;">
-                <div>
-                    <div style="color:white; font-weight:900; font-size:1.1rem;">${p.isArchived ? '🗄️' : '🚀'} ${p.nombre}</div>
-                    <div style="color:#888; font-size:0.8rem; font-family:var(--font-mono); margin-top:5px;">${p.roles?.length || 0} Roles | ${p.work_orders?.length || 0} Entregables</div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-ghost btn-toggle-archive" data-id="${p.id}" data-action="${p.isArchived ? 'unarchive' : 'archive'}" style="width:auto; padding:8px 15px;">
-                        ${p.isArchived ? '✨ Desarchivar' : '📦 Archivar'}
-                    </button>
-                </div>
-            </div>
-        `;
-
-        const activeProjectsHtml = state.projects.filter(p => !p.isArchived).map(renderProjectRow).join('') || '<div style="color:#666; font-style:italic;">No hay proyectos activos.</div>';
-        const archivedProjectsHtml = state.projects.filter(p => p.isArchived).map(renderProjectRow).join('') || '<div style="color:#666; font-style:italic;">La cripta está vacía.</div>';
-        
         const headerConfig = {
             title: project.isArchived ? `[ARCHIVADO] ${project.nombre}` : project.nombre,
             subtitle: project.archetype, 
@@ -182,7 +161,6 @@ export default class DashboardView {
             tabs: [
                 { id: 'overview', label: '📊 Resumen Operativo', active: this.currentTab === 'overview' },
                 { id: 'market', label: '🎯 Mercado Interno', active: this.currentTab === 'market', badge: sillasVacias.length || null },
-                { id: 'archive', label: '🗄️ Archivo Histórico', active: this.currentTab === 'archive' },
                 { id: 'settings', label: '⚙️ Configuración', active: this.currentTab === 'settings' }
             ],
             magicActions: project.isArchived ? [] : [
@@ -388,19 +366,6 @@ export default class DashboardView {
                         </div>
                     </div>
 
-                    <div id="tab-archive" class="tab-content ${this.currentTab === 'archive' ? 'active' : ''}">
-                        <div class="dash-grid">
-                            <div class="dash-panel" style="--panel-color: var(--accent-blue);">
-                                <h3 style="color:white; margin-top:0; margin-bottom: 1.5rem;">🚀 Ecosistemas Activos</h3>
-                                ${activeProjectsHtml}
-                            </div>
-                            <div class="dash-panel" style="--panel-color: #555;">
-                                <h3 style="color:white; margin-top:0; margin-bottom: 1.5rem;">🗄️ La Cripta (Archivados)</h3>
-                                ${archivedProjectsHtml}
-                            </div>
-                        </div>
-                    </div>
-
                     <div id="tab-settings" class="tab-content ${this.currentTab === 'settings' ? 'active' : ''}">
                          <div class="dash-panel" style="--panel-color: #555; max-width:600px; margin: 0 auto; text-align:center;">
                             <div style="font-size: 4rem; margin-bottom:1rem;">⚙️</div>
@@ -445,26 +410,6 @@ export default class DashboardView {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             const target = document.getElementById(`tab-${this.currentTab}`);
             if(target) target.classList.add('active');
-        });
-
-        // 🔥 EVENTOS DE LA CRIPTA (ARCHIVAR/DESARCHIVAR)
-        document.querySelectorAll('.btn-toggle-archive').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const pId = e.target.dataset.id;
-                const setArchived = e.target.dataset.action === 'archive';
-                const actionText = setArchived ? 'Archivar' : 'Desarchivar';
-                
-                if (confirm(`¿${actionText} este ecosistema?`)) {
-                    await store.dispatch({
-                        type: 'UPDATE_PROJECT_INFO',
-                        payload: { projectId: pId, updates: { isArchived: setArchived } }
-                    });
-                    if (setArchived && this.activeProjectId === pId) {
-                        // Si archivamos el actual, saltamos al primer activo para no quedarnos en la cripta por error (opcional, por ahora solo recarga)
-                    }
-                    window.location.reload();
-                }
-            });
         });
 
         // RENDER DE COMPONENTES
