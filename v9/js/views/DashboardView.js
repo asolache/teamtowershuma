@@ -428,7 +428,6 @@ export default class DashboardView {
             lr.render();
         }
 
-        // EVENTOS
         document.querySelectorAll('.btn-invite').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const roleName = e.target.getAttribute('data-rolename');
@@ -438,7 +437,7 @@ export default class DashboardView {
         });
 
         // =========================================================
-        // 🔥 LÓGICA DE ORÁCULOS IA & META-COGNICIÓN
+        // 🔥 LÓGICA DE ORÁCULOS IA & META-COGNICIÓN (Des-hardcodeada)
         // =========================================================
         const modal = document.getElementById('aiModal');
         const modalBody = document.getElementById('aiModalBody');
@@ -454,17 +453,13 @@ export default class DashboardView {
         const runAI = async (type) => {
             if (!modal) return;
             
-            const provider = localStorage.getItem('tt_ai_provider') || 'deepseek';
-            let apiKey = '';
-            if (provider === 'deepseek') apiKey = localStorage.getItem('tt_key_deepseek');
-            if (provider === 'openai') apiKey = localStorage.getItem('tt_key_openai');
-            if (provider === 'gemini') apiKey = localStorage.getItem('tt_key_gemini');
-            if (provider === 'anthropic') apiKey = localStorage.getItem('tt_key_anthropic');
+            const provider = localStorage.getItem('tt_ai_provider') || 'openai';
+            let apiKey = localStorage.getItem(`tt_key_${provider}`);
 
             if (provider !== 'custom' && !apiKey) return alert("⚠️ Configura tu API Key en la Consola (Pantheon) antes de invocar al Orquestador.");
 
             modal.style.display = 'flex';
-            modalBody.innerHTML = `<div style="text-align:center; padding:4rem;"><div style="font-size:4rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1.5rem; font-family:var(--font-mono); font-weight:bold;">Analizando el Córtex del Proyecto...</p></div>`;
+            modalBody.innerHTML = `<div style="text-align:center; padding:4rem;"><div style="font-size:4rem; animation: pulse 2s infinite;">🧠</div><p style="color:var(--accent-purple); margin-top:1.5rem; font-family:var(--font-mono); font-weight:bold;">Consultando la Base de Conocimiento (IndexedDB)...</p></div>`;
             btnDownload.style.display = 'none';
             btnAcceptEvo.style.display = 'none';
             
@@ -496,21 +491,34 @@ export default class DashboardView {
                 cap_table: capTableDetails
             };
 
-            let systemPrompt = "Eres un Master Architect de Ecosistemas VNA.";
+            let systemPrompt = "";
             let isEvolveMode = false;
 
+            // 🔥 LECTURA DINÁMICA DE SKILLS DESDE INDEXEDDB
+            await KB.init();
+
             if (type === 'audit') {
-                systemPrompt += `\nEvalúa si la topología y distribución de Slices refleja un ecosistema sano basado en la teoría Slicing Pie.`;
+                const skillNode = await KB.getNode('skill_slicing_pie_notary');
+                systemPrompt = skillNode 
+                    ? `Eres un Agente equipado con la Skill [${skillNode.title}]. Ejecuta tu SOP:\n\n${skillNode.content}`
+                    : `Eres un auditor. Evalúa si la topología y distribución de Slices refleja un ecosistema sano basado en la teoría Slicing Pie.`;
             } else if (type === 'legal') {
-                systemPrompt += `\nRedacta un Pacto de Socios formal (Smart Contract / Legal Draft) basado en el Cap Table adjunto.`;
+                const skillNode = await KB.getNode('skill_legal_drafting');
+                systemPrompt = skillNode 
+                    ? `Eres un Agente Legal equipado con la Skill [${skillNode.title}]. Redacta el contrato basándote en este SOP:\n\n${skillNode.content}`
+                    : `Redacta un Pacto de Socios formal (Smart Contract / Legal Draft) basado en el Cap Table adjunto.`;
             } else if (type === 'evolve') {
                 isEvolveMode = true;
+                const skillNode = await KB.getNode('skill_vna_architect');
+                systemPrompt = skillNode 
+                    ? `Eres el Master Architect. Usando tu Skill [${skillNode.title}], debes realizar una META-OPTIMIZACIÓN. \nSOP de Referencia: ${skillNode.content}\n\n`
+                    : `Eres un Master Architect de Ecosistemas VNA. Tu objetivo es la META-OPTIMIZACIÓN.\n\n`;
+                
                 systemPrompt += `
-                    El proyecto ha avanzado. Evalúa el "Data Payload" actual y tu objetivo es la META-OPTIMIZACIÓN.
-                    Devuelve UNICAMENTE un objeto JSON estricto con las siguientes claves:
+                    El proyecto ha avanzado. Evalúa el "Data Payload" actual y devuelve UNICAMENTE un objeto JSON estricto con las siguientes claves:
                     1. "new_vision": Versión mejorada, expandida y técnica de la visión fundacional basándote en el progreso.
-                    2. "optimized_genesi_prompt": Un nuevo System Prompt detallado para ti mismo (@genesi_ai). Debe contener instrucciones mucho más precisas sobre cómo mapear mejor los roles, flujos tangibles/intangibles, SOPs y SOCs para ESTE proyecto específico en futuros Sprints.
-                    3. "soc_reliability_assessment": Análisis cualitativo. ¿Los SOCs actuales son lo suficientemente deterministas para ser auditados por una IA (@notari_ledger), o son ambiguos y requieren que un humano intervenga como auditor?
+                    2. "optimized_genesi_prompt": Un nuevo System Prompt detallado para el arquitecto. Debe contener instrucciones precisas sobre cómo mapear mejor los roles, flujos y SOPs para ESTE proyecto específico.
+                    3. "soc_reliability_assessment": Análisis cualitativo. ¿Los SOCs actuales son lo suficientemente deterministas para ser auditados por IA, o son ambiguos?
                     4. "recommendation": ¿Mantener como proceso continuo o iniciar fase de cierre?
                 `;
             }
@@ -520,7 +528,7 @@ export default class DashboardView {
                 const response = await Orchestrator.callLLM({ 
                     provider, apiKey, 
                     systemPrompt, 
-                    userPrompt: `Data Payload: ${JSON.stringify(dataPayload)}`, 
+                    userPrompt: `Data Payload (Contexto Actual):\n${JSON.stringify(dataPayload, null, 2)}`, 
                     responseFormat: responseFormat, 
                     temperature: isEvolveMode ? 0.3 : 0.2 
                 });
@@ -533,7 +541,7 @@ export default class DashboardView {
                             <h3 style="color:var(--accent-blue);">1. Nueva Visión Fundacional</h3>
                             <p style="background:rgba(0,176,255,0.1); padding:15px; border-left:3px solid var(--accent-blue); border-radius:8px;">${latestEvolutionData.new_vision}</p>
                             
-                            <h3 style="color:var(--accent-purple); margin-top:20px;">2. Upgrade de Mapeo (Nuevo Prompt para Gènesi)</h3>
+                            <h3 style="color:var(--accent-purple); margin-top:20px;">2. Upgrade de Mapeo (Sugerencia)</h3>
                             <p style="background:rgba(224,64,251,0.1); padding:15px; border-left:3px solid var(--accent-purple); border-radius:8px; font-family:var(--font-mono); font-size:0.85rem;">${latestEvolutionData.optimized_genesi_prompt}</p>
                             
                             <h3 style="color:var(--accent-orange); margin-top:20px;">3. Fiabilidad de Auditoría SOC (IA vs Humano)</h3>
@@ -559,14 +567,14 @@ export default class DashboardView {
                             id: `prompt_project_genesi_vna_${this.activeProjectId}`,
                             type: 'prompt_a2a',
                             projectId: this.activeProjectId,
-                            targetId: '@genesi_ai',
+                            targetId: '@agent_genesis_architect',
                             roleTarget: 'Meta-Architect',
-                            title: `Prompt Evolucionado: Gènesi (${project.nombre})`,
+                            title: `Prompt Evolucionado: Architect (${project.nombre})`,
                             content: latestEvolutionData.optimized_genesi_prompt,
                             keywords: ['#meta_learning', '#evolution', this.activeProjectId]
                         });
 
-                        alert("✅ La visión del ecosistema ha evolucionado y el cerebro de Gènesi ha sido actualizado.");
+                        alert("✅ La visión del ecosistema ha evolucionado y el cerebro de Genesis ha sido actualizado.");
                         window.location.reload();
                     };
                 } else {
