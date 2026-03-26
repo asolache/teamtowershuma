@@ -55,7 +55,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Chat IDE)",
             subtitle: project.nombre,
-            tagline: "Lienzo Híbrido: Ejecuta Work Orders (GTD) o programa en vivo iterando con memoria contextual.",
+            tagline: "Lienzo Híbrido: Ejecuta Work Orders (GTD) o programa en vivo iterando con Memoria de Enjambre.",
             tabs: []
         };
 
@@ -198,17 +198,18 @@ export default class PaperView {
                         <div class="ide-mode-panel" id="ideModePanel">
                             <div class="chat-panel">
                                 <div class="chat-header">
-                                    <label style="font-size:0.7rem; color:#888; text-transform:uppercase; margin-bottom:5px; display:block;">🗣️ Interlocutor IA (Agente)</label>
+                                    <label style="font-size:0.7rem; color:#888; text-transform:uppercase; margin-bottom:5px; display:block;">🗣️ Interlocutor IA (Enjambre)</label>
                                     <select id="selAgentTarget">${agentOptions}</select>
                                 </div>
                                 <div class="chat-history" id="chatHistory">
                                     <div class="msg-bubble msg-ai">
-                                        ¡Ommmm! Modo Chat-IDE activado. Mi memoria contextual está lista para iterar sobre el código que generemos juntos.
+                                        ¡Ommmm! Modo Chat-IDE y Memoria de Enjambre activados.<br><br>
+                                        Pídeme generar un componente y luego cambia a otro agente para que le inyecte su lógica. Mantenemos el contexto vivo.
                                     </div>
                                 </div>
                                 <div class="chat-input-area">
-                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Haz el botón más grande..."></textarea>
-                                    <button class="btn-send" id="btnSendPrompt">🚀 Generar & Renderizar</button>
+                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Haz el botón más grande y añade lógica Web3..."></textarea>
+                                    <button class="btn-send" id="btnSendPrompt">🚀 Generar / Evolucionar</button>
                                 </div>
                             </div>
                             <div class="sandbox-panel" id="sandboxMount">
@@ -274,10 +275,13 @@ export default class PaperView {
     }
 
     async executeViewScript() {
-        Sidebar.initListeners(); 
+        const state = store.getState();
+        const activeUserId = state.session.activeUserId;
+        
+        Sidebar.initListeners();
         PageHeader.execute(); 
 
-        // Iniciar Sandbox Renderer
+        // Iniciar Sandbox Renderer (Modo IDE)
         this.sandbox = new SandboxRenderer('sandboxMount');
 
         this.dom = {
@@ -309,9 +313,6 @@ export default class PaperView {
             btnSubmit: document.getElementById('btnSubmitReport'),
             btnSaveTaskDraft: document.getElementById('btnSaveTaskDraft')
         };
-
-        const state = store.getState();
-        const activeUserId = state.session.activeUserId;
 
         this.loadProjectTasks = async (projId) => {
             const p = store.getState().projects.find(x => x.id === projId);
@@ -363,10 +364,11 @@ export default class PaperView {
             }
         });
 
+        // 🔥 LOGICA SWARM MEMORY: No vaciar el historial al cambiar de agente.
         this.dom.selAgent.addEventListener('change', () => {
-            // Si cambias de agente, vaciamos la memoria a corto plazo para no confundir contextos.
-            this.chatHistory = []; 
-            this.dom.history.innerHTML = `<div class="msg-bubble msg-ai">¡Ommmm! Cambio de nodo neural detectado. Memoria a corto plazo reiniciada. ¿En qué te asisto?</div>`;
+            const newAgentName = this.dom.selAgent.options[this.dom.selAgent.selectedIndex].text;
+            this.dom.history.innerHTML += `<div class="msg-bubble msg-ai" style="background:rgba(0,176,255,0.05); border-color:var(--accent-blue);">🔄 Enrutando comunicación a: <b>${newAgentName}</b>. La Memoria de Enjambre (Swarm Memory) mantiene tu código anterior accesible para que este agente lo evolucione.</div>`;
+            this.dom.history.scrollTop = this.dom.history.scrollHeight;
         });
 
         this.dom.btnSend.addEventListener('click', () => this.handleSendMessage());
@@ -453,25 +455,20 @@ export default class PaperView {
         }
     }
 
-    // ==========================================
-    // LÓGICA DE CHAT IDE (INYECCIÓN DE MEMORIA CORTA)
-    // ==========================================
     addMessage(text, type, artifactData = null) {
-        // 1. Guardar en memoria corta (Context Window)
         if (type === 'user') {
             this.chatHistory.push({ role: 'user', content: text });
         } else {
-            // Guardamos el JSON devuelto o el texto plano
+            // Guardamos el JSON devuelto o el texto plano en el historial
             this.chatHistory.push({ role: 'assistant', content: artifactData ? JSON.stringify(artifactData) : text });
         }
 
-        // 2. Renderizar en el DOM
         const msg = document.createElement('div');
         msg.className = `msg-bubble msg-${type}`;
         
         if (artifactData) {
             msg.classList.add('msg-ai-artifact');
-            msg.innerHTML = `📦 <b>Artifact Generado</b><br><br>Código compilado. Haz clic para forzar un re-render en el Sandbox.`;
+            msg.innerHTML = `📦 <b>Artifact Compilado</b><br><br>Código actualizado. Haz clic para forzar un re-render en el Sandbox si es necesario.`;
             msg.addEventListener('click', () => {
                 if (this.dom.sbEmpty) this.dom.sbEmpty.style.display = 'none';
                 this.sandbox.renderArtifact(artifactData);
@@ -497,7 +494,7 @@ export default class PaperView {
         this.dom.input.value = '';
         
         this.dom.btnSend.disabled = true;
-        this.dom.btnSend.innerText = "⏳ Pensando (con Memoria)...";
+        this.dom.btnSend.innerText = "⏳ Orquestando (Swarm Memory)...";
 
         try {
             await KB.init();
@@ -512,24 +509,34 @@ export default class PaperView {
                 }
             }
 
+            // 🔥 INYECCIÓN DEL ARTIFACT ACTUAL DIRECTO DESDE EL SANDBOX
+            const currentArtifactState = this.sandbox && this.sandbox.currentData ? JSON.stringify(this.sandbox.currentData) : "El lienzo está vacío. Créalo desde cero.";
+
+            // 🔥 DIRECTIVA ESTRICTA Y OMNIPRESENTE
             systemPrompt += `
-                \n\n[DIRECTIVA DEL OMNI-PAPER]:
-                Si tu tarea es generar código (UI, Scripts, Web3), DEBES devolver ÚNICAMENTE un objeto JSON estricto con esta estructura:
-                { "type": "web_component", "html": "codigo html...", "css": "codigo css...", "js": "codigo js..." }
+                \n\n[DIRECTIVA DE OMNIPRESENCIA Y ARTIFACTS]:
+                Estás operando en un entorno de "Swarm Memory" (Memoria de Enjambre). Puedes ver la conversación anterior y tienes acceso al estado actual del código en pantalla.
+                Si el usuario te pide AÑADIR LÓGICA, MODIFICAR DISEÑO o EVOLUCIONAR EL CÓDIGO (sea cual sea tu especialidad), **DEBES** devolver el componente COMPLETO Y ACTUALIZADO (fusionando tus cambios con el HTML/CSS/JS existente).
+                
+                ESTADO ACTUAL DEL CÓDIGO EN PANTALLA:
+                ${currentArtifactState}
+
+                Para que el motor lo renderice, tu respuesta DEBE ser ÚNICAMENTE un objeto JSON estricto con esta estructura:
+                { "type": "web_component", "html": "html completo...", "css": "css completo...", "js": "js completo..." }
+                NO uses bloques markdown (\`\`\`json) alrededor de tu respuesta, escupe el JSON directamente.
             `;
 
-            // 🔥 INYECCIÓN DE LA MEMORIA A CORTO PLAZO AL PROMPT DEL USUARIO
-            let contextBuilder = "HISTORIAL DE ESTA CONVERSACIÓN:\n";
-            if (this.chatHistory.length > 1) { // Si hay más que la petición actual
+            // CONSTRUIR EL HISTORIAL (RAM) PARA EL LLM
+            let contextBuilder = "HISTORIAL DE ESTA CONVERSACIÓN (SWARM MEMORY):\n";
+            if (this.chatHistory.length > 1) {
                 this.chatHistory.forEach((msg, idx) => {
-                    // Omitimos el último mensaje del usuario porque se lo pasamos al final explícitamente
                     if (idx < this.chatHistory.length - 1) {
                         contextBuilder += `[${msg.role.toUpperCase()}]: ${msg.content}\n`;
                     }
                 });
-                contextBuilder += `\n[NUEVA INSTRUCCIÓN DEL USUARIO]:\n${text}`;
+                contextBuilder += `\n[NUEVA INSTRUCCIÓN DEL USUARIO PARA ${targetAgentName.toUpperCase()}]:\n${text}`;
             } else {
-                contextBuilder = text; // Primera petición, sin historial previo
+                contextBuilder = `[NUEVA INSTRUCCIÓN DEL USUARIO PARA ${targetAgentName.toUpperCase()}]:\n${text}`;
             }
 
             const globalEngine = localStorage.getItem('tt_ai_provider') || 'openai';
@@ -540,7 +547,7 @@ export default class PaperView {
             const response = await Orchestrator.callLLM({ 
                 provider: globalEngine, apiKey: apiKey, 
                 systemPrompt: systemPrompt, 
-                userPrompt: contextBuilder, // Pasamos el historial entero concatenado
+                userPrompt: contextBuilder, 
                 responseFormat: "text", 
                 temperature: 0.3 
             });
@@ -549,12 +556,15 @@ export default class PaperView {
             let artifactParsed = null;
             
             try {
-                let cleanJson = rawContent.replace(/```json/gi, '').replace(/```/g, '').trim();
-                if (cleanJson.startsWith('{') && cleanJson.endsWith('}')) {
-                    const parsed = JSON.parse(cleanJson);
+                // Extracción más agresiva del JSON para evitar que la IA hable antes o después
+                const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    const parsed = JSON.parse(jsonMatch[0]);
                     if (parsed.type === 'web_component') artifactParsed = parsed;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn("Artifact parse error", e);
+            }
 
             if (artifactParsed) {
                 this.addMessage("He compilado y actualizado el código solicitado.", 'ai', artifactParsed);
@@ -566,13 +576,11 @@ export default class PaperView {
             this.addMessage(`⚠️ Error de Kernel: ${error.message}`, 'ai');
         } finally {
             this.dom.btnSend.disabled = false;
-            this.dom.btnSend.innerHTML = "🚀 Generar & Renderizar";
+            this.dom.btnSend.innerHTML = "🚀 Generar / Evolucionar";
         }
     }
 
-    // ==========================================
-    // LÓGICA POMODORO & REPORTING GTD
-    // ==========================================
+    // (Lógica de Pomodoro y Reporting GTD mantenida intacta...)
     updatePomodoroDisplay() {
         const hrs = Math.floor(this.pomodoroSeconds / 3600);
         const mins = Math.floor((this.pomodoroSeconds % 3600) / 60);
