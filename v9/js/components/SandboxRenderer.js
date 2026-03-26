@@ -13,7 +13,7 @@ export class SandboxRenderer {
         
         this.container.innerHTML = `
             <style>
-                .sandbox-wrapper { display: flex; flex-direction: column; width: 100%; height: 100%; background: var(--bg-dark); border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+                .sandbox-wrapper { display: flex; flex-direction: column; width: 100%; height: 100%; background: var(--bg-dark); border-radius: 16px; overflow: hidden; border: 1px dashed var(--accent-purple); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
                 .sandbox-wrapper.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; border-radius: 0; border: none; }
                 
                 .sb-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(10,10,15,0.95); border-bottom: 1px solid rgba(255,255,255,0.05); }
