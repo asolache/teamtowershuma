@@ -1,11 +1,10 @@
 // v9/js/core/seed.js
 export const CoreSeed = {
     async inject(KB) {
-        // Comprobamos si el ADN ya ha sido inyectado previamente
         const check = await KB.getNode('skill_vna_architect');
-        if (check) return; // Semilla ya plantada, abortar inyección
+        if (check) return; 
 
-        console.log("🌱 [Antigravity Kernel] Inyectando ADN de Skills Core en la Matriz...");
+        console.log("🌱 [Antigravity Kernel] Inyectando ADN de Skills Core (Incluyendo Codex & UI) en la Matriz...");
 
         const coreSkills = [
             {
@@ -99,12 +98,68 @@ export const CoreSeed = {
 - [ ] Refleja exactamente la matemática del Slicing Pie.
 - [ ] No inventa cláusulas fuera de la equidad dinámica.
                 `.trim()
+            },
+            // 🔥 FRENTE B: SKILLS PARA OMNI-PAPER Y CÓDIGO 🔥
+            {
+                id: 'skill_ui_component_forge',
+                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
+                title: 'Forja de UI Antigravity (@web_deployer)',
+                description: 'Genera código frontend (HTML/CSS) limpio, responsivo y visualmente deslumbrante, adaptado a la identidad de un ecosistema pero siguiendo las leyes del Codex TeamTowers.',
+                keywords: ['#ui', '#frontend', '#antigravity', '#web_deployer'],
+                content: `
+### 1. VNA Flow
+- **Inputs Requeridos:** Propósito del componente (ej: "Landing Page", "Dashboard de Afiliados"), Paleta/Identidad del cliente, Datos de la red.
+- **Outputs Generados:** JSON estricto conteniendo campos \`html\`, \`css\` y \`js\` separados, listos para ser inyectados y renderizados a pantalla completa en el Omni-Paper.
+
+### 2. SOP (Standard Operating Procedure)
+1. **Leyes Antigravity:** PROHIBIDO usar frameworks como React, Vue, Tailwind o librerías CDN externas. Todo el código debe ser HTML5 Semántico y CSS3 puro.
+2. **Variables del Sistema:** La interfaz debe heredar los colores de la red usando variables CSS globales si están disponibles. Asume la existencia de:
+   - \`var(--bg-dark)\`, \`var(--bg-panel)\`.
+   - \`var(--accent-blue)\`, \`var(--accent-green)\`, \`var(--accent-purple)\`, \`var(--accent-orange)\`.
+   - \`var(--font-main)\`, \`var(--font-mono)\`.
+3. **Glassmorphism:** Para tarjetas y paneles, usa el patrón visual estándar del Kernel: 
+   \`background: rgba(20,20,25,0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px;\`
+4. **Responsividad Suprema:** Obligatorio usar CSS Grid (ej: \`grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\`) para que las vistas se adapten perfectamente a dispositivos móviles y al modo pantalla completa.
+5. **Formato de Salida:** Devuelve el código encapsulado en el siguiente formato JSON para que el Omni-Paper lo ejecute en el Sandbox:
+   \`{ "type": "web_component", "html": "...", "css": "...", "js": "..." }\`
+
+### 3. SOC (Criterios de Aceptación / Evals)
+- [ ] El JSON devuelto es estrictamente válido (Cuidado con escapar comillas dobles en el HTML).
+- [ ] No contiene la etiqueta \`<style>\` dentro del \`html\` (el CSS debe ir en su campo correspondiente).
+- [ ] Las clases CSS son únicas (usa prefijos, ej: \`.lp-card\` en vez de \`.card\`) para no colisionar con el Kernel.
+                `.trim()
+            },
+            {
+                id: 'skill_vault_monetization',
+                type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
+                title: 'Bóvedas de Liquidez (Fiat/Web3)',
+                description: 'Desarrolla la lógica transaccional de pagos (Stripe MVP y MetaMask) conectada al sistema de comisiones (Afiliados).',
+                keywords: ['#monetization', '#web3', '#stripe', '#codex_developer'],
+                content: `
+### 1. VNA Flow
+- **Inputs Requeridos:** Identificador de proyecto, coste del servicio, ID del afiliado (si aplica).
+- **Outputs Generados:** Script \`js\` modular para gestionar el checkout.
+
+### 2. SOP (Standard Operating Procedure)
+1. **El Margen del Protocolo:** Todo script de cobro debe contemplar el *Protocol Fee* de TeamTowers (ej: 35%).
+2. **Sistema Web3 (MetaMask):**
+   - Comprueba \`if(typeof window.ethereum !== 'undefined')\`.
+   - Programa la solicitud de cuentas \`eth_requestAccounts\`.
+   - La transacción debe enviar fondos a un "Splitter Smart Contract" si existe, o simular la división de la liquidez.
+3. **Sistema Fiat (Stripe MVP):**
+   - Programa un mock o llamada \`fetch\` al endpoint \`/api/checkout\` enviando el \`projectId\` y el \`application_fee_amount\` necesario para el routing del dinero.
+4. **Respuesta Visual:** El JS debe contener lógica para modificar el DOM y mostrar "⏳ Procesando..." o "✅ Pago completado" al usuario final.
+
+### 3. SOC (Criterios de Aceptación / Evals)
+- [ ] El script contiene un bloque \`try/catch\` para gestionar rechazos de conexión (ej: usuario cierra MetaMask).
+- [ ] El script no bloquea el Event Loop del navegador.
+                `.trim()
             }
         ];
 
         for (const skill of coreSkills) {
             await KB.saveNode(skill);
         }
-        console.log("🌳 [Antigravity Kernel] ADN inyectado con éxito.");
+        console.log("🌳 [Antigravity Kernel] ADN inyectado con éxito (Codex & Deployer operativos).");
     }
 };
