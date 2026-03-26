@@ -178,7 +178,7 @@ export class ProjectForge {
                     </div>
 
                     <div class="maieutic-panel" id="maieuticPanel">
-                        <div class="maieutic-header"><span>🤖</span> @genesi_ai requiere más contexto:</div>
+                        <div class="maieutic-header"><span>🤖</span> Agent_Genesis_Architect requiere más contexto:</div>
                         <p style="color:#ccc; font-size:0.9rem; margin-top:0;">La visión actual es ambigua para un Análisis VNA estricto. Por favor, aclara estos puntos para forjar un mapa de valor perfecto:</p>
                         <div id="maieuticQuestionsList"></div>
                         <div style="text-align: right; margin-top: 15px;">
@@ -320,7 +320,6 @@ export class ProjectForge {
             initialActionsRow: this.container.querySelector('#initialActionsRow'),
             inpSpawnCascade: this.container.querySelector('#inpSpawnCascade'),
             
-            // Agent Studio Modal DOM
             agentModal: this.container.querySelector('#agentStudioModal'),
             btnCloseStudio: this.container.querySelector('#btnCloseAgentStudio'),
             btnSaveStudio: this.container.querySelector('#btnSaveAgentBrain'),
@@ -409,7 +408,7 @@ export class ProjectForge {
                 this.draftRoles[rIdx].scripts = this.dom.asRoleScripts.value.split(',').map(s=>s.trim()).filter(s=>s);
                 
                 this.dom.agentModal.classList.remove('active');
-                this.renderDraftRoles(); // Refrescar UI (colores de botón si hay cerebro)
+                this.renderDraftRoles(); 
             }
         });
 
@@ -421,7 +420,6 @@ export class ProjectForge {
             this.dom.btnAiForger.innerText = "⏳ Forjando...";
 
             try {
-                // Usamos la misma función de LmsView (expandNodeSemantics)
                 const optimizedData = await Orchestrator.expandNodeSemantics(`Rol: ${roleName}`, 'skill', currentPrompt || 'Generar SOPs y SOCs para este rol', 'AgentSkills');
                 
                 this.dom.asRoleDesc.value = optimizedData.description || '';
@@ -483,9 +481,17 @@ export class ProjectForge {
 
             const evaluation = await Orchestrator.evaluateContextForVNA(name, this.dom.inpArchetype.options[this.dom.inpArchetype.selectedIndex].text, this.enrichedVision, selectedEngine);
 
-            if (evaluation.isReady || !evaluation.questions || evaluation.questions.length === 0) {
+            // 🔥 FIX DEL BUCLE MAYÉUTICO
+            // Evaluamos la propiedad isReady en vez de confiar en la ausencia de preguntas
+            if (evaluation.isReady === true) {
+                // El Architect considera que el contexto es lo suficientemente denso. Pasamos a generar.
                 await this.executeFinalForgeWithAI();
             } else {
+                // El Architect necesita más información. Desplegamos el cuestionario.
+                if (!evaluation.questions || evaluation.questions.length === 0) {
+                    evaluation.questions = ["El Arquitecto necesita más detalles sobre el modelo de ingresos. Por favor, especifica.", "Define qué tangibles exactos entregará la red a sus clientes."];
+                }
+
                 this.dom.maieuticQuestionsList.innerHTML = evaluation.questions.map((q, idx) => `
                     <div style="margin-bottom:10px;">
                         <div class="maieutic-q">${idx + 1}. ${q}</div>
@@ -510,6 +516,7 @@ export class ProjectForge {
         const name = this.dom.inpName.value.trim();
         const selectedEngine = this.dom.inpForgeEngine.value || null;
 
+        // Si venimos del panel Mayéutico, concatenamos las respuestas al contexto
         if (this.dom.maieuticPanel.style.display === 'block') {
             const answers = this.dom.maieuticQuestionsList.querySelectorAll('.q-answer');
             let qaText = "\n\n--- RESPUESTAS ADICIONALES DEL ARQUITECTO ---\n";
@@ -537,6 +544,7 @@ export class ProjectForge {
                 NOTA IKIGAI: Para cada "role" que generes, debes rellenar el campo "ai_prompt" redactando su "Ikigai" (Propósito vital).
             `;
             
+            // 🔥 AHORA SÍ: LLAMAMOS A LA FUNCIÓN QUE GENERA EL JSON FINAL
             const parsedData = await Orchestrator.designEcosystemVNA(name, "Agile Setup", enhancedVision, selectedEngine);
             const tddErrors = this.runCognitiveTDD(parsedData);
             
@@ -609,7 +617,6 @@ export class ProjectForge {
         this.renderDraftRoles();
     }
 
-    // 🔥 ABRIR EL CEREBRO DEL AGENTE (MODAL)
     openAgentStudio(roleId) {
         const role = this.draftRoles.find(r => r.id === roleId);
         if (!role) return;
@@ -652,7 +659,6 @@ export class ProjectForge {
                 ${userOptions.replace(`value="${role.assignee}"`, `value="${role.assignee}" selected`)}
             </select>`;
 
-            // Highlight button if brain is configured
             const hasBrain = role.ai_prompt && role.ai_prompt.length > 5;
             const btnBrainClass = hasBrain ? 'background: var(--accent-purple); color: black;' : 'background: rgba(224,64,251,0.1); color: var(--accent-purple);';
 
@@ -675,7 +681,6 @@ export class ProjectForge {
             this.dom.rolesContainer.appendChild(row);
         });
 
-        // Lógica eventos
         this.dom.rolesContainer.querySelectorAll('.btn-brain').forEach(btn => {
             btn.addEventListener('click', (e) => this.openAgentStudio(e.target.dataset.id));
         });
@@ -739,7 +744,6 @@ export class ProjectForge {
             for (const rol of this.draftRoles) {
                 if (rol.assignee) uniqueAssignees.add(rol.assignee);
                 
-                // 🔥 EL CEREBRO SE GUARDA COMO AGENTSKILL COMPLETO
                 if (rol.ai_prompt && rol.ai_prompt.length > 5) {
                     await KB.saveNode({
                         id: `skill_${projectId}_${rol.id}`, type: 'skill', category: 'skill', projectId: projectId, targetId: rol.id,
@@ -752,7 +756,6 @@ export class ProjectForge {
                         keywords: [rol.levelId, projectId, 'agent_skill']
                     });
                 } else {
-                    // Si no tiene cerebro detallado, se guarda un nodo skill mínimo
                     await KB.saveNode({
                         id: `skill_${projectId}_${rol.id}`, type: 'skill', category: 'skill', projectId: projectId, targetId: 'global',
                         title: `Skill: ${rol.name}`, content: `Competencia estructural para ${rol.name}.`, keywords: [rol.levelId, projectId]
