@@ -23,7 +23,7 @@ export default class DashboardView {
 
         let project = state.projects.find(p => p.id === localStorage.getItem('tt_active_project'));
         if (!project && state.projects.length > 0) {
-            project = state.projects[state.projects.length - 1];
+            project = state.projects.filter(p => !p.isArchived)[0] || state.projects[0];
         }
 
         if (!project) {
@@ -35,7 +35,7 @@ export default class DashboardView {
                              <div style="font-size: 6rem; margin-bottom: 2rem; line-height:1; filter: drop-shadow(0 0 30px rgba(0,176,255,0.6));">🌌</div>
                              <h2 style="color:white; margin-top:0; font-weight:900; font-size:2.5rem; letter-spacing:-1px;">Radar Despejado</h2>
                              <p style="color:#aaa; margin-bottom: 3rem; font-size:1.1rem; line-height:1.6;">El Kernel está listo. Eres el Master Architect. No hay ningún ecosistema instanciado en tu memoria local.</p>
-                             <a href="/v9/create" data-link class="btn-primary" style="text-decoration:none; font-size:1.2rem; padding:15px 30px; background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border:none; box-shadow: 0 10px 20px rgba(0,176,255,0.3);">⚡ Forjar Primer Ecosistema</a>
+                             <a href="/v9/create" data-link class="btn-primary" style="text-decoration:none; font-size:1.2rem; padding:15px 30px; background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border:none; box-shadow: 0 10px 20px rgba(0,176,255,0.3); border-radius: 12px; color: white; font-weight: bold;">⚡ Forjar Primer Ecosistema</a>
                         </div>
                     </main>
                 </div>
@@ -74,7 +74,10 @@ export default class DashboardView {
         // --- INSIGHTS ESTRATÉGICOS (UX) ---
         let insightMessage = "";
         let insightColor = "var(--accent-blue)";
-        if (sillasVacias.length > 0) {
+        if (project.isArchived) {
+            insightMessage = `🗄️ MODO CRIPTA: Este ecosistema está archivado. Es de solo lectura para preservar el Proof of Work.`;
+            insightColor = "#888888";
+        } else if (sillasVacias.length > 0) {
             insightMessage = `Tienes ${sillasVacias.length} roles estructurales vacíos. Ve al Mercado Interno para asignar Humanos o IAs.`;
             insightColor = "var(--accent-orange)";
         } else if (project.vna_flows.length === 0) {
@@ -116,10 +119,8 @@ export default class DashboardView {
         const hypotheticalHumanCost = aiGrossValue > 0 ? aiGrossValue : 0; 
         const savingsPercent = hypotheticalHumanCost > 0 ? ((hypotheticalHumanCost - realApiCost) / hypotheticalHumanCost * 100).toFixed(2) : 0;
 
-        // --- IDENTIFICACIÓN DEL ENJAMBRE IA ASIGNADO ---
         const projectUsers = project.usuarios || [];
         const aisInProject = projectUsers.map(u => state.globalUsers.find(gu => gu.id === u.id)).filter(u => u && u.profile?.isAi);
-        
         const aiEngines = new Set(aisInProject.map(ai => ai.profile?.preferredEngine || 'openai'));
         
         const getEngineIcon = (engine) => {
@@ -152,21 +153,39 @@ export default class DashboardView {
             `).join('');
 
         const pitchText = project.presentation || project.prompt || 'El propósito fundacional de esta red está en fase de definición...';
-        
         const tagsHtml = (project.tags && project.tags.length > 0) 
             ? project.tags.map(t => `<span class="badge-tag">#${t}</span>`).join('') 
             : `<span class="badge-tag">#VNA</span>`;
+
+        // 🔥 HTML DE LA CRIPTA (Proyectos Históricos y Activos)
+        const renderProjectRow = (p) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid #333; background:rgba(0,0,0,0.4); border-radius:12px; margin-bottom:10px;">
+                <div>
+                    <div style="color:white; font-weight:900; font-size:1.1rem;">${p.isArchived ? '🗄️' : '🚀'} ${p.nombre}</div>
+                    <div style="color:#888; font-size:0.8rem; font-family:var(--font-mono); margin-top:5px;">${p.roles?.length || 0} Roles | ${p.work_orders?.length || 0} Entregables</div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-ghost btn-toggle-archive" data-id="${p.id}" data-action="${p.isArchived ? 'unarchive' : 'archive'}" style="width:auto; padding:8px 15px;">
+                        ${p.isArchived ? '✨ Desarchivar' : '📦 Archivar'}
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const activeProjectsHtml = state.projects.filter(p => !p.isArchived).map(renderProjectRow).join('') || '<div style="color:#666; font-style:italic;">No hay proyectos activos.</div>';
+        const archivedProjectsHtml = state.projects.filter(p => p.isArchived).map(renderProjectRow).join('') || '<div style="color:#666; font-style:italic;">La cripta está vacía.</div>';
         
         const headerConfig = {
-            title: project.nombre,
+            title: project.isArchived ? `[ARCHIVADO] ${project.nombre}` : project.nombre,
             subtitle: project.archetype, 
             tagline: "Ojo del Castell (Centro de Mando Antigravity)",
             tabs: [
                 { id: 'overview', label: '📊 Resumen Operativo', active: this.currentTab === 'overview' },
                 { id: 'market', label: '🎯 Mercado Interno', active: this.currentTab === 'market', badge: sillasVacias.length || null },
+                { id: 'archive', label: '🗄️ Archivo Histórico', active: this.currentTab === 'archive' },
                 { id: 'settings', label: '⚙️ Configuración', active: this.currentTab === 'settings' }
             ],
-            magicActions: [
+            magicActions: project.isArchived ? [] : [
                 { id: 'audit', label: 'Auditoría VNA & Equity', icon: '🧠', isAi: true, tokens: 150 },
                 { id: 'legal', label: 'Emitir Pacto Socios', icon: '⚖️', isAi: true, tokens: 300 }
             ]
@@ -183,10 +202,8 @@ export default class DashboardView {
                 .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: 5rem; width: 100%; box-sizing: border-box;}
                 .tab-content.active { display: block; }
 
-                /* 🔥 ARQUITECTURA DE INFORMACIÓN LEGENDARIA */
                 .dash-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 2rem; margin-bottom: 2.5rem; align-items: stretch;}
                 
-                /* Paneles Glassmorphism Avanzados */
                 .dash-panel { background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 15px 35px rgba(0,0,0,0.5); backdrop-filter: blur(20px); display: flex; flex-direction: column; box-sizing: border-box; position: relative; overflow: hidden;}
                 .dash-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--panel-color, var(--glass-border)); }
                 
@@ -194,26 +211,23 @@ export default class DashboardView {
                 
                 .presentation-text { color: #ccc; font-size: 1rem; line-height: 1.6; font-family: 'Georgia', serif; font-style: italic; border-left: 3px solid var(--accent-purple); padding-left: 15px; margin-bottom: 1.5rem; flex: 1;}
                 
-                /* Botones Call to Action */
                 .btn-cta { background: linear-gradient(135deg, rgba(224,64,251,0.1), rgba(0,176,255,0.1)); border: 1px solid var(--accent-purple); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; display:flex; justify-content:center; align-items:center; gap:10px; width: 100%; font-size: 0.95rem; margin-bottom: 10px; text-decoration: none;}
                 .btn-cta:hover { background: var(--accent-purple); box-shadow: 0 0 20px rgba(224,64,251,0.4); transform: translateY(-2px);}
+                .btn-cta.disabled { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
                 
                 .btn-ghost { background: transparent; border: 1px dashed var(--accent-orange); color: var(--accent-orange); padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; font-size: 0.85rem;}
                 .btn-ghost:hover { background: rgba(255, 171, 64, 0.1); border-style: solid;}
 
-                /* Mapa VNA */
                 .mini-map-container { width: 100%; flex: 1; min-height: 250px; position: relative; border-radius:16px; border:1px solid rgba(255,255,255,0.05); overflow:hidden; background: rgba(0,0,0,0.3);}
                 .map-overlay-link { position: absolute; bottom: 15px; right: 15px; background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 8px 15px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; text-decoration: none; backdrop-filter: blur(5px); transition: 0.3s;}
                 .map-overlay-link:hover { background: var(--accent-blue); color: black; box-shadow: 0 0 15px rgba(0,176,255,0.5);}
 
-                /* KPIs Financieros (Top Level) */
                 .kpi-stripe { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 0.5rem; }
                 .kpi-card { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.4)); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; transition: 0.3s; border-left: 4px solid var(--kpi-color, #888);}
                 .kpi-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.05); box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
                 .kpi-val { font-size: 2.5rem; font-weight: 900; color: white; font-family: var(--font-mono); line-height: 1; margin-bottom: 8px; text-shadow: 0 0 20px var(--kpi-glow, transparent);}
                 .kpi-lbl { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-                /* Economía Antigravity Panel */
                 .economy-panel { display: flex; flex-direction: column; gap: 20px;}
                 .eco-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px;}
                 .eco-row:last-child { border-bottom: none; padding-bottom: 0;}
@@ -231,11 +245,9 @@ export default class DashboardView {
                 .ai-avatar-badge:first-child { margin-left: 0; }
                 .ai-avatar-badge:hover { transform: translateY(-5px); z-index: 10; border-color: white;}
 
-                /* Insight Banner */
                 .insight-banner { grid-column: 1 / -1; padding: 15px 20px; border-radius: 12px; font-weight: bold; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.02); border-left: 4px solid var(--insight-color, #888); color: white;}
                 .insight-banner.success { --insight-color: var(--accent-green); background: rgba(0,230,118,0.05); }
                 
-                /* Vacantes */
                 .vacante-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 1.2rem; border-radius: 12px; margin-bottom: 12px; transition: 0.3s;}
                 .vacante-card:hover { border-color: var(--accent-blue); background: rgba(0,176,255,0.02);}
                 .vacante-icon { font-size:1.8rem; filter:drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
@@ -262,6 +274,10 @@ export default class DashboardView {
 
                     <div id="tab-overview" class="tab-content ${this.currentTab === 'overview' ? 'active' : ''}">
                         
+                        <div class="insight-banner" style="--insight-color: ${insightColor}; margin-bottom: 2rem;">
+                            <span>💡</span> ${insightMessage}
+                        </div>
+
                         <section class="kpi-stripe">
                             <div class="kpi-card" style="--kpi-color: var(--accent-green); --kpi-glow: rgba(0,230,118,0.2);">
                                 <span class="kpi-val">${Math.round(totalSlices).toLocaleString()}</span>
@@ -281,10 +297,6 @@ export default class DashboardView {
                             </div>
                         </section>
 
-                        <div class="insight-banner" style="--insight-color: ${insightColor}; margin-bottom: 2rem;">
-                            <span>💡</span> ${insightMessage}
-                        </div>
-
                         <div class="dash-grid">
                             
                             <div style="display:flex; flex-direction:column; gap:2rem;">
@@ -296,8 +308,8 @@ export default class DashboardView {
                                     </div>
                                     <div class="presentation-text" id="pitchText">${pitchText.replace(/\n/g, '<br>')}</div>
                                     <div style="margin-top:auto;">
-                                        <a href="/v9/paper" data-link class="btn-cta">📝 Desarrollar Tareas en Omni-Paper</a>
-                                        <button class="btn-ghost" id="btnEvolveVision">✨ Meta-Cognición: Evolucionar Visión</button>
+                                        <a href="/v9/paper" data-link class="btn-cta ${project.isArchived ? 'disabled' : ''}">📝 Desarrollar Tareas en Omni-Paper</a>
+                                        ${!project.isArchived ? `<button class="btn-ghost" id="btnEvolveVision">✨ Meta-Cognición: Evolucionar Visión</button>` : ''}
                                     </div>
                                 </div>
 
@@ -351,7 +363,7 @@ export default class DashboardView {
                                                 <g id="dashMapPaths"></g>
                                             </svg>
                                         </div>
-                                        <a href="/v9/map" data-link class="map-overlay-link">Modificar Arquitectura &rarr;</a>
+                                        ${!project.isArchived ? `<a href="/v9/map" data-link class="map-overlay-link">Modificar Arquitectura &rarr;</a>` : ''}
                                     </div>
                                 </div>
 
@@ -373,6 +385,19 @@ export default class DashboardView {
                             <h2 style="color: white; margin-top: 0; font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 900; text-transform: uppercase;">🎯 Mercado Interno (Vacantes)</h2>
                             <p style="color:#888; font-size:0.95rem; margin-bottom:2rem; line-height:1.5;">Roles vitales diseñados en la arquitectura que aún no tienen un talento humano o IA asignado.</p>
                             <div>${vacantesHtml}</div>
+                        </div>
+                    </div>
+
+                    <div id="tab-archive" class="tab-content ${this.currentTab === 'archive' ? 'active' : ''}">
+                        <div class="dash-grid">
+                            <div class="dash-panel" style="--panel-color: var(--accent-blue);">
+                                <h3 style="color:white; margin-top:0; margin-bottom: 1.5rem;">🚀 Ecosistemas Activos</h3>
+                                ${activeProjectsHtml}
+                            </div>
+                            <div class="dash-panel" style="--panel-color: #555;">
+                                <h3 style="color:white; margin-top:0; margin-bottom: 1.5rem;">🗄️ La Cripta (Archivados)</h3>
+                                ${archivedProjectsHtml}
+                            </div>
                         </div>
                     </div>
 
@@ -420,6 +445,26 @@ export default class DashboardView {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             const target = document.getElementById(`tab-${this.currentTab}`);
             if(target) target.classList.add('active');
+        });
+
+        // 🔥 EVENTOS DE LA CRIPTA (ARCHIVAR/DESARCHIVAR)
+        document.querySelectorAll('.btn-toggle-archive').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const pId = e.target.dataset.id;
+                const setArchived = e.target.dataset.action === 'archive';
+                const actionText = setArchived ? 'Archivar' : 'Desarchivar';
+                
+                if (confirm(`¿${actionText} este ecosistema?`)) {
+                    await store.dispatch({
+                        type: 'UPDATE_PROJECT_INFO',
+                        payload: { projectId: pId, updates: { isArchived: setArchived } }
+                    });
+                    if (setArchived && this.activeProjectId === pId) {
+                        // Si archivamos el actual, saltamos al primer activo para no quedarnos en la cripta por error (opcional, por ahora solo recarga)
+                    }
+                    window.location.reload();
+                }
+            });
         });
 
         // RENDER DE COMPONENTES
