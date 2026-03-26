@@ -9,7 +9,7 @@ export class IdentityForge {
         this.activeAgentId = null;
         this.agentSkills = []; 
         this.isSimulating = false;
-        this.lastCompiledPrompt = ""; // Guarda el último prompt inyectado para debug
+        this.lastCompiledPrompt = ""; 
     }
 
     async render(agentId = null) {
@@ -49,7 +49,8 @@ export class IdentityForge {
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px; border-radius: 10px; font-family: var(--font-main); font-size: 0.95rem; outline: none; transition: 0.2s; width: 100%; box-sizing: border-box;}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.1);}
                 
-                .prompt-area { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; color: #ddd; resize: vertical; flex: 1; min-height: 200px;}
+                .prompt-area { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; color: #ddd; resize: vertical; flex: 1; min-height: 200px; transition: 0.3s;}
+                .prompt-area.synthesizing { border-color: var(--accent-purple); box-shadow: inset 0 0 20px rgba(224,64,251,0.2); opacity: 0.7;}
                 
                 .agent-dropzone { border: 2px dashed #444; border-radius: 12px; padding: 20px; text-align: center; color: #888; background: rgba(255,255,255,0.02); transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 15px;}
                 .agent-dropzone.drag-over { border-color: var(--accent-purple); background: rgba(224,64,251,0.05); color: white; transform: scale(1.02);}
@@ -122,13 +123,17 @@ export class IdentityForge {
                 </div>
 
                 <div class="forge-panel">
-                    <div class="panel-header"><span>🧠</span> Cerebro y Herramientas (MCP)</div>
+                    <div class="panel-header">
+                        <span>🧠</span> Cerebro (System Prompt)
+                    </div>
                     <div class="form-group" style="flex:1; display:flex; flex-direction:column;">
-                        <label>AGENT.md (System Prompt Inmutable)</label>
                         <textarea id="ifPrompt" class="form-control prompt-area" placeholder="Eres un Agente experto en... Tu misión es...">${promptContent}</textarea>
                     </div>
                     
-                    <div class="panel-header" style="margin-top:20px;"><span>🎒</span> Cinturón de Skills</div>
+                    <div class="panel-header" style="margin-top:10px;">
+                        <span>🎒</span> Cinturón de Skills (MCP Tools)
+                        <div id="synthStatus" style="font-size:0.7rem; color:var(--accent-purple); font-weight:normal; display:none; animation: pulse 1.5s infinite;">🤖 Sintetizando...</div>
+                    </div>
                     <div class="skills-list" id="agentSkillsList">
                         <div style="color:#888; text-align:center; padding:20px; font-style:italic;">Cargando herramientas...</div>
                     </div>
@@ -138,7 +143,7 @@ export class IdentityForge {
                 <div class="forge-panel terminal-col">
                     <div class="panel-header">
                         <span>🧪</span> Simulador ReAct
-                        <button id="btnViewPrompt" class="btn-micro" style="margin-left:auto;" title="Ver qué se le envía realmente a la API">🔍 Ver Prompt Compilado</button>
+                        <button id="btnViewPrompt" class="btn-micro" style="margin-left:auto;" title="Ver qué se le envía realmente a la API">🔍 Ver Payload MCP</button>
                     </div>
                     
                     <div class="sim-controls">
@@ -200,8 +205,43 @@ export class IdentityForge {
             btn.addEventListener('click', (e) => {
                 this.agentSkills = this.agentSkills.filter(id => id !== e.target.dataset.id);
                 this.renderSkillsList();
+                // Nota: Al quitar una skill no reescribimos el prompt por seguridad (puede que el usuario quiera borrarlo a mano), 
+                // pero el Sintetizador actuará en la próxima adición.
             });
         });
+    }
+
+    // 🔥 RUTINA DE AUTO-SÍNTESIS MCP (Agent_Prompt_Synthesizer)
+    async triggerPromptSynthesis(newSkillId) {
+        const promptArea = this.dom.promptArea;
+        const statusMsg = this.dom.synthStatus;
+        if (!promptArea || !statusMsg) return;
+
+        try {
+            await KB.init();
+            const skillNode = await KB.getNode(newSkillId);
+            if (!skillNode) return;
+
+            statusMsg.style.display = 'inline-block';
+            promptArea.classList.add('synthesizing');
+
+            const currentPrompt = promptArea.value;
+            const skillContent = `Nombre: ${skillNode.title}\nDescripción RAG: ${skillNode.description}\nSOP: ${skillNode.content}`;
+
+            const newPrompt = await Orchestrator.synthesizeAgentPrompt(currentPrompt, skillContent);
+            
+            promptArea.value = newPrompt;
+            
+        } catch (e) {
+            console.warn("Fallo en la auto-síntesis del prompt: ", e);
+            alert("⚠️ El Agent_Prompt_Synthesizer falló al actualizar el Cerebro. Añade las instrucciones de la tool manualmente.");
+        } finally {
+            statusMsg.style.display = 'none';
+            promptArea.classList.remove('synthesizing');
+            // Un pequeño resplandor verde para confirmar éxito
+            promptArea.style.boxShadow = "inset 0 0 15px rgba(0,230,118,0.3)";
+            setTimeout(() => promptArea.style.boxShadow = "", 1000);
+        }
     }
 
     loadJSZip() {
@@ -224,7 +264,9 @@ export class IdentityForge {
             dropzone: this.container.querySelector('#globalDropzone'),
             simInput: this.container.querySelector('#simInput'),
             simTerminal: this.container.querySelector('#simTerminal'),
-            simEngine: this.container.querySelector('#simEngineOverride')
+            simEngine: this.container.querySelector('#simEngineOverride'),
+            promptArea: this.container.querySelector('#ifPrompt'),
+            synthStatus: this.container.querySelector('#synthStatus')
         };
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => this.dom.dropzone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false));
@@ -240,7 +282,8 @@ export class IdentityForge {
                 if (skillId && !this.agentSkills.includes(skillId)) {
                     this.agentSkills.push(skillId);
                     this.renderSkillsList();
-                    alert(`✅ Skill equipada en la memoria volátil del Agente.`);
+                    // 🔥 INVOCAMOS AL SINTETIZADOR
+                    await this.triggerPromptSynthesis(skillId);
                 }
             } else if (file.name.endsWith('.agent') || file.name.endsWith('.zip')) {
                 await this.importAgentZip(file);
@@ -261,6 +304,8 @@ export class IdentityForge {
                 if (!this.agentSkills.includes(selectedId)) {
                     this.agentSkills.push(selectedId);
                     this.renderSkillsList();
+                    // 🔥 INVOCAMOS AL SINTETIZADOR
+                    await this.triggerPromptSynthesis(selectedId);
                 }
             } else if (selectedId) {
                 alert("ID no encontrado en la Knowledge Base.");
@@ -343,11 +388,9 @@ export class IdentityForge {
             } catch (e) { alert("Fallo al exportar: " + e.message); } finally { this.dom.btnExport.disabled = false; this.dom.btnExport.innerText = "📦 Exportar .agent"; }
         });
 
-        // 🔥 ACCIÓN: VER PROMPT COMPILADO
         this.dom.btnViewPrompt.addEventListener('click', () => {
             if (!this.lastCompiledPrompt) return alert("Aún no se ha compilado ningún prompt. Ejecuta una simulación primero.");
             
-            // Creamos un modal volante simple para leerlo
             const w = window.open('', '_blank', 'width=800,height=600');
             w.document.write(`
                 <body style="background:#0a0a0a; color:#00e676; font-family:monospace; padding:20px; margin:0; white-space:pre-wrap;">
@@ -358,7 +401,6 @@ export class IdentityForge {
             `);
         });
 
-        // 🔥 SIMULADOR REACT UNITARIO
         this.dom.btnRunSim.addEventListener('click', async () => {
             if (this.isSimulating) return;
             const taskInput = this.dom.simInput.value.trim();
@@ -383,7 +425,6 @@ export class IdentityForge {
 
                 if (this.agentSkills.length === 0) toolsDescriptions = "Sin herramientas disponibles. Solo puedes usar tu conocimiento interno.";
 
-                // 🔥 ESTE ES EL PROMPT QUE SE EXPORTARÁ AL DEBUGER
                 const systemPrompt = `
                     Eres un Agente en un simulador. Tu System Prompt nativo es:
                     """${this.container.querySelector('#ifPrompt').value.trim()}"""
@@ -399,7 +440,7 @@ export class IdentityForge {
                     FINAL: [Tu respuesta final o entregable]
                 `;
 
-                this.lastCompiledPrompt = systemPrompt; // Guardamos para observabilidad
+                this.lastCompiledPrompt = systemPrompt; 
 
                 const apiKey = localStorage.getItem(`tt_key_${selectedApi}`);
                 if (!apiKey && selectedApi !== 'custom') throw new Error(`Falta API Key de ${selectedApi} en el Panteón.`);
