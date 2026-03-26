@@ -25,16 +25,16 @@ const initialState = {
     globalUsers: [
         { id: '@agent_genesis_architect', name: 'Genesis Architect', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'creator', active_skills: ['skill_vna_architect'] } },
         { id: '@agent_dharma_ontologist', name: 'Dharma Ontologist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'caregiver', active_skills: ['skill_ikigai_ontologist'] } },
-        { id: '@agent_skill_crafter', name: 'Skill Crafter', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: [] } },
-        { id: '@agent_prompt_synthesizer', name: 'Prompt Synthesizer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: [] } },
+        { id: '@agent_skill_crafter', name: 'Skill Crafter', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: ['skill_crafter_master'] } },
+        { id: '@agent_prompt_synthesizer', name: 'Prompt Synthesizer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: ['skill_prompt_synthesizer'] } },
         { id: '@agent_tdd_auditor', name: 'TDD Auditor', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: ['skill_slicing_pie_notary', 'skill_legal_drafting'] } },
-        { id: '@agent_synaptic_weaver', name: 'Synaptic Weaver', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'explorer', active_skills: [] } },
-        { id: '@agent_token_economist', name: 'Token Economist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: [] } },
+        { id: '@agent_synaptic_weaver', name: 'Synaptic Weaver', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'explorer', active_skills: ['skill_knowledge_harvest'] } },
+        { id: '@agent_token_economist', name: 'Token Economist', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler', active_skills: ['skill_antifragile_compressor'] } },
         { id: '@agent_media_generator', name: 'Media Generator', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero', active_skills: [] } },
-        { id: '@agent_web_deployer', name: 'Web Deployer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: [] } },
-        { id: '@agent_codex_developer', name: 'Codex Developer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: [] } },
-        { id: '@kaos_tester', name: 'Kaos Tester', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'outlaw', active_skills: [] } },
-        { id: '@bard_narrator', name: 'Bard Narrator', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'jester', active_skills: [] } },
+        { id: '@agent_web_deployer', name: 'Web Deployer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician', active_skills: ['skill_ui_component_forge'] } },
+        { id: '@agent_codex_developer', name: 'Codex Developer', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage', active_skills: ['skill_vault_monetization'] } },
+        { id: '@kaos_tester', name: 'Kaos Tester', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'outlaw', active_skills: ['skill_pentest_chaos'] } },
+        { id: '@bard_narrator', name: 'Bard Narrator', globalRole: 'ai-agent', profile: { isAi: true, guardian: 'jester', active_skills: ['skill_community_engagement'] } },
         { id: '@alvaro', name: 'Alvaro (Master Architect)', globalRole: 'ecosystem-owner', profile: { sbt_skills: [] } }
     ],
     projects: []
@@ -54,25 +54,20 @@ class Store {
         try {
             console.log("⏳ [Kernel] Conectando con IndexedDB...");
             
-            // 🔥 ESCUDO ANTI-DEADLOCK: Si KB.init tarda más de 4 segundos, lanza error y no se cuelga.
             const kbPromise = KB.init();
             const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error("Timeout (4s): IndexedDB bloqueada por el navegador. Ve a Application > IndexedDB y bórrala manualmente.")), 4000)
+                setTimeout(() => reject(new Error("Timeout (4s): IndexedDB bloqueada por el navegador.")), 4000)
             );
             
             await Promise.race([kbPromise, timeoutPromise]);
             console.log("📂 [Kernel] IndexedDB conectada exitosamente.");
             
             try {
-                console.log("🌱 [Kernel] Verificando ADN Semilla...");
-                if (CoreSeed && CoreSeed.inject) {
-                    await CoreSeed.inject(KB);
-                }
+                if (CoreSeed && CoreSeed.inject) await CoreSeed.inject(KB);
             } catch (seedErr) {
                 console.error("⚠️ [Kernel] Fallo inyectando ADN de Skills:", seedErr);
             }
             
-            console.log("🧠 [Kernel] Restaurando Memoria Global...");
             const savedNode = await KB.getNode('global_kernel_state');
             
             if (savedNode && savedNode.content) {
@@ -106,6 +101,15 @@ class Store {
                 if (!p.roles) p.roles = [];
                 if (!p.sprints) p.sprints = [{ id: 'sp_default', name: 'Sprint 1', startDate: Date.now() }];
                 if (!p.activeSprintId) p.activeSprintId = 'sp_default';
+                
+                // 🔥 PROTOCOLO DE OMNIPRESENCIA (AUTO-HEALING PARA PROYECTOS EXISTENTES)
+                // Inyectamos automáticamente todos los Agentes IA del Padrón en el proyecto si no existen.
+                if (!p.usuarios) p.usuarios = [];
+                this.state.globalUsers.filter(u => u.profile?.isAi).forEach(ai => {
+                    if (!p.usuarios.find(pu => pu.id === ai.id)) {
+                        p.usuarios.push({ id: ai.id, permissions: { canCreateWO: true, canApprove: false } });
+                    }
+                });
             });
 
             console.log("✅ [Kernel] Secuencia de arranque completada. Sistema en línea.");
@@ -113,7 +117,6 @@ class Store {
 
         } catch (e) {
             console.error("💥 [KERNEL PANIC] Colapso total leyendo el estado:", e);
-            // Fallback de emergencia para que la app cargue de todas formas (aunque sin persistencia)
             this.state = JSON.parse(JSON.stringify(initialState));
             this.isInitialized = true; 
         }
@@ -174,11 +177,30 @@ class Store {
             case 'LOGOUT_USER':
                 newState.session.activeUserId = null; newState.session.role = 'guest'; break;
             case 'CREATE_PROJECT':
-                newState.projects.push({ ...action.payload, activeSprintId: 'sp_default', sprints: [{ id: 'sp_default', name: 'Sprint 1', startDate: Date.now() }], logs: [], telemetry: [] });
+                const newProj = { ...action.payload, activeSprintId: 'sp_default', sprints: [{ id: 'sp_default', name: 'Sprint 1', startDate: Date.now() }], logs: [], telemetry: [] };
+                if (!newProj.usuarios) newProj.usuarios = [];
+                // 🔥 Asegurar IAs en proyectos de nueva creación
+                newState.globalUsers.filter(u => u.profile?.isAi).forEach(ai => {
+                    if (!newProj.usuarios.find(pu => pu.id === ai.id)) {
+                        newProj.usuarios.push({ id: ai.id, permissions: { canCreateWO: true, canApprove: false } });
+                    }
+                });
+                newState.projects.push(newProj);
                 break;
             case 'UPDATE_PROJECT_INFO':
                 projIdx = findProject(action.payload.projectId);
-                if (projIdx > -1) Object.assign(newState.projects[projIdx], action.payload.updates);
+                if (projIdx > -1) {
+                    // 🔥 ESCUDO: Si se actualizan los usuarios del proyecto, evitar que borren a las IAs Core.
+                    if (action.payload.updates.usuarios) {
+                        const incomingUsers = action.payload.updates.usuarios;
+                        newState.globalUsers.filter(u => u.profile?.isAi).forEach(ai => {
+                            if (!incomingUsers.find(iu => iu.id === ai.id)) {
+                                incomingUsers.push({ id: ai.id, permissions: { canCreateWO: true, canApprove: false } });
+                            }
+                        });
+                    }
+                    Object.assign(newState.projects[projIdx], action.payload.updates);
+                }
                 break;
             case 'DELETE_PROJECT':
                 newState.projects = newState.projects.filter(p => p.id !== action.payload.projectId);
