@@ -7,8 +7,9 @@ export class IdentityForge {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.activeAgentId = null;
-        this.agentSkills = []; // Array de IDs de las skills equipadas
+        this.agentSkills = []; 
         this.isSimulating = false;
+        this.lastCompiledPrompt = ""; // Guarda el último prompt inyectado para debug
     }
 
     async render(agentId = null) {
@@ -30,7 +31,7 @@ export class IdentityForge {
             const promptNode = await KB.getNode(`prompt_global_${this.activeAgentId.replace('@','')}`);
             if (promptNode) {
                 promptContent = promptNode.content;
-                this.agentSkills = promptNode.dependencies || []; // Usamos dependencies para las Skills del Agente
+                this.agentSkills = promptNode.dependencies || []; 
             }
         }
 
@@ -44,7 +45,7 @@ export class IdentityForge {
                 .panel-header { font-size: 1.1rem; color: white; font-weight: 900; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed #333; padding-bottom: 10px;}
                 
                 .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;}
-                .form-group label { color: var(--accent-blue); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+                .form-group label { color: var(--accent-blue); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;}
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px; border-radius: 10px; font-family: var(--font-main); font-size: 0.95rem; outline: none; transition: 0.2s; width: 100%; box-sizing: border-box;}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.1);}
                 
@@ -68,12 +69,16 @@ export class IdentityForge {
                 .btn-outline:hover { background: rgba(255,255,255,0.05); color: white; border-color: white;}
 
                 .terminal-container { flex: 1; background: #050508; border: 1px solid #333; border-radius: 12px; padding: 15px; font-family: var(--font-mono); font-size: 0.8rem; overflow-y: auto; color: #aaa; display: flex; flex-direction: column; gap: 10px;}
-                .term-log { border-left: 2px solid #444; padding-left: 10px; margin-bottom: 5px; line-height: 1.4;}
+                .term-log { border-left: 2px solid #444; padding-left: 10px; margin-bottom: 5px; line-height: 1.4; word-wrap: break-word;}
                 .term-log.thought { color: #a0a0a0; border-color: #888; }
                 .term-log.action { color: var(--accent-blue); border-color: var(--accent-blue); font-weight: bold;}
                 .term-log.observation { color: var(--accent-orange); border-color: var(--accent-orange); }
                 .term-log.final { color: var(--accent-green); border-color: var(--accent-green); font-weight: bold; background: rgba(0,230,118,0.05); padding: 10px;}
                 .term-log.error { color: var(--accent-red); border-color: var(--accent-red); background: rgba(255,82,82,0.05); padding: 10px;}
+                
+                .sim-controls { display: flex; gap: 10px; margin-bottom: 10px; align-items: center;}
+                .btn-micro { background: transparent; border: 1px solid #555; color: #aaa; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; cursor: pointer; transition: 0.2s;}
+                .btn-micro:hover { color: white; border-color: white;}
             </style>
 
             <div class="agent-dropzone" id="globalDropzone">
@@ -94,11 +99,12 @@ export class IdentityForge {
                         <input type="text" id="ifName" class="form-control" placeholder="Ej: Hades (DevOps)" value="${agentData.name}">
                     </div>
                     <div class="form-group">
-                        <label>Motor Neuronal</label>
+                        <label>Motor Neuronal (Core)</label>
                         <select id="ifEngine" class="form-control">
                             <option value="anthropic" ${agentData.profile?.preferredEngine === 'anthropic' ? 'selected' : ''}>Anthropic (Claude 3.5)</option>
                             <option value="deepseek" ${agentData.profile?.preferredEngine === 'deepseek' ? 'selected' : ''}>DeepSeek (Coder)</option>
                             <option value="openai" ${agentData.profile?.preferredEngine === 'openai' ? 'selected' : ''}>OpenAI (GPT-4o)</option>
+                            <option value="gemini" ${agentData.profile?.preferredEngine === 'gemini' ? 'selected' : ''}>Gemini 1.5</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -130,15 +136,29 @@ export class IdentityForge {
                 </div>
 
                 <div class="forge-panel terminal-col">
-                    <div class="panel-header"><span>🧪</span> Simulador ReAct (Laboratorio)</div>
-                    <div class="form-group">
-                        <label>Simular Work Order (Input)</label>
-                        <textarea id="simInput" class="form-control" rows="3" placeholder="Ej: Optimiza el archivo auth.js y verifica que pase los tests." style="font-family:var(--font-mono);"></textarea>
+                    <div class="panel-header">
+                        <span>🧪</span> Simulador ReAct
+                        <button id="btnViewPrompt" class="btn-micro" style="margin-left:auto;" title="Ver qué se le envía realmente a la API">🔍 Ver Prompt Compilado</button>
                     </div>
-                    <button class="btn-lux btn-primary" id="btnRunSim" style="margin-bottom:15px;">▶ Ejecutar Simulación</button>
+                    
+                    <div class="sim-controls">
+                        <select id="simEngineOverride" class="form-control" style="padding: 6px; font-size: 0.8rem; width: auto; min-width: 150px; background: #111;">
+                            <option value="auto">⚡ Usar Core API</option>
+                            <option value="deepseek">Forzar DeepSeek</option>
+                            <option value="anthropic">Forzar Anthropic</option>
+                            <option value="openai">Forzar OpenAI</option>
+                            <option value="gemini">Forzar Gemini</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Input (Work Order)</label>
+                        <textarea id="simInput" class="form-control" rows="2" placeholder="Ej: Optimiza el archivo auth.js y verifica que pase los tests." style="font-family:var(--font-mono);"></textarea>
+                    </div>
+                    <button class="btn-lux btn-primary" id="btnRunSim" style="margin-bottom:15px;">▶ Ejecutar Simulación Unitaria</button>
                     
                     <div class="terminal-container" id="simTerminal">
-                        <div style="color:#555;">[System] Esperando inyección de prompt...</div>
+                        <div style="color:#555;">[System] Selecciona una API y envía un input para testear la orquestación.</div>
                     </div>
                 </div>
 
@@ -200,9 +220,11 @@ export class IdentityForge {
             btnExport: this.container.querySelector('#btnExportAgent'),
             btnRunSim: this.container.querySelector('#btnRunSim'),
             btnBrowseSkills: this.container.querySelector('#btnBrowseSkills'),
+            btnViewPrompt: this.container.querySelector('#btnViewPrompt'),
             dropzone: this.container.querySelector('#globalDropzone'),
             simInput: this.container.querySelector('#simInput'),
-            simTerminal: this.container.querySelector('#simTerminal')
+            simTerminal: this.container.querySelector('#simTerminal'),
+            simEngine: this.container.querySelector('#simEngineOverride')
         };
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => this.dom.dropzone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false));
@@ -275,7 +297,7 @@ export class IdentityForge {
                     type: 'prompt_a2a', category: 'meta_prompt', targetId: id, roleTarget: id,
                     title: `AGENT.md: ${newUserData.name}`,
                     content: this.container.querySelector('#ifPrompt').value.trim(),
-                    dependencies: this.agentSkills, // Aquí guardamos las Skills equipadas
+                    dependencies: this.agentSkills, 
                     keywords: ['ai_agent', id]
                 });
 
@@ -321,30 +343,47 @@ export class IdentityForge {
             } catch (e) { alert("Fallo al exportar: " + e.message); } finally { this.dom.btnExport.disabled = false; this.dom.btnExport.innerText = "📦 Exportar .agent"; }
         });
 
-        // 🔥 SIMULADOR REACT (LOGIC LOOP CON INYECCIÓN DE SKILLS)
+        // 🔥 ACCIÓN: VER PROMPT COMPILADO
+        this.dom.btnViewPrompt.addEventListener('click', () => {
+            if (!this.lastCompiledPrompt) return alert("Aún no se ha compilado ningún prompt. Ejecuta una simulación primero.");
+            
+            // Creamos un modal volante simple para leerlo
+            const w = window.open('', '_blank', 'width=800,height=600');
+            w.document.write(`
+                <body style="background:#0a0a0a; color:#00e676; font-family:monospace; padding:20px; margin:0; white-space:pre-wrap;">
+                    <h3 style="color:white; margin-top:0;">🔍 Payload MCP (System Prompt Compilado)</h3>
+                    <hr style="border:1px dashed #333; margin-bottom:20px;">
+                    ${this.lastCompiledPrompt.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                </body>
+            `);
+        });
+
+        // 🔥 SIMULADOR REACT UNITARIO
         this.dom.btnRunSim.addEventListener('click', async () => {
             if (this.isSimulating) return;
             const taskInput = this.dom.simInput.value.trim();
             if (!taskInput) return alert("Escribe una tarea para simular.");
 
+            const selectedApi = this.dom.simEngine.value === 'auto' ? this.container.querySelector('#ifEngine').value : this.dom.simEngine.value;
+
             this.isSimulating = true;
-            this.dom.btnRunSim.innerText = "⏳ Simulando Bucle Cognitivo...";
-            this.dom.simTerminal.innerHTML = `<div class="term-log thought">[Sim] Iniciando protocolo de orquestación [${this.container.querySelector('#ifOrchestration').value.toUpperCase()}]...</div>`;
+            this.dom.btnRunSim.innerText = "⏳ Simulando...";
+            this.dom.simTerminal.innerHTML = `<div class="term-log thought">[Sim] Conectando a API: <b>${selectedApi.toUpperCase()}</b> | Patrón: [${this.container.querySelector('#ifOrchestration').value.toUpperCase()}]</div>`;
 
             try {
                 await KB.init();
-                let toolsDescriptions = "HERRAMIENTAS MCP DISPONIBLES (AgentSkills):\n";
+                let toolsDescriptions = "HERRAMIENTAS MCP DISPONIBLES:\n";
                 for (const skillId of this.agentSkills) {
                     const skillNode = await KB.getNode(skillId);
                     if (skillNode) {
-                        // Limpiamos la descripción para el System Prompt
                         const cleanDesc = (skillNode.description || skillNode.title).replace(/\n/g, ' ');
                         toolsDescriptions += `- [${skillNode.id}]: ${cleanDesc}\n`;
                     }
                 }
 
-                if (this.agentSkills.length === 0) toolsDescriptions = "Sin herramientas MCP disponibles. Solo puedes usar tu conocimiento interno.";
+                if (this.agentSkills.length === 0) toolsDescriptions = "Sin herramientas disponibles. Solo puedes usar tu conocimiento interno.";
 
+                // 🔥 ESTE ES EL PROMPT QUE SE EXPORTARÁ AL DEBUGER
                 const systemPrompt = `
                     Eres un Agente en un simulador. Tu System Prompt nativo es:
                     """${this.container.querySelector('#ifPrompt').value.trim()}"""
@@ -360,66 +399,50 @@ export class IdentityForge {
                     FINAL: [Tu respuesta final o entregable]
                 `;
 
-                const provider = this.container.querySelector('#ifEngine').value;
-                const apiKey = localStorage.getItem(`tt_key_${provider}`);
+                this.lastCompiledPrompt = systemPrompt; // Guardamos para observabilidad
 
-                // LLAMADA 1: El Agente piensa y decide usar una Tool
-                let response = await Orchestrator.callLLM({ preferredEngine: provider, apiKey: apiKey, systemPrompt: systemPrompt, userPrompt: `TAREA: ${taskInput}`, responseFormat: "text", temperature: 0.2 });
+                const apiKey = localStorage.getItem(`tt_key_${selectedApi}`);
+                if (!apiKey && selectedApi !== 'custom') throw new Error(`Falta API Key de ${selectedApi} en el Panteón.`);
+
+                let response = await Orchestrator.callLLM({ preferredEngine: selectedApi, apiKey: apiKey, systemPrompt: systemPrompt, userPrompt: `TAREA: ${taskInput}`, responseFormat: "text", temperature: 0.2 });
                 let rawText = response.content;
                 
-                // Formateamos y pintamos la primera respuesta
                 this.formatTerminalOutput(rawText);
 
-                // 🔥 LOGICA DEL SIMULADOR: ¿El Agente quiere usar una Skill?
                 if (rawText.includes('ACTION: Ninguna') || rawText.includes('FINAL:')) {
-                    this.isSimulating = false; // Bucle cerrado
+                    this.isSimulating = false; 
                 } else {
-                    // El Agente quiere usar una Tool. Detectamos cuál.
                     const actionMatch = rawText.match(/ACTION:\s*([^\n]+)/);
                     if (actionMatch) {
                         const toolId = actionMatch[1].trim();
                         if (toolId === 'skill_global_project_navigator') {
-                            this.dom.simTerminal.innerHTML += `<div class="term-log action">⏳ [Kernel] Ejecutando Skill 'project_navigator' in-situ...</div>`;
+                            this.dom.simTerminal.innerHTML += `<div class="term-log action">⏳ [Kernel] Mockeando Skill 'project_navigator'...</div>`;
                             
-                            // 🔥 MOCKEAMOS LA SALIDA DEL NAVEGADOR
-                            // En producción, aquí Orchestrator consultaría el Ledger.
                             const state = store.getState();
                             const pId = localStorage.getItem('tt_active_project');
                             const proj = state.projects.find(x => x.id === pId);
                             
                             if (proj) {
-                                let total = 0;
-                                let ledger = 0;
+                                let total = 0; let ledger = 0;
                                 if (proj.transactions) {
-                                    total = proj.transactions.length;
-                                    ledger = proj.transactions.filter(tx => tx.status === 'theoretical' || tx.status === '理論上').length;
+                                    total = proj.transactions.length; ledger = proj.transactions.filter(tx => tx.status === 'theoretical' || tx.status === '理論上').length;
                                 } else if (proj.work_orders) {
-                                    total = proj.work_orders.length;
-                                    ledger = proj.work_orders.filter(tx => tx.status === 'ledger').length;
+                                    total = proj.work_orders.length; ledger = proj.work_orders.filter(tx => tx.status === 'ledger').length;
                                 }
 
-                                const mockOutput = JSON.stringify({
-                                    projectId: pId,
-                                    projectName: proj.nombre,
-                                    totalWorkOrders: total,
-                                    workOrdersInLedger: ledger,
-                                    currency: 'SLICES'
-                                });
+                                const mockOutput = JSON.stringify({ projectId: pId, projectName: proj.nombre, totalWorkOrders: total, workOrdersInLedger: ledger, currency: 'SLICES' });
 
-                                // Inyectamos la Observación simulada
-                                this.dom.simTerminal.innerHTML += `<div class="term-log observation">👁️ Observación Real (from DB): ${mockOutput}</div>`;
+                                this.dom.simTerminal.innerHTML += `<div class="term-log observation">👁️ Data de API interna: ${mockOutput}</div>`;
+                                this.dom.simTerminal.innerHTML += `<div class="term-log thought">⏳ [Sim] Pidiendo conclusión a la IA...</div>`;
                                 
-                                // LLAMADA 2: Le devolvemos el JSON de la DB al Agente para que dé su respuesta FINAL.
-                                this.dom.simTerminal.innerHTML += `<div class="term-log thought">⏳ [Sim] Agente calculando resultado final...</div>`;
-                                
-                                const nextUserPrompt = `[OBSERVATION FROM KERNEL]: ${mockOutput}. Basado en esto, da tu 'FINAL:'.`;
-                                response = await Orchestrator.callLLM({ preferredEngine: provider, apiKey: apiKey, systemPrompt: systemPrompt, userPrompt: nextUserPrompt, responseFormat: "text", temperature: 0.2 });
+                                const nextUserPrompt = `[OBSERVATION FROM TOOL]: ${mockOutput}. Da tu 'FINAL:'.`;
+                                response = await Orchestrator.callLLM({ preferredEngine: selectedApi, apiKey: apiKey, systemPrompt: systemPrompt, userPrompt: nextUserPrompt, responseFormat: "text", temperature: 0.2 });
                                 this.formatTerminalOutput(response.content);
                             } else {
-                                this.dom.simTerminal.innerHTML += `<div class="term-log error">💥 [Error] No hay proyecto activo en el navegador.</div>`;
+                                this.dom.simTerminal.innerHTML += `<div class="term-log error">💥 [Error] Proyecto no encontrado.</div>`;
                             }
                         } else {
-                            this.dom.simTerminal.innerHTML += `<div class="term-log observation">👁️ Observación Simulada: El orquestador de simulación no tiene implementado el Mock para la skill '${toolId}'. Asumiendo éxito.</div>`;
+                            this.dom.simTerminal.innerHTML += `<div class="term-log observation">👁️ Observación: Skill [${toolId}] no tiene un mock en el simulador.</div>`;
                         }
                     }
                 }
@@ -428,7 +451,7 @@ export class IdentityForge {
                 this.dom.simTerminal.innerHTML += `<div class="term-log error">💥 ERROR DE KERNEL: ${e.message}</div>`;
             } finally {
                 this.isSimulating = false;
-                this.dom.btnRunSim.innerText = "▶ Ejecutar Simulación";
+                this.dom.btnRunSim.innerText = "▶ Ejecutar Simulación Unitaria";
                 this.dom.simTerminal.scrollTop = this.dom.simTerminal.scrollHeight;
             }
         });
@@ -461,15 +484,9 @@ export class IdentityForge {
             
             const newNodeId = `skill_imported_${Date.now()}`;
             await KB.init();
-            await KB.saveNode({
-                id: newNodeId, type: 'skill', category: 'skill', projectId: 'global', targetId: 'global',
-                title: title, description: 'Skill inyectada vía AgentForge', content: skillText
-            });
+            await KB.saveNode({ id: newNodeId, type: 'skill', category: 'skill', projectId: 'global', targetId: 'global', title: title, description: 'Skill inyectada vía AgentForge', content: skillText });
             return newNodeId;
-        } catch (e) {
-            alert("Fallo inyectando Skill: " + e.message);
-            return null;
-        }
+        } catch (e) { alert("Fallo inyectando Skill: " + e.message); return null; }
     }
 
     async importAgentZip(file) {
@@ -485,7 +502,6 @@ export class IdentityForge {
 
             const configText = await contents.files[configKey].async("text");
             const agentText = await contents.files[agentKey].async("text");
-            
             const config = JSON.parse(configText);
             
             let promptContent = agentText;
@@ -495,12 +511,9 @@ export class IdentityForge {
             const yamlRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
             const match = agentText.match(yamlRegex);
             if (match) {
-                const yaml = match[1];
-                promptContent = match[2].trim();
-                const aliasMatch = yaml.match(/alias:\s*(.+)/);
-                if (aliasMatch) alias = aliasMatch[1].trim();
-                const nameMatch = yaml.match(/name:\s*(.+)/);
-                if (nameMatch) name = nameMatch[1].trim();
+                const yaml = match[1]; promptContent = match[2].trim();
+                const aliasMatch = yaml.match(/alias:\s*(.+)/); if (aliasMatch) alias = aliasMatch[1].trim();
+                const nameMatch = yaml.match(/name:\s*(.+)/); if (nameMatch) name = nameMatch[1].trim();
             }
 
             this.container.querySelector('#ifId').value = alias;
@@ -509,14 +522,9 @@ export class IdentityForge {
             this.container.querySelector('#ifOrchestration').value = config.orchestration || 'react';
             this.container.querySelector('#ifPrompt').value = promptContent;
             
-            // En una iteración profunda, leeríamos la carpeta /skills/ del ZIP y las inyectaríamos en el KB
             this.agentSkills = [];
             this.renderSkillsList();
-
             alert(`📥 Córtex de ${name} extraído. Revisa los datos, equipa las Skills necesarias y dale a 'Sellar'.`);
-
-        } catch(e) {
-            alert("Fallo desempaquetando Agente: " + e.message);
-        }
+        } catch(e) { alert("Fallo desempaquetando Agente: " + e.message); }
     }
 }
