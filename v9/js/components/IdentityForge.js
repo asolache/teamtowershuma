@@ -3,6 +3,16 @@ import { store } from '../core/store.js';
 import { KB } from '../core/kb.js';
 import { Orchestrator } from '../core/Orchestrator.js';
 
+// 🌌 TAXONOMÍA UNIVERSAL DEL PANTEÓN V9
+const TAXONOMY = {
+    'core.architecture': '🌌 Arquitectura & VNA',
+    'core.economy': '⚖️ Economía & Ledger',
+    'core.cognition': '🧠 Cognición & Ontología',
+    'core.execution': '⚡ Ejecución & Código',
+    'core.culture': '🎭 Cultura & Caos',
+    'skill': '🎒 Skills Custom (Generales)'
+};
+
 export class IdentityForge {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -35,6 +45,40 @@ export class IdentityForge {
             }
         }
 
+        // 🔥 GENERACIÓN DINÁMICA DEL DESPLEGABLE TAXONÓMICO
+        await KB.init();
+        const allSkills = await KB.getAllNodes({ type: 'skill' });
+        const groupedSkills = {};
+        
+        allSkills.forEach(s => {
+            const cat = s.category || 'skill';
+            if (!groupedSkills[cat]) groupedSkills[cat] = [];
+            groupedSkills[cat].push(s);
+        });
+
+        let skillsOptions = `<option value="">➕ Equipar nueva Skill al Cinturón...</option>`;
+        
+        Object.keys(TAXONOMY).forEach(cat => {
+            if (groupedSkills[cat] && groupedSkills[cat].length > 0) {
+                skillsOptions += `<optgroup label="${TAXONOMY[cat]}">`;
+                groupedSkills[cat].forEach(s => {
+                    skillsOptions += `<option value="${s.id}">${s.title}</option>`;
+                });
+                skillsOptions += `</optgroup>`;
+            }
+        });
+
+        // Huerfanas
+        Object.keys(groupedSkills).forEach(cat => {
+            if (!TAXONOMY[cat]) {
+                skillsOptions += `<optgroup label="🧩 Otras (${cat})">`;
+                groupedSkills[cat].forEach(s => {
+                    skillsOptions += `<option value="${s.id}">${s.title}</option>`;
+                });
+                skillsOptions += `</optgroup>`;
+            }
+        });
+
         this.container.innerHTML = `
             <style>
                 .forge-layout { display: grid; grid-template-columns: 350px 1fr 400px; gap: 20px; height: 100%; min-height: 80vh;}
@@ -49,6 +93,10 @@ export class IdentityForge {
                 .form-control { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px; border-radius: 10px; font-family: var(--font-main); font-size: 0.95rem; outline: none; transition: 0.2s; width: 100%; box-sizing: border-box;}
                 .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,176,255,0.1);}
                 
+                /* Taxonomía Selector */
+                select.form-control optgroup { background: #111; color: var(--accent-purple); font-family: var(--font-mono); font-weight: bold; padding: 5px; }
+                select.form-control option { background: #0a0a0a; color: white; padding: 5px; font-family: var(--font-main); font-weight: normal; }
+
                 .prompt-area { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; color: #ddd; resize: vertical; flex: 1; min-height: 200px; transition: 0.3s;}
                 .prompt-area.synthesizing { border-color: var(--accent-purple); box-shadow: inset 0 0 20px rgba(224,64,251,0.2); opacity: 0.7;}
                 
@@ -134,10 +182,14 @@ export class IdentityForge {
                         <span>🎒</span> Cinturón de Skills (MCP Tools)
                         <div id="synthStatus" style="font-size:0.7rem; color:var(--accent-purple); font-weight:normal; display:none; animation: pulse 1.5s infinite;">🤖 Sintetizando...</div>
                     </div>
+                    
                     <div class="skills-list" id="agentSkillsList">
                         <div style="color:#888; text-align:center; padding:20px; font-style:italic;">Cargando herramientas...</div>
                     </div>
-                    <button class="btn-lux btn-outline" id="btnBrowseSkills" style="border-style:dashed;">➕ Explorar Knowledge Base</button>
+                    
+                    <select id="skillSelector" class="form-control" style="border: 1px dashed var(--accent-blue); color: var(--accent-blue); font-weight: bold; cursor: pointer;">
+                        ${skillsOptions}
+                    </select>
                 </div>
 
                 <div class="forge-panel terminal-col">
@@ -188,10 +240,13 @@ export class IdentityForge {
         for (const skillId of this.agentSkills) {
             const node = await KB.getNode(skillId);
             if (node) {
+                // Pequeño badge visual indicando la taxonomía
+                const catLabel = TAXONOMY[node.category] ? TAXONOMY[node.category].split(' ')[0] : '🧩';
+                
                 html += `
                     <div class="skill-slot">
                         <div>
-                            <div class="skill-slot-title">🎒 ${node.title}</div>
+                            <div class="skill-slot-title">${catLabel} ${node.title}</div>
                             <div style="font-size:0.7rem; color:var(--accent-green); margin-top:3px;">ID: ${node.id}</div>
                         </div>
                         <button class="btn-remove-skill" data-id="${skillId}" title="Desequipar Skill">&times;</button>
@@ -205,13 +260,10 @@ export class IdentityForge {
             btn.addEventListener('click', (e) => {
                 this.agentSkills = this.agentSkills.filter(id => id !== e.target.dataset.id);
                 this.renderSkillsList();
-                // Nota: Al quitar una skill no reescribimos el prompt por seguridad (puede que el usuario quiera borrarlo a mano), 
-                // pero el Sintetizador actuará en la próxima adición.
             });
         });
     }
 
-    // 🔥 RUTINA DE AUTO-SÍNTESIS MCP (Agent_Prompt_Synthesizer)
     async triggerPromptSynthesis(newSkillId) {
         const promptArea = this.dom.promptArea;
         const statusMsg = this.dom.synthStatus;
@@ -238,7 +290,6 @@ export class IdentityForge {
         } finally {
             statusMsg.style.display = 'none';
             promptArea.classList.remove('synthesizing');
-            // Un pequeño resplandor verde para confirmar éxito
             promptArea.style.boxShadow = "inset 0 0 15px rgba(0,230,118,0.3)";
             setTimeout(() => promptArea.style.boxShadow = "", 1000);
         }
@@ -259,7 +310,7 @@ export class IdentityForge {
             btnSave: this.container.querySelector('#btnSaveAgent'),
             btnExport: this.container.querySelector('#btnExportAgent'),
             btnRunSim: this.container.querySelector('#btnRunSim'),
-            btnBrowseSkills: this.container.querySelector('#btnBrowseSkills'),
+            skillSelector: this.container.querySelector('#skillSelector'),
             btnViewPrompt: this.container.querySelector('#btnViewPrompt'),
             dropzone: this.container.querySelector('#globalDropzone'),
             simInput: this.container.querySelector('#simInput'),
@@ -282,7 +333,6 @@ export class IdentityForge {
                 if (skillId && !this.agentSkills.includes(skillId)) {
                     this.agentSkills.push(skillId);
                     this.renderSkillsList();
-                    // 🔥 INVOCAMOS AL SINTETIZADOR
                     await this.triggerPromptSynthesis(skillId);
                 }
             } else if (file.name.endsWith('.agent') || file.name.endsWith('.zip')) {
@@ -292,24 +342,19 @@ export class IdentityForge {
             }
         });
 
-        this.dom.btnBrowseSkills.addEventListener('click', async () => {
-            await KB.init();
-            const allNodes = await KB.getAllNodes({ type: 'skill' });
-            
-            let promptText = "Catálogo de Skills Disponibles (Introduce el ID exacto):\n\n";
-            allNodes.forEach(n => promptText += `- [${n.id}] ${n.title}\n`);
-            
-            const selectedId = prompt(promptText);
-            if (selectedId && allNodes.find(n => n.id === selectedId)) {
+        // 🔥 NUEVA LÓGICA DE SELECCIÓN TAXONÓMICA
+        this.dom.skillSelector.addEventListener('change', async (e) => {
+            const selectedId = e.target.value;
+            if (selectedId) {
                 if (!this.agentSkills.includes(selectedId)) {
                     this.agentSkills.push(selectedId);
                     this.renderSkillsList();
-                    // 🔥 INVOCAMOS AL SINTETIZADOR
+                    // Disparamos al Synthesizer
                     await this.triggerPromptSynthesis(selectedId);
                 }
-            } else if (selectedId) {
-                alert("ID no encontrado en la Knowledge Base.");
             }
+            // Reseteamos el select al valor por defecto
+            e.target.value = '';
         });
 
         this.dom.btnSave.addEventListener('click', async () => {
@@ -329,7 +374,8 @@ export class IdentityForge {
                         isAi: true, 
                         guardian: 'creator', 
                         preferredEngine: this.container.querySelector('#ifEngine').value,
-                        orchestration: this.container.querySelector('#ifOrchestration').value
+                        orchestration: this.container.querySelector('#ifOrchestration').value,
+                        active_skills: this.agentSkills // Guardamos las skills en el perfil también
                     }
                 };
 
@@ -456,35 +502,7 @@ export class IdentityForge {
                     const actionMatch = rawText.match(/ACTION:\s*([^\n]+)/);
                     if (actionMatch) {
                         const toolId = actionMatch[1].trim();
-                        if (toolId === 'skill_global_project_navigator') {
-                            this.dom.simTerminal.innerHTML += `<div class="term-log action">⏳ [Kernel] Mockeando Skill 'project_navigator'...</div>`;
-                            
-                            const state = store.getState();
-                            const pId = localStorage.getItem('tt_active_project');
-                            const proj = state.projects.find(x => x.id === pId);
-                            
-                            if (proj) {
-                                let total = 0; let ledger = 0;
-                                if (proj.transactions) {
-                                    total = proj.transactions.length; ledger = proj.transactions.filter(tx => tx.status === 'theoretical' || tx.status === '理論上').length;
-                                } else if (proj.work_orders) {
-                                    total = proj.work_orders.length; ledger = proj.work_orders.filter(tx => tx.status === 'ledger').length;
-                                }
-
-                                const mockOutput = JSON.stringify({ projectId: pId, projectName: proj.nombre, totalWorkOrders: total, workOrdersInLedger: ledger, currency: 'SLICES' });
-
-                                this.dom.simTerminal.innerHTML += `<div class="term-log observation">👁️ Data de API interna: ${mockOutput}</div>`;
-                                this.dom.simTerminal.innerHTML += `<div class="term-log thought">⏳ [Sim] Pidiendo conclusión a la IA...</div>`;
-                                
-                                const nextUserPrompt = `[OBSERVATION FROM TOOL]: ${mockOutput}. Da tu 'FINAL:'.`;
-                                response = await Orchestrator.callLLM({ preferredEngine: selectedApi, apiKey: apiKey, systemPrompt: systemPrompt, userPrompt: nextUserPrompt, responseFormat: "text", temperature: 0.2 });
-                                this.formatTerminalOutput(response.content);
-                            } else {
-                                this.dom.simTerminal.innerHTML += `<div class="term-log error">💥 [Error] Proyecto no encontrado.</div>`;
-                            }
-                        } else {
-                            this.dom.simTerminal.innerHTML += `<div class="term-log observation">👁️ Observación: Skill [${toolId}] no tiene un mock en el simulador.</div>`;
-                        }
+                        this.dom.simTerminal.innerHTML += `<div class="term-log observation">👁️ Observación: Skill [${toolId}] no tiene un mock en el simulador.</div>`;
                     }
                 }
 
@@ -563,7 +581,7 @@ export class IdentityForge {
             this.container.querySelector('#ifOrchestration').value = config.orchestration || 'react';
             this.container.querySelector('#ifPrompt').value = promptContent;
             
-            this.agentSkills = [];
+            this.agentSkills = config.skills || [];
             this.renderSkillsList();
             alert(`📥 Córtex de ${name} extraído. Revisa los datos, equipa las Skills necesarias y dale a 'Sellar'.`);
         } catch(e) { alert("Fallo desempaquetando Agente: " + e.message); }
