@@ -24,6 +24,7 @@ export default class PaperView {
         this.isPomodoroRunning = false;
         
         this.sandbox = null;
+        this.chatHistory = []; // 🔥 CÓRTEX A CORTO PLAZO (RAM)
     }
 
     async getHtml() {
@@ -52,13 +53,12 @@ export default class PaperView {
         }
 
         const headerConfig = {
-            title: "Omni-Paper (Workspace)",
+            title: "Omni-Paper (Chat IDE)",
             subtitle: project.nombre,
-            tagline: "Lienzo Híbrido: Ejecuta Work Orders (GTD) o programa en vivo (Chat-IDE).",
+            tagline: "Lienzo Híbrido: Ejecuta Work Orders (GTD) o programa en vivo iterando con memoria contextual.",
             tabs: []
         };
 
-        // Selector de agentes IA para el Chat-IDE
         let agentOptions = '';
         const aiUsers = state.globalUsers.filter(u => u.profile?.isAi);
         
@@ -141,7 +141,7 @@ export default class PaperView {
                 .chat-header select { background: #050508; border: 1px solid var(--accent-purple); color: var(--accent-purple); padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; outline: none; cursor: pointer; }
                 
                 .chat-history { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth;}
-                .msg-bubble { max-width: 90%; padding: 12px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5;}
+                .msg-bubble { max-width: 90%; padding: 12px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap;}
                 .msg-user { background: rgba(0,176,255,0.1); border: 1px solid rgba(0,176,255,0.2); color: white; align-self: flex-end; border-bottom-right-radius: 2px;}
                 .msg-ai { background: rgba(224,64,251,0.05); border: 1px solid rgba(224,64,251,0.2); color: #ccc; align-self: flex-start; border-bottom-left-radius: 2px;}
                 .msg-ai-artifact { border-color: var(--accent-orange); color: var(--accent-orange); font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; transition: 0.2s;}
@@ -166,7 +166,7 @@ export default class PaperView {
                     .workspace-paper { padding: 90px 1rem 120px 1rem; }
                     .breadcrumb-bar { flex-direction: column; align-items: stretch; margin-bottom: 10px;}
                     .bc-separator { display: none; }
-                    .ide-mode-panel { grid-template-columns: 1fr; display: flex; flex-direction: column-reverse; }
+                    .ide-mode-panel { grid-template-columns: 1fr; display: flex; flex-direction: column-reverse; min-height: auto; }
                     .sandbox-panel { min-height: 400px; }
                     .action-bar-fixed { bottom: 80px; right: 20px; left: 20px; justify-content: space-between; gap:10px; }
                     .btn-action-pow, .btn-action-draft { width: 100%; padding: 14px 10px; font-size: 0.95rem; text-align: center; justify-content:center;}
@@ -191,7 +191,7 @@ export default class PaperView {
                             <span class="bc-separator">/</span>
                             <span style="font-size:1.2rem;">🎯</span>
                             <select id="omniSelector" class="bc-select" style="flex:1;">
-                                <option value="ide" selected>🚀 Modo Chat-IDE (Renderizado VNA)</option>
+                                <option value="ide" selected>🚀 Modo Chat-IDE (Renderizado en Vivo)</option>
                                 </select>
                         </div>
                         
@@ -203,11 +203,11 @@ export default class PaperView {
                                 </div>
                                 <div class="chat-history" id="chatHistory">
                                     <div class="msg-bubble msg-ai">
-                                        ¡Ommmm! Modo Chat-IDE activado. Selecciona al Web Deployer para UI o al Codex Developer para lógica. Si el agente genera un Artifact, lo renderizaré aquí al lado.
+                                        ¡Ommmm! Modo Chat-IDE activado. Mi memoria contextual está lista para iterar sobre el código que generemos juntos.
                                     </div>
                                 </div>
                                 <div class="chat-input-area">
-                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Créame una Landing Page para una DAO..."></textarea>
+                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Haz el botón más grande..."></textarea>
                                     <button class="btn-send" id="btnSendPrompt">🚀 Generar & Renderizar</button>
                                 </div>
                             </div>
@@ -274,32 +274,26 @@ export default class PaperView {
     }
 
     async executeViewScript() {
-        const state = store.getState();
-        const activeUserId = state.session.activeUserId;
-        
-        Sidebar.initListeners();
+        Sidebar.initListeners(); 
         PageHeader.execute(); 
 
-        // Iniciar Sandbox Renderer (Modo IDE)
+        // Iniciar Sandbox Renderer
         this.sandbox = new SandboxRenderer('sandboxMount');
 
         this.dom = {
             selProject: document.getElementById('selProject'),
             omniSelector: document.getElementById('omniSelector'),
             
-            // Paneles Mayores
             ideModePanel: document.getElementById('ideModePanel'),
             gtdModePanel: document.getElementById('gtdModePanel'),
             gtdActionBar: document.getElementById('gtdActionBar'),
             
-            // Elementos IDE
             history: document.getElementById('chatHistory'),
             input: document.getElementById('inpChatPrompt'),
             btnSend: document.getElementById('btnSendPrompt'),
             selAgent: document.getElementById('selAgentTarget'),
             sbEmpty: document.getElementById('sbEmptyState'),
 
-            // Elementos GTD
             pomoPanel: document.getElementById('pomoPanel'),
             timeDisplay: document.getElementById('timeDisplay'),
             btnPlay: document.getElementById('btnPlay'),
@@ -315,6 +309,9 @@ export default class PaperView {
             btnSubmit: document.getElementById('btnSubmitReport'),
             btnSaveTaskDraft: document.getElementById('btnSaveTaskDraft')
         };
+
+        const state = store.getState();
+        const activeUserId = state.session.activeUserId;
 
         this.loadProjectTasks = async (projId) => {
             const p = store.getState().projects.find(x => x.id === projId);
@@ -343,7 +340,6 @@ export default class PaperView {
 
         await this.loadProjectTasks(this.activeProjectId);
 
-        // Eventos de Navegación Principal
         this.dom.selProject.addEventListener('change', async (e) => {
             this.activeProjectId = e.target.value;
             localStorage.setItem('tt_active_project', this.activeProjectId);
@@ -367,18 +363,21 @@ export default class PaperView {
             }
         });
 
-        // Eventos MODO IDE
+        this.dom.selAgent.addEventListener('change', () => {
+            // Si cambias de agente, vaciamos la memoria a corto plazo para no confundir contextos.
+            this.chatHistory = []; 
+            this.dom.history.innerHTML = `<div class="msg-bubble msg-ai">¡Ommmm! Cambio de nodo neural detectado. Memoria a corto plazo reiniciada. ¿En qué te asisto?</div>`;
+        });
+
         this.dom.btnSend.addEventListener('click', () => this.handleSendMessage());
         this.dom.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.handleSendMessage(); }
         });
 
-        // Eventos MODO GTD
         this.setupPomodoro();
         this.dom.btnSubmit.addEventListener('click', () => this.reportDeliverable());
         this.dom.btnSaveTaskDraft.addEventListener('click', () => this.saveTaskDraft());
 
-        // Estado inicial desde URL (si vienes de un enlace del Kanban)
         const hashFromUrl = new URLSearchParams(window.location.search).get('hash');
         if (hashFromUrl) {
             this.dom.omniSelector.value = hashFromUrl;
@@ -388,9 +387,6 @@ export default class PaperView {
         }
     }
 
-    // ==========================================
-    // CAMBIO DE MODOS VISUALES
-    // ==========================================
     setIdeMode() {
         this.dom.gtdModePanel.style.display = 'none';
         this.dom.gtdActionBar.style.display = 'none';
@@ -458,20 +454,28 @@ export default class PaperView {
     }
 
     // ==========================================
-    // LÓGICA DE CHAT IDE (ARTIFACTS)
+    // LÓGICA DE CHAT IDE (INYECCIÓN DE MEMORIA CORTA)
     // ==========================================
     addMessage(text, type, artifactData = null) {
+        // 1. Guardar en memoria corta (Context Window)
+        if (type === 'user') {
+            this.chatHistory.push({ role: 'user', content: text });
+        } else {
+            // Guardamos el JSON devuelto o el texto plano
+            this.chatHistory.push({ role: 'assistant', content: artifactData ? JSON.stringify(artifactData) : text });
+        }
+
+        // 2. Renderizar en el DOM
         const msg = document.createElement('div');
         msg.className = `msg-bubble msg-${type}`;
         
         if (artifactData) {
             msg.classList.add('msg-ai-artifact');
-            msg.innerHTML = `📦 <b>Artifact Generado</b><br><br>Componente compilado. Haz clic para renderizarlo en el Sandbox.`;
+            msg.innerHTML = `📦 <b>Artifact Generado</b><br><br>Código compilado. Haz clic para forzar un re-render en el Sandbox.`;
             msg.addEventListener('click', () => {
                 if (this.dom.sbEmpty) this.dom.sbEmpty.style.display = 'none';
                 this.sandbox.renderArtifact(artifactData);
             });
-            // Renderizado automático
             if (this.dom.sbEmpty) this.dom.sbEmpty.style.display = 'none';
             this.sandbox.renderArtifact(artifactData);
         } else {
@@ -493,7 +497,7 @@ export default class PaperView {
         this.dom.input.value = '';
         
         this.dom.btnSend.disabled = true;
-        this.dom.btnSend.innerText = "⏳ Orquestando...";
+        this.dom.btnSend.innerText = "⏳ Pensando (con Memoria)...";
 
         try {
             await KB.init();
@@ -514,6 +518,20 @@ export default class PaperView {
                 { "type": "web_component", "html": "codigo html...", "css": "codigo css...", "js": "codigo js..." }
             `;
 
+            // 🔥 INYECCIÓN DE LA MEMORIA A CORTO PLAZO AL PROMPT DEL USUARIO
+            let contextBuilder = "HISTORIAL DE ESTA CONVERSACIÓN:\n";
+            if (this.chatHistory.length > 1) { // Si hay más que la petición actual
+                this.chatHistory.forEach((msg, idx) => {
+                    // Omitimos el último mensaje del usuario porque se lo pasamos al final explícitamente
+                    if (idx < this.chatHistory.length - 1) {
+                        contextBuilder += `[${msg.role.toUpperCase()}]: ${msg.content}\n`;
+                    }
+                });
+                contextBuilder += `\n[NUEVA INSTRUCCIÓN DEL USUARIO]:\n${text}`;
+            } else {
+                contextBuilder = text; // Primera petición, sin historial previo
+            }
+
             const globalEngine = localStorage.getItem('tt_ai_provider') || 'openai';
             const apiKey = localStorage.getItem(`tt_key_${globalEngine}`);
             
@@ -521,7 +539,8 @@ export default class PaperView {
 
             const response = await Orchestrator.callLLM({ 
                 provider: globalEngine, apiKey: apiKey, 
-                systemPrompt: systemPrompt, userPrompt: text, 
+                systemPrompt: systemPrompt, 
+                userPrompt: contextBuilder, // Pasamos el historial entero concatenado
                 responseFormat: "text", 
                 temperature: 0.3 
             });
@@ -538,7 +557,7 @@ export default class PaperView {
             } catch (e) {}
 
             if (artifactParsed) {
-                this.addMessage("He compilado el código solicitado.", 'ai', artifactParsed);
+                this.addMessage("He compilado y actualizado el código solicitado.", 'ai', artifactParsed);
             } else {
                 this.addMessage(rawContent, 'ai');
             }
