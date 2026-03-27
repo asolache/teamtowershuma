@@ -27,8 +27,6 @@ export class SkillForgeModal {
         this.container = document.getElementById(mountPointId);
         this.draftMemory = null;
         this.allNodesCache = [];
-        
-        // Estado local de los Smart Inputs
         this.linkedState = { references: [], evals: [], scripts: [] };
         
         this.initGlobalListener();
@@ -176,7 +174,6 @@ export class SkillForgeModal {
                         </div>
 
                         <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; height: fit-content; display:flex; flex-direction:column; gap:20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
-                            
                             <div class="sfm-form-group" style="margin:0;">
                                 <label style="color:var(--accent-blue);">📚 Referencias (Teoría / Docs)</label>
                                 <div class="sfm-smart-input-box" id="box-refs">
@@ -261,9 +258,7 @@ export class SkillForgeModal {
             const type = input.dataset.type; // reference, eval, script
             const box = input.closest('.sfm-smart-input-box');
             const dropdown = box.querySelector('.sfm-dropdown');
-            const tagsContainer = box.querySelector(`div[id^="tags-"]`);
 
-            // Filtrado Ajax simulado
             input.addEventListener('input', () => {
                 const val = input.value.toLowerCase().trim();
                 dropdown.innerHTML = '';
@@ -285,11 +280,9 @@ export class SkillForgeModal {
                     dropdown.innerHTML = matches.slice(0, 5).map(renderItem).join('');
                 }
 
-                // Opción de crear al vuelo
                 dropdown.innerHTML += `<div class="sfm-dd-create" data-create="${val}">➕ Crear entidad '${val}'</div>`;
                 dropdown.style.display = 'block';
 
-                // Eventos de selección
                 dropdown.querySelectorAll('.sfm-dd-item').forEach(item => {
                     item.addEventListener('click', () => {
                         this.addSmartTag(type, item.dataset.id);
@@ -308,7 +301,6 @@ export class SkillForgeModal {
                 });
             });
 
-            // Cerrar dropdown al salir
             document.addEventListener('click', (e) => { if (!box.contains(e.target)) dropdown.style.display = 'none'; });
         });
     }
@@ -350,7 +342,106 @@ export class SkillForgeModal {
 
     getIconForType(type) { return type === 'reference' ? '📚' : (type === 'eval' ? '📋' : '⚡'); }
 
-    // 🔥 APERTURA DEL EDITOR
+    // 🔥 LÓGICA CORE: IMPORTACIÓN DE .SKILL
+    async parseZipSkillFile(file, dropzoneElement = null) {
+        if (!window.JSZip) await this.loadJSZip();
+        try {
+            if (dropzoneElement) {
+                dropzoneElement.innerHTML = `<span style="font-size:2rem; animation:pulse 1s infinite;">⏳</span><br>Desempaquetando Entidad...`;
+            }
+            const zip = new window.JSZip();
+            const contents = await zip.loadAsync(file);
+            
+            const skillFileKey = Object.keys(contents.files).find(k => k.endsWith('SKILL.md'));
+            if (!skillFileKey) throw new Error("No es una skill válida. Falta SKILL.md");
+            
+            const skillText = await contents.files[skillFileKey].async("text");
+            const nameMatch = skillText.match(/name:\s*(.+)/);
+            const descMatch = skillText.match(/description:\s*(.+)/);
+            const title = nameMatch ? nameMatch[1].trim() : file.name.replace('.skill', '');
+            const desc = descMatch ? descMatch[1].trim() : 'Skill inyectada desde paquete.';
+            
+            // Quitar el frontmatter yaml
+            const content = skillText.replace(/^---\n([\s\S]*?)\n---\n/, '').trim();
+
+            const newNodeId = `skill_imported_${Date.now()}`;
+            const linkedRefs = [];
+            const linkedEvals = [];
+            const linkedScripts = [];
+
+            await KB.init();
+
+            // Referencias
+            const refFiles = Object.keys(contents.files).filter(k => k.includes('references/') && k.endsWith('.md'));
+            for (const rKey of refFiles) {
+                const rText = await contents.files[rKey].async("text");
+                const rNameMatch = rText.match(/name:\s*(.+)/);
+                const rTitle = rNameMatch ? rNameMatch[1].trim() : rKey.split('/').pop();
+                const rContent = rText.replace(/^---\n([\s\S]*?)\n---\n/, '').trim();
+                const rId = `ref_imp_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
+                await KB.saveNode({ id: rId, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global', title: rTitle, content: rContent });
+                linkedRefs.push(rId);
+            }
+
+            // Evals
+            const evalFiles = Object.keys(contents.files).filter(k => k.includes('evals/') && k.endsWith('.json'));
+            for (const eKey of evalFiles) {
+                const eText = await contents.files[eKey].async("text");
+                const eParsed = JSON.parse(eText);
+                const evalsArray = eParsed.evals || eParsed;
+                const eId = `eval_imp_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
+                await KB.saveNode({ id: eId, type: 'eval', category: 'eval', projectId: 'global', targetId: 'global', title: `Evals para ${title}`, content: JSON.stringify(evalsArray) });
+                linkedEvals.push(eId);
+            }
+
+            // Scripts
+            const scriptFiles = Object.keys(contents.files).filter(k => k.includes('scripts/') && !k.endsWith('/'));
+            for (const sKey of scriptFiles) {
+                const sText = await contents.files[sKey].async("text");
+                const sTitle = sKey.split('/').pop();
+                const sId = `script_imp_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
+                await KB.saveNode({ id: sId, type: 'script', category: 'script', projectId: 'global', targetId: 'global', title: sTitle, content: sText });
+                linkedScripts.push(sId);
+            }
+
+            await KB.saveNode({ 
+                id: newNodeId, type: 'skill', category: 'skill', projectId: 'global', targetId: 'global', 
+                title: title, description: desc, content: content,
+                references: linkedRefs, evals: linkedEvals, scripts: linkedScripts,
+                keywords: ['#imported_skill']
+            });
+
+            if (dropzoneElement) {
+                dropzoneElement.innerHTML = `<span style="font-size:2rem; color:var(--accent-green);">✅</span><br>¡Entidad <b>${title}</b> inyectada en el Córtex!`;
+                setTimeout(() => {
+                    dropzoneElement.innerHTML = `<span style="font-size:2rem;">📥</span><span>Arrastra un <b>.agent</b> o <b>.skill</b> aquí.</span>`;
+                }, 3000);
+            }
+            return newNodeId;
+
+        } catch (e) { 
+            console.error(e);
+            if (dropzoneElement) {
+                dropzoneElement.innerHTML = `<span style="font-size:2rem; color:var(--accent-red);">❌</span><br>Error: ${e.message}`;
+                setTimeout(() => {
+                    dropzoneElement.innerHTML = `<span style="font-size:2rem;">📥</span><span>Arrastra un <b>.agent</b> o <b>.skill</b> aquí.</span>`;
+                }, 3000);
+            }
+            alert("Fallo inyectando paquete: " + e.message); 
+            return null; 
+        }
+    }
+
+    loadJSZip() {
+        return new Promise((resolve) => {
+            if (window.JSZip) return resolve();
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+    }
+
     async openEditor(nodeId) {
         await KB.init();
         this.allNodesCache = await KB.getAllNodes(); 
@@ -381,7 +472,6 @@ export class SkillForgeModal {
             this.dom.inpId.value = node.id;
             this.dom.inpProjId.value = node.projectId || 'global';
             
-            // Forzar selección en el dropdown
             let catMatch = Array.from(this.dom.inpCat.options).find(opt => opt.value === node.category);
             this.dom.inpCat.value = catMatch ? node.category : 'skill';
             
@@ -430,7 +520,6 @@ export class SkillForgeModal {
         
         this.dom.inpCat.addEventListener('change', (e) => this.updateLabels(e.target.value));
 
-        // 🔥 CHAT-EVOLVER
         this.dom.btnExpand.addEventListener('click', async () => {
             const title = this.dom.inpTitle.value.trim();
             const rawContent = this.dom.inpContent.value.trim();
@@ -457,6 +546,7 @@ export class SkillForgeModal {
                 
                 if (optimizedData.reference_docs && optimizedData.reference_docs.length > 0) {
                     await KB.init();
+                    let currentRefs = this.linkedState.references;
                     for (const refDoc of optimizedData.reference_docs) {
                         const cleanName = refDoc.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().substring(0, 20);
                         const newRefId = `ref_draft_${cleanName}_${Math.random().toString(36).substr(2,4)}`;
@@ -493,7 +583,7 @@ export class SkillForgeModal {
             if (!title || !content) return alert("Título y contenido obligatorios.");
             
             const id = this.dom.inpId.value || `node_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
-            const type = this.dom.inpCat.value.split('.')[0] || 'custom'; // Inferir tipo de la categoría
+            const type = this.dom.inpCat.value.split('.')[0] || 'custom'; 
 
             await KB.init();
             const allNodes = await KB.getAllNodes();
@@ -523,6 +613,61 @@ export class SkillForgeModal {
             catch (e) { alert(`Error: ${e.message}`); } finally { this.dom.btnDelete.disabled = false; }
         });
 
-        // Export (same logic omitted for brevity, keeping original if requested, else clean)
+        // 🔥 EXPORTACIÓN ZIP (Restaurada al 100%)
+        this.dom.btnExport.addEventListener('click', async () => {
+            if (!window.JSZip) await this.loadJSZip();
+            const zip = new window.JSZip();
+
+            const title = this.dom.inpTitle.value.trim() || 'Custom_Skill';
+            const desc = this.dom.inpDesc.value.trim() || 'Skill generada por TeamTowers V9';
+            const content = this.dom.inpContent.value.trim();
+            
+            const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const rootFolder = zip.folder(safeTitle);
+
+            rootFolder.file("SKILL.md", `---\nname: ${title}\ndescription: ${desc}\n---\n\n${content}`);
+
+            await KB.init();
+            if (this.linkedState.references && this.linkedState.references.length > 0) {
+                const resourcesFolder = rootFolder.folder("references");
+                for (const refId of this.linkedState.references) {
+                    const refNode = await KB.getNode(refId);
+                    if (refNode) {
+                        const refNameSafe = (refNode.title || refNode.id).replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+                        resourcesFolder.file(`${refNameSafe}.md`, `---\nname: ${refNode.title}\ndescription: ${refNode.description || ''}\n---\n\n${refNode.content}`);
+                    }
+                }
+            }
+            if (this.linkedState.evals && this.linkedState.evals.length > 0) {
+                const evalsFolder = rootFolder.folder("evals");
+                let allEvalsJson = [];
+                for (const evalId of this.linkedState.evals) {
+                    const evalNode = await KB.getNode(evalId);
+                    if (evalNode) {
+                        try {
+                            const parsed = JSON.parse(evalNode.content);
+                            if (Array.isArray(parsed)) allEvalsJson.push(...parsed); else allEvalsJson.push(parsed);
+                        } catch(e) { allEvalsJson.push({ id: evalNode.id, prompt: evalNode.title, description: evalNode.description }); }
+                    }
+                }
+                if (allEvalsJson.length > 0) evalsFolder.file("evals.json", JSON.stringify({ skill_name: safeTitle, evals: allEvalsJson }, null, 2));
+            }
+            if (this.linkedState.scripts && this.linkedState.scripts.length > 0) {
+                const scriptsFolder = rootFolder.folder("scripts");
+                for (const scriptId of this.linkedState.scripts) {
+                    const scriptNode = await KB.getNode(scriptId);
+                    if (scriptNode) {
+                        const sName = scriptNode.title.includes('.') ? scriptNode.title : `${scriptNode.title}.js`;
+                        scriptsFolder.file(sName.replace(/[^a-zA-Z0-9_.-]/g, '_'), scriptNode.content);
+                    }
+                }
+            }
+
+            const blob = await zip.generateAsync({type:"blob"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `${safeTitle}.skill`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        });
     }
 }
