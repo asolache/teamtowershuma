@@ -450,7 +450,7 @@ export default class TeamView {
         selector.innerHTML = optionsHtml;
     }
 
-    async equipSkillToAgent(fullUser, newSkillId) {
+   async equipSkillToAgent(fullUser, newSkillId) {
         const brainBox = document.getElementById('pmBrainBox');
         const statusText = document.getElementById('pmBrainStatusText');
         const promptArea = document.getElementById('pmSemanticProfile');
@@ -463,6 +463,7 @@ export default class TeamView {
             const skillNode = await KB.getNode(newSkillId);
             if (!skillNode) throw new Error("Skill no encontrada");
 
+            // 1. Actualizamos el array de dependencias del usuario
             const activeSkills = fullUser.profile.active_skills || [];
             if (!activeSkills.includes(newSkillId)) activeSkills.push(newSkillId);
             
@@ -477,14 +478,24 @@ export default class TeamView {
             if (promptNode) {
                 promptNode.dependencies = activeSkills;
                 const currentPrompt = promptNode.content;
-                const skillContext = `Herramienta añadida: ${skillNode.title}\nDescripción: ${skillNode.description}\nSOP: ${skillNode.content}`;
+                
+                // 🔥 RECOPILACIÓN FRACTAL: Juntamos TODAS las skills (viejas y nuevas)
+                let allSkillsContext = "";
+                for (const sId of activeSkills) {
+                    const sNode = await KB.getNode(sId);
+                    if (sNode) {
+                        allSkillsContext += `\n🔹 SKILL: ${sNode.title}\n   USO: ${sNode.description || 'Sin descripción'}\n`;
+                    }
+                }
                 
                 try {
-                    const newPrompt = await Orchestrator.synthesizeAgentPrompt(currentPrompt, skillContext);
+                    // Pasamos todo el contexto al Sintetizador
+                    const newPrompt = await Orchestrator.synthesizeAgentPrompt(currentPrompt, allSkillsContext);
                     promptNode.content = newPrompt;
                     promptArea.innerText = newPrompt;
                 } catch(aiError) {
-                    promptNode.content = currentPrompt + `\n\n[NUEVA HERRAMIENTA AÑADIDA]:\n${skillNode.title} - Úsala cuando sea necesario.`;
+                    // Fallback de seguridad en caso de fallo de API
+                    promptNode.content = currentPrompt + `\n\n[NUEVA HERRAMIENTA AÑADIDA]:\n${skillNode.title}`;
                     promptArea.innerText = promptNode.content;
                 }
 
