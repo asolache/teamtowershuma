@@ -91,23 +91,41 @@ export class SandboxRenderer {
     }
 
     renderEntityMutation(data) {
+        // Generar la visibilidad de los archivos adicionales
+        let extraBadges = '';
+        if (data.references && data.references.length > 0) {
+            extraBadges += `<span style="background:rgba(0,176,255,0.1); border:1px solid var(--accent-blue); color:var(--accent-blue); padding:4px 10px; border-radius:6px; font-size:0.75rem; margin-right:8px; font-family:var(--font-mono); font-weight:bold;">📚 ${data.references.length} Ref(s)</span>`;
+        }
+        if (data.evals && data.evals.length > 0) {
+            extraBadges += `<span style="background:rgba(255,145,0,0.1); border:1px solid var(--accent-orange); color:var(--accent-orange); padding:4px 10px; border-radius:6px; font-size:0.75rem; margin-right:8px; font-family:var(--font-mono); font-weight:bold;">📋 ${data.evals.length} Eval(s)</span>`;
+        }
+        if (data.scripts && data.scripts.length > 0) {
+            extraBadges += `<span style="background:rgba(0,230,118,0.1); border:1px solid var(--accent-green); color:var(--accent-green); padding:4px 10px; border-radius:6px; font-size:0.75rem; font-family:var(--font-mono); font-weight:bold;">⚡ ${data.scripts.length} Script(s)</span>`;
+        }
+
         this.container.innerHTML = `
             <div style="display:flex; flex-direction:column; height:100%; background:rgba(224,64,251,0.05); border:1px solid var(--accent-purple); border-radius:16px; overflow:hidden;">
                 <div style="background:rgba(224,64,251,0.1); border-bottom:1px dashed var(--accent-purple); padding:15px; display:flex; justify-content:space-between; align-items:center;">
                     <div style="color:var(--accent-purple); font-family:var(--font-mono); font-weight:bold; font-size:0.85rem; text-transform:uppercase;">
                         🧬 Mutación de Entidad (${data.entity_type || 'skill'})
                     </div>
-                    <button id="btnSealMutation" style="background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border:none; color:white; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">💾 Sellar en el Córtex</button>
+                    <button id="btnSealMutation" style="background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border:none; color:white; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.2s;">💾 Sellar en el Córtex</button>
                 </div>
                 <div style="padding:20px; overflow-y:auto; flex:1;">
                     <h2 style="color:white; margin-top:0;">${data.title || 'Entidad Anónima'}</h2>
                     <p style="color:#aaa; font-style:italic;">${data.description || 'Mutada desde el Omni-Paper'}</p>
+                    
+                    ${extraBadges ? `<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:5px;">${extraBadges}</div>` : ''}
+
                     <div style="background:rgba(0,0,0,0.6); padding:15px; border-radius:12px; border:1px solid #333; margin-top:20px; font-family:var(--font-mono); font-size:0.85rem; color:#00e676; white-space:pre-wrap;">${(data.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
                 </div>
             </div>
         `;
 
-        this.container.querySelector('#btnSealMutation').addEventListener('click', () => {
+        const btn = this.container.querySelector('#btnSealMutation');
+        btn.addEventListener('click', () => {
+            btn.disabled = true;
+            btn.innerText = "⏳ Sellando...";
             window.dispatchEvent(new CustomEvent('save-entity-mutation', { detail: data }));
         });
     }
