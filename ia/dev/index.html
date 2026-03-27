@@ -3,80 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
 
-    <title>TeamTowers | SOS V10</title>
-    <meta name="description" content="Exoesqueleto Cognitivo V10. OmniPage Architecture. Antigravity Kernel.">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma"        content="no-cache">
+    <meta http-equiv="Expires"       content="0">
+
+    <title>TeamTowers | Sistema Operativo de Soberanía (V10)</title>
+    <meta name="description" content="Antigravity Kernel V10. VNA · Slicing Pie · Swarm IA · Anthropic Primary.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗼</text></svg>">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-    <!-- Rutas relativas a la raíz de publish (ia/dev/) -->
-    <link rel="stylesheet" href="./styles/tokens.css?v=10.0.0">
-    <link rel="stylesheet" href="./styles/base.css?v=10.0.0">
-    <script type="module" src="./js/router.js?v=10.0.0" defer></script>
+    <link rel="stylesheet" href="/ia/dev/css/master.css?v=10.0.0">
+    <script type="module" src="/ia/dev/js/router.js?v=10.0.0" defer></script>
 </head>
 <body>
 
     <div id="app"></div>
 
     <div class="kernel-boot" id="bootloader">
-        <div class="boot-inner">
-            <div class="tower-mark">🗼</div>
-            <div class="boot-title">TeamTowers <span class="boot-version">V10</span></div>
-            <div class="boot-log" id="bootLog">
-                <div class="log-line" data-delay="0">ANTIGRAVITY KERNEL............<span class="log-ok">OK</span></div>
-                <div class="log-line" data-delay="300">LOCAL-FIRST ENGINE............<span class="log-ok">OK</span></div>
-                <div class="log-line" data-delay="600">SLICING PIE LEDGER............<span class="log-ok">OK</span></div>
-                <div class="log-line" data-delay="900">CLAUDE ORCHESTRATOR...........<span class="log-sync">SYNCING</span></div>
-                <div class="log-line" data-delay="1200">SWARM AGENTS..................<span class="log-sync">LOADING</span></div>
-            </div>
-            <div class="boot-bar"><div class="boot-progress" id="bootProgress"></div></div>
+        <div class="tower-logo">🗼</div>
+        <p class="pulse-text">INITIALIZING SOS V10.0 · ANTIGRAVITY</p>
+
+        <div class="boot-log">
+            <div class="log-item">LOCAL-FIRST ENGINE:      <span class="status-ok">OK</span></div>
+            <div class="log-item">INDEXEDDB KB LAYER:      <span class="status-ok">OK</span></div>
+            <div class="log-item">SLICING PIE LEDGER:      <span class="status-ok">OK</span></div>
+            <div class="log-item">ANTHROPIC PRIMARY LLM:   <span class="status-sync">SYNCING...</span></div>
+            <div class="log-item">AGENTIC AI SWARM:        <span class="status-sync">SYNCING...</span></div>
         </div>
     </div>
 
     <noscript>
-        <div style="text-align:center;padding:50px;color:white;background:#000;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-            <div style="font-size:4rem;">🗼</div>
-            <h1 style="margin:1rem 0;">Soberanía Desactivada</h1>
-            <p style="color:#888;">TeamTowers SOS V10 requiere JavaScript.</p>
+        <div style="text-align:center; padding:50px; color:white; background:#000; height:100vh;">
+            <h1>Soberanía Desactivada</h1>
+            <p>TeamTowers OS V10 requiere JavaScript para operar el Exoesqueleto Cognitivo P2P.</p>
         </div>
     </noscript>
-
-    <style>
-        .kernel-boot { position:fixed;inset:0;z-index:99999;background:#050507;display:flex;align-items:center;justify-content:center;transition:opacity 0.6s ease,visibility 0.6s ease; }
-        .kernel-boot.hidden { opacity:0;visibility:hidden;pointer-events:none; }
-        .boot-inner { text-align:left;width:380px; }
-        .tower-mark { font-size:3rem;margin-bottom:1.5rem;filter:drop-shadow(0 0 20px rgba(99,102,241,0.8));animation:tower-pulse 2s ease-in-out infinite; }
-        @keyframes tower-pulse { 0%,100%{filter:drop-shadow(0 0 20px rgba(99,102,241,0.8))}50%{filter:drop-shadow(0 0 40px rgba(99,102,241,1))} }
-        .boot-title { font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:800;color:#fff;margin-bottom:2rem;letter-spacing:-0.5px; }
-        .boot-version { color:#6366f1;background:rgba(99,102,241,0.15);padding:2px 8px;border-radius:6px;font-size:1rem;vertical-align:middle;margin-left:4px; }
-        .boot-log { margin-bottom:2rem; }
-        .log-line { font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#555;padding:3px 0;opacity:0;transition:opacity 0.3s ease,color 0.3s ease;display:flex;justify-content:space-between; }
-        .log-line.visible { opacity:1;color:#888; }
-        .log-ok   { color:#00e676;font-weight:700; }
-        .log-sync { color:#6366f1;font-weight:700;animation:pulse-text 1s ease infinite; }
-        @keyframes pulse-text { 0%,100%{opacity:1}50%{opacity:0.3} }
-        .boot-bar { height:2px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden; }
-        .boot-progress { height:100%;width:0%;background:#6366f1;border-radius:2px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 10px rgba(99,102,241,0.8); }
-    </style>
-
-    <script>
-        (function() {
-            const lines    = document.querySelectorAll('.log-line');
-            const progress = document.getElementById('bootProgress');
-            lines.forEach(l => setTimeout(() => l.classList.add('visible'), parseInt(l.dataset.delay || 0)));
-            setTimeout(() => { progress.style.width = '100%'; }, 100);
-            window.bootDone = function() {
-                setTimeout(() => document.getElementById('bootloader').classList.add('hidden'), 400);
-            };
-            setTimeout(() => window.bootDone?.(), 3000);
-        })();
-    </script>
 
 </body>
 </html>
