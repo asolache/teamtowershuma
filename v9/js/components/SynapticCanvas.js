@@ -3,11 +3,21 @@ import { KB } from '../core/kb.js';
 import { store } from '../core/store.js';
 
 export class SynapticCanvas {
-    constructor(containerEl, options = {}) {
+    constructor(containerEl, optionsOrAgentId = {}) {
         this.container = containerEl;
-        this.agentId = options.agentId || null; 
-        this.projectId = options.projectId || null;
-        this.isVnaMode = options.isVnaMode || false; // 🔥 NUEVO MODO: VNA 3D
+        
+        // 🔥 ANTI-FRAGILIDAD: Adaptador de Firmas Antiguas vs Nuevas
+        let opts = {};
+        if (typeof optionsOrAgentId === 'string') {
+            opts = { agentId: optionsOrAgentId }; // Código antiguo pasaba un string
+        } else if (optionsOrAgentId !== null && typeof optionsOrAgentId === 'object') {
+            opts = optionsOrAgentId; // Nuevo código pasa un objeto
+        }
+        // Si es null (como hace el LmsView), opts se queda como {} vacío.
+
+        this.agentId = opts.agentId || null; 
+        this.projectId = opts.projectId || null;
+        this.isVnaMode = opts.isVnaMode || false; // 🔥 MODO VNA 3D
         
         this.nodes = [];
         this.links = [];
@@ -15,7 +25,6 @@ export class SynapticCanvas {
         this.resizeObserver = null;
         this.isFullscreen = false;
     }
-
     async render() {
         let panelTitle = '🌌 Meta-Grafo Cuántico (V9)';
         let helperText = 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.';
