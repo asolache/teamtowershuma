@@ -58,11 +58,13 @@ export class KanbanRenderer {
             .btn-review { flex: 1; background: var(--accent-blue); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.85rem;}
             .btn-review:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,176,255,0.4);}
             
-            /* 🔥 FIX: Botón de Auditoría Humana (HITL) */
             .btn-review-human { flex: 1; background: rgba(255,82,82,0.1); color: var(--accent-red); border: 1px solid var(--accent-red); padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.85rem; animation: hitlPulse 2s infinite;}
             .btn-review-human:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,82,82,0.4);}
 
             .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.9rem; font-style: italic;}
+            
+            .btn-add-wo { background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.3); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold; transition: 0.2s;}
+            .btn-add-wo:hover { background: white; color: black;}
 
             @keyframes aiPulse { 0% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } 50% { box-shadow: 0 0 30px rgba(224,64,251,0.6); } 100% { box-shadow: 0 0 10px rgba(224,64,251,0.2); } }
             @keyframes hitlPulse { 0% { border-color: rgba(255,82,82,0.3); } 50% { border-color: rgba(255,82,82,1); } 100% { border-color: rgba(255,82,82,0.3); } }
@@ -113,7 +115,10 @@ export class KanbanRenderer {
             this.container.innerHTML = `
                 <div class="kanban-board-layout">
                     <div class="kanban-column" style="border-top: 3px solid #888;">
-                        <div class="kanban-col-header" style="color: #ccc;"><span>📥 Oportunidades</span><span class="kanban-col-count">${cols['oportunidades'].length}</span></div>
+                        <div class="kanban-col-header" style="color: #ccc;">
+                            <span>📥 Oportunidades <span class="kanban-col-count">${cols['oportunidades'].length}</span></span>
+                            ${isPO ? `<button class="btn-add-wo" id="btnInjectAdhocWO" title="Inyectar tarea manual">+ Nueva W.O.</button>` : ''}
+                        </div>
                         <div class="kanban-col-body">${colOportunidades}</div>
                     </div>
                     <div class="kanban-column" style="border-top: 3px solid var(--accent-orange);">
@@ -177,16 +182,13 @@ export class KanbanRenderer {
         else if (tx.status === 'reported' || tx.status === 'in_review') {
             statusTag = `<span style="color:var(--accent-blue); font-size:0.65rem; border:1px solid var(--accent-blue); padding:3px 8px; border-radius:12px; font-weight:bold; letter-spacing:1px; background:rgba(0,176,255,0.1);">AUDITORÍA</span>`;
             
-            // Si lo hizo un Agente IA, lo mostramos
             const isAiTask = tx.proofLink === 'Agent_Auto_Report' || tx.proofLink === 'Usenet_Thread';
             if (isAiTask) {
                 aiOutputHtml = `<div class="task-ai-output"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
             
             if (isPO) {
-                // 🔥 HITL: Si es una tarea hecha por IA y no hay SOCs deterministas, exigimos Auditoría Humana Obligatoria
                 const needsHumanAudit = isAiTask && (socs.length === 0 || socs.length > 5);
-                
                 if (needsHumanAudit) {
                     actionHtml = `<button class="btn-review-human kb-action" data-action="review" ${hashAttr}>⚠️ Auditoría Humana (PO)</button>`;
                 } else {
@@ -204,7 +206,6 @@ export class KanbanRenderer {
                 aiOutputHtml = `<div class="task-ai-output" style="max-height:60px; opacity:0.7;"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g, '<br>')}</div>`;
             }
 
-            // MAGIA RETROACTIVA: Calcular Slices si no está en el JSON
             let earnedSlices = tx.valorCongelado;
             if (!earnedSlices) {
                 const fmv = parseFloat(receiverRole.fmv) || 40;
@@ -273,5 +274,13 @@ export class KanbanRenderer {
                 }));
             });
         });
+
+        // 🔥 Botón de Inyección Manual de W.O.
+        const btnAddWo = this.container.querySelector('#btnInjectAdhocWO');
+        if (btnAddWo) {
+            btnAddWo.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('open-create-wo-modal'));
+            });
+        }
     }
 }
