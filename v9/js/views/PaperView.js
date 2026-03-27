@@ -342,6 +342,68 @@ export default class PaperView {
             window.dispatchEvent(new CustomEvent('refresh-lms-data'));
         });
 
+        // 🔥 EVENTO GLOBAL: Ejecutar Pentest (CI/CD) sobre la Skill renderizada
+        window.addEventListener('run-skill-pentest', async (e) => {
+            const skillData = e.detail;
+            this.addMessage(`Iniciando protocolo de Pentest CI/CD para la skill: **${skillData.title}**...\nEvaluando ${skillData.evals.length} casos de prueba.`, 'user');
+
+            this.dom.btnSend.disabled = true;
+            this.dom.btnSend.innerText = "🧪 Kaos Tester activo...";
+
+            try {
+                const systemPrompt = `
+                    Eres @kaos_tester, el Evaluador de Córtex (CI/CD) del Kernel V9.
+                    Tu misión es testear una Skill recién forjada simulando su ejecución contra sus propios Evals.
+                    
+                    INSTRUCCIONES:
+                    1. Analiza el SOP de la Skill.
+                    2. Aplícalo mentalmente contra cada 'prompt' en el array de 'evals'.
+                    3. Compara tu resultado con el 'expected_output'.
+                    4. Si TODOS pasan, devuelve un mensaje de éxito sin artifact.
+                    5. Si ALGUNO falla o es ambiguo, DEBES devolver un "artifact" de tipo "entity_mutation" con la Skill corregida (mejora su SOP/SOC para que no vuelva a fallar).
+
+                    DEBES RESPONDER ÚNICAMENTE CON UN OBJETO JSON VÁLIDO:
+                    {
+                        "message": "Reporte detallado del testeo (PASA/FALLA y por qué).",
+                        "artifact": null // PON NULL SI PASA. SI FALLA, PON EL JSON DE LA SKILL CORREGIDA AQUÍ.
+                    }
+                `;
+
+                const userPrompt = `SKILL A EVALUAR:\n${JSON.stringify(skillData)}\n\nEJECUTAR PENTEST AHORA.`;
+
+                const globalEngine = localStorage.getItem('tt_ai_provider') || 'openai';
+                const apiKey = localStorage.getItem(`tt_key_${globalEngine}`);
+
+                const response = await Orchestrator.callLLM({ 
+                    provider: globalEngine, apiKey: apiKey, 
+                    systemPrompt: systemPrompt, 
+                    userPrompt: userPrompt, 
+                    responseFormat: "json_object", 
+                    temperature: 0.1 
+                });
+
+                let parsed = response.content;
+                if (typeof parsed === 'string') {
+                    try { parsed = JSON.parse(parsed); } 
+                    catch(e) { parsed = JSON.parse(parsed.match(/\{[\s\S]*\}/)[0]); }
+                }
+                
+                if (parsed.artifact) {
+                    this.addMessage(`⚠️ **PENTEST FALLIDO**. Se han detectado fisuras en el SOP.\n\n` + parsed.message, 'ai', parsed.artifact);
+                } else {
+                    this.addMessage(`✅ **PENTEST SUPERADO**. La Skill es robusta y predecible.\n\n` + parsed.message, 'ai');
+                    const btnPentest = document.getElementById('btnPentestSkill');
+                    if (btnPentest) { btnPentest.innerText = "✅ Pentest OK"; btnPentest.style.background = "var(--accent-green)"; }
+                }
+
+            } catch (error) {
+                this.addMessage(`⚠️ Error en Pentest: ${error.message}`, 'ai');
+            } finally {
+                this.dom.btnSend.disabled = false;
+                this.dom.btnSend.innerHTML = "🚀 Enviar Directiva";
+            }
+        });
+
         if (new URLSearchParams(window.location.search).get('hash')) {
             this.dom.omniSelector.value = new URLSearchParams(window.location.search).get('hash');
             this.dom.omniSelector.dispatchEvent(new Event('change'));
@@ -520,7 +582,6 @@ export default class PaperView {
                 try {
                     parsed = JSON.parse(parsed);
                 } catch(e) {
-                    // Extracción agresiva por si la IA es rebelde
                     const match = parsed.match(/\{[\s\S]*\}/);
                     if (match) parsed = JSON.parse(match[0]);
                     else throw new Error("La IA no devolvió un JSON parseable.");
