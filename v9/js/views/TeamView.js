@@ -26,7 +26,7 @@ export default class TeamView {
         this.currentTab = 'nodos'; 
         this.skillForgeModal = null;
         this.skillsCache = []; 
-        this.activeAgentProfile = null; // Guardar referencia al agente abierto
+        this.activeAgentProfile = null; 
     }
 
     async getHtml() {
@@ -59,7 +59,6 @@ export default class TeamView {
 
         return `
             <style>
-                /* CSS ESPECÍFICO (El global está en styles.css) */
                 .taxonomy-group { margin-bottom: 3rem; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.02);}
                 .taxonomy-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);}
                 .taxonomy-title { font-size: 1.2rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;}
@@ -89,7 +88,7 @@ export default class TeamView {
                 .universal-skill-badge.core-skill { background: rgba(224,64,251,0.1); border-color: rgba(224,64,251,0.3); color: var(--accent-purple);}
                 .universal-skill-badge.core-skill:hover { background: var(--accent-purple); color: black; box-shadow: 0 0 15px rgba(224,64,251,0.5);}
 
-                /* MODAL PERFIL USUARIO/AGENTE NEURONAL (GLASS-BOX AI) */
+                /* MODAL PERFIL USUARIO/AGENTE NEURONAL */
                 .pm-header { padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 20px; align-items: center; position: relative; background: rgba(255,255,255,0.01); flex-shrink:0;}
                 .pm-avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; color: white; font-size: 2.5rem; border: 3px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); flex-shrink: 0;}
                 .pm-info { z-index: 1; overflow: hidden; flex: 1;}
@@ -150,7 +149,7 @@ export default class TeamView {
                                 
                                 <div id="pmSkillEquipperContainer" style="display:none; margin-top: 15px; border-top:1px dashed #444; padding-top:15px;">
                                     <label style="color:var(--accent-green); font-size:0.75rem; font-weight:bold; text-transform:uppercase; margin-bottom:8px; display:block;">🎒 Equipar Nueva Skill al Cinturón</label>
-                                    <select id="pmSkillSelector" class="form-control" style="border-color:var(--accent-green); font-weight:bold;">
+                                    <select id="pmSkillSelector" class="form-control" style="border-color:var(--accent-green); font-weight:bold; background:#050508;">
                                         <option value="">➕ Selecciona una Skill de la Taxonomía...</option>
                                     </select>
                                 </div>
@@ -201,23 +200,19 @@ export default class TeamView {
 
         this.renderTaxonomicUsers(project, state.globalUsers);
 
-        // Eventos del Modal
         document.getElementById('btnCloseProfileModal').addEventListener('click', () => {
             document.getElementById('userProfileModal').classList.remove('active');
             this.activeAgentProfile = null;
         });
 
-        // Evento de Equipar Skill
         const skillSelector = document.getElementById('pmSkillSelector');
         skillSelector.addEventListener('change', async (e) => {
             const skillId = e.target.value;
             if (!skillId || !this.activeAgentProfile) return;
-            e.target.value = ''; // Reset select
-            
+            e.target.value = ''; 
             await this.equipSkillToAgent(this.activeAgentProfile, skillId);
         });
 
-        // Evento de Guardar Prompt Manual
         document.getElementById('btnSaveAgentPrompt').addEventListener('click', async () => {
             if (!this.activeAgentProfile) return;
             const newContent = document.getElementById('pmSemanticProfile').innerText.trim();
@@ -324,9 +319,6 @@ export default class TeamView {
         return card;
     }
 
-    // =================================================================
-    // 🔥 AUTO-SANACIÓN NEURAL & RENDERIZADO DEL MODAL
-    // =================================================================
     async renderAgentModal(fullUser, project) {
         this.activeAgentProfile = fullUser;
         const isAi = fullUser.profile?.isAi || false;
@@ -357,7 +349,6 @@ export default class TeamView {
             const promptId = `prompt_global_${fullUser.id.replace('@','')}`;
             let promptNode = await KB.getNode(promptId);
             
-            // 🔥 AUTO-SANACIÓN: Si no existe, el Kernel lo forja al vuelo
             if (!promptNode) {
                 promptNode = {
                     id: promptId, type: 'prompt_a2a', category: 'meta_prompt',
@@ -378,7 +369,6 @@ export default class TeamView {
             // Llenar el selector taxonómico
             this.populateSkillSelector(fullUser.profile?.active_skills || []);
             
-            // Renderizar Skills Equipadas (Glass-Box)
             const activeSkillsIds = fullUser.profile?.active_skills || [];
             let fullSkillsHtml = '';
             if (activeSkillsIds.length > 0) {
@@ -390,7 +380,7 @@ export default class TeamView {
                             <div style="padding: 10px 15px; background: rgba(0,176,255,0.05); border-bottom: 1px solid rgba(0,176,255,0.2); display:flex; justify-content:space-between; align-items:center;">
                                 <span style="color:var(--accent-blue); font-weight:bold; font-family:var(--font-mono); font-size:0.85rem;">🎒 ${node.title}</span>
                                 <div>
-                                    <button class="universal-skill-badge" data-skill-id="${skillId}" style="margin:0; padding:4px 10px; font-size:0.7rem;">Evolucionar ↗</button>
+                                    <button class="universal-skill-badge" data-skill-id="${skillId}" style="margin:0; padding:4px 10px; font-size:0.7rem;">Inspeccionar ↗</button>
                                 </div>
                             </div>
                             <div style="padding: 15px; font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; white-space: pre-wrap; max-height: 150px; overflow-y: auto; line-height:1.5;">${node.content}</div>
@@ -403,6 +393,15 @@ export default class TeamView {
             
             skillsBox.innerHTML = `<div style="font-size:0.8rem; color:var(--accent-blue); text-transform:uppercase; margin-bottom:10px; font-weight:900; letter-spacing:1px; margin-top:20px;">⚙️ Códice Operativo (SOPs Equipados)</div>${fullSkillsHtml}`;
             
+            // Añadir eventos a los botones de "Inspeccionar" en el cinturón
+            skillsBox.querySelectorAll('.universal-skill-badge').forEach(badge => {
+                badge.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.getElementById('userProfileModal').classList.remove('active');
+                    window.dispatchEvent(new CustomEvent('open-forge-modal', { detail: { nodeId: badge.dataset.skillId } }));
+                });
+            });
+
         } else {
             promptBox.contentEditable = "false";
             btnSavePrompt.style.display = "none";
@@ -414,32 +413,43 @@ export default class TeamView {
         document.getElementById('userProfileModal').classList.add('active');
     }
 
+    // 🔥 FILTRADO TAXONÓMICO DINÁMICO (Evita que desaparezcan las Skills Custom)
     populateSkillSelector(equippedIds) {
         const selector = document.getElementById('pmSkillSelector');
-        let optionsHtml = `<option value="">➕ Selecciona una Skill de la Taxonomía...</option>`;
+        let optionsHtml = `<option value="">➕ Selecciona una Skill de la Red para Equipar...</option>`;
         
         const grouped = {};
         this.skillsCache.forEach(s => {
-            if (!equippedIds.includes(s.id)) { // No mostrar las que ya tiene
-                const cat = s.category || 'skill';
+            if (!equippedIds.includes(s.id)) { 
+                const cat = s.category || 'uncategorized';
                 if(!grouped[cat]) grouped[cat] = [];
                 grouped[cat].push(s);
             }
         });
 
+        // 1. Mostrar categorías Core primero
         Object.keys(TAXONOMY).forEach(cat => {
             if (grouped[cat] && grouped[cat].length > 0) {
                 optionsHtml += `<optgroup label="${TAXONOMY[cat].label}">`;
                 grouped[cat].forEach(s => optionsHtml += `<option value="${s.id}">${s.title}</option>`);
                 optionsHtml += `</optgroup>`;
+                delete grouped[cat]; // Borramos para saber qué nos queda
             }
         });
+
+        // 2. Mostrar el resto de categorías (Las que el usuario o la IA hayan inventado)
+        Object.keys(grouped).forEach(cat => {
+            if (grouped[cat] && grouped[cat].length > 0) {
+                const label = cat === 'uncategorized' || cat === 'skill' ? 'Otras Skills' : `Skills: ${cat.toUpperCase()}`;
+                optionsHtml += `<optgroup label="${label}">`;
+                grouped[cat].forEach(s => optionsHtml += `<option value="${s.id}">${s.title}</option>`);
+                optionsHtml += `</optgroup>`;
+            }
+        });
+        
         selector.innerHTML = optionsHtml;
     }
 
-    // =================================================================
-    // 🔥 EQUIPADOR DE SKILLS IN-SITU + SÍNTESIS DE PROMPT
-    // =================================================================
     async equipSkillToAgent(fullUser, newSkillId) {
         const brainBox = document.getElementById('pmBrainBox');
         const statusText = document.getElementById('pmBrainStatusText');
@@ -453,7 +463,6 @@ export default class TeamView {
             const skillNode = await KB.getNode(newSkillId);
             if (!skillNode) throw new Error("Skill no encontrada");
 
-            // 1. Actualizar Redux (Perfil del Agente)
             const activeSkills = fullUser.profile.active_skills || [];
             if (!activeSkills.includes(newSkillId)) activeSkills.push(newSkillId);
             
@@ -462,17 +471,14 @@ export default class TeamView {
                 payload: { id: fullUser.id, profile: { ...fullUser.profile, active_skills: activeSkills } }
             });
 
-            // 2. Actualizar AGENT.md (Base de datos)
             const promptId = `prompt_global_${fullUser.id.replace('@','')}`;
             let promptNode = await KB.getNode(promptId);
             
             if (promptNode) {
                 promptNode.dependencies = activeSkills;
-                // Mutación IA (Opcional pero espectacular)
                 const currentPrompt = promptNode.content;
                 const skillContext = `Herramienta añadida: ${skillNode.title}\nDescripción: ${skillNode.description}\nSOP: ${skillNode.content}`;
                 
-                // Intentamos que la IA lo fusione. Si falla (por red o API key), lo concatenamos en crudo.
                 try {
                     const newPrompt = await Orchestrator.synthesizeAgentPrompt(currentPrompt, skillContext);
                     promptNode.content = newPrompt;
@@ -485,7 +491,6 @@ export default class TeamView {
                 await KB.saveNode(promptNode);
             }
 
-            // 3. Recargar la interfaz
             window.dispatchEvent(new CustomEvent('refresh-lms-data'));
 
         } catch (error) {
