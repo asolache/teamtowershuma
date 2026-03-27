@@ -174,30 +174,30 @@ class OrchestratorCore {
         return contextText;
     }
 
-    // 🔥 CIRUGÍA NEURONAL: Inyección de Skills sin perder el contexto (Agent_Prompt_Synthesizer)
-    async synthesizeAgentPrompt(currentPrompt, newSkillContext) {
+    // 🔥 CIRUGÍA NEURONAL: Re-síntesis Total del Córtex (Agent_Prompt_Synthesizer)
+    async synthesizeAgentPrompt(currentPrompt, allSkillsContext) {
         const systemPrompt = `
-            Eres el '${CORE_AGENTS.SYNTHESIZER}'. Tu misión es realizar una "Cirugía Neuronal": debes inyectar una nueva Skill en el System Prompt de un Agente (AGENT.md), SIN DESTRUIR su personalidad, su objetivo, ni su contexto previo.
+            Eres el '${CORE_AGENTS.SYNTHESIZER}'. Tu misión es realizar una "Re-síntesis Neuronal": debes reescribir el System Prompt de un Agente (AGENT.md) para asegurarte de que su CINTURÓN DE HERRAMIENTAS completo está integrado, SIN DESTRUIR su personalidad ni su objetivo original.
             
             REGLAS ESTRICTAS:
             1. MANTÉN INTACTO el rol, tono y propósito principal del Agente.
-            2. Busca la sección de "SOPs" o "HERRAMIENTAS" en el prompt actual. Si no existe, créala armónicamente.
-            3. Añade la nueva herramienta indicándole al agente exactamente CUÁNDO debe invocarla basándote en la descripción de la skill.
+            2. Busca o crea la sección "=== HERRAMIENTAS ===" (o similar) en el prompt.
+            3. Integra TODAS las herramientas listadas que se te proporcionan, indicando brevemente CUÁNDO debe invocar cada una basándote en su descripción. NO OMITAS NINGUNA.
             4. Sé directo. Usa frases imperativas ("Usa esta tool cuando...").
-            5. Devuelve ÚNICAMENTE el texto final del AGENT.md completo, sin explicaciones ni markdown envolvente.
+            5. Devuelve ÚNICAMENTE el texto final del AGENT.md completo, sin explicaciones adicionales ni bloques markdown envolventes.
         `;
 
         const userPrompt = `
-            === CEREBRO ACTUAL DEL AGENTE ===
+            === CEREBRO BASE DEL AGENTE ===
             ${currentPrompt || "Eres un agente asistente."}
             
-            === NUEVA SKILL A INYECTAR ===
-            ${newSkillContext}
+            === CINTURÓN DE HERRAMIENTAS COMPLETO (DEBEN ESTAR TODAS) ===
+            ${allSkillsContext}
             
-            Ejecuta la cirugía y devuelve el nuevo cerebro integrado.
+            Ejecuta la síntesis y devuelve el cerebro integrado con todas las herramientas.
         `;
 
-        const response = await this.callLLM({ preferredEngine: 'openai', systemPrompt, userPrompt, responseFormat: "text", temperature: 0.1 }); // Temp baja para fidelidad
+        const response = await this.callLLM({ preferredEngine: 'openai', systemPrompt, userPrompt, responseFormat: "text", temperature: 0.1 }); 
         this._logTelemetry('global', CORE_AGENTS.SYNTHESIZER, response.telemetry.provider, 'PROMPT_SYNTHESIS', response.telemetry);
         return response.content.replace(/^```markdown\n/, '').replace(/```$/, '').trim();
     }
