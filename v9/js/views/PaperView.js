@@ -21,7 +21,9 @@ export default class PaperView {
         
         this.sandbox = null;
         this.chatHistory = []; // Swarm Memory
-        this.attachedNodes = []; // 🔥 MEMORIA RAG MANUAL
+        this.attachedNodes = []; // MEMORIA RAG MANUAL
+        this.currentChatId = null; // IDENTIFICADOR DE SESIÓN PERSISTENTE
+        this.chatMessagesMap = {}; // Mapa para inyección de PoW
     }
 
     async getHtml() {
@@ -137,7 +139,6 @@ export default class PaperView {
 
                 .chat-input-area { padding: 15px; background: rgba(0,0,0,0.6); border-top: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 10px;}
                 
-                /* 🔥 NUEVOS ESTILOS PARA RAG MANUAL */
                 .attachments-tray { display: flex; flex-wrap: wrap; gap: 5px; }
                 .attachment-pill { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; display: flex; align-items: center; gap: 5px;}
                 .btn-remove-att { background: transparent; border: none; color: var(--accent-blue); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0;}
@@ -152,6 +153,10 @@ export default class PaperView {
                 .btn-send { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
                 .btn-send:hover { filter: brightness(1.2); transform: translateY(-2px);}
                 .btn-send:disabled { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
+
+                /* 🔥 BOTONES DE EVIDENCIA EN BURBUJA CHAT */
+                .btn-inject-pow { background: rgba(0,230,118,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; display: block; margin-top: 10px; text-transform: uppercase; font-family: var(--font-mono); }
+                .btn-inject-pow:hover { background: var(--accent-green); color: black; box-shadow: 0 0 10px rgba(0,230,118,0.3);}
 
                 .sandbox-panel { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 10px, transparent 10px, transparent 20px), #050508; border: 1px dashed #333; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative;}
                 .sandbox-empty { color: #555; text-align: center; font-family: var(--font-mono); font-size: 0.9rem; padding: 2rem;}
@@ -186,14 +191,7 @@ export default class PaperView {
                                     <select id="selAgentTarget">${agentOptions}</select>
                                 </div>
                                 <div class="chat-history" id="chatHistory">
-                                    <div class="msg-bubble msg-ai">
-                                        ¡Ommmm! Sandbox Universal activado.<br><br>
-                                        • Pídele al <b>Web Deployer</b> que renderice un componente.<br>
-                                        • Pídele al <b>Skill Crafter</b> que evolucione o genere una nueva Skill.<br>
-                                        • Pídele al <b>TDD Auditor</b> que redacte un contrato.<br>
-                                        Mantenemos el contexto en la Swarm Memory.
                                     </div>
-                                </div>
                                 <div class="chat-input-area">
                                     <div id="attachedNodesContainer" class="attachments-tray"></div>
                                     <div class="input-controls-row">
@@ -231,12 +229,12 @@ export default class PaperView {
                                 <div id="taskDesc" class="task-context-desc"></div>
                                 <div id="taskSocsContainer" class="soc-checklist-box"></div>
                                 <div class="pow-section">
-                                    <div class="pow-input-group" style="flex:2;"><label>🔗 Enlace al Entregable</label><input type="text" id="inpPowLink" class="pow-input" placeholder="URL..."></div>
+                                    <div class="pow-input-group" style="flex:2;"><label>🔗 Enlace al Entregable</label><input type="text" id="inpPowLink" class="pow-input" placeholder="URL interna del Córtex..."></div>
                                     <div class="pow-input-group" style="flex:1;"><label>⏱ Tiempo Imputado (H)</label><input type="number" step="0.01" id="inpPowHours" class="pow-input mono" readonly></div>
                                 </div>
                             </div>
                             <div class="editor-wrapper" id="editorWrapper">
-                                <label id="editorLabel" style="font-size:0.75rem; color:#888; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">Proof of Work</label>
+                                <label id="editorLabel" style="font-size:0.75rem; color:#888; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">Proof of Work (Reporte)</label>
                                 <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="Documenta tu Proof of Work aquí..."><p><br></p></div>
                             </div>
                         </div>
@@ -273,7 +271,7 @@ export default class PaperView {
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
 
-        // 🔥 CARGAR NODOS ADJUNTABLES
+        // CARGAR NODOS ADJUNTABLES
         await KB.init();
         const allNodes = await KB.getAllNodes();
         const attachables = allNodes.filter(n => n.type === 'reference' || n.type === 'skill' || n.type === 'SOP' || n.type === 'script');
@@ -291,7 +289,7 @@ export default class PaperView {
                 this.attachedNodes.push(node);
                 this.renderAttachments();
             }
-            this.dom.selAttachNode.value = ''; // Reset select
+            this.dom.selAttachNode.value = ''; 
         });
 
         this.loadProjectTasks = async (projId) => {
@@ -316,13 +314,13 @@ export default class PaperView {
 
         this.dom.selProject.addEventListener('change', async (e) => {
             this.activeProjectId = e.target.value; localStorage.setItem('tt_active_project', this.activeProjectId);
-            await this.loadProjectTasks(this.activeProjectId); this.activeTx = null; this.stopPomodoro(); this.setIdeMode();
+            await this.loadProjectTasks(this.activeProjectId); this.activeTx = null; this.stopPomodoro(); await this.setIdeMode();
         });
 
         this.dom.omniSelector.addEventListener('change', async (e) => {
             const val = e.target.value; this.stopPomodoro(); 
-            if (val === 'ide') { this.activeTx = null; this.setIdeMode(); } 
-            else { this.activeTx = (store.getState().projects.find(x => x.id === this.activeProjectId).work_orders || []).find(t => (t.id || t.hash) === val); this.setGtdMode(); }
+            if (val === 'ide') { this.activeTx = null; await this.setIdeMode(); } 
+            else { this.activeTx = (store.getState().projects.find(x => x.id === this.activeProjectId).work_orders || []).find(t => (t.id || t.hash) === val); await this.setGtdMode(); }
         });
 
         this.dom.selAgent.addEventListener('change', () => {
@@ -338,7 +336,28 @@ export default class PaperView {
         this.dom.btnSubmit.addEventListener('click', () => this.reportDeliverable());
         this.dom.btnSaveTaskDraft.addEventListener('click', () => this.saveTaskDraft());
 
-        // 🔥 EVENTO GLOBAL: Escuchar la orden de sellar una mutación desde el Sandbox
+        // 🔥 EVENTO GLOBAL: Inyectar Evidencia en el Editor (Auto-PoW)
+        window.addEventListener('inject-evidence', (e) => {
+            if (!this.activeTx) return alert("Debes estar en Modo GTD para inyectar una evidencia.");
+            
+            const msgId = e.detail.msgId;
+            const data = this.chatMessagesMap[msgId];
+            if (!data) return;
+
+            let htmlToInject = `<blockquote><b>Evidencia Generada por IA:</b><br>${data.text.replace(/\n/g, '<br>')}</blockquote>`;
+            if (data.artifactData) {
+                htmlToInject += `<pre style="background:rgba(0,0,0,0.8); border:1px solid #444; color:#00e676; padding:10px; border-radius:8px; font-family:var(--font-mono); font-size:0.8rem; overflow-x:auto;"><code>${JSON.stringify(data.artifactData, null, 2)}</code></pre>`;
+            }
+
+            this.dom.editor.innerHTML += htmlToInject;
+            this.dom.inpPowLink.value = `tt://swarm-memory/${this.currentChatId}#${msgId}`;
+            
+            // Auto-checkear SOCs
+            this.dom.taskSocs.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            alert("✅ Evidencia inyectada en el Editor. Los SOCs han sido pre-validados. Revisa y sella.");
+        });
+
+        // EVENTOS GLOBALES DE MÚTACIÓN Y CI/CD
         window.addEventListener('save-entity-mutation', async (e) => {
             const data = e.detail;
             await KB.init();
@@ -381,7 +400,6 @@ export default class PaperView {
             window.dispatchEvent(new CustomEvent('refresh-lms-data'));
         });
 
-        // 🔥 EVENTO GLOBAL: Ejecutar Pentest (CI/CD) sobre la Skill renderizada
         window.addEventListener('run-skill-pentest', async (e) => {
             const skillData = e.detail;
             this.addMessage(`Iniciando protocolo de Pentest CI/CD para la skill: **${skillData.title}**...\nEvaluando ${skillData.evals.length} casos de prueba.`, 'user');
@@ -404,7 +422,7 @@ export default class PaperView {
                     DEBES RESPONDER ÚNICAMENTE CON UN OBJETO JSON VÁLIDO:
                     {
                         "message": "Reporte detallado del testeo (PASA/FALLA y por qué).",
-                        "artifact": null // PON NULL SI PASA. SI FALLA, PON EL JSON DE LA SKILL CORREGIDA AQUÍ.
+                        "artifact": null
                     }
                 `;
 
@@ -428,9 +446,9 @@ export default class PaperView {
                 }
                 
                 if (parsed.artifact) {
-                    this.addMessage(`⚠️ **PENTEST FALLIDO**. Se han detectado fisuras en el SOP.\n\n` + parsed.message, 'ai', parsed.artifact);
+                    this.addMessage(`⚠️ **PENTEST FALLIDO**. Se han detectado fisuras en el SOP.\n\n` + parsed.message, 'ai', parsed.artifact, false, response.telemetry);
                 } else {
-                    this.addMessage(`✅ **PENTEST SUPERADO**. La Skill es robusta y predecible.\n\n` + parsed.message, 'ai');
+                    this.addMessage(`✅ **PENTEST SUPERADO**. La Skill es robusta y predecible.\n\n` + parsed.message, 'ai', null, false, response.telemetry);
                     const btnPentest = document.getElementById('btnPentestSkill');
                     if (btnPentest) { btnPentest.innerText = "✅ Pentest OK"; btnPentest.style.background = "var(--accent-green)"; }
                 }
@@ -443,10 +461,64 @@ export default class PaperView {
             }
         });
 
+        // 🔥 INICIAR CARGA DE MODO SEGÚN URL
         if (new URLSearchParams(window.location.search).get('hash')) {
             this.dom.omniSelector.value = new URLSearchParams(window.location.search).get('hash');
             this.dom.omniSelector.dispatchEvent(new Event('change'));
-        } else this.setIdeMode();
+        } else {
+            await this.setIdeMode();
+        }
+    }
+
+    // 🔥 GESTIÓN DE SWARM MEMORY PERSISTENTE EN INDEXEDDB
+    async loadChatHistory(chatId) {
+        this.currentChatId = chatId;
+        this.chatHistory = [];
+        this.chatMessagesMap = {}; // Limpiar mapa
+        this.dom.history.innerHTML = '';
+        
+        await KB.init();
+        const node = await KB.getNode(chatId);
+        
+        if (node && node.content) {
+            try {
+                const history = JSON.parse(node.content);
+                for (const msg of history) {
+                    this.addMessage(msg._uiText || msg.content, msg.role === 'user' ? 'user' : 'ai', msg._uiArtifact, true, msg._telemetry);
+                }
+            } catch (e) {
+                console.error("Error parseando chat history", e);
+                this.renderDefaultGreeting();
+            }
+        } else {
+            this.renderDefaultGreeting();
+        }
+    }
+
+    async saveChatHistory() {
+        if (!this.currentChatId) return;
+        await KB.init();
+        await KB.saveNode({
+            id: this.currentChatId,
+            type: 'chat_session',
+            category: 'chat',
+            projectId: this.activeProjectId,
+            targetId: 'global',
+            title: `Chat Session: ${this.currentChatId}`,
+            content: JSON.stringify(this.chatHistory)
+        });
+    }
+
+    renderDefaultGreeting() {
+        this.dom.history.innerHTML = `
+            <div class="msg-bubble msg-ai">
+                ¡Ommmm! Sandbox Universal activado.<br><br>
+                • Pídele al <b>Web Deployer</b> que renderice un componente.<br>
+                • Pídele al <b>Skill Crafter</b> que evolucione o genere una nueva Skill.<br>
+                • Pídele al <b>TDD Auditor</b> que redacte un contrato.<br>
+                Mantenemos el contexto en la Swarm Memory.
+            </div>
+        `;
     }
 
     renderAttachments() {
@@ -466,14 +538,22 @@ export default class PaperView {
         });
     }
 
-    setIdeMode() { this.dom.gtdModePanel.style.display = 'none'; this.dom.gtdActionBar.style.display = 'none'; this.dom.ideModePanel.style.display = window.innerWidth <= 768 ? 'flex' : 'grid'; }
+    async setIdeMode() { 
+        this.dom.gtdModePanel.style.display = 'none'; 
+        this.dom.gtdActionBar.style.display = 'none'; 
+        this.dom.ideModePanel.style.display = window.innerWidth <= 768 ? 'flex' : 'grid'; 
+        await this.loadChatHistory(`chat_${this.activeProjectId}_ide`);
+    }
     
-    setGtdMode() { 
+    async setGtdMode() { 
         this.dom.ideModePanel.style.display = 'none'; 
         this.dom.gtdModePanel.style.display = 'flex'; 
         this.dom.gtdActionBar.style.display = 'flex'; 
 
         if (!this.activeTx) return;
+        
+        await this.loadChatHistory(`chat_${this.activeProjectId}_wo_${this.activeTx.hash || this.activeTx.id}`);
+
         const p = store.getState().projects.find(x => x.id === this.activeProjectId);
         const isLegacy = !this.activeTx.flowId;
         const parentFlow = isLegacy ? this.activeTx : (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
@@ -527,28 +607,77 @@ export default class PaperView {
         }
     }
 
-    addMessage(text, type, artifactData = null) {
-        if (type === 'user') this.chatHistory.push({ role: 'user', content: text });
-        else this.chatHistory.push({ role: 'assistant', content: artifactData ? JSON.stringify(artifactData) : text });
+    addMessage(text, type, artifactData = null, skipSave = false, telemetry = null) {
+        // Guardamos la info para restaurar o inyectar evidencia después
+        if (type === 'user') {
+            this.chatHistory.push({ role: 'user', content: text, _uiText: text });
+        } else {
+            this.chatHistory.push({ role: 'assistant', content: artifactData ? JSON.stringify(artifactData) : text, _uiText: text, _uiArtifact: artifactData, _telemetry: telemetry });
+        }
+
+        const msgId = 'msg_' + Date.now() + Math.floor(Math.random() * 1000);
+        this.chatMessagesMap[msgId] = { text, artifactData };
 
         const msg = document.createElement('div');
         msg.className = `msg-bubble msg-${type}`;
         
+        // 🔥 CALCULAR COSTES SI HAY TELEMETRÍA (Y MODO AI)
+        let costHtml = '';
+        if (telemetry && type === 'ai') {
+            const state = store.getState();
+            const ecoConfig = state.config?.economics || {
+                markup_margin: 0.0, premium_features_fee: 0.0,
+                base_pricing: { 'deepseek': { input: 0.14, output: 0.28 }, 'gemini': { input: 0.075, output: 0.30 }, 'openai': { input: 2.50, output: 10.00 }, 'anthropic': { input: 3.00, output: 15.00 }, 'custom': { input: 0.0, output: 0.0 } }
+            };
+            const priceMatrix = ecoConfig.base_pricing[telemetry.provider] || { input: 0, output: 0 };
+            const costInCents = ((telemetry.tokens.prompt_tokens / 1000000) * priceMatrix.input) + ((telemetry.tokens.completion_tokens / 1000000) * priceMatrix.output);
+            const finalCost = costInCents * (1 + ecoConfig.markup_margin + ecoConfig.premium_features_fee);
+            const costEur = finalCost.toFixed(4);
+            const totalTokens = telemetry.tokens.prompt_tokens + telemetry.tokens.completion_tokens;
+            
+            costHtml = `
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 0.7rem; color: #888; font-family: var(--font-mono); display: flex; justify-content: space-between; align-items:center;">
+                    <span title="Tokens In/Out: ${telemetry.tokens.prompt_tokens} / ${telemetry.tokens.completion_tokens}">⚡ ${(telemetry.latencyMs / 1000).toFixed(1)}s | 🪙 ${totalTokens.toLocaleString()} tk</span>
+                    <span style="color:var(--accent-green);">💶 €${costEur} (${telemetry.provider})</span>
+                </div>
+            `;
+        }
+
+        // 🔥 BOTÓN PARA INYECTAR EVIDENCIA SI ESTAMOS EN MODO GTD
+        let evidenceBtn = '';
+        if (type === 'ai' && this.activeTx && this.activeTx.status === 'pinged') {
+            evidenceBtn = `<button class="btn-inject-pow" id="btn_inject_${msgId}">📥 Inyectar como Proof of Work</button>`;
+        }
+
         if (artifactData) {
             msg.classList.add('msg-ai-artifact');
-            msg.innerHTML = `📦 <b>Artifact Compilado (${artifactData.type})</b><br><br>Se ha generado el componente/documento. El motor lo está renderizando en el Sandbox.`;
-            msg.addEventListener('click', () => {
+            msg.innerHTML = `📦 <b>Artifact Compilado (${artifactData.type})</b><br><br>Se ha generado el componente/documento. El motor lo está renderizando en el Sandbox. ${evidenceBtn} ${costHtml}`;
+            msg.addEventListener('click', (e) => {
+                if(e.target.tagName === 'BUTTON') return; // Evitar que el click en el botón abra el sandbox
                 if (this.dom.sbEmpty) this.dom.sbEmpty.style.display = 'none';
                 this.sandbox.renderArtifact(artifactData);
             });
-            if (this.dom.sbEmpty) this.dom.sbEmpty.style.display = 'none';
-            this.sandbox.renderArtifact(artifactData);
+            if (!skipSave) {
+                if (this.dom.sbEmpty) this.dom.sbEmpty.style.display = 'none';
+                this.sandbox.renderArtifact(artifactData);
+            }
         } else {
-            msg.innerHTML = text.replace(/\n/g, '<br>');
+            msg.innerHTML = text.replace(/\n/g, '<br>') + evidenceBtn + costHtml;
         }
         
         this.dom.history.appendChild(msg);
+        
+        // Listener del botón de evidencia
+        const btnInject = msg.querySelector(`#btn_inject_${msgId}`);
+        if (btnInject) {
+            btnInject.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('inject-evidence', { detail: { msgId: msgId } }));
+            });
+        }
+
         this.dom.history.scrollTop = this.dom.history.scrollHeight;
+
+        if (!skipSave) this.saveChatHistory();
     }
 
     async handleSendMessage() {
@@ -653,9 +782,9 @@ export default class PaperView {
             }
             
             if (parsed.artifact) {
-                this.addMessage(parsed.message || "He generado el artifact.", 'ai', parsed.artifact);
+                this.addMessage(parsed.message || "He generado el artifact.", 'ai', parsed.artifact, false, response.telemetry);
             } else {
-                this.addMessage(parsed.message || "Entendido.", 'ai');
+                this.addMessage(parsed.message || "Entendido.", 'ai', null, false, response.telemetry);
             }
 
             // Limpiamos los adjuntos tras enviar para no saturar el token count en el siguiente mensaje
