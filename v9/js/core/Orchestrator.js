@@ -15,7 +15,7 @@ const CORE_AGENTS = {
 
 class OrchestratorCore {
     constructor() {
-        this.version = "V9.1-Antigravity-Swarm";
+        this.version = "V9.2-Anthropic-Skills-Full";
         this.isListening = false;
     }
 
@@ -61,7 +61,76 @@ class OrchestratorCore {
         });
     }
 
-    async callLLM({ preferredEngine = null, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2 }) {
+    // 🔥 FASE 1: SINCRONIZADOR DE SKILLS A ANTHROPIC API (Zero External Libs)
+    async _syncAnthropicSkill(skillId, apiKey) {
+        await KB.init();
+        const skillNode = await KB.getNode(skillId);
+        if (!skillNode || (skillNode.category !== 'skill' && skillNode.type !== 'skill')) return null;
+
+        if (skillNode.anthropic_skill_id) {
+            return { id: skillNode.anthropic_skill_id, version: skillNode.anthropic_version || 'latest' };
+        }
+
+        console.log(`[Antigravity] 🚀 Subiendo Skill '${skillNode.title}' a la VM de Anthropic...`);
+
+        const formData = new FormData();
+        const safeTitle = (skillNode.title || 'Skill Antigravity').substring(0, 60);
+        formData.append('display_title', safeTitle);
+
+        const safeDir = `skill_${skillNode.id.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase().substring(0,20)}`;
+        const cleanDesc = (skillNode.description || 'SOP de ejecución').replace(/\n/g, ' ').substring(0, 1000);
+        const frontmatter = `---\nname: ${safeDir}\ndescription: ${cleanDesc}\n---\n\n`;
+        const mainContent = `${frontmatter}# ${skillNode.title}\n\n${skillNode.content || ''}`;
+        
+        formData.append('files[]', new Blob([mainContent], { type: 'text/markdown' }), `${safeDir}/SKILL.md`);
+
+        const appendChildren = async (ids, folder) => {
+            if (!ids || !Array.isArray(ids)) return;
+            for (const cId of ids) {
+                const cNode = await KB.getNode(cId);
+                if (cNode) {
+                    let ext = 'md';
+                    if (cNode.type === 'script') ext = 'py'; 
+                    if (cNode.type === 'eval') ext = 'json';
+                    const sName = (cNode.title || cId).replace(/[^a-zA-Z0-9-]/g, '_').toLowerCase();
+                    formData.append('files[]', new Blob([cNode.content], { type: 'text/plain' }), `${safeDir}/${folder}/${sName}.${ext}`);
+                }
+            }
+        };
+
+        await appendChildren(skillNode.references, 'references');
+        await appendChildren(skillNode.evals, 'evals');
+        await appendChildren(skillNode.scripts, 'scripts');
+
+        try {
+            const response = await fetch('https://api.anthropic.com/v1/skills', {
+                method: 'POST',
+                headers: {
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-beta': 'skills-2025-10-02',
+                    'anthropic-dangerously-allow-browser': 'true'
+                },
+                body: formData 
+            });
+
+            if (!response.ok) throw new Error(await response.text());
+            
+            const data = await response.json();
+            skillNode.anthropic_skill_id = data.id;
+            skillNode.anthropic_version = data.latest_version;
+            await KB.saveNode(skillNode);
+            
+            console.log(`[Antigravity] ✅ Skill sellada en Workspace Anthropic: ${data.id}`);
+            return { id: data.id, version: data.latest_version };
+        } catch (error) {
+            console.error(`[Anthropic Sync Failed]:`, error);
+            return null; 
+        }
+    }
+
+    // 🔥 FASE 2: BIFURCACIÓN DEL PAYLOAD
+    async callLLM({ preferredEngine = null, systemPrompt, userPrompt, responseFormat = "json_object", temperature = 0.2, mcpSkills = [] }) {
         const availableProviders = this._getAvailableProviders(preferredEngine);
         let lastError = null;
 
@@ -97,22 +166,55 @@ class OrchestratorCore {
                         }
                     } 
                     else if (provider === 'anthropic') {
-                        // Anthropic no usa response_format nativo para JSON en su API básica. Forzamos en System Prompt.
                         const anthropicSystem = responseFormat === "json_object" 
                             ? systemPrompt + "\n\nDEBES RESPONDER ÚNICAMENTE CON UN OBJETO JSON VÁLIDO. NO USES BLOQUES MARKDOWN." 
                             : systemPrompt;
 
+                        const requestBody = {
+                            model: 'claude-3-5-sonnet-20241022', 
+                            max_tokens: 8192, 
+                            temperature: temperature, 
+                            system: anthropicSystem, 
+                            messages: [{ role: 'user', content: userPrompt }]
+                        };
+
+                        const headers = { 
+                            'x-api-key': apiKey, 
+                            'anthropic-version': '2023-06-01', 
+                            'content-type': 'application/json', 
+                            'anthropic-dangerously-allow-browser': 'true' 
+                        };
+
+                        if (mcpSkills && mcpSkills.length > 0) {
+                            const mappedSkills = [];
+                            for (const sId of mcpSkills) {
+                                const synced = await this._syncAnthropicSkill(sId, apiKey);
+                                if (synced) mappedSkills.push({ type: 'custom', skill_id: synced.id, version: synced.version });
+                            }
+                            
+                            if (mappedSkills.length > 0) {
+                                requestBody.container = { skills: mappedSkills };
+                                requestBody.tools = [{ type: "code_execution_20250825", name: "code_execution" }];
+                                headers['anthropic-beta'] = 'code-execution-2025-08-25,skills-2025-10-02,files-api-2025-04-14';
+                            }
+                        }
+
                         const response = await fetch('https://api.anthropic.com/v1/messages', {
                             method: 'POST',
-                            headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-cors-bypass': 'true' },
-                            body: JSON.stringify({
-                                model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: anthropicSystem, messages: [{ role: 'user', content: userPrompt }]
-                            })
+                            headers: headers,
+                            body: JSON.stringify(requestBody)
                         });
                         
                         if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
                         const data = await response.json();
-                        textResponse = data.content[0].text;
+                        
+                        const executionBlock = data.content.find(c => c.type === 'tool_use' && c.name === 'code_execution');
+                        if (executionBlock) {
+                            textResponse = JSON.stringify({ message: "Operación ejecutada en la VM.", artifact: executionBlock });
+                        } else {
+                            textResponse = data.content[0].text;
+                        }
+                        
                         tokenUsage.prompt_tokens = data.usage?.input_tokens || 0;
                         tokenUsage.completion_tokens = data.usage?.output_tokens || 0;
                     }
@@ -174,7 +276,6 @@ class OrchestratorCore {
         return contextText;
     }
 
-    // 🔥 CIRUGÍA NEURONAL: Re-síntesis Total del Córtex (Agent_Prompt_Synthesizer)
     async synthesizeAgentPrompt(currentPrompt, allSkillsContext) {
         const systemPrompt = `
             Eres el '${CORE_AGENTS.SYNTHESIZER}'. Tu misión es realizar una "Re-síntesis Neuronal": debes reescribir el System Prompt de un Agente (AGENT.md) para asegurarte de que su CINTURÓN DE HERRAMIENTAS completo está integrado, SIN DESTRUIR su personalidad ni su objetivo original.
@@ -202,7 +303,6 @@ class OrchestratorCore {
         return response.content.replace(/^```markdown\n/, '').replace(/```$/, '').trim();
     }
 
-    // 🔥 BUCLE MAYÉUTICO: Exige Contexto Sectorial
     async evaluateContextForVNA(projectName, archetypeText, vision, overrideProvider = null) {
         const systemPrompt = `
             Eres ${CORE_AGENTS.ARCHITECT}, Master Ecosystem Architect. Vas a aplicar Value Network Analysis (VNA).
@@ -250,7 +350,6 @@ class OrchestratorCore {
         } catch (error) { return null; }
     }
 
-    // 🔥 ARCHITECT DESATADO (Sin Eras Temporales)
     async designEcosystemVNA(projectName, archetypeText, vision, overrideProvider = null) {
         await KB.init();
         
@@ -399,11 +498,8 @@ class OrchestratorCore {
         }
     }
 
-    // 🔥 CÁLCULO ECONÓMICO DINÁMICO (Conectado a Redux y Modelo de DAO)
     _logTelemetry(projectId, agentId, engine, actionType, telemetryData) {
         if (!telemetryData) return;
-        
-        // Extraemos el modelo económico de la DAO desde Redux
         const state = store.getState();
         const ecoConfig = state.config?.economics || {
             markup_margin: 0.0,
@@ -418,25 +514,16 @@ class OrchestratorCore {
         };
 
         const priceMatrix = ecoConfig.base_pricing[engine] || { input: 0, output: 0 };
-        
-        // 1. Coste base (Lo que te cobra OpenAI/Anthropic)
         const baseCost = ((telemetryData.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
                          ((telemetryData.tokens.completion_tokens / 1000000) * priceMatrix.output);
-        
-        // 2. Aplicamos tu Margen Corporativo (Markup + Premium Fee)
         const finalCostInDollars = baseCost * (1 + ecoConfig.markup_margin + ecoConfig.premium_features_fee);
 
         store.dispatch({ 
             type: 'LOG_TELEMETRY', 
             payload: { 
-                projectId, 
-                agentId, 
-                engine, 
-                actionType, 
-                tokens: telemetryData.tokens, 
-                costInDollars: finalCostInDollars, // 🔥 Ahora el Dashboard reflejará tu facturación real
-                recRatio: 0, 
-                latencyMs: telemetryData.latencyMs 
+                projectId, agentId, engine, actionType, 
+                tokens: telemetryData.tokens, costInDollars: finalCostInDollars, 
+                recRatio: 0, latencyMs: telemetryData.latencyMs 
             } 
         });
     }
