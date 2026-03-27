@@ -104,9 +104,6 @@ export default class ProjectView {
                 .filter-dropdown { background: rgba(10,10,15,0.8); border: 1px solid var(--glass-border); color: white; padding: 10px 20px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight:bold; outline: none; cursor: pointer; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
                 .filter-dropdown:focus { border-color: var(--accent-blue); }
 
-                .btn-create-task { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; white-space:nowrap; box-shadow: 0 5px 15px rgba(0,176,255,0.2); transition: 0.3s;}
-                .btn-create-task:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(224,64,251,0.4); filter: brightness(1.1);}
-
                 /* MODAL OVERLAY (Universal) */
                 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 4000; opacity:0; transition:opacity 0.2s;}
                 .modal-overlay.active { display: flex; opacity: 1;}
@@ -128,11 +125,20 @@ export default class ProjectView {
                 .btn-push-action { background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 1rem; width: 100%; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(224,64,251,0.3);}
                 .btn-push-action:hover { filter: brightness(1.2); transform: translateY(-2px);}
 
+                /* 🔥 MODAL VNA ESTRUCTURAL */
+                .vna-modal-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9000; display:none; justify-content:center; align-items:center; }
+                .vna-modal-overlay.active { display:flex; }
+                .vna-modal-card { background: linear-gradient(180deg, #1a1a20 0%, #0f0f15 100%); border: 1px solid var(--glass-border); border-top: 4px solid var(--accent-blue); border-radius: 16px; padding: 2rem; width: 100%; max-width: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+                .vna-form-group { margin-bottom: 15px; }
+                .vna-label { display:block; color:var(--accent-blue); font-size:0.75rem; font-weight:bold; text-transform:uppercase; margin-bottom:5px; }
+                .vna-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; border-radius: 8px; font-family: var(--font-main); box-sizing: border-box; outline: none; transition: border-color 0.3s;}
+                .vna-input:focus { border-color: var(--accent-blue); }
+
                 @media (max-width: 768px) {
                     .controls-row { flex-direction: column; align-items: stretch; }
                     .sprint-controls { justify-content: space-between; }
                     .filters-container { flex-direction: column; width: 100%; gap: 10px;}
-                    .filter-dropdown, .btn-create-task { width: 100%; padding: 14px; }
+                    .filter-dropdown { width: 100%; padding: 14px; }
                     .workspace { padding: 90px 1rem 120px 1rem; }
                 }
             </style>
@@ -204,6 +210,53 @@ export default class ProjectView {
                     </div>
                 </div>
                 
+                <div class="vna-modal-overlay" id="vnaModalOverlay">
+                    <div class="vna-modal-card">
+                        <h3 style="color:white; margin:0 0 5px 0; font-size:1.4rem;">🕸️ Inyectar Flujo VNA</h3>
+                        <p style="color:#888; font-size:0.85rem; margin-bottom:20px;">Crea una transacción formal entre dos roles para preservar la trazabilidad en el Meta-Grafo.</p>
+                        
+                        <div style="display:flex; gap:15px;">
+                            <div class="vna-form-group" style="flex:1;">
+                                <label class="vna-label">De (Origen)</label>
+                                <select id="vnaFrom" class="vna-input"></select>
+                            </div>
+                            <div class="vna-form-group" style="flex:1;">
+                                <label class="vna-label" style="color:var(--accent-purple);">Para (Destino)</label>
+                                <select id="vnaTo" class="vna-input"></select>
+                            </div>
+                        </div>
+
+                        <div class="vna-form-group">
+                            <label class="vna-label" style="color:white;">Entregable (Proof of Work)</label>
+                            <input type="text" id="vnaTitle" class="vna-input" placeholder="Ej: Componente Header React">
+                        </div>
+
+                        <div style="display:flex; gap:15px;">
+                            <div class="vna-form-group" style="flex:1;">
+                                <label class="vna-label" style="color:white;">Tipo</label>
+                                <select id="vnaType" class="vna-input">
+                                    <option value="tangible">Tangible (Código, Diseño)</option>
+                                    <option value="intangible">Intangible (Decisión, QA)</option>
+                                </select>
+                            </div>
+                            <div class="vna-form-group" style="flex:1;">
+                                <label class="vna-label" style="color:white;">Horas Est.</label>
+                                <input type="number" id="vnaHours" class="vna-input" value="1" step="0.5" min="0.1">
+                            </div>
+                        </div>
+
+                        <div class="vna-form-group">
+                            <label class="vna-label" style="color:white;">Contexto / Descripción</label>
+                            <textarea id="vnaDesc" class="vna-input" style="min-height:80px; resize:vertical;"></textarea>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                            <button id="vnaCancel" style="background:transparent; border:1px solid #666; color:white; padding:10px 15px; border-radius:8px; cursor:pointer; font-weight:bold;">Cancelar</button>
+                            <button id="vnaConfirm" style="background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border:none; color:white; padding:10px 20px; border-radius:8px; font-weight:900; cursor:pointer; box-shadow: 0 5px 15px rgba(0,176,255,0.3);">💾 Sellar en Matriz</button>
+                        </div>
+                    </div>
+                </div>
+
                 ${BottomNav.getHtml('/project')}
             </div>
         `;
@@ -427,6 +480,84 @@ export default class ProjectView {
         }
 
         this.setupReviewModal();
+
+        // 🔥 LÓGICA DEL MODAL ESTRUCTURAL VNA
+        const vnaOverlay = document.getElementById('vnaModalOverlay');
+        const vnaFrom = document.getElementById('vnaFrom');
+        const vnaTo = document.getElementById('vnaTo');
+        const vnaTitle = document.getElementById('vnaTitle');
+        const vnaType = document.getElementById('vnaType');
+        const vnaHours = document.getElementById('vnaHours');
+        const vnaDesc = document.getElementById('vnaDesc');
+        
+        window.addEventListener('open-create-wo-modal', () => {
+            const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const rolesHtml = (currentProj.roles || []).map(r => `<option value="${r.id}">${r.levelId} - ${r.name}</option>`).join('');
+            vnaFrom.innerHTML = rolesHtml;
+            vnaTo.innerHTML = rolesHtml;
+            
+            vnaTitle.value = '';
+            vnaDesc.value = '';
+            vnaHours.value = '1';
+            
+            vnaOverlay.classList.add('active');
+        });
+
+        document.getElementById('vnaCancel')?.addEventListener('click', () => {
+            vnaOverlay.classList.remove('active');
+        });
+
+        document.getElementById('vnaConfirm')?.addEventListener('click', async () => {
+            const title = vnaTitle.value.trim();
+            if (!title) return alert('El entregable es obligatorio.');
+
+            const btnConfirm = document.getElementById('vnaConfirm');
+            btnConfirm.disabled = true;
+            btnConfirm.innerText = "⏳...";
+
+            const currentProj = store.getState().projects.find(p => p.id === this.activeProjectId);
+
+            // 1. Crear el Flujo VNA (Transacción Estructural)
+            const newFlowId = 'flow_' + Date.now();
+            const newFlow = {
+                id: newFlowId,
+                from: vnaFrom.value,
+                to: vnaTo.value,
+                tipo: vnaType.value,
+                entregable: title,
+                context: vnaDesc.value.trim(),
+                horas: parseFloat(vnaHours.value) || 1,
+                soc_checklist: [] 
+            };
+
+            // 2. Crear la Work Order instanciada de este Flujo
+            const newWO = {
+                hash: 'wo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                flowId: newFlowId,
+                status: 'theoretical',
+                comentario: vnaDesc.value.trim() || 'Work Order inyectada en matriz.',
+                sprintId: currentProj.activeSprintId || null,
+                assigneeId: null,
+                workerId: null
+            };
+
+            const updatedFlows = [...(currentProj.vna_flows || []), newFlow];
+            const updatedWOs = [...(currentProj.work_orders || []), newWO];
+
+            await store.dispatch({ 
+                type: 'UPDATE_PROJECT_INFO', 
+                payload: { 
+                    projectId: currentProj.id, 
+                    updates: { 
+                        vna_flows: updatedFlows,
+                        work_orders: updatedWOs
+                    } 
+                } 
+            });
+            
+            vnaOverlay.classList.remove('active');
+            window.location.reload();
+        });
     }
 
     refreshRenderer() {
@@ -469,7 +600,6 @@ export default class ProjectView {
 
             const updatedList = flows.map(w => {
                 if ((w.hash || w.id) === txHash) {
-                    // Los agentes inyectan automáticamente las horas estimadas (Equilibri) si no tienen tracker.
                     const hrs = parseFloat(parentFlow.estimatedHours) || parseFloat(parentFlow.horas) || 1;
                     return { ...w, status: 'reported', realHours: hrs, proofLink: 'Agent_Auto_Report', comentario: response.content, sprintId: w.sprintId || currProject.activeSprintId };
                 }
@@ -540,7 +670,6 @@ export default class ProjectView {
             currentReviewHash = null;
         });
 
-        // 🔥 INTEGRACIÓN PURIFICADA DEL ORQUESTADOR (Antigravity TDD)
         document.getElementById('btnAiAudit')?.addEventListener('click', async (e) => {
             if (!currentReviewHash) return;
             const btn = e.target;
@@ -552,7 +681,6 @@ export default class ProjectView {
             if (!taskRef) taskRef = (currProject.transactions || []).find(t => t.id === currentReviewHash);
 
             try {
-                // Llamamos a la rutina maestra del Orchestrator
                 const auditResultJSON = await Orchestrator.notarizeWorkOrder(this.activeProjectId, taskRef.comentario, taskRef.soc_checklist);
                 const parsedAudit = JSON.parse(auditResultJSON);
                 
@@ -588,7 +716,7 @@ export default class ProjectView {
 
             if (!allChecked) {
                 const reject = confirm("⚠️ Hay SOCs sin marcar. Si continúas, la Work Order será RECHAZADA y devuelta al ejecutor sin minar Slices. ¿Deseas rechazar la tarea?");
-                if (!reject) return; // Se cancela la acción para que el humano pueda pensar.
+                if (!reject) return; 
             }
 
             const currProject = store.getState().projects.find(p => p.id === this.activeProjectId);
