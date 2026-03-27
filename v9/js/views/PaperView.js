@@ -21,6 +21,7 @@ export default class PaperView {
         
         this.sandbox = null;
         this.chatHistory = []; // Swarm Memory
+        this.attachedNodes = []; // 🔥 MEMORIA RAG MANUAL
     }
 
     async getHtml() {
@@ -38,7 +39,7 @@ export default class PaperView {
         const headerConfig = {
             title: "Omni-Paper (Chat IDE & GTD)",
             subtitle: project.nombre,
-            tagline: "Lienzo Universal: Ejecuta Tareas o interactúa con el Enjambre para generar código, documentos o mutar agentes.",
+            tagline: "Lienzo Universal: Ejecuta Tareas, adjunta recursos del Córtex e interactúa con el Enjambre.",
             tabs: []
         };
 
@@ -49,7 +50,7 @@ export default class PaperView {
         if (deployer) agentOptions += `<option value="${deployer.id}">🤖 ${deployer.name} (Frontend & UI)</option>`;
         
         const crafter = aiUsers.find(a => a.id === '@agent_skill_crafter');
-        if (crafter) agentOptions += `<option value="${crafter.id}">🤖 ${crafter.name} (Mutación de Skills/Agentes)</option>`;
+        if (crafter) agentOptions += `<option value="${crafter.id}">🤖 ${crafter.name} (Mutación de Skills)</option>`;
         
         const codex = aiUsers.find(a => a.id === '@agent_codex_developer');
         if (codex) agentOptions += `<option value="${codex.id}">🤖 ${codex.name} (Lógica & Web3)</option>`;
@@ -135,6 +136,16 @@ export default class PaperView {
                 .msg-ai-artifact:hover { background: rgba(255,145,0,0.1); box-shadow: 0 0 15px rgba(255,145,0,0.2);}
 
                 .chat-input-area { padding: 15px; background: rgba(0,0,0,0.6); border-top: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 10px;}
+                
+                /* 🔥 NUEVOS ESTILOS PARA RAG MANUAL */
+                .attachments-tray { display: flex; flex-wrap: wrap; gap: 5px; }
+                .attachment-pill { background: rgba(0,176,255,0.1); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; display: flex; align-items: center; gap: 5px;}
+                .btn-remove-att { background: transparent; border: none; color: var(--accent-blue); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0;}
+                .btn-remove-att:hover { color: white; }
+                .input-controls-row { display: flex; gap: 10px; }
+                .sel-attach { background: rgba(255,255,255,0.05); border: 1px solid #444; color: #ccc; padding: 10px; border-radius: 8px; flex: 1; font-family: var(--font-main); font-size: 0.85rem; outline: none; cursor: pointer; transition: 0.2s;}
+                .sel-attach:focus { border-color: var(--accent-blue); color: white; }
+
                 .chat-textarea { width: 100%; background: #050508; border: 1px solid #444; color: white; border-radius: 10px; padding: 12px; font-family: var(--font-main); font-size: 0.95rem; resize: none; outline: none; transition: 0.3s; box-sizing: border-box; min-height: 80px;}
                 .chat-textarea:focus { border-color: var(--accent-blue); box-shadow: inset 0 0 10px rgba(0,176,255,0.1);}
                 
@@ -184,7 +195,13 @@ export default class PaperView {
                                     </div>
                                 </div>
                                 <div class="chat-input-area">
-                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Crea una skill para..."></textarea>
+                                    <div id="attachedNodesContainer" class="attachments-tray"></div>
+                                    <div class="input-controls-row">
+                                        <select id="selAttachNode" class="sel-attach">
+                                            <option value="">📎 Adjuntar Referencia del Córtex...</option>
+                                            </select>
+                                    </div>
+                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Escribe tu directiva aquí..."></textarea>
                                     <button class="btn-send" id="btnSendPrompt">🚀 Enviar Directiva</button>
                                 </div>
                             </div>
@@ -246,6 +263,7 @@ export default class PaperView {
             ideModePanel: document.getElementById('ideModePanel'), gtdModePanel: document.getElementById('gtdModePanel'), gtdActionBar: document.getElementById('gtdActionBar'),
             history: document.getElementById('chatHistory'), input: document.getElementById('inpChatPrompt'), btnSend: document.getElementById('btnSendPrompt'),
             selAgent: document.getElementById('selAgentTarget'), sbEmpty: document.getElementById('sbEmptyState'),
+            selAttachNode: document.getElementById('selAttachNode'), attachedNodesContainer: document.getElementById('attachedNodesContainer'),
             pomoPanel: document.getElementById('pomoPanel'), timeDisplay: document.getElementById('timeDisplay'), btnPlay: document.getElementById('btnPlay'), btnPause: document.getElementById('btnPause'),
             taskTitle: document.getElementById('taskTitle'), taskRole: document.getElementById('taskRole'), taskStatus: document.getElementById('taskStatus'), taskDesc: document.getElementById('taskDesc'),
             taskSocs: document.getElementById('taskSocsContainer'), inpPowLink: document.getElementById('inpPowLink'), inpPowHours: document.getElementById('inpPowHours'),
@@ -254,6 +272,27 @@ export default class PaperView {
 
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
+
+        // 🔥 CARGAR NODOS ADJUNTABLES
+        await KB.init();
+        const allNodes = await KB.getAllNodes();
+        const attachables = allNodes.filter(n => n.type === 'reference' || n.type === 'skill' || n.type === 'SOP' || n.type === 'script');
+        let optionsHtml = '<option value="">📎 Adjuntar Referencia del Córtex...</option>';
+        attachables.forEach(n => {
+            optionsHtml += `<option value="${n.id}">[${n.type.toUpperCase()}] ${n.title}</option>`;
+        });
+        this.dom.selAttachNode.innerHTML = optionsHtml;
+
+        this.dom.selAttachNode.addEventListener('change', async (e) => {
+            const nodeId = e.target.value;
+            if (!nodeId) return;
+            const node = allNodes.find(n => n.id === nodeId);
+            if (node && !this.attachedNodes.find(n => n.id === nodeId)) {
+                this.attachedNodes.push(node);
+                this.renderAttachments();
+            }
+            this.dom.selAttachNode.value = ''; // Reset select
+        });
 
         this.loadProjectTasks = async (projId) => {
             const p = store.getState().projects.find(x => x.id === projId);
@@ -410,6 +449,23 @@ export default class PaperView {
         } else this.setIdeMode();
     }
 
+    renderAttachments() {
+        this.dom.attachedNodesContainer.innerHTML = '';
+        this.attachedNodes.forEach((n, idx) => {
+            const pill = document.createElement('div');
+            pill.className = 'attachment-pill';
+            pill.innerHTML = `📚 ${n.title} <button class="btn-remove-att" data-idx="${idx}">&times;</button>`;
+            this.dom.attachedNodesContainer.appendChild(pill);
+        });
+        this.dom.attachedNodesContainer.querySelectorAll('.btn-remove-att').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.target.dataset.idx);
+                this.attachedNodes.splice(idx, 1);
+                this.renderAttachments();
+            });
+        });
+    }
+
     setIdeMode() { this.dom.gtdModePanel.style.display = 'none'; this.dom.gtdActionBar.style.display = 'none'; this.dom.ideModePanel.style.display = window.innerWidth <= 768 ? 'flex' : 'grid'; }
     
     setGtdMode() { 
@@ -523,6 +579,14 @@ export default class PaperView {
 
             const currentArtifactState = this.sandbox && this.sandbox.currentData ? JSON.stringify(this.sandbox.currentData) : "Ningún artifact activo.";
 
+            // 🔥 RAG MANUAL: Inyectar Nodos Adjuntos al Contexto
+            if (this.attachedNodes.length > 0) {
+                systemPrompt += `\n\n[RECURSOS INYECTADOS POR EL USUARIO PARA ESTA TAREA]:\n`;
+                this.attachedNodes.forEach(node => {
+                    systemPrompt += `\n--- REFERENCIA (${node.type}): ${node.title} ---\n${node.content}\n`;
+                });
+            }
+
             // 🔥 PROTOCOLO OMNI-PAPER STRICT JSON (Avanzado para Skills Complejas)
             systemPrompt += `
                 \n\n[PROTOCOLO DE ARTIFACTS UNIVERSAL (OMNI-PAPER)]:
@@ -593,6 +657,10 @@ export default class PaperView {
             } else {
                 this.addMessage(parsed.message || "Entendido.", 'ai');
             }
+
+            // Limpiamos los adjuntos tras enviar para no saturar el token count en el siguiente mensaje
+            this.attachedNodes = [];
+            this.renderAttachments();
 
         } catch (error) {
             this.addMessage(`⚠️ Error de Kernel: ${error.message}`, 'ai');
