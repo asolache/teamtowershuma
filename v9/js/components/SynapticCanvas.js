@@ -25,6 +25,7 @@ export class SynapticCanvas {
         this.resizeObserver = null;
         this.isFullscreen = false;
     }
+    
     async render() {
         let panelTitle = '🌌 Meta-Grafo Cuántico (V9)';
         let helperText = 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.';
@@ -49,14 +50,20 @@ export class SynapticCanvas {
                 .palette-search { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--accent-green); padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.9rem; outline: none; box-sizing: border-box; transition: 0.3s;}
                 .palette-search:focus { border-color: var(--accent-green); box-shadow: inset 0 0 15px rgba(0,230,118,0.2);}
                 .meme-results { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;}
-                .draggable-meme { background: rgba(255,255,255,0.03); border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); user-select: none; word-break: break-word; position: relative; overflow: hidden;}
+                
+                .draggable-meme { background: rgba(255,255,255,0.03); border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: default; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative; overflow: hidden;}
+                .draggable-meme.is-search-result { cursor: pointer; }
+                .draggable-meme.is-search-result:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--node-color, #888);}
                 .draggable-meme::before { content: ''; position: absolute; top:0; left:0; width:4px; height:100%; background: var(--node-color, #444); }
-                .draggable-meme:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--node-color, #888);}
                 .dm-cat { font-size: 0.7rem; color: var(--node-color, var(--accent-orange)); font-family: var(--font-mono); font-weight: bold; pointer-events: none; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;}
                 .dm-title { font-size: 1.05rem; color: white; margin: 0 0 10px 0; font-weight: 900; pointer-events: none; line-height: 1.3;}
                 .dm-content { font-size: 0.9rem; color: #bbb; line-height: 1.6; font-family: 'Georgia', serif; display: block; overflow-y: auto; max-height: 400px; padding-right: 5px;}
                 .dm-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1);}
                 .dm-tag { font-size: 0.7rem; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 3px 8px; color: #aaa; font-family: var(--font-mono);}
+                
+                .btn-action-panel { width: 100%; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 0.85rem; border: none; }
+                .btn-action-panel:disabled { opacity: 0.5; cursor: not-allowed; }
+
                 .btn-inject-seeds { background: linear-gradient(135deg, rgba(0,230,118,0.1), rgba(0,176,255,0.1)); border: 1px solid var(--accent-green); color: white; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 0.85rem; transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px; display: ${(!this.agentId && !this.isVnaMode) ? 'block' : 'none'}; box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
                 .synaptic-3d-container { flex: 1; position: relative; overflow: hidden; background: radial-gradient(circle at center, #0a0a10 0%, #000000 100%); }
                 .webgl-target { width: 100%; height: 100%; outline: none; cursor: crosshair;}
@@ -100,7 +107,7 @@ export class SynapticCanvas {
         this.setupInteractivity();
     }
 
-    // 🔥 NUEVO: CARGADOR ESPECÍFICO PARA MAPA VNA 3D (EXPERIMENTAL)
+    // 🔥 CARGADOR ESPECÍFICO PARA MAPA VNA 3D
     async loadVNAData() {
         const state = store.getState();
         const project = state.projects.find(p => p.id === this.projectId);
@@ -121,7 +128,6 @@ export class SynapticCanvas {
         };
 
         // 2. Gravedad Radial (12 Arquetipos / Dominios)
-        // Dividimos 360 grados (2 * PI) en 12 sectores
         const ARQUETYPES = ['zeus', 'apollo', 'athena', 'hestia', 'hermes', 'aphrodite', 'hephaestus', 'demeter', 'dionysus', 'poseidon', 'hera', 'hebe'];
         const getRadialAngle = (archetype) => {
             const index = ARQUETYPES.indexOf((archetype || '').toLowerCase());
@@ -390,7 +396,6 @@ export class SynapticCanvas {
                 sprite.color = '#ffffff';
                 sprite.textHeight = Math.max(3, node.val * 0.25); 
                 sprite.fontWeight = isCore ? '900' : 'normal';
-                // En modo VNA subimos el texto un poco por encima de la esfera
                 if (this.isVnaMode) sprite.position.set(0, node.val * 0.6, 0);
                 group.add(sprite);
                 return group;
@@ -417,12 +422,9 @@ export class SynapticCanvas {
 
         // 🔥 GRAVEDAD CUSTOM PARA MODO VNA
         if (this.isVnaMode) {
-            // Fuerza estática en el eje Y (Jerarquía Casteller) y X/Z (Radial) se controlan directamente 
-            // ya que hemos asignado node.fx, node.fy y node.fz al crear los nodos.
-            this.graph3D.d3Force('charge').strength(-800); // Repulsión fuerte para links
+            this.graph3D.d3Force('charge').strength(-800); 
             this.graph3D.d3Force('link').distance(100);
             
-            // INYECTAMOS SPRITETEXT EN LOS LINKS (Entregables fluyendo)
             this.graph3D.linkThreeObjectExtend(true)
                 .linkThreeObject(link => {
                     if (!link.rawTx) return null;
@@ -437,13 +439,12 @@ export class SynapticCanvas {
                 })
                 .linkPositionUpdate((sprite, { start, end }) => {
                     const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
-                        [c]: start[c] + (end[c] - start[c]) / 2 // Centro exacto del link
+                        [c]: start[c] + (end[c] - start[c]) / 2 
                     })));
                     Object.assign(sprite.position, middlePos);
                 });
 
         } else {
-            // Gravedad original Meta-Grafo
             if (this.graph3D.d3Force('charge')) this.graph3D.d3Force('charge').strength(-400); 
             if (this.graph3D.d3Force('link')) this.graph3D.d3Force('link').distance(70); 
         }
@@ -471,29 +472,61 @@ export class SynapticCanvas {
         this.resizeObserver.observe(canvasInner);
     }
 
+    // 🔥 PANEL INTERACTIVO DE MANDOS DESDE LA VISTA 3D
     showNodeDetailsInPalette(node3D) {
         const resultsList = this.container.querySelector('#memeResultsList');
         const m = node3D.rawNode;
         if (!m) return;
 
+        const isAgent = node3D.group === 'agent';
+        const isSkill = m.type === 'skill' || m.category === 'skill';
+        
         const tagsHtml = (m.keywords || []).map(t => `<span class="dm-tag">#${t}</span>`).join('');
         const safeColor = node3D.color || 'var(--accent-blue)';
         
         let badgesHtml = '';
-        if (m.type === 'skill') {
+        if (isSkill) {
             const r = (m.references || []).length;
             const e = (m.evals || []).length;
             const s = (m.scripts || []).length;
-            if (r>0) badgesHtml += `<span class="badge ref">📚 ${r} Referencias</span>`;
-            if (e>0) badgesHtml += `<span class="badge eval">📋 ${e} Evals</span>`;
-            if (s>0) badgesHtml += `<span class="badge script">⚡ ${s} Scripts</span>`;
+            if (r>0) badgesHtml += `<span style="background:rgba(0,176,255,0.1); color:var(--accent-blue); padding:3px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-right:5px; border:1px solid rgba(0,176,255,0.3);">📚 ${r} Refs</span>`;
+            if (e>0) badgesHtml += `<span style="background:rgba(255,171,64,0.1); color:var(--accent-orange); padding:3px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-right:5px; border:1px solid rgba(255,171,64,0.3);">📋 ${e} Evals</span>`;
+            if (s>0) badgesHtml += `<span style="background:rgba(0,230,118,0.1); color:var(--accent-green); padding:3px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-right:5px; border:1px solid rgba(0,230,118,0.3);">⚡ ${s} Scripts</span>`;
         }
         
         let contentHtml = (m.content || '').replace(/\\n/g, '<br>');
-        contentHtml = contentHtml.replace(/\[VNA_NODE\]/g, '<strong style="color:var(--accent-blue); display:block; margin-top:10px;">[VNA_NODE]</strong>');
-        contentHtml = contentHtml.replace(/\[SOP\]/g, '<strong style="color:var(--accent-purple); display:block; margin-top:10px;">[SOP]</strong>');
-        contentHtml = contentHtml.replace(/\[SOC\]/g, '<strong style="color:var(--accent-orange); display:block; margin-top:10px;">[SOC]</strong>');
         
+        let interactivePanel = '';
+
+        // 🔥 AGENTE: Equipar Skills
+        if (isAgent) {
+            const availableSkills = this.nodes.filter(n => n.group === 'skill' || n.rawNode?.category === 'skill');
+            const options = availableSkills.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            
+            interactivePanel = `
+                <div style="margin-top: 15px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; border: 1px solid #333;">
+                    <label style="color:var(--accent-purple); font-size:0.75rem; font-weight:bold; text-transform:uppercase; display:block; margin-bottom:8px;">🎒 Equipar Skill al Agente</label>
+                    <div style="display:flex; gap:10px;">
+                        <select id="sel3DEquipSkill" class="palette-search" style="flex:1; padding:8px;">
+                            <option value="">Selecciona skill de la red...</option>
+                            ${options}
+                        </select>
+                        <button id="btn3DEquip" class="btn-action-panel" style="background:var(--accent-purple); color:white; width:auto; padding:0 15px;">Inyectar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 🔥 SKILL: Testear y Editar
+        if (isSkill) {
+            interactivePanel = `
+                <div style="margin-top: 15px; display:flex; flex-direction:column; gap:10px;">
+                    <button id="btn3DEditSkill" class="btn-action-panel" style="background:var(--accent-blue); color:black;">🧠 Evolucionar en la Forja</button>
+                    ${(m.evals && m.evals.length > 0) ? `<button id="btn3DTestSkill" class="btn-action-panel" style="background:transparent; border:1px solid var(--accent-orange); color:var(--accent-orange);">🧪 Ejecutar Pentest (CI/CD)</button>` : ''}
+                </div>
+            `;
+        }
+
         resultsList.innerHTML = `
             <div style="margin-bottom: 15px;">
                 <button id="btnBackSearch" style="background:rgba(255,255,255,0.05); border:1px solid #444; color:#fff; border-radius:8px; cursor:pointer; font-family:var(--font-mono); font-size:0.8rem; padding:10px 15px; width:100%; transition:0.2s; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">&larr; Desanclar Cámara</button>
@@ -505,20 +538,38 @@ export class SynapticCanvas {
                 <div class="dm-content">${contentHtml}</div>
                 <div class="dm-tags">${tagsHtml}</div>
             </div>
-            ${m.type === 'skill' || m.type === 'reference' || m.type === 'eval' ? `
-            <div style="margin-top: 15px; text-align:center;">
-                <button style="background:var(--accent-purple); border:none; color:white; padding:10px 15px; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer; width:100%; transition:0.2s;" onclick="window.dispatchEvent(new CustomEvent('open-forge-modal', {detail:{nodeId:'${m.id}'}}))">🧠 Evolucionar en la Forja</button>
-            </div>` : ''}
+            ${interactivePanel}
         `;
 
         const btnBack = resultsList.querySelector('#btnBackSearch');
-        if (btnBack) {
-            btnBack.addEventListener('click', () => {
-                resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo del universo 3D para viajar hacia él y decodificar su estructura.</div>';
-                this.container.querySelector('#memeSearchInput').value = '';
-                this.graph3D.cameraPosition({ x: 0, y: 0, z: 800 }, { x: 0, y: 0, z: 0 }, 2000);
+        if (btnBack) btnBack.addEventListener('click', () => {
+            resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo del universo 3D para interactuar con él (Editar, Testear, Equipar).</div>';
+            this.graph3D.cameraPosition({ x: 0, y: 0, z: 800 }, { x: 0, y: 0, z: 0 }, 2000);
+        });
+
+        // Listeners Panel Activo
+        const btnEquip = resultsList.querySelector('#btn3DEquip');
+        if (btnEquip) {
+            btnEquip.addEventListener('click', () => {
+                const skillId = resultsList.querySelector('#sel3DEquipSkill').value;
+                if (!skillId) return alert("Selecciona una skill");
+                btnEquip.innerText = "⏳...";
+                btnEquip.disabled = true;
+                window.dispatchEvent(new CustomEvent('3d-equip-skill', { detail: { agentId: m.id, skillId: skillId } }));
             });
         }
+
+        const btnEdit = resultsList.querySelector('#btn3DEditSkill');
+        if (btnEdit) btnEdit.addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('open-forge-modal', { detail: { nodeId: m.id } }));
+        });
+
+        const btnTest = resultsList.querySelector('#btn3DTestSkill');
+        if (btnTest) btnTest.addEventListener('click', () => {
+            btnTest.innerText = "🧪 Evaluando...";
+            btnTest.disabled = true;
+            window.dispatchEvent(new CustomEvent('3d-test-skill', { detail: { skillData: m } }));
+        });
     }
 
     setupInteractivity() {
@@ -566,7 +617,7 @@ export class SynapticCanvas {
             if (filtered.length === 0) return resultsList.innerHTML = '<div style="color:#888; text-align:center; padding:30px;">No se encontró señal en esa frecuencia.</div>';
 
             resultsList.innerHTML = filtered.slice(0, 15).map(m => {
-                return `<div class="draggable-meme" data-id="${m.id}" style="--node-color: var(--accent-blue);"><div class="dm-cat">${m.category || m.type}</div><div class="dm-title">${m.title}</div><div style="font-size:0.8rem; color:#888; font-style:italic; margin-top:5px;">(Clic para viajar al nodo)</div></div>`;
+                return `<div class="draggable-meme is-search-result" data-id="${m.id}" style="--node-color: var(--accent-blue);"><div class="dm-cat">${m.category || m.type}</div><div class="dm-title">${m.title}</div><div style="font-size:0.8rem; color:#888; font-style:italic; margin-top:5px;">(Clic para viajar al nodo)</div></div>`;
             }).join('');
 
             resultsList.querySelectorAll('.draggable-meme').forEach(el => {
