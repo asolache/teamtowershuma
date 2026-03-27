@@ -1,7 +1,22 @@
 [build]
-  publish = "ia/dev"
+  publish = "."
 
 [[redirects]]
-  from   = "/*"
-  to     = "/index.html"
+  from   = "/ia/dev/*"
+  to     = "/ia/dev/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/ia/*"
+  to     = "/ia/dev/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/v9/*"
+  to     = "/v9/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/v8/*"
+  to     = "/v8/index.html"
   status = 200
