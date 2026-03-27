@@ -97,11 +97,16 @@ class OrchestratorCore {
                         }
                     } 
                     else if (provider === 'anthropic') {
+                        // Anthropic no usa response_format nativo para JSON en su API básica. Forzamos en System Prompt.
+                        const anthropicSystem = responseFormat === "json_object" 
+                            ? systemPrompt + "\n\nDEBES RESPONDER ÚNICAMENTE CON UN OBJETO JSON VÁLIDO. NO USES BLOQUES MARKDOWN." 
+                            : systemPrompt;
+
                         const response = await fetch('https://api.anthropic.com/v1/messages', {
                             method: 'POST',
                             headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-cors-bypass': 'true' },
                             body: JSON.stringify({
-                                model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }]
+                                model: 'claude-3-5-sonnet-20241022', max_tokens: 8192, temperature: temperature, system: anthropicSystem, messages: [{ role: 'user', content: userPrompt }]
                             })
                         });
                         
@@ -169,29 +174,30 @@ class OrchestratorCore {
         return contextText;
     }
 
-    // 🔥 SINTETIZADOR DE PROMPTS (Agent_Prompt_Synthesizer)
-    async synthesizeAgentPrompt(currentPrompt, newSkillContent) {
+    // 🔥 CIRUGÍA NEURONAL: Inyección de Skills sin perder el contexto (Agent_Prompt_Synthesizer)
+    async synthesizeAgentPrompt(currentPrompt, newSkillContext) {
         const systemPrompt = `
-            Eres el '${CORE_AGENTS.SYNTHESIZER}'. Tu misión es actualizar el System Prompt de un Agente (AGENT.md) porque se le acaba de añadir una nueva Herramienta/Skill.
+            Eres el '${CORE_AGENTS.SYNTHESIZER}'. Tu misión es realizar una "Cirugía Neuronal": debes inyectar una nueva Skill en el System Prompt de un Agente (AGENT.md), SIN DESTRUIR su personalidad, su objetivo, ni su contexto previo.
             
-            Reglas estrictas (agentskills.io standards):
-            1. NO borres ni alteres el propósito original, tono o reglas previas del agente.
-            2. Añade una sección concisa (ej: "## Uso de Herramientas" o intégralo de forma natural) explicando CUÁNDO y CÓMO debe invocar la nueva Skill, basándote en la descripción de la misma.
-            3. Sé directo. Usa frases imperativas ("Usa esta tool cuando..."). No des opciones ambiguas.
-            4. Devuelve ÚNICAMENTE el texto final del nuevo AGENT.md en crudo (sin bloques de código markdown ni JSON).
+            REGLAS ESTRICTAS:
+            1. MANTÉN INTACTO el rol, tono y propósito principal del Agente.
+            2. Busca la sección de "SOPs" o "HERRAMIENTAS" en el prompt actual. Si no existe, créala armónicamente.
+            3. Añade la nueva herramienta indicándole al agente exactamente CUÁNDO debe invocarla basándote en la descripción de la skill.
+            4. Sé directo. Usa frases imperativas ("Usa esta tool cuando...").
+            5. Devuelve ÚNICAMENTE el texto final del AGENT.md completo, sin explicaciones ni markdown envolvente.
         `;
 
         const userPrompt = `
-            === AGENT.md ACTUAL ===
+            === CEREBRO ACTUAL DEL AGENTE ===
             ${currentPrompt || "Eres un agente asistente."}
             
-            === NUEVA SKILL AÑADIDA AL CINTURÓN ===
-            ${newSkillContent}
+            === NUEVA SKILL A INYECTAR ===
+            ${newSkillContext}
             
-            Actualiza el AGENT.md para que sepa usar esta skill.
+            Ejecuta la cirugía y devuelve el nuevo cerebro integrado.
         `;
 
-        const response = await this.callLLM({ preferredEngine: 'openai', systemPrompt, userPrompt, responseFormat: "text", temperature: 0.3 });
+        const response = await this.callLLM({ preferredEngine: 'openai', systemPrompt, userPrompt, responseFormat: "text", temperature: 0.1 }); // Temp baja para fidelidad
         this._logTelemetry('global', CORE_AGENTS.SYNTHESIZER, response.telemetry.provider, 'PROMPT_SYNTHESIS', response.telemetry);
         return response.content.replace(/^```markdown\n/, '').replace(/```$/, '').trim();
     }
@@ -413,7 +419,7 @@ class OrchestratorCore {
 
         const priceMatrix = ecoConfig.base_pricing[engine] || { input: 0, output: 0 };
         
-        // 1. Coste base (Lo que te cobra OpenAI)
+        // 1. Coste base (Lo que te cobra OpenAI/Anthropic)
         const baseCost = ((telemetryData.tokens.prompt_tokens / 1000000) * priceMatrix.input) + 
                          ((telemetryData.tokens.completion_tokens / 1000000) * priceMatrix.output);
         
