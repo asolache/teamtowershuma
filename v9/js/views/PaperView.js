@@ -184,7 +184,7 @@ export default class PaperView {
                                     </div>
                                 </div>
                                 <div class="chat-input-area">
-                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Evoluciona la skill 'skill_vna_architect' para que..."></textarea>
+                                    <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Crea una skill para..."></textarea>
                                     <button class="btn-send" id="btnSendPrompt">🚀 Enviar Directiva</button>
                                 </div>
                             </div>
@@ -202,8 +202,8 @@ export default class PaperView {
                                 <div class="timer-display" id="timeDisplay">00:00:00</div>
                                 <div style="font-family: var(--font-mono); color: #888; font-size: 0.8rem;">El tiempo se inyectará en el Slicing Pie al sellar.</div>
                                 <div class="timer-controls">
-                                    <button class="btn-timer play" id="btnPlay" title="Iniciar Foco">▶</button>
-                                    <button class="btn-timer pause" id="btnPause" title="Pausar Foco" style="display:none;">⏸</button>
+                                    <button class="btn-timer play" id="btnPlay">▶</button>
+                                    <button class="btn-timer pause" id="btnPause" style="display:none;">⏸</button>
                                 </div>
                             </div>
                             <div id="taskContextPanel" class="task-context-panel">
@@ -303,13 +303,42 @@ export default class PaperView {
         window.addEventListener('save-entity-mutation', async (e) => {
             const data = e.detail;
             await KB.init();
+            
+            const refIds = [];
+            const evalIds = [];
+            const scriptIds = [];
+            
+            if (data.references && Array.isArray(data.references)) {
+                for (const r of data.references) {
+                    const rId = `ref_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
+                    await KB.saveNode({ id: rId, type: 'reference', category: 'reference', projectId: 'global', targetId: 'global', title: r.title, content: r.content });
+                    refIds.push(rId);
+                }
+            }
+            
+            if (data.evals && Array.isArray(data.evals)) {
+                const eId = `eval_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
+                await KB.saveNode({ id: eId, type: 'eval', category: 'eval', projectId: 'global', targetId: 'global', title: `Evals automáticos para ${data.title}`, content: JSON.stringify(data.evals) });
+                evalIds.push(eId);
+            }
+            
+            if (data.scripts && Array.isArray(data.scripts)) {
+                for (const s of data.scripts) {
+                    const sId = `script_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
+                    await KB.saveNode({ id: sId, type: 'script', category: 'script', projectId: 'global', targetId: 'global', title: s.title, content: s.content });
+                    scriptIds.push(sId);
+                }
+            }
+
             await KB.saveNode({
                 id: data.id || `${data.entity_type}_${Date.now()}`,
                 type: data.entity_type || 'skill', category: data.entity_type || 'skill', projectId: 'global', targetId: 'global',
                 title: data.title, content: data.content, description: data.description || 'Mutada desde el Omni-Paper',
+                references: refIds, evals: evalIds, scripts: scriptIds,
                 keywords: ['#ai_mutated']
             });
-            alert(`✅ Entidad '${data.title}' mutada y sellada en el Córtex.`);
+            
+            alert(`✅ Entidad '${data.title}' sellada en el Córtex junto con ${refIds.length} Refs y ${evalIds.length} Evals.`);
             window.dispatchEvent(new CustomEvent('refresh-lms-data'));
         });
 
@@ -389,7 +418,7 @@ export default class PaperView {
         
         if (artifactData) {
             msg.classList.add('msg-ai-artifact');
-            msg.innerHTML = `📦 <b>Artifact Compilado (${artifactData.type})</b><br><br>Se ha generado el componente. Haz clic aquí para forzar su renderizado en el Sandbox.`;
+            msg.innerHTML = `📦 <b>Artifact Compilado (${artifactData.type})</b><br><br>Se ha generado el componente/documento. El motor lo está renderizando en el Sandbox.`;
             msg.addEventListener('click', () => {
                 if (this.dom.sbEmpty) this.dom.sbEmpty.style.display = 'none';
                 this.sandbox.renderArtifact(artifactData);
@@ -432,27 +461,34 @@ export default class PaperView {
 
             const currentArtifactState = this.sandbox && this.sandbox.currentData ? JSON.stringify(this.sandbox.currentData) : "Ningún artifact activo.";
 
-            // 🔥 PROTOCOLO OMNI-PAPER STRICT JSON (El fin del Markdown roto)
+            // 🔥 PROTOCOLO OMNI-PAPER STRICT JSON (Avanzado para Skills Complejas)
             systemPrompt += `
                 \n\n[PROTOCOLO DE ARTIFACTS UNIVERSAL (OMNI-PAPER)]:
                 Estás operando en un entorno de "Swarm Memory".
-                IMPORTANTE: DEBES responder SIEMPRE con un ÚNICO objeto JSON válido.
+                IMPORTANTE: DEBES responder SIEMPRE con un ÚNICO objeto JSON válido. NO uses bloques markdown.
                 Estructura obligatoria de tu respuesta:
                 {
                     "message": "Tu respuesta conversacional corta para el usuario.",
-                    "artifact": null // PON NULL SI NO GENERAS CÓDIGO/DOCS, O PON UN OBJETO SI GENERAS UN ENTREGABLE:
+                    "artifact": null // PON NULL SI NO GENERAS CÓDIGO/DOCS/SKILLS, O PON UN OBJETO SI GENERAS UN ENTREGABLE
                 }
 
-                SI GENERAS UN ARTIFACT, ELIGE UNO DE ESTOS 3 TIPOS para la propiedad "artifact":
+                SI EL USUARIO TE PIDE CREAR/EVOLUCIONAR UNA SKILL COMPLEJA, usa este formato para "artifact" (Permite adjuntar teoría, tests y código como nodos separados):
+                { 
+                    "type": "entity_mutation", 
+                    "entity_type": "skill", 
+                    "title": "Nombre de la Skill", 
+                    "description": "Resumen corto max 300 chars", 
+                    "content": "[VNA_NODE]...\\n[SOP]...\\n[SOC]...",
+                    "references": [ { "title": "Concepto.md", "content": "Teoría detallada..." } ],
+                    "evals": [ { "prompt": "Prueba de usuario simulada", "expected_output": "Resultado esperado" } ],
+                    "scripts": [ { "title": "script_de_apoyo.js", "content": "const a = 1;" } ]
+                }
                 
-                1. Web Component (UI/Code):
+                SI TE PIDEN UN COMPONENTE WEB UI:
                 { "type": "web_component", "html": "...", "css": "...", "js": "..." }
-                
-                2. Documento (Markdown, Legal, Texto plano):
-                { "type": "document", "title": "Nombre del doc", "content": "# Titulo\\nTexto..." }
-                
-                3. Mutación de Entidad (Si el usuario te pide crear/evolucionar una Skill o Agente):
-                { "type": "entity_mutation", "entity_type": "skill", "id": "opcional", "title": "Nombre", "description": "Resumen corto max 300 chars", "content": "[VNA_NODE]... [SOP]..." }
+
+                SI TE PIDEN UN DOCUMENTO:
+                { "type": "document", "title": "...", "content": "..." }
                 
                 ESTADO ACTUAL EN PANTALLA:
                 ${currentArtifactState}
@@ -470,7 +506,6 @@ export default class PaperView {
             const apiKey = localStorage.getItem(`tt_key_${globalEngine}`);
             if (!apiKey && globalEngine !== 'custom') throw new Error(`Falta API Key de ${globalEngine}.`);
 
-            // 🔥 FORZAMOS responseFormat a JSON OBJECT para que nunca vomite Markdown
             const response = await Orchestrator.callLLM({ 
                 provider: globalEngine, apiKey: apiKey, 
                 systemPrompt: systemPrompt, 
@@ -479,8 +514,18 @@ export default class PaperView {
                 temperature: 0.3 
             });
 
-            // Parseo garantizado gracias al JSON Protocol
-            const parsed = JSON.parse(response.content);
+            // 🔥 SOLUCIÓN AL BUG DEL DOBLE PARSEO
+            let parsed = response.content;
+            if (typeof parsed === 'string') {
+                try {
+                    parsed = JSON.parse(parsed);
+                } catch(e) {
+                    // Extracción agresiva por si la IA es rebelde
+                    const match = parsed.match(/\{[\s\S]*\}/);
+                    if (match) parsed = JSON.parse(match[0]);
+                    else throw new Error("La IA no devolvió un JSON parseable.");
+                }
+            }
             
             if (parsed.artifact) {
                 this.addMessage(parsed.message || "He generado el artifact.", 'ai', parsed.artifact);
@@ -489,7 +534,7 @@ export default class PaperView {
             }
 
         } catch (error) {
-            this.addMessage(`⚠️ Error de Kernel: ${error.message}. (Asegúrate de usar OpenAI GPT-4o o un modelo que soporte JSON Mode).`, 'ai');
+            this.addMessage(`⚠️ Error de Kernel: ${error.message}`, 'ai');
         } finally {
             this.dom.btnSend.disabled = false;
             this.dom.btnSend.innerHTML = "🚀 Enviar Directiva";
