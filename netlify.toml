@@ -1,31 +1,7 @@
 [build]
-  base    = "ia/dev"
   publish = "ia/dev"
 
-# Ruta de producción: main → teamtowershuma.com/ia
-# Todo el SPA vive bajo /ia/ — redirect catch-all para el router JS
 [[redirects]]
-  from   = "/ia/*"
-  to     = "/ia/dev/index.html"
+  from   = "/*"
+  to     = "/index.html"
   status = 200
-
-# Redirigir raíz a /ia/ si se accede directamente
-[[redirects]]
-  from   = "/"
-  to     = "/ia/dev/index.html"
-  status = 200
-
-[context.production]
-  base    = "ia/dev"
-  publish = "ia/dev"
-
-[context.branch-deploy]
-  base    = "ia/dev"
-  publish = "ia/dev"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
