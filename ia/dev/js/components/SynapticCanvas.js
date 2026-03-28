@@ -6,6 +6,7 @@
 
 import { KB }    from '../core/kb.js';
 import { store } from '../core/store.js';
+import { WoGenerator } from '../core/WoGenerator.js';
 
 export class SynapticCanvas {
 
@@ -173,36 +174,125 @@ export class SynapticCanvas {
 
     // ── Carga VNA 3D ──────────────────────────────────────────────
     async loadVNAData() {
-        const project = store.getState().projects.find(p => p.id === this.projectId);
-        if (!project) return;
+    const project = store.getState().projects.find(p => p.id === this.projectId);
+    if (!project) return;
 
-        this.nodes = [];
-        this.links = [];
+    this.nodes = [];
+    this.links = [];
 
-        const gravity = (l) => {
-            const lc = (l||'').toLowerCase();
-            if (lc.includes('anx'))  return 200;
-            if (lc.includes('aix'))  return 100;
-            if (lc.includes('dos'))  return 0;
-            if (lc.includes('baix')) return -100;
-            return -200;
-        };
+    // ── V10: vna_nodes + vna_exchanges del JSON-LD ────────────────────────
+    const vnaNodes     = project.vna_nodes     || [];
+    const vnaExchanges = project.vna_exchanges || [];
 
-        const colorsVNA = { '@anxaneta':'#ff5252','@aixecador':'#ff4081','@dosos':'#e040fb','@baixos':'#6366f1','@pinya':'#00e676' };
+    // Paleta semántica por rol VNA
+    const roleColors = {
+        'agent':        '#6366f1',
+        'human':        '#00e676',
+        'organization': '#ff9100',
+        'resource':     '#00b0ff',
+        'process':      '#e040fb'
+    };
 
-        (project.roles || []).forEach(r => {
-            if (!r.isArchived) {
-                this.nodes.push({ id: r.id, name: r.name, group: 'role', val: 25, color: colorsVNA[r.levelId] || '#6366f1', rawNode: r, fy: gravity(r.levelId) });
-            }
+    // Tamaño del nodo según tier (tier 0 = hub central, tier 3 = hoja)
+    const tierSize = (tier) => {
+        const t = Number(tier ?? 2);
+        return t === 0 ? 40 : t === 1 ? 28 : t === 2 ? 20 : 14;
+    };
+
+    // Gravedad vertical por tier — hub arriba, hojas abajo
+    const tierGravity = (tier) => {
+        const t = Number(tier ?? 2);
+        return t === 0 ? 250 : t === 1 ? 100 : t === 2 ? -100 : -250;
+    };
+
+    // Registrar nodos VNA V10
+    vnaNodes.forEach(n => {
+        this.nodes.push({
+            id:      n.id,
+            name:    n.label || n.id,
+            group:   n.role  || 'process',
+            val:     tierSize(n.tier),
+            color:   roleColors[n.role] || '#888',
+            rawNode: { ...n, type: 'vna-node', category: n.role || 'process' },
+            fy:      tierGravity(n.tier)
         });
+    });
 
-        const flows = project.vna_flows?.length ? project.vna_flows : (project.transactions || []);
-        flows.forEach(f => {
-            if (this.nodes.find(n => n.id === f.from) && this.nodes.find(n => n.id === f.to)) {
-                this.links.push({ source: f.from, target: f.to, isDependencies: false, rawTx: f, tipo: f.tipo || 'tangible' });
-            }
+    // Registrar exchanges como links
+    vnaExchanges.forEach(e => {
+        const srcExists = this.nodes.find(n => n.id === e.from);
+        const tgtExists = this.nodes.find(n => n.id === e.to);
+        if (!srcExists || !tgtExists) return;
+
+        this.links.push({
+            source:          e.from,
+            target:          e.to,
+            isDependencies:  false,
+            rawTx:           e,
+            tipo:            e.type     || 'tangible',
+            category:        e.category || 'deliverable',
+            automatable:     e.automatable || false,
+            label:           e.label    || ''
         });
+    });
+}
+
+// ─── AÑADIR loadVnaNetwork() JUSTO DESPUÉS de loadVNAData() ──────────────────
+//
+// Este método acepta directamente un VnaNetwork JSON-LD (sin necesitar
+// que esté persistido en el proyecto). Úsalo desde ValueMapView para
+// mostrar el mapa inmediatamente tras generarlo con Claude.
+
+async loadVnaNetwork(network) {
+    if (!network?.nodes) return;
+
+    this.nodes = [];
+    this.links = [];
+
+    const roleColors = {
+        'agent':        '#6366f1',
+        'human':        '#00e676',
+        'organization': '#ff9100',
+        'resource':     '#00b0ff',
+        'process':      '#e040fb'
+    };
+
+    const tierSize    = (tier) => { const t = Number(tier ?? 2); return t === 0 ? 40 : t === 1 ? 28 : t === 2 ? 20 : 14; };
+    const tierGravity = (tier) => { const t = Number(tier ?? 2); return t === 0 ? 250 : t === 1 ? 100 : t === 2 ? -100 : -250; };
+
+    (network.nodes || []).forEach(n => {
+        this.nodes.push({
+            id:      n.id,
+            name:    n.label || n.id,
+            group:   n.role  || 'process',
+            val:     tierSize(n.tier),
+            color:   roleColors[n.role] || '#888',
+            rawNode: { ...n, type: 'vna-node', category: n.role || 'process' },
+            fy:      tierGravity(n.tier)
+        });
+    });
+
+    (network.exchanges || []).forEach(e => {
+        if (!this.nodes.find(n => n.id === e.from)) return;
+        if (!this.nodes.find(n => n.id === e.to))   return;
+        this.links.push({
+            source:         e.from,
+            target:         e.to,
+            isDependencies: false,
+            rawTx:          e,
+            tipo:           e.type       || 'tangible',
+            category:       e.category   || 'deliverable',
+            automatable:    e.automatable || false,
+            label:          e.label      || ''
+        });
+    });
+
+    // Si el grafo ya está inicializado, actualizar datos en caliente
+    if (this.graph3D) {
+        this.graph3D.graphData({ nodes: this.nodes, links: this.links });
     }
+}
+
 
     // ── WebGL Graph ───────────────────────────────────────────────
     async _initWebGLGraph() {
