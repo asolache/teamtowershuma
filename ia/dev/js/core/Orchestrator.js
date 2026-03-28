@@ -1,6 +1,6 @@
 // ============================================================
 //  ia/dev/js/core/Orchestrator.js
-//  TeamTowers SOS — Sesión V10 · Fase 1
+//  TeamTowers SOS — Sesión V10 · Sprint 1
 //  Motor: anthropic/claude-sonnet-4-20250514 (primario)
 //  API Key: IndexedDB via KB.js (zero localStorage)
 //  Codex: SOS Antigravity Kernel V10
@@ -8,6 +8,7 @@
 
 import { store } from './store.js';
 import { KB } from './kb.js';
+import { SKILL_SEEDS, CLAUDE_VNA_NODE, CLAUDE_KB_NODE } from './skill-seeds.js';
 
 // ─── PADRÓN UNIVERSAL DE AGENTES CORE ───────────────────────
 const CORE_AGENTS = {
@@ -35,11 +36,46 @@ const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 
 // ─── CLAVE DE PERSISTENCIA EN KB (IndexedDB) ─────────────────
-const KB_KEY_PROVIDER    = 'sos_ai_provider';
-const KB_KEY_ANTHROPIC   = 'sos_key_anthropic';
-const KB_KEY_OPENAI      = 'sos_key_openai';
-const KB_KEY_DEEPSEEK    = 'sos_key_deepseek';
-const KB_KEY_GEMINI      = 'sos_key_gemini';
+const KB_KEY_PROVIDER  = 'sos_ai_provider';
+const KB_KEY_ANTHROPIC = 'sos_key_anthropic';
+const KB_KEY_OPENAI    = 'sos_key_openai';
+const KB_KEY_DEEPSEEK  = 'sos_key_deepseek';
+const KB_KEY_GEMINI    = 'sos_key_gemini';
+
+// ─── SYSTEM PROMPTS VNA (Sprint 1) ───────────────────────────
+const VNA_MAPPER_PROMPT = `Eres @agent_genesis_architect del SOS V10, experto en Value Network Analysis de Verna Allee.
+Construye redes de valor completas. DEVUELVE SOLO JSON-LD válido con @context "https://teamtowers.io/sos/v10/vna" y @type "VnaNetwork".
+Estructura: { "@context", "@type", "id", "mission", "vision", "nodes": [VnaNode], "exchanges": [VnaExchange], "meta": { "health_score": 0.0 } }
+VnaNode: { "id", "label", "role": "agent|human|organization|resource|process", "tier": 0-3, "skills": [], "fmv": 0.0, "slices": 0.0 }
+VnaExchange: { "id", "from", "to", "type": "tangible|intangible", "category": "payment|deliverable|resource|service|knowledge|trust|feedback|collaboration", "label", "trigger", "frequency": "once|recurring|on-demand", "automatable": true|false }
+Máximo 10 roles. Incluir health_score 0.0-1.0. Zero hallucinations.`;
+
+const SKILL_CRAFTER_PROMPT = `Eres @agent_skill_crafter del SOS V10. Creas skills en formato SKILL.md.
+Estructura OBLIGATORIA:
+---
+name: skill-nombre-kebab-case
+description: >
+  [Descripción "pushy" y específica con palabras clave para triggering]
+---
+# Título de la Skill
+[Instrucciones precisas. Ejemplos. Referencias si aplica.]
+Devuelve SOLO el contenido del SKILL.md. Sin explicaciones adicionales. Zero redundancy.`;
+
+const AGENT_DESIGNER_PROMPT = `Eres @agent_prompt_synthesizer del SOS V10. Diseñas agentes IA verticales Glass-Box.
+Devuelve EXACTAMENTE este JSON:
+{ "@type": "SosAgent", "id": "@agent_{vertical}_{role}", "name": "Nombre legible",
+  "globalRole": "ai-agent",
+  "profile": { "isAi": true, "guardian": "{arquetipo: sage|magician|hero|ruler|caregiver|explorer|jester|outlaw|creator}",
+    "preferredEngine": "anthropic", "active_skills": ["skill-ids"],
+    "vertical": "{sector}", "system_prompt": "Prompt completo Glass-Box para este agente..." } }
+El system_prompt debe: definir el rol con precisión, listar capacidades concretas, especificar formato de output (JSON-LD cuando aplique), incluir restricciones Glass-Box.`;
+
+const NETWORK_HEALER_PROMPT = `Eres @agent_synaptic_weaver del SOS V10. Detectas y reparas patologías VNA.
+Devuelve SOLO JSON:
+{ "pathologies": [{ "type": "hub_unico|rol_aislado|reciprocidad_rota|flujo_sin_receptor|slices_desequilibrados", "affected": [], "severity": "critical|warning|info" }],
+  "recommendations": [{ "action": "", "priority": "high|medium|low" }],
+  "healed_exchanges": [VnaExchange],
+  "health_score": 0.0 }`;
 
 // ═════════════════════════════════════════════════════════════
 //  OrchestratorCore — Clase principal
@@ -47,18 +83,42 @@ const KB_KEY_GEMINI      = 'sos_key_gemini';
 class OrchestratorCore {
 
     constructor() {
-        this.version      = 'V10.0-Antigravity-Anthropic-Primary';
-        this.isListening  = false;
-        this._kbReady     = false;
+        this.version     = 'V10.1-Antigravity-Sprint1';
+        this.isListening = false;
+        this._kbReady    = false;
     }
 
     // ──────────────────────────────────────────────────────────
-    //  BOOT: asegura KB inicializado antes de cualquier operación
+    //  BOOT: inicializa KB, siembra SKILL_SEEDS y registra Claude
+    //  Idempotente — seguro llamar múltiples veces
     // ──────────────────────────────────────────────────────────
     async _ensureKB() {
-        if (!this._kbReady) {
-            await KB.init();
-            this._kbReady = true;
+        if (this._kbReady) return;
+
+        await KB.init();
+        this._kbReady = true;
+
+        // ── Sembrar skills del Swarm si no existen ────────────
+        for (const seed of SKILL_SEEDS) {
+            const existing = await KB.getNode(seed.id);
+            if (!existing) {
+                await KB.saveNode(seed);
+                console.log(`[V10·KB] 🌱 Skill sembrada: ${seed.id}`);
+            }
+        }
+
+        // ── Registrar nodo Claude en KB si no existe ──────────
+        const claudeKB = await KB.getNode(CLAUDE_KB_NODE.id);
+        if (!claudeKB) {
+            await KB.saveNode(CLAUDE_KB_NODE);
+            console.log('[V10·KB] 🤖 Claude VNA Node registrado en KB.');
+        }
+
+        // ── Registrar Claude en globalUsers si no existe ──────
+        const state = store.getState();
+        if (!state.globalUsers?.find(u => u.id === CLAUDE_VNA_NODE.id)) {
+            await store.dispatch({ type: 'ADD_USER', payload: CLAUDE_VNA_NODE });
+            console.log('[V10·Store] 🤖 Claude añadido a globalUsers.');
         }
     }
 
@@ -68,21 +128,12 @@ class OrchestratorCore {
     async _getAvailableProviders(overrideEngine = null) {
         await this._ensureKB();
 
-        const globalEngine    = (await KB.getNode(KB_KEY_PROVIDER))?.value || 'anthropic';
+        const globalEngine     = (await KB.getNode(KB_KEY_PROVIDER))?.value || 'anthropic';
         const actualPreference = overrideEngine || globalEngine;
 
-        // Cadena de fallback: preferido → global → anthropic → resto
-        const fallbackChain = [
-            actualPreference,
-            globalEngine,
-            'anthropic',
-            'openai',
-            'deepseek',
-            'gemini',
-            'custom'
-        ];
-        const uniqueChain = [...new Set(fallbackChain)];
-        const available   = [];
+        const fallbackChain = [actualPreference, globalEngine, 'anthropic', 'openai', 'deepseek', 'gemini', 'custom'];
+        const uniqueChain   = [...new Set(fallbackChain)];
+        const available     = [];
 
         for (const provider of uniqueChain) {
             if (provider === 'custom') {
@@ -124,7 +175,6 @@ class OrchestratorCore {
         const skillNode = await KB.getNode(skillId);
         if (!skillNode || (skillNode.category !== 'skill' && skillNode.type !== 'skill')) return null;
 
-        // Cache: ya sincronizado
         if (skillNode.anthropic_skill_id) {
             return { id: skillNode.anthropic_skill_id, version: skillNode.anthropic_version || 'latest' };
         }
@@ -160,9 +210,9 @@ class OrchestratorCore {
             const response = await fetch('https://api.anthropic.com/v1/skills', {
                 method: 'POST',
                 headers: {
-                    'x-api-key': apiKey,
-                    'anthropic-version': ANTHROPIC_VERSION,
-                    'anthropic-beta': 'skills-2025-10-02,files-api-2025-04-14',
+                    'x-api-key':                          apiKey,
+                    'anthropic-version':                   ANTHROPIC_VERSION,
+                    'anthropic-beta':                      'skills-2025-10-02,files-api-2025-04-14',
                     'anthropic-dangerously-allow-browser': 'true'
                 },
                 body: formData
@@ -193,9 +243,9 @@ class OrchestratorCore {
         preferredEngine = 'anthropic',
         systemPrompt,
         userPrompt,
-        responseFormat = 'json_object',   // 'json_object' | 'text'
+        responseFormat = 'json_object',
         temperature    = 0.2,
-        mcpSkills      = []               // IDs de skills KB a inyectar vía Anthropic
+        mcpSkills      = []
     }) {
         const providers = await this._getAvailableProviders(preferredEngine);
         let lastError   = null;
@@ -225,13 +275,12 @@ class OrchestratorCore {
                         };
 
                         const headers = {
-                            'x-api-key':                         apiKey,
-                            'anthropic-version':                  ANTHROPIC_VERSION,
-                            'content-type':                       'application/json',
-                            'anthropic-dangerously-allow-browser':'true'
+                            'x-api-key':                          apiKey,
+                            'anthropic-version':                   ANTHROPIC_VERSION,
+                            'content-type':                        'application/json',
+                            'anthropic-dangerously-allow-browser': 'true'
                         };
 
-                        // Inyección de Skills MCP
                         if (mcpSkills.length > 0) {
                             const mappedSkills = [];
                             for (const sId of mcpSkills) {
@@ -257,7 +306,6 @@ class OrchestratorCore {
 
                         const data = await response.json();
 
-                        // Extraer texto o resultado de code_execution
                         const execBlock = data.content.find(c => c.type === 'tool_use' && c.name === 'code_execution');
                         if (execBlock) {
                             textResponse = JSON.stringify({
@@ -275,8 +323,8 @@ class OrchestratorCore {
 
                         if (data.usage) {
                             tokenUsage = {
-                                prompt_tokens:     data.usage.input_tokens     || 0,
-                                completion_tokens: data.usage.output_tokens    || 0,
+                                prompt_tokens:     data.usage.input_tokens                              || 0,
+                                completion_tokens: data.usage.output_tokens                             || 0,
                                 total_tokens:      (data.usage.input_tokens + data.usage.output_tokens) || 0
                             };
                         }
@@ -288,22 +336,14 @@ class OrchestratorCore {
                             { role: 'system', content: systemPrompt },
                             { role: 'user',   content: userPrompt  }
                         ];
-                        const body = {
-                            model:       'gpt-4o',
-                            temperature,
-                            max_tokens:  8192,
-                            messages
-                        };
-                        if (responseFormat === 'json_object') {
-                            body.response_format = { type: 'json_object' };
-                        }
+                        const body = { model: 'gpt-4o', temperature, max_tokens: 8192, messages };
+                        if (responseFormat === 'json_object') body.response_format = { type: 'json_object' };
 
                         const response = await fetch('https://api.openai.com/v1/chat/completions', {
                             method:  'POST',
                             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
                             body:    JSON.stringify(body)
                         });
-
                         if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
 
                         const data   = await response.json();
@@ -323,22 +363,14 @@ class OrchestratorCore {
                             { role: 'system', content: systemPrompt },
                             { role: 'user',   content: userPrompt  }
                         ];
-                        const body = {
-                            model:       'deepseek-chat',
-                            temperature,
-                            max_tokens:  8192,
-                            messages
-                        };
-                        if (responseFormat === 'json_object') {
-                            body.response_format = { type: 'json_object' };
-                        }
+                        const body = { model: 'deepseek-chat', temperature, max_tokens: 8192, messages };
+                        if (responseFormat === 'json_object') body.response_format = { type: 'json_object' };
 
                         const response = await fetch('https://api.deepseek.com/chat/completions', {
                             method:  'POST',
                             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
                             body:    JSON.stringify(body)
                         });
-
                         if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
 
                         const data   = await response.json();
@@ -365,7 +397,6 @@ class OrchestratorCore {
                                 generationConfig: { temperature, maxOutputTokens: 8192, responseMimeType: mimeType }
                             })
                         });
-
                         if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
 
                         const data = await response.json();
@@ -415,13 +446,12 @@ class OrchestratorCore {
                     }
 
                     const latencyMs = Date.now() - startTime;
-
                     return {
-                        content:  parsedContent,
+                        content:   parsedContent,
                         telemetry: {
                             provider,
-                            model:   provider === 'anthropic' ? ANTHROPIC_MODEL : provider,
-                            tokens:  tokenUsage,
+                            model:     provider === 'anthropic' ? ANTHROPIC_MODEL : provider,
+                            tokens:    tokenUsage,
                             latencyMs
                         }
                     };
@@ -439,19 +469,16 @@ class OrchestratorCore {
 
     // ══════════════════════════════════════════════════════════
     //  dispatch — Router de rutinas del Swarm
-    //  Artifact JSON-LD obligatorio en salida
     // ══════════════════════════════════════════════════════════
     async dispatch({ routine, agent, context = {}, constraints = {} }) {
         const {
-            maxTokens   = 1000,
-            strictJSON  = true,
-            engine      = 'anthropic',
-            mcpSkills   = []
+            strictJSON = true,
+            engine     = 'anthropic',
+            mcpSkills  = []
         } = constraints;
 
         await this._ensureKB();
 
-        // Recuperar prompt global del agente desde KB
         const promptNode = await KB.getNode(`prompt_global_${agent.replace('@', '')}`);
         const agentSOP   = promptNode?.content || `Eres ${agent}, agente del Swarm SOS V10. Opera con precisión y Glass-Box.`;
 
@@ -471,32 +498,181 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
             preferredEngine: engine,
             systemPrompt,
             userPrompt,
-            responseFormat: strictJSON ? 'json_object' : 'text',
-            temperature:    0.2,
+            responseFormat:  strictJSON ? 'json_object' : 'text',
+            temperature:     0.2,
             mcpSkills
         });
 
-        // Envolver en envelope JSON-LD SosArtifact si no viene ya envuelto
-        const payload = response.content;
+        const payload  = response.content;
         const artifact = {
-            '@context':    'https://teamtowers.io/sos/v10',
-            '@type':       'SosArtifact',
-            artifactType:  'routine_output',
-            agentId:       agent,
+            '@context':   'https://teamtowers.io/sos/v10',
+            '@type':      'SosArtifact',
+            artifactType: 'routine_output',
+            agentId:      agent,
             routine,
-            timestamp:     new Date().toISOString(),
-            payload:       payload?.payload || payload,
-            telemetry:     response.telemetry,
+            timestamp:    new Date().toISOString(),
+            payload:      payload?.payload || payload,
+            telemetry:    response.telemetry,
             audit: {
-                tddPassed:  false,
-                notarized:  false,
-                hash:       `sha256:${Date.now().toString(16)}`
+                tddPassed: false,
+                notarized: false,
+                hash:      `sha256:${Date.now().toString(16)}`
             }
         };
 
-        // Telemetría al store
         if (context.projectId) {
             this._logTelemetry(context.projectId, agent, response.telemetry.provider, routine, response.telemetry);
+        }
+
+        return artifact;
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  designVnaMap — Genera mapa VNA completo de un proyecto
+    // ══════════════════════════════════════════════════════════
+    async designVnaMap({ projectId, description, domain = 'auto' }) {
+        const artifact = await this.dispatch({
+            routine:     'designEcosystemVNA',
+            agent:       CORE_AGENTS.ARCHITECT,
+            context:     { projectId, description, domain },
+            constraints: {
+                strictJSON: true,
+                engine:     'anthropic',
+                mcpSkills:  ['skill-vna-mapper', 'skill_vna_architect']
+            }
+        });
+
+        const network = artifact.payload;
+        if (!network?.nodes) return artifact;
+
+        for (const node of (network.nodes || [])) {
+            await store.dispatch({ type: 'VNA_NODE_ADD', payload: { projectId, node } });
+        }
+        for (const exchange of (network.exchanges || [])) {
+            await store.dispatch({ type: 'VNA_EXCHANGE_REGISTER', payload: { projectId, exchange } });
+        }
+
+        await KB.saveNode({
+            id:        `vna-network-${projectId}`,
+            type:      'vna-network',
+            projectId,
+            ...network
+        });
+
+        return artifact;
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  createSkillFromVna — Crea skill SKILL.md desde nodo VNA
+    // ══════════════════════════════════════════════════════════
+    async createSkillFromVna({ projectId, skillName, skillContext, roleName }) {
+        const artifact = await this.dispatch({
+            routine:     'createSkill',
+            agent:       CORE_AGENTS.CRAFTER,
+            context:     { skillName, roleName, skillContext, projectId },
+            constraints: { strictJSON: false, engine: 'anthropic', mcpSkills: ['skill_crafter_master'] }
+        });
+
+        const skillContent = typeof artifact.payload === 'string'
+            ? artifact.payload
+            : artifact.payload?.content || JSON.stringify(artifact.payload);
+
+        const kbKey     = `skill-${skillName.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase()}-${Date.now()}`;
+        const skillNode = {
+            id:          kbKey,
+            type:        'skill',
+            category:    'skill',
+            title:       roleName || skillName,
+            description: `Skill generada desde VNA para el rol: ${roleName}`,
+            content:     skillContent,
+            projectId,
+            references:  [],
+            evals:       [],
+            scripts:     []
+        };
+
+        await KB.saveNode(skillNode);
+
+        const slices = Number(((artifact.telemetry?.tokens?.completion_tokens || 0) / 1000 * 0.015 * 2.0).toFixed(3));
+        await store.dispatch({
+            type:    'SKILL_CREATED',
+            payload: {
+                projectId,
+                skillId:       kbKey,
+                skillName,
+                kbKey,
+                createdBy:     'node-claude-sonnet-v10',
+                slicesCharged: slices
+            }
+        });
+
+        return artifact;
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  designVerticalAgent — Fabrica un agente IA para un vertical
+    // ══════════════════════════════════════════════════════════
+    async designVerticalAgent({ projectId, vertical, sector, useCases = [] }) {
+        const artifact = await this.dispatch({
+            routine:     'synthesizeAgentPrompt',
+            agent:       CORE_AGENTS.SYNTHESIZER,
+            context:     { vertical, sector, useCases, projectId },
+            constraints: { strictJSON: true, engine: 'anthropic', mcpSkills: ['skill_prompt_synthesizer'] }
+        });
+
+        const agentDef = artifact.payload;
+        if (!agentDef?.id) return artifact;
+
+        const kbKey = `agent-vertical-${vertical.toLowerCase()}-${Date.now()}`;
+        await KB.saveNode({ id: kbKey, type: 'agent-vertical', projectId, vertical, sector, ...agentDef });
+
+        await store.dispatch({
+            type:    'ADD_USER',
+            payload: {
+                id:         agentDef.id,
+                name:       agentDef.name || `${vertical} Agent`,
+                globalRole: 'ai-agent',
+                profile:    agentDef.profile || { isAi: true, preferredEngine: 'anthropic', active_skills: [] }
+            }
+        });
+
+        return artifact;
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  curateNetworkHealth — Detecta y repara patologías VNA
+    // ══════════════════════════════════════════════════════════
+    async curateNetworkHealth({ projectId }) {
+        const state   = store.getState();
+        const project = state.projects?.find(p => p.id === projectId);
+        if (!project) return null;
+
+        const networkContext = {
+            nodes:     project.vna_nodes     || [],
+            exchanges: project.vna_exchanges || [],
+            ledger:    project.ledger        || [],
+            projectId
+        };
+
+        const artifact = await this.dispatch({
+            routine:     'autoHealNetwork',
+            agent:       CORE_AGENTS.WEAVER,
+            context:     networkContext,
+            constraints: { strictJSON: true, engine: 'anthropic', mcpSkills: ['skill_knowledge_harvest'] }
+        });
+
+        const result = artifact.payload;
+
+        for (const exchange of (result?.healed_exchanges || [])) {
+            await store.dispatch({ type: 'VNA_EXCHANGE_REGISTER', payload: { projectId, exchange } });
+        }
+
+        if (result?.pathologies?.some(p => p.severity === 'critical')) {
+            await this.autoHealNetwork({
+                projectId,
+                task:       { id: `heal-${Date.now()}`, assigneeId: CORE_AGENTS.WEAVER },
+                failedSocs: result.pathologies.map(p => p.type)
+            });
         }
 
         return artifact;
@@ -560,8 +736,8 @@ Responde como ${agentNode.id} al mensaje anterior.`;
                 preferredEngine: engine,
                 systemPrompt,
                 userPrompt,
-                responseFormat: 'text',
-                temperature:    0.4
+                responseFormat:  'text',
+                temperature:     0.4
             });
 
             const responseText = typeof response.content === 'string'
@@ -596,7 +772,6 @@ Responde como ${agentNode.id} al mensaje anterior.`;
     async autoHealNetwork({ projectId, task, failedSocs }) {
         try {
             const state    = store.getState();
-            const project  = state.projects?.find(p => p.id === projectId);
             const allNodes = state.globalUsers || [];
             const aiNodes  = allNodes.filter(u => u.profile?.isAi && u.id !== CORE_AGENTS.SYNTHESIZER);
 
@@ -618,8 +793,8 @@ ${aiNodes.map(a => `- ${a.id} (${a.profile?.preferredEngine || 'anthropic'})`).j
                 preferredEngine: 'anthropic',
                 systemPrompt,
                 userPrompt,
-                responseFormat: 'json_object',
-                temperature:    0.1
+                responseFormat:  'json_object',
+                temperature:     0.1
             });
 
             const result = response.content;
@@ -638,13 +813,13 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
                 payload: {
                     projectId,
                     log: {
-                        id:              `log_heal_${Date.now()}`,
-                        date:            Date.now(),
-                        authorId:        CORE_AGENTS.SYNTHESIZER,
-                        relatedTxHash:   task.hash || task.id,
-                        content:         contentLog,
-                        mentions:        [result.assignedNode, task.assigneeId],
-                        readBy:          []
+                        id:            `log_heal_${Date.now()}`,
+                        date:          Date.now(),
+                        authorId:      CORE_AGENTS.SYNTHESIZER,
+                        relatedTxHash: task.hash || task.id,
+                        content:       contentLog,
+                        mentions:      [result.assignedNode, task.assigneeId],
+                        readBy:        []
                     }
                 }
             });
@@ -659,7 +834,7 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
     }
 
     // ══════════════════════════════════════════════════════════
-    //  Telemetría — registra coste y tokens en el store Redux
+    //  Telemetría — registra coste y tokens + alimenta Ledger
     // ══════════════════════════════════════════════════════════
     _logTelemetry(projectId, agentId, engine, actionType, telemetryData) {
         if (!telemetryData) return;
@@ -674,6 +849,7 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
         );
         const finalCost = baseCost * (1 + (ecoConfig.markup_margin || 0) + (ecoConfig.premium_features_fee || 0));
 
+        // ── Telemetría existente (no tocar) ───────────────────
         store.dispatch({
             type:    'LOG_TELEMETRY',
             payload: {
@@ -687,11 +863,27 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
                 latencyMs:     telemetryData.latencyMs
             }
         });
+
+        // ── NUEVO V10: alimentar Ledger Slicing Pie ───────────
+        if (projectId) {
+            store.dispatch({
+                type:    'LEDGER_AI_COST',
+                payload: {
+                    projectId,
+                    agentId,
+                    engine,
+                    routine:       actionType,
+                    input_tokens:  telemetryData.tokens.prompt_tokens     || 0,
+                    output_tokens: telemetryData.tokens.completion_tokens || 0,
+                    latencyMs:     telemetryData.latencyMs                || 0,
+                    multiplier:    2.0
+                }
+            });
+        }
     }
 
     // ══════════════════════════════════════════════════════════
     //  API de Settings — guardar/leer claves desde KB
-    //  Usado por SettingsVault V10
     // ══════════════════════════════════════════════════════════
     async saveApiKey(provider, apiKey) {
         await this._ensureKB();

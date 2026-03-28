@@ -134,7 +134,7 @@ class Store {
     _reducer(state, action) {
         let newState = { ...state };
         const findProject = (id) => newState.projects.findIndex(p => p.id === id);
-        let projIdx, proj;
+        let projIdx;
 
         switch (action.type) {
 
@@ -175,20 +175,24 @@ class Store {
             case 'CREATE_PROJECT':
                 if (!newState.projects.find(p => p.id === action.payload.id)) {
                     newState.projects.push({
-                        id: action.payload.id,
-                        nombre: action.payload.nombre || 'Nuevo Ecosistema',
-                        presentation: action.payload.presentation || '',
-                        ownerId: action.payload.ownerId || null,
-                        usuarios: [],
-                        roles: [],
-                        vna_flows: [],
-                        ledger: [],
-                        telemetry: [],
-                        sprints: [],
+                        id:            action.payload.id,
+                        nombre:        action.payload.nombre || 'Nuevo Ecosistema',
+                        presentation:  action.payload.presentation || '',
+                        ownerId:       action.payload.ownerId || null,
+                        usuarios:      [],
+                        roles:         [],
+                        vna_flows:     [],
+                        vna_nodes:     [],    // ← V10: nodos VNA del mapa
+                        vna_exchanges: [],    // ← V10: intercambios VNA
+                        skills:        [],    // ← V10: skills creadas en el proyecto
+                        ledger:        [],
+                        telemetry:     [],
+                        sprints:       [],
+                        logs:          [],
                         activeSprintId: null,
-                        workOrders: [],
-                        isArchived: false,
-                        createdAt: Date.now(),
+                        workOrders:    [],
+                        isArchived:    false,
+                        createdAt:     Date.now(),
                         ...action.payload
                     });
                 }
@@ -221,12 +225,69 @@ class Store {
                 }
                 break;
 
-            // ── FLOWS VNA ─────────────────────────────────────────
+            // ── FLOWS VNA (legacy V9 — mantener) ─────────────────
             case 'ADD_FLOW':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
                     if (!newState.projects[projIdx].vna_flows) newState.projects[projIdx].vna_flows = [];
                     newState.projects[projIdx].vna_flows.push(action.payload.flow);
+                }
+                break;
+
+            // ── VNA NODES V10 ─────────────────────────────────────
+            case 'VNA_NODE_ADD':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].vna_nodes) newState.projects[projIdx].vna_nodes = [];
+                    // Idempotente: evitar duplicados por id
+                    const nodeExists = newState.projects[projIdx].vna_nodes.find(n => n.id === action.payload.node.id);
+                    if (!nodeExists) newState.projects[projIdx].vna_nodes.push(action.payload.node);
+                }
+                break;
+
+            case 'VNA_NODE_UPDATE':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    const vnIdx = (newState.projects[projIdx].vna_nodes || []).findIndex(n => n.id === action.payload.nodeId);
+                    if (vnIdx > -1) Object.assign(newState.projects[projIdx].vna_nodes[vnIdx], action.payload.updates);
+                }
+                break;
+
+            case 'VNA_EXCHANGE_REGISTER':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].vna_exchanges) newState.projects[projIdx].vna_exchanges = [];
+                    newState.projects[projIdx].vna_exchanges.push({
+                        ...action.payload.exchange,
+                        registeredAt: Date.now()
+                    });
+                }
+                break;
+
+            // ── SKILLS V10 ────────────────────────────────────────
+            case 'SKILL_CREATED':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].skills) newState.projects[projIdx].skills = [];
+                    newState.projects[projIdx].skills.push({
+                        id:            action.payload.skillId,
+                        name:          action.payload.skillName,
+                        kbKey:         action.payload.kbKey,
+                        createdBy:     action.payload.createdBy || 'node-claude-sonnet-v10',
+                        slicesCharged: Number((action.payload.slicesCharged || 0).toFixed(3)),
+                        timestamp:     Date.now()
+                    });
+                }
+                break;
+
+            case 'SKILL_CURATED':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    const skIdx = (newState.projects[projIdx].skills || []).findIndex(s => s.id === action.payload.skillId);
+                    if (skIdx > -1) Object.assign(newState.projects[projIdx].skills[skIdx], {
+                        ...action.payload.updates,
+                        curatedAt: Date.now()
+                    });
                 }
                 break;
 
@@ -239,8 +300,38 @@ class Store {
                     newState.projects[projIdx].ledger.push({
                         ...action.payload,
                         // Slices siempre con 3 decimales — Codex V10
-                        slices: Number(((action.payload.realHours || 0) * (action.payload.fmv || 50) * (action.payload.multiplier || 1)).toFixed(3)),
+                        slices:    Number(((action.payload.realHours || 0) * (action.payload.fmv || 50) * (action.payload.multiplier || 1)).toFixed(3)),
                         timestamp: Date.now()
+                    });
+                }
+                break;
+
+            // ── LEDGER AI COST V10 (coste real IA → Slicing Pie) ──
+            case 'LEDGER_AI_COST':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].ledger) newState.projects[projIdx].ledger = [];
+
+                    const pricing  = newState.config.economics.base_pricing[action.payload.engine]
+                                   || { input: 3.00, output: 15.00 };
+                    const markup   = 1
+                                   + (newState.config.economics.markup_margin          || 0)
+                                   + (newState.config.economics.premium_features_fee   || 0);
+                    const baseCost = (action.payload.input_tokens  / 1_000_000) * pricing.input
+                                   + (action.payload.output_tokens / 1_000_000) * pricing.output;
+                    const slices   = Number((baseCost * markup * (action.payload.multiplier || 2.0)).toFixed(3));
+
+                    newState.projects[projIdx].ledger.push({
+                        type:          'AI_COST',
+                        agentId:       action.payload.agentId  || 'node-claude-sonnet-v10',
+                        engine:        action.payload.engine   || 'anthropic',
+                        routine:       action.payload.routine  || 'unknown',
+                        input_tokens:  action.payload.input_tokens  || 0,
+                        output_tokens: action.payload.output_tokens || 0,
+                        cost_usd:      Number((baseCost * markup).toFixed(6)),
+                        slices,
+                        realHours:     (action.payload.latencyMs || 0) / 3_600_000,
+                        timestamp:     Date.now()
                     });
                 }
                 break;
@@ -268,6 +359,30 @@ class Store {
                 if (projIdx > -1) {
                     if (!newState.projects[projIdx].telemetry) newState.projects[projIdx].telemetry = [];
                     newState.projects[projIdx].telemetry.push({ ...action.payload, timestamp: Date.now() });
+                }
+                break;
+
+            // ── LOGS (Usenet + Auto-Heal) ─────────────────────────
+            case 'ADD_LOG_ENTRY':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].logs) newState.projects[projIdx].logs = [];
+                    newState.projects[projIdx].logs.push(action.payload.log);
+                }
+                break;
+
+            case 'MARK_LOG_READ':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    const logIdx = (newState.projects[projIdx].logs || []).findIndex(l => l.id === action.payload.logId);
+                    if (logIdx > -1) {
+                        if (!newState.projects[projIdx].logs[logIdx].readBy) {
+                            newState.projects[projIdx].logs[logIdx].readBy = [];
+                        }
+                        if (!newState.projects[projIdx].logs[logIdx].readBy.includes(action.payload.userId)) {
+                            newState.projects[projIdx].logs[logIdx].readBy.push(action.payload.userId);
+                        }
+                    }
                 }
                 break;
 
