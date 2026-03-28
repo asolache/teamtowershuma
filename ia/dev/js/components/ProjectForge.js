@@ -2,10 +2,11 @@
 // TEAMTOWERS SOS V10 — PROJECT FORGE
 // Ruta: ia/dev/js/components/ProjectForge.js
 // Genesis de Ecosistemas VNA · IA Architect · Roles & Flows auto-diseñados
+// V10: inicializa vna_nodes, vna_exchanges, skills, settings.automation_level
 // =============================================================================
 
-import { store }      from '../core/store.js';
-import { KB }         from '../core/kb.js';
+import { store }        from '../core/store.js';
+import { KB }           from '../core/kb.js';
 import { Orchestrator } from '../core/Orchestrator.js';
 
 export class ProjectForge {
@@ -20,12 +21,13 @@ export class ProjectForge {
         this.sectorsFromKB      = {};
         this.enrichedVision     = '';
         this.dom                = {};
+        this._pendingResponse   = null;
 
         this.guardians = [
             { id:'creator',   label:'🎨 Creador'     }, { id:'caregiver', label:'❤️ Cuidador'   },
             { id:'ruler',     label:'👑 Gobernante'   }, { id:'jester',    label:'🃏 Bufón'       },
             { id:'everyman',  label:'🤝 Ciudadano'    }, { id:'lover',     label:'🔥 Amante'      },
-            { id:'hero',      label:'⚔️ Héroe'        }, { id:'outlaw',    label:'🏴‍☠️ Rebelde'    },
+            { id:'hero',      label:'⚔️ Héroe'        }, { id:'outlaw',    label:'🏴‍☠️ Rebelde'   },
             { id:'magician',  label:'✨ Mago'          }, { id:'innocent',  label:'🕊️ Inocente'   },
             { id:'explorer',  label:'🧭 Explorador'   }, { id:'sage',      label:'🦉 Sabio'       }
         ];
@@ -38,7 +40,7 @@ export class ProjectForge {
                 ? await KB.getAvailableSectors()
                 : {};
 
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams         = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
 
         let sectorOptions = `<optgroup label="📦 Catálogo del Knowledge Base">`;
@@ -74,6 +76,17 @@ export class ProjectForge {
             .role-draft-item input,.role-draft-item select { background:rgba(0,0,0,0.5); border:1px solid #333; color:white; padding:8px 10px; border-radius:8px; font-size:0.85rem; outline:none; font-family:inherit; width:100%; box-sizing:border-box; }
 
             .tx-preview-list { display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto; }
+
+            /* ── Automation selector V10 ─────────────────────── */
+            .auto-selector { background:rgba(99,102,241,0.04); border:1px solid rgba(99,102,241,0.15); border-radius:14px; padding:16px; margin-bottom:1.5rem; }
+            .auto-selector-title { font-size:0.72rem; font-weight:900; color:#666; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+            .auto-option { display:flex; align-items:center; gap:10px; cursor:pointer; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); margin-bottom:5px; transition:0.2s; }
+            .auto-option:hover { background:rgba(255,255,255,0.02); }
+            .auto-option.selected { border-color:rgba(99,102,241,0.35); background:rgba(99,102,241,0.06); }
+            .auto-option input[type="radio"] { accent-color:var(--accent-indigo,#6366f1); }
+            .auto-option-label { font-size:0.82rem; font-weight:bold; color:white; }
+            .auto-option-desc  { font-size:0.65rem; color:#555; margin-top:1px; }
+
             .cascade-toggle-box { background:rgba(99,102,241,0.05); border:1px dashed rgba(99,102,241,0.3); border-radius:12px; padding:16px; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:15px; }
             .cascade-toggle-box label { color:white; font-weight:bold; font-size:0.95rem; display:flex; align-items:center; gap:10px; cursor:pointer; }
 
@@ -185,7 +198,7 @@ export class ProjectForge {
             <div id="pf-step2" style="display:none;">
                 <div class="pf-header" style="margin-bottom:2rem;">
                     <h1>Alineación de Equipo</h1>
-                    <p>Audita la estructura y forja el cerebro de las IAs antes de inyectar la red.</p>
+                    <p>Audita la estructura, configura la automatización y forja el cerebro de las IAs antes de lanzar.</p>
                 </div>
 
                 <div class="step2-grid">
@@ -198,6 +211,23 @@ export class ProjectForge {
                         <h3 style="color:white; margin-top:0;">2. Tuberías VNA (Preview)</h3>
                         <div class="tx-preview-list" id="txPreviewList"></div>
                     </div>
+                </div>
+
+                <!-- ── Automatización V10 ─────────────────────── -->
+                <div class="auto-selector">
+                    <div class="auto-selector-title">⚙️ Nivel de automatización del Swarm</div>
+                    ${[
+                        { value:'full_auto',    icon:'⚡', label:'Full Auto', desc:'Work Orders → Swarm directo, sin confirmación' },
+                        { value:'review_first', icon:'👁️', label:'Review First', desc:'WOs generadas pero esperan confirmación humana' },
+                        { value:'human_only',   icon:'👤', label:'Human Only', desc:'WOs visibles pero sin asignación IA automática' }
+                    ].map(opt => `
+                    <label class="auto-option ${opt.value === 'review_first' ? 'selected' : ''}" id="autoOpt_${opt.value}">
+                        <input type="radio" name="pfAutoLevel" value="${opt.value}" ${opt.value === 'review_first' ? 'checked' : ''}>
+                        <div>
+                            <div class="auto-option-label">${opt.icon} ${opt.label}</div>
+                            <div class="auto-option-desc">${opt.desc}</div>
+                        </div>
+                    </label>`).join('')}
                 </div>
 
                 <div class="cascade-toggle-box">
@@ -253,54 +283,60 @@ export class ProjectForge {
 
     _attachEvents() {
         this.dom = {
-            step1:            this.container.querySelector('#pf-step1'),
-            loading:          this.container.querySelector('#pf-loading'),
-            loadingText:      this.container.querySelector('#pf-loading-text'),
-            step2:            this.container.querySelector('#pf-step2'),
-            dot1:             this.container.querySelector('#pf-dot1'),
-            dot2:             this.container.querySelector('#pf-dot2'),
-            btnLoadTemplate:  this.container.querySelector('#btnLoadTemplate'),
-            btnEvaluateAI:    this.container.querySelector('#btnEvaluateAI'),
+            step1:             this.container.querySelector('#pf-step1'),
+            loading:           this.container.querySelector('#pf-loading'),
+            loadingText:       this.container.querySelector('#pf-loading-text'),
+            step2:             this.container.querySelector('#pf-step2'),
+            dot1:              this.container.querySelector('#pf-dot1'),
+            dot2:              this.container.querySelector('#pf-dot2'),
+            btnLoadTemplate:   this.container.querySelector('#btnLoadTemplate'),
+            btnEvaluateAI:     this.container.querySelector('#btnEvaluateAI'),
             btnAnswerAndForge: this.container.querySelector('#btnAnswerAndForge'),
-            btnBack:          this.container.querySelector('#btnBack'),
-            btnLaunch:        this.container.querySelector('#btnLaunch'),
-            btnAddCustom:     this.container.querySelector('#btnAddCustomRole'),
-            rolesContainer:   this.container.querySelector('#draftRolesContainer'),
-            txPreviewList:    this.container.querySelector('#txPreviewList'),
-            tddErrorPanel:    this.container.querySelector('#tddErrorPanel'),
-            tddErrorList:     this.container.querySelector('#tddErrorList'),
-            maieuticPanel:    this.container.querySelector('#maieuticPanel'),
-            maieuticQList:    this.container.querySelector('#maieuticQuestionsList'),
-            inpName:          this.container.querySelector('#inpName'),
-            inpSector:        this.container.querySelector('#inpSector'),
-            inpArchetype:     this.container.querySelector('#inpArchetype'),
-            inpMission:       this.container.querySelector('#inpMission'),
-            inpTarget:        this.container.querySelector('#inpTarget'),
-            inpForgeEngine:   this.container.querySelector('#inpForgeEngine'),
-            inpSpawnCascade:  this.container.querySelector('#inpSpawnCascade'),
-            agentModal:       this.container.querySelector('#agentStudioModal'),
-            btnCloseStudio:   this.container.querySelector('#btnCloseStudio'),
-            btnSaveStudio:    this.container.querySelector('#btnSaveAgentBrain'),
-            btnAiForger:      this.container.querySelector('#btnAiAgentForger'),
-            asRoleId:         this.container.querySelector('#asRoleId'),
-            asRoleName:       this.container.querySelector('#asRoleName'),
-            asRoleDesc:       this.container.querySelector('#asRoleDesc'),
-            asRolePrompt:     this.container.querySelector('#asRolePrompt'),
-            asRoleRefs:       this.container.querySelector('#asRoleRefs'),
-            asRoleEvals:      this.container.querySelector('#asRoleEvals'),
-            asRoleScripts:    this.container.querySelector('#asRoleScripts'),
+            btnBack:           this.container.querySelector('#btnBack'),
+            btnLaunch:         this.container.querySelector('#btnLaunch'),
+            btnAddCustom:      this.container.querySelector('#btnAddCustomRole'),
+            rolesContainer:    this.container.querySelector('#draftRolesContainer'),
+            txPreviewList:     this.container.querySelector('#txPreviewList'),
+            tddErrorPanel:     this.container.querySelector('#tddErrorPanel'),
+            tddErrorList:      this.container.querySelector('#tddErrorList'),
+            maieuticPanel:     this.container.querySelector('#maieuticPanel'),
+            maieuticQList:     this.container.querySelector('#maieuticQuestionsList'),
+            inpName:           this.container.querySelector('#inpName'),
+            inpSector:         this.container.querySelector('#inpSector'),
+            inpArchetype:      this.container.querySelector('#inpArchetype'),
+            inpMission:        this.container.querySelector('#inpMission'),
+            inpTarget:         this.container.querySelector('#inpTarget'),
+            inpForgeEngine:    this.container.querySelector('#inpForgeEngine'),
+            inpSpawnCascade:   this.container.querySelector('#inpSpawnCascade'),
+            agentModal:        this.container.querySelector('#agentStudioModal'),
+            btnCloseStudio:    this.container.querySelector('#btnCloseStudio'),
+            btnSaveStudio:     this.container.querySelector('#btnSaveAgentBrain'),
+            btnAiForger:       this.container.querySelector('#btnAiAgentForger'),
+            asRoleId:          this.container.querySelector('#asRoleId'),
+            asRoleName:        this.container.querySelector('#asRoleName'),
+            asRoleDesc:        this.container.querySelector('#asRoleDesc'),
+            asRolePrompt:      this.container.querySelector('#asRolePrompt'),
+            asRoleRefs:        this.container.querySelector('#asRoleRefs'),
+            asRoleEvals:       this.container.querySelector('#asRoleEvals'),
+            asRoleScripts:     this.container.querySelector('#asRoleScripts'),
         };
 
-        // Clonar plantilla
+        // ── Automation selector ───────────────────────────────────
+        this.container.querySelectorAll('[name="pfAutoLevel"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.container.querySelectorAll('.auto-option').forEach(opt => opt.classList.remove('selected'));
+                this.container.querySelector(`#autoOpt_${e.target.value}`)?.classList.add('selected');
+            });
+        });
+
+        // ── Clonar plantilla ──────────────────────────────────────
         this.dom.btnLoadTemplate.addEventListener('click', () => {
             const sectorVal = this.dom.inpSector.value;
             this.draftRoles = [];
             this.draftTxs   = [];
             this.draftTags  = [sectorVal, this.dom.inpArchetype.value];
             this.draftPresentation = `Misión: ${this.dom.inpMission.value}\nPúblico: ${this.dom.inpTarget.value}`;
-
             if (sectorVal === 'blank_canvas') { alert('🌌 Modo Lienzo en Blanco. Pulsa "Diseñar Topología VNA" para continuar.'); return; }
-
             const sectorData = this.sectorsFromKB[sectorVal];
             if (sectorData?.roles) {
                 const mult = { '@anxaneta':3.0,'@aixecador':2.0,'@dosos':1.5,'@baixos':1.2,'@pinya':1.0 };
@@ -312,13 +348,13 @@ export class ProjectForge {
             this._goToStep2();
         });
 
-        // IA Genesis
-        this.dom.btnEvaluateAI.addEventListener('click', () => this._evaluateVisionWithAI());
+        // ── IA Genesis ────────────────────────────────────────────
+        this.dom.btnEvaluateAI.addEventListener('click',     () => this._evaluateVisionWithAI());
         this.dom.btnAnswerAndForge.addEventListener('click', () => this._executeFinalForgeWithAI());
 
         this.dom.btnBack.addEventListener('click', () => {
-            this.dom.step2.style.display = 'none';
-            this.dom.step1.style.display = 'block';
+            this.dom.step2.style.display   = 'none';
+            this.dom.step1.style.display   = 'block';
             this.dom.dot2.classList.remove('active');
             this.dom.dot1.classList.add('active');
         });
@@ -330,7 +366,7 @@ export class ProjectForge {
 
         this.dom.btnLaunch.addEventListener('click', () => this._finalizeProject());
 
-        // Agent Studio
+        // ── Agent Studio ──────────────────────────────────────────
         this.dom.btnCloseStudio.addEventListener('click', () => this.dom.agentModal.classList.remove('active'));
 
         this.dom.btnSaveStudio.addEventListener('click', () => {
@@ -348,7 +384,7 @@ export class ProjectForge {
         });
 
         this.dom.btnAiForger.addEventListener('click', async () => {
-            const roleName     = this.dom.asRoleName.value;
+            const roleName      = this.dom.asRoleName.value;
             const currentPrompt = this.dom.asRolePrompt.value.trim();
             this.dom.btnAiForger.disabled  = true;
             this.dom.btnAiForger.innerText = '⏳ Forjando…';
@@ -382,12 +418,10 @@ export class ProjectForge {
         try {
             await KB.init();
             const skillNode = await KB.getNode('skill_vna_architect');
-            const systemPrompt = skillNode
+            const systemPrompt = (skillNode
                 ? `Eres el @agent_genesis_architect con la Skill [${skillNode.title}]. SOP:\n${skillNode.content}\n\n`
-                : 'Eres el @agent_genesis_architect, experto en Value Network Analysis (VNA) y ecosistemas Slicing Pie.\n\n';
-
-            const fullSystemPrompt = systemPrompt + `
-Tu misión es diseñar la topología completa de una red de valor.
+                : 'Eres el @agent_genesis_architect, experto en Value Network Analysis (VNA) y ecosistemas Slicing Pie.\n\n')
+            + `Tu misión es diseñar la topología completa de una red de valor.
 Si la visión es clara, devuelve DIRECTAMENTE el ecosistema en JSON.
 Si hay ambigüedad, devuelve SOLO preguntas de clarificación.
 
@@ -409,19 +443,23 @@ OPCIÓN B — Ecosistema completo:
   ]
 }`;
 
-            const userPrompt = `Nombre: ${name}\nSector: ${sector}\nArquetipo: ${this.dom.inpArchetype.value}\nMisión: ${mission}\nPúblico Objetivo: ${target}`;
-
             if (this.dom.loadingText) this.dom.loadingText.innerText = 'Evaluando visión con @agent_genesis_architect…';
 
-            const response = await Orchestrator.callLLM({ preferredEngine: engine || 'anthropic', systemPrompt: fullSystemPrompt, userPrompt, responseFormat: 'json_object', temperature: 0.35 });
-            const parsed   = response.content;
+            const response = await Orchestrator.callLLM({
+                preferredEngine: engine || 'anthropic',
+                systemPrompt,
+                userPrompt: `Nombre: ${name}\nSector: ${sector}\nArquetipo: ${this.dom.inpArchetype.value}\nMisión: ${mission}\nPúblico Objetivo: ${target}`,
+                responseFormat: 'json_object',
+                temperature: 0.35
+            });
 
             this.dom.loading.style.display = 'none';
+            const parsed = response.content;
 
             if (parsed.requires_clarification && parsed.questions?.length > 0) {
                 this.dom.maieuticQList.innerHTML = parsed.questions.map((q, i) => `
                     <div class="maieutic-q">
-                        <label style="color:#aaa; font-size:0.82rem; margin-bottom:4px; display:block;">${q}</label>
+                        <label style="color:#aaa;font-size:0.82rem;margin-bottom:4px;display:block;">${q}</label>
                         <input type="text" class="maieutic-answer" data-idx="${i}" placeholder="Tu respuesta…">
                     </div>`).join('');
                 this.dom.maieuticPanel.style.display = 'block';
@@ -443,7 +481,7 @@ OPCIÓN B — Ecosistema completo:
     async _executeFinalForgeWithAI() {
         const answers  = Array.from(this.container.querySelectorAll('.maieutic-answer')).map(i => i.value.trim());
         const mission  = this.dom.inpMission.value.trim();
-        const enhanced = mission + '\n\nAclaraciones adicionales:\n' + answers.map((a,i) => `- ${a}`).join('\n');
+        const enhanced = mission + '\n\nAclaraciones adicionales:\n' + answers.map(a => `- ${a}`).join('\n');
         this.dom.inpMission.value = enhanced;
         this.dom.maieuticPanel.style.display = 'none';
         await this._evaluateVisionWithAI();
@@ -458,10 +496,10 @@ OPCIÓN B — Ecosistema completo:
             id:          'draft_role_' + i + '_' + Math.random().toString(36).substr(2,5),
             levelId:     r.levelId,
             name:        r.name,
-            fmv:         r.fmv         || 50,
-            multiplier:  r.multiplier  || 1.0,
-            guardian:    r.guardian    || 'everyman',
-            ai_prompt:   r.ai_prompt   || '',
+            fmv:         r.fmv        || 50,
+            multiplier:  r.multiplier || 1.0,
+            guardian:    r.guardian   || 'everyman',
+            ai_prompt:   r.ai_prompt  || '',
             assignee:    '',
             description: '',
             references:  [],
@@ -473,14 +511,14 @@ OPCIÓN B — Ecosistema completo:
             const rFrom = this.draftRoles.find(r => r.levelId === tx.fromLevel) || this.draftRoles[0];
             const rTo   = this.draftRoles.find(r => r.levelId === tx.toLevel)   || this.draftRoles.at(-1);
             return {
-                id:           tx.id || `tx_${i}`,
-                fromLevel:    tx.fromLevel,
-                toLevel:      tx.toLevel,
-                from:         rFrom?.id || null,
-                to:           rTo?.id   || null,
-                tipo:         tx.tipo     || 'tangible',
-                template:     tx.template || 'Entregable',
-                horas:        tx.horas    || 4,
+                id:            tx.id || `tx_${i}`,
+                fromLevel:     tx.fromLevel,
+                toLevel:       tx.toLevel,
+                from:          rFrom?.id || null,
+                to:            rTo?.id   || null,
+                tipo:          tx.tipo     || 'tangible',
+                template:      tx.template || 'Entregable',
+                horas:         tx.horas    || 4,
                 soc_checklist: tx.soc_checklist || []
             };
         });
@@ -502,9 +540,9 @@ OPCIÓN B — Ecosistema completo:
             return;
         }
         this.dom.tddErrorPanel.style.display = 'none';
-        this.dom.step1.style.display  = 'none';
-        this.dom.loading.style.display = 'none';
-        this.dom.step2.style.display  = 'block';
+        this.dom.step1.style.display          = 'none';
+        this.dom.loading.style.display        = 'none';
+        this.dom.step2.style.display          = 'block';
         this.dom.dot1.classList.remove('active');
         this.dom.dot2.classList.add('active');
         this._renderDraftRoles();
@@ -513,9 +551,13 @@ OPCIÓN B — Ecosistema completo:
 
     _renderDraftRoles() {
         const colors = { '@anxaneta':'var(--accent-red)','@aixecador':'#ff4081','@dosos':'var(--accent-purple)','@baixos':'var(--accent-indigo,#6366f1)','@pinya':'var(--accent-green)' };
-        const levels = [ { id:'@anxaneta',label:'@anxaneta (Dirección)' },{ id:'@aixecador',label:'@aixecador (Táctica)' },{ id:'@dosos',label:'@dosos (Auditoría)' },{ id:'@baixos',label:'@baixos (Operativa)' },{ id:'@pinya',label:'@pinya (Soporte)' } ];
-        const state  = store.getState();
-        const users  = state.globalUsers || [];
+        const levels = [
+            { id:'@anxaneta',label:'@anxaneta (Dirección)' },{ id:'@aixecador',label:'@aixecador (Táctica)' },
+            { id:'@dosos',   label:'@dosos (Auditoría)'   },{ id:'@baixos',   label:'@baixos (Operativa)'  },
+            { id:'@pinya',   label:'@pinya (Soporte)'     }
+        ];
+        const state = store.getState();
+        const users = state.globalUsers || [];
 
         let userOptions = `<option value="">-- Sin asignar --</option>`;
         users.forEach(u => { userOptions += `<option value="${u.id}">${u.profile?.isAi?'🤖':'👤'} ${u.name}</option>`; });
@@ -539,7 +581,7 @@ OPCIÓN B — Ecosistema completo:
                     <input type="text" class="inp-role-name" data-idx="${index}" value="${role.name}" placeholder="Nombre del Rol">
                 </div>
                 <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:8px;align-items:center;">
-                    <input type="number" class="inp-role-fmv" data-idx="${index}" value="${role.fmv}" placeholder="FMV €/h">
+                    <input type="number" class="inp-role-fmv"  data-idx="${index}" value="${role.fmv}"        placeholder="FMV €/h">
                     <input type="number" class="inp-role-mult" data-idx="${index}" value="${role.multiplier}" step="0.1" placeholder="Mult.">
                     ${selUser}
                 </div>
@@ -547,17 +589,16 @@ OPCIÓN B — Ecosistema completo:
                     <button class="btn-agent-studio" data-roleid="${role.id}" style="flex:1;background:${hasBrain?'rgba(0,230,118,0.1)':'rgba(99,102,241,0.1)'};border:1px solid ${hasBrain?'var(--accent-green)':'var(--accent-indigo,#6366f1)'};color:${hasBrain?'var(--accent-green)':'var(--accent-indigo,#6366f1)'};padding:7px;border-radius:8px;cursor:pointer;font-size:0.78rem;font-weight:bold;transition:0.2s;">${hasBrain?'🧠 Cerebro ✓':'🧠 Forjar Cerebro'}</button>
                     <button class="btn-del-role" data-idx="${index}" style="background:transparent;border:1px solid var(--accent-red);color:var(--accent-red);padding:7px 11px;border-radius:8px;cursor:pointer;font-weight:bold;">✕</button>
                 </div>`;
-
             this.dom.rolesContainer.appendChild(row);
         });
 
-        this.dom.rolesContainer.querySelectorAll('.inp-role-level').forEach(s => s.addEventListener('change', (e) => { this.draftRoles[e.target.dataset.idx].levelId = e.target.value; this._renderDraftRoles(); }));
-        this.dom.rolesContainer.querySelectorAll('.inp-role-name').forEach(i  => i.addEventListener('input',  (e) => { this.draftRoles[e.target.dataset.idx].name = e.target.value; }));
-        this.dom.rolesContainer.querySelectorAll('.inp-role-fmv').forEach(i   => i.addEventListener('input',  (e) => { this.draftRoles[e.target.dataset.idx].fmv = parseFloat(e.target.value)||0; }));
-        this.dom.rolesContainer.querySelectorAll('.inp-role-mult').forEach(i  => i.addEventListener('input',  (e) => { this.draftRoles[e.target.dataset.idx].multiplier = parseFloat(e.target.value)||1; }));
-        this.dom.rolesContainer.querySelectorAll('.inp-role-assignee').forEach(s => s.addEventListener('change', (e) => { this.draftRoles[e.target.dataset.idx].assignee = e.target.value; }));
-        this.dom.rolesContainer.querySelectorAll('.btn-del-role').forEach(btn => btn.addEventListener('click', (e) => { this.draftRoles.splice(parseInt(e.currentTarget.dataset.idx), 1); this._renderDraftRoles(); }));
-        this.dom.rolesContainer.querySelectorAll('.btn-agent-studio').forEach(btn => btn.addEventListener('click', (e) => this._openAgentStudio(e.currentTarget.dataset.roleid)));
+        this.dom.rolesContainer.querySelectorAll('.inp-role-level').forEach(s    => s.addEventListener('change', e => { this.draftRoles[e.target.dataset.idx].levelId    = e.target.value;               this._renderDraftRoles(); }));
+        this.dom.rolesContainer.querySelectorAll('.inp-role-name').forEach(i     => i.addEventListener('input',  e => { this.draftRoles[e.target.dataset.idx].name        = e.target.value; }));
+        this.dom.rolesContainer.querySelectorAll('.inp-role-fmv').forEach(i      => i.addEventListener('input',  e => { this.draftRoles[e.target.dataset.idx].fmv         = parseFloat(e.target.value)||0; }));
+        this.dom.rolesContainer.querySelectorAll('.inp-role-mult').forEach(i     => i.addEventListener('input',  e => { this.draftRoles[e.target.dataset.idx].multiplier  = parseFloat(e.target.value)||1; }));
+        this.dom.rolesContainer.querySelectorAll('.inp-role-assignee').forEach(s => s.addEventListener('change', e => { this.draftRoles[e.target.dataset.idx].assignee    = e.target.value; }));
+        this.dom.rolesContainer.querySelectorAll('.btn-del-role').forEach(btn    => btn.addEventListener('click', e => { this.draftRoles.splice(parseInt(e.currentTarget.dataset.idx), 1); this._renderDraftRoles(); }));
+        this.dom.rolesContainer.querySelectorAll('.btn-agent-studio').forEach(btn => btn.addEventListener('click', e => this._openAgentStudio(e.currentTarget.dataset.roleid)));
     }
 
     _renderTxPreview() {
@@ -577,20 +618,25 @@ OPCIÓN B — Ecosistema completo:
     _openAgentStudio(roleId) {
         const role = this.draftRoles.find(r => r.id === roleId);
         if (!role) return;
-        this.dom.asRoleId.value     = role.id;
-        this.dom.asRoleName.value   = role.name;
-        this.dom.asRoleDesc.value   = role.description || '';
-        this.dom.asRolePrompt.value = role.ai_prompt   || '';
-        this.dom.asRoleRefs.value   = (role.references || []).join(', ');
-        this.dom.asRoleEvals.value  = (role.evals      || []).join(', ');
-        this.dom.asRoleScripts.value = (role.scripts   || []).join(', ');
+        this.dom.asRoleId.value      = role.id;
+        this.dom.asRoleName.value    = role.name;
+        this.dom.asRoleDesc.value    = role.description || '';
+        this.dom.asRolePrompt.value  = role.ai_prompt   || '';
+        this.dom.asRoleRefs.value    = (role.references || []).join(', ');
+        this.dom.asRoleEvals.value   = (role.evals      || []).join(', ');
+        this.dom.asRoleScripts.value = (role.scripts    || []).join(', ');
         this.dom.agentModal.classList.add('active');
     }
 
+    // ══════════════════════════════════════════════════════════════
+    //  _finalizeProject — crea el proyecto con todos los campos V10
+    // ══════════════════════════════════════════════════════════════
     async _finalizeProject() {
-        const projectId = 'proj_' + Math.random().toString(36).substr(2,9);
-        const name      = this.dom.inpName.value.trim() || 'Nueva Red';
-        const arch      = this.dom.inpArchetype.value;
+        const projectId      = 'proj_' + Math.random().toString(36).substr(2,9);
+        const name           = this.dom.inpName.value.trim() || 'Nueva Red';
+        const arch           = this.dom.inpArchetype.value;
+        const missionText    = this.dom.inpMission.value.trim();
+        const automationLevel = this.container.querySelector('[name="pfAutoLevel"]:checked')?.value || 'review_first';
 
         this.dom.btnLaunch.disabled  = true;
         this.dom.btnLaunch.innerText = 'Instanciando Matriz V10…';
@@ -614,19 +660,47 @@ OPCIÓN B — Ecosistema completo:
         const idMap = {};
         this.draftRoles.forEach((dr, i) => { if (finalRoles[i]) idMap[dr.id] = finalRoles[i].id; });
 
-        const finalFlows = this.draftTxs.map((tx, i) => ({
-            id:           'flow_' + Math.random().toString(36).substr(2,9),
-            from:         idMap[tx.from]  || (finalRoles.find(r => r.levelId === tx.fromLevel)?.id || ''),
-            to:           idMap[tx.to]    || (finalRoles.find(r => r.levelId === tx.toLevel)?.id   || ''),
-            tipo:         tx.tipo,
-            template:     tx.template,
-            horas:        tx.horas,
+        const finalFlows = this.draftTxs.map(tx => ({
+            id:             'flow_' + Math.random().toString(36).substr(2,9),
+            from:           idMap[tx.from]  || (finalRoles.find(r => r.levelId === tx.fromLevel)?.id || ''),
+            to:             idMap[tx.to]    || (finalRoles.find(r => r.levelId === tx.toLevel)?.id   || ''),
+            tipo:           tx.tipo,
+            template:       tx.template,
+            horas:          tx.horas,
             estimatedHours: tx.horas,
-            soc_checklist: tx.soc_checklist || []
+            soc_checklist:  tx.soc_checklist || []
         }));
 
-        await store.dispatch({ type: 'CREATE_PROJECT', payload: { id:projectId, nombre:name, sector:this.dom.inpSector.value, prompt:this.draftPresentation, archetype:arch, roles:finalRoles, vna_flows:finalFlows, work_orders:[], usuarios:[] } });
-        await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId, updates: { presentation:this.draftPresentation, tags:this.draftTags } } });
+        // ── CREATE_PROJECT con campos V10 completos ───────────────
+        await store.dispatch({
+            type: 'CREATE_PROJECT',
+            payload: {
+                id:              projectId,
+                nombre:          name,
+                sector:          this.dom.inpSector.value,
+                prompt:          this.draftPresentation,
+                archetype:       arch,
+                roles:           finalRoles,
+                vna_flows:       finalFlows,
+                // ── V10: campos nuevos ───────────────────────────
+                vna_nodes:       [],        // se llenarán desde /map con Claude
+                vna_exchanges:   [],
+                skills:          [],
+                logs:            [],
+                work_orders:     [],
+                usuarios:        [],
+                vna_description: missionText, // pre-carga el textarea de /map
+                settings: {
+                    automation_level: automationLevel,
+                    cascade_mode:     this.dom.inpSpawnCascade?.checked ?? true
+                }
+            }
+        });
+
+        await store.dispatch({
+            type:    'UPDATE_PROJECT_INFO',
+            payload: { projectId, updates: { presentation: this.draftPresentation, tags: this.draftTags } }
+        });
 
         localStorage.setItem('tt_active_project', projectId);
 
@@ -636,20 +710,31 @@ OPCIÓN B — Ecosistema completo:
         for (const rol of finalRoles) {
             if (rol.ai_prompt?.length > 5) {
                 const promptId = `prompt_global_role_${rol.id}`;
-                await KB.saveNode({ id:promptId, type:'prompt_a2a', category:'meta_prompt', projectId, targetId:rol.id, title:`AGENT.md: ${rol.name}`, content:rol.ai_prompt, dependencies:[], keywords:['ai_agent', projectId] });
+                await KB.saveNode({
+                    id:          promptId,
+                    type:        'prompt_a2a',
+                    category:    'meta_prompt',
+                    projectId,
+                    targetId:    rol.id,
+                    title:       `AGENT.md: ${rol.name}`,
+                    content:     rol.ai_prompt,
+                    dependencies: [],
+                    keywords:    ['ai_agent', projectId]
+                });
             }
         }
 
-        // Guardar new_memes
+        // Guardar new_memes de la IA
         for (const meme of this.draftNewMemes) {
-            if (meme.id) await KB.saveNode({ ...meme, projectId, targetId:projectId });
+            if (meme.id) await KB.saveNode({ ...meme, projectId, targetId: projectId });
         }
 
         this.dom.btnLaunch.innerText = '✅ Ecosistema Lanzado';
 
+        // Redirigir a /map para mapear VNA directamente
         setTimeout(() => {
-            if (typeof window.navigateTo === 'function') window.navigateTo('/dashboard');
-            else window.location.href = '/dashboard';
-        }, 1000);
+            if (typeof window.navigateTo === 'function') window.navigateTo('/map');
+            else window.location.href = '/map';
+        }, 800);
     }
 }
