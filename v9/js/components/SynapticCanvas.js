@@ -6,18 +6,16 @@ export class SynapticCanvas {
     constructor(containerEl, optionsOrAgentId = {}) {
         this.container = containerEl;
         
-        // 🔥 ANTI-FRAGILIDAD: Adaptador de Firmas Antiguas vs Nuevas
         let opts = {};
         if (typeof optionsOrAgentId === 'string') {
-            opts = { agentId: optionsOrAgentId }; // Código antiguo pasaba un string
+            opts = { agentId: optionsOrAgentId }; 
         } else if (optionsOrAgentId !== null && typeof optionsOrAgentId === 'object') {
-            opts = optionsOrAgentId; // Nuevo código pasa un objeto
+            opts = optionsOrAgentId; 
         }
-        // Si es null (como hace el LmsView), opts se queda como {} vacío.
 
         this.agentId = opts.agentId || null; 
         this.projectId = opts.projectId || null;
-        this.isVnaMode = opts.isVnaMode || false; // 🔥 MODO VNA 3D
+        this.isVnaMode = opts.isVnaMode || false; 
         
         this.nodes = [];
         this.links = [];
@@ -28,14 +26,16 @@ export class SynapticCanvas {
     
     async render() {
         let panelTitle = '🌌 Meta-Grafo Cuántico (V9)';
-        let helperText = 'Haz clic en un nodo para viajar hacia él y decodificar su estructura.';
+        let helperText = 'Haz clic en un nodo o flujo para viajar hacia él y decodificar su estructura.';
+        let backBtnHtml = '';
         
         if (this.agentId) {
             panelTitle = `🧠 Córtex 3D de ${this.agentId}`;
             helperText = 'Explora el cerebro del Agente y sus ramificaciones de conocimiento.';
         } else if (this.isVnaMode) {
-            panelTitle = `⚙️ Matriz VNA 3D (Flujo de Valor)`;
-            helperText = 'Visualizando gravedad Casteller y flujo de entregables en tiempo real.';
+            panelTitle = `⚙️ Matriz VNA 3D`;
+            helperText = 'Visualizando gravedad Casteller y flujos de valor. Clica en una flecha para ver el Entregable.';
+            backBtnHtml = `<button id="btnBackToGalaxy" style="background:rgba(255,255,255,0.05); border:1px solid #555; color:#aaa; padding:6px 12px; border-radius:6px; cursor:pointer; font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase; margin-bottom:10px; transition:0.2s; font-weight:bold; letter-spacing:1px;">&larr; Volver a la Galaxia</button>`;
         }
 
         this.container.innerHTML = `
@@ -65,11 +65,15 @@ export class SynapticCanvas {
                 .btn-action-panel:disabled { opacity: 0.5; cursor: not-allowed; }
 
                 .btn-inject-seeds { background: linear-gradient(135deg, rgba(0,230,118,0.1), rgba(0,176,255,0.1)); border: 1px solid var(--accent-green); color: white; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 0.85rem; transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px; display: ${(!this.agentId && !this.isVnaMode) ? 'block' : 'none'}; box-shadow: 0 5px 15px rgba(0,230,118,0.1);}
+                .btn-inject-seeds:hover { background: var(--accent-green); color: black; }
+                
                 .synaptic-3d-container { flex: 1; position: relative; overflow: hidden; background: radial-gradient(circle at center, #0a0a10 0%, #000000 100%); }
                 .webgl-target { width: 100%; height: 100%; outline: none; cursor: crosshair;}
+                
                 .graph-tooltip { position: absolute; background: rgba(10, 10, 15, 0.95); border: 1px solid #555; color: white; padding: 10px 15px; border-radius: 8px; font-family: var(--font-main); font-size: 0.85rem; pointer-events: none; z-index: 100; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.8); display: none; transform: translate(-50%, -150%); white-space: nowrap;}
                 .graph-tooltip .tt-cat { font-size: 0.65rem; color: var(--accent-blue); font-family: var(--font-mono); text-transform: uppercase; font-weight: bold; margin-bottom: 3px;}
                 .graph-tooltip .tt-title { font-weight: 900; font-size: 1rem; }
+                
                 .loader-3d { position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); color: var(--accent-blue); font-family: var(--font-mono); font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; animation: pulse 1.5s infinite; pointer-events: none; z-index: 20;}
                 @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; text-shadow: 0 0 20px var(--accent-blue); } 100% { opacity: 0.5; } }
                 @media (max-width: 768px) { .synaptic-layout { flex-direction: column-reverse; } .synaptic-palette { width: 100%; height: 45%; border-right: none; border-top: 1px solid #333; } .synaptic-3d-container { height: 55%; } }
@@ -79,8 +83,9 @@ export class SynapticCanvas {
                 <button class="btn-fullscreen" id="btnToggleFullscreen" title="Pantalla Completa">⛶</button>
                 <div class="synaptic-palette">
                     <div class="palette-header">
+                        ${backBtnHtml}
                         <h3 class="palette-title">${panelTitle}</h3>
-                        <input type="text" id="memeSearchInput" class="palette-search" placeholder="🔍 Buscar nodos...">
+                        ${!this.isVnaMode ? `<input type="text" id="memeSearchInput" class="palette-search" placeholder="🔍 Buscar nodos...">` : ''}
                         <button class="btn-inject-seeds" id="btnInjectSeeds">✨ Forjar Semillas Antigravity</button>
                     </div>
                     <div class="meme-results" id="memeResultsList">
@@ -107,7 +112,6 @@ export class SynapticCanvas {
         this.setupInteractivity();
     }
 
-    // 🔥 CARGADOR ESPECÍFICO PARA MAPA VNA 3D
     async loadVNAData() {
         const state = store.getState();
         const project = state.projects.find(p => p.id === this.projectId);
@@ -116,7 +120,6 @@ export class SynapticCanvas {
         this.nodes = [];
         this.links = [];
 
-        // 1. Gravedad Vertical (Niveles Casteller)
         const getVerticalGravity = (levelId) => {
             const l = (levelId || '').toLowerCase();
             if(l.includes('anx')) return 200;
@@ -127,7 +130,6 @@ export class SynapticCanvas {
             return 0;
         };
 
-        // 2. Gravedad Radial (12 Arquetipos / Dominios)
         const ARQUETYPES = ['zeus', 'apollo', 'athena', 'hestia', 'hermes', 'aphrodite', 'hephaestus', 'demeter', 'dionysus', 'poseidon', 'hera', 'hebe'];
         const getRadialAngle = (archetype) => {
             const index = ARQUETYPES.indexOf((archetype || '').toLowerCase());
@@ -135,12 +137,11 @@ export class SynapticCanvas {
             return index * ( (2 * Math.PI) / 12 );
         };
 
-        // Extraer Roles
         if (project.roles) {
             project.roles.forEach(r => {
                 const yTarget = getVerticalGravity(r.levelId);
                 const angle = getRadialAngle(r.domain || '');
-                const radius = 150; // Fuerza de separación horizontal
+                const radius = 150; 
                 
                 this.nodes.push({
                     id: r.id,
@@ -149,14 +150,13 @@ export class SynapticCanvas {
                     val: 35,
                     color: '#ff4081',
                     rawNode: { title: r.name, category: 'role', content: `Nivel: ${r.levelId} | FMV: ${r.fmv}` },
-                    fy: yTarget, // Fuerza vertical fija
-                    fx: Math.cos(angle) * radius, // Fuerza horizontal X
-                    fz: Math.sin(angle) * radius  // Fuerza horizontal Z
+                    fy: yTarget, 
+                    fx: Math.cos(angle) * radius, 
+                    fz: Math.sin(angle) * radius  
                 });
             });
         }
 
-        // Extraer Flujos (Transacciones)
         if (project.vna_flows) {
             project.vna_flows.forEach(f => {
                 if (f.from && f.to) {
@@ -362,7 +362,6 @@ export class SynapticCanvas {
             .graphData(gData)
             .nodeLabel('') 
             .linkColor(link => {
-                // En modo VNA, las flechas tangibles son verdes, intangibles púrpuras
                 if (this.isVnaMode && link.tipo) {
                     return link.tipo === 'tangible' ? 'rgba(0,230,118,0.6)' : 'rgba(224,64,251,0.6)';
                 }
@@ -409,8 +408,11 @@ export class SynapticCanvas {
                         <div class="tt-title">${node.name}</div>
                     `;
                 } else {
-                    canvasInner.style.cursor = 'crosshair';
-                    tooltip.style.display = 'none';
+                    // Si no hay nodo, comprobamos si hay link hovered (manejado por onLinkHover)
+                    if (tooltip.style.display !== 'block' || tooltip.dataset.isLink !== 'true') {
+                        canvasInner.style.cursor = 'crosshair';
+                        tooltip.style.display = 'none';
+                    }
                 }
             })
             .onNodeClick(node => {
@@ -418,6 +420,34 @@ export class SynapticCanvas {
                 const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
                 this.graph3D.cameraPosition({ x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, node, 2000);
                 this.showNodeDetailsInPalette(node);
+            })
+            // 🔥 INTERACTIVIDAD DE ENLACES (VNA FLOWS)
+            .onLinkHover(link => {
+                if (link && this.isVnaMode) {
+                    canvasInner.style.cursor = 'pointer';
+                    tooltip.style.display = 'block';
+                    tooltip.dataset.isLink = 'true';
+                    
+                    const sourceName = link.source.name || link.source.id;
+                    const targetName = link.target.name || link.target.id;
+                    const txName = link.rawTx?.template || link.rawTx?.entregable || 'Transacción';
+                    const color = link.tipo === 'tangible' ? '#00e676' : '#e040fb';
+
+                    tooltip.innerHTML = `
+                        <div class="tt-cat" style="color:${color};">Flujo de Valor: ${link.tipo?.toUpperCase()}</div>
+                        <div class="tt-title">${txName}</div>
+                        <div style="font-size:0.75rem; color:#aaa; margin-top:5px;">De: ${sourceName} &rarr; Para: ${targetName}</div>
+                    `;
+                } else if (!link) {
+                    tooltip.dataset.isLink = 'false';
+                    canvasInner.style.cursor = 'crosshair';
+                    tooltip.style.display = 'none';
+                }
+            })
+            .onLinkClick(link => {
+                if (this.isVnaMode) {
+                    this.showLinkDetailsInPalette(link);
+                }
             });
 
         // 🔥 GRAVEDAD CUSTOM PARA MODO VNA
@@ -472,7 +502,53 @@ export class SynapticCanvas {
         this.resizeObserver.observe(canvasInner);
     }
 
-    // 🔥 PANEL INTERACTIVO DE MANDOS DESDE LA VISTA 3D
+    // 🔥 PANEL INTERACTIVO DE ENLACES (FLUJOS VNA)
+    showLinkDetailsInPalette(link) {
+        const resultsList = this.container.querySelector('#memeResultsList');
+        if (!link.rawTx) return;
+        
+        const tx = link.rawTx;
+        const sourceName = link.source.name || link.source.id;
+        const targetName = link.target.name || link.target.id;
+        const isTangible = tx.tipo === 'tangible';
+        
+        const safeColor = isTangible ? 'var(--accent-green)' : 'var(--accent-purple)';
+        const typeLabel = isTangible ? '🟢 TANGIBLE' : '🟣 INTANGIBLE';
+
+        resultsList.innerHTML = `
+            <div style="margin-bottom: 15px;">
+                <button id="btnBackSearch" style="background:rgba(255,255,255,0.05); border:1px solid #444; color:#fff; border-radius:8px; cursor:pointer; font-family:var(--font-mono); font-size:0.8rem; padding:10px 15px; width:100%; transition:0.2s; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">&larr; Ocultar Flujo</button>
+            </div>
+            <div class="draggable-meme" style="--node-color: ${safeColor}; cursor: default;">
+                <div class="dm-cat" style="color: ${safeColor};">${typeLabel}</div>
+                <div class="dm-title" style="font-size:1.3rem;">${tx.template || tx.entregable || 'Entregable'}</div>
+                <div style="margin-bottom:15px; font-size:0.85rem; color:#ccc; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">
+                    <div style="margin-bottom:5px;">📤 <strong>De:</strong> ${sourceName}</div>
+                    <div>📥 <strong>Para:</strong> ${targetName}</div>
+                </div>
+                <div class="dm-content">${(tx.comentario || 'Intercambio de valor orgánico en el ecosistema.').replace(/\\n/g, '<br>')}</div>
+                <div class="dm-tags">
+                    <span class="dm-tag">⏱️ Estimación: ${tx.horas || 1}h</span>
+                </div>
+            </div>
+            <div style="margin-top: 15px; text-align:center;">
+                <button id="btnGoToPaper" style="background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border:none; color:white; padding:12px 15px; border-radius:8px; font-weight:900; font-size:0.9rem; cursor:pointer; width:100%; transition:0.2s; box-shadow: 0 5px 15px rgba(0,176,255,0.2);">🚀 Ejecutar en Omni-Paper</button>
+            </div>
+        `;
+
+        const btnBack = resultsList.querySelector('#btnBackSearch');
+        if (btnBack) btnBack.addEventListener('click', () => {
+            resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo o flujo para interactuar.</div>';
+        });
+
+        const btnGoPaper = resultsList.querySelector('#btnGoToPaper');
+        if (btnGoPaper) btnGoPaper.addEventListener('click', () => {
+            if (this.projectId) localStorage.setItem('tt_active_project', this.projectId);
+            window.location.href = '/v9/paper';
+        });
+    }
+
+    // 🔥 PANEL INTERACTIVO DE NODOS
     showNodeDetailsInPalette(node3D) {
         const resultsList = this.container.querySelector('#memeResultsList');
         const m = node3D.rawNode;
@@ -480,6 +556,7 @@ export class SynapticCanvas {
 
         const isAgent = node3D.group === 'agent';
         const isSkill = m.type === 'skill' || m.category === 'skill';
+        const isProject = node3D.group === 'project_core';
         
         const tagsHtml = (m.keywords || []).map(t => `<span class="dm-tag">#${t}</span>`).join('');
         const safeColor = node3D.color || 'var(--accent-blue)';
@@ -497,6 +574,15 @@ export class SynapticCanvas {
         let contentHtml = (m.content || '').replace(/\\n/g, '<br>');
         
         let interactivePanel = '';
+
+        // 🔥 PROYECTO: Dive In a Matriz VNA
+        if (isProject && !this.isVnaMode) {
+            interactivePanel = `
+                <div style="margin-top: 15px; display:flex; flex-direction:column; gap:10px;">
+                    <button id="btnDiveVNA" class="btn-action-panel" style="background:linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color:white; box-shadow:0 5px 15px rgba(224,64,251,0.2);">👁️ Desplegar Matriz VNA 3D</button>
+                </div>
+            `;
+        }
 
         // 🔥 AGENTE: Equipar Skills
         if (isAgent) {
@@ -543,11 +629,18 @@ export class SynapticCanvas {
 
         const btnBack = resultsList.querySelector('#btnBackSearch');
         if (btnBack) btnBack.addEventListener('click', () => {
-            resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo del universo 3D para interactuar con él (Editar, Testear, Equipar).</div>';
+            resultsList.innerHTML = '<div style="color:#888; font-size:0.85rem; text-align:center; padding:30px; font-style:italic; line-height: 1.5;">Haz clic en un nodo o flujo para interactuar.</div>';
             this.graph3D.cameraPosition({ x: 0, y: 0, z: 800 }, { x: 0, y: 0, z: 0 }, 2000);
         });
 
         // Listeners Panel Activo
+        const btnDive = resultsList.querySelector('#btnDiveVNA');
+        if (btnDive) {
+            btnDive.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('load-vna-graph', { detail: { projectId: m.id } }));
+            });
+        }
+
         const btnEquip = resultsList.querySelector('#btn3DEquip');
         if (btnEquip) {
             btnEquip.addEventListener('click', () => {
@@ -597,6 +690,13 @@ export class SynapticCanvas {
             });
         }
 
+        const btnBackGal = this.container.querySelector('#btnBackToGalaxy');
+        if (btnBackGal) {
+            btnBackGal.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('exit-vna-graph'));
+            });
+        }
+
         if (btnInject) {
             btnInject.addEventListener('click', async () => {
                 btnInject.disabled = true;
@@ -606,35 +706,40 @@ export class SynapticCanvas {
             });
         }
 
-        searchInput.addEventListener('keyup', async (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            if (term.length < 2) return resultsList.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">Buscando en la inmensidad...</div>';
-            
-            await KB.init();
-            const allMemes = await KB.getAllNodes(); 
-            const filtered = allMemes.filter(m => m.title?.toLowerCase().includes(term) || m.category?.toLowerCase().includes(term) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(term))));
-            
-            if (filtered.length === 0) return resultsList.innerHTML = '<div style="color:#888; text-align:center; padding:30px;">No se encontró señal en esa frecuencia.</div>';
+        if (searchInput) {
+            searchInput.addEventListener('keyup', async (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                if (term.length < 2) return resultsList.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">Buscando en la inmensidad...</div>';
+                
+                await KB.init();
+                const allMemes = await KB.getAllNodes(); 
+                const filtered = allMemes.filter(m => m.title?.toLowerCase().includes(term) || m.category?.toLowerCase().includes(term) || (m.keywords && m.keywords.some(k => k.toLowerCase().includes(term))));
+                
+                if (filtered.length === 0) return resultsList.innerHTML = '<div style="color:#888; text-align:center; padding:30px;">No se encontró señal en esa frecuencia.</div>';
 
-            resultsList.innerHTML = filtered.slice(0, 15).map(m => {
-                return `<div class="draggable-meme is-search-result" data-id="${m.id}" style="--node-color: var(--accent-blue);"><div class="dm-cat">${m.category || m.type}</div><div class="dm-title">${m.title}</div><div style="font-size:0.8rem; color:#888; font-style:italic; margin-top:5px;">(Clic para viajar al nodo)</div></div>`;
-            }).join('');
+                resultsList.innerHTML = filtered.slice(0, 15).map(m => {
+                    return `<div class="draggable-meme is-search-result" data-id="${m.id}" style="--node-color: var(--accent-blue);"><div class="dm-cat">${m.category || m.type}</div><div class="dm-title">${m.title}</div><div style="font-size:0.8rem; color:#888; font-style:italic; margin-top:5px;">(Clic para viajar al nodo)</div></div>`;
+                }).join('');
 
-            resultsList.querySelectorAll('.draggable-meme').forEach(el => {
-                el.addEventListener('click', () => {
-                    const targetNode = this.nodes.find(n => n.id === el.dataset.id);
-                    if (targetNode && this.graph3D) {
-                        const distRatio = 1 + 120/Math.hypot(targetNode.x, targetNode.y, targetNode.z);
-                        this.graph3D.cameraPosition({ x: targetNode.x * distRatio, y: targetNode.y * distRatio, z: targetNode.z * distRatio }, targetNode, 1500);
-                        this.showNodeDetailsInPalette(targetNode);
-                    }
+                resultsList.querySelectorAll('.draggable-meme').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const targetNode = this.nodes.find(n => n.id === el.dataset.id);
+                        if (targetNode && this.graph3D) {
+                            const distRatio = 1 + 120/Math.hypot(targetNode.x, targetNode.y, targetNode.z);
+                            this.graph3D.cameraPosition({ x: targetNode.x * distRatio, y: targetNode.y * distRatio, z: targetNode.z * distRatio }, targetNode, 1500);
+                            this.showNodeDetailsInPalette(targetNode);
+                        }
+                    });
                 });
             });
-        });
+        }
     }
 
     destroy() {
         if (this.resizeObserver) this.resizeObserver.disconnect();
-        if (this.graph3D) this.graph3D._destructor();
+        if (this.graph3D) {
+            this.graph3D._destructor();
+            this.graph3D = null;
+        }
     }
 }
