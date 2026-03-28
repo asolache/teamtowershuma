@@ -15,14 +15,13 @@ export default class HomeView {
         await store.init();
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
-        const user = state.globalUsers.find(u => u.id === activeUserId);
 
         // 1. CÁLCULO DE TELEMETRÍA GLOBAL (Tokens y Euros)
         const telemetry = state.telemetry || [];
         const globalStats = { totalCost: 0, totalTokens: 0, byEngine: {} };
 
         telemetry.forEach(t => {
-            const cost = t.costInDollars || 0; // Guardado en €/$ desde Orchestrator
+            const cost = t.costInDollars || 0; 
             const tokens = (t.tokens?.prompt_tokens || 0) + (t.tokens?.completion_tokens || 0);
             
             globalStats.totalCost += cost;
@@ -55,7 +54,7 @@ export default class HomeView {
                 `;
             }
         } else {
-            enginesHtml = `<div style="color:#666; font-size:0.8rem; font-style:italic;">Aún no hay consumo cognitivo registrado.</div>`;
+            enginesHtml = `<div style="color:#666; font-size:0.8rem; font-style:italic;">Aún no hay consumo cognitivo registrado en la matriz. Opera en el Omni-Paper para encender los medidores.</div>`;
         }
 
         // 2. CÁLCULO DE PROYECTOS Y ECOSISTEMAS
@@ -72,12 +71,11 @@ export default class HomeView {
                     <span style="font-size:4rem; display:block; margin-bottom:1rem; opacity:0.8;">🌌</span>
                     <h3 style="color:white; margin:0 0 10px 0; font-size:1.5rem;">El Vacio Cuántico</h3>
                     <p style="color:#888; margin-bottom:20px;">No estás asignado a ningún ecosistema. ¿Forjamos una nueva matriz de valor?</p>
-                    <button class="btn-primary" onclick="window.location.href='/v9/create'">➕ Iniciar Génesis (Nuevo Proyecto)</button>
+                    <button class="btn-primary" data-action="go-create">➕ Iniciar Génesis (Nuevo Proyecto)</button>
                 </div>
             `;
         } else {
             projectsHtml = userProjects.map(p => {
-                // Cálculo de métricas específicas del proyecto
                 const wos = p.work_orders || [];
                 const activeWos = wos.filter(w => w.status === 'pinged' || w.status === 'reported').length;
                 const closedWos = wos.filter(w => w.status === 'consolidated').length;
@@ -120,7 +118,7 @@ export default class HomeView {
                         <div class="pc-actions">
                             <button class="pc-btn primary" data-action="go-kanban" data-id="${p.id}">⚡ Operar Ecosistema (PULL)</button>
                             ${(state.session.role === 'ecosystem-owner' || p.ownerId === activeUserId) ? 
-                                `<button class="pc-btn secondary" data-action="edit-vna" data-id="${p.id}">⚙️ Matriz VNA</button>` : ''}
+                                `<button class="pc-btn secondary" data-action="go-vna" data-id="${p.id}">⚙️ Matriz VNA</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -164,7 +162,7 @@ export default class HomeView {
                 .engine-tokens { color: #888; }
                 .engine-cost { color: var(--accent-green); font-weight: bold; }
 
-                .btn-hero-forja { margin-top: 25px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; text-align: center; text-decoration: none; transition: 0.3s; box-shadow: 0 10px 30px rgba(224,64,251,0.2);}
+                .btn-hero-forja { margin-top: 25px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; text-align: center; text-decoration: none; transition: 0.3s; box-shadow: 0 10px 30px rgba(224,64,251,0.2); display: block; width: 100%; box-sizing: border-box;}
                 .btn-hero-forja:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(224,64,251,0.4); filter: brightness(1.2);}
 
                 .hero-3d-wrapper { border-radius: 16px; overflow: hidden; background: #000; position: relative; border: 1px solid #333; box-shadow: inset 0 0 50px rgba(0,176,255,0.1);}
@@ -240,7 +238,7 @@ export default class HomeView {
                                     ${enginesHtml}
                                 </div>
 
-                                <a href="/v9/lms" class="btn-hero-forja" data-link>🧠 Entrar a La Forja (LMS)</a>
+                                <button class="btn-hero-forja" data-action="go-lms">🧠 Entrar a La Forja (LMS)</button>
                             </div>
                             <div class="hero-3d-wrapper" id="homeCanvasMount">
                                 </div>
@@ -248,7 +246,7 @@ export default class HomeView {
 
                         <div class="section-header">
                             <h3 class="section-title">Nodos de Valor (Ecosistemas Activos)</h3>
-                            ${state.session.role === 'ecosystem-owner' ? `<button class="btn-new-project" onclick="window.location.href='/v9/create'">➕ Nuevo Génesis</button>` : ''}
+                            ${state.session.role === 'ecosystem-owner' ? `<button class="btn-new-project" data-action="go-create">➕ Nuevo Génesis</button>` : ''}
                         </div>
                         <div class="projects-grid">
                             ${projectsHtml}
@@ -265,35 +263,44 @@ export default class HomeView {
         Sidebar.initListeners();
         PageHeader.execute();
 
+        // 🔥 INYECTOR DE ENRUTAMIENTO SPA (Zero Fricción - No recarga la página)
+        const triggerSPA = (url) => {
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('data-link', '');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
         // 🔥 INICIAR META-GRAFO 3D (VISTA GLOBAL)
         const mountPoint = document.getElementById('homeCanvasMount');
         if (mountPoint) {
-            // Pasamos agentId nulo para que cargue toda la red (Vista de Águila)
             this.synapticInstance = new SynapticCanvas(mountPoint, { agentId: null, isVnaMode: false });
             await this.synapticInstance.render();
         }
 
-        // 🔥 LISTENERS DE TARJETAS DE PROYECTO
-        const actionBtns = document.querySelectorAll('.pc-btn');
-        actionBtns.forEach(btn => {
+        // 🔥 LISTENERS DE BOTONES BLINDADOS CON SPA
+        document.querySelectorAll('[data-action]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const action = e.currentTarget.dataset.action;
                 const projId = e.currentTarget.dataset.id;
                 
-                // Guardamos el proyecto activo en localStorage para que las vistas hijas sepan dónde están
-                localStorage.setItem('tt_active_project', projId);
-
-                if (action === 'go-kanban') {
-                    window.location.href = `/v9/project`;
-                } else if (action === 'edit-vna') {
-                    window.location.href = `/v9/edit`; // Asumiendo que tienes una vista de edición VNA
+                // Guardamos el proyecto activo para que las vistas hijas sepan dónde están
+                if (projId) {
+                    localStorage.setItem('tt_active_project', projId);
                 }
+
+                // Enrutamiento nativo del ecosistema V9
+                if (action === 'go-kanban') triggerSPA('/v9/project');
+                else if (action === 'go-vna') triggerSPA('/v9/edit');
+                else if (action === 'go-create') triggerSPA('/v9/create');
+                else if (action === 'go-lms') triggerSPA('/v9/lms');
             });
         });
     }
 
     destroy() {
-        // Limpiamos los eventos 3D y liberamos memoria si cambiamos de ruta SPA
         if (this.synapticInstance && this.synapticInstance.destroy) {
             this.synapticInstance.destroy();
         }
