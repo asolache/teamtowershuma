@@ -35,25 +35,17 @@ async function router() {
     try {
         await store.init();
 
-        // Auth guard — redirige a / si no hay sesión y la ruta no es raíz
-        const state    = store.getState();
-        const isRoot   = path === '/' || path === '/ia';
-        if (!state.session?.activeUserId && !isRoot) {
-            window.history.replaceState(null, null, '/');
-            return router();
-        }
-
         const module    = await match.view();
         const ViewClass = module.default;
         const view      = new ViewClass();
 
         app.innerHTML = await view.getHtml();
 
-        // Ciclo de vida — soporta V10 (afterRender) y alias V9 (executeViewScript)
-        if (typeof view.afterRender      === 'function') await view.afterRender();
+        // Soporte V10 (afterRender) y alias V9 (executeViewScript)
+        if (typeof view.afterRender         === 'function') await view.afterRender();
         else if (typeof view.executeViewScript === 'function') await view.executeViewScript();
 
-        // Activar links SPA
+        // Activar links SPA — evitar doble bind
         document.querySelectorAll('[data-link]').forEach(link => {
             if (link._linked) return;
             link._linked = true;
@@ -69,7 +61,7 @@ async function router() {
             <div style="display:flex;align-items:center;justify-content:center;height:100dvh;
                         flex-direction:column;gap:1.5rem;color:#888;font-family:monospace;background:#050507;">
                 <div style="font-size:3rem;">💥</div>
-                <div style="color:#ff5252;font-size:0.9rem;max-width:400px;text-align:center;">${err.message}</div>
+                <div style="color:#ff5252;font-size:0.9rem;max-width:420px;text-align:center;">${err.message}</div>
                 <button onclick="window.location.href='/'"
                         style="background:rgba(99,102,241,0.2);border:1px solid #6366f1;color:#6366f1;
                                padding:10px 20px;border-radius:10px;cursor:pointer;font-family:monospace;">
