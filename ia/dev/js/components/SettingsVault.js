@@ -2,7 +2,7 @@
 //  ia/dev/js/components/SettingsVault.js
 //  TeamTowers SOS — Sesión V10
 //  Bóveda de configuración: claves via KB.js (IndexedDB)
-//  Zero localStorage para API Keys · Anthropic primario
+//  Zero localStorage para API Keys · Anthropic vía proxy Netlify
 // ============================================================
 
 import { store } from '../core/store.js';
@@ -36,11 +36,11 @@ export class SettingsVault {
         }
 
         // ── Leer claves actuales desde KB (IndexedDB) ──────────────
-        const provider   = await Orchestrator.getDefaultProvider();
-        const keyAnt     = await Orchestrator.getApiKey('anthropic') || '';
-        const keyOai     = await Orchestrator.getApiKey('openai')    || '';
-        const keyDs      = await Orchestrator.getApiKey('deepseek')  || '';
-        const keyGem     = await Orchestrator.getApiKey('gemini')    || '';
+        const provider = await Orchestrator.getDefaultProvider();
+        const keyAnt   = await Orchestrator.getApiKey('anthropic') || '';
+        const keyOai   = await Orchestrator.getApiKey('openai')    || '';
+        const keyDs    = await Orchestrator.getApiKey('deepseek')  || '';
+        const keyGem   = await Orchestrator.getApiKey('gemini')    || '';
 
         // ── Padrón de Nodos ────────────────────────────────────────
         let nodesHtml = '';
@@ -137,6 +137,7 @@ export class SettingsVault {
                 </p>
                 <p style="color:#666; font-size:0.8rem; margin-bottom:2rem;">
                     Si el motor primario falla, el Orquestador activa la cadena de Fallback automáticamente.
+                    Las llamadas a Anthropic pasan por <strong style="color:var(--accent-green);">proxy server-side Netlify</strong> — sin CORS.
                 </p>
 
                 <div class="form-group">
@@ -155,7 +156,7 @@ export class SettingsVault {
 
                 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
                     <div class="form-group">
-                        <label>Anthropic API Key <span style="color:var(--accent-green); font-size:0.7rem;">(Primario)</span></label>
+                        <label>Anthropic API Key <span style="color:var(--accent-green); font-size:0.7rem;">(Proxy Netlify · sin CORS)</span></label>
                         <input type="password" id="inpKeyAnthropic" class="sv-form-control"
                                value="${keyAnt}" placeholder="sk-ant-api03-...">
                     </div>
@@ -259,7 +260,6 @@ export class SettingsVault {
                 const kDs      = this.container.querySelector('#inpKeyDeepSeek').value.trim();
                 const kGem     = this.container.querySelector('#inpKeyGemini').value.trim();
 
-                // Persistir en IndexedDB via Orchestrator (que usa KB.js)
                 await Orchestrator.setDefaultProvider(provider);
                 if (kAnt) await Orchestrator.saveApiKey('anthropic', kAnt);
                 if (kOai) await Orchestrator.saveApiKey('openai',    kOai);
@@ -289,8 +289,9 @@ export class SettingsVault {
         this.container.querySelector('#btnPurgeRedux')?.addEventListener('click', async () => {
             if (confirm('¡PELIGRO! Esto destruirá todos los Proyectos, Kanban y Ledger. ¿Seguro?')) {
                 localStorage.removeItem('tt_v9_kernel_state');
+                localStorage.removeItem('tt_v10_kernel_state');
                 await KB.init();
-                await KB.deleteNode('global_kernel_state');
+                await KB.deleteNode('global_kernel_state_v10'); // ← V10 key
                 alert('Redux Destruido. Cerrando Sesión...');
                 window.location.href = '/ia/dev/';
             }
