@@ -6,6 +6,7 @@ import { BottomNav } from '../components/BottomNav.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { Orchestrator } from '../core/Orchestrator.js'; 
 import { SandboxRenderer } from '../components/SandboxRenderer.js'; 
+import '../components/GtdPanel.js'; // 🔥 IMPORTAMOS EL NUEVO WEB COMPONENT
 
 export default class PaperView {
     constructor() {
@@ -14,10 +15,6 @@ export default class PaperView {
         this.activeTx = null; 
         this.activeProjectId = null;
         this.isMenuOpen = false;
-        
-        this.pomodoroInterval = null;
-        this.pomodoroSeconds = 0;
-        this.isPomodoroRunning = false;
         
         this.sandbox = null;
         this.chatHistory = []; // Swarm Memory
@@ -78,52 +75,7 @@ export default class PaperView {
                 .bc-select:focus { border-color: var(--accent-blue); }
                 .bc-separator { color: #555; font-weight: bold; }
                 
-                /* ==================================================================== */
-                /* 🔥 MODO GTD (WORK ORDERS) */
-                /* ==================================================================== */
-                .gtd-mode-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; flex-direction: column; gap: 20px;}
-                .pomodoro-panel { background: linear-gradient(145deg, rgba(20,20,25,0.9), rgba(10,10,15,0.95)); border: 1px solid var(--accent-orange); border-radius: 24px; padding: 2rem; text-align: center; box-shadow: 0 15px 35px rgba(255,171,64,0.15), inset 0 0 20px rgba(255,171,64,0.05); transition: 0.3s;}
-                .pomodoro-panel.running { border-color: var(--accent-green); box-shadow: 0 15px 35px rgba(0,230,118,0.2), inset 0 0 30px rgba(0,230,118,0.1); animation: breathe 4s infinite;}
-                .timer-display { font-size: 5rem; font-weight: 900; font-family: var(--font-mono); color: white; margin: 0.5rem 0; text-shadow: 0 5px 15px rgba(0,0,0,0.8); font-variant-numeric: tabular-nums;}
-                .pomodoro-panel.running .timer-display { color: var(--accent-green); }
-                .timer-controls { display: flex; justify-content: center; gap: 15px; margin-top: 1rem;}
-                .btn-timer { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
-                .btn-timer:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); }
-                .btn-timer.play { border-color: var(--accent-green); color: var(--accent-green); }
-                .btn-timer.pause { border-color: var(--accent-orange); color: var(--accent-orange); }
-
-                .task-context-panel { background: rgba(15,15,20,0.9); border: 1px solid var(--glass-border); border-left: 4px solid var(--accent-green); padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-                .task-context-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
-                .task-context-title { font-size: 1.3rem; color: white; font-weight: 900; margin: 0; }
-                .task-context-desc { font-size: 0.95rem; color: #ccc; line-height: 1.5; font-style: italic; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;}
-                
-                .pow-section { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
-                .pow-input-group { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 5px; }
-                .pow-input-group label { font-size: 0.75rem; color: var(--accent-green); text-transform: uppercase; font-weight: bold; }
-                .pow-input { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; font-family: var(--font-main); outline:none; transition: 0.3s;}
-                .pow-input:focus { border-color: var(--accent-green); box-shadow: inset 0 0 10px rgba(0,230,118,0.1); }
-                .pow-input.mono { font-family: var(--font-mono); font-weight: bold; color: var(--accent-orange); }
-
-                .soc-checklist-box { margin-top: 15px; }
-                .soc-checklist-box label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; }
-                .soc-item-check { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 5px; transition: 0.2s;}
-                .soc-item-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-green); margin-top: 2px; }
-                .soc-item-check span { color: #ddd; font-size: 0.9rem; line-height: 1.4; }
-
-                .editor-wrapper { position: relative; width: 100%; background: rgba(10,10,15,0.8); border: 1px solid #444; border-radius: 16px; padding: 20px; box-sizing: border-box; transition: 0.3s;}
-                .editor-wrapper:focus-within { border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(224,64,251,0.1);}
-                .semantic-editor { width: 100%; min-height: 35vh; background: transparent; border: none; color: #e0e0e0; font-family: 'Georgia', serif; font-size: 1.15rem; line-height: 1.6; outline: none;}
-                .semantic-editor:empty:before { content: attr(data-placeholder); color: #555; font-style: italic; pointer-events: none;}
-                
-                .action-bar-fixed { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000;}
-                .btn-action-pow { background: linear-gradient(135deg, var(--accent-green), #00b0ff); color: black; border: none; padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 230, 118, 0.3);}
-                .btn-action-pow:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0, 230, 118, 0.5); filter: brightness(1.2);}
-                .btn-action-draft { background: rgba(255,171,64,0.1); border: 1px solid var(--accent-orange); color: var(--accent-orange); padding: 16px 30px; border-radius: 30px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);}
-                .btn-action-draft:hover { background: var(--accent-orange); color: black; box-shadow: 0 10px 30px rgba(255, 171, 64, 0.4); transform: translateY(-3px);}
-
-                /* ==================================================================== */
                 /* 🔥 MODO CHAT-IDE (ARTIFACTS POLIMÓRFICOS) */
-                /* ==================================================================== */
                 .ide-mode-panel { display: grid; grid-template-columns: 450px 1fr; gap: 20px; flex: 1; min-height: 550px; height: 100%;}
                 
                 .chat-panel { background: rgba(10,10,15,0.9); border: 1px solid var(--glass-border); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
@@ -161,7 +113,6 @@ export default class PaperView {
                 .sandbox-panel { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 10px, transparent 10px, transparent 20px), #050508; border: 1px dashed #333; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative;}
                 .sandbox-empty { color: #555; text-align: center; font-family: var(--font-mono); font-size: 0.9rem; padding: 2rem;}
 
-                @keyframes breathe { 0% { box-shadow: 0 15px 35px rgba(0,230,118,0.1), inset 0 0 20px rgba(0,230,118,0.05); } 50% { box-shadow: 0 15px 35px rgba(0,230,118,0.3), inset 0 0 40px rgba(0,230,118,0.15); } 100% { box-shadow: 0 15px 35px rgba(0,230,118,0.1), inset 0 0 20px rgba(0,230,118,0.05); } }
                 @media (max-width: 1024px) { .ide-mode-panel { grid-template-columns: 350px 1fr; } }
                 @media (max-width: 768px) { .ide-mode-panel { grid-template-columns: 1fr; display: flex; flex-direction: column-reverse; min-height: auto; } .sandbox-panel { min-height: 400px; } }
             </style>
@@ -211,38 +162,8 @@ export default class PaperView {
                             </div>
                         </div>
 
-                        <div class="gtd-mode-panel" id="gtdModePanel">
-                            <div class="pomodoro-panel" id="pomoPanel">
-                                <div style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">Tiempo de Foco Activo</div>
-                                <div class="timer-display" id="timeDisplay">00:00:00</div>
-                                <div style="font-family: var(--font-mono); color: #888; font-size: 0.8rem;">El tiempo se inyectará en el Slicing Pie al sellar.</div>
-                                <div class="timer-controls">
-                                    <button class="btn-timer play" id="btnPlay">▶</button>
-                                    <button class="btn-timer pause" id="btnPause" style="display:none;">⏸</button>
-                                </div>
-                            </div>
-                            <div id="taskContextPanel" class="task-context-panel">
-                                <div class="task-context-header">
-                                    <div><h2 id="taskTitle" class="task-context-title">Tarea</h2><div id="taskRole" style="color:var(--accent-blue); font-family:var(--font-mono); font-size:0.85rem; margin-top:5px; font-weight:bold;"></div></div>
-                                    <div style="text-align:right;"><div style="color:#888; font-size:0.75rem; text-transform:uppercase; font-weight:bold;">Estado</div><div id="taskStatus" style="color:var(--accent-orange); font-family:var(--font-mono); font-weight:bold;"></div></div>
-                                </div>
-                                <div id="taskDesc" class="task-context-desc"></div>
-                                <div id="taskSocsContainer" class="soc-checklist-box"></div>
-                                <div class="pow-section">
-                                    <div class="pow-input-group" style="flex:2;"><label>🔗 Enlace al Entregable</label><input type="text" id="inpPowLink" class="pow-input" placeholder="URL interna del Córtex..."></div>
-                                    <div class="pow-input-group" style="flex:1;"><label>⏱ Tiempo Imputado (H)</label><input type="number" step="0.01" id="inpPowHours" class="pow-input mono" readonly></div>
-                                </div>
-                            </div>
-                            <div class="editor-wrapper" id="editorWrapper">
-                                <label id="editorLabel" style="font-size:0.75rem; color:#888; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">Proof of Work (Reporte)</label>
-                                <div id="semanticEditor" class="semantic-editor" contenteditable="true" data-placeholder="Documenta tu Proof of Work aquí..."><p><br></p></div>
-                            </div>
-                        </div>
+                        <gtd-panel id="gtdComponent"></gtd-panel>
 
-                    </div>
-                    <div class="action-bar-fixed" id="gtdActionBar" style="display:none;">
-                        <button class="btn-action-draft" id="btnSaveTaskDraft">💾 Guardar Borrador</button>
-                        <button class="btn-action-pow" id="btnSubmitReport">🚀 Sellar Proof of Work</button>
                     </div>
                 </main>
                 ${BottomNav.getHtml('/paper')}
@@ -250,32 +171,42 @@ export default class PaperView {
         `;
     }
 
-    // 🔥 PUENTE DE ANTI-FRAGILIDAD: Intercepta a los routers SPA que esperan un afterRender
     async afterRender() {
         await this.executeViewScript();
     }
 
     async executeViewScript() {
-        // Envolturas de seguridad para tolerancia a fallos en caso de que Sidebar/PageHeader cambien sus firmas
         try { if (typeof Sidebar.initListeners === 'function') Sidebar.initListeners(); else if (typeof Sidebar.afterRender === 'function') await Sidebar.afterRender(); } catch(e) { console.warn("Sidebar binding issue:", e); }
         try { if (typeof PageHeader.execute === 'function') PageHeader.execute(); else if (typeof PageHeader.afterRender === 'function') await PageHeader.afterRender(); } catch(e) { console.warn("PageHeader binding issue:", e); }
 
         this.sandbox = new SandboxRenderer('sandboxMount');
 
         this.dom = {
-            selProject: document.getElementById('selProject'), omniSelector: document.getElementById('omniSelector'),
-            ideModePanel: document.getElementById('ideModePanel'), gtdModePanel: document.getElementById('gtdModePanel'), gtdActionBar: document.getElementById('gtdActionBar'),
-            history: document.getElementById('chatHistory'), input: document.getElementById('inpChatPrompt'), btnSend: document.getElementById('btnSendPrompt'),
-            selAgent: document.getElementById('selAgentTarget'), sbEmpty: document.getElementById('sbEmptyState'),
-            selAttachNode: document.getElementById('selAttachNode'), attachedNodesContainer: document.getElementById('attachedNodesContainer'),
-            pomoPanel: document.getElementById('pomoPanel'), timeDisplay: document.getElementById('timeDisplay'), btnPlay: document.getElementById('btnPlay'), btnPause: document.getElementById('btnPause'),
-            taskTitle: document.getElementById('taskTitle'), taskRole: document.getElementById('taskRole'), taskStatus: document.getElementById('taskStatus'), taskDesc: document.getElementById('taskDesc'),
-            taskSocs: document.getElementById('taskSocsContainer'), inpPowLink: document.getElementById('inpPowLink'), inpPowHours: document.getElementById('inpPowHours'),
-            editor: document.getElementById('semanticEditor'), btnSubmit: document.getElementById('btnSubmitReport'), btnSaveTaskDraft: document.getElementById('btnSaveTaskDraft')
+            selProject: document.getElementById('selProject'), 
+            omniSelector: document.getElementById('omniSelector'),
+            ideModePanel: document.getElementById('ideModePanel'), 
+            gtdComponent: document.getElementById('gtdComponent'), // Referencia al Web Component
+            history: document.getElementById('chatHistory'), 
+            input: document.getElementById('inpChatPrompt'), 
+            btnSend: document.getElementById('btnSendPrompt'),
+            selAgent: document.getElementById('selAgentTarget'), 
+            sbEmpty: document.getElementById('sbEmptyState'),
+            selAttachNode: document.getElementById('selAttachNode'), 
+            attachedNodesContainer: document.getElementById('attachedNodesContainer')
         };
 
         const state = store.getState();
         const activeUserId = state.session.activeUserId;
+
+        // Escuchar eventos emitidos por el GtdPanel
+        this.dom.gtdComponent.addEventListener('pow-submitted', () => {
+            alert("✅ Proof of Work reportado. Ha pasado a Notaría.");
+            window.location.href = '/v9/project'; 
+        });
+
+        this.dom.gtdComponent.addEventListener('evidence-injected', () => {
+            console.log("Evidencia inyectada en el panel GTD");
+        });
 
         // CARGAR NODOS ADJUNTABLES
         await KB.init();
@@ -320,13 +251,18 @@ export default class PaperView {
 
         this.dom.selProject.addEventListener('change', async (e) => {
             this.activeProjectId = e.target.value; localStorage.setItem('tt_active_project', this.activeProjectId);
-            await this.loadProjectTasks(this.activeProjectId); this.activeTx = null; this.stopPomodoro(); await this.setIdeMode();
+            await this.loadProjectTasks(this.activeProjectId); this.activeTx = null; await this.setIdeMode();
         });
 
         this.dom.omniSelector.addEventListener('change', async (e) => {
-            const val = e.target.value; this.stopPomodoro(); 
-            if (val === 'ide') { this.activeTx = null; await this.setIdeMode(); } 
-            else { this.activeTx = (store.getState().projects.find(x => x.id === this.activeProjectId).work_orders || []).find(t => (t.id || t.hash) === val); await this.setGtdMode(); }
+            const val = e.target.value; 
+            if (val === 'ide') { 
+                this.activeTx = null; 
+                await this.setIdeMode(); 
+            } else { 
+                this.activeTx = (store.getState().projects.find(x => x.id === this.activeProjectId).work_orders || []).find(t => (t.id || t.hash) === val); 
+                await this.setGtdMode(); 
+            }
         });
 
         this.dom.selAgent.addEventListener('change', () => {
@@ -337,31 +273,6 @@ export default class PaperView {
 
         this.dom.btnSend.addEventListener('click', () => this.handleSendMessage());
         this.dom.input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.handleSendMessage(); } });
-
-        this.setupPomodoro();
-        this.dom.btnSubmit.addEventListener('click', () => this.reportDeliverable());
-        this.dom.btnSaveTaskDraft.addEventListener('click', () => this.saveTaskDraft());
-
-        // 🔥 EVENTO GLOBAL: Inyectar Evidencia en el Editor (Auto-PoW)
-        window.addEventListener('inject-evidence', (e) => {
-            if (!this.activeTx) return alert("Debes estar en Modo GTD para inyectar una evidencia.");
-            
-            const msgId = e.detail.msgId;
-            const data = this.chatMessagesMap[msgId];
-            if (!data) return;
-
-            let htmlToInject = `<blockquote><b>Evidencia Generada por IA:</b><br>${data.text.replace(/\n/g, '<br>')}</blockquote>`;
-            if (data.artifactData) {
-                htmlToInject += `<pre style="background:rgba(0,0,0,0.8); border:1px solid #444; color:#00e676; padding:10px; border-radius:8px; font-family:var(--font-mono); font-size:0.8rem; overflow-x:auto;"><code>${JSON.stringify(data.artifactData, null, 2)}</code></pre>`;
-            }
-
-            this.dom.editor.innerHTML += htmlToInject;
-            this.dom.inpPowLink.value = `tt://swarm-memory/${this.currentChatId}#${msgId}`;
-            
-            // Auto-checkear SOCs
-            this.dom.taskSocs.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-            alert("✅ Evidencia inyectada en el Editor. Los SOCs han sido pre-validados. Revisa y sella.");
-        });
 
         // EVENTOS GLOBALES DE MÚTACIÓN Y CI/CD
         window.addEventListener('save-entity-mutation', async (e) => {
@@ -545,72 +456,19 @@ export default class PaperView {
     }
 
     async setIdeMode() { 
-        this.dom.gtdModePanel.style.display = 'none'; 
-        this.dom.gtdActionBar.style.display = 'none'; 
+        this.dom.gtdComponent.loadTask(null, this.activeProjectId, null); // Oculta GTD Panel
         this.dom.ideModePanel.style.display = window.innerWidth <= 768 ? 'flex' : 'grid'; 
         await this.loadChatHistory(`chat_${this.activeProjectId}_ide`);
     }
     
     async setGtdMode() { 
         this.dom.ideModePanel.style.display = 'none'; 
-        this.dom.gtdModePanel.style.display = 'flex'; 
-        this.dom.gtdActionBar.style.display = 'flex'; 
-
-        if (!this.activeTx) return;
+        const chatId = `chat_${this.activeProjectId}_wo_${this.activeTx.hash || this.activeTx.id}`;
         
-        await this.loadChatHistory(`chat_${this.activeProjectId}_wo_${this.activeTx.hash || this.activeTx.id}`);
-
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        const isLegacy = !this.activeTx.flowId;
-        const parentFlow = isLegacy ? this.activeTx : (p.vna_flows || []).find(f => f.id === this.activeTx.flowId);
+        await this.loadChatHistory(chatId);
         
-        this.dom.taskTitle.innerText = parentFlow ? (parentFlow.template || parentFlow.entregable || this.activeTx.comentario) : 'Work Order';
-        const roleTo = p.roles.find(r => r.id === (parentFlow ? parentFlow.to : this.activeTx.to));
-        this.dom.taskRole.innerText = roleTo ? `${roleTo.levelId} - ${roleTo.name}` : '@ecosistema';
-        this.dom.taskStatus.innerText = this.activeTx.status === 'pinged' ? 'EN CURSO' : this.activeTx.status.toUpperCase();
-        this.dom.taskDesc.innerHTML = (this.activeTx.comentario || parentFlow?.comentario || 'Completa la tarea y sella la evidencia.').replace(/\n/g, '<br>');
-
-        const socs = this.activeTx.soc_checklist && this.activeTx.soc_checklist.length > 0 ? this.activeTx.soc_checklist : (parentFlow?.soc_checklist || []);
-        if (socs.length > 0) {
-            this.dom.taskSocs.innerHTML = '<label>Criterios de Aceptación (SOCs):</label>' + socs.map(soc => `
-                <div class="soc-item-check">
-                    <input type="checkbox" id="${soc.id}" ${soc.isChecked ? 'checked' : ''}>
-                    <span>${soc.text}</span>
-                </div>
-            `).join('');
-        } else {
-            this.dom.taskSocs.innerHTML = '<div style="color:#666; font-style:italic; font-size:0.85rem;">No hay SOCs asociados.</div>';
-        }
-
-        this.dom.inpPowLink.value = this.activeTx.draftLink || this.activeTx.proofLink || '';
-        
-        const savedHours = this.activeTx.draftHours || this.activeTx.realHours || 0;
-        if (savedHours > 0) {
-            this.pomodoroSeconds = Math.floor(savedHours * 3600);
-            this.updatePomodoroDisplay();
-            this.dom.inpPowHours.value = savedHours.toFixed(3);
-        } else {
-            this.pomodoroSeconds = 0;
-            this.updatePomodoroDisplay();
-            this.dom.inpPowHours.value = (parentFlow?.estimatedHours || parentFlow?.horas || 1); 
-        }
-
-        this.dom.editor.innerHTML = this.activeTx.draftContent || '<p><br></p>';
-        
-        if (this.activeTx.status === 'pinged') {
-            this.dom.btnSubmit.style.display = 'block';
-            this.dom.btnSaveTaskDraft.style.display = 'block';
-            this.dom.btnPlay.style.display = 'flex';
-            this.dom.editor.contentEditable = "true";
-            this.dom.inpPowLink.disabled = false;
-        } else {
-            this.dom.btnSubmit.style.display = 'none';
-            this.dom.btnSaveTaskDraft.style.display = 'none';
-            this.dom.btnPlay.style.display = 'none';
-            this.dom.inpPowLink.disabled = true;
-            this.dom.taskSocs.querySelectorAll('input').forEach(i => i.disabled = true);
-            this.dom.editor.contentEditable = "false";
-        }
+        // Pasa los datos al Web Component para que él se encargue de renderizarse
+        this.dom.gtdComponent.loadTask(this.activeTx, this.activeProjectId, chatId);
     }
 
     addMessage(text, type, artifactData = null, skipSave = false, telemetry = null) {
@@ -673,7 +531,8 @@ export default class PaperView {
         const btnInject = msg.querySelector(`#btn_inject_${msgId}`);
         if (btnInject) {
             btnInject.addEventListener('click', () => {
-                window.dispatchEvent(new CustomEvent('inject-evidence', { detail: { msgId: msgId } }));
+                // Emitimos el evento global para que el GtdPanel lo atrape
+                window.dispatchEvent(new CustomEvent('inject-evidence', { detail: { msgId: msgId, text: text, artifactData: artifactData } }));
             });
         }
 
@@ -794,100 +653,6 @@ export default class PaperView {
         } finally {
             this.dom.btnSend.disabled = false;
             this.dom.btnSend.innerHTML = "🚀 Enviar Directiva";
-        }
-    }
-
-    updatePomodoroDisplay() {
-        const hrs = Math.floor(this.pomodoroSeconds / 3600);
-        const mins = Math.floor((this.pomodoroSeconds % 3600) / 60);
-        const secs = this.pomodoroSeconds % 60;
-        this.dom.timeDisplay.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        if (this.pomodoroSeconds > 0) this.dom.inpPowHours.value = (this.pomodoroSeconds / 3600).toFixed(3); 
-    }
-
-    setupPomodoro() {
-        this.tickPomodoro = () => { this.pomodoroSeconds++; this.updatePomodoroDisplay(); };
-
-        this.dom.btnPlay.addEventListener('click', () => {
-            if (this.isPomodoroRunning) return;
-            this.isPomodoroRunning = true;
-            this.dom.btnPlay.style.display = 'none';
-            this.dom.btnPause.style.display = 'flex';
-            this.dom.pomoPanel.classList.add('running');
-            this.pomodoroInterval = setInterval(this.tickPomodoro, 1000);
-        });
-
-        this.dom.btnPause.addEventListener('click', () => this.stopPomodoro());
-    }
-
-    stopPomodoro() {
-        if (!this.isPomodoroRunning) return;
-        this.isPomodoroRunning = false;
-        this.dom.btnPlay.style.display = 'flex';
-        this.dom.btnPause.style.display = 'none';
-        this.dom.pomoPanel.classList.remove('running');
-        clearInterval(this.pomodoroInterval);
-    }
-
-    async saveTaskDraft() {
-        if (!this.activeTx) return;
-        this.dom.btnSaveTaskDraft.disabled = true; this.dom.btnSaveTaskDraft.innerText = "⏳...";
-
-        const link = this.dom.inpPowLink.value.trim();
-        const hours = parseFloat(this.dom.inpPowHours.value) || 0;
-        const htmlContent = this.dom.editor.innerHTML.trim();
-        
-        const socs = [];
-        this.dom.taskSocs.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            socs.push({ id: cb.id, text: cb.nextElementSibling.innerText, isChecked: cb.checked });
-        });
-
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        const isLegacy = !this.activeTx.flowId;
-        const listType = isLegacy ? 'transactions' : 'work_orders';
-        const hashTarget = this.activeTx.hash || this.activeTx.id;
-
-        const updatedList = p[listType].map(w => {
-            if ((w.hash || w.id) === hashTarget) {
-                return { ...w, draftLink: link, draftHours: hours, draftContent: htmlContent, soc_checklist: socs.length > 0 ? socs : w.soc_checklist };
-            }
-            return w;
-        });
-
-        await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: this.activeProjectId, updates: { [listType]: updatedList } } });
-
-        setTimeout(() => {
-            this.dom.btnSaveTaskDraft.disabled = false;
-            this.dom.btnSaveTaskDraft.innerText = "💾 Guardar Borrador";
-        }, 500);
-    }
-
-    async reportDeliverable() {
-        if (!this.activeTx) return;
-        this.stopPomodoro();
-
-        const link = this.dom.inpPowLink.value.trim();
-        let hoursToReport = this.pomodoroSeconds > 0 ? (this.pomodoroSeconds / 3600) : parseFloat(this.dom.inpPowHours.value);
-        if (isNaN(hoursToReport) || hoursToReport <= 0) hoursToReport = 1; 
-        hoursToReport = parseFloat(hoursToReport.toFixed(3)); 
-
-        const htmlContent = this.dom.editor.innerHTML.trim();
-        if (!link && htmlContent === '<p><br></p>') return alert("⚠️ Adjunta enlace o escribe el PoW.");
-
-        if (confirm(`¿Sellar Work Order con ${hoursToReport}h? Pasará a Auditoría TDD.`)) {
-            this.dom.btnSubmit.disabled = true; this.dom.btnSubmit.innerText = '🚀...';
-            
-            const isLegacy = !this.activeTx.flowId;
-            const payloadKey = isLegacy ? 'txHash' : 'woHash';
-            const targetHash = this.activeTx.hash || this.activeTx.id;
-
-            await store.dispatch({
-                type: 'REPORT_WORK_ORDER',
-                payload: { projectId: this.activeProjectId, [payloadKey]: targetHash, realHours: hoursToReport, comentario: htmlContent, proofLink: link }
-            });
-
-            alert("✅ Proof of Work reportado. Ha pasado a Notaría.");
-            window.location.href = '/v9/project'; 
         }
     }
 }
