@@ -35,6 +35,18 @@ const ANTHROPIC_MODEL   = 'claude-sonnet-4-20250514';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 
+// ─── PROXY NETLIFY (resuelve CORS del browser → Anthropic) ───
+// En local (localhost) llama directo. En Netlify usa el proxy.
+const ANTHROPIC_PROXY_URL = window.location.hostname === 'localhost'
+    ? ANTHROPIC_API_URL
+    : '/api/anthropic-proxy';
+
+// ─── PROXY NETLIFY (resuelve CORS del browser → Anthropic) ───
+// En local (localhost) llama directo. En Netlify usa el proxy.
+const ANTHROPIC_PROXY_URL = window.location.hostname === 'localhost'
+    ? ANTHROPIC_API_URL
+    : '/api/anthropic-proxy';
+
 // ─── CLAVE DE PERSISTENCIA EN KB (IndexedDB) ─────────────────
 const KB_KEY_PROVIDER  = 'sos_ai_provider';
 const KB_KEY_ANTHROPIC = 'sos_key_anthropic';
@@ -266,19 +278,15 @@ class OrchestratorCore {
                             ? '\n\nDEBES RESPONDER ÚNICAMENTE CON UN OBJETO JSON VÁLIDO. NO USES BLOQUES MARKDOWN NI TEXTO ADICIONAL.'
                             : '';
 
+                        // Body para el proxy: apiKey + _meta + payload Anthropic
                         const requestBody = {
+                            apiKey,                          // proxy lo extrae, pone en x-api-key
+                            _anthropicVersion: ANTHROPIC_VERSION,
                             model:       ANTHROPIC_MODEL,
                             max_tokens:  8192,
                             temperature,
                             system:      systemPrompt + jsonSuffix,
                             messages:    [{ role: 'user', content: userPrompt }]
-                        };
-
-                        const headers = {
-                            'x-api-key':                          apiKey,
-                            'anthropic-version':                   ANTHROPIC_VERSION,
-                            'content-type':                        'application/json',
-                            'anthropic-dangerously-allow-browser': 'true'
                         };
 
                         if (mcpSkills.length > 0) {
@@ -290,15 +298,17 @@ class OrchestratorCore {
                                 }
                             }
                             if (mappedSkills.length > 0) {
-                                requestBody.container = { skills: mappedSkills };
-                                requestBody.tools     = [{ type: 'code_execution_20250825', name: 'code_execution' }];
-                                headers['anthropic-beta'] = 'code-execution-2025-08-25,skills-2025-10-02,files-api-2025-04-14';
+                                requestBody.container      = { skills: mappedSkills };
+                                requestBody.tools          = [{ type: 'code_execution_20250825', name: 'code_execution' }];
+                                requestBody._anthropicBeta = 'code-execution-2025-08-25,skills-2025-10-02,files-api-2025-04-14';
                             }
                         }
 
-                        const response = await fetch(ANTHROPIC_API_URL, {
+                        // ANTHROPIC_PROXY_URL → /api/anthropic-proxy en Netlify
+                        // evita CORS; en localhost apunta directo a api.anthropic.com
+                        const response = await fetch(ANTHROPIC_PROXY_URL, {
                             method:  'POST',
-                            headers,
+                            headers: { 'content-type': 'application/json' },
                             body:    JSON.stringify(requestBody)
                         });
 
