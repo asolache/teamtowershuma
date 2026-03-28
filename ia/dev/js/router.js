@@ -23,26 +23,28 @@ function getRoutePath() {
     return raw;
 }
 
+const VIEWS_PATH = `${BASE_PATH}/js/views`;
+
 const ROUTES = [
-    { path: '/',          view: () => import('./views/HomeView.js')           },
-    { path: '/ia',        view: () => import('./views/HomeView.js')           },
-    { path: '/dashboard', view: () => import('./views/DashboardView.js')      },
-    { path: '/map',       view: () => import('./views/ValueMapView.js')       },
-    { path: '/paper',     view: () => import('./views/PaperView.js')          },
-    { path: '/focus',     view: () => import('./views/PaperView.js')          },
-    { path: '/lms',       view: () => import('./views/LmsView.js')            },
-    { path: '/manifesto', view: () => import('./views/LmsView.js')            },
-    { path: '/team',      view: () => import('./views/AgentEditorView.js')    },
-    { path: '/identity',  view: () => import('./views/AgentEditorView.js')    },
-    { path: '/agentes',   view: () => import('./views/AgentEditorView.js')    },
-    { path: '/ledger',    view: () => import('./views/LedgerView.js')         },
-    { path: '/project',   view: () => import('./views/ProjectView.js')        },
-    { path: '/create',    view: () => import('./views/ProjectCreatorView.js') },
-    { path: '/settings',  view: () => import('./views/SettingsView.js')       },
-    { path: '/pantheon',  view: () => import('./views/SettingsView.js')       },
-    { path: '/profile',   view: () => import('./views/ProfileView.js')        },
-    { path: '/tests',     view: () => import('./views/TestsView.js')          },
-    { path: null,         view: () => import('./views/HomeView.js')           },
+    { path: '/',          view: () => import(`${VIEWS_PATH}/HomeView.js`)           },
+    { path: '/ia',        view: () => import(`${VIEWS_PATH}/HomeView.js`)           },
+    { path: '/dashboard', view: () => import(`${VIEWS_PATH}/DashboardView.js`)      },
+    { path: '/map',       view: () => import(`${VIEWS_PATH}/ValueMapView.js`)       },
+    { path: '/paper',     view: () => import(`${VIEWS_PATH}/PaperView.js`)          },
+    { path: '/focus',     view: () => import(`${VIEWS_PATH}/PaperView.js`)          },
+    { path: '/lms',       view: () => import(`${VIEWS_PATH}/LmsView.js`)            },
+    { path: '/manifesto', view: () => import(`${VIEWS_PATH}/LmsView.js`)            },
+    { path: '/team',      view: () => import(`${VIEWS_PATH}/AgentEditorView.js`)    },
+    { path: '/identity',  view: () => import(`${VIEWS_PATH}/AgentEditorView.js`)    },
+    { path: '/agentes',   view: () => import(`${VIEWS_PATH}/AgentEditorView.js`)    },
+    { path: '/ledger',    view: () => import(`${VIEWS_PATH}/LedgerView.js`)         },
+    { path: '/project',   view: () => import(`${VIEWS_PATH}/ProjectView.js`)        },
+    { path: '/create',    view: () => import(`${VIEWS_PATH}/ProjectCreatorView.js`) },
+    { path: '/settings',  view: () => import(`${VIEWS_PATH}/SettingsView.js`)       },
+    { path: '/pantheon',  view: () => import(`${VIEWS_PATH}/SettingsView.js`)       },
+    { path: '/profile',   view: () => import(`${VIEWS_PATH}/ProfileView.js`)        },
+    { path: '/tests',     view: () => import(`${VIEWS_PATH}/TestsView.js`)          },
+    { path: null,         view: () => import(`${VIEWS_PATH}/HomeView.js`)           },
 ];
 
 async function router() {
