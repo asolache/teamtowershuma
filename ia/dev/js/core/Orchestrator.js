@@ -41,12 +41,6 @@ const ANTHROPIC_PROXY_URL = window.location.hostname === 'localhost'
     ? ANTHROPIC_API_URL
     : '/api/anthropic-proxy';
 
-// ─── PROXY NETLIFY (resuelve CORS del browser → Anthropic) ───
-// En local (localhost) llama directo. En Netlify usa el proxy.
-const ANTHROPIC_PROXY_URL = window.location.hostname === 'localhost'
-    ? ANTHROPIC_API_URL
-    : '/api/anthropic-proxy';
-
 // ─── CLAVE DE PERSISTENCIA EN KB (IndexedDB) ─────────────────
 const KB_KEY_PROVIDER  = 'sos_ai_provider';
 const KB_KEY_ANTHROPIC = 'sos_key_anthropic';
