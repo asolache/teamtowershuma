@@ -1,7 +1,7 @@
 // =============================================================================
 // TEAMTOWERS SOS V10 — PROJECT VIEW
 // Ruta: ia/dev/js/views/ProjectView.js
-// Kanban PULL · Motor de ejecución GTD
+// Kanban PULL · Motor de ejecución GTD · automation_level V10
 // =============================================================================
 
 import { store }          from '../core/store.js';
@@ -61,31 +61,49 @@ export default class ProjectView {
         this.activeProjectId = activeProjectId;
         this.isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
 
+        // ── Automation level badge ────────────────────────────────
+        const autoLevel = project.settings?.automation_level || 'review_first';
+        const autoLabels = { full_auto:'⚡ Full Auto', review_first:'👁️ Review First', human_only:'👤 Human Only' };
+        const autoColors = { full_auto:'var(--accent-green)', review_first:'var(--accent-orange)', human_only:'#888' };
+        const autoBadgeHtml = `
+            <span style="font-size:0.72rem;padding:4px 10px;border-radius:6px;font-weight:bold;
+                background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+                color:${autoColors[autoLevel]};">
+                ${autoLabels[autoLevel]}
+            </span>`;
+
         const isOpen        = user?.profile?.isOpenToWork || false;
         const statusBtnText = isOpen ? '🟢 Flujo Abierto' : '🔴 Modo Foco (DND)';
 
-        const sprintOptions = (project.sprints || []).map(s =>
-            `<option value="${s.id}" ${s.id === project.activeSprintId ? 'selected' : ''}>${s.name}</option>`
-        ).join('');
+        // WOs pendientes automáticas (full_auto pendientes de ejecutar)
+        const pendingAutoWos = (project.work_orders || [])
+            .filter(w => w.automation === 'auto' && w.status === 'theoretical' && w.assigneeId);
+        const autoWoBadge = pendingAutoWos.length > 0
+            ? `<span style="font-size:0.72rem;padding:4px 8px;border-radius:6px;font-weight:bold;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);color:var(--accent-green);">⚡ ${pendingAutoWos.length} auto pendientes</span>`
+            : '';
 
         const headerConfig = {
             title:    'Mercado PULL (Kanban)',
-            subtitle: project.nombre,
+            subtitle:  project.nombre,
             tagline:  'Motor de ejecución GTD. Gestiona Work Orders, asigna talento y sella Proof of Work.',
             actionHtml: `
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    ${autoBadgeHtml}
+                    ${autoWoBadge}
                     <button id="btnToggleStatus" style="background:rgba(0,0,0,0.4); border:1px solid #444; color:white; padding:8px 14px; border-radius:10px; font-size:0.82rem; font-weight:bold; cursor:pointer; transition:0.2s;">${statusBtnText}</button>
                     <select id="filterDropdown" style="background:rgba(0,0,0,0.5); border:1px solid #333; color:white; padding:8px 12px; border-radius:10px; font-size:0.82rem; font-weight:bold; outline:none; cursor:pointer;">
                         <option value="all">Todos los Flujos</option>
                         <option value="mine">Mis Tareas</option>
                         <option value="ai">Tareas IA</option>
                         <option value="hitl">HITL (Revisión Humana)</option>
+                        <option value="auto">Auto-pendientes</option>
                     </select>
                     ${this.isPO ? `<button id="btnNewFlow" class="btn-primary" style="padding:8px 16px; font-size:0.85rem;">+ Inyectar Flujo VNA</button>` : ''}
                 </div>`,
             magicActions: this.isPO ? [
-                { id: 'gen_sop',  label: 'Generar SOP con IA',    icon: '🧠', tokens: 200 },
-                { id: 'auto_assign', label: 'Auto-Asignar Agentes IA', icon: '🤖', tokens: 100 }
+                { id: 'gen_sop',     label: 'Generar SOP con IA',       icon: '🧠', tokens: 200 },
+                { id: 'auto_assign', label: 'Auto-Asignar Agentes IA',  icon: '🤖', tokens: 100 },
+                { id: 'run_auto',    label: 'Ejecutar WOs Auto ahora',  icon: '⚡', tokens: 50  }
             ] : []
         };
 
@@ -98,7 +116,6 @@ export default class ProjectView {
             .tab-content        { display:none; animation:fadeIn 0.3s ease-out; }
             .tab-content.active { display:block; }
 
-            /* Push Modal */
             .overlay-modal { position:fixed; top:0; left:0; width:100vw; height:100vh;
                 background:rgba(0,0,0,0.85); backdrop-filter:blur(15px);
                 z-index:5000; display:none; justify-content:center; align-items:center; }
@@ -177,7 +194,7 @@ export default class ProjectView {
                     </div>
                     <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:1.5rem;">
                         <button id="btnCloseVna" style="background:transparent; border:1px solid #444; color:#aaa; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">Cancelar</button>
-                        <button id="vnaConfirm" class="btn-primary" style="background:linear-gradient(135deg, var(--accent-green), #00b341);">✅ Inyectar en la Matriz</button>
+                        <button id="vnaConfirm" class="btn-primary" style="background:linear-gradient(135deg,var(--accent-green),#00b341);">✅ Inyectar en la Matriz</button>
                     </div>
                 </div>
             </div>
@@ -188,9 +205,10 @@ export default class ProjectView {
 
     async afterRender() {
         Sidebar.initListeners();
-        PageHeader.afterRender(null, (actionId) => {
+        PageHeader.afterRender(null, async (actionId) => {
             if (actionId === 'gen_sop')     this._openVnaModal();
-            if (actionId === 'auto_assign') this._autoAssignIA();
+            if (actionId === 'auto_assign') await this._autoAssignIA();
+            if (actionId === 'run_auto')    await this._runPendingAutoWos();
         });
 
         const state        = store.getState();
@@ -229,7 +247,7 @@ export default class ProjectView {
         });
 
         // ── Push Modal ────────────────────────────────────────────
-        const pushModal    = document.getElementById('pushModal');
+        const pushModal     = document.getElementById('pushModal');
         const selPushTarget = document.getElementById('selPushTarget');
 
         document.getElementById('btnClosePushModal')?.addEventListener('click', () => {
@@ -244,9 +262,9 @@ export default class ProjectView {
             btn.disabled = true; btn.innerText = '⏳ Asignando...';
 
             const currProj = store.getState().projects.find(p => p.id === this.activeProjectId);
-            const wList = this.pushTargetIsLegacy
-                ? (currProj.transactions || [])
-                : (currProj.work_orders  || []);
+            const wList    = this.pushTargetIsLegacy
+                ? (currProj.transactions  || [])
+                : (currProj.work_orders   || []);
             const tx = wList.find(t => (t.hash || t.id) === this.pushTargetHash);
             if (!tx) { alert('Work Order no encontrada.'); btn.disabled = false; return; }
 
@@ -255,7 +273,7 @@ export default class ProjectView {
                 await this._executeAIAgent(this.pushTargetHash, btn, currProj, this.pushTargetIsLegacy);
             } else {
                 await store.dispatch({
-                    type: 'UPDATE_WO_STATUS',
+                    type:    'UPDATE_WO_STATUS',
                     payload: { projectId: this.activeProjectId, hash: this.pushTargetHash, status: 'pinged', assigneeId: targetId }
                 });
             }
@@ -266,7 +284,7 @@ export default class ProjectView {
             this._refreshRenderer();
         });
 
-        // Escuchar evento de open-push desde KanbanRenderer
+        // Escuchar evento sos:push-modal desde KanbanRenderer
         document.addEventListener('sos:push-modal', (e) => {
             const { hash, isLegacy, projectId } = e.detail;
             if (projectId !== this.activeProjectId) return;
@@ -294,30 +312,35 @@ export default class ProjectView {
             const btn = document.getElementById('vnaConfirm');
             btn.disabled = true; btn.innerText = '⏳...';
 
-            const currProj = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const currProj  = store.getState().projects.find(p => p.id === this.activeProjectId);
             const newFlowId = 'flow_' + Date.now();
-            const newFlow = {
-                id: newFlowId,
-                from:  document.getElementById('vnaFrom').value,
-                to:    document.getElementById('vnaTo').value,
-                tipo:  document.getElementById('vnaType').value,
+            const newFlow   = {
+                id:         newFlowId,
+                from:       document.getElementById('vnaFrom').value,
+                to:         document.getElementById('vnaTo').value,
+                tipo:       document.getElementById('vnaType').value,
                 entregable: title,
-                context: document.getElementById('vnaDesc').value.trim(),
-                horas: parseFloat(document.getElementById('vnaHours').value) || 1,
+                context:    document.getElementById('vnaDesc').value.trim(),
+                horas:      parseFloat(document.getElementById('vnaHours').value) || 1,
                 soc_checklist: []
             };
             const newWO = {
-                hash: 'wo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                flowId: newFlowId, status: 'theoretical', comentario: newFlow.context || 'Work Order inyectada.',
-                sprintId: currProj.activeSprintId || null, assigneeId: null
+                hash:       'wo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                flowId:     newFlowId,
+                status:     'theoretical',
+                comentario: newFlow.context || 'Work Order inyectada.',
+                sprintId:   currProj.activeSprintId || null,
+                assigneeId: null,
+                createdBy:  'human',
+                createdAt:  Date.now()
             };
 
             await store.dispatch({
-                type: 'UPDATE_PROJECT_INFO',
+                type:    'UPDATE_PROJECT_INFO',
                 payload: {
                     projectId: currProj.id,
                     updates: {
-                        vna_flows:   [...(currProj.vna_flows  || []), newFlow],
+                        vna_flows:   [...(currProj.vna_flows   || []), newFlow],
                         work_orders: [...(currProj.work_orders || []), newWO]
                     }
                 }
@@ -326,27 +349,84 @@ export default class ProjectView {
             vnaOverlay.classList.remove('active');
             window.location.reload();
         });
+
+        // ── Auto-ejecutar WOs si full_auto y hay pendientes ───────
+        if (project.settings?.automation_level === 'full_auto') {
+            const autoWos = (project.work_orders || [])
+                .filter(w => w.automation === 'auto' && w.status === 'theoretical' && w.assigneeId);
+            if (autoWos.length > 0) {
+                setTimeout(() => this._runPendingAutoWos(), 1500);
+            }
+        }
     }
 
     _openVnaModal() {
         const vnaOverlay = document.getElementById('vnaOverlay');
         const project    = store.getState().projects.find(p => p.id === this.activeProjectId);
         if (!project) return;
-
-        const roleOptions = (project.roles || []).map(r =>
-            `<option value="${r.id}">${r.name} (${r.levelId})</option>`
-        ).join('');
+        const roleOptions = (project.roles || []).map(r => `<option value="${r.id}">${r.name} (${r.levelId})</option>`).join('');
         document.getElementById('vnaFrom').innerHTML = roleOptions;
         document.getElementById('vnaTo').innerHTML   = roleOptions;
         vnaOverlay.classList.add('active');
     }
 
+    // ── _autoAssignIA — asigna agentes a WOs según sus skills ────
     async _autoAssignIA() {
         const project = store.getState().projects.find(p => p.id === this.activeProjectId);
         if (!project) return;
-        const unassigned = (project.work_orders || []).filter(wo => wo.status === 'theoretical' && !wo.assigneeId);
-        if (!unassigned.length) return alert('No hay Work Orders sin asignar.');
-        alert(`Auto-asignación IA: ${unassigned.length} Work Orders teóricas encontradas. Función en desarrollo para V10.1.`);
+
+        const unassigned = (project.work_orders || [])
+            .filter(wo => wo.status === 'theoretical' && !wo.assigneeId);
+        if (!unassigned.length) { alert('No hay Work Orders sin asignar.'); return; }
+
+        const state     = store.getState();
+        const aiAgents  = state.globalUsers.filter(u => u.profile?.isAi);
+        if (!aiAgents.length) { alert('No hay agentes IA en el Swarm.'); return; }
+
+        let assigned = 0;
+        for (const wo of unassigned) {
+            // Asignar agente según categoría de la WO
+            const categoryAgentMap = {
+                'deliverable':   '@agent_web_deployer',
+                'service':       '@agent_skill_crafter',
+                'knowledge':     '@agent_synaptic_weaver',
+                'payment':       '@agent_token_economist',
+                'feedback':      '@agent_prompt_synthesizer',
+                'collaboration': '@agent_genesis_architect',
+                'resource':      '@agent_codex_developer',
+                'trust':         '@bard_narrator'
+            };
+            const targetAgent = categoryAgentMap[wo.category]
+                || aiAgents[assigned % aiAgents.length]?.id;
+
+            if (!targetAgent) continue;
+
+            await store.dispatch({
+                type:    'UPDATE_WO_STATUS',
+                payload: { projectId: this.activeProjectId, hash: wo.hash, status: 'theoretical', assigneeId: targetAgent }
+            });
+            assigned++;
+        }
+
+        this._refreshRenderer();
+        alert(`✅ ${assigned} Work Orders asignadas a agentes IA. Nivel de automatización: ${project.settings?.automation_level || 'review_first'}.`);
+    }
+
+    // ── _runPendingAutoWos — ejecuta WOs auto en cola ─────────────
+    async _runPendingAutoWos() {
+        if (this.isProcessingAi) return;
+        const project = store.getState().projects.find(p => p.id === this.activeProjectId);
+        if (!project) return;
+
+        const autoWos = (project.work_orders || [])
+            .filter(w => w.automation === 'auto' && w.status === 'theoretical' && w.assigneeId);
+
+        for (const wo of autoWos.slice(0, 3)) { // máx 3 a la vez
+            const btn = { disabled: false, innerText: '' }; // mock btn
+            await this._executeAIAgent(wo.hash, btn, project, false);
+        }
+
+        this._refreshRenderer();
     }
 
     async _executeAIAgent(txHash, btnElement, currProject, isLegacy) {
@@ -359,38 +439,41 @@ export default class ProjectView {
             const tx    = wList.find(t => (t.hash || t.id) === txHash);
             if (!tx) throw new Error('Work Order no encontrada.');
 
-            const flow       = flows.find(f => f.id === (tx.flowId || tx.id));
-            const agentUsers = store.getState().globalUsers.filter(u => u.profile?.isAi);
-            const agent      = agentUsers[0];
+            const flow      = flows.find(f => f.id === (tx.flowId || tx.id)) || {};
+            const state     = store.getState();
+            const agentId   = tx.assigneeId || state.globalUsers.find(u => u.profile?.isAi)?.id;
+            if (!agentId)   throw new Error('No hay agente asignado.');
 
-            if (!agent) throw new Error('No hay agentes IA disponibles en el Swarm.');
-
+            // Marcar como WIP
             await store.dispatch({
-                type: 'UPDATE_WO_STATUS',
-                payload: { projectId: currProject.id, hash: txHash, status: 'pinged', assigneeId: agent.id }
+                type:    'UPDATE_WO_STATUS',
+                payload: { projectId: currProject.id, hash: txHash, status: 'pinged', assigneeId: agentId }
             });
 
+            // Ejecutar via Orchestrator
             const artifact = await Orchestrator.dispatch({
                 routine: 'executeWorkOrder',
-                agent:   agent.id,
+                agent:   agentId,
                 context: {
-                    projectId: currProject.id,
-                    workOrder: tx,
-                    flow:      flow || {},
+                    projectId:   currProject.id,
+                    workOrder:   tx,
+                    flow,
                     projectName: currProject.nombre
                 },
                 constraints: { strictJSON: true, engine: 'anthropic' }
             });
 
             const result = artifact.payload;
+
+            // Sellar con REPORT_WORK_ORDER
             await store.dispatch({
-                type: 'REPORT_WORK_ORDER',
+                type:    'REPORT_WORK_ORDER',
                 payload: {
-                    projectId: currProject.id,
-                    woHash:    txHash,
-                    realHours: result?.realHours || flow?.estimatedHours || 1,
+                    projectId:  currProject.id,
+                    woHash:     txHash,           // ← campo correcto V10
+                    realHours:  result?.realHours || flow?.estimatedHours || flow?.horas || 1,
                     comentario: result?.output || result?.message || 'Ejecutado por Swarm V10.',
-                    proofLink: 'Agent_Auto_Report'
+                    proofLink:  'Agent_Auto_Report'
                 }
             });
 
