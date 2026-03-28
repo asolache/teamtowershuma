@@ -386,11 +386,107 @@ class Store {
                 }
                 break;
 
+            // ── ADD_LEDGER_ENTRY (Capital + trabajo manual desde LedgerView) ──
+            case 'ADD_LEDGER_ENTRY':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].ledger) newState.projects[projIdx].ledger = [];
+                    newState.projects[projIdx].ledger.push({
+                        ...action.payload.entry,
+                        timestamp: action.payload.entry.timestamp || Date.now()
+                    });
+                }
+                break;
+
+            // ── UPDATE_WO_STATUS (usado por ProjectView + KanbanRenderer) ──
+            case 'UPDATE_WO_STATUS':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    const woArr = newState.projects[projIdx].work_orders
+                               || newState.projects[projIdx].workOrders
+                               || [];
+                    const woIdx2 = woArr.findIndex(wo => wo.hash === action.payload.hash);
+                    if (woIdx2 > -1) {
+                        woArr[woIdx2].status     = action.payload.status;
+                        woArr[woIdx2].assigneeId = action.payload.assigneeId || woArr[woIdx2].assigneeId;
+                    }
+                }
+                break;
+
+            // ── REPORT_WORK_ORDER (sella WO con Proof of Work) ──────────
+            case 'REPORT_WORK_ORDER': {
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    const woArr2 = newState.projects[projIdx].work_orders
+                                || newState.projects[projIdx].workOrders
+                                || [];
+                    const wi = woArr2.findIndex(wo => wo.hash === action.payload.woHash);
+                    if (wi > -1) {
+                        woArr2[wi].status      = 'reported';
+                        woArr2[wi].realHours   = action.payload.realHours || 0;
+                        woArr2[wi].comentario  = action.payload.comentario || '';
+                        woArr2[wi].proofLink   = action.payload.proofLink  || '';
+                    }
+                }
+                break;
+            }
+
             default:
                 break;
         }
 
         return newState;
+    }
+
+    // ── calculateHarvest ─────────────────────────────────────────────────────
+    // Suma slices por participante para el cap table.
+    // Incluye trabajo humano (valorCongelado) + trabajo IA (AI_COST slices).
+    calculateHarvest(projectId) {
+        const project = this.state.projects?.find(p => p.id === projectId);
+        if (!project?.ledger?.length) return [];
+
+        const totals = {};
+
+        for (const entry of project.ledger) {
+            // ── Entrada de trabajo humano (LEDGER_UPDATE / LOG_WORK / ADD_LEDGER_ENTRY) ──
+            if (!entry.type || entry.type === 'CAPITAL_INJECTION') {
+                const uid = entry.userId || entry.agentId || 'unknown';
+                if (!totals[uid]) totals[uid] = { userId: uid, totalSlices: 0, capitalSlices: 0, workSlices: 0 };
+                const s = entry.valorCongelado || entry.slices || 0;
+                totals[uid].totalSlices += s;
+                if (entry.type === 'CAPITAL_INJECTION') totals[uid].capitalSlices += s;
+                else                                    totals[uid].workSlices    += s;
+                continue;
+            }
+            // ── Entrada AI_COST ───────────────────────────────────────────────
+            if (entry.type === 'AI_COST') {
+                const uid = entry.agentId || 'node-claude-sonnet-v10';
+                if (!totals[uid]) totals[uid] = { userId: uid, totalSlices: 0, capitalSlices: 0, workSlices: 0, aiCost: 0 };
+                const s = Number((entry.slices || 0).toFixed(3));
+                totals[uid].totalSlices += s;
+                totals[uid].workSlices  += s;
+                totals[uid].aiCost      = (totals[uid].aiCost || 0) + (entry.cost_usd || 0);
+            }
+        }
+
+        const totalSlices = Object.values(totals).reduce((s, u) => s + u.totalSlices, 0);
+        return Object.values(totals).map(u => ({
+            ...u,
+            totalSlices: Number(u.totalSlices.toFixed(3)),
+            percentage:  totalSlices > 0 ? Number(((u.totalSlices / totalSlices) * 100).toFixed(2)) : 0
+        }));
+    }
+
+    // ── calculateResilience ──────────────────────────────────────────────────
+    calculateResilience(projectId) {
+        const project = this.state.projects?.find(p => p.id === projectId);
+        if (!project) return 60;
+        const flows    = (project.vna_flows || []).length + (project.vna_exchanges || []).length;
+        const nodes    = (project.roles || []).length + (project.vna_nodes || []).length;
+        const wos      = (project.work_orders || []).length;
+        const hasAi    = (project.usuarios || []).some(u => this.state.globalUsers.find(g => g.id === u.id && g.profile?.isAi));
+        let score = Math.min(40 + flows * 5 + nodes * 3 + (hasAi ? 15 : 0) + Math.min(wos, 5) * 2, 100);
+        return Math.round(score);
     }
 }
 
