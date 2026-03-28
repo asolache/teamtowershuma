@@ -1,9 +1,27 @@
 // =============================================================================
 // TEAMTOWERS SOS V10 — ROUTER
 // Rutas relativas — Netlify publica desde ia/dev/ como raíz
+// BASE_PATH normaliza el pathname para que /ia/dev/map → /map
 // =============================================================================
 
 import { store } from './core/store.js';
+
+// ─── BASE PATH ────────────────────────────────────────────────────────────────
+// En Netlify el sitio vive en /ia/dev/. Cuando el usuario visita
+// https://teamtowershuma.com/ia/dev/map, window.location.pathname es /ia/dev/map.
+// navigateTo() ya usa rutas cortas (/map) via pushState, pero en el primer
+// render (carga directa o reload) hay que strip del prefijo.
+const BASE_PATH = '/ia/dev';
+
+function getRoutePath() {
+    const raw  = window.location.pathname.replace(/\/$/, '') || '/';
+    // Si el pathname empieza con BASE_PATH, lo quitamos
+    if (raw.startsWith(BASE_PATH)) {
+        const stripped = raw.slice(BASE_PATH.length).replace(/\/$/, '') || '/';
+        return stripped;
+    }
+    return raw;
+}
 
 const ROUTES = [
     { path: '/',          view: () => import('./views/HomeView.js')           },
@@ -28,7 +46,7 @@ const ROUTES = [
 ];
 
 async function router() {
-    const path  = window.location.pathname.replace(/\/$/, '') || '/';
+    const path  = getRoutePath();
     const match = ROUTES.find(r => r.path === path) ?? ROUTES.find(r => r.path === null);
     const app   = document.getElementById('app');
 
@@ -42,7 +60,7 @@ async function router() {
         app.innerHTML = await view.getHtml();
 
         // Soporte V10 (afterRender) y alias V9 (executeViewScript)
-        if (typeof view.afterRender         === 'function') await view.afterRender();
+        if (typeof view.afterRender          === 'function') await view.afterRender();
         else if (typeof view.executeViewScript === 'function') await view.executeViewScript();
 
         // Activar links SPA — evitar doble bind
@@ -62,7 +80,7 @@ async function router() {
                         flex-direction:column;gap:1.5rem;color:#888;font-family:monospace;background:#050507;">
                 <div style="font-size:3rem;">💥</div>
                 <div style="color:#ff5252;font-size:0.9rem;max-width:420px;text-align:center;">${err.message}</div>
-                <button onclick="window.location.href='/'"
+                <button onclick="window.location.href='/ia/dev/'"
                         style="background:rgba(99,102,241,0.2);border:1px solid #6366f1;color:#6366f1;
                                padding:10px 20px;border-radius:10px;cursor:pointer;font-family:monospace;">
                     ← Volver al inicio
@@ -74,7 +92,10 @@ async function router() {
 }
 
 export function navigateTo(url) {
-    window.history.pushState(null, null, url);
+    // navigateTo siempre recibe rutas cortas (/map, /dashboard…)
+    // Para pushState necesitamos la URL completa con el base path
+    const fullUrl = url.startsWith(BASE_PATH) ? url : BASE_PATH + url;
+    window.history.pushState(null, null, fullUrl);
     router();
 }
 
