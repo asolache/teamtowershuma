@@ -1,37 +1,36 @@
 // =============================================================================
-// TEAMTOWERS SOS V10 — VALUE MAP VIEW
-// Ruta: ia/dev/js/views/ValueMapView.js
-// Topología VNA · Arquitectura Fractal · Bucle Imperial
+// TEAMTOWERS SOS V10 — VALUE MAP VIEW v2
+// Ruta: /ia/dev/js/views/ValueMapView.js
+// IDE-Like: Fábrica VNA · SynapticCanvas 3D · Work Order Generator
+// URL semántica: /map · /map?project=xxx · /map?wo=xxx
 // =============================================================================
 
-import { store }        from '../core/store.js';
-import { KB }           from '../core/kb.js';
-import { Sidebar }      from '../components/Sidebar.js';
-import { BottomNav }    from '../components/BottomNav.js';
-import { PageHeader }   from '../components/PageHeader.js';
-import { MapRenderer }  from '../components/MapRenderer.js';
-import { Orchestrator } from '../core/Orchestrator.js';
+import { store }           from '../core/store.js';
+import { KB }              from '../core/kb.js';
+import { Sidebar }         from '../components/Sidebar.js';
+import { BottomNav }       from '../components/BottomNav.js';
+import { PageHeader }      from '../components/PageHeader.js';
+import { SynapticCanvas }  from '../components/SynapticCanvas.js';
+import { Orchestrator }    from '../core/Orchestrator.js';
+import { WoGenerator }     from '../core/WoGenerator.js';
 
 export default class ValueMapView {
 
     constructor() {
-        document.title     = 'Mapa VNA | TeamTowers V10';
+        document.title       = 'Fábrica VNA | TeamTowers V10';
         this.activeProjectId = null;
-        this.selectedRoleId  = null;
-        this.editingTxIndex  = null;
-        this.flowFromId      = null;
-        this.isSimulating    = false;
-        this.isHeatmapActive = false;
-        this.currentSimIndex = 0;
-        this.simTimeoutId    = null;
-        this.zoomVis         = 1;
-        this.zoomEdit        = 1;
-        this.mapVis          = null;
-        this.mapEdit         = null;
-        this.resizeObserver  = null;
-        this.currentTab      = 'visual';
         this.isPO            = false;
         this.dom             = {};
+
+        this._canvas      = null;
+        this._network     = null;
+        this._pendingWos  = [];
+        this._woFlows     = [];
+        this._telem       = { tokens: 0, cost: 0, slices: 0 };
+
+        const params = new URLSearchParams(window.location.search);
+        this._focusWoHash   = params.get('wo')      || null;
+        this._initProjectId = params.get('project') || null;
     }
 
     async getHtml() {
@@ -40,18 +39,20 @@ export default class ValueMapView {
         const state        = store.getState();
         const activeUserId = state.session.activeUserId;
 
-        let project = state.projects.find(p => p.id === localStorage.getItem('tt_active_project'));
+        let project = this._initProjectId
+            ? state.projects.find(p => p.id === this._initProjectId)
+            : state.projects.find(p => p.id === localStorage.getItem('tt_active_project'));
         if (!project && state.projects.length > 0) project = state.projects.at(-1);
 
         if (!project) {
             return `
             <div class="app-layout">
                 ${Sidebar.getHtml('/map')}
-                <main class="workspace" style="justify-content:center; align-items:center;">
-                    <div class="glass-panel" style="text-align:center; max-width:500px; margin:0 auto;">
-                        <div style="font-size:5rem; margin-bottom:1.5rem; line-height:1;">🕸️</div>
-                        <h2 style="color:white; margin-top:0; font-weight:900;">Lienzo Vacío</h2>
-                        <p style="color:var(--text-muted); margin-bottom:2.5rem;">No tienes un Ecosistema activo para visualizar.</p>
+                <main class="workspace" style="justify-content:center;align-items:center;display:flex;">
+                    <div class="glass-panel" style="text-align:center;max-width:500px;margin:0 auto;padding:4rem;">
+                        <div style="font-size:5rem;margin-bottom:1.5rem;line-height:1;">🕸️</div>
+                        <h2 style="color:white;margin-top:0;font-weight:900;">Lienzo Vacío</h2>
+                        <p style="color:var(--text-muted);margin-bottom:2.5rem;">Crea un ecosistema primero para mapear su red de valor.</p>
                         <a href="/create" data-link class="btn-primary" style="text-decoration:none;">➕ Forjar Ecosistema</a>
                     </div>
                 </main>
@@ -62,479 +63,490 @@ export default class ValueMapView {
         this.activeProjectId = project.id;
         this.isPO = project.ownerId === activeUserId || state.session.role === 'ecosystem-owner';
 
-        const roleOptions = (project.roles || []).map(r =>
-            `<option value="${r.id}">${r.name} (${r.levelId})</option>`
-        ).join('');
-
-        const flowsForTable = project.vna_flows?.length > 0 ? project.vna_flows : (project.transactions || []);
-        const flowsHtml = flowsForTable.map((f, i) => {
-            const from = project.roles?.find(r => r.id === f.from);
-            const to   = project.roles?.find(r => r.id === f.to);
-            return `
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                <td style="padding:10px; color:#aaa; font-size:0.85rem;">${from?.name || f.from}</td>
-                <td style="padding:10px; color:#aaa; font-size:0.85rem;">${to?.name || f.to}</td>
-                <td style="padding:10px;"><span style="font-size:0.72rem; padding:2px 8px; border-radius:6px; background:${f.tipo==='tangible'?'rgba(0,230,118,0.1)':'rgba(224,64,251,0.1)'}; color:${f.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'}; border:1px solid ${f.tipo==='tangible'?'rgba(0,230,118,0.3)':'rgba(224,64,251,0.3)'};">${f.tipo||'tangible'}</span></td>
-                <td style="padding:10px; color:white; font-size:0.85rem; font-weight:bold;">${f.template || f.entregable || '—'}</td>
-                <td style="padding:10px; color:var(--accent-indigo); font-family:var(--font-mono); font-size:0.82rem;">${f.horas || f.estimatedHours || '?'}h</td>
-                ${this.isPO ? `<td style="padding:10px;"><button class="btn-del-flow" data-idx="${i}" style="background:transparent; border:1px solid var(--accent-red); color:var(--accent-red); padding:4px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer;">✕</button></td>` : '<td></td>'}
-            </tr>`;
-        }).join('');
+        const automationLevel  = project.settings?.automation_level || 'review_first';
+        const hasVna           = (project.vna_nodes || []).length > 0;
+        const projectSkills    = project.skills || [];
 
         const headerConfig = {
-            title:   'Topología VNA',
+            title:   'Fábrica VNA',
             subtitle: project.nombre,
-            tagline: 'Arquitectura fractal de Roles y Tuberías de Valor.',
-            tabs: [
-                { id: 'visual', label: '🕸️ Red Visual',     active: this.currentTab === 'visual' },
-                { id: 'edit',   label: '✏️ Arquitecto',     active: this.currentTab === 'edit'   },
-                { id: 'roles',  label: '🪑 Padrón Nodos',   active: this.currentTab === 'roles'  },
-                { id: 'flow',   label: '📋 Tubos Base',     active: this.currentTab === 'flow'   }
-            ],
-            magicActions: [
-                { id: 'sim_flow', label: 'Simular Tuberías',     icon: '▶' },
-                { id: 'sim_heat', label: 'Heatmap de Carga',     icon: '🔥' },
-                { id: 'sim_stop', label: 'Detener Visualización', icon: '⏹' }
-            ]
+            tagline: 'Red de valor cuántica · Work Orders generadas por el Swarm',
+            tabs:    [],
+            magicActions: hasVna ? [
+                { id: 'remap',  label: 'Re-mapear red',   icon: '🗺️' },
+                { id: 'heal',   label: 'Curar patologías', icon: '🔍' },
+                { id: 'export', label: 'Exportar JSON-LD', icon: '📦' }
+            ] : []
         };
 
         return `
         <style>
-            ${MapRenderer.getStyles()}
-
-            .workspace-map { display:flex; flex-direction:column; flex:1; padding:2rem 3rem; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; width:100%; box-sizing:border-box; }
-            .tab-content        { display:none; flex-direction:column; flex:1; animation:fadeIn 0.4s ease-out; min-height:500px; position:relative; width:100%; }
-            .tab-content.active { display:flex; }
-
-            .map-container { position:relative; flex:1; min-height:420px; background:rgba(0,0,0,0.4); border-radius:16px; border:1px solid var(--glass-border); overflow:hidden; }
-            .map-canvas    { position:relative; width:100%; height:100%; min-height:420px; }
-            .map-canvas svg { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
-
-            .map-container.fullscreen-mode { position:fixed!important; top:0!important; left:0!important; width:100vw!important; height:100dvh!important; z-index:99999!important; border-radius:0!important; background:#050508!important; }
-
-            .zoom-controls { position:absolute; bottom:12px; right:12px; display:flex; gap:6px; z-index:10; }
-            .btn-zoom { background:rgba(0,0,0,0.7); border:1px solid #333; color:white; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:0.2s; }
-            .btn-zoom:hover { background:var(--accent-indigo); border-color:var(--accent-indigo); }
-
-            /* AI Copilot panel */
-            .ai-copilot { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(120%); width:90%; max-width:700px; background:rgba(10,10,15,0.97); border:1px solid rgba(99,102,241,0.4); border-radius:20px; padding:1.5rem; z-index:1000; transition:0.5s cubic-bezier(0.2,0.8,0.2,1); box-shadow:0 20px 50px rgba(0,0,0,0.8); }
-            .ai-copilot.visible { transform:translateX(-50%) translateY(0); }
-            .ai-copilot-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; }
-            .ai-copilot-body   { color:#ccc; font-size:0.9rem; line-height:1.6; max-height:180px; overflow-y:auto; }
-
-            /* Inspector modal */
-            .inspector-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:5000; display:none; justify-content:center; align-items:center; }
-            .inspector-overlay.active { display:flex; }
-            .inspector-card { background:var(--bg-dark); border:1px solid var(--accent-indigo); border-radius:20px; padding:2.5rem; width:100%; max-width:480px; box-shadow:0 30px 60px rgba(0,0,0,0.8); border-top:4px solid var(--accent-indigo); box-sizing:border-box; }
-            .form-group { margin-bottom:1.25rem; }
-            .form-group label { display:block; font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold; letter-spacing:1px; margin-bottom:6px; }
-            .form-control { width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; color:white; padding:11px 14px; border-radius:10px; font-family:var(--font-main); font-size:0.92rem; outline:none; transition:0.3s; box-sizing:border-box; }
-            .form-control:focus { border-color:var(--accent-indigo); }
-
-            /* Flow table */
-            .flow-table { width:100%; border-collapse:collapse; }
-            .flow-table th { text-align:left; padding:10px; font-size:0.72rem; color:#888; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); }
-
-            @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-            @media (max-width:768px) { .workspace-map { padding:80px 1rem 120px 1rem; } }
+            .vmap-ide { display:flex; flex:1; height:calc(100vh - 120px); overflow:hidden; }
+            .vmap-left { width:320px; min-width:260px; display:flex; flex-direction:column;
+                border-right:1px solid var(--glass-border); background:rgba(5,5,8,0.96);
+                overflow-y:auto; flex-shrink:0; }
+            .vmap-center { flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; }
+            .vmap-right { width:300px; min-width:240px; display:flex; flex-direction:column;
+                border-left:1px solid var(--glass-border); background:rgba(5,5,8,0.96);
+                overflow:hidden; flex-shrink:0; transition:width 0.3s; }
+            .vmap-right.hidden { width:0; min-width:0; }
+            #vnaCanvasMount { flex:1; min-height:0; }
+            #vnaCanvasMount .synaptic-layout { border-radius:0; border:none; height:100%; }
+            .vmap-section { padding:1rem 1.25rem; border-bottom:1px solid rgba(255,255,255,0.05); }
+            .vmap-stitle { font-size:0.68rem; font-weight:900; color:#555; text-transform:uppercase;
+                letter-spacing:1.5px; margin-bottom:0.75rem; display:flex; align-items:center;
+                justify-content:space-between; }
+            .vmap-textarea { width:100%; background:rgba(0,0,0,0.4); border:1px solid #2a2a2a;
+                color:white; padding:11px 13px; border-radius:9px; font-family:var(--font-main);
+                font-size:0.85rem; outline:none; transition:border-color 0.2s; box-sizing:border-box;
+                resize:vertical; min-height:90px; }
+            .vmap-textarea:focus { border-color:rgba(224,64,251,0.4); }
+            .vmap-textarea::placeholder { color:#2a2a2a; }
+            .vmap-btn { width:100%; padding:10px 14px; border-radius:9px; font-weight:900;
+                font-size:0.82rem; cursor:pointer; transition:0.2s; border:none;
+                display:flex; align-items:center; justify-content:center; gap:7px; margin-top:8px; }
+            .vmap-btn:hover:not(:disabled) { transform:translateY(-1px); }
+            .vmap-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+            .vmap-btn-primary { background:linear-gradient(135deg,rgba(224,64,251,0.75),rgba(99,102,241,0.75)); color:white; }
+            .vmap-btn-ghost   { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08)!important; color:#888; }
+            .vmap-btn-green   { background:rgba(0,230,118,0.08); border:1px solid rgba(0,230,118,0.2)!important; color:var(--accent-green); }
+            .vmap-btn-orange  { background:rgba(255,171,64,0.08); border:1px solid rgba(255,171,64,0.2)!important; color:var(--accent-orange); }
+            .vmap-status { font-size:0.75rem; font-family:var(--font-mono); color:var(--accent-indigo);
+                padding:8px 11px; background:rgba(99,102,241,0.06); border:1px dashed rgba(99,102,241,0.2);
+                border-radius:7px; margin-top:8px; line-height:1.4; display:none; }
+            .vmap-status.visible { display:block; }
+            .vmap-status.error   { color:var(--accent-red); background:rgba(255,82,82,0.06); border-color:rgba(255,82,82,0.2); }
+            .telem-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+            .telem-card { background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.04);
+                border-radius:7px; padding:7px 10px; }
+            .telem-val { font-size:1rem; font-weight:900; font-family:var(--font-mono); color:white; }
+            .telem-lbl { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+            .health-row { display:flex; align-items:center; gap:10px; }
+            .health-score { font-size:1.3rem; font-weight:900; font-family:var(--font-mono); min-width:44px; }
+            .health-bar-bg   { flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; }
+            .health-bar-fill { height:100%; border-radius:3px; transition:width 0.8s; }
+            .wo-list { flex:1; overflow-y:auto; padding:0.75rem; display:flex; flex-direction:column; gap:7px; }
+            .wo-card { background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06);
+                border-radius:9px; padding:10px 12px; transition:0.2s; }
+            .wo-card:hover { border-color:rgba(99,102,241,0.3); }
+            .wo-card.focused { border-color:var(--accent-indigo); }
+            .wo-type-badge { font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900;
+                font-family:var(--font-mono); text-transform:uppercase; }
+            .wo-tangible   { background:rgba(0,230,118,0.08); color:var(--accent-green); border:1px solid rgba(0,230,118,0.2); }
+            .wo-intangible { background:rgba(224,64,251,0.08); color:var(--accent-purple); border:1px solid rgba(224,64,251,0.2); }
+            .wo-hybrid     { background:rgba(255,171,64,0.08); color:var(--accent-orange); border:1px solid rgba(255,171,64,0.2); }
+            .wo-auto-badge { font-size:0.58rem; padding:2px 5px; border-radius:4px; font-family:var(--font-mono); }
+            .auto-auto  { background:rgba(0,230,118,0.06); color:#00e676; border:1px solid rgba(0,230,118,0.15); }
+            .auto-hitl  { background:rgba(255,171,64,0.06); color:var(--accent-orange); border:1px solid rgba(255,171,64,0.15); }
+            .auto-human { background:rgba(255,255,255,0.03); color:#666; border:1px solid rgba(255,255,255,0.08); }
+            .wo-summary { display:flex; gap:10px; flex-wrap:wrap; font-size:0.72rem; font-family:var(--font-mono); color:#666; }
+            .wo-summary b { color:white; }
+            .wo-confirm-bar { padding:0.75rem; border-top:1px solid rgba(255,255,255,0.05); flex-shrink:0; }
+            @media (max-width:1100px) { .vmap-right { display:none; } }
+            @media (max-width:768px)  { .vmap-left { width:100%; max-width:none; } .vmap-ide { flex-direction:column; height:auto; } }
         </style>
 
-        <div class="app-layout">
+        <div class="app-layout" style="flex-direction:column; overflow:hidden;">
             ${Sidebar.getHtml('/map')}
-            <main class="workspace-map">
-                ${PageHeader.getHtml(headerConfig)}
-
-                <!-- TAB VISUAL ───────────────────────────────── -->
-                <div id="tab-visual" class="tab-content ${this.currentTab === 'visual' ? 'active' : ''}">
-                    <div style="display:flex; gap:10px; font-size:0.78rem; font-weight:bold; color:#aaa; align-items:center; background:rgba(0,0,0,0.5); padding:8px 14px; border-radius:8px; border:1px solid var(--glass-border); width:max-content; margin-bottom:1rem;">
-                        <div style="display:flex; align-items:center; gap:6px;"><div style="width:16px;height:3px;border-radius:2px;background:var(--accent-green);"></div> Tangible</div>
-                        <div style="display:flex; align-items:center; gap:6px;"><div style="width:16px;height:3px;border-radius:2px;border-bottom:2px dashed var(--accent-purple);background:transparent;"></div> Intangible</div>
-                    </div>
-                    <div class="map-container">
-                        <div class="map-canvas" id="mapCanvasVisual">
-                            <svg id="edges-svg-visual">
-                                <defs>
-                                    <marker id="arrow-tangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
-                                    <marker id="arrow-intangible-vis" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
-                                </defs>
-                                <g id="paths-group-vis"></g>
-                            </svg>
-                        </div>
-                        <div class="zoom-controls">
-                            <button class="btn-zoom" id="btnZoomInVis">➕</button>
-                            <button class="btn-zoom" id="btnZoomOutVis">➖</button>
-                        </div>
-                    </div>
+            <div style="display:flex;flex:1;flex-direction:column;overflow:hidden;">
+                <div style="padding:1rem 1.5rem 0;flex-shrink:0;">
+                    ${PageHeader.getHtml(headerConfig)}
                 </div>
+                <div class="vmap-ide">
 
-                <!-- TAB EDIT ─────────────────────────────────── -->
-                <div id="tab-edit" class="tab-content ${this.currentTab === 'edit' ? 'active' : ''}">
-                    ${this.isPO ? `
-                    <div style="background:rgba(99,102,241,0.05); border:1px dashed rgba(99,102,241,0.3); color:var(--accent-indigo); padding:14px 18px; border-radius:10px; font-size:0.88rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                        <span id="editTipText">💡 <b>Modo Arquitecto:</b> Haz clic en un nodo y luego en otro para trazar una tubería permanente.</span>
-                        <div style="display:flex; gap:8px;">
-                            <button id="btnStrategicAudit" style="background:rgba(99,102,241,0.1); border:1px solid var(--accent-indigo); color:var(--accent-indigo); padding:7px 14px; border-radius:8px; font-size:0.8rem; font-weight:bold; cursor:pointer; transition:0.2s;">🧠 Bucle Imperial</button>
-                            <button id="btnUndoTx" style="background:rgba(255,82,82,0.1); border:1px solid var(--accent-red); color:var(--accent-red); padding:7px 14px; border-radius:8px; font-size:0.8rem; font-weight:bold; cursor:pointer; transition:0.2s;">↩ Deshacer</button>
-                            <button id="btnFullscreen" style="background:rgba(255,255,255,0.05); border:1px solid #333; color:white; padding:7px 14px; border-radius:8px; font-size:0.8rem; cursor:pointer;">⛶ Pantalla Completa</button>
-                        </div>
-                    </div>` : ''}
-                    <div class="map-container" id="editMapContainer">
-                        <div class="map-canvas" id="mapCanvasEdit">
-                            <svg id="edges-svg-edit">
-                                <defs>
-                                    <marker id="arrow-tangible-edit" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#00e676"/></marker>
-                                    <marker id="arrow-intangible-edit" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#e040fb"/></marker>
-                                </defs>
-                                <g id="paths-group-edit"></g>
-                            </svg>
-                        </div>
-                        <div class="zoom-controls">
-                            <button class="btn-zoom" id="btnZoomInEdit">➕</button>
-                            <button class="btn-zoom" id="btnZoomOutEdit">➖</button>
-                        </div>
-                    </div>
-                </div>
+                    <!-- PANEL IZQUIERDO -->
+                    <aside class="vmap-left">
 
-                <!-- TAB ROLES ────────────────────────────────── -->
-                <div id="tab-roles" class="tab-content ${this.currentTab === 'roles' ? 'active' : ''}">
-                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; padding-bottom:4rem;">
-                        ${(project.roles||[]).map(r => {
-                            const asig = (project.asignaciones||[]).find(a => a.roleId === r.id);
-                            const user = asig ? state.globalUsers.find(u => u.id === asig.userId) : null;
-                            return `
-                            <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.05); border-radius:14px; padding:1.25rem;">
-                                <div style="font-weight:900; color:white; margin-bottom:6px;">${r.name}</div>
-                                <div style="font-family:var(--font-mono); font-size:0.72rem; color:#666; margin-bottom:10px;">${r.levelId}</div>
-                                <div style="display:flex; gap:8px; font-family:var(--font-mono); font-size:0.75rem; color:#888; flex-wrap:wrap; margin-bottom:10px;">
-                                    <span>FMV: ${r.fmv}€/h</span><span>x${r.multiplier}</span>
-                                    ${r.guardian ? `<span>🛡️ ${r.guardian}</span>` : ''}
+                        <div class="vmap-section">
+                            <div class="vmap-stitle">🧬 Genoma del Proyecto
+                                <span style="font-weight:400;color:#333;text-transform:none;letter-spacing:0;font-size:0.68rem;">${project.nombre}</span>
+                            </div>
+                            <textarea id="vnaInput" class="vmap-textarea" rows="5"
+                                placeholder="Describe el proyecto, negocio o proceso. Claude mapeará los roles y flujos de valor y generará las Work Orders del Swarm…">${project.vna_description || ''}</textarea>
+                            <button id="btnMap" class="vmap-btn vmap-btn-primary">🗺️ Mapear Red de Valor</button>
+                            <div id="mapStatus" class="vmap-status"></div>
+                        </div>
+
+                        <div class="vmap-section">
+                            <div class="vmap-stitle">⚡ Swarm</div>
+                            <button id="btnSkills" class="vmap-btn vmap-btn-ghost" ${!hasVna ? 'disabled' : ''}>⚡ Crear Skills desde VNA</button>
+                            <button id="btnAgent"  class="vmap-btn vmap-btn-ghost" ${!hasVna ? 'disabled' : ''}>🤖 Fabricar Agente Vertical</button>
+                            <button id="btnHeal"   class="vmap-btn vmap-btn-orange" ${!hasVna ? 'disabled' : ''}>🔍 Curar Red</button>
+                        </div>
+
+                        <div class="vmap-section">
+                            <div class="vmap-stitle">⚙️ Automatización
+                                <a href="/settings" data-link style="font-size:0.65rem;color:var(--accent-indigo);text-decoration:none;font-weight:400;text-transform:none;letter-spacing:0;">editar</a>
+                            </div>
+                            ${['full_auto','review_first','human_only'].map(level => `
+                            <label style="display:flex;align-items:center;gap:9px;cursor:pointer;padding:7px 9px;border-radius:7px;
+                                border:1px solid ${automationLevel===level?'rgba(99,102,241,0.3)':'rgba(255,255,255,0.04)'};
+                                background:${automationLevel===level?'rgba(99,102,241,0.05)':'transparent'};margin-bottom:5px;">
+                                <input type="radio" name="autoLevel" value="${level}" ${automationLevel===level?'checked':''} style="accent-color:var(--accent-indigo);">
+                                <div>
+                                    <div style="font-size:0.75rem;font-weight:bold;color:${automationLevel===level?'white':'#666'};">
+                                        ${{full_auto:'⚡ Full Auto',review_first:'👁️ Review First',human_only:'👤 Human Only'}[level]}
+                                    </div>
+                                    <div style="font-size:0.62rem;color:#444;">
+                                        ${{full_auto:'WOs → Swarm directo',review_first:'WOs → confirmar antes',human_only:'WOs → solo humanos'}[level]}
+                                    </div>
                                 </div>
-                                ${user
-                                    ? `<div style="display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.3); padding:7px 10px; border-radius:8px; font-size:0.85rem;"><span>${user.profile?.isAi?'🤖':'👤'}</span><span style="color:white; font-weight:bold;">${user.name}</span></div>`
-                                    : `<div style="color:#555; font-style:italic; font-size:0.8rem; border:1px dashed #333; padding:7px 10px; border-radius:8px; text-align:center;">Vacante</div>`}
-                            </div>`;
-                        }).join('')}
-                    </div>
-                </div>
+                            </label>`).join('')}
+                        </div>
 
-                <!-- TAB FLUJOS ───────────────────────────────── -->
-                <div id="tab-flow" class="tab-content ${this.currentTab === 'flow' ? 'active' : ''}">
-                    <div style="background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); border-radius:14px; overflow:hidden; margin-bottom:4rem;">
-                        <table class="flow-table">
-                            <thead style="background:rgba(0,0,0,0.5);">
-                                <tr><th>Desde</th><th>Hacia</th><th>Tipo</th><th>Entregable</th><th>Horas</th><th></th></tr>
-                            </thead>
-                            <tbody id="flowTableBody">${flowsHtml || `<tr><td colspan="6" style="text-align:center; color:#555; padding:2rem; font-style:italic;">Sin flujos VNA definidos.</td></tr>`}</tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+                        <div class="vmap-section">
+                            <div class="vmap-stitle">📡 Sesión</div>
+                            <div class="telem-grid">
+                                <div class="telem-card"><div class="telem-val" id="telemTokens">0</div><div class="telem-lbl">Tokens</div></div>
+                                <div class="telem-card"><div class="telem-val" id="telemCost">$0.000</div><div class="telem-lbl">Coste</div></div>
+                                <div class="telem-card"><div class="telem-val" id="telemSlices">0.000</div><div class="telem-lbl">Slices</div></div>
+                                <div class="telem-card"><div class="telem-val" id="telemWos" style="font-size:1rem;">0</div><div class="telem-lbl">WOs</div></div>
+                            </div>
+                        </div>
 
-            <!-- AI Copilot ─────────────────────────────────── -->
-            <div class="ai-copilot" id="aiCopilot">
-                <div class="ai-copilot-header">
-                    <span style="color:var(--accent-indigo); font-weight:900; font-size:0.9rem;" id="aiCopilotHeader">🧠 Análisis Estratégico</span>
-                    <button id="btnCloseCopilot" style="background:transparent; border:none; color:#aaa; cursor:pointer; font-size:1.2rem;">✖</button>
+                        <div class="vmap-section">
+                            <div class="vmap-stitle">💚 Health Score</div>
+                            <div class="health-row">
+                                <div class="health-score" id="healthScore" style="color:var(--accent-green);">—</div>
+                                <div style="flex:1;">
+                                    <div class="health-bar-bg"><div class="health-bar-fill" id="healthFill" style="width:0%;background:var(--accent-green);"></div></div>
+                                    <div style="font-size:0.65rem;color:#444;margin-top:3px;" id="healthLabel">Genera un mapa para ver el diagnóstico</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${projectSkills.length > 0 ? `
+                        <div class="vmap-section">
+                            <div class="vmap-stitle">⚡ Skills (${projectSkills.length})</div>
+                            ${projectSkills.slice(0,4).map(s => `
+                            <div style="display:flex;align-items:center;gap:7px;padding:6px 9px;
+                                background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.1);
+                                border-radius:7px;font-size:0.75rem;color:#aaa;margin-bottom:5px;">
+                                <span style="color:var(--accent-green);">⚡</span>
+                                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.name}</span>
+                                <span style="font-family:var(--font-mono);font-size:0.62rem;color:#444;">+${s.slicesCharged}</span>
+                            </div>`).join('')}
+                            ${projectSkills.length > 4 ? `<div style="font-size:0.68rem;color:#444;text-align:center;">+${projectSkills.length-4} más</div>` : ''}
+                        </div>` : ''}
+
+                    </aside>
+
+                    <!-- CANVAS CENTRAL -->
+                    <main class="vmap-center">
+                        <div id="vnaPlaceholder" style="flex:1;display:${hasVna?'none':'flex'};flex-direction:column;
+                            align-items:center;justify-content:center;
+                            background:radial-gradient(circle at center,#0a0a12,#050508);">
+                            <div style="font-size:4rem;margin-bottom:1rem;opacity:0.3;">🕸️</div>
+                            <div style="color:#333;font-size:0.9rem;font-weight:bold;margin-bottom:0.4rem;">Red de valor vacía</div>
+                            <div style="color:#222;font-size:0.78rem;">Describe el proyecto y haz clic en Mapear</div>
+                        </div>
+                        <div id="vnaCanvasMount" style="flex:1;display:${hasVna?'flex':'none'};flex-direction:column;"></div>
+                    </main>
+
+                    <!-- PANEL DERECHO: WORK ORDERS -->
+                    <aside class="vmap-right" id="woPanel">
+                        <div class="vmap-section" style="flex-shrink:0;">
+                            <div class="vmap-stitle">📋 Work Orders
+                                <button id="btnCloseWoPanel" style="background:transparent;border:none;color:#444;cursor:pointer;font-size:0.9rem;padding:0;">✕</button>
+                            </div>
+                            <div id="woSummaryBar" class="wo-summary"></div>
+                        </div>
+                        <div class="wo-list" id="woList">
+                            <div style="color:#333;font-size:0.78rem;font-style:italic;text-align:center;padding:2rem 0;">
+                                Las Work Orders aparecerán aquí tras mapear la red.
+                            </div>
+                        </div>
+                        <div class="wo-confirm-bar" id="woConfirmBar" style="display:none;">
+                            <button id="btnConfirmAllWos" class="vmap-btn vmap-btn-green" style="margin-top:0;">✅ Confirmar todas al Kanban</button>
+                            <button id="btnConfirmAutoOnly" class="vmap-btn vmap-btn-ghost">⚡ Solo WOs auto (Swarm)</button>
+                        </div>
+                    </aside>
+
                 </div>
-                <div class="ai-copilot-body" id="aiCopilotBody">Procesando análisis de red…</div>
             </div>
-
-            <!-- Inspector Modal ─────────────────────────────── -->
-            <div id="inspectorModal" class="inspector-overlay">
-                <div class="inspector-card">
-                    <h2 id="insName" style="margin-top:0; color:white; font-size:1.3rem; font-weight:900;">Nodo</h2>
-                    <p id="insLevel" style="color:var(--accent-indigo); font-family:var(--font-mono); font-size:0.82rem; margin-bottom:1.5rem;"></p>
-                    <div class="form-group">
-                        <label>FMV (€/hora)</label>
-                        <input type="number" id="inputFmv" class="form-control" min="5" step="5">
-                    </div>
-                    <div class="form-group">
-                        <label>Multiplicador de Riesgo</label>
-                        <input type="number" id="inputMult" class="form-control" min="0.5" max="5" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label>System Prompt / Ikigai del Rol</label>
-                        <textarea id="insPrompt" class="form-control" rows="4" placeholder="Define el propósito y SOPs de este rol…"></textarea>
-                    </div>
-                    <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:1.5rem;">
-                        <button id="btnCloseInspector" style="background:transparent; border:1px solid #444; color:#aaa; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">Cerrar</button>
-                        <button id="btnSaveNodeData" class="btn-primary">💾 Sellar Datos del Nodo</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tooltip ────────────────────────────────────── -->
-            <div id="txTooltip" style="display:none; position:fixed; background:rgba(10,10,14,0.97); border:1px solid var(--accent-indigo); color:white; padding:14px 18px; border-radius:12px; font-size:0.85rem; z-index:999999; box-shadow:0 20px 50px rgba(0,0,0,0.9); pointer-events:none; max-width:320px;"></div>
-
             ${BottomNav.getHtml('/map')}
         </div>`;
     }
 
     async afterRender() {
         Sidebar.initListeners();
-        PageHeader.afterRender(
-            // onTabChange
-            (tabId) => {
-                this.currentTab = tabId;
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(`tab-${tabId}`)?.classList.add('active');
-                if (tabId === 'visual' || tabId === 'edit') {
-                    setTimeout(() => {
-                        this.mapVis?.renderEdges();
-                        this.mapEdit?.renderEdges();
-                    }, 50);
-                }
-            },
-            // onMagicAction
-            (actionId) => {
-                if (actionId === 'sim_flow') { this.isHeatmapActive = false; if (this.mapVis) this.mapVis.options.isHeatmap = false; this.startSimulation(); }
-                if (actionId === 'sim_heat') { this.stopSimulation(); this.isHeatmapActive = true; if (this.mapVis) { this.mapVis.options.isHeatmap = true; this.mapVis.renderEdges(); } this._triggerAiInsight('🔥 <b>Heatmap:</b> Las líneas más gruesas indican tuberías con más Proof of Work auditado.'); }
-                if (actionId === 'sim_stop') { this.stopSimulation(); document.getElementById('aiCopilot')?.classList.remove('visible'); }
-            }
-        );
+        PageHeader.afterRender(null, async (actionId) => {
+            if (actionId === 'remap')  document.getElementById('btnMap')?.click();
+            if (actionId === 'heal')   await this._runHeal();
+            if (actionId === 'export') this._exportNetwork();
+        });
 
         const state   = store.getState();
         const project = state.projects.find(p => p.id === this.activeProjectId);
         if (!project) return;
 
-        // ── DOM refs ──────────────────────────────────────────────
         this.dom = {
-            canvasVis:        document.getElementById('mapCanvasVisual'),
-            pathsVis:         document.getElementById('paths-group-vis'),
-            canvasEdit:       document.getElementById('mapCanvasEdit'),
-            pathsEdit:        document.getElementById('paths-group-edit'),
-            aiCopilot:        document.getElementById('aiCopilot'),
-            aiCopilotHeader:  document.getElementById('aiCopilotHeader'),
-            aiCopilotBody:    document.getElementById('aiCopilotBody'),
-            btnCloseCopilot:  document.getElementById('btnCloseCopilot'),
-            btnStrategicAudit: document.getElementById('btnStrategicAudit'),
-            btnUndoTx:        document.getElementById('btnUndoTx'),
-            btnFullscreen:    document.getElementById('btnFullscreen'),
-            editMapContainer: document.getElementById('editMapContainer'),
-            inspectorModal:   document.getElementById('inspectorModal'),
-            insName:          document.getElementById('insName'),
-            insLevel:         document.getElementById('insLevel'),
-            inputFmv:         document.getElementById('inputFmv'),
-            inputMult:        document.getElementById('inputMult'),
-            insPrompt:        document.getElementById('insPrompt'),
-            tooltip:          document.getElementById('txTooltip')
+            btnMap:          document.getElementById('btnMap'),
+            mapStatus:       document.getElementById('mapStatus'),
+            btnSkills:       document.getElementById('btnSkills'),
+            btnAgent:        document.getElementById('btnAgent'),
+            btnHeal:         document.getElementById('btnHeal'),
+            vnaPlaceholder:  document.getElementById('vnaPlaceholder'),
+            vnaCanvasMount:  document.getElementById('vnaCanvasMount'),
+            woPanel:         document.getElementById('woPanel'),
+            woList:          document.getElementById('woList'),
+            woSummaryBar:    document.getElementById('woSummaryBar'),
+            woConfirmBar:    document.getElementById('woConfirmBar'),
+            btnConfirmAll:   document.getElementById('btnConfirmAllWos'),
+            btnConfirmAuto:  document.getElementById('btnConfirmAutoOnly'),
+            btnCloseWoPanel: document.getElementById('btnCloseWoPanel'),
+            telemTokens:     document.getElementById('telemTokens'),
+            telemCost:       document.getElementById('telemCost'),
+            telemSlices:     document.getElementById('telemSlices'),
+            telemWos:        document.getElementById('telemWos'),
+            healthScore:     document.getElementById('healthScore'),
+            healthFill:      document.getElementById('healthFill'),
+            healthLabel:     document.getElementById('healthLabel')
         };
 
-        // ── Map Visual ────────────────────────────────────────────
-        this.mapVis = new MapRenderer(this.dom.canvasVis, this.dom.pathsVis, { isEditMode: false, isHeatmap: false });
-        this.mapVis.setData(project.roles || [], project.vna_flows?.length ? project.vna_flows : (project.transactions || []));
-
-        // ── Map Edit (PO only) ────────────────────────────────────
-        if (this.isPO && this.dom.canvasEdit) {
-            this.mapEdit = new MapRenderer(this.dom.canvasEdit, this.dom.pathsEdit, {
-                isEditMode: true,
-                onNodeClick: (nodeId) => this._handleNodeClick(nodeId),
-                onEdgeClick: (idx) => {
-                    this.editingTxIndex = idx;
-                    this._openTxBuilderModal();
-                }
-            });
-            this.mapEdit.setData(project.roles || [], project.vna_flows?.length ? project.vna_flows : (project.transactions || []));
-
-            this.dom.canvasEdit.addEventListener('mousemove', (e) => {
-                if (this.flowFromId && this.mapEdit) {
-                    this.mapEdit.drawTempLine(this.flowFromId, e.clientX, e.clientY, this.zoomEdit);
-                }
-            });
-        }
-
-        // ── Zoom Visual ───────────────────────────────────────────
-        document.getElementById('btnZoomInVis')?.addEventListener('click',  () => { this.zoomVis  = Math.min(this.zoomVis  + 0.1, 2.5); this.mapVis?.setZoom(this.zoomVis); });
-        document.getElementById('btnZoomOutVis')?.addEventListener('click', () => { this.zoomVis  = Math.max(this.zoomVis  - 0.1, 0.4); this.mapVis?.setZoom(this.zoomVis); });
-        document.getElementById('btnZoomInEdit')?.addEventListener('click',  () => { this.zoomEdit = Math.min(this.zoomEdit + 0.1, 2.5); this.mapEdit?.setZoom(this.zoomEdit); });
-        document.getElementById('btnZoomOutEdit')?.addEventListener('click', () => { this.zoomEdit = Math.max(this.zoomEdit - 0.1, 0.4); this.mapEdit?.setZoom(this.zoomEdit); });
-
-        // ── Copilot close ─────────────────────────────────────────
-        this.dom.btnCloseCopilot?.addEventListener('click', () => this.dom.aiCopilot?.classList.remove('visible'));
-
-        // ── Fullscreen ────────────────────────────────────────────
-        this.dom.btnFullscreen?.addEventListener('click', () => {
-            this.dom.editMapContainer?.classList.toggle('fullscreen-mode');
-            const isFull = this.dom.editMapContainer?.classList.contains('fullscreen-mode');
-            if (this.dom.btnFullscreen) this.dom.btnFullscreen.innerText = isFull ? '✕ Salir' : '⛶ Pantalla Completa';
-            setTimeout(() => { this.mapEdit?.renderEdges(); }, 100);
-        });
-
-        // ── Undo last flow ────────────────────────────────────────
-        this.dom.btnUndoTx?.addEventListener('click', async () => {
-            const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-            if (!p?.vna_flows?.length) return alert('No hay flujos para deshacer.');
-            if (!confirm('¿Eliminar el último flujo VNA?')) return;
-            const updatedFlows = p.vna_flows.slice(0, -1);
-            await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: p.id, updates: { vna_flows: updatedFlows } } });
-            window.location.reload();
-        });
-
-        // ── Bucle Imperial (Strategic Audit) ─────────────────────
-        this.dom.btnStrategicAudit?.addEventListener('click', () => this._runStrategicAudit());
-
-        // ── Inspector Modal ───────────────────────────────────────
-        document.getElementById('btnCloseInspector')?.addEventListener('click', () => document.getElementById('inspectorModal').classList.remove('active'));
-
-        document.getElementById('btnSaveNodeData')?.addEventListener('click', async () => {
-            if (!this.selectedRoleId) return;
-            const fmv  = parseFloat(document.getElementById('inputFmv').value);
-            const mult = parseFloat(document.getElementById('inputMult').value);
-            const prompt = document.getElementById('insPrompt').value.trim();
-            const p    = store.getState().projects.find(x => x.id === this.activeProjectId);
-            const roles = p.roles.map(r => r.id === this.selectedRoleId ? { ...r, fmv, multiplier: mult, ai_prompt: prompt } : r);
-            await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: p.id, updates: { roles } } });
-            document.getElementById('inspectorModal').classList.remove('active');
-            this.mapEdit?.setData(roles, p.vna_flows || []);
-        });
-
-        // ── Delete flow from table ────────────────────────────────
-        document.querySelectorAll('.btn-del-flow').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const idx = parseInt(e.currentTarget.dataset.idx);
-                if (!confirm('¿Eliminar este flujo VNA?')) return;
-                const p      = store.getState().projects.find(x => x.id === this.activeProjectId);
-                const flows  = [...(p.vna_flows?.length ? p.vna_flows : (p.transactions || []))];
-                flows.splice(idx, 1);
-                await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: p.id, updates: { vna_flows: flows } } });
-                window.location.reload();
-            });
-        });
-
-        // ── ResizeObserver ────────────────────────────────────────
-        if (typeof ResizeObserver !== 'undefined') {
-            this.resizeObserver = new ResizeObserver(() => {
-                this.mapVis?.renderEdges();
-                this.mapEdit?.renderEdges();
-            });
-            if (this.dom.canvasVis)  this.resizeObserver.observe(this.dom.canvasVis);
-            if (this.dom.canvasEdit) this.resizeObserver.observe(this.dom.canvasEdit);
-        }
-    }
-
-    // ── Handle node click (Arquitecto) ───────────────────────────
-    _handleNodeClick(nodeId) {
-        if (!this.isPO) return;
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-
-        if (this.flowFromId === null) {
-            this.flowFromId = nodeId;
-            if (this.dom.editTipText) this.dom.editTipText.innerHTML = `⚡ Nodo origen seleccionado: <strong>${nodeId}</strong>. Haz clic en el nodo destino.`;
-        } else if (this.flowFromId === nodeId) {
-            // Abrir inspector
-            this.flowFromId = null;
-            this.selectedRoleId = nodeId;
-            const role = p?.roles?.find(r => r.id === nodeId);
-            if (role && this.dom.inspectorModal) {
-                this.dom.insName.textContent  = role.name;
-                this.dom.insLevel.textContent = role.levelId;
-                this.dom.inputFmv.value       = role.fmv || 40;
-                this.dom.inputMult.value      = role.multiplier || 1;
-                this.dom.insPrompt.value      = role.ai_prompt || '';
-                this.dom.inspectorModal.classList.add('active');
+        // Si ya hay VNA en el proyecto, inicializar canvas
+        if ((project.vna_nodes || []).length > 0) {
+            await this._initCanvas();
+            await this._canvas?.loadVNAData();
+            if (this._canvas?.graph3D) {
+                this._canvas.graph3D.graphData({ nodes: this._canvas.nodes, links: this._canvas.links });
             }
-            if (this.dom.editTipText) this.dom.editTipText.innerHTML = '💡 <b>Modo Arquitecto:</b> Haz clic en un nodo y luego en otro para trazar una tubería.';
-        } else {
-            this._createFlow(this.flowFromId, nodeId);
-            this.flowFromId = null;
-            if (this.dom.editTipText) this.dom.editTipText.innerHTML = '✅ Tubería trazada. Haz clic en dos nodos para continuar.';
+            // WOs previas del Swarm
+            const prev = (project.work_orders || []).filter(w => w.createdBy === 'node-claude-sonnet-v10');
+            if (prev.length) this._renderWoList(prev);
         }
-    }
 
-    async _createFlow(fromId, toId) {
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        if (!p) return;
-        const newFlow = {
-            id:       'flow_' + Date.now(),
-            from:     fromId,
-            to:       toId,
-            tipo:     'tangible',
-            template: 'Nuevo Flujo',
-            horas:    4,
-            soc_checklist: []
-        };
-        const updatedFlows = [...(p.vna_flows || []), newFlow];
-        await store.dispatch({ type: 'UPDATE_PROJECT_INFO', payload: { projectId: p.id, updates: { vna_flows: updatedFlows } } });
-        this.mapEdit?.setData(p.roles, updatedFlows);
-        this.mapVis?.setData(p.roles, updatedFlows);
-    }
-
-    // ── Strategic Audit (Bucle Imperial) ─────────────────────────
-    async _runStrategicAudit() {
-        const btn = this.dom.btnStrategicAudit;
-        if (btn) { btn.disabled = true; btn.innerText = '⏳ Analizando…'; }
-
-        const p = store.getState().projects.find(x => x.id === this.activeProjectId);
-        if (!p) return;
-
-        const flows     = p.vna_flows?.length ? p.vna_flows : (p.transactions || []);
-        const roles     = p.roles || [];
-        const mappedFlows = flows.map(f => {
-            const from = roles.find(r => r.id === f.from);
-            const to   = roles.find(r => r.id === f.to);
-            return `${from?.name || f.from} → ${to?.name || f.to} [${f.tipo || 'tangible'}] "${f.template || f.entregable || '?'}" (${f.horas || '?'}h)`;
+        // Radio automatización
+        document.querySelectorAll('[name="autoLevel"]').forEach(radio => {
+            radio.addEventListener('change', async (e) => {
+                await store.dispatch({ type:'UPDATE_PROJECT_INFO', payload:{
+                    projectId: this.activeProjectId,
+                    updates: { settings: { ...project.settings, automation_level: e.target.value } }
+                }});
+                this._setStatus(`Nivel: ${e.target.value}`);
+            });
         });
 
-        const systemPrompt = `Eres @seny_analyst, auditor estratégico del Swarm SOS V10.
-Analiza la topología VNA de un ecosistema y busca:
-- Cuellos de botella de ejecución.
-- Saltos jerárquicos peligrosos.
-- Falta de tuberías intangibles (auditoría, revisión de calidad).
-- Tareas automatizables con IA.
-Devuelve un reporte en TEXTO PLANO estructurado con viñetas. No uses JSON.`;
+        this.dom.btnMap?.addEventListener('click', async () => {
+            const desc = document.getElementById('vnaInput')?.value.trim();
+            if (!desc) { this._setStatus('⚠️ Describe el proyecto primero.', true); return; }
+            await this._runMap(desc);
+        });
 
-        const userPrompt = `Ecosistema: ${p.nombre}
-Roles: ${roles.map(r => `${r.name} (${r.levelId})`).join(', ')}
-Flujos de Valor:
-${mappedFlows.join('\n')}`;
+        this.dom.btnSkills?.addEventListener('click',  async () => { if (this._network?.nodes?.length) await this._runSkills(); });
+        this.dom.btnAgent?.addEventListener('click',   async () => { if (this._network) await this._runAgent(); });
+        this.dom.btnHeal?.addEventListener('click',    async () => await this._runHeal());
+        this.dom.btnCloseWoPanel?.addEventListener('click', () => this.dom.woPanel?.classList.add('hidden'));
+        this.dom.btnConfirmAll?.addEventListener('click',   async () => await this._confirmWos(this._pendingWos));
+        this.dom.btnConfirmAuto?.addEventListener('click',  async () => await this._confirmWos(this._pendingWos.filter(w => w.automation === 'auto')));
 
+        if (this._focusWoHash) this._focusWoCard(this._focusWoHash);
+    }
+
+    async _runMap(description) {
+        this._setBtns(true);
+        this._setStatus('🧠 Claude analizando la red de valor…');
         try {
-            const response = await Orchestrator.callLLM({
-                preferredEngine: 'anthropic',
-                systemPrompt,
-                userPrompt,
-                responseFormat: 'text',
-                temperature:    0.3
-            });
+            await store.dispatch({ type:'UPDATE_PROJECT_INFO', payload:{
+                projectId: this.activeProjectId, updates:{ vna_description: description }
+            }});
 
-            this._triggerAiInsight(response.content.replace(/\n/g, '<br>'), '🧠 Informe Estratégico (@seny_analyst)');
+            this._setStatus('🔭 Identificando roles y flujos…');
+            const artifact = await Orchestrator.designVnaMap({ projectId: this.activeProjectId, description, domain:'auto' });
+            const network  = artifact.payload;
+            if (!network?.nodes?.length) throw new Error('Mapa VNA vacío. Reformula la descripción.');
+
+            this._network = network;
+            this._updateTelemetry(artifact.telemetry);
+            this._renderHealth(network.meta?.health_score ?? network.health_score ?? 0);
+
+            this._setStatus('🌌 Renderizando red 3D…');
+            await this._initCanvas();
+            await this._canvas.loadVnaNetwork(network);
+            this.dom.vnaPlaceholder.style.display = 'none';
+            this.dom.vnaCanvasMount.style.display  = 'flex';
+
+            this._setStatus('📋 Generando Work Orders del Swarm…');
+            const proj   = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const aLevel = proj?.settings?.automation_level || 'review_first';
+            const { workOrders, flows } = WoGenerator.fromVnaNetwork(network, { automation_level: aLevel });
+            this._pendingWos = workOrders;
+            this._woFlows    = flows;
+            if (this.dom.telemWos) this.dom.telemWos.textContent = workOrders.length;
+
+            this._renderWoList(workOrders);
+            this.dom.woPanel?.classList.remove('hidden');
+
+            if (aLevel === 'full_auto') {
+                this._setStatus('⚡ Full Auto: inyectando WOs…');
+                await this._confirmWos(workOrders);
+            }
+
+            this._setStatus(`✅ ${network.nodes.length} nodos · ${network.exchanges?.length||0} intercambios · ${workOrders.length} WOs`);
+
         } catch (err) {
-            this._triggerAiInsight(`❌ Fallo en la matriz neuronal: ${err.message}`, 'Error Estratégico');
+            this._setStatus(`❌ ${err.message}`, true);
         } finally {
-            if (btn) { btn.disabled = false; btn.innerText = '🧠 Bucle Imperial'; }
+            this._setBtns(false);
         }
     }
 
-    _triggerAiInsight(html, title = '🧠 IA Copilot') {
-        if (this.dom.aiCopilotHeader) this.dom.aiCopilotHeader.innerHTML = title;
-        if (this.dom.aiCopilotBody)   this.dom.aiCopilotBody.innerHTML  = html;
-        this.dom.aiCopilot?.classList.add('visible');
+    async _confirmWos(wos) {
+        if (!wos.length) return;
+        const proj = store.getState().projects.find(p => p.id === this.activeProjectId);
+        if (!proj) return;
+        const newFlows = this._woFlows.filter(f => !(proj.vna_flows||[]).find(ef => ef.id === f.id));
+        const newWos   = wos.filter(w => !(proj.work_orders||[]).find(ew => ew.hash === w.hash));
+        await store.dispatch({ type:'UPDATE_PROJECT_INFO', payload:{
+            projectId: this.activeProjectId,
+            updates: { vna_flows:[...(proj.vna_flows||[]),...newFlows], work_orders:[...(proj.work_orders||[]),...newWos] }
+        }});
+        newWos.forEach(wo => {
+            const card = document.querySelector(`[data-wo-hash="${wo.hash}"]`);
+            if (card) { card.style.opacity='0.45'; card.style.borderColor='rgba(0,230,118,0.25)'; }
+        });
+        this._setStatus(`✅ ${newWos.length} WOs en Kanban · <a href="/project" data-link style="color:var(--accent-indigo);">Ver →</a>`);
+        this.dom.woConfirmBar.style.display = 'none';
+        document.querySelectorAll('#mapStatus [data-link]').forEach(l => {
+            l.addEventListener('click', e => { e.preventDefault(); window.navigateTo(l.getAttribute('href')); });
+        });
     }
 
-    // ── Simulación de flujo ───────────────────────────────────────
-    startSimulation() {
-        if (this.isSimulating) return;
-        this.isSimulating    = true;
-        this.currentSimIndex = 0;
-        const p     = store.getState().projects.find(x => x.id === this.activeProjectId);
-        const flows = p?.vna_flows?.length ? p.vna_flows : (p?.transactions || []);
-        if (!flows.length) { this._triggerAiInsight('Sin flujos para simular.'); this.isSimulating = false; return; }
-
-        const step = () => {
-            if (!this.isSimulating) return;
-            const f = flows[this.currentSimIndex % flows.length];
-            this._triggerAiInsight(`▶ Flujo activo: <strong>${f.template || f.entregable || '?'}</strong> → ${f.horas || '?'}h estimadas.`);
-            this.currentSimIndex++;
-            this.simTimeoutId = setTimeout(step, 2000);
-        };
-        step();
+    async _runSkills() {
+        this._setBtns(true);
+        let created = 0;
+        for (const node of this._network.nodes) {
+            this._setStatus(`⚡ Skill: ${node.label||node.id}…`);
+            try {
+                const art = await Orchestrator.createSkillFromVna({ projectId:this.activeProjectId, skillName:node.id, skillContext:node, roleName:node.label||node.id });
+                this._updateTelemetry(art.telemetry);
+                created++;
+            } catch (_) {}
+        }
+        this._setStatus(`✅ ${created}/${this._network.nodes.length} skills creadas.`);
+        this._setBtns(false);
     }
 
-    stopSimulation() {
-        this.isSimulating = false;
-        if (this.simTimeoutId) clearTimeout(this.simTimeoutId);
+    async _runAgent() {
+        this._setBtns(true);
+        this._setStatus('🤖 Fabricando agente vertical…');
+        try {
+            const art = await Orchestrator.designVerticalAgent({
+                projectId:this.activeProjectId, vertical:this.activeProjectId,
+                sector:this._network.mission||'general', useCases:(this._network.nodes||[]).map(n=>n.label||n.id)
+            });
+            this._updateTelemetry(art.telemetry);
+            const def = art.payload;
+            this._setStatus(`✅ Agente <b>${def?.name||def?.id||'vertical'}</b> en el Swarm.`);
+        } catch(err) { this._setStatus(`❌ ${err.message}`, true); }
+        finally { this._setBtns(false); }
     }
 
-    // Alias V9
+    async _runHeal() {
+        this._setBtns(true);
+        this._setStatus('🔍 Analizando patologías…');
+        try {
+            const art = await Orchestrator.curateNetworkHealth({ projectId:this.activeProjectId });
+            if (!art) throw new Error('Sin datos VNA.');
+            this._updateTelemetry(art.telemetry);
+            this._renderHealth(art.payload?.health_score??0);
+            const n = art.payload?.pathologies?.length||0;
+            this._setStatus(n===0?'✅ Red saludable.': `⚠️ ${n} patología(s) detectada(s).`);
+        } catch(err) { this._setStatus(`❌ ${err.message}`, true); }
+        finally { this._setBtns(false); }
+    }
+
+    _exportNetwork() {
+        if (!this._network) return;
+        const a = document.createElement('a');
+        a.href     = URL.createObjectURL(new Blob([JSON.stringify(this._network,null,2)],{type:'application/json'}));
+        a.download = `vna_${this.activeProjectId}_${Date.now()}.jsonld`;
+        a.click();
+    }
+
+    async _initCanvas() {
+        if (this._canvas) return;
+        this._canvas = new SynapticCanvas(this.dom.vnaCanvasMount, { projectId:this.activeProjectId, isVnaMode:true });
+        await this._canvas.render();
+    }
+
+    _renderWoList(wos) {
+        if (!this.dom.woList) return;
+        const s = WoGenerator.summary(wos);
+        if (this.dom.woSummaryBar) this.dom.woSummaryBar.innerHTML =
+            `<span><b>${s.total}</b> total</span><span><b style="color:var(--accent-green)">${s.auto}</b> auto</span><span><b style="color:var(--accent-orange)">${s.hitl}</b> hitl</span><span><b style="color:#555">${s.human}</b> human</span><span><b>${s.totalHours}h</b></span>`;
+        if (!wos.length) { this.dom.woList.innerHTML='<div style="color:#333;font-size:0.78rem;font-style:italic;text-align:center;padding:2rem 0;">Sin Work Orders.</div>'; return; }
+        const autoLabel  = {auto:'⚡ auto',hitl:'👁️ hitl',human:'👤 human'};
+        const autoCls    = {auto:'auto-auto',hitl:'auto-hitl',human:'auto-human'};
+        this.dom.woList.innerHTML = wos.map(wo => `
+            <div class="wo-card" data-wo-hash="${wo.hash}">
+                <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px;flex-wrap:wrap;">
+                    <span class="wo-type-badge wo-${wo.woType}">${wo.woType}</span>
+                    <span class="wo-auto-badge ${autoCls[wo.automation]||'auto-human'}">${autoLabel[wo.automation]||wo.automation}</span>
+                    <span style="font-size:0.62rem;color:#444;font-family:var(--font-mono);margin-left:auto;">${wo.estimatedHours}h</span>
+                </div>
+                <div style="font-weight:900;font-size:0.84rem;color:white;margin-bottom:3px;line-height:1.3;">${wo.entregable}</div>
+                <div style="font-size:0.7rem;color:#555;margin-bottom:6px;">${wo.from} → ${wo.to}</div>
+                <div style="font-size:0.68rem;color:#444;line-height:1.4;">${(wo.context||'').substring(0,90)}${(wo.context||'').length>90?'…':''}</div>
+                <div style="display:flex;gap:5px;margin-top:7px;">
+                    <button class="wo-confirm-btn" data-hash="${wo.hash}"
+                        style="flex:1;padding:4px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);
+                        color:var(--accent-indigo);border-radius:5px;cursor:pointer;font-size:0.68rem;font-weight:bold;">
+                        + Kanban
+                    </button>
+                    <a href="/map?wo=${wo.hash}" data-link
+                        style="padding:4px 7px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
+                        color:#444;border-radius:5px;font-size:0.68rem;text-decoration:none;">🔗</a>
+                </div>
+            </div>`).join('');
+        this.dom.woList.querySelectorAll('.wo-confirm-btn').forEach(btn => {
+            btn.addEventListener('click', async e => {
+                const wo = this._pendingWos.find(w => w.hash === e.currentTarget.dataset.hash);
+                if (wo) await this._confirmWos([wo]);
+            });
+        });
+        this.dom.woList.querySelectorAll('[data-link]').forEach(l => {
+            l.addEventListener('click', e => { e.preventDefault(); window.history.pushState(null,null,l.getAttribute('href')); });
+        });
+        if (this.dom.woConfirmBar) this.dom.woConfirmBar.style.display = 'flex';
+    }
+
+    _focusWoCard(hash) { document.querySelector(`[data-wo-hash="${hash}"]`)?.classList.add('focused'); }
+
+    _setStatus(msg, isError=false) {
+        const el = this.dom.mapStatus;
+        if (!el) return;
+        el.innerHTML = msg;
+        el.classList.add('visible');
+        el.classList.toggle('error', isError);
+    }
+
+    _setBtns(disabled) {
+        if (this.dom.btnMap)    this.dom.btnMap.disabled    = disabled;
+        if (this.dom.btnSkills) this.dom.btnSkills.disabled = disabled || !this._network;
+        if (this.dom.btnAgent)  this.dom.btnAgent.disabled  = disabled || !this._network;
+        if (this.dom.btnHeal)   this.dom.btnHeal.disabled   = disabled;
+    }
+
+    _updateTelemetry(t) {
+        if (!t?.tokens) return;
+        this._telem.tokens += t.tokens.total_tokens || 0;
+        const base = ((t.tokens.prompt_tokens||0)/1e6)*3.00 + ((t.tokens.completion_tokens||0)/1e6)*15.00;
+        this._telem.cost   += base * 1.35;
+        this._telem.slices  = Number((this._telem.slices + base * 1.35 * 2.0).toFixed(3));
+        if (this.dom.telemTokens) this.dom.telemTokens.textContent = this._telem.tokens.toLocaleString();
+        if (this.dom.telemCost)   this.dom.telemCost.textContent   = `$${this._telem.cost.toFixed(3)}`;
+        if (this.dom.telemSlices) this.dom.telemSlices.textContent = this._telem.slices.toFixed(3);
+    }
+
+    _renderHealth(score) {
+        const pct   = Math.round((score||0)*100);
+        const color = pct>=70?'var(--accent-green)':pct>=40?'var(--accent-orange)':'var(--accent-red)';
+        if (this.dom.healthScore) { this.dom.healthScore.textContent=`${pct}%`; this.dom.healthScore.style.color=color; }
+        if (this.dom.healthFill)  { this.dom.healthFill.style.width=`${pct}%`; this.dom.healthFill.style.background=color; }
+        if (this.dom.healthLabel) this.dom.healthLabel.textContent =
+            pct>=70?'Red saludable':pct>=40?'Patologías menores':'Red crítica — curar';
+    }
+
     executeViewScript() { return this.afterRender(); }
 }
