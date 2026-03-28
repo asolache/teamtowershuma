@@ -34,7 +34,9 @@ export class ProjectForge {
     async render() {
         if (!this.container) return;
         await KB.init();
-        this.sectorsFromKB = await KB.getAvailableSectors();
+        this.sectorsFromKB = (typeof KB.getAvailableSectors === 'function')
+                ? await KB.getAvailableSectors()
+                : {};
 
         const urlParams = new URLSearchParams(window.location.search);
         const preselectedSector = urlParams.get('sector') || '';
