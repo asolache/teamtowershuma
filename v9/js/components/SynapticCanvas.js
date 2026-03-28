@@ -120,6 +120,7 @@ export class SynapticCanvas {
         this.nodes = [];
         this.links = [];
 
+        // 1. Gravedad Vertical (Niveles Casteller)
         const getVerticalGravity = (levelId) => {
             const l = (levelId || '').toLowerCase();
             if(l.includes('anx')) return 200;
@@ -130,6 +131,7 @@ export class SynapticCanvas {
             return 0;
         };
 
+        // 2. Gravedad Radial (12 Arquetipos / Dominios)
         const ARQUETYPES = ['zeus', 'apollo', 'athena', 'hestia', 'hermes', 'aphrodite', 'hephaestus', 'demeter', 'dionysus', 'poseidon', 'hera', 'hebe'];
         const getRadialAngle = (archetype) => {
             const index = ARQUETYPES.indexOf((archetype || '').toLowerCase());
@@ -137,6 +139,7 @@ export class SynapticCanvas {
             return index * ( (2 * Math.PI) / 12 );
         };
 
+        // Extraer Roles
         if (project.roles) {
             project.roles.forEach(r => {
                 const yTarget = getVerticalGravity(r.levelId);
@@ -157,6 +160,7 @@ export class SynapticCanvas {
             });
         }
 
+        // Extraer Flujos (Transacciones)
         if (project.vna_flows) {
             project.vna_flows.forEach(f => {
                 if (f.from && f.to) {
@@ -408,7 +412,6 @@ export class SynapticCanvas {
                         <div class="tt-title">${node.name}</div>
                     `;
                 } else {
-                    // Si no hay nodo, comprobamos si hay link hovered (manejado por onLinkHover)
                     if (tooltip.style.display !== 'block' || tooltip.dataset.isLink !== 'true') {
                         canvasInner.style.cursor = 'crosshair';
                         tooltip.style.display = 'none';
@@ -450,7 +453,7 @@ export class SynapticCanvas {
                 }
             });
 
-        // 🔥 GRAVEDAD CUSTOM PARA MODO VNA
+        // 🔥 GRAVEDAD CUSTOM PARA MODO VNA BLINDADA
         if (this.isVnaMode) {
             this.graph3D.d3Force('charge').strength(-800); 
             this.graph3D.d3Force('link').distance(100);
@@ -468,6 +471,7 @@ export class SynapticCanvas {
                     return sprite;
                 })
                 .linkPositionUpdate((sprite, { start, end }) => {
+                    if (!sprite) return; // 🔥 NULL CHECK CRÍTICO AÑADIDO AQUÍ
                     const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
                         [c]: start[c] + (end[c] - start[c]) / 2 
                     })));
