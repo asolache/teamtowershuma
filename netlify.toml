@@ -2,6 +2,12 @@
   publish   = "."
   functions = "netlify/functions"
 
+[functions]
+  node_bundler = "esbuild"
+
+[functions."anthropic-proxy"]
+  timeout = 26
+
 [[redirects]]
   from   = "/api/*"
   to     = "/.netlify/functions/:splat"
