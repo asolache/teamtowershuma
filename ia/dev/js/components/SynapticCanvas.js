@@ -835,7 +835,7 @@ export class SynapticCanvas {
         const isSkill = m.type === 'skill' || m.category === 'skill';
         const color   = node3D.color || '#6366f1';
         const tags    = (m.keywords||[]).map(t=>`<span class="dm-tag">#${t}</span>`).join('');
-        const content = m.content ? m.content.substring(0,260)+(m.content.length>260?'…':'') : '';
+        const content = (typeof m.content === 'string') ? m.content.substring(0,260)+(m.content.length>260?'…':'') : '';
 
         let badges = '';
         if (isSkill) {
@@ -913,7 +913,7 @@ export class SynapticCanvas {
                 <div class="dm-card" data-id="${n.id}">
                     <div class="dm-cat">${n.category||n.type||'?'}</div>
                     <div class="dm-title">${n.title||n.id}</div>
-                    <div class="dm-content">${n.description||n.content?.substring(0,70)||''}</div>
+                    <div class="dm-content">${n.description||(typeof n.content === 'string' ? n.content.substring(0,70) : '')||''}</div>
                 </div>`).join('')
                 || `<div style="color:#555;text-align:center;padding:18px;font-size:0.76rem;">Sin resultados.</div>`;
 
