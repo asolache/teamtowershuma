@@ -163,7 +163,9 @@ export default class ValueMapView {
                             </div>
                             <textarea id="vnaInput" class="vmap-textarea" rows="5"
                                 placeholder="Describe el proyecto, negocio o proceso. Claude mapeará los roles y flujos de valor y generará las Work Orders del Swarm…">${project.vna_description || ''}</textarea>
-                            <button id="btnMap" class="vmap-btn vmap-btn-primary">🗺️ Mapear Red de Valor</button>
+                            <button id="btnMap" class="vmap-btn vmap-btn-primary">
+                                ${hasVna ? '🔄 Re-mapear / Evolucionar red' : '🗺️ Mapear Red de Valor'}
+                            </button>
                             <div id="mapStatus" class="vmap-status"></div>
                         </div>
 
@@ -311,9 +313,33 @@ export default class ValueMapView {
             if (this._canvas?.graph3D) {
                 this._canvas.graph3D.graphData({ nodes: this._canvas.nodes, links: this._canvas.links });
             }
-            // WOs previas del Swarm
-            const prev = (project.work_orders || []).filter(w => w.createdBy === 'node-claude-sonnet-v10');
-            if (prev.length) this._renderWoList(prev);
+            // Mostrar canvas, ocultar placeholder
+            if (this.dom.vnaPlaceholder) this.dom.vnaPlaceholder.style.display = 'none';
+            if (this.dom.vnaCanvasMount) this.dom.vnaCanvasMount.style.display  = 'flex';
+
+            // Health score desde KB si existe
+            const KB_net = await (async () => { try { await KB.init(); return await KB.getNode(`vna-network-${this.activeProjectId}`); } catch(_){ return null; } })();
+            if (KB_net?.meta?.health_score != null) this._renderHealth(KB_net.meta.health_score);
+
+            // Generar WOs si no existen aún
+            const existingWos = project.work_orders || [];
+            if (existingWos.length === 0) {
+                const aLevel = project.settings?.automation_level || 'review_first';
+                const fakeNetwork = { nodes: project.vna_nodes, exchanges: project.vna_exchanges };
+                const { workOrders, flows } = WoGenerator.fromVnaNetwork(fakeNetwork, { automation_level: aLevel });
+                this._pendingWos = workOrders;
+                this._woFlows    = flows;
+                if (this.dom.telemWos) this.dom.telemWos.textContent = workOrders.length;
+                this._renderWoList(workOrders);
+                this.dom.woPanel?.classList.remove('hidden');
+                this._setStatus(`✅ Red importada desde Forge · ${project.vna_nodes.length} nodos · ${workOrders.length} WOs generadas. Confirma o re-mapea con Claude.`);
+            } else {
+                // WOs previas del Swarm
+                const swarmWos = existingWos.filter(w => w.createdBy === 'node-claude-sonnet-v10');
+                if (swarmWos.length) this._renderWoList(swarmWos);
+                else this._renderWoList(existingWos.slice(0, 20));
+                this.dom.woPanel?.classList.remove('hidden');
+            }
         }
 
         // Radio automatización
