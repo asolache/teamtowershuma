@@ -80,7 +80,7 @@ export default class PaperView {
         return `
         <style>
             /* ── Layout ──────────────────────────────────────────── */
-            .paper-layout { display:flex; flex:1; height:calc(100vh - 110px); overflow:hidden; }
+            .paper-layout { display:flex; flex:1; min-height:0; overflow:hidden; }
 
             /* ── Panel izquierdo: contexto VNA ───────────────────── */
             .paper-left { width:240px; min-width:200px; display:flex; flex-direction:column;
@@ -240,7 +240,7 @@ export default class PaperView {
 
         <div class="app-layout" style="flex-direction:column;overflow:hidden;">
             ${Sidebar.getHtml('/paper')}
-            <div style="display:flex;flex:1;flex-direction:column;overflow:hidden;">
+            <div style="display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden;">
                 <div style="padding:1rem 1.5rem 0;flex-shrink:0;">
                     ${PageHeader.getHtml(headerConfig)}
                 </div>

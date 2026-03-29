@@ -81,7 +81,7 @@ export default class ValueMapView {
 
         return `
         <style>
-            .vmap-ide { display:flex; flex:1; height:calc(100vh - 120px); overflow:hidden; }
+            .vmap-ide { display:flex; flex:1; min-height:0; overflow:hidden; }
             .vmap-left { width:320px; min-width:260px; display:flex; flex-direction:column;
                 border-right:1px solid var(--glass-border); background:rgba(5,5,8,0.96);
                 overflow-y:auto; flex-shrink:0; }
@@ -148,7 +148,7 @@ export default class ValueMapView {
 
         <div class="app-layout" style="flex-direction:column; overflow:hidden;">
             ${Sidebar.getHtml('/map')}
-            <div style="display:flex;flex:1;flex-direction:column;overflow:hidden;">
+            <div style="display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden;">
                 <div style="padding:1rem 1.5rem 0;flex-shrink:0;">
                     ${PageHeader.getHtml(headerConfig)}
                 </div>
