@@ -86,6 +86,8 @@ Devuelve SOLO JSON:
 // ═════════════════════════════════════════════════════════════
 //  OrchestratorCore — Clase principal
 // ═════════════════════════════════════════════════════════════
+const MAX_SWARM_SIZE = 6;
+
 class OrchestratorCore {
 
     constructor() {
@@ -968,11 +970,7 @@ Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
 
     // ══════════════════════════════════════════════════════════════
     //  CLUSTERING V10.2 — Orquestadores como centros de gravedad
-    //  Cada orquestador gestiona un enjambre de agentes.
-    //  Cuando un orquestador tiene > MAX_SWARM_SIZE agentes, se bifurca.
     // ══════════════════════════════════════════════════════════════
-
-    static MAX_SWARM_SIZE = 6;
 
     // ── getClusterMap — devuelve el mapa de clusters activos ─────
     // Retorna: { orchestratorId: { orchestrator, agents: [], load: N } }
@@ -1027,7 +1025,7 @@ Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
         const clusters = await this.getClusterMap();
         const cluster  = clusters[orchestratorId];
         if (!cluster) throw new Error(`Cluster ${orchestratorId} no encontrado`);
-        if (cluster.agents.length <= OrchestratorCore.MAX_SWARM_SIZE) return null;
+        if (cluster.agents.length <= 6) return null;
 
         // Crear nuevo orquestador hijo
         const forkId   = `@orchestrator_fork_${Date.now()}`;
@@ -1076,7 +1074,7 @@ Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
             const completedWos = assignedWos.filter(w => w.status === 'consolidated' || w.status === 'reported');
             const pendingWos   = assignedWos.filter(w => w.status === 'theoretical' || w.status === 'pinged');
             const load         = cluster.agents.length;
-            const overloaded   = load > OrchestratorCore.MAX_SWARM_SIZE;
+            const overloaded   = load > 6;
 
             return {
                 orchestratorId: orchId,
