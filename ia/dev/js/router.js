@@ -24,7 +24,7 @@ function getRoutePath() {
 }
 
 const VIEWS_PATH = `${BASE_PATH}/js/views`;
-const V = '?v=10.1.0'; // ← cambia esto en cada deploy
+const V = '?v=10.1.1'; // ← cambia esto en cada deploy
 
 const ROUTES = [
     { path: '/',          view: () => import(`${VIEWS_PATH}/HomeView.js${V}`)           },
