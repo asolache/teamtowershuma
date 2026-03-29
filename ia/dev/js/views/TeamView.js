@@ -13,21 +13,21 @@ import { BottomNav }    from '../components/BottomNav.js';
 import { PageHeader }   from '../components/PageHeader.js';
 import { Orchestrator } from '../core/Orchestrator.js';
 
-// ── 13 Arquetipos (Jung + Kin Maya) ──────────────────────────────────────────
+// ── 13 Arquetipos (Jung + Kin Maya) con áreas de actividad ───────────────────
 const ARCHETYPES = [
-    { id: 'innocent',   icon: '🕊️',  label: 'Inocente',    color: '#ffffff' },
-    { id: 'explorer',   icon: '🧭',  label: 'Explorador',  color: '#00b0ff' },
-    { id: 'sage',       icon: '🦉',  label: 'Sabio',       color: '#6366f1' },
-    { id: 'hero',       icon: '⚔️',  label: 'Héroe',       color: '#ff9100' },
-    { id: 'outlaw',     icon: '🏴',  label: 'Rebelde',     color: '#ff5252' },
-    { id: 'magician',   icon: '✨',  label: 'Mago',        color: '#e040fb' },
-    { id: 'lover',      icon: '🔥',  label: 'Amante',      color: '#ff4081' },
-    { id: 'jester',     icon: '🃏',  label: 'Bufón',       color: '#ffd740' },
-    { id: 'caregiver',  icon: '❤️',  label: 'Cuidador',    color: '#00e676' },
-    { id: 'creator',    icon: '🎨',  label: 'Creador',     color: '#69f0ae' },
-    { id: 'ruler',      icon: '👑',  label: 'Gobernante',  color: '#ffc400' },
-    { id: 'everyman',   icon: '🤝',  label: 'Ciudadano',   color: '#aaa'    },
-    { id: 'threshold',  icon: '🌀',  label: 'El Umbral',   color: '#e0e0e0' }  // 13º — Kin Maya
+    { id: 'innocent',   icon: '🕊️',  label: 'Inocente',    color: '#ffffff',  areas: ['Optimismo', 'Confianza', 'Renovación']       },
+    { id: 'explorer',   icon: '🧭',  label: 'Explorador',  color: '#00b0ff',  areas: ['Autonomía', 'Descubrimiento', 'Aventura']    },
+    { id: 'sage',       icon: '🦉',  label: 'Sabio',       color: '#6366f1',  areas: ['Conocimiento', 'Análisis', 'Verdad']         },
+    { id: 'hero',       icon: '⚔️',  label: 'Héroe',       color: '#ff9100',  areas: ['Valentía', 'Superación', 'Protección']       },
+    { id: 'outlaw',     icon: '🏴',  label: 'Rebelde',     color: '#ff5252',  areas: ['Disrupción', 'Libertad', 'Revolución']       },
+    { id: 'magician',   icon: '✨',  label: 'Mago',        color: '#e040fb',  areas: ['Transformación', 'Visión', 'Catálisis']      },
+    { id: 'lover',      icon: '🔥',  label: 'Amante',      color: '#ff4081',  areas: ['Conexión', 'Pasión', 'Belleza']              },
+    { id: 'jester',     icon: '🃏',  label: 'Bufón',       color: '#ffd740',  areas: ['Creatividad', 'Humor', 'Presente']           },
+    { id: 'caregiver',  icon: '❤️',  label: 'Cuidador',    color: '#00e676',  areas: ['Servicio', 'Empatía', 'Sostenimiento']       },
+    { id: 'creator',    icon: '🎨',  label: 'Creador',     color: '#69f0ae',  areas: ['Innovación', 'Expresión', 'Construcción']    },
+    { id: 'ruler',      icon: '👑',  label: 'Gobernante',  color: '#ffc400',  areas: ['Liderazgo', 'Orden', 'Responsabilidad']      },
+    { id: 'everyman',   icon: '🤝',  label: 'Ciudadano',   color: '#aaa',     areas: ['Comunidad', 'Pragmatismo', 'Pertenencia']    },
+    { id: 'threshold',  icon: '🌀',  label: 'El Umbral',   color: '#e0e0e0',  areas: ['Transición', 'Integración', 'Misterio']      }  // 13º — Kin Maya
 ];
 
 // ── Taxonomía de categorías ───────────────────────────────────────────────────
@@ -97,12 +97,12 @@ export default class TeamView {
             tagline: 'Padrón Neuronal · Roles VNA · Skills · 13 Arquetipos',
             tabs: [
                 { id: 'nodos',       label: `👥 Taxonomía (${(project.usuarios||[]).length})`, active: true  },
-                { id: 'sillas',      label: '🪑 Sillas VNA',                                   active: false },
+                { id: 'roles',       label: '🪑 Roles',                                   active: false },
                 { id: 'skills',      label: '⚡ Skills KB',                                     active: false }
             ],
             actionHtml: isPO ? `
                 <button id="btnNewNode" class="btn-primary" style="font-size:0.82rem;padding:8px 14px;">
-                    ➕ Nuevo Nodo
+                    ➕ Sumar al Castell
                 </button>` : ''
         };
 
@@ -201,7 +201,7 @@ export default class TeamView {
             .silla-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1rem; }
             .silla-card { background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05);
                 border-radius:12px; padding:1.1rem; }
-            .silla-vacant { border-style:dashed; border-color:rgba(255,145,0,0.3); }
+            .silla-pendiente { border-style:dashed; border-color:rgba(255,145,0,0.3); }
 
             /* Skills KB */
             .skill-card { background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05);
@@ -295,7 +295,7 @@ export default class TeamView {
                     <aside class="team-left" id="teamLeft">
                         <div class="tl-header">
                             <div class="tl-top">
-                                <span class="tl-title">Directorio</span>
+                                <span class="tl-title">La Colla</span>
                                 <button class="btn-collapse" id="btnCollapseLeft" title="Colapsar">◀</button>
                             </div>
                             <input type="text" id="nodeSearch" class="tl-search" placeholder="🔍 Buscar nodo…">
@@ -315,8 +315,8 @@ export default class TeamView {
                             <div id="taxonomyContainer"></div>
                         </div>
                         <!-- Tab: Sillas -->
-                        <div id="tab-sillas" class="tab-content">
-                            <div class="silla-grid" id="sillasContainer"></div>
+                        <div id="tab-roles" class="tab-content">
+                            <div class="silla-grid" id="rolesContainer"></div>
                         </div>
                         <!-- Tab: Skills KB -->
                         <div id="tab-skills" class="tab-content">
@@ -345,10 +345,10 @@ export default class TeamView {
     async afterRender() {
         Sidebar.initListeners();
         PageHeader.afterRender((tabId) => {
-            this.currentTab = tabId === 'nodos' ? 'nodos' : tabId === 'sillas' ? 'sillas' : 'skills';
+            this.currentTab = tabId === 'nodos' ? 'nodos' : tabId === 'roles' ? 'roles' : 'skills';
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(`tab-${this.currentTab}`)?.classList.add('active');
-            if (this.currentTab === 'sillas') this._renderSillas();
+            if (this.currentTab === 'roles')  this._renderSillas();
             if (this.currentTab === 'skills') this._renderSkillsKB();
         });
 
@@ -424,13 +424,25 @@ export default class TeamView {
     // ══════════════════════════════════════════════════════════════
     _renderNodeList(users, project) {
         if (!this.dom.nodeList) return;
+
+        // Incluir: miembros del proyecto + owner + agentes IA globales
         const projectIds = new Set([
-            ...(project.usuarios || []).map(u => u.id),
-            project.ownerId
+            ...(project?.usuarios || []).map(u => u.id),
+            project?.ownerId
         ].filter(Boolean));
 
-        const list = users.filter(u => projectIds.has(u.id));
-        this.dom.nodeList.innerHTML = list.map(u => {
+        const aiGlobal = users.filter(u => u.profile?.isAi);
+        const list = projectIds.size > 0
+            ? [ ...users.filter(u => projectIds.has(u.id)),
+                ...aiGlobal.filter(u => !projectIds.has(u.id)) ]
+            : aiGlobal;
+
+        // Aplicar filtro de tipo
+        const filtered = this.currentFilter === 'ai'    ? list.filter(u =>  u.profile?.isAi)
+                       : this.currentFilter === 'human' ? list.filter(u => !u.profile?.isAi)
+                       : list;
+
+        this.dom.nodeList.innerHTML = filtered.map(u => {
             const isAi      = u.profile?.isAi;
             const color     = isAi ? 'var(--accent-purple,#e040fb)' : 'var(--accent-green,#00e676)';
             const maturity  = u.profile?.maturity || 'draft';
@@ -447,7 +459,7 @@ export default class TeamView {
                 </div>
                 <div class="maturity-dot" style="background:${matColor};" title="${MATURITY[maturity]?.label}"></div>
             </div>`;
-        }).join('') || '<div style="color:#333;font-size:0.76rem;padding:1rem;text-align:center;">Sin nodos</div>';
+        }).join('') || '<div style="color:#333;font-size:0.76rem;padding:1rem;text-align:center;">Sin castellers</div>';
 
         this.dom.nodeList.querySelectorAll('.node-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -463,13 +475,19 @@ export default class TeamView {
     // ══════════════════════════════════════════════════════════════
     _renderTaxonomy(project, globalUsers) {
         const container = this.dom.taxoCont;
-        if (!container || !project) return;
+        if (!container) return;
 
         const projectIds = new Set([
-            ...(project.usuarios || []).map(u => u.id),
-            project.ownerId
+            ...(project?.usuarios || []).map(u => u.id),
+            project?.ownerId
         ].filter(Boolean));
-        const users = globalUsers.filter(u => projectIds.has(u.id));
+
+        const aiGlobal = globalUsers.filter(u => u.profile?.isAi);
+        // Si el proyecto no tiene usuarios definidos, mostrar todos los agentes IA
+        const users = projectIds.size > 0
+            ? [ ...globalUsers.filter(u => projectIds.has(u.id)),
+                ...aiGlobal.filter(u => !projectIds.has(u.id)) ]
+            : aiGlobal;
 
         // Clasificar
         const groups = {};
@@ -497,7 +515,7 @@ export default class TeamView {
                     ${catUsers.map(u => this._userCardHtml(u, project)).join('')}
                 </div>
             </div>`;
-        }).join('') || '<div style="color:#333;text-align:center;padding:3rem;font-style:italic;">Sin nodos en este ecosistema.</div>';
+        }).join('') || '<div style="color:#333;text-align:center;padding:3rem;font-style:italic;">Sin castellers en este ecosistema.</div>';
 
         container.querySelectorAll('.user-card').forEach(card => {
             card.addEventListener('click', () => {
@@ -548,7 +566,7 @@ export default class TeamView {
     //  _renderSillas — tab sillas
     // ══════════════════════════════════════════════════════════════
     _renderSillas() {
-        const container = document.getElementById('sillasContainer');
+        const container = document.getElementById('rolesContainer');
         const project   = store.getState().projects.find(p => p.id === this.activeProjectId);
         const state     = store.getState();
         if (!container || !project) return;
@@ -567,7 +585,7 @@ export default class TeamView {
             const lColor = levelColors[role.levelId] || '#888';
 
             return `
-            <div class="silla-card ${isVacant ? 'silla-vacant' : ''}">
+            <div class="silla-card ${isVacant ? 'silla-pendiente' : ''}">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
                     <div>
                         <div style="font-weight:900;color:white;font-size:0.9rem;">${role.name}</div>
@@ -577,7 +595,7 @@ export default class TeamView {
                         background:${isVacant?'rgba(255,145,0,0.08)':'rgba(0,230,118,0.08)'};
                         color:${isVacant?'var(--accent-orange,#ff9100)':'var(--accent-green,#00e676)'};
                         border:1px solid ${isVacant?'rgba(255,145,0,0.25)':'rgba(0,230,118,0.25)'};">
-                        ${isVacant ? 'VACANTE' : 'OCUPADO'}
+                        ${isVacant ? 'Pendiente de asignar' : 'Asignado'}
                     </span>
                 </div>
                 <div style="display:flex;gap:8px;font-family:var(--font-mono);font-size:0.7rem;color:#666;flex-wrap:wrap;margin-bottom:0.75rem;">
@@ -594,7 +612,7 @@ export default class TeamView {
                            style="background:rgba(99,102,241,0.08);border:1px dashed rgba(99,102,241,0.3);
                            color:var(--accent-indigo,#6366f1);padding:7px;border-radius:7px;
                            font-size:0.76rem;font-weight:bold;cursor:pointer;width:100%;">
-                           + Asignar Nodo
+                           + Asignar Rol
                        </button>`}
             </div>`;
         }).join('');
@@ -704,16 +722,41 @@ export default class TeamView {
             </div>
         </div>
 
-        <!-- Arquetipo -->
+        <!-- Malla de Arquetipos -->
         <div class="forge-section">
-            <div class="forge-stitle">🌀 Arquetipo (13)</div>
-            <div class="archetype-grid" id="archetypeGrid">
-                ${ARCHETYPES.map(a => `
-                <div class="arch-btn ${a.id === (user.profile?.guardian||'everyman') ? 'selected' : ''}"
-                     data-arch="${a.id}" style="--arch-color:${a.color};">
-                    <span class="arch-icon">${a.icon}</span>
-                    <span class="arch-name">${a.label}</span>
-                </div>`).join('')}
+            <div class="forge-stitle">
+                🌀 Malla Arquetípica (13 aristas)
+                <span style="font-size:0.58rem;color:#444;font-weight:400;">nivel 0-5 por arquetipo</span>
+            </div>
+            <div id="archetypeMesh" style="display:flex;flex-direction:column;gap:5px;">
+                ${ARCHETYPES.map(a => {
+                    const level = (user.profile?.archetype_mesh || {})[a.id] || 0;
+                    const pct   = (level / 5) * 100;
+                    return `
+                    <div style="display:flex;align-items:center;gap:7px;" data-arch-row="${a.id}">
+                        <span style="font-size:0.9rem;width:20px;text-align:center;flex-shrink:0;">${a.icon}</span>
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+                                <span style="font-size:0.65rem;color:${a.color};font-weight:bold;">${a.label}</span>
+                                <span style="font-size:0.58rem;color:#444;">${a.areas.join(' · ')}</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:5px;">
+                                <div style="flex:1;height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;">
+                                    <div class="arch-bar" data-arch="${a.id}" style="height:100%;width:${pct}%;background:${a.color};border-radius:2px;transition:width 0.3s;"></div>
+                                </div>
+                                <div style="display:flex;gap:2px;">
+                                    ${[1,2,3,4,5].map(n => `
+                                    <button class="arch-level-btn" data-arch="${a.id}" data-level="${n}"
+                                        style="width:14px;height:14px;border-radius:3px;border:1px solid ${n<=level ? a.color : '#1a1a1a'};
+                                        background:${n<=level ? a.color+'22' : 'transparent'};cursor:pointer;
+                                        font-size:0.5rem;color:${n<=level ? a.color : '#333'};transition:0.15s;">
+                                        ${n}
+                                    </button>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('')}
             </div>
         </div>
 
@@ -767,11 +810,25 @@ export default class TeamView {
     }
 
     _attachForgeEvents(panel, user, project, isAi) {
-        // Arquetipo
-        panel.querySelectorAll('.arch-btn').forEach(btn => {
+        // Malla arquetípica — niveles por arista
+        const mesh = { ...(user.profile?.archetype_mesh || {}) };
+        panel.querySelectorAll('.arch-level-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                panel.querySelectorAll('.arch-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
+                const archId = btn.dataset.arch;
+                const level  = parseInt(btn.dataset.level);
+                // Toggle: si ya está en ese nivel, baja a 0
+                mesh[archId] = mesh[archId] === level ? 0 : level;
+                // Actualizar UI de esa fila
+                const pct = (mesh[archId] / 5) * 100;
+                const bar = panel.querySelector(`.arch-bar[data-arch="${archId}"]`);
+                if (bar) bar.style.width = `${pct}%`;
+                const arch = ARCHETYPES.find(a => a.id === archId);
+                panel.querySelectorAll(`.arch-level-btn[data-arch="${archId}"]`).forEach(b => {
+                    const n = parseInt(b.dataset.level);
+                    b.style.border      = `1px solid ${n <= mesh[archId] ? arch.color : '#1a1a1a'}`;
+                    b.style.background  = n <= mesh[archId] ? arch.color + '22' : 'transparent';
+                    b.style.color       = n <= mesh[archId] ? arch.color : '#333';
+                });
             });
         });
 
@@ -830,15 +887,21 @@ export default class TeamView {
             }
         });
 
-        // Guardar identidad
         panel.querySelector('#btnSaveForge')?.addEventListener('click', async () => {
-            const selectedArch    = panel.querySelector('.arch-btn.selected')?.dataset.arch || user.profile?.guardian || 'everyman';
-            const selectedMaturity = panel.querySelector('.mat-btn.active')?.dataset.mat    || user.profile?.maturity || 'draft';
-            const promptContent   = panel.querySelector('#agentPromptArea')?.value?.trim();
+            const selectedMaturity = panel.querySelector('.mat-btn.active')?.dataset.mat || user.profile?.maturity || 'draft';
+            const promptContent    = panel.querySelector('#agentPromptArea')?.value?.trim();
+
+            // Calcular arquetipo primario = el de mayor nivel en la malla
+            const topArch = Object.entries(mesh).sort((a,b) => b[1]-a[1])[0]?.[0] || user.profile?.guardian || 'everyman';
 
             const updatedUser = {
                 ...user,
-                profile: { ...user.profile, guardian: selectedArch, maturity: selectedMaturity }
+                profile: {
+                    ...user.profile,
+                    guardian:        topArch,       // arquetipo primario (el de mayor nivel)
+                    archetype_mesh:  mesh,           // malla completa de 13 aristas
+                    maturity:        selectedMaturity
+                }
             };
             await store.dispatch({ type: 'UPDATE_USER', payload: updatedUser });
 
@@ -894,7 +957,7 @@ export default class TeamView {
         ).join('');
         return `
         <div class="forge-header">
-            <div class="forge-name">Nuevo Nodo</div>
+            <div class="forge-name">Sumar al Castell</div>
             <div class="forge-id">Forja de Identidad</div>
         </div>
         <div class="forge-section">
