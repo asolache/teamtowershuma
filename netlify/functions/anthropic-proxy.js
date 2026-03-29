@@ -1,18 +1,27 @@
 // ============================================================
 //  netlify/functions/anthropic-proxy.js
 //  TeamTowers SOS V10 — Proxy server-side para Anthropic API
-//  Resuelve CORS: el browser llama a /api/anthropic-proxy,
-//  Netlify reenvía server-side a api.anthropic.com.
-//  La API Key viaja en el body (cifrada en tránsito por HTTPS).
+//  Streaming pass-through — evita timeout 504 de Netlify
 // ============================================================
 
 export default async (request, context) => {
 
-    // ── Solo POST ─────────────────────────────────────────────
+    // ── CORS preflight ────────────────────────────────────────
+    if (request.method === 'OPTIONS') {
+        return new Response(null, {
+            status: 204,
+            headers: {
+                'Access-Control-Allow-Origin':  '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            }
+        });
+    }
+
     if (request.method !== 'POST') {
         return new Response(JSON.stringify({ error: 'Method not allowed' }), {
             status:  405,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
         });
     }
 
@@ -22,48 +31,40 @@ export default async (request, context) => {
     } catch {
         return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
             status:  400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
         });
     }
 
-    const { apiKey, ...anthropicPayload } = body;
+    const { apiKey, _anthropicVersion, _anthropicBeta, ...anthropicPayload } = body;
 
     if (!apiKey || apiKey.length < 10) {
         return new Response(JSON.stringify({ error: 'Missing or invalid API key' }), {
             status:  400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
         });
     }
 
-    // ── Reenvío server-side a Anthropic (sin CORS) ────────────
+    const headers = {
+        'x-api-key':         apiKey,
+        'anthropic-version': _anthropicVersion || '2023-06-01',
+        'content-type':      'application/json'
+    };
+    if (_anthropicBeta) headers['anthropic-beta'] = _anthropicBeta;
+
     try {
-        // Construir headers — beta si viene en el payload
-        const headers = {
-            'x-api-key':        apiKey,
-            'anthropic-version': anthropicPayload._anthropicVersion || '2023-06-01',
-            'content-type':      'application/json'
-        };
-
-        if (anthropicPayload._anthropicBeta) {
-            headers['anthropic-beta'] = anthropicPayload._anthropicBeta;
-        }
-
-        // Limpiar campos internos del proxy antes de reenviar
-        delete anthropicPayload._anthropicVersion;
-        delete anthropicPayload._anthropicBeta;
-
         const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
             method:  'POST',
             headers,
             body:    JSON.stringify(anthropicPayload)
         });
 
-        const responseData = await anthropicResponse.json();
-
-        return new Response(JSON.stringify(responseData), {
+        // ── Streaming pass-through ────────────────────────────
+        // En lugar de esperar .json() completo (que causa 504),
+        // devolvemos el body stream directamente al cliente.
+        return new Response(anthropicResponse.body, {
             status:  anthropicResponse.status,
             headers: {
-                'Content-Type':                'application/json',
+                'Content-Type':                anthropicResponse.headers.get('content-type') || 'application/json',
                 'Access-Control-Allow-Origin': '*'
             }
         });
