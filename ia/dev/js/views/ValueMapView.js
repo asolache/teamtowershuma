@@ -146,7 +146,7 @@ export default class ValueMapView {
             @media (max-width:768px)  { .vmap-left { width:100%; max-width:none; } .vmap-ide { flex-direction:column; height:auto; } }
         </style>
 
-        <div class="app-layout" style="flex-direction:column; overflow:hidden;">
+        <div class="app-layout">
             ${Sidebar.getHtml('/map')}
             <div style="display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden;">
                 <div style="padding:1rem 1.5rem 0;flex-shrink:0;">

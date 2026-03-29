@@ -238,7 +238,7 @@ export default class PaperView {
             @media (max-width:768px)  { .sandbox-panel { display:none; } }
         </style>
 
-        <div class="app-layout" style="flex-direction:column;overflow:hidden;">
+        <div class="app-layout">
             ${Sidebar.getHtml('/paper')}
             <div style="display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden;">
                 <div style="padding:1rem 1.5rem 0;flex-shrink:0;">
