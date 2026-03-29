@@ -8,6 +8,17 @@
 [functions."anthropic-proxy"]
   timeout = 26
 
+# Forzar revalidación de JS modules en cada request
+[[headers]]
+  for = "/ia/dev/js/*"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/ia/dev/styles/*"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
 [[redirects]]
   from   = "/api/*"
   to     = "/.netlify/functions/:splat"
