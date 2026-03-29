@@ -8,6 +8,7 @@
 import { store }        from '../core/store.js';
 import { KB }           from '../core/kb.js';
 import { Orchestrator } from '../core/Orchestrator.js';
+import { EvalEngine }   from '../core/EvalEngine.js';
 
 export class ProjectForge {
 
@@ -638,6 +639,28 @@ OPCIÓN B — Ecosistema completo:
         const missionText    = this.dom.inpMission.value.trim();
         const automationLevel = this.container.querySelector('[name="pfAutoLevel"]:checked')?.value || 'review_first';
 
+        // ── Validación TDD antes de lanzar ────────────────────────
+        const draftProject = {
+            roles:        this.draftRoles,
+            vna_nodes:    this.draftRoles,
+            vna_flows:    this.draftTxs,
+            vna_exchanges: this.draftTxs,
+            evals:        []
+        };
+        const { errors, warnings, isValid } = EvalEngine.validateProjectForge(draftProject);
+
+        if (!isValid) {
+            const errorList = errors.map(e => `❌ ${e.message}`).join('\n');
+            alert(`⚠️ No se puede lanzar el ecosistema:\n\n${errorList}\n\nCorrige los errores antes de continuar.`);
+            return;
+        }
+
+        if (warnings.length) {
+            const warnList  = warnings.map(w => `⚠️ ${w.message}`).join('\n');
+            const proceed   = confirm(`Advertencias TDD detectadas:\n\n${warnList}\n\n¿Continuar de todas formas?`);
+            if (!proceed) return;
+        }
+
         this.dom.btnLaunch.disabled  = true;
         this.dom.btnLaunch.innerText = 'Instanciando Matriz V10…';
 
@@ -771,6 +794,19 @@ OPCIÓN B — Ecosistema completo:
                     keywords:    ['ai_agent', projectId]
                 });
             }
+        }
+
+        // ── Seed de evals por defecto para cada rol ───────────────
+        for (const rol of finalRoles) {
+            try {
+                await EvalEngine.seedEvalsForRole({
+                    projectId,
+                    roleId:   rol.id,
+                    roleName: rol.name,
+                    levelId:  rol.levelId,
+                    guardian: rol.guardian
+                });
+            } catch (_) { /* no bloquea el lanzamiento */ }
         }
 
         // Guardar new_memes de la IA
