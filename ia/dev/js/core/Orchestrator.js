@@ -277,7 +277,7 @@ class OrchestratorCore {
                             apiKey,                          // proxy lo extrae, pone en x-api-key
                             _anthropicVersion: ANTHROPIC_VERSION,
                             model:       ANTHROPIC_MODEL,
-                            max_tokens:  8192,
+                            max_tokens:  4096,
                             temperature,
                             system:      systemPrompt + jsonSuffix,
                             messages:    [{ role: 'user', content: userPrompt }]
