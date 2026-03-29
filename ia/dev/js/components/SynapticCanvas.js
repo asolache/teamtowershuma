@@ -358,14 +358,39 @@ export class SynapticCanvas {
     }
 
     // ══════════════════════════════════════════════════════════════
-    //  Drill-down — entra en el subgrafo de un rol
+    //  _archetypeAngle — ángulo en radianes del sector de un arquetipo
+    //  360° / 13 = 27.69° por sector
+    // ══════════════════════════════════════════════════════════════
+    _archetypeAngle(archetypeId) {
+        const ORDER = [
+            'innocent','explorer','sage','hero','outlaw','magician',
+            'lover','jester','caregiver','creator','ruler','everyman','threshold'
+        ];
+        const idx = ORDER.indexOf(archetypeId);
+        const pos = idx >= 0 ? idx : Math.floor(Math.random() * 13);
+        return (pos / 13) * Math.PI * 2;
+    }
+
+    // ── Color por arquetipo ───────────────────────────────────────
+    _archetypeColor(archetypeId) {
+        const COLORS = {
+            innocent:'#ffffff', explorer:'#00b0ff', sage:'#6366f1',
+            hero:'#ff9100',     outlaw:'#ff5252',   magician:'#e040fb',
+            lover:'#ff4081',    jester:'#ffd740',   caregiver:'#00e676',
+            creator:'#69f0ae',  ruler:'#ffc400',    everyman:'#aaaaaa',
+            threshold:'#e0e0e0'
+        };
+        return COLORS[archetypeId] || '#888';
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  Drill-down — subgrafo de un rol con 13 sectores arquetípicos
     // ══════════════════════════════════════════════════════════════
     async _drillInto(node3D) {
         const state   = store.getState();
         const project = state.projects.find(p => p.id === (this.projectId || localStorage.getItem('tt_active_project')));
         if (!project) return;
 
-        // Guardar snapshot si aún no estamos en drill
         if (!this._isDrillMode) {
             this._globalNodes = [...this.nodes];
             this._globalLinks = [...this.links];
@@ -380,53 +405,120 @@ export class SynapticCanvas {
         const drillNodes = [];
         const drillLinks = [];
 
-        const addD = (id, name, group, val, c, raw, extra={}) => drillNodes.push({ id, name, group, val, color:c, rawNode:raw, ...extra });
-        const addL = (s, t, data={}) => { if(drillNodes.find(n=>n.id===s) && drillNodes.find(n=>n.id===t)) drillLinks.push({source:s, target:t, ...data}); };
+        const addD = (id, name, group, val, c, raw, extra = {}) =>
+            drillNodes.push({ id, name, group, val, color: c, rawNode: raw, ...extra });
+        const addL = (s, t, data = {}) => {
+            if (drillNodes.find(n => n.id === s) && drillNodes.find(n => n.id === t))
+                drillLinks.push({ source: s, target: t, ...data });
+        };
 
-        // Nodo central: el rol
-        addD('drill_center', node3D.name, 'drill_center', 45, color, rawVna, { fy: 0 });
+        // ── Nodo central ──────────────────────────────────────────
+        addD('drill_center', node3D.name, 'drill_center', 45, color, rawVna, { fx: 0, fy: 0, fz: 0 });
 
-        // WOs de este rol
-        const wos = (project.work_orders || []).filter(w => w.from === roleId || w.to === roleId);
-        const flows = (project.vna_flows || []).filter(f => f.from === roleId || f.to === roleId);
+        // ── Anillos de distancia por tipo de nodo ─────────────────
+        const R_WO     = 180;   // Work Orders — anillo interior
+        const R_AGENT  = 300;   // Agentes     — anillo medio
+        const R_SKILL  = 240;   // Skills      — anillo medio-bajo
+        const R_EVAL   = 380;   // Evals       — anillo exterior
 
-        [...wos, ...flows].slice(0, 12).forEach((w, i) => {
+        // ── WOs — posicionadas por arquetipo del flow ─────────────
+        const wos   = (project.work_orders || []).filter(w => w.from === roleId || w.to === roleId);
+        const flows = (project.vna_flows   || []).filter(f => f.from === roleId || f.to === roleId);
+
+        ;[...wos, ...flows].slice(0, 12).forEach((w, i) => {
             const wId    = `drill_wo_${i}`;
             const label  = w.entregable || w.template || w.comentario || `WO ${i+1}`;
             const wColor = w.automation === 'auto' ? '#6366f1' : w.woType === 'intangible' ? '#e040fb' : '#00e676';
-            const angle  = (i / Math.max(wos.length + flows.length, 1)) * Math.PI * 2;
-            addD(wId, label.substring(0,30), 'work_order', 14, wColor, { ...w, type:'work_order', category: w.woType || 'deliverable' }, {
-                fx: Math.cos(angle) * 180, fz: Math.sin(angle) * 180
+            // Distribuir en 13 sectores si hay arquetipo, si no uniformemente
+            const arch  = w.archetype || null;
+            const angle = arch ? this._archetypeAngle(arch) : (i / Math.max(wos.length + flows.length, 1)) * Math.PI * 2;
+            addD(wId, label.substring(0, 28), 'work_order', 14, wColor,
+                { ...w, type: 'work_order', category: w.woType || 'deliverable' }, {
+                fx: Math.cos(angle) * R_WO,
+                fz: Math.sin(angle) * R_WO,
+                fy: 0
             });
-            addL('drill_center', wId, { tipo: w.tipo || w.woType || 'tangible', label: label.substring(0,25), rawTx: w });
+            addL('drill_center', wId, { tipo: w.tipo || w.woType || 'tangible', label: label.substring(0, 22), rawTx: w });
         });
 
-        // Agentes asignados a este rol o a sus WOs
+        // ── Agentes — distribuidos por arquetipo ──────────────────
         const assignedIds = new Set([
             ...wos.map(w => w.assigneeId).filter(Boolean),
             ...(project.usuarios || []).filter(u => u.roleId === roleId).map(u => u.id)
         ]);
 
-        state.globalUsers.filter(u => assignedIds.has(u.id) || u.profile?.isAi).slice(0, 6).forEach((u, i) => {
-            const aId   = `drill_agent_${i}`;
-            const angle = (i / 6) * Math.PI * 2;
-            addD(aId, u.name, 'agent', 20, '#6366f1', { ...u, type:'agent' }, {
-                fx: Math.cos(angle) * 320, fz: Math.sin(angle) * 320, fy: 80
+        const agents = state.globalUsers.filter(u => assignedIds.has(u.id) || u.profile?.isAi).slice(0, 13);
+        agents.forEach((u, i) => {
+            const aId    = `drill_agent_${i}`;
+            const arch   = u.profile?.guardian || 'everyman';
+            const angle  = this._archetypeAngle(arch);
+            const aColor = this._archetypeColor(arch);
+            addD(aId, u.name, 'agent', 20, aColor,
+                { ...u, type: 'agent' }, {
+                fx: Math.cos(angle) * R_AGENT,
+                fz: Math.sin(angle) * R_AGENT,
+                fy: 60
             });
-            addL('drill_center', aId, { tipo:'intangible', label: u.profile?.isAi ? '🤖 IA' : '👤 humano' });
+            addL('drill_center', aId, { tipo: 'intangible', label: u.profile?.isAi ? '🤖 IA' : '👤 casteller' });
         });
 
-        // Skills del rol desde KB
+        // ── Skills — por arquetipo de la skill ────────────────────
         await KB.init();
-        const allKb   = await KB.getAllNodes();
-        const skills   = allKb.filter(n => n.type === 'skill' && (n.projectId === project.id || n.projectId === 'global')).slice(0, 6);
+        const allKb  = await KB.getAllNodes();
+        const skills = allKb.filter(n =>
+            (n.type === 'skill' || n.type === 'skill_antigravity') &&
+            (n.projectId === project.id || n.projectId === 'global')
+        ).slice(0, 13);
+
         skills.forEach((s, i) => {
-            const sId   = `drill_skill_${i}`;
-            const angle = (i / Math.max(skills.length, 1)) * Math.PI * 2;
-            addD(sId, s.title || s.id, 'skill', 12, '#ffd740', s, {
-                fx: Math.cos(angle) * 260, fz: Math.sin(angle) * 260, fy: -80
+            const sId    = `drill_skill_${i}`;
+            const arch   = s.archetype || s.guardian || 'creator';
+            const angle  = this._archetypeAngle(arch);
+            const sColor = s.type === 'skill_antigravity' ? '#e040fb' : '#ffd740';
+            const label  = s.type === 'skill_antigravity' ? `[AG] ${s.title}` : s.title || s.id;
+            addD(sId, label.substring(0, 28), 'skill', s.type === 'skill_antigravity' ? 10 : 12, sColor, s, {
+                fx: Math.cos(angle) * R_SKILL,
+                fz: Math.sin(angle) * R_SKILL,
+                fy: -60
             });
-            addL('drill_center', sId, { isDependencies: true, tipo:'knowledge', label: '⚡ skill' });
+            addL('drill_center', sId, { isDependencies: true, tipo: 'knowledge', label: s.type === 'skill_antigravity' ? '⚡ AG' : '⚡ skill' });
+        });
+
+        // ── Evals — anillo exterior, distribuidos por arquetipo ────
+        const projectEvals = (project.evals || []).filter(e => e.parentId === roleId);
+        projectEvals.slice(0, 13).forEach((e, i) => {
+            const eId    = `drill_eval_${i}`;
+            const arch   = e.archetype || 'sage';
+            const angle  = this._archetypeAngle(arch);
+            const eColor = e.status === 'passed' ? '#00e676' : e.status === 'failed' ? '#ff5252' : e.status === 'active' ? '#ff9100' : '#444';
+            const icon   = e.status === 'passed' ? '✅' : e.status === 'failed' ? '❌' : e.status === 'active' ? '🔄' : '○';
+            addD(eId, `${icon} ${e.criteria?.substring(0, 22) || 'Eval'}`, 'eval', 9, eColor,
+                { ...e, type: 'eval' }, {
+                fx: Math.cos(angle) * R_EVAL,
+                fz: Math.sin(angle) * R_EVAL,
+                fy: -120
+            });
+            addL('drill_center', eId, { tipo: 'eval', label: `L${e.level ?? 0}`, _isEvalLink: true });
+        });
+
+        // ── Sector rings visuales (labels de arquetipos en el canvas) ──
+        // Los 13 labels flotantes que muestran qué arquetipo está en cada sector
+        const ARCH_LABELS = [
+            { id:'innocent',icon:'🕊️'}, { id:'explorer',icon:'🧭'}, { id:'sage',icon:'🦉'},
+            { id:'hero',icon:'⚔️'},      { id:'outlaw',icon:'🏴'},   { id:'magician',icon:'✨'},
+            { id:'lover',icon:'🔥'},     { id:'jester',icon:'🃏'},   { id:'caregiver',icon:'❤️'},
+            { id:'creator',icon:'🎨'},   { id:'ruler',icon:'👑'},    { id:'everyman',icon:'🤝'},
+            { id:'threshold',icon:'🌀'}
+        ];
+        const R_LABEL = 460;
+        ARCH_LABELS.forEach((a, i) => {
+            const angle = (i / 13) * Math.PI * 2;
+            addD(`drill_arch_${i}`, a.icon, 'archetype_label', 6, this._archetypeColor(a.id),
+                { type: 'archetype', id: a.id }, {
+                fx: Math.cos(angle) * R_LABEL,
+                fz: Math.sin(angle) * R_LABEL,
+                fy: 0
+            });
         });
 
         this.nodes = drillNodes;
@@ -434,17 +526,15 @@ export class SynapticCanvas {
 
         if (this.graph3D) {
             this.graph3D.graphData({ nodes: drillNodes, links: drillLinks });
-            this.graph3D.d3Force('charge')?.strength(REPULSION_DRILL);
-            this.graph3D.cameraPosition({ x:0, y:0, z:600 }, { x:0, y:0, z:0 }, 800);
+            try { this.graph3D.d3Force('charge')?.strength(REPULSION_DRILL); } catch(_) {}
+            this.graph3D.cameraPosition({ x: 0, y: 0, z: 700 }, { x: 0, y: 0, z: 0 }, 800);
         }
 
-        // UI drill-back
         const btnBack = this.container.querySelector('#btnDrillBack');
         const crumb   = this.container.querySelector('#drillBreadcrumb');
         if (btnBack) btnBack.classList.add('visible');
         if (crumb)   { crumb.textContent = `🌌 Global → ${node3D.name}`; crumb.classList.add('visible'); }
 
-        // Mostrar panel de detalle del rol
         this._showVnaNodeDetails(node3D);
     }
 
@@ -570,6 +660,16 @@ export class SynapticCanvas {
 
             // ── Objetos 3D de nodos ───────────────────────────────
             .nodeThreeObject(node => {
+                // Nodos de label arquetípico — solo texto flotante semitransparente
+                if (node.group === 'archetype_label') {
+                    const sp = new window.SpriteText(node.name);
+                    sp.color       = node.color;
+                    sp.textHeight  = 5;
+                    sp.fontWeight  = '400';
+                    sp.opacity     = 0.25;
+                    return sp;
+                }
+
                 const group  = new window.THREE.Group();
                 const radius = node.val * 0.55;
                 const isCore = ['core_os','project_core'].includes(node.group);
