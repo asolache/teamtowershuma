@@ -38,7 +38,7 @@ export default class ProjectCreatorView {
                 .btn-generate:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(224,64,251,0.4); filter: brightness(1.2);}
                 .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(1);}
 
-                /* 🔥 VISTA PREVIA VISUAL (NUEVO) */
+                /* 🔥 VISTA PREVIA VISUAL */
                 .preview-box { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px dashed #444; animation: fadeIn 0.4s ease;}
                 .preview-title { color: var(--accent-green); font-size: 1.2rem; font-weight: 900; margin-bottom: 1.5rem; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
                 
@@ -229,14 +229,14 @@ export default class ProjectCreatorView {
                 const state = store.getState();
                 const activeUserId = state.session.activeUserId;
                 
-                // 1. RECOLECTAR DATOS DEL DOM (Lo que el usuario haya editado)
+                // 1. RECOLECTAR DATOS DEL DOM (Lo que el usuario haya editado visualmente)
                 const finalRoles = Array.from(document.querySelectorAll('.role-card')).map(card => {
                     return {
                         id: card.dataset.id,
                         name: card.querySelector('.rc-name').value.trim(),
                         levelId: card.querySelector('.rc-level').value,
                         fmv: parseFloat(card.querySelector('.rc-fmv').value) || 0,
-                        domain: card.dataset.domain // Mantenemos el dominio generado
+                        domain: card.dataset.domain // Mantenemos el dominio generado por IA
                     };
                 });
 
@@ -251,18 +251,25 @@ export default class ProjectCreatorView {
                     };
                 });
                 
-                // 2. INYECTAR WORK ORDERS BASE
+                // 2. INYECTAR WORK ORDERS BASE BLINDADAS (Compatibles con Kanban V9)
                 const initialWorkOrders = finalFlows
                     .filter(f => f.tipo === 'tangible')
-                    .map(f => ({
-                        id: `wo_${Date.now()}_${Math.random().toString(36).substr(2,4)}`,
-                        flowId: f.id,
-                        status: 'pending',
-                        comentario: `Entregar: ${f.entregable}`,
-                        assigneeId: null,
-                        workerId: null,
-                        createdAt: new Date().toISOString()
-                    }));
+                    .map(f => {
+                        const uniqueId = `wo_${Date.now()}_${Math.random().toString(36).substr(2,4)}`;
+                        return {
+                            id: uniqueId,
+                            hash: uniqueId, // Soporte estricto Legacy Kanban
+                            flowId: f.id,
+                            status: 'pending',
+                            comentario: `Entregar: ${f.entregable}`,
+                            assigneeId: null,
+                            workerId: null,
+                            to: f.to,     // CRÍTICO: Indica la columna del Kanban (Rol destino)
+                            from: f.from, // Origen del valor
+                            horas: f.horas,
+                            createdAt: new Date().toISOString()
+                        };
+                    });
 
                 // 3. CONSTRUIR ECOSISTEMA FINAL
                 const finalName = this.dom.inpName.value.trim() || this.generatedBlueprint.nombre;
@@ -276,7 +283,8 @@ export default class ProjectCreatorView {
                     ledger: [],
                     roles: finalRoles,
                     vna_flows: finalFlows,
-                    work_orders: initialWorkOrders 
+                    transactions: initialWorkOrders, // CRÍTICO: Legacy Support para Kanban V9
+                    work_orders: initialWorkOrders   // Estándar V9.1
                 };
 
                 await store.dispatch({ type: 'ADD_PROJECT', payload: newProject });
@@ -284,6 +292,7 @@ export default class ProjectCreatorView {
                 
                 alert("✅ Ecosistema materializado con éxito. Viajando al Kanban...");
                 
+                // Enrutamiento SPA
                 const link = document.createElement('a');
                 link.href = '/v9/project';
                 link.setAttribute('data-link', '');
@@ -305,7 +314,7 @@ export default class ProjectCreatorView {
         
         const getRoleOptions = (roles, selectedId) => roles.map(r => `<option value="${r.id}" ${r.id === selectedId ? 'selected' : ''}>${r.name}</option>`).join('');
 
-        // 1. Renderizar Roles
+        // 1. Renderizar Roles Editables
         this.dom.rolesGrid.innerHTML = data.roles.map(r => `
             <div class="role-card" data-id="${r.id}" data-domain="${r.domain || 'zeus'}">
                 <div class="rc-input-row">
@@ -325,7 +334,7 @@ export default class ProjectCreatorView {
             </div>
         `).join('');
 
-        // 2. Renderizar Flujos
+        // 2. Renderizar Flujos Editables
         this.dom.flowsList.innerHTML = data.vna_flows.map(f => {
             const isTangible = f.tipo === 'tangible';
             return `
