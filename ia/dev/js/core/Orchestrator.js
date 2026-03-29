@@ -902,7 +902,60 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
         return record?.value || null;
     }
 
-    async setDefaultProvider(provider) {
+    // ══════════════════════════════════════════════════════════════
+    //  SPRINT 5 — SKILLS SCRAPER
+    //  @agent_skills_scout busca, audita y propone skills externas
+    // ══════════════════════════════════════════════════════════════
+    async scoutExternalSkills({ domain, context = '', maxSuggestions = 5 }) {
+        await this._ensureKB();
+
+        // Obtener skills existentes en KB para evitar duplicados
+        const allKb     = await KB.getAllNodes();
+        const existing  = allKb.filter(n => n.type === 'skill' || n.category === 'skill')
+                               .map(n => n.title || n.id).join(', ');
+
+        const response = await this.callLLM({
+            preferredEngine: 'anthropic',
+            systemPrompt: `Eres @agent_skills_scout, especialista en taxonomías de skills para ecosistemas de valor.
+Tu misión: identificar skills externas relevantes que complementen el KB actual.
+
+Para cada skill propuesta devuelve:
+- title: nombre canónico de la skill
+- category: una de [core.architecture, core.economy, core.cognition, core.execution, core.culture, skill]
+- description: qué hace esta skill en una frase
+- socs: 3 criterios de calidad verificables
+- sourceUrl: URL de referencia canónica (real, no inventada)
+- priority: high | medium | low
+- gaps: qué gap cubre respecto al KB actual
+
+Devuelve SOLO JSON:
+{ "skills": [ { "title":"...", "category":"...", "description":"...", "socs":["..."], "sourceUrl":"...", "priority":"...", "gaps":"..." } ] }`,
+            userPrompt: `DOMINIO: ${domain}
+CONTEXTO: ${context}
+SKILLS YA EN KB: ${existing || 'ninguna'}
+Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
+            responseFormat: 'json_object',
+            temperature: 0.4
+        });
+
+        const suggestions = response.content?.skills || [];
+
+        // Persistir sugerencias en KB como nodos 'skill_candidate'
+        for (const s of suggestions) {
+            const id = `skill_candidate_${s.title.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()}_${Date.now()}`;
+            await KB.saveNode({
+                id, type: 'skill_candidate', category: s.category || 'skill',
+                title: s.title, description: s.description,
+                content: `SOCs:\n${(s.socs||[]).join('\n')}`,
+                sourceUrl: s.sourceUrl || '', priority: s.priority || 'medium',
+                gaps: s.gaps || '', projectId: 'global',
+                keywords: ['skill_candidate', domain],
+                createdAt: Date.now()
+            });
+        }
+
+        return suggestions;
+    }
         await this._ensureKB();
         await KB.saveNode({ id: KB_KEY_PROVIDER, type: 'config', value: provider });
     }
@@ -911,6 +964,131 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
         await this._ensureKB();
         const record = await KB.getNode(KB_KEY_PROVIDER);
         return record?.value || 'anthropic';
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  CLUSTERING V10.2 — Orquestadores como centros de gravedad
+    //  Cada orquestador gestiona un enjambre de agentes.
+    //  Cuando un orquestador tiene > MAX_SWARM_SIZE agentes, se bifurca.
+    // ══════════════════════════════════════════════════════════════
+
+    static MAX_SWARM_SIZE = 6;
+
+    // ── getClusterMap — devuelve el mapa de clusters activos ─────
+    // Retorna: { orchestratorId: { orchestrator, agents: [], load: N } }
+    async getClusterMap() {
+        const state = store.getState();
+        const allUsers = state.globalUsers || [];
+
+        // Orquestadores = agentes IA con role 'orchestrator' o id que contiene 'orchestrator'
+        const orchestrators = allUsers.filter(u =>
+            u.profile?.isAi && (
+                u.profile?.role === 'orchestrator' ||
+                u.globalRole === 'orchestrator' ||
+                u.id.includes('orchestrator') ||
+                u.id.includes('synthesizer') ||    // @agent_prompt_synthesizer actúa como orquestador
+                u.id.includes('architect')         // @agent_genesis_architect actúa como orquestador
+            )
+        );
+
+        // Si no hay orquestadores definidos, el Orchestrator principal es el único cluster
+        if (!orchestrators.length) {
+            const mainOrch = { id: 'node-claude-sonnet-v10', name: 'Claude Sonnet V10', profile: { isAi: true, role: 'orchestrator' } };
+            orchestrators.push(
+                allUsers.find(u => u.id === 'node-claude-sonnet-v10') || mainOrch,
+                allUsers.find(u => u.id === '@agent_prompt_synthesizer'),
+                allUsers.find(u => u.id === '@agent_genesis_architect'),
+            );
+        }
+
+        const clusters = {};
+        const agents   = allUsers.filter(u => u.profile?.isAi && !orchestrators.find(o => o?.id === u.id));
+
+        // Distribuir agentes en clusters por afinidad de arquetipo
+        orchestrators.filter(Boolean).forEach((orch, i) => {
+            clusters[orch.id] = { orchestrator: orch, agents: [], load: 0 };
+        });
+
+        // Asignar cada agente al orquestador más afín (por arquetipo o índice)
+        const orchIds = Object.keys(clusters);
+        agents.forEach((agent, i) => {
+            const orchId = orchIds[i % orchIds.length];
+            if (clusters[orchId]) {
+                clusters[orchId].agents.push(agent);
+                clusters[orchId].load += agent.profile?.active_skills?.length || 0;
+            }
+        });
+
+        return clusters;
+    }
+
+    // ── forkCluster — bifurca un orquestador sobrecargado ────────
+    async forkCluster(orchestratorId, projectId) {
+        const clusters = await this.getClusterMap();
+        const cluster  = clusters[orchestratorId];
+        if (!cluster) throw new Error(`Cluster ${orchestratorId} no encontrado`);
+        if (cluster.agents.length <= OrchestratorCore.MAX_SWARM_SIZE) return null;
+
+        // Crear nuevo orquestador hijo
+        const forkId   = `@orchestrator_fork_${Date.now()}`;
+        const halfSize = Math.floor(cluster.agents.length / 2);
+        const forkedAgents = cluster.agents.splice(halfSize);
+
+        const forkNode = {
+            id: forkId, name: `Orchestrator Fork #${Object.keys(clusters).length}`,
+            globalRole: 'orchestrator',
+            profile: {
+                isAi: true, role: 'orchestrator',
+                preferredEngine: 'anthropic', version: 'v10',
+                parentOrchestrator: orchestratorId,
+                assignedAgents: forkedAgents.map(a => a.id),
+                maturity: 'draft', archetype_mesh: {}
+            }
+        };
+
+        await store.dispatch({ type: 'ADD_USER', payload: forkNode });
+
+        // Registrar el fork en KB
+        await this._ensureKB();
+        await KB.saveNode({
+            id:       `cluster_${forkId}`,
+            type:     'cluster',
+            category: 'orchestration',
+            orchestratorId: forkId,
+            parentId: orchestratorId,
+            agentIds: forkedAgents.map(a => a.id),
+            projectId,
+            createdAt: Date.now()
+        });
+
+        return { forkId, forkNode, forkedAgents };
+    }
+
+    // ── getClusterHealth — métricas de salud del enjambre ────────
+    async getClusterHealth(projectId) {
+        const clusters = await this.getClusterMap();
+        const state    = store.getState();
+        const project  = state.projects?.find(p => p.id === projectId);
+        const wos      = project?.work_orders || [];
+
+        return Object.entries(clusters).map(([orchId, cluster]) => {
+            const assignedWos  = wos.filter(w => cluster.agents.find(a => a.id === w.assigneeId));
+            const completedWos = assignedWos.filter(w => w.status === 'consolidated' || w.status === 'reported');
+            const pendingWos   = assignedWos.filter(w => w.status === 'theoretical' || w.status === 'pinged');
+            const load         = cluster.agents.length;
+            const overloaded   = load > OrchestratorCore.MAX_SWARM_SIZE;
+
+            return {
+                orchestratorId: orchId,
+                orchestratorName: cluster.orchestrator?.name || orchId,
+                agentCount:    load,
+                woTotal:       assignedWos.length,
+                woCompleted:   completedWos.length,
+                woPending:     pendingWos.length,
+                overloaded,
+                healthScore:   assignedWos.length > 0 ? Number((completedWos.length / assignedWos.length).toFixed(3)) : 1.0
+            };
+        });
     }
 }
 
