@@ -24,27 +24,28 @@ function getRoutePath() {
 }
 
 const VIEWS_PATH = `${BASE_PATH}/js/views`;
+const V = '?v=10.1.0'; // ← cambia esto en cada deploy
 
 const ROUTES = [
-    { path: '/',          view: () => import(`${VIEWS_PATH}/HomeView.js`)           },
-    { path: '/ia',        view: () => import(`${VIEWS_PATH}/HomeView.js`)           },
-    { path: '/dashboard', view: () => import(`${VIEWS_PATH}/DashboardView.js`)      },
-    { path: '/map',       view: () => import(`${VIEWS_PATH}/ValueMapView.js`)       },
-    { path: '/paper',     view: () => import(`${VIEWS_PATH}/PaperView.js`)          },
-    { path: '/focus',     view: () => import(`${VIEWS_PATH}/PaperView.js`)          },
-    { path: '/lms',       view: () => import(`${VIEWS_PATH}/LmsView.js`)            },
-    { path: '/manifesto', view: () => import(`${VIEWS_PATH}/LmsView.js`)            },
-    { path: '/team',      view: () => import(`${VIEWS_PATH}/AgentEditorView.js`)    },
-    { path: '/identity',  view: () => import(`${VIEWS_PATH}/AgentEditorView.js`)    },
-    { path: '/agentes',   view: () => import(`${VIEWS_PATH}/AgentEditorView.js`)    },
-    { path: '/ledger',    view: () => import(`${VIEWS_PATH}/LedgerView.js`)         },
-    { path: '/project',   view: () => import(`${VIEWS_PATH}/ProjectView.js`)        },
-    { path: '/create',    view: () => import(`${VIEWS_PATH}/ProjectCreatorView.js`) },
-    { path: '/settings',  view: () => import(`${VIEWS_PATH}/SettingsView.js`)       },
-    { path: '/pantheon',  view: () => import(`${VIEWS_PATH}/SettingsView.js`)       },
-    { path: '/profile',   view: () => import(`${VIEWS_PATH}/ProfileView.js`)        },
-    { path: '/tests',     view: () => import(`${VIEWS_PATH}/TestsView.js`)          },
-    { path: null,         view: () => import(`${VIEWS_PATH}/HomeView.js`)           },
+    { path: '/',          view: () => import(`${VIEWS_PATH}/HomeView.js${V}`)           },
+    { path: '/ia',        view: () => import(`${VIEWS_PATH}/HomeView.js${V}`)           },
+    { path: '/dashboard', view: () => import(`${VIEWS_PATH}/DashboardView.js${V}`)      },
+    { path: '/map',       view: () => import(`${VIEWS_PATH}/ValueMapView.js${V}`)       },
+    { path: '/paper',     view: () => import(`${VIEWS_PATH}/PaperView.js${V}`)          },
+    { path: '/focus',     view: () => import(`${VIEWS_PATH}/PaperView.js${V}`)          },
+    { path: '/lms',       view: () => import(`${VIEWS_PATH}/LmsView.js${V}`)            },
+    { path: '/manifesto', view: () => import(`${VIEWS_PATH}/LmsView.js${V}`)            },
+    { path: '/team',      view: () => import(`${VIEWS_PATH}/TeamView.js${V}`)           },
+    { path: '/identity',  view: () => import(`${VIEWS_PATH}/TeamView.js${V}`)           },
+    { path: '/agentes',   view: () => import(`${VIEWS_PATH}/TeamView.js${V}`)           },
+    { path: '/ledger',    view: () => import(`${VIEWS_PATH}/LedgerView.js${V}`)         },
+    { path: '/project',   view: () => import(`${VIEWS_PATH}/ProjectView.js${V}`)        },
+    { path: '/create',    view: () => import(`${VIEWS_PATH}/ProjectCreatorView.js${V}`) },
+    { path: '/settings',  view: () => import(`${VIEWS_PATH}/SettingsView.js${V}`)       },
+    { path: '/pantheon',  view: () => import(`${VIEWS_PATH}/SettingsView.js${V}`)       },
+    { path: '/profile',   view: () => import(`${VIEWS_PATH}/ProfileView.js${V}`)        },
+    { path: '/tests',     view: () => import(`${VIEWS_PATH}/TestsView.js${V}`)          },
+    { path: null,         view: () => import(`${VIEWS_PATH}/HomeView.js${V}`)           },
 ];
 
 async function router() {
