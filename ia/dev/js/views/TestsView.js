@@ -422,6 +422,111 @@ export default class TestsView {
                 );
 
                 // ══════════════════════════════════════════════════════
+                //  BLOQUE 10 — EVAL ENGINE (Sprint 2)
+                // ══════════════════════════════════════════════════════
+                const { EvalEngine } = await import('../core/EvalEngine.js');
+                const testRole = roles[0];
+
+                const evalNode = await EvalEngine.createEval({
+                    projectId: PID,
+                    parentId:  testRole.id,
+                    parentType: 'role',
+                    criteria:  'El rol completa su primera WO con SOC >= 80%',
+                    level:     0,
+                    archetype: testRole.guardian
+                });
+                await softAssert(
+                    evalNode?.id?.startsWith('eval_'),
+                    `EvalEngine.createEval(): EvalNode creado [${evalNode?.id}]`, 'EVAL-PASS'
+                );
+
+                // Validación ProjectForge con rol sin transacciones
+                const validation = EvalEngine.validateProjectForge({
+                    roles:        roles,
+                    vna_nodes:    roles,
+                    vna_flows:    [],
+                    vna_exchanges: [],
+                    evals:        [evalNode]
+                });
+                await softAssert(
+                    validation.errors.some(e => e.type === 'NO_TRANSACTIONS'),
+                    `ProjectForge TDD: Error bloqueante detectado (rol sin transacciones)`, 'EVAL-PASS'
+                );
+                await softAssert(
+                    !validation.isValid,
+                    `ProjectForge TDD: Proyecto inválido bloqueado correctamente`, 'EVAL-PASS'
+                );
+
+                // Pasar el eval y verificar madurez
+                const passedEval = await EvalEngine.passEval({
+                    projectId: PID, evalId: evalNode.id,
+                    auditedBy: dynAgent, result: 'SOC superado en primera iteración'
+                });
+                await softAssert(
+                    passedEval?.status === 'passed',
+                    `EvalEngine.passEval(): status → passed ✓`, 'EVAL-PASS'
+                );
+
+                // ══════════════════════════════════════════════════════
+                //  BLOQUE 11 — SKILL ANTIGRAVITY (Sprint 3)
+                // ══════════════════════════════════════════════════════
+                const { SkillAntigravity } = await import('../core/SkillAntigravity.js');
+
+                // Crear skill de prueba en KB
+                const testSkillId = `skill_test_${Date.now()}`;
+                await KB.saveNode({
+                    id: testSkillId, type: 'skill', category: 'core.execution',
+                    projectId: 'global', title: 'Test Skill Sprint4',
+                    description: 'Skill de prueba para el test de Antigravity',
+                    content: 'SOP:\n1. Analizar el input\n2. Procesar\n3. Validar output\nSOC: Output cumple schema definido',
+                    keywords: ['test', 'sprint4']
+                });
+
+                // buildPromptForAgent sin compilar (modo local)
+                const mockAg = {
+                    sourceId: testSkillId, mission: 'Test mission',
+                    socs: ['Output cumple schema'], outputSchema: { type: 'json', fields: ['result'] },
+                    nodeRefs: [], canonicalUrl: `/ia/dev/kb/${testSkillId}`
+                };
+                const agPrompt = SkillAntigravity.buildPromptForAgent(mockAg);
+                await softAssert(
+                    agPrompt.includes('MISSION:') && agPrompt.includes('SOCs:'),
+                    `SkillAntigravity.buildPromptForAgent(): prompt AG generado (${agPrompt.length} chars)`, 'KB'
+                );
+
+                // Estimar compresión
+                const originalLen = 'SOP:\n1. Analizar el input\n2. Procesar\n3. Validar output\nSOC: Output cumple schema definido'.length;
+                const agLen       = agPrompt.length;
+                await softAssert(
+                    agLen < originalLen,
+                    `Compresión AG: ${agLen} chars vs ${originalLen} originales (${Math.round((1-agLen/originalLen)*100)}% reducción)`, 'KB'
+                );
+
+                // ══════════════════════════════════════════════════════
+                //  BLOQUE 12 — ORCHESTRATOR CLUSTERING (Sprint 4)
+                // ══════════════════════════════════════════════════════
+                const clusterMap = await Orchestrator.getClusterMap();
+                await softAssert(
+                    Object.keys(clusterMap).length > 0,
+                    `Clustering V10.2: ${Object.keys(clusterMap).length} cluster(s) detectados`, 'SWARM'
+                );
+
+                const totalAgents = Object.values(clusterMap).reduce((s, c) => s + c.agents.length, 0);
+                await softAssert(
+                    totalAgents > 0,
+                    `Distribución enjambre: ${totalAgents} agentes distribuidos en clusters`, 'SWARM'
+                );
+
+                const clusterHealth = await Orchestrator.getClusterHealth(PID);
+                await softAssert(
+                    Array.isArray(clusterHealth),
+                    `Cluster Health: ${clusterHealth.length} orquestador(es) monitorizados`, 'SWARM'
+                );
+
+                // Limpieza skill de prueba
+                try { await KB.deleteNode(testSkillId); } catch(_) {}
+
+                // ══════════════════════════════════════════════════════
                 //  TEARDOWN
                 // ══════════════════════════════════════════════════════
                 await store.dispatch({ type: 'DELETE_PROJECT', payload: { projectId: PID } });
@@ -439,7 +544,7 @@ export default class TestsView {
                                 ${allPassed ? '✅' : '⚠️'} ${passed}/${total} TESTS SUPERADOS
                             </div>
                             <div style="font-size:0.72rem;color:#555;margin-top:4px;font-family:var(--font-main);">
-                                Redux · IndexedDB KB · Anthropic Primary · Slicing Pie · WO Lifecycle · Swarm IA
+                                Redux · IndexedDB KB · Anthropic Primary · Slicing Pie · WO Lifecycle · Swarm IA · EvalEngine · SkillAntigravity · Clustering
                             </div>
                         </div>
                         <div style="text-align:right;font-size:0.72rem;color:#444;font-family:var(--font-main);">
