@@ -24,6 +24,75 @@ export class SandboxRenderer {
         }
     }
 
+    getFeedbackFooterHtml() {
+        return `
+            <style>
+                .sb-feedback-container { background: rgba(10,10,15,0.95); border-top: 1px solid rgba(255,255,255,0.05); padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+                .sb-feedback-actions { display: flex; gap: 8px; align-items: center; }
+                .sb-btn-icon { background: rgba(255,255,255,0.05); border: 1px solid #444; color: #ccc; border-radius: 8px; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+                .sb-btn-icon:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); }
+                .sb-btn-icon.up:hover { border-color: var(--accent-green); background: rgba(0,230,118,0.1); }
+                .sb-btn-icon.down:hover { border-color: var(--accent-red); background: rgba(255,82,82,0.1); }
+                .sb-feedback-input-wrapper { display: none; flex: 1; gap: 10px; animation: fadeIn 0.3s ease; }
+                .sb-feedback-input { flex: 1; background: rgba(0,0,0,0.6); border: 1px dashed var(--accent-red); color: white; padding: 8px 12px; border-radius: 8px; font-family: var(--font-main); font-size: 0.85rem; outline: none; }
+                .sb-feedback-input:focus { border-style: solid; box-shadow: inset 0 0 10px rgba(255,82,82,0.1); }
+                .sb-btn-fix { background: var(--accent-red); color: black; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: var(--font-main);}
+                .sb-btn-fix:hover { filter: brightness(1.2); }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+            </style>
+            <div class="sb-feedback-container" id="sbFeedbackBlock">
+                <div class="sb-feedback-actions" id="sbFeedbackActions">
+                    <span style="font-size:0.75rem; color:#888; font-weight:bold; text-transform:uppercase;">Evaluación (T-011):</span>
+                    <button class="sb-btn-icon up" id="btnFbUp" title="Artifact Perfecto">👍</button>
+                    <button class="sb-btn-icon down" id="btnFbDown" title="Reportar Fricción">👎</button>
+                </div>
+                <div class="sb-feedback-input-wrapper" id="sbFeedbackInputWrapper">
+                    <input type="text" id="inpSbFeedback" class="sb-feedback-input" placeholder="Detalla el fallo para que el Enjambre lo corrija...">
+                    <button class="sb-btn-fix" id="btnSbFix">Forzar Corrección 🚀</button>
+                </div>
+            </div>
+        `;
+    }
+
+    bindFeedbackListeners(data) {
+        const btnUp = this.container.querySelector('#btnFbUp');
+        const btnDown = this.container.querySelector('#btnFbDown');
+        const inputWrapper = this.container.querySelector('#sbFeedbackInputWrapper');
+        const actionsWrapper = this.container.querySelector('#sbFeedbackActions');
+        const btnFix = this.container.querySelector('#btnSbFix');
+        const inputFeedback = this.container.querySelector('#inpSbFeedback');
+
+        if (btnUp) {
+            btnUp.onclick = () => {
+                btnUp.style.background = 'var(--accent-green)'; btnUp.style.color = 'black'; btnUp.style.borderColor = 'var(--accent-green)';
+                btnDown.style.display = 'none';
+            };
+        }
+
+        if (btnDown) {
+            btnDown.onclick = () => {
+                actionsWrapper.style.display = 'none';
+                inputWrapper.style.display = 'flex';
+                inputFeedback.focus();
+            };
+        }
+
+        if (btnFix) {
+            btnFix.onclick = () => {
+                const text = inputFeedback.value.trim();
+                if (!text) return;
+                btnFix.innerText = "⏳...";
+                btnFix.disabled = true;
+                inputFeedback.disabled = true;
+                window.dispatchEvent(new CustomEvent('artifact-feedback-negative', { detail: { feedback: text, artifact: data } }));
+            };
+            
+            inputFeedback.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') btnFix.click();
+            });
+        }
+    }
+
     renderWebComponent(data) {
         this.container.innerHTML = `
             <style>
@@ -52,6 +121,7 @@ export class SandboxRenderer {
                     <iframe class="sb-iframe" id="sbIframe" sandbox="allow-scripts allow-same-origin"></iframe>
                     <div class="sb-code-view" id="sbCodeView"></div>
                 </div>
+                ${this.getFeedbackFooterHtml()}
             </div>
         `;
 
@@ -75,6 +145,8 @@ export class SandboxRenderer {
             if (document.fullscreenElement === wrapper) wrapper.classList.add('fullscreen');
             else wrapper.classList.remove('fullscreen');
         };
+
+        this.bindFeedbackListeners(data);
     }
 
     renderDocument(data) {
@@ -86,8 +158,11 @@ export class SandboxRenderer {
                 <div style="padding:25px; overflow-y:auto; flex:1; font-family:'Georgia', serif; font-size:1.1rem; line-height:1.7; color:#ddd; white-space:pre-wrap;">
                     ${(data.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
                 </div>
+                ${this.getFeedbackFooterHtml()}
             </div>
         `;
+
+        this.bindFeedbackListeners(data);
     }
 
     renderEntityMutation(data) {
