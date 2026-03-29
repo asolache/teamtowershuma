@@ -671,6 +671,46 @@ OPCIÓN B — Ecosistema completo:
             soc_checklist:  tx.soc_checklist || []
         }));
 
+        // ── Convertir draftRoles → vna_nodes V10 ─────────────────
+        const tierByLevel = { '@anxaneta':0, '@aixecador':1, '@dosos':2, '@baixos':3, '@pinya':3 };
+        const roleByLevel = { '@anxaneta':'human', '@aixecador':'human', '@dosos':'agent', '@baixos':'human', '@pinya':'human' };
+
+        const vnaNodes = finalRoles.map(r => ({
+            id:    r.id,
+            label: r.name,
+            role:  r.assignee ? 'human' : (roleByLevel[r.levelId] || 'process'),
+            tier:  tierByLevel[r.levelId] ?? 2,
+            skills: [],
+            fmv:   r.fmv || 50,
+            slices: 0.000,
+            levelId: r.levelId
+        }));
+
+        // ── Convertir draftTxs → vna_exchanges V10 ───────────────
+        const vnaExchanges = finalFlows.map((f, i) => ({
+            id:          f.id,
+            from:        f.from,
+            to:          f.to,
+            type:        f.tipo || 'tangible',
+            category:    f.tipo === 'intangible' ? 'knowledge' : 'deliverable',
+            label:       f.template || f.entregable || `Entregable ${i+1}`,
+            trigger:     'on-demand',
+            frequency:   'recurring',
+            automatable: automationLevel !== 'human_only'
+        }));
+
+        // ── VnaNetwork JSON-LD completo ───────────────────────────
+        const vnaNetwork = {
+            '@context': 'https://teamtowers.io/sos/v10/vna',
+            '@type':    'VnaNetwork',
+            id:         `vna-${projectId}`,
+            mission:    missionText,
+            vision:     this.draftPresentation,
+            nodes:      vnaNodes,
+            exchanges:  vnaExchanges,
+            meta:       { health_score: 0.7 }
+        };
+
         // ── CREATE_PROJECT con campos V10 completos ───────────────
         await store.dispatch({
             type: 'CREATE_PROJECT',
@@ -682,19 +722,28 @@ OPCIÓN B — Ecosistema completo:
                 archetype:       arch,
                 roles:           finalRoles,
                 vna_flows:       finalFlows,
-                // ── V10: campos nuevos ───────────────────────────
-                vna_nodes:       [],        // se llenarán desde /map con Claude
-                vna_exchanges:   [],
+                // ── V10: pre-poblados desde el Forge ────────────
+                vna_nodes:       vnaNodes,
+                vna_exchanges:   vnaExchanges,
                 skills:          [],
                 logs:            [],
                 work_orders:     [],
                 usuarios:        [],
-                vna_description: missionText, // pre-carga el textarea de /map
+                vna_description: missionText,
                 settings: {
                     automation_level: automationLevel,
                     cascade_mode:     this.dom.inpSpawnCascade?.checked ?? true
                 }
             }
+        });
+
+        // Persistir VnaNetwork en KB para que /map lo cargue
+        await KB.init();
+        await KB.saveNode({
+            id:        `vna-network-${projectId}`,
+            type:      'vna-network',
+            projectId,
+            ...vnaNetwork
         });
 
         await store.dispatch({
