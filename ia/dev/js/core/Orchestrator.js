@@ -902,7 +902,60 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
         return record?.value || null;
     }
 
-    async setDefaultProvider(provider) {
+    // ══════════════════════════════════════════════════════════════
+    //  SPRINT 5 — SKILLS SCRAPER
+    //  @agent_skills_scout busca, audita y propone skills externas
+    // ══════════════════════════════════════════════════════════════
+    async scoutExternalSkills({ domain, context = '', maxSuggestions = 5 }) {
+        await this._ensureKB();
+
+        // Obtener skills existentes en KB para evitar duplicados
+        const allKb     = await KB.getAllNodes();
+        const existing  = allKb.filter(n => n.type === 'skill' || n.category === 'skill')
+                               .map(n => n.title || n.id).join(', ');
+
+        const response = await this.callLLM({
+            preferredEngine: 'anthropic',
+            systemPrompt: `Eres @agent_skills_scout, especialista en taxonomías de skills para ecosistemas de valor.
+Tu misión: identificar skills externas relevantes que complementen el KB actual.
+
+Para cada skill propuesta devuelve:
+- title: nombre canónico de la skill
+- category: una de [core.architecture, core.economy, core.cognition, core.execution, core.culture, skill]
+- description: qué hace esta skill en una frase
+- socs: 3 criterios de calidad verificables
+- sourceUrl: URL de referencia canónica (real, no inventada)
+- priority: high | medium | low
+- gaps: qué gap cubre respecto al KB actual
+
+Devuelve SOLO JSON:
+{ "skills": [ { "title":"...", "category":"...", "description":"...", "socs":["..."], "sourceUrl":"...", "priority":"...", "gaps":"..." } ] }`,
+            userPrompt: `DOMINIO: ${domain}
+CONTEXTO: ${context}
+SKILLS YA EN KB: ${existing || 'ninguna'}
+Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
+            responseFormat: 'json_object',
+            temperature: 0.4
+        });
+
+        const suggestions = response.content?.skills || [];
+
+        // Persistir sugerencias en KB como nodos 'skill_candidate'
+        for (const s of suggestions) {
+            const id = `skill_candidate_${s.title.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()}_${Date.now()}`;
+            await KB.saveNode({
+                id, type: 'skill_candidate', category: s.category || 'skill',
+                title: s.title, description: s.description,
+                content: `SOCs:\n${(s.socs||[]).join('\n')}`,
+                sourceUrl: s.sourceUrl || '', priority: s.priority || 'medium',
+                gaps: s.gaps || '', projectId: 'global',
+                keywords: ['skill_candidate', domain],
+                createdAt: Date.now()
+            });
+        }
+
+        return suggestions;
+    }
         await this._ensureKB();
         await KB.saveNode({ id: KB_KEY_PROVIDER, type: 'config', value: provider });
     }

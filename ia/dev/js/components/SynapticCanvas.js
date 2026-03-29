@@ -243,13 +243,60 @@ export class SynapticCanvas {
             addLink('core_kernel', p.id);
         });
 
-        // Agentes IA — nodos hijos del proyecto activo
-        state.globalUsers?.forEach(u => {
-            if (!u.profile?.isAi) return;
-            const pid = `agent_${u.id.replace('@','')}`;
-            const parentId = project?.id || 'core_kernel';
-            addNode(pid, u.name, 'agent', 22, '#6366f1', { ...u, type:'agent', category:'agent' }, { _isAgent: true, _userId: u.id });
-            addLink(parentId, pid);
+        // ── Clustering V10.2 — Orquestadores como centros de gravedad ──
+        const allUsers = state.globalUsers || [];
+        const isOrchestrator = (u) =>
+            u.profile?.isAi && (
+                u.profile?.role === 'orchestrator' ||
+                u.globalRole   === 'orchestrator'  ||
+                u.id.includes('orchestrator') ||
+                u.id.includes('synthesizer')  ||
+                u.id.includes('architect')    ||
+                u.id === 'node-claude-sonnet-v10'
+            );
+
+        const orchUsers  = allUsers.filter(isOrchestrator);
+        const agentUsers = allUsers.filter(u => u.profile?.isAi && !isOrchestrator(u));
+
+        // Registrar orquestadores — masa alta, color especial, glow
+        orchUsers.forEach((orch, i) => {
+            const oid    = `orch_${orch.id.replace(/[@\s]/g,'_')}`;
+            const angle  = (i / Math.max(orchUsers.length, 1)) * Math.PI * 2;
+            const radius = 280;
+            addNode(oid, orch.name || orch.id, 'orchestrator', 38, '#e040fb',
+                { ...orch, type: 'orchestrator', category: 'orchestration' }, {
+                _isOrchestrator: true, _userId: orch.id,
+                fx: Math.cos(angle) * radius,
+                fz: Math.sin(angle) * radius,
+                fy: 0
+            });
+            addLink('core_kernel', oid, false, { tipo: 'orchestration', label: 'swarm' });
+        });
+
+        // Distribuir agentes alrededor de su orquestador más cercano
+        agentUsers.forEach((u, i) => {
+            const pid   = `agent_${u.id.replace(/[@\s]/g,'_')}`;
+            const orchIdx = i % Math.max(orchUsers.length, 1);
+            const orch    = orchUsers[orchIdx];
+            const orchId  = orch ? `orch_${orch.id.replace(/[@\s]/g,'_')}` : 'core_kernel';
+
+            // Posición orbital alrededor del orquestador
+            const orchNode  = this.nodes.find(n => n.id === orchId);
+            const baseAngle = (i / agentUsers.length) * Math.PI * 2;
+            const orchAngle = orchNode ? Math.atan2(orchNode.fz || 0, orchNode.fx || 0) : 0;
+            const agentAngle = orchAngle + (((i % 6) / 6) * Math.PI * 2);
+            const orchR  = 280;
+            const agentR = 80;
+
+            const archColor = this._archetypeColor(u.profile?.guardian || 'everyman');
+            addNode(pid, u.name || u.id, 'agent', 18, archColor,
+                { ...u, type: 'agent', category: 'agent' }, {
+                _isAgent: true, _userId: u.id,
+                fx: (orchNode?.fx || Math.cos(orchAngle) * orchR) + Math.cos(agentAngle) * agentR,
+                fz: (orchNode?.fz || Math.sin(orchAngle) * orchR) + Math.sin(agentAngle) * agentR,
+                fy: (i % 3 - 1) * 40   // escalonado vertical para evitar solapamiento
+            });
+            addLink(orchId, pid, false, { tipo: 'swarm-member', label: '🤖' });
         });
 
         // Nodos KB
@@ -668,6 +715,35 @@ export class SynapticCanvas {
                     sp.fontWeight  = '400';
                     sp.opacity     = 0.25;
                     return sp;
+                }
+
+                // Orquestadores — doble anillo, masa alta, corona
+                if (node.group === 'orchestrator' || node._isOrchestrator) {
+                    const g = new window.THREE.Group();
+                    const r = node.val * 0.6;
+                    // Esfera principal
+                    g.add(new window.THREE.Mesh(
+                        new window.THREE.SphereGeometry(r, 32, 32),
+                        new window.THREE.MeshLambertMaterial({ color: '#e040fb', transparent: true, opacity: 0.9, depthWrite: false })
+                    ));
+                    // Anillo exterior — pulso
+                    g.add(new window.THREE.Mesh(
+                        new window.THREE.TorusGeometry(r * 1.6, 0.8, 8, 32),
+                        new window.THREE.MeshBasicMaterial({ color: '#e040fb', transparent: true, opacity: 0.2 })
+                    ));
+                    // Anillo interior
+                    g.add(new window.THREE.Mesh(
+                        new window.THREE.TorusGeometry(r * 1.2, 0.4, 8, 32),
+                        new window.THREE.MeshBasicMaterial({ color: '#6366f1', transparent: true, opacity: 0.35 })
+                    ));
+                    const sp = new window.SpriteText(node.name);
+                    sp.color = '#e040fb'; sp.textHeight = Math.max(3, r * 0.22);
+                    sp.fontWeight = '900'; sp.position.set(0, r + 5, 0);
+                    g.add(sp);
+                    const icon = new window.SpriteText('⚙️');
+                    icon.textHeight = Math.max(4, r * 0.3); icon.position.set(0, 0, 0);
+                    g.add(icon);
+                    return g;
                 }
 
                 const group  = new window.THREE.Group();

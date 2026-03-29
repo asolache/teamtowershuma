@@ -40,6 +40,7 @@ export default class LmsView {
             ],
             magicActions: [
                 { id: 'research', icon: '🔭', label: 'Deep Research (Minar Web)', tokens: 800 },
+                { id: 'scout',    icon: '🕵️', label: 'Scout Skills Externas',    tokens: 200 },
                 { id: 'inject',   icon: '💉', label: 'Inyectar Semillas Antigravity', tokens: 0 }
             ]
         };
@@ -181,7 +182,27 @@ export default class LmsView {
             ${BottomNav.getHtml('/lms')}
         </div>
 
-        <!-- Research Modal -->
+        <!-- Scout Modal -->
+        <div class="lms-modal-overlay" id="scoutModal">
+            <div class="lms-modal-card">
+                <div class="lms-modal-header">
+                    <h2>🕵️ Scout Skills Externas</h2>
+                    <button id="btnCloseScout" style="background:transparent;border:none;color:#888;font-size:1.4rem;cursor:pointer;">✖</button>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;color:#888;text-transform:uppercase;font-weight:bold;display:block;margin-bottom:6px;">Dominio a explorar</label>
+                    <input type="text" id="inpScoutDomain" class="lux-input" placeholder="Ej: Value Network Analysis, TDD, Agentes IA…">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;color:#888;text-transform:uppercase;font-weight:bold;display:block;margin-bottom:6px;">Contexto adicional (opcional)</label>
+                    <textarea id="inpScoutContext" class="lux-input" rows="3" style="resize:vertical;" placeholder="Describe el proyecto o los gaps que quieres cubrir…"></textarea>
+                </div>
+                <div id="scoutResults" style="display:none;margin-bottom:14px;"></div>
+                <button id="btnRunScout" style="background:linear-gradient(135deg,rgba(0,176,255,0.7),rgba(99,102,241,0.7));color:white;border:none;padding:12px;border-radius:10px;font-weight:900;cursor:pointer;width:100%;font-size:0.9rem;">
+                    🕵️ Explorar Skills Externas
+                </button>
+            </div>
+        </div>
         <div class="lms-modal-overlay" id="researchModal">
             <div class="lms-modal-card">
                 <div class="lms-modal-header">
@@ -248,6 +269,8 @@ export default class LmsView {
             async (actionId) => {
                 if (actionId === 'research') {
                     document.getElementById('researchModal')?.classList.add('active');
+                } else if (actionId === 'scout') {
+                    document.getElementById('scoutModal')?.classList.add('active');
                 } else if (actionId === 'inject') {
                     try {
                         const { CoreSeed } = await import('../core/seed.js');
