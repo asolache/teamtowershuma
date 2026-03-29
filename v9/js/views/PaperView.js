@@ -132,7 +132,7 @@ export default class PaperView {
                             <span style="font-size:1.2rem;">🎯</span>
                             <select id="omniSelector" class="bc-select" style="flex:1;">
                                 <option value="ide" selected>🚀 Omni-Sandbox (UI, Docs & Skills)</option>
-                                </select>
+                            </select>
                         </div>
                         
                         <div class="ide-mode-panel" id="ideModePanel">
@@ -148,7 +148,7 @@ export default class PaperView {
                                     <div class="input-controls-row">
                                         <select id="selAttachNode" class="sel-attach">
                                             <option value="">📎 Adjuntar Referencia del Córtex...</option>
-                                            </select>
+                                        </select>
                                     </div>
                                     <textarea id="inpChatPrompt" class="chat-textarea" placeholder="Ej: Escribe tu directiva aquí..."></textarea>
                                     <button class="btn-send" id="btnSendPrompt">🚀 Enviar Directiva</button>
@@ -185,7 +185,7 @@ export default class PaperView {
             selProject: document.getElementById('selProject'), 
             omniSelector: document.getElementById('omniSelector'),
             ideModePanel: document.getElementById('ideModePanel'), 
-            gtdComponent: document.getElementById('gtdComponent'), // Referencia al Web Component
+            gtdComponent: document.getElementById('gtdComponent'),
             history: document.getElementById('chatHistory'), 
             input: document.getElementById('inpChatPrompt'), 
             btnSend: document.getElementById('btnSendPrompt'),
@@ -202,10 +202,6 @@ export default class PaperView {
         this.dom.gtdComponent.addEventListener('pow-submitted', () => {
             alert("✅ Proof of Work reportado. Ha pasado a Notaría.");
             window.location.href = '/v9/project'; 
-        });
-
-        this.dom.gtdComponent.addEventListener('evidence-injected', () => {
-            console.log("Evidencia inyectada en el panel GTD");
         });
 
         // CARGAR NODOS ADJUNTABLES
@@ -273,6 +269,23 @@ export default class PaperView {
 
         this.dom.btnSend.addEventListener('click', () => this.handleSendMessage());
         this.dom.input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.handleSendMessage(); } });
+
+        // 🔥 EVENTO GLOBAL: Feedback Negativo del Artifact (Cierre de Bucle CI/CD T-011)
+        window.addEventListener('artifact-feedback-negative', (e) => {
+            const { feedback, artifact } = e.detail;
+            
+            const prompt = `[FEEDBACK DE CALIDAD - CORRECCIÓN REQUERIDA (T-011)]\nEl artifact que acabas de generar (${artifact.type}) no cumple los requisitos o tiene el siguiente problema:\n\n"${feedback}"\n\nINSTRUCCIÓN:\n1. Analiza el error.\n2. Genera una nueva versión corregida del artifact aplicando el feedback.\n3. Si el error se debe a una falta de contexto en tu SOP, debes autoevaluarte y generar un artifact de tipo 'entity_mutation' para actualizar tu propia Skill y que no vuelva a ocurrir en el futuro.`;
+            
+            // Inyectamos el prompt directamente en el input del usuario
+            this.dom.input.value = prompt;
+            
+            // Ocultamos la barra de feedback en el Sandbox para dar confirmación visual
+            const inputWrapper = document.getElementById('sbFeedbackInputWrapper');
+            if(inputWrapper) inputWrapper.innerHTML = `<span style="color:var(--accent-orange); font-size:0.85rem; font-weight:bold; font-family:var(--font-mono);">Orquestando corrección en la Swarm Memory... 🔄</span>`;
+
+            // Simulamos el envío para que fluya natural
+            this.handleSendMessage();
+        });
 
         // EVENTOS GLOBALES DE MÚTACIÓN Y CI/CD
         window.addEventListener('save-entity-mutation', async (e) => {
@@ -456,7 +469,7 @@ export default class PaperView {
     }
 
     async setIdeMode() { 
-        this.dom.gtdComponent.loadTask(null, this.activeProjectId, null); // Oculta GTD Panel
+        this.dom.gtdComponent.loadTask(null, this.activeProjectId, null); 
         this.dom.ideModePanel.style.display = window.innerWidth <= 768 ? 'flex' : 'grid'; 
         await this.loadChatHistory(`chat_${this.activeProjectId}_ide`);
     }
@@ -466,8 +479,6 @@ export default class PaperView {
         const chatId = `chat_${this.activeProjectId}_wo_${this.activeTx.hash || this.activeTx.id}`;
         
         await this.loadChatHistory(chatId);
-        
-        // Pasa los datos al Web Component para que él se encargue de renderizarse
         this.dom.gtdComponent.loadTask(this.activeTx, this.activeProjectId, chatId);
     }
 
@@ -531,7 +542,6 @@ export default class PaperView {
         const btnInject = msg.querySelector(`#btn_inject_${msgId}`);
         if (btnInject) {
             btnInject.addEventListener('click', () => {
-                // Emitimos el evento global para que el GtdPanel lo atrape
                 window.dispatchEvent(new CustomEvent('inject-evidence', { detail: { msgId: msgId, text: text, artifactData: artifactData } }));
             });
         }
