@@ -432,6 +432,71 @@ class Store {
                 break;
             }
 
+            // ── EVAL ENGINE (Sprint 2) ────────────────────────────
+            // EVAL_CREATE: registra un EvalNode en el array evals del proyecto
+            case 'EVAL_CREATE':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].evals) newState.projects[projIdx].evals = [];
+                    const exists = newState.projects[projIdx].evals.find(e => e.id === action.payload.eval.id);
+                    if (!exists) newState.projects[projIdx].evals.push({
+                        ...action.payload.eval,
+                        status:    action.payload.eval.status    || 'draft',
+                        level:     action.payload.eval.level     ?? 0,
+                        weight:    action.payload.eval.weight    ?? 1.0,
+                        passThreshold: action.payload.eval.passThreshold ?? 0.8,
+                        createdAt: Date.now()
+                    });
+                }
+                break;
+
+            // EVAL_UPDATE: actualiza status/resultado de un eval existente
+            case 'EVAL_UPDATE':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    const evals = newState.projects[projIdx].evals || [];
+                    const ei = evals.findIndex(e => e.id === action.payload.evalId);
+                    if (ei > -1) Object.assign(evals[ei], action.payload.updates, { updatedAt: Date.now() });
+                }
+                break;
+
+            // NODE_PROMOTE: sube el nivel de madurez de un rol/nodo
+            // Se dispara cuando todos los evals de nivel N están en 'passed'
+            case 'NODE_PROMOTE': {
+                const { projectId, nodeId, nodeType, newLevel, newMaturity } = action.payload;
+                projIdx = findProject(projectId);
+                if (projIdx > -1) {
+                    if (nodeType === 'role') {
+                        const roles = newState.projects[projIdx].roles || [];
+                        const ri = roles.findIndex(r => r.id === nodeId);
+                        if (ri > -1) {
+                            roles[ri].maturity = newMaturity || 'validated';
+                            roles[ri].level    = newLevel    ?? (roles[ri].level ?? 0) + 1;
+                            roles[ri].promotedAt = Date.now();
+                        }
+                    }
+                    if (nodeType === 'vna_node') {
+                        const nodes = newState.projects[projIdx].vna_nodes || [];
+                        const ni = nodes.findIndex(n => n.id === nodeId);
+                        if (ni > -1) {
+                            nodes[ni].maturity = newMaturity || 'validated';
+                            nodes[ni].level    = newLevel    ?? (nodes[ni].level ?? 0) + 1;
+                            nodes[ni].promotedAt = Date.now();
+                        }
+                    }
+                    if (nodeType === 'user') {
+                        const users = newState.globalUsers || [];
+                        const ui2 = users.findIndex(u => u.id === nodeId);
+                        if (ui2 > -1) {
+                            if (!users[ui2].profile) users[ui2].profile = {};
+                            users[ui2].profile.maturity = newMaturity || 'validated';
+                            users[ui2].profile.level    = newLevel    ?? (users[ui2].profile.level ?? 0) + 1;
+                        }
+                    }
+                }
+                break;
+            }
+
             default:
                 break;
         }
