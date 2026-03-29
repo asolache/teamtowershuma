@@ -340,16 +340,17 @@ class Store {
             case 'SPAWN_WORK_ORDER':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
-                    if (!newState.projects[projIdx].workOrders) newState.projects[projIdx].workOrders = [];
-                    newState.projects[projIdx].workOrders.push(action.payload.workOrder);
+                    if (!newState.projects[projIdx].work_orders) newState.projects[projIdx].work_orders = [];
+                    newState.projects[projIdx].work_orders.push(action.payload.workOrder);
                 }
                 break;
 
             case 'UPDATE_WORK_ORDER':
                 projIdx = findProject(action.payload.projectId);
                 if (projIdx > -1) {
-                    const woIdx = newState.projects[projIdx].workOrders.findIndex(wo => wo.hash === action.payload.hash);
-                    if (woIdx > -1) Object.assign(newState.projects[projIdx].workOrders[woIdx], action.payload.updates);
+                    const woArr = newState.projects[projIdx].work_orders || newState.projects[projIdx].workOrders || [];
+                    const woIdx = woArr.findIndex(wo => wo.hash === action.payload.hash);
+                    if (woIdx > -1) Object.assign(woArr[woIdx], action.payload.updates);
                 }
                 break;
 
