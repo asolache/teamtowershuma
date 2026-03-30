@@ -11,7 +11,12 @@ import { store } from './core/store.js';
 // https://teamtowershuma.com/ia/dev/map, window.location.pathname es /ia/dev/map.
 // navigateTo() ya usa rutas cortas (/map) via pushState, pero en el primer
 // render (carga directa o reload) hay que strip del prefijo.
-const BASE_PATH = '/ia/dev';
+// BASE_PATH automático — funciona en Netlify (/ia/dev) y en local (cualquier ruta)
+const BASE_PATH = (() => {
+    const src = document.currentScript?.src || import.meta.url;
+    const match = src.match(/^(.*?)\/js\/router\.js/);
+    return match ? match[1].replace(window.location.origin, '') : '/ia/dev';
+})();
 
 function getRoutePath() {
     const raw  = window.location.pathname.replace(/\/$/, '') || '/';
@@ -24,7 +29,7 @@ function getRoutePath() {
 }
 
 const VIEWS_PATH = `${BASE_PATH}/js/views`;
-const V = '?v=10.1.8'; // ← cambia esto en cada deploy
+const V = '?v=10.1.0'; // ← cambia esto en cada deploy
 
 const ROUTES = [
     { path: '/',          view: () => import(`${VIEWS_PATH}/HomeView.js${V}`)           },
