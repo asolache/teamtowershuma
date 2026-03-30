@@ -209,8 +209,45 @@ export class ProjectForge {
                         <button class="btn-lux btn-lux-outline" id="btnAddCustomRole" style="width:100%; border-style:dashed; padding:10px;">➕ Instanciar Silla Adicional</button>
                     </div>
                     <div>
-                        <h3 style="color:white; margin-top:0;">2. Tuberías VNA (Preview)</h3>
+                        <h3 style="color:white; margin-top:0; display:flex; align-items:center; justify-content:space-between;">
+                            2. Tuberías VNA
+                            <button id="btnAiGenTxs" style="background:linear-gradient(135deg,rgba(99,102,241,0.6),rgba(224,64,251,0.6));border:none;color:white;padding:5px 12px;border-radius:7px;font-size:0.75rem;font-weight:bold;cursor:pointer;">✨ IA genera</button>
+                        </h3>
                         <div class="tx-preview-list" id="txPreviewList"></div>
+                        <div id="txAddForm" style="margin-top:10px;background:rgba(0,0,0,0.3);border:1px dashed rgba(99,102,241,0.3);border-radius:10px;padding:12px;display:none;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                                <div>
+                                    <label style="font-size:0.65rem;color:#666;text-transform:uppercase;font-weight:bold;display:block;margin-bottom:4px;">Desde (Rol)</label>
+                                    <select id="txFromRole" style="width:100%;background:rgba(0,0,0,0.5);border:1px solid #333;color:white;padding:7px;border-radius:7px;font-size:0.8rem;outline:none;"></select>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.65rem;color:#666;text-transform:uppercase;font-weight:bold;display:block;margin-bottom:4px;">Hacia (Rol)</label>
+                                    <select id="txToRole" style="width:100%;background:rgba(0,0,0,0.5);border:1px solid #333;color:white;padding:7px;border-radius:7px;font-size:0.8rem;outline:none;"></select>
+                                </div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+                                <div>
+                                    <label style="font-size:0.65rem;color:#666;text-transform:uppercase;font-weight:bold;display:block;margin-bottom:4px;">Entregable</label>
+                                    <input type="text" id="txTemplate" style="width:100%;background:rgba(0,0,0,0.5);border:1px solid #333;color:white;padding:7px;border-radius:7px;font-size:0.8rem;outline:none;box-sizing:border-box;" placeholder="Ej: Informe semanal">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.65rem;color:#666;text-transform:uppercase;font-weight:bold;display:block;margin-bottom:4px;">Tipo</label>
+                                    <select id="txTipo" style="width:100%;background:rgba(0,0,0,0.5);border:1px solid #333;color:white;padding:7px;border-radius:7px;font-size:0.8rem;outline:none;">
+                                        <option value="tangible">Tangible</option>
+                                        <option value="intangible">Intangible</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size:0.65rem;color:#666;text-transform:uppercase;font-weight:bold;display:block;margin-bottom:4px;">Horas est.</label>
+                                    <input type="number" id="txHoras" value="8" min="1" style="width:100%;background:rgba(0,0,0,0.5);border:1px solid #333;color:white;padding:7px;border-radius:7px;font-size:0.8rem;outline:none;box-sizing:border-box;">
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <button id="btnConfirmAddTx" style="flex:1;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);color:var(--accent-green,#00e676);padding:7px;border-radius:7px;font-weight:bold;cursor:pointer;font-size:0.8rem;">✓ Añadir</button>
+                                <button id="btnCancelAddTx" style="background:transparent;border:1px solid #333;color:#555;padding:7px 12px;border-radius:7px;cursor:pointer;font-size:0.8rem;">✕</button>
+                            </div>
+                        </div>
+                        <button id="btnShowTxForm" style="width:100%;margin-top:8px;background:transparent;border:1px dashed rgba(255,255,255,0.1);color:#555;padding:8px;border-radius:8px;cursor:pointer;font-size:0.78rem;transition:0.2s;">➕ Añadir transacción manualmente</button>
                     </div>
                 </div>
 
@@ -366,6 +403,125 @@ export class ProjectForge {
         });
 
         this.dom.btnLaunch.addEventListener('click', () => this._finalizeProject());
+
+        // ── Transacciones — formulario manual ────────────────────
+        const btnShowForm   = this.container.querySelector('#btnShowTxForm');
+        const txAddForm     = this.container.querySelector('#txAddForm');
+        const btnConfirmTx  = this.container.querySelector('#btnConfirmAddTx');
+        const btnCancelTx   = this.container.querySelector('#btnCancelAddTx');
+
+        btnShowForm?.addEventListener('click', () => {
+            txAddForm.style.display = 'block';
+            btnShowForm.style.display = 'none';
+            this._populateTxRoleSelectors();
+        });
+
+        btnCancelTx?.addEventListener('click', () => {
+            txAddForm.style.display = 'none';
+            btnShowForm.style.display = 'block';
+        });
+
+        btnConfirmTx?.addEventListener('click', () => {
+            const fromId   = this.container.querySelector('#txFromRole')?.value;
+            const toId     = this.container.querySelector('#txToRole')?.value;
+            const template = this.container.querySelector('#txTemplate')?.value.trim();
+            const tipo     = this.container.querySelector('#txTipo')?.value || 'tangible';
+            const horas    = parseFloat(this.container.querySelector('#txHoras')?.value) || 8;
+
+            if (!fromId || !toId || !template) return alert('Completa todos los campos.');
+            if (fromId === toId) return alert('El origen y destino no pueden ser el mismo rol.');
+
+            const fromRole = this.draftRoles.find(r => r.id === fromId);
+            const toRole   = this.draftRoles.find(r => r.id === toId);
+
+            this.draftTxs.push({
+                id:          'tx_' + Math.random().toString(36).substr(2,9),
+                from:        fromId,
+                to:          toId,
+                fromLevel:   fromRole?.levelId || '',
+                toLevel:     toRole?.levelId   || '',
+                tipo,
+                template,
+                horas,
+                soc_checklist: [
+                    { id: 'soc_1', text: `${template} entregado según criterios acordados`, isChecked: false },
+                    { id: 'soc_2', text: `${template} revisado y validado por el receptor`,  isChecked: false }
+                ]
+            });
+
+            this._renderTxPreview();
+            // Resetear formulario
+            this.container.querySelector('#txTemplate').value = '';
+            this.container.querySelector('#txHoras').value    = '8';
+            txAddForm.style.display = 'none';
+            btnShowForm.style.display = 'block';
+        });
+
+        // ── IA genera transacciones ───────────────────────────────
+        this.container.querySelector('#btnAiGenTxs')?.addEventListener('click', async () => {
+            const btn = this.container.querySelector('#btnAiGenTxs');
+            if (!this.draftRoles.length) return alert('Primero define los roles.');
+            btn.disabled  = true;
+            btn.innerText = '⏳ Generando…';
+
+            try {
+                const rolesCtx = this.draftRoles.map(r =>
+                    `{ id: "${r.id}", levelId: "${r.levelId}", name: "${r.name}" }`
+                ).join(', ');
+
+                const response = await Orchestrator.callLLM({
+                    preferredEngine: 'anthropic',
+                    systemPrompt: `Eres @agent_genesis_architect experto en VNA. Genera transacciones de valor realistas entre los roles dados.
+Para cada transacción devuelve:
+- fromId: id del rol origen
+- toId: id del rol destino
+- template: nombre del entregable (concreto y accionable)
+- tipo: "tangible" o "intangible"
+- horas: horas estimadas (número)
+- soc_checklist: array de 2 SOCs verificables para este entregable
+
+Reglas:
+- Cada rol debe tener al menos una transacción entrante o saliente
+- Los intangibles son conocimiento, feedback, aprobaciones
+- Los tangibles son entregables concretos: documentos, código, diseños, reportes
+- Devuelve SOLO JSON: { "transactions": [...] }`,
+                    userPrompt: `Roles: [${rolesCtx}]\nMisión del proyecto: ${this.dom.inpMission?.value || ''}`,
+                    responseFormat: 'json_object',
+                    temperature: 0.35
+                });
+
+                const txs = response.content?.transactions || [];
+                txs.forEach(tx => {
+                    if (!tx.fromId || !tx.toId || !tx.template) return;
+                    const fromRole = this.draftRoles.find(r => r.id === tx.fromId);
+                    const toRole   = this.draftRoles.find(r => r.id === tx.toId);
+                    if (!fromRole || !toRole) return;
+                    this.draftTxs.push({
+                        id:           'tx_' + Math.random().toString(36).substr(2,9),
+                        from:         tx.fromId,
+                        to:           tx.toId,
+                        fromLevel:    fromRole.levelId,
+                        toLevel:      toRole.levelId,
+                        tipo:         tx.tipo || 'tangible',
+                        template:     tx.template,
+                        horas:        tx.horas || 8,
+                        soc_checklist: tx.soc_checklist || [
+                            { id:'soc_1', text:`${tx.template} entregado según criterios`, isChecked: false },
+                            { id:'soc_2', text:`${tx.template} validado por el receptor`,   isChecked: false }
+                        ]
+                    });
+                });
+
+                this._renderTxPreview();
+                btn.innerText = `✅ ${txs.length} transacciones generadas`;
+                setTimeout(() => { btn.disabled = false; btn.innerText = '✨ IA genera'; }, 2000);
+
+            } catch (err) {
+                alert('Error IA: ' + err.message);
+                btn.disabled  = false;
+                btn.innerText = '✨ IA genera';
+            }
+        });
 
         // ── Agent Studio ──────────────────────────────────────────
         this.dom.btnCloseStudio.addEventListener('click', () => this.dom.agentModal.classList.remove('active'));
@@ -602,18 +758,56 @@ OPCIÓN B — Ecosistema completo:
         this.dom.rolesContainer.querySelectorAll('.btn-agent-studio').forEach(btn => btn.addEventListener('click', e => this._openAgentStudio(e.currentTarget.dataset.roleid)));
     }
 
+    _populateTxRoleSelectors() {
+        const fromSel = this.container.querySelector('#txFromRole');
+        const toSel   = this.container.querySelector('#txToRole');
+        if (!fromSel || !toSel) return;
+        const opts = this.draftRoles.map(r =>
+            `<option value="${r.id}">${r.name} (${r.levelId})</option>`
+        ).join('');
+        fromSel.innerHTML = opts;
+        toSel.innerHTML   = opts;
+        if (this.draftRoles.length > 1) toSel.selectedIndex = 1;
+    }
+
     _renderTxPreview() {
+        if (!this.dom.txPreviewList) return;
         this.dom.txPreviewList.innerHTML = this.draftTxs.length === 0
-            ? `<div style="color:#555;font-style:italic;font-size:0.85rem;padding:1rem;text-align:center;">Sin tuberías VNA definidas.</div>`
-            : this.draftTxs.map(tx => `
-            <div style="background:rgba(0,0,0,0.3);border:1px solid #333;border-radius:10px;padding:10px 14px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                    <span style="color:#888;font-family:var(--font-mono);font-size:0.72rem;">${tx.fromLevel}</span>
-                    <span style="color:${tx.tipo==='tangible'?'var(--accent-green)':'var(--accent-purple)'};font-size:0.72rem;font-weight:bold;">→ [${tx.tipo.toUpperCase()}]</span>
-                    <span style="color:#888;font-family:var(--font-mono);font-size:0.72rem;">${tx.toLevel}</span>
-                </div>
-                <div style="color:white;font-weight:bold;font-size:0.9rem;">${tx.template} (${tx.horas}h)</div>
-            </div>`).join('');
+            ? `<div style="color:#555;font-style:italic;font-size:0.82rem;padding:0.75rem;text-align:center;">Sin tuberías VNA definidas.<br><span style="font-size:0.72rem;color:#444;">Usa "IA genera" o añade manualmente.</span></div>`
+            : this.draftTxs.map((tx, idx) => {
+                const fromRole = this.draftRoles.find(r => r.id === tx.from);
+                const toRole   = this.draftRoles.find(r => r.id === tx.to);
+                const color    = tx.tipo === 'intangible' ? 'var(--accent-purple,#e040fb)' : 'var(--accent-green,#00e676)';
+                const socCount = (tx.soc_checklist || []).length;
+                return `
+                <div style="background:rgba(0,0,0,0.3);border:1px solid #222;border-radius:9px;padding:9px 12px;margin-bottom:6px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px;">
+                        <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;overflow:hidden;">
+                            <span style="color:#666;font-size:0.68rem;font-family:var(--font-mono);white-space:nowrap;">${fromRole?.name || tx.fromLevel || '?'}</span>
+                            <span style="color:${color};">→</span>
+                            <span style="color:#666;font-size:0.68rem;font-family:var(--font-mono);white-space:nowrap;">${toRole?.name || tx.toLevel || '?'}</span>
+                        </div>
+                        <button data-tx-idx="${idx}" class="btn-del-tx" style="background:transparent;border:none;color:#333;cursor:pointer;font-size:0.78rem;flex-shrink:0;transition:0.2s;" title="Eliminar">✕</button>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="color:white;font-weight:bold;font-size:0.84rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${tx.template}</span>
+                        <span style="font-size:0.62rem;padding:1px 6px;border-radius:4px;font-weight:bold;background:rgba(0,0,0,0.3);color:${color};border:1px solid ${color}33;flex-shrink:0;">${tx.tipo}</span>
+                        <span style="font-size:0.62rem;color:#555;font-family:var(--font-mono);flex-shrink:0;">${tx.horas}h</span>
+                        ${socCount > 0 ? `<span style="font-size:0.62rem;color:var(--accent-orange,#ff9100);flex-shrink:0;" title="${socCount} SOCs">📋${socCount}</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+
+        // Eventos eliminar
+        this.dom.txPreviewList.querySelectorAll('.btn-del-tx').forEach(btn => {
+            btn.addEventListener('mouseenter', () => { btn.style.color = 'var(--accent-red,#ff5252)'; });
+            btn.addEventListener('mouseleave', () => { btn.style.color = '#333'; });
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.dataset.txIdx);
+                this.draftTxs.splice(idx, 1);
+                this._renderTxPreview();
+            });
+        });
     }
 
     _openAgentStudio(roleId) {
