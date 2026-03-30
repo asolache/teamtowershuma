@@ -958,6 +958,8 @@ Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
 
         return suggestions;
     }
+
+    async setDefaultProvider(provider) {
         await this._ensureKB();
         await KB.saveNode({ id: KB_KEY_PROVIDER, type: 'config', value: provider });
     }
