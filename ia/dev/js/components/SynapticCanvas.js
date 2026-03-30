@@ -258,43 +258,33 @@ export class SynapticCanvas {
         const orchUsers  = allUsers.filter(isOrchestrator);
         const agentUsers = allUsers.filter(u => u.profile?.isAi && !isOrchestrator(u));
 
-        // Registrar orquestadores — masa alta, color especial, glow
+        // Orquestadores — anclados con fx/fz, radio según cuántos hay
         orchUsers.forEach((orch, i) => {
-            const oid    = `orch_${orch.id.replace(/[@\s]/g,'_')}`;
-            const angle  = (i / Math.max(orchUsers.length, 1)) * Math.PI * 2;
-            const radius = 280;
+            const oid   = `orch_${orch.id.replace(/[@\s]/g,'_')}`;
+            const angle = (i / Math.max(orchUsers.length, 1)) * Math.PI * 2;
+            const R     = orchUsers.length === 1 ? 0 : 260;
             addNode(oid, orch.name || orch.id, 'orchestrator', 38, '#e040fb',
                 { ...orch, type: 'orchestrator', category: 'orchestration' }, {
                 _isOrchestrator: true, _userId: orch.id,
-                fx: Math.cos(angle) * radius,
-                fz: Math.sin(angle) * radius,
-                fy: 0
+                fx: Math.cos(angle) * R,
+                fy: 0,
+                fz: Math.sin(angle) * R
             });
             addLink('core_kernel', oid, false, { tipo: 'orchestration', label: 'swarm' });
         });
 
-        // Distribuir agentes alrededor de su orquestador más cercano
+        // Agentes — SIN posición fija, la simulación de fuerzas los separa
+        // El link al orquestador actúa como atractor, la repulsión global los distribuye
         agentUsers.forEach((u, i) => {
-            const pid   = `agent_${u.id.replace(/[@\s]/g,'_')}`;
+            const pid     = `agent_${u.id.replace(/[@\s]/g,'_')}`;
             const orchIdx = i % Math.max(orchUsers.length, 1);
             const orch    = orchUsers[orchIdx];
             const orchId  = orch ? `orch_${orch.id.replace(/[@\s]/g,'_')}` : 'core_kernel';
-
-            // Posición orbital alrededor del orquestador
-            const orchNode  = this.nodes.find(n => n.id === orchId);
-            const baseAngle = (i / agentUsers.length) * Math.PI * 2;
-            const orchAngle = orchNode ? Math.atan2(orchNode.fz || 0, orchNode.fx || 0) : 0;
-            const agentAngle = orchAngle + (((i % 6) / 6) * Math.PI * 2);
-            const orchR  = 280;
-            const agentR = 80;
-
             const archColor = this._archetypeColor(u.profile?.guardian || 'everyman');
+            // Sin fx/fz — la física los distribuye con repulsión natural
             addNode(pid, u.name || u.id, 'agent', 18, archColor,
                 { ...u, type: 'agent', category: 'agent' }, {
-                _isAgent: true, _userId: u.id,
-                fx: (orchNode?.fx || Math.cos(orchAngle) * orchR) + Math.cos(agentAngle) * agentR,
-                fz: (orchNode?.fz || Math.sin(orchAngle) * orchR) + Math.sin(agentAngle) * agentR,
-                fy: (i % 3 - 1) * 40   // escalonado vertical para evitar solapamiento
+                _isAgent: true, _userId: u.id
             });
             addLink(orchId, pid, false, { tipo: 'swarm-member', label: '🤖' });
         });
@@ -374,7 +364,48 @@ export class SynapticCanvas {
     _buildVnaGraph(vnaNodes, vnaExchanges) {
         this.nodes = [];
         this.links = [];
+
+        // ── Nodo central virtual — ancla gravitacional ────────────
+        // No tiene visual propio, solo actúa como centro de masa
+        this.nodes.push({
+            id:      'vna_center',
+            name:    '⬡',
+            group:   'vna_center',
+            val:     6,
+            color:   'rgba(255,255,255,0.08)',
+            rawNode: { type: 'vna_center', category: 'vna_center' },
+            fx: 0, fy: 0, fz: 0,   // anclado en el origen
+            _isVnaCenter: true
+        });
+
+        // ── Distribuir roles radialmente ──────────────────────────
+        // Cada nivel Casteller tiene su radio — @anxaneta más cerca del centro
+        const LEVEL_RADIUS = {
+            '@anxaneta':  80,
+            '@aixecador': 160,
+            '@dosos':     240,
+            '@baixos':    320,
+            '@pinya':     400
+        };
+        const DEFAULT_RADIUS = 200;
+
+        // Agrupar nodos por nivel para distribuirlos angularmente
+        const byLevel = {};
         vnaNodes.forEach(n => {
+            const lv = n.levelId || `tier_${n.tier ?? 2}`;
+            if (!byLevel[lv]) byLevel[lv] = [];
+            byLevel[lv].push(n);
+        });
+
+        // Asignar posición angular dentro de cada nivel
+        vnaNodes.forEach(n => {
+            const lv      = n.levelId || `tier_${n.tier ?? 2}`;
+            const group   = byLevel[lv];
+            const idx     = group.indexOf(n);
+            const total   = group.length;
+            const angle   = (idx / Math.max(total, 1)) * Math.PI * 2;
+            const radius  = LEVEL_RADIUS[n.levelId] ?? DEFAULT_RADIUS;
+
             this.nodes.push({
                 id:      n.id,
                 name:    n.label || n.id,
@@ -382,11 +413,25 @@ export class SynapticCanvas {
                 val:     this._vnaSize(n),
                 color:   ROLE_COLORS[n.role] || '#888',
                 rawNode: { ...n, type:'vna-node', category: n.role || 'process' },
-                fy:      LEVEL_GRAVITY[n.levelId] ?? (n.tier != null ? [300,150,0,-150,-300][Math.min(n.tier,4)] : 0),
-                _isVna:     true,
-                _rawVna:    n
+                // Posición inicial sugerida — la simulación la refinará
+                // fx/fz fijos para que queden en su anillo, fy libre
+                fx: Math.cos(angle) * radius,
+                fz: Math.sin(angle) * radius,
+                fy: 0,
+                _isVna:  true,
+                _rawVna: n
+            });
+
+            // Link invisible al centro — fuerza de atracción radial
+            this.links.push({
+                source: 'vna_center', target: n.id,
+                _isCenterLink: true,
+                isDependencies: true,
+                tipo: 'gravity'
             });
         });
+
+        // ── Exchanges como links visibles ─────────────────────────
         vnaExchanges.forEach(e => {
             if (!this.nodes.find(n => n.id === e.from) || !this.nodes.find(n => n.id === e.to)) return;
             this.links.push({
@@ -651,7 +696,8 @@ export class SynapticCanvas {
 
             // ── Colores de links ──────────────────────────────────
             .linkColor(link => {
-                if (link._isVnaLink && link.tipo === 'vna-role') return 'rgba(255,255,255,0.04)';
+                if (link._isCenterLink)                              return 'rgba(0,0,0,0)';  // invisible
+                if (link._isVnaLink && link.tipo === 'vna-role')     return 'rgba(255,255,255,0.04)';
                 if (link.tipo === 'tangible')    return 'rgba(0,230,118,0.65)';
                 if (link.tipo === 'intangible')  return 'rgba(224,64,251,0.65)';
                 if (link.tipo === 'knowledge')   return 'rgba(255,215,64,0.5)';
@@ -660,13 +706,15 @@ export class SynapticCanvas {
                 return link.isDependencies ? c.replace(')',',0.15)').replace('rgb','rgba') : c.replace(')',',0.45)').replace('rgb','rgba');
             })
             .linkWidth(link => {
-                if (link._isVnaLink && link.tipo === 'vna-role') return 0.5;
+                if (link._isCenterLink)                              return 0;    // invisible
+                if (link._isVnaLink && link.tipo === 'vna-role')     return 0.5;
                 return link.isDependencies ? 0.6 : 2;
             })
 
             // ── Partículas ────────────────────────────────────────
             .linkDirectionalParticles(link => {
-                if (link._isVnaLink && link.tipo === 'vna-role') return 0;
+                if (link._isCenterLink)                              return 0;
+                if (link._isVnaLink && link.tipo === 'vna-role')     return 0;
                 if (link.tipo === 'tangible' || link.tipo === 'intangible') return 5;
                 return link.isDependencies ? 0 : 2;
             })
@@ -707,6 +755,14 @@ export class SynapticCanvas {
 
             // ── Objetos 3D de nodos ───────────────────────────────
             .nodeThreeObject(node => {
+                // Nodo central VNA — semitransparente, solo sirve de ancla
+                if (node.group === 'vna_center' || node._isVnaCenter) {
+                    const sp = new window.SpriteText('⬡');
+                    sp.color      = 'rgba(255,255,255,0.12)';
+                    sp.textHeight = 8;
+                    return sp;
+                }
+
                 // Nodos de label arquetípico — solo texto flotante semitransparente
                 if (node.group === 'archetype_label') {
                     const sp = new window.SpriteText(node.name);
@@ -850,11 +906,35 @@ export class SynapticCanvas {
                 }
             });
 
-        // Configurar repulsión fuerte — ForceGraph3D ya tiene charge interno
-        // Esperamos un tick para que el grafo esté inicializado
+        // Configurar fuerzas — repulsión fuerte + distancia de links
         setTimeout(() => {
             try {
                 this.graph3D.d3Force('charge')?.strength(repulsion);
+
+                // En modo VNA: links de gravedad atraen al centro,
+                // exchanges tienen distancia proporcional al nivel
+                this.graph3D.d3Force('link')
+                    ?.distance(link => {
+                        if (link._isCenterLink)               return 0;    // pegado al centro (ya tienen fx/fz)
+                        if (link.tipo === 'swarm-member')      return 120;
+                        if (link.tipo === 'orchestration')     return 200;
+                        if (link._isVnaLink)                   return 180;
+                        if (link.isDependencies)               return 80;
+                        return 150;
+                    })
+                    ?.strength(link => {
+                        if (link._isCenterLink)               return 0;    // fx/fz ya fijan posición
+                        if (link.tipo === 'swarm-member')      return 0.8;
+                        if (link.tipo === 'orchestration')     return 0.5;
+                        if (this.isVnaMode)                    return 0.6;  // exchanges VNA más tensos
+                        return 0.3;
+                    });
+
+                // Cámara centrada al inicio en modo VNA
+                if (this.isVnaMode) {
+                    this.graph3D.cameraPosition({ x: 0, y: 0, z: 700 }, { x: 0, y: 0, z: 0 }, 0);
+                }
+
                 this.graph3D.d3ReheatSimulation();
             } catch(_) {}
         }, 100);
