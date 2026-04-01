@@ -13,6 +13,9 @@ import { PageHeader }      from '../components/PageHeader.js';
 import { SynapticCanvas }  from '../components/SynapticCanvas.js';
 import { Orchestrator }    from '../core/Orchestrator.js';
 import { WoGenerator }     from '../core/WoGenerator.js';
+import { QueenSwarm }      from '../core/QueenSwarm.js';
+import { VnaSequencer }    from '../core/VnaSequencer.js';
+import { VnaMapRenderer }  from '../components/VnaMapRenderer.js';
 
 export default class ValueMapView {
 
@@ -163,9 +166,15 @@ export default class ValueMapView {
                             </div>
                             <textarea id="vnaInput" class="vmap-textarea" rows="5"
                                 placeholder="Describe el proyecto, negocio o proceso. Claude mapeará los roles y flujos de valor y generará las Work Orders del Swarm…">${project.vna_description || ''}</textarea>
-                            <button id="btnMap" class="vmap-btn vmap-btn-primary">
-                                ${hasVna ? '🔄 Re-mapear / Evolucionar red' : '🗺️ Mapear Red de Valor'}
-                            </button>
+                            <div style="display:flex;gap:8px;">
+                                <button id="btnMap" class="vmap-btn vmap-btn-primary" style="flex:1;">
+                                    ${hasVna ? '🔄 Re-mapear / Evolucionar red' : '🗺️ Mapear Red de Valor'}
+                                </button>
+                                <button id="btnQueenTDD" title="La Reina · Protocolo TDD inverso · Evals primero"
+                                    style="padding:0 14px;background:linear-gradient(135deg,rgba(224,64,251,0.2),rgba(99,102,241,0.2));border:1px solid rgba(224,64,251,0.4);color:#e040fb;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:bold;transition:0.2s;white-space:nowrap;">
+                                    👑 Reina TDD
+                                </button>
+                            </div>
                             <div id="mapStatus" class="vmap-status"></div>
                         </div>
 
@@ -174,6 +183,21 @@ export default class ValueMapView {
                             <button id="btnSkills" class="vmap-btn vmap-btn-ghost" ${!hasVna ? 'disabled' : ''}>⚡ Crear Skills desde VNA</button>
                             <button id="btnAgent"  class="vmap-btn vmap-btn-ghost" ${!hasVna ? 'disabled' : ''}>🤖 Fabricar Agente Vertical</button>
                             <button id="btnHeal"   class="vmap-btn vmap-btn-orange" ${!hasVna ? 'disabled' : ''}>🔍 Curar Red</button>
+                        </div>
+                        <div class="vmap-section">
+                            <div class="vmap-stitle">🗺️ Vista del Mapa</div>
+                            <div style="display:flex;gap:6px;">
+                                <button id="btnView2D" class="vmap-btn vmap-btn-primary" style="flex:1;margin-top:0;font-size:0.78rem;" ${!hasVna ? 'disabled' : ''}>
+                                    📐 Grafo 2D
+                                </button>
+                                <button id="btnView3D" class="vmap-btn vmap-btn-ghost" style="flex:1;margin-top:0;font-size:0.78rem;" ${!hasVna ? 'disabled' : ''}>
+                                    🌌 3D Canvas
+                                </button>
+                            </div>
+                            <label style="display:flex;align-items:center;gap:7px;margin-top:8px;cursor:pointer;font-size:0.75rem;color:#888;">
+                                <input type="checkbox" id="seqToggle" checked style="accent-color:var(--accent-indigo);">
+                                Mostrar orden de ejecución
+                            </label>
                         </div>
 
                         <div class="vmap-section">
@@ -242,7 +266,11 @@ export default class ValueMapView {
                             <div style="color:#333;font-size:0.9rem;font-weight:bold;margin-bottom:0.4rem;">Red de valor vacía</div>
                             <div style="color:#222;font-size:0.78rem;">Describe el proyecto y haz clic en Mapear</div>
                         </div>
-                        <div id="vnaCanvasMount" style="flex:1;display:${hasVna?'flex':'none'};flex-direction:column;"></div>
+                        <!-- Grafo 2D secuenciado — ocupa todo el canvas central -->
+                        <div id="vnaGraph2D" style="flex:1;display:${hasVna?'flex':'none'};flex-direction:column;overflow:auto;
+                            background:radial-gradient(circle at center,#0a0a12,#050508);position:relative;">
+                        </div>
+                        <div id="vnaCanvasMount" style="flex:1;display:none;flex-direction:column;"></div>
                     </main>
 
                     <!-- PANEL DERECHO: WORK ORDERS -->
@@ -284,6 +312,10 @@ export default class ValueMapView {
 
         this.dom = {
             btnMap:          document.getElementById('btnMap'),
+            btnView2D:       document.getElementById('btnView2D'),
+            btnView3D:       document.getElementById('btnView3D'),
+            vnaGraph2D:      document.getElementById('vnaGraph2D'),
+            seqToggle:       document.getElementById('seqToggle'),
             mapStatus:       document.getElementById('mapStatus'),
             btnSkills:       document.getElementById('btnSkills'),
             btnAgent:        document.getElementById('btnAgent'),
@@ -306,16 +338,19 @@ export default class ValueMapView {
             healthLabel:     document.getElementById('healthLabel')
         };
 
-        // Si ya hay VNA en el proyecto, inicializar canvas
+        // Si ya hay VNA en el proyecto, mostrar grafo 2D secuenciado por defecto
         if ((project.vna_nodes || []).length > 0) {
+            // Mostrar grafo 2D primero (más rápido y legible)
+            if (this.dom.vnaPlaceholder) this.dom.vnaPlaceholder.style.display = 'none';
+            if (this.dom.vnaGraph2D)     this.dom.vnaGraph2D.style.display     = 'flex';
+            await this._render2DGraph();
+
+            // Canvas 3D se inicializa lazy en background
             await this._initCanvas();
             await this._canvas?.loadVNAData();
             if (this._canvas?.graph3D) {
                 this._canvas.graph3D.graphData({ nodes: this._canvas.nodes, links: this._canvas.links });
             }
-            // Mostrar canvas, ocultar placeholder
-            if (this.dom.vnaPlaceholder) this.dom.vnaPlaceholder.style.display = 'none';
-            if (this.dom.vnaCanvasMount) this.dom.vnaCanvasMount.style.display  = 'flex';
 
             // Health score desde KB si existe
             const KB_net = await (async () => { try { await KB.init(); return await KB.getNode(`vna-network-${this.activeProjectId}`); } catch(_){ return null; } })();
@@ -359,10 +394,164 @@ export default class ValueMapView {
             await this._runMap(desc);
         });
 
+        // ── 👑 Reina TDD — protocolo completo en 5 pasos ─────────
+        document.getElementById('btnQueenTDD')?.addEventListener('click', async () => {
+            const desc = document.getElementById('vnaInput')?.value.trim();
+            if (!desc) { this._setStatus('⚠️ Describe el proyecto primero.', true); return; }
+
+            const btn = document.getElementById('btnQueenTDD');
+            btn.disabled  = true;
+            btn.textContent = '⏳ La Reina trabaja…';
+
+            const project = store.getState().projects.find(p => p.id === this.activeProjectId);
+            const mission = desc;
+            const vision  = project?.vna_description || desc;
+            const sector  = project?.sector || 'technology';
+
+            // Sembrar skills del kernel si no existen
+            await QueenSwarm.seedKernel();
+
+            try {
+                const result = await QueenSwarm.generateVnaWithTDD({
+                    projectId: this.activeProjectId,
+                    mission, vision, sector,
+                    onProgress: (msg) => this._setStatus(msg)
+                });
+
+                // Recargar canvas con el nuevo VNA
+                await this._initCanvas();
+                await this._canvas?.loadVNAData();
+                if (this._canvas?.graph3D) {
+                    this._canvas.graph3D.graphData({
+                        nodes: this._canvas.nodes,
+                        links: this._canvas.links
+                    });
+                }
+                if (this.dom.vnaPlaceholder) this.dom.vnaPlaceholder.style.display = 'none';
+                if (this.dom.vnaCanvasMount) this.dom.vnaCanvasMount.style.display  = 'flex';
+
+                // Mostrar resumen de conflictos para revisión humana (3 min)
+                const { summary, conflicts, landing, bizModel } = result;
+                const conflictHtml = (conflicts || []).map(c =>
+                    `<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.76rem;">
+                        <span style="color:${c.severity==='error'?'#ff5252':'#ff9100'};">
+                            ${c.severity==='error'?'❌':'⚠️'} ${c.description}
+                        </span>
+                        ${c.suggestion ? `<div style="color:#555;font-size:0.68rem;margin-top:2px;">→ ${c.suggestion}</div>` : ''}
+                    </div>`
+                ).join('');
+
+                this._setStatus(`
+                    ✅ VNA generado con TDD · ${summary.rolesCount} roles · ${summary.transactionsCount} flujos · 
+                    ${summary.evalsCount} evals · Health: ${(summary.healthScore*100).toFixed(0)}% · 
+                    ${summary.errorsCount} errores · ${summary.warningsCount} warnings para revisar
+                `);
+
+                // Panel de revisión humana
+                if (this.dom.woPanel) {
+                    this.dom.woPanel.classList.remove('hidden');
+                    const woList = this.dom.woPanel.querySelector('.wo-list');
+                    const totalWarns = summary.errorsCount + summary.warningsCount;
+                    const autoFixed  = summary.autoRepaired || 0;
+                    const pending    = (summary.pendingWarnings || []).length;
+
+                    if (woList) {
+                        woList.innerHTML = `
+                        <div style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.05);">
+
+                            ${autoFixed > 0 ? `
+                            <div style="font-size:0.7rem;color:#00e676;background:rgba(0,230,118,0.06);
+                                border:1px solid rgba(0,230,118,0.2);border-radius:7px;padding:7px 10px;margin-bottom:8px;">
+                                🔧 Auto-reparación: ${autoFixed} conflictos resueltos por el agente antes de persistir
+                            </div>` : ''}
+
+                            <div style="font-size:0.72rem;color:#e040fb;font-weight:bold;margin-bottom:8px;">
+                                👑 REVISIÓN DE LA REINA
+                                ${pending > 0 ? `— ${pending} warnings pendientes de revisión humana` : '— ✅ VNA validado'}
+                            </div>
+
+                            ${conflictHtml || '<div style="color:#555;font-size:0.76rem;">✅ Sin conflictos. El VNA está listo.</div>'}
+
+                            ${pending > 0 ? `
+                            <div style="display:flex;gap:6px;margin-top:10px;">
+                                <button id="btnAutoRepairWarnings"
+                                    style="flex:1;padding:8px;background:rgba(224,64,251,0.08);
+                                    border:1px solid rgba(224,64,251,0.3);color:#e040fb;border-radius:7px;
+                                    cursor:pointer;font-size:0.75rem;font-weight:bold;">
+                                    🔧 Auto-reparar warnings con agente
+                                </button>
+                                <button id="btnIgnoreWarnings"
+                                    style="padding:8px 12px;background:rgba(255,255,255,0.03);
+                                    border:1px solid rgba(255,255,255,0.08);color:#555;border-radius:7px;
+                                    cursor:pointer;font-size:0.75rem;">
+                                    Ignorar →
+                                </button>
+                            </div>` : ''}
+
+                            ${landing ? `
+                            <div style="margin-top:10px;padding:10px;background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.15);border-radius:8px;">
+                                <div style="font-size:0.68rem;color:#00e676;font-weight:bold;margin-bottom:6px;">💰 LANDING MVP</div>
+                                <div style="font-size:0.82rem;color:white;font-weight:bold;">${landing.headline}</div>
+                                <div style="font-size:0.72rem;color:#888;margin-top:3px;">${landing.subheadline}</div>
+                                <div style="font-size:0.7rem;color:#555;margin-top:5px;">${landing.cta_primary} · ${landing.pricing_hint}</div>
+                            </div>` : ''}
+                            ${bizModel?.first_revenue_path ? `
+                            <div style="margin-top:8px;padding:8px 10px;background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.15);border-radius:8px;">
+                                <div style="font-size:0.68rem;color:#6366f1;font-weight:bold;margin-bottom:4px;">🎯 PRIMER INGRESO</div>
+                                <div style="font-size:0.72rem;color:#888;">${bizModel.first_revenue_path}</div>
+                            </div>` : ''}
+                        </div>`;
+
+                        // ── Botón auto-reparar warnings pendientes ──────────────
+                        document.getElementById('btnAutoRepairWarnings')?.addEventListener('click', async () => {
+                            const repBtn = document.getElementById('btnAutoRepairWarnings');
+                            if (repBtn) { repBtn.disabled = true; repBtn.textContent = '⏳ Reparando…'; }
+                            this._setStatus('🔧 Agente reparador analizando warnings pendientes…');
+                            try {
+                                // Re-ejecutar QueenSwarm solo con los warnings pendientes como contexto
+                                const desc = document.getElementById('vnaInput')?.value.trim() || mission;
+                                await this._runMap(desc);
+                                this._setStatus('✅ Re-mapeo completado con warnings resueltos.');
+                            } catch(e) {
+                                this._setStatus('❌ Error en reparación: ' + e.message, true);
+                            } finally {
+                                if (repBtn) { repBtn.disabled = false; repBtn.textContent = '🔧 Auto-reparar warnings'; }
+                            }
+                        });
+                        document.getElementById('btnIgnoreWarnings')?.addEventListener('click', () => {
+                            document.getElementById('btnAutoRepairWarnings')?.closest('div[style*="gap"]')?.remove();
+                        });
+                    }
+                }
+
+            } catch (err) {
+                this._setStatus(`❌ Error en protocolo Reina: ${err.message}`, true);
+            } finally {
+                btn.disabled    = false;
+                btn.textContent = '👑 Reina TDD';
+            }
+        });
+
         this.dom.btnSkills?.addEventListener('click',  async () => { if (this._network?.nodes?.length) await this._runSkills(); });
         this.dom.btnAgent?.addEventListener('click',   async () => { if (this._network) await this._runAgent(); });
         this.dom.btnHeal?.addEventListener('click',    async () => await this._runHeal());
         this.dom.btnCloseWoPanel?.addEventListener('click', () => this.dom.woPanel?.classList.add('hidden'));
+
+        // ── Toggle 2D / 3D ──────────────────────────────────────────────────
+        this.dom.btnView2D?.addEventListener('click', async () => {
+            if (this.dom.vnaGraph2D)     this.dom.vnaGraph2D.style.display     = 'flex';
+            if (this.dom.vnaCanvasMount) this.dom.vnaCanvasMount.style.display = 'none';
+            this.dom.btnView2D?.classList.replace('vmap-btn-ghost', 'vmap-btn-primary');
+            this.dom.btnView3D?.classList.replace('vmap-btn-primary','vmap-btn-ghost');
+            await this._render2DGraph();
+        });
+        this.dom.btnView3D?.addEventListener('click', async () => {
+            if (this.dom.vnaGraph2D)     this.dom.vnaGraph2D.style.display     = 'none';
+            if (this.dom.vnaCanvasMount) this.dom.vnaCanvasMount.style.display = 'flex';
+            this.dom.btnView3D?.classList.replace('vmap-btn-ghost', 'vmap-btn-primary');
+            this.dom.btnView2D?.classList.replace('vmap-btn-primary','vmap-btn-ghost');
+        });
+        this.dom.seqToggle?.addEventListener('change', async () => await this._render2DGraph());
         this.dom.btnConfirmAll?.addEventListener('click',   async () => await this._confirmWos(this._pendingWos));
         this.dom.btnConfirmAuto?.addEventListener('click',  async () => await this._confirmWos(this._pendingWos.filter(w => w.automation === 'auto')));
 
@@ -386,11 +575,20 @@ export default class ValueMapView {
             this._updateTelemetry(artifact.telemetry);
             this._renderHealth(network.meta?.health_score ?? network.health_score ?? 0);
 
-            this._setStatus('🌌 Renderizando red 3D…');
-            await this._initCanvas();
-            await this._canvas.loadVnaNetwork(network);
+            // Aplicar VnaSequencer al network recién generado
+            let sequencedNetwork = network;
+            try { sequencedNetwork = VnaSequencer.sequence(network); } catch(_) {}
+            this._network = sequencedNetwork;
+
+            this._setStatus('📐 Renderizando grafo 2D secuenciado…');
             this.dom.vnaPlaceholder.style.display = 'none';
-            this.dom.vnaCanvasMount.style.display  = 'flex';
+            if (this.dom.vnaGraph2D)     { this.dom.vnaGraph2D.style.display = 'flex'; }
+            if (this.dom.vnaCanvasMount) { this.dom.vnaCanvasMount.style.display = 'none'; }
+            await this._render2DGraph(sequencedNetwork);
+
+            // Canvas 3D en background
+            await this._initCanvas();
+            await this._canvas.loadVnaNetwork(sequencedNetwork);
 
             this._setStatus('📋 Generando Work Orders del Swarm…');
             const proj   = store.getState().projects.find(p => p.id === this.activeProjectId);
@@ -572,6 +770,205 @@ export default class ValueMapView {
         if (this.dom.healthFill)  { this.dom.healthFill.style.width=`${pct}%`; this.dom.healthFill.style.background=color; }
         if (this.dom.healthLabel) this.dom.healthLabel.textContent =
             pct>=70?'Red saludable':pct>=40?'Patologías menores':'Red crítica — curar';
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  _render2DGraph — renderiza el VNA como grafo SVG en toda la zona central
+    //  Usa VnaMapRenderer con layout por tier + labels en aristas + seq badges
+    // ══════════════════════════════════════════════════════════════════════════
+    async _render2DGraph(networkOverride = null) {
+        const container = this.dom.vnaGraph2D;
+        if (!container) return;
+
+        const proj = store.getState().projects.find(p => p.id === this.activeProjectId);
+        let net = networkOverride || this._network || (proj ? {
+            nodes:     proj.vna_nodes     || [],
+            exchanges: proj.vna_exchanges || [],
+            mission:   proj.vna_description || proj.nombre || '',
+            meta:      { health_score: proj.health_score }
+        } : null);
+
+        if (!net || !(net.nodes || []).length) {
+            container.innerHTML = '<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#222;">Sin datos VNA.</div>';
+            return;
+        }
+
+        // Aplicar secuenciación si no está ya aplicada
+        if (!net.sequencing_meta) {
+            try { net = VnaSequencer.sequence(net); } catch(_) {}
+        }
+
+        const showSequence = this.dom.seqToggle?.checked !== false;
+        const svg = this._buildFullSvg(net, showSequence);
+        container.innerHTML = svg;
+
+        // Hacer nodos clickables para seleccionar WOs relacionadas
+        container.querySelectorAll('[data-node-id]').forEach(el => {
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', () => {
+                const nodeId = el.dataset.nodeId;
+                const relatedWos = (this._pendingWos || []).filter(w => w.from === nodeId || w.to === nodeId);
+                if (relatedWos.length) this._highlightWoCards(relatedWos.map(w => w.hash));
+            });
+        });
+    }
+
+    // ── Construir SVG completo con layout por nivel ───────────────────────────
+    _buildFullSvg(net, showSequence = true) {
+        const nodes     = net.nodes     || [];
+        const exchanges = net.exchanges || [];
+        if (!nodes.length) return '<svg width="100%" height="200"><text x="50%" y="100" text-anchor="middle" fill="#333">Sin nodos</text></svg>';
+
+        // ── Layout por nivel casteller ─────────────────────────────────────────
+        // tier 0 = @anxaneta (arriba), 4 = @pinya (abajo)
+        // Invertir: mayor tier = más abajo en la pantalla
+        const TIER_ORDER = { '@anxaneta':0,'@aixecador':1,'@dosos':2,'@baixos':3,'@pinya':4 };
+        const tiers = {};
+        nodes.forEach(n => {
+            const t = n.tier ?? (TIER_ORDER[n.levelId] ?? 2);
+            if (!tiers[t]) tiers[t] = [];
+            tiers[t].push({ ...n, _tier: t });
+        });
+
+        const tierKeys = Object.keys(tiers).map(Number).sort((a,b) => a - b);
+        const W = 900;
+        const NODE_W = 150, NODE_H = 52, PAD_X = 24, GAP_Y = 110;
+        const TOTAL_H = Math.max(600, tierKeys.length * GAP_Y + 120);
+
+        const nodePos = {};
+        tierKeys.forEach((tier, ti) => {
+            const tierNodes = tiers[tier];
+            const count     = tierNodes.length;
+            const totalW    = count * NODE_W + (count - 1) * PAD_X;
+            const startX    = (W - totalW) / 2;
+            const y         = 60 + ti * GAP_Y;
+            tierNodes.forEach((node, i) => {
+                const x = startX + i * (NODE_W + PAD_X);
+                nodePos[node.id] = { x, y, cx: x + NODE_W / 2, cy: y + NODE_H / 2, ...node };
+            });
+        });
+
+        // ── Colores por rol ────────────────────────────────────────────────────
+        const ROLE_FILL  = { human:'rgba(15,110,86,.18)', agent:'rgba(83,74,183,.18)', process:'rgba(153,60,29,.14)', organization:'rgba(24,95,165,.14)', resource:'rgba(59,109,17,.14)' };
+        const ROLE_STR   = { human:'#0F6E56', agent:'#534AB7', process:'#993C1D', organization:'#185FA5', resource:'#3B6D11' };
+        const ROLE_TXT   = { human:'#5ecfaa', agent:'#a8a3ee', process:'#f0a07a', organization:'#85B7EB', resource:'#a3d977' };
+
+        // ── Aristas (edges) con label de entregable y badge de secuencia ───────
+        const edgeSvg = exchanges.map((ex, i) => {
+            const from = nodePos[ex.from];
+            const to   = nodePos[ex.to];
+            if (!from || !to) return '';
+
+            const isTang  = ex.type !== 'intangible';
+            const isPay   = ex.category === 'payment';
+            const color   = isPay ? '#BA7517' : isTang ? '#1D9E75' : '#7F77DD';
+            const dash    = isTang ? '' : 'stroke-dasharray="7 4"';
+            const markerId = isPay ? 'arr-p' : isTang ? 'arr-t' : 'arr-i';
+            const seq     = ex.sequence_order;
+
+            // Calcular punto de salida/entrada en el borde del nodo
+            const dx   = to.cx - from.cx;
+            const dy   = to.cy - from.cy;
+            const len  = Math.sqrt(dx*dx + dy*dy) || 1;
+            const x1   = from.cx + (dx/len) * (NODE_W/2 + 3);
+            const y1   = from.cy + (dy/len) * (NODE_H/2 + 2);
+            const x2   = to.cx   - (dx/len) * (NODE_W/2 + 10);
+            const y2   = to.cy   - (dy/len) * (NODE_H/2 + 2);
+
+            // Punto medio para label y badge
+            const midX = (x1 + x2) / 2;
+            const midY = (y1 + y2) / 2;
+
+            // Label del entregable (truncado)
+            const label = (ex.label || ex.entregable || '').substring(0, 28);
+            const labelBg = `<rect x="${midX - label.length*3.2}" y="${midY - 10}" width="${label.length*6.4 + 10}" height="16" rx="4" fill="rgba(0,0,0,0.75)" stroke="${color}" stroke-width="0.4"/>`;
+            const labelTxt = `<text x="${midX}" y="${midY + 2}" text-anchor="middle" font-size="9" fill="${color}" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${label}</text>`;
+
+            // Badge de secuencia
+            const seqBadge = (showSequence && seq != null) ? `
+                <circle cx="${x1 + (x2-x1)*0.15}" cy="${y1 + (y2-y1)*0.15}" r="10" fill="${color}" opacity="0.95"/>
+                <text x="${x1 + (x2-x1)*0.15}" y="${y1 + (y2-y1)*0.15 + 3.5}" text-anchor="middle" font-size="9" font-weight="600" fill="#fff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${seq}</text>` : '';
+
+            return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"
+                        stroke="${color}" stroke-width="1.5" ${dash} marker-end="url(#${markerId})" fill="none"/>
+                    ${labelBg}${labelTxt}${seqBadge}`;
+        }).join('');
+
+        // ── Nodos ─────────────────────────────────────────────────────────────
+        const nodeSvg = Object.values(nodePos).map(n => {
+            const fill  = ROLE_FILL[n.role]  || 'rgba(100,100,100,.1)';
+            const str   = ROLE_STR[n.role]   || '#555';
+            const txt   = ROLE_TXT[n.role]   || '#ccc';
+            const label = (n.label || n.id || '').substring(0, 18);
+            const lvl   = (n.levelId || '').replace('@','').substring(0, 7);
+            return `<g data-node-id="${n.id}">
+                <rect x="${n.x.toFixed(1)}" y="${n.y.toFixed(1)}" width="${NODE_W}" height="${NODE_H}" rx="8"
+                    fill="${fill}" stroke="${str}" stroke-width="0.8"/>
+                <text x="${n.cx.toFixed(1)}" y="${(n.y + NODE_H/2 - 7).toFixed(1)}"
+                    text-anchor="middle" font-size="11" font-weight="500" fill="${txt}"
+                    font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${label}</text>
+                <text x="${n.cx.toFixed(1)}" y="${(n.y + NODE_H/2 + 9).toFixed(1)}"
+                    text-anchor="middle" font-size="9" fill="${str}" opacity="0.7"
+                    font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${lvl}</text>
+            </g>`;
+        }).join('');
+
+        // ── Tier labels (izquierda) ───────────────────────────────────────────
+        const TIER_LABELS = { 0:'@anxaneta', 1:'@aixecador', 2:'@dosos', 3:'@baixos', 4:'@pinya' };
+        const tierLabelsSvg = tierKeys.map(t => {
+            const y = 60 + tierKeys.indexOf(t) * GAP_Y + NODE_H / 2 + 5;
+            return `<text x="8" y="${y}" font-size="8" fill="#333" font-family="monospace"
+                transform="rotate(-90,8,${y})" text-anchor="middle">${TIER_LABELS[t] || ''}</text>`;
+        }).join('');
+
+        // ── Health badge ──────────────────────────────────────────────────────
+        const hs = net.sequencing_meta?.health_score ?? net.meta?.health_score;
+        const hsBadge = hs != null ? `
+            <rect x="${W-80}" y="6" width="72" height="20" rx="6" fill="rgba(0,230,118,.1)" stroke="rgba(0,230,118,.3)" stroke-width="0.5"/>
+            <text x="${W-44}" y="20" text-anchor="middle" font-size="10" fill="#00e676"
+                font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">health ${Number(hs).toFixed(2)}</text>` : '';
+
+        // ── Leyenda ───────────────────────────────────────────────────────────
+        const legend = `
+            <circle cx="20" cy="${TOTAL_H-18}" r="8" fill="rgba(0,230,118,.2)" stroke="#1D9E75" stroke-width="0.6"/>
+            <text x="32" y="${TOTAL_H-13}" font-size="9" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">tangible</text>
+            <line x1="72" y1="${TOTAL_H-18}" x2="88" y2="${TOTAL_H-18}" stroke="#7F77DD" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="92" y="${TOTAL_H-13}" font-size="9" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">intangible</text>
+            ${showSequence ? `<circle cx="145" cy="${TOTAL_H-18}" r="7" fill="#1D9E75" opacity="0.9"/>
+            <text x="145" y="${TOTAL_H-14}" text-anchor="middle" font-size="8" fill="#fff">1</text>
+            <text x="156" y="${TOTAL_H-13}" font-size="9" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">secuencia</text>` : ''}`;
+
+        // ── Defs ──────────────────────────────────────────────────────────────
+        const defs = `<defs>
+            <marker id="arr-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+            <marker id="arr-i" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M2 1L8 5L2 9" fill="none" stroke="#7F77DD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+            <marker id="arr-p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M2 1L8 5L2 9" fill="none" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+        </defs>`;
+
+        return `<svg width="100%" viewBox="0 0 ${W} ${TOTAL_H}" xmlns="http://www.w3.org/2000/svg"
+            style="min-height:${TOTAL_H}px;display:block;padding:8px;">
+            ${defs}
+            ${tierLabelsSvg}
+            ${edgeSvg}
+            ${nodeSvg}
+            ${hsBadge}
+            ${legend}
+        </svg>`;
+    }
+
+    // ── Highlight WO cards ────────────────────────────────────────────────────
+    _highlightWoCards(hashes) {
+        document.querySelectorAll('.wo-card').forEach(c => c.style.borderColor = '');
+        hashes.forEach(h => {
+            const card = document.querySelector(`[data-wo-hash="${h}"]`);
+            if (card) card.style.borderColor = 'var(--accent-indigo)';
+        });
     }
 
     executeViewScript() { return this.afterRender(); }

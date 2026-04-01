@@ -1,591 +1,293 @@
 // =============================================================================
-// TEAMTOWERS SOS V10 — TESTS VIEW
-// Ruta: ia/dev/js/views/TestsView.js
-// Suite TDD · Antigravity Kernel V10 · Validado contra reducer real
+// TEAMTOWERS SOS V10.1 — TESTS VIEW
+// Ruta: /ia/dev/js/views/TestsView.js
+// Vista integrada en el router SOS para ejecutar el test suite V10.1.
+// Ruta SPA: /tests
+//
+// Ejecuta todos los tests del suite V10.1 y muestra:
+//   - Barra de progreso global
+//   - Resultados agrupados por suite
+//   - Estado de cada módulo nuevo (RED / GREEN / SKIP)
+//   - Plan de implementación con prioridades
 // =============================================================================
 
-import { store }        from '../core/store.js';
-import { KB }           from '../core/kb.js';
-import { Orchestrator } from '../core/Orchestrator.js';
-
-const MOCK_ONTOLOGY = {
-    '@anxaneta':  { name: 'Growth Hacker',     multiplier: 3.0, fmv: 70, guardian: 'explorer'  },
-    '@aixecador': { name: 'Director Creativo',  multiplier: 2.0, fmv: 60, guardian: 'creator'   },
-    '@dosos':     { name: 'Project Manager',    multiplier: 1.5, fmv: 50, guardian: 'ruler'      },
-    '@baixos':    { name: 'Diseñador UI',       multiplier: 1.2, fmv: 40, guardian: 'lover'      },
-    '@pinya':     { name: 'Community Manager',  multiplier: 1.0, fmv: 25, guardian: 'caregiver'  }
-};
-
-const LLM_PRICING = {
-    anthropic: { input: 3.00,  output: 15.00 },
-    openai:    { input: 2.50,  output: 10.00 },
-    deepseek:  { input: 0.14,  output: 0.28  },
-    gemini:    { input: 0.075, output: 0.30  }
-};
-
-// ── Helper: lee WOs del proyecto — soporta work_orders y workOrders ──────────
-const getWOs = (p) => p?.work_orders || p?.workOrders || [];
-
 export default class TestsView {
-
-    constructor() {
-        document.title = 'Diagnóstico V10 | TeamTowers';
-    }
 
     async getHtml() {
         return `
         <style>
-            .app-layout { display:flex; height:100dvh; overflow:hidden;
-                background:radial-gradient(circle at center, #0a0a10 0%, #050505 100%);
-                font-family:var(--font-mono); justify-content:center; align-items:center; }
+            .tv-wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px; font-family: var(--font-sans, sans-serif); }
+            .tv-header { margin-bottom: 24px; }
+            .tv-title { font-size: 1.2rem; font-weight: 500; color: var(--color-text-primary, #fff); margin: 0 0 4px; }
+            .tv-sub   { font-size: 0.75rem; color: var(--color-text-secondary, #888); font-family: var(--font-mono, monospace); }
 
-            .test-container { width:100%; max-width:960px; padding:2rem; }
+            .tv-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+            .tv-metric  { background: var(--color-background-secondary, rgba(255,255,255,0.05)); border: 0.5px solid var(--color-border-tertiary, rgba(255,255,255,0.08)); border-radius: 10px; padding: 12px; text-align: center; }
+            .tv-metric-val { font-size: 1.5rem; font-weight: 500; font-family: var(--font-mono, monospace); }
+            .tv-metric-lbl { font-size: 0.68rem; color: var(--color-text-secondary, #888); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+            .tv-green { color: var(--color-text-success, #00e676); }
+            .tv-red   { color: var(--color-text-danger,  #ff5252); }
+            .tv-gray  { color: var(--color-text-secondary, #888); }
 
-            .matrix-header { text-align:center; margin-bottom:2rem; }
-            .matrix-header h1 { color:var(--accent-green,#00e676); font-size:2.4rem; letter-spacing:2px;
-                margin:0; text-transform:uppercase;
-                text-shadow:0 0 25px rgba(0,230,118,0.4); font-weight:900; }
-            .matrix-header p { color:#666; font-size:0.88rem; margin-top:8px;
-                font-family:var(--font-main); }
+            .tv-progress-bar { height: 4px; background: var(--color-border-tertiary, rgba(255,255,255,0.08)); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+            .tv-progress-fill { height: 100%; background: var(--color-text-success, #00e676); border-radius: 2px; transition: width 0.5s ease; }
 
-            .log-terminal { background:rgba(5,5,8,0.98); border:1px solid rgba(0,230,118,0.2);
-                border-radius:16px; padding:1.5rem; height:520px; overflow-y:auto;
-                font-size:0.8rem; line-height:1.9; color:#ccc; }
+            .tv-suite  { margin-bottom: 14px; border: 0.5px solid var(--color-border-tertiary, rgba(255,255,255,0.08)); border-radius: 10px; overflow: hidden; }
+            .tv-suite-header { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; background: var(--color-background-secondary, rgba(255,255,255,0.03)); cursor: pointer; }
+            .tv-suite-name { font-size: 0.82rem; font-weight: 500; color: var(--color-text-primary, #fff); }
+            .tv-suite-badge { font-size: 0.68rem; padding: 2px 8px; border-radius: 8px; font-weight: bold; }
+            .badge-green { background: rgba(0,230,118,0.12); color: #00e676; border: 0.5px solid rgba(0,230,118,0.3); }
+            .badge-red   { background: rgba(255,82,82,0.12);  color: #ff5252; border: 0.5px solid rgba(255,82,82,0.3);  }
+            .badge-gray  { background: rgba(128,128,128,0.1); color: #888;    border: 0.5px solid rgba(128,128,128,0.2); }
+            .badge-orange{ background: rgba(255,171,64,0.12); color: #ffab40; border: 0.5px solid rgba(255,171,64,0.3); }
 
-            .log-line { display:flex; align-items:flex-start; gap:10px; padding:3px 0;
-                border-bottom:1px solid rgba(255,255,255,0.02); animation:fadeIn 0.2s ease-out; }
-            .log-tag  { font-size:0.6rem; padding:2px 7px; border-radius:4px; font-weight:900;
-                letter-spacing:1px; flex-shrink:0; margin-top:3px; white-space:nowrap; }
+            .tv-tests  { padding: 8px 0; }
+            .tv-test   { display: flex; align-items: flex-start; gap: 8px; padding: 5px 14px; font-size: 0.76rem; }
+            .tv-test-icon { flex-shrink: 0; margin-top: 1px; font-size: 0.72rem; width: 14px; text-align: center; }
+            .tv-test-name { color: var(--color-text-secondary, #aaa); flex: 1; line-height: 1.4; }
+            .tv-test-err  { color: var(--color-text-danger, #ff5252); font-size: 0.68rem; font-family: var(--font-mono, monospace); margin-top: 2px; line-height: 1.4; }
 
-            .tag-sys      { background:rgba(99,102,241,0.15);  color:#6366f1; }
-            .tag-kb       { background:rgba(0,176,255,0.15);   color:#00b0ff; }
-            .tag-auth     { background:rgba(0,230,118,0.15);   color:#00e676; }
-            .tag-math     { background:rgba(255,145,0,0.15);   color:#ff9100; }
-            .tag-ledger   { background:rgba(224,64,251,0.15);  color:#e040fb; }
-            .tag-telemetry{ background:rgba(255,82,82,0.12);   color:#ff5252; }
-            .tag-roi      { background:rgba(0,230,118,0.12);   color:#00e676; }
-            .tag-swarm    { background:rgba(224,64,251,0.12);  color:#e040fb; }
-            .tag-evalpass { background:rgba(0,230,118,0.15);   color:#00e676; }
-            .tag-evalfail { background:rgba(255,82,82,0.15);   color:#ff5252; }
-            .tag-vna      { background:rgba(0,176,255,0.12);   color:#00b0ff; }
-            .tag-wo       { background:rgba(255,215,64,0.12);  color:#ffd740; }
+            .tv-plan   { margin-top: 24px; }
+            .tv-plan-title { font-size: 0.8rem; font-weight: 500; color: var(--color-text-primary, #fff); margin-bottom: 12px; }
+            .tv-sprint { margin-bottom: 10px; border: 0.5px solid var(--color-border-tertiary, rgba(255,255,255,0.08)); border-radius: 10px; padding: 12px 14px; }
+            .tv-sprint-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+            .tv-sprint-name { font-size: 0.8rem; font-weight: 500; color: var(--color-text-primary, #fff); }
+            .tv-sprint-items { display: flex; flex-direction: column; gap: 4px; }
+            .tv-sprint-item { display: flex; align-items: center; gap: 6px; font-size: 0.73rem; color: var(--color-text-secondary, #aaa); }
+            .tv-sprint-item.done  { color: var(--color-text-success, #00e676); }
+            .tv-sprint-item.todo  { color: var(--color-text-secondary, #888); }
+            .tv-sprint-item.fail  { color: var(--color-text-danger, #ff5252); }
+            .tv-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+            .dot-green { background: #00e676; }
+            .dot-red   { background: #ff5252; }
+            .dot-gray  { background: #555; }
 
-            .log-text  { flex:1; }
-            .log-check { font-size:0.95rem; flex-shrink:0; }
-
-            .progress-bar { height:3px; background:rgba(255,255,255,0.05);
-                border-radius:2px; margin-bottom:1.5rem; overflow:hidden; }
-            .progress-fill { height:100%;
-                background:linear-gradient(90deg, #6366f1, #00e676);
-                transition:width 0.4s ease-out; width:0%; }
-
-            .score-box { margin-top:1rem; padding:1.25rem 1.5rem;
-                background:rgba(0,230,118,0.03); border:1px solid rgba(0,230,118,0.2);
-                border-radius:12px; display:flex; align-items:center;
-                justify-content:space-between; gap:1rem; }
-            .score-val { font-size:2rem; font-weight:900; color:#00e676;
-                font-family:var(--font-mono); }
-            .score-sub { font-size:0.75rem; color:#555; font-family:var(--font-main);
-                line-height:1.4; }
-
-            .btn-enter { background:linear-gradient(135deg, #6366f1, #00e676);
-                color:white; border:none; padding:12px 36px; border-radius:10px;
-                font-size:0.9rem; font-weight:900; cursor:pointer; margin-top:1rem;
-                display:none; transition:0.3s; letter-spacing:1px; }
-            .btn-enter:hover { transform:translateY(-2px);
-                box-shadow:0 8px 25px rgba(99,102,241,0.4); }
-            .btn-enter.visible { display:inline-block; animation:fadeIn 0.5s ease-out; }
-
-            .cursor { display:inline-block; width:8px; height:14px;
-                background:#00e676; animation:blink 1s infinite; margin-left:3px; }
-
-            @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-            @keyframes blink  { 0%,100%{opacity:1;} 50%{opacity:0;} }
+            .tv-run-btn { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.5); color: #818cf8; padding: 9px 20px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 500; transition: 0.2s; }
+            .tv-run-btn:hover { background: rgba(99,102,241,0.3); }
+            .tv-run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+            .tv-spinner { display: inline-block; width: 11px; height: 11px; border: 1.5px solid rgba(255,255,255,0.2); border-top-color: #818cf8; border-radius: 50%; animation: tv-spin 0.7s linear infinite; vertical-align: middle; margin-right: 4px; }
+            @keyframes tv-spin { to { transform: rotate(360deg); } }
         </style>
 
-        <div class="app-layout">
-            <div class="test-container">
-                <div class="matrix-header">
-                    <h1>⚡ SOS ANTIGRAVITY V10</h1>
-                    <p>Diagnóstico de integridad del Kernel · Todos los sistemas bajo escrutinio</p>
-                </div>
+        <div class="tv-wrap">
+            <div class="tv-header">
+                <div class="tv-title">SOS V10.1 — Test Suite</div>
+                <div class="tv-sub">TDD · Value Flow Sequence + Quality Loop · ${new Date().toLocaleDateString('es')}</div>
+            </div>
 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                <button class="tv-run-btn" id="tv-run-btn" onclick="runTests()">Ejecutar todos los tests</button>
+                <span id="tv-status" style="font-size:0.75rem;color:var(--color-text-secondary,#888);">Listo para ejecutar</span>
+            </div>
 
-                <div class="log-terminal" id="logTerminal">
-                    <div class="log-line">
-                        <span class="log-check">🔄</span>
-                        <span class="log-text" style="color:#00e676;">
-                            Inicializando Suite de Tests V10 · Antigravity Kernel…<span class="cursor"></span>
-                        </span>
-                    </div>
-                </div>
+            <div id="tv-summary" style="display:none;">
+                <div class="tv-summary" id="tv-metrics"></div>
+                <div class="tv-progress-bar"><div class="tv-progress-fill" id="tv-progress" style="width:0%"></div></div>
+            </div>
 
-                <div style="text-align:center;">
-                    <button class="btn-enter" id="btnEnterMatrix">ENTRAR A LA MATRIZ →</button>
+            <div id="tv-results"></div>
+
+            <div class="tv-plan">
+                <div class="tv-plan-title">Plan de implementación V10.1 — estado actual</div>
+                <div id="tv-plan-content">
+                    ${TestsView._renderPlanStatic()}
                 </div>
             </div>
         </div>`;
     }
 
     async afterRender() {
-        const terminal     = document.getElementById('logTerminal');
-        const progressFill = document.getElementById('progressFill');
-        const btnEnter     = document.getElementById('btnEnterMatrix');
-
-        let passed = 0;
-        let failed = 0;
-        let total  = 0;
-        let originalUser = null;
-
-        // ── Log helpers ───────────────────────────────────────────────────────
-        const log = (message, tag = 'SYS', isPass = true) => {
-            total++;
-            if (isPass) passed++; else failed++;
-            const tagKey = tag.toLowerCase().replace(/[^a-z]/g, '');
-            terminal.insertAdjacentHTML('beforeend', `
-                <div class="log-line">
-                    <span class="log-check">${isPass ? '✅' : '❌'}</span>
-                    <span class="log-tag tag-${tagKey}">${tag}</span>
-                    <span class="log-text" style="${isPass ? '' : 'color:#ff5252;'}">${message}</span>
-                </div>`);
-            progressFill.style.width = `${Math.round((total / 22) * 100)}%`;
-            terminal.scrollTop = terminal.scrollHeight;
-        };
-
-        const assert = async (condition, message, tag) => {
-            await new Promise(r => setTimeout(r, 45));
-            log(message, tag, !!condition);
-            if (!condition) throw new Error(`[${tag}] ${message}`);
-        };
-
-        const softAssert = async (condition, message, tag) => {
-            await new Promise(r => setTimeout(r, 45));
-            log(message, tag, !!condition);
-            // No lanza — continúa aunque falle
-        };
-
-        // ── Test runner ───────────────────────────────────────────────────────
-        const runTests = async () => {
-            const PID      = 'v10-stress-' + Date.now();
-            const dynNeo   = '0xNeo_'   + Math.floor(Math.random() * 9999);
-            const dynAgent = '@deep_coder_' + Math.floor(Math.random() * 9999);
-
-            try {
-                await store.init();
-                originalUser = store.getState().session?.activeUserId;
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 1 — KERNEL & IDENTIDAD
-                // ══════════════════════════════════════════════════════
-                const ver = store.getState().config?.version || 'v10-Antigravity';
-                await assert(
-                    ver.includes('v10') || ver.includes('Antigravity') || ver.includes('10'),
-                    `Motor Redux Inmutable V10 Activo (Detectada: ${ver})`, 'SYS'
-                );
-
-                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: dynNeo } });
-                await assert(
-                    store.getState().session.activeUserId === dynNeo,
-                    'Identidad inyectada temporalmente en Storage Redux', 'AUTH'
-                );
-
-                await store.dispatch({ type: 'ADD_USER', payload: {
-                    id: dynAgent, name: 'Deep Coder V10', globalRole: 'ai-agent',
-                    profile: { isAi: true, preferredEngine: 'anthropic', version: 'v10',
-                               maturity: 'draft', archetype_mesh: {} }
-                }});
-                const agentExists = store.getState().globalUsers.find(u => u.id === dynAgent);
-                await assert(
-                    agentExists?.profile?.preferredEngine === 'anthropic',
-                    'Swarm V10: Agente creado con motor primario Anthropic', 'SWARM'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 2 — INDEXEDDB (KB.JS)
-                // ══════════════════════════════════════════════════════
-                const db = await KB.init();
-                await assert(db !== null, 'IndexedDB Córtex (kb.js) montada y sincronizada', 'KB');
-
-                const allSkills = await KB.getAllNodes();
-                const skillCount = allSkills.filter(n => n.type === 'skill' || n.category === 'skill').length;
-                await assert(
-                    Array.isArray(allSkills),
-                    `Arquitectura AgentSkills: ${skillCount} skills en KB`, 'KB'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 3 — API KEYS EN KB (ZERO localStorage)
-                // ══════════════════════════════════════════════════════
-                const storedProvider = await Orchestrator.getDefaultProvider();
-                await assert(
-                    typeof storedProvider === 'string',
-                    `Bóveda KB: Provider activo leído de IndexedDB → "${storedProvider}"`, 'KB'
-                );
-
-                const storedKey = await Orchestrator.getApiKey('anthropic');
-                await assert(
-                    storedKey === null || (typeof storedKey === 'string' && storedKey.length > 0),
-                    'Bóveda KB: API Key Anthropic accesible desde KB (no localStorage)', 'KB'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 4 — PROYECTO V10 & VNA
-                // ══════════════════════════════════════════════════════
-                const roles = Object.entries(MOCK_ONTOLOGY).map(([levelId, d]) => ({
-                    id: 'role_' + levelId.replace('@',''), levelId,
-                    name: d.name, fmv: d.fmv, multiplier: d.multiplier,
-                    guardian: d.guardian, isVacant: true
-                }));
-
-                await store.dispatch({ type: 'CREATE_PROJECT', payload: {
-                    id: PID, nombre: 'Stress Test V10', ownerId: dynNeo,
-                    archetype: 'tech-startup', roles,
-                    vna_nodes: [], vna_exchanges: [],
-                    vna_flows: [], work_orders: [], workOrders: [],
-                    ledger: [], telemetry: [], logs: []
-                }});
-
-                let p = store.getState().projects.find(x => x.id === PID);
-                await assert(p !== undefined, 'Ecosistema VNA instanciado en Redux Kernel', 'SYS');
-                await assert(p.ownerId === dynNeo, 'Gobernanza Zero-Trust: Project Owner verificado', 'AUTH');
-
-                // VNA Flow
-                const rAnx  = p.roles.find(r => r.levelId === '@anxaneta');
-                const rBaix = p.roles.find(r => r.levelId === '@baixos');
-                await store.dispatch({ type: 'ADD_FLOW', payload: {
-                    projectId: PID,
-                    flow: { id: 'flow_1', from: rAnx.id, to: rBaix.id,
-                            template: 'Backend Microservice', tipo: 'tangible', estimatedHours: 10 }
-                }});
-                p = store.getState().projects.find(x => x.id === PID);
-                await assert(
-                    (p.vna_flows || []).length === 1 || (p.flows || []).length === 1,
-                    'Flujo VNA inyectado en topología del ecosistema', 'VNA'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 5 — WORK ORDERS & TDD NOTARIAL
-                // ══════════════════════════════════════════════════════
-                const woHash = 'wo_' + Date.now();
-
-                // SPAWN — usa el key que acepta el reducer (workOrders)
-                await store.dispatch({ type: 'SPAWN_WORK_ORDER', payload: {
-                    projectId: PID,
-                    workOrder: {
-                        hash: woHash, flowId: 'flow_1', status: 'theoretical',
-                        realHours: 0, assigneeId: dynAgent,
-                        soc_checklist: [
-                            { id: 'soc_1', text: 'Output entregado según template', isChecked: false },
-                            { id: 'soc_2', text: 'Pasa validación TDD del auditor',  isChecked: false }
-                        ]
-                    }
-                }});
-
-                p = store.getState().projects.find(x => x.id === PID);
-                const wos = getWOs(p);
-                await assert(wos.length === 1, 'WO spawneada en el proyecto (workOrders)', 'WO');
-                await assert(
-                    wos[0].status === 'theoretical',
-                    'WO status inicial: theoretical ✓', 'WO'
-                );
-
-                // UPDATE_WO_STATUS — pinged
-                await store.dispatch({ type: 'UPDATE_WO_STATUS', payload: {
-                    projectId: PID, hash: woHash, status: 'pinged', assigneeId: dynAgent
-                }});
-                p = store.getState().projects.find(x => x.id === PID);
-                await assert(
-                    getWOs(p)[0]?.status === 'pinged',
-                    'UPDATE_WO_STATUS: theoretical → pinged ✓', 'WO'
-                );
-
-                // REPORT_WORK_ORDER — reported
-                await store.dispatch({ type: 'REPORT_WORK_ORDER', payload: {
-                    projectId: PID, woHash, realHours: 8.42, comentario: 'Commit pushed · tests green'
-                }});
-                p = store.getState().projects.find(x => x.id === PID);
-                await assert(
-                    getWOs(p)[0]?.status === 'reported',
-                    'REPORT_WORK_ORDER: pinged → reported ✓', 'WO'
-                );
-                await assert(
-                    getWOs(p)[0]?.realHours === 8.42,
-                    'Proof of Work: realHours sellados (8.42h)', 'WO'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 6 — SLICING PIE V10
-                // ══════════════════════════════════════════════════════
-                // Simular consolidación manual via ADD_LEDGER_ENTRY
-                // (APPROVE no existe en el reducer V10 — la consolidación
-                //  se hace desde LedgerView/ProjectView con ADD_LEDGER_ENTRY)
-                const wo = getWOs(p)[0];
-                const role = p.roles.find(r => r.id === 'role_@baixos') || p.roles[3];
-                const expectedSlices = parseFloat((wo.realHours * (role?.fmv || 40) * (role?.multiplier || 1.2)).toFixed(3));
-
-                await store.dispatch({ type: 'ADD_LEDGER_ENTRY', payload: {
-                    projectId: PID,
-                    entry: {
-                        userId: dynAgent, roleId: role?.id || 'role_@baixos',
-                        horas: wo.realHours, fmv: role?.fmv || 40,
-                        multiplier: role?.multiplier || 1.2,
-                        valorCongelado: expectedSlices,
-                        descripcion: 'Backend Microservice · consolidado', timestamp: Date.now()
-                    }
-                }});
-
-                p = store.getState().projects.find(x => x.id === PID);
-                await assert(
-                    p.ledger.length > 0,
-                    `Slicing Pie V10: Entrada consolidada en ledger (${expectedSlices.toFixed(3)} slices)`, 'MATH'
-                );
-                await assert(
-                    p.ledger[0].valorCongelado === expectedSlices,
-                    `Precisión decimal verificada: ${expectedSlices} slices ✓`, 'MATH'
-                );
-
-                // Capital injection via ADD_LEDGER_ENTRY tipo CAPITAL_INJECTION
-                const capitalSlices = parseFloat((1000 * 4.0).toFixed(3));
-                await store.dispatch({ type: 'ADD_LEDGER_ENTRY', payload: {
-                    projectId: PID,
-                    entry: {
-                        userId: dynNeo, roleId: 'CAPITAL_ASSET',
-                        type: 'CAPITAL_INJECTION',
-                        valorCongelado: capitalSlices,
-                        descripcion: 'Seed capital · x4.0 riesgo FIAT', timestamp: Date.now()
-                    }
-                }});
-                p = store.getState().projects.find(x => x.id === PID);
-                const capTx = p.ledger.find(l => l.roleId === 'CAPITAL_ASSET');
-                await assert(
-                    capTx !== undefined && capTx.valorCongelado === capitalSlices,
-                    `Ledger Cash: Multiplicador riesgo FIAT x4.0 aplicado (${capitalSlices} slices)`, 'LEDGER'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 7 — TELEMETRÍA & REC
-                // ══════════════════════════════════════════════════════
-                const mockUsage = { prompt_tokens: 15000, completion_tokens: 2500 };
-                const engine    = 'anthropic';
-                const pricing   = LLM_PRICING[engine];
-                const costUSD   = ((mockUsage.prompt_tokens / 1_000_000) * pricing.input) +
-                                  ((mockUsage.completion_tokens / 1_000_000) * pricing.output);
-                const valueCreated = wo.realHours * (role?.fmv || 40);
-                const REC          = valueCreated / costUSD;
-
-                await store.dispatch({ type: 'LOG_TELEMETRY', payload: {
-                    projectId: PID, agentId: dynAgent, engine,
-                    actionType: 'SOP_EXECUTION', tokens: mockUsage,
-                    costInDollars: costUSD, recRatio: REC, latencyMs: 950
-                }});
-
-                p = store.getState().projects.find(x => x.id === PID);
-                await assert(
-                    (p.telemetry || []).length === 1,
-                    `Telemetría V10: Gasto Anthropic registrado ($${costUSD.toFixed(4)})`, 'TELEMETRY'
-                );
-                await assert(
-                    REC > 100,
-                    `Eficiencia REC: ${REC.toFixed(0)}x retorno sobre coste API ⚡`, 'ROI'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 8 — USENET LOG
-                // ══════════════════════════════════════════════════════
-                await store.dispatch({ type: 'ADD_LOG_ENTRY', payload: {
-                    projectId: PID,
-                    log: { id: 'log_1', authorId: dynAgent, relatedTxHash: woHash,
-                           content: 'SOP ejecutado por Swarm V10.', mentions: [], readBy: [] }
-                }});
-                p = store.getState().projects.find(x => x.id === PID);
-                await assert(
-                    (p.logs || []).length > 0,
-                    'Usenet: Log entry registrada en el proyecto', 'SWARM'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 9 — SOFT CHECKS (no rompen el kernel)
-                // ══════════════════════════════════════════════════════
-                const harvest = store.calculateHarvest ? store.calculateHarvest(PID) : [];
-                await softAssert(
-                    Array.isArray(harvest) && harvest.length > 0,
-                    `calculateHarvest(): ${harvest.length} participante(s) en cap table`, 'MATH'
-                );
-
-                const globalUsersCount = store.getState().globalUsers.length;
-                await softAssert(
-                    globalUsersCount >= 12,
-                    `Swarm completo: ${globalUsersCount} agentes en globalUsers`, 'SWARM'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 10 — EVAL ENGINE (Sprint 2)
-                // ══════════════════════════════════════════════════════
-                const { EvalEngine } = await import('../core/EvalEngine.js');
-                const testRole = roles[0];
-
-                const evalNode = await EvalEngine.createEval({
-                    projectId: PID,
-                    parentId:  testRole.id,
-                    parentType: 'role',
-                    criteria:  'El rol completa su primera WO con SOC >= 80%',
-                    level:     0,
-                    archetype: testRole.guardian
-                });
-                await softAssert(
-                    evalNode?.id?.startsWith('eval_'),
-                    `EvalEngine.createEval(): EvalNode creado [${evalNode?.id}]`, 'EVAL-PASS'
-                );
-
-                // Validación ProjectForge con rol sin transacciones
-                const validation = EvalEngine.validateProjectForge({
-                    roles:        roles,
-                    vna_nodes:    roles,
-                    vna_flows:    [],
-                    vna_exchanges: [],
-                    evals:        [evalNode]
-                });
-                await softAssert(
-                    validation.errors.some(e => e.type === 'NO_TRANSACTIONS'),
-                    `ProjectForge TDD: Error bloqueante detectado (rol sin transacciones)`, 'EVAL-PASS'
-                );
-                await softAssert(
-                    !validation.isValid,
-                    `ProjectForge TDD: Proyecto inválido bloqueado correctamente`, 'EVAL-PASS'
-                );
-
-                // Pasar el eval y verificar madurez
-                const passedEval = await EvalEngine.passEval({
-                    projectId: PID, evalId: evalNode.id,
-                    auditedBy: dynAgent, result: 'SOC superado en primera iteración'
-                });
-                await softAssert(
-                    passedEval?.status === 'passed',
-                    `EvalEngine.passEval(): status → passed ✓`, 'EVAL-PASS'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 11 — SKILL ANTIGRAVITY (Sprint 3)
-                // ══════════════════════════════════════════════════════
-                const { SkillAntigravity } = await import('../core/SkillAntigravity.js');
-
-                // Crear skill de prueba en KB
-                const testSkillId = `skill_test_${Date.now()}`;
-                await KB.saveNode({
-                    id: testSkillId, type: 'skill', category: 'core.execution',
-                    projectId: 'global', title: 'Test Skill Sprint4',
-                    description: 'Skill de prueba para el test de Antigravity',
-                    content: 'SOP:\n1. Analizar el input\n2. Procesar\n3. Validar output\nSOC: Output cumple schema definido',
-                    keywords: ['test', 'sprint4']
-                });
-
-                // buildPromptForAgent sin compilar (modo local)
-                const mockAg = {
-                    sourceId: testSkillId, mission: 'Test mission',
-                    socs: ['Output cumple schema'], outputSchema: { type: 'json', fields: ['result'] },
-                    nodeRefs: [], canonicalUrl: `/ia/dev/kb/${testSkillId}`
-                };
-                const agPrompt = SkillAntigravity.buildPromptForAgent(mockAg);
-                await softAssert(
-                    agPrompt.includes('MISSION:') && agPrompt.includes('SOCs:'),
-                    `SkillAntigravity.buildPromptForAgent(): prompt AG generado (${agPrompt.length} chars)`, 'KB'
-                );
-
-                // Estimar compresión
-                const originalLen = 'SOP:\n1. Analizar el input\n2. Procesar\n3. Validar output\nSOC: Output cumple schema definido'.length;
-                const agLen       = agPrompt.length;
-                await softAssert(
-                    agLen < originalLen,
-                    `Compresión AG: ${agLen} chars vs ${originalLen} originales (${Math.round((1-agLen/originalLen)*100)}% reducción)`, 'KB'
-                );
-
-                // ══════════════════════════════════════════════════════
-                //  BLOQUE 12 — ORCHESTRATOR CLUSTERING (Sprint 4)
-                // ══════════════════════════════════════════════════════
-                const clusterMap = await Orchestrator.getClusterMap();
-                await softAssert(
-                    Object.keys(clusterMap).length > 0,
-                    `Clustering V10.2: ${Object.keys(clusterMap).length} cluster(s) detectados`, 'SWARM'
-                );
-
-                const totalAgents = Object.values(clusterMap).reduce((s, c) => s + c.agents.length, 0);
-                await softAssert(
-                    totalAgents > 0,
-                    `Distribución enjambre: ${totalAgents} agentes distribuidos en clusters`, 'SWARM'
-                );
-
-                const clusterHealth = await Orchestrator.getClusterHealth(PID);
-                await softAssert(
-                    Array.isArray(clusterHealth),
-                    `Cluster Health: ${clusterHealth.length} orquestador(es) monitorizados`, 'SWARM'
-                );
-
-                // Limpieza skill de prueba
-                try { await KB.deleteNode(testSkillId); } catch(_) {}
-
-                // ══════════════════════════════════════════════════════
-                //  TEARDOWN
-                // ══════════════════════════════════════════════════════
-                await store.dispatch({ type: 'DELETE_PROJECT', payload: { projectId: PID } });
-                if (originalUser) await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
-
-                // ── Resultado final ───────────────────────────────────
-                const allPassed = failed === 0;
-                terminal.insertAdjacentHTML('beforeend', `
-                    <div style="margin-top:1.5rem; padding:1.25rem 1.5rem;
-                        background:${allPassed ? 'rgba(0,230,118,0.04)' : 'rgba(255,145,0,0.04)'};
-                        border:1px solid ${allPassed ? 'rgba(0,230,118,0.25)' : 'rgba(255,145,0,0.3)'};
-                        border-radius:12px; display:flex; align-items:center; justify-content:space-between;">
-                        <div>
-                            <div style="font-size:1.5rem;font-weight:900;color:${allPassed ? '#00e676' : '#ff9100'};">
-                                ${allPassed ? '✅' : '⚠️'} ${passed}/${total} TESTS SUPERADOS
-                            </div>
-                            <div style="font-size:0.72rem;color:#555;margin-top:4px;font-family:var(--font-main);">
-                                Redux · IndexedDB KB · Anthropic Primary · Slicing Pie · WO Lifecycle · Swarm IA · EvalEngine · SkillAntigravity · Clustering
-                            </div>
-                        </div>
-                        <div style="text-align:right;font-size:0.72rem;color:#444;font-family:var(--font-main);">
-                            ${failed > 0 ? `<span style="color:#ff5252;">${failed} fallidos</span>` : 'Kernel íntegro'}
-                        </div>
-                    </div>`);
-
-                progressFill.style.width = '100%';
-                btnEnter.classList.add('visible');
-                btnEnter.addEventListener('click', () => {
-                    window.history.pushState(null, null, '/dashboard');
-                    window.dispatchEvent(new Event('popstate'));
-                });
-
-            } catch (err) {
-                // Teardown de seguridad
-                try {
-                    await store.dispatch({ type: 'DELETE_PROJECT', payload: { projectId: PID } });
-                    if (originalUser) await store.dispatch({ type: 'LOGIN_USER', payload: { userId: originalUser } });
-                } catch (_) {}
-
-                terminal.insertAdjacentHTML('beforeend', `
-                    <div style="margin-top:1.5rem; padding:1.25rem 1.5rem;
-                        background:rgba(255,82,82,0.04); border:1px solid rgba(255,82,82,0.25);
-                        border-radius:12px;">
-                        <div style="font-size:1.2rem;font-weight:900;color:#ff5252;margin-bottom:8px;">
-                            💥 KERNEL PANIC — ${passed}/${total} antes del fallo
-                        </div>
-                        <pre style="color:#ccc; font-size:0.76rem; background:rgba(0,0,0,0.4);
-                            padding:12px; border-radius:8px; white-space:pre-wrap;
-                            font-family:var(--font-mono);">${err.message}</pre>
-                    </div>`);
-
-                terminal.scrollTop = terminal.scrollHeight;
-            }
-
-            document.querySelector('.cursor')?.remove();
-        };
-
-        setTimeout(runTests, 500);
+        // Auto-run en modo dev
+        if (window.location.search.includes('autorun')) {
+            setTimeout(() => window.runTests?.(), 300);
+        }
     }
 
-    executeViewScript() { return this.afterRender(); }
+    static _renderPlanStatic() {
+        const sprints = [
+            {
+                id: 'S1', name: 'Sprint 1 — VnaSequencer + WoGenerator V10.1',
+                priority: 'high', impact: 'El Orquestador puede ejecutar WOs en orden correcto',
+                items: [
+                    { file: 'core/VnaSequencer.js',   desc: 'Topological sort, sequence_order, depends_on, detectCycles()' },
+                    { file: 'core/WoGenerator.js',    desc: 'Heredar sequence_order, nextExecutable(), execution_layers en summary()' },
+                    { file: 'core/QueenSwarm.js',     desc: 'Usar VnaSequencer antes de fromVnaNetwork() en el paso 4' },
+                ]
+            },
+            {
+                id: 'S2', name: 'Sprint 2 — ArtifactEngine + VnaMapRenderer',
+                priority: 'high', impact: 'Artefactos persistidos y visualizables en cualquier vista SOS',
+                items: [
+                    { file: 'core/ArtifactEngine.js',         desc: 'persist(), getByProject(), getRenderable(), TYPES, ARTIFACT_CREATED' },
+                    { file: 'components/VnaMapRenderer.js',   desc: 'render(vna, opts), buildLayout(), toArtifact(), showSequence badges' },
+                    { file: 'store.js',                       desc: 'Añadir reducer ARTIFACT_CREATED' },
+                ]
+            },
+            {
+                id: 'S3', name: 'Sprint 3 — QueenAudit + PrimerEngine',
+                priority: 'medium', impact: 'Ciclo de mejora continua + memoria entre sesiones',
+                items: [
+                    { file: 'core/QueenAudit.js',    desc: 'analyze(), proposeFixes(), applyFixes() — post CONSOLIDATE_WORK_ORDER' },
+                    { file: 'core/PrimerEngine.js',  desc: 'save(), load(), buildContext() — session_summary nodes en KB' },
+                    { file: 'core/WoAutoCloser.js',  desc: 'Disparar QueenAudit.analyze() después de _consolidate()' },
+                ]
+            },
+            {
+                id: 'S4', name: 'Sprint 4 — GateEngine + integración completa',
+                priority: 'medium', impact: '0 violaciones del Codex en runtime + testing continuo',
+                items: [
+                    { file: 'core/GateEngine.js',    desc: 'check(), wrap(), promote(), DEFAULT_GATES del Codex SOS V10' },
+                    { file: 'core/store.js',         desc: 'Wrapear dispatch() con GateEngine.wrap() en init()' },
+                    { file: 'views/TestsView.js',    desc: 'Integrar suite de tests en /tests — este fichero' },
+                ]
+            },
+        ];
+
+        return sprints.map(s => `
+            <div class="tv-sprint">
+                <div class="tv-sprint-header">
+                    <span class="tv-sprint-name">${s.id}: ${s.name}</span>
+                    <span class="tv-suite-badge badge-orange">${s.priority}</span>
+                </div>
+                <div style="font-size:0.7rem;color:var(--color-text-secondary,#888);margin-bottom:7px;">${s.impact}</div>
+                <div class="tv-sprint-items">
+                    ${s.items.map(item => `
+                    <div class="tv-sprint-item todo">
+                        <div class="tv-dot dot-gray"></div>
+                        <code style="font-size:0.7rem;color:inherit;">${item.file}</code>
+                        <span style="color:var(--color-text-tertiary,#555);font-size:0.68rem;">— ${item.desc}</span>
+                    </div>`).join('')}
+                </div>
+            </div>`).join('');
+    }
+}
+
+// ── Global test runner (accesible desde el HTML) ──────────────────────────────
+
+window.runTests = async function() {
+    const btn    = document.getElementById('tv-run-btn');
+    const status = document.getElementById('tv-status');
+    const results = document.getElementById('tv-results');
+    const summary = document.getElementById('tv-summary');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="tv-spinner"></span>Ejecutando…';
+    status.textContent = 'Cargando módulos…';
+    results.innerHTML  = '';
+    summary.style.display = 'block';
+
+    let suiteResults = [];
+
+    try {
+        // Importar runner y suites — rutas relativas a js/views/ → js/tests/
+        const { TestRunner } = await import('../tests/helpers.js');
+        const { ALL_SUITES } = await import('../tests/sos_v10_1.test.js');
+        const runner = new TestRunner();
+
+        status.textContent = 'Ejecutando tests…';
+
+        // Ejecutar cada suite y actualizar UI progresivamente
+        for (const suite of ALL_SUITES) {
+            try {
+                await suite(runner);
+            } catch(e) {
+                console.error('[TestsView] Suite error:', e);
+            }
+        }
+
+        // Resolver async tests
+        const pending = runner.results.filter(r => r.passed === 'pending');
+        for (const p of pending) {
+            try { await p.promise; p.passed = true; } catch(e) { p.passed = false; p.error = e.message; }
+            delete p.promise;
+        }
+
+        const sum = runner.summary();
+        suiteResults = sum.results;
+
+        // Métricas globales
+        document.getElementById('tv-metrics').innerHTML = `
+            <div class="tv-metric"><div class="tv-metric-val">${sum.total}</div><div class="tv-metric-lbl">Total tests</div></div>
+            <div class="tv-metric"><div class="tv-metric-val tv-green">${sum.passed}</div><div class="tv-metric-lbl">Passed</div></div>
+            <div class="tv-metric"><div class="tv-metric-val tv-red">${sum.failed}</div><div class="tv-metric-lbl">Failed</div></div>
+            <div class="tv-metric"><div class="tv-metric-val ${sum.pct === 100 ? 'tv-green' : sum.pct >= 60 ? '' : 'tv-red'}">${sum.pct}%</div><div class="tv-metric-lbl">Pass rate</div></div>`;
+        document.getElementById('tv-progress').style.width = sum.pct + '%';
+        document.getElementById('tv-progress').style.background = sum.pct === 100 ? '#00e676' : sum.pct >= 60 ? '#ffab40' : '#ff5252';
+
+        // Agrupar por suite
+        const bySuite = {};
+        sum.results.forEach(r => {
+            if (!bySuite[r.suite]) bySuite[r.suite] = [];
+            bySuite[r.suite].push(r);
+        });
+
+        results.innerHTML = Object.entries(bySuite).map(([suite, tests]) => {
+            const suitePassed = tests.filter(t => t.passed).length;
+            const suiteTotal  = tests.length;
+            const allGreen    = suitePassed === suiteTotal;
+            const allRed      = suitePassed === 0;
+            const badgeClass  = allGreen ? 'badge-green' : allRed ? 'badge-red' : 'badge-orange';
+            const badgeText   = allGreen ? 'PASS' : allRed ? 'FAIL' : `${suitePassed}/${suiteTotal}`;
+
+            return `
+            <div class="tv-suite">
+                <div class="tv-suite-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+                    <span class="tv-suite-name">${suite}</span>
+                    <span class="tv-suite-badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="tv-tests" style="display:${allGreen ? 'none' : 'block'}">
+                    ${tests.map(t => `
+                    <div class="tv-test">
+                        <span class="tv-test-icon">${t.passed ? '✓' : '✗'}</span>
+                        <div>
+                            <div class="tv-test-name" style="color:${t.passed ? 'var(--color-text-secondary,#aaa)' : 'var(--color-text-primary,#fff)'}">${t.name}</div>
+                            ${t.error ? `<div class="tv-test-err">${t.error}</div>` : ''}
+                        </div>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+        }).join('');
+
+        status.textContent = `${sum.passed}/${sum.total} tests pasados (${sum.pct}%)`;
+
+        // Actualizar plan con estado real
+        _updatePlanWithResults(sum.results);
+
+    } catch(e) {
+        status.textContent = 'Error cargando test suite: ' + e.message;
+        results.innerHTML = `<div style="color:var(--color-text-danger,#ff5252);font-size:0.82rem;padding:12px;border:0.5px solid rgba(255,82,82,0.3);border-radius:8px;">${e.message}</div>`;
+        console.error('[TestsView]', e);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Volver a ejecutar';
+};
+
+function _updatePlanWithResults(results) {
+    const plan = document.getElementById('tv-plan-content');
+    if (!plan) return;
+    // Marcar sprints como done/fail según si sus módulos tienen tests que pasan
+    const moduleStatus = {
+        'VnaSequencer':   results.filter(r => r.suite.includes('VnaSequencer')).every(r => r.passed),
+        'WoGenerator':    results.filter(r => r.suite.includes('WoGenerator')).every(r => r.passed),
+        'ArtifactEngine': results.filter(r => r.suite.includes('ArtifactEngine')).every(r => r.passed),
+        'QueenAudit':     results.filter(r => r.suite.includes('QueenAudit')).every(r => r.passed),
+        'PrimerEngine':   results.filter(r => r.suite.includes('PrimerEngine')).every(r => r.passed),
+        'GateEngine':     results.filter(r => r.suite.includes('GateEngine')).every(r => r.passed),
+        'VnaMapRenderer': results.filter(r => r.suite.includes('ValueMapView') || r.suite.includes('VnaMapRenderer')).every(r => r.passed),
+    };
+    plan.querySelectorAll('.tv-sprint-item').forEach(item => {
+        const code = item.querySelector('code');
+        if (!code) return;
+        const file = code.textContent;
+        const key  = Object.keys(moduleStatus).find(k => file.includes(k));
+        if (!key) return;
+        if (moduleStatus[key]) {
+            item.classList.remove('todo','fail'); item.classList.add('done');
+            item.querySelector('.tv-dot').className = 'tv-dot dot-green';
+        } else {
+            item.classList.remove('todo','done'); item.classList.add('fail');
+            item.querySelector('.tv-dot').className = 'tv-dot dot-red';
+        }
+    });
 }

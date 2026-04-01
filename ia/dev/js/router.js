@@ -1,35 +1,23 @@
 // =============================================================================
 // TEAMTOWERS SOS V10 — ROUTER
-// Rutas relativas — Netlify publica desde ia/dev/ como raíz
-// BASE_PATH normaliza el pathname para que /ia/dev/map → /map
 // =============================================================================
 
 import { store } from './core/store.js';
 
-// ─── BASE PATH ────────────────────────────────────────────────────────────────
-// En Netlify el sitio vive en /ia/dev/. Cuando el usuario visita
-// https://teamtowershuma.com/ia/dev/map, window.location.pathname es /ia/dev/map.
-// navigateTo() ya usa rutas cortas (/map) via pushState, pero en el primer
-// render (carga directa o reload) hay que strip del prefijo.
-// BASE_PATH automático — funciona en Netlify (/ia/dev) y en local (cualquier ruta)
-const BASE_PATH = (() => {
-    const src = document.currentScript?.src || import.meta.url;
-    const match = src.match(/^(.*?)\/js\/router\.js/);
-    return match ? match[1].replace(window.location.origin, '') : '/ia/dev';
-})();
+const BASE_PATH  = '/ia/dev';
+const VIEWS_PATH = `${BASE_PATH}/js/views`;
+const V          = '?v=10.9.1';
+
+// Guard contra ejecuciones simultáneas del router
+let _routing = false;
 
 function getRoutePath() {
-    const raw  = window.location.pathname.replace(/\/$/, '') || '/';
-    // Si el pathname empieza con BASE_PATH, lo quitamos
+    const raw = window.location.pathname.replace(/\/$/, '') || '/';
     if (raw.startsWith(BASE_PATH)) {
-        const stripped = raw.slice(BASE_PATH.length).replace(/\/$/, '') || '/';
-        return stripped;
+        return raw.slice(BASE_PATH.length).replace(/\/$/, '') || '/';
     }
     return raw;
 }
-
-const VIEWS_PATH = `${BASE_PATH}/js/views`;
-const V = '?v=10.1.0'; // ← cambia esto en cada deploy
 
 const ROUTES = [
     { path: '/',          view: () => import(`${VIEWS_PATH}/HomeView.js${V}`)           },
@@ -54,6 +42,9 @@ const ROUTES = [
 ];
 
 async function router() {
+    if (_routing) return;   // evitar ejecuciones simultáneas
+    _routing = true;
+
     const path  = getRoutePath();
     const match = ROUTES.find(r => r.path === path) ?? ROUTES.find(r => r.path === null);
     const app   = document.getElementById('app');
@@ -67,11 +58,10 @@ async function router() {
 
         app.innerHTML = await view.getHtml();
 
-        // Soporte V10 (afterRender) y alias V9 (executeViewScript)
         if (typeof view.afterRender          === 'function') await view.afterRender();
         else if (typeof view.executeViewScript === 'function') await view.executeViewScript();
 
-        // Activar links SPA — evitar doble bind
+        // Bind links SPA — solo los no vinculados aún
         document.querySelectorAll('[data-link]').forEach(link => {
             if (link._linked) return;
             link._linked = true;
@@ -83,25 +73,26 @@ async function router() {
 
     } catch (err) {
         console.error('[V10 Router]', err);
-        app.innerHTML = `
+        if (app) app.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:center;height:100dvh;
                         flex-direction:column;gap:1.5rem;color:#888;font-family:monospace;background:#050507;">
                 <div style="font-size:3rem;">💥</div>
-                <div style="color:#ff5252;font-size:0.9rem;max-width:420px;text-align:center;">${err.message}</div>
+                <div style="color:#ff5252;font-size:0.85rem;max-width:480px;text-align:center;line-height:1.5;">${err.message}</div>
                 <button onclick="window.location.href='/ia/dev/'"
-                        style="background:rgba(99,102,241,0.2);border:1px solid #6366f1;color:#6366f1;
-                               padding:10px 20px;border-radius:10px;cursor:pointer;font-family:monospace;">
+                        style="background:rgba(99,102,241,0.15);border:1px solid #6366f1;color:#6366f1;
+                               padding:10px 20px;border-radius:10px;cursor:pointer;font-family:monospace;font-size:0.82rem;">
                     ← Volver al inicio
                 </button>
             </div>`;
     } finally {
-        window.bootDone?.();
+        _routing = false;
+        // Ocultar bootloader si existe
+        const boot = document.getElementById('bootloader');
+        if (boot) boot.classList.add('hidden');
     }
 }
 
 export function navigateTo(url) {
-    // navigateTo siempre recibe rutas cortas (/map, /dashboard…)
-    // Para pushState necesitamos la URL completa con el base path
     const fullUrl = url.startsWith(BASE_PATH) ? url : BASE_PATH + url;
     window.history.pushState(null, null, fullUrl);
     router();
@@ -110,6 +101,7 @@ export function navigateTo(url) {
 window.navigateTo = navigateTo;
 window.addEventListener('popstate', router);
 
+// Un solo listener global para links — sin duplicados
 document.addEventListener('click', e => {
     const link = e.target.closest('[data-link]');
     if (link && !link._linked) {
@@ -118,4 +110,6 @@ document.addEventListener('click', e => {
     }
 });
 
+// Arranque inicial
 router();
+

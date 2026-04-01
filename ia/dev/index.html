@@ -3,27 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma"        content="no-cache">
     <meta http-equiv="Expires"       content="0">
-
-    <title>TeamTowers | Sistema Operativo de Soberanía (V10)</title>
+    <title>TeamTowers | SOS V10 · Antigravity</title>
     <meta name="description" content="Antigravity Kernel V10. VNA · Slicing Pie · Swarm IA · Anthropic Primary.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗼</text></svg>">
 
-    <link rel="stylesheet" href="/ia/dev/styles/tokens.css?v=10.0.0">
-    <link rel="stylesheet" href="/ia/dev/styles/base.css?v=10.0.0">
-    <script type="module" src="/ia/dev/js/router.js?v=10.1.0" defer></script>
+    <link rel="stylesheet" href="/ia/dev/styles/tokens.css?v=10.6.8">
+    <link rel="stylesheet" href="/ia/dev/styles/base.css?v=10.6.8">
+
+    <!-- Reset crítico: elimina el margin:8px del body que causa el marco blanco -->
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: #050507;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        #app { width: 100%; height: 100%; }
+
+        /* Bootloader */
+        .kernel-boot {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #050507;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 1.5rem; transition: opacity 0.4s ease;
+        }
+        .kernel-boot.hidden { opacity: 0; pointer-events: none; }
+        .tower-logo  { font-size: 4rem; }
+        .pulse-text  { color: #6366f1; font-family: monospace; font-size: 0.8rem;
+                       letter-spacing: 2px; animation: pulse 2s infinite; }
+        .boot-log    { display: flex; flex-direction: column; gap: 4px; }
+        .log-item    { font-family: monospace; font-size: 0.72rem; color: #444; }
+        .status-ok   { color: #00e676; }
+        .status-sync { color: #ff9100; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    </style>
+
+    <script type="module" src="/ia/dev/js/router.js?v=10.6.8" defer></script>
 </head>
 <body>
-
     <div id="app"></div>
 
     <div class="kernel-boot" id="bootloader">
         <div class="tower-logo">🗼</div>
-        <p class="pulse-text">INITIALIZING SOS V10.0 · ANTIGRAVITY</p>
-
+        <p class="pulse-text">INITIALIZING SOS V10 · ANTIGRAVITY</p>
         <div class="boot-log">
             <div class="log-item">LOCAL-FIRST ENGINE:      <span class="status-ok">OK</span></div>
             <div class="log-item">INDEXEDDB KB LAYER:      <span class="status-ok">OK</span></div>
@@ -34,11 +61,10 @@
     </div>
 
     <noscript>
-        <div style="text-align:center; padding:50px; color:white; background:#000; height:100vh;">
+        <div style="text-align:center;padding:50px;color:white;background:#000;height:100vh;">
             <h1>Soberanía Desactivada</h1>
-            <p>TeamTowers OS V10 requiere JavaScript para operar el Exoesqueleto Cognitivo P2P.</p>
+            <p>TeamTowers SOS V10 requiere JavaScript.</p>
         </div>
     </noscript>
-
 </body>
 </html>

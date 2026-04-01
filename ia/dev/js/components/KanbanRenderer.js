@@ -4,6 +4,8 @@
 // Motor de renderizado del Kanban PULL · Work Orders · TDD SOCs
 // =============================================================================
 
+import { WoEvalPanel } from './WoEvalPanel.js';
+
 export class KanbanRenderer {
 
     constructor(containerEl, options = {}) {
@@ -190,7 +192,7 @@ export class KanbanRenderer {
 
             if (isMine) {
                 actionHtml = `
-                    <a href="/paper?hash=${hashVal}&legacy=${isLegacy}" class="btn-focus" data-link>▶ PUBLICAR ENTREGABLE</a>
+                    <button class="btn-focus kb-action" data-action="eval" ${hashAttr} style="cursor:pointer;">▶ REPORTAR ENTREGABLE</button>
                     <button class="btn-reject kb-action" data-action="reject" ${hashAttr} title="Soltar Tarea">✖</button>`;
             } else if (isAiAssignee && isPO) {
                 actionHtml = `<button class="btn-ai-exec kb-action" data-action="ai-exec" ${hashAttr} data-agent="${tx.assigneeId}">⚡ EJECUTAR IA (${tx.assigneeId})</button>`;
@@ -207,14 +209,11 @@ export class KanbanRenderer {
                 aiOutputHtml = `<div class="task-ai-output"><b>🤖 Proof of Work:</b><br>${(tx.comentario || '').replace(/\n/g,'<br>')}</div>`;
             }
 
-            if (isPO) {
-                const needsHuman = isAiTask && (socs.length === 0 || socs.length > 5);
-                actionHtml = needsHuman
-                    ? `<button class="btn-review-human kb-action" data-action="review" ${hashAttr}>⚠️ Auditoría Humana (PO)</button>`
-                    : `<button class="btn-review      kb-action" data-action="review" ${hashAttr}>🔎 Auditar SOCs (PO)</button>`;
-            } else {
-                actionHtml = `<div style="font-size:0.78rem;color:#888;text-align:center;padding:8px;border:1px dashed #333;border-radius:8px;width:100%;">Pendiente de Auditar por PO</div>`;
-            }
+            // Todos los usuarios pueden abrir el panel de evaluación
+            // Si faltan SOCs → el panel los genera con IA automáticamente
+            const missSocs = socs.length === 0;
+            actionHtml = `<button class="${missSocs ? 'btn-review-human' : 'btn-review'} kb-action" data-action="eval" ${hashAttr}>
+                ${missSocs ? '🎯 Generar SOCs y Evaluar' : '🔎 Evaluar Entregable'}</button>`;
         }
         // ── SELLADO ───────────────────────────────────────────────
         else if (tx.status === 'consolidated' || tx.status === 'approved') {
@@ -258,7 +257,10 @@ export class KanbanRenderer {
             ${contextHtml}
             ${aiOutputHtml}
             <div class="task-meta-row">
-                ${socHtml || `<span style="color:#555;font-weight:bold;font-size:0.72rem;">Sin SOCs</span>`}
+                ${socHtml || `<button class="kb-action" data-action="eval" ${hashAttr}
+                    style="background:rgba(255,171,64,0.08);border:1px dashed rgba(255,171,64,0.4);color:var(--accent-orange);
+                           padding:3px 8px;border-radius:6px;font-size:0.72rem;font-weight:bold;cursor:pointer;">
+                    + Añadir SOCs</button>`}
                 <span style="font-weight:bold;color:white;font-family:var(--font-mono);">⏱ ${flowData.estimatedHours || flowData.horas || 1}h</span>
             </div>
             <div class="task-actions">${actionHtml}</div>
@@ -275,11 +277,20 @@ export class KanbanRenderer {
                 const agentId  = e.currentTarget.dataset.agent;
 
                 if (action === 'open-push-modal') {
-                    // V10: usa evento sos: para que ProjectView abra el modal
                     document.dispatchEvent(new CustomEvent('sos:push-modal', {
                         bubbles: true,
                         detail: { hash, isLegacy, projectId: this.options.project?.id }
                     }));
+                    return;
+                }
+
+                // ── eval: abre WoEvalPanel inline (reemplaza OmniPaper) ──
+                if (action === 'eval') {
+                    WoEvalPanel.open({
+                        projectId: this.options.project?.id,
+                        woHash:    hash,
+                        isLegacy
+                    });
                     return;
                 }
 

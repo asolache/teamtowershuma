@@ -569,78 +569,138 @@ Reglas:
 
         if (!name || !mission) return alert('El nombre y la visión son obligatorios.');
 
+        // Contador de rondas — máximo 1 ronda de preguntas
+        this._maieuticRound = (this._maieuticRound || 0) + 1;
+        const forceGenerate = this._maieuticRound >= 2;
+
         this.dom.step1.style.display   = 'none';
         this.dom.loading.style.display = 'flex';
 
         try {
             await KB.init();
-            const skillNode = await KB.getNode('skill_vna_architect');
-            const systemPrompt = (skillNode
-                ? `Eres el @agent_genesis_architect con la Skill [${skillNode.title}]. SOP:\n${skillNode.content}\n\n`
-                : 'Eres el @agent_genesis_architect, experto en Value Network Analysis (VNA) y ecosistemas Slicing Pie.\n\n')
-            + `Tu misión es diseñar la topología completa de una red de valor.
-Si la visión es clara, devuelve DIRECTAMENTE el ecosistema en JSON.
-Si hay ambigüedad, devuelve SOLO preguntas de clarificación.
+            const skillNode    = await KB.getNode('skill_vna_architect');
+            const skillContext = skillNode
+                ? `Tienes la Skill [${skillNode.title}]. SOP resumido:\n${(skillNode.content||'').substring(0,400)}\n\n`
+                : '';
 
-SIEMPRE devuelve un JSON con UNA de estas dos estructuras:
+            // Si es la segunda ronda → forzar generación directa, sin más preguntas
+            const forceDirective = forceGenerate
+                ? `IMPORTANTE: Ya tienes suficiente contexto. DEBES generar el ecosistema ahora.
+NO devuelvas más preguntas. Genera el mejor borrador posible con la info disponible.
+Si falta algo, inventa valores razonables para el sector "${sector}". El usuario puede editarlo después.\n\n`
+                : '';
 
-OPCIÓN A — Preguntas (si hay ambigüedad):
-{ "requires_clarification": true, "questions": ["Pregunta 1...", "Pregunta 2..."] }
+            const systemPrompt = `Eres @agent_genesis_architect, experto en VNA y ecosistemas Slicing Pie.
+${skillContext}${forceDirective}
+PROTOCOLO:
+- Si la visión es suficientemente clara → genera el ecosistema DIRECTAMENTE (Opción B)
+- Si falta información crítica para el VNA → haz máximo 3 preguntas (Opción A)
+- Nunca hagas más de 3 preguntas. Con 3 respuestas debes poder generar el borrador.
 
-OPCIÓN B — Ecosistema completo:
+OPCIÓN A — Solo si faltan datos críticos (máx 3 preguntas enfocadas en VNA):
+{
+  "requires_clarification": true,
+  "questions": [
+    "¿Quién paga? (rol que genera ingresos)",
+    "¿Qué entrega concreto recibe el cliente?",
+    "¿Quién ejecuta el trabajo principal?"
+  ]
+}
+
+OPCIÓN B — Ecosistema VNA completo (siempre si tienes contexto mínimo):
 {
   "requires_clarification": false,
-  "presentacion": "Visión enriquecida del ecosistema",
+  "presentacion": "Visión del ecosistema en 2-3 frases",
   "tags": ["tag1","tag2"],
   "roles": [
-    { "levelId": "@anxaneta|@aixecador|@dosos|@baixos|@pinya", "name": "Nombre del rol", "fmv": 60, "multiplier": 2.0, "guardian": "archetype", "ai_prompt": "System prompt del rol..." }
+    { "levelId": "@anxaneta|@aixecador|@dosos|@baixos|@pinya",
+      "name": "Nombre del rol", "fmv": 60, "multiplier": 2.0,
+      "guardian": "archetype",
+      "ai_prompt": "System prompt del rol en 1 frase" }
   ],
   "transactions": [
-    { "fromLevel": "@baixos", "toLevel": "@dosos", "tipo": "tangible|intangible", "template": "Entregable", "horas": 8, "soc_checklist": [{"text":"SOC 1","isChecked":false}] }
+    { "fromLevel": "@baixos", "toLevel": "@dosos",
+      "tipo": "tangible|intangible", "template": "Entregable concreto",
+      "horas": 8,
+      "soc_checklist": [
+        {"text":"El entregable cumple criterio X","isChecked":false},
+        {"text":"El receptor confirma recepción","isChecked":false}
+      ]
+    }
   ]
 }`;
 
-            if (this.dom.loadingText) this.dom.loadingText.innerText = 'Evaluando visión con @agent_genesis_architect…';
+            if (this.dom.loadingText) this.dom.loadingText.innerText = forceGenerate
+                ? 'Generando borrador VNA con el contexto disponible…'
+                : 'Analizando visión con @agent_genesis_architect…';
 
             const response = await Orchestrator.callLLM({
                 preferredEngine: engine || 'anthropic',
                 systemPrompt,
-                userPrompt: `Nombre: ${name}\nSector: ${sector}\nArquetipo: ${this.dom.inpArchetype.value}\nMisión: ${mission}\nPúblico Objetivo: ${target}`,
+                userPrompt: `Nombre: ${name}
+Sector: ${sector}
+Arquetipo: ${this.dom.inpArchetype?.value || ''}
+Misión/Visión: ${mission}
+Público Objetivo: ${target || 'Por definir'}`,
                 responseFormat: 'json_object',
-                temperature: 0.35
+                temperature: forceGenerate ? 0.4 : 0.3
             });
 
             this.dom.loading.style.display = 'none';
             const parsed = response.content;
 
-            if (parsed.requires_clarification && parsed.questions?.length > 0) {
-                this.dom.maieuticQList.innerHTML = parsed.questions.map((q, i) => `
+            // Si pide clarificación Y no hemos llegado al límite → mostrar preguntas (máx 3)
+            if (parsed.requires_clarification && parsed.questions?.length > 0 && !forceGenerate) {
+                const qs = parsed.questions.slice(0, 3); // máximo 3 preguntas
+                this.dom.maieuticQList.innerHTML = qs.map((q, i) => `
                     <div class="maieutic-q">
-                        <label style="color:#aaa;font-size:0.82rem;margin-bottom:4px;display:block;">${q}</label>
-                        <input type="text" class="maieutic-answer" data-idx="${i}" placeholder="Tu respuesta…">
+                        <label style="color:#aaa;font-size:0.82rem;margin-bottom:4px;display:block;">
+                            <span style="color:#6366f1;font-weight:bold;margin-right:6px;">${i+1}.</span>${q}
+                        </label>
+                        <input type="text" class="maieutic-answer" data-idx="${i}"
+                               placeholder="Tu respuesta…"
+                               style="background:rgba(0,0,0,0.5);border:1px solid rgba(99,102,241,0.3);
+                                      color:white;padding:9px 12px;border-radius:8px;font-size:0.85rem;
+                                      outline:none;width:100%;box-sizing:border-box;">
                     </div>`).join('');
+
+                // Mostrar hint de que es la única ronda
+                const hint = document.createElement('div');
+                hint.style.cssText = 'font-size:0.7rem;color:#444;margin-top:10px;font-style:italic;';
+                hint.textContent   = `Responde estas ${qs.length} preguntas y el sistema generará el borrador automáticamente.`;
+                this.dom.maieuticQList.appendChild(hint);
+
                 this.dom.maieuticPanel.style.display = 'block';
                 this.dom.step1.style.display         = 'block';
                 this._pendingResponse = parsed;
                 return;
             }
 
+            // En cualquier otro caso (borrador directo o segunda ronda) → generar
+            this._maieuticRound = 0; // reset para próximo proyecto
             this._applyParsedEcosystem(parsed);
             this._goToStep2();
 
         } catch (err) {
             this.dom.loading.style.display = 'none';
             this.dom.step1.style.display   = 'block';
+            this._maieuticRound = 0;
             alert('Error en el Orquestador Cognitivo: ' + err.message);
         }
     }
 
     async _executeFinalForgeWithAI() {
-        const answers  = Array.from(this.container.querySelectorAll('.maieutic-answer')).map(i => i.value.trim());
+        const answers  = Array.from(this.container.querySelectorAll('.maieutic-answer'))
+            .map(i => i.value.trim()).filter(Boolean);
         const mission  = this.dom.inpMission.value.trim();
-        const enhanced = mission + '\n\nAclaraciones adicionales:\n' + answers.map(a => `- ${a}`).join('\n');
-        this.dom.inpMission.value = enhanced;
+
+        // Enriquecer la misión con las respuestas — sin volver a preguntar
+        if (answers.length) {
+            this.dom.inpMission.value = mission + '\n\nContexto adicional:\n' + answers.map(a => `- ${a}`).join('\n');
+        }
         this.dom.maieuticPanel.style.display = 'none';
+
+        // _evaluateVisionWithAI detectará que _maieuticRound >= 2 y forzará la generación
         await this._evaluateVisionWithAI();
     }
 

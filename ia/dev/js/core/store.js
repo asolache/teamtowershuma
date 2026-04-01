@@ -4,7 +4,8 @@
 // Migrado desde v9 · Kernel: Antigravity V10
 // =============================================================================
 
-import { KB } from './kb.js';
+import { KB }          from './kb.js';
+import { GateEngine }  from './GateEngine.js';
 
 const initialState = {
     config: {
@@ -36,7 +37,7 @@ const initialState = {
         { id: '@agent_token_economist',    name: 'Token Economist',    globalRole: 'ai-agent', profile: { isAi: true, guardian: 'ruler',     preferredEngine: 'anthropic', active_skills: ['skill_antifragile_compressor'] } },
         { id: '@agent_media_generator',    name: 'Media Generator',    globalRole: 'ai-agent', profile: { isAi: true, guardian: 'hero',      preferredEngine: 'anthropic', active_skills: [] } },
         { id: '@agent_web_deployer',       name: 'Web Deployer',       globalRole: 'ai-agent', profile: { isAi: true, guardian: 'magician',  preferredEngine: 'anthropic', active_skills: ['skill_ui_component_forge'] } },
-        { id: '@agent_codex_developer',    name: 'Codex Developer',    globalRole: 'ai-agent', profile: { isAi: true, guardian: 'sage',      preferredEngine: 'anthropic', active_skills: ['skill_vault_monetization'] } },
+        { id: '@agent_codex_developer',    name: 'Codex Developer',    globalRole: 'ai-agent', profile: { isAi: true, guardian: 'creator', preferredEngine: 'anthropic', active_skills: ['skill_vault_monetization', 'skill_swa_packager'], castell_level: '@dosos', queen_role: 'packager', reports_to: '@agent_genesis_architect' } },
         { id: '@kaos_tester',              name: 'Kaos Tester',        globalRole: 'ai-agent', profile: { isAi: true, guardian: 'outlaw',    preferredEngine: 'anthropic', active_skills: ['skill_pentest_chaos'] } },
         { id: '@bard_narrator',            name: 'Bard Narrator',      globalRole: 'ai-agent', profile: { isAi: true, guardian: 'jester',    preferredEngine: 'anthropic', active_skills: ['skill_community_engagement'] } },
         { id: '@alvaro', name: 'Alvaro (Master Architect)', globalRole: 'ecosystem-owner', profile: { sbt_skills: [] } }
@@ -104,6 +105,49 @@ class Store {
 
         this.isInitialized = true;
         this.state.lastUpdated = Date.now();
+
+        // ── GateEngine: wrapear dispatch() con enforcement del Codex ──────────
+        // Solo wrapeamos una vez para evitar doble wrapping si init() se llama varias veces.
+        if (!this._gateWrapped) {
+            const _rawDispatch = this.dispatch.bind(this);
+            this.dispatch = GateEngine.wrap(_rawDispatch, GateEngine.DEFAULT_GATES, {
+                onBlocked: (action, result) => {
+                    console.warn(`[GateEngine] 🚫 BLOQUEADO: ${result.reason}`, action.type);
+                    if (!this.state.gateViolations) this.state.gateViolations = { count: 0, log: [] };
+                    this.state.gateViolations.count++;
+                    this.state.gateViolations.log.push({
+                        action: action.type, reason: result.reason, gate: result.gate?.name, ts: Date.now()
+                    });
+                }
+            });
+            this._gateWrapped = true;
+        }
+
+        // ── Asegurar que @alvaro siempre existe como ecosystem-owner ──
+        if (!this.state.globalUsers.find(u => u.id === '@alvaro')) {
+            this.state.globalUsers.unshift({
+                id: '@alvaro', name: 'Alvaro (Master Architect)',
+                globalRole: 'ecosystem-owner',
+                profile: { sbt_skills: [], isAi: false }
+            });
+        }
+
+        // ── Auto-login: forzar ecosystem-owner si sesión es guest/null ──
+        const isGuest = !this.state.session?.activeUserId ||
+                        this.state.session?.role === 'guest' ||
+                        this.state.session?.activeUserId?.startsWith('0xNeo');
+        if (isGuest) {
+            const owner = this.state.globalUsers.find(u =>
+                u.globalRole === 'ecosystem-owner' || u.id === '@alvaro'
+            );
+            if (owner) {
+                this.state.session = {
+                    activeUserId: owner.id,
+                    role:         owner.globalRole || 'ecosystem-owner'
+                };
+                console.log(`🔐 [V10 Kernel] Sesión iniciada como ${owner.name || owner.id}`);
+            }
+        }
     }
 
     getState() { return this.state; }
@@ -432,7 +476,35 @@ class Store {
                 break;
             }
 
-            // ── EVAL ENGINE (Sprint 2) ────────────────────────────
+            // ── CONSOLIDATE_WORK_ORDER — cierre con Proof of Work + Evals ──
+            case 'CONSOLIDATE_WORK_ORDER': {
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    const woArr3 = newState.projects[projIdx].work_orders
+                                || newState.projects[projIdx].workOrders || [];
+                    const ci = woArr3.findIndex(wo => wo.hash === action.payload.woHash);
+                    if (ci > -1) {
+                        woArr3[ci].status        = 'consolidated';
+                        woArr3[ci].consolidatedAt = Date.now();
+                        woArr3[ci].evalsResult   = action.payload.evalsResult || {};
+                        woArr3[ci].autoApproved  = action.payload.autoApproved || false;
+                        // Registrar en ledger automáticamente
+                        if (!newState.projects[projIdx].ledger) newState.projects[projIdx].ledger = [];
+                        newState.projects[projIdx].ledger.push({
+                            type:          'SOP_EXECUTION',
+                            userId:        woArr3[ci].assigneeId,
+                            roleId:        woArr3[ci].from || woArr3[ci].assigneeId,
+                            horas:         woArr3[ci].realHours || 0,
+                            fmv:           action.payload.fmv || 40,
+                            multiplier:    action.payload.multiplier || 1.0,
+                            woHash:        action.payload.woHash,
+                            timestamp:     Date.now(),
+                            descripcion:   `WO consolidada: ${woArr3[ci].entregable || woArr3[ci].template}`
+                        });
+                    }
+                }
+                break;
+            }
             // EVAL_CREATE: registra un EvalNode en el array evals del proyecto
             case 'EVAL_CREATE':
                 projIdx = findProject(action.payload.projectId);
@@ -496,6 +568,15 @@ class Store {
                 }
                 break;
             }
+
+            // ── ARTIFACT_CREATED (ArtifactEngine → proyecto) ──────────────
+            case 'ARTIFACT_CREATED':
+                projIdx = findProject(action.payload.projectId);
+                if (projIdx > -1) {
+                    if (!newState.projects[projIdx].artifacts) newState.projects[projIdx].artifacts = [];
+                    newState.projects[projIdx].artifacts.push(action.payload.artifact);
+                }
+                break;
 
             default:
                 break;

@@ -36,10 +36,11 @@ const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 
 // ─── PROXY NETLIFY (resuelve CORS del browser → Anthropic) ───
-// En local (localhost) llama directo. En Netlify usa el proxy.
-const ANTHROPIC_PROXY_URL = window.location.hostname === 'localhost'
-    ? ANTHROPIC_API_URL
-    : '/api/anthropic-proxy';
+// En local (localhost / 127.0.0.1 / file:) llama directo con dangerously-allow-browser.
+// En producción (Netlify) usa el proxy /api/anthropic-proxy.
+const _h = window.location.hostname;
+const _IS_LOCAL = _h === 'localhost' || _h === '127.0.0.1' || _h === '' || _h.endsWith('.local');
+const ANTHROPIC_PROXY_URL = _IS_LOCAL ? ANTHROPIC_API_URL : '/api/anthropic-proxy';
 
 // ─── CLAVE DE PERSISTENCIA EN KB (IndexedDB) ─────────────────
 const KB_KEY_PROVIDER  = 'sos_ai_provider';
@@ -48,13 +49,54 @@ const KB_KEY_OPENAI    = 'sos_key_openai';
 const KB_KEY_DEEPSEEK  = 'sos_key_deepseek';
 const KB_KEY_GEMINI    = 'sos_key_gemini';
 
-// ─── SYSTEM PROMPTS VNA (Sprint 1) ───────────────────────────
+// ─── SYSTEM PROMPTS VNA (Sprint 6 — Autonomía Máxima) ────────
 const VNA_MAPPER_PROMPT = `Eres @agent_genesis_architect del SOS V10, experto en Value Network Analysis de Verna Allee.
-Construye redes de valor completas. DEVUELVE SOLO JSON-LD válido con @context "https://teamtowers.io/sos/v10/vna" y @type "VnaNetwork".
-Estructura: { "@context", "@type", "id", "mission", "vision", "nodes": [VnaNode], "exchanges": [VnaExchange], "meta": { "health_score": 0.0 } }
+
+MODO OPERATIVO: AUTONOMÍA MÁXIMA
+Tu misión es generar un mapa de valor completo y de alta calidad usando tu conocimiento interno.
+NO hagas preguntas. NO pidas confirmaciones. INFIERE todo lo que puedas del contexto dado.
+Usa tus tokens para investigar, razonar y construir — no para preguntar.
+
+PROTOCOLO DE INVESTIGACIÓN INTERNA (ejecutar antes de construir el mapa):
+1. Analiza el dominio/sector del proyecto e identifica los actores típicos de ese ecosistema
+2. Infiere la cadena de valor del sector (quién produce, quién transforma, quién distribuye, quién consume)
+3. Detecta los flujos tangibles e intangibles más frecuentes en ese tipo de red
+4. Asigna FMV estimado a cada rol basado en benchmarks del sector
+5. Calcula health_score inicial basado en la diversidad y reciprocidad de los intercambios
+
+REGLAS DE CONSTRUCCIÓN:
+- Genera entre 5 y 10 roles. Ni más ni menos. Roles completos > roles incompletos.
+- Cada rol debe tener al menos 2 intercambios (entrada + salida)
+- Incluir siempre flujos intangibles (confianza, conocimiento, reputación)
+- health_score = (intercambios_bidireccionales / total_intercambios) × factor_diversidad_roles
+- Si el contexto es ambiguo, elige el escenario más probable del sector y construye ese mapa
+
+SOLO EMITE open_question (máximo 1) si:
+- El sector es completamente indeterminado Y no hay ninguna pista en la descripción
+- Hay una decisión estratégica binaria que cambia radicalmente el mapa (ej: B2B vs B2C)
+En cualquier otro caso: open_question debe ser null
+
+DEVUELVE SOLO JSON-LD válido:
+{
+  "@context": "https://teamtowers.io/sos/v10/vna",
+  "@type": "VnaNetwork",
+  "id": "vna-{projectId}",
+  "mission": "...",
+  "vision": "...",
+  "sector": "...",
+  "confidence": 0.0,
+  "nodes": [VnaNode],
+  "exchanges": [VnaExchange],
+  "meta": {
+    "health_score": 0.0,
+    "reasoning": "Breve explicación de las decisiones de diseño (2-3 frases)",
+    "assumptions": ["asunciones hechas durante el research interno"],
+    "open_question": null
+  }
+}
 VnaNode: { "id", "label", "role": "agent|human|organization|resource|process", "tier": 0-3, "skills": [], "fmv": 0.0, "slices": 0.0 }
 VnaExchange: { "id", "from", "to", "type": "tangible|intangible", "category": "payment|deliverable|resource|service|knowledge|trust|feedback|collaboration", "label", "trigger", "frequency": "once|recurring|on-demand", "automatable": true|false }
-Máximo 10 roles. Incluir health_score 0.0-1.0. Zero hallucinations.`;
+Zero hallucinations. Máxima calidad. Mínimas preguntas.`;
 
 const SKILL_CRAFTER_PROMPT = `Eres @agent_skill_crafter del SOS V10. Creas skills en formato SKILL.md.
 Estructura OBLIGATORIA:
@@ -301,10 +343,21 @@ class OrchestratorCore {
                         }
 
                         // ANTHROPIC_PROXY_URL → /api/anthropic-proxy en Netlify
-                        // evita CORS; en localhost apunta directo a api.anthropic.com
+                        // En local apunta directo a api.anthropic.com → necesita header especial
+                        if (_IS_LOCAL) {
+                            // Llamada directa browser→Anthropic: mover auth al header, fuera del body
+                            delete requestBody.apiKey;
+                            delete requestBody._anthropicVersion;
+                        }
+                        const anthropicHeaders = { 'content-type': 'application/json' };
+                        if (_IS_LOCAL) {
+                            anthropicHeaders['x-api-key']                          = apiKey;
+                            anthropicHeaders['anthropic-version']                  = ANTHROPIC_VERSION;
+                            anthropicHeaders['anthropic-dangerously-allow-browser'] = 'true';
+                        }
                         const response = await fetch(ANTHROPIC_PROXY_URL, {
                             method:  'POST',
-                            headers: { 'content-type': 'application/json' },
+                            headers: anthropicHeaders,
                             body:    JSON.stringify(requestBody)
                         });
 
@@ -338,9 +391,13 @@ class OrchestratorCore {
 
                     // ── OPENAI ──────────────────────────────────────────────
                     else if (provider === 'openai') {
+                        // OpenAI exige la palabra "json" en el prompt cuando usa json_object
+                        const oaiUserPrompt = responseFormat === 'json_object'
+                            ? userPrompt + '\n\nResponde ÚNICAMENTE con un objeto JSON válido.'
+                            : userPrompt;
                         const messages = [
                             { role: 'system', content: systemPrompt },
-                            { role: 'user',   content: userPrompt  }
+                            { role: 'user',   content: oaiUserPrompt }
                         ];
                         const body = { model: 'gpt-4o', temperature, max_tokens: 8192, messages };
                         if (responseFormat === 'json_object') body.response_format = { type: 'json_object' };
@@ -365,9 +422,12 @@ class OrchestratorCore {
 
                     // ── DEEPSEEK ────────────────────────────────────────────
                     else if (provider === 'deepseek') {
+                        const dsUserPrompt = responseFormat === 'json_object'
+                            ? userPrompt + '\n\nResponde ÚNICAMENTE con un objeto JSON válido.'
+                            : userPrompt;
                         const messages = [
                             { role: 'system', content: systemPrompt },
-                            { role: 'user',   content: userPrompt  }
+                            { role: 'user',   content: dsUserPrompt }
                         ];
                         const body = { model: 'deepseek-chat', temperature, max_tokens: 8192, messages };
                         if (responseFormat === 'json_object') body.response_format = { type: 'json_object' };
@@ -393,19 +453,40 @@ class OrchestratorCore {
                     // ── GEMINI ──────────────────────────────────────────────
                     else if (provider === 'gemini') {
                         const mimeType = responseFormat === 'json_object' ? 'application/json' : 'text/plain';
-                        const url      = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        // Cascada de modelos: probar en orden hasta que uno responda 200
+                        const GEMINI_MODELS = [
+                            'gemini-2.5-flash-preview-05-20',
+                            'gemini-2.0-flash',
+                            'gemini-2.0-flash-lite',
+                            'gemini-1.5-flash',
+                            'gemini-1.5-flash-8b'
+                        ];
+                        let geminiResponse = null;
+                        let geminiModelUsed = null;
+                        for (const gModel of GEMINI_MODELS) {
+                            const gUrl = `https://generativelanguage.googleapis.com/v1beta/models/${gModel}:generateContent?key=${apiKey}`;
+                            try {
+                                const r = await fetch(gUrl, {
+                                    method:  'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body:    JSON.stringify({
+                                        contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT:\n${userPrompt}` }] }],
+                                        generationConfig: { temperature, maxOutputTokens: 8192, responseMimeType: mimeType }
+                                    })
+                                });
+                                if (r.ok) { geminiResponse = r; geminiModelUsed = gModel; break; }
+                                const errBody = await r.text();
+                                // Si no es 404 (modelo no encontrado), propagar el error
+                                if (r.status !== 404) throw new Error(`[HTTP ${r.status}] ${errBody}`);
+                                // 404 → probar siguiente modelo
+                            } catch(gErr) {
+                                if (!gErr.message?.includes('404') && !gErr.message?.includes('no longer available')) throw gErr;
+                            }
+                        }
+                        if (!geminiResponse) throw new Error('[Gemini] Ningún modelo disponible para esta cuenta. Comprueba la API key o usa otro proveedor.');
+                        console.log(`[V10·Orchestrator] ✅ Gemini usando modelo: ${geminiModelUsed}`);
 
-                        const response = await fetch(url, {
-                            method:  'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body:    JSON.stringify({
-                                contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT:\n${userPrompt}` }] }],
-                                generationConfig: { temperature, maxOutputTokens: 8192, responseMimeType: mimeType }
-                            })
-                        });
-                        if (!response.ok) throw new Error(`[HTTP ${response.status}] ${await response.text()}`);
-
-                        const data = await response.json();
+                        const data = await geminiResponse.json();
                         if (!data.candidates?.length) throw new Error('Respuesta vacía de Gemini.');
                         textResponse = data.candidates[0].content.parts[0].text;
                         if (data.usageMetadata) {
@@ -452,7 +533,7 @@ class OrchestratorCore {
                     }
 
                     const latencyMs = Date.now() - startTime;
-                    return {
+                    const result = {
                         content:   parsedContent,
                         telemetry: {
                             provider,
@@ -461,6 +542,26 @@ class OrchestratorCore {
                             latencyMs
                         }
                     };
+
+                    // ── Emitir evento global para el monitor de actividad ──
+                    const priceMatrix = BASE_PRICING[provider] || { input:0, output:0 };
+                    const costUSD = (
+                        (tokenUsage.prompt_tokens     / 1_000_000) * priceMatrix.input +
+                        (tokenUsage.completion_tokens / 1_000_000) * priceMatrix.output
+                    );
+                    window.dispatchEvent(new CustomEvent('sos:ai-activity', {
+                        detail: {
+                            provider,
+                            promptTokens:     tokenUsage.prompt_tokens     || 0,
+                            completionTokens: tokenUsage.completion_tokens || 0,
+                            totalTokens:      (tokenUsage.prompt_tokens||0) + (tokenUsage.completion_tokens||0),
+                            costUSD:          parseFloat(costUSD.toFixed(6)),
+                            latencyMs,
+                            timestamp:        Date.now()
+                        }
+                    }));
+
+                    return result;
 
                 } catch (err) {
                     lastError = err;
@@ -534,13 +635,35 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
     }
 
     // ══════════════════════════════════════════════════════════
-    //  designVnaMap — Genera mapa VNA completo de un proyecto
+    //  designVnaMap — Genera mapa VNA completo (Sprint 6)
+    //  Autónomo: research interno + borrador completo
+    //  Solo pregunta si sector es indeterminado o hay bifurcación
     // ══════════════════════════════════════════════════════════
     async designVnaMap({ projectId, description, domain = 'auto' }) {
+        await this._ensureKB();
+
+        // Enriquecer contexto desde KB — el agente no necesita preguntar
+        const existingNetwork = await KB.getNode(`vna-network-${projectId}`);
+        const state           = store.getState();
+        const project         = state.projects?.find(p => p.id === projectId);
+
+        const researchContext = {
+            projectId,
+            description,
+            domain,
+            projectName:       project?.name                            || '',
+            existingRoles:     project?.roles?.map(r => r.name || r.id) || [],
+            existingNodes:     existingNetwork?.nodes                   || [],
+            existingExchanges: existingNetwork?.exchanges               || [],
+            isEvolution:       !!existingNetwork,
+            hint_sector:       project?.sector || domain,
+            hint_size:         project?.roles?.length                   || 0
+        };
+
         const artifact = await this.dispatch({
             routine:     'designEcosystemVNA',
             agent:       CORE_AGENTS.ARCHITECT,
-            context:     { projectId, description, domain },
+            context:     researchContext,
             constraints: {
                 strictJSON: true,
                 engine:     'anthropic',
@@ -564,6 +687,18 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
             projectId,
             ...network
         });
+
+        // Si el agente detectó una bifurcación estratégica, emitir evento para UI
+        if (network.meta?.open_question) {
+            document.dispatchEvent(new CustomEvent('sos:vna-needs-input', {
+                detail: {
+                    projectId,
+                    question:  network.meta.open_question,
+                    draft:     network,
+                    reasoning: network.meta?.reasoning || ''
+                }
+            }));
+        }
 
         return artifact;
     }
@@ -870,7 +1005,7 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
             }
         });
 
-        // ── NUEVO V10: alimentar Ledger Slicing Pie ───────────
+        // ── NUEVO V10: alimentar Ledger con coste IA real ────────
         if (projectId) {
             store.dispatch({
                 type:    'LEDGER_AI_COST',
@@ -882,6 +1017,7 @@ ${CORE_AGENTS.SYNTHESIZER} solicita asistencia de <a href="/ia/dev/profile?id=${
                     input_tokens:  telemetryData.tokens.prompt_tokens     || 0,
                     output_tokens: telemetryData.tokens.completion_tokens || 0,
                     latencyMs:     telemetryData.latencyMs                || 0,
+                    cost_usd:      finalCost,   // campo que lee HomeView
                     multiplier:    2.0
                 }
             });

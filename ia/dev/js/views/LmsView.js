@@ -10,10 +10,10 @@ import { Sidebar }          from '../components/Sidebar.js';
 import { BottomNav }        from '../components/BottomNav.js';
 import { PageHeader }       from '../components/PageHeader.js';
 import { SynapticCanvas }   from '../components/SynapticCanvas.js';
-import { SkillExplorer }    from '../components/SkillExplorer.js';
-import { SkillForgeModal }  from '../components/SkillForgeModal.js';
 import { Orchestrator }     from '../core/Orchestrator.js';
 import { SkillAntigravity } from '../core/SkillAntigravity.js';
+// SkillExplorer y SkillForgeModal se importan dinámicamente en afterRender
+// para aislar errores de componentes externos
 
 export default class LmsView {
 
@@ -24,6 +24,7 @@ export default class LmsView {
         this.skillExplorer    = null;
         this.skillForgeModal  = null;
         this.dom              = {};
+        this._ac              = new AbortController(); // limpia listeners al navegar
     }
 
     async getHtml() {
@@ -286,11 +287,19 @@ export default class LmsView {
             }
         );
 
-        this.skillForgeModal = new SkillForgeModal('mount-forge-modal');
-        await this.skillForgeModal.render();
+        // Forge Modal — import dinámico para aislar errores
+        try {
+            const { SkillForgeModal } = await import('../components/SkillForgeModal.js');
+            this.skillForgeModal = new SkillForgeModal('mount-forge-modal');
+            await this.skillForgeModal.render();
+        } catch(_) { /* componente no disponible */ }
 
-        this.skillExplorer = new SkillExplorer('mount-skill-explorer');
-        await this.skillExplorer.render();
+        // Skill Explorer — import dinámico para aislar errores
+        try {
+            const { SkillExplorer } = await import('../components/SkillExplorer.js');
+            this.skillExplorer = new SkillExplorer('mount-skill-explorer');
+            await this.skillExplorer.render();
+        } catch(_) { /* componente no disponible */ }
 
         this.dom = {
             researchModal:     document.getElementById('researchModal'),
@@ -336,6 +345,8 @@ export default class LmsView {
         this.dom.btnRunResearch?.addEventListener('click', () => this._runDeepResearch());
 
         // Eventos globales
+        const sig = { signal: this._ac.signal };
+
         window.addEventListener('refresh-lms-data', async () => {
             if (this.skillExplorer) await this.skillExplorer.loadData?.();
             if (this.currentTab === 'antigravity') await this._renderAntigravityTab();
@@ -344,16 +355,16 @@ export default class LmsView {
                 if (this.synapticInstance.graph3D)
                     this.synapticInstance.graph3D.graphData({ nodes: this.synapticInstance.nodes, links: this.synapticInstance.links });
             }
-        });
+        }, sig);
 
         window.addEventListener('process-skill-file', async (e) => {
             if (this.skillForgeModal) {
                 await this.skillForgeModal.parseZipSkillFile?.(e.detail.file, e.detail.dropzone);
                 window.dispatchEvent(new CustomEvent('refresh-lms-data'));
             }
-        });
+        }, sig);
 
-        window.addEventListener('open-research-modal', () => this.dom.researchModal?.classList.add('active'));
+        window.addEventListener('open-research-modal', () => this.dom.researchModal?.classList.add('active'), sig);
 
         window.addEventListener('3d-equip-skill', async (e) => {
             const { agentId, skillId } = e.detail;
@@ -370,7 +381,7 @@ export default class LmsView {
                 alert(`✅ Skill equipada a ${agentId}`);
                 window.dispatchEvent(new CustomEvent('refresh-lms-data'));
             } catch (err) { alert('Error equipando Skill: ' + err.message); }
-        });
+        }, sig);
     }
 
     // ══════════════════════════════════════════════════════════════

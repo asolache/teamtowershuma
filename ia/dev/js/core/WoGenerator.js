@@ -1,7 +1,9 @@
 // =============================================================================
-// TEAMTOWERS SOS V10 — WO GENERATOR
+// TEAMTOWERS SOS V10.1 — WO GENERATOR
 // Ruta: /ia/dev/js/core/WoGenerator.js
 // Extrae Work Orders tangibles e intangibles de un VnaNetwork JSON-LD.
+// V10.1: hereda sequence_order, depends_on y can_start_immediately del VNA secuenciado.
+// Nuevos métodos: nextExecutable(), execution_layers en summary().
 // Regla: Zero mutación directa de store. Solo devuelve arrays de WOs.
 // =============================================================================
 
@@ -20,7 +22,7 @@ const INTANGIBLE_CATEGORIES = new Set([
 
 // Categorías que puede ejecutar un agente IA sin supervisión humana
 const AI_EXECUTABLE_CATEGORIES = new Set([
-    'deliverable', 'service', 'knowledge'
+    'deliverable', 'service', 'knowledge', 'resource'
 ]);
 
 // ─── AGENTES CORE DEL SWARM ───────────────────────────────────────────────────
@@ -98,33 +100,74 @@ export class WoGenerator {
             };
             flows.push(flow);
 
-            // Work Order
+            // Work Order — V10.1: hereda sequence_order y depends_on del exchange secuenciado
+            const exchangeDepIds = exchange.depends_on || [];
             const wo = {
-                hash:           `wo_${Date.now()}_${Math.random().toString(36).substr(2,6)}`,
-                flowId:         flow.id,
+                hash:                 `wo_${Date.now()}_${Math.random().toString(36).substr(2,6)}`,
+                flowId:               flow.id,
                 status,
-                assigneeId:     autoMode === 'auto' ? agentId : null,
+                assigneeId:           (autoMode === 'auto' || autoMode === 'hitl') ? agentId : null,
                 woType,
-                automation:     autoMode,
-                entregable:     exchange.label || exchange.id,
-                context:        flow.context,
-                from:           exchange.from,
-                to:             exchange.to,
-                category:       exchange.category || 'deliverable',
-                automatable:    exchange.automatable || false,
-                estimatedHours: hours,
-                sprintId:       null,
-                createdBy:      'node-claude-sonnet-v10',
-                createdAt:      Date.now()
+                automation:           autoMode,
+                entregable:           exchange.label || exchange.id,
+                context:              flow.context,
+                from:                 exchange.from,
+                to:                   exchange.to,
+                category:             exchange.category || 'deliverable',
+                automatable:          exchange.automatable || false,
+                estimatedHours:       hours,
+                sequence_order:       exchange.sequence_order ?? null,
+                depends_on:           exchangeDepIds,     // IDs de exchange; se resuelven a hashes WO post-build
+                can_start_immediately: exchangeDepIds.length === 0,
+                soc_checklist:        WoGenerator._buildSocChecklist(exchange, woType),
+                sprintId:             null,
+                createdBy:            'node-claude-sonnet-v10',
+                createdAt:            Date.now()
             };
             workOrders.push(wo);
         }
 
-        // Ordenar: tangibles auto primero, luego híbridos, luego humanos
-        workOrders.sort((a, b) => {
-            const order = { auto: 0, hitl: 1, human: 2 };
-            return (order[a.automation] ?? 2) - (order[b.automation] ?? 2);
+        // ── Resolver depends_on: convertir exchange IDs → WO hashes ────────────
+        // Construir mapa: flowId (= exchange.id) → wo.hash
+        const flowToHash = {};
+        workOrders.forEach(wo => { flowToHash[wo.flowId] = wo.hash; });
+
+        // Actualizar depends_on de cada WO con los hashes reales
+        workOrders.forEach(wo => {
+            wo.depends_on = (wo.depends_on || [])
+                .map(depExchangeId => {
+                    // El flowId de la WO dependiente = el exchange.id dependiente
+                    return flowToHash[depExchangeId] || depExchangeId;
+                })
+                .filter(Boolean);
         });
+
+        // ── Recalcular can_start_immediately post-resolución ─────────────────
+        // Tras convertir exchange IDs → hashes reales, eliminar auto-dependencias
+        // y recalcular can_start_immediately de forma consistente.
+        workOrders.forEach(wo => {
+            wo.depends_on = wo.depends_on.filter(h => h !== wo.hash);
+            wo.can_start_immediately = wo.depends_on.length === 0;
+        });
+
+        // ── Ordenar: primero por sequence_order V10.1, luego por automation ──
+        const hasSequence = workOrders.some(wo => wo.sequence_order !== null);
+        if (hasSequence) {
+            workOrders.sort((a, b) => {
+                const sa = a.sequence_order ?? 9999;
+                const sb = b.sequence_order ?? 9999;
+                if (sa !== sb) return sa - sb;
+                // Desempate por automation
+                const order = { auto: 0, hitl: 1, human: 2 };
+                return (order[a.automation] ?? 2) - (order[b.automation] ?? 2);
+            });
+        } else {
+            // Fallback V10 original: automation order
+            workOrders.sort((a, b) => {
+                const order = { auto: 0, hitl: 1, human: 2 };
+                return (order[a.automation] ?? 2) - (order[b.automation] ?? 2);
+            });
+        }
 
         return { workOrders, flows };
     }
@@ -147,6 +190,8 @@ export class WoGenerator {
     // ──────────────────────────────────────────────────────────────────────────
     static _classifyAutomation(exchange, automationLevel) {
         const category = exchange.category || 'deliverable';
+        // Payment siempre requiere supervisión humana independientemente del nivel
+        if (category === 'payment') return 'human';
         const canAuto  = exchange.automatable && AI_EXECUTABLE_CATEGORIES.has(category);
 
         if (automationLevel === 'full_auto') {
@@ -241,7 +286,44 @@ export class WoGenerator {
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    //  summary — resumen estadístico del resultado
+    //  nextExecutable — V10.1
+    //  Dado el array de WOs y los hashes de WOs ya completadas,
+    //  devuelve las WOs cuyas depends_on están todas satisfechas.
+    //  El Orquestador llama esto en cada ronda para saber qué ejecutar.
+    // ──────────────────────────────────────────────────────────────────────────
+    static nextExecutable(workOrders, completedHashes = []) {
+        const completed = new Set(completedHashes);
+        const active    = workOrders.filter(wo =>
+            wo.status !== 'consolidated' && wo.status !== 'reported'
+        );
+
+        // Candidatas normales: WOs cuyas depends_on están todas en completedHashes
+        const candidates = active.filter(wo => {
+            const deps = wo.depends_on || [];
+            return deps.every(depHash => completed.has(depHash));
+        });
+
+        if (candidates.length > 0) {
+            return candidates.sort((a, b) => (a.sequence_order ?? 9999) - (b.sequence_order ?? 9999));
+        }
+
+        // Fallback para redes con ciclos funcionales VNA: ninguna WO activa tiene
+        // todas sus dependencias completadas. Devolver la capa 1 (sequence_order mínimo)
+        // como ejecutables de arranque. Se devuelven con can_start_immediately=true
+        // porque en la práctica son las que inician el ciclo.
+        if (active.length > 0) {
+            const minSeq = Math.min(...active.map(w => w.sequence_order ?? 9999));
+            return active
+                .filter(w => (w.sequence_order ?? 9999) === minSeq)
+                .map(w => ({ ...w, can_start_immediately: true }))
+                .sort((a, b) => (a.sequence_order ?? 9999) - (b.sequence_order ?? 9999));
+        }
+
+        return [];
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    //  summary — resumen estadístico del resultado (V10.1: + execution_layers)
     // ──────────────────────────────────────────────────────────────────────────
     static summary(workOrders) {
         const auto   = workOrders.filter(w => w.automation === 'auto').length;
@@ -252,6 +334,40 @@ export class WoGenerator {
         const hybrid = workOrders.filter(w => w.woType === 'hybrid').length;
         const totalH = workOrders.reduce((s, w) => s + (w.estimatedHours || 0), 0);
 
-        return { total: workOrders.length, auto, hitl, human, tang, intang, hybrid, totalHours: Math.round(totalH * 10) / 10 };
+        // ── execution_layers: agrupar WOs por ronda de ejecución paralela ────
+        // Simula nextExecutable() iterativamente para calcular las capas
+        const execution_layers = [];
+        const completed = new Set();
+        const pending   = [...workOrders];
+
+        let safetyCounter = 0;
+        while (pending.length > 0 && safetyCounter < 100) {
+            safetyCounter++;
+            const layer = pending.filter(wo => {
+                const deps = wo.depends_on || [];
+                return deps.every(d => completed.has(d));
+            });
+            if (layer.length === 0) {
+                // Dependencias no resolubles (ciclos residuales) — añadir resto como última capa
+                execution_layers.push(pending.map(w => w.hash));
+                break;
+            }
+            execution_layers.push(layer.map(w => w.hash));
+            layer.forEach(w => {
+                completed.add(w.hash);
+                const idx = pending.indexOf(w);
+                if (idx > -1) pending.splice(idx, 1);
+            });
+        }
+
+        return {
+            total: workOrders.length,
+            auto, hitl, human,
+            tang, intang, hybrid,
+            totalHours:      Math.round(totalH * 10) / 10,
+            execution_layers,
+            parallel_rounds: execution_layers.length,
+            immediate_count: workOrders.filter(w => w.can_start_immediately).length
+        };
     }
 }

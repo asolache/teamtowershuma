@@ -290,7 +290,26 @@ export class SynapticCanvas {
         });
 
         // Nodos KB
-        allNodes.forEach(m => {
+        // ── KB nodes — lazy: solo core + máximo 40 nodos al inicio ──
+        // El detalle se carga bajo demanda al hacer click (expandNode)
+        const MAX_INITIAL_KB = 40;
+        const PRIORITY_TYPES = ['prompt_a2a','business_model','landing','cluster','eval'];
+
+        // Ordenar por prioridad: core primero, luego por tipo, luego el resto
+        const sortedNodes = [...allNodes].sort((a, b) => {
+            const aPrio = PRIORITY_TYPES.includes(a.type) ? 0 : 1;
+            const bPrio = PRIORITY_TYPES.includes(b.type) ? 0 : 1;
+            if (aPrio !== bPrio) return aPrio - bPrio;
+            // Skills del kernel antes que skills importadas
+            if (a.category === 'core.architecture') return -1;
+            if (b.category === 'core.architecture') return 1;
+            return 0;
+        });
+
+        const visibleNodes = sortedNodes.slice(0, MAX_INITIAL_KB);
+        const hiddenCount  = allNodes.length - visibleNodes.length;
+
+        visibleNodes.forEach(m => {
             const { c, m: mass } = colorMass(m.category || m.type);
             addNode(m.id, m.title || m.id, m.category || m.type, mass, c, m);
             state.globalUsers?.forEach(u => {
@@ -299,7 +318,7 @@ export class SynapticCanvas {
             });
             ['references','evals','scripts'].forEach(dep => {
                 if (Array.isArray(m[dep])) m[dep].forEach(cid => {
-                    if (allNodes.find(n => n.id === cid)) addLink(m.id, cid, true);
+                    if (visibleNodes.find(n => n.id === cid)) addLink(m.id, cid, true);
                 });
             });
             if (m.projectId && m.projectId !== 'global' && this.nodes.find(n => n.id === m.projectId))
@@ -307,6 +326,17 @@ export class SynapticCanvas {
             else if (m.projectId === 'global' && m.type === 'skill')
                 addLink('core_kernel', m.id, true);
         });
+
+        // Nodo resumen "más nodos" si hay ocultos
+        if (hiddenCount > 0) {
+            addNode('_kb_more', `+${hiddenCount} nodos en KB`, 'kb_summary', 12, '#333', null, {
+                _isKbMore: true, _hiddenCount: hiddenCount, _allNodes: allNodes
+            });
+            addLink('core_kernel', '_kb_more', true);
+        }
+
+        // Guardar referencia al KB completo para expansión bajo demanda
+        this._allKbNodes = allNodes;
 
         // ── Overlay VNA del proyecto activo ───────────────────────
         if (project) {
@@ -441,6 +471,83 @@ export class SynapticCanvas {
                 automatable: e.automatable || false, rawTx: e
             });
         });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  LAZY LOADING — expansión de nodos bajo demanda
+    // ══════════════════════════════════════════════════════════════
+
+    // Expande los vecinos directos de un nodo (nodos que lo referencian o son referenciados)
+    _expandNeighbors(node) {
+        if (!this._allKbNodes || !this.graph3D) return;
+        const existing = new Set(this.nodes.map(n => n.id));
+        const toAdd    = [];
+
+        this._allKbNodes.forEach(m => {
+            if (existing.has(m.id)) return;
+            const refs = [...(m.references||[]), ...(m.evals||[]), ...(m.scripts||[])];
+            const isNeighbor = refs.includes(node.id)
+                || (m.projectId === node.id)
+                || (node.rawNode?.references||[]).includes(m.id)
+                || (node.rawNode?.evals||[]).includes(m.id);
+            if (isNeighbor) toAdd.push(m);
+        });
+
+        if (!toAdd.length) return;
+
+        const { c: defColor, m: defMass } = { c:'#888', m:10 };
+        const colorMass = (cat) => {
+            if (!cat) return { c:'#888', m:10 };
+            if (cat.startsWith('core.architecture')) return { c:'#6366f1', m:28 };
+            if (cat.startsWith('core.economy'))      return { c:'#00e676', m:28 };
+            if (cat.startsWith('core.cognition'))    return { c:'#e040fb', m:28 };
+            if (cat.startsWith('core.execution'))    return { c:'#ff9100', m:28 };
+            if (cat === 'skill')                     return { c:'#ffd740', m:16 };
+            if (cat === 'eval')                      return { c:'#ff9100', m:11 };
+            return { c:'#888', m:10 };
+        };
+
+        toAdd.forEach(m => {
+            const { c, m: mass } = colorMass(m.category || m.type);
+            // Posicionar cerca del nodo padre
+            const spread = 60;
+            this.nodes.push({
+                id: m.id, name: m.title || m.id,
+                group: m.category || m.type,
+                val: mass, color: c, rawNode: m,
+                x: (node.x||0) + (Math.random()-0.5)*spread,
+                y: (node.y||0) + (Math.random()-0.5)*spread,
+                z: (node.z||0) + (Math.random()-0.5)*spread
+            });
+            this.links.push({ source: node.id, target: m.id, isDependencies: true });
+        });
+
+        // Actualizar grafo sin reiniciar la simulación
+        this.graph3D.graphData({ nodes: this.nodes, links: this.links });
+        console.log(`[Canvas] +${toAdd.length} vecinos expandidos desde "${node.name}"`);
+    }
+
+    // Expande todos los nodos ocultos del KB (al hacer click en el nodo "+N")
+    _expandKbAll() {
+        if (!this._allKbNodes || !this.graph3D) return;
+        const existing = new Set(this.nodes.map(n => n.id));
+        // Eliminar nodo resumen
+        this.nodes = this.nodes.filter(n => n.id !== '_kb_more');
+        this.links = this.links.filter(l => {
+            const s = typeof l.source === 'object' ? l.source.id : l.source;
+            const t = typeof l.target === 'object' ? l.target.id : l.target;
+            return s !== '_kb_more' && t !== '_kb_more';
+        });
+
+        this._allKbNodes.forEach(m => {
+            if (existing.has(m.id) || m.id === '_kb_more') return;
+            this.nodes.push({ id:m.id, name:m.title||m.id, group:m.category||m.type, val:10, color:'#555', rawNode:m });
+            if (m.projectId === 'global' && m.type === 'skill')
+                this.links.push({ source:'core_kernel', target:m.id, isDependencies:true });
+        });
+
+        this.graph3D.graphData({ nodes:this.nodes, links:this.links });
+        console.log(`[Canvas] KB completo expandido: ${this.nodes.length} nodos totales`);
     }
 
     _vnaSize(n) {
@@ -755,6 +862,15 @@ export class SynapticCanvas {
 
             // ── Objetos 3D de nodos ───────────────────────────────
             .nodeThreeObject(node => {
+                // Nodo resumen KB "+N nodos" — invita a expandir
+                if (node._isKbMore) {
+                    const sp = new window.SpriteText(`+${node._hiddenCount}`);
+                    sp.color      = '#444';
+                    sp.textHeight = 8;
+                    sp.fontWeight = '900';
+                    return sp;
+                }
+
                 // Nodo central VNA — semitransparente, solo sirve de ancla
                 if (node.group === 'vna_center' || node._isVnaCenter) {
                     const sp = new window.SpriteText('⬡');
@@ -890,6 +1006,16 @@ export class SynapticCanvas {
                         node, 800
                     );
                 }
+
+                // Nodo resumen "+N nodos" — expande el KB completo
+                if (node._isKbMore) {
+                    this._expandKbAll();
+                    return;
+                }
+
+                // Expansión lazy: cargar vecinos del KB que referencian este nodo
+                if (node.id && this._allKbNodes) this._expandNeighbors(node);
+
                 if (node._isVna || node.group === 'vna-overlay') this._showVnaNodeDetails(node);
                 else if (node.group === 'work_order')             this._showWoDetails(node);
                 else                                              this._showNodeDetails(node);

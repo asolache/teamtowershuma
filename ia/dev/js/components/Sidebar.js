@@ -24,15 +24,15 @@ export class Sidebar {
         const projectLabel = project ? project.nombre : 'Sin ecosistema';
 
         const navItems = [
-            { path: '/dashboard', icon: '🛰️', label: 'Ojo del Castell'       },
-            { path: '/map',       icon: '🕸️', label: 'Topología VNA'         },
-            { path: '/project',   icon: '📋', label: 'Mercado PULL'           },
-            { path: '/paper',     icon: '📝', label: 'Omni-Paper'             },
-            { path: '/team',      icon: '👥', label: 'Padrón de Nodos'        },
-            { path: '/ledger',    icon: '⚖️', label: 'Notaría Slicing Pie'    },
-            { path: '/lms',       icon: '🧠', label: 'La Forja (Córtex W3C)' },
-            { path: '/settings',  icon: '⚙️', label: 'Panteón Global'         },
-            { path: '/tests',     icon: '🩺', label: 'Test Antigravity'       }
+            { path: '/paper',     icon: '💬', label: 'Chat · La Reina'           },
+            { path: '/dashboard', icon: '🛰️', label: 'Ojo del Castell'           },
+            { path: '/map',       icon: '🕸️', label: 'Topología VNA'             },
+            { path: '/project',   icon: '📋', label: 'Mercado PULL'               },
+            { path: '/team',      icon: '👥', label: 'Padrón de Nodos'            },
+            { path: '/ledger',    icon: '⚖️', label: 'Notaría Slicing Pie'        },
+            { path: '/lms',       icon: '🧠', label: 'La Forja (Córtex W3C)'     },
+            { path: '/settings',  icon: '⚙️', label: 'Panteón Global'             },
+            { path: '/tests',     icon: '🩺', label: 'Test Antigravity'           }
         ];
 
         const navHtml = navItems.map(item => {
@@ -190,14 +190,29 @@ export class Sidebar {
                 <nav>${navHtml}</nav>
 
                 <div class="sb-footer">
-                    <div class="sb-user">
+                    <!-- Monitor de actividad IA -->
+                    <div id="aiMonitorMount"></div>
+
+                    <div class="sb-user" id="sbUserArea" style="cursor:pointer;" title="Cambiar usuario">
                         <div class="sb-avatar">${activeUserName.charAt(0).toUpperCase()}</div>
                         <div class="sb-user-info">
                             <div class="sb-user-name">${activeUserName}</div>
-                            <div class="sb-user-role">${projectLabel}</div>
+                            <div class="sb-user-role">${state.session.role || 'guest'}</div>
                         </div>
+                        <span style="color:#333;font-size:0.7rem;flex-shrink:0;">⇅</span>
                     </div>
-                    <button class="btn-sb-logout" id="btnLogout">✖ Cerrar Sesión</button>
+                    <!-- Panel de switch de usuario (oculto por defecto) -->
+                    <div id="sbLoginPanel" style="display:none;margin-top:6px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:8px;max-height:180px;overflow-y:auto;">
+                        <div style="font-size:0.6rem;color:#444;text-transform:uppercase;font-weight:bold;margin-bottom:6px;padding:0 4px;">Cambiar identidad</div>
+                        ${state.globalUsers.filter(u => !u.profile?.isAi).map(u => `
+                        <button class="btn-login-user" data-uid="${u.id}"
+                            style="width:100%;text-align:left;padding:6px 8px;background:${u.id===activeUserId?'rgba(99,102,241,0.12)':'transparent'};border:none;border-radius:6px;cursor:pointer;font-size:0.76rem;color:${u.id===activeUserId?'#6366f1':'#888'};display:flex;align-items:center;gap:7px;transition:0.15s;margin-bottom:2px;">
+                            <span style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#e040fb);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:bold;color:white;flex-shrink:0;">${(u.name||u.id).charAt(0).toUpperCase()}</span>
+                            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${u.name||u.id}</span>
+                            ${u.globalRole==='ecosystem-owner'?'<span style="font-size:0.55rem;color:#e040fb;margin-left:auto;flex-shrink:0;">owner</span>':''}
+                            ${u.id===activeUserId?'<span style="font-size:0.65rem;margin-left:auto;flex-shrink:0;">✓</span>':''}
+                        </button>`).join('')}
+                    </div>
                 </div>
             </aside>
 
@@ -213,6 +228,11 @@ export class Sidebar {
         const btn  = document.getElementById('btnToggleSidebar');
         const icon = document.getElementById('sbToggleIcon');
 
+        // ── Montar el monitor de actividad IA ─────────────────────
+        import('../core/../components/AiActivityMonitor.js').then(({ AiActivityMonitor }) => {
+            AiActivityMonitor.mount('aiMonitorMount');
+        }).catch(() => {});  // silencioso si no carga
+
         btn?.addEventListener('click', () => {
             if (!sb) return;
             const col = sb.classList.toggle('collapsed');
@@ -220,15 +240,45 @@ export class Sidebar {
             if (icon) icon.textContent = col ? '▶' : '◀';
         });
 
-        document.getElementById('sidebarEcoSelector')?.addEventListener('change', (e) => {
-            localStorage.setItem('tt_active_project', e.target.value);
-            window.location.reload();
+        // Guard: evitar que el change inicial del select cause reload
+        let _ecoSelectorReady = false;
+        const ecoSel = document.getElementById('sidebarEcoSelector');
+        if (ecoSel) {
+            setTimeout(() => { _ecoSelectorReady = true; }, 300);
+            ecoSel.addEventListener('change', (e) => {
+                if (!_ecoSelectorReady) return;
+                localStorage.setItem('tt_active_project', e.target.value);
+                // navigateTo en lugar de reload — evita el loop
+                if (typeof window.navigateTo === 'function') window.navigateTo('/dashboard');
+                else window.location.reload();
+            });
+        }
+
+        // ── Toggle panel de login ─────────────────────────────────
+        document.getElementById('sbUserArea')?.addEventListener('click', () => {
+            const panel = document.getElementById('sbLoginPanel');
+            if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         });
 
-        document.getElementById('btnLogout')?.addEventListener('click', async () => {
-            await store.dispatch({ type: 'LOGOUT' });
-            if (typeof window.navigateTo === 'function') window.navigateTo('/');
-            else window.location.href = '/';
+        // ── Switch de usuario ─────────────────────────────────────
+        document.querySelectorAll('.btn-login-user').forEach(btn => {
+            btn.addEventListener('mouseenter', () => { btn.style.color = 'white'; btn.style.background = 'rgba(255,255,255,0.05)'; });
+            btn.addEventListener('mouseleave', () => {
+                const state = store.getState();
+                const isActive = btn.dataset.uid === state.session.activeUserId;
+                btn.style.color = isActive ? '#6366f1' : '#888';
+                btn.style.background = isActive ? 'rgba(99,102,241,0.12)' : 'transparent';
+            });
+            btn.addEventListener('click', async () => {
+                const uid = btn.dataset.uid;
+                await store.dispatch({ type: 'LOGIN_USER', payload: { userId: uid } });
+                // Recargar la vista actual para reflejar el cambio de usuario
+                if (typeof window.navigateTo === 'function') {
+                    window.navigateTo(window.location.pathname.replace('/ia/dev', '') || '/');
+                } else {
+                    window.location.reload();
+                }
+            });
         });
     }
 }

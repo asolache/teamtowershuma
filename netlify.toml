@@ -2,11 +2,12 @@
   publish   = "."
   functions = "netlify/functions"
 
+# ── Edge Functions (proxy Anthropic sin CORS, sin timeout 504) ──
+[edge_functions]
+  directory = "netlify/edge-functions"
+
 [functions]
   node_bundler = "esbuild"
-
-[functions."anthropic-proxy"]
-  timeout = 26
 
 # Forzar revalidación de JS modules en cada request
 [[headers]]
@@ -19,10 +20,10 @@
   [headers.values]
     Cache-Control = "no-cache, must-revalidate"
 
-[[redirects]]
-  from   = "/api/*"
-  to     = "/.netlify/functions/:splat"
-  status = 200
+# ── Ruta del proxy → Edge Function (debe ir ANTES de los redirects SPA) ──
+[[edge_functions]]
+  path     = "/api/anthropic-proxy"
+  function = "anthropic-proxy"
 
 [[redirects]]
   from   = "/ia/dev/*"
