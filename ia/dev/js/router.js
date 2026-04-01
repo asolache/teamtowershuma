@@ -6,7 +6,7 @@ import { store } from './core/store.js';
 
 const BASE_PATH  = '/ia/dev';
 const VIEWS_PATH = `${BASE_PATH}/js/views`;
-const V          = '?v=10.9.1';
+const V          = '?v=10.9.2';
 
 // Guard contra ejecuciones simultáneas del router
 let _routing = false;
