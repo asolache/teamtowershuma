@@ -639,7 +639,7 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
     //  Autónomo: research interno + borrador completo
     //  Solo pregunta si sector es indeterminado o hay bifurcación
     // ══════════════════════════════════════════════════════════
-    async designVnaMap({ projectId, description, domain = 'auto' }) {
+    async designVnaMap({ projectId, description, domain = 'auto', systemOverride = null }) {
         await this._ensureKB();
 
         // Enriquecer contexto desde KB — el agente no necesita preguntar
@@ -651,7 +651,7 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
             projectId,
             description,
             domain,
-            projectName:       project?.name                            || '',
+            projectName:       project?.nombre || project?.name        || '',
             existingRoles:     project?.roles?.map(r => r.name || r.id) || [],
             existingNodes:     existingNetwork?.nodes                   || [],
             existingExchanges: existingNetwork?.exchanges               || [],
@@ -660,16 +660,46 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
             hint_size:         project?.roles?.length                   || 0
         };
 
-        const artifact = await this.dispatch({
-            routine:     'designEcosystemVNA',
-            agent:       CORE_AGENTS.ARCHITECT,
-            context:     researchContext,
-            constraints: {
-                strictJSON: true,
-                engine:     'anthropic',
-                mcpSkills:  ['skill-vna-mapper', 'skill_vna_architect']
+        // Si viene systemOverride del VnaCalibrator, inyectarlo directamente
+        // en lugar del prompt del agente desde KB
+        let artifact;
+        if (systemOverride) {
+            const response = await this.callLLM({
+                preferredEngine: 'anthropic',
+                systemPrompt:    systemOverride,
+                userPrompt:      `Descripción del sistema:\n"${description}"\n\nContexto del proyecto:\n${JSON.stringify(researchContext, null, 2)}\n\nGenera el mapa VNA completo.`,
+                responseFormat:  'json_object',
+                temperature:     0.15
+            });
+
+            const payload = response.content?.payload || response.content;
+            artifact = {
+                '@context':   'https://teamtowers.io/sos/v10/vna',
+                '@type':      'SosArtifact',
+                artifactType: 'vna_map',
+                agentId:      CORE_AGENTS.ARCHITECT,
+                routine:      'designEcosystemVNA',
+                timestamp:    new Date().toISOString(),
+                payload,
+                telemetry:    response.telemetry,
+                audit:        { tddPassed: false, notarized: false, hash: `sha256:${Date.now().toString(16)}` }
+            };
+
+            if (projectId) {
+                this._logTelemetry(projectId, CORE_AGENTS.ARCHITECT, response.telemetry.provider, 'designEcosystemVNA_calibrated', response.telemetry);
             }
-        });
+        } else {
+            artifact = await this.dispatch({
+                routine:     'designEcosystemVNA',
+                agent:       CORE_AGENTS.ARCHITECT,
+                context:     researchContext,
+                constraints: {
+                    strictJSON: true,
+                    engine:     'anthropic',
+                    mcpSkills:  ['skill-vna-mapper', 'skill_vna_architect']
+                }
+            });
+        }
 
         const network = artifact.payload;
         if (!network?.nodes) return artifact;
