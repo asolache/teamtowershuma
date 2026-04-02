@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+server.py
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
