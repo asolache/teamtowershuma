@@ -813,15 +813,13 @@ export default class ValueMapView {
         });
     }
 
-    // ── Construir SVG completo con layout por nivel ───────────────────────────
+    // ── Construir SVG — Mapa de Valor con curvas Bezier y layout mejorado ────
     _buildFullSvg(net, showSequence = true) {
         const nodes     = net.nodes     || [];
         const exchanges = net.exchanges || [];
         if (!nodes.length) return '<svg width="100%" height="200"><text x="50%" y="100" text-anchor="middle" fill="#333">Sin nodos</text></svg>';
 
         // ── Layout por nivel casteller ─────────────────────────────────────────
-        // tier 0 = @anxaneta (arriba), 4 = @pinya (abajo)
-        // Invertir: mayor tier = más abajo en la pantalla
         const TIER_ORDER = { '@anxaneta':0,'@aixecador':1,'@dosos':2,'@baixos':3,'@pinya':4 };
         const tiers = {};
         nodes.forEach(n => {
@@ -831,19 +829,28 @@ export default class ValueMapView {
         });
 
         const tierKeys = Object.keys(tiers).map(Number).sort((a,b) => a - b);
-        const W = 900;
-        const NODE_W = 150, NODE_H = 52, PAD_X = 24, GAP_Y = 110;
-        const TOTAL_H = Math.max(600, tierKeys.length * GAP_Y + 120);
+        const W = 1000;
+        const NODE_W = 155, NODE_H = 56, PAD_X = 40, GAP_Y = 140;
+        const MARGIN_TOP = 70, MARGIN_LEFT = 45;
+        const TOTAL_H = Math.max(700, tierKeys.length * GAP_Y + MARGIN_TOP + 80);
 
+        // ── Posicionar nodos — distribucion amplia con stagger vertical ────────
+        // Los nodos en cada tier se reparten ocupando todo el ancho disponible
+        // con un leve stagger en Y para que las flechas entre tiers no se crucen.
         const nodePos = {};
         tierKeys.forEach((tier, ti) => {
             const tierNodes = tiers[tier];
             const count     = tierNodes.length;
-            const totalW    = count * NODE_W + (count - 1) * PAD_X;
-            const startX    = (W - totalW) / 2;
-            const y         = 60 + ti * GAP_Y;
+            const usableW   = W - MARGIN_LEFT * 2 - NODE_W;
+            const spacing   = count > 1 ? usableW / (count - 1) : 0;
+            const startX    = count > 1 ? MARGIN_LEFT : (W - NODE_W) / 2;
+            const baseY     = MARGIN_TOP + ti * GAP_Y;
+
             tierNodes.forEach((node, i) => {
-                const x = startX + i * (NODE_W + PAD_X);
+                const x = startX + i * spacing;
+                // Stagger: nodos pares ligeramente arriba, impares abajo
+                const stagger = count > 1 ? (i % 2 === 0 ? -8 : 8) : 0;
+                const y = baseY + stagger;
                 nodePos[node.id] = { x, y, cx: x + NODE_W / 2, cy: y + NODE_H / 2, ...node };
             });
         });
@@ -853,100 +860,146 @@ export default class ValueMapView {
         const ROLE_STR   = { human:'#0F6E56', agent:'#534AB7', process:'#993C1D', organization:'#185FA5', resource:'#3B6D11' };
         const ROLE_TXT   = { human:'#5ecfaa', agent:'#a8a3ee', process:'#f0a07a', organization:'#85B7EB', resource:'#a3d977' };
 
-        // ── Aristas (edges) con label de entregable y badge de secuencia ───────
+        // ── Contar aristas paralelas entre pares de nodos ──────────────────────
+        const pairIndex = {};
+        exchanges.forEach((ex, i) => {
+            const key = [ex.from, ex.to].sort().join('::');
+            if (!pairIndex[key]) pairIndex[key] = [];
+            pairIndex[key].push(i);
+        });
+
+        // ── Aristas con curvas Bezier y offsets anti-colision ──────────────────
         const edgeSvg = exchanges.map((ex, i) => {
             const from = nodePos[ex.from];
             const to   = nodePos[ex.to];
             if (!from || !to) return '';
 
-            const isTang  = ex.type !== 'intangible';
-            const isPay   = ex.category === 'payment';
-            const color   = isPay ? '#BA7517' : isTang ? '#1D9E75' : '#7F77DD';
-            const dash    = isTang ? '' : 'stroke-dasharray="7 4"';
+            const isTang   = ex.type !== 'intangible';
+            const isPay    = ex.category === 'payment';
+            const color    = isPay ? '#BA7517' : isTang ? '#1D9E75' : '#7F77DD';
+            const dash     = isTang ? '' : 'stroke-dasharray="7 4"';
             const markerId = isPay ? 'arr-p' : isTang ? 'arr-t' : 'arr-i';
-            const seq     = ex.sequence_order;
+            const seq      = ex.sequence_order;
 
-            // Calcular punto de salida/entrada en el borde del nodo
-            const dx   = to.cx - from.cx;
-            const dy   = to.cy - from.cy;
-            const len  = Math.sqrt(dx*dx + dy*dy) || 1;
-            const x1   = from.cx + (dx/len) * (NODE_W/2 + 3);
-            const y1   = from.cy + (dy/len) * (NODE_H/2 + 2);
-            const x2   = to.cx   - (dx/len) * (NODE_W/2 + 10);
-            const y2   = to.cy   - (dy/len) * (NODE_H/2 + 2);
+            // Vector y longitud
+            const dx  = to.cx - from.cx;
+            const dy  = to.cy - from.cy;
+            const len = Math.sqrt(dx*dx + dy*dy) || 1;
+            const nx  = dx / len;
+            const ny  = dy / len;
 
-            // Punto medio para label y badge
-            const midX = (x1 + x2) / 2;
-            const midY = (y1 + y2) / 2;
+            // Punto de salida/entrada en el borde del nodo
+            const x1 = from.cx + nx * (NODE_W/2 + 4);
+            const y1 = from.cy + ny * (NODE_H/2 + 3);
+            const x2 = to.cx   - nx * (NODE_W/2 + 12);
+            const y2 = to.cy   - ny * (NODE_H/2 + 3);
 
-            // Label del entregable (truncado)
-            const label = (ex.label || ex.entregable || '').substring(0, 28);
-            const labelBg = `<rect x="${midX - label.length*3.2}" y="${midY - 10}" width="${label.length*6.4 + 10}" height="16" rx="4" fill="rgba(0,0,0,0.75)" stroke="${color}" stroke-width="0.4"/>`;
-            const labelTxt = `<text x="${midX}" y="${midY + 2}" text-anchor="middle" font-size="9" fill="${color}" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${label}</text>`;
+            // Offset perpendicular para aristas paralelas entre mismo par
+            const pairKey   = [ex.from, ex.to].sort().join('::');
+            const siblings  = pairIndex[pairKey] || [i];
+            const sibIdx    = siblings.indexOf(i);
+            const sibCount  = siblings.length;
+            const perpOff   = (sibIdx - (sibCount - 1) / 2) * 28;
+            const px = -ny * perpOff;
+            const py =  nx * perpOff;
 
-            // Badge de secuencia
-            const seqBadge = (showSequence && seq != null) ? `
-                <circle cx="${x1 + (x2-x1)*0.15}" cy="${y1 + (y2-y1)*0.15}" r="10" fill="${color}" opacity="0.95"/>
-                <text x="${x1 + (x2-x1)*0.15}" y="${y1 + (y2-y1)*0.15 + 3.5}" text-anchor="middle" font-size="9" font-weight="600" fill="#fff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${seq}</text>` : '';
+            // Punto de control Bezier cuadratico (curvatura + offset paralelo)
+            const baseCurve = Math.min(len * 0.18, 45);
+            const ctrlX = (x1 + x2) / 2 + px + (-ny) * baseCurve;
+            const ctrlY = (y1 + y2) / 2 + py + ( nx) * baseCurve;
 
-            return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"
-                        stroke="${color}" stroke-width="1.5" ${dash} marker-end="url(#${markerId})" fill="none"/>
-                    ${labelBg}${labelTxt}${seqBadge}`;
-        }).join('');
+            // Punto en la curva al 50% para posicionar label
+            const mt = 0.5;
+            const midX = (1-mt)*(1-mt)*x1 + 2*(1-mt)*mt*ctrlX + mt*mt*x2;
+            const midY = (1-mt)*(1-mt)*y1 + 2*(1-mt)*mt*ctrlY + mt*mt*y2;
 
-        // ── Nodos ─────────────────────────────────────────────────────────────
+            // Path curvo Bezier
+            const pathD = `M${x1.toFixed(1)},${y1.toFixed(1)} Q${ctrlX.toFixed(1)},${ctrlY.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+            const pathSvg = `<path d="${pathD}" stroke="${color}" stroke-width="1.5" ${dash} marker-end="url(#${markerId})" fill="none" opacity="0.85"/>`;
+
+            // Label del entregable con fondo
+            const label = (ex.label || ex.entregable || '').substring(0, 30);
+            const labelW = Math.max(label.length * 5.8 + 14, 40);
+            const labelBg = label ? `<rect x="${(midX - labelW/2).toFixed(1)}" y="${(midY - 10).toFixed(1)}" width="${labelW.toFixed(1)}" height="17" rx="4" fill="rgba(5,5,10,0.88)" stroke="${color}" stroke-width="0.4" opacity="0.95"/>` : '';
+            const labelTxt = label ? `<text x="${midX.toFixed(1)}" y="${(midY + 2).toFixed(1)}" text-anchor="middle" font-size="8.5" fill="${color}" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-weight="500">${label}</text>` : '';
+
+            // Badge de secuencia (posicionado al 18% de la curva)
+            let seqBadge = '';
+            if (showSequence && seq != null) {
+                const ts = 0.18;
+                const sx = (1-ts)*(1-ts)*x1 + 2*(1-ts)*ts*ctrlX + ts*ts*x2;
+                const sy = (1-ts)*(1-ts)*y1 + 2*(1-ts)*ts*ctrlY + ts*ts*y2;
+                seqBadge = `<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="10" fill="${color}" opacity="0.92"/>` +
+                           `<text x="${sx.toFixed(1)}" y="${(sy + 3.5).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="600" fill="#fff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${seq}</text>`;
+            }
+
+            return `${pathSvg}
+                    ${labelBg}${labelTxt}
+                    ${seqBadge}`;
+        }).join('\n');
+
+        // ── Nodos con icono de rol alineado a la izquierda ────────────────────
+        const ROLE_ICON = { human:'\u{1f464}', agent:'\u{1f916}', process:'\u{2699}\u{fe0f}', organization:'\u{1f3e2}', resource:'\u{1f4e6}' };
         const nodeSvg = Object.values(nodePos).map(n => {
             const fill  = ROLE_FILL[n.role]  || 'rgba(100,100,100,.1)';
             const str   = ROLE_STR[n.role]   || '#555';
             const txt   = ROLE_TXT[n.role]   || '#ccc';
-            const label = (n.label || n.id || '').substring(0, 18);
-            const lvl   = (n.levelId || '').replace('@','').substring(0, 7);
-            return `<g data-node-id="${n.id}">
-                <rect x="${n.x.toFixed(1)}" y="${n.y.toFixed(1)}" width="${NODE_W}" height="${NODE_H}" rx="8"
-                    fill="${fill}" stroke="${str}" stroke-width="0.8"/>
-                <text x="${n.cx.toFixed(1)}" y="${(n.y + NODE_H/2 - 7).toFixed(1)}"
-                    text-anchor="middle" font-size="11" font-weight="500" fill="${txt}"
+            const label = (n.label || n.id || '').substring(0, 20);
+            const lvl   = (n.levelId || '').replace('@','').substring(0, 9);
+            const icon  = ROLE_ICON[n.role]  || '\u{1f4a0}';
+            return `<g data-node-id="${n.id}" style="cursor:pointer;">
+                <rect x="${n.x.toFixed(1)}" y="${n.y.toFixed(1)}" width="${NODE_W}" height="${NODE_H}" rx="10"
+                    fill="${fill}" stroke="${str}" stroke-width="1"/>
+                <text x="${(n.x + 14).toFixed(1)}" y="${(n.y + NODE_H/2 + 1).toFixed(1)}"
+                    font-size="14">${icon}</text>
+                <text x="${(n.x + 30).toFixed(1)}" y="${(n.y + NODE_H/2 - 6).toFixed(1)}"
+                    font-size="11" font-weight="600" fill="${txt}"
                     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${label}</text>
-                <text x="${n.cx.toFixed(1)}" y="${(n.y + NODE_H/2 + 9).toFixed(1)}"
-                    text-anchor="middle" font-size="9" fill="${str}" opacity="0.7"
+                <text x="${(n.x + 30).toFixed(1)}" y="${(n.y + NODE_H/2 + 9).toFixed(1)}"
+                    font-size="8.5" fill="${str}" opacity="0.7"
                     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${lvl}</text>
             </g>`;
-        }).join('');
+        }).join('\n');
 
-        // ── Tier labels (izquierda) ───────────────────────────────────────────
-        const TIER_LABELS = { 0:'@anxaneta', 1:'@aixecador', 2:'@dosos', 3:'@baixos', 4:'@pinya' };
-        const tierLabelsSvg = tierKeys.map(t => {
-            const y = 60 + tierKeys.indexOf(t) * GAP_Y + NODE_H / 2 + 5;
-            return `<text x="8" y="${y}" font-size="8" fill="#333" font-family="monospace"
-                transform="rotate(-90,8,${y})" text-anchor="middle">${TIER_LABELS[t] || ''}</text>`;
-        }).join('');
+        // ── Tier labels con franja de fondo sutil ─────────────────────────────
+        const TIER_LABELS = { 0:'@anxaneta \u{b7} Vision', 1:'@aixecador \u{b7} Coord.', 2:'@dosos \u{b7} Ops', 3:'@baixos \u{b7} Soporte', 4:'@pinya \u{b7} Base' };
+        const tierLabelsSvg = tierKeys.map((t, ti) => {
+            const y = MARGIN_TOP + ti * GAP_Y + NODE_H / 2;
+            const bandY = MARGIN_TOP + ti * GAP_Y - 12;
+            return `<rect x="0" y="${bandY}" width="${W}" height="${NODE_H + 24}" rx="0" fill="rgba(255,255,255,0.012)"/>` +
+                   `<text x="14" y="${y + 4}" font-size="8" fill="#2a2a2a" font-family="monospace" font-weight="bold">${TIER_LABELS[t] || 'tier ' + t}</text>`;
+        }).join('\n');
 
         // ── Health badge ──────────────────────────────────────────────────────
         const hs = net.sequencing_meta?.health_score ?? net.meta?.health_score;
         const hsBadge = hs != null ? `
-            <rect x="${W-80}" y="6" width="72" height="20" rx="6" fill="rgba(0,230,118,.1)" stroke="rgba(0,230,118,.3)" stroke-width="0.5"/>
-            <text x="${W-44}" y="20" text-anchor="middle" font-size="10" fill="#00e676"
+            <rect x="${W-90}" y="8" width="82" height="22" rx="6" fill="rgba(0,230,118,.08)" stroke="rgba(0,230,118,.25)" stroke-width="0.5"/>
+            <text x="${W-49}" y="23" text-anchor="middle" font-size="10" fill="#00e676" font-weight="600"
                 font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">health ${Number(hs).toFixed(2)}</text>` : '';
 
-        // ── Leyenda ───────────────────────────────────────────────────────────
+        // ── Leyenda con fondo ─────────────────────────────────────────────────
+        const ly = TOTAL_H - 22;
         const legend = `
-            <circle cx="20" cy="${TOTAL_H-18}" r="8" fill="rgba(0,230,118,.2)" stroke="#1D9E75" stroke-width="0.6"/>
-            <text x="32" y="${TOTAL_H-13}" font-size="9" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">tangible</text>
-            <line x1="72" y1="${TOTAL_H-18}" x2="88" y2="${TOTAL_H-18}" stroke="#7F77DD" stroke-width="1.5" stroke-dasharray="4 3"/>
-            <text x="92" y="${TOTAL_H-13}" font-size="9" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">intangible</text>
-            ${showSequence ? `<circle cx="145" cy="${TOTAL_H-18}" r="7" fill="#1D9E75" opacity="0.9"/>
-            <text x="145" y="${TOTAL_H-14}" text-anchor="middle" font-size="8" fill="#fff">1</text>
-            <text x="156" y="${TOTAL_H-13}" font-size="9" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">secuencia</text>` : ''}`;
+            <rect x="10" y="${ly - 12}" width="${showSequence ? 265 : 200}" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+            <line x1="20" y1="${ly}" x2="38" y2="${ly}" stroke="#1D9E75" stroke-width="2"/>
+            <text x="42" y="${ly + 4}" font-size="8.5" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">tangible</text>
+            <line x1="86" y1="${ly}" x2="104" y2="${ly}" stroke="#7F77DD" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="108" y="${ly + 4}" font-size="8.5" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">intangible</text>
+            <line x1="158" y1="${ly}" x2="176" y2="${ly}" stroke="#BA7517" stroke-width="2"/>
+            <text x="180" y="${ly + 4}" font-size="8.5" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">pago</text>
+            ${showSequence ? `<circle cx="218" cy="${ly}" r="7" fill="#1D9E75" opacity="0.9"/>
+            <text x="218" y="${ly + 3}" text-anchor="middle" font-size="8" fill="#fff" font-weight="600">1</text>
+            <text x="230" y="${ly + 4}" font-size="8.5" fill="#555" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">secuencia</text>` : ''}`;
 
-        // ── Defs ──────────────────────────────────────────────────────────────
+        // ── Defs con markers ──────────────────────────────────────────────────
         const defs = `<defs>
-            <marker id="arr-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <marker id="arr-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                 <path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </marker>
-            <marker id="arr-i" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <marker id="arr-i" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                 <path d="M2 1L8 5L2 9" fill="none" stroke="#7F77DD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </marker>
-            <marker id="arr-p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <marker id="arr-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                 <path d="M2 1L8 5L2 9" fill="none" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </marker>
         </defs>`;

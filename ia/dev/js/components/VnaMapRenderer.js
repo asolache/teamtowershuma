@@ -35,11 +35,11 @@ const FLOW = {
 };
 
 // ─── Layout constants ─────────────────────────────────────────────────────────
-const NODE_W = 140;
+const NODE_W = 155;
 const NODE_H =  56;
-const PAD_X  =  20;
-const PAD_Y  =  48;
-const TIER_H = 100;
+const PAD_X  =  40;
+const PAD_Y  =  70;
+const TIER_H = 140;
 
 export class VnaMapRenderer {
 
@@ -69,12 +69,16 @@ export class VnaMapRenderer {
         tierKeys.forEach((tier, tierIdx) => {
             const tierNodes = tiers[tier];
             const count     = tierNodes.length;
-            const totalW    = count * NODE_W + (count - 1) * PAD_X;
-            const startX    = Math.max(PAD_X, (width - totalW) / 2);
-            const y         = PAD_Y + tierIdx * TIER_H;
+            const usableW   = width - PAD_X * 2 - NODE_W;
+            const spacing   = count > 1 ? usableW / (count - 1) : 0;
+            const startX    = count > 1 ? PAD_X : (width - NODE_W) / 2;
+            const baseY     = PAD_Y + tierIdx * TIER_H;
 
             tierNodes.forEach((node, i) => {
-                const x = startX + i * (NODE_W + PAD_X);
+                const x = startX + i * spacing;
+                // Stagger vertical para separar flechas
+                const stagger = count > 1 ? (i % 2 === 0 ? -8 : 8) : 0;
+                const y = baseY + stagger;
                 nodeLayout[node.id] = {
                     ...node,
                     x,
@@ -85,27 +89,51 @@ export class VnaMapRenderer {
             });
         });
 
-        // ── Edges con coordenadas ─────────────────────────────────────────────
-        const edgeLayout = exchanges.map(ex => {
+        // ── Contar aristas paralelas entre pares ──────────────────────────────
+        const pairIdx = {};
+        exchanges.forEach((ex, i) => {
+            const key = [ex.from, ex.to].sort().join('::');
+            if (!pairIdx[key]) pairIdx[key] = [];
+            pairIdx[key].push(i);
+        });
+
+        // ── Edges con coordenadas y curvas Bezier ─────────────────────────────
+        const edgeLayout = exchanges.map((ex, i) => {
             const from = nodeLayout[ex.from];
             const to   = nodeLayout[ex.to];
 
             if (!from || !to) {
-                return { ...ex, x1: 0, y1: 0, x2: 0, y2: 0, sequence_order: ex.sequence_order ?? null };
+                return { ...ex, x1: 0, y1: 0, x2: 0, y2: 0, ctrlX: 0, ctrlY: 0, sequence_order: ex.sequence_order ?? null };
             }
 
-            // Offset lateral mínimo para que las flechas no se sobrepongan
-            const dx     = to.cx - from.cx;
-            const dy     = to.cy - from.cy;
-            const len    = Math.sqrt(dx * dx + dy * dy) || 1;
-            const margin = NODE_W / 2 + 4;
+            const dx  = to.cx - from.cx;
+            const dy  = to.cy - from.cy;
+            const len = Math.sqrt(dx * dx + dy * dy) || 1;
+            const nx  = dx / len;
+            const ny  = dy / len;
+
+            const x1 = from.cx + nx * (NODE_W / 2 + 4);
+            const y1 = from.cy + ny * (NODE_H / 2 + 3);
+            const x2 = to.cx   - nx * (NODE_W / 2 + 12);
+            const y2 = to.cy   - ny * (NODE_H / 2 + 3);
+
+            // Offset perpendicular para aristas paralelas
+            const pairKey  = [ex.from, ex.to].sort().join('::');
+            const siblings = pairIdx[pairKey] || [i];
+            const sibI     = siblings.indexOf(i);
+            const perpOff  = (sibI - (siblings.length - 1) / 2) * 28;
+            const px = -ny * perpOff;
+            const py =  nx * perpOff;
+
+            // Control point Bezier
+            const baseCurve = Math.min(len * 0.18, 45);
+            const ctrlX = (x1 + x2) / 2 + px + (-ny) * baseCurve;
+            const ctrlY = (y1 + y2) / 2 + py + ( nx) * baseCurve;
 
             return {
                 ...ex,
-                x1:             from.cx + (dx / len) * margin,
-                y1:             from.cy + (dy / len) * (NODE_H / 2),
-                x2:             to.cx   - (dx / len) * margin,
-                y2:             to.cy   - (dy / len) * (NODE_H / 2),
+                x1, y1, x2, y2,
+                ctrlX, ctrlY,
                 sequence_order: ex.sequence_order ?? null,
                 tangible:       ex.type !== 'intangible',
                 payment:        ex.category === 'payment',
@@ -152,28 +180,36 @@ export class VnaMapRenderer {
   </marker>
 </defs>`;
 
-        // ── Edges ─────────────────────────────────────────────────────────────
+        // ── Edges con curvas Bezier ────────────────────────────────────────────
         const edgeSvg = layout.edges.map(e => {
             const flow     = e.payment ? FLOW.payment : e.tangible ? FLOW.tangible : FLOW.intangible;
             const markerId = e.payment ? 'vna-arr-p' : e.tangible ? 'vna-arr-t' : 'vna-arr-i';
-            const midX     = ((e.x1 + e.x2) / 2).toFixed(1);
-            const midY     = ((e.y1 + e.y2) / 2).toFixed(1);
 
-            const line = `<line x1="${e.x1.toFixed(1)}" y1="${e.y1.toFixed(1)}" ` +
-                               `x2="${e.x2.toFixed(1)}" y2="${e.y2.toFixed(1)}" ` +
-                               `stroke="${flow.stroke}" stroke-width="1.5" ${flow.dash} ` +
-                               `marker-end="url(#${markerId})" fill="none"/>`;
+            // Punto medio en la curva Bezier al 50%
+            const mt = 0.5;
+            const midX = ((1-mt)*(1-mt)*e.x1 + 2*(1-mt)*mt*(e.ctrlX||((e.x1+e.x2)/2)) + mt*mt*e.x2).toFixed(1);
+            const midY = ((1-mt)*(1-mt)*e.y1 + 2*(1-mt)*mt*(e.ctrlY||((e.y1+e.y2)/2)) + mt*mt*e.y2).toFixed(1);
+
+            // Path Bezier cuadratico
+            const cx = (e.ctrlX || ((e.x1+e.x2)/2)).toFixed(1);
+            const cy = (e.ctrlY || ((e.y1+e.y2)/2)).toFixed(1);
+            const path = `<path d="M${e.x1.toFixed(1)},${e.y1.toFixed(1)} Q${cx},${cy} ${e.x2.toFixed(1)},${e.y2.toFixed(1)}" ` +
+                         `stroke="${flow.stroke}" stroke-width="1.5" ${flow.dash} ` +
+                         `marker-end="url(#${markerId})" fill="none" opacity="0.85"/>`;
 
             // Badge de secuencia
             let badge = '';
             if (showSequence && e.sequence_order != null) {
-                badge = `<circle cx="${midX}" cy="${midY}" r="9" fill="${flow.stroke}" opacity="0.9" class="seq-badge"/>` +
-                        `<text x="${midX}" y="${midY}" text-anchor="middle" dominant-baseline="central" ` +
+                const ts = 0.18;
+                const sx = ((1-ts)*(1-ts)*e.x1 + 2*(1-ts)*ts*(e.ctrlX||((e.x1+e.x2)/2)) + ts*ts*e.x2).toFixed(1);
+                const sy = ((1-ts)*(1-ts)*e.y1 + 2*(1-ts)*ts*(e.ctrlY||((e.y1+e.y2)/2)) + ts*ts*e.y2).toFixed(1);
+                badge = `<circle cx="${sx}" cy="${sy}" r="9" fill="${flow.stroke}" opacity="0.92" class="seq-badge"/>` +
+                        `<text x="${sx}" y="${sy}" text-anchor="middle" dominant-baseline="central" ` +
                         `font-size="9" font-weight="500" fill="#fff" ` +
                         `font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${e.sequence_order}</text>`;
             }
 
-            return line + badge;
+            return path + badge;
         }).join('\n  ');
 
         // ── Nodes ─────────────────────────────────────────────────────────────
