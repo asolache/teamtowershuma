@@ -116,7 +116,7 @@ export class WoGenerator {
                 category:             exchange.category || 'deliverable',
                 automatable:          exchange.automatable || false,
                 estimatedHours:       hours,
-                sequence_order:       exchange.sequence_order ?? null,
+                sequence_order:       exchange.sequence_order || null,
                 depends_on:           exchangeDepIds,     // IDs de exchange; se resuelven a hashes WO post-build
                 can_start_immediately: exchangeDepIds.length === 0,
                 soc_checklist:        WoGenerator._buildSocChecklist(exchange, woType),
@@ -154,18 +154,18 @@ export class WoGenerator {
         const hasSequence = workOrders.some(wo => wo.sequence_order !== null);
         if (hasSequence) {
             workOrders.sort((a, b) => {
-                const sa = a.sequence_order ?? 9999;
-                const sb = b.sequence_order ?? 9999;
+                const sa = a.sequence_order || 9999;
+                const sb = b.sequence_order || 9999;
                 if (sa !== sb) return sa - sb;
                 // Desempate por automation
                 const order = { auto: 0, hitl: 1, human: 2 };
-                return (order[a.automation] ?? 2) - (order[b.automation] ?? 2);
+                return (order[a.automation] || 2) - (order[b.automation] || 2);
             });
         } else {
             // Fallback V10 original: automation order
             workOrders.sort((a, b) => {
                 const order = { auto: 0, hitl: 1, human: 2 };
-                return (order[a.automation] ?? 2) - (order[b.automation] ?? 2);
+                return (order[a.automation] || 2) - (order[b.automation] || 2);
             });
         }
 
@@ -229,7 +229,7 @@ export class WoGenerator {
             trust:         1.0,
             feedback:      1.5,
             collaboration: 2.0
-        }[category] ?? 2.0;
+        }[category] || 2.0;
 
         const freqMult = frequency === 'once' ? 1.5 : frequency === 'recurring' ? 1.0 : 1.2;
         const typeMult = type === 'intangible' ? 1.3 : 1.0;
@@ -304,7 +304,7 @@ export class WoGenerator {
         });
 
         if (candidates.length > 0) {
-            return candidates.sort((a, b) => (a.sequence_order ?? 9999) - (b.sequence_order ?? 9999));
+            return candidates.sort((a, b) => (a.sequence_order || 9999) - (b.sequence_order || 9999));
         }
 
         // Fallback para redes con ciclos funcionales VNA: ninguna WO activa tiene
@@ -312,11 +312,11 @@ export class WoGenerator {
         // como ejecutables de arranque. Se devuelven con can_start_immediately=true
         // porque en la práctica son las que inician el ciclo.
         if (active.length > 0) {
-            const minSeq = Math.min(...active.map(w => w.sequence_order ?? 9999));
+            const minSeq = Math.min(...active.map(w => w.sequence_order || 9999));
             return active
-                .filter(w => (w.sequence_order ?? 9999) === minSeq)
+                .filter(w => (w.sequence_order || 9999) === minSeq)
                 .map(w => ({ ...w, can_start_immediately: true }))
-                .sort((a, b) => (a.sequence_order ?? 9999) - (b.sequence_order ?? 9999));
+                .sort((a, b) => (a.sequence_order || 9999) - (b.sequence_order || 9999));
         }
 
         return [];

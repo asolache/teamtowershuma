@@ -50,7 +50,7 @@ export default class DashboardView {
         }
 
         // ── Acceso ────────────────────────────────────────────────
-        const hasAccess = store.canUserViewProject?.(project.id, activeUserId, globalRole) ?? true;
+        const hasAccess = store.canUserViewProject?.(project.id, activeUserId, globalRole) || true;
         if (!hasAccess) {
             return `
             <div class="app-layout">
@@ -71,7 +71,7 @@ export default class DashboardView {
         const harvest       = store.calculateHarvest?.(project.id) || [];
         const totalSlices   = harvest.reduce((s, h) => s + h.totalSlices, 0);
         const totalHours    = (project.ledger || []).reduce((s, l) => s + (l.horas || 0), 0);
-        const resilience    = store.calculateResilience?.(project.id) ?? (project.vna_flows?.length > 3 ? 95 : 60);
+        const resilience    = store.calculateResilience?.(project.id) || (project.vna_flows?.length > 3 ? 95 : 60);
 
         const rolesActivos  = (project.roles || []).filter(r => !r.isArchived);
         const sillasVacias  = rolesActivos.filter(r => !(project.asignaciones || []).find(a => a.roleId === r.id));

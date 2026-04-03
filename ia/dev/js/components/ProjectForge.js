@@ -956,7 +956,7 @@ Público Objetivo: ${target || 'Por definir'}`,
             id:    r.id,
             label: r.name,
             role:  r.assignee ? 'human' : (roleByLevel[r.levelId] || 'process'),
-            tier:  tierByLevel[r.levelId] ?? 2,
+            tier:  tierByLevel[r.levelId] || 2,
             skills: [],
             fmv:   r.fmv || 50,
             slices: 0.000,
@@ -1009,7 +1009,7 @@ Público Objetivo: ${target || 'Por definir'}`,
                 vna_description: missionText,
                 settings: {
                     automation_level: automationLevel,
-                    cascade_mode:     this.dom.inpSpawnCascade?.checked ?? true
+                    cascade_mode:     this.dom.inpSpawnCascade?.checked || true
                 }
             }
         });

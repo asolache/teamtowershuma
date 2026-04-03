@@ -113,7 +113,7 @@ export class EvalEngine {
             n.type === 'eval' &&
             n.parentId === parentId &&
             (!projectId || n.projectId === projectId)
-        ).sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
+        ).sort((a, b) => (a.level || 0) - (b.level || 0));
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -121,7 +121,7 @@ export class EvalEngine {
     // ══════════════════════════════════════════════════════════════
     static async getEvalsByLevel(parentId, level, projectId = null) {
         const all = await this.getEvalsForNode(parentId, projectId);
-        return all.filter(e => (e.level ?? 0) === level);
+        return all.filter(e => (e.level || 0) === level);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -135,12 +135,12 @@ export class EvalEngine {
         const score  = passed.length / evals.length;
 
         // Nivel actual = nivel más alto donde todos los evals pasaron
-        const levels = [...new Set(evals.map(e => e.level ?? 0))].sort((a,b) => a-b);
+        const levels = [...new Set(evals.map(e => e.level || 0))].sort((a,b) => a-b);
         let currentLevel = 0;
         for (const lv of levels) {
-            const lvEvals  = evals.filter(e => (e.level ?? 0) === lv);
+            const lvEvals  = evals.filter(e => (e.level || 0) === lv);
             const lvPassed = lvEvals.filter(e => e.status === 'passed');
-            const threshold = lvEvals[0]?.passThreshold ?? 0.8;
+            const threshold = lvEvals[0]?.passThreshold || 0.8;
             if (lvPassed.length / lvEvals.length >= threshold) currentLevel = lv + 1;
             else break;
         }
@@ -248,7 +248,7 @@ export class EvalEngine {
         if (!levelEvals.length) return;
 
         const passed    = levelEvals.filter(e => e.status === 'passed');
-        const threshold = levelEvals[0]?.passThreshold ?? 0.8;
+        const threshold = levelEvals[0]?.passThreshold || 0.8;
         const ratio     = passed.length / levelEvals.length;
 
         if (ratio >= threshold) {

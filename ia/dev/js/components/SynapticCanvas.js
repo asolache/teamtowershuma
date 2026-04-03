@@ -345,7 +345,7 @@ export class SynapticCanvas {
 
             vnaNodes.forEach(n => {
                 const vid = `vna_${n.id}`;
-                const gravity = LEVEL_GRAVITY[n.levelId] ?? (n.tier != null ? [300,150,0,-150,-300][Math.min(n.tier,4)] : 0);
+                const gravity = LEVEL_GRAVITY[n.levelId] || (n.tier != null ? [300,150,0,-150,-300][Math.min(n.tier,4)] : 0);
                 addNode(vid, n.label || n.id, 'vna-overlay', this._vnaSize(n), ROLE_COLORS[n.role] || '#888',
                     { ...n, type:'vna-node', category: n.role || 'process' },
                     { fy: gravity, _isVna: true, _rawVna: n });
@@ -422,19 +422,19 @@ export class SynapticCanvas {
         // Agrupar nodos por nivel para distribuirlos angularmente
         const byLevel = {};
         vnaNodes.forEach(n => {
-            const lv = n.levelId || `tier_${n.tier ?? 2}`;
+            const lv = n.levelId || `tier_${n.tier || 2}`;
             if (!byLevel[lv]) byLevel[lv] = [];
             byLevel[lv].push(n);
         });
 
         // Asignar posición angular dentro de cada nivel
         vnaNodes.forEach(n => {
-            const lv      = n.levelId || `tier_${n.tier ?? 2}`;
+            const lv      = n.levelId || `tier_${n.tier || 2}`;
             const group   = byLevel[lv];
             const idx     = group.indexOf(n);
             const total   = group.length;
             const angle   = (idx / Math.max(total, 1)) * Math.PI * 2;
-            const radius  = LEVEL_RADIUS[n.levelId] ?? DEFAULT_RADIUS;
+            const radius  = LEVEL_RADIUS[n.levelId] || DEFAULT_RADIUS;
 
             this.nodes.push({
                 id:      n.id,
@@ -551,8 +551,8 @@ export class SynapticCanvas {
     }
 
     _vnaSize(n) {
-        if (n.levelId) return { '@anxaneta':42,'@aixecador':32,'@dosos':24,'@baixos':18,'@pinya':14 }[n.levelId] ?? 20;
-        const t = Number(n.tier ?? 2);
+        if (n.levelId) return { '@anxaneta':42,'@aixecador':32,'@dosos':24,'@baixos':18,'@pinya':14 }[n.levelId] || 20;
+        const t = Number(n.tier || 2);
         return t === 0 ? 40 : t === 1 ? 28 : t === 2 ? 20 : 14;
     }
 
@@ -697,7 +697,7 @@ export class SynapticCanvas {
                 fz: Math.sin(angle) * R_EVAL,
                 fy: -120
             });
-            addL('drill_center', eId, { tipo: 'eval', label: `L${e.level ?? 0}`, _isEvalLink: true });
+            addL('drill_center', eId, { tipo: 'eval', label: `L${e.level || 0}`, _isEvalLink: true });
         });
 
         // ── Sector rings visuales (labels de arquetipos en el canvas) ──

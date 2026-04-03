@@ -366,7 +366,7 @@ export class IdeModal {
             <div class="eval-pill" data-eval-id="${e.id}">
                 <div class="eval-status" style="background:${color};"></div>
                 <div class="eval-criteria">${e.criteria}</div>
-                <div class="eval-level">L${e.level??0}</div>
+                <div class="eval-level">L${e.level||0}</div>
                 ${e.status !== 'passed' ? `<button class="btn-eval-pass" data-eval-id="${e.id}">✓ Pass</button>` : ''}
                 ${e.status !== 'failed' && e.status !== 'passed' ? `<button class="btn-eval-fail" data-eval-id="${e.id}">✗ Fail</button>` : ''}
             </div>`;

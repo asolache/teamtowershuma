@@ -56,7 +56,7 @@ export class PrimerEngine {
         // Calcular health_score de la sesión
         const total = workOrders.length;
         const good  = workOrders.filter(wo =>
-            wo.status === 'consolidated' && (wo.evalsResult?.score ?? 0) >= 0.8
+            wo.status === 'consolidated' && (wo.evalsResult?.score || 0) >= 0.8
         ).length;
         const health_score = total > 0 ? Number((good / total).toFixed(3)) : 0.75;
 

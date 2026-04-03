@@ -514,9 +514,9 @@ class Store {
                     if (!exists) newState.projects[projIdx].evals.push({
                         ...action.payload.eval,
                         status:    action.payload.eval.status    || 'draft',
-                        level:     action.payload.eval.level     ?? 0,
-                        weight:    action.payload.eval.weight    ?? 1.0,
-                        passThreshold: action.payload.eval.passThreshold ?? 0.8,
+                        level:     action.payload.eval.level     || 0,
+                        weight:    action.payload.eval.weight    || 1.0,
+                        passThreshold: action.payload.eval.passThreshold || 0.8,
                         createdAt: Date.now()
                     });
                 }
@@ -543,7 +543,7 @@ class Store {
                         const ri = roles.findIndex(r => r.id === nodeId);
                         if (ri > -1) {
                             roles[ri].maturity = newMaturity || 'validated';
-                            roles[ri].level    = newLevel    ?? (roles[ri].level ?? 0) + 1;
+                            roles[ri].level    = newLevel    || (roles[ri].level || 0) + 1;
                             roles[ri].promotedAt = Date.now();
                         }
                     }
@@ -552,7 +552,7 @@ class Store {
                         const ni = nodes.findIndex(n => n.id === nodeId);
                         if (ni > -1) {
                             nodes[ni].maturity = newMaturity || 'validated';
-                            nodes[ni].level    = newLevel    ?? (nodes[ni].level ?? 0) + 1;
+                            nodes[ni].level    = newLevel    || (nodes[ni].level || 0) + 1;
                             nodes[ni].promotedAt = Date.now();
                         }
                     }
@@ -562,7 +562,7 @@ class Store {
                         if (ui2 > -1) {
                             if (!users[ui2].profile) users[ui2].profile = {};
                             users[ui2].profile.maturity = newMaturity || 'validated';
-                            users[ui2].profile.level    = newLevel    ?? (users[ui2].profile.level ?? 0) + 1;
+                            users[ui2].profile.level    = newLevel    || (users[ui2].profile.level || 0) + 1;
                         }
                     }
                 }

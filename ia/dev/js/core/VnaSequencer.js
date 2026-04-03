@@ -83,9 +83,9 @@ export class VnaSequencer {
         // ── Paso 7: Enriquecer los exchanges en la copia ─────────────────────
         const enriched = net.exchanges.map(ex => ({
             ...ex,
-            sequence_order:       orderMap[ex.id] ?? counter++,
-            depends_on:           depsMap[ex.id]  ?? [],
-            can_start_immediately: (depsMap[ex.id]?.length ?? 0) === 0
+            sequence_order:       orderMap[ex.id] || counter++,
+            depends_on:           depsMap[ex.id]  || [],
+            can_start_immediately: (depsMap[ex.id]?.length || 0) === 0
         }));
 
         // Ordenar el array por sequence_order para consistencia

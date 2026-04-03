@@ -43,7 +43,7 @@ export class QueenAudit {
         consolidatedWOs.forEach(wo => {
             const roleId = wo.from;
             if (!roleId) return;
-            const score = wo.evalsResult?.score ?? 1.0;
+            const score = wo.evalsResult?.score || 1.0;
             if (!scoresByRole[roleId]) scoresByRole[roleId] = [];
             scoresByRole[roleId].push(score);
         });
@@ -198,7 +198,7 @@ export class QueenAudit {
 
         // Bonus si hay WOs consolidadas con score >= 0.8
         const goodWOs = (project.work_orders || []).filter(wo =>
-            wo.status === 'consolidated' && (wo.evalsResult?.score ?? 0) >= 0.8
+            wo.status === 'consolidated' && (wo.evalsResult?.score || 0) >= 0.8
         );
         if (goodWOs.length > 0 && roles.length > 0) {
             score += Math.min(goodWOs.length * 0.05, 0.2);

@@ -6,7 +6,7 @@ import { store } from './core/store.js';
 
 const BASE_PATH  = '/ia/dev';
 const VIEWS_PATH = `${BASE_PATH}/js/views`;
-const V          = '?v=10.9.2';
+const V          = '?v=10.9.4';
 
 // Guard contra ejecuciones simultáneas del router
 let _routing = false;
@@ -46,7 +46,7 @@ async function router() {
     _routing = true;
 
     const path  = getRoutePath();
-    const match = ROUTES.find(r => r.path === path) ?? ROUTES.find(r => r.path === null);
+    const match = ROUTES.find(r => r.path === path) || ROUTES.find(r => r.path === null);
     const app   = document.getElementById('app');
 
     try {
