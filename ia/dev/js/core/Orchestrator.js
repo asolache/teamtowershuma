@@ -1241,7 +1241,6 @@ Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
             };
         });
     }
-}
 
     // ══════════════════════════════════════════════════════════════════════════
     //  FASE 1 — designVnaRoles
@@ -1489,5 +1488,6 @@ Devuelve SOLO JSON:
         };
     }
 
+}
 // ─── SINGLETON EXPORTADO ─────────────────────────────────────
 export const Orchestrator = new OrchestratorCore();

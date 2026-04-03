@@ -365,6 +365,11 @@ export class VnaMapRenderer {
             .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0] || null;
     }
 
+    static _roleIcon(role) {
+        const icons = { human: '👤', agent: '🤖', process: '⚙️', organization: '🏢', resource: '📦' };
+        return icons[role] || '◆';
+    }
+
     static _tierFromLevel(levelId) {
         const l = (levelId || '').toLowerCase();
         if (l.includes('anx'))  return 0;

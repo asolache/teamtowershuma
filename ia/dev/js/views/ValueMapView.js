@@ -616,7 +616,7 @@ export default class ValueMapView {
         };
         this.dom.rolesList.innerHTML = nodes.map(n => `
             <div class="role-item" data-role-id="${n.id}">
-                <div style="font-size:1rem;margin-top:2px;">${{human:'👤',agent:'🤖',process:'⚙️',organization:'🏢',resource:'📦'}[n.role]||'◆'}</div>
+                <div style="font-size:1rem;margin-top:2px;">${VnaMapRenderer._roleIcon(n.role)}</div>
                 <div style="flex:1;min-width:0;">
                     <input class="role-edit-name" data-field="label" value="${n.label || ''}"
                         style="color:${ROLE_COLORS_MAP[n.role]||'#ccc'};" placeholder="Nombre del rol (actividad)">

@@ -358,7 +358,7 @@ Granularidad de flujos: ${cfg.flowGranularity}
 Máximo de nodos recomendado: ${cfg.maxNodes}
 Máximo de flujos recomendado: ${cfg.maxFlows}
 Niveles castell disponibles: ${cfg.levelIds.join(', ')}
-${focalRole ? `Rol focal (perspectiva central del mapa): ${focalRole}` : ''}
+${focalRole ? ("Rol focal (perspectiva central del mapa): " + focalRole) : ""}
 
 [METASKILL DE ESTA RED]
 Misión: ${mission}
@@ -368,7 +368,7 @@ Fase del sistema: ${maturityLabels[maturity] || maturity}
 Horizonte temporal: ${timeHorizon}
 
 [CONTEXTO ADICIONAL]
-${this.context.rawDescription ? `Descripción libre del usuario:\n"${this.context.rawDescription}"` : ''}
+${this.context.rawDescription ? ("Descripción libre del usuario:\n\"" + this.context.rawDescription + "\"") : ""}
 
 [ROLES / ACTORES]
 Roles ya identificados por el usuario: ${knownRoles}
@@ -378,22 +378,22 @@ ${this.context.rolesSkipped ? 'El usuario no identificó roles previos — detec
 
 1. ROLES (vna_nodes):
    - Identifica todos los roles/actores relevantes para el nivel ${zoom}
-   - Asigna `role`: ${cfg.roleTypes.map(r => `"${r}"`).join(' | ')}
-   - Asigna `levelId` según jerarquía castell:
+   - Asigna \`role\`: ${cfg.roleTypes.map(function(r){ return '"' + r + '"'; }).join(' | ')}
+   - Asigna \`levelId\` según jerarquía castell:
      * @anxaneta = cúspide (decisores estratégicos, visión, C-level)
      * @aixecador = segundo nivel (coordinadores, managers, líderes)
      * @dosos = tercer nivel (ejecutores senior, especialistas)
      * @baixos = cuarto nivel (ejecutores base, operativos)
      * @pinya = base (soporte, recursos externos, proveedores, clientes masivos)
-   - Añade una `description` breve y funcional (no de cargo, de función en la red)
+   - Añade una \`description\` breve y funcional (no de cargo, de función en la red)
    - Si el usuario dio roles, úsalos; si hay roles clave faltantes, AÑÁDELOS marcándolos como sugeridos
 
 2. FLUJOS (vna_flows) — REGLA DE ORO VNA:
    - Por cada relación entre roles, define PRIMERO el tangible, LUEGO busca el intangible que lo precede o sigue
-   - `type`: "tangible" (bien/servicio/pago/dato) | "intangible" (conocimiento/confianza/feedback/reconocimiento)
-   - `category`: "payment" | "service" | "knowledge" | "trust" | "feedback"
-   - `label`: entregable concreto, MÁXIMO 28 caracteres (se trunca en el mapa SVG)
-   - `sequence_order`: orden lógico del flujo en el proceso (1, 2, 3...)
+   - \`type\`: "tangible" (bien/servicio/pago/dato) | "intangible" (conocimiento/confianza/feedback/reconocimiento)
+   - \`category\`: "payment" | "service" | "knowledge" | "trust" | "feedback"
+   - \`label\`: entregable concreto, MÁXIMO 28 caracteres (se trunca en el mapa SVG)
+   - \`sequence_order\`: orden lógico del flujo en el proceso (1, 2, 3...)
    - Respeta el principio de reciprocidad: si A→B, buscar B→A (aunque sea intangible)
 
 3. VALIDACIÓN DE SALUD:
@@ -406,7 +406,7 @@ ${this.context.rolesSkipped ? 'El usuario no identificó roles previos — detec
 
 4. ROLES FALTANTES:
    - Si detectas un gap en el flujo (algo que debería existir pero no hay actor que lo sostenga),
-     propón el rol faltante con `suggested: true`
+     propón el rol faltante con \`suggested: true\`
 
 5. SÍNTESIS NARRATIVA:
    - Escribe 2-3 frases explicando cómo la red cumple (o no) su misión
