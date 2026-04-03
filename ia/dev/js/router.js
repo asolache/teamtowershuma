@@ -6,9 +6,8 @@ import { store } from './core/store.js';
 
 const BASE_PATH  = '/ia/dev';
 const VIEWS_PATH = `${BASE_PATH}/js/views`;
-const V          = '?v=10.9.4';
+const V          = '?v=10.9.7';
 
-// Guard contra ejecuciones simultáneas del router
 let _routing = false;
 
 function getRoutePath() {
@@ -42,15 +41,18 @@ const ROUTES = [
 ];
 
 async function router() {
-    if (_routing) return;   // evitar ejecuciones simultáneas
+    if (_routing) return;
     _routing = true;
+    console.log('[Router] arrancando, path:', window.location.pathname);
 
     const path  = getRoutePath();
     const match = ROUTES.find(r => r.path === path) || ROUTES.find(r => r.path === null);
     const app   = document.getElementById('app');
 
     try {
+        console.log('[Router] antes store.init');
         await store.init();
+        console.log('[Router] store.init OK, cargando vista:', path);
 
         const module    = await match.view();
         const ViewClass = module.default;
@@ -58,10 +60,9 @@ async function router() {
 
         app.innerHTML = await view.getHtml();
 
-        if (typeof view.afterRender          === 'function') await view.afterRender();
+        if (typeof view.afterRender === 'function') await view.afterRender();
         else if (typeof view.executeViewScript === 'function') await view.executeViewScript();
 
-        // Bind links SPA — solo los no vinculados aún
         document.querySelectorAll('[data-link]').forEach(link => {
             if (link._linked) return;
             link._linked = true;
@@ -86,7 +87,6 @@ async function router() {
             </div>`;
     } finally {
         _routing = false;
-        // Ocultar bootloader si existe
         const boot = document.getElementById('bootloader');
         if (boot) boot.classList.add('hidden');
     }
@@ -101,7 +101,6 @@ export function navigateTo(url) {
 window.navigateTo = navigateTo;
 window.addEventListener('popstate', router);
 
-// Un solo listener global para links — sin duplicados
 document.addEventListener('click', e => {
     const link = e.target.closest('[data-link]');
     if (link && !link._linked) {
@@ -110,6 +109,4 @@ document.addEventListener('click', e => {
     }
 });
 
-// Arranque inicial
 router();
-
