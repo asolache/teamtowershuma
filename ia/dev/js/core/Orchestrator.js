@@ -642,7 +642,6 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
     async designVnaMap({ projectId, description, domain = 'auto', systemOverride = null }) {
         await this._ensureKB();
 
-        // Enriquecer contexto desde KB — el agente no necesita preguntar
         const existingNetwork = await KB.getNode(`vna-network-${projectId}`);
         const state           = store.getState();
         const project         = state.projects?.find(p => p.id === projectId);
@@ -651,7 +650,7 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
             projectId,
             description,
             domain,
-            projectName:       project?.nombre || project?.name        || '',
+            projectName:       project?.nombre || project?.name         || '',
             existingRoles:     project?.roles?.map(r => r.name || r.id) || [],
             existingNodes:     existingNetwork?.nodes                   || [],
             existingExchanges: existingNetwork?.exchanges               || [],
@@ -660,44 +659,30 @@ Ejecuta la rutina "${routine}" y devuelve el artefacto correspondiente.`;
             hint_size:         project?.roles?.length                   || 0
         };
 
-        // Si viene systemOverride del VnaCalibrator, inyectarlo directamente
-        // en lugar del prompt del agente desde KB
         let artifact;
         if (systemOverride) {
             const response = await this.callLLM({
                 preferredEngine: 'anthropic',
                 systemPrompt:    systemOverride,
-                userPrompt:      `Descripción del sistema:\n"${description}"\n\nContexto del proyecto:\n${JSON.stringify(researchContext, null, 2)}\n\nGenera el mapa VNA completo.`,
+                userPrompt:      `Descripción:\n"${description}"\n\nContexto:\n${JSON.stringify(researchContext, null, 2)}`,
                 responseFormat:  'json_object',
                 temperature:     0.15
             });
-
             const payload = response.content?.payload || response.content;
             artifact = {
-                '@context':   'https://teamtowers.io/sos/v10/vna',
-                '@type':      'SosArtifact',
-                artifactType: 'vna_map',
-                agentId:      CORE_AGENTS.ARCHITECT,
-                routine:      'designEcosystemVNA',
-                timestamp:    new Date().toISOString(),
-                payload,
-                telemetry:    response.telemetry,
-                audit:        { tddPassed: false, notarized: false, hash: `sha256:${Date.now().toString(16)}` }
+                '@context': 'https://teamtowers.io/sos/v10/vna', '@type': 'SosArtifact',
+                artifactType: 'vna_map', agentId: CORE_AGENTS.ARCHITECT,
+                routine: 'designEcosystemVNA', timestamp: new Date().toISOString(),
+                payload, telemetry: response.telemetry,
+                audit: { tddPassed: false, notarized: false, hash: `sha256:${Date.now().toString(16)}` }
             };
-
-            if (projectId) {
-                this._logTelemetry(projectId, CORE_AGENTS.ARCHITECT, response.telemetry.provider, 'designEcosystemVNA_calibrated', response.telemetry);
-            }
+            if (projectId) this._logTelemetry(projectId, CORE_AGENTS.ARCHITECT, response.telemetry.provider, 'designEcosystemVNA_calibrated', response.telemetry);
         } else {
             artifact = await this.dispatch({
                 routine:     'designEcosystemVNA',
                 agent:       CORE_AGENTS.ARCHITECT,
                 context:     researchContext,
-                constraints: {
-                    strictJSON: true,
-                    engine:     'anthropic',
-                    mcpSkills:  ['skill-vna-mapper', 'skill_vna_architect']
-                }
+                constraints: { strictJSON: true, engine: 'anthropic', mcpSkills: ['skill-vna-mapper', 'skill_vna_architect'] }
             });
         }
 
@@ -1257,6 +1242,252 @@ Propón ${maxSuggestions} skills externas que cubran gaps reales.`,
         });
     }
 }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  FASE 1 — designVnaRoles
+    //  Genera roles como actividades con entregable identificado.
+    //  Un rol NO es un cargo — es una función que produce algo concreto.
+    // ══════════════════════════════════════════════════════════════════════════
+    async designVnaRoles({ projectId, description }) {
+        await this._ensureKB();
+        const state   = store.getState();
+        const project = state.projects?.find(p => p.id === projectId);
+
+        const systemPrompt = `Eres @agent_genesis_architect, experto en Value Network Analysis de Verna Allee (SOS V10).
+
+FASE 1 — ARQUITECTURA DE ROLES
+Tu misión: identificar todos los actores de esta red de valor.
+
+REGLA CRÍTICA DE NOMENCLATURA:
+Un rol NO es un cargo (no "CEO", no "Developer").
+Un rol ES una actividad que produce un entregable específico.
+Formato del nombre: VERBO + FUNCIÓN (ej: "Genera conocimiento técnico", "Financia el desarrollo", "Distribuye el producto")
+
+Para cada rol debes definir:
+- id: slug kebab-case único (ej: "role-genera-conocimiento")
+- label: nombre del rol como actividad (VERBO + FUNCIÓN, máx 25 chars)
+- main_deliverable: el entregable principal que produce este rol (concreto, tangible o intangible, máx 30 chars)
+- role: tipo → "human" | "agent" | "process" | "organization" | "resource"
+- levelId: posición en el castell:
+    @anxaneta = cúspide (quién tiene la visión/decisión final)
+    @aixecador = coordinación (quien conecta y coordina)
+    @dosos = ejecución senior (quien produce valor principal)
+    @baixos = ejecución base (quien opera y mantiene)
+    @pinya = soporte/base (proveedores, clientes, recursos externos)
+- description: para quién produce el entregable y qué valor aporta a la red (1 frase)
+- deliverables: array de 2-4 entregables que produce este rol
+
+REGLAS:
+- Entre 5 y 8 roles. Ni más ni menos.
+- Incluir siempre el rol del cliente/usuario final (quien recibe el valor último)
+- Incluir siempre el rol que genera el ingreso económico
+- Detectar roles latentes (los que deberían existir aunque no estén nombrados)
+- Ningún rol aislado — todos deben intercambiar con al menos 2 otros roles
+
+Devuelve SOLO JSON válido:
+{
+  "nodes": [{ "id", "label", "main_deliverable", "role", "levelId", "description", "deliverables": [] }],
+  "meta": { "mission": "...", "sector": "...", "total_roles": N, "reasoning": "..." }
+}`;
+
+        const response = await this.callLLM({
+            preferredEngine: 'anthropic',
+            systemPrompt,
+            userPrompt: `Descripción del ecosistema:\n"${description}"\n\nProyecto: ${project?.nombre || projectId}\nSector detectado: ${project?.sector || 'auto-detectar'}`,
+            responseFormat: 'json_object',
+            temperature: 0.2
+        });
+
+        const payload = response.content?.payload || response.content;
+
+        // Persistir nodos en store
+        for (const node of (payload?.nodes || [])) {
+            await store.dispatch({ type: 'VNA_NODE_ADD', payload: { projectId, node } });
+        }
+
+        // Persistir en KB como borrador
+        await KB.saveNode({
+            id: `vna-roles-draft-${projectId}`,
+            type: 'vna-roles-draft',
+            projectId,
+            nodes: payload?.nodes || [],
+            meta:  payload?.meta  || {},
+            createdAt: Date.now()
+        });
+
+        this._logTelemetry(projectId, CORE_AGENTS.ARCHITECT, response.telemetry.provider, 'designVnaRoles', response.telemetry);
+
+        return {
+            '@context': 'https://teamtowers.io/sos/v10/vna',
+            '@type': 'SosArtifact', artifactType: 'vna_roles',
+            agentId: CORE_AGENTS.ARCHITECT, timestamp: new Date().toISOString(),
+            payload, telemetry: response.telemetry,
+            audit: { tddPassed: false, notarized: false, hash: `sha256:${Date.now().toString(16)}` }
+        };
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  FASE 2 — designVnaFlows
+    //  Genera todos los intercambios tangibles E intangibles entre los roles.
+    //  Regla de reciprocidad forzada: todo tangible tiene su intangible.
+    // ══════════════════════════════════════════════════════════════════════════
+    async designVnaFlows({ projectId, nodes, mission }) {
+        await this._ensureKB();
+
+        const rolesDescription = nodes.map(n =>
+            `- ${n.id} (${n.label}): produce "${n.main_deliverable}" → ${n.description}`
+        ).join('\n');
+
+        const systemPrompt = `Eres @agent_genesis_architect, experto en Value Network Analysis de Verna Allee (SOS V10).
+
+FASE 2 — MAPEO DE FLUJOS DE VALOR
+Tienes los roles definidos. Ahora mapea TODOS los intercambios entre ellos.
+
+REGLA DE ORO VNA (Verna Allee):
+Por cada intercambio tangible, DEBE existir el intangible que lo precede o lo sigue.
+Los intangibles son la economía invisible: confianza, conocimiento, reputación, compromiso.
+Una red sin intangibles es frágil y transaccional — no es un ecosistema de valor.
+
+REGLAS DE CONSTRUCCIÓN:
+1. Para cada par de roles con relación, define:
+   - El flujo TANGIBLE: qué bien, servicio, pago o dato fluye físicamente
+   - El flujo INTANGIBLE correspondiente: qué conocimiento, confianza o valor estratégico fluye
+2. Principio de reciprocidad: si A→B existe, buscar B→A (aunque sea de tipo diferente)
+3. label: nombre del entregable concreto que viaja en este flujo (MÁXIMO 28 chars para el mapa)
+4. entregable: descripción extendida del entregable (para el panel de detalle)
+5. category: "payment" | "service" | "knowledge" | "trust" | "feedback" | "deliverable"
+6. sequence_order: orden lógico en el proceso (1, 2, 3...)
+7. socs: 2-3 criterios de calidad verificables para este intercambio
+
+Devuelve SOLO JSON válido:
+{
+  "exchanges": [{
+    "id": "flow-NNN",
+    "from": "role-id",
+    "to": "role-id",
+    "type": "tangible|intangible",
+    "category": "payment|service|knowledge|trust|feedback|deliverable",
+    "label": "max 28 chars",
+    "entregable": "descripción extendida",
+    "sequence_order": N,
+    "socs": ["criterio verificable 1", "criterio verificable 2"]
+  }],
+  "meta": {
+    "health_score": 0.000,
+    "total_tangible": N,
+    "total_intangible": N,
+    "isolated_roles": [],
+    "missing_reciprocity": [],
+    "narrative": "2-3 frases explicando cómo fluye el valor en esta red"
+  }
+}`;
+
+        const response = await this.callLLM({
+            preferredEngine: 'anthropic',
+            systemPrompt,
+            userPrompt: `MISIÓN DE LA RED: ${mission || 'No especificada'}\n\nROLES IDENTIFICADOS:\n${rolesDescription}\n\nGenera TODOS los flujos de valor entre estos roles.`,
+            responseFormat: 'json_object',
+            temperature: 0.2
+        });
+
+        const payload = response.content?.payload || response.content;
+
+        // Persistir flujos en store
+        for (const exchange of (payload?.exchanges || [])) {
+            await store.dispatch({ type: 'VNA_EXCHANGE_REGISTER', payload: { projectId, exchange } });
+        }
+
+        // Actualizar KB con el network completo
+        const rolesDraft = await KB.getNode(`vna-roles-draft-${projectId}`);
+        await KB.saveNode({
+            id:        `vna-network-${projectId}`,
+            type:      'vna-network',
+            projectId,
+            nodes:     rolesDraft?.nodes || nodes,
+            exchanges: payload?.exchanges || [],
+            mission,
+            meta:      payload?.meta || {},
+            updatedAt: Date.now()
+        });
+
+        this._logTelemetry(projectId, CORE_AGENTS.ARCHITECT, response.telemetry.provider, 'designVnaFlows', response.telemetry);
+
+        return {
+            '@context': 'https://teamtowers.io/sos/v10/vna',
+            '@type': 'SosArtifact', artifactType: 'vna_flows',
+            agentId: CORE_AGENTS.ARCHITECT, timestamp: new Date().toISOString(),
+            payload, telemetry: response.telemetry,
+            audit: { tddPassed: false, notarized: false, hash: `sha256:${Date.now().toString(16)}` }
+        };
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  FASE 3 — designVnaSocs
+    //  Enriquece cada intercambio con SOCs verificables.
+    //  Esto alimenta directamente las Work Orders del Kanban.
+    // ══════════════════════════════════════════════════════════════════════════
+    async designVnaSocs({ projectId, exchanges, nodes }) {
+        await this._ensureKB();
+
+        const systemPrompt = `Eres @agent_tdd_auditor, notario del Swarm SOS V10.
+
+FASE 3 — CRITERIOS DE CALIDAD (SOCs)
+Para cada intercambio de la red, define 2-3 SOCs (Statement of Criteria):
+- Concreto y verificable (sí/no, medible)
+- Orientado al entregable del intercambio
+- Formulado como condición de aceptación
+
+Formato: "El entregable X cumple cuando Y" o "Se verifica que Z"
+
+También evalúa el health_score final de la red:
+- 1.0 = red perfectamente equilibrada (todos los flujos son bidireccionales, todos tienen intangibles)
+- Descuenta 0.10 por cada rol sin reciprocidad
+- Descuenta 0.08 por cada flujo sin SOCs
+- Descuenta 0.15 por cada rol aislado
+
+Devuelve SOLO JSON:
+{
+  "enriched_exchanges": [{ "id": "flow-id", "socs": ["SOC1", "SOC2", "SOC3"] }],
+  "health_score": 0.000,
+  "summary": { "total_socs": N, "avg_per_flow": N, "weak_flows": ["ids sin criterios claros"] }
+}`;
+
+        const response = await this.callLLM({
+            preferredEngine: 'anthropic',
+            systemPrompt,
+            userPrompt: `INTERCAMBIOS A ENRIQUECER:\n${JSON.stringify(exchanges.slice(0, 20), null, 2)}\n\nROLES:\n${nodes.map(n => `${n.id}: ${n.label} — produce: ${n.main_deliverable}`).join('\n')}`,
+            responseFormat: 'json_object',
+            temperature: 0.15
+        });
+
+        const payload = response.content?.payload || response.content;
+
+        // Mergear SOCs en el network de KB
+        const network = await KB.getNode(`vna-network-${projectId}`);
+        if (network) {
+            const enrichedMap = {};
+            (payload?.enriched_exchanges || []).forEach(e => { enrichedMap[e.id] = e.socs; });
+            network.exchanges = (network.exchanges || []).map(ex => ({
+                ...ex,
+                socs: enrichedMap[ex.id] || ex.socs || []
+            }));
+            if (payload?.health_score != null) {
+                network.meta = { ...(network.meta || {}), health_score: payload.health_score };
+            }
+            network.updatedAt = Date.now();
+            await KB.saveNode(network);
+        }
+
+        this._logTelemetry(projectId, CORE_AGENTS.AUDITOR, response.telemetry.provider, 'designVnaSocs', response.telemetry);
+
+        return {
+            '@context': 'https://teamtowers.io/sos/v10/vna',
+            '@type': 'SosArtifact', artifactType: 'vna_socs',
+            agentId: CORE_AGENTS.AUDITOR, timestamp: new Date().toISOString(),
+            payload, telemetry: response.telemetry,
+            audit: { tddPassed: false, notarized: false, hash: `sha256:${Date.now().toString(16)}` }
+        };
+    }
 
 // ─── SINGLETON EXPORTADO ─────────────────────────────────────
 export const Orchestrator = new OrchestratorCore();
