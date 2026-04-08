@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TeamTowers Humà — Consultoría estratégica de RRHH con enfoque humanista desde el corazón del Penedès. De las torres humanas a las organizaciones humanas.">
+    <meta name="keywords" content="TeamTowers Humà, consultoría RRHH, Value Network Analysis, VNA, Vilafranca del Penedès, castellers, team building, organizaciones humanas">
+    <meta name="author" content="TeamTowers Humà">
+    <meta name="robots" content="index, follow">
+    <title>TeamTowers Humà | Consultoría Estratégica de RRHH en el Penedès</title>
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="TeamTowers Humà | Consultoría Estratégica de RRHH">
+    <meta property="og:description" content="De las torres humanas a las organizaciones humanas. Consultoría estratégica de RRHH con enfoque humanista desde Vilafranca del Penedès.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://asolache.github.io/teamtowershuma/">
+    <meta property="og:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="ca_ES">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TeamTowers Humà | Consultoría Estratégica de RRHH">
+    <meta name="twitter:description" content="De las torres humanas a las organizaciones humanas.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png">
+
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "TeamTowers Humà",
+      "url": "https://asolache.github.io/teamtowershuma/",
+      "logo": "https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png",
+      "description": "Consultoría estratégica de RRHH con enfoque humanista desde el corazón del Penedès",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Vilafranca del Penedès",
+        "addressRegion": "Cataluña",
+        "addressCountry": "ES"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "asolache@mac.com",
+        "telephone": "+34629867715",
+        "contactType": "customer service"
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gold: #f59e0b;
+            --success: #10b981;
+            --gray: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+            --gradient-castell: linear-gradient(135deg, #8b5cf6 0%, #4f46e5 30%, #1e3a8a 60%, #0f172a 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray);
+        }
+
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-castell);
+            opacity: 0.92;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 40px 20px;
+        }
+
+        .hero-logo {
+            margin-bottom: 30px;
+        }
+
+        .hero-logo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-tagline {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto 35px;
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: linear-gradient(135deg, var(--light) 0%, #e0e7ff 100%);
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(30, 58, 138, 0.1);
+        }
+
+        .stats-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Services Section */
+        section {
+            padding: 70px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            font-weight: 800;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--gradient-accent);
+            margin: 12px auto 0;
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray);
+            font-size: 1.05rem;
+            margin-bottom: 45px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(30, 58, 138, 0.08);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(30, 58, 138, 0.15);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .service-card h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .service-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .service-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+
+        /* Founder Section */
+        .founder-section {
+            background: var(--gradient-castell);
+            color: white;
+            padding: 70px 20px;
+        }
+
+        .founder-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .founder-inner h2 {
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .founder-inner p {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 15px;
+        }
+
+        blockquote {
+            font-style: italic;
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid var(--gold);
+            padding-left: 20px;
+            margin: 25px auto;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 50px 20px 25px;
+        }
+
+        .footer-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 35px;
+            margin-bottom: 35px;
+        }
+
+        .footer-col h3 {
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stats-inner {
+                grid-template-columns: repeat(2, 1fr);
+                display: grid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" onclick="setLang('es')" id="btn-es">ES</button>
+        <button class="lang-btn" onclick="setLang('ca')" id="btn-ca">CA</button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png" alt="TeamTowers Humà">
+            </div>
+            <h1 class="lang" data-es="TeamTowers Humà" data-ca="TeamTowers Humà">TeamTowers Humà</h1>
+            <p class="hero-tagline lang" data-es="De las torres humanas a las organizaciones humanas" data-ca="De les torres humanes a les organitzacions humanes">De las torres humanas a las organizaciones humanas</p>
+            <p class="lang"
+                data-es="Consultoría estratégica de RRHH con enfoque humanista. Combinamos la sabiduría ancestral de los castellers (Patrimonio Inmaterial UNESCO) con metodologías innovadoras para transformar organizaciones desde el corazón del Penedès."
+                data-ca="Consultoria estratègica de RRHH amb enfocament humanista. Combinem la saviesa ancestral dels castellers (Patrimoni Immaterial UNESCO) amb metodologies innovadores per transformar organitzacions des del cor del Penedès.">
+                Consultoría estratégica de RRHH con enfoque humanista. Combinamos la sabiduría ancestral de los castellers (Patrimonio Inmaterial UNESCO) con metodologías innovadoras para transformar organizaciones desde el corazón del Penedès.
+            </p>
+            <div class="cta-container">
+                <a href="javascript:void(0)" onclick="contactService('TeamTowers Humà')" class="btn btn-primary lang" data-es="Solicitar Información" data-ca="Sol·licitar Informació">Solicitar Información</a>
+                <a href="#services" class="btn btn-secondary lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stats-inner">
+            <div class="stat-item">
+                <span class="stat-number">20+</span>
+                <span class="stat-label lang" data-es="Años de experiencia" data-ca="Anys d'experiència">Años de experiencia</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">150+</span>
+                <span class="stat-label lang" data-es="Empresas transformadas" data-ca="Empreses transformades">Empresas transformadas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">60.000+</span>
+                <span class="stat-label lang" data-es="Participantes formados" data-ca="Participants formats">Participantes formados</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">95%</span>
+                <span class="stat-label lang" data-es="Satisfacción clientes" data-ca="Satisfacció clients">Satisfacción clientes</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="services">
+        <h2 class="section-title lang" data-es="Nuestros Servicios" data-ca="Els Nostres Serveis">Nuestros Servicios</h2>
+        <p class="section-subtitle lang"
+            data-es="Oferta integral de consultoría estratégica en gestión de personas"
+            data-ca="Oferta integral de consultoria estratègica en gestió de persones">
+            Oferta integral de consultoría estratégica en gestión de personas
+        </p>
+        <div class="services-grid">
+            <a href="valor.html" class="service-card">
+                <span class="service-icon">🔬</span>
+                <h3 class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</h3>
+                <p class="lang"
+                    data-es="Metodología estratégica para mapear flujos de valor tangibles e intangibles en tu organización."
+                    data-ca="Metodologia estratègica per mapejar fluxos de valor tangibles i intangibles a la teva organització.">
+                    Metodología estratégica para mapear flujos de valor tangibles e intangibles en tu organización.
+                </p>
+                <span class="service-link lang" data-es="Saber más →" data-ca="Saber-ne més →">Saber más →</span>
+            </a>
+            <a href="coops.html" class="service-card">
+                <span class="service-icon">🤝</span>
+                <h3 class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</h3>
+                <p class="lang"
+                    data-es="Modelos de aprendizaje basados en redes de valor. -47% tiempo onboarding, +65% retención talento."
+                    data-ca="Models d'aprenentatge basats en xarxes de valor. -47% temps onboarding, +65% retenció talent.">
+                    Modelos de aprendizaje basados en redes de valor. -47% tiempo onboarding, +65% retención talento.
+                </p>
+                <span class="service-link lang" data-es="Saber más →" data-ca="Saber-ne més →">Saber más →</span>
+            </a>
+            <a href="rrhh.html" class="service-card">
+                <span class="service-icon">💼</span>
+                <h3 class="lang" data-es="Consultoría RRHH Estratégica" data-ca="Consultoria RRHH Estratègica">Consultoría RRHH Estratégica</h3>
+                <p class="lang"
+                    data-es="Outsourcing, transformación cultural y People Analytics. Soluciones para PYMEs y grandes empresas."
+                    data-ca="Outsourcing, transformació cultural i People Analytics. Solucions per a PIMEs i grans empreses.">
+                    Outsourcing, transformación cultural y People Analytics. Soluciones para PYMEs y grandes empresas.
+                </p>
+                <span class="service-link lang" data-es="Saber más →" data-ca="Saber-ne més →">Saber más →</span>
+            </a>
+            <a href="events.html" class="service-card">
+                <span class="service-icon">🏰</span>
+                <h3 class="lang" data-es="TeamTowers &amp; Eventos" data-ca="TeamTowers i Esdeveniments">TeamTowers &amp; Eventos</h3>
+                <p class="lang"
+                    data-es="Experiencias castelleras transformadoras para equipos corporativos. +30-50% cohesión de equipo en 2 horas."
+                    data-ca="Experiències castelleres transformadores per a equips corporatius. +30-50% cohesió d'equip en 2 hores.">
+                    Experiencias castelleras transformadoras para equipos corporativos. +30-50% cohesión de equipo en 2 horas.
+                </p>
+                <span class="service-link lang" data-es="Saber más →" data-ca="Saber-ne més →">Saber más →</span>
+            </a>
+            <a href="curs_vna.html" class="service-card">
+                <span class="service-icon">🎓</span>
+                <h3 class="lang" data-es="Formación &amp; Cursos" data-ca="Formació i Cursos">Formación &amp; Cursos</h3>
+                <p class="lang"
+                    data-es="Programas transformadores con metodologías únicas. Liderazgo colaborativo y gestión del cambio."
+                    data-ca="Programes transformadors amb metodologies úniques. Lideratge col·laboratiu i gestió del canvi.">
+                    Programas transformadores con metodologías únicas. Liderazgo colaborativo y gestión del cambio.
+                </p>
+                <span class="service-link lang" data-es="Saber más →" data-ca="Saber-ne més →">Saber más →</span>
+            </a>
+            <a href="app.html" class="service-card">
+                <span class="service-icon">📊</span>
+                <h3 class="lang" data-es="VNA App" data-ca="VNA App">VNA App</h3>
+                <p class="lang"
+                    data-es="Herramienta visual interactiva para mapear flujos de valor en tu organización."
+                    data-ca="Eina visual interactiva per mapejar fluxos de valor a la teva organització.">
+                    Herramienta visual interactiva para mapear flujos de valor en tu organización.
+                </p>
+                <span class="service-link lang" data-es="Abrir App →" data-ca="Obrir App →">Abrir App →</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Founder Section -->
+    <div class="founder-section">
+        <div class="founder-inner">
+            <h2 class="lang" data-es="Álvaro Solache, Fundador" data-ca="Álvaro Solache, Fundador">Álvaro Solache, Fundador</h2>
+            <blockquote class="lang"
+                data-es='"No construimos solo torres humanas. Construimos organizaciones humanas donde cada persona encuentra su lugar, propósito y poder para contribuir al todo."'
+                data-ca='"No construïm només torres humanes. Construïm organitzacions humanes on cada persona troba el seu lloc, propòsit i poder per contribuir al tot."'>
+                "No construimos solo torres humanas. Construimos organizaciones humanas donde cada persona encuentra su lugar, propósito y poder para contribuir al todo."
+            </blockquote>
+            <p class="lang"
+                data-es="20+ años de experiencia combinando la sabiduría ancestral de los castellers con metodologías innovadoras de análisis de redes de valor desde Vilafranca del Penedès."
+                data-ca="20+ anys d'experiència combinant la saviesa ancestral dels castellers amb metodologies innovadores d'anàlisi de xarxes de valor des de Vilafranca del Penedès.">
+                20+ años de experiencia combinando la sabiduría ancestral de los castellers con metodologías innovadoras de análisis de redes de valor desde Vilafranca del Penedès.
+            </p>
+            <a href="javascript:void(0)" onclick="contactService('TeamTowers Humà')" class="btn btn-primary" style="margin-top: 25px;">
+                <span class="lang" data-es="Contactar con Álvaro" data-ca="Contactar amb Álvaro">Contactar con Álvaro</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3 class="lang" data-es="Servicios" data-ca="Serveis">Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="valor.html" class="lang" data-es="Value Network Analysis" data-ca="Value Network Analysis">Value Network Analysis</a></li>
+                    <li><a href="coops.html" class="lang" data-es="Comunidades de Práctica" data-ca="Comunitats de Pràctica">Comunidades de Práctica</a></li>
+                    <li><a href="rrhh.html" class="lang" data-es="Consultoría RRHH" data-ca="Consultoria RRHH">Consultoría RRHH</a></li>
+                    <li><a href="events.html" class="lang" data-es="Producción de Eventos" data-ca="Producció d'Esdeveniments">Producción de Eventos</a></li>
+                    <li><a href="curs_vna.html" class="lang" data-es="Formación" data-ca="Formació">Formación</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Herramientas" data-ca="Eines">Herramientas</h3>
+                <ul class="footer-links">
+                    <li><a href="app.html" class="lang" data-es="VNA App" data-ca="VNA App">VNA App</a></li>
+                    <li><a href="finances.html" class="lang" data-es="Finanzas" data-ca="Finances">Finanzas</a></li>
+                    <li><a href="mapas.html" class="lang" data-es="Mapas" data-ca="Mapes">Mapas</a></li>
+                    <li><a href="tokenomics.html" class="lang" data-es="Tokenomics" data-ca="Tokenomics">Tokenomics</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Recursos" data-ca="Recursos">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="https://cursovna.netlify.app/" target="_blank" rel="noopener" class="lang" data-es="Curso de VNA" data-ca="Curs de VNA">Curso de VNA</a></li>
+                    <li><a href="https://valuenetworklab.netlify.app/" target="_blank" rel="noopener" class="lang" data-es="Value Network Lab" data-ca="Value Network Lab">Value Network Lab</a></li>
+                    <li><a href="https://www.teamtowers.eu" target="_blank" rel="noopener" class="lang" data-es="TeamTowers Original" data-ca="TeamTowers Original">TeamTowers Original</a></li>
+                    <li><a href="https://alvarosolache.netlify.app/" target="_blank" rel="noopener" class="lang" data-es="Sobre Álvaro Solache" data-ca="Sobre Àlvaro Solache">Sobre Álvaro Solache</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3 class="lang" data-es="Contacto" data-ca="Contacte">Contacto</h3>
+                <ul class="footer-links">
+                    <li><a href="javascript:void(0)" onclick="contactService('TeamTowers Humà')" class="lang" data-es="Enviar mensaje" data-ca="Enviar missatge">Enviar mensaje</a></li>
+                    <li><a href="https://linkedin.com/in/alvarosolache" target="_blank" rel="noopener">LinkedIn</a></li>
+                    <li><span>📍 Vilafranca del Penedès</span></li>
+                    <li><span>📞 +34 629 86 77 15</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 TeamTowers Humà — Vilafranca del Penedès 🏰💙💜</p>
+        </div>
+    </footer>
+
+    <script>
+        // Language management
+        let currentLang = localStorage.getItem('teamtowers-lang') ||
+            (navigator.language.startsWith('ca') ? 'ca' : 'es');
+
+        function setLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('teamtowers-lang', lang);
+            document.querySelectorAll('.lang').forEach(el => {
+                const text = el.getAttribute('data-' + lang);
+                if (text) el.innerHTML = text;
+            });
+            document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+            document.getElementById('btn-ca').classList.toggle('active', lang === 'ca');
+            document.documentElement.lang = lang === 'ca' ? 'ca' : 'es';
+        }
+
+        // Initialize language
+        setLang(currentLang);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Contact function
+        function contactService(service) {
+            const email = 'asolache' + '@' + 'mac.com';
+            const subjects = {
+                es: 'Consulta sobre ' + service,
+                ca: 'Consulta sobre ' + service
+            };
+            const subject = encodeURIComponent(subjects[currentLang] || subjects.es);
+            window.location.href = 'mailto:' + email + '?subject=' + subject;
+        }
+    </script>
+
+</body>
+</html>
