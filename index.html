@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTowers · Value Network Analysis</title>
+    <meta name="description" content="Mapeamos las redes de valor que mueven a su organización. Consultora especializada en VNA — de Verna Allee al siguiente nivel con IA.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black:      #080808;
+            --off-black:  #111010;
+            --surface:    #161514;
+            --border:     rgba(255,255,255,0.07);
+            --gold:       #c9a84c;
+            --gold-pale:  #e8d199;
+            --gold-dim:   rgba(201,168,76,0.12);
+            --white:      #f5f2ec;
+            --muted:      #7a756e;
+            --light:      #c8c2b8;
+
+            --serif:  'Cormorant Garamond', Georgia, serif;
+            --mono:   'DM Mono', monospace;
+            --sans:   'DM Sans', system-ui, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--sans);
+            font-weight: 300;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* ── SCROLLBAR ──────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); opacity: 0.4; }
+
+        /* ── NOISE OVERLAY ──────────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            opacity: 0.4;
+        }
+
+        /* ── LAYOUT ─────────────────────────────────────────── */
+        .container { max-width: 1160px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+        section { position: relative; z-index: 1; }
+
+        /* ── NAV ────────────────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1.5rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(8,8,8,0.95), transparent);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .nav-logo {
+            font-family: var(--serif);
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--white);
+            text-decoration: none;
+        }
+        .nav-logo span { color: var(--gold); }
+        .nav-links {
+            display: flex; align-items: center; gap: 2.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--muted); text-decoration: none; transition: color 0.2s;
+            font-weight: 400;
+        }
+        .nav-links a:hover { color: var(--white); }
+        .nav-cta {
+            background: transparent !important;
+            border: 1px solid var(--gold) !important;
+            color: var(--gold) !important;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2px;
+            transition: all 0.2s !important;
+        }
+        .nav-cta:hover { background: var(--gold) !important; color: var(--black) !important; }
+
+        /* ── HERO ───────────────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex; align-items: center;
+            padding: 8rem 0 6rem;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .hero-eyebrow::before {
+            content: '';
+            display: block; width: 32px; height: 1px;
+            background: var(--gold);
+        }
+
+        .hero h1 {
+            font-family: var(--serif);
+            font-size: clamp(3rem, 5vw, 5.5rem);
+            font-weight: 600;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--white);
+            margin-bottom: 2rem;
+        }
+        .hero h1 em {
+            font-style: italic;
+            color: var(--gold-pale);
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--light);
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            max-width: 520px;
+        }
+
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--black);
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.9rem 2rem;
+            border: none; cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+        }
+        .btn-primary:hover { background: var(--gold-pale); transform: translateY(-2px); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--light);
+            font-family: var(--sans);
+            font-weight: 400;
+            font-size: 0.85rem;
+            letter-spacing: 0.06em;
+            padding: 0.9rem 2rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+        /* ── HERO VISUAL — diagrama VNA abstracto ───────────── */
+        .hero-visual {
+            position: relative;
+            height: 480px;
+        }
+        .vna-diagram {
+            width: 100%; height: 100%;
+        }
+
+        /* ── CLIENTS STRIP ──────────────────────────────────── */
+        .clients-strip {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .clients-label {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .clients-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem 3rem;
+        }
+        .client-name {
+            font-family: var(--serif);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            transition: color 0.2s;
+        }
+        .client-name:hover { color: var(--light); }
+
+        /* ── SECTION HEADER ─────────────────────────────────── */
+        .section-header {
+            text-align: center;
+            max-width: 680px;
+            margin: 0 auto 5rem;
+        }
+        .section-eyebrow {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+        .section-header h2 {
+            font-family: var(--serif);
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.01em;
+            margin-bottom: 1.25rem;
+        }
+        .section-header h2 em { font-style: italic; color: var(--gold-pale); }
+        .section-header p {
+            font-size: 1rem;
+            color: var(--light);
+            line-height: 1.8;
+        }
+
+        /* ── WHAT IS VNA ────────────────────────────────────── */
+        .what-is { padding: 8rem 0; }
+
+        .what-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: start;
+        }
+        .what-content h3 {
+            font-family: var(--serif);
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .what-content h3 em { font-style: italic; color: var(--gold-pale); }
+        .what-content p {
+            color: var(--light);
+            line-height: 1.85;
+            margin-bottom: 1.25rem;
+        }
+        .what-content p strong { color: var(--white); font-weight: 500; }
+
+        .tangible-intangible {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .tx-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+        }
+        .tx-card.tangible { border-top: 2px solid #4ade80; }
+        .tx-card.intangible { border-top: 2px solid var(--gold); }
+        .tx-label {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .tx-card.tangible .tx-label { color: #4ade80; }
+        .tx-card.intangible .tx-label { color: var(--gold); }
+        .tx-card h4 { font-family: var(--serif); font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .tx-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+
+        /* ── METODOLOGÍA ─────────────────────────────────────── */
+        .metodologia { padding: 8rem 0; background: var(--off-black); }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+        }
+        .step {
+            padding: 2.5rem 2rem;
+            border-right: 1px solid var(--border);
+            position: relative;
+        }
+        .step:last-child { border-right: none; }
+        .step-number {
+            font-family: var(--mono);
+            font-size: 3.5rem;
+            font-weight: 500;
+            color: var(--gold-dim);
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        .step h3 {
+            font-family: var(--serif);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--white);
+        }
+        .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+        /* ── KAIZEN / KAIKAKU ───────────────────────────────── */
+        .kaizen { padding: 8rem 0; }
+
+        .kaizen-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+        }
+        .kaizen-card {
+            background: var(--surface);
+            padding: 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .kaizen-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 2px;
+        }
+        .kaizen-card.kaizen-side::before { background: var(--muted); }
+        .kaizen-card.kaikaku-side::before { background: var(--gold); }
+
+        .kaizen-card .badge {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        .kaizen-side .badge { color: var(--muted); }
+        .kaikaku-side .badge { color: var(--gold); }
+
+        .kaizen-card h3 {
+            font-family: var(--serif);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+        .kaizen-card p { font-size: 0.9rem; color: var(--light); line-height: 1.8; }
+
+        /* ── IA SECTION ─────────────────────────────────────── */
+        .ia-section {
+            padding: 8rem 0;
+            background: var(--off-black);
+        }
+
+        .ia-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+        .ia-content h2 {
+            font-family: var(--serif);
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+        }
+        .ia-content h2 em { font-style: italic; color: var(--gold-pale); }
+        .ia-content p { color: var(--light); line-height: 1.85; margin-bottom: 1.25rem; }
+        .ia-content p strong { color: var(--white); font-weight: 500; }
+
+        .ia-demo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--gold);
+            padding: 2rem;
+        }
+        .ia-demo-header {
+            display: flex; align-items: center; gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .ia-demo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+        .ia-demo-title { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); letter-spacing: 0.1em; }
+        .ia-demo-body p { font-size: 0.83rem; color: var(--muted); line-height: 1.7; margin-bottom: 0.75rem; }
+        .ia-demo-body p:last-child { margin-bottom: 0; }
+        .ia-demo-link {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            margin-top: 1.5rem;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--gold-dim);
+            padding-bottom: 2px;
+            transition: border-color 0.2s;
+        }
+        .ia-demo-link:hover { border-color: var(--gold); }
+        .ia-demo-link::after { content: '→'; }
+
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+        /* ── COLLA ──────────────────────────────────────────── */
+        .colla-section {
+            padding: 8rem 0;
+            text-align: center;
+        }
+        .colla-quote {
+            font-family: var(--serif);
+            font-size: clamp(1.6rem, 3vw, 2.8rem);
+            font-style: italic;
+            font-weight: 400;
+            line-height: 1.3;
+            color: var(--light);
+            max-width: 820px;
+            margin: 0 auto 1.5rem;
+        }
+        .colla-quote strong { color: var(--white); font-style: normal; font-weight: 600; }
+        .colla-attribution {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+        }
+
+        .colla-pillars {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            margin-top: 4rem;
+            background: var(--border);
+        }
+        .colla-pillar {
+            background: var(--black);
+            padding: 2.5rem 2rem;
+            text-align: left;
+        }
+        .colla-pillar-icon {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .colla-pillar h4 {
+            font-family: var(--serif);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .colla-pillar p { font-size: 0.83rem; color: var(--muted); line-height: 1.7; }
+
+        /* ── FAQ ────────────────────────────────────────────── */
+        .faq-section { padding: 8rem 0; background: var(--off-black); }
+
+        .faq-list { max-width: 760px; margin: 0 auto; }
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 2rem 0;
+        }
+        .faq-item:first-child { border-top: 1px solid var(--border); }
+        .faq-q {
+            font-family: var(--serif);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--white);
+            cursor: pointer;
+            display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+        }
+        .faq-q::after {
+            content: '+';
+            font-family: var(--mono);
+            font-size: 1.2rem;
+            color: var(--gold);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .faq-a { font-size: 0.9rem; color: var(--light); line-height: 1.85; }
+
+        /* ── CTA FINAL ──────────────────────────────────────── */
+        .cta-final {
+            padding: 10rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-final::before {
+            content: 'VNA';
+            position: absolute;
+            font-family: var(--serif);
+            font-size: 28vw;
+            font-weight: 700;
+            color: rgba(201,168,76,0.03);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .cta-final h2 {
+            font-family: var(--serif);
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .cta-final h2 em { font-style: italic; color: var(--gold-pale); }
+        .cta-final p {
+            font-size: 1rem;
+            color: var(--light);
+            max-width: 560px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+            position: relative;
+        }
+        .cta-final .actions { position: relative; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* ── FOOTER ─────────────────────────────────────────── */
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border);
+        }
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .footer-logo {
+            font-family: var(--serif);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+        .footer-logo span { color: var(--gold); }
+        .footer-copy {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+        }
+        .footer-links {
+            display: flex; gap: 2rem; list-style: none;
+        }
+        .footer-links a {
+            font-size: 0.78rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--gold); }
+
+        /* ── ANIMATIONS ─────────────────────────────────────── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── RESPONSIVE ─────────────────────────────────────── */
+        @media (max-width: 900px) {
+            .hero-grid, .what-grid, .ia-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .hero-visual { height: 300px; }
+            .steps-grid { grid-template-columns: 1fr 1fr; }
+            .step { border-right: none; border-bottom: 1px solid var(--border); }
+            .step:nth-child(even) { border-right: none; }
+            .kaizen-grid, .colla-pillars { grid-template-columns: 1fr; }
+            .tangible-intangible { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 600px) {
+            .steps-grid { grid-template-columns: 1fr; }
+            .clients-grid { gap: 1.5rem 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <a href="/" class="nav-logo">Team<span>Towers</span></a>
+        <ul class="nav-links">
+            <li><a href="#metodologia">Metodología</a></li>
+            <li><a href="#ia">IA & Automatización</a></li>
+            <li><a href="/colla.html">La Colla</a></li>
+            <li><a href="https://sos.teamtowershuma.com" target="_blank" class="nav-cta">Ver SOS →</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div>
+                    <div class="hero-eyebrow fade-up">Consultora VNA · Verna Allee Methodology</div>
+                    <h1 class="fade-up" style="animation-delay:0.1s">
+                        Las organizaciones<br>
+                        son redes de<br>
+                        <em>valor vivo.</em>
+                    </h1>
+                    <p class="hero-desc fade-up" style="animation-delay:0.2s">
+                        Mapeamos lo que los organigramas no ven — las transacciones de confianza, conocimiento y colaboración que mueven a su organización. Del diagnóstico al Kaikaku.
+                    </p>
+                    <div class="hero-actions fade-up" style="animation-delay:0.3s">
+                        <a href="/colla.html" class="btn-primary">Conocer el Programa</a>
+                        <a href="https://sos.teamtowershuma.com" target="_blank" class="btn-ghost">Ver el Mapa en Vivo →</a>
+                    </div>
+                </div>
+                <div class="hero-visual fade-up" style="animation-delay:0.4s">
+                    <svg class="vna-diagram" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Fondo sutil -->
+                        <circle cx="240" cy="240" r="220" stroke="rgba(201,168,76,0.06)" stroke-width="1"/>
+                        <circle cx="240" cy="240" r="160" stroke="rgba(201,168,76,0.04)" stroke-width="1"/>
+                        <circle cx="240" cy="240" r="90"  stroke="rgba(201,168,76,0.08)" stroke-width="1" stroke-dasharray="4 8"/>
+
+                        <!-- Links tangibles — línea sólida verde -->
+                        <line x1="240" y1="60" x2="380" y2="180" stroke="#4ade80" stroke-width="1.5" stroke-opacity="0.6"/>
+                        <line x1="380" y1="180" x2="380" y2="320" stroke="#4ade80" stroke-width="1.5" stroke-opacity="0.6"/>
+                        <line x1="380" y1="320" x2="240" y2="420" stroke="#4ade80" stroke-width="1.5" stroke-opacity="0.6"/>
+                        <line x1="240" y1="420" x2="100" y2="320" stroke="#4ade80" stroke-width="1.5" stroke-opacity="0.6"/>
+                        <line x1="100" y1="320" x2="100" y2="180" stroke="#4ade80" stroke-width="1.5" stroke-opacity="0.6"/>
+                        <line x1="100" y1="180" x2="240" y2="60"  stroke="#4ade80" stroke-width="1.5" stroke-opacity="0.6"/>
+
+                        <!-- Links intangibles — línea dorada punteada -->
+                        <line x1="240" y1="60" x2="380" y2="320" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity="0.5"/>
+                        <line x1="380" y1="180" x2="240" y2="420" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity="0.5"/>
+                        <line x1="380" y1="320" x2="100" y2="180" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity="0.5"/>
+                        <line x1="240" y1="420" x2="240" y2="60"  stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity="0.4"/>
+                        <line x1="100" y1="320" x2="380" y2="180" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity="0.4"/>
+                        <line x1="100" y1="180" x2="380" y2="320" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity="0.3"/>
+
+                        <!-- Nodo central -->
+                        <circle cx="240" cy="240" r="28" fill="rgba(201,168,76,0.08)" stroke="#c9a84c" stroke-width="1.5"/>
+                        <circle cx="240" cy="240" r="6"  fill="#c9a84c"/>
+                        <text x="240" y="248" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" fill="#c9a84c" opacity="0.7" letter-spacing="1">VNA</text>
+
+                        <!-- Nodos periféricos -->
+                        <circle cx="240" cy="60"  r="22" fill="rgba(22,21,20,0.9)" stroke="rgba(201,168,76,0.4)" stroke-width="1.5"/>
+                        <text x="240" y="64" text-anchor="middle" font-family="DM Mono" font-size="8" fill="#c9a84c" opacity="0.8">CEO</text>
+
+                        <circle cx="380" cy="180" r="22" fill="rgba(22,21,20,0.9)" stroke="rgba(74,222,128,0.4)" stroke-width="1.5"/>
+                        <text x="380" y="184" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#4ade80" opacity="0.8">OPER</text>
+
+                        <circle cx="380" cy="320" r="22" fill="rgba(22,21,20,0.9)" stroke="rgba(201,168,76,0.4)" stroke-width="1.5"/>
+                        <text x="380" y="324" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#c9a84c" opacity="0.8">CLIENT</text>
+
+                        <circle cx="240" cy="420" r="22" fill="rgba(22,21,20,0.9)" stroke="rgba(74,222,128,0.4)" stroke-width="1.5"/>
+                        <text x="240" y="424" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#4ade80" opacity="0.8">TECH</text>
+
+                        <circle cx="100" cy="320" r="22" fill="rgba(22,21,20,0.9)" stroke="rgba(201,168,76,0.4)" stroke-width="1.5"/>
+                        <text x="100" y="324" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#c9a84c" opacity="0.8">RRHH</text>
+
+                        <circle cx="100" cy="180" r="22" fill="rgba(22,21,20,0.9)" stroke="rgba(74,222,128,0.4)" stroke-width="1.5"/>
+                        <text x="100" y="184" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#4ade80" opacity="0.8">MKT</text>
+
+                        <!-- Partículas animadas en los links -->
+                        <circle r="3" fill="#4ade80" opacity="0.8">
+                            <animateMotion dur="4s" repeatCount="indefinite" path="M240,60 L380,180"/>
+                        </circle>
+                        <circle r="2.5" fill="#c9a84c" opacity="0.7">
+                            <animateMotion dur="5s" repeatCount="indefinite" begin="1s" path="M380,320 L100,180"/>
+                        </circle>
+                        <circle r="2" fill="#4ade80" opacity="0.6">
+                            <animateMotion dur="6s" repeatCount="indefinite" begin="2s" path="M100,320 L380,180"/>
+                        </circle>
+                        <circle r="2.5" fill="#c9a84c" opacity="0.5">
+                            <animateMotion dur="4.5s" repeatCount="indefinite" begin="0.5s" path="M240,420 L240,60"/>
+                        </circle>
+
+                        <!-- Leyenda -->
+                        <line x1="30" y1="450" x2="55" y2="450" stroke="#4ade80" stroke-width="1.5"/>
+                        <text x="60" y="454" font-family="DM Mono" font-size="9" fill="#4ade80" opacity="0.7">Tangible</text>
+                        <line x1="130" y1="450" x2="155" y2="450" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4 5"/>
+                        <text x="160" y="454" font-family="DM Mono" font-size="9" fill="#c9a84c" opacity="0.7">Intangible</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section class="clients-strip">
+        <div class="container">
+            <p class="clients-label">Organizaciones que han confiado en nosotros</p>
+            <div class="clients-grid">
+                <span class="client-name">IKEA</span>
+                <span class="client-name">Porsche</span>
+                <span class="client-name">Mercedes</span>
+                <span class="client-name">SEAT</span>
+                <span class="client-name">Telefónica</span>
+                <span class="client-name">Vodafone</span>
+                <span class="client-name">UBS</span>
+                <span class="client-name">Novartis</span>
+                <span class="client-name">La Caixa</span>
+                <span class="client-name">BBVA</span>
+                <span class="client-name">FC Barcelona</span>
+                <span class="client-name">Akzo Nobel</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHAT IS VNA -->
+    <section class="what-is" id="vna">
+        <div class="container">
+            <div class="what-grid">
+                <div class="what-content fade-up">
+                    <div class="section-eyebrow" style="margin-bottom:1.5rem;">Metodología</div>
+                    <h3>Lo que los organigramas <em>no pueden ver</em></h3>
+                    <p>El Value Network Analysis (VNA), desarrollado por Verna Allee, mapea la organización como un ecosistema vivo de intercambios. Más allá de los procesos lineales, revela las transacciones invisibles que realmente determinan la eficiencia y la innovación.</p>
+                    <p><strong>Una Colla Castellera</strong> no funciona por jerarquía — funciona porque cada persona sabe exactamente qué recibe y qué da. Esa misma lógica aplicada a su organización transforma silos en redes adaptativas.</p>
+                    <p>Hemos aplicado esta metodología con <strong>clientes como IKEA en múltiples proyectos</strong>, desbloqueando flujos de valor que ningún análisis de procesos convencional había detectado.</p>
+                </div>
+                <div class="fade-up" style="animation-delay:0.15s">
+                    <div class="tangible-intangible">
+                        <div class="tx-card tangible">
+                            <div class="tx-label">Tangibles ——</div>
+                            <h4>Lo que se puede contar</h4>
+                            <p>Contratos, software, dinero, entregables formales. Lo visible en los sistemas de gestión.</p>
+                        </div>
+                        <div class="tx-card intangible">
+                            <div class="tx-label">Intangibles - - -</div>
+                            <h4>Lo que lo mueve todo</h4>
+                            <p>Confianza, conocimiento, favores, reputación. Los flujos que ningún ERP registra pero que determinan el resultado.</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:1rem; padding:1.5rem; background:var(--surface); border:1px solid var(--border);">
+                        <p style="font-family:var(--mono); font-size:0.75rem; color:var(--muted); line-height:1.7;">
+                            <span style="color:var(--gold);">→</span> La diferencia entre una organización que funciona y una que se atasca rara vez está en los procesos formales. Está en los intangibles no mapeados.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- METODOLOGÍA -->
+    <section class="metodologia" id="metodologia">
+        <div class="container">
+            <div class="section-header fade-up">
+                <div class="section-eyebrow">El proceso</div>
+                <h2>Cuatro pasos hacia la <em>transformación sistémica</em></h2>
+                <p>No auditamos. Mapeamos, diagnosticamos y co-diseñamos con los equipos para que el conocimiento quede dentro de la organización.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step fade-up">
+                    <span class="step-number">01</span>
+                    <h3>Definición de Roles</h3>
+                    <p>Cambiamos la mentalidad de "cargos jerárquicos" a "roles activos" en la red. Destapa la estructura real de comunicación, independiente del organigrama oficial.</p>
+                </div>
+                <div class="step fade-up" style="animation-delay:0.1s">
+                    <span class="step-number">02</span>
+                    <h3>Mapeo de Transacciones</h3>
+                    <p>Identificamos entregables MUST (contractuales: código, dinero) y entregables EXTRA (intangibles: confianza, favores, conocimiento) que construyen relaciones sólidas.</p>
+                </div>
+                <div class="step fade-up" style="animation-delay:0.2s">
+                    <span class="step-number">03</span>
+                    <h3>Diagnóstico de la Red</h3>
+                    <p>Visualizamos dónde la red se atasca operativa o emocionalmente, detectando puntos débiles y entregas de valor que no están siendo correspondidas.</p>
+                </div>
+                <div class="step fade-up" style="animation-delay:0.3s">
+                    <span class="step-number">04</span>
+                    <h3>Transformación Sistémica</h3>
+                    <p>Mediante insights de alto impacto, re-secuenciamos la red para crear múltiples vías optimizadas, garantizando agilidad y resiliencia del ecosistema.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KAIZEN / KAIKAKU -->
+    <section class="kaizen">
+        <div class="container">
+            <div class="section-header fade-up">
+                <div class="section-eyebrow">Ambición</div>
+                <h2>Del Kaizen al <em>Kaikaku</em></h2>
+            </div>
+            <div class="kaizen-grid">
+                <div class="kaizen-card kaizen-side fade-up">
+                    <span class="badge">Kaizen · Mejora continua</span>
+                    <h3>Optimizar lo que existe</h3>
+                    <p>La mayoría de las consultoras se detienen aquí. Identifican ineficiencias en los procesos existentes y proponen mejoras incrementales. Es necesario, pero no suficiente.</p>
+                    <p style="margin-top:1rem;">El Kaizen responde a: <em>¿Cómo hacemos mejor lo que ya hacemos?</em></p>
+                </div>
+                <div class="kaizen-card kaikaku-side fade-up" style="animation-delay:0.15s">
+                    <span class="badge">Kaikaku · Transformación disruptiva</span>
+                    <h3>Reinventar el flujo de valor</h3>
+                    <p>Mapeando la red completa — tangibles e intangibles — encontramos el salto cuántico: reconfigurar los nodos y transacciones para generar nuevos modelos de negocio o eficiencias radicales.</p>
+                    <p style="margin-top:1rem; color:var(--gold-pale);">El Kaikaku responde a: <em>¿Qué red de valor completamente diferente podemos construir?</em></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- IA -->
+    <section class="ia-section" id="ia">
+        <div class="container">
+            <div class="ia-grid">
+                <div class="ia-content fade-up">
+                    <div class="section-eyebrow" style="text-align:left; margin-bottom:1.5rem;">Próxima frontera</div>
+                    <h2>No puedes automatizar <em>lo que no ves.</em></h2>
+                    <p>Antes de implementar Agentes de IA, su organización debe comprender con total claridad sus transacciones de valor. Nuestra experiencia en VNA nos convierte en el socio perfecto para este paso.</p>
+                    <p>Identificamos exactamente qué nodos operativos y transacciones tangibles están listos para ser operados por Agentes Autónomos, <strong>preservando el capital humano</strong> para los intercambios intangibles críticos: estrategia, confianza y empatía.</p>
+                    <p>Hemos construido SOS — nuestro propio Sistema Operativo de Swarm — para demostrar en vivo cómo se ve un ecosistema de agentes IA operando sobre un mapa VNA real.</p>
+                </div>
+                <div class="fade-up" style="animation-delay:0.2s">
+                    <div class="ia-demo-card">
+                        <div class="ia-demo-header">
+                            <div class="ia-demo-dot"></div>
+                            <span class="ia-demo-title">SOS V11 · Sistema Operativo de Swarm</span>
+                        </div>
+                        <div class="ia-demo-body">
+                            <p>Una herramienta viva donde los agentes IA mapean redes de valor, generan Work Orders, calculan la economía de equidad (Slicing Pie) y aprenden del conocimiento acumulado en cada proyecto.</p>
+                            <p>Construida sobre la metodología VNA. Cada nodo del mapa es un rol activo. Cada línea es una transacción — tangible o intangible — que el sistema comprende, mide y puede automatizar.</p>
+                            <p style="color:var(--muted); font-size:0.78rem; margin-top:1.5rem;">Acceso libre para explorar la herramienta y entender cómo el VNA se convierte en arquitectura operativa.</p>
+                        </div>
+                        <a href="https://sos.teamtowershuma.com" target="_blank" class="ia-demo-link">Explorar SOS en vivo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LA COLLA -->
+    <section class="colla-section">
+        <div class="container">
+            <div class="fade-up">
+                <blockquote class="colla-quote">
+                    "Una <strong>Colla Castellera</strong> no funciona mediante jerarquías rígidas; opera como una red de intercambio de valor perfectamente afinada. Cada rol es crucial, y las transacciones de confianza son tan vitales como la fuerza física."
+                </blockquote>
+                <p class="colla-attribution">— La metáfora que lo cambia todo</p>
+            </div>
+
+            <div class="colla-pillars fade-up" style="animation-delay:0.2s">
+                <div class="colla-pillar">
+                    <span class="colla-pillar-icon">🗼</span>
+                    <h4>Força</h4>
+                    <p>La fortaleza de una red de valor no viene de los nodos más fuertes, sino de la calidad de sus transacciones.</p>
+                </div>
+                <div class="colla-pillar">
+                    <span class="colla-pillar-icon">⚖️</span>
+                    <h4>Equilibri</h4>
+                    <p>Un mapa VNA sano es un mapa recíproco. Cuando los intangibles no son correspondidos, la red se atasca.</p>
+                </div>
+                <div class="colla-pillar">
+                    <span class="colla-pillar-icon">🧠</span>
+                    <h4>Seny</h4>
+                    <p>La inteligencia organizativa está distribuida en la red. El VNA la hace visible y accionable.</p>
+                </div>
+            </div>
+
+            <div style="margin-top:4rem; text-align:center;" class="fade-up" style="animation-delay:0.3s">
+                <a href="/colla.html" class="btn-primary">Ver el Programa La Colla →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-header fade-up">
+                <div class="section-eyebrow">FAQ</div>
+                <h2>Preguntas frecuentes</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item fade-up">
+                    <div class="faq-q">¿Qué es el Value Network Analysis?</div>
+                    <p class="faq-a">Es un mapa que analiza la red de valor de una organización de forma sistémica. A diferencia de los procesos lineales, el VNA visibiliza tanto las transacciones tangibles (contratos, software) como los intangibles vitales (confianza, conocimiento, empatía) que mueven a los equipos.</p>
+                </div>
+                <div class="faq-item fade-up">
+                    <div class="faq-q">¿Por qué el VNA es necesario antes de implementar IA?</div>
+                    <p class="faq-a">No puedes automatizar lo que no ves. Mapear y optimizar los roles y transacciones de su ecosistema es el paso previo indispensable para saber exactamente qué nodos del flujo de valor pueden ser operados eficientemente por Agentes de IA, y cuáles deben permanecer humanos.</p>
+                </div>
+                <div class="faq-item fade-up">
+                    <div class="faq-q">¿Para qué tipo de organizaciones trabajáis?</div>
+                    <p class="faq-a">Idealmente grandes empresas y clientes que han realizado previamente un taller de castellers como metáfora inspiradora. También trabajamos con cualquier institución, organización o comunidad que desea mejorar su flujo de valor para alcanzar el Kaikaku.</p>
+                </div>
+                <div class="faq-item fade-up">
+                    <div class="faq-q">¿Cuál es la diferencia entre Kaizen y Kaikaku?</div>
+                    <p class="faq-a">El Kaizen busca la mejora continua y progresiva de los procesos existentes. El Kaikaku es una transformación disruptiva — replanteamos por completo el flujo de valor para generar nuevos modelos de negocio o eficiencias radicales que no eran visibles desde dentro.</p>
+                </div>
+                <div class="faq-item fade-up">
+                    <div class="faq-q">¿Qué es SOS y para qué sirve en este contexto?</div>
+                    <p class="faq-a">SOS (Sistema Operativo de Swarm) es nuestra herramienta interna construida sobre metodología VNA. Permite visualizar en vivo cómo un ecosistema de agentes IA opera sobre un mapa de valor real — es la demostración práctica de adónde lleva el VNA cuando se combina con inteligencia artificial.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="cta-final">
+        <div class="container">
+            <h2 class="fade-up">¿Su organización está lista<br>para el <em>Kaikaku?</em></h2>
+            <p class="fade-up" style="animation-delay:0.1s">Mapeamos el flujo de valor real de su equipo. Identificamos los intangibles que nadie ve. Diseñamos la red que su organización necesita ser.</p>
+            <div class="actions fade-up" style="animation-delay:0.2s">
+                <a href="/colla.html" class="btn-primary">Conocer el Programa La Colla</a>
+                <a href="https://sos.teamtowershuma.com" target="_blank" class="btn-ghost">Ver SOS en vivo →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-logo">Team<span>Towers</span></div>
+                <ul class="footer-links">
+                    <li><a href="/colla.html">La Colla</a></li>
+                    <li><a href="https://sos.teamtowershuma.com" target="_blank">SOS</a></li>
+                    <li><a href="#vna">VNA</a></li>
+                    <li><a href="#ia">IA</a></li>
+                </ul>
+                <p class="footer-copy">© 2025 TeamTowers · Força · Equilibri · Valor · Seny</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer para animaciones fade-up
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(el => {
+                if (el.isIntersecting) {
+                    el.target.classList.add('visible');
+                    observer.unobserve(el.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-up').forEach(el => {
+            observer.observe(el);
+            // Elementos del hero visibles inmediatamente
+            if (el.closest('.hero')) el.classList.add('visible');
+        });
+    </script>
+
+</body>
+</html>
