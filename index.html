@@ -212,8 +212,9 @@
         .footer-links a:hover { color:var(--gold); }
 
         /* ANIMATIONS */
-        .fade-up { opacity:0; transform:translateY(24px); transition:opacity .7s ease,transform .7s ease; }
-        .fade-up.visible { opacity:1; transform:translateY(0); }
+        .fade-up { opacity:1; transform:translateY(0); transition:opacity .7s ease,transform .7s ease; }
+        .fade-up.animate { opacity:0; transform:translateY(24px); }
+        .fade-up.animate.visible { opacity:1; transform:translateY(0); }
 
         /* RESPONSIVE */
         @media (max-width:900px) {
