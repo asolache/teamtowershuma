@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SOS · Social Operating System · TeamTowers Humà</title>
+<meta name="description" content="Sistema operatiu social per a xarxes de valor comunitàries. Local-first, al teu navegador. Cada territori — país, comarca, municipi, barri — amb el seu mapa de valor, tauler i comptabilitat.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-dark:#050507; --bg-panel:#0a0a0f; --bg-elevated:#111118; --bg-hover:#16161f;
+  --border:rgba(255,255,255,0.08); --border-strong:rgba(255,255,255,0.14);
+  --indigo:#6366f1; --indigo-dim:rgba(99,102,241,0.14);
+  --blue:#00b0ff; --blue-dim:rgba(0,176,255,0.14);
+  --purple:#e040fb; --purple-dim:rgba(224,64,251,0.14);
+  --green:#00e676; --green-dim:rgba(0,230,118,0.14);
+  --orange:#ff9100; --orange-dim:rgba(255,145,0,0.14);
+  --red:#ff5252; --red-dim:rgba(255,82,82,0.14);
+  --white:#f5f5f7; --muted:#82828d; --light:#c7c7d1;
+  --sans:'Space Grotesk',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{background:var(--bg-dark);color:var(--white);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+button{font-family:var(--sans);cursor:pointer}
+input,textarea,select{font-family:var(--sans)}
+a{color:var(--blue);text-decoration:none}
+.mono{font-family:var(--mono)}
+.hidden{display:none!important}
+
+/* buttons */
+.btn{border:none;border-radius:8px;padding:.7rem 1.3rem;font-size:.9rem;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:.5rem;justify-content:center}
+.btn-primary{background:var(--indigo);color:#fff}
+.btn-primary:hover{background:var(--blue);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--light);border:1px solid var(--border-strong)}
+.btn-ghost:hover{border-color:var(--indigo);color:var(--white)}
+.btn-sm{padding:.4rem .8rem;font-size:.78rem;border-radius:6px}
+.btn-icon{background:transparent;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:6px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:1rem}
+.btn-icon:hover{border-color:var(--indigo);color:var(--white);background:var(--bg-hover)}
+
+/* ─── ONBOARDING / ENTRY ─── */
+#onboarding{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;position:relative;overflow:hidden}
+#onboarding::before{content:'SOS';position:absolute;font-family:var(--sans);font-size:34vw;font-weight:700;color:rgba(99,102,241,0.035);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;z-index:0}
+.ob-inner{position:relative;z-index:1;max-width:680px}
+.ob-eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;color:var(--indigo);text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
+.ob-eyebrow::before,.ob-eyebrow::after{content:'';width:28px;height:1px;background:var(--indigo);opacity:.5}
+#onboarding h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:1.3rem}
+#onboarding h1 em{font-style:normal;color:var(--blue)}
+.ob-sub{font-size:1.05rem;color:var(--light);line-height:1.75;margin-bottom:2.5rem;max-width:560px;margin-left:auto;margin-right:auto}
+.ob-triad{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.75rem}
+.ob-chip{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;min-width:140px;text-align:left}
+.ob-chip .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem}
+.ob-chip.c1{border-top:2px solid var(--purple)}.ob-chip.c1 .lbl{color:var(--purple)}
+.ob-chip.c2{border-top:2px solid var(--blue)}.ob-chip.c2 .lbl{color:var(--blue)}
+.ob-chip.c3{border-top:2px solid var(--indigo)}.ob-chip.c3 .lbl{color:var(--indigo)}
+.ob-chip .nm{font-size:.95rem;font-weight:600}
+.ob-chip .ds{font-size:.75rem;color:var(--muted);margin-top:.2rem;line-height:1.4}
+.ob-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.ob-contact{font-size:.9rem;color:var(--muted)}
+.ob-contact a{border-bottom:1px solid var(--indigo-dim);padding-bottom:1px}
+.ob-contact a:hover{border-color:var(--blue)}
+.ob-foot{margin-top:2.5rem;font-family:var(--mono);font-size:.65rem;color:var(--muted);letter-spacing:.08em}
+
+/* ─── APP SHELL ─── */
+#app{display:none;min-height:100vh;min-height:100dvh;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 1.25rem;background:linear-gradient(to bottom,rgba(10,10,15,.98),rgba(10,10,15,.9));backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.tb-logo{font-size:1.05rem;font-weight:700;letter-spacing:-.01em;cursor:pointer;white-space:nowrap}
+.tb-logo span{color:var(--indigo)}
+.tb-crumbs{flex:1;display:flex;align-items:center;gap:.4rem;overflow-x:auto;font-size:.82rem;color:var(--muted);white-space:nowrap;scrollbar-width:none}
+.tb-crumbs::-webkit-scrollbar{display:none}
+.tb-crumbs .cr{cursor:pointer;padding:.2rem .1rem}.tb-crumbs .cr:hover{color:var(--white)}
+.tb-crumbs .cr.active{color:var(--blue);font-weight:600}
+.tb-crumbs .sep{opacity:.4}
+.tb-right{display:flex;align-items:center;gap:.6rem}
+.sync-pill{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;color:var(--muted);background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;padding:.35rem .7rem;text-transform:uppercase}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+
+.shell{flex:1;display:grid;grid-template-columns:280px 1fr;min-height:0}
+.tree{background:var(--bg-panel);border-right:1px solid var(--border);overflow-y:auto;padding:1rem .75rem}
+.tree-head{display:flex;align-items:center;justify-content:space-between;padding:.25rem .5rem .75rem;font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tree-node{display:flex;align-items:center;gap:.4rem;padding:.5rem .55rem;border-radius:7px;cursor:pointer;transition:background .12s;font-size:.88rem;position:relative}
+.tree-node:hover{background:var(--bg-hover)}
+.tree-node.sel{background:var(--indigo-dim)}
+.tree-node.sel .tn-name{color:var(--white);font-weight:600}
+.tn-caret{width:14px;flex-shrink:0;color:var(--muted);font-size:.7rem;text-align:center;transition:transform .15s}
+.tn-caret.open{transform:rotate(90deg)}
+.tn-lvl{font-family:var(--mono);font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;padding:.12rem .35rem;border-radius:4px;flex-shrink:0}
+.lvl-pais{background:var(--indigo-dim);color:var(--indigo)}
+.lvl-provincia{background:var(--blue-dim);color:var(--blue)}
+.lvl-comarca{background:var(--green-dim);color:var(--green)}
+.lvl-municipi{background:var(--orange-dim);color:var(--orange)}
+.lvl-barri{background:var(--purple-dim);color:var(--purple)}
+.tn-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tn-add{opacity:0;font-size:1rem;color:var(--muted);width:20px;text-align:center;flex-shrink:0}
+.tree-node:hover .tn-add{opacity:1}.tn-add:hover{color:var(--indigo)}
+.tree-empty{padding:1rem .5rem;color:var(--muted);font-size:.82rem;line-height:1.6}
+
+.workspace{overflow-y:auto;min-width:0}
+.ws-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--muted)}
+.ws-empty h2{color:var(--light);font-weight:600;margin-bottom:.6rem;font-size:1.3rem}
+.ws-empty p{max-width:380px;line-height:1.6;margin-bottom:1.5rem}
+
+.node-head{padding:1.5rem 1.75rem 0}
+.nh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.nh-title{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.nh-title h1{font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.nh-actions{display:flex;gap:.5rem;flex-shrink:0}
+.metaskill{margin-top:1rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.15rem}
+.ms-row{display:flex;gap:.6rem;margin-bottom:.55rem;font-size:.85rem;align-items:baseline}
+.ms-row:last-child{margin-bottom:0}
+.ms-k{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);width:66px;flex-shrink:0;padding-top:.15rem}
+.ms-v{flex:1;color:var(--light);line-height:1.5}
+.ms-v[contenteditable]{outline:none;border-radius:4px;padding:.1rem .3rem;margin:-.1rem -.3rem}
+.ms-v[contenteditable]:hover{background:var(--bg-hover)}
+.ms-v[contenteditable]:focus{background:var(--bg-hover);box-shadow:0 0 0 1px var(--indigo)}
+.ms-v:empty::before{content:attr(data-ph);color:var(--muted);font-style:italic}
+
+.tabs{display:flex;gap:.25rem;padding:1.25rem 1.75rem 0;border-bottom:1px solid var(--border);margin-top:1.25rem}
+.tab{background:transparent;border:none;color:var(--muted);font-size:.9rem;font-weight:600;padding:.6rem 1rem;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:.45rem}
+.tab:hover{color:var(--light)}
+.tab.active{color:var(--white);border-bottom-color:var(--indigo)}
+.tab .cnt{font-family:var(--mono);font-size:.62rem;background:var(--bg-elevated);border-radius:10px;padding:.05rem .4rem;color:var(--muted)}
+.tab-body{padding:1.75rem}
+
+/* VNA MAP */
+.vna-wrap{display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start}
+.vna-canvas{background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;position:relative;min-height:440px;overflow:hidden}
+.vna-canvas svg{width:100%;height:440px;display:block}
+.vna-side h3{font-size:.72rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.role-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.25rem}
+.role-item{display:flex;align-items:center;gap:.5rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:7px;padding:.5rem .65rem;font-size:.82rem}
+.role-item .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.role-item .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.role-item .del{opacity:0;color:var(--muted);cursor:pointer;font-size:.9rem}
+.role-item:hover .del{opacity:1}.role-item .del:hover{color:var(--red)}
+.health{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.health h3{margin-bottom:.85rem}
+.h-row{display:flex;align-items:center;justify-content:space-between;font-size:.8rem;margin-bottom:.6rem}
+.h-row:last-child{margin-bottom:0}
+.h-lbl{color:var(--light)}
+.h-badge{font-family:var(--mono);font-size:.68rem;padding:.15rem .5rem;border-radius:5px;font-weight:600}
+.h-ok{background:var(--green-dim);color:var(--green)}
+.h-warn{background:var(--orange-dim);color:var(--orange)}
+.h-bad{background:var(--red-dim);color:var(--red)}
+.add-inline{display:flex;gap:.4rem;margin-bottom:1.25rem}
+.add-inline input,.add-inline select{flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;color:var(--white);padding:.5rem .6rem;font-size:.82rem}
+.add-inline input:focus,.add-inline select:focus{outline:none;border-color:var(--indigo)}
+.exch-form{display:flex;flex-direction:column;gap:.4rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:.75rem;margin-top:.5rem}
+.exch-form select,.exch-form input{background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;color:var(--white);padding:.45rem .55rem;font-size:.8rem;width:100%}
+.exch-form .rowg{display:flex;gap:.4rem}
+
+/* KANBAN */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.kcol{background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:.85rem;min-height:200px}
+.kcol-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;font-size:.78rem;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.kcol.todo .kcol-head{color:var(--muted)}
+.kcol.doing .kcol-head{color:var(--orange)}
+.kcol.done .kcol-head{color:var(--green)}
+.kcard{background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:.65rem .7rem;margin-bottom:.5rem;font-size:.84rem;line-height:1.4}
+.kcard .kc-txt{margin-bottom:.5rem}
+.kcard .kc-actions{display:flex;gap:.3rem;justify-content:flex-end}
+.kmini{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:5px;font-size:.72rem;padding:.15rem .4rem;line-height:1}
+.kmini:hover{border-color:var(--indigo);color:var(--white)}
+.kmini.del:hover{border-color:var(--red);color:var(--red)}
+.kadd{width:100%;background:transparent;border:1px dashed var(--border-strong);color:var(--white);border-radius:7px;padding:.5rem;font-size:.8rem;font-family:var(--sans);margin-top:.15rem}
+.kadd:hover{border-color:var(--indigo)}
+.kadd::placeholder{color:var(--muted)}
+.kadd:focus{outline:none;border-color:var(--indigo);border-style:solid}
+
+/* LEDGER */
+.ledger-total{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.lt-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;border-top:2px solid var(--green)}
+.lt-card .v{font-size:1.7rem;font-weight:700;font-family:var(--mono)}
+.lt-card .l{font-size:.7rem;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:.15rem}
+.ledger-form{display:grid;grid-template-columns:1.3fr 2fr .8fr auto;gap:.5rem;margin-bottom:1.25rem}
+.ledger-form input{background:var(--bg-elevated);border:1px solid var(--border);border-radius:7px;color:var(--white);padding:.55rem .65rem;font-size:.85rem;min-width:0}
+.ledger-form input:focus{outline:none;border-color:var(--indigo)}
+.ledger-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.ledger-table th{text-align:left;font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.5rem .6rem;border-bottom:1px solid var(--border)}
+.ledger-table td{padding:.6rem;border-bottom:1px solid var(--border);color:var(--light)}
+.ledger-table td.num{font-family:var(--mono);color:var(--green);text-align:right}
+.ledger-table .del{color:var(--muted);cursor:pointer}.ledger-table .del:hover{color:var(--red)}
+.empty-hint{color:var(--muted);font-size:.85rem;padding:1.5rem;text-align:center;font-style:italic}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1.5rem;z-index:200}
+.modal{background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:16px;padding:1.75rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:1.3rem;font-weight:700;margin-bottom:.4rem}
+.modal .m-sub{color:var(--muted);font-size:.88rem;margin-bottom:1.25rem;line-height:1.5}
+.field{margin-bottom:1rem}
+.field label{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo);margin-bottom:.4rem}
+.field input,.field textarea,.field select{width:100%;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:.65rem .75rem;font-size:.92rem}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--indigo)}
+.field textarea{resize:vertical;min-height:64px;line-height:1.5}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.5rem}
+.ai-note{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:.7rem .85rem;font-size:.78rem;color:var(--light);line-height:1.5;margin-bottom:1rem;display:flex;gap:.5rem}
+.ai-note .ic{color:var(--indigo)}
+/* wizard */
+.wz-steps{display:flex;gap:.4rem;margin-bottom:1.1rem}
+.wz-step{flex:1;height:4px;border-radius:2px;background:var(--border)}
+.wz-step.on{background:var(--indigo)}
+.wz-modal{max-width:560px}
+.pick-list{display:flex;flex-direction:column;gap:.45rem;max-height:280px;overflow-y:auto;margin:-.2rem -.3rem;padding:.2rem .3rem}
+.pick{display:flex;gap:.6rem;align-items:flex-start;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.6rem .75rem;cursor:pointer;transition:border-color .12s}
+.pick:hover{border-color:var(--border-strong)}
+.pick.sel{border-color:var(--indigo);background:var(--indigo-dim)}
+.pick input{margin-top:.15rem;accent-color:var(--indigo);width:16px;height:16px;flex-shrink:0}
+.pick .pk-t{font-size:.9rem;font-weight:600;line-height:1.3}
+.pick .pk-d{font-size:.76rem;color:var(--muted);line-height:1.4;margin-top:.1rem}
+.pick .pk-badge{font-family:var(--mono);font-size:.58rem;padding:.1rem .35rem;border-radius:4px;margin-left:.4rem}
+.pk-tang{background:var(--green-dim);color:var(--green)}
+.pk-intang{background:var(--indigo-dim);color:var(--indigo)}
+.wz-sec-lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin:1.1rem 0 .5rem;display:flex;justify-content:space-between;align-items:center}
+.wz-add{display:flex;gap:.4rem;margin-top:.5rem}
+.wz-add input,.wz-add select{background:var(--bg-panel);border:1px solid var(--border);border-radius:7px;color:var(--white);padding:.5rem .6rem;font-size:.82rem;min-width:0}
+.wz-add input{flex:1}
+.wz-count{font-family:var(--mono);font-size:.66rem;color:var(--muted);font-weight:400}
+.wz-mission{background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--green);border-radius:8px;padding:.7rem .85rem;font-size:.84rem;color:var(--light);line-height:1.5;margin-top:.6rem}
+
+/* toast */
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(200%);background:var(--bg-elevated);border:1px solid var(--border-strong);border-left:3px solid var(--green);border-radius:9px;padding:.75rem 1.1rem;font-size:.85rem;z-index:300;transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:90vw}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* responsive */
+@media(max-width:820px){
+  .shell{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .tree{border-right:none;border-bottom:1px solid var(--border);max-height:38vh}
+  .vna-wrap{grid-template-columns:1fr}
+  .kanban{grid-template-columns:1fr}
+  .ledger-form{grid-template-columns:1fr 1fr}
+  .node-head,.tab-body,.tabs{padding-left:1.1rem;padding-right:1.1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ ONBOARDING / ENTRADA A SOS ══════════ -->
+<section id="onboarding">
+  <div class="ob-inner">
+    <div class="ob-eyebrow">Social Operating System · TeamTowers Humà</div>
+    <h1>Converteix la voluntat veïnal<br>en <em>xarxes que duren.</em></h1>
+    <p class="ob-sub">El SOS és l'eina local del teu navegador per donar estructura a projectes comunitaris. Cada territori —país, comarca, municipi o barri— té el seu <strong>mapa de valor</strong>, el seu <strong>tauler</strong> i la seva <strong>comptabilitat de valor</strong>. Les teves dades viuen al teu dispositiu.</p>
+    <div class="ob-triad">
+      <div class="ob-chip c1"><div class="lbl">Cohesió</div><div class="nm">Fent Pinya</div><div class="ds">Confiança i interdependència veïnal</div></div>
+      <div class="ob-chip c2"><div class="lbl">Diagnòstic</div><div class="nm">Mapa VNA</div><div class="ds">Els fluxos de valor, visibles</div></div>
+      <div class="ob-chip c3"><div class="lbl">Sostenibilitat</div><div class="nm">SOS</div><div class="ds">Autogestió justa i transparent</div></div>
+    </div>
+    <div class="ob-actions">
+      <button class="btn btn-primary" id="obStart">⬢ Crea la teva primera xarxa</button>
+      <button class="btn btn-ghost" id="obExplore">🗺 Explora Catalunya</button>
+      <button class="btn btn-ghost" id="obContact">Parla amb l'Álvaro</button>
+    </div>
+    <p class="ob-contact">Tens un repte comunitari al teu territori? Escriu directament a <a href="#" id="obEmailLink" data-subject="Repte comunitari — vull explorar el SOS">l'Álvaro Solache</a> i ho valorem junts. Sense compromís.</p>
+    <div class="ob-foot">Local-first · W3C · Força · Equilibri · Valor · Seny</div>
+  </div>
+</section>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app">
+  <div class="topbar">
+    <div class="tb-logo" id="homeLogo">SOS<span>·</span><span style="color:var(--white);font-weight:600">Humà</span></div>
+    <div class="tb-crumbs" id="crumbs"></div>
+    <div class="tb-right">
+      <div class="sync-pill" id="syncPill"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
+      <button class="btn-icon" id="btnContact" title="Contacta amb l'Álvaro">✉</button>
+      <button class="btn-icon" id="btnSettings" title="Configuració · dades">⚙</button>
+    </div>
+  </div>
+  <div class="shell">
+    <aside class="tree">
+      <div class="tree-head"><span>Territoris</span><button class="btn-icon" id="btnNewRoot" title="Nou país / territori arrel" style="width:26px;height:26px;font-size:.9rem">+</button></div>
+      <div id="treeList"></div>
+    </aside>
+    <main class="workspace" id="workspace"></main>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toast"></div>
+
+<script type="module">
+/* ═══════════════════ EMAIL OFUSCAT ═══════════════════ */
+const _U='asolache', _D='mac'+'.'+'com';
+const email=()=>_U+'@'+_D;
+const mailto=(subject,body)=>'mailto:'+email()+'?subject='+encodeURIComponent(subject||'')+(body?'&body='+encodeURIComponent(body):'');
+
+/* ═══════════════════ TAXONOMIA TERRITORIAL ═══════════════════ */
+const LEVELS=['pais','provincia','comarca','municipi','barri'];
+const LEVEL_META={
+  pais:     {label:'País',      child:'provincia',childLabel:'província', cls:'lvl-pais',      zoom:'MACRO', ph:'p.ex. Catalunya'},
+  provincia:{label:'Província', child:'comarca',  childLabel:'comarca',   cls:'lvl-provincia', zoom:'MACRO', ph:'p.ex. Barcelona'},
+  comarca:  {label:'Comarca',   child:'municipi', childLabel:'municipi',  cls:'lvl-comarca',   zoom:'MESO',  ph:'p.ex. Alt Penedès'},
+  municipi: {label:'Municipi',  child:'barri',    childLabel:'barri',     cls:'lvl-municipi',  zoom:'MESO',  ph:'p.ex. Torrelles de Foix'},
+  barri:    {label:'Barri',     child:null,       childLabel:null,        cls:'lvl-barri',     zoom:'MICRO', ph:'p.ex. Nucli antic'}
+};
+const nextLevel=lvl=>LEVEL_META[lvl].child;
+
+/* ═══════════════════ CATÀLEG GEOGRÀFIC — CATALUNYA ═══════════════════ */
+/* Referència read-only per a l'autocompletar del wizard i l'esquelet inicial.
+   {n:nom, p:nom del pare}. */
+const CAT_GEO={
+  pais:[{n:'Catalunya'}],
+  provincia:[{n:'Barcelona',p:'Catalunya'},{n:'Girona',p:'Catalunya'},{n:'Lleida',p:'Catalunya'},{n:'Tarragona',p:'Catalunya'}],
+  comarca:[
+    // Barcelona
+    {n:'Alt Penedès',p:'Barcelona'},{n:'Anoia',p:'Barcelona'},{n:'Bages',p:'Barcelona'},{n:'Baix Llobregat',p:'Barcelona'},{n:'Barcelonès',p:'Barcelona'},{n:'Berguedà',p:'Barcelona'},{n:'Garraf',p:'Barcelona'},{n:'Maresme',p:'Barcelona'},{n:'Moianès',p:'Barcelona'},{n:'Osona',p:'Barcelona'},{n:'Vallès Occidental',p:'Barcelona'},{n:'Vallès Oriental',p:'Barcelona'},
+    // Girona
+    {n:'Alt Empordà',p:'Girona'},{n:'Baix Empordà',p:'Girona'},{n:'Cerdanya',p:'Girona'},{n:'Garrotxa',p:'Girona'},{n:'Gironès',p:'Girona'},{n:'Pla de l\'Estany',p:'Girona'},{n:'Ripollès',p:'Girona'},{n:'Selva',p:'Girona'},
+    // Lleida
+    {n:'Alt Urgell',p:'Lleida'},{n:'Alta Ribagorça',p:'Lleida'},{n:'Garrigues',p:'Lleida'},{n:'Noguera',p:'Lleida'},{n:'Pallars Jussà',p:'Lleida'},{n:'Pallars Sobirà',p:'Lleida'},{n:'Pla d\'Urgell',p:'Lleida'},{n:'Segarra',p:'Lleida'},{n:'Segrià',p:'Lleida'},{n:'Solsonès',p:'Lleida'},{n:'Urgell',p:'Lleida'},{n:'Val d\'Aran',p:'Lleida'},
+    // Tarragona
+    {n:'Alt Camp',p:'Tarragona'},{n:'Baix Camp',p:'Tarragona'},{n:'Baix Ebre',p:'Tarragona'},{n:'Baix Penedès',p:'Tarragona'},{n:'Conca de Barberà',p:'Tarragona'},{n:'Montsià',p:'Tarragona'},{n:'Priorat',p:'Tarragona'},{n:'Ribera d\'Ebre',p:'Tarragona'},{n:'Tarragonès',p:'Tarragona'},{n:'Terra Alta',p:'Tarragona'}
+  ],
+  municipi:[
+    {n:'Barcelona',p:'Barcelonès'},{n:'L\'Hospitalet de Llobregat',p:'Barcelonès'},{n:'Badalona',p:'Barcelonès'},{n:'Santa Coloma de Gramenet',p:'Barcelonès'},
+    {n:'Terrassa',p:'Vallès Occidental'},{n:'Sabadell',p:'Vallès Occidental'},{n:'Sant Cugat del Vallès',p:'Vallès Occidental'},
+    {n:'Mataró',p:'Maresme'},{n:'Cornellà de Llobregat',p:'Baix Llobregat'},
+    {n:'Lleida',p:'Segrià'},{n:'Tarragona',p:'Tarragonès'},{n:'Reus',p:'Baix Camp'},{n:'Girona',p:'Gironès'},
+    {n:'Vilafranca del Penedès',p:'Alt Penedès'},{n:'Torrelles de Foix',p:'Alt Penedès'},{n:'Vilanova i la Geltrú',p:'Garraf'},{n:'Sitges',p:'Garraf'},{n:'El Vendrell',p:'Baix Penedès'}
+  ],
+  barri:[
+    // Barcelona (districtes)
+    {n:'Ciutat Vella',p:'Barcelona'},{n:'Eixample',p:'Barcelona'},{n:'Sants-Montjuïc',p:'Barcelona'},{n:'Les Corts',p:'Barcelona'},{n:'Sarrià-Sant Gervasi',p:'Barcelona'},{n:'Gràcia',p:'Barcelona'},{n:'Horta-Guinardó',p:'Barcelona'},{n:'Nou Barris',p:'Barcelona'},{n:'Sant Andreu',p:'Barcelona'},{n:'Sant Martí',p:'Barcelona'},
+    // Girona
+    {n:'Barri Vell',p:'Girona'},{n:'Mercadal',p:'Girona'},{n:'Eixample (Girona)',p:'Girona'},{n:'Santa Eugènia',p:'Girona'},{n:'Sant Narcís',p:'Girona'},{n:'Pont Major',p:'Girona'},{n:'Montilivi',p:'Girona'},
+    // Lleida
+    {n:'Centre Històric',p:'Lleida'},{n:'Cappont',p:'Lleida'},{n:'Balàfia',p:'Lleida'},{n:'Pardinyes',p:'Lleida'},{n:'La Bordeta',p:'Lleida'},{n:'Secà de Sant Pere',p:'Lleida'},
+    // Tarragona
+    {n:'Part Alta',p:'Tarragona'},{n:'Eixample (Tarragona)',p:'Tarragona'},{n:'El Serrallo',p:'Tarragona'},{n:'Sant Pere i Sant Pau',p:'Tarragona'},{n:'Torreforta',p:'Tarragona'},{n:'Bonavista',p:'Tarragona'}
+  ]
+};
+function geoFor(level,parentName){const list=CAT_GEO[level]||[];return parentName?list.filter(x=>x.p===parentName):list;}
+
+/* ═══════════════ CONEIXEMENT PER NIVELL (psicologia comunitària + VNA) ═══════════════
+   Per nivell: rols típics, flux de valor clàssic i dolors/necessitats. Cada dolor
+   pot afegir rols i intercanvis específics. Alimenta el wizard de creació. */
+const LEVEL_KNOWLEDGE={
+  provincia:{
+    roles:['Diputació','Consells Comarcals','Ajuntaments grans','Universitats','Agents econòmics','Xarxa d\'ateneus'],
+    flows:[['Diputació','Consells Comarcals','tangible','fons i assistència'],['Consells Comarcals','Diputació','intangible','dades territorials'],['Universitats','Agents econòmics','intangible','coneixement i talent']],
+    pains:[
+      {id:'desequilibri',t:'Desequilibri territorial',d:'Àrees urbanes fortes i comarques interiors que es despoblen.',roles:['Consells Comarcals','Agents econòmics'],flows:[['Agents econòmics','Consells Comarcals','tangible','inversió']]},
+      {id:'coord-supra',t:'Coordinació supramunicipal feble',d:'Els municipis no comparteixen serveis ni estratègia.',roles:['Consells Comarcals','Ajuntaments grans'],flows:[]}
+    ]
+  },
+  comarca:{
+    roles:['Consell Comarcal','Ajuntaments','Grup d\'Acció Local','Consorcis','Federació d\'entitats','Cooperatives 2n grau','Agents econòmics'],
+    flows:[['Consell Comarcal','Ajuntaments','tangible','serveis compartits'],['Ajuntaments','Consell Comarcal','intangible','legitimitat i dades'],['Grup d\'Acció Local','Cooperatives 2n grau','tangible','fons Leader'],['Federació d\'entitats','Ajuntaments','intangible','veu col·lectiva']],
+    pains:[
+      {id:'campanarisme',t:'Campanarisme / rivalitat entre pobles',d:'Cada municipi va sol; no hi ha projectes compartits.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[['Consell Comarcal','Federació d\'entitats','intangible','confiança supramunicipal']]},
+      {id:'subvencio-dep',t:'Dependència de subvencions',d:'Projectes sense estructura pròpia sostenible.',roles:['Grup d\'Acció Local','Cooperatives 2n grau'],flows:[['Cooperatives 2n grau','Ajuntaments','tangible','serveis autofinançats']]},
+      {id:'despoblament',t:'Despoblament i envelliment rural',d:'Marxa del jovent i manca de relleu.',roles:['Grup d\'Acció Local','Agents econòmics'],flows:[]},
+      {id:'tecnic-cremat',t:'Tècnics comarcals sobrecarregats',d:'Poca gent fa de tot i es crema.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[]},
+      {id:'no-escala',t:'Pilots que no escalen',d:'El que funciona en un poble no es transfereix.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[['Federació d\'entitats','Ajuntaments','intangible','transferència de coneixement']]}
+    ]
+  },
+  municipi:{
+    roles:['Ajuntament','Entitats i associacions','Comerç local','Cooperatives','Centres educatius','CAP / salut','Veïnat','Voluntariat','Colles culturals'],
+    flows:[['Ajuntament','Entitats i associacions','tangible','equipaments i subvenció'],['Entitats i associacions','Veïnat','intangible','cohesió i identitat'],['Veïnat','Ajuntament','intangible','participació i legitimitat'],['Comerç local','Veïnat','tangible','proximitat i vida al carrer'],['Centres educatius','Veïnat','intangible','formació i xarxa de famílies']],
+    pains:[
+      {id:'participacio',t:'Participació feble o tokenística',d:'Els processos no vinculen ni arriben a la gent.',roles:['Ajuntament','Veïnat','Entitats i associacions'],flows:[['Veïnat','Ajuntament','intangible','deliberació real']]},
+      {id:'relleu',t:'Entitats envellides sense relleu',d:'2-3 persones ho sostenen tot fins que es cremen.',roles:['Entitats i associacions','Voluntariat','Colles culturals'],flows:[['Voluntariat','Entitats i associacions','intangible','relleu generacional']]},
+      {id:'jovent',t:'Desconnexió amb el jovent',d:'Els joves no troben el seu lloc al poble.',roles:['Centres educatius','Ajuntament','Colles culturals'],flows:[['Centres educatius','Ajuntament','intangible','veu jove']]},
+      {id:'nouvinguts',t:'Nouvinguts no integrats',d:'Segregació i comunitats paral·leles.',roles:['Entitats i associacions','Veïnat','Centres educatius'],flows:[]},
+      {id:'governanca',t:'Projectes ciutadans sense governança',d:'Bancs de temps, hortes o comunitats energètiques que fracassen.',roles:['Cooperatives','Voluntariat','Ajuntament'],flows:[['Cooperatives','Veïnat','tangible','servei autogestionat']]},
+      {id:'soledat',t:'Soledat i salut mental no detectades',d:'Malestar que no arriba als serveis a temps.',roles:['CAP / salut','Veïnat','Entitats i associacions'],flows:[['Veïnat','CAP / salut','intangible','detecció precoç']]},
+      {id:'comerc',t:'Comerç local en declivi',d:'Grans superfícies i online buiden el carrer.',roles:['Comerç local','Ajuntament'],flows:[]}
+    ]
+  },
+  barri:{
+    roles:['Associació de veïns','Veïnat','Comerç de proximitat','Escola / AMPA','Centre cívic','Grups de cura','Gent gran','Jovent'],
+    flows:[['Veïnat','Veïnat','intangible','cura, favors i informació'],['Associació de veïns','Veïnat','intangible','activitats i reivindicació'],['Veïnat','Associació de veïns','tangible','quotes i participació'],['Comerç de proximitat','Veïnat','intangible','punt de trobada i confiança'],['Escola / AMPA','Veïnat','intangible','xarxa de famílies']],
+    pains:[
+      {id:'aillament',t:'Aïllament i soledat no volguda',d:'Gent gran sola, sense xarxa quotidiana.',roles:['Gent gran','Grups de cura','Veïnat'],flows:[['Grups de cura','Gent gran','intangible','acompanyament']]},
+      {id:'convivencia',t:'Conflictes de convivència',d:'Soroll, usos de l\'espai, incivisme.',roles:['Associació de veïns','Veïnat','Centre cívic'],flows:[['Centre cívic','Veïnat','intangible','mediació i trobada']]},
+      {id:'gentrificacio',t:'Gentrificació i pèrdua d\'identitat',d:'Expulsió de veïnat i comerç de tota la vida.',roles:['Associació de veïns','Comerç de proximitat','Veïnat'],flows:[]},
+      {id:'espais',t:'Manca d\'espais i temps de trobada',d:'No hi ha on ni quan trobar-se.',roles:['Centre cívic','Associació de veïns','Escola / AMPA'],flows:[['Centre cívic','Veïnat','tangible','espai obert']]},
+      {id:'bretxa',t:'Bretxa digital',d:'Gent gran fora dels grups on passa tot.',roles:['Gent gran','Jovent','Centre cívic'],flows:[['Jovent','Gent gran','intangible','acompanyament digital']]},
+      {id:'cures',t:'Sobrecàrrega i invisibilitat de les cures',d:'Recau en poques persones, sovint dones.',roles:['Grups de cura','Veïnat','Gent gran'],flows:[['Veïnat','Grups de cura','intangible','reconeixement i relleu']]}
+    ]
+  }
+};
+const knowFor=level=>LEVEL_KNOWLEDGE[level]||{roles:[],flows:[],pains:[]};
+
+/* ═══════════════════ INDEXEDDB (local-first) ═══════════════════ */
+const DB_NAME='SOS_MVP', DB_VER=1, STORE='nodes';
+let _db=null;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE)){const s=db.createObjectStore(STORE,{keyPath:'id'});s.createIndex('parentId','parentId',{unique:false});}};r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=e=>rej(e.target.error);});}
+function tx(mode){return _db.transaction(STORE,mode).objectStore(STORE);}
+function dbGetAll(){return new Promise((res,rej)=>{const r=tx('readonly').getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});}
+function dbPut(node){return new Promise((res,rej)=>{const r=tx('readwrite').put(node);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+
+/* ═══════════════════ ESTAT ═══════════════════ */
+const state={nodes:[],activeId:null,tab:'map',expanded:new Set()};
+const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const now=()=>new Date().toISOString();
+const byId=id=>state.nodes.find(n=>n.id===id);
+const children=pid=>state.nodes.filter(n=>n.parentId===pid).sort((a,b)=>a.name.localeCompare(b.name));
+function ancestors(id){const out=[];let n=byId(id);while(n){out.unshift(n);n=n.parentId?byId(n.parentId):null;}return out;}
+function descendants(id){const out=[];const walk=p=>children(p).forEach(c=>{out.push(c);walk(c.id);});walk(id);return out;}
+
+function newNode(name,level,parentId){return{id:uid(),name:name.trim(),nodeLevel:level,parentId:parentId||null,
+  metaskill:{mission:'',vision:'',objectives:''},
+  vna:{roles:[],exchanges:[]},kanban:{cards:[]},ledger:[],
+  createdAt:now(),updatedAt:now()};}
+async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();}
+
+/* ═══════════════════ RENDER: ARREL ═══════════════════ */
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+function render(){
+  const has=state.nodes.length>0;
+  $('#onboarding').style.display=has?'none':'flex';
+  $('#app').style.display=has?'flex':'none';
+  if(has){renderTree();renderCrumbs();renderWorkspace();}
+}
+
+function renderCrumbs(){
+  const c=$('#crumbs');c.innerHTML='';
+  if(!state.activeId){c.appendChild(el('span','cr','Selecciona un territori'));return;}
+  const chain=ancestors(state.activeId);
+  chain.forEach((n,i)=>{
+    if(i>0)c.appendChild(el('span','sep','›'));
+    const cr=el('span','cr'+(i===chain.length-1?' active':''),esc(n.name));
+    cr.onclick=()=>selectNode(n.id);
+    c.appendChild(cr);
+  });
+}
+
+function renderTree(){
+  const t=$('#treeList');t.innerHTML='';
+  const roots=children(null);
+  if(roots.length===0){t.appendChild(el('div','tree-empty','Encara no hi ha cap territori. Fes clic a + per crear-ne el primer.'));return;}
+  const draw=(node,depth)=>{
+    const kids=children(node.id);
+    const meta=LEVEL_META[node.nodeLevel];
+    const row=el('div','tree-node'+(state.activeId===node.id?' sel':''));
+    row.style.paddingLeft=(.55+depth*.85)+'rem';
+    const caret=el('span','tn-caret'+(state.expanded.has(node.id)?' open':''),kids.length?'▶':'');
+    caret.onclick=e=>{e.stopPropagation();if(kids.length){state.expanded.has(node.id)?state.expanded.delete(node.id):state.expanded.add(node.id);renderTree();}};
+    row.appendChild(caret);
+    row.appendChild(el('span','tn-lvl '+meta.cls,meta.label));
+    row.appendChild(el('span','tn-name',esc(node.name)));
+    if(meta.child){const add=el('span','tn-add','+');add.title='Afegeix '+meta.childLabel;add.onclick=e=>{e.stopPropagation();openCreateModal(node.id);};row.appendChild(add);}
+    row.onclick=()=>selectNode(node.id);
+    t.appendChild(row);
+    if(state.expanded.has(node.id))kids.forEach(k=>draw(k,depth+1));
+  };
+  roots.forEach(r=>draw(r,0));
+}
+
+function selectNode(id){state.activeId=id;state.tab='map';let n=byId(id);while(n&&n.parentId){state.expanded.add(n.parentId);n=byId(n.parentId);}render();}
+
+/* ═══════════════════ WORKSPACE ═══════════════════ */
+function renderWorkspace(){
+  const w=$('#workspace');w.innerHTML='';
+  const node=byId(state.activeId);
+  if(!node){const e=el('div','ws-empty','<h2>Selecciona un territori</h2><p>Tria un node de l\'arbre de l\'esquerra per veure el seu mapa de valor, el seu tauler i els seus comptes.</p>');w.appendChild(e);return;}
+  const meta=LEVEL_META[node.nodeLevel];
+
+  const head=el('div','node-head');
+  const top=el('div','nh-top');
+  const title=el('div','nh-title');
+  title.appendChild(el('span','tn-lvl '+meta.cls,meta.label));
+  const h1=el('h1');h1.textContent=node.name;title.appendChild(h1);
+  top.appendChild(title);
+  const acts=el('div','nh-actions');
+  if(meta.child){const b=el('button','btn btn-ghost btn-sm','+ '+meta.childLabel);b.onclick=()=>openCreateModal(node.id);acts.appendChild(b);}
+  const ren=el('button','btn-icon','✎');ren.title='Reanomena';ren.onclick=()=>renameNode(node);acts.appendChild(ren);
+  const del=el('button','btn-icon','🗑');del.title='Elimina';del.onclick=()=>deleteNode(node);acts.appendChild(del);
+  top.appendChild(acts);
+  head.appendChild(top);
+
+  // metaskill
+  const ms=el('div','metaskill');
+  [['mission','Missió','Per a què existeix aquesta xarxa?'],['vision','Visió','Quin territori crea si té èxit?'],['objectives','Objectius','Com sabem que ho està aconseguint?']].forEach(([k,lbl,ph])=>{
+    const row=el('div','ms-row');
+    row.appendChild(el('span','ms-k',lbl));
+    const v=el('div','ms-v');v.contentEditable='true';v.dataset.ph=ph;v.textContent=node.metaskill[k]||'';
+    v.onblur=()=>{if(node.metaskill[k]!==v.textContent){node.metaskill[k]=v.textContent;persist(node);}};
+    row.appendChild(v);ms.appendChild(row);
+  });
+  head.appendChild(ms);
+  w.appendChild(head);
+
+  // tabs
+  const tabs=el('div','tabs');
+  const tdefs=[['map','◉ Mapa de valor',node.vna.roles.length],['kanban','▤ Tauler',node.kanban.cards.length],['ledger','⊞ Comptes',node.ledger.length]];
+  tdefs.forEach(([id,lbl,cnt])=>{
+    const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
+    b.onclick=()=>{state.tab=id;renderWorkspace();};tabs.appendChild(b);
+  });
+  w.appendChild(tabs);
+
+  const body=el('div','tab-body');
+  if(state.tab==='map')renderVNA(body,node);
+  else if(state.tab==='kanban')renderKanban(body,node);
+  else renderLedger(body,node);
+  w.appendChild(body);
+}
+
+/* ─── VNA MAP ─── */
+const ROLE_COLORS=['#6366f1','#00b0ff','#00e676','#e040fb','#ff9100','#ff5252','#c7c7d1','#facc15'];
+function renderVNA(body,node){
+  const wrap=el('div','vna-wrap');
+  // canvas
+  const canvas=el('div','vna-canvas');
+  canvas.appendChild(buildVNASvg(node));
+  wrap.appendChild(canvas);
+  // side
+  const side=el('div','vna-side');
+  // add role
+  side.appendChild(el('h3','Rols / Actors'));
+  const addR=el('div','add-inline');
+  const inp=el('input');inp.placeholder='Nou rol (p.ex. Ateneu)';inp.maxLength=40;
+  const addBtn=el('button','btn btn-primary btn-sm','+');
+  const doAdd=()=>{const v=inp.value.trim();if(!v)return;node.vna.roles.push({id:uid(),name:v});persist(node);renderWorkspace();};
+  addBtn.onclick=doAdd;inp.onkeydown=e=>{if(e.key==='Enter')doAdd();};
+  addR.appendChild(inp);addR.appendChild(addBtn);side.appendChild(addR);
+  // role list
+  const rl=el('div','role-list');
+  if(node.vna.roles.length===0)rl.appendChild(el('div','empty-hint','Afegeix rols per començar a mapar la xarxa.'));
+  node.vna.roles.forEach((r,i)=>{
+    const it=el('div','role-item');
+    const dot=el('span','dot');dot.style.background=ROLE_COLORS[i%ROLE_COLORS.length];it.appendChild(dot);
+    it.appendChild(el('span','nm',esc(r.name)));
+    const d=el('span','del','×');d.onclick=()=>{node.vna.roles=node.vna.roles.filter(x=>x.id!==r.id);node.vna.exchanges=node.vna.exchanges.filter(e=>e.from!==r.id&&e.to!==r.id);persist(node);renderWorkspace();};
+    it.appendChild(d);rl.appendChild(it);
+  });
+  side.appendChild(rl);
+  // add exchange
+  if(node.vna.roles.length>=2){
+    side.appendChild(el('h3','Nou intercanvi'));
+    const f=el('div','exch-form');
+    const from=el('select'),to=el('select');
+    node.vna.roles.forEach(r=>{from.appendChild(new Option(r.name,r.id));to.appendChild(new Option(r.name,r.id));});
+    if(node.vna.roles[1])to.value=node.vna.roles[1].id;
+    const kind=el('select');kind.appendChild(new Option('Tangible (bé, servei, diner)','tangible'));kind.appendChild(new Option('Intangible (confiança, saber)','intangible'));
+    const lbl=el('input');lbl.placeholder='Què flueix? (opcional)';lbl.maxLength=40;
+    const rowg=el('div','rowg');rowg.appendChild(from);const arr=el('span','',' → ');arr.style.cssText='color:var(--muted);align-self:center';rowg.appendChild(arr);rowg.appendChild(to);
+    f.appendChild(rowg);f.appendChild(kind);f.appendChild(lbl);
+    const b=el('button','btn btn-primary btn-sm','+ Afegeix intercanvi');
+    b.onclick=()=>{if(from.value===to.value){toast('Tria dos rols diferents');return;}node.vna.exchanges.push({id:uid(),from:from.value,to:to.value,kind:kind.value,label:lbl.value.trim()});persist(node);renderWorkspace();};
+    f.appendChild(b);side.appendChild(f);
+  }
+  // health
+  side.appendChild(buildHealth(node));
+  wrap.appendChild(side);
+  body.appendChild(wrap);
+}
+
+function buildVNASvg(node){
+  const roles=node.vna.roles, ex=node.vna.exchanges;
+  const W=520,H=440,cx=W/2,cy=H/2,R=Math.min(W,H)/2-70;
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  const pos={};
+  roles.forEach((r,i)=>{const a=(-Math.PI/2)+(i/roles.length)*Math.PI*2;pos[r.id]={x:cx+R*Math.cos(a),y:cy+R*Math.sin(a),c:ROLE_COLORS[i%ROLE_COLORS.length]};});
+  const ns='http://www.w3.org/2000/svg';
+  const mk=(t,at)=>{const e=document.createElementNS(ns,t);for(const k in at)e.setAttribute(k,at[k]);return e;};
+  if(roles.length===0){const tx=mk('text',{x:cx,y:cy,'text-anchor':'middle',fill:'#82828d','font-family':'JetBrains Mono','font-size':13});tx.textContent='Afegeix rols per veure el mapa →';svg.appendChild(tx);return svg;}
+  // edges
+  ex.forEach(e=>{const a=pos[e.from],b=pos[e.to];if(!a||!b)return;
+    const line=mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,'stroke':e.kind==='tangible'?'#00e676':'#6366f1','stroke-width':e.kind==='tangible'?2:1.4,'stroke-opacity':.6});
+    if(e.kind==='intangible')line.setAttribute('stroke-dasharray','5 5');
+    svg.appendChild(line);
+    if(e.label){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;const t=mk('text',{x:mx,y:my-3,'text-anchor':'middle',fill:e.kind==='tangible'?'#00e676':'#8b8df5','font-family':'JetBrains Mono','font-size':8.5,'opacity':.85});t.textContent=e.label;svg.appendChild(t);}
+  });
+  // nodes
+  roles.forEach(r=>{const p=pos[r.id];
+    svg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:22,fill:'#0a0a0f',stroke:p.c,'stroke-width':2}));
+    const t=mk('text',{x:p.x,y:p.y+3.5,'text-anchor':'middle',fill:p.c,'font-family':'Space Grotesk','font-size':9,'font-weight':600});
+    t.textContent=r.name.length>10?r.name.slice(0,9)+'…':r.name;svg.appendChild(t);
+  });
+  // legend
+  svg.appendChild(mk('line',{x1:16,y1:H-14,x2:36,y2:H-14,stroke:'#00e676','stroke-width':2}));
+  const l1=mk('text',{x:40,y:H-11,fill:'#00e676','font-family':'JetBrains Mono','font-size':9,'opacity':.8});l1.textContent='Tangible';svg.appendChild(l1);
+  svg.appendChild(mk('line',{x1:110,y1:H-14,x2:130,y2:H-14,stroke:'#6366f1','stroke-width':1.4,'stroke-dasharray':'4 4'}));
+  const l2=mk('text',{x:134,y:H-11,fill:'#8b8df5','font-family':'JetBrains Mono','font-size':9,'opacity':.8});l2.textContent='Intangible';svg.appendChild(l2);
+  return svg;
+}
+
+function buildHealth(node){
+  const roles=node.vna.roles, ex=node.vna.exchanges, box=el('div','health');
+  box.appendChild(el('h3','Salut de la xarxa'));
+  const row=(lbl,cls,txt)=>{const r=el('div','h-row');r.appendChild(el('span','h-lbl',lbl));r.appendChild(el('span','h-badge '+cls,txt));box.appendChild(r);};
+  if(roles.length<2){row('Estat','h-warn','Incompleta');const h=el('p','',' Afegeix rols i intercanvis per avaluar la salut.');h.style.cssText='font-size:.75rem;color:var(--muted);margin-top:.5rem;line-height:1.4';box.appendChild(h);return box;}
+  // reciprocity
+  const pairKey=(a,b)=>[a,b].sort().join('|');
+  const dir={};ex.forEach(e=>{dir[e.from+'>'+e.to]=1;});
+  const pairs=new Set();ex.forEach(e=>pairs.add(pairKey(e.from,e.to)));
+  let recip=0;pairs.forEach(p=>{const[a,b]=p.split('|');if(dir[a+'>'+b]&&dir[b+'>'+a])recip++;});
+  const recPct=pairs.size?Math.round(recip/pairs.size*100):0;
+  row('Reciprocitat',recPct>=60?'h-ok':recPct>=30?'h-warn':'h-bad',recPct+'%');
+  // density
+  const maxE=roles.length*(roles.length-1)/2;const dens=maxE?Math.round(pairs.size/maxE*100):0;
+  row('Densitat',dens>=40?'h-ok':dens>=20?'h-warn':'h-bad',dens+'%');
+  // diversity
+  const hasT=ex.some(e=>e.kind==='tangible'),hasI=ex.some(e=>e.kind==='intangible');
+  row('Diversitat',hasT&&hasI?'h-ok':'h-warn',hasT&&hasI?'Equilibri':hasI?'Només intang.':'Només tang.');
+  // isolated
+  const connected=new Set();ex.forEach(e=>{connected.add(e.from);connected.add(e.to);});
+  const iso=roles.filter(r=>!connected.has(r.id)).length;
+  row('Rols aïllats',iso===0?'h-ok':'h-warn',iso===0?'Cap':iso+'');
+  return box;
+}
+
+/* ─── KANBAN ─── */
+const KCOLS=[['todo','Per fer'],['doing','Fent'],['done','Fet']];
+let _kFocus=null; // columna que ha de recuperar el focus de l'input després de re-render
+function renderKanban(body,node){
+  const k=el('div','kanban');
+  KCOLS.forEach(([col,lbl],ci)=>{
+    const cards=node.kanban.cards.filter(c=>c.col===col);
+    const cont=el('div','kcol '+col);
+    const head=el('div','kcol-head');head.innerHTML='<span>'+lbl+'</span><span>'+cards.length+'</span>';cont.appendChild(head);
+    cards.forEach(c=>{
+      const card=el('div','kcard');
+      const txt=el('div','kc-txt',esc(c.text));txt.title='Doble clic per editar';
+      txt.ondblclick=()=>{txt.contentEditable='true';txt.focus();document.getSelection().selectAllChildren(txt);};
+      txt.onblur=()=>{txt.contentEditable='false';const v=txt.textContent.trim();if(v&&v!==c.text){c.text=v;persist(node);}else txt.textContent=c.text;};
+      txt.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();txt.blur();}if(e.key==='Escape'){txt.textContent=c.text;txt.blur();}};
+      card.appendChild(txt);
+      const a=el('div','kc-actions');
+      if(ci>0){const b=el('button','kmini','‹');b.title='Enrere';b.onclick=()=>{c.col=KCOLS[ci-1][0];persist(node);renderWorkspace();};a.appendChild(b);}
+      if(ci<2){const b=el('button','kmini','›');b.title='Avança';b.onclick=()=>{c.col=KCOLS[ci+1][0];persist(node);renderWorkspace();};a.appendChild(b);}
+      const d=el('button','kmini del','×');d.onclick=()=>{node.kanban.cards=node.kanban.cards.filter(x=>x.id!==c.id);persist(node);renderWorkspace();};a.appendChild(d);
+      card.appendChild(a);cont.appendChild(card);
+    });
+    // alta inline sempre visible (àgil, sense diàlegs del navegador)
+    const addInp=el('input','kadd');addInp.placeholder='+ Nova tasca…';addInp.maxLength=120;
+    addInp.onkeydown=e=>{
+      if(e.key==='Enter'){const v=addInp.value.trim();if(v){node.kanban.cards.push({id:uid(),text:v,col});_kFocus=col;persist(node);renderWorkspace();}}
+      if(e.key==='Escape'){addInp.value='';addInp.blur();}
+    };
+    cont.appendChild(addInp);
+    k.appendChild(cont);
+    if(_kFocus===col){setTimeout(()=>addInp.focus(),0);}
+  });
+  _kFocus=null;
+  body.appendChild(k);
+}
+
+/* ─── LEDGER ─── */
+function renderLedger(body,node){
+  const total=node.ledger.reduce((s,e)=>s+(Number(e.value)||0),0);
+  const tot=el('div','ledger-total');
+  const c1=el('div','lt-card');c1.innerHTML='<div class="v">'+total.toFixed(1)+'</div><div class="l">Valor total aportat</div>';tot.appendChild(c1);
+  const contribs=new Set(node.ledger.map(e=>e.who)).size;
+  const c2=el('div','lt-card');c2.style.borderTopColor='var(--indigo)';c2.innerHTML='<div class="v">'+contribs+'</div><div class="l">Persones aportant</div>';tot.appendChild(c2);
+  body.appendChild(tot);
+
+  const form=el('div','ledger-form');
+  const who=el('input');who.placeholder='Qui';who.maxLength=30;
+  const what=el('input');what.placeholder='Què aporta';what.maxLength=60;
+  const val=el('input');val.type='number';val.placeholder='Valor';val.min='0';val.step='0.5';
+  const add=el('button','btn btn-primary btn-sm','+');
+  const doAdd=()=>{if(!who.value.trim()||!what.value.trim()){toast('Omple qui i què');return;}node.ledger.unshift({id:uid(),who:who.value.trim(),what:what.value.trim(),value:Number(val.value)||0,ts:now()});persist(node);renderWorkspace();};
+  add.onclick=doAdd;[who,what,val].forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')doAdd();});
+  form.appendChild(who);form.appendChild(what);form.appendChild(val);form.appendChild(add);
+  body.appendChild(form);
+
+  if(node.ledger.length===0){body.appendChild(el('div','empty-hint','Encara no hi ha aportacions registrades. Registra qui aporta què perquè la comunitat ho vegi de manera justa i transparent.'));return;}
+  const tbl=el('table','ledger-table');
+  tbl.innerHTML='<thead><tr><th>Qui</th><th>Aportació</th><th style="text-align:right">Valor</th><th></th></tr></thead>';
+  const tb=el('tbody');
+  node.ledger.forEach(e=>{
+    const tr=el('tr');
+    tr.appendChild(el('td',null,esc(e.who)));
+    tr.appendChild(el('td',null,esc(e.what)));
+    tr.appendChild(el('td','num',(Number(e.value)||0).toFixed(1)));
+    const td=el('td');const d=el('span','del','×');d.onclick=()=>{node.ledger=node.ledger.filter(x=>x.id!==e.id);persist(node);renderWorkspace();};td.appendChild(d);tr.appendChild(td);
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb);body.appendChild(tbl);
+}
+
+/* ═══════════════════ MODALS ═══════════════════ */
+function closeModal(){$('#modalRoot').innerHTML='';}
+function modal(html){const bg=el('div','modal-bg');bg.innerHTML='<div class="modal">'+html+'</div>';bg.onclick=e=>{if(e.target===bg)closeModal();};$('#modalRoot').innerHTML='';$('#modalRoot').appendChild(bg);return bg;}
+
+// Motor de suggeriment determinista: coneixement del nivell + dolors triats + biaix pel prompt lliure
+function suggestMap(level,selectedPainIds,promptText){
+  const k=knowFor(level);
+  const roleSet=new Set(k.roles);
+  const flows=k.flows.map(f=>f.slice());
+  const addPain=p=>{(p.roles||[]).forEach(r=>roleSet.add(r));(p.flows||[]).forEach(f=>flows.push(f.slice()));};
+  k.pains.forEach(p=>{if(selectedPainIds.has(p.id))addPain(p);});
+  // biaix pel prompt: si el text menciona el títol/descr d'un dolor no triat, incorpora'l
+  const txt=(promptText||'').toLowerCase();
+  if(txt.length>3)k.pains.forEach(p=>{if(!selectedPainIds.has(p.id)){const kw=(p.t+' '+p.d).toLowerCase().split(/[\s,\/·.]+/).filter(w=>w.length>4);if(kw.some(w=>txt.includes(w)))addPain(p);}});
+  const roles=[...roleSet];
+  // deduplica flujos i conserva només els que tenen els dos extrems
+  const seen=new Set(),outFlows=[];
+  flows.forEach(([a,b,kind,label])=>{if(!roleSet.has(a)||!roleSet.has(b))return;const key=a+'>'+b+'>'+(label||'');if(seen.has(key))return;seen.add(key);outFlows.push({from:a,to:b,kind:kind||'tangible',label:label||''});});
+  return {roles,flows:outFlows};
+}
+function draftMission(name,level,selectedPainIds){
+  const k=knowFor(level);const picked=k.pains.filter(p=>selectedPainIds.has(p.id));
+  if(!picked.length)return '';
+  const list=picked.map(p=>p.t.toLowerCase()).join(', ');
+  return 'Enfortir la xarxa de valor de '+name+' abordant: '+list+'.';
+}
+
+function openCreateModal(parentId){
+  const level=parentId?nextLevel(byId(parentId).nodeLevel):'pais';
+  const meta=LEVEL_META[level];
+  const parentName=parentId?byId(parentId).name:null;
+  const k=knowFor(level);
+  // estat del wizard
+  const wz={name:'',prompt:'',pains:new Set(),roles:[],exchanges:[],mission:''};
+
+  function step1(){
+    const opts=geoFor(level,parentName).map(g=>'<option value="'+esc(g.n)+'">').join('');
+    const painsHtml=k.pains.length?k.pains.map(p=>`
+      <label class="pick${wz.pains.has(p.id)?' sel':''}" data-pain="${p.id}">
+        <input type="checkbox" ${wz.pains.has(p.id)?'checked':''}>
+        <span><span class="pk-t">${esc(p.t)}</span><br><span class="pk-d">${esc(p.d)}</span></span>
+      </label>`).join(''):'<p class="m-sub">Per a aquest nivell no hi ha reptes predefinits; passa al mapa.</p>';
+    const bg=modal(`
+      <div class="wz-steps"><div class="wz-step on"></div><div class="wz-step"></div></div>
+      <h2>Nou ${meta.label.toLowerCase()}</h2>
+      <p class="m-sub">${parentName?'Dins de <strong>'+esc(parentName)+'</strong>. ':''}Nivell fixat pel context · zoom <strong>${meta.zoom}</strong>.</p>
+      <div class="field"><label>Nom del ${meta.label.toLowerCase()}</label>
+        <input id="wzName" list="wzGeo" placeholder="${meta.ph}" autocomplete="off" value="${esc(wz.name)}">
+        <datalist id="wzGeo">${opts}</datalist></div>
+      <div class="field"><label>Descriu la teva comunitat (opcional)</label>
+        <textarea id="wzPrompt" placeholder="Una frase sobre el territori i el seu moment. Afinarà els suggeriments.">${esc(wz.prompt)}</textarea></div>
+      <div class="wz-sec-lbl">Quins reptes ressonen al teu territori?<span class="wz-count" id="wzPCount"></span></div>
+      <div class="pick-list">${painsHtml}</div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="wzCancel">Cancel·la</button><button class="btn btn-primary" id="wzNext">Continua → mapa suggerit</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    const nm=bg.querySelector('#wzName');nm.focus();
+    const upCount=()=>{bg.querySelector('#wzPCount').textContent=wz.pains.size?wz.pains.size+' triats':'';};upCount();
+    bg.querySelectorAll('.pick[data-pain]').forEach(row=>{row.addEventListener('click',e=>{
+      if(e.target.tagName!=='INPUT')e.preventDefault();
+      const id=row.dataset.pain,cb=row.querySelector('input');const on=!wz.pains.has(id);
+      if(on)wz.pains.add(id);else wz.pains.delete(id);cb.checked=on;row.classList.toggle('sel',on);upCount();
+    });});
+    bg.querySelector('#wzCancel').onclick=closeModal;
+    bg.querySelector('#wzNext').onclick=()=>{
+      wz.name=nm.value.trim();wz.prompt=bg.querySelector('#wzPrompt').value.trim();
+      if(!wz.name){nm.focus();return;}
+      const sug=suggestMap(level,wz.pains,wz.prompt);
+      wz.roles=sug.roles.map(n=>({name:n,on:true}));
+      wz.exchanges=sug.flows.map(f=>({from:f.from,to:f.to,kind:f.kind,label:f.label,on:true}));
+      wz.mission=draftMission(wz.name,level,wz.pains);
+      step2();
+    };
+    nm.onkeydown=e=>{if(e.key==='Enter')bg.querySelector('#wzNext').click();};
+  }
+
+  function step2(){
+    const bg=modal(`
+      <div class="wz-steps"><div class="wz-step on"></div><div class="wz-step on"></div></div>
+      <h2>Mapa de valor suggerit</h2>
+      <p class="m-sub">Basat en la metodologia VNA (Verna Allee) i els reptes triats. <strong>Desmarca el que no vulguis i afegeix el teu.</strong></p>
+      <div class="field"><label>Missió</label><textarea id="wzMission" placeholder="Per a què existeix aquesta xarxa de valor?">${esc(wz.mission)}</textarea>
+        ${wz.mission?'<div class="wz-mission">✦ Esborrany generat a partir dels reptes triats. Edita\'l lliurement.</div>':''}</div>
+      <div class="wz-sec-lbl">Rols / actors<span class="wz-count" id="wzRC"></span></div>
+      <div class="pick-list" id="wzRoles"></div>
+      <div class="wz-add"><input id="wzNewRole" placeholder="Afegeix un rol propi" maxlength="40"><button class="btn btn-ghost btn-sm" id="wzAddRole">+</button></div>
+      <div class="wz-sec-lbl">Intercanvis de valor<span class="wz-count" id="wzEC"></span></div>
+      <div class="pick-list" id="wzExch"></div>
+      <div id="wzExchAdd"></div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="wzBack">← Enrere</button><button class="btn btn-primary" id="wzCreate">⬢ Crea el node</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    const roleNames=()=>wz.roles.filter(r=>r.on).map(r=>r.name);
+    function paintRoles(){
+      const c=bg.querySelector('#wzRoles');c.innerHTML='';
+      wz.roles.forEach((r,i)=>{const row=el('label','pick'+(r.on?' sel':''));
+        row.innerHTML='<input type="checkbox" '+(r.on?'checked':'')+'><span class="pk-t">'+esc(r.name)+'</span>';
+        row.querySelector('input').onchange=e=>{r.on=e.target.checked;row.classList.toggle('sel',r.on);updCounts();paintExch();};
+        c.appendChild(row);});
+    }
+    function paintExch(){
+      const c=bg.querySelector('#wzExch');c.innerHTML='';
+      const valid=new Set(roleNames());
+      wz.exchanges.forEach(x=>{
+        const ok=valid.has(x.from)&&valid.has(x.to);
+        const row=el('label','pick'+(x.on&&ok?' sel':''));row.style.opacity=ok?'1':'.4';
+        row.innerHTML='<input type="checkbox" '+(x.on&&ok?'checked':'')+(ok?'':' disabled')+'><span><span class="pk-t">'+esc(x.from)+' → '+esc(x.to)+'</span><span class="pk-badge '+(x.kind==='tangible'?'pk-tang':'pk-intang')+'">'+(x.kind==='tangible'?'tangible':'intangible')+'</span>'+(x.label?'<span class="pk-d">'+esc(x.label)+'</span>':'')+'</span>';
+        const cb=row.querySelector('input');if(cb&&!cb.disabled)cb.onchange=e=>{x.on=e.target.checked;row.classList.toggle('sel',x.on);updCounts();};
+        c.appendChild(row);});
+      // add-exchange form
+      const names=roleNames();const add=bg.querySelector('#wzExchAdd');
+      if(names.length>=2){
+        add.innerHTML='<div class="wz-add"><select id="wzEf">'+names.map(n=>'<option>'+esc(n)+'</option>').join('')+'</select><select id="wzEt">'+names.map(n=>'<option>'+esc(n)+'</option>').join('')+'</select><select id="wzEk"><option value="tangible">tangible</option><option value="intangible">intangible</option></select></div><div class="wz-add"><input id="wzEl" placeholder="Què flueix? (opcional)" maxlength="40"><button class="btn btn-ghost btn-sm" id="wzEadd">+ intercanvi</button></div>';
+        if(names[1])add.querySelector('#wzEt').selectedIndex=1;
+        add.querySelector('#wzEadd').onclick=()=>{const f=add.querySelector('#wzEf').value,t=add.querySelector('#wzEt').value;if(f===t){toast('Tria dos rols diferents');return;}wz.exchanges.push({from:f,to:t,kind:add.querySelector('#wzEk').value,label:add.querySelector('#wzEl').value.trim(),on:true});paintExch();updCounts();};
+      } else add.innerHTML='';
+    }
+    function updCounts(){bg.querySelector('#wzRC').textContent=roleNames().length+' actius';const ne=wz.exchanges.filter(x=>x.on&&roleNames().includes(x.from)&&roleNames().includes(x.to)).length;bg.querySelector('#wzEC').textContent=ne+' actius';}
+    paintRoles();paintExch();updCounts();
+    bg.querySelector('#wzAddRole').onclick=()=>{const i=bg.querySelector('#wzNewRole');const v=i.value.trim();if(!v)return;if(wz.roles.some(r=>r.name.toLowerCase()===v.toLowerCase())){toast('Ja existeix');return;}wz.roles.push({name:v,on:true});i.value='';paintRoles();paintExch();updCounts();};
+    bg.querySelector('#wzNewRole').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();bg.querySelector('#wzAddRole').click();}};
+    bg.querySelector('#wzBack').onclick=step1;
+    bg.querySelector('#wzCreate').onclick=async()=>{
+      const node=newNode(wz.name,level,parentId);
+      node.metaskill.mission=bg.querySelector('#wzMission').value.trim();
+      const active=wz.roles.filter(r=>r.on);
+      const nameToId={};active.forEach(r=>{const id=uid();nameToId[r.name]=id;node.vna.roles.push({id,name:r.name});});
+      wz.exchanges.forEach(x=>{if(x.on&&nameToId[x.from]&&nameToId[x.to])node.vna.exchanges.push({id:uid(),from:nameToId[x.from],to:nameToId[x.to],kind:x.kind,label:x.label});});
+      state.nodes.push(node);await persist(node);
+      if(parentId)state.expanded.add(parentId);
+      closeModal();selectNode(node.id);
+      toast('Node "'+wz.name+'" creat amb '+node.vna.roles.length+' rols');
+    };
+  }
+  step1();
+}
+
+function renameNode(node){
+  const bg=modal(`<h2>Reanomena</h2><div class="field"><label>Nom</label><input id="rnName"></div><div class="modal-actions"><button class="btn btn-ghost" id="rnCancel">Cancel·la</button><button class="btn btn-primary" id="rnSave">Desa</button></div>`);
+  const i=bg.querySelector('#rnName');i.value=node.name;i.focus();i.select();
+  bg.querySelector('#rnCancel').onclick=closeModal;
+  const save=()=>{const v=i.value.trim();if(v){node.name=v;persist(node);}closeModal();render();};
+  bg.querySelector('#rnSave').onclick=save;i.onkeydown=e=>{if(e.key==='Enter')save();};
+}
+
+async function deleteNode(node){
+  const desc=descendants(node.id);
+  const n=desc.length;
+  if(!confirm('Eliminar "'+node.name+'"'+(n?' i els seus '+n+' sub-nodes':'')+'? Aquesta acció no es pot desfer.'))return;
+  for(const d of desc)await dbDelete(d.id);
+  await dbDelete(node.id);
+  const ids=new Set([node.id,...desc.map(d=>d.id)]);
+  state.nodes=state.nodes.filter(x=>!ids.has(x.id));
+  state.activeId=node.parentId&&byId(node.parentId)?node.parentId:(state.nodes[0]?state.nodes[0].id:null);
+  flashSync();render();toast('Node eliminat');
+}
+
+function openContactModal(){
+  const active=byId(state.activeId);
+  const subj=active?('SOS — '+LEVEL_META[active.nodeLevel].label+' '+active.name):'SOS — vull explorar el meu territori';
+  const bg=modal(`
+    <h2>Parla amb l'Álvaro</h2>
+    <p class="m-sub">Álvaro Solache · psicòleg social, Torrelles de Foix. T'ajuda a donar estructura real a la teva iniciativa comunitària. Zero fum.</p>
+    <div class="field"><label>El teu missatge</label><textarea id="ctMsg" placeholder="Explica'ns el repte del teu territori..."></textarea></div>
+    <div class="ai-note"><span class="ic">✉</span><span>En enviar, s'obrirà el teu correu amb el missatge cap a l'Álvaro. La seva adreça mai apareix en text pla a la pàgina.</span></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ctCancel">Tanca</button><button class="btn btn-primary" id="ctSend">✉ Obre el correu</button></div>
+  `);
+  const ta=bg.querySelector('#ctMsg');if(active)ta.value='Territori: '+active.name+'\n\n';ta.focus();
+  bg.querySelector('#ctCancel').onclick=closeModal;
+  bg.querySelector('#ctSend').onclick=()=>{window.location.href=mailto(subj,ta.value);closeModal();};
+}
+
+function openSettingsModal(){
+  const cnt=state.nodes.length;
+  const bg=modal(`
+    <h2>Configuració i dades</h2>
+    <p class="m-sub">Les teves dades viuen només al teu navegador (${cnt} node${cnt===1?'':'s'}). Fes còpies o trasllada-les a un altre dispositiu.</p>
+    <div class="field"><label>Territori</label>
+      <button class="btn btn-ghost btn-sm" id="stGeo">🗺 Carrega l'esquelet de Catalunya</button>
+    </div>
+    <div class="field"><label>Còpia de seguretat</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" id="stExport">⭳ Exporta tot (.json)</button>
+        <button class="btn btn-ghost btn-sm" id="stImport">⭱ Importa</button>
+      </div>
+    </div>
+    <div class="ai-note"><span class="ic">⟳</span><span><strong>Sincronització entre dispositius (properament):</strong> emparellament directe navegador-a-navegador amb WebRTC i codi QR, sense cap servidor. De moment, fes servir exportar/importar per traslladar les dades.</span></div>
+    <div class="field"><label style="color:var(--red)">Zona perillosa</label>
+      <button class="btn btn-ghost btn-sm" id="stPurge" style="border-color:var(--red-dim);color:var(--red)">Esborra totes les dades locals</button>
+    </div>
+    <div class="modal-actions"><button class="btn btn-primary" id="stClose">Fet</button></div>
+  `);
+  bg.querySelector('#stClose').onclick=closeModal;
+  bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
+  bg.querySelector('#stExport').onclick=exportData;
+  bg.querySelector('#stImport').onclick=importData;
+  bg.querySelector('#stPurge').onclick=async()=>{if(confirm('Segur? S\'esborraran TOTES les dades locals del SOS en aquest navegador.')){await dbClear();state.nodes=[];state.activeId=null;closeModal();render();toast('Dades esborrades');}};
+}
+
+function exportData(){
+  const pkg={app:'SOS',version:1,exported:now(),count:state.nodes.length,nodes:state.nodes};
+  const blob=new Blob([JSON.stringify(pkg,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sos-backup-'+now().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
+  toast('Còpia exportada');
+}
+function importData(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='application/json,.json';
+  inp.onchange=()=>{const f=inp.files[0];if(!f)return;const r=new FileReader();
+    r.onload=async()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.nodes))throw 0;
+      if(!confirm('Importar '+d.nodes.length+' nodes? Es fusionaran amb els actuals (guanya la versió més recent).'))return;
+      for(const n of d.nodes){const cur=byId(n.id);if(!cur||(n.updatedAt||'')>(cur.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);}}
+      closeModal();render();toast('Importació completada');
+    }catch(e){toast('Fitxer no vàlid');}};
+    r.readAsText(f);};
+  inp.click();
+}
+
+/* ═══════════════════ SYNC INDICATOR + TOAST ═══════════════════ */
+let _syncT;
+function flashSync(){const p=$('#syncTxt');if(!p)return;p.textContent='Desat';$('#syncPill').querySelector('.sync-dot').style.background='var(--blue)';clearTimeout(_syncT);_syncT=setTimeout(()=>{p.textContent='Local';$('#syncPill').querySelector('.sync-dot').style.background='var(--green)';},1200);}
+let _toastT;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+/* ═══════════ ESQUELET DE CATALUNYA (país + províncies + comarques) ═══════════ */
+async function loadCatalunyaSkeleton(){
+  const existing=new Map(state.nodes.map(n=>[n.nodeLevel+'|'+n.name+'|'+(n.parentId||''),n]));
+  const findByName=(level,name,parentId)=>state.nodes.find(n=>n.nodeLevel===level&&n.name===name&&(n.parentId||'')===(parentId||''));
+  let created=0;
+  const ensure=async(name,level,parentId)=>{
+    let ex=findByName(level,name,parentId);if(ex)return ex;
+    const node=newNode(name,level,parentId||null);state.nodes.push(node);await dbPut(node);created++;return node;
+  };
+  const pais=await ensure('Catalunya','pais',null);
+  for(const pr of CAT_GEO.provincia){
+    const prov=await ensure(pr.n,'provincia',pais.id);
+    state.expanded.add(prov.id);
+    for(const co of geoFor('comarca',pr.n)) await ensure(co.n,'comarca',prov.id);
+  }
+  state.expanded.add(pais.id);
+  flashSync();
+  return {created,pais};
+}
+
+/* ═══════════════════ WIRING ═══════════════════ */
+$('#obStart').onclick=()=>openCreateModal(null);
+$('#obExplore').onclick=async()=>{const r=await loadCatalunyaSkeleton();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
+$('#obContact').onclick=()=>{window.location.href=mailto('Repte comunitari — vull explorar el SOS');};
+$('#obEmailLink').onclick=e=>{e.preventDefault();window.location.href=mailto(e.target.dataset.subject);};
+$('#btnNewRoot').onclick=()=>openCreateModal(null);
+$('#btnContact').onclick=openContactModal;
+$('#btnSettings').onclick=openSettingsModal;
+$('#homeLogo').onclick=()=>{state.activeId=null;render();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* ═══════════════════ BOOT ═══════════════════ */
+(async function boot(){
+  try{await openDB();state.nodes=await dbGetAll();}catch(e){console.error('DB error',e);}
+  if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;let n=byId(state.activeId);/*expand roots*/children(null).forEach(r=>state.expanded.add(r.id));}
+  render();
+  window.__SOS={state,byId,children,descendants}; // hook per a tests
+})();
+</script>
+</body>
+</html>
