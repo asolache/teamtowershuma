@@ -90,8 +90,9 @@ a{color:var(--blue);text-decoration:none}
 .tn-caret.open{transform:rotate(90deg)}
 .tn-lvl{font-family:var(--mono);font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;padding:.12rem .35rem;border-radius:4px;flex-shrink:0}
 .lvl-pais{background:var(--indigo-dim);color:var(--indigo)}
-.lvl-comarca{background:var(--blue-dim);color:var(--blue)}
-.lvl-municipi{background:var(--green-dim);color:var(--green)}
+.lvl-provincia{background:var(--blue-dim);color:var(--blue)}
+.lvl-comarca{background:var(--green-dim);color:var(--green)}
+.lvl-municipi{background:var(--orange-dim);color:var(--orange)}
 .lvl-barri{background:var(--purple-dim);color:var(--purple)}
 .tn-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tn-add{opacity:0;font-size:1rem;color:var(--muted);width:20px;text-align:center;flex-shrink:0}
@@ -165,8 +166,10 @@ a{color:var(--blue);text-decoration:none}
 .kmini{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:5px;font-size:.72rem;padding:.15rem .4rem;line-height:1}
 .kmini:hover{border-color:var(--indigo);color:var(--white)}
 .kmini.del:hover{border-color:var(--red);color:var(--red)}
-.kadd{width:100%;background:transparent;border:1px dashed var(--border-strong);color:var(--muted);border-radius:7px;padding:.5rem;font-size:.8rem}
-.kadd:hover{border-color:var(--indigo);color:var(--light)}
+.kadd{width:100%;background:transparent;border:1px dashed var(--border-strong);color:var(--white);border-radius:7px;padding:.5rem;font-size:.8rem;font-family:var(--sans);margin-top:.15rem}
+.kadd:hover{border-color:var(--indigo)}
+.kadd::placeholder{color:var(--muted)}
+.kadd:focus{outline:none;border-color:var(--indigo);border-style:solid}
 
 /* LEDGER */
 .ledger-total{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
@@ -196,6 +199,27 @@ a{color:var(--blue);text-decoration:none}
 .modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.5rem}
 .ai-note{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:.7rem .85rem;font-size:.78rem;color:var(--light);line-height:1.5;margin-bottom:1rem;display:flex;gap:.5rem}
 .ai-note .ic{color:var(--indigo)}
+/* wizard */
+.wz-steps{display:flex;gap:.4rem;margin-bottom:1.1rem}
+.wz-step{flex:1;height:4px;border-radius:2px;background:var(--border)}
+.wz-step.on{background:var(--indigo)}
+.wz-modal{max-width:560px}
+.pick-list{display:flex;flex-direction:column;gap:.45rem;max-height:280px;overflow-y:auto;margin:-.2rem -.3rem;padding:.2rem .3rem}
+.pick{display:flex;gap:.6rem;align-items:flex-start;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.6rem .75rem;cursor:pointer;transition:border-color .12s}
+.pick:hover{border-color:var(--border-strong)}
+.pick.sel{border-color:var(--indigo);background:var(--indigo-dim)}
+.pick input{margin-top:.15rem;accent-color:var(--indigo);width:16px;height:16px;flex-shrink:0}
+.pick .pk-t{font-size:.9rem;font-weight:600;line-height:1.3}
+.pick .pk-d{font-size:.76rem;color:var(--muted);line-height:1.4;margin-top:.1rem}
+.pick .pk-badge{font-family:var(--mono);font-size:.58rem;padding:.1rem .35rem;border-radius:4px;margin-left:.4rem}
+.pk-tang{background:var(--green-dim);color:var(--green)}
+.pk-intang{background:var(--indigo-dim);color:var(--indigo)}
+.wz-sec-lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin:1.1rem 0 .5rem;display:flex;justify-content:space-between;align-items:center}
+.wz-add{display:flex;gap:.4rem;margin-top:.5rem}
+.wz-add input,.wz-add select{background:var(--bg-panel);border:1px solid var(--border);border-radius:7px;color:var(--white);padding:.5rem .6rem;font-size:.82rem;min-width:0}
+.wz-add input{flex:1}
+.wz-count{font-family:var(--mono);font-size:.66rem;color:var(--muted);font-weight:400}
+.wz-mission{background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--green);border-radius:8px;padding:.7rem .85rem;font-size:.84rem;color:var(--light);line-height:1.5;margin-top:.6rem}
 
 /* toast */
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(200%);background:var(--bg-elevated);border:1px solid var(--border-strong);border-left:3px solid var(--green);border-radius:9px;padding:.75rem 1.1rem;font-size:.85rem;z-index:300;transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:90vw}
@@ -227,6 +251,7 @@ a{color:var(--blue);text-decoration:none}
     </div>
     <div class="ob-actions">
       <button class="btn btn-primary" id="obStart">⬢ Crea la teva primera xarxa</button>
+      <button class="btn btn-ghost" id="obExplore">🗺 Explora Catalunya</button>
       <button class="btn btn-ghost" id="obContact">Parla amb l'Álvaro</button>
     </div>
     <p class="ob-contact">Tens un repte comunitari al teu territori? Escriu directament a <a href="#" id="obEmailLink" data-subject="Repte comunitari — vull explorar el SOS">l'Álvaro Solache</a> i ho valorem junts. Sense compromís.</p>
@@ -264,14 +289,102 @@ const email=()=>_U+'@'+_D;
 const mailto=(subject,body)=>'mailto:'+email()+'?subject='+encodeURIComponent(subject||'')+(body?'&body='+encodeURIComponent(body):'');
 
 /* ═══════════════════ TAXONOMIA TERRITORIAL ═══════════════════ */
-const LEVELS=['pais','comarca','municipi','barri'];
+const LEVELS=['pais','provincia','comarca','municipi','barri'];
 const LEVEL_META={
-  pais:    {label:'País',     child:'comarca',  childLabel:'comarca',  cls:'lvl-pais',     zoom:'MACRO', ph:'p.ex. Catalunya'},
-  comarca: {label:'Comarca',  child:'municipi', childLabel:'municipi', cls:'lvl-comarca',  zoom:'MACRO', ph:'p.ex. Alt Penedès'},
-  municipi:{label:'Municipi', child:'barri',    childLabel:'barri',    cls:'lvl-municipi', zoom:'MESO',  ph:'p.ex. Torrelles de Foix'},
-  barri:   {label:'Barri',    child:null,       childLabel:null,       cls:'lvl-barri',    zoom:'MICRO', ph:'p.ex. Nucli antic'}
+  pais:     {label:'País',      child:'provincia',childLabel:'província', cls:'lvl-pais',      zoom:'MACRO', ph:'p.ex. Catalunya'},
+  provincia:{label:'Província', child:'comarca',  childLabel:'comarca',   cls:'lvl-provincia', zoom:'MACRO', ph:'p.ex. Barcelona'},
+  comarca:  {label:'Comarca',   child:'municipi', childLabel:'municipi',  cls:'lvl-comarca',   zoom:'MESO',  ph:'p.ex. Alt Penedès'},
+  municipi: {label:'Municipi',  child:'barri',    childLabel:'barri',     cls:'lvl-municipi',  zoom:'MESO',  ph:'p.ex. Torrelles de Foix'},
+  barri:    {label:'Barri',     child:null,       childLabel:null,        cls:'lvl-barri',     zoom:'MICRO', ph:'p.ex. Nucli antic'}
 };
 const nextLevel=lvl=>LEVEL_META[lvl].child;
+
+/* ═══════════════════ CATÀLEG GEOGRÀFIC — CATALUNYA ═══════════════════ */
+/* Referència read-only per a l'autocompletar del wizard i l'esquelet inicial.
+   {n:nom, p:nom del pare}. */
+const CAT_GEO={
+  pais:[{n:'Catalunya'}],
+  provincia:[{n:'Barcelona',p:'Catalunya'},{n:'Girona',p:'Catalunya'},{n:'Lleida',p:'Catalunya'},{n:'Tarragona',p:'Catalunya'}],
+  comarca:[
+    // Barcelona
+    {n:'Alt Penedès',p:'Barcelona'},{n:'Anoia',p:'Barcelona'},{n:'Bages',p:'Barcelona'},{n:'Baix Llobregat',p:'Barcelona'},{n:'Barcelonès',p:'Barcelona'},{n:'Berguedà',p:'Barcelona'},{n:'Garraf',p:'Barcelona'},{n:'Maresme',p:'Barcelona'},{n:'Moianès',p:'Barcelona'},{n:'Osona',p:'Barcelona'},{n:'Vallès Occidental',p:'Barcelona'},{n:'Vallès Oriental',p:'Barcelona'},
+    // Girona
+    {n:'Alt Empordà',p:'Girona'},{n:'Baix Empordà',p:'Girona'},{n:'Cerdanya',p:'Girona'},{n:'Garrotxa',p:'Girona'},{n:'Gironès',p:'Girona'},{n:'Pla de l\'Estany',p:'Girona'},{n:'Ripollès',p:'Girona'},{n:'Selva',p:'Girona'},
+    // Lleida
+    {n:'Alt Urgell',p:'Lleida'},{n:'Alta Ribagorça',p:'Lleida'},{n:'Garrigues',p:'Lleida'},{n:'Noguera',p:'Lleida'},{n:'Pallars Jussà',p:'Lleida'},{n:'Pallars Sobirà',p:'Lleida'},{n:'Pla d\'Urgell',p:'Lleida'},{n:'Segarra',p:'Lleida'},{n:'Segrià',p:'Lleida'},{n:'Solsonès',p:'Lleida'},{n:'Urgell',p:'Lleida'},{n:'Val d\'Aran',p:'Lleida'},
+    // Tarragona
+    {n:'Alt Camp',p:'Tarragona'},{n:'Baix Camp',p:'Tarragona'},{n:'Baix Ebre',p:'Tarragona'},{n:'Baix Penedès',p:'Tarragona'},{n:'Conca de Barberà',p:'Tarragona'},{n:'Montsià',p:'Tarragona'},{n:'Priorat',p:'Tarragona'},{n:'Ribera d\'Ebre',p:'Tarragona'},{n:'Tarragonès',p:'Tarragona'},{n:'Terra Alta',p:'Tarragona'}
+  ],
+  municipi:[
+    {n:'Barcelona',p:'Barcelonès'},{n:'L\'Hospitalet de Llobregat',p:'Barcelonès'},{n:'Badalona',p:'Barcelonès'},{n:'Santa Coloma de Gramenet',p:'Barcelonès'},
+    {n:'Terrassa',p:'Vallès Occidental'},{n:'Sabadell',p:'Vallès Occidental'},{n:'Sant Cugat del Vallès',p:'Vallès Occidental'},
+    {n:'Mataró',p:'Maresme'},{n:'Cornellà de Llobregat',p:'Baix Llobregat'},
+    {n:'Lleida',p:'Segrià'},{n:'Tarragona',p:'Tarragonès'},{n:'Reus',p:'Baix Camp'},{n:'Girona',p:'Gironès'},
+    {n:'Vilafranca del Penedès',p:'Alt Penedès'},{n:'Torrelles de Foix',p:'Alt Penedès'},{n:'Vilanova i la Geltrú',p:'Garraf'},{n:'Sitges',p:'Garraf'},{n:'El Vendrell',p:'Baix Penedès'}
+  ],
+  barri:[
+    // Barcelona (districtes)
+    {n:'Ciutat Vella',p:'Barcelona'},{n:'Eixample',p:'Barcelona'},{n:'Sants-Montjuïc',p:'Barcelona'},{n:'Les Corts',p:'Barcelona'},{n:'Sarrià-Sant Gervasi',p:'Barcelona'},{n:'Gràcia',p:'Barcelona'},{n:'Horta-Guinardó',p:'Barcelona'},{n:'Nou Barris',p:'Barcelona'},{n:'Sant Andreu',p:'Barcelona'},{n:'Sant Martí',p:'Barcelona'},
+    // Girona
+    {n:'Barri Vell',p:'Girona'},{n:'Mercadal',p:'Girona'},{n:'Eixample (Girona)',p:'Girona'},{n:'Santa Eugènia',p:'Girona'},{n:'Sant Narcís',p:'Girona'},{n:'Pont Major',p:'Girona'},{n:'Montilivi',p:'Girona'},
+    // Lleida
+    {n:'Centre Històric',p:'Lleida'},{n:'Cappont',p:'Lleida'},{n:'Balàfia',p:'Lleida'},{n:'Pardinyes',p:'Lleida'},{n:'La Bordeta',p:'Lleida'},{n:'Secà de Sant Pere',p:'Lleida'},
+    // Tarragona
+    {n:'Part Alta',p:'Tarragona'},{n:'Eixample (Tarragona)',p:'Tarragona'},{n:'El Serrallo',p:'Tarragona'},{n:'Sant Pere i Sant Pau',p:'Tarragona'},{n:'Torreforta',p:'Tarragona'},{n:'Bonavista',p:'Tarragona'}
+  ]
+};
+function geoFor(level,parentName){const list=CAT_GEO[level]||[];return parentName?list.filter(x=>x.p===parentName):list;}
+
+/* ═══════════════ CONEIXEMENT PER NIVELL (psicologia comunitària + VNA) ═══════════════
+   Per nivell: rols típics, flux de valor clàssic i dolors/necessitats. Cada dolor
+   pot afegir rols i intercanvis específics. Alimenta el wizard de creació. */
+const LEVEL_KNOWLEDGE={
+  provincia:{
+    roles:['Diputació','Consells Comarcals','Ajuntaments grans','Universitats','Agents econòmics','Xarxa d\'ateneus'],
+    flows:[['Diputació','Consells Comarcals','tangible','fons i assistència'],['Consells Comarcals','Diputació','intangible','dades territorials'],['Universitats','Agents econòmics','intangible','coneixement i talent']],
+    pains:[
+      {id:'desequilibri',t:'Desequilibri territorial',d:'Àrees urbanes fortes i comarques interiors que es despoblen.',roles:['Consells Comarcals','Agents econòmics'],flows:[['Agents econòmics','Consells Comarcals','tangible','inversió']]},
+      {id:'coord-supra',t:'Coordinació supramunicipal feble',d:'Els municipis no comparteixen serveis ni estratègia.',roles:['Consells Comarcals','Ajuntaments grans'],flows:[]}
+    ]
+  },
+  comarca:{
+    roles:['Consell Comarcal','Ajuntaments','Grup d\'Acció Local','Consorcis','Federació d\'entitats','Cooperatives 2n grau','Agents econòmics'],
+    flows:[['Consell Comarcal','Ajuntaments','tangible','serveis compartits'],['Ajuntaments','Consell Comarcal','intangible','legitimitat i dades'],['Grup d\'Acció Local','Cooperatives 2n grau','tangible','fons Leader'],['Federació d\'entitats','Ajuntaments','intangible','veu col·lectiva']],
+    pains:[
+      {id:'campanarisme',t:'Campanarisme / rivalitat entre pobles',d:'Cada municipi va sol; no hi ha projectes compartits.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[['Consell Comarcal','Federació d\'entitats','intangible','confiança supramunicipal']]},
+      {id:'subvencio-dep',t:'Dependència de subvencions',d:'Projectes sense estructura pròpia sostenible.',roles:['Grup d\'Acció Local','Cooperatives 2n grau'],flows:[['Cooperatives 2n grau','Ajuntaments','tangible','serveis autofinançats']]},
+      {id:'despoblament',t:'Despoblament i envelliment rural',d:'Marxa del jovent i manca de relleu.',roles:['Grup d\'Acció Local','Agents econòmics'],flows:[]},
+      {id:'tecnic-cremat',t:'Tècnics comarcals sobrecarregats',d:'Poca gent fa de tot i es crema.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[]},
+      {id:'no-escala',t:'Pilots que no escalen',d:'El que funciona en un poble no es transfereix.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[['Federació d\'entitats','Ajuntaments','intangible','transferència de coneixement']]}
+    ]
+  },
+  municipi:{
+    roles:['Ajuntament','Entitats i associacions','Comerç local','Cooperatives','Centres educatius','CAP / salut','Veïnat','Voluntariat','Colles culturals'],
+    flows:[['Ajuntament','Entitats i associacions','tangible','equipaments i subvenció'],['Entitats i associacions','Veïnat','intangible','cohesió i identitat'],['Veïnat','Ajuntament','intangible','participació i legitimitat'],['Comerç local','Veïnat','tangible','proximitat i vida al carrer'],['Centres educatius','Veïnat','intangible','formació i xarxa de famílies']],
+    pains:[
+      {id:'participacio',t:'Participació feble o tokenística',d:'Els processos no vinculen ni arriben a la gent.',roles:['Ajuntament','Veïnat','Entitats i associacions'],flows:[['Veïnat','Ajuntament','intangible','deliberació real']]},
+      {id:'relleu',t:'Entitats envellides sense relleu',d:'2-3 persones ho sostenen tot fins que es cremen.',roles:['Entitats i associacions','Voluntariat','Colles culturals'],flows:[['Voluntariat','Entitats i associacions','intangible','relleu generacional']]},
+      {id:'jovent',t:'Desconnexió amb el jovent',d:'Els joves no troben el seu lloc al poble.',roles:['Centres educatius','Ajuntament','Colles culturals'],flows:[['Centres educatius','Ajuntament','intangible','veu jove']]},
+      {id:'nouvinguts',t:'Nouvinguts no integrats',d:'Segregació i comunitats paral·leles.',roles:['Entitats i associacions','Veïnat','Centres educatius'],flows:[]},
+      {id:'governanca',t:'Projectes ciutadans sense governança',d:'Bancs de temps, hortes o comunitats energètiques que fracassen.',roles:['Cooperatives','Voluntariat','Ajuntament'],flows:[['Cooperatives','Veïnat','tangible','servei autogestionat']]},
+      {id:'soledat',t:'Soledat i salut mental no detectades',d:'Malestar que no arriba als serveis a temps.',roles:['CAP / salut','Veïnat','Entitats i associacions'],flows:[['Veïnat','CAP / salut','intangible','detecció precoç']]},
+      {id:'comerc',t:'Comerç local en declivi',d:'Grans superfícies i online buiden el carrer.',roles:['Comerç local','Ajuntament'],flows:[]}
+    ]
+  },
+  barri:{
+    roles:['Associació de veïns','Veïnat','Comerç de proximitat','Escola / AMPA','Centre cívic','Grups de cura','Gent gran','Jovent'],
+    flows:[['Veïnat','Veïnat','intangible','cura, favors i informació'],['Associació de veïns','Veïnat','intangible','activitats i reivindicació'],['Veïnat','Associació de veïns','tangible','quotes i participació'],['Comerç de proximitat','Veïnat','intangible','punt de trobada i confiança'],['Escola / AMPA','Veïnat','intangible','xarxa de famílies']],
+    pains:[
+      {id:'aillament',t:'Aïllament i soledat no volguda',d:'Gent gran sola, sense xarxa quotidiana.',roles:['Gent gran','Grups de cura','Veïnat'],flows:[['Grups de cura','Gent gran','intangible','acompanyament']]},
+      {id:'convivencia',t:'Conflictes de convivència',d:'Soroll, usos de l\'espai, incivisme.',roles:['Associació de veïns','Veïnat','Centre cívic'],flows:[['Centre cívic','Veïnat','intangible','mediació i trobada']]},
+      {id:'gentrificacio',t:'Gentrificació i pèrdua d\'identitat',d:'Expulsió de veïnat i comerç de tota la vida.',roles:['Associació de veïns','Comerç de proximitat','Veïnat'],flows:[]},
+      {id:'espais',t:'Manca d\'espais i temps de trobada',d:'No hi ha on ni quan trobar-se.',roles:['Centre cívic','Associació de veïns','Escola / AMPA'],flows:[['Centre cívic','Veïnat','tangible','espai obert']]},
+      {id:'bretxa',t:'Bretxa digital',d:'Gent gran fora dels grups on passa tot.',roles:['Gent gran','Jovent','Centre cívic'],flows:[['Jovent','Gent gran','intangible','acompanyament digital']]},
+      {id:'cures',t:'Sobrecàrrega i invisibilitat de les cures',d:'Recau en poques persones, sovint dones.',roles:['Grups de cura','Veïnat','Gent gran'],flows:[['Veïnat','Grups de cura','intangible','reconeixement i relleu']]}
+    ]
+  }
+};
+const knowFor=level=>LEVEL_KNOWLEDGE[level]||{roles:[],flows:[],pains:[]};
 
 /* ═══════════════════ INDEXEDDB (local-first) ═══════════════════ */
 const DB_NAME='SOS_MVP', DB_VER=1, STORE='nodes';
@@ -502,6 +615,7 @@ function buildHealth(node){
 
 /* ─── KANBAN ─── */
 const KCOLS=[['todo','Per fer'],['doing','Fent'],['done','Fet']];
+let _kFocus=null; // columna que ha de recuperar el focus de l'input després de re-render
 function renderKanban(body,node){
   const k=el('div','kanban');
   KCOLS.forEach(([col,lbl],ci)=>{
@@ -510,18 +624,28 @@ function renderKanban(body,node){
     const head=el('div','kcol-head');head.innerHTML='<span>'+lbl+'</span><span>'+cards.length+'</span>';cont.appendChild(head);
     cards.forEach(c=>{
       const card=el('div','kcard');
-      card.appendChild(el('div','kc-txt',esc(c.text)));
+      const txt=el('div','kc-txt',esc(c.text));txt.title='Doble clic per editar';
+      txt.ondblclick=()=>{txt.contentEditable='true';txt.focus();document.getSelection().selectAllChildren(txt);};
+      txt.onblur=()=>{txt.contentEditable='false';const v=txt.textContent.trim();if(v&&v!==c.text){c.text=v;persist(node);}else txt.textContent=c.text;};
+      txt.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();txt.blur();}if(e.key==='Escape'){txt.textContent=c.text;txt.blur();}};
+      card.appendChild(txt);
       const a=el('div','kc-actions');
       if(ci>0){const b=el('button','kmini','‹');b.title='Enrere';b.onclick=()=>{c.col=KCOLS[ci-1][0];persist(node);renderWorkspace();};a.appendChild(b);}
       if(ci<2){const b=el('button','kmini','›');b.title='Avança';b.onclick=()=>{c.col=KCOLS[ci+1][0];persist(node);renderWorkspace();};a.appendChild(b);}
       const d=el('button','kmini del','×');d.onclick=()=>{node.kanban.cards=node.kanban.cards.filter(x=>x.id!==c.id);persist(node);renderWorkspace();};a.appendChild(d);
       card.appendChild(a);cont.appendChild(card);
     });
-    const add=el('button','kadd','+ Nova tasca');
-    add.onclick=()=>{const t=prompt('Nova tasca a "'+lbl+'":');if(t&&t.trim()){node.kanban.cards.push({id:uid(),text:t.trim(),col});persist(node);renderWorkspace();}};
-    cont.appendChild(add);
+    // alta inline sempre visible (àgil, sense diàlegs del navegador)
+    const addInp=el('input','kadd');addInp.placeholder='+ Nova tasca…';addInp.maxLength=120;
+    addInp.onkeydown=e=>{
+      if(e.key==='Enter'){const v=addInp.value.trim();if(v){node.kanban.cards.push({id:uid(),text:v,col});_kFocus=col;persist(node);renderWorkspace();}}
+      if(e.key==='Escape'){addInp.value='';addInp.blur();}
+    };
+    cont.appendChild(addInp);
     k.appendChild(cont);
+    if(_kFocus===col){setTimeout(()=>addInp.focus(),0);}
   });
+  _kFocus=null;
   body.appendChild(k);
 }
 
@@ -563,51 +687,137 @@ function renderLedger(body,node){
 function closeModal(){$('#modalRoot').innerHTML='';}
 function modal(html){const bg=el('div','modal-bg');bg.innerHTML='<div class="modal">'+html+'</div>';bg.onclick=e=>{if(e.target===bg)closeModal();};$('#modalRoot').innerHTML='';$('#modalRoot').appendChild(bg);return bg;}
 
+// Motor de suggeriment determinista: coneixement del nivell + dolors triats + biaix pel prompt lliure
+function suggestMap(level,selectedPainIds,promptText){
+  const k=knowFor(level);
+  const roleSet=new Set(k.roles);
+  const flows=k.flows.map(f=>f.slice());
+  const addPain=p=>{(p.roles||[]).forEach(r=>roleSet.add(r));(p.flows||[]).forEach(f=>flows.push(f.slice()));};
+  k.pains.forEach(p=>{if(selectedPainIds.has(p.id))addPain(p);});
+  // biaix pel prompt: si el text menciona el títol/descr d'un dolor no triat, incorpora'l
+  const txt=(promptText||'').toLowerCase();
+  if(txt.length>3)k.pains.forEach(p=>{if(!selectedPainIds.has(p.id)){const kw=(p.t+' '+p.d).toLowerCase().split(/[\s,\/·.]+/).filter(w=>w.length>4);if(kw.some(w=>txt.includes(w)))addPain(p);}});
+  const roles=[...roleSet];
+  // deduplica flujos i conserva només els que tenen els dos extrems
+  const seen=new Set(),outFlows=[];
+  flows.forEach(([a,b,kind,label])=>{if(!roleSet.has(a)||!roleSet.has(b))return;const key=a+'>'+b+'>'+(label||'');if(seen.has(key))return;seen.add(key);outFlows.push({from:a,to:b,kind:kind||'tangible',label:label||''});});
+  return {roles,flows:outFlows};
+}
+function draftMission(name,level,selectedPainIds){
+  const k=knowFor(level);const picked=k.pains.filter(p=>selectedPainIds.has(p.id));
+  if(!picked.length)return '';
+  const list=picked.map(p=>p.t.toLowerCase()).join(', ');
+  return 'Enfortir la xarxa de valor de '+name+' abordant: '+list+'.';
+}
+
 function openCreateModal(parentId){
   const level=parentId?nextLevel(byId(parentId).nodeLevel):'pais';
   const meta=LEVEL_META[level];
   const parentName=parentId?byId(parentId).name:null;
-  const bg=modal(`
-    <h2>Nou ${meta.label.toLowerCase()}</h2>
-    <p class="m-sub">${parentName?'Dins de <strong>'+esc(parentName)+'</strong>. ':''}El nivell queda fixat pel context.</p>
-    <div class="ai-note"><span class="ic">✦</span><span>En crear el node, sembrarem el seu mapa de valor amb la metodologia VNA (Verna Allee) a nivell <strong>${meta.zoom}</strong>: rols, intercanvis tangibles i intangibles, i indicadors de salut. Podràs editar-ho tot.</span></div>
-    <div class="field"><label>Nom del ${meta.label.toLowerCase()}</label><input id="ncName" placeholder="${meta.ph}" autocomplete="off"></div>
-    <div class="field"><label>Missió (opcional)</label><textarea id="ncMission" placeholder="Per a què existeix aquesta xarxa de valor?"></textarea></div>
-    <div class="modal-actions"><button class="btn btn-ghost" id="ncCancel">Cancel·la</button><button class="btn btn-primary" id="ncCreate">⬢ Crea el node</button></div>
-  `);
-  const nm=bg.querySelector('#ncName');nm.focus();
-  bg.querySelector('#ncCancel').onclick=closeModal;
-  const create=async()=>{
-    const name=nm.value.trim();if(!name){nm.focus();return;}
-    const node=newNode(name,level,parentId);
-    node.metaskill.mission=bg.querySelector('#ncMission').value.trim();
-    seedVNA(node); // sembra inicial coherent amb VNA
-    state.nodes.push(node);await persist(node);
-    if(parentId)state.expanded.add(parentId);
-    closeModal();selectNode(node.id);
-    toast('Node "'+name+'" creat amb el seu mapa de valor');
-  };
-  bg.querySelector('#ncCreate').onclick=create;
-  nm.onkeydown=e=>{if(e.key==='Enter')create();};
-}
+  const k=knowFor(level);
+  // estat del wizard
+  const wz={name:'',prompt:'',pains:new Set(),roles:[],exchanges:[],mission:''};
 
-// Sembra un mapa VNA inicial mínim segons el nivell (acció-formació: punt de partida, editable)
-function seedVNA(node){
-  const seeds={
-    pais:['Generalitat','Consells Comarcals','Xarxa d\'ateneus','Cooperatives'],
-    comarca:['Consell Comarcal','Ajuntaments','Ateneus','Cooperatives','Comerç local'],
-    municipi:['Ajuntament','Entitats','Veïns i veïnes','Comerços','Voluntariat'],
-    barri:['Associació de veïns','Veïns i veïnes','Comerços','Voluntariat']
-  };
-  const names=seeds[node.nodeLevel]||[];
-  node.vna.roles=names.map(n=>({id:uid(),name:n}));
-  // intercanvis d'exemple: cadena tangible + un intangible de confiança
-  const r=node.vna.roles;
-  if(r.length>=2){
-    node.vna.exchanges.push({id:uid(),from:r[0].id,to:r[1].id,kind:'tangible',label:'recursos'});
-    node.vna.exchanges.push({id:uid(),from:r[1].id,to:r[0].id,kind:'intangible',label:'confiança'});
+  function step1(){
+    const opts=geoFor(level,parentName).map(g=>'<option value="'+esc(g.n)+'">').join('');
+    const painsHtml=k.pains.length?k.pains.map(p=>`
+      <label class="pick${wz.pains.has(p.id)?' sel':''}" data-pain="${p.id}">
+        <input type="checkbox" ${wz.pains.has(p.id)?'checked':''}>
+        <span><span class="pk-t">${esc(p.t)}</span><br><span class="pk-d">${esc(p.d)}</span></span>
+      </label>`).join(''):'<p class="m-sub">Per a aquest nivell no hi ha reptes predefinits; passa al mapa.</p>';
+    const bg=modal(`
+      <div class="wz-steps"><div class="wz-step on"></div><div class="wz-step"></div></div>
+      <h2>Nou ${meta.label.toLowerCase()}</h2>
+      <p class="m-sub">${parentName?'Dins de <strong>'+esc(parentName)+'</strong>. ':''}Nivell fixat pel context · zoom <strong>${meta.zoom}</strong>.</p>
+      <div class="field"><label>Nom del ${meta.label.toLowerCase()}</label>
+        <input id="wzName" list="wzGeo" placeholder="${meta.ph}" autocomplete="off" value="${esc(wz.name)}">
+        <datalist id="wzGeo">${opts}</datalist></div>
+      <div class="field"><label>Descriu la teva comunitat (opcional)</label>
+        <textarea id="wzPrompt" placeholder="Una frase sobre el territori i el seu moment. Afinarà els suggeriments.">${esc(wz.prompt)}</textarea></div>
+      <div class="wz-sec-lbl">Quins reptes ressonen al teu territori?<span class="wz-count" id="wzPCount"></span></div>
+      <div class="pick-list">${painsHtml}</div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="wzCancel">Cancel·la</button><button class="btn btn-primary" id="wzNext">Continua → mapa suggerit</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    const nm=bg.querySelector('#wzName');nm.focus();
+    const upCount=()=>{bg.querySelector('#wzPCount').textContent=wz.pains.size?wz.pains.size+' triats':'';};upCount();
+    bg.querySelectorAll('.pick[data-pain]').forEach(row=>{row.addEventListener('click',e=>{
+      if(e.target.tagName!=='INPUT')e.preventDefault();
+      const id=row.dataset.pain,cb=row.querySelector('input');const on=!wz.pains.has(id);
+      if(on)wz.pains.add(id);else wz.pains.delete(id);cb.checked=on;row.classList.toggle('sel',on);upCount();
+    });});
+    bg.querySelector('#wzCancel').onclick=closeModal;
+    bg.querySelector('#wzNext').onclick=()=>{
+      wz.name=nm.value.trim();wz.prompt=bg.querySelector('#wzPrompt').value.trim();
+      if(!wz.name){nm.focus();return;}
+      const sug=suggestMap(level,wz.pains,wz.prompt);
+      wz.roles=sug.roles.map(n=>({name:n,on:true}));
+      wz.exchanges=sug.flows.map(f=>({from:f.from,to:f.to,kind:f.kind,label:f.label,on:true}));
+      wz.mission=draftMission(wz.name,level,wz.pains);
+      step2();
+    };
+    nm.onkeydown=e=>{if(e.key==='Enter')bg.querySelector('#wzNext').click();};
   }
-  if(r.length>=3)node.vna.exchanges.push({id:uid(),from:r[2].id,to:r[1].id,kind:'intangible',label:'coneixement'});
+
+  function step2(){
+    const bg=modal(`
+      <div class="wz-steps"><div class="wz-step on"></div><div class="wz-step on"></div></div>
+      <h2>Mapa de valor suggerit</h2>
+      <p class="m-sub">Basat en la metodologia VNA (Verna Allee) i els reptes triats. <strong>Desmarca el que no vulguis i afegeix el teu.</strong></p>
+      <div class="field"><label>Missió</label><textarea id="wzMission" placeholder="Per a què existeix aquesta xarxa de valor?">${esc(wz.mission)}</textarea>
+        ${wz.mission?'<div class="wz-mission">✦ Esborrany generat a partir dels reptes triats. Edita\'l lliurement.</div>':''}</div>
+      <div class="wz-sec-lbl">Rols / actors<span class="wz-count" id="wzRC"></span></div>
+      <div class="pick-list" id="wzRoles"></div>
+      <div class="wz-add"><input id="wzNewRole" placeholder="Afegeix un rol propi" maxlength="40"><button class="btn btn-ghost btn-sm" id="wzAddRole">+</button></div>
+      <div class="wz-sec-lbl">Intercanvis de valor<span class="wz-count" id="wzEC"></span></div>
+      <div class="pick-list" id="wzExch"></div>
+      <div id="wzExchAdd"></div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="wzBack">← Enrere</button><button class="btn btn-primary" id="wzCreate">⬢ Crea el node</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    const roleNames=()=>wz.roles.filter(r=>r.on).map(r=>r.name);
+    function paintRoles(){
+      const c=bg.querySelector('#wzRoles');c.innerHTML='';
+      wz.roles.forEach((r,i)=>{const row=el('label','pick'+(r.on?' sel':''));
+        row.innerHTML='<input type="checkbox" '+(r.on?'checked':'')+'><span class="pk-t">'+esc(r.name)+'</span>';
+        row.querySelector('input').onchange=e=>{r.on=e.target.checked;row.classList.toggle('sel',r.on);updCounts();paintExch();};
+        c.appendChild(row);});
+    }
+    function paintExch(){
+      const c=bg.querySelector('#wzExch');c.innerHTML='';
+      const valid=new Set(roleNames());
+      wz.exchanges.forEach(x=>{
+        const ok=valid.has(x.from)&&valid.has(x.to);
+        const row=el('label','pick'+(x.on&&ok?' sel':''));row.style.opacity=ok?'1':'.4';
+        row.innerHTML='<input type="checkbox" '+(x.on&&ok?'checked':'')+(ok?'':' disabled')+'><span><span class="pk-t">'+esc(x.from)+' → '+esc(x.to)+'</span><span class="pk-badge '+(x.kind==='tangible'?'pk-tang':'pk-intang')+'">'+(x.kind==='tangible'?'tangible':'intangible')+'</span>'+(x.label?'<span class="pk-d">'+esc(x.label)+'</span>':'')+'</span>';
+        const cb=row.querySelector('input');if(cb&&!cb.disabled)cb.onchange=e=>{x.on=e.target.checked;row.classList.toggle('sel',x.on);updCounts();};
+        c.appendChild(row);});
+      // add-exchange form
+      const names=roleNames();const add=bg.querySelector('#wzExchAdd');
+      if(names.length>=2){
+        add.innerHTML='<div class="wz-add"><select id="wzEf">'+names.map(n=>'<option>'+esc(n)+'</option>').join('')+'</select><select id="wzEt">'+names.map(n=>'<option>'+esc(n)+'</option>').join('')+'</select><select id="wzEk"><option value="tangible">tangible</option><option value="intangible">intangible</option></select></div><div class="wz-add"><input id="wzEl" placeholder="Què flueix? (opcional)" maxlength="40"><button class="btn btn-ghost btn-sm" id="wzEadd">+ intercanvi</button></div>';
+        if(names[1])add.querySelector('#wzEt').selectedIndex=1;
+        add.querySelector('#wzEadd').onclick=()=>{const f=add.querySelector('#wzEf').value,t=add.querySelector('#wzEt').value;if(f===t){toast('Tria dos rols diferents');return;}wz.exchanges.push({from:f,to:t,kind:add.querySelector('#wzEk').value,label:add.querySelector('#wzEl').value.trim(),on:true});paintExch();updCounts();};
+      } else add.innerHTML='';
+    }
+    function updCounts(){bg.querySelector('#wzRC').textContent=roleNames().length+' actius';const ne=wz.exchanges.filter(x=>x.on&&roleNames().includes(x.from)&&roleNames().includes(x.to)).length;bg.querySelector('#wzEC').textContent=ne+' actius';}
+    paintRoles();paintExch();updCounts();
+    bg.querySelector('#wzAddRole').onclick=()=>{const i=bg.querySelector('#wzNewRole');const v=i.value.trim();if(!v)return;if(wz.roles.some(r=>r.name.toLowerCase()===v.toLowerCase())){toast('Ja existeix');return;}wz.roles.push({name:v,on:true});i.value='';paintRoles();paintExch();updCounts();};
+    bg.querySelector('#wzNewRole').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();bg.querySelector('#wzAddRole').click();}};
+    bg.querySelector('#wzBack').onclick=step1;
+    bg.querySelector('#wzCreate').onclick=async()=>{
+      const node=newNode(wz.name,level,parentId);
+      node.metaskill.mission=bg.querySelector('#wzMission').value.trim();
+      const active=wz.roles.filter(r=>r.on);
+      const nameToId={};active.forEach(r=>{const id=uid();nameToId[r.name]=id;node.vna.roles.push({id,name:r.name});});
+      wz.exchanges.forEach(x=>{if(x.on&&nameToId[x.from]&&nameToId[x.to])node.vna.exchanges.push({id:uid(),from:nameToId[x.from],to:nameToId[x.to],kind:x.kind,label:x.label});});
+      state.nodes.push(node);await persist(node);
+      if(parentId)state.expanded.add(parentId);
+      closeModal();selectNode(node.id);
+      toast('Node "'+wz.name+'" creat amb '+node.vna.roles.length+' rols');
+    };
+  }
+  step1();
 }
 
 function renameNode(node){
@@ -650,6 +860,9 @@ function openSettingsModal(){
   const bg=modal(`
     <h2>Configuració i dades</h2>
     <p class="m-sub">Les teves dades viuen només al teu navegador (${cnt} node${cnt===1?'':'s'}). Fes còpies o trasllada-les a un altre dispositiu.</p>
+    <div class="field"><label>Territori</label>
+      <button class="btn btn-ghost btn-sm" id="stGeo">🗺 Carrega l'esquelet de Catalunya</button>
+    </div>
     <div class="field"><label>Còpia de seguretat</label>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         <button class="btn btn-ghost btn-sm" id="stExport">⭳ Exporta tot (.json)</button>
@@ -663,6 +876,7 @@ function openSettingsModal(){
     <div class="modal-actions"><button class="btn btn-primary" id="stClose">Fet</button></div>
   `);
   bg.querySelector('#stClose').onclick=closeModal;
+  bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
   bg.querySelector('#stExport').onclick=exportData;
   bg.querySelector('#stImport').onclick=importData;
   bg.querySelector('#stPurge').onclick=async()=>{if(confirm('Segur? S\'esborraran TOTES les dades locals del SOS en aquest navegador.')){await dbClear();state.nodes=[];state.activeId=null;closeModal();render();toast('Dades esborrades');}};
@@ -692,8 +906,29 @@ function flashSync(){const p=$('#syncTxt');if(!p)return;p.textContent='Desat';$(
 let _toastT;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(()=>t.classList.remove('show'),2600);}
 
+/* ═══════════ ESQUELET DE CATALUNYA (país + províncies + comarques) ═══════════ */
+async function loadCatalunyaSkeleton(){
+  const existing=new Map(state.nodes.map(n=>[n.nodeLevel+'|'+n.name+'|'+(n.parentId||''),n]));
+  const findByName=(level,name,parentId)=>state.nodes.find(n=>n.nodeLevel===level&&n.name===name&&(n.parentId||'')===(parentId||''));
+  let created=0;
+  const ensure=async(name,level,parentId)=>{
+    let ex=findByName(level,name,parentId);if(ex)return ex;
+    const node=newNode(name,level,parentId||null);state.nodes.push(node);await dbPut(node);created++;return node;
+  };
+  const pais=await ensure('Catalunya','pais',null);
+  for(const pr of CAT_GEO.provincia){
+    const prov=await ensure(pr.n,'provincia',pais.id);
+    state.expanded.add(prov.id);
+    for(const co of geoFor('comarca',pr.n)) await ensure(co.n,'comarca',prov.id);
+  }
+  state.expanded.add(pais.id);
+  flashSync();
+  return {created,pais};
+}
+
 /* ═══════════════════ WIRING ═══════════════════ */
 $('#obStart').onclick=()=>openCreateModal(null);
+$('#obExplore').onclick=async()=>{const r=await loadCatalunyaSkeleton();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
 $('#obContact').onclick=()=>{window.location.href=mailto('Repte comunitari — vull explorar el SOS');};
 $('#obEmailLink').onclick=e=>{e.preventDefault();window.location.href=mailto(e.target.dataset.subject);};
 $('#btnNewRoot').onclick=()=>openCreateModal(null);
