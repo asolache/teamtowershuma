@@ -220,6 +220,8 @@ a{color:var(--blue);text-decoration:none}
 .wz-add input{flex:1}
 .wz-count{font-family:var(--mono);font-size:.66rem;color:var(--muted);font-weight:400}
 .wz-mission{background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--green);border-radius:8px;padding:.7rem .85rem;font-size:.84rem;color:var(--light);line-height:1.5;margin-top:.6rem}
+.le-type.sel{border-color:var(--indigo)!important;color:var(--white);background:var(--indigo-dim)}
+.kc-badge{font-family:var(--mono);font-size:.58rem;color:var(--green);border:1px solid var(--green-dim);border-radius:4px;padding:.05rem .3rem;margin-right:auto}
 
 /* toast */
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(200%);background:var(--bg-elevated);border:1px solid var(--border-strong);border-left:3px solid var(--green);border-radius:9px;padding:.75rem 1.1rem;font-size:.85rem;z-index:300;transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:90vw}
@@ -250,7 +252,7 @@ a{color:var(--blue);text-decoration:none}
       <div class="ob-chip c3"><div class="lbl">Sostenibilitat</div><div class="nm">SOS</div><div class="ds">Autogestió justa i transparent</div></div>
     </div>
     <div class="ob-actions">
-      <button class="btn btn-primary" id="obStart">⬢ Crea la teva primera xarxa</button>
+      <button class="btn btn-primary" id="obLocate">📍 Ubica el teu projecte</button>
       <button class="btn btn-ghost" id="obExplore">🗺 Explora Catalunya</button>
       <button class="btn btn-ghost" id="obContact">Parla amb l'Álvaro</button>
     </div>
@@ -272,7 +274,7 @@ a{color:var(--blue);text-decoration:none}
   </div>
   <div class="shell">
     <aside class="tree">
-      <div class="tree-head"><span>Territoris</span><button class="btn-icon" id="btnNewRoot" title="Nou país / territori arrel" style="width:26px;height:26px;font-size:.9rem">+</button></div>
+      <div class="tree-head"><span>Territoris</span><span style="display:flex;gap:.3rem"><button class="btn-icon" id="btnLocate" title="Ubica un projecte (extrapola la jerarquia)" style="width:26px;height:26px;font-size:.9rem">📍</button><button class="btn-icon" id="btnNewRoot" title="Nou país / territori arrel" style="width:26px;height:26px;font-size:.9rem">+</button></span></div>
       <div id="treeList"></div>
     </aside>
     <main class="workspace" id="workspace"></main>
@@ -630,6 +632,11 @@ function renderKanban(body,node){
       txt.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();txt.blur();}if(e.key==='Escape'){txt.textContent=c.text;txt.blur();}};
       card.appendChild(txt);
       const a=el('div','kc-actions');
+      // tasca tancada (Fet) → passa a comptes (Proof of Work → valor)
+      if(col==='done'){
+        if(c.accounted&&node.ledger.some(e=>e.id===c.accounted)){a.appendChild(el('span','kc-badge','✓ als comptes'));}
+        else{const cb=el('button','kmini','€ Comptabilitza');cb.style.marginRight='auto';cb.title='Passa aquesta tasca a la comptabilitat de valor';cb.onclick=()=>openLedgerEntryModal(node,{what:c.text},c);a.appendChild(cb);}
+      }
       if(ci>0){const b=el('button','kmini','‹');b.title='Enrere';b.onclick=()=>{c.col=KCOLS[ci-1][0];persist(node);renderWorkspace();};a.appendChild(b);}
       if(ci<2){const b=el('button','kmini','›');b.title='Avança';b.onclick=()=>{c.col=KCOLS[ci+1][0];persist(node);renderWorkspace();};a.appendChild(b);}
       const d=el('button','kmini del','×');d.onclick=()=>{node.kanban.cards=node.kanban.cards.filter(x=>x.id!==c.id);persist(node);renderWorkspace();};a.appendChild(d);
@@ -650,37 +657,72 @@ function renderKanban(body,node){
 }
 
 /* ─── LEDGER ─── */
+const entryUnit=e=>e.type==='moneda'?'€':'h';
 function renderLedger(body,node){
-  const total=node.ledger.reduce((s,e)=>s+(Number(e.value)||0),0);
-  const tot=el('div','ledger-total');
-  const c1=el('div','lt-card');c1.innerHTML='<div class="v">'+total.toFixed(1)+'</div><div class="l">Valor total aportat</div>';tot.appendChild(c1);
+  const hores=node.ledger.filter(e=>e.type!=='moneda').reduce((s,e)=>s+(Number(e.value)||0),0);
+  const moneda=node.ledger.filter(e=>e.type==='moneda').reduce((s,e)=>s+(Number(e.value)||0),0);
   const contribs=new Set(node.ledger.map(e=>e.who)).size;
-  const c2=el('div','lt-card');c2.style.borderTopColor='var(--indigo)';c2.innerHTML='<div class="v">'+contribs+'</div><div class="l">Persones aportant</div>';tot.appendChild(c2);
+  const tot=el('div','ledger-total');
+  const c1=el('div','lt-card');c1.innerHTML='<div class="v">'+hores.toFixed(1)+'<span style="font-size:1rem"> h</span></div><div class="l">Temps aportat</div>';tot.appendChild(c1);
+  const c2=el('div','lt-card');c2.style.borderTopColor='var(--orange)';c2.innerHTML='<div class="v">'+moneda.toFixed(0)+'<span style="font-size:1rem"> €</span></div><div class="l">Valor monetari</div>';tot.appendChild(c2);
+  const c3=el('div','lt-card');c3.style.borderTopColor='var(--indigo)';c3.innerHTML='<div class="v">'+contribs+'</div><div class="l">Persones aportant</div>';tot.appendChild(c3);
   body.appendChild(tot);
 
-  const form=el('div','ledger-form');
-  const who=el('input');who.placeholder='Qui';who.maxLength=30;
-  const what=el('input');what.placeholder='Què aporta';what.maxLength=60;
-  const val=el('input');val.type='number';val.placeholder='Valor';val.min='0';val.step='0.5';
-  const add=el('button','btn btn-primary btn-sm','+');
-  const doAdd=()=>{if(!who.value.trim()||!what.value.trim()){toast('Omple qui i què');return;}node.ledger.unshift({id:uid(),who:who.value.trim(),what:what.value.trim(),value:Number(val.value)||0,ts:now()});persist(node);renderWorkspace();};
-  add.onclick=doAdd;[who,what,val].forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')doAdd();});
-  form.appendChild(who);form.appendChild(what);form.appendChild(val);form.appendChild(add);
-  body.appendChild(form);
+  const addBtn=el('button','btn btn-primary btn-sm','+ Registra una aportació');addBtn.style.marginBottom='1.25rem';
+  addBtn.onclick=()=>openLedgerEntryModal(node);
+  body.appendChild(addBtn);
 
-  if(node.ledger.length===0){body.appendChild(el('div','empty-hint','Encara no hi ha aportacions registrades. Registra qui aporta què perquè la comunitat ho vegi de manera justa i transparent.'));return;}
+  if(node.ledger.length===0){body.appendChild(el('div','empty-hint','Encara no hi ha aportacions registrades. Tanca tasques al Tauler i passa-les aquí (Proof of Work → valor), o registra-les directament.'));return;}
   const tbl=el('table','ledger-table');
-  tbl.innerHTML='<thead><tr><th>Qui</th><th>Aportació</th><th style="text-align:right">Valor</th><th></th></tr></thead>';
+  tbl.innerHTML='<thead><tr><th>Qui</th><th>Concepte / entregables</th><th style="text-align:right">Valor</th><th></th></tr></thead>';
   const tb=el('tbody');
   node.ledger.forEach(e=>{
     const tr=el('tr');
     tr.appendChild(el('td',null,esc(e.who)));
-    tr.appendChild(el('td',null,esc(e.what)));
-    tr.appendChild(el('td','num',(Number(e.value)||0).toFixed(1)));
-    const td=el('td');const d=el('span','del','×');d.onclick=()=>{node.ledger=node.ledger.filter(x=>x.id!==e.id);persist(node);renderWorkspace();};td.appendChild(d);tr.appendChild(td);
+    const cell=el('td',null,esc(e.what)+(e.deliverables?'<br><span style="font-size:.72rem;color:var(--muted)">⬢ '+esc(e.deliverables)+'</span>':'')+(e.cardId?' <span style="font-size:.6rem;font-family:var(--mono);color:var(--green)">·tauler</span>':''));
+    tr.appendChild(cell);
+    const nc=el('td','num',(Number(e.value)||0).toFixed(1)+' '+entryUnit(e));nc.style.color=e.type==='moneda'?'var(--orange)':'var(--green)';tr.appendChild(nc);
+    const td=el('td');const d=el('span','del','×');d.onclick=()=>{node.ledger=node.ledger.filter(x=>x.id!==e.id);
+      // si venia d'una targeta, desmarca-la
+      if(e.cardId){const c=node.kanban.cards.find(x=>x.id===e.cardId);if(c)delete c.accounted;}
+      persist(node);renderWorkspace();};td.appendChild(d);tr.appendChild(td);
     tb.appendChild(tr);
   });
   tbl.appendChild(tb);body.appendChild(tbl);
+}
+
+// Modal ric de registre d'aportació (compartit: alta manual + tancament de tasca del Tauler)
+function openLedgerEntryModal(node,prefill,card){
+  prefill=prefill||{};
+  const bg=modal(`
+    <h2>${card?'Tanca la tasca als comptes':'Nova aportació de valor'}</h2>
+    <p class="m-sub">${card?'Proof of Work: registra qui ho ha fet i el valor aportat.':'Registra una contribució a la xarxa de valor.'}</p>
+    <div class="field"><label>Qui ho ha aportat</label><input id="leWho" placeholder="Nom o rol" maxlength="40" value="${esc(prefill.who||'')}"></div>
+    <div class="field"><label>Concepte</label><input id="leWhat" placeholder="Què s'ha fet" maxlength="80" value="${esc(prefill.what||'')}"></div>
+    <div class="field"><label>Entregables (Proof of Work, opcional)</label><input id="leDeliv" placeholder="Acta, disseny, hores de taller…" maxlength="80" value="${esc(prefill.deliverables||'')}"></div>
+    <div class="field"><label>Tipus de valor</label>
+      <div style="display:flex;gap:.5rem">
+        <button type="button" class="btn btn-ghost btn-sm le-type sel" data-type="temps" style="flex:1">⏱ Temps (hores)</button>
+        <button type="button" class="btn btn-ghost btn-sm le-type" data-type="moneda" style="flex:1">€ Moneda</button>
+      </div></div>
+    <div class="field"><label id="leValLbl">Hores</label><input id="leVal" type="number" min="0" step="0.5" placeholder="0"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="leCancel">Cancel·la</button><button class="btn btn-primary" id="leSave">⬢ Registra</button></div>
+  `);
+  let type='temps';
+  bg.querySelectorAll('.le-type').forEach(b=>b.onclick=()=>{type=b.dataset.type;bg.querySelectorAll('.le-type').forEach(x=>x.classList.toggle('sel',x===b));bg.querySelector('#leValLbl').textContent=type==='moneda'?'Euros (€)':'Hores';});
+  bg.querySelectorAll('.le-type').forEach(b=>{if(b.dataset.type==='temps')b.style.borderColor='var(--indigo)';});
+  const who=bg.querySelector('#leWho');who.focus();
+  bg.querySelector('#leCancel').onclick=closeModal;
+  bg.querySelector('#leSave').onclick=async()=>{
+    const w=who.value.trim(),what=bg.querySelector('#leWhat').value.trim();
+    if(!w||!what){toast('Omple qui i concepte');return;}
+    const entry={id:uid(),who:w,what,deliverables:bg.querySelector('#leDeliv').value.trim(),type,value:Number(bg.querySelector('#leVal').value)||0,ts:now()};
+    if(card){entry.cardId=card.id;card.accounted=entry.id;}
+    node.ledger.unshift(entry);await persist(node);
+    closeModal();
+    if(card){state.tab='kanban';}else{state.tab='ledger';}
+    renderWorkspace();toast('Aportació registrada');
+  };
 }
 
 /* ═══════════════════ MODALS ═══════════════════ */
@@ -906,28 +948,115 @@ function flashSync(){const p=$('#syncTxt');if(!p)return;p.textContent='Desat';$(
 let _toastT;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(()=>t.classList.remove('show'),2600);}
 
+/* ═══════════ CREACIÓ DE NODES GEOGRÀFICS (compartit) ═══════════ */
+let _ensureCreated=0;
+async function ensureNode(name,level,parentId){
+  const ex=state.nodes.find(n=>n.nodeLevel===level&&n.name===name&&(n.parentId||'')===(parentId||''));
+  if(ex)return ex;
+  const node=newNode(name,level,parentId||null);state.nodes.push(node);await dbPut(node);_ensureCreated++;return node;
+}
+// Omple el mapa VNA d'un node amb la suggerència determinista per defecte del seu nivell
+function seedDefaultMap(node){
+  const sug=suggestMap(node.nodeLevel,new Set(),'');
+  const idBy={};sug.roles.forEach(nm=>{const id=uid();idBy[nm]=id;node.vna.roles.push({id,name:nm});});
+  sug.flows.forEach(f=>{if(idBy[f.from]&&idBy[f.to])node.vna.exchanges.push({id:uid(),from:idBy[f.from],to:idBy[f.to],kind:f.kind,label:f.label});});
+}
+
 /* ═══════════ ESQUELET DE CATALUNYA (país + províncies + comarques) ═══════════ */
 async function loadCatalunyaSkeleton(){
-  const existing=new Map(state.nodes.map(n=>[n.nodeLevel+'|'+n.name+'|'+(n.parentId||''),n]));
-  const findByName=(level,name,parentId)=>state.nodes.find(n=>n.nodeLevel===level&&n.name===name&&(n.parentId||'')===(parentId||''));
-  let created=0;
-  const ensure=async(name,level,parentId)=>{
-    let ex=findByName(level,name,parentId);if(ex)return ex;
-    const node=newNode(name,level,parentId||null);state.nodes.push(node);await dbPut(node);created++;return node;
-  };
-  const pais=await ensure('Catalunya','pais',null);
+  _ensureCreated=0;
+  const pais=await ensureNode('Catalunya','pais',null);
   for(const pr of CAT_GEO.provincia){
-    const prov=await ensure(pr.n,'provincia',pais.id);
+    const prov=await ensureNode(pr.n,'provincia',pais.id);
     state.expanded.add(prov.id);
-    for(const co of geoFor('comarca',pr.n)) await ensure(co.n,'comarca',prov.id);
+    for(const co of geoFor('comarca',pr.n)) await ensureNode(co.n,'comarca',prov.id);
   }
   state.expanded.add(pais.id);
   flashSync();
-  return {created,pais};
+  return {created:_ensureCreated,pais};
+}
+
+/* ═══════════ WIZARD D'UBICACIÓ (extrapola la jerarquia des del nivell baix) ═══════════ */
+// Resol la cadena de pares d'un municipi conegut del catàleg → {pais,provincia,comarca}
+function resolveChainFromMunicipi(muniName){
+  const m=CAT_GEO.municipi.find(x=>x.n===muniName);if(!m)return null;
+  const comarca=m.p;const c=CAT_GEO.comarca.find(x=>x.n===comarca);const provincia=c?c.p:null;
+  return {pais:'Catalunya',provincia,comarca,municipi:muniName};
+}
+function resolveChainFromComarca(comName){
+  const c=CAT_GEO.comarca.find(x=>x.n===comName);if(!c)return null;
+  return {pais:'Catalunya',provincia:c.p,comarca:comName};
+}
+
+function openLocateWizard(){
+  const st={level:'municipi',municipi:'',comarca:'',barri:'',genMap:true};
+  function draw(){
+    const muniOpts=CAT_GEO.municipi.map(m=>'<option value="'+esc(m.n)+'">'+esc(m.p)+'</option>').join('');
+    const known=st.municipi?resolveChainFromMunicipi(st.municipi):null;
+    const comarcaKnown=known&&known.comarca;
+    const needComarca=st.level!=='comarca'&&st.municipi&&!known; // municipi fora del catàleg
+    const comOpts=CAT_GEO.comarca.map(c=>'<option value="'+esc(c.n)+'">'+esc(c.p)+'</option>').join('');
+    // chain preview
+    let chain=null,target=null;
+    if(st.level==='comarca'){const r=st.comarca?resolveChainFromComarca(st.comarca):null;if(r){chain=[r.pais,r.provincia,r.comarca];target=r.comarca;}}
+    else{const r=known||(st.comarca?Object.assign({municipi:st.municipi},resolveChainFromComarca(st.comarca)):null);
+      if(r&&r.provincia){chain=[r.pais,r.provincia,r.comarca,st.municipi];if(st.level==='barri'&&st.barri)chain.push(st.barri);target=st.level==='barri'?st.barri:st.municipi;}}
+    const barriList=(st.municipi?geoFor('barri',st.municipi):[]).map(b=>'<option value="'+esc(b.n)+'">').join('');
+    const chainHtml=chain?('<div class="wz-mission" style="border-left-color:var(--indigo)">📍 '+chain.map((n,i)=>i? '<span style="opacity:.5"> › </span>'+esc(n):'<strong>'+esc(n)+'</strong>').join('')+'</div>'):(st.municipi||st.comarca?'<div class="wz-mission" style="border-left-color:var(--orange)">Escriu la comarca per completar la cadena.</div>':'');
+    const canCreate=!!(chain&&target);
+    const bg=modal(`
+      <h2>📍 Ubica el teu projecte</h2>
+      <p class="m-sub">Digues on treballes i el SOS crea sol tota la jerarquia (país › província › comarca › municipi › barri).</p>
+      <div class="field"><label>A quin nivell treballes?</label>
+        <select id="lwLevel">
+          <option value="barri"${st.level==='barri'?' selected':''}>Barri</option>
+          <option value="municipi"${st.level==='municipi'?' selected':''}>Municipi / poble</option>
+          <option value="comarca"${st.level==='comarca'?' selected':''}>Comarca</option>
+        </select></div>
+      ${st.level==='comarca'?`
+        <div class="field"><label>Comarca</label><input id="lwComarca" list="lwComL" placeholder="p.ex. Alt Penedès" value="${esc(st.comarca)}" autocomplete="off"><datalist id="lwComL">${comOpts}</datalist></div>
+      `:`
+        <div class="field"><label>Municipi / poble</label><input id="lwMuni" list="lwMuniL" placeholder="p.ex. Torrelles de Foix" value="${esc(st.municipi)}" autocomplete="off"><datalist id="lwMuniL">${muniOpts}</datalist></div>
+        ${needComarca?`<div class="field"><label>Comarca (no l'hem reconegut, indica-la)</label><input id="lwComarca" list="lwComL" placeholder="p.ex. Alt Penedès" value="${esc(st.comarca)}" autocomplete="off"><datalist id="lwComL">${comOpts}</datalist></div>`:''}
+        ${st.level==='barri'?`<div class="field"><label>Barri</label><input id="lwBarri" list="lwBarriL" placeholder="p.ex. Nucli antic" value="${esc(st.barri)}" autocomplete="off"><datalist id="lwBarriL">${barriList}</datalist></div>`:''}
+      `}
+      ${chainHtml}
+      <label class="pick${st.genMap?' sel':''}" id="lwGen" style="margin-top:.8rem"><input type="checkbox" ${st.genMap?'checked':''}><span><span class="pk-t">Genera el mapa de valor suggerit</span><span class="pk-d">Sembra rols i intercanvis típics del nivell (els pots editar després).</span></span></label>
+      <div class="modal-actions"><button class="btn btn-ghost" id="lwCancel">Cancel·la</button><button class="btn btn-primary" id="lwCreate"${canCreate?'':' disabled style="opacity:.5"'}>⬢ Crea i ubica</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    const rerun=()=>draw();
+    bg.querySelector('#lwLevel').onchange=e=>{st.level=e.target.value;rerun();};
+    const muni=bg.querySelector('#lwMuni');if(muni){muni.oninput=()=>{st.municipi=muni.value.trim();};muni.onchange=()=>{st.municipi=muni.value.trim();rerun();};muni.onblur=rerun;}
+    const com=bg.querySelector('#lwComarca');if(com){com.oninput=()=>{st.comarca=com.value.trim();};com.onchange=()=>{st.comarca=com.value.trim();rerun();};com.onblur=rerun;}
+    const barri=bg.querySelector('#lwBarri');if(barri){barri.oninput=()=>{st.barri=barri.value.trim();};barri.onblur=rerun;}
+    const gen=bg.querySelector('#lwGen');gen.querySelector('input').onchange=e=>{st.genMap=e.target.checked;gen.classList.toggle('sel',st.genMap);};
+    bg.querySelector('#lwCancel').onclick=closeModal;
+    bg.querySelector('#lwCreate').onclick=async()=>{
+      let r;
+      if(st.level==='comarca')r=resolveChainFromComarca(st.comarca);
+      else{r=known||(st.comarca?Object.assign({municipi:st.municipi},resolveChainFromComarca(st.comarca)):null);}
+      if(!r||!r.provincia){toast('Completa la ubicació');return;}
+      _ensureCreated=0;
+      const pais=await ensureNode(r.pais,'pais',null);
+      const prov=await ensureNode(r.provincia,'provincia',pais.id);
+      const com=await ensureNode(r.comarca,'comarca',prov.id);
+      let targetNode=com;
+      if(st.level!=='comarca'){targetNode=await ensureNode(st.municipi,'municipi',com.id);
+        if(st.level==='barri'&&st.barri)targetNode=await ensureNode(st.barri,'barri',targetNode.id);}
+      // sembra mapa si cal i si el node és nou (buit)
+      if(st.genMap&&targetNode.vna.roles.length===0){seedDefaultMap(targetNode);await dbPut(targetNode);}
+      [pais.id,prov.id,com.id].forEach(id=>state.expanded.add(id));if(targetNode.parentId)state.expanded.add(targetNode.parentId);
+      flashSync();closeModal();selectNode(targetNode.id);
+      toast('Ubicat: '+targetNode.name+(_ensureCreated?' (+'+_ensureCreated+' territoris)':''));
+    };
+  }
+  draw();
 }
 
 /* ═══════════════════ WIRING ═══════════════════ */
-$('#obStart').onclick=()=>openCreateModal(null);
+$('#obLocate').onclick=()=>openLocateWizard();
+$('#btnLocate').onclick=()=>openLocateWizard();
 $('#obExplore').onclick=async()=>{const r=await loadCatalunyaSkeleton();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
 $('#obContact').onclick=()=>{window.location.href=mailto('Repte comunitari — vull explorar el SOS');};
 $('#obEmailLink').onclick=e=>{e.preventDefault();window.location.href=mailto(e.target.dataset.subject);};
