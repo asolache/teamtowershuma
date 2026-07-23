@@ -94,6 +94,7 @@ a{color:var(--blue);text-decoration:none}
 .lvl-comarca{background:var(--green-dim);color:var(--green)}
 .lvl-municipi{background:var(--orange-dim);color:var(--orange)}
 .lvl-barri{background:var(--purple-dim);color:var(--purple)}
+.lvl-projecte{background:var(--orange-dim);color:var(--orange)}
 .tn-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tn-add{opacity:0;font-size:1rem;color:var(--muted);width:20px;text-align:center;flex-shrink:0}
 .tree-node:hover .tn-add{opacity:1}.tn-add:hover{color:var(--indigo)}
@@ -222,6 +223,22 @@ a{color:var(--blue);text-decoration:none}
 .wz-mission{background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--green);border-radius:8px;padding:.7rem .85rem;font-size:.84rem;color:var(--light);line-height:1.5;margin-top:.6rem}
 .le-type.sel{border-color:var(--indigo)!important;color:var(--white);background:var(--indigo-dim)}
 .kc-badge{font-family:var(--mono);font-size:.58rem;color:var(--green);border:1px solid var(--green-dim);border-radius:4px;padding:.05rem .3rem;margin-right:auto}
+/* dynamics gallery */
+.dyn-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;max-height:52vh;overflow-y:auto;margin:-.2rem -.3rem;padding:.2rem .3rem}
+.dyn-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.85rem;cursor:pointer;transition:border-color .12s,transform .12s;display:flex;flex-direction:column;gap:.3rem}
+.dyn-card:hover{border-color:var(--indigo);transform:translateY(-2px)}
+.dyn-ic{font-size:1.5rem;line-height:1}
+.dyn-nm{font-size:.92rem;font-weight:700}
+.dyn-one{font-size:.75rem;color:var(--muted);line-height:1.35}
+.dyn-unit{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;color:var(--orange);margin-top:.15rem}
+.dyn-detail{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.4rem}
+.dyn-detail .dd-gov{font-size:.82rem;color:var(--light);line-height:1.5;border-left:2px solid var(--indigo);padding-left:.7rem;margin:.5rem 0}
+.dyn-detail .dd-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo);margin:.75rem 0 .35rem}
+.dd-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.dd-chip{font-size:.72rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:5px;padding:.2rem .5rem;color:var(--light)}
+.dd-res a{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;margin-right:.9rem}
+.dd-res a::before{content:'↗';font-size:.7rem;color:var(--muted)}
+@media(max-width:600px){.dyn-grid{grid-template-columns:1fr}}
 
 /* toast */
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(200%);background:var(--bg-elevated);border:1px solid var(--border-strong);border-left:3px solid var(--green);border-radius:9px;padding:.75rem 1.1rem;font-size:.85rem;z-index:300;transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:90vw}
@@ -297,9 +314,11 @@ const LEVEL_META={
   provincia:{label:'Província', child:'comarca',  childLabel:'comarca',   cls:'lvl-provincia', zoom:'MACRO', ph:'p.ex. Barcelona'},
   comarca:  {label:'Comarca',   child:'municipi', childLabel:'municipi',  cls:'lvl-comarca',   zoom:'MESO',  ph:'p.ex. Alt Penedès'},
   municipi: {label:'Municipi',  child:'barri',    childLabel:'barri',     cls:'lvl-municipi',  zoom:'MESO',  ph:'p.ex. Torrelles de Foix'},
-  barri:    {label:'Barri',     child:null,       childLabel:null,        cls:'lvl-barri',     zoom:'MICRO', ph:'p.ex. Nucli antic'}
+  barri:    {label:'Barri',     child:null,       childLabel:null,        cls:'lvl-barri',     zoom:'MICRO', ph:'p.ex. Nucli antic'},
+  projecte: {label:'Projecte',  child:null,       childLabel:null,        cls:'lvl-projecte',  zoom:'MICRO', ph:'p.ex. Banc de Temps'}
 };
 const nextLevel=lvl=>LEVEL_META[lvl].child;
+const isTerritory=lvl=>lvl!=='projecte';
 
 /* ═══════════════════ CATÀLEG GEOGRÀFIC — CATALUNYA ═══════════════════ */
 /* Referència read-only per a l'autocompletar del wizard i l'esquelet inicial.
@@ -388,6 +407,102 @@ const LEVEL_KNOWLEDGE={
 };
 const knowFor=level=>LEVEL_KNOWLEDGE[level]||{roles:[],flows:[],pains:[]};
 
+/* ═══════════ CATÀLEG DE DINÀMIQUES (prototips d'acció-formació) ═══════════
+   Cada dinàmica és un projecte instanciable sota un territori. Precarrega
+   missió + rols/fluxos VNA + tasques del tauler + unitat de comptes, amb
+   nota de governança i recursos formatius reals. */
+const DYNAMICS=[
+ {id:'banc_temps',name:'Banc de Temps',icon:'⏳',one:'Intercanvi de serveis en hores, no en diners.',unit:'hores',
+  mission:'Teixir suport mutu al veïnat intercanviant temps i habilitats en igualtat: una hora val una hora.',
+  roles:['Nucli gestor','Persones sòcies','Ajuntament','Entitat amfitriona','Registre'],
+  flows:[['Persones sòcies','Persones sòcies','tangible','hores de servei'],['Persones sòcies','Persones sòcies','intangible','reciprocitat i confiança'],['Ajuntament','Nucli gestor','tangible','cessió d\'espai'],['Nucli gestor','Persones sòcies','intangible','reconeixement']],
+  kanban:['Definir catàleg d\'ofertes i demandes','Captar les 10 primeres persones','Sessió inaugural','Protocol de registre d\'hores','Primera ronda d\'intercanvis'],
+  gov:'Assemblea oberta · una hora val el mateix sigui quin servei sigui · rotació de la coordinació.',
+  res:[['Banc del Temps · Salut i Família','https://www.bancdeltemps.org']]},
+ {id:'biblioteca_coses',name:'Biblioteca de les Coses',icon:'🧰',one:'Pool compartit d\'objectes i eines en préstec.',unit:'moneda',
+  mission:'Compartir objectes d\'ús ocasional per estalviar, reduir residus i crear trobada al barri.',
+  roles:['Nucli gestor','Persones usuàries','Donants','Ajuntament','Comerç col·laborador'],
+  flows:[['Donants','Nucli gestor','tangible','objectes'],['Nucli gestor','Persones usuàries','tangible','préstecs'],['Persones usuàries','Nucli gestor','tangible','quotes i fiances'],['Nucli gestor','Persones usuàries','intangible','coneixement d\'ús i confiança']],
+  kanban:['Inventari inicial d\'objectes','Sistema de préstec i fitxes','Trobar punt físic','Normes i fiances','Inauguració'],
+  gov:'Transparència d\'inventari · normes clares de préstec i cura · rotació de torns d\'obertura.',
+  res:[['Pam a Pam','https://pamapam.cat'],['Opcions','https://opcions.org']]},
+ {id:'matriu',name:'MATRIU · Incubadora',icon:'🌱',one:'Acompanya idees ciutadanes fins a projectes viables.',unit:'equity',
+  mission:'Incubar projectes comunitaris amb aprenentatge fent (Tiimiakatemia) fins que siguin sobirans i viables.',
+  roles:['Facilitador/a','Equips promotors','Mentors','Ajuntament / finançament','Xarxa d\'entitats','Cooperatives madrines'],
+  flows:[['Ajuntament / finançament','Equips promotors','tangible','microfinançament i espai'],['Mentors','Equips promotors','intangible','mentoria i coneixement'],['Cooperatives madrines','Equips promotors','intangible','xarxa i confiança'],['Equips promotors','Xarxa d\'entitats','tangible','prototips i entregables']],
+  kanban:['Convocatòria d\'idees','Selecció d\'idees','Formar equips i rols VNA','Cicles d\'aprenentatge (sprints)','Prototip','Validació','Graduació a cooperativa'],
+  gov:'Aprendre fent · equips que s\'autogestionen · repartiment just per aportació (Slicing Pie) · risc compartit.',
+  res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coòpolis','https://bcn.coop']]},
+ {id:'fent_pinya',name:'Taller Fent Pinya',icon:'🏰',one:'Cohesió vivencial castellera (kickoff de confiança).',unit:'hores',
+  mission:'Generar confiança, seguretat psicològica i interdependència abans d\'estructurar el projecte.',
+  roles:['Facilitador','Grup participant','Colla castellera','Espai'],
+  flows:[['Facilitador','Grup participant','tangible','sessió i materials'],['Grup participant','Grup participant','intangible','confiança i interdependència'],['Colla castellera','Grup participant','intangible','llenguatge comú']],
+  kanban:['Definir grup i objectiu','Logística d\'espai','Sessió Fent Pinya','Recollida d\'aprenentatges','Pla de continuïtat'],
+  gov:'Seguretat psicològica primer · tothom sosté i és sostingut · sense jerarquia durant la dinàmica.',
+  res:[['TeamTowers Humà','https://teamtowershuma.com']]},
+ {id:'mapeig_vna',name:'Mapeig de Xarxa de Valor',icon:'🕸️',one:'El diagnòstic VNA del territori com a servei.',unit:'hores',
+  mission:'Fer visible l\'ecosistema local: qui es relaciona amb qui i quins fluxos de valor sostenen (o trenquen) la xarxa.',
+  roles:['Facilitador VNA','Actors del territori','Ajuntament','Entitats'],
+  flows:[['Ajuntament','Facilitador VNA','tangible','encàrrec'],['Actors del territori','Facilitador VNA','intangible','coneixement del territori'],['Facilitador VNA','Ajuntament','tangible','informe i mapa']],
+  kanban:['Definir abast (macro/meso/micro)','Identificar actors','Entrevistes','Construir el mapa VNA','Indicadors de salut','Sessió de retorn','Pla d\'acció'],
+  gov:'Metodologia Verna Allee · dades tangibles i intangibles · retorn obert als actors.',
+  res:[['Value Network Analysis (Verna Allee)','https://en.wikipedia.org/wiki/Value_network_analysis']]},
+ {id:'comunitat_energetica',name:'Comunitat Energètica',icon:'⚡',one:'Energia renovable compartida (cooperativa).',unit:'moneda',
+  mission:'Produir i compartir energia renovable localment, guanyant sobirania energètica i estalvi.',
+  roles:['Nucli promotor','Sòcies consumidores','Ajuntament','Instal·ladora','Cooperativa energètica','Assessoria'],
+  flows:[['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes'],['Ajuntament','Nucli promotor','tangible','cessió de teulades'],['Instal·ladora','Sòcies consumidores','tangible','energia (kWh)'],['Cooperativa energètica','Nucli promotor','intangible','coneixement tècnic']],
+  kanban:['Estudi de viabilitat','Captació de sòcies','Teulada municipal','Finançament','Constitució jurídica','Instal·lació','Posada en marxa'],
+  gov:'Una persona un vot · excedents reinvertits · transparència d\'inversió i consum.',
+  res:[['Som Energia','https://www.somenergia.coop']]},
+ {id:'habitatge_cessio',name:'Habitatge en cessió d\'ús',icon:'🏘️',one:'Propietat col·lectiva, dret d\'ús indefinit (model Andel).',unit:'moneda',
+  mission:'Accedir a habitatge digne sense especulació: la cooperativa és propietària, les sòcies tenen dret d\'ús.',
+  roles:['Grup motor','Unitats de convivència','Administració (cessió de sòl)','Finançament ètic','Cooperativa'],
+  flows:[['Administració (cessió de sòl)','Cooperativa','tangible','dret de superfície'],['Unitats de convivència','Cooperativa','tangible','aportació i quota d\'ús'],['Finançament ètic','Cooperativa','tangible','préstec'],['Grup motor','Unitats de convivència','intangible','convivència i confiança']],
+  kanban:['Consolidar el grup motor','Cerca de sòl / cessió','Estudi de viabilitat','Constitució de la cooperativa','Finançament ètic','Projecte i obra','Convivència'],
+  gov:'Assemblea + comissions (convivència, economia, obres) · consentiment · quota d\'ús sense especulació.',
+  res:[['Sostre Cívic','https://sostrecivic.coop'],['La Dinamo Fundació','https://ladinamofundacio.org']]},
+ {id:'consum_agroecologic',name:'Grup de Consum Agroecològic',icon:'🥬',one:'Compra directa a pagès, sense intermediaris.',unit:'moneda',
+  mission:'Accedir a aliments sans i de proximitat a preu just, sostenint la pagesia local.',
+  roles:['Unitats familiars','Productors/es locals','Coordinació','Punt de repartiment'],
+  flows:[['Unitats familiars','Productors/es locals','tangible','comandes i pagament just'],['Productors/es locals','Unitats familiars','tangible','cistelles'],['Coordinació','Unitats familiars','intangible','logística i confiança']],
+  kanban:['Formar el grup','Contactar productors/es','Logística de repartiment','Sistema de comandes','Primera cistella','Avaluació'],
+  gov:'Rotació de tasques (comandes, repartiment, caixa) · preu just pactat · assemblea mensual.',
+  res:[['Pam a Pam','https://pamapam.cat'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
+ {id:'suport_mutu',name:'Suport Mutu / Cures Veïnals',icon:'🤝',one:'Xarxa de cura i acompanyament al barri.',unit:'hores',
+  mission:'Combatre la soledat i sostenir les cures de manera compartida i visible, connectant amb els serveis.',
+  roles:['Nucli de cura','Veïnat','Gent gran','CAP / serveis socials','Voluntariat'],
+  flows:[['Nucli de cura','Gent gran','intangible','acompanyament'],['Veïnat','Nucli de cura','intangible','detecció i alerta'],['CAP / serveis socials','Nucli de cura','tangible','derivació i suport'],['Voluntariat','Nucli de cura','tangible','hores de cura']],
+  kanban:['Detectar necessitats','Formar el grup de cura','Protocol d\'acompanyament','Primers acompanyaments','Coordinació amb CAP/serveis socials'],
+  gov:'Cures compartides (no recaure en poques persones) · confidencialitat · connexió amb serveis públics.',
+  res:[['Coòpolis','https://bcn.coop']]},
+ {id:'compra_collectiva',name:'Compra Col·lectiva / Estalvi',icon:'🛒',one:'Agregar demanda per millors condicions.',unit:'moneda',
+  mission:'Unir la demanda del veïnat per aconseguir millors preus i condicions (energia, materials, assegurances).',
+  roles:['Participants','Coordinació','Proveïdor/a'],
+  flows:[['Participants','Coordinació','tangible','demanda agregada'],['Coordinació','Proveïdor/a','tangible','contracte col·lectiu'],['Proveïdor/a','Participants','tangible','estalvi']],
+  kanban:['Identificar la necessitat comuna','Agregar la demanda','Comparar ofertes','Negociar','Contractar','Repartir l\'estalvi'],
+  gov:'Transparència de comissions · rotació de la negociació · decisió per consentiment.',
+  res:[['Som Energia','https://www.somenergia.coop'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
+ {id:'coop_treball',name:'Cooperativa de Treball',icon:'🛠️',one:'Les persones treballadores en són sòcies.',unit:'equity',
+  mission:'Crear ocupació digna i democràtica on qui treballa decideix: una persona, un vot.',
+  roles:['Sòcies treballadores','Consell rector','Clients','Ateneu Cooperatiu','Finançament'],
+  flows:[['Sòcies treballadores','Clients','tangible','productes i serveis'],['Clients','Sòcies treballadores','tangible','ingressos'],['Ateneu Cooperatiu','Sòcies treballadores','intangible','formació i acompanyament'],['Sòcies treballadores','Consell rector','intangible','participació democràtica']],
+  kanban:['Idea i equip','Estudi de viabilitat','Estatuts','Constitució','Primers ingressos','Consolidació'],
+  gov:'Una persona un vot · consell rector rotatiu · forquilla salarial acotada · formació contínua.',
+  res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coop. de Treball','https://www.cooperativestreball.coop']]},
+ {id:'generic',name:'Xarxa genèrica',icon:'◇',one:'Comença de zero, sense prototip.',unit:'hores',
+  mission:'',roles:[],flows:[],kanban:[],gov:'',res:[]}
+];
+const dynById=id=>DYNAMICS.find(d=>d.id===id);
+
+// Sembra un node projecte a partir d'una dinàmica del catàleg
+function seedFromDynamic(node,dyn){
+  node.dynamicType=dyn.id;
+  if(dyn.mission)node.metaskill.mission=dyn.mission;
+  const idBy={};(dyn.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;node.vna.roles.push({id,name:nm});});
+  (dyn.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])node.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
+  (dyn.kanban||[]).forEach(t=>node.kanban.cards.push({id:uid(),text:t,col:'todo'}));
+}
+
 /* ═══════════════════ INDEXEDDB (local-first) ═══════════════════ */
 const DB_NAME='SOS_MVP', DB_VER=1, STORE='nodes';
 let _db=null;
@@ -470,11 +585,13 @@ function renderWorkspace(){
 
   const head=el('div','node-head');
   const top=el('div','nh-top');
+  const dyn=node.nodeLevel==='projecte'?dynById(node.dynamicType):null;
   const title=el('div','nh-title');
-  title.appendChild(el('span','tn-lvl '+meta.cls,meta.label));
+  title.appendChild(el('span','tn-lvl '+meta.cls,dyn?(dyn.icon+' Projecte'):meta.label));
   const h1=el('h1');h1.textContent=node.name;title.appendChild(h1);
   top.appendChild(title);
   const acts=el('div','nh-actions');
+  if(isTerritory(node.nodeLevel)){const p=el('button','btn btn-primary btn-sm','+ projecte');p.onclick=()=>openProjectWizard(node.id);acts.appendChild(p);}
   if(meta.child){const b=el('button','btn btn-ghost btn-sm','+ '+meta.childLabel);b.onclick=()=>openCreateModal(node.id);acts.appendChild(b);}
   const ren=el('button','btn-icon','✎');ren.title='Reanomena';ren.onclick=()=>renameNode(node);acts.appendChild(ren);
   const del=el('button','btn-icon','🗑');del.title='Elimina';del.onclick=()=>deleteNode(node);acts.appendChild(del);
@@ -491,6 +608,14 @@ function renderWorkspace(){
     row.appendChild(v);ms.appendChild(row);
   });
   head.appendChild(ms);
+  // projecte: nota de governança + recursos
+  if(dyn&&(dyn.gov||(dyn.res&&dyn.res.length))){
+    const box=el('div','dyn-detail');box.style.marginTop='1rem';
+    if(dyn.gov)box.appendChild(el('div','dd-gov','🏛 '+esc(dyn.gov)));
+    if(dyn.res&&dyn.res.length){box.appendChild(el('div','dd-lbl','Recursos per implementar-ho'));
+      const r=el('div','dd-res');r.innerHTML=dyn.res.map(x=>'<a href="'+esc(x[1])+'" target="_blank" rel="noopener">'+esc(x[0])+'</a>').join('');box.appendChild(r);}
+    head.appendChild(box);
+  }
   w.appendChild(head);
 
   // tabs
@@ -708,9 +833,11 @@ function openLedgerEntryModal(node,prefill,card){
     <div class="field"><label id="leValLbl">Hores</label><input id="leVal" type="number" min="0" step="0.5" placeholder="0"></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="leCancel">Cancel·la</button><button class="btn btn-primary" id="leSave">⬢ Registra</button></div>
   `);
-  let type='temps';
+  const _dyn=node.dynamicType?dynById(node.dynamicType):null;
+  let type=(_dyn&&_dyn.unit==='moneda')?'moneda':'temps';
   bg.querySelectorAll('.le-type').forEach(b=>b.onclick=()=>{type=b.dataset.type;bg.querySelectorAll('.le-type').forEach(x=>x.classList.toggle('sel',x===b));bg.querySelector('#leValLbl').textContent=type==='moneda'?'Euros (€)':'Hores';});
-  bg.querySelectorAll('.le-type').forEach(b=>{if(b.dataset.type==='temps')b.style.borderColor='var(--indigo)';});
+  bg.querySelectorAll('.le-type').forEach(b=>b.classList.toggle('sel',b.dataset.type===type));
+  bg.querySelector('#leValLbl').textContent=type==='moneda'?'Euros (€)':'Hores';
   const who=bg.querySelector('#leWho');who.focus();
   bg.querySelector('#leCancel').onclick=closeModal;
   bg.querySelector('#leSave').onclick=async()=>{
@@ -860,6 +987,61 @@ function openCreateModal(parentId){
     };
   }
   step1();
+}
+
+/* ═══════════ WIZARD DE PROJECTE / DINÀMICA (galeria de prototips) ═══════════ */
+function openProjectWizard(territoryId){
+  const territory=byId(territoryId);
+  function gallery(){
+    const cards=DYNAMICS.map(d=>`
+      <div class="dyn-card" data-dyn="${d.id}">
+        <span class="dyn-ic">${d.icon}</span>
+        <span class="dyn-nm">${esc(d.name)}</span>
+        <span class="dyn-one">${esc(d.one)}</span>
+        ${d.id==='generic'?'':'<span class="dyn-unit">comptes: '+esc(d.unit)+'</span>'}
+      </div>`).join('');
+    const bg=modal(`
+      <h2>Nou projecte / dinàmica</h2>
+      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}Tria un model d'acció-formació: precarregarem el seu mapa de valor, tasques i comptes.</p>
+      <div class="dyn-grid">${cards}</div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="pwCancel">Cancel·la</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    bg.querySelector('#pwCancel').onclick=closeModal;
+    bg.querySelectorAll('.dyn-card').forEach(c=>c.onclick=()=>detail(dynById(c.dataset.dyn)));
+  }
+  function detail(dyn){
+    const resHtml=(dyn.res||[]).map(r=>'<a href="'+esc(r[1])+'" target="_blank" rel="noopener">'+esc(r[0])+'</a>').join('');
+    const rolesHtml=(dyn.roles||[]).map(r=>'<span class="dd-chip">'+esc(r)+'</span>').join('')||'<span class="dyn-one">Sense rols predefinits — els afegiràs tu.</span>';
+    const bg=modal(`
+      <h2>${dyn.icon} ${esc(dyn.name)}</h2>
+      <p class="m-sub">${esc(dyn.one)}</p>
+      <div class="field"><label>Nom del projecte</label><input id="pwName" value="${esc(dyn.id==='generic'?'':dyn.name)}" placeholder="p.ex. ${esc(dyn.name)} de ${esc(territory?territory.name:'la comunitat')}" autocomplete="off"></div>
+      <div class="dyn-detail">
+        ${dyn.mission?'<div class="dyn-one" style="font-style:italic">“'+esc(dyn.mission)+'”</div>':''}
+        ${dyn.gov?'<div class="dd-gov">🏛 '+esc(dyn.gov)+'</div>':''}
+        <div class="dd-lbl">Rols que es precarreguen (${(dyn.roles||[]).length})</div><div class="dd-chips">${rolesHtml}</div>
+        <div class="dd-lbl">Tasques inicials del tauler (${(dyn.kanban||[]).length})</div><div class="dd-chips">${(dyn.kanban||[]).map(t=>'<span class="dd-chip">'+esc(t)+'</span>').join('')||'<span class="dyn-one">Cap</span>'}</div>
+        ${resHtml?'<div class="dd-lbl">Recursos per implementar-ho</div><div class="dd-res">'+resHtml+'</div>':''}
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="pwBack">← Enrere</button><button class="btn btn-primary" id="pwCreate">⬢ Crea el projecte</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    const nm=bg.querySelector('#pwName');nm.focus();
+    bg.querySelector('#pwBack').onclick=gallery;
+    const create=async()=>{
+      const name=nm.value.trim()||dyn.name;
+      const node=newNode(name,'projecte',territoryId);
+      seedFromDynamic(node,dyn);
+      state.nodes.push(node);await persist(node);
+      if(territoryId)state.expanded.add(territoryId);
+      closeModal();selectNode(node.id);
+      toast('Projecte "'+name+'" creat'+(dyn.roles&&dyn.roles.length?' amb '+dyn.roles.length+' rols':''));
+    };
+    bg.querySelector('#pwCreate').onclick=create;
+    nm.onkeydown=e=>{if(e.key==='Enter')create();};
+  }
+  gallery();
 }
 
 function renameNode(node){
