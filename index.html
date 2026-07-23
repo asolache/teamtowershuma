@@ -1,215 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ca">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamTowers · Value Network Analysis</title>
-    <meta name="description" content="Every organization has two structures: the org chart and the real value network. We map the real one. VNA consultancy trusted by IKEA, Porsche, FC Barcelona.">
-    <meta property="og:title" content="TeamTowers · Value Network Analysis">
-    <meta property="og:description" content="Every org has two structures. We map the real one. Before you automate with AI, map your value flows.">
+    <title>TeamTowers Humà · Laboratori de Psicologia Comunitària i Acció Social</title>
+    <meta name="description" content="Convertim la voluntat veïnal en xarxes que duren: Fent Pinya (cohesió), Value Network Analysis (diagnòstic) i SOS (sostenibilitat) per a ajuntaments, cooperatives i entitats.">
+    <meta property="og:title" content="TeamTowers Humà · Laboratori de Psicologia Comunitària i Acció Social">
+    <meta property="og:description" content="Cohesió, diagnòstic i sostenibilitat per a ecosistemes locals, cooperatives i ajuntaments. Amb el focus a l'Alt Penedès i el Garraf.">
     <meta property="og:type" content="website">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --black:     #080808; --off-black: #0e0d0c; --surface: #161514;
-            --border:    rgba(255,255,255,0.07);
-            --gold:      #c9a84c; --gold-pale: #e8d199; --gold-dim: rgba(201,168,76,0.12);
-            --green:     #4ade80; --green-dim: rgba(74,222,128,0.12);
-            --white:     #f5f2ec; --muted: #7a756e; --light: #c8c2b8;
-            --serif: 'Cormorant Garamond', Georgia, serif;
-            --mono:  'DM Mono', monospace;
-            --sans:  'DM Sans', system-ui, sans-serif;
+            --bg-dark:      #050507; --bg-panel: #0a0a0f; --bg-elevated: #111118;
+            --border:       rgba(255,255,255,0.07);
+            --accent-indigo:#6366f1; --indigo-dim: rgba(99,102,241,0.12);
+            --accent-blue:  #00b0ff; --blue-dim: rgba(0,176,255,0.12);
+            --accent-purple:#e040fb; --purple-dim: rgba(224,64,251,0.12);
+            --accent-green: #00e676; --green-dim: rgba(0,230,118,0.12);
+            --accent-orange:#ff9100; --orange-dim: rgba(255,145,0,0.12);
+            --white:        #f5f5f7; --muted: #82828d; --light: #c7c7d1;
+            --sans: 'Space Grotesk', system-ui, sans-serif;
+            --mono: 'JetBrains Mono', monospace;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-size: 16px; scroll-behavior: smooth; }
-        body { background: var(--black); color: var(--white); font-family: var(--sans); font-weight: 300; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--gold); }
+        body { background: var(--bg-dark); color: var(--white); font-family: var(--sans); font-weight: 400; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--accent-indigo); }
         body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); opacity:.4; }
         .container { max-width:1160px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
         section { position:relative; z-index:1; }
 
         /* NAV */
-        nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:1.4rem 2rem; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(to bottom,rgba(8,8,8,0.97),transparent); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.04); }
-        .nav-logo { font-family:var(--serif); font-size:1.3rem; font-weight:600; letter-spacing:.05em; color:var(--white); text-decoration:none; }
-        .nav-logo span { color:var(--gold); }
+        nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:1.4rem 2rem; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(to bottom,rgba(5,5,7,0.97),transparent); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.04); }
+        .nav-logo { font-family:var(--sans); font-size:1.3rem; font-weight:700; letter-spacing:-.02em; color:var(--white); text-decoration:none; }
+        .nav-logo span { color:var(--accent-indigo); }
         .nav-links { display:flex; align-items:center; gap:2.5rem; list-style:none; }
-        .nav-links a { font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .2s; font-weight:400; }
+        .nav-links a { font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .2s; font-weight:500; }
         .nav-links a:hover { color:var(--white); }
-        .nav-cta { background:transparent!important; border:1px solid var(--gold)!important; color:var(--gold)!important; padding:.5rem 1.2rem; border-radius:2px; transition:all .2s!important; }
-        .nav-cta:hover { background:var(--gold)!important; color:var(--black)!important; }
+        .nav-cta { background:transparent!important; border:1px solid var(--accent-indigo)!important; color:var(--accent-indigo)!important; padding:.5rem 1.2rem; border-radius:2px; transition:all .2s!important; }
+        .nav-cta:hover { background:var(--accent-indigo)!important; color:var(--white)!important; }
         .lang-switch { display:flex; align-items:center; gap:2px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:3px; padding:2px; }
         .lang-btn { background:transparent; border:none; color:var(--muted); font-family:var(--mono); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; padding:4px 8px; border-radius:2px; transition:all .15s; }
-        .lang-btn.active { background:var(--gold); color:var(--black); font-weight:700; }
+        .lang-btn.active { background:var(--accent-indigo); color:var(--white); font-weight:700; }
         .lang-btn:not(.active):hover { color:var(--white); }
 
         /* BTNS */
-        .btn-primary { background:var(--gold); color:var(--black); font-family:var(--sans); font-weight:500; font-size:.85rem; letter-spacing:.06em; text-transform:uppercase; padding:.9rem 2rem; border:none; cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); }
-        .btn-primary:hover { background:var(--gold-pale); transform:translateY(-2px); }
-        .btn-ghost { background:transparent; color:var(--light); font-family:var(--sans); font-weight:400; font-size:.85rem; letter-spacing:.06em; padding:.9rem 2rem; border:1px solid var(--border); cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; }
-        .btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
+        .btn-primary { background:var(--accent-indigo); color:var(--white); font-family:var(--sans); font-weight:600; font-size:.85rem; letter-spacing:.03em; padding:.9rem 2rem; border:none; cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); }
+        .btn-primary:hover { background:var(--accent-blue); transform:translateY(-2px); }
+        .btn-ghost { background:transparent; color:var(--light); font-family:var(--sans); font-weight:500; font-size:.85rem; letter-spacing:.03em; padding:.9rem 2rem; border:1px solid var(--border); cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; }
+        .btn-ghost:hover { border-color:var(--accent-indigo); color:var(--accent-blue); }
 
         /* HERO */
         .hero { min-height:100vh; display:flex; align-items:center; padding:8rem 0 6rem; }
         .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
-        .hero-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.2em; color:var(--gold); text-transform:uppercase; margin-bottom:1.5rem; display:flex; align-items:center; gap:.75rem; }
-        .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--gold); }
-        .hero h1 { font-family:var(--serif); font-size:clamp(2.8rem,4.5vw,5rem); font-weight:600; line-height:1.05; letter-spacing:-.02em; margin-bottom:2rem; }
-        .hero h1 em { font-style:italic; color:var(--gold-pale); }
-        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.8; margin-bottom:2.5rem; max-width:520px; }
+        .hero-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.5rem; display:flex; align-items:center; gap:.75rem; }
+        .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--accent-indigo); }
+        .hero h1 { font-family:var(--sans); font-size:clamp(2.6rem,4.5vw,4.6rem); font-weight:700; line-height:1.08; letter-spacing:-.02em; margin-bottom:2rem; }
+        .hero h1 em { font-style:normal; color:var(--accent-blue); }
+        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.8; margin-bottom:2.5rem; max-width:540px; }
         .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
         .hero-visual { position:relative; height:500px; }
         .vna-diagram { width:100%; height:100%; }
 
-        /* CLIENTS */
-        .clients-strip { padding:3rem 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-        .clients-label { font-family:var(--mono); font-size:.65rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; text-align:center; margin-bottom:2rem; }
-        .clients-grid { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:2rem 3rem; }
-        .client-name { font-family:var(--serif); font-size:1rem; font-weight:600; color:var(--muted); letter-spacing:.08em; transition:color .2s; }
-        .client-name:hover { color:var(--light); }
-
         /* SECTION HEADERS */
-        .section-header { text-align:center; max-width:700px; margin:0 auto 5rem; }
-        .section-eyebrow { font-family:var(--mono); font-size:.7rem; letter-spacing:.2em; color:var(--gold); text-transform:uppercase; margin-bottom:1.25rem; }
-        .section-header h2 { font-family:var(--serif); font-size:clamp(2.2rem,4vw,3.5rem); font-weight:600; line-height:1.1; margin-bottom:1.25rem; }
-        .section-header h2 em { font-style:italic; color:var(--gold-pale); }
+        .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
+        .section-eyebrow { font-family:var(--mono); font-size:.7rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.25rem; }
+        .section-header h2 { font-family:var(--sans); font-size:clamp(2.1rem,4vw,3.2rem); font-weight:700; line-height:1.15; margin-bottom:1.25rem; }
+        .section-header h2 em { font-style:normal; color:var(--accent-blue); }
         .section-header p { font-size:1rem; color:var(--light); line-height:1.8; }
 
-        /* WHAT VNA SEES */
-        .what-is { padding:8rem 0; }
-        .what-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
-        .what-content h3 { font-family:var(--serif); font-size:2rem; font-weight:600; line-height:1.2; margin-bottom:1.5rem; }
-        .what-content h3 em { font-style:italic; color:var(--gold-pale); }
-        .what-content p { color:var(--light); line-height:1.85; margin-bottom:1.25rem; }
-        .what-content p strong { color:var(--white); font-weight:500; }
+        /* PROBLEMA / ENFOQUE */
+        .enfoc { padding:9rem 0 8rem; }
+        .enfoc-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+        .enfoc-content h3 { font-family:var(--sans); font-size:2rem; font-weight:700; line-height:1.2; margin-bottom:1.5rem; }
+        .enfoc-content h3 em { font-style:normal; color:var(--accent-blue); }
+        .enfoc-content p { color:var(--light); line-height:1.85; margin-bottom:1.25rem; }
+        .enfoc-content p strong { color:var(--white); font-weight:600; }
         .tangible-intangible { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:2rem; }
-        .tx-card { background:var(--surface); border:1px solid var(--border); padding:1.5rem; }
-        .tx-card.tangible  { border-top:2px solid var(--green); }
-        .tx-card.intangible{ border-top:2px solid var(--gold); }
+        .tx-card { background:var(--bg-panel); border:1px solid var(--border); padding:1.5rem; }
+        .tx-card.tangible  { border-top:2px solid var(--accent-green); }
+        .tx-card.intangible{ border-top:2px solid var(--accent-indigo); }
         .tx-label { font-family:var(--mono); font-size:.65rem; letter-spacing:.15em; text-transform:uppercase; margin-bottom:.5rem; }
-        .tx-card.tangible  .tx-label { color:var(--green); }
-        .tx-card.intangible .tx-label { color:var(--gold); }
-        .tx-card h4 { font-family:var(--serif); font-size:1.1rem; margin-bottom:.5rem; }
+        .tx-card.tangible  .tx-label { color:var(--accent-green); }
+        .tx-card.intangible .tx-label { color:var(--accent-indigo); }
+        .tx-card h4 { font-family:var(--sans); font-size:1.1rem; margin-bottom:.5rem; font-weight:600; }
         .tx-card p  { font-size:.83rem; color:var(--muted); line-height:1.6; }
-        .pull-quote { margin-top:1.5rem; padding:1.5rem; background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(201,168,76,0.02)); border-left:2px solid var(--gold); }
-        .pull-quote p { font-family:var(--serif); font-size:1.1rem; font-style:italic; color:var(--gold-pale); line-height:1.7; margin:0; }
+        .pull-quote { margin-top:1.5rem; padding:1.5rem; background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02)); border-left:2px solid var(--accent-indigo); }
+        .pull-quote p { font-family:var(--sans); font-size:1.1rem; font-weight:500; color:var(--light); line-height:1.7; margin:0; }
 
-        /* ── CASTELLERA SECTION ── */
-        .castellera { padding:8rem 0; background:var(--off-black); }
-        .castellera-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
-        .castellera-content h3 { font-family:var(--serif); font-size:clamp(1.8rem,3vw,2.8rem); font-weight:600; line-height:1.15; margin-bottom:1.5rem; }
-        .castellera-content h3 em { font-style:italic; color:var(--gold-pale); }
-        .castellera-content p { color:var(--light); line-height:1.85; margin-bottom:1.25rem; font-size:.95rem; }
-        .castellera-content p strong { color:var(--white); font-weight:500; }
-        .castellera-insights { display:flex; flex-direction:column; gap:.75rem; margin-top:2rem; }
-        .castellera-insight { padding:1rem 1.25rem; background:rgba(25,25,32,0.8); border:1px solid var(--border); border-left:2px solid var(--gold); }
-        .castellera-insight-title { font-size:.78rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.08em; font-family:var(--mono); margin-bottom:.4rem; }
-        .castellera-insight p { font-size:.82rem; color:var(--muted); margin:0; line-height:1.6; }
-        .castellera-insight p strong { color:var(--light); font-weight:500; }
+        /* TRÍADA */
+        .triada { padding:8rem 0; background:var(--bg-panel); }
+        .triada-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+        .triada-card { background:var(--bg-dark); padding:2.75rem 2.25rem; position:relative; transition:background .2s; }
+        .triada-card:hover { background:var(--bg-elevated); }
+        .triada-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+        .triada-cohesio::before   { background:linear-gradient(90deg,var(--accent-purple),transparent); }
+        .triada-diagnostic::before{ background:linear-gradient(90deg,var(--accent-blue),transparent); }
+        .triada-motor::before     { background:linear-gradient(90deg,var(--accent-indigo),transparent); }
+        .triada-label { font-family:var(--mono); font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1.25rem; display:block; font-weight:700; }
+        .triada-cohesio .triada-label    { color:var(--accent-purple); }
+        .triada-diagnostic .triada-label { color:var(--accent-blue); }
+        .triada-motor .triada-label      { color:var(--accent-indigo); }
+        .triada-card h3 { font-family:var(--sans); font-size:1.55rem; font-weight:700; margin-bottom:.9rem; }
+        .triada-card p { font-size:.85rem; color:var(--muted); line-height:1.75; margin-bottom:1.25rem; }
+        .triada-tags { display:flex; flex-wrap:wrap; gap:.5rem; }
+        .triada-tag { font-size:.7rem; font-family:var(--mono); padding:.35rem .7rem; border-radius:3px; }
+        .triada-cohesio .triada-tag    { background:var(--purple-dim); color:var(--accent-purple); }
+        .triada-diagnostic .triada-tag { background:var(--blue-dim); color:var(--accent-blue); }
+        .triada-motor .triada-tag      { background:var(--indigo-dim); color:var(--accent-indigo); }
+
+        /* ── FENT PINYA SECTION ── */
+        .fentpinya { padding:8rem 0; }
+        .fentpinya-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+        .fentpinya-content h3 { font-family:var(--sans); font-size:clamp(1.8rem,3vw,2.6rem); font-weight:700; line-height:1.15; margin-bottom:1.5rem; }
+        .fentpinya-content h3 em { font-style:normal; color:var(--accent-purple); }
+        .fentpinya-content p { color:var(--light); line-height:1.85; margin-bottom:1.25rem; font-size:.95rem; }
+        .fentpinya-content p strong { color:var(--white); font-weight:600; }
+        .fentpinya-insights { display:flex; flex-direction:column; gap:.75rem; margin-top:2rem; }
+        .fentpinya-insight { padding:1rem 1.25rem; background:rgba(17,17,24,0.8); border:1px solid var(--border); border-left:2px solid var(--accent-purple); }
+        .fentpinya-insight-title { font-size:.78rem; font-weight:700; color:var(--accent-purple); text-transform:uppercase; letter-spacing:.08em; font-family:var(--mono); margin-bottom:.4rem; }
+        .fentpinya-insight p { font-size:.82rem; color:var(--muted); margin:0; line-height:1.6; }
+        .fentpinya-insight p strong { color:var(--light); font-weight:600; }
 
         /* SVG Castellera interactive */
         .colla-svg-wrap { position:relative; }
         .colla-svg-wrap svg { width:100%; max-height:520px; }
         .colla-tooltip {
             position:absolute; pointer-events:none; display:none;
-            background:rgba(8,8,8,0.97); border:1px solid var(--gold);
+            background:rgba(5,5,7,0.97); border:1px solid var(--accent-purple);
             border-radius:8px; padding:10px 14px; max-width:220px;
             font-size:.78rem; color:var(--light); line-height:1.6; z-index:10;
             box-shadow:0 8px 24px rgba(0,0,0,0.5);
         }
-        .colla-tooltip-title { font-family:var(--mono); font-size:.65rem; color:var(--gold); text-transform:uppercase; letter-spacing:.1em; margin-bottom:5px; font-weight:700; }
-        .colla-tooltip-t { color:var(--green); font-size:.72rem; margin-bottom:2px; }
-        .colla-tooltip-i { color:var(--gold); font-size:.72rem; }
+        .colla-tooltip-title { font-family:var(--mono); font-size:.65rem; color:var(--accent-purple); text-transform:uppercase; letter-spacing:.1em; margin-bottom:5px; font-weight:700; }
+        .colla-tooltip-t { color:var(--accent-green); font-size:.72rem; margin-bottom:2px; }
+        .colla-tooltip-i { color:var(--accent-orange); font-size:.72rem; }
 
-        /* ── ZOOM MODEL ── */
-        .zoom-section { padding:8rem 0; }
-        .zoom-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; margin-top:0; }
-        .zoom-card { background:var(--surface); padding:2.5rem 2rem; position:relative; cursor:default; transition:background .2s; }
-        .zoom-card:hover { background:#1a1917; }
-        .zoom-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
-        .zoom-macro::before { background:linear-gradient(90deg,var(--gold),transparent); }
-        .zoom-meso::before  { background:linear-gradient(90deg,var(--green),transparent); }
-        .zoom-micro::before { background:linear-gradient(90deg,#e040fb,transparent); }
-        .zoom-label { font-family:var(--mono); font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1.25rem; display:block; font-weight:700; }
-        .zoom-macro .zoom-label { color:var(--gold); }
-        .zoom-meso  .zoom-label { color:var(--green); }
-        .zoom-micro .zoom-label { color:#e040fb; }
-        .zoom-card h3 { font-family:var(--serif); font-size:1.5rem; font-weight:600; margin-bottom:.75rem; }
-        .zoom-card .zoom-nodes { font-size:.78rem; color:var(--muted); margin-bottom:1rem; line-height:1.7; }
-        .zoom-card .zoom-nodes strong { color:var(--light); font-weight:500; }
-        .zoom-card .zoom-use { font-size:.78rem; font-family:var(--mono); padding:.4rem .8rem; border-radius:3px; display:inline-block; margin-top:.5rem; }
-        .zoom-macro .zoom-use { background:var(--gold-dim); color:var(--gold); }
-        .zoom-meso  .zoom-use { background:var(--green-dim); color:var(--green); }
-        .zoom-micro .zoom-use { background:rgba(224,64,251,0.1); color:#e040fb; }
-
-        /* Butterfly effect */
-        .butterfly { padding:4rem 0; background:rgba(10,10,14,0.8); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-        .butterfly-inner { max-width:900px; margin:0 auto; }
-        .butterfly-title { font-family:var(--serif); font-size:1.3rem; font-weight:600; color:var(--white); text-align:center; margin-bottom:2rem; }
-        .butterfly-title span { color:var(--gold-pale); font-style:italic; }
-        .butterfly-chain { display:flex; align-items:stretch; gap:0; }
-        .butterfly-step { flex:1; padding:1.25rem 1rem; position:relative; }
-        .butterfly-step::after { content:'→'; position:absolute; right:-8px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.9rem; z-index:1; }
-        .butterfly-step:last-child::after { display:none; }
-        .butterfly-step-level { font-family:var(--mono); font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; margin-bottom:.4rem; font-weight:700; }
-        .butterfly-step.micro  .butterfly-step-level { color:#e040fb; }
-        .butterfly-step.meso   .butterfly-step-level { color:var(--green); }
-        .butterfly-step.macro  .butterfly-step-level { color:var(--gold); }
-        .butterfly-step-desc { font-size:.78rem; color:var(--light); line-height:1.5; }
-        .butterfly-step.macro .butterfly-step-desc { color:var(--gold-pale); font-weight:500; }
-        .butterfly-conclusion { text-align:center; margin-top:2rem; }
-        .butterfly-conclusion p { font-family:var(--serif); font-size:1.1rem; font-style:italic; color:var(--muted); }
-        .butterfly-conclusion strong { color:var(--white); font-style:normal; }
-
-        /* ── AI SECTION ── */
-        .ia-section { padding:8rem 0; background:var(--off-black); }
-        .ia-grid { display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
-        .ia-content h2 { font-family:var(--serif); font-size:clamp(2rem,3.5vw,3rem); font-weight:600; line-height:1.15; margin-bottom:1.5rem; }
-        .ia-content h2 em { font-style:italic; color:var(--gold-pale); }
-        .ia-content p { color:var(--light); line-height:1.85; margin-bottom:1.25rem; }
-        .ia-content p strong { color:var(--white); font-weight:500; }
-        .ia-demo-card { background:var(--surface); border:1px solid var(--border); border-top:2px solid var(--gold); padding:2rem; }
-        .ia-demo-header { display:flex; align-items:center; gap:.75rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
-        .ia-demo-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); animation:pulse 2s infinite; }
-        .ia-demo-title { font-family:var(--mono); font-size:.72rem; color:var(--gold); letter-spacing:.1em; }
-        .ia-demo-body p { font-size:.83rem; color:var(--muted); line-height:1.7; margin-bottom:.75rem; }
-        .ia-demo-link { display:inline-flex; align-items:center; gap:.5rem; margin-top:1.5rem; font-family:var(--mono); font-size:.72rem; color:var(--gold); letter-spacing:.1em; text-decoration:none; text-transform:uppercase; border-bottom:1px solid var(--gold-dim); padding-bottom:2px; transition:border-color .2s; }
-        .ia-demo-link:hover { border-color:var(--gold); }
-        .ia-demo-link::after { content:'→'; }
+        /* ── SOS SECTION ── */
+        .sos-section { padding:8rem 0; background:var(--bg-panel); }
+        .sos-grid { display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
+        .sos-content h2 { font-family:var(--sans); font-size:clamp(2rem,3.5vw,3rem); font-weight:700; line-height:1.15; margin-bottom:1.5rem; }
+        .sos-content h2 em { font-style:normal; color:var(--accent-indigo); }
+        .sos-content p { color:var(--light); line-height:1.85; margin-bottom:1.25rem; }
+        .sos-content p strong { color:var(--white); font-weight:600; }
+        .sos-bullets { list-style:none; margin:1.5rem 0; display:flex; flex-direction:column; gap:.6rem; }
+        .sos-bullets li { font-size:.9rem; color:var(--light); padding-left:1.4rem; position:relative; }
+        .sos-bullets li::before { content:'→'; position:absolute; left:0; color:var(--accent-indigo); }
+        .sos-demo-card { background:var(--bg-dark); border:1px solid var(--border); border-top:2px solid var(--accent-indigo); padding:2rem; }
+        .sos-demo-header { display:flex; align-items:center; gap:.75rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+        .sos-demo-dot { width:8px; height:8px; border-radius:50%; background:var(--accent-indigo); animation:pulse 2s infinite; }
+        .sos-demo-title { font-family:var(--mono); font-size:.72rem; color:var(--accent-indigo); letter-spacing:.1em; }
+        .sos-demo-body p { font-size:.83rem; color:var(--muted); line-height:1.7; margin-bottom:.75rem; }
+        .sos-demo-link { display:inline-flex; align-items:center; gap:.5rem; margin-top:1.5rem; font-family:var(--mono); font-size:.72rem; color:var(--accent-indigo); letter-spacing:.1em; text-decoration:none; text-transform:uppercase; border-bottom:1px solid var(--indigo-dim); padding-bottom:2px; transition:border-color .2s; }
+        .sos-demo-link:hover { border-color:var(--accent-indigo); }
+        .sos-demo-link::after { content:'→'; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-        /* METHODOLOGY */
-        .metodologia { padding:8rem 0; }
-        .steps-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0; }
-        .step { padding:2rem 1.75rem; border-right:1px solid var(--border); }
-        .step:last-child { border-right:none; }
-        .step-number { font-family:var(--mono); font-size:3rem; font-weight:500; color:var(--gold-dim); line-height:1; margin-bottom:1.25rem; display:block; }
-        .step h3 { font-family:var(--serif); font-size:1.2rem; font-weight:600; margin-bottom:.6rem; }
-        .step p   { font-size:.83rem; color:var(--muted); line-height:1.7; }
+        /* APRENENTATGE */
+        .aprenentatge { padding:8rem 0; }
+        .aprenentatge-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:5rem; align-items:center; }
+        .aprenentatge-content h2 { font-family:var(--sans); font-size:clamp(2rem,3.5vw,3rem); font-weight:700; line-height:1.15; margin-bottom:1.5rem; }
+        .aprenentatge-content h2 em { font-style:normal; color:var(--accent-green); }
+        .aprenentatge-content p { color:var(--light); line-height:1.85; margin-bottom:1.25rem; }
+        .aprenentatge-content p strong { color:var(--white); font-weight:600; }
+        .pilars { display:flex; flex-direction:column; gap:1rem; }
+        .pilar { padding:1.25rem 1.5rem; background:var(--bg-panel); border:1px solid var(--border); border-left:2px solid var(--accent-green); }
+        .pilar-title { font-family:var(--mono); font-size:.72rem; color:var(--accent-green); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.4rem; font-weight:700; }
+        .pilar p { font-size:.85rem; color:var(--muted); margin:0; line-height:1.6; }
+
+        /* FACILITADOR */
+        .facilitador { padding:8rem 0; background:var(--bg-panel); }
+        .facilitador-inner { max-width:820px; margin:0 auto; text-align:center; }
+        .facilitador-inner h3 { font-family:var(--sans); font-size:2rem; font-weight:700; margin-bottom:.5rem; }
+        .facilitador-role { font-family:var(--mono); font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:2rem; }
+        .facilitador-inner p { color:var(--light); line-height:1.85; font-size:1rem; margin-bottom:1.25rem; }
+        .facilitador-tags { display:flex; justify-content:center; flex-wrap:wrap; gap:.6rem; margin-top:1.5rem; }
+        .facilitador-tags span { font-size:.72rem; font-family:var(--mono); padding:.4rem .9rem; border-radius:20px; background:var(--indigo-dim); color:var(--accent-indigo); border:1px solid rgba(99,102,241,0.25); }
 
         /* CTA FINAL */
         .cta-final { padding:10rem 0; text-align:center; position:relative; overflow:hidden; }
-        .cta-final::before { content:'VNA'; position:absolute; font-family:var(--serif); font-size:28vw; font-weight:700; color:rgba(201,168,76,0.03); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap; }
-        .cta-final h2 { font-family:var(--serif); font-size:clamp(2.5rem,5vw,5rem); font-weight:600; line-height:1.1; margin-bottom:1.5rem; position:relative; }
-        .cta-final h2 em { font-style:italic; color:var(--gold-pale); }
+        .cta-final::before { content:'SOS'; position:absolute; font-family:var(--sans); font-size:26vw; font-weight:700; color:rgba(99,102,241,0.03); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap; }
+        .cta-final h2 { font-family:var(--sans); font-size:clamp(2.3rem,5vw,4.6rem); font-weight:700; line-height:1.12; margin-bottom:1.5rem; position:relative; }
+        .cta-final h2 em { font-style:normal; color:var(--accent-blue); }
         .cto-quote { max-width:640px; margin:0 auto 3rem; position:relative; }
-        .cto-quote blockquote { font-family:var(--serif); font-size:1.1rem; font-style:italic; color:var(--muted); line-height:1.7; border-left:2px solid var(--gold); padding-left:1.5rem; text-align:left; }
-        .cto-quote blockquote strong { color:var(--light); font-style:normal; }
+        .cto-quote blockquote { font-family:var(--sans); font-size:1.05rem; font-weight:500; color:var(--muted); line-height:1.7; border-left:2px solid var(--accent-indigo); padding-left:1.5rem; text-align:left; }
+        .cto-quote blockquote strong { color:var(--light); font-weight:600; }
         .cto-quote cite { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-top:.75rem; display:block; padding-left:1.5rem; }
         .cta-final .actions { position:relative; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
 
         /* FOOTER */
         footer { padding:3rem 0; border-top:1px solid var(--border); }
         .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-        .footer-logo { font-family:var(--serif); font-size:1.1rem; font-weight:600; color:var(--white); }
-        .footer-logo span { color:var(--gold); }
+        .footer-logo { font-family:var(--sans); font-size:1.1rem; font-weight:700; color:var(--white); }
+        .footer-logo span { color:var(--accent-indigo); }
         .footer-copy { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.08em; }
         .footer-links { display:flex; gap:2rem; list-style:none; }
         .footer-links a { font-size:.78rem; color:var(--muted); text-decoration:none; transition:color .2s; }
-        .footer-links a:hover { color:var(--gold); }
+        .footer-links a:hover { color:var(--accent-indigo); }
 
         /* ANIMATIONS */
         .fade-up { opacity:1; transform:translateY(0); transition:opacity .7s ease,transform .7s ease; }
@@ -218,34 +209,30 @@
 
         /* RESPONSIVE */
         @media (max-width:900px) {
-            .hero-grid,.what-grid,.castellera-grid,.ia-grid { grid-template-columns:1fr; gap:3rem; }
+            .hero-grid,.enfoc-grid,.fentpinya-grid,.sos-grid,.aprenentatge-grid { grid-template-columns:1fr; gap:3rem; }
             .hero-visual { height:320px; }
-            .steps-grid { grid-template-columns:1fr 1fr; }
-            .step { border-right:none; border-bottom:1px solid var(--border); }
-            .zoom-grid { grid-template-columns:1fr; }
+            .triada-grid { grid-template-columns:1fr; }
             .tangible-intangible { grid-template-columns:1fr; }
-            .butterfly-chain { flex-direction:column; }
-            .butterfly-step::after { display:none; }
             .nav-links { display:none; }
             .lang-switch { display:flex !important; }
         }
-        @media (max-width:600px) { .steps-grid { grid-template-columns:1fr; } .clients-grid { gap:1.5rem 2rem; } }
+        @media (max-width:600px) { .triada-grid { gap:1px; } }
     </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-    <a href="/" class="nav-logo">Team<span>Towers</span></a>
+    <a href="/" class="nav-logo">Team<span>Towers</span> Humà</a>
     <div style="display:flex;align-items:center;gap:1.5rem;">
         <ul class="nav-links">
-            <li><a href="#castellera" data-i18n="nav.castellers">The Castellers Case</a></li>
-            <li><a href="#zoom" data-i18n="nav.zoom">Zoom Model</a></li>
-            <li><a href="#ai" data-i18n="nav.ai">AI Readiness</a></li>
-            <li><a href="https://sos.teamtowershuma.com" target="_blank" class="nav-cta" data-i18n="nav.demo">Live Demo →</a></li>
+            <li><a href="#enfoc" data-i18n="nav.enfoc">El Repte</a></li>
+            <li><a href="#fentpinya" data-i18n="nav.fentpinya">Fent Pinya</a></li>
+            <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
+            <li><a href="https://sos.teamtowershuma.com" target="_blank" class="nav-cta" data-i18n="nav.demo">Viu-ho →</a></li>
         </ul>
         <div class="lang-switch" style="flex-shrink:0;">
-            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn active" data-lang="ca">CA</button>
             <button class="lang-btn" data-lang="es">ES</button>
         </div>
     </div>
@@ -256,119 +243,135 @@
     <div class="container">
         <div class="hero-grid">
             <div>
-                <div class="hero-eyebrow fade-up" data-i18n="hero.eyebrow">VNA Consultancy · Verna Allee Methodology</div>
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Every org has<br><em>two structures.</em><br>We map the real one.</h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n="hero.desc">The org chart shows reporting lines. The value network reveals the real flows of trust, knowledge, and collaboration that determine whether your organization delivers — or slowly breaks down.</p>
+                <div class="hero-eyebrow fade-up" data-i18n="hero.eyebrow">Laboratori de Psicologia Comunitària i Acció Social</div>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Convertim la <em>voluntat veïnal</em><br>en <em>xarxes que duren.</em></h1>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n="hero.desc">Ajudem ajuntaments, cooperatives i entitats a passar de la bona voluntat a la infraestructura: bancs de temps, biblioteques de coses o comunitats energètiques amb rols clars, governança i futur — sense dependre de dues persones cremades. Amb el focus posat a l'Alt Penedès i el Garraf, i obertes a treballar a qualsevol territori que vulgui organitzar-se.</p>
                 <div class="hero-actions fade-up" style="animation-delay:.3s">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" class="btn-primary" data-i18n="hero.cta1">Book a VNA Session</a>
-                    <a href="https://sos.teamtowershuma.com" target="_blank" class="btn-ghost" data-i18n="hero.cta2">See the Live Tool →</a>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" class="btn-primary" data-i18n="hero.cta1">Parla'ns del teu territori</a>
+                    <a href="https://sos.teamtowershuma.com" target="_blank" class="btn-ghost" data-i18n="hero.cta2">Veure el SOS en viu →</a>
                 </div>
             </div>
             <div class="hero-visual fade-up" style="animation-delay:.4s">
                 <svg class="vna-diagram" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="240" cy="240" r="220" stroke="rgba(201,168,76,0.06)" stroke-width="1"/>
-                    <circle cx="240" cy="240" r="160" stroke="rgba(201,168,76,0.04)" stroke-width="1"/>
-                    <circle cx="240" cy="240" r="90" stroke="rgba(201,168,76,0.08)" stroke-width="1" stroke-dasharray="4 8"/>
-                    <line x1="240" y1="60" x2="380" y2="180" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="380" y1="180" x2="380" y2="320" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="380" y1="320" x2="240" y2="420" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="240" y1="420" x2="100" y2="320" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="100" y1="320" x2="100" y2="180" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="100" y1="180" x2="240" y2="60" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="240" y1="60" x2="380" y2="320" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
-                    <line x1="380" y1="180" x2="240" y2="420" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
-                    <line x1="380" y1="320" x2="100" y2="180" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
-                    <line x1="240" y1="420" x2="240" y2="60" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".4"/>
-                    <line x1="100" y1="320" x2="380" y2="180" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".4"/>
-                    <line x1="100" y1="180" x2="380" y2="320" stroke="#c9a84c" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".3"/>
-                    <circle cx="240" cy="240" r="28" fill="rgba(201,168,76,0.08)" stroke="#c9a84c" stroke-width="1.5"/>
-                    <circle cx="240" cy="240" r="6" fill="#c9a84c"/>
-                    <text x="240" y="248" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#c9a84c" opacity=".7" letter-spacing="1">VNA</text>
-                    <circle cx="240" cy="60" r="22" fill="rgba(22,21,20,.9)" stroke="rgba(201,168,76,.4)" stroke-width="1.5"/>
-                    <text x="240" y="64" text-anchor="middle" font-family="DM Mono" font-size="8" fill="#c9a84c" opacity=".8">CEO</text>
-                    <circle cx="380" cy="180" r="22" fill="rgba(22,21,20,.9)" stroke="rgba(74,222,128,.4)" stroke-width="1.5"/>
-                    <text x="380" y="184" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#4ade80" opacity=".8">OPS</text>
-                    <circle cx="380" cy="320" r="22" fill="rgba(22,21,20,.9)" stroke="rgba(201,168,76,.4)" stroke-width="1.5"/>
-                    <text x="380" y="324" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#c9a84c" opacity=".8">CLIENT</text>
-                    <circle cx="240" cy="420" r="22" fill="rgba(22,21,20,.9)" stroke="rgba(74,222,128,.4)" stroke-width="1.5"/>
-                    <text x="240" y="424" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#4ade80" opacity=".8">TECH</text>
-                    <circle cx="100" cy="320" r="22" fill="rgba(22,21,20,.9)" stroke="rgba(201,168,76,.4)" stroke-width="1.5"/>
-                    <text x="100" y="324" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#c9a84c" opacity=".8">HR</text>
-                    <circle cx="100" cy="180" r="22" fill="rgba(22,21,20,.9)" stroke="rgba(74,222,128,.4)" stroke-width="1.5"/>
-                    <text x="100" y="184" text-anchor="middle" font-family="DM Mono" font-size="7" fill="#4ade80" opacity=".8">MKT</text>
-                    <circle r="3" fill="#4ade80" opacity=".8"><animateMotion dur="4s" repeatCount="indefinite" path="M240,60 L380,180"/></circle>
-                    <circle r="2.5" fill="#c9a84c" opacity=".7"><animateMotion dur="5s" repeatCount="indefinite" begin="1s" path="M380,320 L100,180"/></circle>
-                    <circle r="2" fill="#4ade80" opacity=".6"><animateMotion dur="6s" repeatCount="indefinite" begin="2s" path="M100,320 L380,180"/></circle>
-                    <circle r="2.5" fill="#c9a84c" opacity=".5"><animateMotion dur="4.5s" repeatCount="indefinite" begin=".5s" path="M240,420 L240,60"/></circle>
-                    <line x1="30" y1="450" x2="55" y2="450" stroke="#4ade80" stroke-width="1.5"/>
-                    <text x="60" y="454" font-family="DM Mono" font-size="9" fill="#4ade80" opacity=".7">Tangible</text>
-                    <line x1="130" y1="450" x2="155" y2="450" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4 5"/>
-                    <text x="160" y="454" font-family="DM Mono" font-size="9" fill="#c9a84c" opacity=".7">Intangible</text>
+                    <circle cx="240" cy="240" r="220" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
+                    <circle cx="240" cy="240" r="160" stroke="rgba(99,102,241,0.04)" stroke-width="1"/>
+                    <circle cx="240" cy="240" r="90" stroke="rgba(99,102,241,0.08)" stroke-width="1" stroke-dasharray="4 8"/>
+                    <line x1="240" y1="60" x2="380" y2="180" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
+                    <line x1="380" y1="180" x2="380" y2="320" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
+                    <line x1="380" y1="320" x2="240" y2="420" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
+                    <line x1="240" y1="420" x2="100" y2="320" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
+                    <line x1="100" y1="320" x2="100" y2="180" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
+                    <line x1="100" y1="180" x2="240" y2="60" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
+                    <line x1="240" y1="60" x2="380" y2="320" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
+                    <line x1="380" y1="180" x2="240" y2="420" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
+                    <line x1="380" y1="320" x2="100" y2="180" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
+                    <line x1="240" y1="420" x2="240" y2="60" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".4"/>
+                    <line x1="100" y1="320" x2="380" y2="180" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".4"/>
+                    <line x1="100" y1="180" x2="380" y2="320" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".3"/>
+                    <circle cx="240" cy="240" r="28" fill="rgba(99,102,241,0.08)" stroke="#6366f1" stroke-width="1.5"/>
+                    <circle cx="240" cy="240" r="6" fill="#6366f1"/>
+                    <text x="240" y="248" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6366f1" opacity=".7" letter-spacing="1">VNA</text>
+                    <circle cx="240" cy="60" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(99,102,241,.4)" stroke-width="1.5"/>
+                    <text x="240" y="64" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#6366f1" opacity=".8">AJUNTAMENT</text>
+                    <circle cx="380" cy="180" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(0,230,118,.4)" stroke-width="1.5"/>
+                    <text x="380" y="184" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#00e676" opacity=".8">ENTITATS</text>
+                    <circle cx="380" cy="320" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(99,102,241,.4)" stroke-width="1.5"/>
+                    <text x="380" y="324" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#6366f1" opacity=".8">VEÏNS</text>
+                    <circle cx="240" cy="420" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(0,230,118,.4)" stroke-width="1.5"/>
+                    <text x="240" y="424" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#00e676" opacity=".8">COOPERATIVES</text>
+                    <circle cx="100" cy="320" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(99,102,241,.4)" stroke-width="1.5"/>
+                    <text x="100" y="324" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#6366f1" opacity=".8">COMERÇOS</text>
+                    <circle cx="100" cy="180" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(0,230,118,.4)" stroke-width="1.5"/>
+                    <text x="100" y="184" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#00e676" opacity=".8">VOLUNTARIAT</text>
+                    <circle r="3" fill="#00e676" opacity=".8"><animateMotion dur="4s" repeatCount="indefinite" path="M240,60 L380,180"/></circle>
+                    <circle r="2.5" fill="#6366f1" opacity=".7"><animateMotion dur="5s" repeatCount="indefinite" begin="1s" path="M380,320 L100,180"/></circle>
+                    <circle r="2" fill="#00e676" opacity=".6"><animateMotion dur="6s" repeatCount="indefinite" begin="2s" path="M100,320 L380,180"/></circle>
+                    <circle r="2.5" fill="#6366f1" opacity=".5"><animateMotion dur="4.5s" repeatCount="indefinite" begin=".5s" path="M240,420 L240,60"/></circle>
+                    <line x1="30" y1="450" x2="55" y2="450" stroke="#00e676" stroke-width="1.5"/>
+                    <text x="60" y="454" font-family="JetBrains Mono" font-size="9" fill="#00e676" opacity=".7">Tangible</text>
+                    <line x1="130" y1="450" x2="155" y2="450" stroke="#6366f1" stroke-width="1" stroke-dasharray="4 5"/>
+                    <text x="160" y="454" font-family="JetBrains Mono" font-size="9" fill="#6366f1" opacity=".7">Intangible</text>
                 </svg>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CLIENTS -->
-<section class="clients-strip">
+<!-- EL PROBLEMA / ENFOQUE -->
+<section class="enfoc" id="enfoc">
     <div class="container">
-        <p class="clients-label" data-i18n="clients.label">Organizations that have trusted us</p>
-        <div class="clients-grid">
-            <span class="client-name">IKEA</span><span class="client-name">Porsche</span>
-            <span class="client-name">Mercedes</span><span class="client-name">SEAT</span>
-            <span class="client-name">Telefónica</span><span class="client-name">Vodafone</span>
-            <span class="client-name">UBS</span><span class="client-name">Novartis</span>
-            <span class="client-name">La Caixa</span><span class="client-name">BBVA</span>
-            <span class="client-name">FC Barcelona</span><span class="client-name">Akzo Nobel</span>
-        </div>
-    </div>
-</section>
-
-<!-- WHAT VNA SEES -->
-<section class="what-is" id="vna">
-    <div class="container">
-        <div class="what-grid">
-            <div class="what-content fade-up">
-                <div class="section-eyebrow" style="margin-bottom:1.5rem;" data-i18n="vna.eyebrow">The methodology</div>
-                <h3 data-i18n-html="vna.h3">What org charts <em>cannot show</em></h3>
-                <p data-i18n="vna.p1">Value Network Analysis (VNA), developed by Verna Allee, maps your organization as a living ecosystem of exchanges. The formal deliverables — contracts, code, revenue — are only half the picture.</p>
-                <p data-i18n-html="vna.p2">The other half is <strong>what your org chart never captures</strong>: the trust that makes people share knowledge, the informal favors that unblock projects, the rhythmic synchronization that turns a group into a team.</p>
-                <p data-i18n-html="vna.p3">We have applied this methodology across <strong>multiple engagements with IKEA</strong>, Porsche, and global leaders — unlocking value flows that no conventional analysis had detected.</p>
+        <div class="enfoc-grid">
+            <div class="enfoc-content fade-up">
+                <div class="section-eyebrow" style="margin-bottom:1.5rem;" data-i18n="enfoc.eyebrow">El repte</div>
+                <h3 data-i18n-html="enfoc.h3">Moltes ganes. <em>Poca estructura.</em></h3>
+                <p data-i18n="enfoc.p1">La majoria de projectes ciutadans —bancs de temps, biblioteques de coses, comunitats energètiques, horts comunitaris— neixen amb una empenta enorme de voluntariat. I s'apaguen igual de ràpid: no per falta d'il·lusió, sinó per falta de governança, rols clars i relleu generacional.</p>
+                <p data-i18n-html="enfoc.p2"><strong>Dues o tres persones ho sostenen tot fins que es cremen.</strong> Quan marxen, el projecte marxa amb elles. És el patró que veiem repetir-se en ajuntaments, ateneus i cooperatives de tot el territori.</p>
+                <p data-i18n-html="enfoc.p3">La Psicologia Social i Comunitària no ve a posar més voluntat. Ve a posar <strong>l'esquelet que la voluntat necessita</strong> per no ensorrar-se: rols, confiança, ritme i dades reals sobre qui sosté què.</p>
                 <div class="pull-quote">
-                    <p data-i18n="vna.quote">"Physical strength collapses without trust and rhythmic synchronization. So does every organization."</p>
+                    <p data-i18n="enfoc.quote">"Un projecte ciutadà no fracassa per falta de cor. Fracassa per falta d'esquelet."</p>
                 </div>
             </div>
             <div class="fade-up" style="animation-delay:.15s">
                 <div class="tangible-intangible">
                     <div class="tx-card tangible">
-                        <div class="tx-label">Tangibles ——</div>
-                        <h4 data-i18n="vna.tangible.h4">What gets counted</h4>
-                        <p data-i18n="vna.tangible.p">Contracts, software, money, deliverables. Visible in your management systems. Necessary, but not sufficient.</p>
+                        <div class="tx-label">Es veu ——</div>
+                        <h4 data-i18n="enfoc.tangible.h4">El que es diu a les reunions</h4>
+                        <p data-i18n="enfoc.tangible.p">Hores de voluntariat, quotes, subvencions, actes. Visible sobre el paper. Necessari, però no suficient.</p>
                     </div>
                     <div class="tx-card intangible">
-                        <div class="tx-label">Intangibles - - -</div>
-                        <h4 data-i18n="vna.intangible.h4">What moves everything</h4>
-                        <p data-i18n="vna.intangible.p">Trust, knowledge, favors, reputation. No ERP records them — but they determine whether the tangibles actually flow.</p>
+                        <div class="tx-label">No es veu - - -</div>
+                        <h4 data-i18n="enfoc.intangible.h4">El que ho sosté de veritat</h4>
+                        <p data-i18n="enfoc.intangible.p">Confiança veïnal, favors, coneixement acumulat, reputació. Cap acta ho recull — però decideix si el projecte aguanta.</p>
                     </div>
                 </div>
-                <div style="margin-top:1rem;padding:1.5rem;background:var(--surface);border:1px solid var(--border);">
-                    <p style="font-family:var(--mono);font-size:.75rem;color:var(--muted);line-height:1.7;" data-i18n-html="vna.note"><span style="color:var(--gold);">→</span> The difference between an organization that delivers and one that stalls is almost never in the formal processes. It is in the unmapped intangibles.</p>
+                <div style="margin-top:1rem;padding:1.5rem;background:var(--bg-panel);border:1px solid var(--border);">
+                    <p style="font-family:var(--mono);font-size:.75rem;color:var(--muted);line-height:1.7;" data-i18n-html="enfoc.note"><span style="color:var(--accent-indigo);">→</span> La diferència entre un projecte que dura i un que es col·lapsa gairebé mai és als processos formals. Està en els intangibles no mapats.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CASTELLERA CASE -->
-<section class="castellera" id="castellera">
+<!-- TRÍADA -->
+<section class="triada" id="triada">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="triada.eyebrow">La nostra metodologia</div>
+            <h2 data-i18n-html="triada.h2">Tres peces. <em>Un únic sistema.</em></h2>
+            <p data-i18n="triada.intro">Cohesió, diagnòstic i sostenibilitat: la tríada que fem servir per convertir bona voluntat en un ecosistema que s'autogestiona.</p>
+        </div>
+        <div class="triada-grid fade-up">
+            <div class="triada-card triada-cohesio">
+                <span class="triada-label" data-i18n="triada.cohesio.label">Cohesió · El Cor</span>
+                <h3 data-i18n="triada.cohesio.h3">Fent Pinya</h3>
+                <p data-i18n="triada.cohesio.p">Dinàmiques vivencials basades en l'estructura i els valors dels castells humans. En poques hores, un grup de veïns, tècnics o sòcies experimenta físicament el que després necessitarà per sostenir un projecte: confiança, interdependència i seguretat psicològica.</p>
+                <div class="triada-tags"><span class="triada-tag" data-i18n="triada.cohesio.tag1">Confiança veïnal</span><span class="triada-tag" data-i18n="triada.cohesio.tag2">Interdependència</span></div>
+            </div>
+            <div class="triada-card triada-diagnostic">
+                <span class="triada-label" data-i18n="triada.diagnostic.label">Diagnòstic · El Cervell</span>
+                <h3 data-i18n="triada.diagnostic.h3">Value Network Analysis</h3>
+                <p data-i18n="triada.diagnostic.p">Apliquem la metodologia de Verna Allee per mapar l'ecosistema local: qui es relaciona amb qui, què s'intercanvia i quins fluxos de valor —confiança, favors, coneixement— no apareixen enlloc. Els fem visibles abans que es trenquin.</p>
+                <div class="triada-tags"><span class="triada-tag" data-i18n="triada.diagnostic.tag1">Mapa d'ecosistema</span><span class="triada-tag" data-i18n="triada.diagnostic.tag2">Fluxos ocults</span></div>
+            </div>
+            <div class="triada-card triada-motor">
+                <span class="triada-label" data-i18n="triada.motor.label">Sostenibilitat · El Motor</span>
+                <h3 data-i18n="triada.motor.h3">SOS</h3>
+                <p data-i18n="triada.motor.p">Infraestructura digital i descentralitzada amb tauler àgils perquè el projecte no depengui de la memòria (ni del cansament) de dues persones. Rols clars, registre transparent, autogestió justa.</p>
+                <div class="triada-tags"><span class="triada-tag" data-i18n="triada.motor.tag1">Tauler àgils</span><span class="triada-tag" data-i18n="triada.motor.tag2">Autogestió</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FENT PINYA EN DETALL -->
+<section class="fentpinya" id="fentpinya">
     <div class="container">
         <div class="section-header fade-up" style="margin-bottom:4rem;">
-            <div class="section-eyebrow" data-i18n="cas.eyebrow">Live case study</div>
-            <h2 data-i18n-html="cas.h2">The Castellers:<br><em>a 200-year-old value network</em></h2>
-            <p data-i18n="cas.intro">A Castellers tower is the most transparent value network that exists. Every role, every transaction, every intangible — visible in real time. Three lessons every C-suite needs to see.</p>
+            <div class="section-eyebrow" data-i18n="fp.eyebrow">Cohesió en acció</div>
+            <h2 data-i18n-html="fp.h2">Els Castells:<br><em>una xarxa de valor de 200 anys</em></h2>
+            <p data-i18n="fp.intro">Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que aplica el Taller Fent Pinya.</p>
         </div>
-        <div class="castellera-grid">
+        <div class="fentpinya-grid">
             <div class="colla-svg-wrap fade-up">
                 <svg id="collaSvg" viewBox="0 0 360 520" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -378,74 +381,64 @@
                     </defs>
 
                     <!-- Nivel labels -->
-                    <text x="18" y="74"  font-family="DM Mono,monospace" font-size="7" fill="#e040fb" opacity=".6" letter-spacing="1">POM</text>
-                    <text x="18" y="194" font-family="DM Mono,monospace" font-size="7" fill="#6366f1" opacity=".6" letter-spacing="1">TRONC</text>
-                    <text x="18" y="420" font-family="DM Mono,monospace" font-size="7" fill="#00b0ff" opacity=".6" letter-spacing="1">PINYA</text>
+                    <text x="18" y="74"  font-family="JetBrains Mono,monospace" font-size="7" fill="#e040fb" opacity=".6" letter-spacing="1">POM</text>
+                    <text x="18" y="194" font-family="JetBrains Mono,monospace" font-size="7" fill="#6366f1" opacity=".6" letter-spacing="1">TRONC</text>
+                    <text x="18" y="420" font-family="JetBrains Mono,monospace" font-size="7" fill="#00b0ff" opacity=".6" letter-spacing="1">PINYA</text>
 
                     <!-- Separadores nivel -->
                     <line x1="55" y1="120" x2="320" y2="120" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
                     <line x1="55" y1="290" x2="320" y2="290" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
 
                     <!-- PINYA — base -->
-                    <!-- Baixos (centro) -->
                     <g class="colla-node" data-id="baixos" style="cursor:pointer;">
                         <circle cx="180" cy="420" r="28" fill="#0a0a14" stroke="#00b0ff" stroke-width="2" stroke-opacity=".6"/>
-                        <text x="180" y="417" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#00b0ff" opacity=".9">BAIXOS</text>
-                        <text x="180" y="428" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="#00b0ff" opacity=".5">anchor</text>
+                        <text x="180" y="417" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#00b0ff" opacity=".9">BAIXOS</text>
+                        <text x="180" y="428" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#00b0ff" opacity=".5">ancora</text>
                     </g>
-                    <!-- Crosses -->
                     <g class="colla-node" data-id="crosses" style="cursor:pointer;">
                         <circle cx="100" cy="400" r="22" fill="#0a0a14" stroke="#00b0ff" stroke-width="1.5" stroke-opacity=".5"/>
-                        <text x="100" y="396" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="#00b0ff" opacity=".8">CROSSES</text>
-                        <text x="100" y="406" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".45">brace</text>
+                        <text x="100" y="396" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#00b0ff" opacity=".8">CROSSES</text>
+                        <text x="100" y="406" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".45">suport</text>
                     </g>
-                    <!-- Contraforts -->
                     <g class="colla-node" data-id="contraforts" style="cursor:pointer;">
                         <circle cx="260" cy="400" r="22" fill="#0a0a14" stroke="#00b0ff" stroke-width="1.5" stroke-opacity=".5"/>
-                        <text x="260" y="396" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".8">CONTRA-</text>
-                        <text x="260" y="406" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".8">FORTS</text>
+                        <text x="260" y="396" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".8">CONTRA-</text>
+                        <text x="260" y="406" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".8">FORTS</text>
                     </g>
-                    <!-- Mans / Laterals -->
                     <g class="colla-node" data-id="mans" style="cursor:pointer;">
                         <circle cx="70"  cy="460" r="20" fill="#0a0a14" stroke="#00b0ff" stroke-width="1" stroke-opacity=".4"/>
-                        <text x="70" y="463" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="#00b0ff" opacity=".6">MANS</text>
+                        <text x="70" y="463" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#00b0ff" opacity=".6">MANS</text>
                     </g>
                     <g class="colla-node" data-id="laterals" style="cursor:pointer;">
                         <circle cx="290" cy="460" r="20" fill="#0a0a14" stroke="#00b0ff" stroke-width="1" stroke-opacity=".4"/>
-                        <text x="290" y="463" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".6">LATERALS</text>
+                        <text x="290" y="463" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#00b0ff" opacity=".6">LATERALS</text>
                     </g>
 
                     <!-- TRONC -->
-                    <!-- Segons -->
                     <g class="colla-node" data-id="segons" style="cursor:pointer;">
                         <circle cx="180" cy="260" r="26" fill="#0a0a14" stroke="#6366f1" stroke-width="2" stroke-opacity=".7"/>
-                        <text x="180" y="257" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#6366f1" opacity=".9">SEGONS</text>
-                        <text x="180" y="268" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#6366f1" opacity=".5">2nd floor</text>
+                        <text x="180" y="257" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#6366f1" opacity=".9">SEGONS</text>
+                        <text x="180" y="268" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#6366f1" opacity=".5">2n pis</text>
                     </g>
-                    <!-- Terços -->
                     <g class="colla-node" data-id="tercos" style="cursor:pointer;">
                         <circle cx="180" cy="200" r="23" fill="#0a0a14" stroke="#6366f1" stroke-width="1.5" stroke-opacity=".6"/>
-                        <text x="180" y="197" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="#6366f1" opacity=".85">TERÇOS</text>
-                        <text x="180" y="207" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#6366f1" opacity=".45">3rd floor</text>
+                        <text x="180" y="197" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#6366f1" opacity=".85">TERÇOS</text>
+                        <text x="180" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#6366f1" opacity=".45">3r pis</text>
                     </g>
 
                     <!-- POM DE DALT -->
-                    <!-- Dosos -->
                     <g class="colla-node" data-id="dosos" style="cursor:pointer;">
                         <circle cx="180" cy="148" r="20" fill="#0a0a14" stroke="#e040fb" stroke-width="1.5" stroke-opacity=".6"/>
-                        <text x="180" y="151" text-anchor="middle" font-family="DM Mono,monospace" font-size="7.5" fill="#e040fb" opacity=".85">DOSOS</text>
+                        <text x="180" y="151" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#e040fb" opacity=".85">DOSOS</text>
                     </g>
-                    <!-- Acotxador -->
                     <g class="colla-node" data-id="acotxador" style="cursor:pointer;">
                         <circle cx="180" cy="100" r="18" fill="#0a0a14" stroke="#e040fb" stroke-width="1.5" stroke-opacity=".7"/>
-                        <text x="180" y="97" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#e040fb" opacity=".9">ACOTXA-</text>
-                        <text x="180" y="107" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#e040fb" opacity=".9">DOR</text>
+                        <text x="180" y="97" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#e040fb" opacity=".9">ACOTXA-</text>
+                        <text x="180" y="107" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#e040fb" opacity=".9">DOR</text>
                     </g>
-                    <!-- Enxaneta -->
                     <g class="colla-node" data-id="enxaneta" style="cursor:pointer;">
                         <circle cx="180" cy="56" r="16" fill="rgba(224,64,251,0.12)" stroke="#e040fb" stroke-width="2" stroke-opacity=".9"/>
-                        <text x="180" y="60" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="#e040fb" opacity="1">ENXANETA</text>
-                        <!-- aleta animada -->
+                        <text x="180" y="60" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#e040fb" opacity="1">ENXANETA</text>
                         <line x1="180" y1="42" x2="196" y2="28" stroke="#e040fb" stroke-width="1.5" stroke-opacity=".7">
                             <animate attributeName="stroke-opacity" values=".7;1;.7" dur="2s" repeatCount="indefinite"/>
                         </line>
@@ -453,56 +446,42 @@
                     </g>
 
                     <!-- Control nodes -->
-                    <!-- Cap de Colla -->
                     <g class="colla-node" data-id="cap" style="cursor:pointer;">
-                        <circle cx="52" cy="300" r="24" fill="rgba(201,168,76,0.08)" stroke="#c9a84c" stroke-width="2" stroke-opacity=".8"/>
-                        <text x="52" y="297" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="#c9a84c" opacity=".9">CAP DE</text>
-                        <text x="52" y="307" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="#c9a84c" opacity=".9">COLLA</text>
+                        <circle cx="52" cy="300" r="24" fill="rgba(255,145,0,0.1)" stroke="#ff9100" stroke-width="2" stroke-opacity=".8"/>
+                        <text x="52" y="297" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#ff9100" opacity=".9">CAP DE</text>
+                        <text x="52" y="307" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#ff9100" opacity=".9">COLLA</text>
                     </g>
-                    <!-- Músics -->
                     <g class="colla-node" data-id="musics" style="cursor:pointer;">
-                        <circle cx="308" cy="300" r="22" fill="rgba(201,168,76,0.06)" stroke="#c9a84c" stroke-width="1.5" stroke-opacity=".6"/>
-                        <text x="308" y="297" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="#c9a84c" opacity=".85">MÚSICS</text>
-                        <text x="308" y="307" text-anchor="middle" font-family="DM Mono,monospace" font-size="6.5" fill="#c9a84c" opacity=".5">grallers</text>
+                        <circle cx="308" cy="300" r="22" fill="rgba(255,145,0,0.08)" stroke="#ff9100" stroke-width="1.5" stroke-opacity=".6"/>
+                        <text x="308" y="297" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#ff9100" opacity=".85">MÚSICS</text>
+                        <text x="308" y="307" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6.5" fill="#ff9100" opacity=".5">grallers</text>
                     </g>
 
-                    <!-- ARISTAS TANGIBLES (sólidas, verde) -->
-                    <!-- Baixos → Segons: soporte físico -->
-                    <path d="M180,392 L180,286" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
-                    <path d="M174,286 L174,392" fill="none" stroke="#4ade80" stroke-width="1" stroke-opacity=".4" marker-end="url(#arr)"/>
-                    <!-- Segons → Terços -->
-                    <path d="M180,234 L180,223" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
-                    <path d="M174,223 L174,234" fill="none" stroke="#4ade80" stroke-width="1" stroke-opacity=".4" marker-end="url(#arr)"/>
-                    <!-- Terços → Dosos -->
-                    <path d="M180,177 L180,168" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
-                    <!-- Dosos → Acotxador -->
-                    <path d="M180,128 L180,118" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
-                    <!-- Acotxador → Enxaneta -->
-                    <path d="M180,82 L180,72" fill="none" stroke="#4ade80" stroke-width="2" stroke-opacity=".9" marker-end="url(#arr)"/>
-                    <!-- Crosses → Baixos -->
-                    <path d="M120,400 L152,415" fill="none" stroke="#4ade80" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
-                    <!-- Contraforts → Baixos -->
-                    <path d="M240,400 L208,415" fill="none" stroke="#4ade80" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
+                    <!-- ARISTAS TANGIBLES (verd) -->
+                    <path d="M180,392 L180,286" fill="none" stroke="#00e676" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
+                    <path d="M174,286 L174,392" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".4" marker-end="url(#arr)"/>
+                    <path d="M180,234 L180,223" fill="none" stroke="#00e676" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
+                    <path d="M174,223 L174,234" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".4" marker-end="url(#arr)"/>
+                    <path d="M180,177 L180,168" fill="none" stroke="#00e676" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
+                    <path d="M180,128 L180,118" fill="none" stroke="#00e676" stroke-width="1.5" stroke-opacity=".7" marker-end="url(#arr)"/>
+                    <path d="M180,82 L180,72" fill="none" stroke="#00e676" stroke-width="2" stroke-opacity=".9" marker-end="url(#arr)"/>
+                    <path d="M120,400 L152,415" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
+                    <path d="M240,400 L208,415" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
 
-                    <!-- ARISTAS INTANGIBLES (punteadas, dorado) -->
-                    <!-- Cap → toda la red (líneas desde cap hacia tronc) -->
-                    <path d="M74,290 Q120,260 154,260" fill="none" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".6" marker-end="url(#arr)"/>
-                    <path d="M66,280 Q80,200 157,185" fill="none" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".5" marker-end="url(#arr)"/>
-                    <path d="M60,278 Q60,100 162,66" fill="none" stroke="#c9a84c" stroke-width=".8" stroke-dasharray="4,5" stroke-opacity=".35" marker-end="url(#arr)"/>
-                    <!-- Músics → Baixos (telemetría acústica) -->
-                    <path d="M286,300 Q260,360 210,410" fill="none" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".5" marker-end="url(#arr)"/>
-                    <!-- Músics → Tronc (sincronización) -->
-                    <path d="M286,295 Q250,250 206,252" fill="none" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".5" marker-end="url(#arr)"/>
-                    <!-- Enxaneta → todos (éxtasis colectivo) -->
-                    <path d="M166,60 Q80,120 76,288" fill="none" stroke="#c9a84c" stroke-width=".8" stroke-dasharray="3,6" stroke-opacity=".3" marker-end="url(#arr)"/>
-                    <!-- Baixos → Crosses (seguridad psicológica) -->
-                    <path d="M155,413 L122,402" fill="none" stroke="#c9a84c" stroke-width=".8" stroke-dasharray="3,5" stroke-opacity=".4" marker-end="url(#arr)"/>
+                    <!-- ARISTAS INTANGIBLES (taronja) -->
+                    <path d="M74,290 Q120,260 154,260" fill="none" stroke="#ff9100" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".6" marker-end="url(#arr)"/>
+                    <path d="M66,280 Q80,200 157,185" fill="none" stroke="#ff9100" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".5" marker-end="url(#arr)"/>
+                    <path d="M60,278 Q60,100 162,66" fill="none" stroke="#ff9100" stroke-width=".8" stroke-dasharray="4,5" stroke-opacity=".35" marker-end="url(#arr)"/>
+                    <path d="M286,300 Q260,360 210,410" fill="none" stroke="#ff9100" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".5" marker-end="url(#arr)"/>
+                    <path d="M286,295 Q250,250 206,252" fill="none" stroke="#ff9100" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".5" marker-end="url(#arr)"/>
+                    <path d="M166,60 Q80,120 76,288" fill="none" stroke="#ff9100" stroke-width=".8" stroke-dasharray="3,6" stroke-opacity=".3" marker-end="url(#arr)"/>
+                    <path d="M155,413 L122,402" fill="none" stroke="#ff9100" stroke-width=".8" stroke-dasharray="3,5" stroke-opacity=".4" marker-end="url(#arr)"/>
 
-                    <!-- Partículas animadas en aristas clave -->
-                    <circle r="2.5" fill="#4ade80" opacity=".8"><animateMotion dur="2.5s" repeatCount="indefinite" path="M180,392 L180,286"/></circle>
-                    <circle r="2" fill="#4ade80" opacity=".7"><animateMotion dur="2s" repeatCount="indefinite" begin=".5s" path="M180,234 L180,223 L180,177 L180,168 L180,128 L180,118 L180,82 L180,72"/></circle>
-                    <circle r="1.5" fill="#c9a84c" opacity=".6"><animateMotion dur="3s" repeatCount="indefinite" path="M74,290 Q120,260 154,260"/></circle>
-                    <circle r="1.5" fill="#c9a84c" opacity=".5"><animateMotion dur="3.5s" repeatCount="indefinite" begin="1s" path="M286,300 Q260,360 210,410"/></circle>
+                    <!-- Partículas animadas -->
+                    <circle r="2.5" fill="#00e676" opacity=".8"><animateMotion dur="2.5s" repeatCount="indefinite" path="M180,392 L180,286"/></circle>
+                    <circle r="2" fill="#00e676" opacity=".7"><animateMotion dur="2s" repeatCount="indefinite" begin=".5s" path="M180,234 L180,223 L180,177 L180,168 L180,128 L180,118 L180,82 L180,72"/></circle>
+                    <circle r="1.5" fill="#ff9100" opacity=".6"><animateMotion dur="3s" repeatCount="indefinite" path="M74,290 Q120,260 154,260"/></circle>
+                    <circle r="1.5" fill="#ff9100" opacity=".5"><animateMotion dur="3.5s" repeatCount="indefinite" begin="1s" path="M286,300 Q260,360 210,410"/></circle>
                 </svg>
                 <div class="colla-tooltip" id="collaTooltip">
                     <div class="colla-tooltip-title" id="collaTooltipTitle"></div>
@@ -511,23 +490,23 @@
                 </div>
             </div>
 
-            <div class="castellera-content fade-up" style="animation-delay:.15s">
-                <div class="section-eyebrow" style="text-align:left;margin-bottom:1.5rem;" data-i18n="cas.insights.eyebrow">3 business insights</div>
-                <h3 data-i18n-html="cas.h3">The oldest proof that <em>intangibles come first</em></h3>
-                <p data-i18n="cas.p1">A Castellers human tower is a live VNA map. Every role, every transaction, every intangible — visible in real time, with immediate consequences. Hover over each node to see its value flows.</p>
+            <div class="fentpinya-content fade-up" style="animation-delay:.15s">
+                <div class="section-eyebrow" style="text-align:left;margin-bottom:1.5rem;" data-i18n="fp.insights.eyebrow">3 lliçons per a la comunitat</div>
+                <h3 data-i18n-html="fp.h3">La prova més antiga que <em>els intangibles van primer</em></h3>
+                <p data-i18n="fp.p1">Una torre humana és un mapa VNA en viu. Cada rol, cada intercanvi, cada intangible — visible en temps real, amb conseqüències immediates. Passa el cursor per cada node per veure els seus fluxos de valor.</p>
 
-                <div class="castellera-insights">
-                    <div class="castellera-insight">
-                        <div class="castellera-insight-title" data-i18n="cas.i1.title">01 · Intangibles are prerequisites</div>
-                        <p data-i18n-html="cas.i1.p">Physical strength (tangible) collapses instantly without trust and rhythmic sync (intangible). <strong>In any org: formal processes fail without the informal trust network underneath.</strong> VNA makes that network visible before it breaks.</p>
+                <div class="fentpinya-insights">
+                    <div class="fentpinya-insight">
+                        <div class="fentpinya-insight-title" data-i18n="fp.i1.title">01 · La confiança és primer</div>
+                        <p data-i18n-html="fp.i1.p">La força física (tangible) s'ensorra a l'instant sense confiança i sincronia rítmica (intangible). <strong>En qualsevol projecte comunitari passa igual: els acords formals no aguanten si no hi ha vincle veïnal per sota.</strong> Fent Pinya fa visible aquest vincle abans que es trenqui.</p>
                     </div>
-                    <div class="castellera-insight">
-                        <div class="castellera-insight-title" data-i18n="cas.i2.title">02 · Cascade failure from one broken link</div>
-                        <p data-i18n-html="cas.i2.p">A crossa giving way 2mm generates a full network collapse. <strong>One broken intangible — unreciprocated trust, a lost knowledge transfer — can bring down the whole system.</strong> VNA shows which links are at risk before the crisis.</p>
+                    <div class="fentpinya-insight">
+                        <div class="fentpinya-insight-title" data-i18n="fp.i2.title">02 · Un vincle trencat, tot el sistema</div>
+                        <p data-i18n-html="fp.i2.p">Una crossa que cedeix 2mm fa caure tota la torre. <strong>Un/a voluntari/a que es crema sense relleu pot enfonsar un banc de temps sencer.</strong> El diagnòstic VNA mostra quins vincles estan en risc abans de la crisi.</p>
                     </div>
-                    <div class="castellera-insight">
-                        <div class="castellera-insight-title" data-i18n="cas.i3.title">03 · Leadership must distribute as orgs scale</div>
-                        <p data-i18n-html="cas.i3.p">In folre+manilles castles, the Cap de Colla can't see the core. Authority distributes to organic leaders embedded in each layer. <strong>As your organization grows, centralized control breaks. VNA shows who the real decision nodes are.</strong></p>
+                    <div class="fentpinya-insight">
+                        <div class="fentpinya-insight-title" data-i18n="fp.i3.title">03 · El lideratge s'ha de repartir</div>
+                        <p data-i18n-html="fp.i3.p">En castells complexos, el Cap de Colla no veu el nucli: l'autoritat es reparteix entre líders naturals de cada nivell. <strong>Els projectes que duren fan el mateix — no depenen d'una sola persona imprescindible.</strong></p>
                     </div>
                 </div>
             </div>
@@ -535,134 +514,81 @@
     </div>
 </section>
 
-<!-- ZOOM MODEL -->
-<section class="zoom-section" id="zoom">
+<!-- SOS -->
+<section class="sos-section" id="sos">
     <div class="container">
-        <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="zoom.eyebrow">Scalable methodology</div>
-            <h2 data-i18n-html="zoom.h2">The organizational <em>Google Earth</em></h2>
-            <p data-i18n="zoom.intro">Complex organizations can't be mapped all at once. We zoom in and out — from ecosystem to team — revealing how value flows across every level. Each map can stand alone or integrate into the full picture.</p>
-        </div>
-        <div class="zoom-grid fade-up">
-            <div class="zoom-card zoom-macro">
-                <span class="zoom-label" data-i18n="zoom.macro.label">Macro · Zoom out</span>
-                <h3 data-i18n="zoom.macro.h3">Strategic ecosystem</h3>
-                <div class="zoom-nodes">
-                    <strong>Nodes:</strong> Business units, partners, regulators, key clients.<br>
-                    <strong>Mapped flows:</strong> Capital flows, major contracts, brand reputation, market intelligence, strategic alliances.
-                </div>
-                <p style="font-size:.83rem;color:var(--muted);line-height:1.7;">Ideal for M&amp;A, market entry, or business model redesign — when you need the full ecosystem view before committing.</p>
-                <span class="zoom-use" data-i18n="zoom.macro.use">M&amp;A · Market entry · Restructuring</span>
-            </div>
-            <div class="zoom-card zoom-meso">
-                <span class="zoom-label" data-i18n="zoom.meso.label">Meso · Zoom medium</span>
-                <h3 data-i18n="zoom.meso.h3">Operational dynamics</h3>
-                <div class="zoom-nodes">
-                    <strong>Nodes:</strong> Departments, cross-functional teams, project committees.<br>
-                    <strong>Mapped flows:</strong> Data pipelines, approvals, shared budgets, cross-team trust, operational coordination.
-                </div>
-                <p style="font-size:.83rem;color:var(--muted);line-height:1.7;">Where silos destroy value. VNA shows exactly which interdepartmental links are broken — and which informal bridges are holding everything together.</p>
-                <span class="zoom-use" data-i18n="zoom.meso.use">Process optimization · Product launch</span>
-            </div>
-            <div class="zoom-card zoom-micro">
-                <span class="zoom-label" data-i18n="zoom.micro.label">Micro · Zoom in</span>
-                <h3 data-i18n="zoom.micro.h3">Team execution</h3>
-                <div class="zoom-nodes">
-                    <strong>Nodes:</strong> Specific roles, individual specialists, team leads.<br>
-                    <strong>Mapped flows:</strong> Documents, code, mentoring, emotional support, blocker resolution, tacit knowledge transfer.
-                </div>
-                <p style="font-size:.83rem;color:var(--muted);line-height:1.7;">Exposes hidden knowledge hubs — the people the org actually depends on — before they leave or burn out. Essential for succession planning and onboarding.</p>
-                <span class="zoom-use" data-i18n="zoom.micro.use">Talent · Burnout prevention · Onboarding</span>
-            </div>
-        </div>
-
-        <!-- Butterfly effect -->
-        <div class="butterfly fade-up" style="margin-top:2px;">
-            <div class="butterfly-inner">
-                <div class="butterfly-title" data-i18n-html="butterfly.title">The <span>butterfly effect</span> your board needs to see</div>
-                <div class="butterfly-chain">
-                    <div class="butterfly-step micro">
-                        <div class="butterfly-step-level">Micro</div>
-                        <div class="butterfly-step-desc" data-i18n="butterfly.s1">No mentoring for a Junior Dev. Tacit knowledge stays locked in one Senior.</div>
-                    </div>
-                    <div class="butterfly-step meso">
-                        <div class="butterfly-step-level">Meso</div>
-                        <div class="butterfly-step-desc" data-i18n="butterfly.s2">Unoptimized code saturates DevOps infrastructure. Deployment pipeline slows.</div>
-                    </div>
-                    <div class="butterfly-step meso">
-                        <div class="butterfly-step-level">Meso</div>
-                        <div class="butterfly-step-desc" data-i18n="butterfly.s3">Product roadmap stalls. Sales promises features Engineering can't deliver.</div>
-                    </div>
-                    <div class="butterfly-step macro">
-                        <div class="butterfly-step-level">Macro</div>
-                        <div class="butterfly-step-desc" data-i18n-html="butterfly.s4"><strong>SLA breach. Q4 contract renewal at risk. Board-level reputation damage.</strong></div>
-                    </div>
-                </div>
-                <div class="butterfly-conclusion">
-                    <p data-i18n-html="butterfly.conclusion">VNA doesn't fix the fire. <strong>It shows you the code of your organizational culture — so you can reprogram it from the root.</strong></p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- METHODOLOGY -->
-<section class="metodologia" id="methodology">
-    <div class="container">
-        <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="method.eyebrow">The process</div>
-            <h2 data-i18n-html="method.h2">Four steps to <em>systemic transformation</em></h2>
-            <p data-i18n="method.intro">We don't audit. We map, diagnose and co-design with your teams — so the knowledge stays inside your organization.</p>
-        </div>
-        <div class="steps-grid">
-            <div class="step fade-up">
-                <span class="step-number">01</span>
-                <h3 data-i18n="method.s1.h3">Role Definition</h3>
-                <p data-i18n="method.s1.p">We shift from job titles to active roles in the value flow — exposing the real communication structure, independent of the org chart.</p>
-            </div>
-            <div class="step fade-up" style="animation-delay:.1s">
-                <span class="step-number">02</span>
-                <h3 data-i18n="method.s2.h3">Transaction Mapping</h3>
-                <p data-i18n="method.s2.p">We identify MUST deliverables (contractual: code, money, reports) and EXTRA deliverables (intangibles: trust, favors, knowledge) that build durable relationships.</p>
-            </div>
-            <div class="step fade-up" style="animation-delay:.2s">
-                <span class="step-number">03</span>
-                <h3 data-i18n="method.s3.h3">Network Diagnostics</h3>
-                <p data-i18n="method.s3.p">We visualize where the network stalls — operationally or emotionally — detecting weak links and value flows that are not being reciprocated.</p>
-            </div>
-            <div class="step fade-up" style="animation-delay:.3s">
-                <span class="step-number">04</span>
-                <h3 data-i18n="method.s4.h3">Systemic Redesign</h3>
-                <p data-i18n="method.s4.p">Through high-impact insights, we resequence the network to create multiple optimized pathways — building agility and resilience into the ecosystem.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- AI READINESS -->
-<section class="ia-section" id="ai">
-    <div class="container">
-        <div class="ia-grid">
-            <div class="ia-content fade-up">
-                <div class="section-eyebrow" style="text-align:left;margin-bottom:1.5rem;" data-i18n="ai.eyebrow">AI readiness</div>
-                <h2 data-i18n-html="ai.h2">You cannot automate <em>what you haven't mapped.</em></h2>
-                <p data-i18n="ai.p1">Before deploying AI agents, your organization must have total clarity on its value transactions. Our VNA expertise makes us the right partner for this step — because the map precedes the automation.</p>
-                <p data-i18n-html="ai.p2">We identify exactly which operational nodes are ready for AI Agents, <strong>preserving human capital</strong> for the critical intangible exchanges: strategy, trust, and empathy.</p>
-                <p data-i18n="ai.p3">We built SOS — our own Swarm Operating System — to demonstrate live what an AI agent ecosystem operating on a real VNA map looks like.</p>
+        <div class="sos-grid">
+            <div class="sos-content fade-up">
+                <div class="section-eyebrow" style="text-align:left;margin-bottom:1.5rem;" data-i18n="sos.eyebrow">Sostenibilitat</div>
+                <h2 data-i18n-html="sos.h2">La infraestructura que <em>fa que duri.</em></h2>
+                <p data-i18n="sos.p1">El SOS (Social Operating System) és la infraestructura digital i descentralitzada que sosté un projecte quan les dues persones que el van engegar es cansen, marxen o simplement necessiten repartir la càrrega.</p>
+                <p data-i18n-html="sos.p2">Tauler àgils, rols visibles i un registre transparent de qui aporta què, <strong>perquè la comunitat es pugui autogestionar de manera justa</strong> — sense un/a coordinador/a imprescindible ni jerarquies opaques.</p>
+                <ul class="sos-bullets">
+                    <li data-i18n="sos.b1">Tauler Kanban del projecte, obert a tothom</li>
+                    <li data-i18n="sos.b2">Rols i responsabilitats sempre visibles</li>
+                    <li data-i18n="sos.b3">Registre just de qui aporta què</li>
+                    <li data-i18n="sos.b4">Funciona encara que algú marxi del projecte</li>
+                </ul>
             </div>
             <div class="fade-up" style="animation-delay:.2s">
-                <div class="ia-demo-card">
-                    <div class="ia-demo-header">
-                        <div class="ia-demo-dot"></div>
-                        <span class="ia-demo-title">SOS V11 · Swarm Operating System</span>
+                <div class="sos-demo-card">
+                    <div class="sos-demo-header">
+                        <div class="sos-demo-dot"></div>
+                        <span class="sos-demo-title">SOS · Social Operating System</span>
                     </div>
-                    <div class="ia-demo-body">
-                        <p data-i18n="ai.demo.p1">A live tool where AI agents map value networks, generate Work Orders, calculate equity economics and learn from the knowledge accumulated across projects.</p>
-                        <p data-i18n="ai.demo.p2">Built on VNA methodology. Every node is an active role. Every line is a transaction the system understands, measures, and can automate.</p>
-                        <p style="color:var(--muted);font-size:.78rem;margin-top:1.5rem;" data-i18n="ai.demo.p3">Open access — explore the tool and see how VNA becomes operational architecture.</p>
+                    <div class="sos-demo-body">
+                        <p data-i18n="sos.demo.p1">Una eina viva on cada projecte comunitari mapa la seva xarxa de valor, genera tasques, reparteix l'aportació de manera justa i aprèn del coneixement acumulat en altres ecosistemes locals.</p>
+                        <p data-i18n="sos.demo.p2">Construïda sobre la metodologia VNA. Cada node és un rol actiu. Cada línia és un intercanvi que el sistema entén, mesura i ajuda a sostenir.</p>
+                        <p style="color:var(--muted);font-size:.78rem;margin-top:1.5rem;" data-i18n="sos.demo.p3">Accés obert — explora l'eina i veu com el diagnòstic es converteix en infraestructura viva.</p>
                     </div>
-                    <a href="https://sos.teamtowershuma.com" target="_blank" class="ia-demo-link" data-i18n="ai.demo.link">Explore SOS live</a>
+                    <a href="https://sos.teamtowershuma.com" target="_blank" class="sos-demo-link" data-i18n="sos.demo.link">Explora el SOS en viu</a>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- APRENENTATGE CONTINU -->
+<section class="aprenentatge" id="aprenentatge">
+    <div class="container">
+        <div class="aprenentatge-grid">
+            <div class="aprenentatge-content fade-up">
+                <div class="section-eyebrow" style="text-align:left;margin-bottom:1.5rem;" data-i18n="apr.eyebrow">Sobirania a llarg termini</div>
+                <h2 data-i18n-html="apr.h2">Perquè la comunitat <em>aprengui a caminar sola.</em></h2>
+                <p data-i18n="apr.p1">Fem servir metodologies d'aprenentatge continu i emprenedoria cooperativa inspirades en el model finlandès Tiimiakatemia (Universitat de Mondragón): equips que aprenen fent, es formen entre iguals i assumeixen risc i responsabilitat compartida.</p>
+                <p data-i18n-html="apr.p2">L'objectiu no és que ens necessiteu sempre a nosaltres. És que <strong>la comunitat esdevingui sobirana i viable a llarg termini</strong>, amb capacitat pròpia per formar nous membres, prendre decisions i créixer sense dependre d'un tècnic extern.</p>
+            </div>
+            <div class="pilars fade-up" style="animation-delay:.15s">
+                <div class="pilar">
+                    <div class="pilar-title" data-i18n="apr.pilar1.title">Aprendre fent</div>
+                    <p data-i18n="apr.pilar1.p">El projecte real és l'aula. Cada repte es converteix en aprenentatge compartit, no en teoria aïllada.</p>
+                </div>
+                <div class="pilar">
+                    <div class="pilar-title" data-i18n="apr.pilar2.title">Equips que s'autogestionen</div>
+                    <p data-i18n="apr.pilar2.p">Cel·les de treball entre iguals, amb rols rotatius i decisions preses en comú, no per un sol líder.</p>
+                </div>
+                <div class="pilar">
+                    <div class="pilar-title" data-i18n="apr.pilar3.title">Risc i responsabilitat compartida</div>
+                    <p data-i18n="apr.pilar3.p">Cooperativisme real: qui hi posa feina, hi té veu i part del resultat — no promeses, fets.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SOBRE EL FACILITADOR -->
+<section class="facilitador" id="facilitador">
+    <div class="container">
+        <div class="facilitador-inner fade-up">
+            <div class="section-eyebrow" data-i18n="fac.eyebrow">Qui hi ha darrere</div>
+            <h3>Álvaro Solache</h3>
+            <div class="facilitador-role" data-i18n="fac.role">Psicòleg social · Innovador comunitari</div>
+            <p data-i18n="fac.p1">Arrelat a Torrelles de Foix, al cor de l'Alt Penedès, més de 20 anys dissenyant dinàmiques de grup i xarxes de valor, avui posats al servei dels ecosistemes locals.</p>
+            <p data-i18n-html="fac.p2">Ajuda ajuntaments, cooperatives, ateneus i associacions a donar <strong>estructura real</strong> a les seves iniciatives ciutadanes. Proximitat de poble, rigor metodològic — zero fum, solucions reals.</p>
+            <div class="facilitador-tags">
+                <span data-i18n="fac.tag1">Psicologia Social i Comunitària</span>
+                <span data-i18n="fac.tag2">Value Network Analysis</span>
+                <span data-i18n="fac.tag3">Facilitació Fent Pinya</span>
             </div>
         </div>
     </div>
@@ -671,16 +597,16 @@
 <!-- CTA FINAL -->
 <section class="cta-final">
     <div class="container">
-        <h2 class="fade-up" data-i18n-html="cta.h2">Is your organization ready<br>for <em>Kaikaku?</em></h2>
+        <h2 class="fade-up" data-i18n-html="cta.h2">Té el teu territori un projecte<br>que <em>necessita estructura?</em></h2>
         <div class="cto-quote fade-up" style="animation-delay:.1s">
             <blockquote>
-                <span data-i18n-html="cta.quote">"This node of technical debt is consuming <strong>30% of our value delivery capacity</strong>, putting Q4 contract renewals at risk. We need to restructure this network."</span>
+                <span data-i18n-html="cta.quote">"Teníem un banc de temps amb moltes ganes i cap manera de saber qui aportava què. Ara tenim un mapa, uns rols i un tauler que ho sostenen tot."</span>
             </blockquote>
-            <cite>— What your CTO can say to the board after a VNA engagement</cite>
+            <cite data-i18n="cta.cite">— El que un tècnic de promoció econòmica pot dir després d'un diagnòstic VNA</cite>
         </div>
         <div class="actions fade-up" style="animation-delay:.2s">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" class="btn-primary" data-i18n="cta.btn1">Book a VNA Session</a>
-            <a href="https://sos.teamtowershuma.com" target="_blank" class="btn-ghost" data-i18n="cta.btn2">Explore SOS live →</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" class="btn-primary" data-i18n="cta.btn1">Parla'ns del teu repte local</a>
+            <a href="https://sos.teamtowershuma.com" target="_blank" class="btn-ghost" data-i18n="cta.btn2">Explora el SOS en viu →</a>
         </div>
     </div>
 </section>
@@ -689,167 +615,187 @@
 <footer>
     <div class="container">
         <div class="footer-inner">
-            <div class="footer-logo">Team<span>Towers</span></div>
+            <div class="footer-logo">Team<span>Towers</span> Humà</div>
             <ul class="footer-links">
-                <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" data-i18n="footer.lacolla">La Colla</a></li>
+                <li><a href="#fentpinya" data-i18n="footer.fentpinya">Fent Pinya</a></li>
                 <li><a href="https://sos.teamtowershuma.com" target="_blank">SOS</a></li>
-                <li><a href="#castellera" data-i18n="footer.castellers">Castellers Case</a></li>
-                <li><a href="#zoom" data-i18n="footer.zoom">Zoom Model</a></li>
-                <li><a href="#ai" data-i18n="footer.ai">AI Readiness</a></li>
+                <li><a href="#aprenentatge" data-i18n="footer.aprenentatge">Aprenentatge</a></li>
+                <li><a href="#facilitador" data-i18n="footer.facilitador">Facilitador</a></li>
             </ul>
-            <p class="footer-copy">© 2025 TeamTowers · Força · Equilibri · Valor · Seny</p>
+            <p class="footer-copy">© 2026 TeamTowers Humà · Força · Equilibri · Valor · Seny</p>
         </div>
     </div>
 </footer>
 
 <script>
-// ── Traducciones ──────────────────────────────────────────────────────────────
+// ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
-en: {
-  'nav.castellers':'The Castellers Case','nav.zoom':'Zoom Model','nav.ai':'AI Readiness','nav.demo':'Live Demo →',
-  'hero.eyebrow':'VNA Consultancy · Verna Allee Methodology',
-  'hero.h1':'Every org has<br><em>two structures.</em><br>We map the real one.',
-  'hero.desc':'The org chart shows reporting lines. The value network reveals the real flows of trust, knowledge, and collaboration that determine whether your organization delivers — or slowly breaks down.',
-  'hero.cta1':'Book a VNA Session','hero.cta2':'See the Live Tool →',
-  'clients.label':'Organizations that have trusted us',
-  'vna.eyebrow':'The methodology',
-  'vna.h3':'What org charts <em>cannot show</em>',
-  'vna.p1':'Value Network Analysis (VNA), developed by Verna Allee, maps your organization as a living ecosystem of exchanges. The formal deliverables — contracts, code, revenue — are only half the picture.',
-  'vna.p2':'The other half is <strong>what your org chart never captures</strong>: the trust that makes people share knowledge, the informal favors that unblock projects, the rhythmic synchronization that turns a group into a team.',
-  'vna.p3':'We have applied this methodology across <strong>multiple engagements with IKEA</strong>, Porsche, and global leaders — unlocking value flows that no conventional analysis had detected.',
-  'vna.quote':'"Physical strength collapses without trust and rhythmic synchronization. So does every organization."',
-  'vna.tangible.h4':'What gets counted',
-  'vna.tangible.p':'Contracts, software, money, deliverables. Visible in your management systems. Necessary, but not sufficient.',
-  'vna.intangible.h4':'What moves everything',
-  'vna.intangible.p':'Trust, knowledge, favors, reputation. No ERP records them — but they determine whether the tangibles actually flow.',
-  'vna.note':'<span style="color:var(--gold);">→</span> The difference between an organization that delivers and one that stalls is almost never in the formal processes. It is in the unmapped intangibles.',
-  'cas.eyebrow':'Live case study',
-  'cas.h2':'The Castellers:<br><em>a 200-year-old value network</em>',
-  'cas.intro':'A Castellers tower is the most transparent value network that exists. Every role, every transaction, every intangible — visible in real time. Three lessons every C-suite needs to see.',
-  'cas.insights.eyebrow':'3 business insights',
-  'cas.h3':'The oldest proof that <em>intangibles come first</em>',
-  'cas.p1':'A Castellers human tower is a live VNA map. Every role, every transaction, every intangible — visible in real time, with immediate consequences. Hover over each node to see its value flows.',
-  'cas.i1.title':'01 · Intangibles are prerequisites',
-  'cas.i1.p':'Physical strength (tangible) collapses instantly without trust and rhythmic sync (intangible). <strong>In any org: formal processes fail without the informal trust network underneath.</strong> VNA makes that network visible before it breaks.',
-  'cas.i2.title':'02 · Cascade failure from one broken link',
-  'cas.i2.p':'A crossa giving way 2mm generates a full network collapse. <strong>One broken intangible — unreciprocated trust, a lost knowledge transfer — can bring down the whole system.</strong> VNA shows which links are at risk before the crisis.',
-  'cas.i3.title':'03 · Leadership must distribute as orgs scale',
-  'cas.i3.p':"In folre+manilles castles, the Cap de Colla can't see the core. Authority distributes to organic leaders embedded in each layer. <strong>As your organization grows, centralized control breaks. VNA shows who the real decision nodes are.</strong>",
-  'zoom.eyebrow':'Scalable methodology',
-  'zoom.h2':'The organizational <em>Google Earth</em>',
-  'zoom.intro':"Complex organizations can't be mapped all at once. We zoom in and out — from ecosystem to team — revealing how value flows across every level. Each map can stand alone or integrate into the full picture.",
-  'zoom.macro.label':'Macro · Zoom out','zoom.macro.h3':'Strategic ecosystem',
-  'zoom.macro.use':'M&A · Market entry · Restructuring',
-  'zoom.meso.label':'Meso · Zoom medium','zoom.meso.h3':'Operational dynamics',
-  'zoom.meso.use':'Process optimization · Product launch',
-  'zoom.micro.label':'Micro · Zoom in','zoom.micro.h3':'Team execution',
-  'zoom.micro.use':'Talent · Burnout prevention · Onboarding',
-  'butterfly.title':'The <span>butterfly effect</span> your board needs to see',
-  'butterfly.s1':'No mentoring for a Junior Dev. Tacit knowledge stays locked in one Senior.',
-  'butterfly.s2':'Unoptimized code saturates DevOps infrastructure. Deployment pipeline slows.',
-  'butterfly.s3':"Product roadmap stalls. Sales promises features Engineering can't deliver.",
-  'butterfly.s4':'<strong>SLA breach. Q4 contract renewal at risk. Board-level reputation damage.</strong>',
-  'butterfly.conclusion':"VNA doesn't fix the fire. <strong>It shows you the code of your organizational culture — so you can reprogram it from the root.</strong>",
-  'method.eyebrow':'The process',
-  'method.h2':'Four steps to <em>systemic transformation</em>',
-  'method.intro':"We don't audit. We map, diagnose and co-design with your teams — so the knowledge stays inside your organization.",
-  'method.s1.h3':'Role Definition',
-  'method.s1.p':'We shift from job titles to active roles in the value flow — exposing the real communication structure, independent of the org chart.',
-  'method.s2.h3':'Transaction Mapping',
-  'method.s2.p':'We identify MUST deliverables (contractual: code, money, reports) and EXTRA deliverables (intangibles: trust, favors, knowledge) that build durable relationships.',
-  'method.s3.h3':'Network Diagnostics',
-  'method.s3.p':'We visualize where the network stalls — operationally or emotionally — detecting weak links and value flows that are not being reciprocated.',
-  'method.s4.h3':'Systemic Redesign',
-  'method.s4.p':'Through high-impact insights, we resequence the network to create multiple optimized pathways — building agility and resilience into the ecosystem.',
-  'ai.eyebrow':'AI readiness',
-  'ai.h2':"You cannot automate <em>what you haven't mapped.</em>",
-  'ai.p1':'Before deploying AI agents, your organization must have total clarity on its value transactions. Our VNA expertise makes us the right partner for this step — because the map precedes the automation.',
-  'ai.p2':'We identify exactly which operational nodes are ready for AI Agents, <strong>preserving human capital</strong> for the critical intangible exchanges: strategy, trust, and empathy.',
-  'ai.p3':'We built SOS — our own Swarm Operating System — to demonstrate live what an AI agent ecosystem operating on a real VNA map looks like.',
-  'ai.demo.p1':'A live tool where AI agents map value networks, generate Work Orders, calculate equity economics and learn from the knowledge accumulated across projects.',
-  'ai.demo.p2':'Built on VNA methodology. Every node is an active role. Every line is a transaction the system understands, measures, and can automate.',
-  'ai.demo.p3':'Open access — explore the tool and see how VNA becomes operational architecture.',
-  'ai.demo.link':'Explore SOS live',
-  'cta.h2':'Is your organization ready<br>for <em>Kaikaku?</em>',
-  'cta.quote':'"This node of technical debt is consuming <strong>30% of our value delivery capacity</strong>, putting Q4 contract renewals at risk. We need to restructure this network."',
-  'cta.cite':'— What your CTO can say to the board after a VNA engagement',
-  'cta.btn1':'Book a VNA Session','cta.btn2':'Explore SOS live →',
-  'footer.lacolla':'La Colla','footer.castellers':'Castellers Case','footer.zoom':'Zoom Model','footer.ai':'AI Readiness'
+ca: {
+  'nav.enfoc':'El Repte','nav.fentpinya':'Fent Pinya','nav.sos':'El SOS','nav.demo':'Viu-ho →',
+  'hero.eyebrow':'Laboratori de Psicologia Comunitària i Acció Social',
+  'hero.h1':'Convertim la <em>voluntat veïnal</em><br>en <em>xarxes que duren.</em>',
+  'hero.desc':'Ajudem ajuntaments, cooperatives i entitats a passar de la bona voluntat a la infraestructura: bancs de temps, biblioteques de coses o comunitats energètiques amb rols clars, governança i futur — sense dependre de dues persones cremades. Amb el focus posat a l\'Alt Penedès i el Garraf, i obertes a treballar a qualsevol territori que vulgui organitzar-se.',
+  'hero.cta1':'Parla\'ns del teu territori','hero.cta2':'Veure el SOS en viu →',
+  'enfoc.eyebrow':'El repte',
+  'enfoc.h3':'Moltes ganes. <em>Poca estructura.</em>',
+  'enfoc.p1':'La majoria de projectes ciutadans —bancs de temps, biblioteques de coses, comunitats energètiques, horts comunitaris— neixen amb una empenta enorme de voluntariat. I s\'apaguen igual de ràpid: no per falta d\'il·lusió, sinó per falta de governança, rols clars i relleu generacional.',
+  'enfoc.p2':'<strong>Dues o tres persones ho sostenen tot fins que es cremen.</strong> Quan marxen, el projecte marxa amb elles. És el patró que veiem repetir-se en ajuntaments, ateneus i cooperatives de tot el territori.',
+  'enfoc.p3':'La Psicologia Social i Comunitària no ve a posar més voluntat. Ve a posar <strong>l\'esquelet que la voluntat necessita</strong> per no ensorrar-se: rols, confiança, ritme i dades reals sobre qui sosté què.',
+  'enfoc.quote':'"Un projecte ciutadà no fracassa per falta de cor. Fracassa per falta d\'esquelet."',
+  'enfoc.tangible.h4':'El que es diu a les reunions',
+  'enfoc.tangible.p':'Hores de voluntariat, quotes, subvencions, actes. Visible sobre el paper. Necessari, però no suficient.',
+  'enfoc.intangible.h4':'El que ho sosté de veritat',
+  'enfoc.intangible.p':'Confiança veïnal, favors, coneixement acumulat, reputació. Cap acta ho recull — però decideix si el projecte aguanta.',
+  'enfoc.note':'<span style="color:var(--accent-indigo);">→</span> La diferència entre un projecte que dura i un que es col·lapsa gairebé mai és als processos formals. Està en els intangibles no mapats.',
+  'triada.eyebrow':'La nostra metodologia',
+  'triada.h2':'Tres peces. <em>Un únic sistema.</em>',
+  'triada.intro':'Cohesió, diagnòstic i sostenibilitat: la tríada que fem servir per convertir bona voluntat en un ecosistema que s\'autogestiona.',
+  'triada.cohesio.label':'Cohesió · El Cor','triada.cohesio.h3':'Fent Pinya',
+  'triada.cohesio.p':'Dinàmiques vivencials basades en l\'estructura i els valors dels castells humans. En poques hores, un grup de veïns, tècnics o sòcies experimenta físicament el que després necessitarà per sostenir un projecte: confiança, interdependència i seguretat psicològica.',
+  'triada.cohesio.tag1':'Confiança veïnal','triada.cohesio.tag2':'Interdependència',
+  'triada.diagnostic.label':'Diagnòstic · El Cervell','triada.diagnostic.h3':'Value Network Analysis',
+  'triada.diagnostic.p':'Apliquem la metodologia de Verna Allee per mapar l\'ecosistema local: qui es relaciona amb qui, què s\'intercanvia i quins fluxos de valor —confiança, favors, coneixement— no apareixen enlloc. Els fem visibles abans que es trenquin.',
+  'triada.diagnostic.tag1':'Mapa d\'ecosistema','triada.diagnostic.tag2':'Fluxos ocults',
+  'triada.motor.label':'Sostenibilitat · El Motor','triada.motor.h3':'SOS',
+  'triada.motor.p':'Infraestructura digital i descentralitzada amb tauler àgils perquè el projecte no depengui de la memòria (ni del cansament) de dues persones. Rols clars, registre transparent, autogestió justa.',
+  'triada.motor.tag1':'Tauler àgils','triada.motor.tag2':'Autogestió',
+  'fp.eyebrow':'Cohesió en acció',
+  'fp.h2':'Els Castells:<br><em>una xarxa de valor de 200 anys</em>',
+  'fp.intro':'Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que aplica el Taller Fent Pinya.',
+  'fp.insights.eyebrow':'3 lliçons per a la comunitat',
+  'fp.h3':'La prova més antiga que <em>els intangibles van primer</em>',
+  'fp.p1':'Una torre humana és un mapa VNA en viu. Cada rol, cada intercanvi, cada intangible — visible en temps real, amb conseqüències immediates. Passa el cursor per cada node per veure els seus fluxos de valor.',
+  'fp.i1.title':'01 · La confiança és primer',
+  'fp.i1.p':'La força física (tangible) s\'ensorra a l\'instant sense confiança i sincronia rítmica (intangible). <strong>En qualsevol projecte comunitari passa igual: els acords formals no aguanten si no hi ha vincle veïnal per sota.</strong> Fent Pinya fa visible aquest vincle abans que es trenqui.',
+  'fp.i2.title':'02 · Un vincle trencat, tot el sistema',
+  'fp.i2.p':'Una crossa que cedeix 2mm fa caure tota la torre. <strong>Un/a voluntari/a que es crema sense relleu pot enfonsar un banc de temps sencer.</strong> El diagnòstic VNA mostra quins vincles estan en risc abans de la crisi.',
+  'fp.i3.title':'03 · El lideratge s\'ha de repartir',
+  'fp.i3.p':'En castells complexos, el Cap de Colla no veu el nucli: l\'autoritat es reparteix entre líders naturals de cada nivell. <strong>Els projectes que duren fan el mateix — no depenen d\'una sola persona imprescindible.</strong>',
+  'sos.eyebrow':'Sostenibilitat',
+  'sos.h2':'La infraestructura que <em>fa que duri.</em>',
+  'sos.p1':'El SOS (Social Operating System) és la infraestructura digital i descentralitzada que sosté un projecte quan les dues persones que el van engegar es cansen, marxen o simplement necessiten repartir la càrrega.',
+  'sos.p2':'Tauler àgils, rols visibles i un registre transparent de qui aporta què, <strong>perquè la comunitat es pugui autogestionar de manera justa</strong> — sense un/a coordinador/a imprescindible ni jerarquies opaques.',
+  'sos.b1':'Tauler Kanban del projecte, obert a tothom',
+  'sos.b2':'Rols i responsabilitats sempre visibles',
+  'sos.b3':'Registre just de qui aporta què',
+  'sos.b4':'Funciona encara que algú marxi del projecte',
+  'sos.demo.p1':'Una eina viva on cada projecte comunitari mapa la seva xarxa de valor, genera tasques, reparteix l\'aportació de manera justa i aprèn del coneixement acumulat en altres ecosistemes locals.',
+  'sos.demo.p2':'Construïda sobre la metodologia VNA. Cada node és un rol actiu. Cada línia és un intercanvi que el sistema entén, mesura i ajuda a sostenir.',
+  'sos.demo.p3':'Accés obert — explora l\'eina i veu com el diagnòstic es converteix en infraestructura viva.',
+  'sos.demo.link':'Explora el SOS en viu',
+  'apr.eyebrow':'Sobirania a llarg termini',
+  'apr.h2':'Perquè la comunitat <em>aprengui a caminar sola.</em>',
+  'apr.p1':'Fem servir metodologies d\'aprenentatge continu i emprenedoria cooperativa inspirades en el model finlandès Tiimiakatemia (Universitat de Mondragón): equips que aprenen fent, es formen entre iguals i assumeixen risc i responsabilitat compartida.',
+  'apr.p2':'L\'objectiu no és que ens necessiteu sempre a nosaltres. És que <strong>la comunitat esdevingui sobirana i viable a llarg termini</strong>, amb capacitat pròpia per formar nous membres, prendre decisions i créixer sense dependre d\'un tècnic extern.',
+  'apr.pilar1.title':'Aprendre fent',
+  'apr.pilar1.p':'El projecte real és l\'aula. Cada repte es converteix en aprenentatge compartit, no en teoria aïllada.',
+  'apr.pilar2.title':'Equips que s\'autogestionen',
+  'apr.pilar2.p':'Cel·les de treball entre iguals, amb rols rotatius i decisions preses en comú, no per un sol líder.',
+  'apr.pilar3.title':'Risc i responsabilitat compartida',
+  'apr.pilar3.p':'Cooperativisme real: qui hi posa feina, hi té veu i part del resultat — no promeses, fets.',
+  'fac.eyebrow':'Qui hi ha darrere',
+  'fac.role':'Psicòleg social · Innovador comunitari',
+  'fac.p1':'Arrelat a Torrelles de Foix, al cor de l\'Alt Penedès, més de 20 anys dissenyant dinàmiques de grup i xarxes de valor, avui posats al servei dels ecosistemes locals.',
+  'fac.p2':'Ajuda ajuntaments, cooperatives, ateneus i associacions a donar <strong>estructura real</strong> a les seves iniciatives ciutadanes. Proximitat de poble, rigor metodològic — zero fum, solucions reals.',
+  'fac.tag1':'Psicologia Social i Comunitària','fac.tag2':'Value Network Analysis','fac.tag3':'Facilitació Fent Pinya',
+  'cta.h2':'Té el teu territori un projecte<br>que <em>necessita estructura?</em>',
+  'cta.quote':'"Teníem un banc de temps amb moltes ganes i cap manera de saber qui aportava què. Ara tenim un mapa, uns rols i un tauler que ho sostenen tot."',
+  'cta.cite':'— El que un tècnic de promoció econòmica pot dir després d\'un diagnòstic VNA',
+  'cta.btn1':'Parla\'ns del teu repte local','cta.btn2':'Explora el SOS en viu →',
+  'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprenentatge','footer.facilitador':'Facilitador'
 },
 es: {
-  'nav.castellers':'El Caso Castellers','nav.zoom':'Modelo Zoom','nav.ai':'IA & Automatización','nav.demo':'Demo en Vivo →',
-  'hero.eyebrow':'Consultoría VNA · Metodología Verna Allee',
-  'hero.h1':'Toda organización tiene<br><em>dos estructuras.</em><br>Mapeamos la real.',
-  'hero.desc':'El organigrama muestra líneas jerárquicas. La red de valor revela los flujos reales de confianza, conocimiento y colaboración que determinan si tu organización entrega resultados — o se desintegra lentamente.',
-  'hero.cta1':'Reserva una Sesión VNA','hero.cta2':'Ver la Herramienta en Vivo →',
-  'clients.label':'Organizaciones que han confiado en nosotros',
-  'vna.eyebrow':'La metodología',
-  'vna.h3':'Lo que los organigramas <em>no pueden mostrar</em>',
-  'vna.p1':'El Análisis de Red de Valor (VNA), desarrollado por Verna Allee, mapea tu organización como un ecosistema vivo de intercambios. Los entregables formales — contratos, código, ingresos — son solo la mitad del cuadro.',
-  'vna.p2':'La otra mitad es <strong>lo que el organigrama nunca captura</strong>: la confianza que hace que las personas compartan conocimiento, los favores informales que desbloquean proyectos, la sincronización rítmica que convierte un grupo en un equipo.',
-  'vna.p3':'Hemos aplicado esta metodología en <strong>múltiples proyectos con IKEA</strong>, Porsche y líderes globales — desbloqueando flujos de valor que ningún análisis convencional había detectado.',
-  'vna.quote':'"La fuerza física colapsa sin confianza y sincronización rítmica. Lo mismo ocurre en cualquier organización."',
-  'vna.tangible.h4':'Lo que se contabiliza',
-  'vna.tangible.p':'Contratos, software, dinero, entregables. Visibles en tus sistemas de gestión. Necesarios, pero no suficientes.',
-  'vna.intangible.h4':'Lo que mueve todo',
-  'vna.intangible.p':'Confianza, conocimiento, favores, reputación. Ningún ERP los registra — pero determinan si los tangibles realmente fluyen.',
-  'vna.note':'<span style="color:var(--gold);">→</span> La diferencia entre una organización que entrega y una que se paraliza casi nunca está en los procesos formales. Está en los intangibles no mapeados.',
-  'cas.eyebrow':'Caso de estudio en vivo',
-  'cas.h2':'Los Castellers:<br><em>una red de valor de 200 años</em>',
-  'cas.intro':'Una torre de Castellers es la red de valor más transparente que existe. Cada rol, cada transacción, cada intangible — visible en tiempo real. Tres lecciones que todo C-suite necesita ver.',
-  'cas.insights.eyebrow':'3 ideas clave de negocio',
-  'cas.h3':'La prueba más antigua de que <em>los intangibles son primero</em>',
-  'cas.p1':'Una torre humana de Castellers es un mapa VNA en vivo. Cada rol, cada transacción, cada intangible — visible en tiempo real, con consecuencias inmediatas. Pasa el cursor por cada nodo para ver sus flujos de valor.',
-  'cas.i1.title':'01 · Los intangibles son prerequisitos',
-  'cas.i1.p':'La fuerza física (tangible) colapsa instantáneamente sin confianza y sincronización rítmica (intangible). <strong>En cualquier organización: los procesos formales fallan sin la red informal de confianza que los sustenta.</strong> VNA hace esa red visible antes de que se rompa.',
-  'cas.i2.title':'02 · Fallo en cascada por un enlace roto',
-  'cas.i2.p':'Una crossa que cede 2mm genera el colapso total de la red. <strong>Un intangible roto — confianza no reciprocada, una transferencia de conocimiento perdida — puede derribar todo el sistema.</strong> VNA muestra qué enlaces están en riesgo antes de la crisis.',
-  'cas.i3.title':'03 · El liderazgo debe distribuirse al crecer',
-  'cas.i3.p':'En castillos con folre+manilles, el Cap de Colla no puede ver el núcleo. La autoridad se distribuye a líderes orgánicos en cada capa. <strong>A medida que tu organización crece, el control centralizado se rompe. VNA muestra quiénes son los nodos de decisión reales.</strong>',
-  'zoom.eyebrow':'Metodología escalable',
-  'zoom.h2':'El <em>Google Earth</em> organizacional',
-  'zoom.intro':'Las organizaciones complejas no pueden mapearse de una sola vez. Hacemos zoom hacia dentro y hacia fuera — desde el ecosistema hasta el equipo — revelando cómo fluye el valor en cada nivel.',
-  'zoom.macro.label':'Macro · Zoom externo','zoom.macro.h3':'Ecosistema estratégico',
-  'zoom.macro.use':'M&A · Entrada a mercados · Reestructuración',
-  'zoom.meso.label':'Meso · Zoom medio','zoom.meso.h3':'Dinámica operacional',
-  'zoom.meso.use':'Optimización de procesos · Lanzamiento de producto',
-  'zoom.micro.label':'Micro · Zoom interno','zoom.micro.h3':'Ejecución del equipo',
-  'zoom.micro.use':'Talento · Prevención de burnout · Onboarding',
-  'butterfly.title':'El <span>efecto mariposa</span> que tu directiva necesita ver',
-  'butterfly.s1':'Sin mentoría para un Junior Dev. El conocimiento tácito queda bloqueado en un Senior.',
-  'butterfly.s2':'El código no optimizado satura la infraestructura DevOps. El pipeline de despliegue se ralentiza.',
-  'butterfly.s3':'La hoja de ruta del producto se paraliza. Ventas promete funcionalidades que Ingeniería no puede entregar.',
-  'butterfly.s4':'<strong>Incumplimiento de SLA. Renovación de contrato de Q4 en riesgo. Daño reputacional a nivel directivo.</strong>',
-  'butterfly.conclusion':'VNA no apaga el fuego. <strong>Te muestra el código de tu cultura organizacional — para que puedas reprogramarlo desde la raíz.</strong>',
-  'method.eyebrow':'El proceso',
-  'method.h2':'Cuatro pasos hacia la <em>transformación sistémica</em>',
-  'method.intro':'No auditamos. Mapeamos, diagnosticamos y co-diseñamos con tus equipos — para que el conocimiento se quede dentro de tu organización.',
-  'method.s1.h3':'Definición de Roles',
-  'method.s1.p':'Pasamos de títulos de trabajo a roles activos en el flujo de valor — exponiendo la estructura real de comunicación, independientemente del organigrama.',
-  'method.s2.h3':'Mapeo de Transacciones',
-  'method.s2.p':'Identificamos entregables OBLIGATORIOS (contractuales: código, dinero, informes) y entregables EXTRA (intangibles: confianza, favores, conocimiento) que construyen relaciones duraderas.',
-  'method.s3.h3':'Diagnóstico de Red',
-  'method.s3.p':'Visualizamos dónde se paraliza la red — operacional o emocionalmente — detectando enlaces débiles y flujos de valor que no están siendo reciprocados.',
-  'method.s4.h3':'Rediseño Sistémico',
-  'method.s4.p':'A través de insights de alto impacto, reorganizamos la red para crear múltiples vías optimizadas — construyendo agilidad y resiliencia en el ecosistema.',
-  'ai.eyebrow':'Preparación para la IA',
-  'ai.h2':'No puedes automatizar <em>lo que no has mapeado.</em>',
-  'ai.p1':'Antes de desplegar agentes de IA, tu organización debe tener total claridad sobre sus transacciones de valor. Nuestra experiencia en VNA nos convierte en el socio adecuado para este paso — porque el mapa precede a la automatización.',
-  'ai.p2':'Identificamos exactamente qué nodos operacionales están listos para Agentes de IA, <strong>preservando el capital humano</strong> para los intercambios intangibles críticos: estrategia, confianza y empatía.',
-  'ai.p3':'Construimos SOS — nuestro propio Sistema Operativo de Swarm — para demostrar en vivo cómo es un ecosistema de agentes de IA operando sobre un mapa VNA real.',
-  'ai.demo.p1':'Una herramienta en vivo donde los agentes de IA mapean redes de valor, generan Órdenes de Trabajo, calculan economía de equidad y aprenden del conocimiento acumulado en los proyectos.',
-  'ai.demo.p2':'Construido sobre la metodología VNA. Cada nodo es un rol activo. Cada línea es una transacción que el sistema entiende, mide y puede automatizar.',
-  'ai.demo.p3':'Acceso abierto — explora la herramienta y ve cómo VNA se convierte en arquitectura operacional.',
-  'ai.demo.link':'Explorar SOS en vivo',
-  'cta.h2':'¿Está tu organización lista<br>para el <em>Kaikaku?</em>',
-  'cta.quote':'"Este nodo de deuda técnica está consumiendo <strong>el 30% de nuestra capacidad de entrega de valor</strong>, poniendo en riesgo las renovaciones de contratos del Q4. Necesitamos reestructurar esta red."',
-  'cta.cite':'— Lo que tu CTO puede decirle al directorio tras un engagement VNA',
-  'cta.btn1':'Reserva una Sesión VNA','cta.btn2':'Explorar SOS en vivo →',
-  'footer.lacolla':'La Colla','footer.castellers':'Caso Castellers','footer.zoom':'Modelo Zoom','footer.ai':'IA & Automatización'
+  'nav.enfoc':'El Reto','nav.fentpinya':'Fent Pinya','nav.sos':'El SOS','nav.demo':'Verlo en vivo →',
+  'hero.eyebrow':'Laboratorio de Psicología Comunitaria y Acción Social',
+  'hero.h1':'Convertimos la <em>voluntad vecinal</em><br>en <em>redes que duran.</em>',
+  'hero.desc':'Ayudamos a ayuntamientos, cooperativas y entidades a pasar de la buena voluntad a la infraestructura: bancos de tiempo, bibliotecas de las cosas o comunidades energéticas con roles claros, gobernanza y futuro — sin depender de dos personas quemadas. Con el foco puesto en el Alt Penedès y el Garraf, y abiertos a trabajar en cualquier territorio que quiera organizarse.',
+  'hero.cta1':'Hablemos de tu territorio','hero.cta2':'Ver el SOS en vivo →',
+  'enfoc.eyebrow':'El reto',
+  'enfoc.h3':'Muchas ganas. <em>Poca estructura.</em>',
+  'enfoc.p1':'La mayoría de proyectos ciudadanos —bancos de tiempo, bibliotecas de las cosas, comunidades energéticas, huertos comunitarios— nacen con un empujón enorme de voluntariado. Y se apagan igual de rápido: no por falta de ilusión, sino por falta de gobernanza, roles claros y relevo generacional.',
+  'enfoc.p2':'<strong>Dos o tres personas lo sostienen todo hasta quemarse.</strong> Cuando se van, el proyecto se va con ellas. Es el patrón que vemos repetirse en ayuntamientos, ateneos y cooperativas de todo el territorio.',
+  'enfoc.p3':'La Psicología Social y Comunitaria no viene a poner más voluntad. Viene a poner <strong>el esqueleto que la voluntad necesita</strong> para no derrumbarse: roles, confianza, ritmo y datos reales sobre quién sostiene qué.',
+  'enfoc.quote':'"Un proyecto ciudadano no fracasa por falta de corazón. Fracasa por falta de esqueleto."',
+  'enfoc.tangible.h4':'Lo que se dice en las reuniones',
+  'enfoc.tangible.p':'Horas de voluntariado, cuotas, subvenciones, actas. Visible sobre el papel. Necesario, pero no suficiente.',
+  'enfoc.intangible.h4':'Lo que lo sostiene de verdad',
+  'enfoc.intangible.p':'Confianza vecinal, favores, conocimiento acumulado, reputación. Ninguna acta lo recoge — pero decide si el proyecto aguanta.',
+  'enfoc.note':'<span style="color:var(--accent-indigo);">→</span> La diferencia entre un proyecto que dura y uno que colapsa casi nunca está en los procesos formales. Está en los intangibles no mapeados.',
+  'triada.eyebrow':'Nuestra metodología',
+  'triada.h2':'Tres piezas. <em>Un único sistema.</em>',
+  'triada.intro':'Cohesión, diagnóstico y sostenibilidad: la tríada que usamos para convertir buena voluntad en un ecosistema que se autogestiona.',
+  'triada.cohesio.label':'Cohesión · El Corazón','triada.cohesio.h3':'Fent Pinya',
+  'triada.cohesio.p':'Dinámicas vivenciales basadas en la estructura y los valores de los castells humanos. En pocas horas, un grupo de vecinos, técnicos o socias experimenta físicamente lo que después necesitará para sostener un proyecto: confianza, interdependencia y seguridad psicológica.',
+  'triada.cohesio.tag1':'Confianza vecinal','triada.cohesio.tag2':'Interdependencia',
+  'triada.diagnostic.label':'Diagnóstico · El Cerebro','triada.diagnostic.h3':'Value Network Analysis',
+  'triada.diagnostic.p':'Aplicamos la metodología de Verna Allee para mapear el ecosistema local: quién se relaciona con quién, qué se intercambia y qué flujos de valor —confianza, favores, conocimiento— no aparecen en ningún sitio. Los hacemos visibles antes de que se rompan.',
+  'triada.diagnostic.tag1':'Mapa de ecosistema','triada.diagnostic.tag2':'Flujos ocultos',
+  'triada.motor.label':'Sostenibilidad · El Motor','triada.motor.h3':'SOS',
+  'triada.motor.p':'Infraestructura digital y descentralizada con tableros ágiles para que el proyecto no dependa de la memoria (ni del cansancio) de dos personas. Roles claros, registro transparente, autogestión justa.',
+  'triada.motor.tag1':'Tableros ágiles','triada.motor.tag2':'Autogestión',
+  'fp.eyebrow':'Cohesión en acción',
+  'fp.h2':'Los Castells:<br><em>una red de valor de 200 años</em>',
+  'fp.intro':'Una torre humana es la red de valor más transparente que existe. Cada rol, cada intercambio, cada intangible — visible en tiempo real. Tres lecciones que aplica el Taller Fent Pinya.',
+  'fp.insights.eyebrow':'3 lecciones para la comunidad',
+  'fp.h3':'La prueba más antigua de que <em>los intangibles van primero</em>',
+  'fp.p1':'Una torre humana es un mapa VNA en vivo. Cada rol, cada intercambio, cada intangible — visible en tiempo real, con consecuencias inmediatas. Pasa el cursor por cada nodo para ver sus flujos de valor.',
+  'fp.i1.title':'01 · La confianza es primero',
+  'fp.i1.p':'La fuerza física (tangible) se derrumba al instante sin confianza y sincronía rítmica (intangible). <strong>En cualquier proyecto comunitario pasa igual: los acuerdos formales no aguantan si no hay vínculo vecinal debajo.</strong> Fent Pinya hace visible ese vínculo antes de que se rompa.',
+  'fp.i2.title':'02 · Un vínculo roto, todo el sistema',
+  'fp.i2.p':'Una crossa que cede 2mm hace caer toda la torre. <strong>Un/a voluntario/a que se quema sin relevo puede hundir un banco de tiempo entero.</strong> El diagnóstico VNA muestra qué vínculos están en riesgo antes de la crisis.',
+  'fp.i3.title':'03 · El liderazgo debe repartirse',
+  'fp.i3.p':'En castells complejos, el Cap de Colla no ve el núcleo: la autoridad se reparte entre líderes naturales de cada nivel. <strong>Los proyectos que duran hacen lo mismo — no dependen de una sola persona imprescindible.</strong>',
+  'sos.eyebrow':'Sostenibilidad',
+  'sos.h2':'La infraestructura que <em>hace que dure.</em>',
+  'sos.p1':'El SOS (Social Operating System) es la infraestructura digital y descentralizada que sostiene un proyecto cuando las dos personas que lo arrancaron se cansan, se van o simplemente necesitan repartir la carga.',
+  'sos.p2':'Tableros ágiles, roles visibles y un registro transparente de quién aporta qué, <strong>para que la comunidad se pueda autogestionar de forma justa</strong> — sin un/a coordinador/a imprescindible ni jerarquías opacas.',
+  'sos.b1':'Tablero Kanban del proyecto, abierto a todos',
+  'sos.b2':'Roles y responsabilidades siempre visibles',
+  'sos.b3':'Registro justo de quién aporta qué',
+  'sos.b4':'Funciona aunque alguien deje el proyecto',
+  'sos.demo.p1':'Una herramienta viva donde cada proyecto comunitario mapea su red de valor, genera tareas, reparte la aportación de forma justa y aprende del conocimiento acumulado en otros ecosistemas locales.',
+  'sos.demo.p2':'Construida sobre la metodología VNA. Cada nodo es un rol activo. Cada línea es un intercambio que el sistema entiende, mide y ayuda a sostener.',
+  'sos.demo.p3':'Acceso abierto — explora la herramienta y ve cómo el diagnóstico se convierte en infraestructura viva.',
+  'sos.demo.link':'Explora el SOS en vivo',
+  'apr.eyebrow':'Soberanía a largo plazo',
+  'apr.h2':'Para que la comunidad <em>aprenda a caminar sola.</em>',
+  'apr.p1':'Usamos metodologías de aprendizaje continuo y emprendimiento cooperativo inspiradas en el modelo finlandés Tiimiakatemia (Universidad de Mondragón): equipos que aprenden haciendo, se forman entre iguales y asumen riesgo y responsabilidad compartida.',
+  'apr.p2':'El objetivo no es que nos necesitéis siempre a nosotros. Es que <strong>la comunidad sea soberana y viable a largo plazo</strong>, con capacidad propia para formar nuevos miembros, tomar decisiones y crecer sin depender de un técnico externo.',
+  'apr.pilar1.title':'Aprender haciendo',
+  'apr.pilar1.p':'El proyecto real es el aula. Cada reto se convierte en aprendizaje compartido, no en teoría aislada.',
+  'apr.pilar2.title':'Equipos que se autogestionan',
+  'apr.pilar2.p':'Células de trabajo entre iguales, con roles rotativos y decisiones tomadas en común, no por un solo líder.',
+  'apr.pilar3.title':'Riesgo y responsabilidad compartida',
+  'apr.pilar3.p':'Cooperativismo real: quien pone trabajo, tiene voz y parte del resultado — no promesas, hechos.',
+  'fac.eyebrow':'Quién hay detrás',
+  'fac.role':'Psicólogo social · Innovador comunitario',
+  'fac.p1':'Arraigado en Torrelles de Foix, en el corazón del Alt Penedès, más de 20 años diseñando dinámicas de grupo y redes de valor, hoy puestos al servicio de los ecosistemas locales.',
+  'fac.p2':'Ayuda a ayuntamientos, cooperativas, ateneos y asociaciones a dar <strong>estructura real</strong> a sus iniciativas ciudadanas. Cercanía de pueblo, rigor metodológico — cero humo, soluciones reales.',
+  'fac.tag1':'Psicología Social y Comunitaria','fac.tag2':'Value Network Analysis','fac.tag3':'Facilitación Fent Pinya',
+  'cta.h2':'¿Tiene tu territorio un proyecto<br>que <em>necesita estructura?</em>',
+  'cta.quote':'"Teníamos un banco de tiempo con muchas ganas y ninguna forma de saber quién aportaba qué. Ahora tenemos un mapa, unos roles y un tablero que lo sostiene todo."',
+  'cta.cite':'— Lo que un técnico de promoción económica puede decir tras un diagnóstico VNA',
+  'cta.btn1':'Hablemos de tu reto local','cta.btn2':'Explora el SOS en vivo →',
+  'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprendizaje','footer.facilitador':'Facilitador'
 }
 };
 
-// Tooltips Castellers en ES
+// Tooltips Castellers en CA
+var COLLA_CA = {
+baixos:     {title:'Baixos — Àncora de Terra',        t:'Tangible: transmet tota la compressió estructural al terra',            i:'Intangible: seguretat psicològica per a cada nivell superior — la certesa que la base aguanta'},
+crosses:    {title:'Crosses — Suport Axil·lar',       t:'Tangible: evita que els Baixos s\'enfonsin sota càrrega axial',         i:'Intangible: micro-ajustos a través del tacte — sense paraules, només senyals de pressió'},
+contraforts:{title:'Contraforts — Pressió Posterior', t:'Tangible: absorbeix la pressió posterior per mantenir l\'alineació',    i:'Intangible: confiança cega — no poden veure la torre, només sentir-la'},
+mans:       {title:'Mans — Estabilitzadors de Maluc', t:'Tangible: empenyen cap amunt i estabilitzen els pisos superiors',       i:'Intangible: calma distribuïda — si les Mans són fermes, la confiança puja'},
+laterals:   {title:'Laterals — Guardes Laterals',     t:'Tangible: eviten l\'oscil·lació lateral de tota l\'estructura',         i:'Intangible: lectura de risc en temps real — senten micro-oscil·lacions abans que siguin visibles'},
+segons:     {title:'Segons — 2n Pis',                 t:'Tangible: distribueixen el pes geomètricament; ofereixen plataforma d\'espatlles', i:'Intangible: confiança biomecànica cap amunt — si els segons tremolen, el pànic es propaga'},
+tercos:     {title:'Terços — 3r Pis',                 t:'Tangible: ancorats pel folre en castells complexos',                   i:'Intangible: enfocament cognitiu — cada esglaó estreny l\'atenció al pur equilibri'},
+dosos:      {title:'Dosos — Base de la Corona',       t:'Tangible: ofereixen la plataforma física final per a l\'Acotxador',    i:'Intangible: ancora emocional — últim contacte humà abans del cim'},
+acotxador:  {title:'Acotxador — Pont de Seguretat',   t:'Tangible: ofereix la superfície dorsal per al pas final de l\'Enxaneta', i:'Intangible: empatia en alçada — el contacte visual redueix l\'ansietat vertiginosa'},
+enxaneta:   {title:'Enxaneta — L\'Àpex',              t:'Tangible: aixeca el braç (l\'aleta) — valida la càrrega estructuralment', i:'Intangible: catarsi col·lectiva — allibera la tensió de tota la xarxa simultàniament'},
+cap:        {title:'Cap de Colla — Director',         t:'Tangible: ordres operacionals precises, senyals de temps',              i:'Intangible: visió macroscòpica + autoritat distribuïda en castells complexos'},
+musics:     {title:'Músics — Rellotge de Xarxa',      t:'Tangible: telemetria acústica — la melodia assenyala la fase exacta de l\'Enxaneta als Baixos', i:'Intangible: estat de flux grupal — el ritme sincronitza respiració, enfocament i motivació'}
+};
+
 var COLLA_ES = {
 baixos:     {title:'Baixos — Ancla de Tierra',       t:'Tangible: transmite toda la compresión estructural al suelo',            i:'Intangible: seguridad psicológica para cada nivel superior — la certeza de que la base aguanta'},
 crosses:    {title:'Crosses — Soporte Axilar',       t:'Tangible: evita que los Baixos se hundan bajo carga axial',              i:'Intangible: microajustes a través del tacto — sin palabras, solo señales de presión'},
@@ -865,13 +811,13 @@ cap:        {title:'Cap de Colla — Director',        t:'Tangible: comandos ope
 musics:     {title:'Músics — Reloj de Red',          t:'Tangible: telemetría acústica — la melodía señala la fase exacta del Enxaneta a los Baixos', i:'Intangible: estado de flujo grupal — el ritmo sincroniza respiración, enfoque y motivación'}
 };
 
-var currentLang = localStorage.getItem('tt_lang') || 'en';
+var currentLang = localStorage.getItem('tt_lang') || 'ca';
 
 function applyLang(l) {
     currentLang = l;
     localStorage.setItem('tt_lang', l);
     document.documentElement.lang = l;
-    var t = T[l] || T['en'];
+    var t = T[l] || T['ca'];
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
         var k = el.getAttribute('data-i18n');
         if (t[k] !== undefined) el.textContent = t[k];
@@ -889,21 +835,20 @@ document.querySelectorAll('.lang-btn').forEach(function(btn) {
     btn.addEventListener('click', function() { applyLang(this.getAttribute('data-lang')); });
 });
 
+applyLang(currentLang);
+
 // ── Fade-up observer ──────────────────────────────────────────────────────────
-var COLLA_DATA = {
-    baixos:      { title:'Baixos — Ground Anchor',      t:'⬤ Tangible: transmits all structural compression to the ground', i:'◌ Intangible: psychological security for every level above — the certainty that the foundation holds' },
-    crosses:     { title:'Crosses — Axilla Brace',      t:'⬤ Tangible: prevents the Baixos from sinking under axial load', i:'◌ Intangible: micro-adjustments through touch — no words, just pressure signals' },
-    contraforts: { title:'Contraforts — Back Pressure',  t:'⬤ Tangible: absorbs rear pressure to maintain vertical alignment', i:'◌ Intangible: blind trust — they cannot see the tower, only feel it' },
-    mans:        { title:'Mans — Hip Stabilizers',       t:'⬤ Tangible: push up and stabilize the gluteus of upper floors', i:'◌ Intangible: distributed calm — if Mans are steady, confidence travels upward' },
-    laterals:    { title:'Laterals & Vents — Side Guard', t:'⬤ Tangible: prevent lateral oscillation of the entire structure', i:'◌ Intangible: real-time risk reading — they sense micro-sways before they become visible' },
-    segons:      { title:'Segons — 2nd Floor',           t:'⬤ Tangible: distribute weight geometrically; provide shoulder platform', i:'◌ Intangible: biomechanical confidence upward — if seconds tremble, panic propagates' },
-    tercos:      { title:'Terços — 3rd Floor',           t:'⬤ Tangible: anchored by folre in complex castles; provide next platform', i:'◌ Intangible: cognitive focus — each step up narrows attention to pure balance' },
-    dosos:       { title:'Dosos — Crown Base',           t:'⬤ Tangible: provide the final physical platform for the Acotxador', i:'◌ Intangible: emotional anchor — last human contact before the summit' },
-    acotxador:   { title:'Acotxador — Safety Bridge',    t:'⬤ Tangible: provides back surface for the Enxaneta\'s final step', i:'◌ Intangible: empathy at altitude — eye contact reduces vertigo anxiety at maximum height' },
-    enxaneta:    { title:'Enxaneta — The Apex',          t:'⬤ Tangible: raises the arm (la aleta) — validates the load structurally', i:'◌ Intangible: collective catharsis — releases tension across the entire network simultaneously' },
-    cap:         { title:'Cap de Colla — Director',      t:'⬤ Tangible: precise operational commands, timing signals', i:'◌ Intangible: macroscopic vision + distributed authority in complex castles (folre/manilles)' },
-    musics:      { title:'Músics — Network Clock',       t:'⬤ Tangible: acoustic telemetry — the melody signals exact Enxaneta phase to the Baixos who cannot see', i:'◌ Intangible: group flow state — rhythm synchronizes breathing, focus and motivation across all nodes' },
-};
+document.querySelectorAll('.fade-up').forEach(function(el){ el.classList.add('animate'); });
+if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+            if (entry.isIntersecting) { entry.target.classList.add('visible'); io.unobserve(entry.target); }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(function(el){ io.observe(el); });
+} else {
+    document.querySelectorAll('.fade-up').forEach(function(el){ el.classList.add('visible'); });
+}
 
 var tooltip  = document.getElementById('collaTooltip');
 var tTitle   = document.getElementById('collaTooltipTitle');
@@ -914,13 +859,12 @@ var svgEl    = document.getElementById('collaSvg');
 document.querySelectorAll('.colla-node').forEach(function(node) {
     node.addEventListener('mouseenter', function(e) {
         var id   = this.dataset.id;
-        var data = (currentLang === 'es' && COLLA_ES[id]) ? COLLA_ES[id] : COLLA_DATA[id];
+        var data = (currentLang === 'es' && COLLA_ES[id]) ? COLLA_ES[id] : COLLA_CA[id];
         if (!data) return;
         tTitle.textContent = data.title;
         tT.textContent     = data.t;
         tI.textContent     = data.i;
         tooltip.style.display = 'block';
-        // Highlight node
         var circle = this.querySelector('circle');
         if (circle) { circle.style.filter = 'brightness(1.4)'; circle.setAttribute('stroke-width','3'); }
     });
