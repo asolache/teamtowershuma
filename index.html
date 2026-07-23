@@ -160,6 +160,16 @@
         .sos-demo-link::after { content:'→'; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
+        /* EINES / TOOLS */
+        .eines { padding:8rem 0; background:var(--bg-panel); }
+        .eines-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(232px,1fr)); gap:1rem; margin-top:3.5rem; }
+        .eina-card { background:var(--bg-dark); border:1px solid var(--border); border-radius:12px; padding:1.5rem 1.35rem; transition:border-color .2s,transform .2s; }
+        .eina-card:hover { border-color:var(--accent-indigo); transform:translateY(-3px); }
+        .eina-ic { font-size:1.7rem; line-height:1; margin-bottom:.7rem; display:block; }
+        .eina-card h3 { font-family:var(--sans); font-size:1.05rem; font-weight:700; margin-bottom:.4rem; }
+        .eina-card p { font-size:.83rem; color:var(--muted); line-height:1.55; }
+        .eines-cta { text-align:center; margin-top:3rem; }
+
         /* APRENENTATGE */
         .aprenentatge { padding:8rem 0; }
         .aprenentatge-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:5rem; align-items:center; }
@@ -228,6 +238,7 @@
         <ul class="nav-links">
             <li><a href="#enfoc" data-i18n="nav.enfoc">El Repte</a></li>
             <li><a href="#fentpinya" data-i18n="nav.fentpinya">Fent Pinya</a></li>
+            <li><a href="#eines" data-i18n="nav.eines">Eines</a></li>
             <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
             <li><a href="/SOS/" target="_blank" class="nav-cta" data-i18n="nav.demo">Viu-ho →</a></li>
         </ul>
@@ -548,6 +559,33 @@
     </div>
 </section>
 
+<!-- EINES DE DESENVOLUPAMENT COMUNITARI -->
+<section class="eines" id="eines">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="eines.eyebrow">Eines al SOS</div>
+            <h2 data-i18n-html="eines.h2">Un catàleg de <em>dinàmiques comunitàries</em></h2>
+            <p data-i18n="eines.intro">Cada eina arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.</p>
+        </div>
+        <div class="eines-grid fade-up">
+            <div class="eina-card"><span class="eina-ic">⏳</span><h3 data-i18n="eines.banc.n">Banc de Temps</h3><p data-i18n="eines.banc.d">Intercanvi de serveis veïnals mesurats en hores, no en diners. Una hora val una hora.</p></div>
+            <div class="eina-card"><span class="eina-ic">🧰</span><h3 data-i18n="eines.biblio.n">Biblioteca de les Coses</h3><p data-i18n="eines.biblio.d">Pool compartit d'objectes i eines en préstec: estalvi, menys residus i trobada.</p></div>
+            <div class="eina-card"><span class="eina-ic">⚡</span><h3 data-i18n="eines.energia.n">Comunitat Energètica</h3><p data-i18n="eines.energia.d">Energia renovable produïda i compartida localment, en cooperativa. Sobirania i estalvi.</p></div>
+            <div class="eina-card"><span class="eina-ic">🌱</span><h3 data-i18n="eines.matriu.n">MATRIU · Incubadora</h3><p data-i18n="eines.matriu.d">Acompanya idees ciutadanes fins a projectes viables i sobirans, aprenent fent.</p></div>
+            <div class="eina-card"><span class="eina-ic">🏘️</span><h3 data-i18n="eines.habitatge.n">Habitatge en cessió d'ús</h3><p data-i18n="eines.habitatge.d">Propietat col·lectiva i dret d'ús indefinit, sense especulació (model Andel).</p></div>
+            <div class="eina-card"><span class="eina-ic">🥬</span><h3 data-i18n="eines.consum.n">Consum Agroecològic</h3><p data-i18n="eines.consum.d">Compra directa a pagès, sense intermediaris: aliments sans i preu just.</p></div>
+            <div class="eina-card"><span class="eina-ic">🏰</span><h3 data-i18n="eines.pinya.n">Taller Fent Pinya</h3><p data-i18n="eines.pinya.d">Cohesió vivencial castellera: confiança i interdependència abans d'estructurar.</p></div>
+            <div class="eina-card"><span class="eina-ic">🤝</span><h3 data-i18n="eines.cures.n">Suport Mutu i Cures</h3><p data-i18n="eines.cures.d">Xarxa veïnal de cura i acompanyament contra la soledat, connectada als serveis.</p></div>
+            <div class="eina-card"><span class="eina-ic">🛠️</span><h3 data-i18n="eines.coop.n">Cooperativa de Treball</h3><p data-i18n="eines.coop.d">Ocupació digna i democràtica: qui treballa és soci i decideix. Una persona, un vot.</p></div>
+            <div class="eina-card"><span class="eina-ic">🕸️</span><h3 data-i18n="eines.vna.n">Mapeig de Xarxa de Valor</h3><p data-i18n="eines.vna.d">El diagnòstic VNA del territori: qui es relaciona amb qui i quins fluxos el sostenen.</p></div>
+            <div class="eina-card"><span class="eina-ic">🛒</span><h3 data-i18n="eines.compra.n">Compra Col·lectiva</h3><p data-i18n="eines.compra.d">Agregar la demanda del veïnat per aconseguir millors preus i condicions.</p></div>
+        </div>
+        <div class="eines-cta fade-up">
+            <a href="/SOS/" target="_blank" class="btn-primary" data-i18n="eines.cta">Obre el catàleg al SOS →</a>
+        </div>
+    </div>
+</section>
+
 <!-- APRENENTATGE CONTINU -->
 <section class="aprenentatge" id="aprenentatge">
     <div class="container">
@@ -631,7 +669,7 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
-  'nav.enfoc':'El Repte','nav.fentpinya':'Fent Pinya','nav.sos':'El SOS','nav.demo':'Viu-ho →',
+  'nav.enfoc':'El Repte','nav.fentpinya':'Fent Pinya','nav.eines':'Eines','nav.sos':'El SOS','nav.demo':'Viu-ho →',
   'hero.eyebrow':'Laboratori de Psicologia Comunitària i Acció Social',
   'hero.h1':'Convertim la <em>voluntat veïnal</em><br>en <em>xarxes que duren.</em>',
   'hero.desc':'Ajudem ajuntaments, cooperatives i entitats a passar de la bona voluntat a la infraestructura: bancs de temps, biblioteques de coses o comunitats energètiques amb rols clars, governança i futur — sense dependre de dues persones cremades. Amb el focus posat a l\'Alt Penedès i el Garraf, i obertes a treballar a qualsevol territori que vulgui organitzar-se.',
@@ -683,6 +721,21 @@ ca: {
   'sos.demo.p2':'Construïda sobre la metodologia VNA. Cada node és un rol actiu. Cada línia és un intercanvi que el sistema entén, mesura i ajuda a sostenir.',
   'sos.demo.p3':'Accés obert — explora l\'eina i veu com el diagnòstic es converteix en infraestructura viva.',
   'sos.demo.link':'Explora el SOS en viu',
+  'eines.eyebrow':'Eines al SOS',
+  'eines.h2':'Un catàleg de <em>dinàmiques comunitàries</em>',
+  'eines.intro':'Cada eina arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.',
+  'eines.banc.n':'Banc de Temps','eines.banc.d':'Intercanvi de serveis veïnals mesurats en hores, no en diners. Una hora val una hora.',
+  'eines.biblio.n':'Biblioteca de les Coses','eines.biblio.d':'Pool compartit d\'objectes i eines en préstec: estalvi, menys residus i trobada.',
+  'eines.energia.n':'Comunitat Energètica','eines.energia.d':'Energia renovable produïda i compartida localment, en cooperativa. Sobirania i estalvi.',
+  'eines.matriu.n':'MATRIU · Incubadora','eines.matriu.d':'Acompanya idees ciutadanes fins a projectes viables i sobirans, aprenent fent.',
+  'eines.habitatge.n':'Habitatge en cessió d\'ús','eines.habitatge.d':'Propietat col·lectiva i dret d\'ús indefinit, sense especulació (model Andel).',
+  'eines.consum.n':'Consum Agroecològic','eines.consum.d':'Compra directa a pagès, sense intermediaris: aliments sans i preu just.',
+  'eines.pinya.n':'Taller Fent Pinya','eines.pinya.d':'Cohesió vivencial castellera: confiança i interdependència abans d\'estructurar.',
+  'eines.cures.n':'Suport Mutu i Cures','eines.cures.d':'Xarxa veïnal de cura i acompanyament contra la soledat, connectada als serveis.',
+  'eines.coop.n':'Cooperativa de Treball','eines.coop.d':'Ocupació digna i democràtica: qui treballa és soci i decideix. Una persona, un vot.',
+  'eines.vna.n':'Mapeig de Xarxa de Valor','eines.vna.d':'El diagnòstic VNA del territori: qui es relaciona amb qui i quins fluxos el sostenen.',
+  'eines.compra.n':'Compra Col·lectiva','eines.compra.d':'Agregar la demanda del veïnat per aconseguir millors preus i condicions.',
+  'eines.cta':'Obre el catàleg al SOS →',
   'apr.eyebrow':'Sobirania a llarg termini',
   'apr.h2':'Perquè la comunitat <em>aprengui a caminar sola.</em>',
   'apr.p1':'Fem servir metodologies d\'aprenentatge continu i emprenedoria cooperativa inspirades en el model finlandès Tiimiakatemia (Universitat de Mondragón): equips que aprenen fent, es formen entre iguals i assumeixen risc i responsabilitat compartida.',
@@ -705,7 +758,7 @@ ca: {
   'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprenentatge','footer.facilitador':'Facilitador'
 },
 es: {
-  'nav.enfoc':'El Reto','nav.fentpinya':'Fent Pinya','nav.sos':'El SOS','nav.demo':'Verlo en vivo →',
+  'nav.enfoc':'El Reto','nav.fentpinya':'Fent Pinya','nav.eines':'Herramientas','nav.sos':'El SOS','nav.demo':'Verlo en vivo →',
   'hero.eyebrow':'Laboratorio de Psicología Comunitaria y Acción Social',
   'hero.h1':'Convertimos la <em>voluntad vecinal</em><br>en <em>redes que duran.</em>',
   'hero.desc':'Ayudamos a ayuntamientos, cooperativas y entidades a pasar de la buena voluntad a la infraestructura: bancos de tiempo, bibliotecas de las cosas o comunidades energéticas con roles claros, gobernanza y futuro — sin depender de dos personas quemadas. Con el foco puesto en el Alt Penedès y el Garraf, y abiertos a trabajar en cualquier territorio que quiera organizarse.',
@@ -757,6 +810,21 @@ es: {
   'sos.demo.p2':'Construida sobre la metodología VNA. Cada nodo es un rol activo. Cada línea es un intercambio que el sistema entiende, mide y ayuda a sostener.',
   'sos.demo.p3':'Acceso abierto — explora la herramienta y ve cómo el diagnóstico se convierte en infraestructura viva.',
   'sos.demo.link':'Explora el SOS en vivo',
+  'eines.eyebrow':'Herramientas en el SOS',
+  'eines.h2':'Un catálogo de <em>dinámicas comunitarias</em>',
+  'eines.intro':'Cada herramienta llega con su mapa de valor, su tablero y su contabilidad ya preparados, y con recursos para implementarla. Instánciala en tu territorio en un clic.',
+  'eines.banc.n':'Banco de Tiempo','eines.banc.d':'Intercambio de servicios vecinales medidos en horas, no en dinero. Una hora vale una hora.',
+  'eines.biblio.n':'Biblioteca de las Cosas','eines.biblio.d':'Pool compartido de objetos y herramientas en préstamo: ahorro, menos residuos y encuentro.',
+  'eines.energia.n':'Comunidad Energética','eines.energia.d':'Energía renovable producida y compartida localmente, en cooperativa. Soberanía y ahorro.',
+  'eines.matriu.n':'MATRIU · Incubadora','eines.matriu.d':'Acompaña ideas ciudadanas hasta proyectos viables y soberanos, aprendiendo haciendo.',
+  'eines.habitatge.n':'Vivienda en cesión de uso','eines.habitatge.d':'Propiedad colectiva y derecho de uso indefinido, sin especulación (modelo Andel).',
+  'eines.consum.n':'Consumo Agroecológico','eines.consum.d':'Compra directa a payés, sin intermediarios: alimentos sanos y precio justo.',
+  'eines.pinya.n':'Taller Fent Pinya','eines.pinya.d':'Cohesión vivencial castellera: confianza e interdependencia antes de estructurar.',
+  'eines.cures.n':'Apoyo Mutuo y Cuidados','eines.cures.d':'Red vecinal de cuidado y acompañamiento contra la soledad, conectada a los servicios.',
+  'eines.coop.n':'Cooperativa de Trabajo','eines.coop.d':'Empleo digno y democrático: quien trabaja es socio y decide. Una persona, un voto.',
+  'eines.vna.n':'Mapeo de Red de Valor','eines.vna.d':'El diagnóstico VNA del territorio: quién se relaciona con quién y qué flujos lo sostienen.',
+  'eines.compra.n':'Compra Colectiva','eines.compra.d':'Agregar la demanda del vecindario para conseguir mejores precios y condiciones.',
+  'eines.cta':'Abre el catálogo en el SOS →',
   'apr.eyebrow':'Soberanía a largo plazo',
   'apr.h2':'Para que la comunidad <em>aprenda a caminar sola.</em>',
   'apr.p1':'Usamos metodologías de aprendizaje continuo y emprendimiento cooperativo inspiradas en el modelo finlandés Tiimiakatemia (Universidad de Mondragón): equipos que aprenden haciendo, se forman entre iguales y asumen riesgo y responsabilidad compartida.',
