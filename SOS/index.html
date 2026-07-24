@@ -301,6 +301,7 @@ a{color:var(--blue);text-decoration:none}
     <div class="tb-right">
       <div class="sync-pill" id="syncPill"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
       <button class="btn-icon" id="btnMap" title="Mapa de Catalunya">🗺</button>
+      <button class="btn-icon" id="btnSync" title="Sincronitza amb un altre dispositiu">🔗</button>
       <button class="btn-icon" id="btnContact" title="Contacta amb l'Álvaro">✉</button>
       <button class="btn-icon" id="btnSettings" title="Configuració · dades">⚙</button>
     </div>
@@ -577,7 +578,7 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],activeId:null,tab:'map',expanded:new Set()};
+const state={nodes:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{}};
 const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const now=()=>new Date().toISOString();
 const byId=id=>state.nodes.find(n=>n.id===id);
@@ -1119,8 +1120,10 @@ async function deleteNode(node){
   const desc=descendants(node.id);
   const n=desc.length;
   if(!confirm('Eliminar "'+node.name+'"'+(n?' i els seus '+n+' sub-nodes':'')+'? Aquesta acció no es pot desfer.'))return;
-  for(const d of desc)await dbDelete(d.id);
-  await dbDelete(node.id);
+  const ts=now();
+  for(const d of desc){await dbDelete(d.id);state.tombstones[d.id]=ts;}
+  await dbDelete(node.id);state.tombstones[node.id]=ts;
+  await saveTombstones();
   const ids=new Set([node.id,...desc.map(d=>d.id)]);
   state.nodes=state.nodes.filter(x=>!ids.has(x.id));
   state.activeId=node.parentId&&byId(node.parentId)?node.parentId:(state.nodes[0]?state.nodes[0].id:null);
@@ -1156,13 +1159,17 @@ function openSettingsModal(){
         <button class="btn btn-ghost btn-sm" id="stImport">⭱ Importa</button>
       </div>
     </div>
-    <div class="ai-note"><span class="ic">⟳</span><span><strong>Sincronització entre dispositius (properament):</strong> emparellament directe navegador-a-navegador amb WebRTC i codi QR, sense cap servidor. De moment, fes servir exportar/importar per traslladar les dades.</span></div>
+    <div class="field"><label>Sincronització entre dispositius</label>
+      <button class="btn btn-ghost btn-sm" id="stSync">🔗 Sincronitza amb un altre dispositiu</button>
+      <div class="ai-note" style="margin-top:.6rem"><span class="ic">⟳</span><span>Directe navegador-a-navegador (WebRTC), <strong>sense cap servidor</strong>. Guanya la versió més recent de cada node.</span></div>
+    </div>
     <div class="field"><label style="color:var(--red)">Zona perillosa</label>
       <button class="btn btn-ghost btn-sm" id="stPurge" style="border-color:var(--red-dim);color:var(--red)">Esborra totes les dades locals</button>
     </div>
     <div class="modal-actions"><button class="btn btn-primary" id="stClose">Fet</button></div>
   `);
   bg.querySelector('#stClose').onclick=closeModal;
+  bg.querySelector('#stSync').onclick=()=>{closeModal();openSyncModal();};
   bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
   bg.querySelector('#stExport').onclick=exportData;
   bg.querySelector('#stImport').onclick=importData;
@@ -1188,10 +1195,109 @@ function importData(){
 }
 
 /* ═══════════════════ SYNC INDICATOR + TOAST ═══════════════════ */
-let _syncT;
-function flashSync(){const p=$('#syncTxt');if(!p)return;p.textContent='Desat';$('#syncPill').querySelector('.sync-dot').style.background='var(--blue)';clearTimeout(_syncT);_syncT=setTimeout(()=>{p.textContent='Local';$('#syncPill').querySelector('.sync-dot').style.background='var(--green)';},1200);}
+let _syncT,_syncLock=false;
+function setSyncPill(txt,color){const p=$('#syncTxt');if(!p)return;p.textContent=txt;$('#syncPill').querySelector('.sync-dot').style.background=color;}
+function flashSync(){if(_syncLock)return;const p=$('#syncTxt');if(!p)return;p.textContent='Desat';$('#syncPill').querySelector('.sync-dot').style.background='var(--blue)';clearTimeout(_syncT);_syncT=setTimeout(()=>{if(!_syncLock)setSyncPill('Local','var(--green)');},1200);}
 let _toastT;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+/* ═══════════════════ SYNC P2P (WebRTC · local-first, sense servidor) ═══════════════════ */
+const RTC_CFG={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
+let _pc=null,_dc=null;
+async function saveTombstones(){await dbPut({id:'__tombstones',type:'meta',map:state.tombstones});}
+function _enc(desc){return btoa(unescape(encodeURIComponent(JSON.stringify(desc))));}
+function _dec(code){return JSON.parse(decodeURIComponent(escape(atob(code.trim()))));}
+function _waitIce(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const chk=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',chk);res();}};pc.addEventListener('icegatheringstatechange',chk);setTimeout(res,2600);});}
+function _closePc(){try{if(_dc)_dc.close();}catch(e){}try{if(_pc)_pc.close();}catch(e){}_dc=null;_pc=null;}
+function _wireChannel(dc,onReady){
+  dc.onopen=()=>{_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');dc.send(JSON.stringify({type:'hello',nodes:state.nodes,tombstones:state.tombstones}));if(onReady)onReady();};
+  dc.onmessage=ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}if(msg.type==='hello'||msg.type==='data'){mergeIncoming(msg);if(msg.type==='hello')dc.send(JSON.stringify({type:'data',nodes:state.nodes,tombstones:state.tombstones}));}};
+  dc.onclose=()=>{_syncLock=false;setSyncPill('Local','var(--green)');};
+}
+async function syncCreateOffer(onReady){
+  _closePc();_pc=new RTCPeerConnection(RTC_CFG);
+  _dc=_pc.createDataChannel('sos');_wireChannel(_dc,onReady);
+  const o=await _pc.createOffer();await _pc.setLocalDescription(o);await _waitIce(_pc);
+  return _enc(_pc.localDescription);
+}
+async function syncAcceptOffer(code,onReady){
+  _closePc();_pc=new RTCPeerConnection(RTC_CFG);
+  _pc.ondatachannel=e=>{_dc=e.channel;_wireChannel(_dc,onReady);};
+  await _pc.setRemoteDescription(_dec(code));
+  const a=await _pc.createAnswer();await _pc.setLocalDescription(a);await _waitIce(_pc);
+  return _enc(_pc.localDescription);
+}
+async function syncAcceptAnswer(code){await _pc.setRemoteDescription(_dec(code));}
+async function mergeIncoming(msg){
+  let changes=0;const tomb=msg.tombstones||{};
+  for(const id in tomb){const ts=tomb[id];if(!state.tombstones[id]||state.tombstones[id]<ts)state.tombstones[id]=ts;const local=byId(id);if(local&&(local.updatedAt||'')<ts){await dbDelete(id);state.nodes=state.nodes.filter(n=>n.id!==id);changes++;}}
+  for(const n of (msg.nodes||[])){if(!n||!n.id||n.id==='__tombstones')continue;const ts=state.tombstones[n.id];if(ts&&ts>=(n.updatedAt||''))continue;const local=byId(n.id);if(!local||(local.updatedAt||'')<(n.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);changes++;}}
+  await saveTombstones();
+  if(state.activeId&&!byId(state.activeId))state.activeId=state.nodes[0]?state.nodes[0].id:null;
+  render();
+  setSyncPill('Sincronitzat','var(--accent-green)');
+  toast(changes?('Sincronitzat · '+changes+' canvi'+(changes>1?'s':'')):'Ja estaves al dia');
+}
+
+function _copyBtn(getText){const b=el('button','btn btn-ghost btn-sm','⧉ Copia');b.onclick=async()=>{try{await navigator.clipboard.writeText(getText());b.textContent='✓ Copiat';setTimeout(()=>b.textContent='⧉ Copia',1500);}catch(e){toast('Copia manualment');}};return b;}
+function _codeArea(val,ph){const t=el('textarea');t.readOnly=!!val;t.value=val||'';t.placeholder=ph||'';t.style.cssText='width:100%;min-height:70px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--light);font-family:var(--mono);font-size:.66rem;padding:.6rem;resize:vertical;word-break:break-all';return t;}
+
+function openSyncModal(){
+  const bg=modal(`
+    <h2>🔗 Sincronitza amb un altre dispositiu</h2>
+    <p class="m-sub">Directe navegador-a-navegador (WebRTC), sense cap servidor. Comparteix els codis per qualsevol canal (missatge, correu). Guanya la versió més recent de cada node.</p>
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+      <button class="btn btn-primary btn-sm le-type sel" id="syRoleA" style="flex:1">① Crea invitació</button>
+      <button class="btn btn-ghost btn-sm le-type" id="syRoleB" style="flex:1">② Tinc una invitació</button>
+    </div>
+    <div id="syBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="syClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const body=bg.querySelector('#syBody');
+  bg.querySelector('#syClose').onclick=()=>{closeModal();};
+  const rA=bg.querySelector('#syRoleA'),rB=bg.querySelector('#syRoleB');
+  function setRole(a){rA.classList.toggle('sel',a);rB.classList.toggle('sel',!a);a?roleA():roleB();}
+  rA.onclick=()=>setRole(true);rB.onclick=()=>setRole(false);
+
+  function roleA(){ // initiator
+    body.innerHTML='';
+    const p=el('div','dyn-one');p.style.marginBottom='.6rem';p.textContent='1) Genera el codi d\'invitació i envia\'l a l\'altre dispositiu.';body.appendChild(p);
+    const gen=el('button','btn btn-primary btn-sm','Genera invitació');body.appendChild(gen);
+    gen.onclick=async()=>{
+      gen.disabled=true;gen.textContent='Generant…';
+      try{
+        const code=await syncCreateOffer(()=>{setTimeout(closeModal,1400);});
+        body.innerHTML='';
+        const l1=el('div','wz-sec-lbl','El teu codi d\'invitació');body.appendChild(l1);
+        const ta=_codeArea(code);body.appendChild(ta);
+        body.appendChild(_copyBtn(()=>code));
+        const l2=el('div','wz-sec-lbl','Enganxa aquí la resposta de l\'altre dispositiu');body.appendChild(l2);
+        const ans=_codeArea('','Codi de resposta…');body.appendChild(ans);
+        const con=el('button','btn btn-primary btn-sm','Connecta');con.style.marginTop='.5rem';body.appendChild(con);
+        con.onclick=async()=>{if(!ans.value.trim())return;con.disabled=true;con.textContent='Connectant…';try{await syncAcceptAnswer(ans.value);toast('Establint connexió…');}catch(e){con.disabled=false;con.textContent='Connecta';toast('Codi de resposta no vàlid');}};
+      }catch(e){gen.disabled=false;gen.textContent='Genera invitació';toast('Error generant la invitació');}
+    };
+  }
+  function roleB(){ // joiner
+    body.innerHTML='';
+    const p=el('div','dyn-one');p.style.marginBottom='.6rem';p.textContent='1) Enganxa el codi d\'invitació que t\'han passat.';body.appendChild(p);
+    const inv=_codeArea('','Codi d\'invitació…');body.appendChild(inv);
+    const gen=el('button','btn btn-primary btn-sm','Genera resposta');gen.style.marginTop='.5rem';body.appendChild(gen);
+    gen.onclick=async()=>{
+      if(!inv.value.trim())return;gen.disabled=true;gen.textContent='Generant…';
+      try{
+        const ans=await syncAcceptOffer(inv.value,()=>{setTimeout(closeModal,1400);});
+        body.innerHTML='';
+        const l=el('div','wz-sec-lbl','Envia aquesta resposta de tornada al primer dispositiu');body.appendChild(l);
+        const ta=_codeArea(ans);body.appendChild(ta);
+        body.appendChild(_copyBtn(()=>ans));
+        const note=el('div','dyn-one');note.style.marginTop='.6rem';note.textContent='Quan l\'altre dispositiu enganxi aquesta resposta, la sincronització serà automàtica.';body.appendChild(note);
+      }catch(e){gen.disabled=false;gen.textContent='Genera resposta';toast('Codi d\'invitació no vàlid');}
+    };
+  }
+  roleA();
+}
 
 /* ═══════════ CREACIÓ DE NODES GEOGRÀFICS (compartit) ═══════════ */
 let _ensureCreated=0;
@@ -1309,15 +1415,16 @@ $('#btnNewRoot').onclick=()=>openCreateModal(null);
 $('#btnContact').onclick=openContactModal;
 $('#btnSettings').onclick=openSettingsModal;
 $('#btnMap').onclick=()=>{state.activeId=null;render();};
+$('#btnSync').onclick=openSyncModal;
 $('#homeLogo').onclick=()=>{state.activeId=null;render();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ═══════════════════ BOOT ═══════════════════ */
 (async function boot(){
-  try{await openDB();state.nodes=await dbGetAll();}catch(e){console.error('DB error',e);}
-  if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;let n=byId(state.activeId);/*expand roots*/children(null).forEach(r=>state.expanded.add(r.id));}
+  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta');}catch(e){console.error('DB error',e);}
+  if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming}; // hook per a tests
 })();
 </script>
 </body>
