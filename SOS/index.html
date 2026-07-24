@@ -638,7 +638,7 @@ function renderTree(){
   roots.forEach(r=>draw(r,0));
 }
 
-function selectNode(id){state.activeId=id;state.tab='map';let n=byId(id);while(n&&n.parentId){state.expanded.add(n.parentId);n=byId(n.parentId);}render();}
+function selectNode(id){state.activeId=id;const nn=byId(id);state.tab=(nn&&isTerritory(nn.nodeLevel))?'resum':'map';let n=nn;while(n&&n.parentId){state.expanded.add(n.parentId);n=byId(n.parentId);}render();}
 
 /* ═══════════════════ WORKSPACE ═══════════════════ */
 function renderWorkspace(){
@@ -684,7 +684,12 @@ function renderWorkspace(){
 
   // tabs
   const tabs=el('div','tabs');
-  const tdefs=[['map','◉ Mapa de valor',node.vna.roles.length],['kanban','▤ Tauler',node.kanban.cards.length],['ledger','⊞ Comptes',node.ledger.length]];
+  const territory=isTerritory(node.nodeLevel);
+  const ru=territory?rollup(node.id):null;
+  const tdefs=[];
+  if(territory)tdefs.push(['resum','◧ Resum',ru.projectes]);
+  tdefs.push(['map','◉ Mapa de valor',node.vna.roles.length],['kanban','▤ Tauler',node.kanban.cards.length],['ledger','⊞ Comptes',node.ledger.length]);
+  if(!tdefs.some(t=>t[0]===state.tab))state.tab=tdefs[0][0];
   tdefs.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
     b.onclick=()=>{state.tab=id;renderWorkspace();};tabs.appendChild(b);
@@ -692,10 +697,71 @@ function renderWorkspace(){
   w.appendChild(tabs);
 
   const body=el('div','tab-body');
-  if(state.tab==='map')renderVNA(body,node);
+  if(state.tab==='resum')renderResum(body,node,ru);
+  else if(state.tab==='map')renderVNA(body,node);
   else if(state.tab==='kanban')renderKanban(body,node);
   else renderLedger(body,node);
   w.appendChild(body);
+}
+
+/* ─── ROLL-UP: valor agregat d'un territori des dels seus descendents ─── */
+function rollup(id){
+  const desc=descendants(id);
+  let hores=0,moneda=0,tasks=0,done=0,roles=0,exch=0,projectes=0,territoris=0,persones=new Set();
+  const byDyn={};
+  desc.forEach(n=>{
+    if(n.nodeLevel==='projecte'){projectes++;byDyn[n.dynamicType]=(byDyn[n.dynamicType]||0)+1;}
+    else territoris++;
+    (n.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;else hores+=Number(e.value)||0;if(e.who)persones.add(e.who.toLowerCase());});
+    tasks+=(n.kanban.cards||[]).length; done+=(n.kanban.cards||[]).filter(c=>c.col==='done').length;
+    roles+=n.vna.roles.length; exch+=n.vna.exchanges.length;
+  });
+  return {desc,hores,moneda,tasks,done,roles,exch,byDyn,projectes,territoris,persones:persones.size};
+}
+function renderResum(body,node,ru){
+  const meta=LEVEL_META[node.nodeLevel];
+  // stat tiles
+  const tot=el('div','ledger-total');
+  const tile=(v,l,col)=>{const c=el('div','lt-card');if(col)c.style.borderTopColor=col;c.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';return c;};
+  tot.appendChild(tile(ru.projectes,'Projectes','var(--accent-orange)'));
+  tot.appendChild(tile(ru.territoris,'Sub-territoris','var(--accent-blue)'));
+  tot.appendChild(tile(ru.hores.toFixed(0)+'<span style="font-size:1rem"> h</span>','Temps aportat','var(--accent-green)'));
+  tot.appendChild(tile(ru.moneda.toFixed(0)+'<span style="font-size:1rem"> €</span>','Valor monetari','var(--accent-orange)'));
+  tot.appendChild(tile(ru.persones,'Persones','var(--accent-indigo)'));
+  body.appendChild(tot);
+
+  if(ru.projectes===0&&ru.territoris===0){
+    const e=el('div','empty-hint','Aquest '+meta.label.toLowerCase()+' encara no té projectes ni sub-territoris. Fes servir "+ '+(meta.childLabel||'projecte')+'" o "+ projecte" per començar.');
+    body.appendChild(e);return;
+  }
+  // dinàmiques (breakdown by dynamic)
+  const dynKeys=Object.keys(ru.byDyn);
+  if(dynKeys.length){
+    body.appendChild(el('div','wz-sec-lbl','Dinàmiques al territori'));
+    const chips=el('div','dd-chips');
+    dynKeys.forEach(k=>{const d=dynById(k);const chip=el('span','dd-chip');chip.textContent=(d?d.icon+' '+d.name:k)+' · '+ru.byDyn[k];chips.appendChild(chip);});
+    body.appendChild(chips);
+  }
+  // list of descendant projectes
+  const projs=ru.desc.filter(n=>n.nodeLevel==='projecte');
+  if(projs.length){
+    body.appendChild(el('div','wz-sec-lbl','Projectes actius ('+projs.length+')'));
+    const tbl=el('table','ledger-table');
+    tbl.innerHTML='<thead><tr><th>Projecte</th><th>Ubicació</th><th style="text-align:right">Valor</th></tr></thead>';
+    const tb=el('tbody');
+    projs.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p=>{
+      const d=dynById(p.dynamicType);
+      const parent=p.parentId?byId(p.parentId):null;
+      let h=0,m=0;(p.ledger||[]).forEach(e=>{if(e.type==='moneda')m+=Number(e.value)||0;else h+=Number(e.value)||0;});
+      const tr=el('tr');tr.style.cursor='pointer';tr.onclick=()=>selectNode(p.id);
+      tr.appendChild(el('td',null,(d?d.icon+' ':'')+esc(p.name)));
+      tr.appendChild(el('td',null,'<span style="color:var(--muted);font-size:.8rem">'+esc(parent?parent.name:'')+'</span>'));
+      const vc=el('td','num',(h?h.toFixed(0)+' h':'')+(h&&m?' · ':'')+(m?m.toFixed(0)+' €':'')||'—');vc.style.color='var(--light)';
+      tr.appendChild(vc);
+      tb.appendChild(tr);
+    });
+    tbl.appendChild(tb);body.appendChild(tbl);
+  }
 }
 
 /* ─── VNA MAP ─── */
