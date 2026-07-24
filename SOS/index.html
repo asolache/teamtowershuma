@@ -247,6 +247,35 @@ a{color:var(--blue);text-decoration:none}
 .dd-res a{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;margin-right:.9rem}
 .dd-res a::before{content:'↗';font-size:.7rem;color:var(--muted)}
 @media(max-width:600px){.dyn-grid{grid-template-columns:1fr}}
+/* fork crea/registra */
+.fork-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:.2rem 0}
+.fork-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:1.1rem;cursor:pointer;transition:border-color .12s,transform .12s;display:flex;flex-direction:column;gap:.4rem;text-align:left}
+.fork-card:hover{border-color:var(--indigo);transform:translateY(-2px)}
+.fork-ic{font-size:1.7rem;line-height:1}
+.fork-nm{font-size:.95rem;font-weight:700}
+.fork-one{font-size:.76rem;color:var(--muted);line-height:1.4}
+@media(max-width:600px){.fork-grid{grid-template-columns:1fr}}
+/* panell entitats */
+.ent-bar{display:flex;gap:.45rem;flex-wrap:wrap}
+.ent-grp-lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--indigo);margin:1.2rem 0 .5rem}
+.ent-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.ent-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.8rem .9rem;cursor:pointer;transition:border-color .12s,transform .12s;display:flex;flex-direction:column;gap:.4rem}
+.ent-card:hover{border-color:var(--indigo);transform:translateY(-2px)}
+.ent-nm{font-size:.9rem;font-weight:700;line-height:1.25}
+.ent-badges{display:flex;flex-wrap:wrap;gap:.3rem}
+.ent-b{font-family:var(--mono);font-size:.56rem;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:.08rem .35rem;border:1px solid var(--border);color:var(--muted)}
+.b-exist{color:var(--green);border-color:var(--green-dim)}
+.b-form{color:var(--orange);border-color:var(--orange-dim,rgba(255,145,0,.35))}
+.b-ver{color:var(--green);border-color:var(--green-dim)}
+.b-unver{color:var(--orange);border-color:var(--orange-dim,rgba(255,145,0,.35))}
+.b-pub{color:var(--blue);border-color:rgba(0,176,255,.3)}
+.b-priv{color:var(--muted)}
+.ent-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.ent-url{font-size:.72rem;color:var(--blue);text-decoration:none;word-break:break-all}
+.ent-url:hover{text-decoration:underline}
+.ent-toggles{display:flex;gap:.45rem;margin-top:.5rem}
+.ent-toggles .pick{flex:1;justify-content:center;text-align:center}
+@media(max-width:600px){.ent-grid{grid-template-columns:1fr}}
 /* mapa Catalunya */
 .catmap-wrap{padding:1.5rem 1.75rem}
 .catmap-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.4rem}
@@ -586,7 +615,7 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{}};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{}};
 const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const now=()=>new Date().toISOString();
 const byId=id=>state.nodes.find(n=>n.id===id);
@@ -599,6 +628,47 @@ function newNode(name,level,parentId){return{id:uid(),name:name.trim(),nodeLevel
   vna:{roles:[],exchanges:[]},kanban:{cards:[]},ledger:[],
   createdAt:now(),updatedAt:now()};}
 async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();}
+
+/* ═══════════ ENTITATS (directori / atles d'economia social) ═══════════ */
+// Tipus d'entitat per nivell territorial [id, etiqueta, icona]
+const ENTITY_TYPES={
+  pais:[['institucio','Institució','🏛'],['federacio','Federació d\'entitats','🕸'],['xarxa','Xarxa / moviment','🔗'],['coop2','Cooperativa de 2n grau','⬡'],['altre','Altre','◦']],
+  provincia:[['diputacio','Diputació / ens supramunicipal','🏛'],['federacio','Federació d\'entitats','🕸'],['universitat','Universitat','🎓'],['coop2','Cooperativa de 2n grau','⬡'],['altre','Altre','◦']],
+  comarca:[['consell','Consell Comarcal','🏛'],['gal','Grup d\'Acció Local','🌾'],['federacio','Federació d\'entitats','🕸'],['coop2','Cooperativa de 2n grau','⬡'],['consorci','Consorci','🔗'],['banc_temps','Banc de temps','⏱'],['altre','Altre','◦']],
+  municipi:[['ajuntament','Ajuntament','🏛'],['associacio','Associació','🤝'],['cooperativa','Cooperativa','⬡'],['banc_temps','Banc de temps','⏱'],['biblioteca_coses','Biblioteca de les coses','📚'],['casal','Casal / ateneu','🏠'],['escola','Centre educatiu','🎓'],['cap','CAP / salut','⚕'],['comerc','Comerç / empresa','🏪'],['colla','Colla / entitat cultural','🎭'],['ampa','AMPA / AFA','👪'],['esplai','Esplai / lleure','⚽'],['altre','Altre','◦']],
+  barri:[['ass_veins','Associació de veïns','🏘'],['grup_informal','Grup informal','◍'],['comunitat','Xarxa de cures / suport','💗'],['comerc','Comerç de proximitat','🏪'],['equipament','Equipament de barri','🏠'],['altre','Altre','◦']],
+  projecte:[['iniciativa','Iniciativa','✦'],['altre','Altre','◦']]
+};
+const ENTITY_TYPE_META=(()=>{const m={};Object.values(ENTITY_TYPES).forEach(l=>l.forEach(([id,label,icon])=>{if(!m[id])m[id]={id,label,icon:icon||'◦'};}));return m;})();
+const entTypeMeta=id=>ENTITY_TYPE_META[id]||{id,label:id,icon:'◦'};
+const entityTypesFor=level=>ENTITY_TYPES[level]||ENTITY_TYPES.municipi;
+const norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const entityId=(level,territoryName,entityType,name)=>'e_'+[norm(level),norm(territoryName),norm(entityType),norm(name)].join('_');
+const byEnt=id=>state.entities.find(e=>e.id===id);
+function newEntity({name,entityType,level,territoryName,territoryId,parentChain,status,visibility,source}){
+  const t=now();source=source||'manual';
+  return {id:entityId(level,territoryName||'',entityType,name),'@type':'sos:Entity',kind:'entity',
+    name:name.trim(),entityType,status:status||'existing',
+    geo:{level,territoryName:territoryName||'',parentChain:parentChain||[]},
+    territoryId:territoryId||null,projecteId:null,
+    contact:{email:'',phone:'',url:'',address:''},description:'',tags:[],
+    visibility:visibility||'public',source,
+    verification:{verified:source!=='ai',by:'',at:source!=='ai'?t:'',confidence:source==='ai'?0.5:1},
+    createdAt:t,updatedAt:t};
+}
+async function persistEntity(e){e.updatedAt=now();await dbPut(e);flashSync();}
+// Entitats d'un territori: enllaçades al node o a un descendent, o pel nom del territori dins el subarbre
+function entitiesFor(territoryId){
+  const node=byId(territoryId);if(!node)return state.entities.slice();
+  const ids=new Set([territoryId,...descendants(territoryId).map(n=>n.id)]);
+  const names=new Set([norm(node.name),...descendants(territoryId).filter(n=>isTerritory(n.nodeLevel)).map(n=>norm(n.name))]);
+  return state.entities.filter(e=>(e.territoryId&&ids.has(e.territoryId))||(e.geo&&names.has(norm(e.geo.territoryName))));
+}
+async function deleteEntity(e){
+  if(!confirm('Elimina "'+e.name+'" del directori? (No afecta cap projecte ni comptabilitat.)'))return;
+  state.tombstones[e.id]=now();await saveTombstones();await dbDelete(e.id);
+  state.entities=state.entities.filter(x=>x.id!==e.id);flashSync();renderWorkspace();toast('Entitat eliminada');
+}
 
 /* ═══════════════════ RENDER: ARREL ═══════════════════ */
 const $=s=>document.querySelector(s);
@@ -697,6 +767,7 @@ function renderWorkspace(){
   const tdefs=[];
   if(territory)tdefs.push(['resum','◧ Resum',ru.projectes]);
   tdefs.push(['map','◉ Mapa de valor',node.vna.roles.length],['kanban','▤ Tauler',node.kanban.cards.length],['ledger','⊞ Comptes',node.ledger.length]);
+  if(territory)tdefs.push(['entitats','⬡ Entitats',entitiesFor(node.id).length]);
   if(!tdefs.some(t=>t[0]===state.tab))state.tab=tdefs[0][0];
   tdefs.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
@@ -708,6 +779,7 @@ function renderWorkspace(){
   if(state.tab==='resum')renderResum(body,node,ru);
   else if(state.tab==='map')renderVNA(body,node);
   else if(state.tab==='kanban')renderKanban(body,node);
+  else if(state.tab==='entitats')renderEntitats(body,node);
   else renderLedger(body,node);
   w.appendChild(body);
 }
@@ -1063,6 +1135,41 @@ function mergeAiIntoWizard(wz,ai){
   ai.exchanges.forEach(x=>{const kk=key(x);if(!seen.has(kk)){wz.exchanges.push({from:x.from,to:x.to,kind:x.kind,label:x.label,on:true});seen.add(kk);}});
   if(ai.mission&&!wz.mission)wz.mission=ai.mission;
 }
+// Descoberta d'entitats REALS existents amb IA (verify-first · zero-hallucination)
+async function aiDiscoverEntities({level,territoryName,promptText}){
+  const key=_aiKey||await loadAiKey();
+  if(!key)throw{noKey:true};
+  const meta=LEVEL_META[level];
+  const types=entityTypesFor(level);
+  const typeIds=types.map(t=>t[0]);
+  const ctx=['Territori: '+meta.label+' de "'+territoryName+'" (Catalunya).',promptText?'Context: '+promptText:''].filter(Boolean).join('\n');
+  const sys='Ets expert en el teixit associatiu i l\'economia social de Catalunya. Proposa entitats i organitzacions REALS que probablement operen en aquest territori (ajuntaments, consells comarcals, associacions, cooperatives, casals, colles, comerços, bancs de temps…). IMPORTANT: NO inventis noms. Si no tens prou certesa d\'una entitat concreta, no la incloguis o marca-la amb confidence baixa. Val més una llista curta i fiable que una llarga inventada. Assigna a cada entitat un entityType d\'aquesta llista: '+typeIds.join(', ')+'. Escriu en català. Respon només cridant l\'eina.';
+  const body={model:'claude-opus-4-8',max_tokens:2000,system:sys,
+    tools:[{name:'proposar_entitats',description:'Retorna candidats d\'entitats reals a verificar.',input_schema:{type:'object',properties:{
+      entities:{type:'array',items:{type:'object',properties:{
+        name:{type:'string'},entityType:{type:'string',enum:typeIds},
+        description:{type:'string',description:'Una frase curta.'},
+        url:{type:'string',description:'Web oficial si la coneixes amb certesa, si no deixa buit.'},
+        confidence:{type:'number',description:'0..1 de certesa que existeix i és correcta.'}
+      },required:['name','entityType']}}
+    },required:['entities']}}],
+    tool_choice:{type:'tool',name:'proposar_entitats'},
+    messages:[{role:'user',content:'Proposa entitats reals per a aquest territori:\n\n'+ctx}]};
+  let res;
+  try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});}
+  catch(e){throw{msg:'Sense connexió amb l\'API'};}
+  if(!res.ok){let m='';try{const j=await res.json();m=(j.error&&j.error.message)||'';}catch(e){}throw{status:res.status,msg:m||('Error '+res.status)};}
+  const data=await res.json();
+  const tu=(data.content||[]).find(c=>c.type==='tool_use');
+  if(!tu||!tu.input||!Array.isArray(tu.input.entities))throw{msg:'Resposta inesperada'};
+  return tu.input.entities.filter(e=>e&&e.name).map(e=>({
+    name:String(e.name).trim(),
+    entityType:typeIds.includes(e.entityType)?e.entityType:'altre',
+    description:(e.description||'').trim(),
+    url:(e.url||'').trim(),
+    confidence:typeof e.confidence==='number'?Math.max(0,Math.min(1,e.confidence)):0.5
+  }));
+}
 
 function openCreateModal(parentId){
   const level=parentId?nextLevel(byId(parentId).nodeLevel):'pais';
@@ -1201,9 +1308,183 @@ function openCreateModal(parentId){
   step1();
 }
 
+/* ═══════════ PANELL D'ENTITATS (directori / cens del territori) ═══════════ */
+function renderEntitats(body,node){
+  const list=entitiesFor(node.id);
+  const bar=el('div','ent-bar');
+  const add=el('button','btn btn-primary btn-sm','+ Registra una entitat existent');add.onclick=()=>openEntityForm(node.id,null);
+  const disc=el('button','btn btn-ghost btn-sm','✦ Descobreix amb IA');disc.onclick=()=>openDiscoverEntities(node.id);
+  const pull=el('button','btn btn-ghost btn-sm','⭳ Actualitza l\'atles');pull.onclick=updateAtles;
+  const share=el('button','btn btn-ghost btn-sm','⭱ Comparteix');share.onclick=shareAtles;
+  bar.append(add,disc,pull,share);body.appendChild(bar);
+
+  const note=el('div','ai-note');note.style.marginTop='.9rem';
+  note.innerHTML='<span class="ic">⬡</span><span>El <strong>directori</strong> del territori: entitats que <strong>ja existeixen</strong> (censa-les) o que <strong>estàs creant</strong>. Es comparteix de forma col·laborativa via l\'atles comú; el teu mapa, tauler i comptes queden privats.</span>';
+  body.appendChild(note);
+
+  if(!list.length){
+    const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';
+    emp.innerHTML='<h2 style="font-size:1.05rem">Encara no hi ha entitats</h2><p>Registra una entitat que ja existeix al territori, descobreix-ne amb IA, o actualitza l\'atles comú per veure què hi ha.</p>';
+    body.appendChild(emp);return;
+  }
+  // agrupa per entityType
+  const groups={};list.forEach(e=>{(groups[e.entityType]=groups[e.entityType]||[]).push(e);});
+  Object.keys(groups).sort((a,b)=>entTypeMeta(a).label.localeCompare(entTypeMeta(b).label)).forEach(tp=>{
+    const meta=entTypeMeta(tp);
+    body.appendChild(el('div','ent-grp-lbl',meta.icon+' '+esc(meta.label)+' · '+groups[tp].length));
+    const grid=el('div','ent-grid');
+    groups[tp].sort((a,b)=>a.name.localeCompare(b.name)).forEach(e=>{
+      const c=el('div','ent-card');
+      const st=e.status==='forming'?'<span class="ent-b b-form">en formació</span>':'<span class="ent-b b-exist">existeix</span>';
+      const vf=e.verification&&e.verification.verified?'<span class="ent-b b-ver">✓ verificada</span>':'<span class="ent-b b-unver">per verificar</span>';
+      const pv=e.visibility==='private'?'<span class="ent-b b-priv">privada</span>':'<span class="ent-b b-pub">pública</span>';
+      c.innerHTML='<div class="ent-nm">'+esc(e.name)+'</div>'+
+        '<div class="ent-badges">'+st+vf+pv+'</div>'+
+        (e.description?'<div class="ent-desc">'+esc(e.description)+'</div>':'')+
+        (e.contact&&e.contact.url?'<a class="ent-url" href="'+esc(e.contact.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(e.contact.url.replace(/^https?:\/\//,''))+'</a>':'');
+      c.onclick=()=>openEntityForm(node.id,e);
+      grid.appendChild(c);
+    });
+    body.appendChild(grid);
+  });
+}
+
+// Formulari de registre / edició d'una entitat (crea o enriqueix)
+function openEntityForm(territoryId,existing){
+  const node=byId(territoryId)||byId(state.activeId);
+  const level=node?node.nodeLevel:'municipi';
+  const territoryName=node?node.name:'';
+  const chain=node?ancestors(node.id).map(n=>n.name):[];
+  const types=entityTypesFor(level);
+  const e=existing;
+  const opts=types.map(t=>'<option value="'+t[0]+'"'+(e&&e.entityType===t[0]?' selected':'')+'>'+t[1]+'</option>').join('');
+  const bg=modal(`
+    <h2>${e?'Entitat':'Registra una entitat existent'}</h2>
+    <p class="m-sub">${e?'Edita o enriqueix la fitxa.':'A <strong>'+esc(territoryName)+'</strong>. Censa una organització o recurs que <strong>ja existeix</strong> al territori.'}</p>
+    <div class="field"><label>Nom</label><input id="enName" autocomplete="off" placeholder="p.ex. Banc de Temps de ${esc(territoryName||'la comunitat')}" value="${e?esc(e.name):''}"></div>
+    <div class="field"><label>Tipus</label><select id="enType">${opts}</select></div>
+    <div class="field"><label>Web (opcional)</label><input id="enUrl" autocomplete="off" placeholder="https://…" value="${e&&e.contact?esc(e.contact.url||''):''}"></div>
+    <div class="field"><label>Descripció (opcional)</label><textarea id="enDesc" placeholder="Una frase sobre què fa.">${e?esc(e.description||''):''}</textarea></div>
+    <div class="ent-toggles">
+      <label class="pick ${!e||e.status==='existing'?'sel':''}" id="enStExist"><input type="radio" name="enSt" ${!e||e.status==='existing'?'checked':''}><span class="pk-t">Ja existeix</span></label>
+      <label class="pick ${e&&e.status==='forming'?'sel':''}" id="enStForm"><input type="radio" name="enSt" ${e&&e.status==='forming'?'checked':''}><span class="pk-t">En formació</span></label>
+    </div>
+    <div class="ent-toggles">
+      <label class="pick ${!e||e.visibility==='public'?'sel':''}" id="enVisPub"><input type="radio" name="enVis" ${!e||e.visibility==='public'?'checked':''}><span class="pk-t">Pública (va a l'atles)</span></label>
+      <label class="pick ${e&&e.visibility==='private'?'sel':''}" id="enVisPriv"><input type="radio" name="enVis" ${e&&e.visibility==='private'?'checked':''}><span class="pk-t">Privada (només tu)</span></label>
+    </div>
+    ${e&&e.verification&&!e.verification.verified?'<div class="ent-toggles"><label class="pick" id="enVerify"><input type="checkbox"><span class="pk-t">✓ Confirmo que és real i correcta</span></label></div>':''}
+    <div class="modal-actions">${e?'<button class="btn btn-ghost" id="enDelete" style="border-color:var(--red-dim);color:var(--red)">Elimina</button>':'<button class="btn btn-ghost" id="enCancel">Cancel·la</button>'}<button class="btn btn-primary" id="enSave">${e?'Desa':'⬡ Registra'}</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const nm=bg.querySelector('#enName');nm.focus();
+  bg.querySelectorAll('.ent-toggles').forEach(g=>g.querySelectorAll('.pick').forEach(l=>l.onclick=ev=>{const inp=l.querySelector('input');if(inp.type==='radio'){g.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel'));l.classList.add('sel');inp.checked=true;}else{l.classList.toggle('sel');}}));
+  if(e){bg.querySelector('#enDelete').onclick=()=>{closeModal();deleteEntity(e);};}
+  else{bg.querySelector('#enCancel').onclick=closeModal;}
+  bg.querySelector('#enSave').onclick=async()=>{
+    const name=nm.value.trim();if(!name){nm.focus();return;}
+    const entityType=bg.querySelector('#enType').value;
+    const status=bg.querySelector('#enStForm input').checked?'forming':'existing';
+    const visibility=bg.querySelector('#enVisPriv input').checked?'private':'public';
+    const url=bg.querySelector('#enUrl').value.trim();
+    const desc=bg.querySelector('#enDesc').value.trim();
+    let rec;
+    if(e){
+      rec=e;rec.name=name;rec.entityType=entityType;rec.status=status;rec.visibility=visibility;
+      rec.contact=Object.assign({email:'',phone:'',url:'',address:''},rec.contact,{url});rec.description=desc;
+      const vbox=bg.querySelector('#enVerify');if(vbox&&vbox.querySelector('input').checked){rec.verification={verified:true,by:'humà',at:now(),confidence:1};}
+    } else {
+      rec=newEntity({name,entityType,level,territoryName,territoryId:node?node.id:null,parentChain:chain,status,visibility,source:'manual'});
+      rec.contact.url=url;rec.description=desc;
+      const dup=byEnt(rec.id);if(dup){rec=Object.assign(dup,{name,entityType,status,visibility,description:desc});rec.contact=Object.assign({email:'',phone:'',url:'',address:''},dup.contact,{url});}
+      else state.entities.push(rec);
+    }
+    await persistEntity(rec);closeModal();state.tab='entitats';renderWorkspace();
+    toast(e?'Entitat desada':'Entitat registrada');
+  };
+}
+
+// Descoberta amb IA — candidats NO verificats fins que un humà confirma
+function openDiscoverEntities(territoryId){
+  const node=byId(territoryId)||byId(state.activeId);
+  const level=node?node.nodeLevel:'municipi';
+  const territoryName=node?node.name:'';
+  const chain=node?ancestors(node.id).map(n=>n.name):[];
+  let cands=[];
+  const bg=modal(`
+    <h2>✦ Descobreix entitats amb IA</h2>
+    <p class="m-sub">Proposa entitats <strong>reals</strong> que probablement operen a <strong>${esc(territoryName)}</strong>. Són <strong>candidats a verificar</strong>: confirma només els que coneguis.</p>
+    <div class="field"><label>Pista addicional (opcional)</label><input id="dcPrompt" autocomplete="off" placeholder="p.ex. focus en cultura i economia social"></div>
+    <div class="ai-note"><span class="ic">⚠</span><span>La IA pot equivocar-se. Res s'afegeix com a verificat: tot entra com a <strong>"per verificar"</strong> fins que ho confirmis a la fitxa.</span></div>
+    <div id="dcHint" class="wz-ai-hint"></div>
+    <div id="dcList"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="dcCancel">Tanca</button><button class="btn btn-primary" id="dcRun">✦ Proposa</button><button class="btn btn-primary" id="dcAdd" style="display:none">Afegeix seleccionats</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const hint=bg.querySelector('#dcHint'),listEl=bg.querySelector('#dcList'),runBtn=bg.querySelector('#dcRun'),addBtn=bg.querySelector('#dcAdd');
+  bg.querySelector('#dcCancel').onclick=closeModal;
+  function paint(){
+    listEl.innerHTML='';
+    cands.forEach((c,i)=>{
+      const conf=Math.round((c.confidence||0)*100);
+      const row=el('label','pick sel');row.dataset.i=i;
+      row.innerHTML='<input type="checkbox" checked><span><span class="pk-t">'+esc(c.name)+'</span> <span class="ent-b b-unver">'+entTypeMeta(c.entityType).label+' · '+conf+'%</span>'+(c.description?'<span class="pk-d">'+esc(c.description)+'</span>':'')+'</span>';
+      row.querySelector('input').onchange=ev=>{c._on=ev.target.checked;row.classList.toggle('sel',ev.target.checked);};
+      c._on=true;listEl.appendChild(row);
+    });
+    addBtn.style.display=cands.length?'':'none';
+  }
+  async function run(){
+    hint.className='wz-ai-hint';hint.textContent='';runBtn.disabled=true;runBtn.textContent='✦ Pensant…';
+    try{
+      cands=await aiDiscoverEntities({level,territoryName,promptText:bg.querySelector('#dcPrompt').value.trim()});
+      runBtn.disabled=false;runBtn.textContent='✦ Torna a proposar';
+      if(!cands.length){hint.textContent='La IA no ha proposat entitats fiables. Prova una pista o registra-les manualment.';return;}
+      paint();
+    }catch(err){
+      runBtn.disabled=false;runBtn.textContent='✦ Proposa';
+      if(err&&err.noKey){promptKey();return;}
+      hint.className='wz-ai-hint err';hint.textContent='⚠ '+((err&&err.status===401)?'Clau API no vàlida':(err&&err.msg)||'No s\'ha pogut proposar');
+    }
+  }
+  function promptKey(){
+    hint.innerHTML='<div class="wz-key"><input id="dcKey" type="password" placeholder="Enganxa la teva clau API d\'Anthropic (sk-ant-…)" autocomplete="off"><button class="btn btn-primary btn-sm" id="dcKeySave" type="button">Desa i prova</button></div><span class="wz-key-note">Es guarda només al teu navegador.</span>';
+    const inp=hint.querySelector('#dcKey');inp.focus();
+    const go=async()=>{const v=inp.value.trim();if(!v){inp.focus();return;}await saveAiKey(v);hint.textContent='';run();};
+    hint.querySelector('#dcKeySave').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go();}};
+  }
+  runBtn.onclick=run;
+  addBtn.onclick=async()=>{
+    let n=0;
+    for(const c of cands){
+      if(c._on===false)continue;
+      let rec=newEntity({name:c.name,entityType:c.entityType,level,territoryName,territoryId:node?node.id:null,parentChain:chain,status:'existing',visibility:'public',source:'ai'});
+      rec.description=c.description||'';rec.contact.url=c.url||'';rec.verification.confidence=c.confidence||0.5;
+      const dup=byEnt(rec.id);if(dup){if(!dup.description&&rec.description)dup.description=rec.description;rec=dup;}else state.entities.push(rec);
+      await persistEntity(rec);n++;
+    }
+    closeModal();state.tab='entitats';renderWorkspace();toast(n+' entitats afegides · revisa-les i verifica-les');
+  };
+}
+
 /* ═══════════ WIZARD DE PROJECTE / DINÀMICA (galeria de prototips) ═══════════ */
 function openProjectWizard(territoryId){
   const territory=byId(territoryId);
+  function chooser(){
+    const bg=modal(`
+      <h2>Nova entrada al territori</h2>
+      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}Vols posar en marxa una iniciativa nova o censar-ne una que <strong>ja existeix</strong>?</p>
+      <div class="fork-grid">
+        <div class="fork-card" id="fkNew"><span class="fork-ic">✦</span><span class="fork-nm">Crea una iniciativa nova</span><span class="fork-one">Model d'acció-formació: precarrega mapa de valor, tasques i comptes per construir-la pas a pas.</span></div>
+        <div class="fork-card" id="fkExist"><span class="fork-ic">⬡</span><span class="fork-nm">Registra'n una que ja existeix</span><span class="fork-one">Censa una entitat o recurs real del territori al directori. Ràpid; sense tauler.</span></div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="pwCancel0">Cancel·la</button></div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    bg.querySelector('#pwCancel0').onclick=closeModal;
+    bg.querySelector('#fkNew').onclick=gallery;
+    bg.querySelector('#fkExist').onclick=()=>{closeModal();openEntityForm(territoryId,null);};
+  }
   function gallery(){
     const cards=DYNAMICS.map(d=>`
       <div class="dyn-card" data-dyn="${d.id}">
@@ -1216,10 +1497,10 @@ function openProjectWizard(territoryId){
       <h2>Nou projecte / dinàmica</h2>
       <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}Tria un model d'acció-formació: precarregarem el seu mapa de valor, tasques i comptes.</p>
       <div class="dyn-grid">${cards}</div>
-      <div class="modal-actions"><button class="btn btn-ghost" id="pwCancel">Cancel·la</button></div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="pwCancel">← Enrere</button></div>
     `);
     bg.querySelector('.modal').classList.add('wz-modal');
-    bg.querySelector('#pwCancel').onclick=closeModal;
+    bg.querySelector('#pwCancel').onclick=chooser;
     bg.querySelectorAll('.dyn-card').forEach(c=>c.onclick=()=>detail(dynById(c.dataset.dyn)));
   }
   function detail(dyn){
@@ -1253,7 +1534,7 @@ function openProjectWizard(territoryId){
     bg.querySelector('#pwCreate').onclick=create;
     nm.onkeydown=e=>{if(e.key==='Enter')create();};
   }
-  gallery();
+  chooser();
 }
 
 function renameNode(node){
@@ -1311,9 +1592,16 @@ function openSettingsModal(){
       <button class="btn btn-ghost btn-sm" id="stSync">🔗 Sincronitza amb un altre dispositiu</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">⟳</span><span>Directe navegador-a-navegador (WebRTC), <strong>sense cap servidor</strong>. Guanya la versió més recent de cada node.</span></div>
     </div>
+    <div class="field"><label>Atles comú d'entitats (${state.entities.length})</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" id="stAtlesPull">⭳ Actualitza l'atles</button>
+        <button class="btn btn-ghost btn-sm" id="stAtlesShare">⭱ Comparteix al commons</button>
+      </div>
+      <div class="ai-note" style="margin-top:.6rem"><span class="ic">🌐</span><span>Un directori d'economia social <strong>col·laboratiu i descentralitzat</strong> (repo Git públic + CDN, cost zero). Només es comparteix la capa pública; el teu treball intern queda privat.</span></div>
+    </div>
     <div class="field"><label>Suggeriments amb IA (clau pròpia)</label>
       <div class="wz-key"><input id="stAiKey" type="password" placeholder="sk-ant-…" autocomplete="off"><button class="btn btn-ghost btn-sm" id="stAiSave">Desa</button><button class="btn btn-ghost btn-sm" id="stAiClear">Treu</button></div>
-      <div class="ai-note" style="margin-top:.6rem"><span class="ic">✦</span><span id="stAiState">La clau es guarda <strong>només al teu navegador</strong> i s'usa per cridar l'API de Claude directament, sense servidor. Activa el botó "Suggereix amb IA" del wizard de mapa.</span></div>
+      <div class="ai-note" style="margin-top:.6rem"><span class="ic">✦</span><span id="stAiState">La clau es guarda <strong>només al teu navegador</strong> i s'usa per cridar l'API de Claude directament, sense servidor. Activa "Suggereix amb IA" i "Descobreix entitats amb IA".</span></div>
     </div>
     <div class="field"><label style="color:var(--red)">Zona perillosa</label>
       <button class="btn btn-ghost btn-sm" id="stPurge" style="border-color:var(--red-dim);color:var(--red)">Esborra totes les dades locals</button>
@@ -1325,15 +1613,17 @@ function openSettingsModal(){
   bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
   bg.querySelector('#stExport').onclick=exportData;
   bg.querySelector('#stImport').onclick=importData;
+  bg.querySelector('#stAtlesPull').onclick=()=>{closeModal();updateAtles();};
+  bg.querySelector('#stAtlesShare').onclick=()=>{closeModal();shareAtles();};
   (async()=>{const cur=await loadAiKey();const st=bg.querySelector('#stAiState'),inp=bg.querySelector('#stAiKey');
     if(cur){inp.placeholder='•••• clau desada ('+cur.slice(0,7)+'…)';st.innerHTML='✔ Clau desada. Ja pots usar "Suggereix amb IA". Es guarda <strong>només al teu navegador</strong>.';}})();
   bg.querySelector('#stAiSave').onclick=async()=>{const v=bg.querySelector('#stAiKey').value.trim();if(!v){toast('Enganxa una clau');return;}await saveAiKey(v);toast('Clau desada');bg.querySelector('#stAiState').innerHTML='✔ Clau desada. Ja pots usar "Suggereix amb IA".';bg.querySelector('#stAiKey').value='';bg.querySelector('#stAiKey').placeholder='•••• clau desada ('+v.slice(0,7)+'…)';};
   bg.querySelector('#stAiClear').onclick=async()=>{await saveAiKey('');bg.querySelector('#stAiKey').value='';bg.querySelector('#stAiKey').placeholder='sk-ant-…';bg.querySelector('#stAiState').textContent='Clau eliminada.';toast('Clau eliminada');};
-  bg.querySelector('#stPurge').onclick=async()=>{if(confirm('Segur? S\'esborraran TOTES les dades locals del SOS en aquest navegador.')){await dbClear();state.nodes=[];state.activeId=null;closeModal();render();toast('Dades esborrades');}};
+  bg.querySelector('#stPurge').onclick=async()=>{if(confirm('Segur? S\'esborraran TOTES les dades locals del SOS en aquest navegador.')){await dbClear();state.nodes=[];state.entities=[];state.tombstones={};state.activeId=null;closeModal();render();toast('Dades esborrades');}};
 }
 
 function exportData(){
-  const pkg={app:'SOS',version:1,exported:now(),count:state.nodes.length,nodes:state.nodes};
+  const pkg={app:'SOS',version:2,exported:now(),count:state.nodes.length,nodes:state.nodes,entities:state.entities};
   const blob=new Blob([JSON.stringify(pkg,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sos-backup-'+now().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
   toast('Còpia exportada');
@@ -1342,12 +1632,65 @@ function importData(){
   const inp=document.createElement('input');inp.type='file';inp.accept='application/json,.json';
   inp.onchange=()=>{const f=inp.files[0];if(!f)return;const r=new FileReader();
     r.onload=async()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.nodes))throw 0;
-      if(!confirm('Importar '+d.nodes.length+' nodes? Es fusionaran amb els actuals (guanya la versió més recent).'))return;
+      const ne=Array.isArray(d.entities)?d.entities.length:0;
+      if(!confirm('Importar '+d.nodes.length+' nodes'+(ne?' i '+ne+' entitats':'')+'? Es fusionaran amb els actuals (guanya la versió més recent).'))return;
       for(const n of d.nodes){const cur=byId(n.id);if(!cur||(n.updatedAt||'')>(cur.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);}}
+      for(const e of (d.entities||[])){if(!e||!e.id)continue;e.kind='entity';const cur=byEnt(e.id);if(!cur||(e.updatedAt||'')>(cur.updatedAt||'')){await dbPut(e);const i=state.entities.findIndex(x=>x.id===e.id);if(i>=0)state.entities[i]=e;else state.entities.push(e);}}
       closeModal();render();toast('Importació completada');
     }catch(e){toast('Fitxer no vàlid');}};
     r.readAsText(f);};
   inp.click();
+}
+
+/* ═══════════ COMMONS · ATLES (directori públic compartit via Git+CDN) ═══════════
+   Només surt la capa "directori": existència, tipus, ubicació i web pública.
+   MAI el mapa VNA, el tauler ni la comptabilitat — es queden locals/P2P.        */
+const ATLES_BASE='atles/';
+function toPublicPack(){
+  const dir=state.entities.filter(e=>e.visibility==='public').map(e=>({
+    id:e.id,'@type':'sos:Entity',name:e.name,entityType:e.entityType,status:e.status,
+    geo:e.geo,contact:{url:(e.contact&&e.contact.url)||''},
+    description:e.description||'',tags:e.tags||[],
+    verification:e.verification,source:e.source,updatedAt:e.updatedAt
+  }));
+  return {'@context':'https://teamtowers.io/sos/v11','@type':'sos:AtlesPack',generated:now(),count:dir.length,entities:dir};
+}
+async function mergePack(pack){
+  let n=0;
+  for(const e of ((pack&&pack.entities)||[])){
+    if(!e||!e.id)continue;const ts=state.tombstones[e.id];if(ts&&ts>=(e.updatedAt||''))continue;
+    const local=byEnt(e.id);
+    const rec=Object.assign({kind:'entity','@type':'sos:Entity',visibility:'public',status:'existing',
+      contact:{email:'',phone:'',url:'',address:''},description:'',tags:[],
+      verification:{verified:false,by:'',at:'',confidence:1},source:e.source||'pack',
+      createdAt:e.updatedAt||now()}, local||{}, e);
+    rec.kind='entity';rec.contact=Object.assign({email:'',phone:'',url:'',address:''},(local&&local.contact)||{},e.contact||{});
+    if(!local||(local.updatedAt||'')<(e.updatedAt||'')){await dbPut(rec);const i=state.entities.findIndex(x=>x.id===e.id);if(i>=0)state.entities[i]=rec;else state.entities.push(rec);n++;}
+  }
+  if(n)flashSync();
+  return n;
+}
+async function updateAtles(){
+  toast('Carregant l\'atles…');
+  try{
+    const idx=await (await fetch(ATLES_BASE+'index.json',{cache:'no-store'})).json();
+    let total=0;
+    for(const p of ((idx&&idx.packs)||[])){try{const pk=await (await fetch(ATLES_BASE+p.file,{cache:'no-store'})).json();total+=await mergePack(pk);}catch(e){}}
+    render();toast(total?('Atles actualitzat · '+total+' entitats noves o enriquides'):'L\'atles ja estava al dia');
+  }catch(e){toast('No s\'ha pogut carregar l\'atles');}
+}
+function shareAtles(){
+  const pack=toPublicPack();
+  if(!pack.count){toast('Encara no tens cap entitat pública per compartir');return;}
+  const blob=new Blob([JSON.stringify(pack,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='atles-pack-'+now().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
+  const bg=modal(`
+    <h2>⭱ Comparteix al commons</h2>
+    <p class="m-sub">S'han exportat <strong>${pack.count}</strong> entitats públiques (només directori: nom, tipus, ubicació i web). El teu mapa de valor, tauler i comptabilitat <strong>no</strong> surten mai.</p>
+    <div class="ai-note"><span class="ic">🌐</span><span>L'atles és un <strong>bé comú</strong>: un repositori públic (Git) servit gratis per CDN. Per afegir la teva aportació, obre una <em>Pull Request</em> amb el fitxer descarregat a la carpeta <code>SOS/atles/</code>. Es revisa i es publica; qualsevol el pot baixar amb "Actualitza l'atles".</span></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="shOk">Fet</button></div>
+  `);
+  bg.querySelector('#shOk').onclick=closeModal;
 }
 
 /* ═══════════════════ SYNC INDICATOR + TOAST ═══════════════════ */
@@ -1366,8 +1709,8 @@ function _dec(code){return JSON.parse(decodeURIComponent(escape(atob(code.trim()
 function _waitIce(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const chk=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',chk);res();}};pc.addEventListener('icegatheringstatechange',chk);setTimeout(res,2600);});}
 function _closePc(){try{if(_dc)_dc.close();}catch(e){}try{if(_pc)_pc.close();}catch(e){}_dc=null;_pc=null;}
 function _wireChannel(dc,onReady){
-  dc.onopen=()=>{_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');dc.send(JSON.stringify({type:'hello',nodes:state.nodes,tombstones:state.tombstones}));if(onReady)onReady();};
-  dc.onmessage=ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}if(msg.type==='hello'||msg.type==='data'){mergeIncoming(msg);if(msg.type==='hello')dc.send(JSON.stringify({type:'data',nodes:state.nodes,tombstones:state.tombstones}));}};
+  dc.onopen=()=>{_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');dc.send(JSON.stringify({type:'hello',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));if(onReady)onReady();};
+  dc.onmessage=ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}if(msg.type==='hello'||msg.type==='data'){mergeIncoming(msg);if(msg.type==='hello')dc.send(JSON.stringify({type:'data',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}};
   dc.onclose=()=>{_syncLock=false;setSyncPill('Local','var(--green)');};
 }
 async function syncCreateOffer(onReady){
@@ -1386,8 +1729,9 @@ async function syncAcceptOffer(code,onReady){
 async function syncAcceptAnswer(code){await _pc.setRemoteDescription(_dec(code));}
 async function mergeIncoming(msg){
   let changes=0;const tomb=msg.tombstones||{};
-  for(const id in tomb){const ts=tomb[id];if(!state.tombstones[id]||state.tombstones[id]<ts)state.tombstones[id]=ts;const local=byId(id);if(local&&(local.updatedAt||'')<ts){await dbDelete(id);state.nodes=state.nodes.filter(n=>n.id!==id);changes++;}}
+  for(const id in tomb){const ts=tomb[id];if(!state.tombstones[id]||state.tombstones[id]<ts)state.tombstones[id]=ts;const local=byId(id)||byEnt(id);if(local&&(local.updatedAt||'')<ts){await dbDelete(id);state.nodes=state.nodes.filter(n=>n.id!==id);state.entities=state.entities.filter(n=>n.id!==id);changes++;}}
   for(const n of (msg.nodes||[])){if(!n||!n.id||n.id==='__tombstones')continue;const ts=state.tombstones[n.id];if(ts&&ts>=(n.updatedAt||''))continue;const local=byId(n.id);if(!local||(local.updatedAt||'')<(n.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);changes++;}}
+  for(const e of (msg.entities||[])){if(!e||!e.id)continue;const ts=state.tombstones[e.id];if(ts&&ts>=(e.updatedAt||''))continue;const local=byEnt(e.id);if(!local||(local.updatedAt||'')<(e.updatedAt||'')){e.kind='entity';await dbPut(e);const i=state.entities.findIndex(x=>x.id===e.id);if(i>=0)state.entities[i]=e;else state.entities.push(e);changes++;}}
   await saveTombstones();
   if(state.activeId&&!byId(state.activeId))state.activeId=state.nodes[0]?state.nodes[0].id:null;
   render();
@@ -1577,10 +1921,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ═══════════════════ BOOT ═══════════════════ */
 (async function boot(){
-  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta');}catch(e){console.error('DB error',e);}
+  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard}; // hook per a tests
 })();
 </script>
 </body>

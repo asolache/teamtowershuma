@@ -1,0 +1,51 @@
+{
+  "@context": "https://teamtowers.io/sos/v11",
+  "@type": "sos:AtlesPack",
+  "comarca": "Alt Penedès",
+  "generated": "2026-07-24T00:00:00.000Z",
+  "count": 3,
+  "entities": [
+    {
+      "id": "e_comarca_alt-penedes_consell_consell-comarcal-de-l-alt-penedes",
+      "@type": "sos:Entity",
+      "name": "Consell Comarcal de l'Alt Penedès",
+      "entityType": "consell",
+      "status": "existing",
+      "geo": { "level": "comarca", "territoryName": "Alt Penedès", "parentChain": ["Catalunya", "Barcelona"] },
+      "contact": { "url": "https://www.ccapenedes.cat" },
+      "description": "Ens supramunicipal que coordina serveis i projectes de la comarca.",
+      "tags": ["administració", "supramunicipal"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-24T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed",
+      "updatedAt": "2026-07-24T00:00:00.000Z"
+    },
+    {
+      "id": "e_municipi_vilafranca-del-penedes_ajuntament_ajuntament-de-vilafranca-del-penedes",
+      "@type": "sos:Entity",
+      "name": "Ajuntament de Vilafranca del Penedès",
+      "entityType": "ajuntament",
+      "status": "existing",
+      "geo": { "level": "municipi", "territoryName": "Vilafranca del Penedès", "parentChain": ["Catalunya", "Barcelona", "Alt Penedès"] },
+      "contact": { "url": "https://www.vilafranca.cat" },
+      "description": "Ajuntament de la capital de l'Alt Penedès.",
+      "tags": ["administració", "municipi"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-24T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed",
+      "updatedAt": "2026-07-24T00:00:00.000Z"
+    },
+    {
+      "id": "e_municipi_vilafranca-del-penedes_colla_castellers-de-vilafranca",
+      "@type": "sos:Entity",
+      "name": "Castellers de Vilafranca",
+      "entityType": "colla",
+      "status": "existing",
+      "geo": { "level": "municipi", "territoryName": "Vilafranca del Penedès", "parentChain": ["Catalunya", "Barcelona", "Alt Penedès"] },
+      "contact": { "url": "https://www.castellersdevilafranca.cat" },
+      "description": "Colla castellera de referència; cohesió, identitat i 'fer pinya'.",
+      "tags": ["cultura", "castells", "comunitat"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-24T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed",
+      "updatedAt": "2026-07-24T00:00:00.000Z"
+    }
+  ]
+}
