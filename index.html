@@ -191,6 +191,25 @@
         .facilitador-tags { display:flex; justify-content:center; flex-wrap:wrap; gap:.6rem; margin-top:1.5rem; }
         .facilitador-tags span { font-size:.72rem; font-family:var(--mono); padding:.4rem .9rem; border-radius:20px; background:var(--indigo-dim); color:var(--accent-indigo); border:1px solid rgba(99,102,241,0.25); }
 
+        /* CLIENTS / TRAJECTÒRIA */
+        .clients { padding:8rem 0; }
+        .cl-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-top:3rem; }
+        .cl-stat { text-align:center; background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:1.6rem 1rem; }
+        .cl-stat .n { font-family:var(--sans); font-size:2rem; font-weight:700; color:var(--accent-blue); line-height:1; }
+        .cl-stat .l { font-size:.78rem; color:var(--muted); margin-top:.5rem; line-height:1.4; }
+        .cl-groups { margin-top:3.25rem; display:flex; flex-direction:column; gap:1.75rem; }
+        .cl-group-lbl { font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:.9rem; }
+        .cl-logos { display:flex; flex-wrap:wrap; gap:.7rem 1.6rem; align-items:baseline; }
+        .cl-logos span { font-family:var(--sans); font-size:1.05rem; font-weight:600; color:var(--light); letter-spacing:.01em; }
+        .cl-logos .muted { color:var(--muted); font-size:.88rem; font-weight:400; }
+        .cl-projects { display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:1rem; margin-top:3.5rem; }
+        .cl-proj { background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:1.6rem 1.4rem; border-top:2px solid var(--accent-green); }
+        .cl-proj .pj-tag { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-green); margin-bottom:.6rem; }
+        .cl-proj h3 { font-size:1.15rem; font-weight:700; margin-bottom:.5rem; }
+        .cl-proj p { font-size:.85rem; color:var(--muted); line-height:1.6; }
+        .cl-proj a { display:inline-block; margin-top:.8rem; font-family:var(--mono); font-size:.72rem; color:var(--accent-blue); text-decoration:none; }
+        .cl-proj a:hover { color:var(--accent-indigo); }
+
         /* CTA FINAL */
         .cta-final { padding:10rem 0; text-align:center; position:relative; overflow:hidden; }
         .cta-final::before { content:'SOS'; position:absolute; font-family:var(--sans); font-size:26vw; font-weight:700; color:rgba(99,102,241,0.03); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap; }
@@ -240,6 +259,7 @@
             <li><a href="#fentpinya" data-i18n="nav.fentpinya">Fent Pinya</a></li>
             <li><a href="#eines" data-i18n="nav.eines">Eines</a></li>
             <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
+            <li><a href="#trajectoria" data-i18n="nav.traj">Trajectòria</a></li>
             <li><a href="/SOS/" target="_blank" class="nav-cta" data-i18n="nav.demo">Viu-ho →</a></li>
         </ul>
         <div class="lang-switch" style="flex-shrink:0;">
@@ -632,6 +652,55 @@
     </div>
 </section>
 
+<!-- TRAJECTÒRIA I CONFIANÇA -->
+<section class="clients" id="trajectoria">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="cl.eyebrow">Trajectòria i confiança</div>
+            <h2 data-i18n-html="cl.h2">20 anys teixint <em>equips i comunitats</em></h2>
+            <p data-i18n="cl.intro">Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals.</p>
+        </div>
+        <div class="cl-stats fade-up">
+            <div class="cl-stat"><div class="n">1996</div><div class="l" data-i18n="cl.s1">Creant i desenvolupant equips des de</div></div>
+            <div class="cl-stat"><div class="n">60.000+</div><div class="l" data-i18n="cl.s2">Persones formades en col·laboració i confiança</div></div>
+            <div class="cl-stat"><div class="n">150+</div><div class="l" data-i18n="cl.s3">Empreses i organitzacions acompanyades</div></div>
+            <div class="cl-stat"><div class="n">2009</div><div class="l" data-i18n="cl.s4">Primer banc de temps de la ciutat de León</div></div>
+        </div>
+        <div class="cl-groups fade-up">
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g1">Universitats i formació</div>
+                <div class="cl-logos"><span>UB</span><span>UOC</span><span>UAB</span><span>UPC</span><span>La Salle</span><span>Universidad de León</span></div>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g2">Sector públic</div>
+                <div class="cl-logos"><span>Diputació de Barcelona</span><span>Ajuntament de Vilafranca</span><span>Junta de Castilla y León</span></div>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g3">Empreses</div>
+                <div class="cl-logos"><span>InfoJobs</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
+            </div>
+        </div>
+        <div class="cl-projects fade-up">
+            <div class="cl-proj">
+                <div class="pj-tag" data-i18n="cl.p1.tag">Software comunitari</div>
+                <h3>Comunitats.org</h3>
+                <p data-i18n="cl.p1.d">Banc de temps i xarxa de coneixement. Una plataforma que empreses i organitzacions lloguen per crear la seva pròpia economia del temps i dinamitzar la seva comunitat.</p>
+                <a href="https://comunitats.org" target="_blank" rel="noopener">comunitats.org ↗</a>
+            </div>
+            <div class="cl-proj">
+                <div class="pj-tag" data-i18n="cl.p2.tag">Projecte pioner · 2009</div>
+                <h3 data-i18n="cl.p2.n">Banc de Temps de León</h3>
+                <p data-i18n="cl.p2.d">El primer banc de temps de la ciutat: intercanvi de serveis mesurat en hores, sense diners, teixint confiança i suport mutu entre veïns.</p>
+            </div>
+            <div class="cl-proj">
+                <div class="pj-tag" data-i18n="cl.p3.tag">Desenvolupament comunitari</div>
+                <h3 data-i18n="cl.p3.n">Fent Pinya &amp; VNA</h3>
+                <p data-i18n="cl.p3.d">Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d'ajuntaments, cooperatives i ateneus del territori.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CTA FINAL -->
 <section class="cta-final">
     <div class="container">
@@ -669,7 +738,7 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
-  'nav.enfoc':'El Repte','nav.fentpinya':'Fent Pinya','nav.eines':'Eines','nav.sos':'El SOS','nav.demo':'Viu-ho →',
+  'nav.enfoc':'El Repte','nav.fentpinya':'Fent Pinya','nav.eines':'Eines','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.demo':'Viu-ho →',
   'hero.eyebrow':'Laboratori de Psicologia Comunitària i Acció Social',
   'hero.h1':'Convertim la <em>voluntat veïnal</em><br>en <em>xarxes que duren.</em>',
   'hero.desc':'Ajudem ajuntaments, cooperatives i entitats a passar de la bona voluntat a la infraestructura: bancs de temps, biblioteques de coses o comunitats energètiques amb rols clars, governança i futur — sense dependre de dues persones cremades. Amb el focus posat a l\'Alt Penedès i el Garraf, i obertes a treballar a qualsevol territori que vulgui organitzar-se.',
@@ -751,6 +820,15 @@ ca: {
   'fac.p1':'Arrelat a Torrelles de Foix, al cor de l\'Alt Penedès, més de 20 anys dissenyant dinàmiques de grup i xarxes de valor, avui posats al servei dels ecosistemes locals.',
   'fac.p2':'Ajuda ajuntaments, cooperatives, ateneus i associacions a donar <strong>estructura real</strong> a les seves iniciatives ciutadanes. Proximitat de poble, rigor metodològic — zero fum, solucions reals.',
   'fac.tag1':'Psicologia Social i Comunitària','fac.tag2':'Value Network Analysis','fac.tag3':'Facilitació Fent Pinya',
+  'cl.eyebrow':'Trajectòria i confiança',
+  'cl.h2':'20 anys teixint <em>equips i comunitats</em>',
+  'cl.intro':'Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals.',
+  'cl.s1':'Creant i desenvolupant equips des de','cl.s2':'Persones formades en col·laboració i confiança','cl.s3':'Empreses i organitzacions acompanyades','cl.s4':'Primer banc de temps de la ciutat de León',
+  'cl.g1':'Universitats i formació','cl.g2':'Sector públic','cl.g3':'Empreses',
+  'cl.emp':'i +150 empreses en formació i cohesió d\'equips',
+  'cl.p1.tag':'Software comunitari','cl.p1.d':'Banc de temps i xarxa de coneixement. Una plataforma que empreses i organitzacions lloguen per crear la seva pròpia economia del temps i dinamitzar la seva comunitat.',
+  'cl.p2.tag':'Projecte pioner · 2009','cl.p2.n':'Banc de Temps de León','cl.p2.d':'El primer banc de temps de la ciutat: intercanvi de serveis mesurat en hores, sense diners, teixint confiança i suport mutu entre veïns.',
+  'cl.p3.tag':'Desenvolupament comunitari','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d\'ajuntaments, cooperatives i ateneus del territori.',
   'cta.h2':'Té el teu territori un projecte<br>que <em>necessita estructura?</em>',
   'cta.quote':'"Teníem un banc de temps amb moltes ganes i cap manera de saber qui aportava què. Ara tenim un mapa, uns rols i un tauler que ho sostenen tot."',
   'cta.cite':'— El que un tècnic de promoció econòmica pot dir després d\'un diagnòstic VNA',
@@ -758,7 +836,7 @@ ca: {
   'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprenentatge','footer.facilitador':'Facilitador'
 },
 es: {
-  'nav.enfoc':'El Reto','nav.fentpinya':'Fent Pinya','nav.eines':'Herramientas','nav.sos':'El SOS','nav.demo':'Verlo en vivo →',
+  'nav.enfoc':'El Reto','nav.fentpinya':'Fent Pinya','nav.eines':'Herramientas','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.demo':'Verlo en vivo →',
   'hero.eyebrow':'Laboratorio de Psicología Comunitaria y Acción Social',
   'hero.h1':'Convertimos la <em>voluntad vecinal</em><br>en <em>redes que duran.</em>',
   'hero.desc':'Ayudamos a ayuntamientos, cooperativas y entidades a pasar de la buena voluntad a la infraestructura: bancos de tiempo, bibliotecas de las cosas o comunidades energéticas con roles claros, gobernanza y futuro — sin depender de dos personas quemadas. Con el foco puesto en el Alt Penedès y el Garraf, y abiertos a trabajar en cualquier territorio que quiera organizarse.',
@@ -840,6 +918,15 @@ es: {
   'fac.p1':'Arraigado en Torrelles de Foix, en el corazón del Alt Penedès, más de 20 años diseñando dinámicas de grupo y redes de valor, hoy puestos al servicio de los ecosistemas locales.',
   'fac.p2':'Ayuda a ayuntamientos, cooperativas, ateneos y asociaciones a dar <strong>estructura real</strong> a sus iniciativas ciudadanas. Cercanía de pueblo, rigor metodológico — cero humo, soluciones reales.',
   'fac.tag1':'Psicología Social y Comunitaria','fac.tag2':'Value Network Analysis','fac.tag3':'Facilitación Fent Pinya',
+  'cl.eyebrow':'Trayectoria y confianza',
+  'cl.h2':'20 años tejiendo <em>equipos y comunidades</em>',
+  'cl.intro':'Del mundo corporativo a la innovación social: una metodología probada con universidades, administraciones públicas, empresas y proyectos comunitarios reales.',
+  'cl.s1':'Creando y desarrollando equipos desde','cl.s2':'Personas formadas en colaboración y confianza','cl.s3':'Empresas y organizaciones acompañadas','cl.s4':'Primer banco de tiempo de la ciudad de León',
+  'cl.g1':'Universidades y formación','cl.g2':'Sector público','cl.g3':'Empresas',
+  'cl.emp':'y +150 empresas en formación y cohesión de equipos',
+  'cl.p1.tag':'Software comunitario','cl.p1.d':'Banco de tiempo y red de conocimiento. Una plataforma que empresas y organizaciones alquilan para crear su propia economía del tiempo y dinamizar su comunidad.',
+  'cl.p2.tag':'Proyecto pionero · 2009','cl.p2.n':'Banco de Tiempo de León','cl.p2.d':'El primer banco de tiempo de la ciudad: intercambio de servicios medido en horas, sin dinero, tejiendo confianza y apoyo mutuo entre vecinos.',
+  'cl.p3.tag':'Desarrollo comunitario','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodología propia de cohesión castellera y mapeo de redes de valor, hoy al servicio de ayuntamientos, cooperativas y ateneos del territorio.',
   'cta.h2':'¿Tiene tu territorio un proyecto<br>que <em>necesita estructura?</em>',
   'cta.quote':'"Teníamos un banco de tiempo con muchas ganas y ninguna forma de saber quién aportaba qué. Ahora tenemos un mapa, unos roles y un tablero que lo sostiene todo."',
   'cta.cite':'— Lo que un técnico de promoción económica puede decir tras un diagnóstico VNA',
