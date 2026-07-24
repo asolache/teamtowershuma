@@ -221,6 +221,14 @@ a{color:var(--blue);text-decoration:none}
 .wz-add input{flex:1}
 .wz-count{font-family:var(--mono);font-size:.66rem;color:var(--muted);font-weight:400}
 .wz-mission{background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--green);border-radius:8px;padding:.7rem .85rem;font-size:.84rem;color:var(--light);line-height:1.5;margin-top:.6rem}
+.wz-ai{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:.2rem 0 .9rem}
+.wz-ai #wzAI{border-color:var(--purple);color:var(--white);background:linear-gradient(90deg,rgba(224,64,251,.14),rgba(99,102,241,.14))}
+.wz-ai #wzAI:disabled{opacity:.6;cursor:default}
+.wz-ai-hint{font-size:.76rem;color:var(--muted);line-height:1.45;flex:1;min-width:180px}
+.wz-ai-hint.err{color:var(--red)}
+.wz-key{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.wz-key input{flex:1;min-width:180px;background:var(--bg-panel);border:1px solid var(--border);border-radius:7px;color:var(--white);padding:.5rem .6rem;font-size:.82rem}
+.wz-key-note{display:block;font-size:.7rem;color:var(--muted);margin-top:.4rem}
 .le-type.sel{border-color:var(--indigo)!important;color:var(--white);background:var(--indigo-dim)}
 .kc-badge{font-family:var(--mono);font-size:.58rem;color:var(--green);border:1px solid var(--green-dim);border-radius:4px;padding:.05rem .3rem;margin-right:auto}
 /* dynamics gallery */
@@ -1009,6 +1017,53 @@ function draftMission(name,level,selectedPainIds){
   return 'Enfortir la xarxa de valor de '+name+' abordant: '+list+'.';
 }
 
+/* ═══════════ SUGGERIMENT AMB IA (clau pròpia · navegador → Anthropic, sense servidor) ═══════════ */
+let _aiKey=null;
+async function loadAiKey(){try{const all=await dbGetAll();const m=all.find(n=>n.id==='__aikey');_aiKey=m&&m.key?m.key:null;}catch(e){_aiKey=null;}return _aiKey;}
+async function saveAiKey(k){k=(k||'').trim();_aiKey=k||null;if(k)await dbPut({id:'__aikey',type:'meta',key:k});else await dbDelete('__aikey');}
+// Crida directa a l'API de Claude des del navegador amb la clau de l'usuari (BYO key). Sortida estructurada via tool_choice forçat.
+async function aiSuggestMap({level,name,promptText,painIds}){
+  const key=_aiKey||await loadAiKey();
+  if(!key)throw{noKey:true};
+  const k=knowFor(level),meta=LEVEL_META[level];
+  const picked=k.pains.filter(p=>painIds&&painIds.has(p.id)).map(p=>p.t+' — '+p.d);
+  const ctx=[
+    'Nivell: '+meta.label+(name?' · "'+name+'"':''),
+    promptText?'Context de la comunitat: '+promptText:'',
+    picked.length?'Reptes prioritzats: '+picked.join('; '):'',
+    'Rols de referència del nivell: '+k.roles.join(', ')
+  ].filter(Boolean).join('\n');
+  const sys='Ets expert en desenvolupament comunitari i en Value Network Analysis (VNA) de Verna Allee, aplicat a comunitats de Catalunya (focus a l\'Alt Penedès i el Garraf, sense excloure la resta). Proposa un mapa de valor comunitari realista i accionable: entre 5 i 8 rols (funcions, no càrrecs) i entre 6 i 12 intercanvis de valor que connectin dos rols de la teva pròpia llista, barrejant tangibles (béns, serveis, hores, diners) i intangibles (confiança, coneixement, pertinença, reciprocitat, reconeixement). Cerca reciprocitat: pocs fluxos unidireccionals. Escriu en català, breu. Respon només cridant l\'eina.';
+  const body={model:'claude-opus-4-8',max_tokens:2000,system:sys,
+    tools:[{name:'proposar_mapa_valor',description:'Retorna el mapa de valor VNA proposat.',input_schema:{type:'object',properties:{
+      mission:{type:'string',description:'Missió breu (una frase) de la xarxa de valor.'},
+      roles:{type:'array',items:{type:'string'},description:'Noms curts de rols/actors.'},
+      exchanges:{type:'array',items:{type:'object',properties:{from:{type:'string'},to:{type:'string'},kind:{type:'string',enum:['tangible','intangible']},label:{type:'string',description:'Què flueix (curt).'}},required:['from','to','kind','label']}}
+    },required:['mission','roles','exchanges']}}],
+    tool_choice:{type:'tool',name:'proposar_mapa_valor'},
+    messages:[{role:'user',content:'Proposa el mapa de valor per a aquesta comunitat:\n\n'+ctx}]};
+  let res;
+  try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});}
+  catch(e){throw{msg:'Sense connexió amb l\'API'};}
+  if(!res.ok){let m='';try{const j=await res.json();m=(j.error&&j.error.message)||'';}catch(e){}throw{status:res.status,msg:m||('Error '+res.status)};}
+  const data=await res.json();
+  const tu=(data.content||[]).find(c=>c.type==='tool_use');
+  if(!tu||!tu.input||!Array.isArray(tu.input.roles))throw{msg:'Resposta inesperada'};
+  const roles=[...new Set(tu.input.roles.map(r=>String(r).trim()).filter(Boolean))];
+  const rl=new Set(roles.map(r=>r.toLowerCase()));
+  const exchanges=(tu.input.exchanges||[]).filter(x=>x&&x.from&&x.to&&rl.has(String(x.from).toLowerCase())&&rl.has(String(x.to).toLowerCase())).map(x=>({from:String(x.from).trim(),to:String(x.to).trim(),kind:x.kind==='intangible'?'intangible':'tangible',label:(x.label||'').trim()}));
+  return {mission:(tu.input.mission||'').trim(),roles,exchanges};
+}
+// Fusiona una proposta d'IA dins l'estat del wizard (accept/reject), sense duplicar
+function mergeAiIntoWizard(wz,ai){
+  const have=new Set(wz.roles.map(r=>r.name.toLowerCase()));
+  ai.roles.forEach(n=>{if(!have.has(n.toLowerCase())){wz.roles.push({name:n,on:true});have.add(n.toLowerCase());}});
+  const key=x=>x.from.toLowerCase()+'>'+x.to.toLowerCase()+'>'+(x.label||'').toLowerCase();
+  const seen=new Set(wz.exchanges.map(key));
+  ai.exchanges.forEach(x=>{const kk=key(x);if(!seen.has(kk)){wz.exchanges.push({from:x.from,to:x.to,kind:x.kind,label:x.label,on:true});seen.add(kk);}});
+  if(ai.mission&&!wz.mission)wz.mission=ai.mission;
+}
+
 function openCreateModal(parentId){
   const level=parentId?nextLevel(byId(parentId).nodeLevel):'pais';
   const meta=LEVEL_META[level];
@@ -1063,6 +1118,7 @@ function openCreateModal(parentId){
       <div class="wz-steps"><div class="wz-step on"></div><div class="wz-step on"></div></div>
       <h2>Mapa de valor suggerit</h2>
       <p class="m-sub">Basat en la metodologia VNA (Verna Allee) i els reptes triats. <strong>Desmarca el que no vulguis i afegeix el teu.</strong></p>
+      <div class="wz-ai" id="wzAiRow"><button class="btn btn-ghost btn-sm" id="wzAI" type="button">✦ Suggereix amb IA</button><span class="wz-ai-hint" id="wzAiHint"></span></div>
       <div class="field"><label>Missió</label><textarea id="wzMission" placeholder="Per a què existeix aquesta xarxa de valor?">${esc(wz.mission)}</textarea>
         ${wz.mission?'<div class="wz-mission">✦ Esborrany generat a partir dels reptes triats. Edita\'l lliurement.</div>':''}</div>
       <div class="wz-sec-lbl">Rols / actors<span class="wz-count" id="wzRC"></span></div>
@@ -1101,6 +1157,32 @@ function openCreateModal(parentId){
     }
     function updCounts(){bg.querySelector('#wzRC').textContent=roleNames().length+' actius';const ne=wz.exchanges.filter(x=>x.on&&roleNames().includes(x.from)&&roleNames().includes(x.to)).length;bg.querySelector('#wzEC').textContent=ne+' actius';}
     paintRoles();paintExch();updCounts();
+    // ✦ Suggeriment amb IA (clau pròpia). Fusiona la proposta dins l'accept/reject existent.
+    const aiBtn=bg.querySelector('#wzAI'),aiHint=bg.querySelector('#wzAiHint');
+    async function runAi(){
+      wz.mission=bg.querySelector('#wzMission').value.trim();
+      aiBtn.disabled=true;aiBtn.textContent='✦ Pensant…';aiHint.textContent='';aiHint.className='wz-ai-hint';
+      try{
+        const ai=await aiSuggestMap({level,name:wz.name,promptText:wz.prompt,painIds:wz.pains});
+        mergeAiIntoWizard(wz,ai);
+        step2(); // re-pinta amb els nous rols/intercanvis i la missió
+        toast('IA: +'+ai.roles.length+' rols · +'+ai.exchanges.length+' intercanvis');
+      }catch(err){
+        aiBtn.disabled=false;aiBtn.textContent='✦ Suggereix amb IA';
+        if(err&&err.noKey){promptForKey();return;}
+        const m=(err&&err.status===401)?'Clau API no vàlida':(err&&err.msg)||'No s\'ha pogut suggerir';
+        aiHint.className='wz-ai-hint err';aiHint.textContent='⚠ '+m;
+      }
+    }
+    function promptForKey(){
+      aiHint.className='wz-ai-hint';
+      aiHint.innerHTML='<div class="wz-key"><input id="wzKey" type="password" placeholder="Enganxa la teva clau API d\'Anthropic (sk-ant-…)" autocomplete="off"><button class="btn btn-primary btn-sm" id="wzKeySave" type="button">Desa i suggereix</button></div><span class="wz-key-note">Es guarda només al teu navegador. Gestiona-la a Configuració.</span>';
+      const inp=aiHint.querySelector('#wzKey');inp.focus();
+      const go=async()=>{const v=inp.value.trim();if(!v){inp.focus();return;}await saveAiKey(v);aiHint.textContent='';runAi();};
+      aiHint.querySelector('#wzKeySave').onclick=go;
+      inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go();}};
+    }
+    aiBtn.onclick=runAi;
     bg.querySelector('#wzAddRole').onclick=()=>{const i=bg.querySelector('#wzNewRole');const v=i.value.trim();if(!v)return;if(wz.roles.some(r=>r.name.toLowerCase()===v.toLowerCase())){toast('Ja existeix');return;}wz.roles.push({name:v,on:true});i.value='';paintRoles();paintExch();updCounts();};
     bg.querySelector('#wzNewRole').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();bg.querySelector('#wzAddRole').click();}};
     bg.querySelector('#wzBack').onclick=step1;
@@ -1229,6 +1311,10 @@ function openSettingsModal(){
       <button class="btn btn-ghost btn-sm" id="stSync">🔗 Sincronitza amb un altre dispositiu</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">⟳</span><span>Directe navegador-a-navegador (WebRTC), <strong>sense cap servidor</strong>. Guanya la versió més recent de cada node.</span></div>
     </div>
+    <div class="field"><label>Suggeriments amb IA (clau pròpia)</label>
+      <div class="wz-key"><input id="stAiKey" type="password" placeholder="sk-ant-…" autocomplete="off"><button class="btn btn-ghost btn-sm" id="stAiSave">Desa</button><button class="btn btn-ghost btn-sm" id="stAiClear">Treu</button></div>
+      <div class="ai-note" style="margin-top:.6rem"><span class="ic">✦</span><span id="stAiState">La clau es guarda <strong>només al teu navegador</strong> i s'usa per cridar l'API de Claude directament, sense servidor. Activa el botó "Suggereix amb IA" del wizard de mapa.</span></div>
+    </div>
     <div class="field"><label style="color:var(--red)">Zona perillosa</label>
       <button class="btn btn-ghost btn-sm" id="stPurge" style="border-color:var(--red-dim);color:var(--red)">Esborra totes les dades locals</button>
     </div>
@@ -1239,6 +1325,10 @@ function openSettingsModal(){
   bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
   bg.querySelector('#stExport').onclick=exportData;
   bg.querySelector('#stImport').onclick=importData;
+  (async()=>{const cur=await loadAiKey();const st=bg.querySelector('#stAiState'),inp=bg.querySelector('#stAiKey');
+    if(cur){inp.placeholder='•••• clau desada ('+cur.slice(0,7)+'…)';st.innerHTML='✔ Clau desada. Ja pots usar "Suggereix amb IA". Es guarda <strong>només al teu navegador</strong>.';}})();
+  bg.querySelector('#stAiSave').onclick=async()=>{const v=bg.querySelector('#stAiKey').value.trim();if(!v){toast('Enganxa una clau');return;}await saveAiKey(v);toast('Clau desada');bg.querySelector('#stAiState').innerHTML='✔ Clau desada. Ja pots usar "Suggereix amb IA".';bg.querySelector('#stAiKey').value='';bg.querySelector('#stAiKey').placeholder='•••• clau desada ('+v.slice(0,7)+'…)';};
+  bg.querySelector('#stAiClear').onclick=async()=>{await saveAiKey('');bg.querySelector('#stAiKey').value='';bg.querySelector('#stAiKey').placeholder='sk-ant-…';bg.querySelector('#stAiState').textContent='Clau eliminada.';toast('Clau eliminada');};
   bg.querySelector('#stPurge').onclick=async()=>{if(confirm('Segur? S\'esborraran TOTES les dades locals del SOS en aquest navegador.')){await dbClear();state.nodes=[];state.activeId=null;closeModal();render();toast('Dades esborrades');}};
 }
 
@@ -1490,7 +1580,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal}; // hook per a tests
 })();
 </script>
 </body>
