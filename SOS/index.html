@@ -490,13 +490,6 @@ const DYNAMICS=[
   kanban:['Convocatòria d\'idees','Selecció d\'idees','Formar equips i rols VNA','Cicles d\'aprenentatge (sprints)','Prototip','Validació','Graduació a cooperativa'],
   gov:'Aprendre fent · equips que s\'autogestionen · repartiment just per aportació (Slicing Pie) · risc compartit.',
   res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coòpolis','https://bcn.coop']]},
- {id:'fent_pinya',name:'Taller Fent Pinya',icon:'🏰',one:'Cohesió vivencial castellera (kickoff de confiança).',unit:'hores',
-  mission:'Generar confiança, seguretat psicològica i interdependència abans d\'estructurar el projecte.',
-  roles:['Facilitador','Grup participant','Colla castellera','Espai'],
-  flows:[['Facilitador','Grup participant','tangible','sessió i materials'],['Grup participant','Grup participant','intangible','confiança i interdependència'],['Colla castellera','Grup participant','intangible','llenguatge comú']],
-  kanban:['Definir grup i objectiu','Logística d\'espai','Sessió Fent Pinya','Recollida d\'aprenentatges','Pla de continuïtat'],
-  gov:'Seguretat psicològica primer · tothom sosté i és sostingut · sense jerarquia durant la dinàmica.',
-  res:[['TeamTowers Humà','https://teamtowershuma.com']]},
  {id:'mapeig_vna',name:'Mapeig de Xarxa de Valor',icon:'🕸️',one:'El diagnòstic VNA del territori com a servei.',unit:'hores',
   mission:'Fer visible l\'ecosistema local: qui es relaciona amb qui i quins fluxos de valor sostenen (o trenquen) la xarxa.',
   roles:['Facilitador VNA','Actors del territori','Ajuntament','Entitats'],
@@ -1593,8 +1586,8 @@ function openProjectWizard(territoryId){
         ${d.id==='generic'?'':'<span class="dyn-unit">comptes: '+esc(d.unit)+'</span>'}
       </div>`).join('');
     const bg=modal(`
-      <h2>Nou projecte / dinàmica</h2>
-      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}Tria un model d'acció-formació: precarregarem el seu mapa de valor, tasques i comptes.</p>
+      <h2>Sessions de desenvolupament comunitari</h2>
+      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}Tria una sessió d'acció-formació: precarregarem el seu mapa de valor, tasques i comptes.</p>
       <div class="dyn-grid">${cards}</div>
       <div class="modal-actions"><button class="btn btn-ghost" id="pwCancel">← Enrere</button></div>
     `);

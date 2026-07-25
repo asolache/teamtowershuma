@@ -170,6 +170,30 @@
         .eina-card p { font-size:.83rem; color:var(--muted); line-height:1.55; }
         .eines-cta { text-align:center; margin-top:3rem; }
 
+        /* SERVEIS */
+        .serveis { padding:8rem 0; }
+        .serv-fam { margin-top:3rem; }
+        .serv-fam:first-of-type { margin-top:3.5rem; }
+        .serv-fam-lbl { font-family:var(--mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-green); border-left:2px solid var(--accent-green); padding-left:.7rem; margin-bottom:1.4rem; }
+        .serveis .eines-grid { margin-top:0; }
+        .serv-fund { margin-top:3rem; background:var(--bg-panel); border:1px solid var(--border); border-left:3px solid var(--accent-indigo); border-radius:12px; padding:1.75rem 1.9rem; }
+        .serv-fund-tag { font-family:var(--mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:.8rem; }
+        .serv-fund p { font-size:.92rem; color:var(--light); line-height:1.7; }
+
+        /* BENEFICIS */
+        .beneficis { padding:8rem 0; background:var(--bg-panel); }
+        .ben-grid { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; margin-top:3.5rem; }
+        .ben-col-lbl { font-family:var(--mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; margin-bottom:1.2rem; }
+        .ben-col:first-child .ben-col-lbl { color:var(--accent-purple); border-left:2px solid var(--accent-purple); padding-left:.7rem; }
+        .ben-col:last-child .ben-col-lbl { color:var(--accent-orange); border-left:2px solid var(--accent-orange); padding-left:.7rem; }
+        .ben-list { list-style:none; display:flex; flex-direction:column; gap:1rem; }
+        .ben-list li { font-size:.9rem; color:var(--muted); line-height:1.6; padding-left:1.1rem; position:relative; }
+        .ben-list li::before { content:'—'; position:absolute; left:0; color:var(--accent-indigo); }
+        .ben-list strong { color:var(--white); font-weight:600; }
+        .ben-note { margin-top:2.5rem; font-family:var(--mono); font-size:.76rem; color:var(--muted); line-height:1.7; }
+        .ben-note span { color:var(--accent-indigo); }
+        @media(max-width:760px){ .ben-grid { grid-template-columns:1fr; gap:2rem; } }
+
         /* APRENENTATGE */
         .aprenentatge { padding:8rem 0; }
         .aprenentatge-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:5rem; align-items:center; }
@@ -255,10 +279,10 @@
     <a href="/" class="nav-logo">Team<span>Towers</span> Humà</a>
     <div style="display:flex;align-items:center;gap:1.5rem;">
         <ul class="nav-links">
-            <li><a href="#enfoc" data-i18n="nav.enfoc">El Repte</a></li>
+            <li><a href="#serveis" data-i18n="nav.serveis">Serveis</a></li>
             <li><a href="#fentpinya" data-i18n="nav.fentpinya">Fent Pinya</a></li>
-            <li><a href="#eines" data-i18n="nav.eines">Eines</a></li>
             <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
+            <li><a href="#beneficis" data-i18n="nav.beneficis">Beneficis</a></li>
             <li><a href="#trajectoria" data-i18n="nav.traj">Trajectòria</a></li>
             <li><a href="/SOS/" target="_blank" class="nav-cta" data-i18n="nav.demo">Viu-ho →</a></li>
         </ul>
@@ -276,7 +300,7 @@
             <div>
                 <div class="hero-eyebrow fade-up" data-i18n="hero.eyebrow">Laboratori de Psicologia Comunitària i Acció Social</div>
                 <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Convertim la <em>voluntat veïnal</em><br>en <em>xarxes que duren.</em></h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n="hero.desc">Ajudem ajuntaments, cooperatives i entitats a passar de la bona voluntat a la infraestructura: bancs de temps, biblioteques de coses o comunitats energètiques amb rols clars, governança i futur — sense dependre de dues persones cremades. Amb el focus posat a l'Alt Penedès i el Garraf, i obertes a treballar a qualsevol territori que vulgui organitzar-se.</p>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n="hero.desc">Ajudem ajuntaments, consells comarcals, cooperatives i entitats a convertir la bona voluntat en infraestructura que dura: diagnòstic del territori, cohesió de grups i eines digitals per a bancs de temps, biblioteques de coses o comunitats energètiques. Amb el focus a l'Alt Penedès i el Garraf, obertes a tot el territori.</p>
                 <div class="hero-actions fade-up" style="animation-delay:.3s">
                     <a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" class="btn-primary" data-i18n="hero.cta1">Parla'ns del teu territori</a>
                     <a href="/SOS/" target="_blank" class="btn-ghost" data-i18n="hero.cta2">Veure el SOS en viu →</a>
@@ -394,13 +418,49 @@
     </div>
 </section>
 
+<!-- SERVEIS -->
+<section class="serveis" id="serveis">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="serv.eyebrow">Serveis</div>
+            <h2 data-i18n-html="serv.h2">Què podem fer <em>al teu territori</em></h2>
+            <p data-i18n="serv.intro">Serveis contractables per ajuntaments, consells comarcals i entitats — pensats per finançar-se amb subvencions, sense càrrega directa per al poble o el barri.</p>
+        </div>
+        <div class="serv-fam fade-up">
+            <div class="serv-fam-lbl" data-i18n="serv.metod">Metodològics · psicologia social i acció comunitària</div>
+            <div class="eines-grid">
+                <div class="eina-card"><span class="eina-ic">🕸️</span><h3 data-i18n="serv.m1.n">Diagnòstic VNA del territori</h3><p data-i18n="serv.m1.d">Mapem qui es relaciona amb qui i quins fluxos de valor —confiança, favors, coneixement— sostenen o trenquen la comunitat.</p></div>
+                <div class="eina-card"><span class="eina-ic">🏰</span><h3 data-i18n="serv.m2.n">Cohesió i confiança (Fent Pinya)</h3><p data-i18n="serv.m2.d">Sessions vivencials perquè veïnat, tècnics i entitats aprenguin a "fer pinya": confiança, interdependència i seguretat psicològica.</p></div>
+                <div class="eina-card"><span class="eina-ic">⚙️</span><h3 data-i18n="serv.m3.n">Posada en marxa de dinàmiques</h3><p data-i18n="serv.m3.d">Bancs de temps, biblioteques de coses, grups de consum, cures veïnals… de la idea a l'acció, amb rols i governança.</p></div>
+                <div class="eina-card"><span class="eina-ic">⬡</span><h3 data-i18n="serv.m4.n">Governança cooperativa</h3><p data-i18n="serv.m4.d">Acompanyem la constitució, els estatuts i la presa de decisions de cooperatives i associacions que duren.</p></div>
+                <div class="eina-card"><span class="eina-ic">🎓</span><h3 data-i18n="serv.m5.n">Formació en acció-formació</h3><p data-i18n="serv.m5.d">Model Tiimiakatemia (Mondragón): equips que aprenen fent i esdevenen sobirans, sense dependre d'un tècnic extern.</p></div>
+                <div class="eina-card"><span class="eina-ic">⚖️</span><h3 data-i18n="serv.m6.n">Comptabilitat de valor justa</h3><p data-i18n="serv.m6.d">Slicing Pie i registre transparent: qui aporta hores i feina hi té veu i part del resultat.</p></div>
+            </div>
+        </div>
+        <div class="serv-fam fade-up">
+            <div class="serv-fam-lbl" data-i18n="serv.tec">Tecnològics · eines digitals sobiranes</div>
+            <div class="eines-grid">
+                <div class="eina-card"><span class="eina-ic">🖥️</span><h3 data-i18n="serv.t1.n">Implantació del SOS</h3><p data-i18n="serv.t1.d">App local-first per mapar, planificar i comptabilitzar cada projecte comunitari al navegador, sense servidors ni dependències.</p></div>
+                <div class="eina-card"><span class="eina-ic">✦</span><h3 data-i18n="serv.t2.n">IA aplicada al desenvolupament</h3><p data-i18n="serv.t2.d">Suggeriment de mapes de valor i descoberta d'entitats reals del territori, sempre amb verificació humana.</p></div>
+                <div class="eina-card"><span class="eina-ic">🌐</span><h3 data-i18n="serv.t3.n">Atles obert de dades comunitàries</h3><p data-i18n="serv.t3.d">Directori col·laboratiu i descentralitzat del teixit local: consells, entitats i iniciatives verificables.</p></div>
+                <div class="eina-card"><span class="eina-ic">🔧</span><h3 data-i18n="serv.t4.n">Eines digitals a mida</h3><p data-i18n="serv.t4.d">Estàndards W3C, codi obert i mantenible: la comunitat és propietària de la seva tecnologia.</p></div>
+                <div class="eina-card"><span class="eina-ic">📶</span><h3 data-i18n="serv.t5.n">Alfabetització digital d'entitats</h3><p data-i18n="serv.t5.d">Formació perquè el teixit associatiu guanyi autonomia tecnològica i deixi de dependre de tercers.</p></div>
+            </div>
+        </div>
+        <div class="serv-fund fade-up">
+            <div class="serv-fund-tag" data-i18n="serv.fund.tag">Sense càrrega directa per al poble</div>
+            <p data-i18n-html="serv.fund.p">Molts d'aquests serveis són <strong>finançables amb fons ja existents</strong>: el catàleg de serveis i les subvencions de la <strong>Diputació de Barcelona</strong> (suport a municipis, especialment de menys de 20.000 habitants), els <strong>Ateneus Cooperatius</strong> (aracoop, gratuïts), fons <strong>Leader/GAL</strong> de desenvolupament rural i programes <strong>Next Generation</strong>. T'ajudem a trobar i justificar la via de finançament perquè el cost no recaigui sobre el veïnat.</p>
+        </div>
+    </div>
+</section>
+
 <!-- FENT PINYA EN DETALL -->
 <section class="fentpinya" id="fentpinya">
     <div class="container">
         <div class="section-header fade-up" style="margin-bottom:4rem;">
             <div class="section-eyebrow" data-i18n="fp.eyebrow">Cohesió en acció</div>
             <h2 data-i18n-html="fp.h2">Els Castells:<br><em>una xarxa de valor de 200 anys</em></h2>
-            <p data-i18n="fp.intro">Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que aplica el Taller Fent Pinya.</p>
+            <p data-i18n="fp.intro">Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que apliquem a les sessions de cohesió Fent Pinya.</p>
         </div>
         <div class="fentpinya-grid">
             <div class="colla-svg-wrap fade-up">
@@ -583,9 +643,9 @@
 <section class="eines" id="eines">
     <div class="container">
         <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="eines.eyebrow">Eines al SOS</div>
-            <h2 data-i18n-html="eines.h2">Un catàleg de <em>dinàmiques comunitàries</em></h2>
-            <p data-i18n="eines.intro">Cada eina arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.</p>
+            <div class="section-eyebrow" data-i18n="eines.eyebrow">Sessions al SOS</div>
+            <h2 data-i18n-html="eines.h2">Sessions de <em>desenvolupament comunitari</em></h2>
+            <p data-i18n="eines.intro">Cada sessió arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.</p>
         </div>
         <div class="eines-grid fade-up">
             <div class="eina-card"><span class="eina-ic">⏳</span><h3 data-i18n="eines.banc.n">Banc de Temps</h3><p data-i18n="eines.banc.d">Intercanvi de serveis veïnals mesurats en hores, no en diners. Una hora val una hora.</p></div>
@@ -594,7 +654,6 @@
             <div class="eina-card"><span class="eina-ic">🌱</span><h3 data-i18n="eines.matriu.n">MATRIU · Incubadora</h3><p data-i18n="eines.matriu.d">Acompanya idees ciutadanes fins a projectes viables i sobirans, aprenent fent.</p></div>
             <div class="eina-card"><span class="eina-ic">🏘️</span><h3 data-i18n="eines.habitatge.n">Habitatge en cessió d'ús</h3><p data-i18n="eines.habitatge.d">Propietat col·lectiva i dret d'ús indefinit, sense especulació (model Andel).</p></div>
             <div class="eina-card"><span class="eina-ic">🥬</span><h3 data-i18n="eines.consum.n">Consum Agroecològic</h3><p data-i18n="eines.consum.d">Compra directa a pagès, sense intermediaris: aliments sans i preu just.</p></div>
-            <div class="eina-card"><span class="eina-ic">🏰</span><h3 data-i18n="eines.pinya.n">Taller Fent Pinya</h3><p data-i18n="eines.pinya.d">Cohesió vivencial castellera: confiança i interdependència abans d'estructurar.</p></div>
             <div class="eina-card"><span class="eina-ic">🤝</span><h3 data-i18n="eines.cures.n">Suport Mutu i Cures</h3><p data-i18n="eines.cures.d">Xarxa veïnal de cura i acompanyament contra la soledat, connectada als serveis.</p></div>
             <div class="eina-card"><span class="eina-ic">🛠️</span><h3 data-i18n="eines.coop.n">Cooperativa de Treball</h3><p data-i18n="eines.coop.d">Ocupació digna i democràtica: qui treballa és soci i decideix. Una persona, un vot.</p></div>
             <div class="eina-card"><span class="eina-ic">🕸️</span><h3 data-i18n="eines.vna.n">Mapeig de Xarxa de Valor</h3><p data-i18n="eines.vna.d">El diagnòstic VNA del territori: qui es relaciona amb qui i quins fluxos el sostenen.</p></div>
@@ -603,6 +662,38 @@
         <div class="eines-cta fade-up">
             <a href="/SOS/" target="_blank" class="btn-primary" data-i18n="eines.cta">Obre el catàleg al SOS →</a>
         </div>
+    </div>
+</section>
+
+<!-- BENEFICIS I ESTALVI -->
+<section class="beneficis" id="beneficis">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="ben.eyebrow">Per què val la pena</div>
+            <h2 data-i18n-html="ben.h2">Beneficis <em>psicosocials i econòmics</em></h2>
+            <p data-i18n="ben.intro">Teixir comunitat no és només bonic: millora la salut de les persones i estalvia diners reals als pobles i barris.</p>
+        </div>
+        <div class="ben-grid fade-up">
+            <div class="ben-col">
+                <div class="ben-col-lbl" data-i18n="ben.psico">Psicosocials</div>
+                <ul class="ben-list">
+                    <li><strong data-i18n="ben.ps1.t">Menys soledat i aïllament.</strong> <span data-i18n="ben.ps1.d">El suport mutu i la trobada regular protegeixen la salut mental, sobretot de la gent gran.</span></li>
+                    <li><strong data-i18n="ben.ps2.t">Més confiança i pertinença.</strong> <span data-i18n="ben.ps2.d">Les xarxes denses de reciprocitat generen seguretat, identitat compartida i capital social.</span></li>
+                    <li><strong data-i18n="ben.ps3.t">Participació i relleu.</strong> <span data-i18n="ben.ps3.d">Rols clars i governança faciliten que entri gent nova i el projecte no depengui de 2-3 persones cremades.</span></li>
+                    <li><strong data-i18n="ben.ps4.t">Salut i resiliència.</strong> <span data-i18n="ben.ps4.d">Les comunitats cohesionades mostren millors indicadors de benestar i aguanten millor les crisis.</span></li>
+                </ul>
+            </div>
+            <div class="ben-col">
+                <div class="ben-col-lbl" data-i18n="ben.econ">Econòmics · casos d'estalvi</div>
+                <ul class="ben-list">
+                    <li><strong data-i18n="ben.ec1.t">Banc de temps.</strong> <span data-i18n="ben.ec1.d">Accés a serveis sense diners: cada hora rebuda és una hora que no es paga al mercat.</span></li>
+                    <li><strong data-i18n="ben.ec2.t">Biblioteca de les coses.</strong> <span data-i18n="ben.ec2.d">Compartir eines i objectes d'ús ocasional estalvia centenars d'euros per llar i redueix residus.</span></li>
+                    <li><strong data-i18n="ben.ec3.t">Compra col·lectiva i energia.</strong> <span data-i18n="ben.ec3.d">Agregar demanda i produir energia en cooperativa abarateix la factura de llum, materials o assegurances.</span></li>
+                    <li><strong data-i18n="ben.ec4.t">Habitatge en cessió d'ús.</strong> <span data-i18n="ben.ec4.d">Quota d'ús per sota del mercat i sense especulació: accés estable a l'habitatge a llarg termini.</span></li>
+                </ul>
+            </div>
+        </div>
+        <p class="ben-note fade-up" data-i18n-html="ben.note"><span>→</span> Evidència qualitativa i xifres orientatives; l'estalvi real depèn de cada projecte. Ens basem en la literatura d'acció comunitària i en experiències pròpies com el Banc de Temps de León (2009) i Comunitats.org.</p>
     </div>
 </section>
 
@@ -738,10 +829,35 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
-  'nav.enfoc':'El Repte','nav.fentpinya':'Fent Pinya','nav.eines':'Eines','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.demo':'Viu-ho →',
+  'nav.enfoc':'El Repte','nav.serveis':'Serveis','nav.fentpinya':'Fent Pinya','nav.eines':'Sessions','nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.demo':'Viu-ho →',
+  'serv.eyebrow':'Serveis','serv.h2':'Què podem fer <em>al teu territori</em>','serv.intro':'Serveis contractables per ajuntaments, consells comarcals i entitats — pensats per finançar-se amb subvencions, sense càrrega directa per al poble o el barri.',
+  'serv.metod':'Metodològics · psicologia social i acció comunitària','serv.tec':'Tecnològics · eines digitals sobiranes',
+  'serv.m1.n':'Diagnòstic VNA del territori','serv.m1.d':'Mapem qui es relaciona amb qui i quins fluxos de valor —confiança, favors, coneixement— sostenen o trenquen la comunitat.',
+  'serv.m2.n':'Cohesió i confiança (Fent Pinya)','serv.m2.d':'Sessions vivencials perquè veïnat, tècnics i entitats aprenguin a "fer pinya": confiança, interdependència i seguretat psicològica.',
+  'serv.m3.n':'Posada en marxa de dinàmiques','serv.m3.d':'Bancs de temps, biblioteques de coses, grups de consum, cures veïnals… de la idea a l\'acció, amb rols i governança.',
+  'serv.m4.n':'Governança cooperativa','serv.m4.d':'Acompanyem la constitució, els estatuts i la presa de decisions de cooperatives i associacions que duren.',
+  'serv.m5.n':'Formació en acció-formació','serv.m5.d':'Model Tiimiakatemia (Mondragón): equips que aprenen fent i esdevenen sobirans, sense dependre d\'un tècnic extern.',
+  'serv.m6.n':'Comptabilitat de valor justa','serv.m6.d':'Slicing Pie i registre transparent: qui aporta hores i feina hi té veu i part del resultat.',
+  'serv.t1.n':'Implantació del SOS','serv.t1.d':'App local-first per mapar, planificar i comptabilitzar cada projecte comunitari al navegador, sense servidors ni dependències.',
+  'serv.t2.n':'IA aplicada al desenvolupament','serv.t2.d':'Suggeriment de mapes de valor i descoberta d\'entitats reals del territori, sempre amb verificació humana.',
+  'serv.t3.n':'Atles obert de dades comunitàries','serv.t3.d':'Directori col·laboratiu i descentralitzat del teixit local: consells, entitats i iniciatives verificables.',
+  'serv.t4.n':'Eines digitals a mida','serv.t4.d':'Estàndards W3C, codi obert i mantenible: la comunitat és propietària de la seva tecnologia.',
+  'serv.t5.n':'Alfabetització digital d\'entitats','serv.t5.d':'Formació perquè el teixit associatiu guanyi autonomia tecnològica i deixi de dependre de tercers.',
+  'serv.fund.tag':'Sense càrrega directa per al poble','serv.fund.p':'Molts d\'aquests serveis són <strong>finançables amb fons ja existents</strong>: el catàleg de serveis i les subvencions de la <strong>Diputació de Barcelona</strong> (suport a municipis, especialment de menys de 20.000 habitants), els <strong>Ateneus Cooperatius</strong> (aracoop, gratuïts), fons <strong>Leader/GAL</strong> de desenvolupament rural i programes <strong>Next Generation</strong>. T\'ajudem a trobar i justificar la via de finançament perquè el cost no recaigui sobre el veïnat.',
+  'ben.eyebrow':'Per què val la pena','ben.h2':'Beneficis <em>psicosocials i econòmics</em>','ben.intro':'Teixir comunitat no és només bonic: millora la salut de les persones i estalvia diners reals als pobles i barris.',
+  'ben.psico':'Psicosocials','ben.econ':'Econòmics · casos d\'estalvi',
+  'ben.ps1.t':'Menys soledat i aïllament.','ben.ps1.d':'El suport mutu i la trobada regular protegeixen la salut mental, sobretot de la gent gran.',
+  'ben.ps2.t':'Més confiança i pertinença.','ben.ps2.d':'Les xarxes denses de reciprocitat generen seguretat, identitat compartida i capital social.',
+  'ben.ps3.t':'Participació i relleu.','ben.ps3.d':'Rols clars i governança faciliten que entri gent nova i el projecte no depengui de 2-3 persones cremades.',
+  'ben.ps4.t':'Salut i resiliència.','ben.ps4.d':'Les comunitats cohesionades mostren millors indicadors de benestar i aguanten millor les crisis.',
+  'ben.ec1.t':'Banc de temps.','ben.ec1.d':'Accés a serveis sense diners: cada hora rebuda és una hora que no es paga al mercat.',
+  'ben.ec2.t':'Biblioteca de les coses.','ben.ec2.d':'Compartir eines i objectes d\'ús ocasional estalvia centenars d\'euros per llar i redueix residus.',
+  'ben.ec3.t':'Compra col·lectiva i energia.','ben.ec3.d':'Agregar demanda i produir energia en cooperativa abarateix la factura de llum, materials o assegurances.',
+  'ben.ec4.t':'Habitatge en cessió d\'ús.','ben.ec4.d':'Quota d\'ús per sota del mercat i sense especulació: accés estable a l\'habitatge a llarg termini.',
+  'ben.note':'<span>→</span> Evidència qualitativa i xifres orientatives; l\'estalvi real depèn de cada projecte. Ens basem en la literatura d\'acció comunitària i en experiències pròpies com el Banc de Temps de León (2009) i Comunitats.org.',
   'hero.eyebrow':'Laboratori de Psicologia Comunitària i Acció Social',
   'hero.h1':'Convertim la <em>voluntat veïnal</em><br>en <em>xarxes que duren.</em>',
-  'hero.desc':'Ajudem ajuntaments, cooperatives i entitats a passar de la bona voluntat a la infraestructura: bancs de temps, biblioteques de coses o comunitats energètiques amb rols clars, governança i futur — sense dependre de dues persones cremades. Amb el focus posat a l\'Alt Penedès i el Garraf, i obertes a treballar a qualsevol territori que vulgui organitzar-se.',
+  'hero.desc':'Ajudem ajuntaments, consells comarcals, cooperatives i entitats a convertir la bona voluntat en infraestructura que dura: diagnòstic del territori, cohesió de grups i eines digitals per a bancs de temps, biblioteques de coses o comunitats energètiques. Amb el focus a l\'Alt Penedès i el Garraf, obertes a tot el territori.',
   'hero.cta1':'Parla\'ns del teu territori','hero.cta2':'Veure el SOS en viu →',
   'enfoc.eyebrow':'El repte',
   'enfoc.h3':'Moltes ganes. <em>Poca estructura.</em>',
@@ -768,7 +884,7 @@ ca: {
   'triada.motor.tag1':'Tauler àgils','triada.motor.tag2':'Autogestió',
   'fp.eyebrow':'Cohesió en acció',
   'fp.h2':'Els Castells:<br><em>una xarxa de valor de 200 anys</em>',
-  'fp.intro':'Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que aplica el Taller Fent Pinya.',
+  'fp.intro':'Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que apliquem a les sessions de cohesió Fent Pinya.',
   'fp.insights.eyebrow':'3 lliçons per a la comunitat',
   'fp.h3':'La prova més antiga que <em>els intangibles van primer</em>',
   'fp.p1':'Una torre humana és un mapa VNA en viu. Cada rol, cada intercanvi, cada intangible — visible en temps real, amb conseqüències immediates. Passa el cursor per cada node per veure els seus fluxos de valor.',
@@ -790,9 +906,9 @@ ca: {
   'sos.demo.p2':'Construïda sobre la metodologia VNA. Cada node és un rol actiu. Cada línia és un intercanvi que el sistema entén, mesura i ajuda a sostenir.',
   'sos.demo.p3':'Accés obert — explora l\'eina i veu com el diagnòstic es converteix en infraestructura viva.',
   'sos.demo.link':'Explora el SOS en viu',
-  'eines.eyebrow':'Eines al SOS',
-  'eines.h2':'Un catàleg de <em>dinàmiques comunitàries</em>',
-  'eines.intro':'Cada eina arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.',
+  'eines.eyebrow':'Sessions al SOS',
+  'eines.h2':'Sessions de <em>desenvolupament comunitari</em>',
+  'eines.intro':'Cada sessió arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.',
   'eines.banc.n':'Banc de Temps','eines.banc.d':'Intercanvi de serveis veïnals mesurats en hores, no en diners. Una hora val una hora.',
   'eines.biblio.n':'Biblioteca de les Coses','eines.biblio.d':'Pool compartit d\'objectes i eines en préstec: estalvi, menys residus i trobada.',
   'eines.energia.n':'Comunitat Energètica','eines.energia.d':'Energia renovable produïda i compartida localment, en cooperativa. Sobirania i estalvi.',
@@ -836,10 +952,35 @@ ca: {
   'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprenentatge','footer.facilitador':'Facilitador'
 },
 es: {
-  'nav.enfoc':'El Reto','nav.fentpinya':'Fent Pinya','nav.eines':'Herramientas','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.demo':'Verlo en vivo →',
+  'nav.enfoc':'El Reto','nav.serveis':'Servicios','nav.fentpinya':'Fent Pinya','nav.eines':'Sesiones','nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.demo':'Verlo en vivo →',
+  'serv.eyebrow':'Servicios','serv.h2':'Qué podemos hacer <em>en tu territorio</em>','serv.intro':'Servicios contratables por ayuntamientos, consejos comarcales y entidades — pensados para financiarse con subvenciones, sin carga directa para el pueblo o el barrio.',
+  'serv.metod':'Metodológicos · psicología social y acción comunitaria','serv.tec':'Tecnológicos · herramientas digitales soberanas',
+  'serv.m1.n':'Diagnóstico VNA del territorio','serv.m1.d':'Mapeamos quién se relaciona con quién y qué flujos de valor —confianza, favores, conocimiento— sostienen o rompen la comunidad.',
+  'serv.m2.n':'Cohesión y confianza (Fent Pinya)','serv.m2.d':'Sesiones vivenciales para que vecindario, técnicos y entidades aprendan a "hacer piña": confianza, interdependencia y seguridad psicológica.',
+  'serv.m3.n':'Puesta en marcha de dinámicas','serv.m3.d':'Bancos de tiempo, bibliotecas de las cosas, grupos de consumo, cuidados vecinales… de la idea a la acción, con roles y gobernanza.',
+  'serv.m4.n':'Gobernanza cooperativa','serv.m4.d':'Acompañamos la constitución, los estatutos y la toma de decisiones de cooperativas y asociaciones que duran.',
+  'serv.m5.n':'Formación en acción-formación','serv.m5.d':'Modelo Tiimiakatemia (Mondragón): equipos que aprenden haciendo y se vuelven soberanos, sin depender de un técnico externo.',
+  'serv.m6.n':'Contabilidad de valor justa','serv.m6.d':'Slicing Pie y registro transparente: quien aporta horas y trabajo tiene voz y parte del resultado.',
+  'serv.t1.n':'Implantación del SOS','serv.t1.d':'App local-first para mapear, planificar y contabilizar cada proyecto comunitario en el navegador, sin servidores ni dependencias.',
+  'serv.t2.n':'IA aplicada al desarrollo','serv.t2.d':'Sugerencia de mapas de valor y descubrimiento de entidades reales del territorio, siempre con verificación humana.',
+  'serv.t3.n':'Atlas abierto de datos comunitarios','serv.t3.d':'Directorio colaborativo y descentralizado del tejido local: consejos, entidades e iniciativas verificables.',
+  'serv.t4.n':'Herramientas digitales a medida','serv.t4.d':'Estándares W3C, código abierto y mantenible: la comunidad es propietaria de su tecnología.',
+  'serv.t5.n':'Alfabetización digital de entidades','serv.t5.d':'Formación para que el tejido asociativo gane autonomía tecnológica y deje de depender de terceros.',
+  'serv.fund.tag':'Sin carga directa para el pueblo','serv.fund.p':'Muchos de estos servicios son <strong>financiables con fondos ya existentes</strong>: el catálogo de servicios y las subvenciones de la <strong>Diputació de Barcelona</strong> (apoyo a municipios, especialmente de menos de 20.000 habitantes), los <strong>Ateneus Cooperatius</strong> (aracoop, gratuitos), fondos <strong>Leader/GAL</strong> de desarrollo rural y programas <strong>Next Generation</strong>. Te ayudamos a encontrar y justificar la vía de financiación para que el coste no recaiga sobre el vecindario.',
+  'ben.eyebrow':'Por qué vale la pena','ben.h2':'Beneficios <em>psicosociales y económicos</em>','ben.intro':'Tejer comunidad no es solo bonito: mejora la salud de las personas y ahorra dinero real a pueblos y barrios.',
+  'ben.psico':'Psicosociales','ben.econ':'Económicos · casos de ahorro',
+  'ben.ps1.t':'Menos soledad y aislamiento.','ben.ps1.d':'El apoyo mutuo y el encuentro regular protegen la salud mental, sobre todo de las personas mayores.',
+  'ben.ps2.t':'Más confianza y pertenencia.','ben.ps2.d':'Las redes densas de reciprocidad generan seguridad, identidad compartida y capital social.',
+  'ben.ps3.t':'Participación y relevo.','ben.ps3.d':'Roles claros y gobernanza facilitan que entre gente nueva y el proyecto no dependa de 2-3 personas quemadas.',
+  'ben.ps4.t':'Salud y resiliencia.','ben.ps4.d':'Las comunidades cohesionadas muestran mejores indicadores de bienestar y aguantan mejor las crisis.',
+  'ben.ec1.t':'Banco de tiempo.','ben.ec1.d':'Acceso a servicios sin dinero: cada hora recibida es una hora que no se paga en el mercado.',
+  'ben.ec2.t':'Biblioteca de las cosas.','ben.ec2.d':'Compartir herramientas y objetos de uso ocasional ahorra cientos de euros por hogar y reduce residuos.',
+  'ben.ec3.t':'Compra colectiva y energía.','ben.ec3.d':'Agregar demanda y producir energía en cooperativa abarata la factura de luz, materiales o seguros.',
+  'ben.ec4.t':'Vivienda en cesión de uso.','ben.ec4.d':'Cuota de uso por debajo del mercado y sin especulación: acceso estable a la vivienda a largo plazo.',
+  'ben.note':'<span>→</span> Evidencia cualitativa y cifras orientativas; el ahorro real depende de cada proyecto. Nos basamos en la literatura de acción comunitaria y en experiencias propias como el Banco de Tiempo de León (2009) y Comunitats.org.',
   'hero.eyebrow':'Laboratorio de Psicología Comunitaria y Acción Social',
   'hero.h1':'Convertimos la <em>voluntad vecinal</em><br>en <em>redes que duran.</em>',
-  'hero.desc':'Ayudamos a ayuntamientos, cooperativas y entidades a pasar de la buena voluntad a la infraestructura: bancos de tiempo, bibliotecas de las cosas o comunidades energéticas con roles claros, gobernanza y futuro — sin depender de dos personas quemadas. Con el foco puesto en el Alt Penedès y el Garraf, y abiertos a trabajar en cualquier territorio que quiera organizarse.',
+  'hero.desc':'Ayudamos a ayuntamientos, consejos comarcales, cooperativas y entidades a convertir la buena voluntad en infraestructura que dura: diagnóstico del territorio, cohesión de grupos y herramientas digitales para bancos de tiempo, bibliotecas de las cosas o comunidades energéticas. Con el foco en el Alt Penedès y el Garraf, abiertos a todo el territorio.',
   'hero.cta1':'Hablemos de tu territorio','hero.cta2':'Ver el SOS en vivo →',
   'enfoc.eyebrow':'El reto',
   'enfoc.h3':'Muchas ganas. <em>Poca estructura.</em>',
@@ -866,7 +1007,7 @@ es: {
   'triada.motor.tag1':'Tableros ágiles','triada.motor.tag2':'Autogestión',
   'fp.eyebrow':'Cohesión en acción',
   'fp.h2':'Los Castells:<br><em>una red de valor de 200 años</em>',
-  'fp.intro':'Una torre humana es la red de valor más transparente que existe. Cada rol, cada intercambio, cada intangible — visible en tiempo real. Tres lecciones que aplica el Taller Fent Pinya.',
+  'fp.intro':'Una torre humana es la red de valor más transparente que existe. Cada rol, cada intercambio, cada intangible — visible en tiempo real. Tres lecciones que aplicamos en las sesiones de cohesión Fent Pinya.',
   'fp.insights.eyebrow':'3 lecciones para la comunidad',
   'fp.h3':'La prueba más antigua de que <em>los intangibles van primero</em>',
   'fp.p1':'Una torre humana es un mapa VNA en vivo. Cada rol, cada intercambio, cada intangible — visible en tiempo real, con consecuencias inmediatas. Pasa el cursor por cada nodo para ver sus flujos de valor.',
@@ -888,9 +1029,9 @@ es: {
   'sos.demo.p2':'Construida sobre la metodología VNA. Cada nodo es un rol activo. Cada línea es un intercambio que el sistema entiende, mide y ayuda a sostener.',
   'sos.demo.p3':'Acceso abierto — explora la herramienta y ve cómo el diagnóstico se convierte en infraestructura viva.',
   'sos.demo.link':'Explora el SOS en vivo',
-  'eines.eyebrow':'Herramientas en el SOS',
-  'eines.h2':'Un catálogo de <em>dinámicas comunitarias</em>',
-  'eines.intro':'Cada herramienta llega con su mapa de valor, su tablero y su contabilidad ya preparados, y con recursos para implementarla. Instánciala en tu territorio en un clic.',
+  'eines.eyebrow':'Sesiones en el SOS',
+  'eines.h2':'Sesiones de <em>desarrollo comunitario</em>',
+  'eines.intro':'Cada sesión llega con su mapa de valor, su tablero y su contabilidad ya preparados, y con recursos para implementarla. Instánciala en tu territorio en un clic.',
   'eines.banc.n':'Banco de Tiempo','eines.banc.d':'Intercambio de servicios vecinales medidos en horas, no en dinero. Una hora vale una hora.',
   'eines.biblio.n':'Biblioteca de las Cosas','eines.biblio.d':'Pool compartido de objetos y herramientas en préstamo: ahorro, menos residuos y encuentro.',
   'eines.energia.n':'Comunidad Energética','eines.energia.d':'Energía renovable producida y compartida localmente, en cooperativa. Soberanía y ahorro.',
