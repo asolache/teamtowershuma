@@ -275,6 +275,9 @@ a{color:var(--blue);text-decoration:none}
 .ent-url:hover{text-decoration:underline}
 .ent-toggles{display:flex;gap:.45rem;margin-top:.5rem}
 .ent-toggles .pick{flex:1;justify-content:center;text-align:center}
+.role-bound{display:inline-block;margin-left:.4rem;font-size:.64rem;color:var(--green);border:1px solid var(--green-dim);border-radius:4px;padding:.02rem .3rem;vertical-align:middle}
+.role-link{margin-left:auto;cursor:pointer;color:var(--muted);font-size:.85rem;padding:0 .35rem;border-radius:5px}
+.role-link:hover{color:var(--indigo);background:var(--indigo-dim)}
 @media(max-width:600px){.ent-grid{grid-template-columns:1fr}}
 /* mapa Catalunya */
 .catmap-wrap{padding:1.5rem 1.75rem}
@@ -543,6 +546,13 @@ const DYNAMICS=[
   kanban:['Idea i equip','Estudi de viabilitat','Estatuts','Constitució','Primers ingressos','Consolidació'],
   gov:'Una persona un vot · consell rector rotatiu · forquilla salarial acotada · formació contínua.',
   res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coop. de Treball','https://www.cooperativestreball.coop']]},
+ {id:'cens_entitats',name:'Sprint de Cens d\'Entitats',icon:'🗂️',one:'Mapatge i verificació del teixit local per a l\'atles.',unit:'hores',
+  mission:'Fer visible qui hi ha al territori: censar, verificar i publicar les entitats reals a l\'atles comú.',
+  roles:['Equip de cens','Font oberta / IA','Entitats del territori','Ajuntament','Comunitat de l\'atles'],
+  flows:[['Font oberta / IA','Equip de cens','intangible','candidats a verificar'],['Equip de cens','Entitats del territori','intangible','contacte i validació'],['Entitats del territori','Equip de cens','tangible','dades verificades'],['Equip de cens','Comunitat de l\'atles','tangible','pack públic (PR)']],
+  kanban:['Definir abast del cens (tipus i zona)','Descoberta amb IA','Verificació de camp','Registre al directori','Publicar al commons (PR)','Manteniment i revisió'],
+  gov:'Zero invencions: res es publica sense verificar · fonts obertes · dades públiques al commons, treball intern privat.',
+  res:[['Pam a Pam','https://pamapam.cat'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
  {id:'generic',name:'Xarxa genèrica',icon:'◇',one:'Comença de zero, sense prototip.',unit:'hores',
   mission:'',roles:[],flows:[],kanban:[],gov:'',res:[]}
 ];
@@ -654,9 +664,29 @@ function newEntity({name,entityType,level,territoryName,territoryId,parentChain,
     contact:{email:'',phone:'',url:'',address:''},description:'',tags:[],
     visibility:visibility||'public',source,
     verification:{verified:source!=='ai',by:'',at:source!=='ai'?t:'',confidence:source==='ai'?0.5:1},
+    _fields:ENT_FIELDS.reduce((m,f)=>{m[f]=t;return m;},{}),
     createdAt:t,updatedAt:t};
 }
 async function persistEntity(e){e.updatedAt=now();await dbPut(e);flashSync();}
+// Enriquiment a nivell de camp: cada camp porta el seu timestamp perquè dos enriquiments
+// paral·lels (dos dispositius o l'atles) no es trepitgin — guanya el camp més recent.
+const ENT_FIELDS=['name','entityType','status','description','tags','url','verification','visibility'];
+const entReadF=(e,f)=>f==='url'?((e.contact&&e.contact.url)||''):e[f];
+function entWriteF(e,f,val){if(f==='url'){e.contact=Object.assign({email:'',phone:'',url:'',address:''},e.contact,{url:val||''});}else e[f]=val;}
+function stampFields(e,fields,ts){e._fields=e._fields||{};(fields||ENT_FIELDS).forEach(f=>{e._fields[f]=ts;});return e;}
+// Fusiona 'inc' dins 'local' camp a camp. Retorna {rec,touched}.
+function mergeEntityInto(local,inc){
+  const lf=local._fields||{},incf=inc._fields||{};
+  const out=Object.assign({},local);out.contact=Object.assign({email:'',phone:'',url:'',address:''},local.contact);out._fields=Object.assign({},lf);
+  let touched=false;
+  ENT_FIELDS.forEach(f=>{
+    const lt=lf[f]||(local.updatedAt||''), it=incf[f]||(inc.updatedAt||'');
+    if(it>lt){entWriteF(out,f,entReadF(inc,f));out._fields[f]=incf[f]||inc.updatedAt||now();touched=true;}
+  });
+  out.updatedAt=(local.updatedAt||'')>(inc.updatedAt||'')?local.updatedAt:(inc.updatedAt||now());
+  out.kind='entity';
+  return {rec:out,touched};
+}
 // Entitats d'un territori: enllaçades al node o a un descendent, o pel nom del territori dins el subarbre
 function entitiesFor(territoryId){
   const node=byId(territoryId);if(!node)return state.entities.slice();
@@ -664,6 +694,8 @@ function entitiesFor(territoryId){
   const names=new Set([norm(node.name),...descendants(territoryId).filter(n=>isTerritory(n.nodeLevel)).map(n=>norm(n.name))]);
   return state.entities.filter(e=>(e.territoryId&&ids.has(e.territoryId))||(e.geo&&names.has(norm(e.geo.territoryName))));
 }
+const nearestTerritory=node=>{let n=node;while(n&&!isTerritory(n.nodeLevel))n=n.parentId?byId(n.parentId):null;return n||node;};
+const entitiesForContext=node=>entitiesFor(nearestTerritory(node).id);
 async function deleteEntity(e){
   if(!confirm('Elimina "'+e.name+'" del directori? (No afecta cap projecte ni comptabilitat.)'))return;
   state.tombstones[e.id]=now();await saveTombstones();await dbDelete(e.id);
@@ -868,7 +900,11 @@ function renderVNA(body,node){
   node.vna.roles.forEach((r,i)=>{
     const it=el('div','role-item');
     const dot=el('span','dot');dot.style.background=ROLE_COLORS[i%ROLE_COLORS.length];it.appendChild(dot);
-    it.appendChild(el('span','nm',esc(r.name)));
+    const nmWrap=el('span','nm');nmWrap.appendChild(document.createTextNode(r.name));
+    const bound=r.entityId?byEnt(r.entityId):null;
+    if(bound){const bd=el('span','role-bound',(bound.verification&&bound.verification.verified?'✓ ':'')+esc(bound.name));bd.title='Entitat vinculada';nmWrap.appendChild(bd);}
+    it.appendChild(nmWrap);
+    const link=el('span','role-link',bound?'⬡':'⬡+');link.title=bound?'Canvia l\'entitat vinculada':'Vincula a una entitat real';link.onclick=()=>openRoleBind(node,r);it.appendChild(link);
     const d=el('span','del','×');d.onclick=()=>{node.vna.roles=node.vna.roles.filter(x=>x.id!==r.id);node.vna.exchanges=node.vna.exchanges.filter(e=>e.from!==r.id&&e.to!==r.id);persist(node);renderWorkspace();};
     it.appendChild(d);rl.appendChild(it);
   });
@@ -1314,9 +1350,11 @@ function renderEntitats(body,node){
   const bar=el('div','ent-bar');
   const add=el('button','btn btn-primary btn-sm','+ Registra una entitat existent');add.onclick=()=>openEntityForm(node.id,null);
   const disc=el('button','btn btn-ghost btn-sm','✦ Descobreix amb IA');disc.onclick=()=>openDiscoverEntities(node.id);
+  const sprint=el('button','btn btn-ghost btn-sm','🗂️ Sprint de cens');sprint.title='Crea un projecte-tauler per censar el territori';sprint.onclick=()=>{const dyn=dynById('cens_entitats');const nn=newNode('Cens d\'entitats · '+node.name,'projecte',node.id);seedFromDynamic(nn,dyn);state.nodes.push(nn);persist(nn);state.expanded.add(node.id);selectNode(nn.id);toast('Sprint de cens creat');};
   const pull=el('button','btn btn-ghost btn-sm','⭳ Actualitza l\'atles');pull.onclick=updateAtles;
   const share=el('button','btn btn-ghost btn-sm','⭱ Comparteix');share.onclick=shareAtles;
-  bar.append(add,disc,pull,share);body.appendChild(bar);
+  const dedup=el('button','btn btn-ghost btn-sm','⌫ Fusiona duplicats');dedup.onclick=()=>openMergeDuplicates(node.id);
+  bar.append(add,disc,sprint,pull,share,dedup);body.appendChild(bar);
 
   const note=el('div','ai-note');note.style.marginTop='.9rem';
   note.innerHTML='<span class="ic">⬡</span><span>El <strong>directori</strong> del territori: entitats que <strong>ja existeixen</strong> (censa-les) o que <strong>estàs creant</strong>. Es comparteix de forma col·laborativa via l\'atles comú; el teu mapa, tauler i comptes queden privats.</span>';
@@ -1388,15 +1426,21 @@ function openEntityForm(territoryId,existing){
     const visibility=bg.querySelector('#enVisPriv input').checked?'private':'public';
     const url=bg.querySelector('#enUrl').value.trim();
     const desc=bg.querySelector('#enDesc').value.trim();
-    let rec;
+    let rec;const ts=now();
     if(e){
-      rec=e;rec.name=name;rec.entityType=entityType;rec.status=status;rec.visibility=visibility;
-      rec.contact=Object.assign({email:'',phone:'',url:'',address:''},rec.contact,{url});rec.description=desc;
-      const vbox=bg.querySelector('#enVerify');if(vbox&&vbox.querySelector('input').checked){rec.verification={verified:true,by:'humà',at:now(),confidence:1};}
+      rec=e;const ch=[];
+      if(rec.name!==name){rec.name=name;ch.push('name');}
+      if(rec.entityType!==entityType){rec.entityType=entityType;ch.push('entityType');}
+      if(rec.status!==status){rec.status=status;ch.push('status');}
+      if(rec.visibility!==visibility){rec.visibility=visibility;ch.push('visibility');}
+      if(((rec.contact&&rec.contact.url)||'')!==url){rec.contact=Object.assign({email:'',phone:'',url:'',address:''},rec.contact,{url});ch.push('url');}
+      if((rec.description||'')!==desc){rec.description=desc;ch.push('description');}
+      const vbox=bg.querySelector('#enVerify');if(vbox&&vbox.querySelector('input').checked){rec.verification={verified:true,by:'humà',at:ts,confidence:1};ch.push('verification');}
+      stampFields(rec,ch,ts);
     } else {
       rec=newEntity({name,entityType,level,territoryName,territoryId:node?node.id:null,parentChain:chain,status,visibility,source:'manual'});
       rec.contact.url=url;rec.description=desc;
-      const dup=byEnt(rec.id);if(dup){rec=Object.assign(dup,{name,entityType,status,visibility,description:desc});rec.contact=Object.assign({email:'',phone:'',url:'',address:''},dup.contact,{url});}
+      const dup=byEnt(rec.id);if(dup){rec=Object.assign(dup,{name,entityType,status,visibility,description:desc});rec.contact=Object.assign({email:'',phone:'',url:'',address:''},dup.contact,{url});stampFields(rec,ENT_FIELDS,ts);}
       else state.entities.push(rec);
     }
     await persistEntity(rec);closeModal();state.tab='entitats';renderWorkspace();
@@ -1465,6 +1509,61 @@ function openDiscoverEntities(territoryId){
     }
     closeModal();state.tab='entitats';renderWorkspace();toast(n+' entitats afegides · revisa-les i verifica-les');
   };
+}
+
+// Vincula un rol del mapa VNA a una entitat real del directori del territori
+function openRoleBind(node,role){
+  const ents=entitiesForContext(node).slice().sort((a,b)=>a.name.localeCompare(b.name));
+  const cur=role.entityId?byEnt(role.entityId):null;
+  const rows=ents.length?ents.map(e=>`<label class="pick${cur&&cur.id===e.id?' sel':''}" data-eid="${e.id}"><input type="radio" name="rbE" ${cur&&cur.id===e.id?'checked':''}><span><span class="pk-t">${(e.verification&&e.verification.verified?'✓ ':'')+esc(e.name)}</span><span class="pk-badge pk-intang">${esc(entTypeMeta(e.entityType).label)}</span></span></label>`).join(''):'<p class="m-sub">No hi ha entitats registrades en aquest territori encara. Registra\'n a la pestanya Entitats.</p>';
+  const bg=modal(`
+    <h2>Vincula el rol «${esc(role.name)}»</h2>
+    <p class="m-sub">Connecta aquest rol del mapa amb una entitat real del directori. Fa el mapa concret i navegable.</p>
+    <div class="pick-list">${rows}</div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="rbCancel">Cancel·la</button>${cur?'<button class="btn btn-ghost" id="rbUnbind">Desvincula</button>':''}<button class="btn btn-primary" id="rbSave">Vincula</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let sel=cur?cur.id:null;
+  bg.querySelectorAll('.pick[data-eid]').forEach(l=>l.onclick=e=>{if(e.target.tagName!=='INPUT')l.querySelector('input').checked=true;bg.querySelectorAll('.pick[data-eid]').forEach(x=>x.classList.remove('sel'));l.classList.add('sel');sel=l.dataset.eid;});
+  bg.querySelector('#rbCancel').onclick=closeModal;
+  if(cur)bg.querySelector('#rbUnbind').onclick=async()=>{delete role.entityId;await persist(node);closeModal();renderWorkspace();toast('Rol desvinculat');};
+  bg.querySelector('#rbSave').onclick=async()=>{if(!sel){toast('Tria una entitat');return;}role.entityId=sel;await persist(node);closeModal();renderWorkspace();toast('Rol vinculat a «'+byEnt(sel).name+'»');};
+}
+
+// Eina de neteja: fusiona entitats duplicades (mateix nom normalitzat al territori)
+function openMergeDuplicates(territoryId){
+  const list=entitiesFor(territoryId);
+  const groups={};list.forEach(e=>{(groups[norm(e.name)]=groups[norm(e.name)]||[]).push(e);});
+  const dups=Object.values(groups).filter(g=>g.length>1);
+  const bg=modal(`
+    <h2>Fusiona duplicats</h2>
+    <p class="m-sub">${dups.length?'Entitats amb el mateix nom al territori. Es fusionen en una sola conservant el més complet i verificat.':'No s\'han trobat duplicats en aquest territori. 🎉'}</p>
+    <div id="mdList"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="mdClose">Fet</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#mdClose').onclick=closeModal;
+  const listEl=bg.querySelector('#mdList');
+  dups.forEach(g=>{
+    const row=el('div','dyn-detail');row.style.marginBottom='.6rem';
+    row.innerHTML='<div class="pk-t">'+esc(g[0].name)+' · '+g.length+' còpies</div><div class="dyn-one">'+g.map(e=>entTypeMeta(e.entityType).label).join(' · ')+'</div>';
+    const b=el('button','btn btn-ghost btn-sm','⬡ Fusiona');b.style.marginTop='.5rem';
+    b.onclick=async()=>{await mergeDuplicateGroup(g);closeModal();renderWorkspace();toast('Duplicats fusionats');};
+    row.appendChild(b);listEl.appendChild(row);
+  });
+}
+async function mergeDuplicateGroup(group){
+  // supervivent: verificada primer, després la de més camps omplerts
+  const score=e=>(e.verification&&e.verification.verified?100:0)+(e.description?2:0)+((e.contact&&e.contact.url)?2:0)+Object.keys(e._fields||{}).length;
+  const survivor=group.slice().sort((a,b)=>score(b)-score(a))[0];
+  for(const e of group){
+    if(e.id===survivor.id)continue;
+    const {rec}=mergeEntityInto(survivor,e);Object.assign(survivor,rec);
+    // repunta els rols vinculats a l'entitat absorbida
+    state.nodes.forEach(n=>{if(n.vna&&n.vna.roles)n.vna.roles.forEach(r=>{if(r.entityId===e.id){r.entityId=survivor.id;persist(n);}});});
+    state.tombstones[e.id]=now();await dbDelete(e.id);state.entities=state.entities.filter(x=>x.id!==e.id);
+  }
+  await saveTombstones();await persistEntity(survivor);
 }
 
 /* ═══════════ WIZARD DE PROJECTE / DINÀMICA (galeria de prototips) ═══════════ */
@@ -1635,7 +1734,7 @@ function importData(){
       const ne=Array.isArray(d.entities)?d.entities.length:0;
       if(!confirm('Importar '+d.nodes.length+' nodes'+(ne?' i '+ne+' entitats':'')+'? Es fusionaran amb els actuals (guanya la versió més recent).'))return;
       for(const n of d.nodes){const cur=byId(n.id);if(!cur||(n.updatedAt||'')>(cur.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);}}
-      for(const e of (d.entities||[])){if(!e||!e.id)continue;e.kind='entity';const cur=byEnt(e.id);if(!cur||(e.updatedAt||'')>(cur.updatedAt||'')){await dbPut(e);const i=state.entities.findIndex(x=>x.id===e.id);if(i>=0)state.entities[i]=e;else state.entities.push(e);}}
+      for(const e of (d.entities||[])){if(!e||!e.id)continue;e.kind='entity';const cur=byEnt(e.id);if(!cur){await dbPut(e);state.entities.push(e);continue;}const m=mergeEntityInto(cur,e);if(m.touched){await dbPut(m.rec);state.entities[state.entities.findIndex(x=>x.id===e.id)]=m.rec;}}
       closeModal();render();toast('Importació completada');
     }catch(e){toast('Fitxer no vàlid');}};
     r.readAsText(f);};
@@ -1659,13 +1758,15 @@ async function mergePack(pack){
   let n=0;
   for(const e of ((pack&&pack.entities)||[])){
     if(!e||!e.id)continue;const ts=state.tombstones[e.id];if(ts&&ts>=(e.updatedAt||''))continue;
-    const local=byEnt(e.id);
-    const rec=Object.assign({kind:'entity','@type':'sos:Entity',visibility:'public',status:'existing',
+    const inc=Object.assign({kind:'entity','@type':'sos:Entity',visibility:'public',status:'existing',
       contact:{email:'',phone:'',url:'',address:''},description:'',tags:[],
       verification:{verified:false,by:'',at:'',confidence:1},source:e.source||'pack',
-      createdAt:e.updatedAt||now()}, local||{}, e);
-    rec.kind='entity';rec.contact=Object.assign({email:'',phone:'',url:'',address:''},(local&&local.contact)||{},e.contact||{});
-    if(!local||(local.updatedAt||'')<(e.updatedAt||'')){await dbPut(rec);const i=state.entities.findIndex(x=>x.id===e.id);if(i>=0)state.entities[i]=rec;else state.entities.push(rec);n++;}
+      createdAt:e.updatedAt||now()}, e);
+    inc.kind='entity';inc.contact=Object.assign({email:'',phone:'',url:'',address:''},e.contact||{});
+    if(!inc._fields)inc._fields=ENT_FIELDS.reduce((m,f)=>{m[f]=inc.updatedAt||now();return m;},{});
+    const local=byEnt(e.id);
+    if(!local){await dbPut(inc);state.entities.push(inc);n++;continue;}
+    const {rec,touched}=mergeEntityInto(local,inc);if(touched){await dbPut(rec);state.entities[state.entities.findIndex(x=>x.id===e.id)]=rec;n++;}
   }
   if(n)flashSync();
   return n;
@@ -1731,7 +1832,9 @@ async function mergeIncoming(msg){
   let changes=0;const tomb=msg.tombstones||{};
   for(const id in tomb){const ts=tomb[id];if(!state.tombstones[id]||state.tombstones[id]<ts)state.tombstones[id]=ts;const local=byId(id)||byEnt(id);if(local&&(local.updatedAt||'')<ts){await dbDelete(id);state.nodes=state.nodes.filter(n=>n.id!==id);state.entities=state.entities.filter(n=>n.id!==id);changes++;}}
   for(const n of (msg.nodes||[])){if(!n||!n.id||n.id==='__tombstones')continue;const ts=state.tombstones[n.id];if(ts&&ts>=(n.updatedAt||''))continue;const local=byId(n.id);if(!local||(local.updatedAt||'')<(n.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);changes++;}}
-  for(const e of (msg.entities||[])){if(!e||!e.id)continue;const ts=state.tombstones[e.id];if(ts&&ts>=(e.updatedAt||''))continue;const local=byEnt(e.id);if(!local||(local.updatedAt||'')<(e.updatedAt||'')){e.kind='entity';await dbPut(e);const i=state.entities.findIndex(x=>x.id===e.id);if(i>=0)state.entities[i]=e;else state.entities.push(e);changes++;}}
+  for(const e of (msg.entities||[])){if(!e||!e.id)continue;const ts=state.tombstones[e.id];if(ts&&ts>=(e.updatedAt||''))continue;e.kind='entity';const local=byEnt(e.id);
+    if(!local){await dbPut(e);state.entities.push(e);changes++;continue;}
+    const {rec,touched}=mergeEntityInto(local,e);if(touched){await dbPut(rec);state.entities[state.entities.findIndex(x=>x.id===e.id)]=rec;changes++;}}
   await saveTombstones();
   if(state.activeId&&!byId(state.activeId))state.activeId=state.nodes[0]?state.nodes[0].id:null;
   render();
@@ -1924,7 +2027,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist}; // hook per a tests
 })();
 </script>
 </body>
