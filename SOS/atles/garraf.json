@@ -1,0 +1,51 @@
+{
+  "@context": "https://teamtowers.io/sos/v11",
+  "@type": "sos:AtlesPack",
+  "comarca": "Garraf",
+  "generated": "2026-07-24T00:00:00.000Z",
+  "count": 3,
+  "entities": [
+    {
+      "id": "e_comarca_garraf_consell_consell-comarcal-del-garraf",
+      "@type": "sos:Entity",
+      "name": "Consell Comarcal del Garraf",
+      "entityType": "consell",
+      "status": "existing",
+      "geo": { "level": "comarca", "territoryName": "Garraf", "parentChain": ["Catalunya", "Barcelona"] },
+      "contact": { "url": "https://www.ccgarraf.cat" },
+      "description": "Ens supramunicipal que coordina serveis i projectes de la comarca del Garraf.",
+      "tags": ["administració", "supramunicipal"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-24T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed",
+      "updatedAt": "2026-07-24T00:00:00.000Z"
+    },
+    {
+      "id": "e_municipi_vilanova-i-la-geltru_ajuntament_ajuntament-de-vilanova-i-la-geltru",
+      "@type": "sos:Entity",
+      "name": "Ajuntament de Vilanova i la Geltrú",
+      "entityType": "ajuntament",
+      "status": "existing",
+      "geo": { "level": "municipi", "territoryName": "Vilanova i la Geltrú", "parentChain": ["Catalunya", "Barcelona", "Garraf"] },
+      "contact": { "url": "https://www.vilanova.cat" },
+      "description": "Ajuntament de la capital del Garraf.",
+      "tags": ["administració", "municipi"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-24T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed",
+      "updatedAt": "2026-07-24T00:00:00.000Z"
+    },
+    {
+      "id": "e_municipi_sitges_ajuntament_ajuntament-de-sitges",
+      "@type": "sos:Entity",
+      "name": "Ajuntament de Sitges",
+      "entityType": "ajuntament",
+      "status": "existing",
+      "geo": { "level": "municipi", "territoryName": "Sitges", "parentChain": ["Catalunya", "Barcelona", "Garraf"] },
+      "contact": { "url": "https://www.sitges.cat" },
+      "description": "Ajuntament de Sitges.",
+      "tags": ["administració", "municipi"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-24T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed",
+      "updatedAt": "2026-07-24T00:00:00.000Z"
+    }
+  ]
+}
