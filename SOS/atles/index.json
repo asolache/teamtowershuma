@@ -3,8 +3,9 @@
   "@type": "sos:AtlesManifest",
   "name": "Atles SOS — economia social i teixit comunitari de Catalunya",
   "description": "Directori públic i col·laboratiu d'entitats. Es distribueix per CDN i s'enriqueix via Pull Requests. Només capa directori (nom, tipus, ubicació, web); mai dades privades.",
-  "updated": "2026-07-24",
+  "updated": "2026-07-25",
   "packs": [
+    { "comarca": "Catalunya (xarxa)", "file": "catalunya.json" },
     { "comarca": "Alt Penedès", "file": "alt-penedes.json" },
     { "comarca": "Garraf", "file": "garraf.json" }
   ]

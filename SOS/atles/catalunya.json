@@ -1,0 +1,119 @@
+{
+  "@context": "https://teamtowers.io/sos/v11",
+  "@type": "sos:AtlesPack",
+  "comarca": "Catalunya (xarxa)",
+  "generated": "2026-07-25T00:00:00.000Z",
+  "count": 11,
+  "entities": [
+    {
+      "id": "e_provincia_barcelona_diputacio_diputacio-de-barcelona",
+      "@type": "sos:Entity", "name": "Diputació de Barcelona", "entityType": "diputacio", "status": "existing",
+      "geo": { "level": "provincia", "territoryName": "Barcelona", "parentChain": ["Catalunya"] },
+      "contact": { "url": "https://www.diba.cat" },
+      "description": "Ens supramunicipal amb catàleg de serveis i subvencions d'acció comunitària per a ajuntaments (especialment <20.000 hab.).",
+      "tags": ["administració", "finançament", "suport municipal"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_xarxa_ateneus-cooperatius-aracoop",
+      "@type": "sos:Entity", "name": "Ateneus Cooperatius (aracoop)", "entityType": "xarxa", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://www.aracoop.coop" },
+      "description": "Xarxa d'ateneus cooperatius territorials: acompanyament i formació gratuïts per crear cooperatives i projectes d'economia social.",
+      "tags": ["economia social", "formació gratuïta", "cooperativisme"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_xarxa_coopolis-ateneu-cooperatiu-de-barcelona",
+      "@type": "sos:Entity", "name": "Coòpolis · Ateneu Cooperatiu de Barcelona", "entityType": "xarxa", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://bcn.coop" },
+      "description": "Ateneu cooperatiu de referència: incubació, formació i intercooperació de l'economia social i solidària.",
+      "tags": ["economia social", "incubadora", "formació"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_xarxa_xarxa-d-economia-solidaria-xes",
+      "@type": "sos:Entity", "name": "Xarxa d'Economia Solidària (XES)", "entityType": "xarxa", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://xes.cat" },
+      "description": "Xarxa de referència de l'economia social i solidària a Catalunya.",
+      "tags": ["economia social", "xarxa"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_xarxa_pam-a-pam",
+      "@type": "sos:Entity", "name": "Pam a Pam", "entityType": "xarxa", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://pamapam.cat" },
+      "description": "Mapa col·laboratiu de l'economia solidària: punts de consum responsable arreu del territori.",
+      "tags": ["consum responsable", "mapa", "economia solidària"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_federacio_sostre-civic",
+      "@type": "sos:Entity", "name": "Sostre Cívic", "entityType": "federacio", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://sostrecivic.coop" },
+      "description": "Referent de l'habitatge cooperatiu en cessió d'ús (model Andel) a Catalunya.",
+      "tags": ["habitatge", "cessió d'ús", "cooperativa"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_federacio_la-dinamo-fundacio",
+      "@type": "sos:Entity", "name": "La Dinamo Fundació", "entityType": "federacio", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://ladinamofundacio.org" },
+      "description": "Impuls de l'habitatge cooperatiu en cessió d'ús i assessorament a grups promotors.",
+      "tags": ["habitatge", "cessió d'ús"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_coop2_som-energia",
+      "@type": "sos:Entity", "name": "Som Energia", "entityType": "coop2", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://www.somenergia.coop" },
+      "description": "Cooperativa de producció i consum d'energia verda; referent per a comunitats energètiques.",
+      "tags": ["energia", "cooperativa", "comunitat energètica"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_federacio_federacio-de-cooperatives-de-treball",
+      "@type": "sos:Entity", "name": "Federació de Cooperatives de Treball de Catalunya", "entityType": "federacio", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://www.cooperativestreball.coop" },
+      "description": "Representació i suport a les cooperatives de treball associat.",
+      "tags": ["cooperativisme", "treball"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_xarxa_opcions",
+      "@type": "sos:Entity", "name": "Opcions", "entityType": "xarxa", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://opcions.org" },
+      "description": "Cooperativa de consum conscient: recursos i guies per a un consum responsable.",
+      "tags": ["consum responsable"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "id": "e_pais_catalunya_xarxa_banc-del-temps-salut-i-familia",
+      "@type": "sos:Entity", "name": "Banc del Temps · Salut i Família", "entityType": "xarxa", "status": "existing",
+      "geo": { "level": "pais", "territoryName": "Catalunya", "parentChain": [] },
+      "contact": { "url": "https://www.bancdeltemps.org" },
+      "description": "Impuls i acompanyament de bancs del temps arreu del territori.",
+      "tags": ["banc de temps", "suport mutu"],
+      "verification": { "verified": true, "by": "seed", "at": "2026-07-25T00:00:00.000Z", "confidence": 1 },
+      "source": "pack:seed", "updatedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ]
+}
