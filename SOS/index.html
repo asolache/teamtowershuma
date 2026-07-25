@@ -326,6 +326,7 @@ a{color:var(--blue);text-decoration:none}
     <div class="ob-actions">
       <button class="btn btn-primary" id="obLocate">📍 Ubica el teu projecte</button>
       <button class="btn btn-ghost" id="obExplore">🗺 Explora Catalunya</button>
+      <button class="btn btn-ghost" id="obDir">🌐 Directori d'entitats</button>
       <button class="btn btn-ghost" id="obContact">Parla amb l'Álvaro</button>
     </div>
     <p class="ob-contact">Tens un repte comunitari al teu territori? Escriu directament a <a href="#" id="obEmailLink" data-subject="Repte comunitari — vull explorar el SOS">l'Álvaro Solache</a> i ho valorem junts. Sense compromís.</p>
@@ -341,6 +342,7 @@ a{color:var(--blue);text-decoration:none}
     <div class="tb-right">
       <div class="sync-pill" id="syncPill"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
       <button class="btn-icon" id="btnMap" title="Mapa de Catalunya">🗺</button>
+      <button class="btn-icon" id="btnDir" title="Directori d'entitats (atles)">🌐</button>
       <button class="btn-icon" id="btnSync" title="Sincronitza amb un altre dispositiu">🔗</button>
       <button class="btn-icon" id="btnContact" title="Contacta amb l'Álvaro">✉</button>
       <button class="btn-icon" id="btnSettings" title="Configuració · dades">⚙</button>
@@ -1380,11 +1382,43 @@ function renderEntitats(body,node){
   });
 }
 
+// Directori global: totes les entitats del SOS, agrupades per territori (visible sense cap node)
+function openDirectory(){
+  const bg=modal(`
+    <h2>🌐 Directori d'entitats</h2>
+    <p class="m-sub">Totes les entitats del teu SOS (<span id="dirN">${state.entities.length}</span>) — centres oficials i entitats registrades. <button class="btn btn-ghost btn-sm" id="dirPull" type="button" style="margin-left:.3rem">⭳ Actualitza l'atles</button></p>
+    <div id="dirBody" style="max-height:60vh;overflow-y:auto;margin:0 -.3rem;padding:0 .3rem"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="dirClose">Fet</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#dirClose').onclick=closeModal;
+  bg.querySelector('#dirPull').onclick=async()=>{const b=bg.querySelector('#dirPull');b.disabled=true;b.textContent='⭳ Carregant…';await updateAtles();closeModal();openDirectory();};
+  paintDir(bg.querySelector('#dirBody'));
+}
+function paintDir(body){
+  const ents=state.entities.slice();
+  if(!ents.length){body.innerHTML='<div class="ws-empty" style="height:auto;padding:1.5rem"><p>Encara no hi ha entitats. Prem «Actualitza l\'atles» per carregar els centres oficials de la xarxa comunitària catalana.</p></div>';return;}
+  const order={pais:0,provincia:1,comarca:2,municipi:3,barri:4,projecte:5};
+  const groups={};ents.forEach(e=>{const g=(e.geo&&e.geo.territoryName)||'Sense territori';(groups[g]=groups[g]||[]).push(e);});
+  Object.keys(groups).sort((a,b)=>{const la=order[groups[a][0].geo&&groups[a][0].geo.level]??9,lb=order[groups[b][0].geo&&groups[b][0].geo.level]??9;return la-lb||a.localeCompare(b);}).forEach(terr=>{
+    body.appendChild(el('div','ent-grp-lbl','📍 '+esc(terr)+' · '+groups[terr].length));
+    const grid=el('div','ent-grid');
+    groups[terr].sort((a,b)=>a.name.localeCompare(b.name)).forEach(e=>{
+      const c=el('div','ent-card');
+      const vf=e.verification&&e.verification.verified?'<span class="ent-b b-ver">✓ verificada</span>':'<span class="ent-b b-unver">per verificar</span>';
+      c.innerHTML='<div class="ent-nm">'+esc(e.name)+'</div><div class="ent-badges"><span class="ent-b">'+esc(entTypeMeta(e.entityType).label)+'</span>'+vf+'</div>'+(e.description?'<div class="ent-desc">'+esc(e.description)+'</div>':'')+((e.contact&&e.contact.url)?'<a class="ent-url" href="'+esc(e.contact.url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(e.contact.url.replace(/^https?:\/\//,''))+'</a>':'');
+      c.onclick=()=>{closeModal();openEntityForm(e.territoryId,e);};
+      grid.appendChild(c);
+    });
+    body.appendChild(grid);
+  });
+}
+
 // Formulari de registre / edició d'una entitat (crea o enriqueix)
 function openEntityForm(territoryId,existing){
   const node=byId(territoryId)||byId(state.activeId);
-  const level=node?node.nodeLevel:'municipi';
-  const territoryName=node?node.name:'';
+  const level=existing&&existing.geo&&existing.geo.level?existing.geo.level:(node?node.nodeLevel:'municipi');
+  const territoryName=existing&&existing.geo&&existing.geo.territoryName?existing.geo.territoryName:(node?node.name:'');
   const chain=node?ancestors(node.id).map(n=>n.name):[];
   const types=entityTypesFor(level);
   const e=existing;
@@ -1764,14 +1798,15 @@ async function mergePack(pack){
   if(n)flashSync();
   return n;
 }
-async function updateAtles(){
-  toast('Carregant l\'atles…');
+async function updateAtles(silent){
+  if(!silent)toast('Carregant l\'atles…');
   try{
     const idx=await (await fetch(ATLES_BASE+'index.json',{cache:'no-store'})).json();
     let total=0;
     for(const p of ((idx&&idx.packs)||[])){try{const pk=await (await fetch(ATLES_BASE+p.file,{cache:'no-store'})).json();total+=await mergePack(pk);}catch(e){}}
-    render();toast(total?('Atles actualitzat · '+total+' entitats noves o enriquides'):'L\'atles ja estava al dia');
-  }catch(e){toast('No s\'ha pogut carregar l\'atles');}
+    render();if(!silent)toast(total?('Atles actualitzat · '+total+' entitats noves o enriquides'):'L\'atles ja estava al dia');else if(total)flashSync();
+    return total;
+  }catch(e){if(!silent)toast('No s\'ha pogut carregar l\'atles');return 0;}
 }
 function shareAtles(){
   const pack=toPublicPack();
@@ -2011,6 +2046,8 @@ $('#btnNewRoot').onclick=()=>openCreateModal(null);
 $('#btnContact').onclick=openContactModal;
 $('#btnSettings').onclick=openSettingsModal;
 $('#btnMap').onclick=()=>{state.activeId=null;render();};
+$('#btnDir').onclick=openDirectory;
+$('#obDir').onclick=openDirectory;
 $('#btnSync').onclick=openSyncModal;
 $('#homeLogo').onclick=()=>{state.activeId=null;render();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
@@ -2020,7 +2057,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory}; // hook per a tests
+  // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
+  // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
+  try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
 })();
 </script>
 </body>
