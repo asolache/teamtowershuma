@@ -289,6 +289,18 @@ a{color:var(--blue);text-decoration:none}
 .bt-cat{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .4rem}
 .bt-col .ent-card{margin-bottom:.5rem}
 @media(max-width:600px){.bt-cols{grid-template-columns:1fr}}
+/* MATRIU equity pie */
+.eq-wrap{display:grid;grid-template-columns:220px 1fr;gap:1.5rem;align-items:center;margin-top:.8rem}
+.eq-pie{display:flex;justify-content:center}
+.eq-svg{width:200px;height:200px}
+.eq-tbl{display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.eq-row{display:flex;align-items:center;gap:.6rem;font-size:.86rem}
+.eq-dot{width:12px;height:12px;border-radius:3px;flex:none}
+.eq-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eq-sl{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.eq-pct{font-family:var(--mono);font-weight:700;color:var(--white);min-width:52px;text-align:right}
+.eq-total{font-family:var(--mono);font-size:.7rem;color:var(--muted);border-top:1px solid var(--border);padding-top:.5rem;margin-top:.2rem}
+@media(max-width:600px){.eq-wrap{grid-template-columns:1fr}}
 /* mapa Catalunya */
 .catmap-wrap{padding:1.5rem 1.75rem}
 .catmap-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.4rem}
@@ -688,6 +700,110 @@ function newObject({name,typology,ownerId,condition,deposit}){return{id:uid(),na
 function newOffer({memberId,kind,category,title,desc}){return{id:uid(),memberId:memberId||null,kind:kind||'oferta',category:category||'altres',title:(title||'').trim(),desc:(desc||'').trim()};}
 // Saldo d'hores d'un soci = hores aportades − hores rebudes (entrades del ledger etiquetades)
 function memberBalance(node,memberId){let given=0,recv=0;(node.ledger||[]).forEach(e=>{if(e.type!=='temps')return;const v=Number(e.value)||0;if(e.memberId===memberId)given+=v;if(e.counterpartId===memberId)recv+=v;});return{given,recv,net:given-recv};}
+
+/* ═══════════ MATRIU · INCUBADORA (activitats crítiques + ecosistema + equity dinàmic) ═══════════ */
+// Activitats crítiques de desenvolupament comunitari i econòmic (plantilles de mapa de valor + acció-formació)
+const CRITICAL_ACTIVITIES=[
+ {id:'dinamitzacio_comercial',name:'Dinamització comercial',icon:'🏪',one:'Revitalitzar el comerç i l\'economia de proximitat.',
+  roles:['Comerços de proximitat','Ajuntament','Associació de comerciants','Veïnat','Consumidors'],
+  flows:[['Comerços de proximitat','Veïnat','tangible','productes i serveis'],['Ajuntament','Associació de comerciants','tangible','suport i espais'],['Veïnat','Comerços de proximitat','intangible','fidelitat i vida al carrer']],
+  kanban:['Diagnòstic del teixit comercial','Constituir l\'associació','Campanya de proximitat','Fires i mercats','Fidelització i moneda local']},
+ {id:'ocupacio',name:'Ocupació i inserció laboral',icon:'💼',one:'Crear ocupació digna i itineraris d\'inserció.',
+  roles:['Persones en cerca de feina','Empreses locals','Ajuntament','Entitats formatives','Servei d\'ocupació'],
+  flows:[['Entitats formatives','Persones en cerca de feina','tangible','formació'],['Empreses locals','Persones en cerca de feina','tangible','llocs de treball'],['Ajuntament','Servei d\'ocupació','tangible','recursos']],
+  kanban:['Mapar necessitats i perfils','Aliances amb empreses','Formació a mida','Pràctiques i inserció','Seguiment']},
+ {id:'habitatge',name:'Habitatge assequible',icon:'🏘️',one:'Accés a habitatge digne sense especulació.',
+  roles:['Grup motor','Administració','Finançament ètic','Cooperativa','Unitats de convivència'],
+  flows:[['Administració','Cooperativa','tangible','cessió de sòl'],['Finançament ètic','Cooperativa','tangible','préstec'],['Unitats de convivència','Cooperativa','tangible','quota d\'ús']],
+  kanban:['Grup motor','Cerca de sòl','Viabilitat','Constitució','Finançament','Obra','Convivència']},
+ {id:'energia',name:'Comunitat energètica',icon:'⚡',one:'Produir i compartir energia renovable localment.',
+  roles:['Nucli promotor','Sòcies consumidores','Ajuntament','Instal·ladora','Assessoria'],
+  flows:[['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes'],['Ajuntament','Nucli promotor','tangible','teulades'],['Instal·ladora','Sòcies consumidores','tangible','energia (kWh)']],
+  kanban:['Viabilitat','Captació de sòcies','Teulada','Finançament','Constitució','Instal·lació','Posada en marxa']},
+ {id:'alimentacio',name:'Alimentació sostenible',icon:'🥬',one:'Aliments sans i de proximitat, de la terra al plat.',
+  roles:['Pagesia local','Grup de consum','Obrador','Punt de repartiment','Consumidors'],
+  flows:[['Pagesia local','Grup de consum','tangible','cistelles'],['Grup de consum','Pagesia local','tangible','preu just'],['Obrador','Consumidors','tangible','producte transformat']],
+  kanban:['Formar el grup','Contactar pagesia','Logística','Sistema de comandes','Primera cistella','Obrador']},
+ {id:'cures',name:'Cures i salut comunitària',icon:'💗',one:'Xarxa de cures i benestar contra la soledat.',
+  roles:['Nucli de cura','Veïnat','Gent gran','CAP / serveis socials','Voluntariat'],
+  flows:[['Nucli de cura','Gent gran','intangible','acompanyament'],['CAP / serveis socials','Nucli de cura','tangible','derivació'],['Voluntariat','Nucli de cura','tangible','hores de cura']],
+  kanban:['Detectar necessitats','Formar el grup','Protocol','Primers acompanyaments','Coordinació amb serveis']},
+ {id:'cultura',name:'Cultura i patrimoni',icon:'🎭',one:'Activar la cultura, la festa i el patrimoni local.',
+  roles:['Entitats culturals','Ajuntament','Artistes','Veïnat','Escoles'],
+  flows:[['Ajuntament','Entitats culturals','tangible','equipaments i subvenció'],['Artistes','Veïnat','intangible','experiència cultural'],['Escoles','Veïnat','intangible','patrimoni viu']],
+  kanban:['Mapa d\'agents culturals','Programació compartida','Recuperar patrimoni','Festa major participativa','Avaluació']},
+ {id:'turisme',name:'Turisme de poble sostenible',icon:'🧭',one:'Turisme responsable que reverteix al territori.',
+  roles:['Allotjaments','Ajuntament','Restauració','Guies locals','Productors'],
+  flows:[['Guies locals','Allotjaments','tangible','experiències'],['Ajuntament','Restauració','tangible','promoció'],['Productors','Restauració','tangible','producte km0']],
+  kanban:['Inventari d\'atractius','Producte turístic','Aliances locals','Promoció responsable','Gestió de fluxos']},
+ {id:'economia_circular',name:'Economia circular',icon:'♻️',one:'Reduir, reparar i reutilitzar en clau local.',
+  roles:['Nucli gestor','Veïnat','Comerços','Ajuntament','Recicladors'],
+  flows:[['Veïnat','Nucli gestor','tangible','objectes i residus'],['Nucli gestor','Veïnat','tangible','productes reparats'],['Ajuntament','Nucli gestor','tangible','espai i suport']],
+  kanban:['Punt de reparació','Biblioteca de les coses','Mercat de segona mà','Compostatge','Sensibilització']},
+ {id:'digitalitzacio',name:'Digitalització i sobirania tecnològica',icon:'🖥️',one:'Autonomia digital del teixit local.',
+  roles:['Nucli tècnic','Entitats','Ajuntament','Veïnat','Formadors'],
+  flows:[['Formadors','Entitats','intangible','capacitació'],['Nucli tècnic','Veïnat','tangible','eines digitals'],['Ajuntament','Nucli tècnic','tangible','recursos']],
+  kanban:['Diagnòstic digital','Formació bàsica','Eines sobiranes','Presència digital','Manteniment comunitari']},
+ {id:'joventut',name:'Joventut i lleure',icon:'🛹',one:'Espais i oportunitats per al jovent.',
+  roles:['Jovent','Esplai / entitats','Ajuntament','Escoles','Monitoratge'],
+  flows:[['Ajuntament','Esplai / entitats','tangible','espais i beca'],['Monitoratge','Jovent','intangible','acompanyament'],['Jovent','Esplai / entitats','intangible','participació']],
+  kanban:['Escoltar el jovent','Espai jove','Programació','Projectes liderats per joves','Relleu']},
+ {id:'mobilitat',name:'Mobilitat sostenible',icon:'🚲',one:'Moure\'s millor amb menys cotxe.',
+  roles:['Veïnat','Ajuntament','Transport públic','Grups ciclistes','Escoles'],
+  flows:[['Ajuntament','Veïnat','tangible','carrils i aparcaments'],['Escoles','Veïnat','intangible','camins escolars'],['Grups ciclistes','Ajuntament','intangible','propostes']],
+  kanban:['Diagnòstic de mobilitat','Camins escolars','Cotxe compartit','Carril bici','Avaluació']},
+ {id:'acollida',name:'Acollida i inclusió',icon:'🫂',one:'Integrar i cohesionar amb qui arriba.',
+  roles:['Nouvinguts','Entitats d\'acollida','Ajuntament','Veïnat','Escoles'],
+  flows:[['Entitats d\'acollida','Nouvinguts','intangible','acompanyament'],['Ajuntament','Entitats d\'acollida','tangible','recursos'],['Veïnat','Nouvinguts','intangible','xarxa i pertinença']],
+  kanban:['Mapa de necessitats','Punt d\'acollida','Aprenentatge de la llengua','Mentories veïnals','Participació']},
+ {id:'territori',name:'Custòdia del territori',icon:'🌳',one:'Tenir cura del medi natural i agrari.',
+  roles:['Custòdia / entitat','Propietaris','Ajuntament','Voluntariat','Pagesia'],
+  flows:[['Propietaris','Custòdia / entitat','tangible','acord de custòdia'],['Voluntariat','Custòdia / entitat','tangible','hores de conservació'],['Ajuntament','Custòdia / entitat','tangible','suport']],
+  kanban:['Diagnòstic ambiental','Acords de custòdia','Jornades de voluntariat','Recuperació d\'hàbitats','Seguiment']}
+];
+const _am=(()=>{const m={};CRITICAL_ACTIVITIES.forEach(a=>m[a.id]=a);return m;})();
+const actMeta=id=>_am[id]||{id,name:id,icon:'◦',roles:[],flows:[],kanban:[]};
+const venturesOf=node=>node.ventures||(node.ventures=[]);
+const linksOf=node=>node.links||(node.links=[]);
+const equityCfg=node=>node.equity||(node.equity={fmv:20,nonCash:2,cash:4});
+const VENTURE_STAGES=['idea','prototip','validacio','graduacio'];
+function newVenture(node,act){
+  const idBy={},roles=[],exch=[];
+  (act.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
+  (act.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
+  return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null};
+}
+// Slicing Pie: slices = valor de l'aportació × multiplicador (temps a preu FMV × nonCash; diner × cash)
+function computeEquity(node){
+  const cfg=equityCfg(node),ms=membersOf(node),slby={};ms.forEach(m=>slby[m.id]=0);
+  (node.ledger||[]).forEach(e=>{if(!e.memberId||slby[e.memberId]===undefined)return;const v=Number(e.value)||0;
+    if(e.type==='moneda')slby[e.memberId]+=v*cfg.cash;
+    else{const rate=Number(e.rate)||cfg.fmv;slby[e.memberId]+=v*rate*cfg.nonCash;}});
+  const total=Object.values(slby).reduce((a,b)=>a+b,0);
+  return ms.map(m=>({memberId:m.id,name:m.name,slices:slby[m.id],pct:total?slby[m.id]/total*100:0})).sort((a,b)=>b.slices-a.slices);
+}
+// Recursos de l'ecosistema: talent (socis + entitats) + hores (bancs de temps enllaçats) + objectes (biblioteques)
+function ecosystemResources(node){
+  const links=linksOf(node).map(id=>byId(id)).filter(Boolean);
+  let hores=0,objectes=0;const talent=[];
+  membersOf(node).forEach(m=>talent.push({name:m.name,role:'soci MATRIU'}));
+  links.forEach(l=>{
+    if(l.dynamicType==='banc_temps'){hores+=offersOf(l).filter(o=>o.kind==='oferta').length;membersOf(l).forEach(m=>talent.push({name:m.name,role:'banc de temps'}));}
+    if(l.dynamicType==='biblioteca_coses'){objectes+=objectsOf(l).filter(o=>o.status==='disponible').length;membersOf(l).forEach(m=>talent.push({name:m.name,role:'biblioteca'}));}
+  });
+  entitiesForContext(node).forEach(e=>talent.push({name:e.name,role:entTypeMeta(e.entityType).label}));
+  return{links,talent,hores,objectes};
+}
+async function graduateVenture(node,v){
+  const nn=newNode(v.name,'projecte',node.parentId);
+  nn.dynamicType='generic';nn.vna={roles:v.vna.roles.map(r=>({...r})),exchanges:v.vna.exchanges.map(x=>({...x}))};
+  (v.kanbanSeed||[]).forEach(t=>nn.kanban.cards.push({id:uid(),text:t,col:'todo'}));
+  nn.metaskill.mission='Graduada de la MATRIU: '+actMeta(v.activityId).name+'.';
+  v.stage='graduacio';v.graduatedNodeId=nn.id;
+  state.nodes.push(nn);await persist(nn);await persist(node);
+  if(node.parentId)state.expanded.add(node.parentId);
+  selectNode(nn.id);toast('Venture graduada a projecte');
+}
 const norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const entityId=(level,territoryName,entityType,name)=>'e_'+[norm(level),norm(territoryName),norm(entityType),norm(name)].join('_');
 const byEnt=id=>state.entities.find(e=>e.id===id);
@@ -838,6 +954,7 @@ function renderWorkspace(){
   if(territory)tdefs.push(['entitats','⬡ Entitats',entitiesFor(node.id).length]);
   if(node.dynamicType==='biblioteca_coses')tdefs.push(['socis','👥 Socis',membersOf(node).length],['biblioteca','📚 Biblioteca',objectsOf(node).length]);
   else if(node.dynamicType==='banc_temps')tdefs.push(['socis','👥 Socis',membersOf(node).length],['banctemps','⏳ Ofertes',offersOf(node).length]);
+  else if(node.dynamicType==='matriu')tdefs.push(['socis','👥 Socis',membersOf(node).length],['cartera','🌱 Cartera',venturesOf(node).length],['ecosistema','🕸 Ecosistema',linksOf(node).length],['equity','🥧 Equity',membersOf(node).length]);
   if(!tdefs.some(t=>t[0]===state.tab))state.tab=tdefs[0][0];
   tdefs.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
@@ -853,6 +970,9 @@ function renderWorkspace(){
   else if(state.tab==='socis')renderSocis(body,node);
   else if(state.tab==='biblioteca')renderBiblioteca(body,node);
   else if(state.tab==='banctemps')renderBancTemps(body,node);
+  else if(state.tab==='cartera')renderMatriuVentures(body,node);
+  else if(state.tab==='ecosistema')renderMatriuResources(body,node);
+  else if(state.tab==='equity')renderEquity(body,node);
   else renderLedger(body,node);
   w.appendChild(body);
 }
@@ -1830,6 +1950,13 @@ function seedDemo(node){
   const isLib=node.dynamicType==='biblioteca_coses';
   const names=['Marta Vidal','Jordi Soler','Núria Camps','Pau Ribes','AV del Centre'],kinds=['persona','persona','persona','persona','entitat'];
   const ids=names.map((n,i)=>{const m=newMember({name:n,kind:kinds[i]});membersOf(node).push(m);return m.id;});
+  if(node.dynamicType==='matriu'){
+    ['dinamitzacio_comercial','energia','cures'].forEach(aid=>{const v=newVenture(node,actMeta(aid));if(aid==='dinamitzacio_comercial')v.stage='prototip';venturesOf(node).push(v);});
+    // aportacions de valor (perquè la tarta es reparteixi)
+    const L=[[ids[0],'temps',40,25,'Coordinació i disseny'],[ids[1],'temps',30,20,'Desenvolupament tècnic'],[ids[2],'temps',20,20,'Comunicació i xarxa'],[ids[3],'moneda',500,0,'Aportació de capital llavor'],[ids[0],'moneda',300,0,'Material i despeses']];
+    L.forEach(x=>node.ledger.unshift({id:uid(),who:memberById(node,x[0]).name,what:x[4],deliverables:'',type:x[1],value:x[2],rate:x[3]||undefined,memberId:x[0],ts:now()}));
+    persist(node).then(()=>{renderWorkspace();toast('Exemple carregat');});return;
+  }
   if(isLib){
     const objs=[['Taladre percutor','bricolatge'],['Escala de 3 m','bricolatge'],['Paella per a 30','cuina'],['Gelatera','cuina'],['Talla-gespa','jardineria'],['Hidronetejadora','neteja'],['Projector','electronica'],['Altaveu amb micròfon','festes'],['Tenda de campanya 4p','esport'],['Trona de viatge','infancia'],['Màquina de cosir','costura'],['Crosses','salut']];
     objs.forEach((o,i)=>objectsOf(node).push(newObject({name:o[0],typology:o[1],ownerId:ids[i%ids.length],condition:'bon estat',deposit:[0,5,10][i%3]})));
@@ -1839,6 +1966,128 @@ function seedDemo(node){
     node.ledger.unshift({id:uid(),who:names[0],what:'Classes de repàs → '+names[1],deliverables:'',type:'temps',value:2,memberId:ids[0],counterpartId:ids[1],ts:now()});
   }
   persist(node).then(()=>{renderWorkspace();toast('Exemple carregat');});
+}
+
+/* ═══════════ MATRIU · vistes (Cartera · Ecosistema · Equity) ═══════════ */
+function renderMatriuVentures(body,node){
+  const vs=venturesOf(node);
+  const bar=el('div','ent-bar');
+  const add=el('button','btn btn-primary btn-sm','+ Nova venture');add.onclick=()=>openActivityGallery(node);bar.appendChild(add);
+  if(!vs.length){const seed=el('button','btn btn-ghost btn-sm','✨ Carrega exemple');seed.onclick=()=>seedDemo(node);bar.appendChild(seed);}
+  body.appendChild(bar);
+  const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🌱</span><span>Incuba iniciatives crítiques de desenvolupament comunitari i econòmic amb <strong>acció-formació</strong>: cada venture arriba amb el seu mapa de valor i el seu tauler d\'aprenentatge, i pot <strong>graduar-se</strong> a projecte propi.</span>';body.appendChild(note);
+  if(!vs.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Cap venture encara</h2><p>Tria una activitat crítica del territori i instancia-la, o carrega un exemple.</p>';body.appendChild(emp);return;}
+  VENTURE_STAGES.forEach(stg=>{
+    const list=vs.filter(v=>v.stage===stg);if(!list.length)return;
+    const stLbl={idea:'💡 Idea',prototip:'🔧 Prototip',validacio:'✅ Validació',graduacio:'🎓 Graduades'}[stg];
+    body.appendChild(el('div','ent-grp-lbl',stLbl+' · '+list.length));
+    const grid=el('div','ent-grid');
+    list.forEach(v=>{
+      const a=actMeta(v.activityId),c=el('div','ent-card');
+      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
+      const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
+      if(v.stage!=='graduacio'){const i=VENTURE_STAGES.indexOf(v.stage);const nx=el('button','btn btn-ghost btn-sm','→ '+({idea:'Prototip',prototip:'Validació',validacio:'Graduar'}[v.stage]));nx.onclick=async ev=>{ev.stopPropagation();if(v.stage==='validacio'){await graduateVenture(node,v);}else{v.stage=VENTURE_STAGES[i+1];await persist(node);renderWorkspace();toast('Venture avançada');}};act.appendChild(nx);}
+      const del=el('button','btn btn-ghost btn-sm','🗑');del.onclick=async ev=>{ev.stopPropagation();node.ventures=venturesOf(node).filter(x=>x.id!==v.id);await persist(node);renderWorkspace();toast('Venture eliminada');};act.appendChild(del);
+      c.appendChild(act);grid.appendChild(c);
+    });
+    body.appendChild(grid);
+  });
+}
+function openActivityGallery(node){
+  const cards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
+  const bg=modal('<h2>Activitats crítiques del territori</h2><p class="m-sub">Tria l\'activitat a incubar: precarregarem el seu mapa de valor i el tauler d\'acció-formació.</p><div class="dyn-grid">'+cards+'</div><div class="modal-actions"><button class="btn btn-ghost" id="agCancel">Cancel·la</button></div>');
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#agCancel').onclick=closeModal;
+  bg.querySelectorAll('.dyn-card').forEach(c=>c.onclick=async()=>{venturesOf(node).push(newVenture(node,actMeta(c.dataset.act)));await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada');});
+}
+function renderMatriuResources(body,node){
+  const r=ecosystemResources(node);
+  const bar=el('div','ent-bar');const link=el('button','btn btn-primary btn-sm','+ Connecta recurs');link.onclick=()=>linkResource(node);bar.appendChild(link);body.appendChild(bar);
+  const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🕸</span><span>La MATRIU connecta amb l\'<strong>ecosistema de recursos i talent</strong>: banc de temps (hores), biblioteca de les coses (objectes) i el directori d\'entitats.</span>';body.appendChild(note);
+  const stats=el('div','bib-stats');stats.innerHTML='<div class="bib-tile"><div class="n">'+r.talent.length+'</div><div class="l">talent</div></div><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+r.hores+'</div><div class="l">ofertes d\'hores</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+r.objectes+'</div><div class="l">objectes disp.</div></div>';body.appendChild(stats);
+  // linked resources
+  body.appendChild(el('div','ent-grp-lbl','🔗 Recursos connectats · '+r.links.length));
+  if(!r.links.length)body.appendChild(el('div','ent-desc','Cap encara. Connecta un banc de temps o una biblioteca del mateix territori.'));
+  else{const grid=el('div','ent-grid');r.links.forEach(l=>{const d=dynById(l.dynamicType);const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+(d?d.icon:'◇')+' '+esc(l.name)+'</div><div class="ent-badges"><span class="ent-b">'+(d?esc(d.name):'projecte')+'</span></div>';const un=el('button','btn btn-ghost btn-sm','Desconnecta');un.style.marginTop='.5rem';un.onclick=async()=>{node.links=linksOf(node).filter(x=>x!==l.id);await persist(node);renderWorkspace();};c.appendChild(un);grid.appendChild(c);});body.appendChild(grid);}
+  // talent list
+  if(r.talent.length){body.appendChild(el('div','ent-grp-lbl','👥 Talent de l\'ecosistema · '+r.talent.length));const grid=el('div','ent-grid');r.talent.slice(0,60).forEach(t=>{const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+esc(t.name)+'</div><div class="ent-badges"><span class="ent-b">'+esc(t.role)+'</span></div>';grid.appendChild(c);});body.appendChild(grid);}
+}
+function linkResource(node){
+  const sibs=children(node.parentId).filter(n=>n.id!==node.id&&(n.dynamicType==='banc_temps'||n.dynamicType==='biblioteca_coses')&&!linksOf(node).includes(n.id));
+  if(!sibs.length){toast('No hi ha bancs de temps ni biblioteques al mateix territori');return;}
+  const bg=modal('<h2>Connecta un recurs</h2><p class="m-sub">Projectes del mateix territori que la MATRIU pot aprofitar.</p><div class="pick-list">'+sibs.map(s=>{const d=dynById(s.dynamicType);return '<label class="pick" data-id="'+s.id+'"><input type="checkbox"><span class="pk-t">'+(d?d.icon:'')+' '+esc(s.name)+'</span></label>';}).join('')+'</div><div class="modal-actions"><button class="btn btn-ghost" id="lrCancel">Cancel·la</button><button class="btn btn-primary" id="lrSave">Connecta</button></div>');
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelectorAll('.pick[data-id]').forEach(l=>l.onclick=e=>{if(e.target.tagName!=='INPUT'){const i=l.querySelector('input');i.checked=!i.checked;}l.classList.toggle('sel',l.querySelector('input').checked);});
+  bg.querySelector('#lrCancel').onclick=closeModal;
+  bg.querySelector('#lrSave').onclick=async()=>{bg.querySelectorAll('.pick[data-id]').forEach(l=>{if(l.querySelector('input').checked&&!linksOf(node).includes(l.dataset.id))linksOf(node).push(l.dataset.id);});await persist(node);closeModal();state.tab='ecosistema';renderWorkspace();toast('Recurs connectat');};
+}
+function renderEquity(body,node){
+  const cfg=equityCfg(node),eq=computeEquity(node),ms=membersOf(node);
+  const bar=el('div','ent-bar');
+  const add=el('button','btn btn-primary btn-sm','+ Registra aportació');add.onclick=()=>{if(!ms.length){toast('Dona d\'alta un soci primer');state.tab='socis';renderWorkspace();return;}openContributionModal(node);};
+  const cfgb=el('button','btn btn-ghost btn-sm','⚙ Paràmetres');cfgb.onclick=()=>openEquityConfig(node);
+  bar.append(add,cfgb);
+  if(!ms.length){const seed=el('button','btn btn-ghost btn-sm','✨ Carrega exemple');seed.onclick=()=>seedDemo(node);bar.appendChild(seed);}
+  body.appendChild(bar);
+  const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🥧</span><span><strong>Slicing Pie</strong>: la tarta reparteix el valor per aportacions reals. Temps a preu FMV ('+cfg.fmv+' €/h) ×'+cfg.nonCash+'; diner ×'+cfg.cash+'. Es recalcula sola.</span>';body.appendChild(note);
+  if(!eq.length||!eq.some(e=>e.slices>0)){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Encara no hi ha aportacions</h2><p>Registra hores, diner o recursos dels socis i la tarta es repartirà.</p>';body.appendChild(emp);return;}
+  const wrap=el('div','eq-wrap');
+  const pie=el('div','eq-pie');pie.appendChild(buildEquityPie(eq));wrap.appendChild(pie);
+  const tbl=el('div','eq-tbl');
+  eq.forEach((e,i)=>{const row=el('div','eq-row');row.innerHTML='<span class="eq-dot" style="background:'+ROLE_COLORS[i%ROLE_COLORS.length]+'"></span><span class="eq-nm">'+esc(e.name)+'</span><span class="eq-sl">'+Math.round(e.slices).toLocaleString('ca')+' slices</span><span class="eq-pct">'+e.pct.toFixed(1)+'%</span>';tbl.appendChild(row);});
+  const tot=eq.reduce((a,b)=>a+b.slices,0);
+  tbl.appendChild(el('div','eq-total','Total: '+Math.round(tot).toLocaleString('ca')+' slices'));
+  wrap.appendChild(tbl);body.appendChild(wrap);
+}
+function buildEquityPie(eq){
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 200 200');svg.setAttribute('class','eq-svg');
+  const total=eq.reduce((a,b)=>a+b.slices,0)||1;let ang=-Math.PI/2;const cx=100,cy=100,R=90;
+  eq.forEach((e,i)=>{if(e.slices<=0)return;const frac=e.slices/total,a2=ang+frac*Math.PI*2;
+    const x1=cx+R*Math.cos(ang),y1=cy+R*Math.sin(ang),x2=cx+R*Math.cos(a2),y2=cy+R*Math.sin(a2);
+    const large=frac>0.5?1:0;
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d','M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+R+','+R+' 0 '+large+' 1 '+x2.toFixed(2)+','+y2.toFixed(2)+' Z');
+    p.setAttribute('fill',ROLE_COLORS[i%ROLE_COLORS.length]);p.setAttribute('stroke','var(--bg-dark)');p.setAttribute('stroke-width','1.5');
+    const t=document.createElementNS('http://www.w3.org/2000/svg','title');t.textContent=e.name+' · '+e.pct.toFixed(1)+'%';p.appendChild(t);
+    svg.appendChild(p);ang=a2;});
+  const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
+  return svg;
+}
+function openContributionModal(node){
+  const ms=membersOf(node),cfg=equityCfg(node);
+  const bg=modal(`
+    <h2>Registra una aportació de valor</h2>
+    <p class="m-sub">Compta per a l'equity dinàmic (Slicing Pie).</p>
+    <div class="field"><label>Soci</label><select id="cbMem">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
+    <div class="field"><label>Concepte</label><input id="cbWhat" placeholder="Què ha aportat" maxlength="80"></div>
+    <div class="field"><label>Tipus</label><div style="display:flex;gap:.5rem"><button type="button" class="btn btn-ghost btn-sm cb-type sel" data-type="temps" style="flex:1">⏱ Temps (hores)</button><button type="button" class="btn btn-ghost btn-sm cb-type" data-type="moneda" style="flex:1">€ Diner</button></div></div>
+    <div class="field"><label id="cbValLbl">Hores</label><div class="wz-key"><input id="cbVal" type="number" min="0" step="0.5" placeholder="0"><input id="cbRate" type="number" min="0" placeholder="€/h (FMV ${cfg.fmv})"></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="cbCancel">Cancel·la</button><button class="btn btn-primary" id="cbSave">⬢ Registra</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let type='temps';
+  const rateWrap=bg.querySelector('#cbRate');
+  bg.querySelectorAll('.cb-type').forEach(b=>b.onclick=()=>{type=b.dataset.type;bg.querySelectorAll('.cb-type').forEach(x=>x.classList.toggle('sel',x===b));bg.querySelector('#cbValLbl').textContent=type==='moneda'?'Euros (€)':'Hores';rateWrap.style.display=type==='moneda'?'none':'';});
+  bg.querySelector('#cbCancel').onclick=closeModal;
+  bg.querySelector('#cbSave').onclick=async()=>{
+    const memberId=bg.querySelector('#cbMem').value,what=bg.querySelector('#cbWhat').value.trim()||'Aportació',value=Number(bg.querySelector('#cbVal').value)||0;
+    const entry={id:uid(),who:memberById(node,memberId).name,what,deliverables:'',type,value,memberId,ts:now()};
+    if(type==='temps'){const r=Number(bg.querySelector('#cbRate').value)||0;if(r)entry.rate=r;}
+    node.ledger.unshift(entry);await persist(node);closeModal();state.tab='equity';renderWorkspace();toast('Aportació registrada');
+  };
+}
+function openEquityConfig(node){
+  const cfg=equityCfg(node);
+  const bg=modal(`
+    <h2>⚙ Paràmetres de l'equity</h2>
+    <p class="m-sub">Model Slicing Pie. Ajusta els multiplicadors de risc.</p>
+    <div class="field"><label>Preu FMV per defecte (€/h)</label><input id="eqFmv" type="number" min="0" value="${cfg.fmv}"></div>
+    <div class="field"><label>Multiplicador temps/recurs (no-cash)</label><input id="eqNc" type="number" min="0" step="0.5" value="${cfg.nonCash}"></div>
+    <div class="field"><label>Multiplicador diner (cash)</label><input id="eqCash" type="number" min="0" step="0.5" value="${cfg.cash}"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="eqCancel">Cancel·la</button><button class="btn btn-primary" id="eqSave">Desa</button></div>
+  `);
+  bg.querySelector('#eqCancel').onclick=closeModal;
+  bg.querySelector('#eqSave').onclick=async()=>{node.equity={fmv:Number(bg.querySelector('#eqFmv').value)||20,nonCash:Number(bg.querySelector('#eqNc').value)||2,cash:Number(bg.querySelector('#eqCash').value)||4};await persist(node);closeModal();state.tab='equity';renderWorkspace();toast('Paràmetres desats');};
 }
 
 /* ═══════════ WIZARD DE PROJECTE / DINÀMICA (galeria de prototips) ═══════════ */
@@ -2305,7 +2554,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
