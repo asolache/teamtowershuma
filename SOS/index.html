@@ -279,6 +279,16 @@ a{color:var(--blue);text-decoration:none}
 .role-link{margin-left:auto;cursor:pointer;color:var(--muted);font-size:.85rem;padding:0 .35rem;border-radius:5px}
 .role-link:hover{color:var(--indigo);background:var(--indigo-dim)}
 @media(max-width:600px){.ent-grid{grid-template-columns:1fr}}
+/* biblioteca + banc de temps */
+.bib-stats{display:flex;gap:.6rem;margin:.9rem 0}
+.bib-tile{flex:1;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center}
+.bib-tile .n{font-family:var(--sans);font-size:1.4rem;font-weight:700;line-height:1}
+.bib-tile .l{font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.25rem}
+.bt-cols{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem}
+.bt-col{min-width:0}
+.bt-cat{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .4rem}
+.bt-col .ent-card{margin-bottom:.5rem}
+@media(max-width:600px){.bt-cols{grid-template-columns:1fr}}
 /* mapa Catalunya */
 .catmap-wrap{padding:1.5rem 1.75rem}
 .catmap-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.4rem}
@@ -647,6 +657,37 @@ const ENTITY_TYPES={
 const ENTITY_TYPE_META=(()=>{const m={};Object.values(ENTITY_TYPES).forEach(l=>l.forEach(([id,label,icon])=>{if(!m[id])m[id]={id,label,icon:icon||'◦'};}));return m;})();
 const entTypeMeta=id=>ENTITY_TYPE_META[id]||{id,label:id,icon:'◦'};
 const entityTypesFor=level=>ENTITY_TYPES[level]||ENTITY_TYPES.municipi;
+
+/* ═══════════ PROTOTIP OPERATIU · Biblioteca de les Coses + Banc de Temps ═══════════ */
+// Tipologies d'objectes de la biblioteca de les coses [id,label,icon]
+const LIBRARY_TYPES=[
+  ['bricolatge','Bricolatge i eines','🧰'],['cuina','Cuina i càtering','🍳'],['jardineria','Jardineria','🌿'],
+  ['neteja','Neteja','🧽'],['festes','Festes i esdeveniments','🎉'],['electronica','Electrònica i AV','🔌'],
+  ['esport','Esport i lleure','⛺'],['infancia','Infància','🧸'],['costura','Costura i manualitats','🧵'],
+  ['salut','Salut i mobilitat','♿'],['jocs','Jocs i llibres','🎲'],['altres','Altres','◦']
+];
+// Categories de serveis del banc de temps (puntuals més sol·licitats) [id,label,icon]
+const TIMEBANK_CATS=[
+  ['acompanyament','Acompanyament i companyia','🤝'],['transport','Transport','🚗'],['reparacions','Petites reparacions de la llar','🔧'],
+  ['informatica','Informàtica i mòbil','💻'],['idiomes','Idiomes i classes de reforç','📚'],['infants','Cura d\'infants (cangur)','🍼'],
+  ['gentgran','Cura de gent gran','👵'],['cuina','Cuina','🍲'],['jardineria','Jardineria i hort','🌱'],
+  ['costura','Costura i arranjaments','🧵'],['tramits','Tràmits i paperassa','📄'],['estetica','Perruqueria i estètica','✂️'],
+  ['animals','Cura d\'animals','🐕'],['mudances','Mudances i càrregues','📦'],['altres','Altres','◦']
+];
+const _lm=(()=>{const m={};LIBRARY_TYPES.forEach(([id,label,icon])=>m[id]={id,label,icon});return m;})();
+const _tc=(()=>{const m={};TIMEBANK_CATS.forEach(([id,label,icon])=>m[id]={id,label,icon});return m;})();
+const libTypeMeta=id=>_lm[id]||{id,label:id||'Altres',icon:'◦'};
+const tbCatMeta=id=>_tc[id]||{id,label:id||'Altres',icon:'◦'};
+// Col·leccions al node projecte (additiu; no es toca newNode)
+const membersOf=node=>node.members||(node.members=[]);
+const objectsOf=node=>node.objects||(node.objects=[]);
+const offersOf=node=>node.offers||(node.offers=[]);
+const memberById=(node,id)=>membersOf(node).find(m=>m.id===id);
+function newMember({name,kind,entityId,phone,email}){return{id:uid(),name:(name||'').trim(),kind:kind||'persona',entityId:entityId||null,contact:{phone:phone||'',email:email||''},joinedAt:now(),active:true,notes:''};}
+function newObject({name,typology,ownerId,condition,deposit}){return{id:uid(),name:(name||'').trim(),typology:typology||'altres',ownerId:ownerId||null,status:'disponible',borrowerId:null,since:null,dueDate:null,condition:condition||'',deposit:Number(deposit)||0,notes:''};}
+function newOffer({memberId,kind,category,title,desc}){return{id:uid(),memberId:memberId||null,kind:kind||'oferta',category:category||'altres',title:(title||'').trim(),desc:(desc||'').trim()};}
+// Saldo d'hores d'un soci = hores aportades − hores rebudes (entrades del ledger etiquetades)
+function memberBalance(node,memberId){let given=0,recv=0;(node.ledger||[]).forEach(e=>{if(e.type!=='temps')return;const v=Number(e.value)||0;if(e.memberId===memberId)given+=v;if(e.counterpartId===memberId)recv+=v;});return{given,recv,net:given-recv};}
 const norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const entityId=(level,territoryName,entityType,name)=>'e_'+[norm(level),norm(territoryName),norm(entityType),norm(name)].join('_');
 const byEnt=id=>state.entities.find(e=>e.id===id);
@@ -795,6 +836,8 @@ function renderWorkspace(){
   if(territory)tdefs.push(['resum','◧ Resum',ru.projectes]);
   tdefs.push(['map','◉ Mapa de valor',node.vna.roles.length],['kanban','▤ Tauler',node.kanban.cards.length],['ledger','⊞ Comptes',node.ledger.length]);
   if(territory)tdefs.push(['entitats','⬡ Entitats',entitiesFor(node.id).length]);
+  if(node.dynamicType==='biblioteca_coses')tdefs.push(['socis','👥 Socis',membersOf(node).length],['biblioteca','📚 Biblioteca',objectsOf(node).length]);
+  else if(node.dynamicType==='banc_temps')tdefs.push(['socis','👥 Socis',membersOf(node).length],['banctemps','⏳ Ofertes',offersOf(node).length]);
   if(!tdefs.some(t=>t[0]===state.tab))state.tab=tdefs[0][0];
   tdefs.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
@@ -807,6 +850,9 @@ function renderWorkspace(){
   else if(state.tab==='map')renderVNA(body,node);
   else if(state.tab==='kanban')renderKanban(body,node);
   else if(state.tab==='entitats')renderEntitats(body,node);
+  else if(state.tab==='socis')renderSocis(body,node);
+  else if(state.tab==='biblioteca')renderBiblioteca(body,node);
+  else if(state.tab==='banctemps')renderBancTemps(body,node);
   else renderLedger(body,node);
   w.appendChild(body);
 }
@@ -1086,9 +1132,11 @@ function openLedgerEntryModal(node,prefill,card){
     if(!w||!what){toast('Omple qui i concepte');return;}
     const entry={id:uid(),who:w,what,deliverables:bg.querySelector('#leDeliv').value.trim(),type,value:Number(bg.querySelector('#leVal').value)||0,ts:now()};
     if(card){entry.cardId=card.id;card.accounted=entry.id;}
+    if(prefill.memberId)entry.memberId=prefill.memberId;
+    if(prefill.counterpartId)entry.counterpartId=prefill.counterpartId;
     node.ledger.unshift(entry);await persist(node);
     closeModal();
-    if(card){state.tab='kanban';}else{state.tab='ledger';}
+    if(prefill.backTab){state.tab=prefill.backTab;}else if(card){state.tab='kanban';}else{state.tab='ledger';}
     renderWorkspace();toast('Aportació registrada');
   };
 }
@@ -1593,6 +1641,206 @@ async function mergeDuplicateGroup(group){
   await saveTombstones();await persistEntity(survivor);
 }
 
+/* ═══════════ SOCIS · BIBLIOTECA DE LES COSES · BANC DE TEMPS (operatiu) ═══════════ */
+function renderSocis(body,node){
+  const ms=membersOf(node);
+  const bar=el('div','ent-bar');
+  const add=el('button','btn btn-primary btn-sm','+ Alta de soci');add.onclick=()=>openMemberForm(node,null);bar.appendChild(add);
+  if(!ms.length){const seed=el('button','btn btn-ghost btn-sm','✨ Carrega exemple');seed.onclick=()=>seedDemo(node);bar.appendChild(seed);}
+  body.appendChild(bar);
+  const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">👥</span><span>Persones i entitats que <strong>socialitzen</strong> en aquesta dinàmica. Les dades són <strong>privades</strong> (local + P2P); no surten mai a l\'atles públic.</span>';body.appendChild(note);
+  if(!ms.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Encara no hi ha socis</h2><p>Dona d\'alta persones o entitats, o carrega un exemple per provar-ho.</p>';body.appendChild(emp);return;}
+  const grid=el('div','ent-grid');
+  ms.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(m=>{
+    const c=el('div','ent-card');
+    const objs=objectsOf(node).filter(o=>o.ownerId===m.id).length,offs=offersOf(node).filter(o=>o.memberId===m.id).length,bal=memberBalance(node,m.id);
+    const kindB='<span class="ent-b">'+(m.kind==='entitat'?'entitat':'persona')+'</span>';
+    const linkB=m.entityId&&byEnt(m.entityId)?'<span class="ent-b b-ver">↗ directori</span>':'';
+    let stat=node.dynamicType==='biblioteca_coses'?'<span class="ent-b">'+objs+' objecte'+(objs===1?'':'s')+'</span>':'<span class="ent-b">'+offs+' oferta/es</span><span class="ent-b '+(bal.net>=0?'b-ver':'b-unver')+'">saldo '+(bal.net>0?'+':'')+bal.net+' h</span>';
+    c.innerHTML='<div class="ent-nm">'+esc(m.name)+'</div><div class="ent-badges">'+kindB+linkB+stat+'</div>'+((m.contact&&(m.contact.phone||m.contact.email))?'<div class="ent-desc">'+esc([m.contact.phone,m.contact.email].filter(Boolean).join(' · '))+'</div>':'');
+    c.onclick=()=>openMemberForm(node,m);grid.appendChild(c);
+  });
+  body.appendChild(grid);
+}
+function openMemberForm(node,e){
+  const ents=state.entities.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  const bg=modal(`
+    <h2>${e?'Soci':'Alta de soci'}</h2>
+    <p class="m-sub">Persona o entitat que participa en «${esc(node.name)}».</p>
+    <div class="field"><label>Nom</label><input id="mbName" autocomplete="off" value="${e?esc(e.name):''}"></div>
+    <div class="ent-toggles">
+      <label class="pick ${!e||e.kind==='persona'?'sel':''}" id="mbKp"><input type="radio" name="mbK" ${!e||e.kind==='persona'?'checked':''}><span class="pk-t">Persona</span></label>
+      <label class="pick ${e&&e.kind==='entitat'?'sel':''}" id="mbKe"><input type="radio" name="mbK" ${e&&e.kind==='entitat'?'checked':''}><span class="pk-t">Entitat</span></label>
+    </div>
+    <div class="field"><label>Enllaça a una entitat del directori (opcional)</label><input id="mbEnt" list="mbEntList" autocomplete="off" placeholder="Cerca al directori…" value="${e&&e.entityId&&byEnt(e.entityId)?esc(byEnt(e.entityId).name):''}"><datalist id="mbEntList">${ents.map(x=>'<option value="'+esc(x.name)+'">').join('')}</datalist></div>
+    <div class="field"><label>Contacte (opcional)</label><div class="wz-key"><input id="mbPhone" placeholder="Telèfon" value="${e?esc(e.contact.phone||''):''}"><input id="mbEmail" placeholder="Correu" value="${e?esc(e.contact.email||''):''}"></div></div>
+    <div class="modal-actions">${e?'<button class="btn btn-ghost" id="mbDel" style="border-color:var(--red-dim);color:var(--red)">Baixa</button>':'<button class="btn btn-ghost" id="mbCancel">Cancel·la</button>'}<button class="btn btn-primary" id="mbSave">${e?'Desa':'Alta'}</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const nm=bg.querySelector('#mbName');nm.focus();
+  bg.querySelectorAll('.ent-toggles .pick').forEach(l=>l.onclick=()=>{bg.querySelectorAll('.ent-toggles .pick').forEach(x=>x.classList.remove('sel'));l.classList.add('sel');l.querySelector('input').checked=true;});
+  if(e)bg.querySelector('#mbDel').onclick=async()=>{if(!confirm('Donar de baixa «'+e.name+'»?'))return;node.members=membersOf(node).filter(x=>x.id!==e.id);await persist(node);closeModal();renderWorkspace();toast('Soci donat de baixa');};
+  else bg.querySelector('#mbCancel').onclick=closeModal;
+  bg.querySelector('#mbSave').onclick=async()=>{
+    const name=nm.value.trim();if(!name){nm.focus();return;}
+    const kind=bg.querySelector('#mbKe input').checked?'entitat':'persona';
+    let entityId=null;const entName=bg.querySelector('#mbEnt').value.trim();if(entName){const f=ents.find(x=>x.name.toLowerCase()===entName.toLowerCase());if(f)entityId=f.id;}
+    const phone=bg.querySelector('#mbPhone').value.trim(),email=bg.querySelector('#mbEmail').value.trim();
+    if(e){e.name=name;e.kind=kind;e.entityId=entityId;e.contact={phone,email};}
+    else membersOf(node).push(newMember({name,kind,entityId,phone,email}));
+    await persist(node);closeModal();state.tab='socis';renderWorkspace();toast(e?'Soci desat':'Soci donat d\'alta');
+  };
+}
+function renderBiblioteca(body,node){
+  const objs=objectsOf(node),ms=membersOf(node);
+  const bar=el('div','ent-bar');
+  const add=el('button','btn btn-primary btn-sm','+ Afegeix objecte');add.onclick=()=>{if(!ms.length){toast('Dona d\'alta un soci primer');state.tab='socis';renderWorkspace();return;}openObjectForm(node,null);};bar.appendChild(add);
+  if(!objs.length){const seed=el('button','btn btn-ghost btn-sm','✨ Carrega exemple');seed.onclick=()=>seedDemo(node);bar.appendChild(seed);}
+  body.appendChild(bar);
+  const disp=objs.filter(o=>o.status==='disponible').length,prest=objs.filter(o=>o.status==='prestat').length;
+  const stats=el('div','bib-stats');stats.innerHTML='<div class="bib-tile"><div class="n">'+objs.length+'</div><div class="l">objectes</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+disp+'</div><div class="l">disponibles</div></div><div class="bib-tile"><div class="n" style="color:var(--orange)">'+prest+'</div><div class="l">prestats</div></div>';body.appendChild(stats);
+  if(!objs.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Catàleg buit</h2><p>Afegeix objectes que els socis vulguin compartir, o carrega un exemple.</p>';body.appendChild(emp);return;}
+  LIBRARY_TYPES.forEach(([tp,label,icon])=>{
+    const list=objs.filter(o=>o.typology===tp);if(!list.length)return;
+    body.appendChild(el('div','ent-grp-lbl',icon+' '+esc(label)+' · '+list.length));
+    const grid=el('div','ent-grid');
+    list.sort((a,b)=>a.name.localeCompare(b.name)).forEach(o=>{
+      const owner=memberById(node,o.ownerId),borrower=o.status==='prestat'&&o.borrowerId?memberById(node,o.borrowerId):null;
+      const st=o.status==='prestat'?'<span class="ent-b b-unver">prestat</span>':(o.status==='reparacio'?'<span class="ent-b">reparació</span>':'<span class="ent-b b-ver">disponible</span>');
+      const c=el('div','ent-card');
+      c.innerHTML='<div class="ent-nm">'+esc(o.name)+'</div><div class="ent-badges">'+st+(owner?'<span class="ent-b">de '+esc(owner.name)+'</span>':'')+(o.deposit?'<span class="ent-b">fiança '+o.deposit+'€</span>':'')+'</div>'+(borrower?'<div class="ent-desc">→ '+esc(borrower.name)+(o.dueDate?' · fins '+o.dueDate:'')+'</div>':'')+(o.condition?'<div class="ent-desc">'+esc(o.condition)+'</div>':'');
+      const act=el('div');act.style.marginTop='.5rem';
+      if(o.status==='disponible'){const b=el('button','btn btn-ghost btn-sm','↗ Presta');b.onclick=ev=>{ev.stopPropagation();lendObject(node,o);};act.appendChild(b);}
+      else if(o.status==='prestat'){const b=el('button','btn btn-ghost btn-sm','↩ Retorna');b.onclick=async ev=>{ev.stopPropagation();o.status='disponible';o.borrowerId=null;o.since=null;o.dueDate=null;await persist(node);renderWorkspace();toast('Objecte retornat');};act.appendChild(b);}
+      const ed=el('button','btn btn-ghost btn-sm','✎');ed.style.marginLeft='.3rem';ed.onclick=ev=>{ev.stopPropagation();openObjectForm(node,o);};act.appendChild(ed);
+      c.appendChild(act);grid.appendChild(c);
+    });
+    body.appendChild(grid);
+  });
+}
+function openObjectForm(node,e){
+  const ms=membersOf(node);
+  const typeOpts=LIBRARY_TYPES.map(([id,label])=>'<option value="'+id+'"'+(e&&e.typology===id?' selected':'')+'>'+label+'</option>').join('');
+  const ownerOpts=ms.map(m=>'<option value="'+m.id+'"'+(e&&e.ownerId===m.id?' selected':'')+'>'+esc(m.name)+'</option>').join('');
+  const bg=modal(`
+    <h2>${e?'Objecte':'Afegeix objecte'}</h2>
+    <div class="field"><label>Nom de l'objecte</label><input id="obName" autocomplete="off" placeholder="p.ex. Taladre percutor" value="${e?esc(e.name):''}"></div>
+    <div class="field"><label>Tipologia</label><select id="obType">${typeOpts}</select></div>
+    <div class="field"><label>Propietari/a (soci que el socialitza)</label><select id="obOwner">${ownerOpts}</select></div>
+    <div class="field"><label>Estat i fiança (opcional)</label><div class="wz-key"><input id="obCond" placeholder="Estat (p.ex. bon estat)" value="${e?esc(e.condition||''):''}"><input id="obDep" type="number" min="0" placeholder="Fiança €" value="${e&&e.deposit?e.deposit:''}"></div></div>
+    <div class="modal-actions">${e?'<button class="btn btn-ghost" id="obDel" style="border-color:var(--red-dim);color:var(--red)">Elimina</button>':'<button class="btn btn-ghost" id="obCancel">Cancel·la</button>'}<button class="btn btn-primary" id="obSave">${e?'Desa':'Afegeix'}</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const nm=bg.querySelector('#obName');nm.focus();
+  if(e)bg.querySelector('#obDel').onclick=async()=>{node.objects=objectsOf(node).filter(x=>x.id!==e.id);await persist(node);closeModal();renderWorkspace();toast('Objecte eliminat');};
+  else bg.querySelector('#obCancel').onclick=closeModal;
+  bg.querySelector('#obSave').onclick=async()=>{
+    const name=nm.value.trim();if(!name){nm.focus();return;}
+    const typology=bg.querySelector('#obType').value,ownerId=bg.querySelector('#obOwner').value,condition=bg.querySelector('#obCond').value.trim(),deposit=Number(bg.querySelector('#obDep').value)||0;
+    if(e){e.name=name;e.typology=typology;e.ownerId=ownerId;e.condition=condition;e.deposit=deposit;}
+    else objectsOf(node).push(newObject({name,typology,ownerId,condition,deposit}));
+    await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();toast(e?'Objecte desat':'Objecte afegit');
+  };
+}
+function lendObject(node,o){
+  const ms=membersOf(node);
+  const bg=modal(`
+    <h2>↗ Presta «${esc(o.name)}»</h2>
+    <div class="field"><label>A qui</label><select id="lnWho">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
+    <div class="field"><label>Data de retorn prevista (opcional)</label><input id="lnDue" type="date"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="lnCancel">Cancel·la</button><button class="btn btn-primary" id="lnSave">Presta</button></div>
+  `);
+  bg.querySelector('#lnCancel').onclick=closeModal;
+  bg.querySelector('#lnSave').onclick=async()=>{o.status='prestat';o.borrowerId=bg.querySelector('#lnWho').value;o.since=now();o.dueDate=bg.querySelector('#lnDue').value||null;await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();toast('Objecte prestat');};
+}
+function renderBancTemps(body,node){
+  const offs=offersOf(node),ms=membersOf(node);
+  const bar=el('div','ent-bar');
+  const addO=el('button','btn btn-primary btn-sm','+ Oferta');addO.onclick=()=>{if(!ms.length){toast('Dona d\'alta un soci primer');state.tab='socis';renderWorkspace();return;}openOfferForm(node,'oferta',null);};
+  const addD=el('button','btn btn-ghost btn-sm','+ Demanda');addD.onclick=()=>{if(!ms.length){toast('Dona d\'alta un soci primer');state.tab='socis';renderWorkspace();return;}openOfferForm(node,'demanda',null);};
+  const ex=el('button','btn btn-ghost btn-sm','⏱ Registra intercanvi');ex.onclick=()=>exchangeHours(node);
+  bar.append(addO,addD,ex);
+  if(!offs.length){const seed=el('button','btn btn-ghost btn-sm','✨ Carrega exemple');seed.onclick=()=>seedDemo(node);bar.appendChild(seed);}
+  body.appendChild(bar);
+  const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">⏳</span><span>Una hora val una hora. Registra ofertes i demandes de serveis; en fer un intercanvi, el <strong>saldo d\'hores</strong> de cada soci s\'actualitza.</span>';body.appendChild(note);
+  const cols=el('div','bt-cols');
+  ['oferta','demanda'].forEach(kind=>{
+    const col=el('div','bt-col');
+    col.appendChild(el('div','ent-grp-lbl',(kind==='oferta'?'✅ Ofertes':'🙋 Demandes')+' · '+offs.filter(o=>o.kind===kind).length));
+    let any=false;
+    TIMEBANK_CATS.forEach(([cat,label,icon])=>{
+      const list=offs.filter(o=>o.kind===kind&&o.category===cat);if(!list.length)return;any=true;
+      col.appendChild(el('div','bt-cat',icon+' '+esc(label)));
+      list.forEach(o=>{const m=memberById(node,o.memberId);const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+esc(o.title||label)+'</div><div class="ent-badges">'+(m?'<span class="ent-b">'+esc(m.name)+'</span>':'')+'</div>'+(o.desc?'<div class="ent-desc">'+esc(o.desc)+'</div>':'');c.onclick=()=>openOfferForm(node,kind,o);col.appendChild(c);});
+    });
+    if(!any)col.appendChild(el('div','ent-desc','Cap encara.'));
+    cols.appendChild(col);
+  });
+  body.appendChild(cols);
+  if(ms.length){body.appendChild(el('div','ent-grp-lbl','⚖ Saldo d\'hores per soci'));const grid=el('div','ent-grid');ms.forEach(m=>{const b=memberBalance(node,m.id);const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+esc(m.name)+'</div><div class="ent-badges"><span class="ent-b b-ver">+'+b.given+' h dona</span><span class="ent-b b-unver">−'+b.recv+' h rep</span><span class="ent-b">saldo '+(b.net>0?'+':'')+b.net+' h</span></div>';grid.appendChild(c);});body.appendChild(grid);}
+}
+function openOfferForm(node,kind,e){
+  const ms=membersOf(node);
+  const memOpts=ms.map(m=>'<option value="'+m.id+'"'+(e&&e.memberId===m.id?' selected':'')+'>'+esc(m.name)+'</option>').join('');
+  const catOpts=TIMEBANK_CATS.map(([id,label])=>'<option value="'+id+'"'+(e&&e.category===id?' selected':'')+'>'+label+'</option>').join('');
+  const bg=modal(`
+    <h2>${e?'Edita':(kind==='oferta'?'Nova oferta':'Nova demanda')}</h2>
+    <div class="field"><label>Soci</label><select id="ofMem">${memOpts}</select></div>
+    <div class="field"><label>Categoria de servei</label><select id="ofCat">${catOpts}</select></div>
+    <div class="field"><label>Títol</label><input id="ofTitle" autocomplete="off" placeholder="p.ex. Classes de repàs de mates" value="${e?esc(e.title):''}"></div>
+    <div class="field"><label>Descripció (opcional)</label><textarea id="ofDesc">${e?esc(e.desc):''}</textarea></div>
+    <div class="modal-actions">${e?'<button class="btn btn-ghost" id="ofDel" style="border-color:var(--red-dim);color:var(--red)">Elimina</button>':'<button class="btn btn-ghost" id="ofCancel">Cancel·la</button>'}<button class="btn btn-primary" id="ofSave">${e?'Desa':'Afegeix'}</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#ofTitle').focus();
+  if(e)bg.querySelector('#ofDel').onclick=async()=>{node.offers=offersOf(node).filter(x=>x.id!==e.id);await persist(node);closeModal();renderWorkspace();toast('Eliminat');};
+  else bg.querySelector('#ofCancel').onclick=closeModal;
+  bg.querySelector('#ofSave').onclick=async()=>{
+    const memberId=bg.querySelector('#ofMem').value,category=bg.querySelector('#ofCat').value,title=bg.querySelector('#ofTitle').value.trim(),desc=bg.querySelector('#ofDesc').value.trim();
+    if(!title){bg.querySelector('#ofTitle').focus();return;}
+    if(e){e.memberId=memberId;e.category=category;e.title=title;e.desc=desc;}
+    else offersOf(node).push(newOffer({memberId,kind,category,title,desc}));
+    await persist(node);closeModal();state.tab='banctemps';renderWorkspace();toast(e?'Desat':'Afegit');
+  };
+}
+function exchangeHours(node){
+  const ms=membersOf(node);
+  if(ms.length<2){toast('Cal almenys dos socis');state.tab='socis';renderWorkspace();return;}
+  const bg=modal(`
+    <h2>⏱ Registra un intercanvi</h2>
+    <p class="m-sub">Qui presta el servei suma hores; qui el rep, en resta. 1h = 1h.</p>
+    <div class="field"><label>Presta el servei (dona hores)</label><select id="exFrom">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
+    <div class="field"><label>Rep el servei (rep hores)</label><select id="exTo">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
+    <div class="field"><label>Servei</label><input id="exWhat" placeholder="Concepte del servei" maxlength="80"></div>
+    <div class="field"><label>Hores</label><input id="exH" type="number" min="0" step="0.5" placeholder="1"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="exCancel">Cancel·la</button><button class="btn btn-primary" id="exSave">⬢ Registra</button></div>
+  `);
+  if(ms[1])bg.querySelector('#exTo').selectedIndex=1;
+  bg.querySelector('#exCancel').onclick=closeModal;
+  bg.querySelector('#exSave').onclick=async()=>{
+    const from=bg.querySelector('#exFrom').value,to=bg.querySelector('#exTo').value;
+    if(from===to){toast('Tria dos socis diferents');return;}
+    const what=bg.querySelector('#exWhat').value.trim()||'Intercanvi de servei';const h=Number(bg.querySelector('#exH').value)||0;
+    const fromM=memberById(node,from),toM=memberById(node,to);
+    node.ledger.unshift({id:uid(),who:fromM.name,what:what+' → '+toM.name,deliverables:'',type:'temps',value:h,memberId:from,counterpartId:to,ts:now()});
+    await persist(node);closeModal();state.tab='banctemps';renderWorkspace();toast('Intercanvi registrat · '+h+' h');
+  };
+}
+function seedDemo(node){
+  const isLib=node.dynamicType==='biblioteca_coses';
+  const names=['Marta Vidal','Jordi Soler','Núria Camps','Pau Ribes','AV del Centre'],kinds=['persona','persona','persona','persona','entitat'];
+  const ids=names.map((n,i)=>{const m=newMember({name:n,kind:kinds[i]});membersOf(node).push(m);return m.id;});
+  if(isLib){
+    const objs=[['Taladre percutor','bricolatge'],['Escala de 3 m','bricolatge'],['Paella per a 30','cuina'],['Gelatera','cuina'],['Talla-gespa','jardineria'],['Hidronetejadora','neteja'],['Projector','electronica'],['Altaveu amb micròfon','festes'],['Tenda de campanya 4p','esport'],['Trona de viatge','infancia'],['Màquina de cosir','costura'],['Crosses','salut']];
+    objs.forEach((o,i)=>objectsOf(node).push(newObject({name:o[0],typology:o[1],ownerId:ids[i%ids.length],condition:'bon estat',deposit:[0,5,10][i%3]})));
+  }else{
+    const offs=[['oferta','idiomes','Classes de repàs de mates'],['oferta','informatica','Ajuda amb el mòbil i l\'ordinador'],['oferta','reparacions','Petites reparacions elèctriques'],['oferta','cuina','Cuinar per a àpats'],['oferta','acompanyament','Acompanyament al metge'],['demanda','transport','Que em portin a comprar'],['demanda','jardineria','Ajuda per podar l\'hort'],['demanda','costura','Arreglar unes cortines'],['demanda','infants','Cangur puntual dissabte']];
+    offs.forEach((o,i)=>offersOf(node).push(newOffer({memberId:ids[i%ids.length],kind:o[0],category:o[1],title:o[2]})));
+    node.ledger.unshift({id:uid(),who:names[0],what:'Classes de repàs → '+names[1],deliverables:'',type:'temps',value:2,memberId:ids[0],counterpartId:ids[1],ts:now()});
+  }
+  persist(node).then(()=>{renderWorkspace();toast('Exemple carregat');});
+}
+
 /* ═══════════ WIZARD DE PROJECTE / DINÀMICA (galeria de prototips) ═══════════ */
 function openProjectWizard(territoryId){
   const territory=byId(territoryId);
@@ -2057,7 +2305,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
