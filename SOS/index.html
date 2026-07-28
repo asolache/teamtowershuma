@@ -495,78 +495,100 @@ const knowFor=level=>LEVEL_KNOWLEDGE[level]||{roles:[],flows:[],pains:[]};
 const DYNAMICS=[
  {id:'banc_temps',name:'Banc de Temps',icon:'⏳',one:'Intercanvi de serveis en hores, no en diners.',unit:'hores',
   mission:'Teixir suport mutu al veïnat intercanviant temps i habilitats en igualtat: una hora val una hora.',
-  roles:['Nucli gestor','Persones sòcies','Ajuntament','Entitat amfitriona','Registre'],
-  flows:[['Persones sòcies','Persones sòcies','tangible','hores de servei'],['Persones sòcies','Persones sòcies','intangible','reciprocitat i confiança'],['Ajuntament','Nucli gestor','tangible','cessió d\'espai'],['Nucli gestor','Persones sòcies','intangible','reconeixement']],
+  vision:'Un barri on ningú està sol: el temps de cadascú és un bé comú i demanar ajuda és tan normal com oferir-la.',
+  objectives:'30 sòcies actives el primer any · 80% amb almenys un intercanvi · saldo mitjà proper a zero (reciprocitat sana).',
+  roles:['Nucli gestor','Sòcies oferents','Sòcies demandants','Registre d\'hores','Ajuntament','Entitat amfitriona','Comunitat veïnal'],
+  flows:[['Sòcies oferents','Sòcies demandants','tangible','hores de servei'],['Sòcies demandants','Sòcies oferents','intangible','reciprocitat i gratitud'],['Registre d\'hores','Sòcies oferents','tangible','saldo i validació'],['Registre d\'hores','Sòcies demandants','tangible','saldo i validació'],['Nucli gestor','Registre d\'hores','tangible','protocol i manteniment'],['Ajuntament','Entitat amfitriona','tangible','cessió d\'espai'],['Entitat amfitriona','Nucli gestor','tangible','seu i logística'],['Nucli gestor','Comunitat veïnal','intangible','reconeixement i pertinença'],['Comunitat veïnal','Nucli gestor','intangible','captació i legitimitat'],['Nucli gestor','Ajuntament','intangible','dades d\'impacte social'],['Sòcies oferents','Comunitat veïnal','intangible','confiança i vincle']],
   kanban:['Definir catàleg d\'ofertes i demandes','Captar les 10 primeres persones','Sessió inaugural','Protocol de registre d\'hores','Primera ronda d\'intercanvis'],
   gov:'Assemblea oberta · una hora val el mateix sigui quin servei sigui · rotació de la coordinació.',
   res:[['Banc del Temps · Salut i Família','https://www.bancdeltemps.org']]},
  {id:'biblioteca_coses',name:'Biblioteca de les Coses',icon:'🧰',one:'Pool compartit d\'objectes i eines en préstec.',unit:'moneda',
   mission:'Compartir objectes d\'ús ocasional per estalviar, reduir residus i crear trobada al barri.',
-  roles:['Nucli gestor','Persones usuàries','Donants','Ajuntament','Comerç col·laborador'],
-  flows:[['Donants','Nucli gestor','tangible','objectes'],['Nucli gestor','Persones usuàries','tangible','préstecs'],['Persones usuàries','Nucli gestor','tangible','quotes i fiances'],['Nucli gestor','Persones usuàries','intangible','coneixement d\'ús i confiança']],
+  vision:'Un barri on tenir accés val més que posseir: menys traster, menys residus i més trobada.',
+  objectives:'150 objectes en circulació · 60% amb ús mensual · estalvi i residus evitats mesurats i publicats.',
+  roles:['Nucli gestor','Persones sòcies','Donants','Ajuntament','Comerç col·laborador','Servei de reparació','Comunitat del barri'],
+  flows:[['Donants','Nucli gestor','tangible','objectes cedits'],['Nucli gestor','Persones sòcies','tangible','préstecs'],['Persones sòcies','Nucli gestor','tangible','quotes i fiances'],['Persones sòcies','Nucli gestor','tangible','objectes retornats'],['Nucli gestor','Persones sòcies','intangible','coneixement d\'ús i cura'],['Servei de reparació','Nucli gestor','tangible','manteniment d\'objectes'],['Nucli gestor','Servei de reparació','intangible','aprenentatge de reparació'],['Ajuntament','Nucli gestor','tangible','cessió de local'],['Comerç col·laborador','Nucli gestor','tangible','objectes i descomptes'],['Nucli gestor','Comerç col·laborador','intangible','visibilitat i clientela'],['Persones sòcies','Comunitat del barri','intangible','cultura de compartir'],['Nucli gestor','Ajuntament','intangible','estalvi i residus evitats (dades)'],['Donants','Comunitat del barri','intangible','generositat i exemple']],
   kanban:['Inventari inicial d\'objectes','Sistema de préstec i fitxes','Trobar punt físic','Normes i fiances','Inauguració'],
   gov:'Transparència d\'inventari · normes clares de préstec i cura · rotació de torns d\'obertura.',
   res:[['Pam a Pam','https://pamapam.cat'],['Opcions','https://opcions.org']]},
  {id:'matriu',name:'MATRIU · Incubadora',icon:'🌱',one:'Acompanya idees ciutadanes fins a projectes viables.',unit:'equity',
   mission:'Incubar projectes comunitaris amb aprenentatge fent (Tiimiakatemia) fins que siguin sobirans i viables.',
-  roles:['Facilitador/a','Equips promotors','Mentors','Ajuntament / finançament','Xarxa d\'entitats','Cooperatives madrines'],
-  flows:[['Ajuntament / finançament','Equips promotors','tangible','microfinançament i espai'],['Mentors','Equips promotors','intangible','mentoria i coneixement'],['Cooperatives madrines','Equips promotors','intangible','xarxa i confiança'],['Equips promotors','Xarxa d\'entitats','tangible','prototips i entregables']],
+  vision:'Un territori que gesta els seus propis projectes: idees ciutadanes que es tornen cooperatives i serveis que duren.',
+  objectives:'6 ventures incubades l\'any · 50% graduades a projecte propi · equity repartit de forma justa (Slicing Pie).',
+  roles:['Facilitador/a','Equips promotors','Mentors','Ajuntament / finançament','Xarxa d\'entitats','Cooperatives madrines','Comunitat destinatària'],
+  flows:[['Ajuntament / finançament','Equips promotors','tangible','microfinançament i espai'],['Equips promotors','Ajuntament / finançament','intangible','impacte i rendició de comptes'],['Mentors','Equips promotors','intangible','mentoria i coneixement'],['Equips promotors','Mentors','intangible','aprenentatge i propòsit'],['Cooperatives madrines','Equips promotors','intangible','xarxa i confiança'],['Facilitador/a','Equips promotors','intangible','mètode i acompanyament'],['Equips promotors','Xarxa d\'entitats','tangible','prototips i entregables'],['Comunitat destinatària','Equips promotors','intangible','necessitats i validació'],['Equips promotors','Comunitat destinatària','tangible','serveis i solucions']],
   kanban:['Convocatòria d\'idees','Selecció d\'idees','Formar equips i rols VNA','Cicles d\'aprenentatge (sprints)','Prototip','Validació','Graduació a cooperativa'],
   gov:'Aprendre fent · equips que s\'autogestionen · repartiment just per aportació (Slicing Pie) · risc compartit.',
   res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coòpolis','https://bcn.coop']]},
  {id:'mapeig_vna',name:'Mapeig de Xarxa de Valor',icon:'🕸️',one:'El diagnòstic VNA del territori com a servei.',unit:'hores',
   mission:'Fer visible l\'ecosistema local: qui es relaciona amb qui i quins fluxos de valor sostenen (o trenquen) la xarxa.',
-  roles:['Facilitador VNA','Actors del territori','Ajuntament','Entitats'],
-  flows:[['Ajuntament','Facilitador VNA','tangible','encàrrec'],['Actors del territori','Facilitador VNA','intangible','coneixement del territori'],['Facilitador VNA','Ajuntament','tangible','informe i mapa']],
+  vision:'Un territori que es veu a si mateix: decisions preses sobre el mapa real de qui aporta què, no sobre intuïcions.',
+  objectives:'Mapa amb 20+ actors i els seus fluxos · indicadors de salut calculats · pla d\'acció acordat als 3 mesos.',
+  roles:['Facilitador VNA','Actors del territori','Ajuntament','Entitats','Comunitat'],
+  flows:[['Ajuntament','Facilitador VNA','tangible','encàrrec'],['Actors del territori','Facilitador VNA','intangible','coneixement del territori'],['Facilitador VNA','Actors del territori','intangible','visió compartida i confiança'],['Facilitador VNA','Ajuntament','tangible','informe i mapa'],['Entitats','Facilitador VNA','intangible','fluxos ocults i vincles'],['Facilitador VNA','Comunitat','intangible','retorn obert i apoderament'],['Comunitat','Actors del territori','intangible','legitimitat i participació']],
   kanban:['Definir abast (macro/meso/micro)','Identificar actors','Entrevistes','Construir el mapa VNA','Indicadors de salut','Sessió de retorn','Pla d\'acció'],
   gov:'Metodologia Verna Allee · dades tangibles i intangibles · retorn obert als actors.',
   res:[['Value Network Analysis (Verna Allee)','https://en.wikipedia.org/wiki/Value_network_analysis']]},
  {id:'comunitat_energetica',name:'Comunitat Energètica',icon:'⚡',one:'Energia renovable compartida (cooperativa).',unit:'moneda',
   mission:'Produir i compartir energia renovable localment, guanyant sobirania energètica i estalvi.',
-  roles:['Nucli promotor','Sòcies consumidores','Ajuntament','Instal·ladora','Cooperativa energètica','Assessoria'],
-  flows:[['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes'],['Ajuntament','Nucli promotor','tangible','cessió de teulades'],['Instal·ladora','Sòcies consumidores','tangible','energia (kWh)'],['Cooperativa energètica','Nucli promotor','intangible','coneixement tècnic']],
+  vision:'Energia neta, local i governada per la gent: cada teulada, un bé comú que retorna al territori.',
+  objectives:'100 kWp instal·lats · 50 sòcies · 20-40% d\'estalvi a la factura · excedents reinvertits al fons comú.',
+  roles:['Nucli promotor','Sòcies consumidores','Ajuntament','Instal·ladora','Cooperativa energètica','Assessoria tècnica-legal','Comunitat local'],
+  flows:[['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes'],['Nucli promotor','Sòcies consumidores','tangible','energia (kWh) i estalvi'],['Ajuntament','Nucli promotor','tangible','cessió de teulades'],['Nucli promotor','Ajuntament','intangible','transició energètica (relat i dades)'],['Instal·ladora','Nucli promotor','tangible','instal·lació fotovoltaica'],['Cooperativa energètica','Nucli promotor','tangible','comercialització i garantia'],['Nucli promotor','Cooperativa energètica','tangible','excedents compartits'],['Assessoria tècnica-legal','Nucli promotor','intangible','viabilitat i seguretat jurídica'],['Nucli promotor','Sòcies consumidores','intangible','sobirania i transparència'],['Sòcies consumidores','Comunitat local','intangible','exemple i confiança'],['Comunitat local','Nucli promotor','intangible','noves sòcies i legitimitat']],
   kanban:['Estudi de viabilitat','Captació de sòcies','Teulada municipal','Finançament','Constitució jurídica','Instal·lació','Posada en marxa'],
   gov:'Una persona un vot · excedents reinvertits · transparència d\'inversió i consum.',
   res:[['Som Energia','https://www.somenergia.coop']]},
  {id:'habitatge_cessio',name:'Habitatge en cessió d\'ús',icon:'🏘️',one:'Propietat col·lectiva, dret d\'ús indefinit (model Andel).',unit:'moneda',
   mission:'Accedir a habitatge digne sense especulació: la cooperativa és propietària, les sòcies tenen dret d\'ús.',
-  roles:['Grup motor','Unitats de convivència','Administració (cessió de sòl)','Finançament ètic','Cooperativa'],
-  flows:[['Administració (cessió de sòl)','Cooperativa','tangible','dret de superfície'],['Unitats de convivència','Cooperativa','tangible','aportació i quota d\'ús'],['Finançament ètic','Cooperativa','tangible','préstec'],['Grup motor','Unitats de convivència','intangible','convivència i confiança']],
+  vision:'Un habitatge que no s\'especula: llars estables per a tota la vida i una comunitat que es cuida.',
+  objectives:'Grup motor consolidat · sòl cedit · viabilitat tancada · quota d\'ús per sota del mercat · convivència acordada.',
+  roles:['Grup motor','Unitats de convivència','Administració (cessió de sòl)','Finançament ètic','Cooperativa','Assessoria tècnica'],
+  flows:[['Administració (cessió de sòl)','Cooperativa','tangible','dret de superfície'],['Cooperativa','Administració (cessió de sòl)','intangible','retorn social i mixtura'],['Unitats de convivència','Cooperativa','tangible','aportació i quota d\'ús'],['Cooperativa','Unitats de convivència','tangible','dret d\'ús indefinit'],['Finançament ètic','Cooperativa','tangible','préstec'],['Cooperativa','Finançament ètic','intangible','projecte solvent i valors'],['Assessoria tècnica','Cooperativa','intangible','viabilitat i seguretat'],['Grup motor','Unitats de convivència','intangible','convivència i confiança']],
   kanban:['Consolidar el grup motor','Cerca de sòl / cessió','Estudi de viabilitat','Constitució de la cooperativa','Finançament ètic','Projecte i obra','Convivència'],
   gov:'Assemblea + comissions (convivència, economia, obres) · consentiment · quota d\'ús sense especulació.',
   res:[['Sostre Cívic','https://sostrecivic.coop'],['La Dinamo Fundació','https://ladinamofundacio.org']]},
  {id:'consum_agroecologic',name:'Grup de Consum Agroecològic',icon:'🥬',one:'Compra directa a pagès, sense intermediaris.',unit:'moneda',
   mission:'Accedir a aliments sans i de proximitat a preu just, sostenint la pagesia local.',
-  roles:['Unitats familiars','Productors/es locals','Coordinació','Punt de repartiment'],
-  flows:[['Unitats familiars','Productors/es locals','tangible','comandes i pagament just'],['Productors/es locals','Unitats familiars','tangible','cistelles'],['Coordinació','Unitats familiars','intangible','logística i confiança']],
+  vision:'De la terra al plat sense intermediaris: menjar sa, pagesia digna i un grup que menja i decideix junt.',
+  objectives:'12 unitats familiars · 3 productors/es · cistella setmanal estable · preu just pactat i avaluat.',
+  roles:['Unitats familiars','Productors/es locals','Coordinació','Punt de repartiment','Comunitat'],
+  flows:[['Unitats familiars','Productors/es locals','tangible','comandes i pagament just'],['Productors/es locals','Unitats familiars','tangible','cistelles'],['Productors/es locals','Unitats familiars','intangible','confiança i traçabilitat'],['Coordinació','Unitats familiars','intangible','logística i confiança'],['Unitats familiars','Coordinació','tangible','rotació de tasques'],['Punt de repartiment','Unitats familiars','tangible','lloc i horari'],['Unitats familiars','Comunitat','intangible','cultura alimentària']],
   kanban:['Formar el grup','Contactar productors/es','Logística de repartiment','Sistema de comandes','Primera cistella','Avaluació'],
   gov:'Rotació de tasques (comandes, repartiment, caixa) · preu just pactat · assemblea mensual.',
   res:[['Pam a Pam','https://pamapam.cat'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
  {id:'suport_mutu',name:'Suport Mutu / Cures Veïnals',icon:'🤝',one:'Xarxa de cura i acompanyament al barri.',unit:'hores',
   mission:'Combatre la soledat i sostenir les cures de manera compartida i visible, connectant amb els serveis.',
-  roles:['Nucli de cura','Veïnat','Gent gran','CAP / serveis socials','Voluntariat'],
-  flows:[['Nucli de cura','Gent gran','intangible','acompanyament'],['Veïnat','Nucli de cura','intangible','detecció i alerta'],['CAP / serveis socials','Nucli de cura','tangible','derivació i suport'],['Voluntariat','Nucli de cura','tangible','hores de cura']],
+  vision:'Un barri que no deixa ningú enrere: la cura és cosa de tothom i el treball invisible es fa visible.',
+  objectives:'Mapa de persones en risc · protocol actiu · 15 acompanyaments/mes · hores de cura registrades i reconegudes.',
+  roles:['Nucli de cura','Veïnat','Gent gran','CAP / serveis socials','Voluntariat','Comunitat'],
+  flows:[['Nucli de cura','Gent gran','intangible','acompanyament'],['Gent gran','Nucli de cura','intangible','saber i memòria viva'],['Veïnat','Nucli de cura','intangible','detecció i alerta'],['CAP / serveis socials','Nucli de cura','tangible','derivació i suport'],['Nucli de cura','CAP / serveis socials','intangible','detecció precoç i dades'],['Voluntariat','Nucli de cura','tangible','hores de cura'],['Nucli de cura','Voluntariat','intangible','sentit i pertinença'],['Nucli de cura','Comunitat','intangible','visibilitat del treball de cures']],
   kanban:['Detectar necessitats','Formar el grup de cura','Protocol d\'acompanyament','Primers acompanyaments','Coordinació amb CAP/serveis socials'],
   gov:'Cures compartides (no recaure en poques persones) · confidencialitat · connexió amb serveis públics.',
   res:[['Coòpolis','https://bcn.coop']]},
  {id:'compra_collectiva',name:'Compra Col·lectiva / Estalvi',icon:'🛒',one:'Agregar demanda per millors condicions.',unit:'moneda',
   mission:'Unir la demanda del veïnat per aconseguir millors preus i condicions (energia, materials, assegurances).',
-  roles:['Participants','Coordinació','Proveïdor/a'],
-  flows:[['Participants','Coordinació','tangible','demanda agregada'],['Coordinació','Proveïdor/a','tangible','contracte col·lectiu'],['Proveïdor/a','Participants','tangible','estalvi']],
+  vision:'Junts negociem millor: el poder de compra del veïnat retorna en estalvi i condicions justes.',
+  objectives:'10+ participants · una compra tancada · estalvi mesurat per llar · comissions transparents.',
+  roles:['Participants','Coordinació','Proveïdor/a','Comunitat'],
+  flows:[['Participants','Coordinació','tangible','demanda agregada'],['Coordinació','Participants','intangible','transparència i confiança'],['Coordinació','Proveïdor/a','tangible','contracte col·lectiu'],['Proveïdor/a','Coordinació','tangible','oferta i condicions'],['Proveïdor/a','Participants','tangible','estalvi'],['Participants','Comunitat','intangible','exemple i noves compres']],
   kanban:['Identificar la necessitat comuna','Agregar la demanda','Comparar ofertes','Negociar','Contractar','Repartir l\'estalvi'],
   gov:'Transparència de comissions · rotació de la negociació · decisió per consentiment.',
   res:[['Som Energia','https://www.somenergia.coop'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
  {id:'coop_treball',name:'Cooperativa de Treball',icon:'🛠️',one:'Les persones treballadores en són sòcies.',unit:'equity',
   mission:'Crear ocupació digna i democràtica on qui treballa decideix: una persona, un vot.',
-  roles:['Sòcies treballadores','Consell rector','Clients','Ateneu Cooperatiu','Finançament'],
-  flows:[['Sòcies treballadores','Clients','tangible','productes i serveis'],['Clients','Sòcies treballadores','tangible','ingressos'],['Ateneu Cooperatiu','Sòcies treballadores','intangible','formació i acompanyament'],['Sòcies treballadores','Consell rector','intangible','participació democràtica']],
+  vision:'Feina digna i sobirana: qui hi posa el treball hi té la veu, el vot i part del resultat.',
+  objectives:'3+ sòcies treballadores · activitat viable · estatuts i constitució · forquilla salarial acotada.',
+  roles:['Sòcies treballadores','Consell rector','Clients','Ateneu Cooperatiu','Finançament','Comunitat'],
+  flows:[['Sòcies treballadores','Clients','tangible','productes i serveis'],['Clients','Sòcies treballadores','tangible','ingressos'],['Clients','Sòcies treballadores','intangible','feedback i fidelitat'],['Ateneu Cooperatiu','Sòcies treballadores','intangible','formació i acompanyament'],['Finançament','Sòcies treballadores','tangible','capital i circulant'],['Sòcies treballadores','Consell rector','intangible','participació democràtica'],['Consell rector','Sòcies treballadores','intangible','estratègia i cura de l\'equip'],['Sòcies treballadores','Comunitat','intangible','arrelament i retorn']],
   kanban:['Idea i equip','Estudi de viabilitat','Estatuts','Constitució','Primers ingressos','Consolidació'],
   gov:'Una persona un vot · consell rector rotatiu · forquilla salarial acotada · formació contínua.',
   res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coop. de Treball','https://www.cooperativestreball.coop']]},
  {id:'cens_entitats',name:'Sprint de Cens d\'Entitats',icon:'🗂️',one:'Mapatge i verificació del teixit local per a l\'atles.',unit:'hores',
   mission:'Fer visible qui hi ha al territori: censar, verificar i publicar les entitats reals a l\'atles comú.',
+  vision:'Un atles viu del teixit comunitari: qualsevol pot saber qui hi ha i connectar-hi, mantingut entre tots.',
+  objectives:'50+ entitats censades i verificades · pack públic obert per PR · manteniment repartit.',
   roles:['Equip de cens','Font oberta / IA','Entitats del territori','Ajuntament','Comunitat de l\'atles'],
-  flows:[['Font oberta / IA','Equip de cens','intangible','candidats a verificar'],['Equip de cens','Entitats del territori','intangible','contacte i validació'],['Entitats del territori','Equip de cens','tangible','dades verificades'],['Equip de cens','Comunitat de l\'atles','tangible','pack públic (PR)']],
+  flows:[['Font oberta / IA','Equip de cens','intangible','candidats a verificar'],['Equip de cens','Entitats del territori','intangible','contacte i validació'],['Entitats del territori','Equip de cens','tangible','dades verificades'],['Equip de cens','Comunitat de l\'atles','tangible','pack públic (PR)'],['Comunitat de l\'atles','Equip de cens','intangible','enriquiment i correccions'],['Ajuntament','Equip de cens','tangible','fonts oficials i suport']],
   kanban:['Definir abast del cens (tipus i zona)','Descoberta amb IA','Verificació de camp','Registre al directori','Publicar al commons (PR)','Manteniment i revisió'],
   gov:'Zero invencions: res es publica sense verificar · fonts obertes · dades públiques al commons, treball intern privat.',
   res:[['Pam a Pam','https://pamapam.cat'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
@@ -579,6 +601,8 @@ const dynById=id=>DYNAMICS.find(d=>d.id===id);
 function seedFromDynamic(node,dyn){
   node.dynamicType=dyn.id;
   if(dyn.mission)node.metaskill.mission=dyn.mission;
+  if(dyn.vision)node.metaskill.vision=dyn.vision;
+  if(dyn.objectives)node.metaskill.objectives=dyn.objectives;
   const idBy={};(dyn.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;node.vna.roles.push({id,name:nm});});
   (dyn.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])node.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
   (dyn.kanban||[]).forEach(t=>node.kanban.cards.push({id:uid(),text:t,col:'todo'}));
@@ -654,7 +678,7 @@ function newNode(name,level,parentId){return{id:uid(),name:name.trim(),nodeLevel
   metaskill:{mission:'',vision:'',objectives:''},
   vna:{roles:[],exchanges:[]},kanban:{cards:[]},ledger:[],
   createdAt:now(),updatedAt:now()};}
-async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();}
+async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();syncBroadcast(node,'node');}
 
 /* ═══════════ ENTITATS (directori / atles d'economia social) ═══════════ */
 // Tipus d'entitat per nivell territorial [id, etiqueta, icona]
@@ -819,7 +843,7 @@ function newEntity({name,entityType,level,territoryName,territoryId,parentChain,
     _fields:ENT_FIELDS.reduce((m,f)=>{m[f]=t;return m;},{}),
     createdAt:t,updatedAt:t};
 }
-async function persistEntity(e){e.updatedAt=now();await dbPut(e);flashSync();}
+async function persistEntity(e){e.updatedAt=now();await dbPut(e);flashSync();syncBroadcast(e,'entity');}
 // Enriquiment a nivell de camp: cada camp porta el seu timestamp perquè dos enriquiments
 // paral·lels (dos dispositius o l'atles) no es trepitgin — guanya el camp més recent.
 const ENT_FIELDS=['name','entityType','status','description','tags','url','verification','visibility'];
@@ -851,7 +875,7 @@ const entitiesForContext=node=>entitiesFor(nearestTerritory(node).id);
 async function deleteEntity(e){
   if(!confirm('Elimina "'+e.name+'" del directori? (No afecta cap projecte ni comptabilitat.)'))return;
   state.tombstones[e.id]=now();await saveTombstones();await dbDelete(e.id);
-  state.entities=state.entities.filter(x=>x.id!==e.id);flashSync();renderWorkspace();toast('Entitat eliminada');
+  state.entities=state.entities.filter(x=>x.id!==e.id);flashSync();syncBroadcast(null,'del');renderWorkspace();toast('Entitat eliminada');
 }
 
 /* ═══════════════════ RENDER: ARREL ═══════════════════ */
@@ -2179,7 +2203,7 @@ async function deleteNode(node){
   const ids=new Set([node.id,...desc.map(d=>d.id)]);
   state.nodes=state.nodes.filter(x=>!ids.has(x.id));
   state.activeId=node.parentId&&byId(node.parentId)?node.parentId:(state.nodes[0]?state.nodes[0].id:null);
-  flashSync();render();toast('Node eliminat');
+  flashSync();syncBroadcast(null,'del');render();toast('Node eliminat');
 }
 
 function openContactModal(){
@@ -2334,10 +2358,17 @@ function _enc(desc){return btoa(unescape(encodeURIComponent(JSON.stringify(desc)
 function _dec(code){return JSON.parse(decodeURIComponent(escape(atob(code.trim()))));}
 function _waitIce(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const chk=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',chk);res();}};pc.addEventListener('icegatheringstatechange',chk);setTimeout(res,2600);});}
 function _closePc(){try{if(_dc)_dc.close();}catch(e){}try{if(_pc)_pc.close();}catch(e){}_dc=null;_pc=null;}
+let _liveConnected=false;
+function _chanOpen(){return _dc&&_dc.readyState==='open';}
+// Emet un canvi en viu pel canal obert (delta). No fa res si no hi ha connexió.
+function syncBroadcast(rec,kind){if(!_chanOpen())return;try{_dc.send(JSON.stringify({type:'patch',kind,rec:rec||null,tombstones:state.tombstones}));}catch(e){}}
 function _wireChannel(dc,onReady){
-  dc.onopen=()=>{_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');dc.send(JSON.stringify({type:'hello',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));if(onReady)onReady();};
-  dc.onmessage=ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}if(msg.type==='hello'||msg.type==='data'){mergeIncoming(msg);if(msg.type==='hello')dc.send(JSON.stringify({type:'data',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}};
-  dc.onclose=()=>{_syncLock=false;setSyncPill('Local','var(--green)');};
+  dc.onopen=()=>{_liveConnected=true;_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');dc.send(JSON.stringify({type:'hello',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));if(onReady)onReady();document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'open'}}));};
+  dc.onmessage=ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}
+    if(msg.type==='hello'||msg.type==='data'){mergeIncoming(msg);if(msg.type==='hello')dc.send(JSON.stringify({type:'data',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}
+    else if(msg.type==='patch'){mergeIncoming({nodes:msg.kind==='node'?[msg.rec]:[],entities:msg.kind==='entity'?[msg.rec]:[],tombstones:msg.tombstones});}
+  };
+  dc.onclose=()=>{_liveConnected=false;_syncLock=false;setSyncPill('Local','var(--green)');document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'closed'}}));};
 }
 async function syncCreateOffer(onReady){
   _closePc();_pc=new RTCPeerConnection(RTC_CFG);
@@ -2371,13 +2402,15 @@ function _copyBtn(getText){const b=el('button','btn btn-ghost btn-sm','⧉ Copia
 function _codeArea(val,ph){const t=el('textarea');t.readOnly=!!val;t.value=val||'';t.placeholder=ph||'';t.style.cssText='width:100%;min-height:70px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--light);font-family:var(--mono);font-size:.66rem;padding:.6rem;resize:vertical;word-break:break-all';return t;}
 
 function openSyncModal(){
+  if(_chanOpen()){openSyncConnected();return;}
   const bg=modal(`
     <h2>🔗 Sincronitza amb un altre dispositiu</h2>
-    <p class="m-sub">Directe navegador-a-navegador (WebRTC), sense cap servidor. Comparteix els codis per qualsevol canal (missatge, correu). Guanya la versió més recent de cada node.</p>
+    <p class="m-sub">Directe navegador-a-navegador (WebRTC), <strong>sense cap servidor</strong>. Se sincronitza <strong>tot el teu SOS</strong> (territoris, projectes, socis, objectes, ofertes, ventures, directori…) i, mentre la finestra queda oberta, <strong>els canvis viatgen en viu</strong> als dos sentits.</p>
     <div style="display:flex;gap:.5rem;margin-bottom:1rem">
       <button class="btn btn-primary btn-sm le-type sel" id="syRoleA" style="flex:1">① Crea invitació</button>
       <button class="btn btn-ghost btn-sm le-type" id="syRoleB" style="flex:1">② Tinc una invitació</button>
     </div>
+    <div class="ai-note" style="margin-bottom:1rem"><span class="ic">🔒</span><span>Guia: en <strong>un</strong> dispositiu prem "Crea invitació" i copia el codi; a l'<strong>altre</strong>, "Tinc una invitació", enganxa'l i genera la resposta; torna la resposta al primer i "Connecta". Els codis es poden enviar per qualsevol canal.</span></div>
     <div id="syBody"></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="syClose">Tanca</button></div>
   `);
@@ -2395,7 +2428,7 @@ function openSyncModal(){
     gen.onclick=async()=>{
       gen.disabled=true;gen.textContent='Generant…';
       try{
-        const code=await syncCreateOffer(()=>{setTimeout(closeModal,1400);});
+        const code=await syncCreateOffer(()=>{openSyncConnected();});
         body.innerHTML='';
         const l1=el('div','wz-sec-lbl','El teu codi d\'invitació');body.appendChild(l1);
         const ta=_codeArea(code);body.appendChild(ta);
@@ -2415,7 +2448,7 @@ function openSyncModal(){
     gen.onclick=async()=>{
       if(!inv.value.trim())return;gen.disabled=true;gen.textContent='Generant…';
       try{
-        const ans=await syncAcceptOffer(inv.value,()=>{setTimeout(closeModal,1400);});
+        const ans=await syncAcceptOffer(inv.value,()=>{openSyncConnected();});
         body.innerHTML='';
         const l=el('div','wz-sec-lbl','Envia aquesta resposta de tornada al primer dispositiu');body.appendChild(l);
         const ta=_codeArea(ans);body.appendChild(ta);
@@ -2425,6 +2458,18 @@ function openSyncModal(){
     };
   }
   roleA();
+}
+// Panell d'estat quan la connexió està establerta (sync en viu actiu)
+function openSyncConnected(){
+  const bg=modal(`
+    <h2>✅ Connectat · sincronització en viu</h2>
+    <p class="m-sub">Els dos dispositius estan enllaçats. <strong>Tot el que creïs o editis apareixerà a l'altre a l'instant</strong> (i a l'inrevés), mentre mantinguis la connexió oberta. Guanya sempre la versió més recent.</p>
+    <div class="ai-note"><span class="ic">⟳</span><span>Directe navegador-a-navegador, xifrat i sense servidor. Si tanques la pestanya o el navegador, la connexió s'acaba; per tornar-hi, torna a aparellar.</span></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="scStop" style="border-color:var(--red-dim);color:var(--red)">Desconnecta</button><button class="btn btn-primary" id="scOk">Continua treballant</button></div>
+  `);
+  bg.querySelector('#scOk').onclick=closeModal;
+  bg.querySelector('#scStop').onclick=()=>{_closePc();setSyncPill('Local','var(--green)');closeModal();toast('Desconnectat');};
+  setSyncPill('En viu','var(--accent-green)');
 }
 
 /* ═══════════ CREACIÓ DE NODES GEOGRÀFICS (compartit) ═══════════ */
@@ -2554,7 +2599,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
