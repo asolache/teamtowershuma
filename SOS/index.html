@@ -805,25 +805,32 @@ function newVenture(node,act){
   const idBy={},roles=[],exch=[];
   (act.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
   (act.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
-  return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,allocations:[],vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null};
+  return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null};
 }
 const allocationsOf=v=>v.allocations||(v.allocations=[]);
 // Fons cooperatiu local: valor mobilitzat per la MATRIU cap a les seves ventures (recursos assignats + € aportat)
 function fundRollup(node){
   let hores=0,objectes=0,talent=0;const vs=venturesOf(node);
-  vs.forEach(v=>allocationsOf(v).forEach(a=>{const q=Number(a.qty)||0;if(a.kind==='hores')hores+=q;else if(a.kind==='objecte')objectes+=q;else if(a.kind==='talent')talent+=q;}));
-  let moneda=0;(node.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;});
+  let moneda=0;
+  vs.forEach(v=>{allocationsOf(v).forEach(a=>{const q=Number(a.qty)||0;if(a.kind==='hores')hores+=q;else if(a.kind==='objecte')objectes+=q;else if(a.kind==='talent')talent+=q;});
+    (v.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;});});
+  (node.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;});
   return{ventures:vs.length,economicVentures:vs.filter(v=>v.stage!=='idea').length,hores,objectes,talent,moneda};
 }
 // Slicing Pie: slices = valor de l'aportació × multiplicador (temps a preu FMV × nonCash; diner × cash)
-function computeEquity(node){
-  const cfg=equityCfg(node),ms=membersOf(node),slby={};ms.forEach(m=>slby[m.id]=0);
-  (node.ledger||[]).forEach(e=>{if(!e.memberId||slby[e.memberId]===undefined)return;const v=Number(e.value)||0;
+const ventureLedger=v=>v.ledger||(v.ledger=[]);
+const ventureCfg=(node,v)=>v.equity||equityCfg(node);
+function computeEquityCore(members,ledger,cfg){
+  const slby={};members.forEach(m=>slby[m.id]=0);
+  (ledger||[]).forEach(e=>{if(!e.memberId||slby[e.memberId]===undefined)return;const v=Number(e.value)||0;
     if(e.type==='moneda')slby[e.memberId]+=v*cfg.cash;
     else{const rate=Number(e.rate)||cfg.fmv;slby[e.memberId]+=v*rate*cfg.nonCash;}});
   const total=Object.values(slby).reduce((a,b)=>a+b,0);
-  return ms.map(m=>({memberId:m.id,name:m.name,slices:slby[m.id],pct:total?slby[m.id]/total*100:0})).sort((a,b)=>b.slices-a.slices);
+  return members.map(m=>({memberId:m.id,name:m.name,slices:slby[m.id],pct:total?slby[m.id]/total*100:0})).sort((a,b)=>b.slices-a.slices);
 }
+// Equity de la MATRIU (fons global) i equity per venture econòmica (cada projecte té la seva tarta).
+function computeEquity(node){return computeEquityCore(membersOf(node),node.ledger,equityCfg(node));}
+function computeVentureEquity(node,v){return computeEquityCore(membersOf(node),ventureLedger(v),ventureCfg(node,v));}
 // Recursos de l'ecosistema: talent (socis + entitats) + hores (bancs de temps enllaçats) + objectes (biblioteques)
 function ecosystemResources(node){
   const links=linksOf(node).map(id=>byId(id)).filter(Boolean);
@@ -2062,8 +2069,8 @@ function renderMatriuVentures(body,node){
     const grid=el('div','ent-grid');
     list.forEach(v=>{
       const a=actMeta(v.activityId),c=el('div','ent-card');c.style.cursor='pointer';
-      const lead=v.leadMemberId?memberById(node,v.leadMemberId):null,nAl=allocationsOf(v).length;
-      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
+      const lead=v.leadMemberId?memberById(node,v.leadMemberId):null,nAl=allocationsOf(v).length,nAp=ventureLedger(v).length;
+      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
       c.onclick=()=>openVentureDetail(node,v);
       const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
       if(v.stage!=='graduacio'){const i=VENTURE_STAGES.indexOf(v.stage);const nx=el('button','btn btn-ghost btn-sm','→ '+({idea:'Prototip',prototip:'Validació',validacio:'Graduar'}[v.stage]));nx.onclick=async ev=>{ev.stopPropagation();if(v.stage==='validacio'){await graduateVenture(node,v);}else{v.stage=VENTURE_STAGES[i+1];await persist(node);renderWorkspace();toast('Venture avançada');}};act.appendChild(nx);}
@@ -2098,6 +2105,9 @@ function openVentureDetail(node,v){
       <div class="ent-desc" id="vdHint" style="margin-top:.3rem">Ecosistema: ${eco.talent.length} talent · ${eco.hores} ofertes d'hores · ${eco.objectes} objectes disponibles.</div>
       <button class="btn btn-ghost btn-sm" id="vdAdd" style="margin-top:.4rem">+ Assigna</button>
     </div>
+    <div class="ent-grp-lbl">🥧 Slicing Pie de la venture</div>
+    <div id="vdEquity"></div>
+    <button class="btn btn-ghost btn-sm" id="vdContrib" style="margin-top:.5rem">+ Registra aportació</button>
     <div class="modal-actions"><button class="btn btn-ghost" id="vdClose">Tanca</button><button class="btn btn-primary" id="vdSave">⬢ Desa</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
@@ -2112,6 +2122,9 @@ function openVentureDetail(node,v){
     else{const q=Number(qty.value)||0;if(q<=0){toast('Indica una quantitat');return;}al={id:uid(),kind,label:(kind==='hores'?q+' hores del banc de temps':q+' objectes de la biblioteca'),qty:q};}
     allocationsOf(v).push(al);bg.querySelector('#vdAllocs').innerHTML=allocRows();wireX();
   };
+  const eqBox=bg.querySelector('#vdEquity');
+  (function renderVEq(){const eq=computeVentureEquity(node,v);eqBox.innerHTML='';if(eq.some(e=>e.slices>0))eqBox.appendChild(buildEquityWrap(eq));else eqBox.appendChild(el('div','ent-desc','Encara cap aportació a aquesta venture. Registra hores o diner dels socis i la tarta es repartirà — cada projecte econòmic té la seva pròpia.'));})();
+  bg.querySelector('#vdContrib').onclick=async()=>{if(!ms.length){toast('Dona d\'alta socis a la MATRIU primer');return;}v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);openContributionModal(node,v);};
   bg.querySelector('#vdClose').onclick=closeModal;
   bg.querySelector('#vdSave').onclick=async()=>{v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture actualitzada');};
 }
@@ -2146,13 +2159,16 @@ function renderEquity(body,node){
   body.appendChild(bar);
   const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🥧</span><span><strong>Slicing Pie</strong>: la tarta reparteix el valor per aportacions reals. Temps a preu FMV ('+cfg.fmv+' €/h) ×'+cfg.nonCash+'; diner ×'+cfg.cash+'. Es recalcula sola.</span>';body.appendChild(note);
   if(!eq.length||!eq.some(e=>e.slices>0)){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Encara no hi ha aportacions</h2><p>Registra hores, diner o recursos dels socis i la tarta es repartirà.</p>';body.appendChild(emp);return;}
+  body.appendChild(buildEquityWrap(eq));
+}
+function buildEquityWrap(eq){
   const wrap=el('div','eq-wrap');
   const pie=el('div','eq-pie');pie.appendChild(buildEquityPie(eq));wrap.appendChild(pie);
   const tbl=el('div','eq-tbl');
   eq.forEach((e,i)=>{const row=el('div','eq-row');row.innerHTML='<span class="eq-dot" style="background:'+ROLE_COLORS[i%ROLE_COLORS.length]+'"></span><span class="eq-nm">'+esc(e.name)+'</span><span class="eq-sl">'+Math.round(e.slices).toLocaleString('ca')+' slices</span><span class="eq-pct">'+e.pct.toFixed(1)+'%</span>';tbl.appendChild(row);});
   const tot=eq.reduce((a,b)=>a+b.slices,0);
   tbl.appendChild(el('div','eq-total','Total: '+Math.round(tot).toLocaleString('ca')+' slices'));
-  wrap.appendChild(tbl);body.appendChild(wrap);
+  wrap.appendChild(tbl);return wrap;
 }
 function buildEquityPie(eq){
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 200 200');svg.setAttribute('class','eq-svg');
@@ -2168,11 +2184,11 @@ function buildEquityPie(eq){
   const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
   return svg;
 }
-function openContributionModal(node){
-  const ms=membersOf(node),cfg=equityCfg(node);
+function openContributionModal(node,venture){
+  const ms=membersOf(node),cfg=venture?ventureCfg(node,venture):equityCfg(node);
   const bg=modal(`
     <h2>Registra una aportació de valor</h2>
-    <p class="m-sub">Compta per a l'equity dinàmic (Slicing Pie).</p>
+    <p class="m-sub">${venture?'Compta per a la tarta d\'aquesta venture ('+esc(venture.name)+').':'Compta per a l\'equity dinàmic (Slicing Pie).'}</p>
     <div class="field"><label>Soci</label><select id="cbMem">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
     <div class="field"><label>Concepte</label><input id="cbWhat" placeholder="Què ha aportat" maxlength="80"></div>
     <div class="field"><label>Tipus</label><div style="display:flex;gap:.5rem"><button type="button" class="btn btn-ghost btn-sm cb-type sel" data-type="temps" style="flex:1">⏱ Temps (hores)</button><button type="button" class="btn btn-ghost btn-sm cb-type" data-type="moneda" style="flex:1">€ Diner</button></div></div>
@@ -2188,6 +2204,7 @@ function openContributionModal(node){
     const memberId=bg.querySelector('#cbMem').value,what=bg.querySelector('#cbWhat').value.trim()||'Aportació',value=Number(bg.querySelector('#cbVal').value)||0;
     const entry={id:uid(),who:memberById(node,memberId).name,what,deliverables:'',type,value,memberId,ts:now()};
     if(type==='temps'){const r=Number(bg.querySelector('#cbRate').value)||0;if(r)entry.rate=r;}
+    if(venture){ventureLedger(venture).unshift(entry);await persist(node);closeModal();openVentureDetail(node,venture);toast('Aportació registrada');return;}
     node.ledger.unshift(entry);await persist(node);closeModal();state.tab='equity';renderWorkspace();toast('Aportació registrada');
   };
 }
@@ -2723,7 +2740,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
