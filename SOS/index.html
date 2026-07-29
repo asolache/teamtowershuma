@@ -728,8 +728,10 @@ const objectsOf=node=>node.objects||(node.objects=[]);
 const offersOf=node=>node.offers||(node.offers=[]);
 const memberById=(node,id)=>membersOf(node).find(m=>m.id===id);
 function newMember({name,kind,entityId,phone,email}){return{id:uid(),name:(name||'').trim(),kind:kind||'persona',entityId:entityId||null,contact:{phone:phone||'',email:email||''},joinedAt:now(),active:true,notes:''};}
-function newObject({name,typology,ownerId,condition,deposit}){return{id:uid(),name:(name||'').trim(),typology:typology||'altres',ownerId:ownerId||null,status:'disponible',borrowerId:null,since:null,dueDate:null,condition:condition||'',deposit:Number(deposit)||0,notes:''};}
-function newOffer({memberId,kind,category,title,desc}){return{id:uid(),memberId:memberId||null,kind:kind||'oferta',category:category||'altres',title:(title||'').trim(),desc:(desc||'').trim()};}
+function newObject({name,typology,ownerId,condition,deposit}){return{id:uid(),name:(name||'').trim(),typology:typology||'altres',ownerId:ownerId||null,status:'disponible',borrowerId:null,since:null,dueDate:null,reservations:[],condition:condition||'',deposit:Number(deposit)||0,notes:''};}
+function newOffer({memberId,kind,category,title,desc}){return{id:uid(),memberId:memberId||null,kind:kind||'oferta',category:category||'altres',title:(title||'').trim(),desc:(desc||'').trim(),status:'activa'};}
+// Estat de venciment d'un préstec: vençut / venç aviat (≤3 dies) / en termini
+function dueStatus(o){if(o.status!=='prestat'||!o.dueDate)return null;const d=Math.ceil((new Date(o.dueDate)-new Date())/864e5);if(d<0)return{t:'vençut ('+(-d)+'d)',cls:'b-unver'};if(d<=3)return{t:'venç en '+d+'d',cls:'b-form'};return null;}
 // Saldo d'hores d'un soci = hores aportades − hores rebudes (entrades del ledger etiquetades)
 function memberBalance(node,memberId){let given=0,recv=0;(node.ledger||[]).forEach(e=>{if(e.type!=='temps')return;const v=Number(e.value)||0;if(e.memberId===memberId)given+=v;if(e.counterpartId===memberId)recv+=v;});return{given,recv,net:given-recv};}
 
@@ -1859,12 +1861,18 @@ function renderBiblioteca(body,node){
     list.sort((a,b)=>a.name.localeCompare(b.name)).forEach(o=>{
       const owner=memberById(node,o.ownerId),borrower=o.status==='prestat'&&o.borrowerId?memberById(node,o.borrowerId):null;
       const st=o.status==='prestat'?'<span class="ent-b b-unver">prestat</span>':(o.status==='reparacio'?'<span class="ent-b">reparació</span>':'<span class="ent-b b-ver">disponible</span>');
+      const due=dueStatus(o),resv=(o.reservations||[]);
+      const dueB=due?'<span class="ent-b '+due.cls+'">'+due.t+'</span>':'';
+      const resvB=resv.length?'<span class="ent-b b-form">🔖 '+resv.length+' en espera</span>':'';
       const c=el('div','ent-card');
-      c.innerHTML='<div class="ent-nm">'+esc(o.name)+'</div><div class="ent-badges">'+st+(owner?'<span class="ent-b">de '+esc(owner.name)+'</span>':'')+(o.deposit?'<span class="ent-b">fiança '+o.deposit+'€</span>':'')+'</div>'+(borrower?'<div class="ent-desc">→ '+esc(borrower.name)+(o.dueDate?' · fins '+o.dueDate:'')+'</div>':'')+(o.condition?'<div class="ent-desc">'+esc(o.condition)+'</div>':'');
-      const act=el('div');act.style.marginTop='.5rem';
+      c.innerHTML='<div class="ent-nm">'+esc(o.name)+'</div><div class="ent-badges">'+st+dueB+resvB+(owner?'<span class="ent-b">de '+esc(owner.name)+'</span>':'')+(o.deposit?'<span class="ent-b">fiança '+o.deposit+'€</span>':'')+'</div>'+(borrower?'<div class="ent-desc">→ '+esc(borrower.name)+(o.dueDate?' · fins '+o.dueDate:'')+'</div>':'')+(resv.length?'<div class="ent-desc">reserva: '+resv.map(id=>{const m=memberById(node,id);return m?esc(m.name):'?';}).join(', ')+'</div>':'')+(o.condition?'<div class="ent-desc">'+esc(o.condition)+'</div>':'');
+      const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
       if(o.status==='disponible'){const b=el('button','btn btn-ghost btn-sm','↗ Presta');b.onclick=ev=>{ev.stopPropagation();lendObject(node,o);};act.appendChild(b);}
-      else if(o.status==='prestat'){const b=el('button','btn btn-ghost btn-sm','↩ Retorna');b.onclick=async ev=>{ev.stopPropagation();o.status='disponible';o.borrowerId=null;o.since=null;o.dueDate=null;await persist(node);renderWorkspace();toast('Objecte retornat');};act.appendChild(b);}
-      const ed=el('button','btn btn-ghost btn-sm','✎');ed.style.marginLeft='.3rem';ed.onclick=ev=>{ev.stopPropagation();openObjectForm(node,o);};act.appendChild(ed);
+      else if(o.status==='prestat'){
+        const b=el('button','btn btn-ghost btn-sm','↩ Retorna');b.onclick=async ev=>{ev.stopPropagation();o.status='disponible';o.borrowerId=null;o.since=null;o.dueDate=null;await persist(node);renderWorkspace();const nx=(o.reservations||[])[0];toast(nx?('Retornat · reservat per '+(memberById(node,nx)||{name:'?'}).name):'Objecte retornat');};act.appendChild(b);
+        const r=el('button','btn btn-ghost btn-sm','🔖 Reserva');r.onclick=ev=>{ev.stopPropagation();reserveObject(node,o);};act.appendChild(r);
+      }
+      const ed=el('button','btn btn-ghost btn-sm','✎');ed.onclick=ev=>{ev.stopPropagation();openObjectForm(node,o);};act.appendChild(ed);
       c.appendChild(act);grid.appendChild(c);
     });
     body.appendChild(grid);
@@ -1894,16 +1902,29 @@ function openObjectForm(node,e){
     await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();toast(e?'Objecte desat':'Objecte afegit');
   };
 }
+function reserveObject(node,o){
+  const ms=membersOf(node).filter(m=>m.id!==o.borrowerId&&!(o.reservations||[]).includes(m.id));
+  if(!ms.length){toast('No hi ha socis per posar en espera');return;}
+  const bg=modal(`
+    <h2>🔖 Reserva «${esc(o.name)}»</h2>
+    <p class="m-sub">Afegeix un soci a la llista d'espera. Quan es retorni, tindrà prioritat.</p>
+    <div class="field"><label>Soci</label><select id="rvWho">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="rvCancel">Cancel·la</button><button class="btn btn-primary" id="rvSave">Reserva</button></div>
+  `);
+  bg.querySelector('#rvCancel').onclick=closeModal;
+  bg.querySelector('#rvSave').onclick=async()=>{o.reservations=o.reservations||[];o.reservations.push(bg.querySelector('#rvWho').value);await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();toast('Reserva afegida');};
+}
 function lendObject(node,o){
-  const ms=membersOf(node);
+  const ms=membersOf(node),first=(o.reservations||[])[0];
   const bg=modal(`
     <h2>↗ Presta «${esc(o.name)}»</h2>
-    <div class="field"><label>A qui</label><select id="lnWho">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
+    ${first?'<p class="m-sub">Hi ha reserva: es preselecciona qui espera primer.</p>':''}
+    <div class="field"><label>A qui</label><select id="lnWho">${ms.map(m=>'<option value="'+m.id+'"'+(m.id===first?' selected':'')+'>'+esc(m.name)+'</option>').join('')}</select></div>
     <div class="field"><label>Data de retorn prevista (opcional)</label><input id="lnDue" type="date"></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="lnCancel">Cancel·la</button><button class="btn btn-primary" id="lnSave">Presta</button></div>
   `);
   bg.querySelector('#lnCancel').onclick=closeModal;
-  bg.querySelector('#lnSave').onclick=async()=>{o.status='prestat';o.borrowerId=bg.querySelector('#lnWho').value;o.since=now();o.dueDate=bg.querySelector('#lnDue').value||null;await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();toast('Objecte prestat');};
+  bg.querySelector('#lnSave').onclick=async()=>{const who=bg.querySelector('#lnWho').value;o.status='prestat';o.borrowerId=who;o.since=now();o.dueDate=bg.querySelector('#lnDue').value||null;if(o.reservations)o.reservations=o.reservations.filter(id=>id!==who);await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();toast('Objecte prestat');};
 }
 function renderBancTemps(body,node){
   const offs=offersOf(node),ms=membersOf(node);
@@ -1923,7 +1944,13 @@ function renderBancTemps(body,node){
     TIMEBANK_CATS.forEach(([cat,label,icon])=>{
       const list=offs.filter(o=>o.kind===kind&&o.category===cat);if(!list.length)return;any=true;
       col.appendChild(el('div','bt-cat',icon+' '+esc(label)));
-      list.forEach(o=>{const m=memberById(node,o.memberId);const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+esc(o.title||label)+'</div><div class="ent-badges">'+(m?'<span class="ent-b">'+esc(m.name)+'</span>':'')+'</div>'+(o.desc?'<div class="ent-desc">'+esc(o.desc)+'</div>':'');c.onclick=()=>openOfferForm(node,kind,o);col.appendChild(c);});
+      list.forEach(o=>{const m=memberById(node,o.memberId);const paused=o.status==='pausada';const c=el('div','ent-card');if(paused)c.style.opacity='.55';
+        c.innerHTML='<div class="ent-nm">'+esc(o.title||label)+'</div><div class="ent-badges">'+(m?'<span class="ent-b">'+esc(m.name)+'</span>':'')+(paused?'<span class="ent-b">pausada</span>':'')+'</div>'+(o.desc?'<div class="ent-desc">'+esc(o.desc)+'</div>':'');
+        const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
+        const xb=el('button','btn btn-ghost btn-sm','⏱ Intercanvi');xb.title='Registra un intercanvi a partir d\'aquesta '+kind;xb.onclick=ev=>{ev.stopPropagation();exchangeHours(node,kind==='oferta'?{fromId:o.memberId,what:o.title}:{toId:o.memberId,what:o.title});};act.appendChild(xb);
+        const pb=el('button','btn btn-ghost btn-sm',paused?'▶ Activa':'⏸ Pausa');pb.onclick=async ev=>{ev.stopPropagation();o.status=paused?'activa':'pausada';await persist(node);renderWorkspace();};act.appendChild(pb);
+        const eb=el('button','btn btn-ghost btn-sm','✎');eb.onclick=ev=>{ev.stopPropagation();openOfferForm(node,kind,o);};act.appendChild(eb);
+        c.appendChild(act);col.appendChild(c);});
     });
     if(!any)col.appendChild(el('div','ent-desc','Cap encara.'));
     cols.appendChild(col);
@@ -1955,19 +1982,21 @@ function openOfferForm(node,kind,e){
     await persist(node);closeModal();state.tab='banctemps';renderWorkspace();toast(e?'Desat':'Afegit');
   };
 }
-function exchangeHours(node){
+function exchangeHours(node,prefill){
+  prefill=prefill||{};
   const ms=membersOf(node);
   if(ms.length<2){toast('Cal almenys dos socis');state.tab='socis';renderWorkspace();return;}
+  const opt=(sel)=>ms.map(m=>'<option value="'+m.id+'"'+(m.id===sel?' selected':'')+'>'+esc(m.name)+'</option>').join('');
   const bg=modal(`
     <h2>⏱ Registra un intercanvi</h2>
     <p class="m-sub">Qui presta el servei suma hores; qui el rep, en resta. 1h = 1h.</p>
-    <div class="field"><label>Presta el servei (dona hores)</label><select id="exFrom">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
-    <div class="field"><label>Rep el servei (rep hores)</label><select id="exTo">${ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select></div>
-    <div class="field"><label>Servei</label><input id="exWhat" placeholder="Concepte del servei" maxlength="80"></div>
+    <div class="field"><label>Presta el servei (dona hores)</label><select id="exFrom">${opt(prefill.fromId)}</select></div>
+    <div class="field"><label>Rep el servei (rep hores)</label><select id="exTo">${opt(prefill.toId)}</select></div>
+    <div class="field"><label>Servei</label><input id="exWhat" placeholder="Concepte del servei" maxlength="80" value="${esc(prefill.what||'')}"></div>
     <div class="field"><label>Hores</label><input id="exH" type="number" min="0" step="0.5" placeholder="1"></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="exCancel">Cancel·la</button><button class="btn btn-primary" id="exSave">⬢ Registra</button></div>
   `);
-  if(ms[1])bg.querySelector('#exTo').selectedIndex=1;
+  if(!prefill.toId&&ms[1])bg.querySelector('#exTo').selectedIndex=1;
   bg.querySelector('#exCancel').onclick=closeModal;
   bg.querySelector('#exSave').onclick=async()=>{
     const from=bg.querySelector('#exFrom').value,to=bg.querySelector('#exTo').value;
@@ -2640,7 +2669,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
