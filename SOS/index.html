@@ -843,6 +843,42 @@ function ecosystemResources(node){
   entitiesForContext(node).forEach(e=>talent.push({name:e.name,role:entTypeMeta(e.entityType).label}));
   return{links,talent,hores,objectes};
 }
+// Perfil transversal de persona: una mateixa persona apareix com a soci a diversos nodes
+// (banc de temps, biblioteca, MATRIU). Aquesta funció agrega tot el que aporta i mou l'ecosistema.
+const personKey=name=>norm(name||'');
+function personProfile(nameOrKey){
+  const key=personKey(nameOrKey);
+  const presence=[],offers=[],demands=[],objects=[],borrowed=[],reservations=[],ventures=[],contributions=[],balances=[],slices=[];
+  const contacts=new Set(),kinds=new Set();
+  state.nodes.forEach(nd=>{
+    membersOf(nd).forEach(m=>{
+      if(personKey(m.name)!==key)return;
+      presence.push({nodeId:nd.id,nodeName:nd.name,dynamicType:nd.dynamicType,member:m});
+      kinds.add(m.kind);
+      if(m.contact){if(m.contact.phone)contacts.add(m.contact.phone);if(m.contact.email)contacts.add(m.contact.email);}
+      if(nd.dynamicType==='banc_temps'){
+        offersOf(nd).filter(o=>o.memberId===m.id).forEach(o=>{if(o.kind==='oferta')offers.push({nodeId:nd.id,nodeName:nd.name,offer:o});else demands.push({nodeId:nd.id,nodeName:nd.name,offer:o});});
+        balances.push({nodeId:nd.id,nodeName:nd.name,net:memberBalance(nd,m.id).net});
+      }
+      if(nd.dynamicType==='biblioteca_coses'){
+        objectsOf(nd).filter(o=>o.ownerId===m.id).forEach(o=>objects.push({nodeId:nd.id,nodeName:nd.name,object:o}));
+        objectsOf(nd).filter(o=>o.borrowerId===m.id&&o.status==='prestat').forEach(o=>borrowed.push({nodeId:nd.id,nodeName:nd.name,object:o}));
+        objectsOf(nd).filter(o=>(o.reservations||[]).includes(m.id)).forEach(o=>reservations.push({nodeId:nd.id,nodeName:nd.name,object:o}));
+      }
+      if(nd.dynamicType==='matriu'){
+        venturesOf(nd).filter(v=>v.leadMemberId===m.id).forEach(v=>ventures.push({nodeId:nd.id,nodeName:nd.name,venture:v}));
+        (nd.ledger||[]).filter(e=>e.memberId===m.id).forEach(e=>contributions.push({nodeId:nd.id,nodeName:nd.name,scope:'matriu',entry:e}));
+        venturesOf(nd).forEach(v=>(v.ledger||[]).filter(e=>e.memberId===m.id).forEach(e=>contributions.push({nodeId:nd.id,nodeName:nd.name,scope:'venture',ventureName:v.name,entry:e})));
+        const my=computeEquity(nd).find(x=>x.memberId===m.id);if(my&&my.slices>0)slices.push({nodeId:nd.id,nodeName:nd.name,scope:'matriu',slices:my.slices,pct:my.pct});
+        venturesOf(nd).forEach(v=>{const s=computeVentureEquity(nd,v).find(x=>x.memberId===m.id);if(s&&s.slices>0)slices.push({nodeId:nd.id,nodeName:nd.name,scope:'venture',ventureName:v.name,slices:s.slices,pct:s.pct});});
+      }
+    });
+  });
+  let hores=0,euros=0;
+  contributions.forEach(c=>{const v=Number(c.entry.value)||0;if(c.entry.type==='temps')hores+=v;else if(c.entry.type==='moneda')euros+=v;});
+  const netHours=balances.reduce((a,b)=>a+b.net,0);
+  return{key,name:presence[0]?presence[0].member.name:nameOrKey,kinds:[...kinds],contacts:[...contacts],presence,offers,demands,objects,borrowed,reservations,ventures,contributions,balances,slices,totals:{hores,euros,ofertes:offers.length,demandes:demands.length,objectesPropis:objects.length,netHoursBank:netHours,ventures:ventures.length,nodes:presence.length}};
+}
 async function graduateVenture(node,v){
   const nn=newNode(v.name,'projecte',node.parentId);
   nn.dynamicType='generic';nn.vna={roles:v.vna.roles.map(r=>({...r})),exchanges:v.vna.exchanges.map(x=>({...x}))};
@@ -1827,6 +1863,9 @@ function renderSocis(body,node){
     const linkB=m.entityId&&byEnt(m.entityId)?'<span class="ent-b b-ver">↗ directori</span>':'';
     let stat=node.dynamicType==='biblioteca_coses'?'<span class="ent-b">'+objs+' objecte'+(objs===1?'':'s')+'</span>':'<span class="ent-b">'+offs+' oferta/es</span><span class="ent-b '+(bal.net>=0?'b-ver':'b-unver')+'">saldo '+(bal.net>0?'+':'')+bal.net+' h</span>';
     c.innerHTML='<div class="ent-nm">'+esc(m.name)+'</div><div class="ent-badges">'+kindB+linkB+stat+'</div>'+((m.contact&&(m.contact.phone||m.contact.email))?'<div class="ent-desc">'+esc([m.contact.phone,m.contact.email].filter(Boolean).join(' · '))+'</div>':'');
+    const acts=el('div');acts.style.marginTop='.5rem';acts.style.display='flex';acts.style.gap='.3rem';acts.style.flexWrap='wrap';
+    const prof=el('button','btn btn-ghost btn-sm','👁 Perfil');prof.onclick=e=>{e.stopPropagation();openPersonProfile(m.name);};acts.appendChild(prof);
+    c.appendChild(acts);
     c.onclick=()=>openMemberForm(node,m);grid.appendChild(c);
   });
   body.appendChild(grid);
@@ -2086,6 +2125,41 @@ function openActivityGallery(node){
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#agCancel').onclick=closeModal;
   bg.querySelectorAll('.dyn-card').forEach(c=>c.onclick=async()=>{venturesOf(node).push(newVenture(node,actMeta(c.dataset.act)));await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada');});
+}
+// Perfil transversal: mostra tot el que una persona aporta i mou a l'ecosistema (banc, biblioteca, MATRIU).
+function openPersonProfile(nameOrKey){
+  const p=personProfile(nameOrKey);
+  const dynIc={banc_temps:'⏱',biblioteca_coses:'📚',matriu:'🌱'};
+  const dynLbl={banc_temps:'banc de temps',biblioteca_coses:'biblioteca',matriu:'MATRIU'};
+  const sec=(title,list,body)=>list.length?'<div class="ent-grp-lbl">'+title+' · '+list.length+'</div><div class="ent-grid">'+body+'</div>':'';
+  const nodeBadge=(dt,nm)=>'<span class="ent-b">'+(dynIc[dt]||'◇')+' '+esc(nm)+'</span>';
+  const bg=modal(`
+    <h2>👤 ${esc(p.name)}</h2>
+    <p class="m-sub">Perfil transversal · aporta i mou recursos a ${p.totals.nodes} node${p.totals.nodes===1?'':'s'} de l'ecosistema.</p>
+    ${p.contacts.length?'<div class="ent-desc" style="margin-bottom:.6rem">'+esc(p.contacts.join(' · '))+'</div>':''}
+    <div class="bib-stats">
+      <div class="bib-tile"><div class="n">${p.totals.nodes}</div><div class="l">presència</div></div>
+      <div class="bib-tile"><div class="n" style="color:var(--indigo)">${p.totals.hores}</div><div class="l">hores aport.</div></div>
+      ${p.totals.euros?'<div class="bib-tile"><div class="n">'+p.totals.euros+' €</div><div class="l">capital</div></div>':''}
+      ${p.balances.length?'<div class="bib-tile"><div class="n" style="color:'+(p.totals.netHoursBank>=0?'var(--green)':'var(--red)')+'">'+(p.totals.netHoursBank>=0?'+':'')+p.totals.netHoursBank+' h</div><div class="l">saldo banc</div></div>':''}
+      ${p.totals.ofertes?'<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+p.totals.ofertes+'</div><div class="l">ofertes</div></div>':''}
+      ${p.totals.demandes?'<div class="bib-tile"><div class="n" style="color:var(--purple)">'+p.totals.demandes+'</div><div class="l">demandes</div></div>':''}
+      ${p.totals.objectesPropis?'<div class="bib-tile"><div class="n" style="color:var(--green)">'+p.totals.objectesPropis+'</div><div class="l">objectes propis</div></div>':''}
+      ${p.totals.ventures?'<div class="bib-tile"><div class="n" style="color:var(--orange)">'+p.totals.ventures+'</div><div class="l">ventures lidera</div></div>':''}
+    </div>
+    ${sec('🌐 Presència als nodes',p.presence,p.presence.map(x=>'<div class="ent-card"><div class="ent-nm">'+(dynIc[x.dynamicType]||'◇')+' '+esc(x.nodeName)+'</div><div class="ent-badges"><span class="ent-b">'+dynLbl[x.dynamicType]+'</span></div></div>').join(''))}
+    ${sec('⏱ Ofertes al banc de temps',p.offers,p.offers.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.offer.title||'oferta')+'</div><div class="ent-badges">'+nodeBadge('banc_temps',x.nodeName)+'<span class="ent-b">'+esc(x.offer.category||'')+'</span><span class="ent-b '+(x.offer.status==='pausada'?'b-unver':'b-ver')+'">'+esc(x.offer.status||'activa')+'</span></div></div>').join(''))}
+    ${sec('🙋 Demandes al banc de temps',p.demands,p.demands.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.offer.title||'demanda')+'</div><div class="ent-badges">'+nodeBadge('banc_temps',x.nodeName)+'<span class="ent-b">'+esc(x.offer.category||'')+'</span></div></div>').join(''))}
+    ${sec('📚 Objectes propis a la biblioteca',p.objects,p.objects.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.object.name)+'</div><div class="ent-badges">'+nodeBadge('biblioteca_coses',x.nodeName)+'<span class="ent-b">'+esc(x.object.typology||'')+'</span><span class="ent-b '+(x.object.status==='disponible'?'b-ver':'b-unver')+'">'+esc(x.object.status||'')+'</span></div></div>').join(''))}
+    ${sec('🤝 Objectes en préstec',p.borrowed,p.borrowed.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.object.name)+'</div><div class="ent-badges">'+nodeBadge('biblioteca_coses',x.nodeName)+'</div></div>').join(''))}
+    ${sec('🕓 Reserves',p.reservations,p.reservations.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.object.name)+'</div><div class="ent-badges">'+nodeBadge('biblioteca_coses',x.nodeName)+'</div></div>').join(''))}
+    ${sec('🌱 Ventures que lidera',p.ventures,p.ventures.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.venture.name)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b">'+esc(x.venture.stage)+'</span></div></div>').join(''))}
+    ${sec('🥧 Slicing Pie',p.slices,p.slices.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.scope==='matriu'?'Fons de la MATRIU':x.ventureName)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b b-ver">'+x.pct.toFixed(1)+'%</span><span class="ent-b">'+Math.round(x.slices).toLocaleString('ca')+' slices</span></div></div>').join(''))}
+    ${sec('⬢ Aportacions comptables',p.contributions,p.contributions.slice(0,60).map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.entry.what||(x.entry.type==='moneda'?'Diner':'Hores'))+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName+(x.scope==='venture'?' · '+x.ventureName:''))+'<span class="ent-b">'+(x.entry.type==='moneda'?(x.entry.value+' €'):(x.entry.value+' h'))+'</span></div></div>').join(''))}
+    <div class="modal-actions"><button class="btn btn-primary" id="ppClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#ppClose').onclick=closeModal;
 }
 const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'⏱',label:'Hores',unit:'hores'},objecte:{ic:'📦',label:'Objectes',unit:'objectes'}};
 // Detall d'una venture: assigna el soci que lidera i mobilitza recursos de l'ecosistema (talent, hores, objectes).
@@ -2740,7 +2814,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
