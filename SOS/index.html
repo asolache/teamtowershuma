@@ -805,7 +805,15 @@ function newVenture(node,act){
   const idBy={},roles=[],exch=[];
   (act.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
   (act.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
-  return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null};
+  return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,allocations:[],vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null};
+}
+const allocationsOf=v=>v.allocations||(v.allocations=[]);
+// Fons cooperatiu local: valor mobilitzat per la MATRIU cap a les seves ventures (recursos assignats + € aportat)
+function fundRollup(node){
+  let hores=0,objectes=0,talent=0;const vs=venturesOf(node);
+  vs.forEach(v=>allocationsOf(v).forEach(a=>{const q=Number(a.qty)||0;if(a.kind==='hores')hores+=q;else if(a.kind==='objecte')objectes+=q;else if(a.kind==='talent')talent+=q;}));
+  let moneda=0;(node.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;});
+  return{ventures:vs.length,economicVentures:vs.filter(v=>v.stage!=='idea').length,hores,objectes,talent,moneda};
 }
 // Slicing Pie: slices = valor de l'aportació × multiplicador (temps a preu FMV × nonCash; diner × cash)
 function computeEquity(node){
@@ -2038,14 +2046,25 @@ function renderMatriuVentures(body,node){
   body.appendChild(bar);
   const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🌱</span><span>Incuba iniciatives crítiques de desenvolupament comunitari i econòmic amb <strong>acció-formació</strong>: cada venture arriba amb el seu mapa de valor i el seu tauler d\'aprenentatge, i pot <strong>graduar-se</strong> a projecte propi.</span>';body.appendChild(note);
   if(!vs.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Cap venture encara</h2><p>Tria una activitat crítica del territori i instancia-la, o carrega un exemple.</p>';body.appendChild(emp);return;}
+  const f=fundRollup(node);
+  body.appendChild(el('div','ent-grp-lbl','🏦 Fons cooperatiu · valor mobilitzat'));
+  const fund=el('div','bib-stats');fund.innerHTML=
+    '<div class="bib-tile"><div class="n">'+f.economicVentures+'/'+f.ventures+'</div><div class="l">ventures econòmiques</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+f.hores+'</div><div class="l">hores assignades</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--green)">'+f.objectes+'</div><div class="l">objectes mobilitzats</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+f.talent+'</div><div class="l">talent assignat</div></div>'+
+    (f.moneda?'<div class="bib-tile"><div class="n">'+f.moneda+' €</div><div class="l">capital aportat</div></div>':'');
+  body.appendChild(fund);
   VENTURE_STAGES.forEach(stg=>{
     const list=vs.filter(v=>v.stage===stg);if(!list.length)return;
     const stLbl={idea:'💡 Idea',prototip:'🔧 Prototip',validacio:'✅ Validació',graduacio:'🎓 Graduades'}[stg];
     body.appendChild(el('div','ent-grp-lbl',stLbl+' · '+list.length));
     const grid=el('div','ent-grid');
     list.forEach(v=>{
-      const a=actMeta(v.activityId),c=el('div','ent-card');
-      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
+      const a=actMeta(v.activityId),c=el('div','ent-card');c.style.cursor='pointer';
+      const lead=v.leadMemberId?memberById(node,v.leadMemberId):null,nAl=allocationsOf(v).length;
+      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
+      c.onclick=()=>openVentureDetail(node,v);
       const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
       if(v.stage!=='graduacio'){const i=VENTURE_STAGES.indexOf(v.stage);const nx=el('button','btn btn-ghost btn-sm','→ '+({idea:'Prototip',prototip:'Validació',validacio:'Graduar'}[v.stage]));nx.onclick=async ev=>{ev.stopPropagation();if(v.stage==='validacio'){await graduateVenture(node,v);}else{v.stage=VENTURE_STAGES[i+1];await persist(node);renderWorkspace();toast('Venture avançada');}};act.appendChild(nx);}
       const del=el('button','btn btn-ghost btn-sm','🗑');del.onclick=async ev=>{ev.stopPropagation();node.ventures=venturesOf(node).filter(x=>x.id!==v.id);await persist(node);renderWorkspace();toast('Venture eliminada');};act.appendChild(del);
@@ -2060,6 +2079,41 @@ function openActivityGallery(node){
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#agCancel').onclick=closeModal;
   bg.querySelectorAll('.dyn-card').forEach(c=>c.onclick=async()=>{venturesOf(node).push(newVenture(node,actMeta(c.dataset.act)));await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada');});
+}
+const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'⏱',label:'Hores',unit:'hores'},objecte:{ic:'📦',label:'Objectes',unit:'objectes'}};
+// Detall d'una venture: assigna el soci que lidera i mobilitza recursos de l'ecosistema (talent, hores, objectes).
+function openVentureDetail(node,v){
+  const a=actMeta(v.activityId),ms=membersOf(node),eco=ecosystemResources(node),allocs=allocationsOf(v);
+  const talentOpts=eco.talent.map((t,i)=>'<option value="'+i+'">'+esc(t.name)+' · '+esc(t.role)+'</option>').join('');
+  const allocRows=()=>allocs.length?allocs.map(al=>'<div class="ent-card" data-al="'+al.id+'"><div class="ent-nm">'+(ALLOC_KINDS[al.kind]||{ic:'◇'}).ic+' '+esc(al.label)+'</div><div class="ent-badges"><span class="ent-b">'+al.qty+' '+esc((ALLOC_KINDS[al.kind]||{unit:''}).unit)+'</span><button class="btn btn-ghost btn-sm alx" data-al="'+al.id+'">🗑</button></div></div>').join(''):'<div class="ent-desc">Cap recurs assignat encara.</div>';
+  const bg=modal(`
+    <h2>${a.icon} ${esc(v.name)}</h2>
+    <p class="m-sub">Assigna qui lidera i quins recursos de l'ecosistema mobilitza aquesta venture.</p>
+    <div class="field"><label>Soci que lidera</label><select id="vdLead"><option value="">— sense assignar —</option>${ms.map(m=>'<option value="'+m.id+'"'+(v.leadMemberId===m.id?' selected':'')+'>'+esc(m.name)+'</option>').join('')}</select>${ms.length?'':'<div class="ent-desc" style="margin-top:.3rem">Dona d\'alta socis a la MATRIU per poder assignar un lead.</div>'}</div>
+    <div class="ent-grp-lbl">🔗 Recursos mobilitzats</div>
+    <div class="ent-grid" id="vdAllocs">${allocRows()}</div>
+    <div class="field" style="margin-top:.8rem"><label>Afegeix recurs</label>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem">${Object.entries(ALLOC_KINDS).map(([k,m],i)=>'<button type="button" class="btn btn-ghost btn-sm vd-k'+(i===0?' sel':'')+'" data-k="'+k+'" style="flex:1">'+m.ic+' '+m.label+'</button>').join('')}</div>
+      <div class="wz-key"><select id="vdTalent" style="flex:2">${talentOpts||'<option value="">— cap talent a l\'ecosistema —</option>'}</select><input id="vdQty" type="number" min="0" step="1" value="1" style="display:none"></div>
+      <div class="ent-desc" id="vdHint" style="margin-top:.3rem">Ecosistema: ${eco.talent.length} talent · ${eco.hores} ofertes d'hores · ${eco.objectes} objectes disponibles.</div>
+      <button class="btn btn-ghost btn-sm" id="vdAdd" style="margin-top:.4rem">+ Assigna</button>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="vdClose">Tanca</button><button class="btn btn-primary" id="vdSave">⬢ Desa</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let kind='talent';
+  const tSel=bg.querySelector('#vdTalent'),qty=bg.querySelector('#vdQty'),hint=bg.querySelector('#vdHint');
+  bg.querySelectorAll('.vd-k').forEach(btn=>btn.onclick=()=>{kind=btn.dataset.k;bg.querySelectorAll('.vd-k').forEach(x=>x.classList.toggle('sel',x===btn));const isTal=kind==='talent';tSel.style.display=isTal?'':'none';qty.style.display=isTal?'none':'';qty.value=isTal?'1':(kind==='hores'?'2':'1');hint.textContent=isTal?('Ecosistema: '+eco.talent.length+' talent disponibles.'):(kind==='hores'?('Fins a '+eco.hores+' ofertes d\'hores a l\'ecosistema.'):('Fins a '+eco.objectes+' objectes disponibles.'));});
+  const wireX=()=>bg.querySelectorAll('.alx').forEach(x=>x.onclick=()=>{const id=x.dataset.al,arr=allocationsOf(v),i=arr.findIndex(y=>y.id===id);if(i>=0)arr.splice(i,1);bg.querySelector('#vdAllocs').innerHTML=allocRows();wireX();});
+  wireX();
+  bg.querySelector('#vdAdd').onclick=()=>{
+    let al;
+    if(kind==='talent'){const t=eco.talent[Number(tSel.value)];if(!t){toast('No hi ha talent a l\'ecosistema');return;}al={id:uid(),kind:'talent',label:t.name+' · '+t.role,qty:1};}
+    else{const q=Number(qty.value)||0;if(q<=0){toast('Indica una quantitat');return;}al={id:uid(),kind,label:(kind==='hores'?q+' hores del banc de temps':q+' objectes de la biblioteca'),qty:q};}
+    allocationsOf(v).push(al);bg.querySelector('#vdAllocs').innerHTML=allocRows();wireX();
+  };
+  bg.querySelector('#vdClose').onclick=closeModal;
+  bg.querySelector('#vdSave').onclick=async()=>{v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture actualitzada');};
 }
 function renderMatriuResources(body,node){
   const r=ecosystemResources(node);
@@ -2669,7 +2723,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
