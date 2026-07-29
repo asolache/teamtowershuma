@@ -2366,8 +2366,27 @@ async function saveTombstones(){await dbPut({id:'__tombstones',type:'meta',map:s
 function _b64enc(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(s);}
 async function gz(str){const cs=new CompressionStream('gzip');const w=cs.writable.getWriter();w.write(new TextEncoder().encode(str));w.close();const buf=await new Response(cs.readable).arrayBuffer();return _b64enc(new Uint8Array(buf));}
 async function ungz(b64){const bin=atob(b64.trim());const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));const ds=new DecompressionStream('gzip');const w=ds.writable.getWriter();w.write(bytes);w.close();const buf=await new Response(ds.readable).arrayBuffer();return new TextDecoder().decode(buf);}
-async function _enc(desc){try{return 'Z1'+await gz(JSON.stringify(desc));}catch(e){return btoa(unescape(encodeURIComponent(JSON.stringify(desc))));}}
-async function _dec(code){code=(code||'').trim();if(code.startsWith('Z1')){return JSON.parse(await ungz(code.slice(2)));}return JSON.parse(decodeURIComponent(escape(atob(code))));}
+// Compacta l'SDP a l'essencial (ufrag, pwd, fingerprint, setup, candidats UDP) i el
+// reconstrueix a l'altre costat des d'una plantilla de datachannel → codi/QR molt més curts.
+function packSDP(desc){
+  const s=desc.sdp||'',g=re=>{const m=s.match(re);return m?m[1]:'';};
+  const c=[],re=/a=candidate:(\S+) (\d+) (?:udp|UDP) (\d+) (\S+) (\d+) typ (\S+)/g;let m;
+  while((m=re.exec(s)))c.push([m[1],m[3],m[4],m[5],m[6]]);// foundation,priority,ip,port,type (component sempre 1)
+  return {t:desc.type,u:g(/a=ice-ufrag:(\S+)/),p:g(/a=ice-pwd:(\S+)/),
+    f:g(/a=fingerprint:sha-256 (\S+)/i).replace(/:/g,''),s:g(/a=setup:(\S+)/)||'actpass',m:g(/a=mid:(\S+)/)||'0',c};
+}
+function unpackSDP(o){
+  const fp=(o.f||'').replace(/(..)(?=.)/g,'$1:');
+  const cand=(o.c||[]).map(c=>'a=candidate:'+c[0]+' 1 udp '+c[1]+' '+c[2]+' '+c[3]+' typ '+c[4]).join('\r\n');
+  const sdp='v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE '+o.m+
+    '\r\na=extmap-allow-mixed\r\na=msid-semantic: WMS\r\nm=application 9 UDP/DTLS/SCTP webrtc-datachannel\r\n'+
+    'c=IN IP4 0.0.0.0\r\na=ice-ufrag:'+o.u+'\r\na=ice-pwd:'+o.p+'\r\na=ice-options:trickle\r\n'+
+    'a=fingerprint:sha-256 '+fp+'\r\na=setup:'+o.s+'\r\na=mid:'+o.m+'\r\na=sctp-port:5000\r\n'+
+    'a=max-message-size:262144\r\n'+(cand?cand+'\r\n':'');
+  return {type:o.t,sdp};
+}
+async function _enc(desc){try{return 'Z2'+await gz(JSON.stringify(packSDP(desc)));}catch(e){try{return 'Z1'+await gz(JSON.stringify({type:desc.type,sdp:desc.sdp}));}catch(e2){return btoa(unescape(encodeURIComponent(JSON.stringify(desc))));}}}
+async function _dec(code){code=(code||'').trim();if(code.startsWith('Z2'))return unpackSDP(JSON.parse(await ungz(code.slice(2))));if(code.startsWith('Z1'))return JSON.parse(await ungz(code.slice(2)));return JSON.parse(decodeURIComponent(escape(atob(code))));}
 function _waitIce(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const chk=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',chk);res();}};pc.addEventListener('icegatheringstatechange',chk);setTimeout(res,2600);});}
 function _closePc(){try{if(_dc)_dc.close();}catch(e){}try{if(_pc)_pc.close();}catch(e){}_dc=null;_pc=null;}
 let _liveConnected=false;
@@ -2621,7 +2640,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,ecosystemResources,graduateVenture,openActivityGallery,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
