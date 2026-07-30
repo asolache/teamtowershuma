@@ -677,6 +677,64 @@ function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear(
 const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{}};
 const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const now=()=>new Date().toISOString();
+// ═══════════ Identitat descentralitzada · did:key + firma (Arc I1+L1) ═══════════
+// Cada persona/dispositiu genera un parell de claus la primera vegada; la privada mai surt del navegador.
+// Cada apunt del ledger (i qualsevol registre que ho vulgui) es firma; verificable localment i entre peers.
+const _te=new TextEncoder(),_td=new TextDecoder();
+const _b64u=bytes=>{let s='';const u=new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');};
+const _unb64u=str=>{const pad='='.repeat((4-(str.length%4))%4),s=(str+pad).replace(/-/g,'+').replace(/_/g,'/'),bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;};
+async function sha256(bytes){const h=await crypto.subtle.digest('SHA-256',bytes instanceof Uint8Array?bytes:_te.encode(String(bytes)));return _b64u(h);}
+// Canonicalització: JSON estable (claus ordenades) excloent camps que sí que varien fora del signant (sig, signer, sigTs).
+function _canon(v){if(v===null||typeof v!=='object')return JSON.stringify(v);if(Array.isArray(v))return '['+v.map(_canon).join(',')+']';const keys=Object.keys(v).filter(k=>k!=='sig'&&k!=='signer'&&k!=='sigTs'&&k!=='hash'&&v[k]!==undefined).sort();return '{'+keys.map(k=>JSON.stringify(k)+':'+_canon(v[k])).join(',')+'}';}
+const _payload=obj=>_te.encode(_canon(obj));
+// Algorisme: preferim Ed25519 (W3C, WebCrypto en majoria de navegadors moderns); fallback a ECDSA P-256.
+async function _makeKeypair(){
+  try{return{alg:'Ed25519',pair:await crypto.subtle.generateKey({name:'Ed25519'},true,['sign','verify'])};}
+  catch(e){return{alg:'ECDSA-P256',pair:await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify'])};}
+}
+const _signParams=alg=>alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',hash:'SHA-256'};
+const _importPub=async(alg,jwk)=>crypto.subtle.importKey('jwk',jwk,alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['verify']);
+async function _didFromJwk(alg,jwk){return 'did:sos:'+alg.toLowerCase()+':'+(await sha256(_te.encode(JSON.stringify(jwk)))).slice(0,32);}
+let _identity=null;
+async function getIdentity(){
+  if(_identity)return _identity;
+  try{const all=await dbGetAll();const rec=all.find(n=>n.id==='__identity');
+    if(rec&&rec.privJwk&&rec.pubJwk&&rec.alg){
+      const priv=await crypto.subtle.importKey('jwk',rec.privJwk,rec.alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['sign']);
+      _identity={did:rec.did,alg:rec.alg,pubJwk:rec.pubJwk,privKey:priv};return _identity;}
+  }catch(e){}
+  const{alg,pair}=await _makeKeypair();
+  const pubJwk=await crypto.subtle.exportKey('jwk',pair.publicKey),privJwk=await crypto.subtle.exportKey('jwk',pair.privateKey);
+  const did=await _didFromJwk(alg,pubJwk);
+  try{await dbPut({id:'__identity',type:'meta',did,alg,pubJwk,privJwk,createdAt:now()});}catch(e){}
+  _identity={did,alg,pubJwk,privKey:pair.privateKey};return _identity;
+}
+// Signa un registre: adjunta signer + sig sobre el JSON canònic del registre (sense els propis camps de firma).
+async function signRecord(rec){
+  const id=await getIdentity();
+  const sigBytes=await crypto.subtle.sign(_signParams(id.alg),id.privKey,_payload(rec));
+  rec.signer={did:id.did,alg:id.alg,pubJwk:id.pubJwk};
+  rec.sig=_b64u(sigBytes);rec.sigTs=now();return rec;
+}
+// Verifica que la firma de rec correspon a signer.pubJwk sobre el JSON canònic actual.
+async function verifyRecord(rec){
+  if(!rec||!rec.sig||!rec.signer||!rec.signer.pubJwk||!rec.signer.alg)return{ok:false,reason:'unsigned'};
+  try{const pub=await _importPub(rec.signer.alg,rec.signer.pubJwk);
+    const good=await crypto.subtle.verify(_signParams(rec.signer.alg),pub,_unb64u(rec.sig),_payload(rec));
+    return{ok:good,reason:good?'valid':'invalid'};}
+  catch(e){return{ok:false,reason:'error:'+(e.message||e)};}
+}
+// Encadenat de ledger: cada apunt referencia el hash de l'anterior; qualsevol manipulació trenca la cadena.
+async function chainLedger(entries){
+  let prev='';for(const e of entries){e.prevHash=prev;e.hash=await sha256(_payload(e));prev=e.hash;}
+  return entries;
+}
+async function verifyChain(entries){
+  let prev='';for(const e of entries){if((e.prevHash||'')!==prev)return{ok:false,brokenAt:e.id||e.hash||''};const h=await sha256(_payload({...e,hash:undefined}));if(h!==e.hash)return{ok:false,brokenAt:e.id||e.hash||''};prev=e.hash;}
+  return{ok:true};
+}
+// Helper compost: firma + encadena en una sola operació. Els apunts pre-existents sense firma es marquen com "legacy".
+async function signAndChainEntry(entry,prevHash){entry.prevHash=prevHash||'';await signRecord(entry);entry.hash=await sha256(_payload({...entry,hash:undefined}));return entry;}
 const byId=id=>state.nodes.find(n=>n.id===id);
 const children=pid=>state.nodes.filter(n=>n.parentId===pid).sort((a,b)=>a.name.localeCompare(b.name));
 function ancestors(id){const out=[];let n=byId(id);while(n){out.unshift(n);n=n.parentId?byId(n.parentId):null;}return out;}
@@ -2791,7 +2849,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,sha256,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
