@@ -1377,39 +1377,49 @@ function draftMission(name,level,selectedPainIds){
 let _aiKey=null;
 async function loadAiKey(){try{const all=await dbGetAll();const m=all.find(n=>n.id==='__aikey');_aiKey=m&&m.key?m.key:null;}catch(e){_aiKey=null;}return _aiKey;}
 async function saveAiKey(k){k=(k||'').trim();_aiKey=k||null;if(k)await dbPut({id:'__aikey',type:'meta',key:k});else await dbDelete('__aikey');}
-// Crida directa a l'API de Claude des del navegador amb la clau de l'usuari (BYO key). Sortida estructurada via tool_choice forçat.
-async function aiSuggestMap({level,name,promptText,painIds}){
-  const key=_aiKey||await loadAiKey();
-  if(!key)throw{noKey:true};
-  const k=knowFor(level),meta=LEVEL_META[level];
-  const picked=k.pains.filter(p=>painIds&&painIds.has(p.id)).map(p=>p.t+' — '+p.d);
-  const ctx=[
-    'Nivell: '+meta.label+(name?' · "'+name+'"':''),
-    promptText?'Context de la comunitat: '+promptText:'',
-    picked.length?'Reptes prioritzats: '+picked.join('; '):'',
-    'Rols de referència del nivell: '+k.roles.join(', ')
-  ].filter(Boolean).join('\n');
-  const sys='Ets expert en desenvolupament comunitari i en Value Network Analysis (VNA) de Verna Allee, aplicat a comunitats de Catalunya (focus a l\'Alt Penedès i el Garraf, sense excloure la resta). Proposa un mapa de valor comunitari realista i accionable: entre 5 i 8 rols (funcions, no càrrecs) i entre 6 i 12 intercanvis de valor que connectin dos rols de la teva pròpia llista, barrejant tangibles (béns, serveis, hores, diners) i intangibles (confiança, coneixement, pertinença, reciprocitat, reconeixement). Cerca reciprocitat: pocs fluxos unidireccionals. Escriu en català, breu. Respon només cridant l\'eina.';
-  const body={model:'claude-opus-4-8',max_tokens:2000,system:sys,
-    tools:[{name:'proposar_mapa_valor',description:'Retorna el mapa de valor VNA proposat.',input_schema:{type:'object',properties:{
-      mission:{type:'string',description:'Missió breu (una frase) de la xarxa de valor.'},
-      roles:{type:'array',items:{type:'string'},description:'Noms curts de rols/actors.'},
-      exchanges:{type:'array',items:{type:'object',properties:{from:{type:'string'},to:{type:'string'},kind:{type:'string',enum:['tangible','intangible']},label:{type:'string',description:'Què flueix (curt).'}},required:['from','to','kind','label']}}
-    },required:['mission','roles','exchanges']}}],
-    tool_choice:{type:'tool',name:'proposar_mapa_valor'},
-    messages:[{role:'user',content:'Proposa el mapa de valor per a aquesta comunitat:\n\n'+ctx}]};
-  let res;
-  try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});}
-  catch(e){throw{msg:'Sense connexió amb l\'API'};}
-  if(!res.ok){let m='';try{const j=await res.json();m=(j.error&&j.error.message)||'';}catch(e){}throw{status:res.status,msg:m||('Error '+res.status)};}
-  const data=await res.json();
-  const tu=(data.content||[]).find(c=>c.type==='tool_use');
-  if(!tu||!tu.input||!Array.isArray(tu.input.roles))throw{msg:'Resposta inesperada'};
-  const roles=[...new Set(tu.input.roles.map(r=>String(r).trim()).filter(Boolean))];
-  const rl=new Set(roles.map(r=>r.toLowerCase()));
-  const exchanges=(tu.input.exchanges||[]).filter(x=>x&&x.from&&x.to&&rl.has(String(x.from).toLowerCase())&&rl.has(String(x.to).toLowerCase())).map(x=>({from:String(x.from).trim(),to:String(x.to).trim(),kind:x.kind==='intangible'?'intangible':'tangible',label:(x.label||'').trim()}));
-  return {mission:(tu.input.mission||'').trim(),roles,exchanges};
-}
+// ═══════════ AI · adaptador únic DRY (V11 codex) ═══════════
+// Un únic pas per a totes les crides a Claude: intent catalogat + BYO key + Glass-Box audit + cost tracker.
+// Els prompts humans viuen a SOS/prompts/*.md (font documental); el `system` aquí és la còpia executable.
+const AI_INTENTS={
+  suggest_map:{
+    model:'claude-opus-4-8',max_tokens:2000,
+    system:'Ets expert en desenvolupament comunitari i en Value Network Analysis (VNA) de Verna Allee, aplicat a comunitats de Catalunya (focus a l\'Alt Penedès i el Garraf, sense excloure la resta). Proposa un mapa de valor comunitari realista i accionable: entre 5 i 8 rols (funcions, no càrrecs) i entre 6 i 12 intercanvis de valor que connectin dos rols de la teva pròpia llista, barrejant tangibles (béns, serveis, hores, diners) i intangibles (confiança, coneixement, pertinença, reciprocitat, reconeixement). Cerca reciprocitat: pocs fluxos unidireccionals. Escriu en català, breu. Respon només cridant l\'eina.',
+    tool:{name:'proposar_mapa_valor',description:'Retorna el mapa de valor VNA proposat.',input_schema:{type:'object',properties:{mission:{type:'string'},roles:{type:'array',items:{type:'string'}},exchanges:{type:'array',items:{type:'object',properties:{from:{type:'string'},to:{type:'string'},kind:{type:'string',enum:['tangible','intangible']},label:{type:'string'}},required:['from','to','kind','label']}}},required:['mission','roles','exchanges']}},
+    build:ctx=>{const k=knowFor(ctx.level),meta=LEVEL_META[ctx.level];const picked=k.pains.filter(p=>ctx.painIds&&ctx.painIds.has(p.id)).map(p=>p.t+' — '+p.d);const txt=['Nivell: '+meta.label+(ctx.name?' · "'+ctx.name+'"':''),ctx.promptText?'Context de la comunitat: '+ctx.promptText:'',picked.length?'Reptes prioritzats: '+picked.join('; '):'','Rols de referència del nivell: '+k.roles.join(', ')].filter(Boolean).join('\n');return 'Proposa el mapa de valor per a aquesta comunitat:\n\n'+txt;},
+    coerce:tu=>{const roles=[...new Set((tu.roles||[]).map(r=>String(r).trim()).filter(Boolean))];const rl=new Set(roles.map(r=>r.toLowerCase()));const exchanges=(tu.exchanges||[]).filter(x=>x&&x.from&&x.to&&rl.has(String(x.from).toLowerCase())&&rl.has(String(x.to).toLowerCase())).map(x=>({from:String(x.from).trim(),to:String(x.to).trim(),kind:x.kind==='intangible'?'intangible':'tangible',label:(x.label||'').trim()}));return{mission:(tu.mission||'').trim(),roles,exchanges};}
+  },
+  discover_entities:{
+    model:'claude-opus-4-8',max_tokens:2000,
+    system:'Ets expert en el teixit associatiu i l\'economia social de Catalunya. Proposa entitats i organitzacions REALS que probablement operen en aquest territori (ajuntaments, consells comarcals, associacions, cooperatives, casals, colles, comerços, bancs de temps…). IMPORTANT: NO inventis noms. Si no tens prou certesa d\'una entitat concreta, no la incloguis o marca-la amb confidence baixa. Val més una llista curta i fiable que una llarga inventada. Escriu en català. Respon només cridant l\'eina.',
+    tool:(ctx)=>{const typeIds=entityTypesFor(ctx.level).map(t=>t[0]);return{name:'proposar_entitats',description:'Retorna candidats d\'entitats reals a verificar.',input_schema:{type:'object',properties:{entities:{type:'array',items:{type:'object',properties:{name:{type:'string'},entityType:{type:'string',enum:typeIds},description:{type:'string'},url:{type:'string'},confidence:{type:'number'}},required:['name','entityType']}}},required:['entities']}};},
+    build:ctx=>{const meta=LEVEL_META[ctx.level];const txt=['Territori: '+meta.label+' de "'+ctx.territoryName+'" (Catalunya).',ctx.promptText?'Context: '+ctx.promptText:''].filter(Boolean).join('\n');return 'Proposa entitats reals per a aquest territori:\n\n'+txt;},
+    coerce:(tu,ctx)=>{const typeIds=entityTypesFor(ctx.level).map(t=>t[0]);return(tu.entities||[]).filter(e=>e&&e.name).map(e=>({name:String(e.name).trim(),entityType:typeIds.includes(e.entityType)?e.entityType:'altre',description:(e.description||'').trim(),url:(e.url||'').trim(),confidence:typeof e.confidence==='number'?Math.max(0,Math.min(1,e.confidence)):0.5}));}
+  }
+};
+const AI={
+  intents:AI_INTENTS,
+  audit:{log:[],totalIn:0,totalOut:0,totalCalls:0},
+  registerIntent(name,def){AI_INTENTS[name]=def;},
+  async call(intent,ctx){
+    const def=AI_INTENTS[intent];if(!def)throw{msg:'Intent desconegut: '+intent};
+    const key=_aiKey||await loadAiKey();if(!key)throw{noKey:true};
+    const tool=typeof def.tool==='function'?def.tool(ctx||{}):def.tool;
+    const userMsg=def.build?def.build(ctx||{}):(ctx&&ctx.text)||'';
+    const body={model:def.model||'claude-opus-4-8',max_tokens:def.max_tokens||2000,system:def.system,tools:[tool],tool_choice:{type:'tool',name:tool.name},messages:[{role:'user',content:userMsg}]};
+    let res;
+    try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});}
+    catch(e){throw{msg:'Sense connexió amb l\'API'};}
+    if(!res.ok){let m='';try{const j=await res.json();m=(j.error&&j.error.message)||'';}catch(e){}throw{status:res.status,msg:m||('Error '+res.status)};}
+    const data=await res.json();
+    const tu=(data.content||[]).find(c=>c.type==='tool_use');
+    if(!tu||!tu.input)throw{msg:'Resposta inesperada'};
+    const u=(data.usage)||{},ins=u.input_tokens||0,outs=u.output_tokens||0;
+    AI.audit.totalIn+=ins;AI.audit.totalOut+=outs;AI.audit.totalCalls++;
+    AI.audit.log.unshift({intent,ts:now(),tokensIn:ins,tokensOut:outs,tool:tool.name,promptFirst80:userMsg.slice(0,80)});if(AI.audit.log.length>50)AI.audit.log.pop();
+    return def.coerce?def.coerce(tu.input,ctx||{}):tu.input;
+  }
+};
+async function aiSuggestMap(ctx){return AI.call('suggest_map',ctx);}
 // Fusiona una proposta d'IA dins l'estat del wizard (accept/reject), sense duplicar
 function mergeAiIntoWizard(wz,ai){
   const have=new Set(wz.roles.map(r=>r.name.toLowerCase()));
@@ -1419,41 +1429,8 @@ function mergeAiIntoWizard(wz,ai){
   ai.exchanges.forEach(x=>{const kk=key(x);if(!seen.has(kk)){wz.exchanges.push({from:x.from,to:x.to,kind:x.kind,label:x.label,on:true});seen.add(kk);}});
   if(ai.mission&&!wz.mission)wz.mission=ai.mission;
 }
-// Descoberta d'entitats REALS existents amb IA (verify-first · zero-hallucination)
-async function aiDiscoverEntities({level,territoryName,promptText}){
-  const key=_aiKey||await loadAiKey();
-  if(!key)throw{noKey:true};
-  const meta=LEVEL_META[level];
-  const types=entityTypesFor(level);
-  const typeIds=types.map(t=>t[0]);
-  const ctx=['Territori: '+meta.label+' de "'+territoryName+'" (Catalunya).',promptText?'Context: '+promptText:''].filter(Boolean).join('\n');
-  const sys='Ets expert en el teixit associatiu i l\'economia social de Catalunya. Proposa entitats i organitzacions REALS que probablement operen en aquest territori (ajuntaments, consells comarcals, associacions, cooperatives, casals, colles, comerços, bancs de temps…). IMPORTANT: NO inventis noms. Si no tens prou certesa d\'una entitat concreta, no la incloguis o marca-la amb confidence baixa. Val més una llista curta i fiable que una llarga inventada. Assigna a cada entitat un entityType d\'aquesta llista: '+typeIds.join(', ')+'. Escriu en català. Respon només cridant l\'eina.';
-  const body={model:'claude-opus-4-8',max_tokens:2000,system:sys,
-    tools:[{name:'proposar_entitats',description:'Retorna candidats d\'entitats reals a verificar.',input_schema:{type:'object',properties:{
-      entities:{type:'array',items:{type:'object',properties:{
-        name:{type:'string'},entityType:{type:'string',enum:typeIds},
-        description:{type:'string',description:'Una frase curta.'},
-        url:{type:'string',description:'Web oficial si la coneixes amb certesa, si no deixa buit.'},
-        confidence:{type:'number',description:'0..1 de certesa que existeix i és correcta.'}
-      },required:['name','entityType']}}
-    },required:['entities']}}],
-    tool_choice:{type:'tool',name:'proposar_entitats'},
-    messages:[{role:'user',content:'Proposa entitats reals per a aquest territori:\n\n'+ctx}]};
-  let res;
-  try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});}
-  catch(e){throw{msg:'Sense connexió amb l\'API'};}
-  if(!res.ok){let m='';try{const j=await res.json();m=(j.error&&j.error.message)||'';}catch(e){}throw{status:res.status,msg:m||('Error '+res.status)};}
-  const data=await res.json();
-  const tu=(data.content||[]).find(c=>c.type==='tool_use');
-  if(!tu||!tu.input||!Array.isArray(tu.input.entities))throw{msg:'Resposta inesperada'};
-  return tu.input.entities.filter(e=>e&&e.name).map(e=>({
-    name:String(e.name).trim(),
-    entityType:typeIds.includes(e.entityType)?e.entityType:'altre',
-    description:(e.description||'').trim(),
-    url:(e.url||'').trim(),
-    confidence:typeof e.confidence==='number'?Math.max(0,Math.min(1,e.confidence)):0.5
-  }));
-}
+// Descoberta d'entitats REALS existents amb IA (verify-first · zero-hallucination) — delega a AI.call
+async function aiDiscoverEntities(ctx){return AI.call('discover_entities',ctx);}
 
 function openCreateModal(parentId){
   const level=parentId?nextLevel(byId(parentId).nodeLevel):'pais';
@@ -2814,7 +2791,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
