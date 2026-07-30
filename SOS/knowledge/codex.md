@@ -19,6 +19,17 @@ El fons cooperatiu local es dissenya per **convertir-se en la infraestructura d'
 ### V15 · Codex vedes com a font viva
 El codex evoluciona amb l'ús. Cada nova comprensió que la comunitat aprova (via sabiduria signada) s'afegeix aquí. Sense burocràcia — és el resum del que hem après.
 
+## V16 · Seny · Rauxa · Castells — el llenguatge local
+
+L'anclatge mitològic dual **Shiva ↔ Shakti** que ja tenim al codex es tradueix directament als dos motors cognitius i culturals de Catalunya: **seny** i **rauxa**. Els fem servir com a llenguatge de mercat i com a marc pedagògic. No són sinònims literals; són **anàlegs funcionals**:
+
+- **Shiva ≈ Seny** — estructura, marc, anàlisi, procés, contractes, cadena hash, `canWrite`, quòrum de sabiduria. És *el que sosté* quan els reptes es tornen intensos. És la **pinya** del castell: la base tècnica, milimètrica, sense la qual no hi ha altura possible.
+- **Shakti ≈ Rauxa** — energia creativa, moviment, atreviment, comunitat vibrant, molekulons, kit narratiu, esdeveniments performatius. És *el que encén* la comunitat quan la matriu de valor està activada. És **la canalla** que apuja el castell, l'alegria de la pinya feta acció.
+
+**Molekulon = la síntesi seny+rauxa en acció**: cèl·lula descentralitzada de 5-12 superheroi que baixa al terreny — cada persona amb el seu rol clar (seny) i tota la colla amb energia i risc compartit (rauxa). És la nostra forma d'entendre la colaboració dinàmica del segle XXI.
+
+Aquest llenguatge dual (Shiva/Shakti · Seny/Rauxa · Pinya/Canalla) apareix a tot: al blog, a la landing, a la comunicació comercial, als noms de mòdul quan calgui. **Coherència multi-cultural**: qui prové de tradicions vèdiques hi troba Shiva/Shakti; qui prové de Catalunya hi troba seny/rauxa/castells; qui prové d'altres llocs hi troba llenguatge secular (estructura/energia/síntesi).
+
 ## Ancoratges mitològics (opcionals per l'usuari)
 
 Els arquetips vèdics són **presets funcionals**, no obligació religiosa. Un projecte pot triar qualsevol sistema simbòlic (celta, andí, secular, propi) — el sistema tècnic no distingeix:
