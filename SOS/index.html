@@ -1041,6 +1041,44 @@ function simulateImpact(inp){
     ]
   };
 }
+// Kit narratiu Molekulon: crida narrative_kit → sinopsi de còmic, himne, escena performativa (Arc CU2).
+function openNarrativeKit(prefill){
+  prefill=prefill||{};
+  const bg=modal(`
+    <h2>🎬 Kit narratiu Molekulon</h2>
+    <p class="m-sub">Genera sinopsi de còmic, himne i escena performativa amb IA. La narrativa viu al costat de la comptabilitat.</p>
+    <div class="field"><label>Nom del molekulon</label><input id="nkName" placeholder="p.ex. Els guardians del barri vell" value="${esc(prefill.name||'')}"></div>
+    <div class="field"><label>Superherois (noms separats per coma)</label><input id="nkMembers" placeholder="Àlvar, Berta, Cèlia…" value="${esc((prefill.members||[]).join(', '))}"></div>
+    <div class="field"><label>Repte comunitari</label><input id="nkChallenge" placeholder="Recuperar l'ateneu del barri" value="${esc(prefill.challenge||'')}"></div>
+    <div class="field"><label>Mode (opcional)</label>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button type="button" class="btn btn-ghost btn-sm nk-mode sel" data-m="èpica quotidiana">Èpica quotidiana</button>
+        <button type="button" class="btn btn-ghost btn-sm nk-mode" data-m="còmic infantil">Còmic infantil</button>
+        <button type="button" class="btn btn-ghost btn-sm nk-mode" data-m="realisme màgic">Realisme màgic</button>
+        <button type="button" class="btn btn-ghost btn-sm nk-mode" data-m="mistèric">Mistèric</button>
+      </div>
+    </div>
+    <div id="nkResult" style="margin-top:.7rem"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="nkClose">Tanca</button><button class="btn btn-primary" id="nkRun">✦ Genera amb IA</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let mode='èpica quotidiana';
+  bg.querySelectorAll('.nk-mode').forEach(btn=>btn.onclick=()=>{mode=btn.dataset.m;bg.querySelectorAll('.nk-mode').forEach(x=>x.classList.toggle('sel',x===btn));});
+  bg.querySelector('#nkClose').onclick=closeModal;
+  bg.querySelector('#nkRun').onclick=async()=>{
+    const name=bg.querySelector('#nkName').value.trim(),members=bg.querySelector('#nkMembers').value.split(',').map(s=>s.trim()).filter(Boolean),challenge=bg.querySelector('#nkChallenge').value.trim();
+    if(!name||!challenge){toast('Cal nom i repte');return;}
+    const box=bg.querySelector('#nkResult');box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Generant el kit narratiu…</span></div>';
+    try{
+      const r=await AI.call('narrative_kit',{name,members,challenge,mode});
+      const sec=(t,body,cls)=>'<div class="ent-grp-lbl">'+t+'</div><div class="ent-card"'+(cls?' style="'+cls+'"':'')+'><pre style="white-space:pre-wrap;font-family:inherit;margin:0">'+esc(body||'—')+'</pre></div>';
+      box.innerHTML=(r.title?'<h3 style="margin:.4rem 0">📖 '+esc(r.title)+'</h3>':'')+
+        sec('📄 Sinopsi de còmic',r.synopsis)+
+        sec('🎵 Himne',r.anthem,'background:linear-gradient(180deg,rgba(224,64,251,.08),rgba(99,102,241,.05))')+
+        sec('🎭 Escena performativa',r.scene);
+    }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.noKey?'Cal clau d\'Anthropic a Configuració':(e.msg||String(e)))+'</span></div>';}
+  };
+}
 function openPRReviewModal(prefill){
   prefill=prefill||{};
   const bg=modal(`
@@ -2492,9 +2530,10 @@ function openPersonProfile(nameOrKey){
     ${sec('🌱 Ventures que lidera',p.ventures,p.ventures.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.venture.name)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b">'+esc(x.venture.stage)+'</span></div></div>').join(''))}
     ${sec('🥧 Slicing Pie',p.slices,p.slices.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.scope==='matriu'?'Fons de la MATRIU':x.ventureName)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b b-ver">'+x.pct.toFixed(1)+'%</span><span class="ent-b">'+Math.round(x.slices).toLocaleString('ca')+' slices</span></div></div>').join(''))}
     ${sec('⬢ Aportacions comptables',p.contributions,p.contributions.slice(0,60).map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.entry.what||(x.entry.type==='moneda'?'Diner':'Hores'))+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName+(x.scope==='venture'?' · '+x.ventureName:''))+'<span class="ent-b">'+(x.entry.type==='moneda'?(x.entry.value+' €'):(x.entry.value+' h'))+'</span></div></div>').join(''))}
-    <div class="modal-actions"><button class="btn btn-primary" id="ppClose">Tanca</button></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ppKit">🎬 Genera kit narratiu</button><button class="btn btn-primary" id="ppClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#ppKit').onclick=()=>{closeModal();openNarrativeKit({name:'El molekulon de '+p.name,members:[p.name].concat((p.ventures||[]).slice(0,4).map(v=>v.venture.name)),challenge:''});};
   bg.querySelector('#ppClose').onclick=closeModal;
 }
 const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'⏱',label:'Hores',unit:'hores'},objecte:{ic:'📦',label:'Objectes',unit:'objectes'}};
@@ -2755,6 +2794,7 @@ function openSettingsModal(){
     </div>
     <div class="field"><label>Demostració d'impacte</label>
       <button class="btn btn-ghost btn-sm" id="stImpact">🔮 Impacte hipotètic · cas Catalunya</button>
+      <button class="btn btn-ghost btn-sm" id="stKit" style="margin-left:.3rem">🎬 Kit narratiu Molekulon</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">📊</span><span>Simulador psicoeconòmic per a entitats públiques: estalvi €/any i benefici psicosocial d'una implementació SOS al territori.</span></div>
     </div>
     <div class="field"><label>Sincronització entre dispositius</label>
@@ -2790,6 +2830,7 @@ function openSettingsModal(){
   bg.querySelector('#stClose').onclick=closeModal;
   bg.querySelector('#stSync').onclick=()=>{closeModal();openSyncModal();};
   bg.querySelector('#stImpact').onclick=()=>{closeModal();openImpactSimulator();};
+  bg.querySelector('#stKit').onclick=()=>{closeModal();openNarrativeKit();};
   (async()=>{const t=await GH.getToken();if(t){try{const me=await GH.me();bg.querySelector('#ghState').innerHTML='<span class="ic">✅</span><span>Autenticat com a <strong>'+esc(me.login)+'</strong>. Ja pots demanar revisions a la IA sobre PRs on tinguis accés.</span>';}catch(e){bg.querySelector('#ghState').innerHTML='<span class="ic">⚠</span><span>Token guardat però invàlid. Torna a iniciar el flow.</span>';}}})();
   let _ghPoll=null;
   bg.querySelector('#ghStart').onclick=async()=>{
@@ -3184,7 +3225,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,SKILL_POLARITY,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,SKILL_POLARITY,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
