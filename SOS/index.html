@@ -735,6 +735,10 @@ async function verifyChain(entries){
 }
 // Helper compost: firma + encadena en una sola operació. Els apunts pre-existents sense firma es marquen com "legacy".
 async function signAndChainEntry(entry,prevHash){entry.prevHash=prevHash||'';await signRecord(entry);entry.hash=await sha256(_payload({...entry,hash:undefined}));return entry;}
+// Choke point per a totes les escriptures reals al ledger — signa + encadena + unshift atomicament.
+async function pushLedger(ledgerArr,entry){const prev=ledgerArr[0];await signAndChainEntry(entry,prev?(prev.hash||''):'');ledgerArr.unshift(entry);return entry;}
+// Estat d'integritat d'una llista d'apunts (ledger.slice().reverse() per ordre cronològic).
+async function verifyLedger(ledgerArr){const chrono=ledgerArr.slice().reverse();const chain=await verifyChain(chrono);const entries={};await Promise.all(ledgerArr.map(async e=>{entries[e.id]=await verifyRecord(e);}));return{chain,entries};}
 const byId=id=>state.nodes.find(n=>n.id===id);
 const children=pid=>state.nodes.filter(n=>n.parentId===pid).sort((a,b)=>a.name.localeCompare(b.name));
 function ancestors(id){const out=[];let n=byId(id);while(n){out.unshift(n);n=n.parentId?byId(n.parentId):null;}return out;}
@@ -1348,22 +1352,25 @@ function renderLedger(body,node){
   body.appendChild(addBtn);
 
   if(node.ledger.length===0){body.appendChild(el('div','empty-hint','Encara no hi ha aportacions registrades. Tanca tasques al Tauler i passa-les aquí (Proof of Work → valor), o registra-les directament.'));return;}
+  const chainStatus=el('div','ent-b b-ver','🔗 verificant integritat…');chainStatus.style.marginBottom='.6rem';chainStatus.id='ledgerChainStatus';body.appendChild(chainStatus);
   const tbl=el('table','ledger-table');
-  tbl.innerHTML='<thead><tr><th>Qui</th><th>Concepte / entregables</th><th style="text-align:right">Valor</th><th></th></tr></thead>';
+  tbl.innerHTML='<thead><tr><th>Qui</th><th>Concepte / entregables</th><th style="text-align:right">Valor</th><th>Integritat</th><th></th></tr></thead>';
   const tb=el('tbody');
   node.ledger.forEach(e=>{
-    const tr=el('tr');
+    const tr=el('tr');tr.dataset.eid=e.id;
     tr.appendChild(el('td',null,esc(e.who)));
     const cell=el('td',null,esc(e.what)+(e.deliverables?'<br><span style="font-size:.72rem;color:var(--muted)">⬢ '+esc(e.deliverables)+'</span>':'')+(e.cardId?' <span style="font-size:.6rem;font-family:var(--mono);color:var(--green)">·tauler</span>':''));
     tr.appendChild(cell);
     const nc=el('td','num',(Number(e.value)||0).toFixed(1)+' '+entryUnit(e));nc.style.color=e.type==='moneda'?'var(--orange)':'var(--green)';tr.appendChild(nc);
+    const sigTd=el('td');sigTd.className='sig-cell';sigTd.innerHTML='<span class="ent-b" data-sig-badge="'+e.id+'">…</span>';tr.appendChild(sigTd);
     const td=el('td');const d=el('span','del','×');d.onclick=()=>{node.ledger=node.ledger.filter(x=>x.id!==e.id);
-      // si venia d'una targeta, desmarca-la
       if(e.cardId){const c=node.kanban.cards.find(x=>x.id===e.cardId);if(c)delete c.accounted;}
       persist(node);renderWorkspace();};td.appendChild(d);tr.appendChild(td);
     tb.appendChild(tr);
   });
   tbl.appendChild(tb);body.appendChild(tbl);
+  (async()=>{const r=await verifyLedger(node.ledger);const st=body.querySelector('#ledgerChainStatus');if(st){if(r.chain.ok)st.textContent='🔗 integritat OK ('+node.ledger.length+' apunts encadenats)';else{st.textContent='⚠ integritat trencada — apunt '+(r.chain.brokenAt||'?');st.classList.remove('b-ver');st.classList.add('b-unver');}}
+    Object.entries(r.entries).forEach(([id,v])=>{const b=body.querySelector('[data-sig-badge="'+id+'"]');if(!b)return;if(v.ok){b.textContent='🔏 firmat';b.classList.add('b-ver');}else if(v.reason==='unsigned'){b.textContent='⋯ legacy';b.title='Apunt sense firma criptogràfica';}else{b.textContent='⚠ firma invàlida';b.classList.add('b-unver');b.title=v.reason;}});})();
 }
 
 // Modal ric de registre d'aportació (compartit: alta manual + tancament de tasca del Tauler)
@@ -1397,7 +1404,7 @@ function openLedgerEntryModal(node,prefill,card){
     if(card){entry.cardId=card.id;card.accounted=entry.id;}
     if(prefill.memberId)entry.memberId=prefill.memberId;
     if(prefill.counterpartId)entry.counterpartId=prefill.counterpartId;
-    node.ledger.unshift(entry);await persist(node);
+    await pushLedger(node.ledger||(node.ledger=[]),entry);await persist(node);
     closeModal();
     if(prefill.backTab){state.tab=prefill.backTab;}else if(card){state.tab='kanban';}else{state.tab='ledger';}
     renderWorkspace();toast('Aportació registrada');
@@ -2092,7 +2099,7 @@ function exchangeHours(node,prefill){
     if(from===to){toast('Tria dos socis diferents');return;}
     const what=bg.querySelector('#exWhat').value.trim()||'Intercanvi de servei';const h=Number(bg.querySelector('#exH').value)||0;
     const fromM=memberById(node,from),toM=memberById(node,to);
-    node.ledger.unshift({id:uid(),who:fromM.name,what:what+' → '+toM.name,deliverables:'',type:'temps',value:h,memberId:from,counterpartId:to,ts:now()});
+    await pushLedger(node.ledger||(node.ledger=[]),{id:uid(),who:fromM.name,what:what+' → '+toM.name,deliverables:'',type:'temps',value:h,memberId:from,counterpartId:to,ts:now()});
     await persist(node);closeModal();state.tab='banctemps';renderWorkspace();toast('Intercanvi registrat · '+h+' h');
   };
 }
@@ -2313,8 +2320,8 @@ function openContributionModal(node,venture){
     const memberId=bg.querySelector('#cbMem').value,what=bg.querySelector('#cbWhat').value.trim()||'Aportació',value=Number(bg.querySelector('#cbVal').value)||0;
     const entry={id:uid(),who:memberById(node,memberId).name,what,deliverables:'',type,value,memberId,ts:now()};
     if(type==='temps'){const r=Number(bg.querySelector('#cbRate').value)||0;if(r)entry.rate=r;}
-    if(venture){ventureLedger(venture).unshift(entry);await persist(node);closeModal();openVentureDetail(node,venture);toast('Aportació registrada');return;}
-    node.ledger.unshift(entry);await persist(node);closeModal();state.tab='equity';renderWorkspace();toast('Aportació registrada');
+    if(venture){await pushLedger(ventureLedger(venture),entry);await persist(node);closeModal();openVentureDetail(node,venture);toast('Aportació registrada');return;}
+    await pushLedger(node.ledger||(node.ledger=[]),entry);await persist(node);closeModal();state.tab='equity';renderWorkspace();toast('Aportació registrada');
   };
 }
 function openEquityConfig(node){
@@ -2849,7 +2856,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,sha256,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
