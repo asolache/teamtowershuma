@@ -1640,6 +1640,41 @@ const AI_INTENTS={
     build:ctx=>{const k=knowFor(ctx.level),meta=LEVEL_META[ctx.level];const picked=k.pains.filter(p=>ctx.painIds&&ctx.painIds.has(p.id)).map(p=>p.t+' — '+p.d);const txt=['Nivell: '+meta.label+(ctx.name?' · "'+ctx.name+'"':''),ctx.promptText?'Context de la comunitat: '+ctx.promptText:'',picked.length?'Reptes prioritzats: '+picked.join('; '):'','Rols de referència del nivell: '+k.roles.join(', ')].filter(Boolean).join('\n');return 'Proposa el mapa de valor per a aquesta comunitat:\n\n'+txt;},
     coerce:tu=>{const roles=[...new Set((tu.roles||[]).map(r=>String(r).trim()).filter(Boolean))];const rl=new Set(roles.map(r=>r.toLowerCase()));const exchanges=(tu.exchanges||[]).filter(x=>x&&x.from&&x.to&&rl.has(String(x.from).toLowerCase())&&rl.has(String(x.to).toLowerCase())).map(x=>({from:String(x.from).trim(),to:String(x.to).trim(),kind:x.kind==='intangible'?'intangible':'tangible',label:(x.label||'').trim()}));return{mission:(tu.mission||'').trim(),roles,exchanges};}
   },
+  molekulon_invite:{
+    model:'claude-opus-4-8',max_tokens:1500,
+    system:'Ets un dissenyador de xarxes cooperatives (VNA + Slicing Pie). Donat un molekulon (grup 5-12 superherois) i una necessitat concreta d\'una comunitat, proposa qui d\'ells hi encaixa millor i per què (superpoders + balanç Shakti/Shiva + reputació). Sortida sempre via l\'eina.',
+    tool:{name:'proposar_matching',description:'Retorna la proposta de matching entre superherois i necessitat.',input_schema:{type:'object',properties:{best:{type:'array',items:{type:'object',properties:{name:{type:'string'},reason:{type:'string'},shakti_shiva:{type:'string'}},required:['name','reason']}},gap:{type:'string',description:'Habilitat que falta si cal ampliar el molekulon.'}},required:['best']}},
+    build:ctx=>'Molekulon: '+(ctx.molekulon||[]).map(m=>m.name+' ('+(m.superpowers||[]).slice(0,3).map(s=>s.cat).join(',')+')').join(' · ')+'\nNecessitat: '+(ctx.need||''),
+    coerce:tu=>({best:(tu.best||[]).map(x=>({name:String(x.name).trim(),reason:(x.reason||'').trim(),balance:(x.shakti_shiva||'').trim()})),gap:(tu.gap||'').trim()})
+  },
+  narrative_kit:{
+    model:'claude-opus-4-8',max_tokens:2500,
+    system:'Ets guionista de còmic + compositor lletrista. Dissenya un kit narratiu breu per a un molekulon comunitari: 1) sinopsi de còmic (4-6 pàgines, tipus escola de superherois modern amb valors procomú), 2) estrofa d\'himne (16 versos amb rima assonant, en català), 3) escena performativa de graduació (5 min, amb rols). Estil: èpica quotidiana + humor càlid + veritats operatives.',
+    tool:{name:'kit_narratiu',description:'Retorna el kit narratiu del molekulon.',input_schema:{type:'object',properties:{synopsis:{type:'string'},anthem:{type:'string'},scene:{type:'string'},title:{type:'string'}},required:['synopsis','anthem','scene']}},
+    build:ctx=>'Molekulon: '+(ctx.name||'')+'\nPersonatges: '+(ctx.members||[]).join(', ')+'\nRepte comunitari: '+(ctx.challenge||'')+(ctx.mode?'\nMode: '+ctx.mode:''),
+    coerce:tu=>({title:(tu.title||'').trim(),synopsis:(tu.synopsis||'').trim(),anthem:(tu.anthem||'').trim(),scene:(tu.scene||'').trim()})
+  },
+  valuation:{
+    model:'claude-opus-4-8',max_tokens:1200,
+    system:'Ets valorador expert en economia col·laborativa. Donada una descripció d\'un recurs (skill o objecte), proposa un rang de valor (mínim/esperat/màxim) en €/hora (si és skill) o €/unitat (si és objecte). Sempre indica la font o hipòtesi. Preferència per estimacions conservadores.',
+    tool:{name:'valuar_recurs',description:'Retorna un rang de valor amb font.',input_schema:{type:'object',properties:{eur_min:{type:'number'},eur_expected:{type:'number'},eur_max:{type:'number'},unit:{type:'string',enum:['h','unitat']},source:{type:'string'},confidence:{type:'number'}},required:['eur_expected','unit','source']}},
+    build:ctx=>'Recurs: '+(ctx.name||'')+'\nTipus: '+(ctx.type||'skill')+'\nDescripció: '+(ctx.description||''),
+    coerce:tu=>({min:Number(tu.eur_min)||Math.round(Number(tu.eur_expected)*0.7),expected:Number(tu.eur_expected)||0,max:Number(tu.eur_max)||Math.round(Number(tu.eur_expected)*1.3),unit:tu.unit||'h',source:(tu.source||'').trim(),confidence:typeof tu.confidence==='number'?Math.max(0,Math.min(1,tu.confidence)):0.5})
+  },
+  governance_check:{
+    model:'claude-opus-4-8',max_tokens:800,
+    system:'Ets un auditor de governança comunitària. Donada una proposta signada per algú, valida si compleix bones pràctiques (proporcionalitat, reversibilitat, transparència, respecte de la sabiduria acumulada). Sortida sempre via l\'eina.',
+    tool:{name:'validar_proposta',description:'Retorna veredicte i raons.',input_schema:{type:'object',properties:{verdict:{type:'string',enum:['approve','review','reject']},reasons:{type:'array',items:{type:'string'}},suggestions:{type:'array',items:{type:'string'}}},required:['verdict','reasons']}},
+    build:ctx=>'Proposta: '+JSON.stringify(ctx.proposal||{},null,2)+'\nContext del node: '+(ctx.nodeContext||''),
+    coerce:tu=>({verdict:['approve','review','reject'].includes(tu.verdict)?tu.verdict:'review',reasons:(tu.reasons||[]).map(String),suggestions:(tu.suggestions||[]).map(String)})
+  },
+  pr_review:{
+    model:'claude-opus-4-8',max_tokens:1500,
+    system:'Ets revisor de codi expert (defensor de la simplicitat, DRY, i el codex SOS: W3C nadiu, self-contained, immutable state, Glass-Box). Donat un diff de PR, dictamina si es pot mergejar automàticament, si necessita supervisió humana, o si cal refer.',
+    tool:{name:'dictamen_pr',description:'Retorna dictamen + raons + fixes.',input_schema:{type:'object',properties:{verdict:{type:'string',enum:['green','yellow','red']},summary:{type:'string'},issues:{type:'array',items:{type:'string'}},fixSuggestions:{type:'array',items:{type:'string'}}},required:['verdict','summary']}},
+    build:ctx=>'PR title: '+(ctx.title||'')+'\nDiff (truncat):\n'+((ctx.diff||'').slice(0,15000)),
+    coerce:tu=>({verdict:['green','yellow','red'].includes(tu.verdict)?tu.verdict:'yellow',summary:(tu.summary||'').trim(),issues:(tu.issues||[]).map(String),fixSuggestions:(tu.fixSuggestions||[]).map(String)})
+  },
   discover_entities:{
     model:'claude-opus-4-8',max_tokens:2000,
     system:'Ets expert en el teixit associatiu i l\'economia social de Catalunya. Proposa entitats i organitzacions REALS que probablement operen en aquest territori (ajuntaments, consells comarcals, associacions, cooperatives, casals, colles, comerços, bancs de temps…). IMPORTANT: NO inventis noms. Si no tens prou certesa d\'una entitat concreta, no la incloguis o marca-la amb confidence baixa. Val més una llista curta i fiable que una llarga inventada. Escriu en català. Respon només cridant l\'eina.',
