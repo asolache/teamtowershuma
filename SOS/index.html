@@ -1565,8 +1565,38 @@ function rollup(id){
 }
 function renderResum(body,node,ru){
   const meta=LEVEL_META[node.nodeLevel];
+  // Story hero: què és aquest territori/projecte i on està al viatge
+  const empty=(ru.projectes===0&&ru.territoris===0);
+  const stage=empty?'llavor':(ru.projectes>=5?'expansió':(ru.projectes>=2?'creixement':'primeres passes'));
+  const hero=el('div','ent-card');hero.style.background='linear-gradient(180deg,rgba(99,102,241,.08),rgba(0,230,118,.03))';hero.style.marginBottom='.9rem';
+  hero.innerHTML='<div style="font-size:.75rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase">'+esc(meta.label)+' · fase '+stage+'</div>'+
+    '<div class="ent-nm" style="font-size:1.3rem;margin-top:.2rem">'+esc(node.name)+'</div>'+
+    '<div class="ent-desc" style="margin-top:.4rem">'+(empty
+      ?'Encara no hi ha ecosistema aquí. Comença amb 1 dinàmica que ja existeixi al territori (banc de temps, biblioteca, cooperativa d\'energia…) i el sistema en construeix el mapa de valor + el fons cooperatiu.'
+      :ru.projectes+' projecte'+(ru.projectes===1?'':'s')+' actiu'+(ru.projectes===1?'':'s')+' mobilitzen <strong>'+ru.hores.toFixed(0)+' hores</strong> i <strong>'+ru.moneda.toFixed(0)+' €</strong> per a <strong>'+ru.persones+' persones</strong>. Aquest és el múscul del fons cooperatiu local.'
+    )+'</div>';body.appendChild(hero);
+  // Fluxos per perfil: Guardian / Superheroi / Comunitat
+  body.appendChild(el('div','wz-sec-lbl','🎯 Quin és el teu proper pas?'));
+  const flow=el('div','ent-grid');
+  const flowCard=(ic,role,who,steps)=>{const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+ic+' '+esc(role)+'</div><div class="ent-desc" style="margin:.3rem 0">'+esc(who)+'</div><ol style="margin:.3rem 0 0;padding-left:1.1rem;font-size:.85rem;color:var(--light)">'+steps.map(s=>'<li style="margin:.2rem 0">'+s+'</li>').join('')+'</ol>';return c;};
+  flow.appendChild(flowCard('🏛','Guardian del territori','Coordina · vetlla la sabiduria · signa decisions',[
+    empty?'+ Crea el primer projecte des del botó sobre el nom del node':'Revisa <strong>Sabiduria</strong> a Configuració · aprova/rebutja propostes pendents',
+    'Obre <strong>Assemblea federativa</strong> per veure el pes ponderat dels municipis',
+    'Comparteix les novetats amb l\'ecosistema (Noticies · Blog)'
+  ]));
+  flow.appendChild(flowCard('🦸','Superheroi/na','Aporta els teus talents · rep reputació verificable',[
+    'Obre el teu <strong>Perfil transversal</strong> (👁 Perfil des de qualsevol soci)',
+    'Vincula banc de temps, biblioteca, MATRIU — un únic perfil',
+    'Rep el teu <strong>Kit narratiu Molekulon</strong> si formes part d\'un grup'
+  ]));
+  flow.appendChild(flowCard('🌱','Comunitat','Participa · mira el valor · uneix-te',[
+    'Recorre les <strong>Dinàmiques</strong> del territori (chips a sota)',
+    'Al MATRIU, mira el <strong>Valor del fons</strong> (rang €/any) i les ventures',
+    'Simula l\'<strong>Impacte cas Catalunya</strong> per veure el potencial'
+  ]));
+  body.appendChild(flow);
   // stat tiles
-  const tot=el('div','ledger-total');
+  const tot=el('div','ledger-total');tot.style.marginTop='1rem';
   const tile=(v,l,col)=>{const c=el('div','lt-card');if(col)c.style.borderTopColor=col;c.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';return c;};
   tot.appendChild(tile(ru.projectes,'Projectes','var(--accent-orange)'));
   tot.appendChild(tile(ru.territoris,'Sub-territoris','var(--accent-blue)'));
@@ -1574,11 +1604,12 @@ function renderResum(body,node,ru){
   tot.appendChild(tile(ru.moneda.toFixed(0)+'<span style="font-size:1rem"> €</span>','Valor monetari','var(--accent-orange)'));
   tot.appendChild(tile(ru.persones,'Persones','var(--accent-indigo)'));
   body.appendChild(tot);
-
-  if(ru.projectes===0&&ru.territoris===0){
-    const e=el('div','empty-hint','Aquest '+meta.label.toLowerCase()+' encara no té projectes ni sub-territoris. Fes servir "+ '+(meta.childLabel||'projecte')+'" o "+ projecte" per començar.');
-    body.appendChild(e);return;
-  }
+  // Novetats · link a blog intern
+  body.appendChild(el('div','wz-sec-lbl','📰 Novetats del desenvolupament'));
+  const news=el('div','ent-card');news.style.background='linear-gradient(180deg,rgba(224,64,251,.06),rgba(99,102,241,.03))';
+  news.innerHTML='<div class="ent-nm">Blog SOS · històries de desenvolupament</div><div class="ent-desc" style="margin-top:.3rem">Cada nova capacitat que arriba al SOS (Guardians, Molekulon, Slicing Pie, Fons cooperatiu…) surt narrada aquí per als seus destinataris: ajuntaments, cooperatives, veïnes.</div><a class="btn btn-ghost btn-sm" href="blog.html" target="_blank" rel="noopener" style="margin-top:.4rem;display:inline-block">📖 Llegeix el blog</a>';
+  body.appendChild(news);
+  if(empty){body.appendChild(el('div','empty-hint','Aquest '+meta.label.toLowerCase()+' encara no té projectes ni sub-territoris. Fes servir "+ '+(meta.childLabel||'projecte')+'" o "+ projecte" per començar.'));return;}
   // dinàmiques (breakdown by dynamic)
   const dynKeys=Object.keys(ru.byDyn);
   if(dynKeys.length){
