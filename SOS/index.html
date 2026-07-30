@@ -993,6 +993,83 @@ function reputationOf(nameOrKey){
   const score=Math.round((signed*3+validations*2+p.totals.hores+nodes*10)*10)/10;
   return{name:p.name,hours:p.totals.hores,communities:nodes,signed,unsigned,validations,superpowers,shakti:Math.round(shakti*100)/100,shiva:Math.round(shiva*100)/100,archetype:null,reputationScore:score};
 }
+// ═══════════ Impacte Catalunya · simulador psicoeconòmic (Arc C1-C4) ═══════════
+// Estima estalvi econòmic + benefici psicosocial d'una implementació de SOS al territori a diferents penetracions.
+// Fonts (defaults): Idescat/INE (renda i lloguer mitjà), Sindicat de Llogaters, Som Energia, Diba, cost hora banc-de-temps FMV.
+const IMPACT_DEFAULTS={hourlyValueAvg:20,annualHoursPerActive:40,objectsPerActive:3,avgObjectValue:100,housingSavingPct:0.15,energySavingPct:0.2,avgRentAnnual:9600,avgEnergyAnnual:1200,carePerActive:200,tCO2PerActive:0.35};
+function simulateImpact(inp){
+  const d=Object.assign({},IMPACT_DEFAULTS,inp||{});
+  const pop=Math.max(0,Number(d.population)||0);
+  const households=Number(d.households)||Math.round(pop/2.5);
+  const pen=Math.max(0,Math.min(1,Number(d.penetration)||0));
+  const active=Math.round(households*pen);
+  // Econòmic
+  const timeBank=Math.round(active*d.annualHoursPerActive*d.hourlyValueAvg);
+  const library=Math.round(active*d.objectsPerActive*d.avgObjectValue*0.3); // 30% depreciat/circulat/an
+  const housing=Math.round(active*(d.avgRentAnnual||0)*d.housingSavingPct*0.4); // només 40% dels actius accedeixen a coop d'habitatge
+  const energy=Math.round(active*(d.avgEnergyAnnual||0)*d.energySavingPct);
+  const care=Math.round(active*d.carePerActive);
+  const total=timeBank+library+housing+energy+care;
+  // Psicosocial (indicadors normalitzats 0-1)
+  const loneliness=Math.min(1,pen*2); // reducció fins al 100% al 50% penetració
+  const participation=Math.min(1,pen*1.5);
+  const health=Math.min(1,pen*1.2);
+  const trust=Math.min(1,pen*1.8);
+  // CO2
+  const tCO2=Math.round(active*d.tCO2PerActive*10)/10;
+  return{
+    inputs:{population:pop,households,penetration:pen,active},
+    economic:{timeBank,library,housing,energy,care,total,perHousehold:households?Math.round(total/households):0},
+    psychosocial:{loneliness,participation,health,trust},
+    environmental:{tCO2},
+    sources:[
+      {k:'FMV h',v:d.hourlyValueAvg+' €/h',src:'oracle SOS'},
+      {k:'lloguer/any',v:d.avgRentAnnual+' €',src:'Sindicat Llogaters CAT (mitjana)'},
+      {k:'energia/any',v:d.avgEnergyAnnual+' €',src:'CNMC/Som Energia'},
+      {k:'cures',v:d.carePerActive+' €/actiu',src:'estimació IDESCAT'}
+    ]
+  };
+}
+function openImpactSimulator(prefill){
+  const r0=simulateImpact(Object.assign({population:120000,penetration:0.05},prefill||{}));
+  const bg=modal(`
+    <h2>🔮 Impacte hipotètic · cas Catalunya</h2>
+    <p class="m-sub">Estima l'estalvi econòmic i el benefici psicosocial d'una implementació de SOS al territori. Ajusta la penetració per veure l'efecte en temps real.</p>
+    <div class="field"><label>Població</label><input id="impPop" type="number" min="0" value="${r0.inputs.population}"></div>
+    <div class="field"><label>Llars <span style="color:var(--muted);font-weight:normal">(deixa buit per estimar població/2.5)</span></label><input id="impHouseholds" type="number" min="0" value="${r0.inputs.households}"></div>
+    <div class="field"><label>Penetració SOS: <span id="impPenLbl">${Math.round(r0.inputs.penetration*100)}%</span></label><input id="impPen" type="range" min="0" max="100" value="${Math.round(r0.inputs.penetration*100)}"></div>
+    <div id="impKPIs"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="impClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const upd=()=>{
+    const pop=Number(bg.querySelector('#impPop').value)||0,hh=Number(bg.querySelector('#impHouseholds').value)||undefined,pen=Number(bg.querySelector('#impPen').value)/100;
+    bg.querySelector('#impPenLbl').textContent=Math.round(pen*100)+'%';
+    const r=simulateImpact({population:pop,households:hh,penetration:pen});
+    bg.querySelector('#impKPIs').innerHTML=
+      '<div class="bib-stats"><div class="bib-tile"><div class="n" style="color:var(--green)">'+r.economic.total.toLocaleString('ca')+' €</div><div class="l">estalvi/any</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+r.economic.perHousehold.toLocaleString('ca')+' €</div><div class="l">per llar/any</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+r.inputs.active.toLocaleString('ca')+'</div><div class="l">llars actives</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--green)">'+r.environmental.tCO2.toLocaleString('ca')+' t</div><div class="l">CO₂ evitades</div></div></div>'+
+      '<div class="ent-grp-lbl">💰 Desglossament econòmic</div><table class="ledger-table"><thead><tr><th>Component</th><th class="num">€/any</th></tr></thead><tbody>'+
+      '<tr><td>⏱ Banc de temps</td><td class="num">'+r.economic.timeBank.toLocaleString('ca')+'</td></tr>'+
+      '<tr><td>📚 Biblioteca de les coses</td><td class="num">'+r.economic.library.toLocaleString('ca')+'</td></tr>'+
+      '<tr><td>🏠 Habitatge cooperatiu</td><td class="num">'+r.economic.housing.toLocaleString('ca')+'</td></tr>'+
+      '<tr><td>⚡ Energia cooperativa</td><td class="num">'+r.economic.energy.toLocaleString('ca')+'</td></tr>'+
+      '<tr><td>🤝 Cures i acompanyament</td><td class="num">'+r.economic.care.toLocaleString('ca')+'</td></tr>'+
+      '</tbody></table>'+
+      '<div class="ent-grp-lbl">🧠 Benefici psicosocial</div><div class="bib-stats">'+
+      '<div class="bib-tile"><div class="n">-'+Math.round(r.psychosocial.loneliness*100)+'%</div><div class="l">solitud</div></div>'+
+      '<div class="bib-tile"><div class="n">+'+Math.round(r.psychosocial.participation*100)+'%</div><div class="l">participació</div></div>'+
+      '<div class="bib-tile"><div class="n">+'+Math.round(r.psychosocial.health*100)+'%</div><div class="l">salut percebuda</div></div>'+
+      '<div class="bib-tile"><div class="n">+'+Math.round(r.psychosocial.trust*100)+'%</div><div class="l">confiança</div></div>'+
+      '</div>'+
+      '<div class="ent-grp-lbl">📚 Fonts (Glass-Box)</div><div class="ent-desc">'+r.sources.map(s=>'<span class="ent-b">'+esc(s.k)+': '+esc(s.v)+' · '+esc(s.src)+'</span>').join(' ')+'</div>';
+  };
+  ['#impPop','#impHouseholds','#impPen'].forEach(sel=>bg.querySelector(sel).oninput=upd);
+  upd();
+  bg.querySelector('#impClose').onclick=closeModal;
+}
 // Molekulon = grup 5-12 superheroi complementaris. L'afinitat combina cobertura d'habilitats + balanç Shakti/Shiva.
 function molekulonAffinity(reps){
   if(!reps.length)return{coverage:0,balance:0,score:0,members:0};
@@ -2570,6 +2647,10 @@ function openSettingsModal(){
         <button class="btn btn-ghost btn-sm" id="stImport">⭱ Importa</button>
       </div>
     </div>
+    <div class="field"><label>Demostració d'impacte</label>
+      <button class="btn btn-ghost btn-sm" id="stImpact">🔮 Impacte hipotètic · cas Catalunya</button>
+      <div class="ai-note" style="margin-top:.6rem"><span class="ic">📊</span><span>Simulador psicoeconòmic per a entitats públiques: estalvi €/any i benefici psicosocial d'una implementació SOS al territori.</span></div>
+    </div>
     <div class="field"><label>Sincronització entre dispositius</label>
       <button class="btn btn-ghost btn-sm" id="stSync">🔗 Sincronitza amb un altre dispositiu</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">⟳</span><span>Directe navegador-a-navegador (WebRTC), <strong>sense cap servidor</strong>. Guanya la versió més recent de cada node.</span></div>
@@ -2592,6 +2673,7 @@ function openSettingsModal(){
   `);
   bg.querySelector('#stClose').onclick=closeModal;
   bg.querySelector('#stSync').onclick=()=>{closeModal();openSyncModal();};
+  bg.querySelector('#stImpact').onclick=()=>{closeModal();openImpactSimulator();};
   bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
   bg.querySelector('#stExport').onclick=exportData;
   bg.querySelector('#stImport').onclick=importData;
@@ -2967,7 +3049,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,SKILL_POLARITY,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,SKILL_POLARITY,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
