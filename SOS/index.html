@@ -739,6 +739,32 @@ async function signAndChainEntry(entry,prevHash){entry.prevHash=prevHash||'';awa
 async function pushLedger(ledgerArr,entry){const prev=ledgerArr[0];await signAndChainEntry(entry,prev?(prev.hash||''):'');ledgerArr.unshift(entry);return entry;}
 // Estat d'integritat d'una llista d'apunts (ledger.slice().reverse() per ordre cronològic).
 async function verifyLedger(ledgerArr){const chrono=ledgerArr.slice().reverse();const chain=await verifyChain(chrono);const entries={};await Promise.all(ledgerArr.map(async e=>{entries[e.id]=await verifyRecord(e);}));return{chain,entries};}
+// ═══════════ Sabiduria · governança + main canònic (Arc G1-G5, R1-R3) ═══════════
+// Cada node té governança lleugera: owner (creador), stewards (co-lideren), quorum de sabiduria.
+// Propostes (altes, canvis) entren pending → stewards signen vot → si arriba a quorum, es validen i s'apliquen al main.
+const govOf=node=>node.governance||(node.governance={owner:null,stewards:[],quorum:1});
+const proposalsOf=node=>node.proposals||(node.proposals=[]);
+async function claimNode(node){const id=await getIdentity();const g=govOf(node);if(!g.owner){g.owner=id.did;}return g;}
+function roleOf(node,did){const g=govOf(node);if(!did)return'observer';if(g.owner===did)return'owner';if((g.stewards||[]).includes(did))return'steward';return'observer';}
+// Gate d'escriptura. Kind = 'ledger' | 'member' | 'object' | 'offer' | 'venture' | 'meta'.
+// Sense owner definit → free-for-all (backwards compat amb nodes existents).
+function canWrite(node,did,kind){const g=govOf(node);if(!g.owner)return{ok:true,reason:'unclaimed'};const r=roleOf(node,did);if(r==='owner'||r==='steward')return{ok:true,reason:r};return{ok:false,reason:'needs_proposal',role:r};}
+// Proposta signada · entra a la cua pending
+async function proposeChange(node,kind,payload,note){const id=await getIdentity();const prop={id:uid(),kind,payload,note:note||'',proposer:id.did,votes:[],createdAt:now(),status:'pending'};await signRecord(prop);proposalsOf(node).push(prop);return prop;}
+// Vot signat per un steward/owner
+async function voteProposal(node,propId,approve){const id=await getIdentity();const p=proposalsOf(node).find(x=>x.id===propId);if(!p||p.status!=='pending')throw{msg:'Proposta no disponible'};const r=roleOf(node,id.did);if(r!=='owner'&&r!=='steward')throw{msg:'Cal ser owner o steward per votar'};const vote={did:id.did,approve:!!approve,ts:now()};await signRecord(vote);p.votes=p.votes.filter(v=>v.did!==id.did);p.votes.push(vote);await applyIfQuorum(node,p);return p;}
+// Si arriba a quorum d'aprovacions → aplicar payload al node (segons kind) i marcar merged
+async function applyIfQuorum(node,p){const g=govOf(node);const approvals=p.votes.filter(v=>v.approve).length;if(approvals<(g.quorum||1))return false;
+  // Aplica payload segons kind
+  if(p.kind==='member'){membersOf(node).push({id:uid(),name:p.payload.name,kind:p.payload.kind||'persona',active:true,joinedAt:now(),notes:'',contact:p.payload.contact||{phone:'',email:''}});}
+  else if(p.kind==='ledger'){await pushLedger(node.ledger||(node.ledger=[]),Object.assign({id:uid(),ts:now()},p.payload));}
+  else if(p.kind==='steward_add'&&p.payload.did){if(!g.stewards.includes(p.payload.did))g.stewards.push(p.payload.did);}
+  else if(p.kind==='meta'){Object.assign(node.metaskill||(node.metaskill={}),p.payload);}
+  // Marca com merged + regenera mainHash
+  p.status='merged';p.mergedAt=now();
+  g.mainHash=await sha256(_payload({nodes:{id:node.id,ledger:(node.ledger||[]).map(e=>e.hash||''),members:(membersOf(node)||[]).map(m=>m.id),stewards:g.stewards,owner:g.owner}}));
+  return true;
+}
 const byId=id=>state.nodes.find(n=>n.id===id);
 const children=pid=>state.nodes.filter(n=>n.parentId===pid).sort((a,b)=>a.name.localeCompare(b.name));
 function ancestors(id){const out=[];let n=byId(id);while(n){out.unshift(n);n=n.parentId?byId(n.parentId):null;}return out;}
@@ -2856,7 +2882,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
