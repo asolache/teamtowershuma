@@ -1076,6 +1076,46 @@ function simulateImpact(inp){
     ]
   };
 }
+// Federació Guardians · assemblea territorial amb pes Penrose-√població × activitat, correcció Gini (Arc F5).
+function openFederationModal(territoryNode){
+  const populations=(territoryNode?children(territoryNode.id).filter(n=>['municipi','barri'].includes(n.nodeLevel)):[]).map(n=>({id:n.id,name:n.name,population:Number(n.population)||10000,activityFraction:1,approve:false}));
+  const bg=modal(`
+    <h2>🏛 Assemblea federativa · ${esc(territoryNode?territoryNode.name:'Cas hipotètic')}</h2>
+    <p class="m-sub">Vot ponderat <strong>√població × activitat</strong> (llei Penrose-1946) amb correcció Gini per <strong>equitat màxima</strong>. Ajusta poblacions i activitats per veure l'impacte.</p>
+    ${!populations.length?'<div class="ai-note" style="margin-bottom:.6rem"><span class="ic">ℹ</span><span>Sense municipis/barris fills. Editant els inputs pots simular una assemblea hipotètica.</span></div>':''}
+    <div id="fedRows"></div>
+    <button class="btn btn-ghost btn-sm" id="fedAdd" style="margin-top:.3rem">+ Afegeix població</button>
+    <div id="fedResult" style="margin-top:.7rem"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="fedClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const rows=populations.length?populations:[{id:'p1',name:'Municipi A',population:120000,activityFraction:1,approve:true},{id:'p2',name:'Municipi B',population:8000,activityFraction:1.2,approve:true},{id:'p3',name:'Municipi C',population:1500,activityFraction:0.6,approve:false}];
+  const render=()=>{
+    const box=bg.querySelector('#fedRows');box.innerHTML='';
+    rows.forEach((r,i)=>{const row=el('div','ent-card');row.style.marginBottom='.4rem';
+      row.innerHTML='<div class="wz-key"><input data-i="'+i+'" data-f="name" value="'+esc(r.name)+'" style="flex:2" placeholder="Població"><input data-i="'+i+'" data-f="population" type="number" min="0" value="'+r.population+'" style="width:110px" placeholder="Habitants"><input data-i="'+i+'" data-f="activityFraction" type="number" step="0.1" min="0.5" max="1.5" value="'+r.activityFraction+'" style="width:70px" title="Activitat 0.5-1.5"></div>'+
+        '<label style="display:flex;gap:.4rem;align-items:center;margin-top:.3rem"><input type="checkbox" data-i="'+i+'" data-f="approve"'+(r.approve?' checked':'')+'>✅ Vot a favor</label> <button class="btn btn-ghost btn-sm" data-del="'+i+'" style="margin-left:.4rem">×</button>';
+      box.appendChild(row);
+    });
+    // wire inputs
+    box.querySelectorAll('input[data-f]').forEach(inp=>inp.oninput=()=>{const i=+inp.dataset.i,f=inp.dataset.f;rows[i][f]=(inp.type==='checkbox')?inp.checked:(inp.type==='number'?Number(inp.value)||0:inp.value);tally();});
+    box.querySelectorAll('button[data-del]').forEach(btn=>btn.onclick=()=>{rows.splice(+btn.dataset.del,1);render();});
+  };
+  const tally=()=>{const r=tallyFederation(rows);const resBox=bg.querySelector('#fedResult');
+    const pct=Math.round(r.ratio*100);
+    resBox.innerHTML='<div class="ent-card"><div class="ent-nm" style="font-size:1.2rem">Aprovació: <span style="color:'+(pct>=50?'var(--green)':'var(--red)')+'">'+pct+'%</span></div>'+
+      '<div class="ent-desc">A favor: <strong>'+r.approves+'</strong> / <strong>'+r.total+'</strong> pes total</div>'+
+      '<div class="ent-grp-lbl">📊 Salut de l\'assemblea</div>'+
+      '<div class="bib-stats"><div class="bib-tile"><div class="n">'+r.gini+'</div><div class="l">Gini</div></div><div class="bib-tile"><div class="n" style="color:var(--orange)">'+r.penalty+'</div><div class="l">correcció</div></div></div>'+
+      '<div class="ent-grp-lbl">⚖ Pesos per població</div>'+
+      '<table class="ledger-table"><thead><tr><th>Població</th><th class="num">√pop×act</th><th class="num">Ajustat</th><th class="num">Vot</th></tr></thead><tbody>'+
+      rows.map((row,i)=>'<tr><td>'+esc(row.name)+'</td><td class="num">'+r.raw[i]+'</td><td class="num">'+r.weights[i]+'</td><td class="num" style="color:'+(row.approve?'var(--green)':'var(--red)')+'">'+(row.approve?'✅':'❌')+'</td></tr>').join('')+
+      '</tbody></table></div>';
+  };
+  bg.querySelector('#fedAdd').onclick=()=>{rows.push({id:'p'+(rows.length+1),name:'Nova població',population:10000,activityFraction:1,approve:true});render();tally();};
+  bg.querySelector('#fedClose').onclick=closeModal;
+  render();tally();
+}
 // Sabiduria · governança visible: llista propostes pendents, gate de rol, votació signada, consell IA opcional (Arc G).
 async function openGovernanceModal(node){
   const id=await getIdentity(),myDid=id.did,g=govOf(node),role=roleOf(node,myDid),props=proposalsOf(node);
@@ -2963,6 +3003,7 @@ function openSettingsModal(){
       <button class="btn btn-ghost btn-sm" id="stKit" style="margin-left:.3rem">🎬 Kit narratiu Molekulon</button>
       <button class="btn btn-ghost btn-sm" id="stValu" style="margin-left:.3rem">🔮 Valora un recurs amb IA</button>
       <button class="btn btn-ghost btn-sm" id="stGov" style="margin-left:.3rem">🏛 Sabiduria del node actiu</button>
+      <button class="btn btn-ghost btn-sm" id="stFed" style="margin-left:.3rem">🌐 Assemblea federativa</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">📊</span><span>Simulador psicoeconòmic per a entitats públiques: estalvi €/any i benefici psicosocial d'una implementació SOS al territori.</span></div>
     </div>
     <div class="field"><label>Sincronització entre dispositius</label>
@@ -3001,6 +3042,7 @@ function openSettingsModal(){
   bg.querySelector('#stKit').onclick=()=>{closeModal();openNarrativeKit();};
   bg.querySelector('#stValu').onclick=()=>{closeModal();openValuationAssistant();};
   bg.querySelector('#stGov').onclick=()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}closeModal();openGovernanceModal(nd);};
+  bg.querySelector('#stFed').onclick=()=>{const nd=byId(state.activeId);closeModal();openFederationModal(nd&&isTerritory(nd.nodeLevel)?nd:null);};
   (async()=>{const t=await GH.getToken();if(t){try{const me=await GH.me();bg.querySelector('#ghState').innerHTML='<span class="ic">✅</span><span>Autenticat com a <strong>'+esc(me.login)+'</strong>. Ja pots demanar revisions a la IA sobre PRs on tinguis accés.</span>';}catch(e){bg.querySelector('#ghState').innerHTML='<span class="ic">⚠</span><span>Token guardat però invàlid. Torna a iniciar el flow.</span>';}}})();
   let _ghPoll=null;
   bg.querySelector('#ghStart').onclick=async()=>{
@@ -3395,7 +3437,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
