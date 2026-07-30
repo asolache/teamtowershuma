@@ -1041,6 +1041,35 @@ function simulateImpact(inp){
     ]
   };
 }
+function openPRReviewModal(prefill){
+  prefill=prefill||{};
+  const bg=modal(`
+    <h2>🤖 IA revisa un PR</h2>
+    <p class="m-sub">La IA baixa el diff, dictamina i pot publicar un comentari signat al PR. Necessites GitHub connectat i clau d'Anthropic.</p>
+    <div class="field"><label>Owner</label><input id="prOwner" placeholder="asolache" value="${esc(prefill.owner||'')}"></div>
+    <div class="field"><label>Repo</label><input id="prRepo" placeholder="teamtowershuma" value="${esc(prefill.repo||'')}"></div>
+    <div class="field"><label>PR #</label><input id="prNum" type="number" min="1" value="${prefill.pr||''}"></div>
+    <div class="field"><label>Context addicional (opcional)</label><input id="prCtx" placeholder="p.ex. focus a l'accessibilitat"></div>
+    <label style="display:flex;gap:.4rem;align-items:center;margin-top:.4rem"><input type="checkbox" id="prPost"> Publica el veredicte com a comentari al PR</label>
+    <div id="prResult" style="margin-top:.7rem"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="prClose">Tanca</button><button class="btn btn-primary" id="prRun">🔮 Revisa amb IA</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#prClose').onclick=closeModal;
+  bg.querySelector('#prRun').onclick=async()=>{
+    const owner=bg.querySelector('#prOwner').value.trim(),repo=bg.querySelector('#prRepo').value.trim(),pr=Number(bg.querySelector('#prNum').value)||0,ctx=bg.querySelector('#prCtx').value.trim(),post=bg.querySelector('#prPost').checked;
+    if(!owner||!repo||!pr){toast('Cal owner, repo i número');return;}
+    const box=bg.querySelector('#prResult');box.innerHTML='<div class="ai-note"><span class="ic">⏳</span><span>Descarregant diff i preguntant a la IA…</span></div>';
+    try{
+      const r=await reviewPRWithAI(owner,repo,pr,{context:ctx,postComment:post});
+      const clr={green:'var(--green)',yellow:'var(--orange)',red:'var(--red)'}[r.verdict]||'var(--muted)';
+      box.innerHTML='<div class="ent-card" style="border-left:3px solid '+clr+'"><div class="ent-nm" style="color:'+clr+'">Veredicte: '+esc(r.verdict.toUpperCase())+'</div><div class="ent-desc">'+esc(r.summary||'')+'</div>'+
+        (r.issues&&r.issues.length?'<div class="ent-grp-lbl">Punts</div><ul>'+r.issues.map(i=>'<li>'+esc(i)+'</li>').join('')+'</ul>':'')+
+        (r.fixSuggestions&&r.fixSuggestions.length?'<div class="ent-grp-lbl">Suggeriments</div><ul>'+r.fixSuggestions.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>':'')+
+        (post?'<div class="ent-desc" style="margin-top:.4rem">✅ Comentari publicat al PR.</div>':'')+'</div>';
+    }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.msg||String(e))+'</span></div>';}
+  };
+}
 function openImpactSimulator(prefill){
   const r0=simulateImpact(Object.assign({population:120000,penetration:0.05},prefill||{}));
   const bg=modal(`
@@ -1629,6 +1658,37 @@ function draftMission(name,level,selectedPainIds){
 let _aiKey=null;
 async function loadAiKey(){try{const all=await dbGetAll();const m=all.find(n=>n.id==='__aikey');_aiKey=m&&m.key?m.key:null;}catch(e){_aiKey=null;}return _aiKey;}
 async function saveAiKey(k){k=(k||'').trim();_aiKey=k||null;if(k)await dbPut({id:'__aikey',type:'meta',key:k});else await dbDelete('__aikey');}
+// ═══════════ GH · adaptador GitHub (device flow W3C fetch + PR review IA) ═══════════
+// Zero servidor propi. Login via OAuth Device Flow. La IA revisa PRs delegant a AI.call('pr_review').
+const GH_API='https://api.github.com',GH_OAUTH='https://github.com/login';
+let _ghToken=null;
+async function ghLoadToken(){try{const all=await dbGetAll();const m=all.find(n=>n.id==='__ghtoken');_ghToken=m&&m.token?m.token:null;}catch(e){_ghToken=null;}return _ghToken;}
+async function ghSaveToken(t){t=(t||'').trim();_ghToken=t||null;if(t)await dbPut({id:'__ghtoken',type:'meta',token:t});else await dbDelete('__ghtoken');}
+const GH={
+  async getToken(){return _ghToken||await ghLoadToken();},
+  async setToken(t){await ghSaveToken(t);},
+  async deviceStart(clientId,scope){if(!clientId)throw{msg:'Falta client_id de la GitHub App'};const res=await fetch(GH_OAUTH+'/device/code',{method:'POST',headers:{'accept':'application/json','content-type':'application/json'},body:JSON.stringify({client_id:clientId,scope:scope||'read:user public_repo'})});if(!res.ok)throw{status:res.status,msg:'device/code error'};return await res.json();},
+  async devicePoll(clientId,deviceCode){const res=await fetch(GH_OAUTH+'/oauth/access_token',{method:'POST',headers:{'accept':'application/json','content-type':'application/json'},body:JSON.stringify({client_id:clientId,device_code:deviceCode,grant_type:'urn:ietf:params:oauth:grant-type:device_code'})});const j=await res.json();if(j.access_token){await ghSaveToken(j.access_token);return{done:true,token:j.access_token};}return{done:false,error:j.error,interval:j.interval};},
+  async _fetch(path,opts){const t=await GH.getToken(),h={'accept':'application/vnd.github+json','x-github-api-version':'2022-11-28'};if(t)h.authorization='Bearer '+t;const res=await fetch(GH_API+path,Object.assign({headers:h},opts||{}));if(!res.ok){let m='';try{const j=await res.json();m=(j.message||'');}catch(e){}throw{status:res.status,msg:m||('GH '+res.status)};}return res;},
+  async me(){return(await GH._fetch('/user')).json();},
+  async fetchDiff(owner,repo,pr){const t=await GH.getToken(),h={'accept':'application/vnd.github.diff'};if(t)h.authorization='Bearer '+t;const res=await fetch(GH_API+'/repos/'+owner+'/'+repo+'/pulls/'+pr,{headers:h});if(!res.ok)throw{status:res.status,msg:'diff error '+res.status};return await res.text();},
+  async postComment(owner,repo,pr,body){return(await GH._fetch('/repos/'+owner+'/'+repo+'/issues/'+pr+'/comments',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})})).json();}
+};
+// Revisa un PR amb IA: descarrega diff → AI.call('pr_review') → opcionalment publica comentari.
+async function reviewPRWithAI(owner,repo,pr,opts){
+  opts=opts||{};
+  const diff=await GH.fetchDiff(owner,repo,pr);
+  const result=await AI.call('pr_review',{owner,repo,pr,diff,context:opts.context||''});
+  if(opts.postComment){
+    const emoji={green:'✅',yellow:'⚠️',red:'❌'}[result.verdict]||'🤖';
+    const body=emoji+' **IA revisió · '+result.verdict.toUpperCase()+'**\n\n'+result.summary+
+      (result.issues&&result.issues.length?'\n\n**Punts:**\n'+result.issues.map(i=>'- '+i).join('\n'):'')+
+      (result.fixSuggestions&&result.fixSuggestions.length?'\n\n**Suggeriments:**\n'+result.fixSuggestions.map(f=>'- '+f).join('\n'):'')+
+      '\n\n---\n_Generat per SOS · AI adapter (Arc GH)_';
+    await GH.postComment(owner,repo,pr,body);
+  }
+  return result;
+}
 // ═══════════ AI · adaptador únic DRY (V11 codex) ═══════════
 // Un únic pas per a totes les crides a Claude: intent catalogat + BYO key + Glass-Box audit + cost tracker.
 // Els prompts humans viuen a SOS/prompts/*.md (font documental); el `system` aquí és la còpia executable.
@@ -2712,6 +2772,16 @@ function openSettingsModal(){
       <div class="wz-key"><input id="stAiKey" type="password" placeholder="sk-ant-…" autocomplete="off"><button class="btn btn-ghost btn-sm" id="stAiSave">Desa</button><button class="btn btn-ghost btn-sm" id="stAiClear">Treu</button></div>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">✦</span><span id="stAiState">La clau es guarda <strong>només al teu navegador</strong> i s'usa per cridar l'API de Claude directament, sense servidor. Activa "Suggereix amb IA" i "Descobreix entitats amb IA".</span></div>
     </div>
+    <div class="field"><label>GitHub · repositori dev + IA revisora de PRs</label>
+      <div id="ghState" class="ai-note" style="margin-bottom:.5rem"><span class="ic">🐙</span><span>No autenticat. Enganxa el <strong>Client ID</strong> d'una GitHub OAuth App i inicia el device flow.</span></div>
+      <div class="wz-key"><input id="ghClientId" placeholder="Iv1.abc… (Client ID)" autocomplete="off"><button class="btn btn-ghost btn-sm" id="ghStart">🔑 Inicia device flow</button></div>
+      <div id="ghDevice" style="margin-top:.5rem"></div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem">
+        <button class="btn btn-ghost btn-sm" id="ghLogout">Tanca sessió</button>
+        <button class="btn btn-ghost btn-sm" id="ghReviewPR">🤖 Revisa un PR amb IA</button>
+      </div>
+      <div class="ai-note" style="margin-top:.6rem"><span class="ic">🔮</span><span>La IA baixa el diff via <code>fetch</code> W3C, dictamina <strong>verd/groc/vermell</strong> i pot deixar un comentari signat al PR. Tot amb el teu token — cap servidor de TeamTowers.</span></div>
+    </div>
     <div class="field"><label style="color:var(--red)">Zona perillosa</label>
       <button class="btn btn-ghost btn-sm" id="stPurge" style="border-color:var(--red-dim);color:var(--red)">Esborra totes les dades locals</button>
     </div>
@@ -2720,6 +2790,25 @@ function openSettingsModal(){
   bg.querySelector('#stClose').onclick=closeModal;
   bg.querySelector('#stSync').onclick=()=>{closeModal();openSyncModal();};
   bg.querySelector('#stImpact').onclick=()=>{closeModal();openImpactSimulator();};
+  (async()=>{const t=await GH.getToken();if(t){try{const me=await GH.me();bg.querySelector('#ghState').innerHTML='<span class="ic">✅</span><span>Autenticat com a <strong>'+esc(me.login)+'</strong>. Ja pots demanar revisions a la IA sobre PRs on tinguis accés.</span>';}catch(e){bg.querySelector('#ghState').innerHTML='<span class="ic">⚠</span><span>Token guardat però invàlid. Torna a iniciar el flow.</span>';}}})();
+  let _ghPoll=null;
+  bg.querySelector('#ghStart').onclick=async()=>{
+    const cid=bg.querySelector('#ghClientId').value.trim();if(!cid){bg.querySelector('#ghClientId').focus();return;}
+    const dev=bg.querySelector('#ghDevice');dev.innerHTML='Sol·licitant codi…';
+    try{
+      const d=await GH.deviceStart(cid);
+      dev.innerHTML='<div class="ai-note"><span class="ic">🔐</span><span>Obre <a href="'+d.verification_uri+'" target="_blank" rel="noopener">'+d.verification_uri+'</a> i enganxa el codi: <code style="font-size:1.2rem;font-weight:600">'+esc(d.user_code)+'</code></span></div>';
+      let stopped=false;const iv=Math.max(5,d.interval||5)*1000;
+      _ghPoll=setInterval(async()=>{if(stopped)return;
+        try{const r=await GH.devicePoll(cid,d.device_code);
+          if(r.done){stopped=true;clearInterval(_ghPoll);dev.innerHTML='<div class="ai-note"><span class="ic">✅</span><span>Autenticat correctament. Tanca i torna a obrir Configuració per veure el teu usuari.</span></div>';}
+          else if(r.error&&r.error!=='authorization_pending'&&r.error!=='slow_down'){stopped=true;clearInterval(_ghPoll);dev.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(r.error)+'</span></div>';}
+        }catch(e){stopped=true;clearInterval(_ghPoll);dev.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.msg||'')+'</span></div>';}
+      },iv);
+    }catch(e){dev.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.msg||'')+'</span></div>';}
+  };
+  bg.querySelector('#ghLogout').onclick=async()=>{await GH.setToken('');if(_ghPoll)clearInterval(_ghPoll);bg.querySelector('#ghState').innerHTML='<span class="ic">🐙</span><span>Sessió tancada.</span>';toast('Sessió tancada');};
+  bg.querySelector('#ghReviewPR').onclick=async()=>{closeModal();openPRReviewModal();};
   bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
   bg.querySelector('#stExport').onclick=exportData;
   bg.querySelector('#stImport').onclick=importData;
@@ -3095,7 +3184,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,SKILL_POLARITY,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,SKILL_POLARITY,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
