@@ -905,6 +905,31 @@ function fundRollup(node){
   (node.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;});
   return{ventures:vs.length,economicVentures:vs.filter(v=>v.stage!=='idea').length,hores,objectes,talent,moneda};
 }
+// ═══════════ Oracle · valoració intel·ligent dels recursos comunitaris (Arc O1-O5) ═══════════
+// Taula FMV base per habilitat (banc de temps) i valor base per tipologia d'objecte (biblioteca).
+// El node pot sobreescriure amb node.oracle = {fmv:{cat:preu}, objects:{typology:valor}}.
+const ORACLE_FMV_DEFAULTS={idiomes:20,informatica:35,reparacions:25,cuina:18,acompanyament:12,jardineria:20,transport:20,costura:20,infants:18,electronica:30,bricolatge:22,salut:25,festes:15,neteja:12,altres:20};
+const ORACLE_OBJECT_DEFAULTS={bricolatge:80,cuina:60,jardineria:120,neteja:90,electronica:200,festes:150,esport:180,infancia:100,costura:100,salut:40,altres:70};
+const oracleOf=node=>node.oracle||(node.oracle={fmv:{},objects:{}});
+function oracleFmv(node,cat){const o=oracleOf(node);return Number(o.fmv&&o.fmv[cat])||ORACLE_FMV_DEFAULTS[cat]||ORACLE_FMV_DEFAULTS.altres;}
+function oracleObjectValue(node,obj){const o=oracleOf(node),base=Number(o.objects&&o.objects[obj.typology])||ORACLE_OBJECT_DEFAULTS[obj.typology]||ORACLE_OBJECT_DEFAULTS.altres;const years=obj.years?Number(obj.years):0;return Math.round(base*Math.max(0.3,1-0.1*years));}
+// Valor total del fons cooperatiu — inclou hores mobilitzades, objectes, talent i capital, amb rang d'incertesa.
+function fundValue(node){
+  const vs=venturesOf(node);const links=linksOf(node).map(id=>byId(id)).filter(Boolean);
+  const fmvAvg=(()=>{const bt=links.filter(l=>l.dynamicType==='banc_temps');if(!bt.length)return ORACLE_FMV_DEFAULTS.altres;let s=0,n=0;bt.forEach(l=>offersOf(l).forEach(o=>{if(o.kind==='oferta'){s+=oracleFmv(l,o.category);n++;}}));return n?Math.round(s/n):ORACLE_FMV_DEFAULTS.altres;})();
+  const objAvg=(()=>{const bib=links.filter(l=>l.dynamicType==='biblioteca_coses');if(!bib.length)return ORACLE_OBJECT_DEFAULTS.altres;let s=0,n=0;bib.forEach(l=>objectsOf(l).forEach(o=>{s+=oracleObjectValue(l,o);n++;}));return n?Math.round(s/n):ORACLE_OBJECT_DEFAULTS.altres;})();
+  const breakdown=[];let hores=0,objectes=0,talent=0,moneda=0;
+  vs.forEach(v=>allocationsOf(v).forEach(a=>{const q=Number(a.qty)||0;if(a.kind==='hores')hores+=q;else if(a.kind==='objecte')objectes+=q;else if(a.kind==='talent')talent+=q;}));
+  (node.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;});
+  vs.forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;else if(e.type==='temps')hores+=Number(e.value)||0;}));
+  const hV=hores*fmvAvg,oV=objectes*objAvg,tV=talent*40*fmvAvg,cV=moneda;
+  if(hV)breakdown.push({label:'Hores mobilitzades',qty:hores,rate:fmvAvg+' €/h',value:hV,source:'oracle FMV'});
+  if(oV)breakdown.push({label:'Objectes compartits',qty:objectes,rate:objAvg+' €/objecte',value:oV,source:'oracle objectes'});
+  if(tV)breakdown.push({label:'Talent assignat',qty:talent,rate:'40h/mes × '+fmvAvg+' €/h',value:tV,source:'estimació dedicació'});
+  if(cV)breakdown.push({label:'Capital aportat',qty:1,rate:'',value:cV,source:'ledger real'});
+  const total=hV+oV+tV+cV,uncertainty=0.3;
+  return{total:Math.round(total),min:Math.round(total*(1-uncertainty)),max:Math.round(total*(1+uncertainty)),fmvAvg,objAvg,breakdown};
+}
 // Slicing Pie: slices = valor de l'aportació × multiplicador (temps a preu FMV × nonCash; diner × cash)
 const ventureLedger=v=>v.ledger||(v.ledger=[]);
 const ventureCfg=(node,v)=>v.equity||equityCfg(node);
@@ -2169,6 +2194,17 @@ function renderMatriuVentures(body,node){
     '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+f.talent+'</div><div class="l">talent assignat</div></div>'+
     (f.moneda?'<div class="bib-tile"><div class="n">'+f.moneda+' €</div><div class="l">capital aportat</div></div>':'');
   body.appendChild(fund);
+  const fv=fundValue(node);
+  if(fv.total>0){
+    body.appendChild(el('div','ent-grp-lbl','🔮 Valor del fons (oracle) · rang estimat'));
+    const wrap=el('div','ent-card');wrap.style.background='linear-gradient(180deg,rgba(99,102,241,.08),rgba(0,230,118,.05))';
+    wrap.innerHTML='<div class="ent-nm" style="font-size:1.25rem">≈ '+fv.total.toLocaleString('ca')+' €</div><div class="ent-desc">Rang: <strong>'+fv.min.toLocaleString('ca')+' € – '+fv.max.toLocaleString('ca')+' €</strong> (±30% d\'incertesa)</div>';
+    const table=el('table','ledger-table');table.style.marginTop='.6rem';table.innerHTML='<thead><tr><th>Component</th><th>Quantitat</th><th>Taxa</th><th style="text-align:right">Valor €</th><th>Font</th></tr></thead>';
+    const tb=el('tbody');fv.breakdown.forEach(b=>{const tr=el('tr');tr.innerHTML='<td>'+esc(b.label)+'</td><td>'+b.qty+'</td><td>'+esc(b.rate)+'</td><td class="num">'+b.value.toLocaleString('ca')+' €</td><td><span class="ent-b">'+esc(b.source)+'</span></td>';tb.appendChild(tr);});
+    table.appendChild(tb);wrap.appendChild(table);
+    const note=el('div','ent-desc');note.style.marginTop='.4rem';note.innerHTML='FMV mig: <strong>'+fv.fmvAvg+' €/h</strong> · Valor mig d\'objecte: <strong>'+fv.objAvg+' €</strong>. Valors editables al futur (⚙ Oracle). Glass-Box: cada valor mostra d\'on ve.';
+    wrap.appendChild(note);body.appendChild(wrap);
+  }
   VENTURE_STAGES.forEach(stg=>{
     const list=vs.filter(v=>v.stage===stg);if(!list.length)return;
     const stLbl={idea:'💡 Idea',prototip:'🔧 Prototip',validacio:'✅ Validació',graduacio:'🎓 Graduades'}[stg];
@@ -2882,7 +2918,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
