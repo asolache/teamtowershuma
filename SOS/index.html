@@ -988,6 +988,41 @@ const ARCHETYPES={
   saraswati:{name:'Saraswati',ic:'📚',role:'Formació i coneixement',fn:'lms'},
   lakshmi:{name:'Lakshmi',ic:'💰',role:'Gestió del fons cooperatiu',fn:'fund'}
 };
+// Sets alternatius d'arquetips: el sistema tècnic no distingeix; l'usuari tria el simbòlic (codex V13).
+const ARCHETYPE_SETS={
+  vedic:{label:'Vèdic',archetypes:ARCHETYPES},
+  celta:{label:'Celta',archetypes:{
+    dagda:{name:'Dagda',ic:'🌳',role:'Veu de la missió',fn:'metaskill'},
+    brigit:{name:'Brígit',ic:'🌱',role:'Disseny d\'iniciatives',fn:'design'},
+    lugh:{name:'Lugh',ic:'⚖',role:'Coordinació i operació',fn:'coord'},
+    morrigan:{name:'Morrígan',ic:'🔥',role:'Auditoria i renovació',fn:'audit'},
+    epona:{name:'Epona',ic:'💫',role:'Execució creativa',fn:'exec'},
+    cernunnos:{name:'Cernunnos',ic:'🌿',role:'Facilitació i desbloqueig',fn:'facil'},
+    ogham:{name:'Ogham',ic:'📚',role:'Formació i coneixement',fn:'lms'},
+    manannan:{name:'Manannán',ic:'💰',role:'Gestió del fons cooperatiu',fn:'fund'}
+  }},
+  andi:{label:'Andí',archetypes:{
+    pachamama:{name:'Pachamama',ic:'✨',role:'Veu de la missió',fn:'metaskill'},
+    inti:{name:'Inti',ic:'🌱',role:'Disseny d\'iniciatives',fn:'design'},
+    viracocha:{name:'Viracocha',ic:'⚖',role:'Coordinació i operació',fn:'coord'},
+    supay:{name:'Supay',ic:'🔥',role:'Auditoria i renovació',fn:'audit'},
+    mamaquilla:{name:'Mama Quilla',ic:'💫',role:'Execució creativa',fn:'exec'},
+    ekeko:{name:'Ekeko',ic:'🌿',role:'Facilitació i desbloqueig',fn:'facil'},
+    amaru:{name:'Amaru',ic:'📚',role:'Formació i coneixement',fn:'lms'},
+    ayni:{name:'Ayni',ic:'💰',role:'Gestió del fons cooperatiu',fn:'fund'}
+  }},
+  secular:{label:'Secular',archetypes:{
+    visioner:{name:'Visioner/a',ic:'✨',role:'Veu de la missió',fn:'metaskill'},
+    dissenyador:{name:'Dissenyador/a',ic:'🌱',role:'Disseny d\'iniciatives',fn:'design'},
+    coordinador:{name:'Coordinador/a',ic:'⚖',role:'Coordinació i operació',fn:'coord'},
+    auditor:{name:'Auditor/a',ic:'🔥',role:'Auditoria i renovació',fn:'audit'},
+    executor:{name:'Executor/a',ic:'💫',role:'Execució creativa',fn:'exec'},
+    facilitador:{name:'Facilitador/a',ic:'🌿',role:'Facilitació i desbloqueig',fn:'facil'},
+    formador:{name:'Formador/a',ic:'📚',role:'Formació i coneixement',fn:'lms'},
+    tresorer:{name:'Tresorer/a',ic:'💰',role:'Gestió del fons cooperatiu',fn:'fund'}
+  }}
+};
+const archetypesFor=setId=>((ARCHETYPE_SETS[setId]||ARCHETYPE_SETS.vedic).archetypes);
 // Polaritat Shakti (0) ↔ Shiva (1) per categoria de skill. Shakti crea/obre/sembra; Shiva talla/audita/repara.
 const SKILL_POLARITY={idiomes:0.15,cuina:0.2,infants:0.15,informatica:0.4,acompanyament:0.15,jardineria:0.25,festes:0.1,transport:0.5,costura:0.8,reparacions:0.85,neteja:0.85,electronica:0.75,bricolatge:0.75,salut:0.9,altres:0.5};
 // Reputació verificable per persona = comptable, no puntuació opaca. Es basa en apunts signats + validacions rebudes.
@@ -1039,6 +1074,40 @@ function simulateImpact(inp){
       {k:'energia/any',v:d.avgEnergyAnnual+' €',src:'CNMC/Som Energia'},
       {k:'cures',v:d.carePerActive+' €/actiu',src:'estimació IDESCAT'}
     ]
+  };
+}
+// Assistent de valoració amb IA: rang €-min/esperat/max per skill o objecte amb font (Arc O3 · Glass-Box).
+function openValuationAssistant(prefill){
+  prefill=prefill||{};
+  const bg=modal(`
+    <h2>🔮 Assistent de valoració amb IA</h2>
+    <p class="m-sub">Obté un rang de valor per a un recurs (skill o objecte) amb la seva font. Glass-Box: veus mínim/esperat/màxim i la hipòtesi.</p>
+    <div class="field"><label>Tipus</label>
+      <div style="display:flex;gap:.4rem">
+        <button type="button" class="btn btn-ghost btn-sm vt-k sel" data-k="skill" style="flex:1">🧠 Skill (€/h)</button>
+        <button type="button" class="btn btn-ghost btn-sm vt-k" data-k="object" style="flex:1">📦 Objecte (€)</button>
+      </div>
+    </div>
+    <div class="field"><label>Descripció</label><input id="vtDesc" placeholder="p.ex. classes de guitarra, o taladre percutor de 5 anys" value="${esc(prefill.desc||'')}"></div>
+    <div class="field"><label>Context (opcional)</label><input id="vtCtx" placeholder="p.ex. barri de Vilanova, banc de temps existent"></div>
+    <div id="vtResult" style="margin-top:.7rem"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="vtClose">Tanca</button><button class="btn btn-primary" id="vtRun">✦ Valora amb IA</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let kind='skill';
+  bg.querySelectorAll('.vt-k').forEach(btn=>btn.onclick=()=>{kind=btn.dataset.k;bg.querySelectorAll('.vt-k').forEach(x=>x.classList.toggle('sel',x===btn));});
+  bg.querySelector('#vtClose').onclick=closeModal;
+  bg.querySelector('#vtRun').onclick=async()=>{
+    const desc=bg.querySelector('#vtDesc').value.trim(),ctx=bg.querySelector('#vtCtx').value.trim();
+    if(!desc){toast('Cal una descripció');return;}
+    const box=bg.querySelector('#vtResult');box.innerHTML='<div class="ai-note"><span class="ic">⏳</span><span>Demanant valoració a la IA…</span></div>';
+    try{
+      const r=await AI.call('valuation',{type:kind==='object'?'objecte':'skill',description:desc,name:ctx});
+      const unit=r.unit||(kind==='skill'?'h':'unitat');
+      box.innerHTML='<div class="ent-card" style="border-left:3px solid var(--indigo)"><div class="ent-nm" style="font-size:1.25rem">≈ '+r.expected+' €/'+esc(unit)+'</div>'+
+        '<div class="ent-desc">Rang: <strong>'+r.min+' €</strong> – <strong>'+r.max+' €</strong> · Confiança: '+(r.confidence?Math.round(r.confidence*100)+'%':'—')+'</div>'+
+        '<div class="ent-grp-lbl">📚 Font</div><div class="ent-desc">'+esc(r.source||'—')+'</div></div>';
+    }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.noKey?'Cal clau d\'Anthropic a Configuració':(e.msg||String(e)))+'</span></div>';}
   };
 }
 // Kit narratiu Molekulon: crida narrative_kit → sinopsi de còmic, himne, escena performativa (Arc CU2).
@@ -2853,6 +2922,7 @@ function openSettingsModal(){
     <div class="field"><label>Demostració d'impacte</label>
       <button class="btn btn-ghost btn-sm" id="stImpact">🔮 Impacte hipotètic · cas Catalunya</button>
       <button class="btn btn-ghost btn-sm" id="stKit" style="margin-left:.3rem">🎬 Kit narratiu Molekulon</button>
+      <button class="btn btn-ghost btn-sm" id="stValu" style="margin-left:.3rem">🔮 Valora un recurs amb IA</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">📊</span><span>Simulador psicoeconòmic per a entitats públiques: estalvi €/any i benefici psicosocial d'una implementació SOS al territori.</span></div>
     </div>
     <div class="field"><label>Sincronització entre dispositius</label>
@@ -2889,6 +2959,7 @@ function openSettingsModal(){
   bg.querySelector('#stSync').onclick=()=>{closeModal();openSyncModal();};
   bg.querySelector('#stImpact').onclick=()=>{closeModal();openImpactSimulator();};
   bg.querySelector('#stKit').onclick=()=>{closeModal();openNarrativeKit();};
+  bg.querySelector('#stValu').onclick=()=>{closeModal();openValuationAssistant();};
   (async()=>{const t=await GH.getToken();if(t){try{const me=await GH.me();bg.querySelector('#ghState').innerHTML='<span class="ic">✅</span><span>Autenticat com a <strong>'+esc(me.login)+'</strong>. Ja pots demanar revisions a la IA sobre PRs on tinguis accés.</span>';}catch(e){bg.querySelector('#ghState').innerHTML='<span class="ic">⚠</span><span>Token guardat però invàlid. Torna a iniciar el flow.</span>';}}})();
   let _ghPoll=null;
   bg.querySelector('#ghStart').onclick=async()=>{
@@ -3283,7 +3354,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,SKILL_POLARITY,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
