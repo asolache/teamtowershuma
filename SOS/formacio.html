@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guia formativa SOS · 8 mòduls per esdevenir expert/a</title>
+<meta name="description" content="Guia pedagògica completa del Sistema Operatiu Social. 8 mòduls progressius amb objectius formatius, skills desenvolupades, aptituds i exercicis pràctics — des dels fonaments W3C fins al Comando Molekulon i l'ancoratge Nostr.">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:#2a2a35;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b0b12,#12121c);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:2rem 1.2rem}
+header{padding:3rem 1.2rem 1.5rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.07)}
+header h1{font-size:2.2rem;margin:0 0 .6rem;background:linear-gradient(90deg,#6366f1,#00e676,#e040fb);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:var(--muted);margin:0 auto;font-size:1.05rem;max-width:640px}
+nav{margin-top:1.4rem;font-size:.9rem}
+nav a{color:var(--indigo);text-decoration:none;margin:0 .5rem;white-space:nowrap}
+nav a:hover{text-decoration:underline}
+.toc{background:var(--card);border-radius:12px;padding:1.4rem;margin-bottom:2rem;border:1px solid var(--border)}
+.toc h3{margin:0 0 .8rem;font-size:1rem;color:var(--indigo);letter-spacing:.05em;text-transform:uppercase}
+.toc ol{margin:0;padding-left:1.2rem;color:var(--light)}
+.toc ol li{margin:.35rem 0}
+.toc ol li a{color:var(--text);text-decoration:none}
+.toc ol li a:hover{color:var(--indigo)}
+.toc ol li em{color:var(--muted);font-style:normal;font-size:.85rem}
+.module{background:var(--card);border-radius:14px;padding:1.8rem 2rem;margin-bottom:1.8rem;border:1px solid var(--border);border-left:4px solid var(--indigo)}
+.module.mod-1{border-left-color:var(--indigo)} .module.mod-2{border-left-color:var(--blue)} .module.mod-3{border-left-color:var(--green)} .module.mod-4{border-left-color:#facc15}
+.module.mod-5{border-left-color:var(--orange)} .module.mod-6{border-left-color:var(--red)} .module.mod-7{border-left-color:var(--purple)} .module.mod-8{border-left-color:#00e5ff}
+.module .num{color:var(--muted);font-size:.85rem;font-family:'SF Mono',Monaco,monospace;letter-spacing:.1em}
+.module h2{margin:.2rem 0 .3rem;font-size:1.5rem}
+.module .subtitle{color:var(--light);font-size:1rem;margin:0 0 1.2rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.box{background:rgba(255,255,255,.03);padding:1rem 1.2rem;border-radius:8px}
+.box h4{margin:0 0 .5rem;font-size:.75rem;color:var(--indigo);letter-spacing:.1em;text-transform:uppercase}
+.box.skills h4{color:var(--green)}
+.box.aptituds h4{color:var(--orange)}
+.box.eines h4{color:var(--purple)}
+.box.metode h4{color:var(--blue)}
+.box.exercici h4{color:var(--red)}
+.box ul{margin:.3rem 0;padding-left:1.2rem;color:var(--light)}
+.box ul li{margin:.2rem 0;font-size:.9rem}
+.box p{margin:.3rem 0;color:var(--light);font-size:.9rem}
+.box code{background:rgba(99,102,241,.15);padding:.05rem .35rem;border-radius:4px;font-size:.85em;color:var(--indigo)}
+h3.section{color:var(--indigo);font-size:1rem;letter-spacing:.05em;text-transform:uppercase;margin:1.5rem 0 .5rem}
+.lead{font-size:1.02rem;color:var(--light);margin:.5rem 0}
+.tag{display:inline-block;background:rgba(99,102,241,.15);color:var(--indigo);padding:.15rem .55rem;border-radius:20px;font-size:.72rem;margin-right:.3rem}
+.tag.done{background:rgba(0,230,118,.15);color:var(--green)}
+.stack{background:linear-gradient(90deg,rgba(99,102,241,.08),rgba(0,230,118,.05));padding:.6rem .9rem;border-radius:8px;margin:.6rem 0;font-size:.88rem;color:var(--light)}
+.stack strong{color:var(--text)}
+footer{text-align:center;color:var(--muted);padding:2.5rem 1rem 3rem;font-size:.85rem;border-top:1px solid rgba(255,255,255,.05);margin-top:2rem}
+footer a{color:var(--indigo);text-decoration:none}
+.expert-cert{background:linear-gradient(135deg,rgba(224,64,251,.15),rgba(99,102,241,.1));border:2px solid var(--purple);border-radius:14px;padding:2rem;margin-top:2rem;text-align:center}
+.expert-cert h2{margin:0 0 .5rem;background:linear-gradient(90deg,#e040fb,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent}
+</style>
+</head>
+<body>
+<header>
+<h1>Guia formativa SOS · Fes-te expert/a</h1>
+<p><strong>8 mòduls progressius</strong> per dominar totes les metodologies i tecnologies del Sistema Operatiu Social. Al final tindràs skills, aptituds i experiència pràctica per implementar SOS a qualsevol comunitat.</p>
+<nav>
+<a href="../index.html">← TeamTowers Humà</a> ·
+<a href="index.html">Obre SOS</a> ·
+<a href="blog.html">Blog</a> ·
+<a href="comando.html">Comando</a> ·
+<a href="#cert">Certificat expert</a>
+</nav>
+</header>
+
+<main class="wrap">
+
+<div class="toc">
+<h3>Índex de mòduls</h3>
+<ol>
+<li><a href="#m1">Fonaments SOS i codex Antigravity</a> · <em>filosofia + stack W3C + local-first</em></li>
+<li><a href="#m2">Identitat descentralitzada i criptografia</a> · <em>did:sos, firma, cadena hash, wallets</em></li>
+<li><a href="#m3">Value Network Analysis (Verna Allee)</a> · <em>rols funcionals + fluxos recíprocs</em></li>
+<li><a href="#m4">Recursos comunitaris</a> · <em>banc de temps + biblioteca de les coses</em></li>
+<li><a href="#m5">Governança i Guardians</a> · <em>sabiduria + quòrum + assemblea federativa Penrose</em></li>
+<li><a href="#m6">MATRIU, Slicing Pie i intercooperació</a> · <em>ventures + equity dinàmic + Mondragón</em></li>
+<li><a href="#m7">Comando Molekulon i reputació</a> · <em>superheroi + cromos + multivers narratiu</em></li>
+<li><a href="#m8">Ancoratge públic i IA integrada</a> · <em>Nostr + IPFS/Arweave + AI adapter DRY</em></li>
+</ol>
+</div>
+
+<section class="module mod-1" id="m1">
+<div class="num">MÒDUL 1 · 4-6 h</div>
+<h2>Fonaments SOS i codex Antigravity</h2>
+<p class="subtitle">Comprendre la filosofia, l'stack tècnic i les línies vermelles del sistema.</p>
+<p class="lead">SOS no és una app més: és una manera d'entendre el desenvolupament comunitari com un sistema operatiu — capes, protocols, permisos, sobirania. Aquest mòdul et dóna el marc mental per tot el que vindrà després.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Entendre per què el <strong>local-first</strong> canvia el joc del desenvolupament comunitari.</li>
+<li>Assimilar els <strong>17 vedes del codex Antigravity</strong> (Zero Redundancy, W3C excel·lència, Glass-Box AI…).</li>
+<li>Reconèixer l'arquitectura d'un fitxer HTML autocontingut com a app completa.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li>Pensament sistèmic aplicat a comunitats</li>
+<li>Lectura d'arquitectura W3C (HTML/CSS/JS mòduls natius)</li>
+<li>Anàlisi crítica de dependències</li>
+<li>Cultura Zero Redundancy (DRY radical)</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Rigor amb la sobirania de dades</li>
+<li>Respecte per estàndards oberts</li>
+<li>Paciència amb la simplicitat</li>
+<li>Sentit de servei procomú</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>SOS/index.html</code> (fitxer únic autocontingut) · IndexedDB · WebRTC · SubtleCrypto · <code>window.__SOS</code> hook · Codex V11-V17 (<code>SOS/knowledge/codex.md</code>)</p>
+</div>
+
+<div class="stack"><strong>Stack tècnic:</strong> HTML5 · CSS custom properties · ES modules · IndexedDB · WebRTC · WebCrypto API · WebSocket · fetch · CompressionStream · BarcodeDetector. Sense frameworks, sense servidors.</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Llegeix el codex sencer. Obre <code>SOS/index.html</code> a l'editor. Cerca "Zero Redundancy" i observa on es materialitza. Fes una llista de tots els mòduls funcionals que trobes.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Obre SOS al navegador. Al DevTools: escriu <code>window.__SOS</code> i explora quantes funcions exposa (>150). Escull-ne 5 i escriu què creus que fa cadascuna. Verifica després amb el codi.</p></div>
+</section>
+
+<section class="module mod-2" id="m2">
+<div class="num">MÒDUL 2 · 6-8 h</div>
+<h2>Identitat descentralitzada i criptografia</h2>
+<p class="subtitle">Sobirania criptogràfica: `did:sos`, firma, cadena hash, wallets, xifratge multi-membre.</p>
+<p class="lead">Cada acció al SOS pot ser signada, encadenada i xifrada sense confiar en cap servidor. Aquest mòdul et dóna els fonaments per operar amb identitat auto-sobirana i comptabilitat verificable.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Crear i gestionar una identitat <strong>did:sos</strong> (Ed25519 o ECDSA-P256).</li>
+<li>Signar registres amb <code>signRecord</code> i verificar-los amb <code>verifyRecord</code>.</li>
+<li>Encadenar apunts amb SHA-256 (<strong>tamper-evident ledger</strong>).</li>
+<li>Vincular un <strong>passkey WebAuthn</strong> a la identitat.</li>
+<li>Distribuir claus AES-GCM entre múltiples membres via ECDH-P256.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li><strong>WebCrypto API W3C</strong> (generateKey, sign, verify, digest)</li>
+<li>Ed25519 · ECDSA-P256 · ECDH-P256 · AES-GCM · PBKDF2 · HKDF</li>
+<li>base64url encoding / decoding</li>
+<li>WebAuthn / passkeys</li>
+<li>Merkle chains + hash-based integrity</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Higiene de claus privades</li>
+<li>Escepticisme sistemàtic (verify before trust)</li>
+<li>Comprensió d'incentius d'atacants</li>
+<li>Rigor documental (què firmes, què no)</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>getIdentity()</code> · <code>signRecord(rec)</code> · <code>verifyRecord(rec)</code> · <code>chainLedger(list)</code> · <code>verifyChain(list)</code> · <code>pushLedger()</code> · <code>bindPasskey()</code> · <code>generateNodeKey()</code> · <code>wrapNodeKeyForMember()</code> · <code>getMyNodeKey()</code> · <code>myExchangeCard()</code></p>
+</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Segueix el flux "primer boot → identitat automàtica → primera firma → primer envelope". Fes servir DevTools per veure les JWKs sense sortir del navegador. Utilitza el <strong>test-crypto.mjs</strong> com a guió d'aprenentatge.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>1) Obre SOS en dos navegadors diferents (dues identitats did:sos). 2) A la Sabiduria del node, comparteix la clau de xifratge amb l'altre. 3) Verifica que l'altre pot llegir el contingut xifrat i un tercer navegador no.</p></div>
+</section>
+
+<section class="module mod-3" id="m3">
+<div class="num">MÒDUL 3 · 5-7 h</div>
+<h2>Value Network Analysis (Verna Allee)</h2>
+<p class="subtitle">Dissenyar xarxes de valor sostenibles: rols funcionals + fluxos tangibles/intangibles + reciprocitat.</p>
+<p class="lead">La metodologia VNA de Verna Allee és la base del disseny de qualsevol xarxa de valor a SOS. Ni organigrama, ni cadena de valor lineal: mapes relacionals amb rols funcionals i intercanvis bidireccionals.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Diferenciar <strong>rols funcionals</strong> de càrrecs jeràrquics.</li>
+<li>Mapar <strong>intercanvis tangibles</strong> (béns, serveis, hores, diners) i <strong>intangibles</strong> (confiança, coneixement, pertinença).</li>
+<li>Detectar <strong>topologies estrella</strong> patològiques i corregir-les.</li>
+<li>Dissenyar la <strong>metaskill</strong> (missió/visió/objectius) d'una xarxa.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li>Metodologia VNA (rols · fluxos · salut)</li>
+<li>Facilitació de tallers de mapatge</li>
+<li>Anàlisi de densitat, reciprocitat, diversitat</li>
+<li>Ús de <strong>presets DYNAMICS</strong> (10+ dinàmiques comunitàries)</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Sensibilitat als intangibles</li>
+<li>Escolta activa (Barbamuda!)</li>
+<li>Visió sistèmica en temps real</li>
+<li>Facilitació neutra</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>DYNAMICS</code> catalog (banc de temps, biblioteca, energia, habitatge, cures…) · <code>seedFromDynamic()</code> · <code>buildHealth()</code> · <code>renderVNA()</code> · <code>aiSuggestMap()</code> per IA · <code>ARCHETYPES</code> · knowledge/references/vna-verna-allee.md</p>
+</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Del general al concret: primer defineix la metaskill (missió/visió/objectius). Després els 5-8 rols funcionals. Després els 6-12 intercanvis, amb barreja tangibles/intangibles. Comprova <code>buildHealth</code> per rols aïllats i topologia estrella.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Instancia una <strong>Comunitat energètica</strong> al SOS. Mira el mapa VNA generat. Identifica quins fluxos falten. Afegeix 3 intercanvis intangibles nous que reforcin la reciprocitat.</p></div>
+</section>
+
+<section class="module mod-4" id="m4">
+<div class="num">MÒDUL 4 · 4-6 h</div>
+<h2>Recursos comunitaris — Banc de temps i Biblioteca de les coses</h2>
+<p class="subtitle">Els dos comuns més universals: hores i objectes. Gestionats amb pings i matching descentralitzat.</p>
+<p class="lead">Cada minut donat i cada objecte compartit multiplica el valor de la comunitat sense multiplicar-ne el cost. Aquest mòdul t'ensenya a modelar i operar els dos comuns més accessibles.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Modelar socis, ofertes, demandes i objectes.</li>
+<li>Registrar intercanvis d'hores signats.</li>
+<li>Gestionar préstecs amb <strong>due dates</strong> + reserves.</li>
+<li>Detectar <strong>matchings automàtics</strong> entre ofertes i demandes d'ecosistema.</li>
+<li>Utilitzar els <strong>top-20 curats</strong> (skills + objectes) que cobreixen el 80% de la demanda.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li>Economia solidària aplicada</li>
+<li>Disseny de taxonomies (categoria/tipologia)</li>
+<li>Gestió operativa d'un banc de temps</li>
+<li>Onboarding de socis (superheroi flow)</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Cura de la reciprocitat</li>
+<li>Justícia distributiva</li>
+<li>Atenció a les persones invisibilitzades</li>
+<li>Prevenció del burnout dels ponents</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>membersOf()</code> · <code>offersOf()</code> · <code>objectsOf()</code> · <code>lendObject()</code> · <code>reserveObject()</code> · <code>exchangeHours()</code> · <code>memberBalance()</code> · <code>dueStatus()</code> · <code>findMatches()</code> · <code>openMatchesModal()</code> · <code>SKILL_TOP20</code> · <code>OBJECT_TOP20</code> · <code>openSuperheroiOnboarding()</code></p>
+</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Comença amb 3-5 socis. Registra ofertes reals (no simulades). Fes un intercanvi que quedi al ledger firmat. Explora els <strong>Pings ecosistema</strong> per veure matchings automàtics entre bancs de temps adjacents.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Crea 2 bancs de temps (pobles A i B). Registra a A un/a superheroi que ofereix informàtica; a B un/a que la demana. Obre <strong>🔔 Pings ecosistema</strong>. Verifica que el matching cross-node apareix i que pots iniciar un intercanvi signat.</p></div>
+</section>
+
+<section class="module mod-5" id="m5">
+<div class="num">MÒDUL 5 · 6-8 h</div>
+<h2>Governança i Guardians — Sabiduria + Assemblea federativa</h2>
+<p class="subtitle">Presa de decisions signada + votació ponderada matemàticament equitativa (llei Penrose).</p>
+<p class="lead">Sense governança clara, les xarxes de valor col·lapsen. SOS incorpora un sistema de propostes signades amb quòrum de guardians (stewards) i una assemblea federativa amb vot ponderat per √població amb correcció Gini.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Reclamar propietat d'un node i configurar quòrums.</li>
+<li>Crear propostes signades (kind: <code>member</code>, <code>ledger</code>, <code>meta</code>, <code>steward_add</code>).</li>
+<li>Votar amb signatura criptogràfica.</li>
+<li>Comprendre la <strong>llei quadràtica-arrel de Penrose (1946)</strong> aplicada a votació multi-població.</li>
+<li>Aplicar la <strong>correcció Gini</strong> per equitat màxima entre blocs.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li>Disseny de governança democràtica</li>
+<li>Facilitació assembleària</li>
+<li>Càlcul de pesos federatius (√població × activitat)</li>
+<li>Aplicació d'indicadors de concentració (Gini)</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Sentit de la mesura entre eficàcia i deliberació</li>
+<li>Cura de les minories</li>
+<li>Delegació saludable</li>
+<li>Transparència compulsiva</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>govOf()</code> · <code>claimNode()</code> · <code>roleOf()</code> · <code>canWrite()</code> · <code>proposeChange()</code> · <code>voteProposal()</code> · <code>applyIfQuorum()</code> · <code>openGovernanceModal()</code> · <code>federativeWeight()</code> · <code>giniOfWeights()</code> · <code>equityAdjust()</code> · <code>tallyFederation()</code> · <code>openFederationModal()</code></p>
+</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Configura una comarca amb 3 municipis de mides molt diferents. Simula una decisió a l'<strong>Assemblea federativa</strong>. Observa com √població reparteix pes just. Prova d'inflar la població d'un bloc: la correcció Gini el modula.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Reclama un node. Convida un altre navegador a l'ecosistema. Des d'observer sol·licita ser guardian. Des d'owner, aprova la petició. Verifica que el nou guardian pot votar propostes.</p></div>
+</section>
+
+<section class="module mod-6" id="m6">
+<div class="num">MÒDUL 6 · 7-9 h</div>
+<h2>MATRIU · Slicing Pie · Intercooperació Mondragón</h2>
+<p class="subtitle">Incubadora de projectes econòmics amb equity dinàmic i intercooperació entre ventures.</p>
+<p class="lead">La MATRIU és el mecanisme més complex de SOS: incubar iniciatives crítiques del territori amb Slicing Pie (Mike Moyer) i deixar-les cooperar entre elles estil Mondragón — sense advocats, sense despatxos, tot al navegador.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Crear una MATRIU i incubar ventures des de les <code>CRITICAL_ACTIVITIES</code>.</li>
+<li>Assignar recursos ecosistèmics (talent, hores, objectes) a cada venture.</li>
+<li>Calcular l'equity dinàmic amb <strong>Slicing Pie</strong> (temps × FMV × nonCash + diner × cash).</li>
+<li>Gestionar el <strong>Fons cooperatiu</strong> local + roll-up de valor.</li>
+<li>Executar <strong>transferències entre ventures</strong> signades i encadenades (model Mondragón).</li>
+<li>Graduar una venture a projecte propi.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li>Model Slicing Pie de Mike Moyer</li>
+<li>Anàlisi econòmica de fons cooperatius</li>
+<li>Valoració FMV per skill i tipologia d'objecte</li>
+<li>Disseny d'intercooperació entre projectes</li>
+<li>Facilitació d'incubadores comunitàries</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Visió econòmica cooperativa</li>
+<li>Equitat dinàmica sense discussions</li>
+<li>Paciència amb l'agregat lent</li>
+<li>Ètica de la circulació (no extracció)</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>CRITICAL_ACTIVITIES</code> · <code>newVenture()</code> · <code>venturesOf()</code> · <code>allocationsOf()</code> · <code>ventureLedger()</code> · <code>equityCfg()</code> · <code>computeEquity()</code> · <code>computeVentureEquity()</code> · <code>buildEquityWrap()</code> · <code>ecosystemResources()</code> · <code>fundRollup()</code> · <code>fundValue()</code> · <code>ORACLE_FMV_DEFAULTS</code> · <code>ORACLE_OBJECT_DEFAULTS</code> · <code>transferBetweenVentures()</code> · <code>cooperationSummary()</code> · <code>graduateVenture()</code> · <code>openMatriuXXX modals</code></p>
+</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Comença per un fons petit (2-3 socis, 20-40 hores mobilitzades). Incuba 2 ventures des de <code>CRITICAL_ACTIVITIES</code>. Assigna recursos i observa el <strong>Fons cooperatiu</strong> rollup. Executa una intercooperació entre ventures i verifica la cadena hash del log.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Configura MATRIU + banc de temps + biblioteca vinculats. Simula 1 any: 5 socis, 200h aportades, 2 ventures actives, 1 intercooperació entre elles. Obre el panell <strong>🔮 Valor del fons</strong> i valida el rang €-min/esperat/max.</p></div>
+</section>
+
+<section class="module mod-7" id="m7">
+<div class="num">MÒDUL 7 · 5-7 h</div>
+<h2>Comando Molekulon · Reputació · Multivers narratiu</h2>
+<p class="subtitle">La capa gamificada + narrativa transmedia: superherois, cromos, balanç Shakti/Shiva i pel·lícula col·lectiva.</p>
+<p class="lead">La reputació al SOS és <strong>verificable</strong>: surt del ledger signat. La narrativa és <strong>viva</strong>: cada intercanvi és una llavor de la pel·lícula del Comando. Aquest mòdul t'ensenya a activar el marc que fa que la gent torni.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Comprendre el marc <strong>Shakti/Shiva</strong> (creació/transformació) i els arquetips.</li>
+<li>Calcular la reputació verificable d'una persona.</li>
+<li>Generar el <strong>cromo trading-card</strong> d'un superheroi.</li>
+<li>Activar el <strong>Comando Catalunya</strong> vista amb protagonistes originals + roster real.</li>
+<li>Generar <strong>kits narratius</strong> (còmic + himne + escena performativa) amb IA.</li>
+<li>Publicar al <strong>Multivers Molekulon</strong>.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li>Gamification per procomú</li>
+<li>Narrativa transmedia (còmic + música + performativa)</li>
+<li>Disseny d'arquetips funcionals (vèdic/celta/andí/secular)</li>
+<li>Càlcul de matching (molekulonAffinity)</li>
+<li>Storytelling comunitari</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Creativitat vibrant (Shakti)</li>
+<li>Rigor transformador (Shiva)</li>
+<li>Sentit d'aventura col·lectiva</li>
+<li>Humilitat davant l'ego perdut</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>reputationOf()</code> · <code>superheroCromo()</code> · <code>comandoRoster()</code> · <code>directorFilter()</code> · <code>openComandoView()</code> · <code>ARCHETYPES</code> · <code>ARCHETYPE_SETS</code> (vèdic/celta/andí/secular) · <code>SKILL_POLARITY</code> · <code>molekulonAffinity()</code> · <code>CANONICAL_HEROES</code> · <code>CROMO_TIERS</code> · <code>COMANDO_TARGET</code> (150.000) · <code>evaluateChallenges()</code> · <code>openNarrativeKit()</code> · <code>saveNarrative()</code> · <code>openMultiverse()</code></p>
+</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Dóna d'alta 5 superherois amb superpoders diferents. Obre el <strong>Comando Catalunya</strong> i observa els cromos rank-ordenats. Genera un <strong>Kit narratiu</strong> pel grup més complementari. Guarda al multivers. Repeteix amb un altre grup.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Al perfil transversal d'un superheroi, revisa els <strong>Reptes actius</strong>. Identifica quin repte cal completar per pujar a Bronze tier. Actua a SOS fins que el repte quedi ✓.</p></div>
+</section>
+
+<section class="module mod-8" id="m8">
+<div class="num">MÒDUL 8 · 6-8 h</div>
+<h2>Ancoratge públic i IA integrada</h2>
+<p class="subtitle">Sortir a l'obert: Nostr, Anchor Pack per IPFS/Arweave, AI adapter DRY i simuladors d'impacte.</p>
+<p class="lead">Fins ara tot ha viscut al navegador. Ara aprens a projectar el sistema cap enfora amb proves públiques signades i amb IA integrada per generar mapes, valoracions i narrativa.</p>
+
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Publicar el <code>mainHash</code> d'un node com a event <strong>Nostr NIP-33</strong> replaceable via NIP-07.</li>
+<li>Generar <strong>Anchor Packs</strong> content-addressable (SHA-256 CID) per pinnar a IPFS/Arweave.</li>
+<li>Utilitzar l'adaptador <code>AI.call(intent, ctx)</code> per invocar Claude amb BYO key.</li>
+<li>Configurar el <strong>simulador d'impacte psicoeconòmic Catalunya</strong>.</li>
+<li>Vincular <strong>GitHub OAuth</strong> per revisar PRs amb IA.</li>
+</ul>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul>
+<li>Nostr protocol (NIP-33 replaceable events, NIP-07 signer)</li>
+<li>Content addressing (CID SHA-256)</li>
+<li>Prompt engineering + intent catalog</li>
+<li>Oracles FMV editables</li>
+<li>OAuth device flow (GitHub)</li>
+<li>Anàlisi psicoeconòmica territorial</li>
+</ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
+<li>Cura de la traçabilitat pública</li>
+<li>Cost-benefit d'utilitzar IA (Glass-Box)</li>
+<li>Comunicació política amb dades reals</li>
+<li>Dijitalizar simultàniament sense servidor propi</li>
+</ul></div>
+</div>
+
+<div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
+<p><code>AI.call(intent, ctx)</code> · 8+ intents versionats a <code>SOS/prompts/*.md</code> · <code>NOSTR_RELAYS_DEFAULT</code> · <code>nostrBuildAnchor()</code> · <code>nostrPublishAnchor()</code> · <code>buildAnchorPack()</code> · <code>verifyAnchorPack()</code> · <code>downloadAnchorPack()</code> · <code>simulateImpact()</code> · <code>openImpactSimulator()</code> · <code>GH.deviceStart()</code> · <code>reviewPRWithAI()</code> · <code>openIdentityDashboard()</code></p>
+</div>
+
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Un cop tens un node amb activitat real (Mòdul 6 completat), fes un cicle complet d'ancoratge: (a) genera Anchor Pack + CID · (b) puja'l a Arweave/IPFS · (c) publica el mainHash a Nostr. Cadascú pot verificar el pack sense confiar en TeamTowers.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Simula l'<strong>Impacte cas Catalunya</strong> per al teu municipi. Ajusta la penetració al 10%. Anota l'estalvi €/any + reducció solitud + tCO2. Fes captura i comparteix-la a xarxes amb link a SOS.</p></div>
+</section>
+
+<div class="expert-cert" id="cert">
+<h2>🎓 Expert/a SOS · llibre obert</h2>
+<p style="color:var(--light);margin:.4rem 0 1rem">Has completat els 8 mòduls. Domines:</p>
+<p style="color:var(--muted);font-size:.9rem"><span class="tag done">Filosofia + codex</span><span class="tag done">Criptografia W3C</span><span class="tag done">VNA Verna Allee</span><span class="tag done">Recursos comunitaris</span><span class="tag done">Governança federativa</span><span class="tag done">Slicing Pie + Mondragón</span><span class="tag done">Comando + narrativa</span><span class="tag done">Nostr + IPFS + IA</span></p>
+<p style="color:var(--light);margin-top:1rem">Estàs preparat/da per <strong>implementar SOS a qualsevol comunitat</strong> i formar altres persones. La certificació surt del teu propi <strong>perfil transversal</strong> al SOS: cada mòdul completat és un repte del tier corresponent.</p>
+<p style="margin-top:1.2rem"><a href="index.html" style="background:linear-gradient(90deg,#e040fb,#6366f1);color:#fff;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">Obre SOS i comença →</a></p>
+</div>
+
+</main>
+
+<footer>
+<p>SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · Guia formativa lliure · Zero servidor · W3C · Local-first</p>
+</footer>
+
+</body>
+</html>
