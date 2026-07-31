@@ -1389,10 +1389,41 @@ function openNarrativeKit(prefill){
     }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.noKey?'Cal clau d\'Anthropic a Configuració':(e.msg||String(e)))+'</span></div>';}
   };
 }
+// Pings offer/demand · matching descentralitzat entre nodes (Backlog #1)
+// Escaneja tots els bancs de temps de l'ecosistema i troba parells oferta↔demanda amb mateixa categoria + persones diferents.
+function findMatches(){
+  const offers=[],demands=[];
+  state.nodes.forEach(nd=>{if(nd.dynamicType!=='banc_temps')return;
+    offersOf(nd).forEach(o=>{const m=memberById(nd,o.memberId);if(!m||o.status==='pausada')return;const rec={nodeId:nd.id,nodeName:nd.name,offerId:o.id,memberId:o.memberId,memberName:m.name,category:o.category,title:o.title,status:o.status||'activa'};if(o.kind==='oferta')offers.push(rec);else demands.push(rec);});});
+  const matches=[];
+  offers.forEach(o=>demands.forEach(d=>{if(o.category!==d.category)return;if(personKey(o.memberName)===personKey(d.memberName))return;matches.push({category:o.category,offer:o,demand:d,sameNode:o.nodeId===d.nodeId});}));
+  return matches;
+}
+function matchesForPerson(nameOrKey){const key=personKey(nameOrKey);return findMatches().filter(m=>personKey(m.offer.memberName)===key||personKey(m.demand.memberName)===key);}
+function openMatchesModal(personName){
+  const all=personName?matchesForPerson(personName):findMatches();
+  const byCat={};all.forEach(m=>{(byCat[m.category]=byCat[m.category]||[]).push(m);});
+  const bg=modal(`
+    <h2>🔔 Pings de l'ecosistema${personName?' · '+esc(personName):''}</h2>
+    <p class="m-sub">Parells <strong>oferta ↔ demanda</strong> descentralitzats: qui pot ajudar qui, ara mateix. Cada ping surt d'un banc de temps signat i real.</p>
+    <div id="mtBody">${all.length?'':'<div class="ai-note"><span class="ic">✨</span><span>Encara cap matching. Registra ofertes i demandes al banc de temps per generar-ne.</span></div>'}</div>
+    <div class="modal-actions"><button class="btn btn-primary" id="mtClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#mtClose').onclick=closeModal;
+  if(all.length){
+    const box=bg.querySelector('#mtBody');
+    box.innerHTML='<div class="ent-desc" style="margin-bottom:.6rem">'+all.length+' ping'+(all.length===1?'':'s')+' actius a '+Object.keys(byCat).length+' categori'+(Object.keys(byCat).length===1?'a':'es')+'.</div>'+
+      Object.entries(byCat).map(([cat,items])=>'<div class="ent-grp-lbl">🎯 '+esc(cat)+' · '+items.length+' ping'+(items.length===1?'':'s')+'</div><div class="ent-grid">'+
+        items.slice(0,10).map(m=>'<div class="ent-card"><div class="ent-nm">'+esc(m.offer.memberName)+' → '+esc(m.demand.memberName)+'</div><div class="ent-badges"><span class="ent-b b-ver">ofereix '+esc(m.offer.title||cat)+'</span><span class="ent-b">demana '+esc(m.demand.title||cat)+'</span></div><div class="ent-desc" style="margin-top:.3rem">📍 '+(m.sameNode?'mateix node · '+esc(m.offer.nodeName):esc(m.offer.nodeName)+' ↔ '+esc(m.demand.nodeName))+'</div></div>').join('')+
+      '</div>').join('');
+  }
+}
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
+    {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>openMatchesModal()},
     {ic:'🎬',t:'Comando Catalunya',d:'Cromos de la tribu + protagonistes originals',fn:()=>openComandoView()},
     {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
@@ -3027,10 +3058,11 @@ function openPersonProfile(nameOrKey){
     ${sec('🌱 Ventures que lidera',p.ventures,p.ventures.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.venture.name)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b">'+esc(x.venture.stage)+'</span></div></div>').join(''))}
     ${sec('🥧 Slicing Pie',p.slices,p.slices.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.scope==='matriu'?'Fons de la MATRIU':x.ventureName)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b b-ver">'+x.pct.toFixed(1)+'%</span><span class="ent-b">'+Math.round(x.slices).toLocaleString('ca')+' slices</span></div></div>').join(''))}
     ${sec('⬢ Aportacions comptables',p.contributions,p.contributions.slice(0,60).map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.entry.what||(x.entry.type==='moneda'?'Diner':'Hores'))+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName+(x.scope==='venture'?' · '+x.ventureName:''))+'<span class="ent-b">'+(x.entry.type==='moneda'?(x.entry.value+' €'):(x.entry.value+' h'))+'</span></div></div>').join(''))}
-    <div class="modal-actions"><button class="btn btn-ghost" id="ppWallet">🔐 Vincula passkey</button><button class="btn btn-ghost" id="ppMulti">🌌 Multivers</button><button class="btn btn-ghost" id="ppKit">🎬 Kit narratiu</button><button class="btn btn-primary" id="ppClose">Tanca</button></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ppPings">🔔 Pings</button><button class="btn btn-ghost" id="ppWallet">🔐 Vincula passkey</button><button class="btn btn-ghost" id="ppMulti">🌌 Multivers</button><button class="btn btn-ghost" id="ppKit">🎬 Kit narratiu</button><button class="btn btn-primary" id="ppClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#ppKit').onclick=()=>{closeModal();openNarrativeKit({name:'El molekulon de '+p.name,members:[p.name].concat((p.ventures||[]).slice(0,4).map(v=>v.venture.name)),challenge:''});};
+  bg.querySelector('#ppPings').onclick=()=>{closeModal();openMatchesModal(p.name);};
   bg.querySelector('#ppMulti').onclick=()=>{closeModal();openMultiverse();};
   bg.querySelector('#ppWallet').onclick=async()=>{try{const pk=await hasPasskey();if(pk){if(confirm('Ja tens un passkey vinculat ('+pk.credId.slice(0,20)+'…). El vols eliminar?')){await unbindPasskey();toast('Passkey desvinculat');}return;}await bindPasskey();toast('✓ Passkey vinculat a la teva identitat did:sos');}catch(e){toast(e.msg||'Error vinculant passkey');}};
   bg.querySelector('#ppClose').onclick=closeModal;
@@ -3770,7 +3802,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,openLauncher,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,openLauncher,findMatches,matchesForPerson,openMatchesModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
