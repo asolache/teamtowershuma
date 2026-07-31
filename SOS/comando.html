@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comando Molekulon · 150.000 superherois per canviar la història</title>
+<meta name="description" content="Enviats a la Terra pel Gran Molekulon, Mazinguer i Horacio han de reclutar 150.000 superherois abans que la Corporació Món Mort ho engoleixi tot. Uneix-te a la tribu creativa oberta amb el teu perfil superheroi verificable.">
+<meta property="og:title" content="Comando Molekulon · 150.000 superherois">
+<meta property="og:description" content="Uneix-te a la tribu creativa oberta. Perfil verificable amb superpoders + superarmes. Zero servidor. Local-first.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700}
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b12;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.55}
+img{max-width:100%}
+
+/* HERO */
+.hero{position:relative;padding:5rem 1.5rem 4rem;text-align:center;background:radial-gradient(ellipse at top,rgba(99,102,241,.2),transparent 60%),radial-gradient(ellipse at bottom right,rgba(224,64,251,.15),transparent 50%),#0b0b12;overflow:hidden}
+.hero::before{content:'MOLEKULON';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22vw;font-weight:900;color:rgba(255,255,255,.02);pointer-events:none;letter-spacing:-.05em;white-space:nowrap}
+.hero-inner{max-width:900px;margin:0 auto;position:relative}
+.tag{display:inline-block;background:rgba(99,102,241,.15);color:var(--indigo);padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,6vw,3.8rem);margin:0 0 1rem;line-height:1.05;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+.hero .sub{font-size:clamp(1rem,2.4vw,1.35rem);color:var(--light);max-width:700px;margin:0 auto 2rem}
+.hero .sub strong{color:var(--text)}
+.ctas{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}
+.cta{padding:.9rem 1.5rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:1rem;display:inline-flex;align-items:center;gap:.4rem;transition:transform .15s}
+.cta:hover{transform:translateY(-1px)}
+.cta-primary{background:linear-gradient(90deg,#6366f1,#00e676);color:#0b0b12}
+.cta-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+
+/* Counter */
+.counter{display:inline-flex;gap:2rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1.2rem 2rem;margin:2rem 0}
+.counter .item{text-align:center}
+.counter .n{font-size:2rem;font-weight:800;background:linear-gradient(90deg,#6366f1,#e040fb);-webkit-background-clip:text;background-clip:text;color:transparent}
+.counter .l{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.15rem}
+
+section{padding:3.5rem 1.5rem;max-width:1100px;margin:0 auto}
+section h2{font-size:clamp(1.5rem,3vw,2.2rem);margin:0 0 .6rem;line-height:1.15}
+section .lead{color:var(--light);font-size:1.05rem;max-width:700px;margin:0 auto 2rem}
+section.center{text-align:center}
+
+/* Canonical heroes grid */
+.heroes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;margin-top:2rem}
+.hcard{background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(99,102,241,.08));border:1px solid rgba(224,64,251,.3);border-radius:14px;padding:1.2rem;transition:border-color .2s}
+.hcard:hover{border-color:rgba(224,64,251,.6)}
+.hcard-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem}
+.hcard-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.2rem;flex-shrink:0}
+.hcard-nm{font-weight:700;font-size:1.05rem}
+.hcard-role{font-size:.72rem;color:var(--purple);font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin-top:.1rem}
+.hcard-power{color:var(--light);font-size:.85rem;line-height:1.4}
+
+/* How it works */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;margin-top:2rem;text-align:left}
+.step{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.4rem;position:relative}
+.step-n{position:absolute;top:-15px;left:1.4rem;background:linear-gradient(90deg,#6366f1,#e040fb);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b0b12}
+.step h3{margin:.4rem 0 .5rem;font-size:1.05rem}
+.step p{margin:0;color:var(--light);font-size:.9rem}
+
+/* Registry */
+.registry{background:linear-gradient(180deg,rgba(0,230,118,.05),rgba(99,102,241,.05));border:1px solid rgba(0,230,118,.15);border-radius:16px;padding:2rem;margin-top:2rem}
+.registry ul{list-style:none;padding:0;margin:1rem 0 0}
+.registry li{padding:.5rem 0;color:var(--light);font-size:.95rem}
+.registry li::before{content:'✓ ';color:var(--green);font-weight:700;margin-right:.4rem}
+.registry strong{color:var(--text)}
+
+/* Tiers */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.8rem;margin-top:2rem}
+.tier{padding:1.2rem 1rem;border-radius:14px;border:2px solid;text-align:center}
+.tier-name{font-weight:700;font-size:1rem;margin:.4rem 0 .1rem}
+.tier-xp{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.t-apr{border-color:#c7c7d1;background:linear-gradient(135deg,#3a3a48,#22222a)}.t-apr .tier-name{color:#c7c7d1}
+.t-brz{border-color:#cd7f32;background:linear-gradient(135deg,#5a3a20,#3a2410)}.t-brz .tier-name{color:#cd7f32}
+.t-plt{border-color:#c0c0c0;background:linear-gradient(135deg,#4a4a58,#2a2a35)}.t-plt .tier-name{color:#c0c0c0}
+.t-or{border-color:#ffd700;background:linear-gradient(135deg,#5a4a10,#3a3006)}.t-or .tier-name{color:#ffd700}
+.t-lgd{border-color:#e040fb;background:linear-gradient(135deg,#4a1055,#28082a)}.t-lgd .tier-name{color:#e040fb}
+
+/* Transmedia */
+.transmedia{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:2rem}
+.tm{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.5rem;text-align:center;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.tm:hover{transform:translateY(-2px);border-color:var(--indigo)}
+.tm .ic{font-size:2rem}
+.tm .n{font-weight:700;margin:.5rem 0 .2rem}
+.tm .d{color:var(--muted);font-size:.82rem}
+
+/* Final CTA */
+.final{background:linear-gradient(180deg,rgba(99,102,241,.1),rgba(224,64,251,.1));padding:4rem 1.5rem;text-align:center;margin-top:2rem}
+.final h2{font-size:clamp(1.5rem,4vw,2.5rem);margin:0 0 .5rem}
+.final p{color:var(--light);max-width:600px;margin:0 auto 1.5rem}
+
+footer{text-align:center;color:var(--muted);padding:2rem 1rem;font-size:.85rem;border-top:1px solid rgba(255,255,255,.05)}
+footer a{color:var(--indigo);text-decoration:none}
+nav.top{position:sticky;top:0;background:rgba(11,11,18,.85);backdrop-filter:blur(10px);padding:.9rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+nav.top .brand{font-weight:700;color:var(--text);text-decoration:none;font-size:.95rem}
+nav.top .brand span{color:var(--indigo)}
+nav.top .links{display:flex;gap:1.2rem;font-size:.9rem}
+nav.top .links a{color:var(--light);text-decoration:none}
+nav.top .links a:hover{color:var(--text)}
+</style>
+</head>
+<body>
+
+<nav class="top">
+<a class="brand" href="../index.html">TeamTowers <span>Humà</span></a>
+<div class="links">
+<a href="../index.html">Landing</a>
+<a href="blog.html">Blog</a>
+<a href="index.html">Obre SOS →</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+<div class="hero-inner">
+<span class="tag">🧬 Tribu creativa oberta</span>
+<h1>150.000 superherois per canviar la història</h1>
+<p class="sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, <strong>Mazinguer i Horacio</strong> han de reclutar-nos abans que la <strong>Corporació Món Mort</strong> engoleixi les comunitats. Cada aportació teva a un banc de temps, cada objecte que comparteixes, cada intercanvi signat és una llavor de la pel·lícula.</p>
+<div class="ctas">
+<a class="cta cta-primary" href="index.html">✦ Crea el meu cromo</a>
+<a class="cta cta-ghost" href="blog.html">📖 L'origen</a>
+</div>
+<div class="counter">
+<div class="item"><div class="n">150.000</div><div class="l">objectiu Comando</div></div>
+<div class="item"><div class="n">8</div><div class="l">herois canònics</div></div>
+<div class="item"><div class="n">27+6</div><div class="l">pobles Alt Penedès + Garraf</div></div>
+</div>
+</div>
+</div>
+
+<!-- CANONICAL HEROES -->
+<section class="center">
+<h2>🌟 Els herois canònics</h2>
+<p class="lead">Còmics 1 i 2. El nucli inicial del Comando. Els que estan buscant els altres 149.992.</p>
+<div class="heroes" style="text-align:left">
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(210,65%,45%)">M</div><div><div class="hcard-nm">Mazinguer</div><div class="hcard-role">Líder tècnic</div></div></div><div class="hcard-power">Sense superpoder aparent · l'ego perdut és el seu poder</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(30,65%,45%)">H</div><div><div class="hcard-nm">Horacio</div><div class="hcard-role">Narrador i estratega</div></div></div><div class="hcard-power">Explicar la història que uneix tot</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(120,65%,45%)">G</div><div><div class="hcard-nm">Guiriguai</div><div class="hcard-role">Diplomat impossible</div></div></div><div class="hcard-power">Llenguatges impossibles · parla amb qualsevol tribu</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(280,65%,45%)">P</div><div><div class="hcard-nm">Purpleman</div><div class="hcard-role">Persuasor</div></div></div><div class="hcard-power">Persuasió i visualització · fa veure el que no es veu</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(330,65%,45%)">A</div><div><div class="hcard-nm">Afrodita</div><div class="hcard-role">Cures i xarxa afectiva</div></div></div><div class="hcard-power">Teixir vincles on n'hi ha absència</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(180,65%,45%)">LA</div><div><div class="hcard-nm">La Anguila</div><div class="hcard-role">Mobilitat i escapisme</div></div></div><div class="hcard-power">Trencar cercles viciosos i moure la comunitat</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(60,65%,45%)">B</div><div><div class="hcard-nm">Barbamuda</div><div class="hcard-role">Escolta profunda</div></div></div><div class="hcard-power">Silenci útil · sentir el que la comunitat no diu</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(240,65%,45%)">E</div><div><div class="hcard-nm">Ectoplasman</div><div class="hcard-role">P2P encarnat</div></div></div><div class="hcard-power">Presència distribuïda · aixafar la centralització</div></div>
+</div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="center">
+<h2>Com et convertiràs en superheroi</h2>
+<p class="lead">Tres passos. Un minut. Cap servidor. La teva identitat es queda al teu dispositiu.</p>
+<div class="steps">
+<div class="step"><div class="step-n">1</div><h3>Obre SOS al teu navegador</h3><p>Zero descàrrega. Local-first. Es genera automàticament la teva <strong>identitat did:sos</strong> (Ed25519, W3C SubtleCrypto). La clau privada mai surt del dispositiu.</p></div>
+<div class="step"><div class="step-n">2</div><h3>Crea el teu cromo</h3><p>Nom + població + fins a <strong>5 superpoders</strong> (skills) + <strong>superarmes</strong> (objectes que poses en comú). El sistema et vincula al banc de temps + biblioteca del teu barri.</p></div>
+<div class="step"><div class="step-n">3</div><h3>Puja de nivell</h3><p>Aprenent → Bronze → Plata → Or → Llegenda. Cada intercanvi firmat, cada objecte compartit, cada molekulon activat suma XP. Els reptes del següent tier són visibles al teu cromo.</p></div>
+</div>
+</section>
+
+<!-- TIERS -->
+<section class="center">
+<h2>🏆 Nivells del Comando</h2>
+<p class="lead">Reputació verificable, no puntuació opaca. Cada tier té reptes concrets al teu cromo.</p>
+<div class="tiers">
+<div class="tier t-apr"><div class="tier-name">Aprenent</div><div class="tier-xp">XP 0 → 50</div></div>
+<div class="tier t-brz"><div class="tier-name">Bronze</div><div class="tier-xp">XP 50 → 200</div></div>
+<div class="tier t-plt"><div class="tier-name">Plata</div><div class="tier-xp">XP 200 → 500</div></div>
+<div class="tier t-or"><div class="tier-name">Or</div><div class="tier-xp">XP 500 → 1.200</div></div>
+<div class="tier t-lgd"><div class="tier-name">Llegenda</div><div class="tier-xp">XP 1.200+</div></div>
+</div>
+</section>
+
+<!-- REGISTRE -->
+<section>
+<div class="registry">
+<h2 style="margin-top:0">🔐 Registre descentralitzat · sense servidor</h2>
+<p class="lead" style="margin-left:0">El teu perfil superheroi és <strong>portable</strong> i <strong>verificable</strong> per contracte tècnic. Ningú el pot alterar sense la teva firma.</p>
+<ul>
+<li><strong>did:sos</strong> — identifica't amb un DID W3C generat pel teu navegador. Compatible amb l'ecosistema descentralitzat.</li>
+<li><strong>WebAuthn passkey</strong> — vincula un passkey del teu dispositiu (Face ID, Touch ID, Windows Hello) per accés + recuperació.</li>
+<li><strong>NIP-05 alias</strong> (backlog) — reclama <code>nom@teamtowershuma.com</code> per fer-te trobable via Nostr sense donar el DID sencer.</li>
+<li><strong>WebRTC P2P</strong> — sincronitza el teu perfil entre dispositius directament, sense passar per cap servidor.</li>
+<li><strong>Anthropic BYO-key</strong> — quan uses IA (kit narratiu, valoració, matching), tu poses la clau. Zero SaaS de TeamTowers.</li>
+<li><strong>GitHub OAuth device flow</strong> — vinculació opcional per revisar PRs col·laboratius del codex.</li>
+</ul>
+</div>
+</section>
+
+<!-- TRANSMEDIA -->
+<section class="center">
+<h2>🎬 L'univers transmedia</h2>
+<p class="lead">Els cròmics vénen a Amazon. La banda toca al SoundCloud. Els capítols a YouTube. La comunitat, aquí a SOS.</p>
+<div class="transmedia">
+<a class="tm" href="https://soundcloud.com/comando-molekulon" target="_blank" rel="noopener"><div class="ic">🎵</div><div class="n">SoundCloud</div><div class="d">Música del Comando</div></a>
+<a class="tm" href="https://youtube.com/@comando-molekulon" target="_blank" rel="noopener"><div class="ic">🎥</div><div class="n">YouTube</div><div class="d">Capítols de personatges</div></a>
+<a class="tm" href="https://amazon.es/s?k=comando+molekulon+comic" target="_blank" rel="noopener"><div class="ic">📚</div><div class="n">Amazon</div><div class="d">Còmics 1 i 2</div></a>
+<a class="tm" href="https://instagram.com/comando_molekulon" target="_blank" rel="noopener"><div class="ic">📷</div><div class="n">Instagram</div><div class="d">Backstage + roster</div></a>
+</div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="final">
+<h2>Uneix-te ara</h2>
+<p>El Comando arriba a la teva població quan tu arribes. Cada superheroi és una llavor local. Zero descàrrega. Zero servidor. Un minut.</p>
+<div class="ctas"><a class="cta cta-primary" href="index.html">✦ Crea el meu cromo</a><a class="cta cta-ghost" href="blog.html">📖 Llegeix més històries</a></div>
+</div>
+
+<footer>
+Comando Molekulon · un projecte mestre de <a href="../index.html">TeamTowers Humà</a> · Alt Penedès i Garraf · <a href="blog.html">Blog</a> · <a href="index.html">Obre SOS</a>
+</footer>
+
+</body>
+</html>
