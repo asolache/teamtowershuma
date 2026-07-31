@@ -1484,6 +1484,7 @@ function _searchIndex(){
   const ents=(state.entities||[]).map(e=>({k:'entity',id:e.id,label:e.name,sub:'🏛 '+(e.entityType||'entitat'),action:()=>openEntityForm(e)}));
   const actions=[
     {k:'action',id:'act_hero',label:'Crea el meu perfil superheroi',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
+    {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · wallets · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_multi',label:'Multivers Molekulon',sub:'🌌 acció',action:()=>openMultiverse()},
     {k:'action',id:'act_pings',label:'Pings ecosistema',sub:'🔔 acció',action:()=>openMatchesModal()},
@@ -1561,6 +1562,45 @@ function openOnboardingTour(){
     const done=bg.querySelector('#obDone');if(done)done.onclick=async()=>{await markOnboardingDone();closeModal();};
   };
   draw();
+}
+// ═══════════ Identity Dashboard · centre unificat d'identitat, wallets, anchors ═══════════
+// Un únic modal per veure l'estat de: did:sos · exchange card · passkey · Nostr signer · relés · envelopes actius · nodes on soc owner/steward.
+async function openIdentityDashboard(){
+  const bg=modal(`
+    <h2>🆔 La meva identitat digital</h2>
+    <p class="m-sub">Estat unificat de tot el que et fa <strong>sobirà de les teves dades</strong>: identitat did:sos, wallets vinculats, capacitats d'anchoring i accessos xifrats.</p>
+    <div id="idDash">Carregant…</div>
+    <div class="modal-actions"><button class="btn btn-primary" id="idClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#idClose').onclick=closeModal;
+  const box=bg.querySelector('#idDash');
+  try{
+    const id=await getIdentity();
+    const passkey=await hasPasskey();
+    const nostr=nostrHasSigner();
+    const nostrPub=nostr?await window.nostr.getPublicKey().catch(()=>null):null;
+    const relays=await nostrRelays();
+    // Envelopes actius (nodes on jo puc desxifrar)
+    const decryptable=[];for(const nd of state.nodes){const env=await myEnvelopeFor(nd);if(env)decryptable.push({id:nd.id,name:nd.name,ts:env.ts,sender:(env.senderDid||'').slice(0,20)+'…'});}
+    // Rols en nodes
+    const owns=state.nodes.filter(nd=>govOf(nd).owner===id.did).map(nd=>nd.name);
+    const stewards=state.nodes.filter(nd=>(govOf(nd).stewards||[]).includes(id.did)).map(nd=>nd.name);
+    box.innerHTML=
+      '<div class="ent-grp-lbl">🔑 Identitat did:sos</div><div class="ent-card"><div class="ent-nm" style="font-size:.75rem;font-family:var(--mono);word-break:break-all">'+esc(id.did)+'</div><div class="ent-badges" style="margin-top:.4rem"><span class="ent-b b-ver">'+esc(id.alg||'Ed25519')+'</span><button class="btn btn-ghost btn-sm" id="idCopyDid">📋 Copia DID</button><button class="btn btn-ghost btn-sm" id="idCopyExch">🎫 Copia carta d\'intercanvi</button></div></div>'+
+      '<div class="ent-grp-lbl">🔐 Wallets vinculats</div><div class="ent-grid"><div class="ent-card" style="border-left:3px solid '+(passkey?'var(--green)':'var(--muted)')+'"><div class="ent-nm">WebAuthn passkey</div><div class="ent-badges"><span class="ent-b '+(passkey?'b-ver':'b-unver')+'">'+(passkey?'vinculat':'no vinculat')+'</span></div><button class="btn btn-ghost btn-sm" id="idPasskey" style="margin-top:.4rem">'+(passkey?'❌ Desvincula':'🔐 Vincula passkey')+'</button></div>'+
+      '<div class="ent-card" style="border-left:3px solid '+(nostr?'var(--green)':'var(--muted)')+'"><div class="ent-nm">Nostr NIP-07</div><div class="ent-badges"><span class="ent-b '+(nostr?'b-ver':'b-unver')+'">'+(nostr?'detectat':'no detectat')+'</span></div>'+(nostrPub?'<div class="ent-desc" style="margin-top:.3rem;font-family:var(--mono);font-size:.7rem;word-break:break-all">'+esc(nostrPub)+'</div>':'<div class="ent-desc" style="margin-top:.3rem">Instal·la Alby o nos2x per signar events.</div>')+'</div></div>'+
+      '<div class="ent-grp-lbl">🛰 Relés Nostr configurats · '+relays.length+'</div><div class="ent-card"><div style="font-size:.75rem;color:var(--light)">'+relays.map(r=>esc(r)).join('<br>')+'</div><button class="btn btn-ghost btn-sm" id="idNostr" style="margin-top:.4rem">🛰 Obre ancoratge Nostr</button></div>'+
+      '<div class="ent-grp-lbl">👑 Rols a l\'ecosistema</div><div class="bib-stats"><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+owns.length+'</div><div class="l">owner</div></div><div class="bib-tile"><div class="n" style="color:var(--purple)">'+stewards.length+'</div><div class="l">steward</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+decryptable.length+'</div><div class="l">nodes desxifrables</div></div></div>'+
+      (owns.length?'<div class="ent-desc">Owner de: '+owns.slice(0,10).map(esc).join(', ')+'</div>':'')+
+      (stewards.length?'<div class="ent-desc">Steward a: '+stewards.slice(0,10).map(esc).join(', ')+'</div>':'')+
+      '<div class="ent-grp-lbl">🔓 Nodes on tinc accés desxifrat · '+decryptable.length+'</div>'+(decryptable.length?'<div class="ent-grid">'+decryptable.slice(0,10).map(d=>'<div class="ent-card"><div class="ent-nm">'+esc(d.name)+'</div><div class="ent-badges"><span class="ent-b">sender '+esc(d.sender)+'</span></div></div>').join('')+'</div>':'<div class="ent-desc">Cap encara. Comparteix la teva carta d\'intercanvi amb un owner perquè t\'obri accés.</div>')+
+      '<div class="ai-note" style="margin-top:.6rem"><span class="ic">🌱</span><span>Tot això és <strong>local i sobirà</strong>. La teva clau privada mai surt del navegador. Els envelopes ECDH t\'obren accés punt-a-punt sense servidor.</span></div>';
+    bg.querySelector('#idCopyDid').onclick=async()=>{if(navigator.clipboard)await navigator.clipboard.writeText(id.did);toast('📋 DID copiat');};
+    bg.querySelector('#idCopyExch').onclick=async()=>{const c=await myExchangeCard();if(navigator.clipboard)await navigator.clipboard.writeText(JSON.stringify(c));toast('🎫 Carta copiada');};
+    bg.querySelector('#idPasskey').onclick=async()=>{try{if(passkey){await unbindPasskey();toast('Passkey desvinculat');}else{await bindPasskey();toast('Passkey vinculat ✓');}closeModal();openIdentityDashboard();}catch(e){toast(e.msg||'Error');}};
+    bg.querySelector('#idNostr').onclick=()=>{closeModal();openNostrModal();};
+  }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.msg||String(e))+'</span></div>';}
 }
 // ═══════════ Anchor Pack · snapshot signat + CID per pinnar a IPFS/Arweave/permaweb (Backlog #5 groundwork) ═══════════
 // Empaqueta {node.id, name, mainHash, ledger_hashes[], envelopes count, ts, signer} + firma.
@@ -1680,6 +1720,7 @@ function openNostrModal(node){
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
+    {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>openIdentityDashboard()},
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>openMatchesModal()},
     {ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
@@ -4107,7 +4148,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
