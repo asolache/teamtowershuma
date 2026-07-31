@@ -1562,11 +1562,72 @@ function openOnboardingTour(){
   };
   draw();
 }
+// ═══════════ Nostr anchor · public timestamped anchor del mainHash del node (Backlog #4) ═══════════
+// Utilitza NIP-33 (kind 30078 replaceable) + NIP-07 (window.nostr.signEvent) per firma real secp256k1.
+// Zero servidor propi: publica a relés WSS públics (Damus, nos.lol, snort.social). Opt-in per node.
+const NOSTR_RELAYS_DEFAULT=['wss://relay.damus.io','wss://nos.lol','wss://relay.snort.social'];
+async function nostrRelays(){try{const all=await dbGetAll();const rec=all.find(n=>n.id==='__nostrelays');return rec&&Array.isArray(rec.relays)?rec.relays:NOSTR_RELAYS_DEFAULT.slice();}catch(e){return NOSTR_RELAYS_DEFAULT.slice();}}
+async function setNostrRelays(list){await dbPut({id:'__nostrelays',type:'meta',relays:list.slice()});}
+function nostrHasSigner(){return !!(typeof window!=='undefined'&&window.nostr&&typeof window.nostr.signEvent==='function'&&typeof window.nostr.getPublicKey==='function');}
+// Construeix l'event NIP-33 replaceable per un node — un únic event actualitzable per {pubkey, kind, d-tag}.
+async function nostrBuildAnchor(node,mainHash,pubkey){
+  const content=JSON.stringify({node:node.id,name:node.name,mainHash:mainHash||'',ts:now(),app:'sos-teamtowers'});
+  return{kind:30078,created_at:Math.floor(Date.now()/1000),tags:[['d','sos-node-'+node.id],['t','sos'],['t','teamtowers']],content,pubkey:pubkey||''};
+}
+async function nostrSignAnchor(event){if(!nostrHasSigner())throw{msg:'Cal una extensió Nostr NIP-07 (Alby, nos2x) instal·lada al navegador'};return await window.nostr.signEvent(event);}
+// Client mínim: obre WebSocket, envia ['EVENT', signed], espera OK o timeout curt, tanca.
+function nostrPublish(relayUrl,signedEvent,{timeout=6000}={}){
+  return new Promise(res=>{
+    let done=false;const finish=(status,detail)=>{if(done)return;done=true;try{ws.close();}catch(e){}res({relay:relayUrl,status,detail:detail||''});};
+    let ws;try{ws=new WebSocket(relayUrl);}catch(e){return finish('error',e.message||'ws error');}
+    const to=setTimeout(()=>finish('timeout'),timeout);
+    ws.onopen=()=>{try{ws.send(JSON.stringify(['EVENT',signedEvent]));}catch(e){clearTimeout(to);finish('error',e.message);}};
+    ws.onmessage=ev=>{try{const msg=JSON.parse(ev.data);if(Array.isArray(msg)&&msg[0]==='OK'&&msg[1]===signedEvent.id){clearTimeout(to);finish(msg[2]?'ok':'rejected',msg[3]||'');}else if(Array.isArray(msg)&&msg[0]==='NOTICE'){/* log-only */}}catch(e){}};
+    ws.onerror=()=>{clearTimeout(to);finish('error','ws error');};
+    ws.onclose=()=>{clearTimeout(to);if(!done)finish('closed');};
+  });
+}
+async function nostrPublishAnchor(node,{relays,onProgress}={}){
+  const g=govOf(node);const mainHash=g.mainHash||'';
+  const pubkey=await window.nostr.getPublicKey();
+  const evt=await nostrBuildAnchor(node,mainHash,pubkey);
+  const signed=await nostrSignAnchor(evt);
+  const list=relays&&relays.length?relays:await nostrRelays();
+  const results=[];
+  for(const r of list){if(onProgress)onProgress({relay:r,status:'pending'});const res=await nostrPublish(r,signed);results.push(res);if(onProgress)onProgress(res);}
+  return{signed,results,successCount:results.filter(x=>x.status==='ok').length};
+}
+function openNostrModal(node){
+  if(!node)node=byId(state.activeId);
+  const bg=modal(`
+    <h2>🛰 Ancoratge Nostr</h2>
+    <p class="m-sub">Publica el <strong>mainHash</strong> del node com a event <em>NIP-33 replaceable</em> (kind 30078) a relés WSS públics. Prova pública de temps + integritat, sense servidor. Signat amb la teva clau Nostr via NIP-07.</p>
+    ${!node?'<div class="ai-note"><span class="ic">⚠</span><span>Selecciona primer un node.</span></div>':`<div class="ent-desc" style="margin-bottom:.4rem">Node: <strong>${esc(node.name)}</strong> · mainHash: <code style="font-size:.7rem">${esc((govOf(node).mainHash||'—').slice(0,32))}${(govOf(node).mainHash||'').length>32?'…':''}</code></div>`}
+    <div class="field"><label>Relés (un per línia)</label><textarea id="nsRelays" rows="4" style="width:100%;font-family:var(--mono);font-size:.8rem"></textarea></div>
+    <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🔐</span><span>Cal una extensió NIP-07 (Alby, nos2x). Estat: <span id="nsHas">comprovant…</span></span></div>
+    <div id="nsOut" style="max-height:35vh;overflow-y:auto"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="nsRelaysSave">Desa relés</button>${node?'<button class="btn btn-primary" id="nsGo">🛰 Publica anchor</button>':''}<button class="btn btn-ghost" id="nsClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#nsClose').onclick=closeModal;
+  (async()=>{const list=await nostrRelays();bg.querySelector('#nsRelays').value=list.join('\n');bg.querySelector('#nsHas').textContent=nostrHasSigner()?'✅ NIP-07 disponible':'❌ no disponible';})();
+  bg.querySelector('#nsRelaysSave').onclick=async()=>{const list=bg.querySelector('#nsRelays').value.split('\n').map(s=>s.trim()).filter(s=>/^wss?:\/\//.test(s));await setNostrRelays(list);toast('Relés desats · '+list.length);};
+  const go=bg.querySelector('#nsGo');if(go)go.onclick=async()=>{
+    const list=bg.querySelector('#nsRelays').value.split('\n').map(s=>s.trim()).filter(s=>/^wss?:\/\//.test(s));
+    const out=bg.querySelector('#nsOut');out.innerHTML='<div class="ai-note"><span class="ic">⏳</span><span>Signant i publicant…</span></div>';
+    try{
+      const r=await nostrPublishAnchor(node,{relays:list,onProgress:pr=>{}});
+      out.innerHTML='<div class="ent-desc">Signat · id: <code style="font-size:.7rem">'+esc(r.signed.id.slice(0,32))+'…</code> · '+r.successCount+'/'+r.results.length+' relés OK</div>'+
+        '<div class="ent-grid">'+r.results.map(x=>{const c={ok:'var(--green)',rejected:'var(--red)',timeout:'var(--orange)',error:'var(--red)',closed:'var(--muted)'}[x.status]||'var(--muted)';return '<div class="ent-card" style="border-left:3px solid '+c+'"><div class="ent-nm" style="font-size:.85rem">'+esc(x.relay)+'</div><div class="ent-badges"><span class="ent-b">'+esc(x.status)+'</span></div>'+(x.detail?'<div class="ent-desc" style="margin-top:.2rem">'+esc(x.detail)+'</div>':'')+'</div>';}).join('')+'</div>';
+    }catch(e){out.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||String(e))+'</span></div>';}
+  };
+}
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>openMatchesModal()},
+    {ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
     {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>openComandoView()},
     {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
@@ -3990,11 +4051,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
-  try{if(await shouldRunOnboarding())setTimeout(()=>openOnboardingTour(),400);}catch(e){}
+  try{if(await shouldRunOnboarding())setTimeout(async()=>{if(await shouldRunOnboarding())openOnboardingTour();},400);}catch(e){}
 })();
 </script>
 </body>
