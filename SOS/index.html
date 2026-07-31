@@ -1247,11 +1247,26 @@ async function openGovernanceModal(node){
     <p class="m-sub">Propostes signades i quòrum. El teu rol: <strong>${roleLbl}</strong> · Quòrum d'aprovació: <strong>${g.quorum||1}</strong> · Stewards: <strong>${(g.stewards||[]).length}</strong></p>
     ${!g.owner?'<div class="ai-note" style="margin-bottom:.6rem"><span class="ic">⚠</span><span>Node sense owner reclamat — qualsevol pot escriure. Fes "Reclama la propietat" per activar la sabiduria.</span><br><button class="btn btn-primary btn-sm" id="gClaim" style="margin-top:.4rem">👑 Reclama la propietat</button></div>':''}
     ${g.owner&&role==='observer'?'<div class="ai-note" style="margin-bottom:.6rem;border-color:var(--purple)"><span class="ic">🙋</span><span>Vols ajudar a validar propostes d\'aquest node? Sol·licita ser Guardian (steward). El propietari haurà d\'aprovar la teva petició.</span><br><button class="btn btn-primary btn-sm" id="gRequest" style="margin-top:.4rem">🙋 Sol·licita ser Guardian</button></div>':''}
+    ${(role==='owner'||role==='steward')?'<div class="ai-note" style="margin-bottom:.6rem;border-color:var(--green)"><span class="ic">🔐</span><span>Xifratge multi-membre: comparteix la clau simètrica del node amb un membre autoritzat perquè pugui llegir els camps privats xifrats. Envelope ECDH-P256.</span><br><button class="btn btn-primary btn-sm" id="gShareKey" style="margin-top:.4rem">🔐 Comparteix la clau del node</button> <span class="ent-desc" style="margin-left:.4rem">'+(envelopesOf(node).length||0)+' membre(s) amb accés</span></div>':''}
     <div id="gProps"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="gClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const claimBtn=bg.querySelector('#gClaim');if(claimBtn)claimBtn.onclick=async()=>{await claimNode(node);await persist(node);closeModal();openGovernanceModal(node);toast('Ets el propietari — la sabiduria està activa');};
+  const shareBtn=bg.querySelector('#gShareKey');if(shareBtn)shareBtn.onclick=async()=>{
+    const raw=prompt('Enganxa la carta d\'intercanvi del membre (JSON amb {did, exchangePub}):');
+    if(!raw)return;
+    let card;try{card=JSON.parse(raw.trim());}catch(e){toast('JSON invàlid');return;}
+    if(!card.did||!card.exchangePub){toast('Falta did o exchangePub a la carta');return;}
+    try{
+      let nodeKey=await getMyNodeKey(node);
+      if(!nodeKey)nodeKey=await generateNodeKey(); // primera vegada: genera i comparteix-la amb un mateix també
+      const meCard=await myExchangeCard();
+      if(!envelopesOf(node).find(e=>e.recipientDid===meCard.did))await shareNodeKeyWithMember(node,meCard,nodeKey);
+      await shareNodeKeyWithMember(node,card,nodeKey);
+      await persist(node);closeModal();openGovernanceModal(node);toast('✓ Clau del node compartida amb '+card.did.slice(0,20)+'…');
+    }catch(e){toast(e.msg||'Error compartint clau');}
+  };
   const reqBtn=bg.querySelector('#gRequest');if(reqBtn)reqBtn.onclick=async()=>{
     const existing=(props||[]).find(p=>p.kind==='steward_add'&&p.status==='pending'&&p.payload&&p.payload.did===myDid);
     if(existing){toast('Ja tens una petició pendent per aquest node');return;}
@@ -3223,11 +3238,17 @@ function openPersonProfile(nameOrKey){
     ${sec('🌱 Ventures que lidera',p.ventures,p.ventures.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.venture.name)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b">'+esc(x.venture.stage)+'</span></div></div>').join(''))}
     ${sec('🥧 Slicing Pie',p.slices,p.slices.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.scope==='matriu'?'Fons de la MATRIU':x.ventureName)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b b-ver">'+x.pct.toFixed(1)+'%</span><span class="ent-b">'+Math.round(x.slices).toLocaleString('ca')+' slices</span></div></div>').join(''))}
     ${sec('⬢ Aportacions comptables',p.contributions,p.contributions.slice(0,60).map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.entry.what||(x.entry.type==='moneda'?'Diner':'Hores'))+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName+(x.scope==='venture'?' · '+x.ventureName:''))+'<span class="ent-b">'+(x.entry.type==='moneda'?(x.entry.value+' €'):(x.entry.value+' h'))+'</span></div></div>').join(''))}
-    <div class="modal-actions"><button class="btn btn-ghost" id="ppPings">🔔 Pings</button><button class="btn btn-ghost" id="ppWallet">🔐 Vincula passkey</button><button class="btn btn-ghost" id="ppMulti">🌌 Multivers</button><button class="btn btn-ghost" id="ppKit">🎬 Kit narratiu</button><button class="btn btn-primary" id="ppClose">Tanca</button></div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="ppPings">🔔 Pings</button><button class="btn btn-ghost" id="ppCard">🎫 Carta intercanvi</button><button class="btn btn-ghost" id="ppWallet">🔐 Passkey</button><button class="btn btn-ghost" id="ppMulti">🌌 Multivers</button><button class="btn btn-ghost" id="ppKit">🎬 Kit narratiu</button><button class="btn btn-primary" id="ppClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#ppKit').onclick=()=>{closeModal();openNarrativeKit({name:'El molekulon de '+p.name,members:[p.name].concat((p.ventures||[]).slice(0,4).map(v=>v.venture.name)),challenge:''});};
   bg.querySelector('#ppPings').onclick=()=>{closeModal();openMatchesModal(p.name);};
+  bg.querySelector('#ppCard').onclick=async()=>{
+    try{const card=await myExchangeCard();const txt=JSON.stringify(card);
+      if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(txt);toast('🎫 Carta d\'intercanvi copiada · enganxa-la a l\'owner del node');}
+      else prompt('Copia la teva carta d\'intercanvi:',txt);
+    }catch(e){toast(e.msg||'Error creant carta');}
+  };
   bg.querySelector('#ppMulti').onclick=()=>{closeModal();openMultiverse();};
   bg.querySelector('#ppWallet').onclick=async()=>{try{const pk=await hasPasskey();if(pk){if(confirm('Ja tens un passkey vinculat ('+pk.credId.slice(0,20)+'…). El vols eliminar?')){await unbindPasskey();toast('Passkey desvinculat');}return;}await bindPasskey();toast('✓ Passkey vinculat a la teva identitat did:sos');}catch(e){toast(e.msg||'Error vinculant passkey');}};
   bg.querySelector('#ppClose').onclick=closeModal;
