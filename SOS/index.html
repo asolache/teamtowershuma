@@ -370,6 +370,7 @@ a{color:var(--blue);text-decoration:none}
       <div class="sync-pill" id="syncPill"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
       <button class="btn-icon" id="btnMap" title="Mapa de Catalunya">🗺</button>
       <button class="btn-icon" id="btnDir" title="Directori d'entitats (atles)">🌐</button>
+      <button class="btn-icon" id="personaBadge" title="Sessió activa" style="display:none;background:linear-gradient(135deg,var(--indigo),var(--green));color:#fff;font-weight:700;padding:0 .5rem">·</button>
       <button class="btn-icon" id="btnSearch" title="Cerca global (⌘K)">🔍</button>
       <button class="btn-icon" id="btnLauncher" title="Menú d'accions ràpides">☰</button>
       <button class="btn-icon" id="btnSync" title="Sincronitza amb un altre dispositiu">🔗</button>
@@ -728,7 +729,11 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{}};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null};
+// Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
+async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
+async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
+function updatePersonaBadge(){const el=document.getElementById('personaBadge');if(!el)return;if(state.activePersona){el.textContent='👤 '+state.activePersona.split(/\s+/).slice(0,2).map(s=>s.charAt(0).toUpperCase()).join('');el.title='Sessió activa: '+state.activePersona+' · clic per canviar';el.style.display='';}else{el.style.display='none';}}
 const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const now=()=>new Date().toISOString();
 // ═══════════ Identitat descentralitzada · did:key + firma (Arc I1+L1) ═══════════
@@ -1374,7 +1379,8 @@ function openSuperheroiOnboarding(prefill){
     if(bt){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bt).push(m);sel.sk.forEach(i=>{const s=SKILL_TOP20[i];offersOf(bt).push(newOffer({memberId:m.id,kind:'oferta',category:s.cat,title:s.label+' — '+name}));});await persist(bt);}
     if(bib){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bib).push(m);sel.ob.forEach(i=>{const o=OBJECT_TOP20[i];objectsOf(bib).push(newObject({name:o.label+' — '+name,typology:o.typ,ownerId:m.id,condition:'bon estat'}));});await persist(bib);}
     state.expanded.add(placement.id);if(com)state.expanded.add(com.id);if(prov)state.expanded.add(prov.id);state.expanded.add(pais.id);
-    closeModal();selectNode(placement.id);toast('✦ Perfil superheroi creat a '+placement.name);setTimeout(()=>openPersonProfile(name),300);
+    await setActivePersona(name);
+    closeModal();selectNode(placement.id);toast('✦ Perfil superheroi creat · sessió iniciada com '+name);setTimeout(()=>openPersonProfile(name),300);
   };
 }
 // Assistent de valoració amb IA: rang €-min/esperat/max per skill o objecte amb font (Arc O3 · Glass-Box).
@@ -1814,6 +1820,86 @@ const SOS_ROLES={
   agent:{ic:'🌐',label:'Agent territorial',desc:'Connecta institucions públiques amb l\'ecosistema',color:'var(--blue)'},
   simpatitzant:{ic:'💫',label:'Ciutadà/na simpatitzant',desc:'Explora, aprèn i decideix quan vols pujar',color:'var(--purple)'}
 };
+// Assemblea àgil · vista mòbil-first per propostes + votacions signades + registre públic de decisions
+async function openAssemblyModal(node){
+  if(!node)node=byId(state.activeId);
+  if(!node){toast('Selecciona un node primer');return;}
+  const id=await getIdentity(),myDid=id.did,g=govOf(node),role=roleOf(node,myDid),props=proposalsOf(node);
+  const canVote=role==='owner'||role==='steward';
+  const pending=props.filter(p=>p.status==='pending');
+  const merged=props.filter(p=>p.status==='merged');
+  const rejected=props.filter(p=>p.status==='rejected');
+  const kindLbl=k=>({steward_add:'🛡 Guardian',member:'👥 Soci',ledger:'⬢ Aportació',meta:'📝 Metaskill'}[k]||k);
+  const bg=modal(`
+    <h2>🗳 Assemblea àgil · <em>${esc(node.name)}</em></h2>
+    <p class="m-sub">${state.activePersona?'Sessió: <strong>'+esc(state.activePersona)+'</strong> · ':''}El teu rol: <strong>${role}</strong> · Quòrum: <strong>${g.quorum||1}</strong> · Registre públic ancorable a Nostr/permaweb.</p>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem">
+      <button class="btn btn-primary btn-sm" id="asNew" style="flex:1;min-width:150px">+ Nova proposta</button>
+      <button class="btn btn-ghost btn-sm" id="asHist" style="flex:1;min-width:150px">📖 Historial públic (${merged.length}✅/${rejected.length}❌)</button>
+    </div>
+    <div id="asNewForm" style="display:none" class="ent-card">
+      <div class="field"><label>Tipus</label><select id="asKind"><option value="ledger">⬢ Aportació al ledger</option><option value="member">👥 Alta de soci</option><option value="meta">📝 Canvi de metaskill</option></select></div>
+      <div class="field"><label>Nota / motivació breu</label><input id="asNote" placeholder="p.ex. La Berta puja al banc de temps"></div>
+      <div class="field"><label>Payload (JSON breu)</label><textarea id="asPayload" rows="3" style="width:100%;font-family:var(--mono);font-size:.8rem" placeholder='p.ex. {"name":"Berta"} per member · {"type":"temps","value":2,"who":"Berta"} per ledger'>{}</textarea></div>
+      <div style="display:flex;gap:.4rem;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="asCancel">Cancel·la</button><button class="btn btn-primary btn-sm" id="asSubmit">🖋 Signa i envia</button></div>
+    </div>
+    <div class="ent-grp-lbl">⏳ Pendents · ${pending.length}</div>
+    <div id="asPending"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="asClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#asClose').onclick=closeModal;
+  const drawPending=()=>{
+    const box=bg.querySelector('#asPending');
+    if(!pending.length){box.innerHTML='<div class="ent-desc">Cap proposta pendent. Crea\'n una amb "+ Nova proposta".</div>';return;}
+    box.innerHTML='<div style="display:grid;gap:.5rem">'+pending.map(p=>{
+      const yes=p.votes.filter(v=>v.approve).length,no=p.votes.filter(v=>!v.approve).length;
+      const mine=p.votes.find(v=>v.did===myDid);
+      const need=(g.quorum||1)-yes;
+      return '<div class="ent-card"><div class="ent-nm">'+kindLbl(p.kind)+(p.note?': '+esc(p.note):'')+'</div>'+
+        '<div class="ent-badges" style="margin-top:.3rem"><span class="ent-b b-ver">✅ '+yes+'/'+(g.quorum||1)+'</span>'+(no?'<span class="ent-b b-unver">❌ '+no+'</span>':'')+(mine?'<span class="ent-b">votat: '+(mine.approve?'✅':'❌')+'</span>':'')+'</div>'+
+        (canVote?'<div style="display:flex;gap:.3rem;margin-top:.4rem"><button class="btn btn-primary btn-sm as-yes" data-p="'+p.id+'" style="flex:1">✅ Aprova</button><button class="btn btn-ghost btn-sm as-no" data-p="'+p.id+'" style="flex:1;color:var(--red)">❌ Rebutja</button></div>':'<div class="ent-desc" style="margin-top:.4rem">Cal ser owner/steward per votar. Faltaven '+need+' vot(s) més per aprovar.</div>')+
+      '</div>';
+    }).join('')+'</div>';
+    box.querySelectorAll('.as-yes').forEach(b=>b.onclick=async()=>{try{await voteProposal(node,b.dataset.p,true);await persist(node);closeModal();openAssemblyModal(node);toast('✓ Vot registrat');}catch(e){toast(e.msg||'Error');}});
+    box.querySelectorAll('.as-no').forEach(b=>b.onclick=async()=>{try{await voteProposal(node,b.dataset.p,false);await persist(node);closeModal();openAssemblyModal(node);toast('✓ Vot registrat');}catch(e){toast(e.msg||'Error');}});
+  };
+  drawPending();
+  const form=bg.querySelector('#asNewForm');
+  bg.querySelector('#asNew').onclick=()=>{form.style.display=form.style.display==='none'?'block':'none';};
+  bg.querySelector('#asCancel').onclick=()=>{form.style.display='none';};
+  bg.querySelector('#asSubmit').onclick=async()=>{
+    const kind=bg.querySelector('#asKind').value,note=bg.querySelector('#asNote').value.trim();
+    let payload;try{payload=JSON.parse(bg.querySelector('#asPayload').value||'{}');}catch(e){toast('JSON invàlid');return;}
+    try{await proposeChange(node,kind,payload,note);await persist(node);closeModal();openAssemblyModal(node);toast('🖋 Proposta enviada');}catch(e){toast(e.msg||'Error');}
+  };
+  bg.querySelector('#asHist').onclick=()=>{closeModal();openPublicDecisionsModal(node);};
+}
+function openPublicDecisionsModal(node){
+  if(!node)node=byId(state.activeId);
+  if(!node){toast('Selecciona un node primer');return;}
+  const g=govOf(node),props=proposalsOf(node);
+  const decisions=props.filter(p=>p.status!=='pending').sort((a,b)=>(b.mergedAt||b.rejectedAt||b.ts||'').localeCompare(a.mergedAt||a.rejectedAt||a.ts||''));
+  const kindLbl=k=>({steward_add:'🛡 Guardian',member:'👥 Soci',ledger:'⬢ Aportació',meta:'📝 Metaskill'}[k]||k);
+  const bg=modal(`
+    <h2>📖 Registre públic de decisions · <em>${esc(node.name)}</em></h2>
+    <p class="m-sub">Historial signat i verificable de totes les decisions preses per l'assemblea. mainHash actual: <code style="font-size:.72rem">${esc((g.mainHash||'—').slice(0,32))}${(g.mainHash||'').length>32?'…':''}</code></p>
+    <div id="pdBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="pdAnchor">🛰 Ancora mainHash</button><button class="btn btn-primary" id="pdClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#pdClose').onclick=closeModal;
+  bg.querySelector('#pdAnchor').onclick=()=>{closeModal();openNostrModal(node);};
+  const box=bg.querySelector('#pdBody');
+  if(!decisions.length){box.innerHTML='<div class="ent-desc">Encara cap decisió al registre públic. Les propostes aprovades i rebutjades s\'hi acumularan aquí.</div>';return;}
+  box.innerHTML='<div style="display:grid;gap:.4rem">'+decisions.slice(0,50).map(d=>{
+    const color=d.status==='merged'?'var(--green)':'var(--red)';
+    const emoji=d.status==='merged'?'✅':'❌';
+    const yes=d.votes.filter(v=>v.approve).length,no=d.votes.filter(v=>!v.approve).length;
+    return '<div class="ent-card" style="border-left:3px solid '+color+'"><div class="ent-nm">'+emoji+' '+kindLbl(d.kind)+(d.note?': '+esc(d.note):'')+'</div>'+
+      '<div class="ent-badges" style="margin-top:.3rem"><span class="ent-b">'+d.status+'</span><span class="ent-b">✅ '+yes+' · ❌ '+no+'</span>'+(d.mergedAt||d.rejectedAt?'<span class="ent-b">'+((d.mergedAt||d.rejectedAt).slice(0,16))+'</span>':'')+'</div></div>';
+  }).join('')+'</div>';
+}
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
@@ -1827,6 +1913,8 @@ function openLauncher(){
     {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
     {ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
+    {ic:'🗳',t:'Assemblea àgil (mòbil-first)',d:'Propostes + vots ràpids optimitzats per tauleta/mòbil',fn:()=>openAssemblyModal()},
+    {ic:'📖',t:'Registre públic de decisions',d:'Historial signat i ancorable a Nostr',fn:()=>openPublicDecisionsModal()},
     {ic:'🌐',t:'Assemblea federativa',d:'Pes Penrose √població × activitat + Gini',fn:()=>{const nd=byId(state.activeId);openFederationModal(nd&&isTerritory(nd.nodeLevel)?nd:null);}},
     {ic:'🔮',t:'Impacte hipotètic Catalunya',d:'Simulador psicoeconòmic per municipi',fn:()=>openImpactSimulator()},
     {ic:'💎',t:'Valora un recurs amb IA',d:'Rang min-esperat-max + font Glass-Box',fn:()=>openValuationAssistant()},
@@ -4299,6 +4387,7 @@ $('#btnContact').onclick=openContactModal;
 $('#btnSettings').onclick=openSettingsModal;
 $('#btnLauncher').onclick=openLauncher;
 window.openFounderMap=openFounderMap;
+$('#personaBadge').onclick=()=>{if(state.activePersona){openPersonProfile(state.activePersona);}};
 $('#btnSearch').onclick=openSearchPalette;
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearchPalette();}});
 $('#btnMap').onclick=()=>{state.activeId=null;render();};
@@ -4310,10 +4399,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ═══════════════════ BOOT ═══════════════════ */
 (async function boot(){
-  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
+  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
