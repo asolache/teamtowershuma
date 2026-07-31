@@ -1379,6 +1379,81 @@ function openNarrativeKit(prefill){
     }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.noKey?'Cal clau d\'Anthropic a Configuració':(e.msg||String(e)))+'</span></div>';}
   };
 }
+// ═══════════ Comando Molekulon · Cromo + Roster + Director filter ═══════════
+// Tot superheroi té el seu cromo. Comando Catalunya és la tribu que els aplega. La pel·lícula surt d'aquí.
+const COMANDO_TARGET=150000;
+const CROMO_TIERS=[{min:0,label:'Aprenent',color:'#c7c7d1',bg:'linear-gradient(135deg,#3a3a48,#22222a)'},{min:50,label:'Bronze',color:'#cd7f32',bg:'linear-gradient(135deg,#5a3a20,#3a2410)'},{min:200,label:'Plata',color:'#c0c0c0',bg:'linear-gradient(135deg,#4a4a58,#2a2a35)'},{min:500,label:'Or',color:'#ffd700',bg:'linear-gradient(135deg,#5a4a10,#3a3006)'},{min:1200,label:'Llegenda',color:'#e040fb',bg:'linear-gradient(135deg,#4a1055,#28082a)'}];
+const cromoTier=score=>CROMO_TIERS.slice().reverse().find(t=>score>=t.min)||CROMO_TIERS[0];
+function _colorFromName(name){let h=0;for(let i=0;i<name.length;i++){h=(h*31+name.charCodeAt(i))>>>0;}const hue=h%360;return 'hsl('+hue+',65%,45%)';}
+function _initialsOf(name){return (name||'?').split(/\s+/).slice(0,2).map(s=>s.charAt(0).toUpperCase()).join('')||'?';}
+function superheroCromo(nameOrKey){
+  const p=personProfile(nameOrKey),r=reputationOf(nameOrKey);
+  const tier=cromoTier(r.reputationScore||0);
+  return{
+    name:p.name,key:p.key,initials:_initialsOf(p.name),color:_colorFromName(p.name),
+    tier,score:Math.round(r.reputationScore||0),
+    superpowers:(r.superpowers||[]).slice(0,3),
+    shakti:r.shakti,shiva:r.shiva,
+    hours:r.hours,communities:r.communities,
+    signed:r.signed,unsigned:r.unsigned,validations:r.validations,
+    nodes:p.totals.nodes,ventures:p.totals.ventures
+  };
+}
+// Roster Comando: tots els superheroi únics de l'ecosistema, rankejats per reputació.
+function comandoRoster(){
+  const seen=new Set(),roster=[];
+  state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{const k=personKey(m.name);if(seen.has(k))return;seen.add(k);roster.push(superheroCromo(m.name));}));
+  return roster.sort((a,b)=>b.score-a.score);
+}
+// Filtre màgic del director: recull últims intercanvis + narratives i els torna en veu narrativa.
+async function directorFilter(limit){
+  limit=limit||30;
+  const items=[];
+  state.nodes.forEach(nd=>(nd.ledger||[]).forEach(e=>{if(!e.memberId)return;const m=memberById(nd,e.memberId);if(!m)return;items.push({t:'contribucio',ts:e.ts||'',node:nd.name,person:m.name,type:e.type,value:Number(e.value)||0,what:e.what||'',category:e.category||'',signed:!!e.sig});}));
+  state.nodes.forEach(nd=>venturesOf(nd).forEach(v=>(v.ledger||[]).forEach(e=>{if(!e.memberId)return;const m=memberById(nd,e.memberId);if(!m)return;items.push({t:'contribucio',ts:e.ts||'',node:nd.name+' · '+v.name,person:m.name,type:e.type,value:Number(e.value)||0,what:e.what||'',category:e.category||'',signed:!!e.sig});})));
+  const narrs=await loadAllNarratives();
+  narrs.forEach(x=>items.push({t:'narrativa',ts:x.createdAt||'',person:x.personKey,narrative:x.narrative}));
+  items.sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  return items.slice(0,limit).map(x=>{
+    if(x.t==='narrativa'){const n=x.narrative||{};return{icon:'📖',title:n.title||('Narrativa de '+x.person),body:n.synopsis||'—',person:x.person,ts:x.ts,badge:'multivers'};}
+    const value=x.type==='moneda'?(x.value+' €'):(x.value+' h');
+    const body=x.person+' va aportar '+value+(x.what?' a "'+x.what+'"':'')+(x.category?' amb el poder de '+x.category:'')+' al node '+x.node+'.';
+    return{icon:x.type==='moneda'?'💰':'⏱',title:x.person+' actua a '+x.node,body,person:x.person,ts:x.ts,badge:x.signed?'firmat':'llegat'};
+  });
+}
+// Modal Comando Catalunya: cromos + últimes històries + progrés vers els 150k.
+function openComandoView(){
+  const bg=modal(`
+    <h2>🎬 Comando Catalunya</h2>
+    <p class="m-sub">La tribu del Comando Molekulon aplega tots els superheroi validats de l'ecosistema. Cada acció real és una llavor de la pel·lícula.</p>
+    <div id="cmStats"></div>
+    <div class="ent-grp-lbl">🎴 Cromos de la tribu</div>
+    <div id="cmRoster" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
+    <div class="ent-grp-lbl">📖 Últimes històries · filtrades pel director</div>
+    <div id="cmStories">Carregant…</div>
+    <div class="modal-actions"><button class="btn btn-primary" id="cmClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#cmClose').onclick=closeModal;
+  const roster=comandoRoster();
+  const cur=roster.length,pct=Math.min(100,cur/COMANDO_TARGET*100);
+  bg.querySelector('#cmStats').innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n">'+cur.toLocaleString('ca')+'</div><div class="l">superherois validats</div></div><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+COMANDO_TARGET.toLocaleString('ca')+'</div><div class="l">visió Comando</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+pct.toFixed(3)+'%</div><div class="l">de la tribu</div></div></div>'+
+    '<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;margin:.5rem 0 1rem;overflow:hidden"><div style="height:100%;width:'+Math.max(0.5,pct)+'%;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);border-radius:5px"></div></div>';
+  bg.querySelector('#cmRoster').innerHTML=roster.length?roster.slice(0,60).map(c=>{
+    const shPct=c.shakti+c.shiva>0?Math.round(c.shakti*100/(c.shakti+c.shiva)):50;
+    return '<div class="ent-card" data-cromo="'+esc(c.name)+'" style="cursor:pointer;padding:0;overflow:hidden;background:'+c.tier.bg+';border:2px solid '+c.tier.color+';border-radius:12px">'+
+      '<div style="padding:.7rem .8rem;display:flex;align-items:center;gap:.6rem"><div style="width:44px;height:44px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(c.initials)+'</div><div style="min-width:0;flex:1"><div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · '+c.score+'</div></div></div>'+
+      '<div style="padding:0 .8rem"><div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;position:relative"><div style="height:100%;background:linear-gradient(90deg,#00e676 0%,#00e676 '+shPct+'%,#ff5252 '+shPct+'%,#ff5252 100%)"></div></div><div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--muted);margin-top:.15rem"><span>Shakti '+Math.round(c.shakti*100)+'</span><span>Shiva '+Math.round(c.shiva*100)+'</span></div></div>'+
+      '<div style="padding:.5rem .8rem;display:flex;flex-wrap:wrap;gap:.25rem">'+c.superpowers.map(s=>'<span style="background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:10px;font-size:.65rem">'+esc(s.cat)+'</span>').join('')+'</div>'+
+      '<div style="padding:.4rem .8rem .7rem;font-size:.7rem;color:var(--muted);display:flex;gap:.6rem;border-top:1px solid rgba(255,255,255,.05);margin-top:.2rem"><span>⏱ '+c.hours+'h</span><span>🏘 '+c.communities+'</span><span>🔏 '+c.signed+'</span></div>'+
+    '</div>';
+  }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
+  bg.querySelectorAll('[data-cromo]').forEach(el=>el.onclick=()=>{closeModal();openPersonProfile(el.dataset.cromo);});
+  (async()=>{const stories=await directorFilter(30);const box=bg.querySelector('#cmStories');
+    if(!stories.length){box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Encara cap història real. Registra un intercanvi o guarda una narrativa al multivers per començar.</span></div>';return;}
+    box.innerHTML=stories.map(s=>'<div class="ent-card" style="margin-bottom:.5rem"><div class="ent-nm">'+s.icon+' '+esc(s.title)+'</div><div class="ent-badges"><span class="ent-b">'+esc(s.badge)+'</span>'+(s.ts?'<span class="ent-b">'+esc(s.ts.slice(0,10))+'</span>':'')+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(s.body.slice(0,220))+(s.body.length>220?'…':'')+'</div></div>').join('');
+  })();
+}
 // Multivers Molekulon: llista totes les narratives del multivers (base per a la pel·lícula del Comando).
 function openMultiverse(){
   const bg=modal(`
@@ -1760,8 +1835,9 @@ function renderResum(body,node,ru){
   flow.appendChild(flowCard('🌱','Comunitat','Explora · mira el valor · simula l\'impacte',[
     'Recorre les <strong>Dinàmiques</strong> del territori (chips a sota)',
     'Al MATRIU, mira el <strong>Valor del fons</strong> (rang €/any) i les ventures',
-    'Simula l\'<strong>Impacte cas Catalunya</strong> per veure el potencial'
-  ],{label:'🔮 Simula l\'impacte',onclick:()=>openImpactSimulator()}));
+    'Simula l\'<strong>Impacte cas Catalunya</strong> per veure el potencial',
+    'Entra al <strong>Comando Catalunya</strong> · veu els cromos de la tribu'
+  ],{label:'🎬 Comando Catalunya',onclick:()=>openComandoView()}));
   body.appendChild(flow);
   // stat tiles
   const tot=el('div','ledger-total');tot.style.marginTop='1rem';
@@ -3204,6 +3280,7 @@ function openSettingsModal(){
       <button class="btn btn-ghost btn-sm" id="stKit" style="margin-left:.3rem">🎬 Kit narratiu Molekulon</button>
       <button class="btn btn-ghost btn-sm" id="stValu" style="margin-left:.3rem">🔮 Valora un recurs amb IA</button>
       <button class="btn btn-ghost btn-sm" id="stMulti" style="margin-left:.3rem">🌌 Multivers Molekulon</button>
+      <button class="btn btn-ghost btn-sm" id="stComando" style="margin-left:.3rem">🎬 Comando Catalunya</button>
       <button class="btn btn-ghost btn-sm" id="stGov" style="margin-left:.3rem">🏛 Sabiduria del node actiu</button>
       <button class="btn btn-ghost btn-sm" id="stFed" style="margin-left:.3rem">🌐 Assemblea federativa</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">📊</span><span>Simulador psicoeconòmic per a entitats públiques: estalvi €/any i benefici psicosocial d'una implementació SOS al territori.</span></div>
@@ -3244,6 +3321,7 @@ function openSettingsModal(){
   bg.querySelector('#stKit').onclick=()=>{closeModal();openNarrativeKit();};
   bg.querySelector('#stValu').onclick=()=>{closeModal();openValuationAssistant();};
   bg.querySelector('#stMulti').onclick=()=>{closeModal();openMultiverse();};
+  bg.querySelector('#stComando').onclick=()=>{closeModal();openComandoView();};
   bg.querySelector('#stGov').onclick=()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}closeModal();openGovernanceModal(nd);};
   bg.querySelector('#stFed').onclick=()=>{const nd=byId(state.activeId);closeModal();openFederationModal(nd&&isTerritory(nd.nodeLevel)?nd:null);};
   (async()=>{const t=await GH.getToken();if(t){try{const me=await GH.me();bg.querySelector('#ghState').innerHTML='<span class="ic">✅</span><span>Autenticat com a <strong>'+esc(me.login)+'</strong>. Ja pots demanar revisions a la IA sobre PRs on tinguis accés.</span>';}catch(e){bg.querySelector('#ghState').innerHTML='<span class="ic">⚠</span><span>Token guardat però invàlid. Torna a iniciar el flow.</span>';}}})();
@@ -3640,7 +3718,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
