@@ -1203,11 +1203,18 @@ async function openGovernanceModal(node){
     <h2>🏛 Sabiduria de <em>${esc(node.name)}</em></h2>
     <p class="m-sub">Propostes signades i quòrum. El teu rol: <strong>${roleLbl}</strong> · Quòrum d'aprovació: <strong>${g.quorum||1}</strong> · Stewards: <strong>${(g.stewards||[]).length}</strong></p>
     ${!g.owner?'<div class="ai-note" style="margin-bottom:.6rem"><span class="ic">⚠</span><span>Node sense owner reclamat — qualsevol pot escriure. Fes "Reclama la propietat" per activar la sabiduria.</span><br><button class="btn btn-primary btn-sm" id="gClaim" style="margin-top:.4rem">👑 Reclama la propietat</button></div>':''}
+    ${g.owner&&role==='observer'?'<div class="ai-note" style="margin-bottom:.6rem;border-color:var(--purple)"><span class="ic">🙋</span><span>Vols ajudar a validar propostes d\'aquest node? Sol·licita ser Guardian (steward). El propietari haurà d\'aprovar la teva petició.</span><br><button class="btn btn-primary btn-sm" id="gRequest" style="margin-top:.4rem">🙋 Sol·licita ser Guardian</button></div>':''}
     <div id="gProps"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="gClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const claimBtn=bg.querySelector('#gClaim');if(claimBtn)claimBtn.onclick=async()=>{await claimNode(node);await persist(node);closeModal();openGovernanceModal(node);toast('Ets el propietari — la sabiduria està activa');};
+  const reqBtn=bg.querySelector('#gRequest');if(reqBtn)reqBtn.onclick=async()=>{
+    const existing=(props||[]).find(p=>p.kind==='steward_add'&&p.status==='pending'&&p.payload&&p.payload.did===myDid);
+    if(existing){toast('Ja tens una petició pendent per aquest node');return;}
+    const note=prompt('Per què vols ser Guardian d\'aquest node? (breu · opcional)')||'';
+    try{await proposeChange(node,'steward_add',{did:myDid},note);await persist(node);closeModal();openGovernanceModal(node);toast('✓ Petició enviada al propietari');}catch(e){toast(e.msg||'Error');}
+  };
   const wire=()=>{
     const box=bg.querySelector('#gProps');
     if(!props.length){box.innerHTML='<div class="ent-desc">Cap proposta encara. Les propostes són canvis signats que necessiten quòrum de stewards per fusionar-se a la branca canònica del node.</div>';return;}
@@ -1217,9 +1224,11 @@ async function openGovernanceModal(node){
       const approvals=p.votes.filter(v=>v.approve).length,rejections=p.votes.filter(v=>!v.approve).length;
       const mine=p.votes.find(v=>v.did===myDid);
       const card=el('div','ent-card');
-      card.innerHTML='<div class="ent-nm">'+esc(p.kind)+(p.note?': '+esc(p.note):'')+'</div>'+
-        '<div class="ent-badges"><span class="ent-b">✅ '+approvals+'/'+(g.quorum||1)+'</span><span class="ent-b">❌ '+rejections+'</span>'+(mine?'<span class="ent-b b-ver">has votat '+(mine.approve?'✅':'❌')+'</span>':'')+'<span class="ent-b">'+esc(String(p.proposer||'').slice(0,16))+'…</span></div>'+
-        '<div class="ent-desc" style="font-family:var(--mono);font-size:.7rem">'+esc(JSON.stringify(p.payload).slice(0,120))+'…</div>';
+      const kindLbl={steward_add:'🛡 Sol·licitud de Guardian',member:'👥 Alta de soci',ledger:'⬢ Aportació al ledger',meta:'📝 Canvi de metaskill'}[p.kind]||p.kind;
+      const isMine=p.kind==='steward_add'&&p.payload&&p.payload.did===myDid;
+      card.innerHTML='<div class="ent-nm">'+esc(kindLbl)+(p.note?': '+esc(p.note):'')+'</div>'+
+        '<div class="ent-badges"><span class="ent-b">✅ '+approvals+'/'+(g.quorum||1)+'</span><span class="ent-b">❌ '+rejections+'</span>'+(mine?'<span class="ent-b b-ver">has votat '+(mine.approve?'✅':'❌')+'</span>':'')+(isMine?'<span class="ent-b b-ver">és la teva</span>':'')+'<span class="ent-b" title="'+esc(String(p.proposer||''))+'">'+esc(String(p.proposer||'').slice(0,20))+'…</span></div>'+
+        (p.kind==='steward_add'?'<div class="ent-desc">Demana ser Guardian (steward) d\'aquest node. Podrà proposar canvis i votar propostes.</div>':'<div class="ent-desc" style="font-family:var(--mono);font-size:.7rem">'+esc(JSON.stringify(p.payload).slice(0,120))+'…</div>');
       const acts=el('div');acts.style.marginTop='.4rem';acts.style.display='flex';acts.style.gap='.3rem';acts.style.flexWrap='wrap';
       if(role==='owner'||role==='steward'){
         const ok=el('button','btn btn-primary btn-sm','✅ Aprova');ok.onclick=async()=>{try{await voteProposal(node,p.id,true);await persist(node);closeModal();openGovernanceModal(node);toast('Vot registrat');}catch(e){toast(e.msg);}};acts.appendChild(ok);
