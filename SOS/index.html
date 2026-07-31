@@ -38,8 +38,8 @@ a{color:var(--blue);text-decoration:none}
 .btn-primary:hover{background:var(--blue);transform:translateY(-1px)}
 .btn-ghost{background:transparent;color:var(--light);border:1px solid var(--border-strong)}
 .btn-ghost:hover{border-color:var(--indigo);color:var(--white)}
-.btn-ghost.sel,.sh-sk.sel,.sh-ob.sel{background:var(--indigo);color:var(--white);border-color:var(--indigo);font-weight:600}
-.sh-sk,.sh-ob{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
+.btn-ghost.sel,.sh-sk.sel,.sh-ob.sel,.sh-role.sel{background:var(--indigo);color:var(--white);border-color:var(--indigo);font-weight:600}
+.sh-sk,.sh-ob,.sh-role{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
 .btn-sm{padding:.4rem .8rem;font-size:.78rem;border-radius:6px}
 .btn-icon{background:transparent;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:6px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:1rem}
 .btn-icon:hover{border-color:var(--indigo);color:var(--white);background:var(--bg-hover)}
@@ -956,7 +956,7 @@ const membersOf=node=>node.members||(node.members=[]);
 const objectsOf=node=>node.objects||(node.objects=[]);
 const offersOf=node=>node.offers||(node.offers=[]);
 const memberById=(node,id)=>membersOf(node).find(m=>m.id===id);
-function newMember({name,kind,entityId,phone,email}){return{id:uid(),name:(name||'').trim(),kind:kind||'persona',entityId:entityId||null,contact:{phone:phone||'',email:email||''},joinedAt:now(),active:true,notes:''};}
+function newMember({name,kind,entityId,phone,email,role}){return{id:uid(),name:(name||'').trim(),kind:kind||'persona',entityId:entityId||null,role:role||'superheroi',contact:{phone:phone||'',email:email||''},joinedAt:now(),active:true,notes:''};}
 function newObject({name,typology,ownerId,condition,deposit}){return{id:uid(),name:(name||'').trim(),typology:typology||'altres',ownerId:ownerId||null,status:'disponible',borrowerId:null,since:null,dueDate:null,reservations:[],condition:condition||'',deposit:Number(deposit)||0,notes:''};}
 function newOffer({memberId,kind,category,title,desc}){return{id:uid(),memberId:memberId||null,kind:kind||'oferta',category:category||'altres',title:(title||'').trim(),desc:(desc||'').trim(),status:'activa'};}
 // Estat de venciment d'un préstec: vençut / venç aviat (≤3 dies) / en termini
@@ -1327,7 +1327,10 @@ function openSuperheroiOnboarding(prefill){
   const bg=modal(`
     <h2>🦸 Crea el teu perfil de superheroi/na</h2>
     <p class="m-sub">En un sol pas: ubicació + habilitats (banc de temps) + objectes (biblioteca). Es signa amb la teva identitat did:sos i entra al fons cooperatiu local.</p>
-    <div class="field"><label>El teu nom</label><input id="shName" autocomplete="name" placeholder="p.ex. Àlvar Solache" value="${esc(prefill.name||'')}"></div>
+    <div class="field"><label>El teu nom</label><input id="shName" autocomplete="name" placeholder="p.ex. Àlvar Solache" value="${esc(prefill.name||'')}"><div class="ent-desc" style="margin-top:.3rem">El nom que veurà la comunitat. Verificable via reputació signada del ledger.</div></div>
+    <div class="field"><label>El teu rol al SOS</label>
+      <div id="shRoles" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.35rem">${Object.entries(SOS_ROLES).map(([k,r],i)=>'<button type="button" class="btn btn-ghost btn-sm sh-role'+(k===(prefill.role||'superheroi')?' sel':'')+'" data-role="'+k+'" style="text-align:left;padding:.5rem .6rem"><div style="font-size:.9rem">'+r.ic+' '+esc(r.label)+'</div><div style="font-size:.7rem;color:var(--muted);margin-top:.15rem">'+esc(r.desc)+'</div></button>').join('')}</div>
+    </div>
     <div class="field"><label>La teva població</label>
       <input id="shMuni" list="shMuniList" autocomplete="off" placeholder="Comença a escriure…" value="${esc(prefill.municipi||'')}">
       <datalist id="shMuniList">${munis.map(m=>'<option value="'+esc(m.n)+'">'+esc(m.p)+'</option>').join('')}</datalist>
@@ -1343,7 +1346,8 @@ function openSuperheroiOnboarding(prefill){
     <div class="modal-actions"><button class="btn btn-ghost" id="shCancel">Cancel·la</button><button class="btn btn-primary" id="shSave">✦ Crea el meu perfil</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
-  const sel={sk:new Set(),ob:new Set()};
+  const sel={sk:new Set(),ob:new Set(),role:prefill.role||'superheroi'};
+  bg.querySelectorAll('.sh-role').forEach(b=>b.onclick=()=>{sel.role=b.dataset.role;bg.querySelectorAll('.sh-role').forEach(x=>x.classList.toggle('sel',x===b));});
   const skCnt=bg.querySelector('#shSkCnt'),obCnt=bg.querySelector('#shObCnt');
   const updCounts=()=>{skCnt.textContent='(tria fins a 5 · '+sel.sk.size+'/5)';skCnt.style.color=sel.sk.size===5?'var(--orange)':'var(--muted)';obCnt.textContent='('+sel.ob.size+' tri'+(sel.ob.size===1?'a':'es')+')';};
   bg.querySelectorAll('.sh-sk').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.i);if(sel.sk.has(i)){sel.sk.delete(i);b.classList.remove('sel');}else if(sel.sk.size<5){sel.sk.add(i);b.classList.add('sel');}else{toast('Ja tens 5 superpoders. Treu-ne un abans d\'afegir-ne un altre.');}updCounts();});
@@ -1367,8 +1371,8 @@ function openSuperheroiOnboarding(prefill){
     let bib=kids.find(k=>k.dynamicType==='biblioteca_coses');
     if(!bib&&sel.ob.size){bib=newNode('Biblioteca de les coses de '+placement.name,'projecte',placement.id);bib.dynamicType='biblioteca_coses';seedFromDynamic(bib,dynById('biblioteca_coses'));state.nodes.push(bib);await persist(bib);}
     // Alta de membre + skills + objectes
-    if(bt){const m=newMember({name,kind:'persona'});membersOf(bt).push(m);sel.sk.forEach(i=>{const s=SKILL_TOP20[i];offersOf(bt).push(newOffer({memberId:m.id,kind:'oferta',category:s.cat,title:s.label+' — '+name}));});await persist(bt);}
-    if(bib){const m=newMember({name,kind:'persona'});membersOf(bib).push(m);sel.ob.forEach(i=>{const o=OBJECT_TOP20[i];objectsOf(bib).push(newObject({name:o.label+' — '+name,typology:o.typ,ownerId:m.id,condition:'bon estat'}));});await persist(bib);}
+    if(bt){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bt).push(m);sel.sk.forEach(i=>{const s=SKILL_TOP20[i];offersOf(bt).push(newOffer({memberId:m.id,kind:'oferta',category:s.cat,title:s.label+' — '+name}));});await persist(bt);}
+    if(bib){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bib).push(m);sel.ob.forEach(i=>{const o=OBJECT_TOP20[i];objectsOf(bib).push(newObject({name:o.label+' — '+name,typology:o.typ,ownerId:m.id,condition:'bon estat'}));});await persist(bib);}
     state.expanded.add(placement.id);if(com)state.expanded.add(com.id);if(prov)state.expanded.add(prov.id);state.expanded.add(pais.id);
     closeModal();selectNode(placement.id);toast('✦ Perfil superheroi creat a '+placement.name);setTimeout(()=>openPersonProfile(name),300);
   };
@@ -1717,6 +1721,30 @@ function openNostrModal(node){
     }catch(e){out.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||String(e))+'</span></div>';}
   };
 }
+// ═══════════ CORE PROJECTS + ROLES · projectes transversals de l'ecosistema ═══════════
+// SOS i Comando Molekulon són projectes CORE — sempre disponibles, participen a matching, apareixen
+// a tot arreu com a ancoratge de la xarxa. La resta són projectes territorials.
+const CORE_PROJECTS=[
+  {id:'core-sos',key:'sos',name:'SOS · Sistema Operatiu Social',ic:'⬢',mission:'Infraestructura sobirana per a comunitats antifràgils',url:'formacio.html',color:'var(--indigo)'},
+  {id:'core-comando',key:'comando',name:'Comando Molekulon',ic:'🎬',mission:'Xarxa transmedia de 150.000 superherois per vèncer la Corporació Món Mort',url:'comando.html',color:'var(--purple)'}
+];
+function isCoreProject(idOrKey){return CORE_PROJECTS.some(c=>c.id===idOrKey||c.key===idOrKey);}
+function coreProjectsFor(personName){
+  const key=personKey(personName);const active=[];
+  state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{if(personKey(m.name)!==key)return;
+    if(nd.dynamicType==='matriu')active.push({core:'comando',via:'MATRIU: '+nd.name});
+    if(nd.dynamicType)active.push({core:'sos',via:'Dinàmica: '+(dynById(nd.dynamicType)||{name:nd.dynamicType}).name+' a '+nd.name});
+  }));
+  return{sos:active.some(x=>x.core==='sos'),comando:active.some(x=>x.core==='comando'),vias:active};
+}
+// Rols del SOS · cada rol té un roadmap i suggeriments d'acció adaptats.
+const SOS_ROLES={
+  guardian:{ic:'🏛',label:'Guardian del territori',desc:'Coordina, vetlla la sabiduria, signa decisions',color:'var(--indigo)'},
+  superheroi:{ic:'🦸',label:'Superheroi/na',desc:'Aporta talents i objectes al fons cooperatiu',color:'var(--green)'},
+  coordinador:{ic:'👥',label:'Coordinador/a de comunitat',desc:'Ajuda persones i entitats a integrar-se al SOS',color:'var(--orange)'},
+  agent:{ic:'🌐',label:'Agent territorial',desc:'Connecta institucions públiques amb l\'ecosistema',color:'var(--blue)'},
+  simpatitzant:{ic:'💫',label:'Ciutadà/na simpatitzant',desc:'Explora, aprèn i decideix quan vols pujar',color:'var(--purple)'}
+};
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
@@ -2252,26 +2280,55 @@ function renderResum(body,node,ru){
       ?'Encara no hi ha ecosistema aquí. Comença amb 1 dinàmica que ja existeixi al territori (banc de temps, biblioteca, cooperativa d\'energia…) i el sistema en construeix el mapa de valor + el fons cooperatiu.'
       :ru.projectes+' projecte'+(ru.projectes===1?'':'s')+' actiu'+(ru.projectes===1?'':'s')+' mobilitzen <strong>'+ru.hores.toFixed(0)+' hores</strong> i <strong>'+ru.moneda.toFixed(0)+' €</strong> per a <strong>'+ru.persones+' persones</strong>. Aquest és el múscul del fons cooperatiu local.'
     )+'</div>';body.appendChild(hero);
-  // Fluxos per perfil: Guardian / Superheroi / Comunitat
-  body.appendChild(el('div','wz-sec-lbl','🎯 Quin és el teu proper pas?'));
+  // Projectes CORE transversals (SOS + Comando) — sempre visibles, ancoratge de la xarxa
+  body.appendChild(el('div','wz-sec-lbl','⬢ Projectes core · transversals a tot l\'ecosistema'));
+  const cores=el('div','ent-grid');
+  CORE_PROJECTS.forEach(cp=>{const c=el('div','ent-card');c.style.borderLeft='3px solid '+cp.color;
+    c.innerHTML='<div class="ent-nm">'+cp.ic+' '+esc(cp.name)+'</div><div class="ent-desc" style="margin:.3rem 0">'+esc(cp.mission)+'</div>'+
+      '<a href="'+cp.url+'" target="_blank" class="btn btn-ghost btn-sm" style="margin-top:.4rem;display:inline-block;text-decoration:none">Coneix-lo →</a>';
+    cores.appendChild(c);});
+  body.appendChild(cores);
+  // Roadmaps per rol · 5 fluxos d'acció adaptats
+  body.appendChild(el('div','wz-sec-lbl','🎯 Roadmap segons el teu rol · quin és el teu proper pas?'));
   const flow=el('div','ent-grid');
-  const flowCard=(ic,role,who,steps,cta)=>{const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+ic+' '+esc(role)+'</div><div class="ent-desc" style="margin:.3rem 0">'+esc(who)+'</div><ol style="margin:.3rem 0 0;padding-left:1.1rem;font-size:.85rem;color:var(--light)">'+steps.map(s=>'<li style="margin:.2rem 0">'+s+'</li>').join('')+'</ol>';if(cta){const btn=el('button','btn btn-primary btn-sm',cta.label);btn.style.marginTop='.6rem';btn.onclick=cta.onclick;c.appendChild(btn);}return c;};
+  const flowCard=(ic,role,who,steps,cta,color)=>{const c=el('div','ent-card');if(color)c.style.borderTop='3px solid '+color;
+    c.innerHTML='<div class="ent-nm">'+ic+' '+esc(role)+'</div><div class="ent-desc" style="margin:.3rem 0">'+esc(who)+'</div><ol style="margin:.3rem 0 0;padding-left:1.1rem;font-size:.85rem;color:var(--light)">'+steps.map(s=>'<li style="margin:.2rem 0">'+s+'</li>').join('')+'</ol>';
+    if(cta){const btn=el('button','btn btn-primary btn-sm',cta.label);btn.style.marginTop='.6rem';btn.onclick=cta.onclick;c.appendChild(btn);}return c;};
   flow.appendChild(flowCard('🏛','Guardian del territori','Coordina · vetlla la sabiduria · signa decisions',[
-    empty?'+ Crea el primer projecte des del botó sobre el nom del node':'Revisa <strong>Sabiduria</strong> · aprova/rebutja propostes pendents',
-    'Obre <strong>Assemblea federativa</strong> · pes √població × activitat',
-    'Comparteix les novetats a la comunitat (Blog SOS)'
-  ],{label:'🏛 Obre Sabiduria',onclick:()=>openGovernanceModal(node)}));
+    empty?'+ Crea el primer projecte des del botó sobre el nom del node':'Reclama la propietat del node si encara ningú l\'ha reclamada',
+    'Revisa <strong>Sabiduria</strong> · aprova/rebutja propostes pendents',
+    'Convida stewards (guardians) · configura quòrum',
+    'Obre <strong>Assemblea federativa</strong> per decisions inter-municipis',
+    'Publica <strong>mainHash</strong> a Nostr per prova pública'
+  ],{label:'🏛 Obre Sabiduria',onclick:()=>openGovernanceModal(node)},SOS_ROLES.guardian.color));
   flow.appendChild(flowCard('🦸','Superheroi/na','Aporta els teus talents · rep reputació verificable',[
-    'Un pas: nom + població + fins a 5 <strong>superpoders</strong> + objectes propis',
-    'El sistema crea banc de temps + biblioteca on toqui i t\'hi ubica',
-    'Al final s\'obre el teu <strong>Perfil transversal</strong> ja actiu'
-  ],{label:'✦ Crea el meu perfil',onclick:()=>openSuperheroiOnboarding()}));
-  flow.appendChild(flowCard('🌱','Comunitat','Explora · mira el valor · simula l\'impacte',[
-    'Recorre les <strong>Dinàmiques</strong> del territori (chips a sota)',
-    'Al MATRIU, mira el <strong>Valor del fons</strong> (rang €/any) i les ventures',
-    'Simula l\'<strong>Impacte cas Catalunya</strong> per veure el potencial',
-    'Entra al <strong>Comando Molekulon</strong> · veu els cromos de la tribu'
-  ],{label:'🎬 Comando Molekulon',onclick:()=>openComandoView()}));
+    'Crea el teu perfil (nom + població + fins a 5 <strong>superpoders</strong>)',
+    'Vincula un <strong>passkey WebAuthn</strong> per accés segur',
+    'Publica ofertes/demandes al banc de temps · rep pings',
+    'Segueix els <strong>reptes actius</strong> del teu tier per pujar de cromo',
+    'Guarda narratives al <strong>Multivers</strong> quan facis un molekulon'
+  ],{label:'✦ Crea el meu perfil',onclick:()=>openSuperheroiOnboarding()},SOS_ROLES.superheroi.color));
+  flow.appendChild(flowCard('👥','Coordinador/a de comunitat','Ajuda persones i entitats a integrar-se al SOS',[
+    'Descobreix entitats reals del territori (Directori + IA)',
+    'Convida socis a bancs de temps i biblioteques existents',
+    'Detecta <strong>matchings ecosistema</strong> (Pings) i facilita\'ls',
+    'Utilitza el <strong>Comando Catalunya</strong> per veure el roster viu',
+    'Genera <strong>kits narratius</strong> per activar els molekulons'
+  ],{label:'🔔 Obre Pings',onclick:()=>openMatchesModal()},SOS_ROLES.coordinador.color));
+  flow.appendChild(flowCard('🌐','Agent territorial','Connecta institucions públiques amb l\'ecosistema',[
+    'Simula l\'<strong>Impacte cas Catalunya</strong> per al teu municipi',
+    'Presenta xifres a l\'ajuntament (€ estalvi, tCO₂, participació)',
+    'Publica <strong>Anchor Packs</strong> per justificar subvencions',
+    'Configura l\'<strong>Assemblea federativa</strong> a nivell comarcal',
+    'Enllaça el directori d\'entitats oficials · aporta a l\'atles comú'
+  ],{label:'🔮 Simulador impacte',onclick:()=>openImpactSimulator()},SOS_ROLES.agent.color));
+  flow.appendChild(flowCard('💫','Ciutadà/na simpatitzant','Explora, aprèn i decideix quan vols pujar',[
+    'Llegeix la <strong>Guia formativa</strong> (8 mòduls)',
+    'Recorre les <strong>Dinàmiques</strong> del territori (chips)',
+    'Entra al <strong>Comando Molekulon</strong> · veu els cromos',
+    'Segueix les <strong>Novetats</strong> al Blog SOS',
+    'Prova a crear el teu perfil quan et sentis preparat/da'
+  ],{label:'🎬 Comando Molekulon',onclick:()=>openComandoView()},SOS_ROLES.simpatitzant.color));
   body.appendChild(flow);
   // Panell d'incentiu territorial: si estem a país/província/comarca, mostrar baixada a poblacions
   if(['pais','provincia','comarca'].includes(node.nodeLevel)){
@@ -4184,7 +4241,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
