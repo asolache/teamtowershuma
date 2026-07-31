@@ -45,6 +45,26 @@ Els arquetips vèdics són **presets funcionals**, no obligació religiosa. Un p
 
 **Shiva** (Tapas · transformació) i **Shakti** (Kriya · creació) són els dos vectors polars de cada superheroi. Un sense l'altre col·lapsa; junts són la gràcia.
 
+## V18 · Missió de SOS i lloc del Comando Molekulon
+
+**SOS** té una missió sola: **connectar i empoderar comunitats locals**. Cada eina — banc de temps, biblioteca de les coses, MATRIU, Guardians, Sabiduria, Slicing Pie — està al servei d'això.
+
+El **Comando Molekulon** és **una tribu creativa oberta** — un dels projectes mestres de la MATRIU, no la totalitat del SOS. Qui vulgui pot participar; qui no vulgui, també pot fer SOS sense entrar-hi. Cromo, cançó, còmic i pel·lícula són l'embolcall narratiu que fa desitjable la infraestructura tècnica.
+
+**Superheroi = superpoders + superarmes**:
+- **Superpoders** = habilitats (skills) que aporta al banc de temps
+- **Superarmes** = objectes que posa en comú a la biblioteca
+
+Ambdós apareixen al cromo. Cada cromo té un **nivell** (Aprenent → Bronze → Plata → Or → Llegenda) amb reptes concrets per desbloquejar el següent.
+
+**Transmedia del Comando** (canals):
+- Música al **SoundCloud** (`/comando-molekulon`)
+- Vídeos al **YouTube** (`@comando-molekulon`) — capítols per personatge
+- Còmics comprables a **Amazon**
+- **Instagram** (`@comando_molekulon`)
+
+**Nivell territorial**: quan l'usuari està a país/província/comarca, l'app mostra un panell d'incentiu que empeny cap avall (municipi/barri) — el valor real es crea a peu de carrer.
+
 ## V17 · Mitologia origen — Mazinguer, Horacio i el Gran Molekulon
 
 Enviats a la Terra pel **Gran Molekulon** (la molècula que governa les galàxies des de l'hiperespai), **Mazinguer i Horacio** tenen una missió aparentment impossible: reclutar un **Comando de 150.000 superherois** capaç de vèncer la **Corporació Món Mort** — l'entitat sistèmica que extreu valor sense retornar-lo, que trenca vincles i deixa les comunitats orfes.

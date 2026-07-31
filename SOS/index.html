@@ -1469,7 +1469,7 @@ function _searchIndex(){
   const ents=(state.entities||[]).map(e=>({k:'entity',id:e.id,label:e.name,sub:'🏛 '+(e.entityType||'entitat'),action:()=>openEntityForm(e)}));
   const actions=[
     {k:'action',id:'act_hero',label:'Crea el meu perfil superheroi',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
-    {k:'action',id:'act_comando',label:'Comando Catalunya',sub:'🎬 acció',action:()=>openComandoView()},
+    {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_multi',label:'Multivers Molekulon',sub:'🌌 acció',action:()=>openMultiverse()},
     {k:'action',id:'act_pings',label:'Pings ecosistema',sub:'🔔 acció',action:()=>openMatchesModal()},
     {k:'action',id:'act_kit',label:'Kit narratiu Molekulon',sub:'🎥 acció',action:()=>openNarrativeKit()},
@@ -1522,9 +1522,9 @@ async function markOnboardingDone(){try{await dbPut({id:'__onboardingDone',type:
 function openOnboardingTour(){
   const steps=[
     {ic:'🎬',t:'Benvingut/da al SOS',b:'Sistema Operatiu Social. Cada comunitat és una xarxa de valor, cada aportació queda signada, cada € del fons cooperatiu circula sense sortir del territori. Local-first: tot al teu navegador.',cta:null},
-    {ic:'🦸',t:'Crea el teu perfil superheroi',b:'Nom + població + fins a 5 superpoders + objectes que poses en comú. En un pas entres al roster del Comando Catalunya.',cta:{label:'✦ Crea el meu perfil',fn:()=>{markOnboardingDone();closeModal();openSuperheroiOnboarding();}}},
+    {ic:'🦸',t:'Crea el teu perfil superheroi',b:'Nom + població + fins a 5 superpoders + objectes que poses en comú. En un pas entres al roster del Comando Molekulon.',cta:{label:'✦ Crea el meu perfil',fn:()=>{markOnboardingDone();closeModal();openSuperheroiOnboarding();}}},
     {ic:'🏛',t:'Guardians i Sabiduria',b:'Cada node pot tenir un owner i stewards (guardians). Les propostes es fusionen quan la sabiduria (quòrum de guardians) les aprova. Assemblees federatives amb pes Penrose-√població.',cta:null},
-    {ic:'🎬',t:'Comando Catalunya · 150.000 superherois',b:'Mazinguer i Horacio, enviats pel Gran Molekulon, munten una banda per reclutar els 150.000 abans que la Corporació Món Mort ho engoleixi tot. Cada acció real que registres és una llavor de la pel·lícula.',cta:{label:'🎬 Veure el Comando',fn:()=>{markOnboardingDone();closeModal();openComandoView();}}}
+    {ic:'🎬',t:'Comando Molekulon · 150.000 superherois',b:'Mazinguer i Horacio, enviats pel Gran Molekulon, munten una banda per reclutar els 150.000 abans que la Corporació Món Mort ho engoleixi tot. Cada acció real que registres és una llavor de la pel·lícula.',cta:{label:'🎬 Veure el Comando',fn:()=>{markOnboardingDone();closeModal();openComandoView();}}}
   ];
   let i=0;
   const draw=()=>{
@@ -1552,7 +1552,7 @@ function openLauncher(){
   const items=[
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>openMatchesModal()},
-    {ic:'🎬',t:'Comando Catalunya',d:'Cromos de la tribu + protagonistes originals',fn:()=>openComandoView()},
+    {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>openComandoView()},
     {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
     {ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
@@ -1575,8 +1575,15 @@ function openLauncher(){
   bg.querySelectorAll('.lch-it').forEach(el=>el.onclick=()=>{const i=Number(el.dataset.i);closeModal();setTimeout(()=>items[i].fn(),50);});
 }
 // ═══════════ Comando Molekulon · Cromo + Roster + Director filter ═══════════
-// Tot superheroi té el seu cromo. Comando Catalunya és la tribu que els aplega. La pel·lícula surt d'aquí.
+// Tot superheroi té el seu cromo. Comando Molekulon és la tribu que els aplega. La pel·lícula surt d'aquí.
 const COMANDO_TARGET=150000;
+// Enllaços transmedia del Comando (placeholders — actualitzar amb URLs reals quan estiguin).
+const MOLEKULON_LINKS={
+  soundcloud:'https://soundcloud.com/comando-molekulon',
+  youtube:'https://youtube.com/@comando-molekulon',
+  amazon:'https://amazon.es/s?k=comando+molekulon+comic',
+  instagram:'https://instagram.com/comando_molekulon'
+};
 // Superherois canònics del còmic origen (V17). El Gran Molekulon envia Mazinguer i Horacio a la Terra
 // per muntar una banda que trobi els 150.000 abans que la Corporació Món Mort ho engoleixi tot.
 const CANONICAL_HEROES=[
@@ -1593,13 +1600,24 @@ const CROMO_TIERS=[{min:0,label:'Aprenent',color:'#c7c7d1',bg:'linear-gradient(1
 const cromoTier=score=>CROMO_TIERS.slice().reverse().find(t=>score>=t.min)||CROMO_TIERS[0];
 function _colorFromName(name){let h=0;for(let i=0;i<name.length;i++){h=(h*31+name.charCodeAt(i))>>>0;}const hue=h%360;return 'hsl('+hue+',65%,45%)';}
 function _initialsOf(name){return (name||'?').split(/\s+/).slice(0,2).map(s=>s.charAt(0).toUpperCase()).join('')||'?';}
+// Reptes de nivell (gamification). Cada tier té reptes concrets que desbloquen el següent.
+const HERO_CHALLENGES={
+  Aprenent:['Crea el teu perfil superheroi','Fes 1 aportació al banc de temps','Registra 1 objecte a la biblioteca'],
+  Bronze:['Fes 5 intercanvis firmats','Participa a 2 comunitats diferents','Convida 1 nou superheroi'],
+  Plata:['Lidera una venture o crea un molekulon','Fes 20 hores validades','Aprovació d\'un guardian'],
+  Or:['Genera un kit narratiu al multivers','5 comunitats servides','Sol·licita ser Guardian'],
+  Llegenda:['Coordina intercooperació entre ventures','Mentoritza altres superheroi','Contribueix al codex']
+};
+function heroLevel(score){const tier=cromoTier(score||0),iCur=CROMO_TIERS.indexOf(tier),next=CROMO_TIERS[iCur+1];return{tier,next,xp:score||0,xpNeeded:next?next.min:tier.min,pctToNext:next?Math.min(100,Math.round((score-tier.min)*100/(next.min-tier.min))):100,challenges:HERO_CHALLENGES[tier.label]||[]};}
 function superheroCromo(nameOrKey){
   const p=personProfile(nameOrKey),r=reputationOf(nameOrKey);
   const tier=cromoTier(r.reputationScore||0);
+  const superarmes=(p.objects||[]).slice(0,5).map(o=>({name:o.object.name,typology:o.object.typology,node:o.nodeName}));
   return{
     name:p.name,key:p.key,initials:_initialsOf(p.name),color:_colorFromName(p.name),
-    tier,score:Math.round(r.reputationScore||0),
+    tier,score:Math.round(r.reputationScore||0),level:heroLevel(r.reputationScore||0),
     superpowers:(r.superpowers||[]).slice(0,3),
+    superarmes,
     shakti:r.shakti,shiva:r.shiva,
     hours:r.hours,communities:r.communities,
     signed:r.signed,unsigned:r.unsigned,validations:r.validations,
@@ -1628,11 +1646,12 @@ async function directorFilter(limit){
     return{icon:x.type==='moneda'?'💰':'⏱',title:x.person+' actua a '+x.node,body,person:x.person,ts:x.ts,badge:x.signed?'firmat':'llegat'};
   });
 }
-// Modal Comando Catalunya: cromos + últimes històries + progrés vers els 150k.
+// Modal Comando Molekulon: cromos + últimes històries + progrés vers els 150k.
 function openComandoView(){
   const bg=modal(`
-    <h2>🎬 Comando Catalunya</h2>
-    <p class="m-sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, Mazinguer i Horacio han de reclutar els <strong>150.000 superherois</strong> abans que la <strong>Corporació Món Mort</strong> engoleixi les comunitats. Cada acció real que registres a SOS és una llavor de la pel·lícula.</p>
+    <h2>🎬 Comando Molekulon</h2>
+    <p class="m-sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, Mazinguer i Horacio han de reclutar els <strong>150.000 superherois</strong> abans que la <strong>Corporació Món Mort</strong> engoleixi les comunitats. Cada acció real que registres a SOS és una llavor de la pel·lícula. <em>El Comando Molekulon és una tribu creativa oberta — un dels projectes mestres de la MATRIU.</em></p>
+    <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎵</span><span>Transmedia · escolta <a href="${MOLEKULON_LINKS.soundcloud}" target="_blank" rel="noopener" style="color:var(--indigo)">SoundCloud</a> · mira <a href="${MOLEKULON_LINKS.youtube}" target="_blank" rel="noopener" style="color:var(--red)">YouTube</a> · compra el còmic a <a href="${MOLEKULON_LINKS.amazon}" target="_blank" rel="noopener" style="color:var(--orange)">Amazon</a> · segueix a <a href="${MOLEKULON_LINKS.instagram}" target="_blank" rel="noopener" style="color:var(--purple)">Instagram</a></span></div>
     <div id="cmStats"></div>
     <div class="ent-grp-lbl">🌟 Protagonistes originals · còmics 1 i 2</div>
     <div id="cmCanonical" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
@@ -1650,11 +1669,15 @@ function openComandoView(){
     '<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;margin:.5rem 0 1rem;overflow:hidden"><div style="height:100%;width:'+Math.max(0.5,pct)+'%;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);border-radius:5px"></div></div>';
   bg.querySelector('#cmRoster').innerHTML=roster.length?roster.slice(0,60).map(c=>{
     const shPct=c.shakti+c.shiva>0?Math.round(c.shakti*100/(c.shakti+c.shiva)):50;
+    const lvlPct=c.level&&c.level.next?c.level.pctToNext:100;
+    const nextLbl=c.level&&c.level.next?c.level.next.label:'màxim';
     return '<div class="ent-card" data-cromo="'+esc(c.name)+'" style="cursor:pointer;padding:0;overflow:hidden;background:'+c.tier.bg+';border:2px solid '+c.tier.color+';border-radius:12px">'+
-      '<div style="padding:.7rem .8rem;display:flex;align-items:center;gap:.6rem"><div style="width:44px;height:44px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(c.initials)+'</div><div style="min-width:0;flex:1"><div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · '+c.score+'</div></div></div>'+
-      '<div style="padding:0 .8rem"><div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;position:relative"><div style="height:100%;background:linear-gradient(90deg,#00e676 0%,#00e676 '+shPct+'%,#ff5252 '+shPct+'%,#ff5252 100%)"></div></div><div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--muted);margin-top:.15rem"><span>Shakti '+Math.round(c.shakti*100)+'</span><span>Shiva '+Math.round(c.shiva*100)+'</span></div></div>'+
-      '<div style="padding:.5rem .8rem;display:flex;flex-wrap:wrap;gap:.25rem">'+c.superpowers.map(s=>'<span style="background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:10px;font-size:.65rem">'+esc(s.cat)+'</span>').join('')+'</div>'+
-      '<div style="padding:.4rem .8rem .7rem;font-size:.7rem;color:var(--muted);display:flex;gap:.6rem;border-top:1px solid rgba(255,255,255,.05);margin-top:.2rem"><span>⏱ '+c.hours+'h</span><span>🏘 '+c.communities+'</span><span>🔏 '+c.signed+'</span></div>'+
+      '<div style="padding:.7rem .8rem;display:flex;align-items:center;gap:.6rem"><div style="width:44px;height:44px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(c.initials)+'</div><div style="min-width:0;flex:1"><div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · XP '+c.score+'</div></div></div>'+
+      '<div style="padding:0 .8rem"><div style="height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+lvlPct+'%;background:'+c.tier.color+'"></div></div><div style="font-size:.55rem;color:var(--muted);margin-top:.1rem;text-align:right">→ '+esc(nextLbl)+'</div></div>'+
+      '<div style="padding:.3rem .8rem"><div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;position:relative"><div style="height:100%;background:linear-gradient(90deg,#00e676 0%,#00e676 '+shPct+'%,#ff5252 '+shPct+'%,#ff5252 100%)"></div></div><div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--muted);margin-top:.15rem"><span>Shakti '+Math.round(c.shakti*100)+'</span><span>Shiva '+Math.round(c.shiva*100)+'</span></div></div>'+
+      '<div style="padding:.4rem .8rem 0"><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Superpoders</div><div style="display:flex;flex-wrap:wrap;gap:.2rem">'+(c.superpowers.length?c.superpowers.map(s=>'<span style="background:rgba(99,102,241,.2);color:var(--indigo);padding:.1rem .4rem;border-radius:10px;font-size:.62rem">'+esc(s.cat)+'</span>').join(''):'<span style="font-size:.6rem;color:var(--muted);opacity:.6">encara cap</span>')+'</div></div>'+
+      '<div style="padding:.4rem .8rem 0"><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Superarmes</div><div style="display:flex;flex-wrap:wrap;gap:.2rem">'+(c.superarmes.length?c.superarmes.slice(0,4).map(a=>'<span style="background:rgba(0,230,118,.15);color:var(--green);padding:.1rem .4rem;border-radius:10px;font-size:.62rem" title="'+esc(a.node)+'">'+esc(a.name.slice(0,18))+(a.name.length>18?'…':'')+'</span>').join(''):'<span style="font-size:.6rem;color:var(--muted);opacity:.6">encara cap</span>')+'</div></div>'+
+      '<div style="padding:.4rem .8rem .7rem;font-size:.7rem;color:var(--muted);display:flex;gap:.6rem;border-top:1px solid rgba(255,255,255,.05);margin-top:.3rem"><span>⏱ '+c.hours+'h</span><span>🏘 '+c.communities+'</span><span>🔏 '+c.signed+'</span></div>'+
     '</div>';
   }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
   bg.querySelector('#cmCanonical').innerHTML=CANONICAL_HEROES.map(h=>{const color=_colorFromName(h.name);return '<div class="ent-card" style="padding:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(99,102,241,.08));border:1px solid rgba(224,64,251,.3);border-radius:12px"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(_initialsOf(h.name))+'</div><div style="min-width:0"><div style="font-weight:600;font-size:.9rem">'+esc(h.name)+'</div><div style="font-size:.68rem;color:var(--purple);font-weight:600">'+esc(h.role)+'</div></div></div><div style="font-size:.72rem;color:var(--light);line-height:1.35">'+esc(h.power)+'</div></div>';}).join('');
@@ -2046,9 +2069,23 @@ function renderResum(body,node,ru){
     'Recorre les <strong>Dinàmiques</strong> del territori (chips a sota)',
     'Al MATRIU, mira el <strong>Valor del fons</strong> (rang €/any) i les ventures',
     'Simula l\'<strong>Impacte cas Catalunya</strong> per veure el potencial',
-    'Entra al <strong>Comando Catalunya</strong> · veu els cromos de la tribu'
-  ],{label:'🎬 Comando Catalunya',onclick:()=>openComandoView()}));
+    'Entra al <strong>Comando Molekulon</strong> · veu els cromos de la tribu'
+  ],{label:'🎬 Comando Molekulon',onclick:()=>openComandoView()}));
   body.appendChild(flow);
+  // Panell d'incentiu territorial: si estem a país/província/comarca, mostrar baixada a poblacions
+  if(['pais','provincia','comarca'].includes(node.nodeLevel)){
+    body.appendChild(el('div','wz-sec-lbl','🌍 Baixa al terreny · el valor es crea a nivell local'));
+    const desc=descendants(node.id);
+    const munis=desc.filter(n=>n.nodeLevel==='municipi'||n.nodeLevel==='barri');
+    const scored=munis.map(m=>{const d=descendants(m.id);const activos=d.filter(x=>x.nodeLevel==='projecte').length;const hores=d.reduce((s,x)=>s+(x.ledger||[]).filter(e=>e.type!=='moneda').reduce((a,b)=>a+(Number(b.value)||0),0),0);return{m,score:activos*10+hores,activos,hores};}).sort((a,b)=>b.score-a.score);
+    const actius=scored.filter(x=>x.score>0),dormits=scored.filter(x=>x.score===0);
+    const incentive=el('div','ent-card');incentive.style.background='linear-gradient(180deg,rgba(0,230,118,.06),rgba(99,102,241,.03))';
+    incentive.innerHTML='<div class="ent-nm">💡 Estratègia territorial</div><div class="ent-desc" style="margin-top:.3rem">El valor real es crea a peu de carrer — al <strong>municipi</strong> i al <strong>barri</strong>. Aquest nivell existeix per <em>coordinar</em>, no per acumular activitat. Baixa a poblacions concretes per començar o accelerar molekulons locals.</div>'+
+      '<div class="bib-stats" style="margin-top:.6rem"><div class="bib-tile"><div class="n" style="color:var(--green)">'+actius.length+'</div><div class="l">poblacions actives</div></div><div class="bib-tile"><div class="n" style="color:var(--orange)">'+dormits.length+'</div><div class="l">poblacions dormides</div></div><div class="bib-tile"><div class="n">'+munis.length+'</div><div class="l">total</div></div></div>';
+    body.appendChild(incentive);
+    if(actius.length){body.appendChild(el('div','wz-sec-lbl','🔥 Poblacions més actives'));const grid=el('div','ent-grid');actius.slice(0,6).forEach(x=>{const c=el('div','ent-card');c.style.cursor='pointer';c.innerHTML='<div class="ent-nm">🌱 '+esc(x.m.name)+'</div><div class="ent-badges"><span class="ent-b b-ver">'+x.activos+' projectes</span><span class="ent-b">'+x.hores.toFixed(0)+' h</span></div>';c.onclick=()=>selectNode(x.m.id);grid.appendChild(c);});body.appendChild(grid);}
+    if(dormits.length){body.appendChild(el('div','wz-sec-lbl','💤 Poblacions on encara no s\'ha activat'));const grid=el('div','ent-grid');dormits.slice(0,8).forEach(x=>{const c=el('div','ent-card');c.style.cursor='pointer';c.style.opacity='.75';c.innerHTML='<div class="ent-nm">'+esc(x.m.name)+'</div><div class="ent-desc">Perfect per començar. Clic per obrir + crear el primer molekulon local.</div>';c.onclick=()=>selectNode(x.m.id);grid.appendChild(c);});body.appendChild(grid);}
+  }
   // stat tiles
   const tot=el('div','ledger-total');tot.style.marginTop='1rem';
   const tile=(v,l,col)=>{const c=el('div','lt-card');if(col)c.style.borderTopColor=col;c.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';return c;};
@@ -3491,7 +3528,7 @@ function openSettingsModal(){
       <button class="btn btn-ghost btn-sm" id="stKit" style="margin-left:.3rem">🎬 Kit narratiu Molekulon</button>
       <button class="btn btn-ghost btn-sm" id="stValu" style="margin-left:.3rem">🔮 Valora un recurs amb IA</button>
       <button class="btn btn-ghost btn-sm" id="stMulti" style="margin-left:.3rem">🌌 Multivers Molekulon</button>
-      <button class="btn btn-ghost btn-sm" id="stComando" style="margin-left:.3rem">🎬 Comando Catalunya</button>
+      <button class="btn btn-ghost btn-sm" id="stComando" style="margin-left:.3rem">🎬 Comando Molekulon</button>
       <button class="btn btn-ghost btn-sm" id="stGov" style="margin-left:.3rem">🏛 Sabiduria del node actiu</button>
       <button class="btn btn-ghost btn-sm" id="stFed" style="margin-left:.3rem">🌐 Assemblea federativa</button>
       <div class="ai-note" style="margin-top:.6rem"><span class="ic">📊</span><span>Simulador psicoeconòmic per a entitats públiques: estalvi €/any i benefici psicosocial d'una implementació SOS al territori.</span></div>
@@ -3932,7 +3969,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
