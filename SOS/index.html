@@ -750,19 +750,61 @@ const _signParams=alg=>alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',hash:'SHA-
 const _importPub=async(alg,jwk)=>crypto.subtle.importKey('jwk',jwk,alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['verify']);
 async function _didFromJwk(alg,jwk){return 'did:sos:'+alg.toLowerCase()+':'+(await sha256(_te.encode(JSON.stringify(jwk)))).slice(0,32);}
 let _identity=null;
+async function _makeExchangeKeypair(){return crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
+async function _importExchangePriv(jwk){return crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
 async function getIdentity(){
   if(_identity)return _identity;
   try{const all=await dbGetAll();const rec=all.find(n=>n.id==='__identity');
     if(rec&&rec.privJwk&&rec.pubJwk&&rec.alg){
       const priv=await crypto.subtle.importKey('jwk',rec.privJwk,rec.alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['sign']);
-      _identity={did:rec.did,alg:rec.alg,pubJwk:rec.pubJwk,privKey:priv};return _identity;}
+      let ex=null;
+      if(rec.exPrivJwk&&rec.exPubJwk){ex={pubJwk:rec.exPubJwk,privKey:await _importExchangePriv(rec.exPrivJwk)};}
+      else{const p=await _makeExchangeKeypair();ex={pubJwk:await crypto.subtle.exportKey('jwk',p.publicKey),privKey:p.privateKey};try{const upd=Object.assign({},rec,{exPubJwk:ex.pubJwk,exPrivJwk:await crypto.subtle.exportKey('jwk',p.privateKey)});await dbPut(upd);}catch(e){}}
+      _identity={did:rec.did,alg:rec.alg,pubJwk:rec.pubJwk,privKey:priv,passkey:rec.passkey||null,exchange:ex};return _identity;}
   }catch(e){}
   const{alg,pair}=await _makeKeypair();
   const pubJwk=await crypto.subtle.exportKey('jwk',pair.publicKey),privJwk=await crypto.subtle.exportKey('jwk',pair.privateKey);
   const did=await _didFromJwk(alg,pubJwk);
-  try{await dbPut({id:'__identity',type:'meta',did,alg,pubJwk,privJwk,createdAt:now()});}catch(e){}
-  _identity={did,alg,pubJwk,privKey:pair.privateKey};return _identity;
+  const exPair=await _makeExchangeKeypair();const exPubJwk=await crypto.subtle.exportKey('jwk',exPair.publicKey),exPrivJwk=await crypto.subtle.exportKey('jwk',exPair.privateKey);
+  try{await dbPut({id:'__identity',type:'meta',did,alg,pubJwk,privJwk,exPubJwk,exPrivJwk,createdAt:now()});}catch(e){}
+  _identity={did,alg,pubJwk,privKey:pair.privateKey,passkey:null,exchange:{pubJwk:exPubJwk,privKey:exPair.privateKey}};return _identity;
 }
+// Retorna la meva "carta d'intercanvi" ECDH-P256 pub JWK per compartir amb propietaris de node.
+async function myExchangeCard(){const id=await getIdentity();return{did:id.did,exchangePub:id.exchange.pubJwk};}
+// ECDH derive amb HKDF → AES-GCM wrapping key (usada per xifrar la clau simètrica del node).
+async function _deriveWrapKey(myPriv,otherPubJwk){
+  const otherPub=await crypto.subtle.importKey('jwk',otherPubJwk,{name:'ECDH',namedCurve:'P-256'},false,[]);
+  const bits=await crypto.subtle.deriveBits({name:'ECDH',public:otherPub},myPriv,256);
+  const hkdfBase=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(),info:new TextEncoder().encode('sos:nodekey:wrap')},hkdfBase,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+// Wrap: propietari del node encapsula la nodeKey per a un receptor concret (identificat pel seu ECDH pub JWK).
+async function wrapNodeKeyForMember(nodeKey,recipientExchangePubJwk){
+  const id=await getIdentity();
+  const raw=await crypto.subtle.exportKey('raw',nodeKey);
+  const wrapKey=await _deriveWrapKey(id.exchange.privKey,recipientExchangePubJwk);
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},wrapKey,raw);
+  return{v:1,alg:'ECDH-AES-GCM',senderDid:id.did,senderExchangePub:id.exchange.pubJwk,iv:_b64u(iv),ct:_b64u(ct),ts:now()};
+}
+// Unwrap: el receptor recupera la nodeKey utilitzant la seva pròpia ECDH priv i el pub del remitent.
+async function unwrapNodeKeyFromEnvelope(envelope){
+  if(!envelope||envelope.alg!=='ECDH-AES-GCM')throw{msg:'Envelope invàlid'};
+  const id=await getIdentity();
+  const wrapKey=await _deriveWrapKey(id.exchange.privKey,envelope.senderExchangePub);
+  const raw=await crypto.subtle.decrypt({name:'AES-GCM',iv:_unb64u(envelope.iv),tagLength:128},wrapKey,_unb64u(envelope.ct));
+  return crypto.subtle.importKey('raw',raw,{name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+}
+// Publica un envelope a node.envelopes[] per a un receptor concret. Reemplaça si ja n'hi ha un pel mateix DID.
+const envelopesOf=node=>node.envelopes||(node.envelopes=[]);
+async function shareNodeKeyWithMember(node,recipient,nodeKey){
+  if(!recipient||!recipient.did||!recipient.exchangePub)throw{msg:'Falten dades del receptor (did + exchangePub)'};
+  const env=await wrapNodeKeyForMember(nodeKey,recipient.exchangePub);env.recipientDid=recipient.did;
+  const arr=envelopesOf(node);const i=arr.findIndex(e=>e.recipientDid===recipient.did);if(i>=0)arr[i]=env;else arr.push(env);
+  return env;
+}
+async function myEnvelopeFor(node){const id=await getIdentity();return(envelopesOf(node)||[]).find(e=>e.recipientDid===id.did)||null;}
+async function getMyNodeKey(node){const env=await myEnvelopeFor(node);if(!env)return null;return await unwrapNodeKeyFromEnvelope(env);}
 // Vincula un passkey WebAuthn a la identitat did:sos (W1 wallet MVP). El passkey queda com a segona-via de recuperació + accés.
 async function bindPasskey(){
   if(!navigator.credentials||!window.PublicKeyCredential)throw{msg:'WebAuthn no disponible en aquest navegador'};
@@ -3890,7 +3932,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
