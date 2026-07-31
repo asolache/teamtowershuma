@@ -294,6 +294,14 @@ a{color:var(--blue);text-decoration:none}
 .bt-cat{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .4rem}
 .bt-col .ent-card{margin-bottom:.5rem}
 @media(max-width:600px){.bt-cols{grid-template-columns:1fr}}
+/* MATRIU · Impacte psicosocial (widget flagship) */
+.matriu-psy{background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(0,230,118,.04),rgba(224,64,251,.04));border:1px solid var(--border);border-radius:12px;padding:1rem;margin:.5rem 0 1rem}
+.psy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem}
+.psy-tile{background:var(--bg-panel);border-radius:8px;padding:.7rem .8rem;text-align:center}
+.psy-n{font-family:var(--sans);font-size:1.55rem;font-weight:700;line-height:1}
+.psy-l{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.psy-hint{font-size:.68rem;color:var(--light);opacity:.75;margin-top:.25rem}
+.psy-caption{font-size:.78rem;color:var(--light);line-height:1.5;margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--border)}
 /* Activity gallery tabs (venture creation) */
 .ag-tabs{display:flex;gap:.3rem;margin:.5rem 0 .3rem;flex-wrap:wrap}
 .ag-tab{flex:1;min-width:0;padding:.5rem .6rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--muted);font:inherit;font-size:.82rem;cursor:pointer;transition:all .12s}
@@ -2405,6 +2413,60 @@ function newProjectComando(node,{name,mission,memberIds,prototypeMapId}={}){
 }
 function comandoAssignRole(node,memberId,role,focus){const c=comandoOf(node);if(!c)return;const m=c.members.find(x=>x.memberId===memberId);if(m){m.role=role||'';if(focus!==undefined)m.focus=focus;}else c.members.push({memberId,personKey:(memberById(node,memberId)||{name:''}).name?personKey(memberById(node,memberId).name):null,role:role||'',focus:focus||''});c.updatedAt=now();}
 function comandoRemoveMember(node,memberId){const c=comandoOf(node);if(!c)return;c.members=c.members.filter(x=>x.memberId!==memberId);c.updatedAt=now();}
+// ═══════════ Entity Comando · «les entitats i els comandos són cosins» ═══════════
+// Cada entitat pot tenir el seu propi Comando (equip gestor). Els membres es
+// referencien per nom (personKey) — així es poden lligar amb el roster global
+// del Comando Molekulon sense duplicar registres.
+const entityComandoOf=e=>e&&e.comando||null;
+function newEntityComando(entity,{name,mission,memberNames,prototypeMapId}={}){
+  const proto=prototypeMapId?prototypeMapMeta(prototypeMapId):null;
+  const c={id:uid(),name:(name||'Comando de '+(entity.name||'l\'entitat')).trim(),mission:mission||'',prototypeMapId:prototypeMapId||null,
+    members:(memberNames||[]).filter(Boolean).map(nm=>({name:nm.trim(),personKey:personKey(nm),role:'',focus:''})),
+    vna:proto?{roles:proto.roles.map(nm=>({id:uid(),name:nm})),exchanges:[]}:{roles:[],exchanges:[]},
+    createdAt:now(),updatedAt:now()};
+  if(proto){
+    const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
+    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+  }
+  entity.comando=c;return c;
+}
+function entityComandoAssign(entity,personName,role,focus){const c=entityComandoOf(entity);if(!c)return;const nk=personKey(personName);const m=c.members.find(x=>x.personKey===nk);if(m){m.role=role||'';if(focus!==undefined)m.focus=focus;}else c.members.push({name:personName,personKey:nk,role:role||'',focus:focus||''});c.updatedAt=now();}
+function entityComandoRemove(entity,personKeyToRemove){const c=entityComandoOf(entity);if(!c)return;c.members=c.members.filter(x=>x.personKey!==personKeyToRemove);c.updatedAt=now();}
+// ═══════════ MATRIU · impacte psicosocial (valor viu, més enllà de l'euro) ═══════════
+// El que fa la MATRIU imprescindible: no només es mou capital, també es mouen cures,
+// vincles, reciprocitat i temps donat. Aquest widget els fa visibles.
+function matriuPsychoImpact(node){
+  const vs=venturesOf(node),ms=membersOf(node),links=linksOf(node).map(id=>byId(id)).filter(Boolean);
+  // Hores donades = suma d'entrades ledger type=temps (venture + node)
+  let horesDonades=0,horesRebudes=0,capital=0;
+  (node.ledger||[]).forEach(e=>{if(e.type==='temps')horesDonades+=Number(e.value)||0;else if(e.type==='moneda')capital+=Number(e.value)||0;});
+  vs.forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps')horesDonades+=Number(e.value)||0;else if(e.type==='moneda')capital+=Number(e.value)||0;}));
+  // Fluxos intangibles vs tangibles a tot l'arbre de ventures (índex de riquesa relacional)
+  let intg=0,tang=0;vs.forEach(v=>(v.vna.exchanges||[]).forEach(x=>{if(x.kind==='I')intg++;else tang++;}));
+  const reciprocitat=tang?Math.round(intg/(intg+tang)*100):0;
+  // Persones actives = membres únics amb almenys una aportació signada o no
+  const activeIds=new Set();(node.ledger||[]).forEach(e=>e.memberId&&activeIds.add(e.memberId));vs.forEach(v=>(v.ledger||[]).forEach(e=>e.memberId&&activeIds.add(e.memberId)));
+  // Ventures amb enfoc de cura (heurístic: nom, descripció o categoria conté paraules clau)
+  const careWords=/cur[ae]s?|salut|acompan|gent gran|infan|inclus|inserci|integra|solidar|conviv/i;
+  const careVentures=vs.filter(v=>careWords.test(v.name+' '+(actMeta(v.activityId).one||'')+' '+(v.notes||'')));
+  // Connexions creuades = ventures + entitats de l'ecosistema (proxies de teixit)
+  const connexions=vs.length+links.length;
+  // Índex de solidaritat = hores donades sense contrapartida econòmica (heurístic simplificat)
+  let solidariHores=0;vs.forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps'&&(!e.rate||e.rate<10))solidariHores+=Number(e.value)||0;}));
+  return{
+    horesDonades:Math.round(horesDonades),
+    reciprocitat,
+    intangibles:intg,tangibles:tang,
+    personesActives:activeIds.size,
+    membresTotal:ms.length,
+    venturesCura:careVentures.length,
+    connexions,
+    capitalMobilitzat:Math.round(capital),
+    solidariHores:Math.round(solidariHores),
+    ventures:vs.length,
+    ecosystem:links.length
+  };
+}
 // ═══════════ AI planner de fluxos de valor per demanda comunitària ═══════════
 // Delega a AI.call('plan_value_flows', ctx) si hi ha key; retorna {roles, flows} en el mateix format que un prototip.
 async function aiPlanValueFlows(demand,ctx){
@@ -3359,12 +3421,16 @@ function openEntityForm(territoryId,existing){
       <label class="pick ${e&&e.visibility==='private'?'sel':''}" id="enVisPriv"><input type="radio" name="enVis" ${e&&e.visibility==='private'?'checked':''}><span class="pk-t">Privada (només tu)</span></label>
     </div>
     ${e&&e.verification&&!e.verification.verified?'<div class="ent-toggles"><label class="pick" id="enVerify"><input type="checkbox"><span class="pk-t">✓ Confirmo que és real i correcta</span></label></div>':''}
+    ${e?'<div class="modal-actions" style="justify-content:flex-start;margin-top:.5rem"><button class="btn btn-ghost btn-sm" id="enComando" style="border-color:var(--purple);color:var(--purple)">🏰 Comando de l\'entitat '+(entityComandoOf(e)?'('+entityComandoOf(e).members.length+')':'· crear')+'</button></div>':''}
     <div class="modal-actions">${e?'<button class="btn btn-ghost" id="enDelete" style="border-color:var(--red-dim);color:var(--red)">Elimina</button>':'<button class="btn btn-ghost" id="enCancel">Cancel·la</button>'}<button class="btn btn-primary" id="enSave">${e?'Desa':'⬡ Registra'}</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const nm=bg.querySelector('#enName');nm.focus();
   bg.querySelectorAll('.ent-toggles').forEach(g=>g.querySelectorAll('.pick').forEach(l=>l.onclick=ev=>{const inp=l.querySelector('input');if(inp.type==='radio'){g.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel'));l.classList.add('sel');inp.checked=true;}else{l.classList.toggle('sel');}}));
-  if(e){bg.querySelector('#enDelete').onclick=()=>{closeModal();deleteEntity(e);};}
+  if(e){
+    bg.querySelector('#enDelete').onclick=()=>{closeModal();deleteEntity(e);};
+    const cmBtn=bg.querySelector('#enComando');if(cmBtn)cmBtn.onclick=()=>{closeModal();openEntityComando(e);};
+  }
   else{bg.querySelector('#enCancel').onclick=closeModal;}
   bg.querySelector('#enSave').onclick=async()=>{
     const name=nm.value.trim();if(!name){nm.focus();return;}
@@ -3759,6 +3825,19 @@ function renderMatriuVentures(body,node){
   body.appendChild(bar);
   const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🌱</span><span>Incuba iniciatives crítiques de desenvolupament comunitari i econòmic amb <strong>acció-formació</strong>: cada venture arriba amb el seu mapa de valor i el seu tauler d\'aprenentatge, i pot <strong>graduar-se</strong> a projecte propi.</span>';body.appendChild(note);
   if(!vs.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Cap venture encara</h2><p>Tria una activitat crítica del territori i instancia-la, o carrega un exemple.</p>';body.appendChild(emp);return;}
+  // Widget d'impacte psicosocial — el que fa la MATRIU imprescindible més enllà de l'euro
+  const psy=matriuPsychoImpact(node);
+  body.appendChild(el('div','ent-grp-lbl','🌊 Impacte psicosocial · el valor viu que crea la MATRIU'));
+  const psyBox=el('div','matriu-psy');
+  psyBox.innerHTML='<div class="psy-grid">'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--indigo)">'+psy.horesDonades+'h</div><div class="psy-l">temps donat total</div><div class="psy-hint">'+(psy.solidariHores>0?psy.solidariHores+'h solidàries':'sense hores solidàries encara')+'</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--green)">'+psy.reciprocitat+'%</div><div class="psy-l">reciprocitat</div><div class="psy-hint">'+psy.intangibles+' intang. · '+psy.tangibles+' tang.</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--purple)">'+psy.personesActives+'/'+psy.membresTotal+'</div><div class="psy-l">persones actives</div><div class="psy-hint">'+(psy.personesActives?Math.round(psy.personesActives/Math.max(1,psy.membresTotal)*100):0)+'% del cens</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--red)">'+psy.venturesCura+'</div><div class="psy-l">ventures de cura</div><div class="psy-hint">contra la soledat i l\'exclusió</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--orange)">'+psy.connexions+'</div><div class="psy-l">connexions creuades</div><div class="psy-hint">'+psy.ventures+' ventures · '+psy.ecosystem+' entitats</div></div>'+
+    '</div>'+
+    '<div class="psy-caption">Aquestes són les mètriques que expliquen per què la MATRIU és un model: no només mou capital, també <strong>cura, vincle, reciprocitat i temps donat</strong>. La densitat relacional (fluxos intangibles) i el temps solidari són indicadors de sortida de la salut psicosocial del territori.</div>';
+  body.appendChild(psyBox);
   const f=fundRollup(node);
   body.appendChild(el('div','ent-grp-lbl','🏦 Fons cooperatiu · valor mobilitzat'));
   const fund=el('div','bib-stats');fund.innerHTML=
@@ -4082,6 +4161,46 @@ function buildEquityPie(eq){
     svg.appendChild(p);ang=a2;});
   const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
   return svg;
+}
+// ═══════════ openEntityComando · l'equip gestor d'una entitat existent ═══════════
+function openEntityComando(entity){
+  // Reunim tots els noms de persona coneguts a l'ecosistema per suggerir-los
+  const allNames=new Set();state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{if(m.kind!=='entitat')allNames.add(m.name);}));
+  const namesArr=[...allNames].sort();
+  let c=entityComandoOf(entity);
+  const protoOpts='<option value="">— sense prototip —</option>'+PROTOTYPE_MAPS.map(p=>'<option value="'+p.id+'">'+p.icon+' '+esc(p.name)+'</option>').join('');
+  const bg=modal(`
+    <h2>🏰 Comando · ${esc(entity.name)}</h2>
+    <p class="m-sub">Cada entitat pot tenir el seu propi Comando (equip gestor). Els membres es referencien per nom i queden vinculats al roster global del Comando Molekulon.</p>
+    <div id="ecBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ecCloseBtn">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const body=bg.querySelector('#ecBody');
+  const render=()=>{
+    c=entityComandoOf(entity);
+    if(!c){
+      body.innerHTML='<div class="ai-note"><span class="ic">🏰</span><span>Aquesta entitat encara no té Comando. Crea l\'equip gestor.</span></div>'+
+        '<div class="field"><label>Nom del Comando</label><input id="ecName" value="'+esc('Comando de '+entity.name)+'"></div>'+
+        '<div class="field"><label>Missió (una frase)</label><input id="ecMission" placeholder="ex: sostenir el projecte X..."></div>'+
+        '<div class="field"><label>Prototip de mapa de valor</label><select id="ecProto">'+protoOpts+'</select></div>'+
+        '<button class="btn btn-primary btn-sm" id="ecCreate">🏰 Crea el Comando</button>';
+      body.querySelector('#ecCreate').onclick=async()=>{const name=body.querySelector('#ecName').value.trim(),mission=body.querySelector('#ecMission').value.trim(),pid=body.querySelector('#ecProto').value||null;newEntityComando(entity,{name,mission,prototypeMapId:pid});await persistEntity(entity);render();toast('Comando creat');};
+      return;
+    }
+    const roleOpts='<option value="">rol funcional (obert)</option>'+(c.vna.roles||[]).map(r=>'<option value="'+esc(r.name)+'">'+esc(r.name)+'</option>').join('');
+    const dataListNames='<datalist id="ecNamesDL">'+namesArr.map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist>';
+    body.innerHTML='<div class="cm-hd"><span style="font-size:1.6rem">🏰</span><span class="cm-hd-nm">'+esc(c.name)+'</span></div>'+
+      (c.mission?'<div class="cm-mission">🎯 '+esc(c.mission)+'</div>':'')+
+      '<div class="ent-grp-lbl">👥 Colla castellera · '+c.members.length+' membre'+(c.members.length===1?'':'s')+'</div>'+
+      (c.members.length?'<div class="cm-team">'+c.members.map(mm=>'<div class="cm-slot"><div class="cm-slot-nm">'+esc(mm.name)+'</div>'+(mm.role?'<div class="cm-slot-rl">🎭 '+esc(mm.role)+'</div>':'')+(mm.focus?'<div class="cm-slot-fc">'+esc(mm.focus)+'</div>':'')+'<button class="btn btn-ghost btn-sm ecDel" data-pk="'+esc(mm.personKey)+'" style="margin-top:.3rem;align-self:flex-start">Treu</button></div>').join('')+'</div>':'<div class="ent-desc">Cap membre encara.</div>')+
+      '<div class="cm-add-row"><input list="ecNamesDL" id="ecAddName" placeholder="nom de persona"><select id="ecAddRole">'+roleOpts+'</select><input id="ecAddFocus" placeholder="focus (opcional)"><button class="btn btn-ghost btn-sm" id="ecAddBtn">+ Afegeix</button></div>'+dataListNames+
+      (c.vna.roles.length?'<div class="ent-grp-lbl">📐 Mini mapa de valor del Comando · '+c.vna.roles.length+' rols · '+c.vna.exchanges.length+' fluxos</div><div class="ent-desc">Rols funcionals: '+c.vna.roles.map(r=>esc(r.name)).join(' · ')+'</div>':'');
+    body.querySelector('#ecAddBtn').onclick=async()=>{const nm=body.querySelector('#ecAddName').value.trim();if(!nm){toast('Escriu un nom');return;}entityComandoAssign(entity,nm,body.querySelector('#ecAddRole').value,body.querySelector('#ecAddFocus').value);await persistEntity(entity);render();};
+    body.querySelectorAll('.ecDel').forEach(b=>b.onclick=async()=>{entityComandoRemove(entity,b.dataset.pk);await persistEntity(entity);render();});
+  };
+  render();
+  bg.querySelector('#ecCloseBtn').onclick=closeModal;
 }
 // ═══════════ openProjectComando · equip gestor del node (colla castellera) ═══════════
 function openProjectComando(node){
@@ -4729,7 +4848,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
