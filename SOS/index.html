@@ -294,6 +294,23 @@ a{color:var(--blue);text-decoration:none}
 .bt-cat{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .4rem}
 .bt-col .ent-card{margin-bottom:.5rem}
 @media(max-width:600px){.bt-cols{grid-template-columns:1fr}}
+/* Activity gallery tabs (venture creation) */
+.ag-tabs{display:flex;gap:.3rem;margin:.5rem 0 .3rem;flex-wrap:wrap}
+.ag-tab{flex:1;min-width:0;padding:.5rem .6rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--muted);font:inherit;font-size:.82rem;cursor:pointer;transition:all .12s}
+.ag-tab:hover{color:var(--text);border-color:var(--indigo)}
+.ag-tab.sel{background:rgba(99,102,241,.15);border-color:var(--indigo);color:var(--indigo);font-weight:600}
+.ag-pane{margin-top:.5rem}
+/* Comando · equip gestor d'un projecte (colla castellera) */
+.cm-hd{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.cm-hd-nm{font-size:1.1rem;font-weight:700}
+.cm-mission{font-size:.85rem;color:var(--light);padding:.5rem .7rem;background:var(--bg-panel);border-left:3px solid var(--purple);border-radius:6px;margin:.4rem 0}
+.cm-team{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin:.5rem 0}
+.cm-slot{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem;display:flex;flex-direction:column;gap:.3rem}
+.cm-slot-nm{font-weight:700;font-size:.9rem}
+.cm-slot-rl{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;color:var(--purple)}
+.cm-slot-fc{font-size:.78rem;color:var(--muted)}
+.cm-add-row{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem}
+.cm-add-row select,.cm-add-row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.4rem;font:inherit;font-size:.8rem}
 /* MATRIU sprint plan (venture backlog · camí de graduació) */
 .vd-ready{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;margin-bottom:.7rem}
 .vd-ready-hd{display:flex;align-items:baseline;gap:.6rem}
@@ -1531,6 +1548,7 @@ function _searchIndex(){
     {k:'action',id:'act_hero',label:'Crea el meu perfil superheroi',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · wallets · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
+    {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
     {k:'action',id:'act_multi',label:'Multivers Molekulon',sub:'🌌 acció',action:()=>openMultiverse()},
     {k:'action',id:'act_pings',label:'Pings ecosistema',sub:'🔔 acció',action:()=>openMatchesModal()},
     {k:'action',id:'act_kit',label:'Kit narratiu Molekulon',sub:'🎥 acció',action:()=>openNarrativeKit()},
@@ -2320,6 +2338,84 @@ function seedSprintPlanFromMap(v){
   addBacklogItem(s3,{title:'Registrar 3 aportacions reals al ledger (Slicing Pie)',kind:'test'});
   addBacklogItem(s3,{title:'Verificar que cap membre concentra >70% de l\'equity',kind:'test'});
   return sprintsOf(v);
+}
+// ═══════════ Tipus de projecte + mapes prototip (cobreixen el 80% dels casos) ═══════════
+// Sempre personalitzable — són plantilles, no restriccions. La MATRIU pot incubar qualsevol tipus.
+const PROJECT_TYPES=[
+  {id:'comunitari',name:'Projecte comunitari',icon:'🏘',one:'Associació, col·lectiu o iniciativa sense lucre.',equity:{fmv:15,nonCash:1,cash:2},lucre:'no',juridic:['associació','fundació','plataforma informal']},
+  {id:'cooperativa',name:'Cooperativa',icon:'🤝',one:'Empresa col·lectiva democràtica (SCCL, treball associat o consum).',equity:{fmv:25,nonCash:2,cash:4},lucre:'limitat',juridic:['SCCL','SCP','SL cooperativa']},
+  {id:'autonom',name:'Autònom / freelance',icon:'👤',one:'Iniciativa individual amb possible xarxa d\'aliats.',equity:{fmv:30,nonCash:2,cash:5},lucre:'sí',juridic:['autònom','autònom col·laborador']},
+  {id:'empresa',name:'Empresa mercantil',icon:'🏢',one:'PIME o start-up amb objectiu de creixement i retribució.',equity:{fmv:40,nonCash:3,cash:6},lucre:'sí',juridic:['SL','SLU','SA']}
+];
+const _pt=(()=>{const m={};PROJECT_TYPES.forEach(t=>m[t.id]=t);return m;})();
+const projectTypeMeta=id=>_pt[id]||PROJECT_TYPES[0];
+// Prototips de mapes de valor genèrics — per servei/procés/producte. 80% dels casos coberts.
+// Cadascun personalitzable al 100% després d'instanciar.
+const PROTOTYPE_MAPS=[
+  {id:'servei_proximitat',name:'Servei de proximitat',icon:'🛎',one:'Servei que s\'ofereix directament a la comunitat local (educació, cures, reparacions, atenció).',projectTypes:['comunitari','cooperativa','autonom'],
+   roles:['Persones oferents','Persones usuàries','Nucli gestor','Referent territorial','Ecosistema aliat'],
+   flows:[['Persones oferents','Persones usuàries','tangible','servei directe'],['Persones usuàries','Persones oferents','tangible','pagament o hores banc de temps'],['Persones oferents','Persones oferents','intangible','pràctica reflexiva compartida'],['Nucli gestor','Persones oferents','intangible','coordinació i cura'],['Referent territorial','Nucli gestor','tangible','legitimitat i espai'],['Persones usuàries','Nucli gestor','intangible','reputació i vincle'],['Ecosistema aliat','Nucli gestor','tangible','derivacions'],['Nucli gestor','Ecosistema aliat','intangible','coneixement i confiança']],
+   kanban:['Definir el servei mínim viable','Formar el primer equip d\'oferents','Publicar al banc de temps','Primeres 10 prestacions','Feedback i ajust','Ampliació territorial']},
+  {id:'producte_artesa',name:'Producte artesà / manufactura',icon:'🧶',one:'Producció física en petit format, taller propi o compartit.',projectTypes:['cooperativa','autonom','empresa'],
+   roles:['Artesans/es','Proveïdors locals','Punt de venda','Clientes','Comunitat i formació'],
+   flows:[['Proveïdors locals','Artesans/es','tangible','matèria primera km0'],['Artesans/es','Punt de venda','tangible','producte acabat'],['Punt de venda','Clientes','tangible','venda'],['Clientes','Artesans/es','tangible','ingressos'],['Artesans/es','Comunitat i formació','intangible','ofici i tallers'],['Comunitat i formació','Artesans/es','intangible','aprenents i renovació'],['Clientes','Punt de venda','intangible','reputació i boca-orella'],['Punt de venda','Proveïdors locals','tangible','pagament just']],
+   kanban:['Prototipar 3 SKUs','Muntar el taller','Preus i marges','Canal de venda pilot','Iterar amb feedback client','Escalar producció']},
+  {id:'servei_tecnic',name:'Consultoria / servei tècnic',icon:'💼',one:'Consultoria, disseny, IT, arquitectura, assessoria — projecte per projecte.',projectTypes:['cooperativa','autonom','empresa'],
+   roles:['Consultors/es','Clients institucionals','Clients privats','Xarxa de partners','Nucli operatiu'],
+   flows:[['Consultors/es','Clients institucionals','tangible','entregable especialitzat'],['Consultors/es','Clients privats','tangible','entregable especialitzat'],['Clients institucionals','Consultors/es','tangible','honoraris'],['Clients privats','Consultors/es','tangible','honoraris'],['Xarxa de partners','Consultors/es','intangible','peer review'],['Consultors/es','Xarxa de partners','tangible','sub-encàrrecs'],['Nucli operatiu','Consultors/es','intangible','back-office i comercial'],['Consultors/es','Nucli operatiu','tangible','% de facturació']],
+   kanban:['Definir 2-3 verticals','Cas d\'ús anchor','Portfoli i propostes tipus','Primer contracte','Referral loop','Estabilitzar cartera']},
+  {id:'producte_digital',name:'Producte digital / SaaS',icon:'📱',one:'App, plataforma, servei online — usuaris massius o de nínxol.',projectTypes:['cooperativa','empresa','autonom'],
+   roles:['Equip producte','Usuaris/es','Comunitat contributora','Sponsors/inversors','Infraestructura'],
+   flows:[['Equip producte','Usuaris/es','tangible','funcionalitat'],['Usuaris/es','Equip producte','tangible','subscripció o donació'],['Usuaris/es','Comunitat contributora','intangible','feedback i casos d\'ús'],['Comunitat contributora','Equip producte','tangible','PRs, traduccions, docs'],['Sponsors/inversors','Equip producte','tangible','capital'],['Equip producte','Sponsors/inversors','intangible','tracció i mètriques'],['Infraestructura','Equip producte','tangible','runtime i dades'],['Equip producte','Infraestructura','tangible','pagament hosting']],
+   kanban:['MVP fumo','Landing + waitlist','Primer usuari real','Iterar sobre feedback','Model de monetització','Escalar amb la comunitat']},
+  {id:'cura_social',name:'Cura i acompanyament social',icon:'💗',one:'Xarxa de cures, salut comunitària, acompanyament a persones vulnerables.',projectTypes:['comunitari','cooperativa'],
+   roles:['Persones cuidadores','Persones cuidades','Famílies','Serveis socials/CAP','Voluntariat'],
+   flows:[['Persones cuidadores','Persones cuidades','intangible','acompanyament i escolta'],['Persones cuidades','Persones cuidadores','intangible','vincle i sentit'],['Famílies','Persones cuidadores','tangible','confiança i suport econòmic'],['Persones cuidadores','Famílies','tangible','descàrrega i informació'],['Serveis socials/CAP','Persones cuidadores','tangible','derivacions i formació'],['Persones cuidadores','Serveis socials/CAP','tangible','dades i seguiment'],['Voluntariat','Persones cuidadores','tangible','hores gratuïtes'],['Persones cuidadores','Voluntariat','intangible','formació i cura mútua']],
+   kanban:['Diagnòstic de necessitats','Formar cuidadores','Protocol de casos','Primeres 5 famílies','Enllaç serveis públics','Prevenció del burnout']},
+  {id:'formacio',name:'Educació / formació',icon:'📚',one:'Formació reglada o lliure, mentoria, escola comunitària.',projectTypes:['comunitari','cooperativa','autonom'],
+   roles:['Formadors/es','Aprenents','Coordinació pedagògica','Espai formatiu','Comunitat de pràctica'],
+   flows:[['Formadors/es','Aprenents','tangible','sessions i materials'],['Aprenents','Formadors/es','tangible','matrícula o hores banc'],['Coordinació pedagògica','Formadors/es','intangible','disseny curricular'],['Formadors/es','Coordinació pedagògica','tangible','avaluació i millora'],['Espai formatiu','Formadors/es','tangible','aules i eines'],['Aprenents','Comunitat de pràctica','intangible','xarxa d\'exalumnes'],['Comunitat de pràctica','Aprenents','intangible','mentoria peer'],['Formadors/es','Comunitat de pràctica','intangible','recerca compartida']],
+   kanban:['Currículum mínim','Reclutar formadors','Espai i horaris','Cohort pilot','Avaluació i certificació','Bucle amb ex-alumnes']}
+];
+const _pm=(()=>{const m={};PROTOTYPE_MAPS.forEach(p=>m[p.id]=p);return m;})();
+const prototypeMapMeta=id=>_pm[id];
+// Instanciar una venture des d'un prototip: converteix roles+flows en vna, hereta kanban, associa tipus.
+function newVentureFromPrototype(node,proto,{name,type}={}){
+  const idBy={},roles=[],exch=[];
+  (proto.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
+  (proto.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+  const t=type||(proto.projectTypes&&proto.projectTypes[0])||'comunitari';
+  return{id:uid(),name:(name||proto.name).trim(),activityId:'proto_'+proto.id,prototypeId:proto.id,projectType:t,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(proto.kanban||[]).slice(),notes:'',graduatedNodeId:null,equity:{...projectTypeMeta(t).equity}};
+}
+// ═══════════ Comando · equip gestor d'un projecte (colla castellera) ═══════════
+// Un Comando és un subconjunt de membres d'un node organitzats per rols funcionals,
+// amb el seu mini mapa de valor propi (com se subministra el servei/procés/producte).
+const comandoOf=node=>node.comando||null;
+function newProjectComando(node,{name,mission,memberIds,prototypeMapId}={}){
+  const proto=prototypeMapId?prototypeMapMeta(prototypeMapId):null;
+  const c={id:uid(),name:(name||'Comando de '+node.name).trim(),mission:mission||'',prototypeMapId:prototypeMapId||null,
+    members:(memberIds||[]).map(mid=>{const m=memberById(node,mid);return{memberId:mid,personKey:m?personKey(m.name):null,role:'',focus:''};}),
+    vna:proto?{roles:proto.roles.map(nm=>({id:uid(),name:nm})),exchanges:[]}:{roles:[],exchanges:[]},
+    createdAt:now(),updatedAt:now()};
+  if(proto){
+    const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
+    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+  }
+  node.comando=c;return c;
+}
+function comandoAssignRole(node,memberId,role,focus){const c=comandoOf(node);if(!c)return;const m=c.members.find(x=>x.memberId===memberId);if(m){m.role=role||'';if(focus!==undefined)m.focus=focus;}else c.members.push({memberId,personKey:(memberById(node,memberId)||{name:''}).name?personKey(memberById(node,memberId).name):null,role:role||'',focus:focus||''});c.updatedAt=now();}
+function comandoRemoveMember(node,memberId){const c=comandoOf(node);if(!c)return;c.members=c.members.filter(x=>x.memberId!==memberId);c.updatedAt=now();}
+// ═══════════ AI planner de fluxos de valor per demanda comunitària ═══════════
+// Delega a AI.call('plan_value_flows', ctx) si hi ha key; retorna {roles, flows} en el mateix format que un prototip.
+async function aiPlanValueFlows(demand,ctx){
+  const context={demand:(demand||'').trim(),territory:(ctx&&ctx.territory)||'',projectType:(ctx&&ctx.projectType)||'comunitari',existingMap:(ctx&&ctx.existingMap)||null,prototypes:PROTOTYPE_MAPS.map(p=>({id:p.id,name:p.name,one:p.one}))};
+  if(typeof AI==='object'&&typeof AI.call==='function'){
+    try{const r=await AI.call('plan_value_flows',context);if(r&&r.roles&&r.flows)return r;}catch(e){/* fallthrough to heuristic */}
+  }
+  // Fallback heurístic: escull el prototip més proper per keyword-match i el retorna.
+  const dl=(demand||'').toLowerCase();
+  const guess=PROTOTYPE_MAPS.find(p=>[p.id,p.name,p.one].join(' ').toLowerCase().split(/\W+/).some(w=>w.length>4&&dl.includes(w)))||PROTOTYPE_MAPS[0];
+  return{roles:guess.roles,flows:guess.flows,kanban:guess.kanban,fromPrototype:guess.id,heuristic:true};
 }
 // Readiness: 5 checks. Graduate quan tots verds (o overrideable per steward).
 function ventureReadiness(node,v){
@@ -3703,11 +3799,42 @@ function renderMatriuVentures(body,node){
   });
 }
 function openActivityGallery(node){
-  const cards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
-  const bg=modal('<h2>Activitats crítiques del territori</h2><p class="m-sub">Tria l\'activitat a incubar: precarregarem el seu mapa de valor i el tauler d\'acció-formació.</p><div class="dyn-grid">'+cards+'</div><div class="modal-actions"><button class="btn btn-ghost" id="agCancel">Cancel·la</button></div>');
+  const critCards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
+  const protoCards=PROTOTYPE_MAPS.map(p=>'<div class="dyn-card" data-proto="'+p.id+'"><span class="dyn-ic">'+p.icon+'</span><span class="dyn-nm">'+esc(p.name)+'</span><span class="dyn-one">'+esc(p.one)+'</span><span class="dyn-one" style="opacity:.65;font-style:italic">Tipus habituals: '+p.projectTypes.map(t=>projectTypeMeta(t).icon).join(' ')+'</span></div>').join('');
+  const typeOpts=PROJECT_TYPES.map(t=>'<option value="'+t.id+'">'+t.icon+' '+esc(t.name)+' — '+esc(t.one)+'</option>').join('');
+  const bg=modal('<h2>Nova venture · MATRIU</h2>'+
+    '<p class="m-sub">Escull d\'on partir: <strong>activitat crítica</strong> del territori (10 predefinides), <strong>prototip de mapa de valor</strong> (per servei/procés/producte, cobreix el 80% dels casos), o <strong>demanda</strong> que la IA planificarà.</p>'+
+    '<div class="ag-tabs"><button class="ag-tab sel" data-t="crit">🎯 Activitats crítiques</button><button class="ag-tab" data-t="proto">📐 Prototips de mapa de valor</button><button class="ag-tab" data-t="ai">🤖 Demana a la IA</button></div>'+
+    '<div class="field" style="margin-top:.6rem"><label>Tipus de projecte</label><select id="agType">'+typeOpts+'</select></div>'+
+    '<div id="agCrit" class="ag-pane"><p class="m-sub" style="font-size:.82rem">Plantilles del territori (dinamització, ocupació, habitatge, energia, alimentació, cures, cultura…). Cada activitat inclou rols, fluxos i pla d\'acció.</p><div class="dyn-grid">'+critCards+'</div></div>'+
+    '<div id="agProto" class="ag-pane" style="display:none"><p class="m-sub" style="font-size:.82rem">Mapes genèrics reutilitzables per <strong>servei</strong>, <strong>procés</strong> o <strong>producte</strong>. Personalitzables al 100% després.</p><div class="dyn-grid">'+protoCards+'</div></div>'+
+    '<div id="agAi" class="ag-pane" style="display:none"><p class="m-sub" style="font-size:.82rem">Descriu la <strong>demanda comunitària</strong>. La IA (o el fallback heurístic sense clau) proposarà un mapa de valor amb rols i fluxos, editable després.</p><textarea id="agDemand" style="width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.5rem;font:inherit" placeholder="Ex: cal un servei de reparació de bicicletes de barri accessible per a joves i gent gran, obert els caps de setmana"></textarea><button class="btn btn-primary btn-sm" id="agAiGo" style="margin-top:.5rem">🤖 Planifica els fluxos de valor</button><div id="agAiRes" style="margin-top:.6rem"></div></div>'+
+    '<div class="modal-actions"><button class="btn btn-ghost" id="agCancel">Cancel·la</button></div>');
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#agCancel').onclick=closeModal;
-  bg.querySelectorAll('.dyn-card').forEach(c=>c.onclick=async()=>{venturesOf(node).push(newVenture(node,actMeta(c.dataset.act)));await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada');});
+  bg.querySelectorAll('.ag-tab').forEach(tab=>tab.onclick=()=>{const t=tab.dataset.t;bg.querySelectorAll('.ag-tab').forEach(x=>x.classList.toggle('sel',x===tab));bg.querySelector('#agCrit').style.display=t==='crit'?'':'none';bg.querySelector('#agProto').style.display=t==='proto'?'':'none';bg.querySelector('#agAi').style.display=t==='ai'?'':'none';});
+  const getType=()=>bg.querySelector('#agType').value;
+  bg.querySelectorAll('#agCrit .dyn-card').forEach(c=>c.onclick=async()=>{const v=newVenture(node,actMeta(c.dataset.act));v.projectType=getType();v.equity={...projectTypeMeta(getType()).equity};venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada — '+projectTypeMeta(getType()).name);});
+  bg.querySelectorAll('#agProto .dyn-card').forEach(c=>c.onclick=async()=>{const v=newVentureFromPrototype(node,prototypeMapMeta(c.dataset.proto),{type:getType()});venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture des de prototip — '+v.name);});
+  bg.querySelector('#agAiGo').onclick=async()=>{
+    const demand=bg.querySelector('#agDemand').value.trim();if(!demand){toast('Descriu la demanda comunitària');return;}
+    const btn=bg.querySelector('#agAiGo');btn.disabled=true;btn.textContent='🤖 Planificant…';
+    try{
+      const plan=await aiPlanValueFlows(demand,{projectType:getType()});
+      const rolesHtml=plan.roles.map(r=>'<li>'+esc(typeof r==='string'?r:(r.name||''))+'</li>').join('');
+      const flowsHtml=plan.flows.slice(0,12).map(f=>'<li>'+esc(f[0])+' '+(f[2]==='tangible'||f[2]==='T'?'→':'⇢')+' '+esc(f[1])+(f[3]?' <em style="color:var(--muted)">('+esc(f[3])+')</em>':'')+'</li>').join('');
+      bg.querySelector('#agAiRes').innerHTML='<div class="ai-note"><span class="ic">🤖</span><span>'+(plan.heuristic?'<em>Sense clau IA: fallback heurístic al prototip <strong>'+esc(prototypeMapMeta(plan.fromPrototype).name)+'</strong>.</em>':'Pla generat.')+'</span></div>'+
+        '<div class="ent-grp-lbl">Rols</div><ul style="font-size:.85rem;color:var(--light);margin:0;padding-left:1.2rem">'+rolesHtml+'</ul>'+
+        '<div class="ent-grp-lbl">Fluxos</div><ul style="font-size:.85rem;color:var(--light);margin:0;padding-left:1.2rem">'+flowsHtml+'</ul>'+
+        '<button class="btn btn-primary btn-sm" id="agAiUse" style="margin-top:.6rem">✓ Crea la venture amb aquest pla</button>';
+      bg.querySelector('#agAiUse').onclick=async()=>{
+        const proto={id:'ai_'+Date.now(),name:demand.slice(0,60),icon:'🤖',one:demand,roles:plan.roles.map(r=>typeof r==='string'?r:r.name),flows:plan.flows,kanban:plan.kanban||['Definir MVP','Primer prototip','Test amb 3 persones','Iterar','Consolidar']};
+        const v=newVentureFromPrototype(node,proto,{type:getType(),name:demand.slice(0,60)});
+        venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada des de plan IA');
+      };
+    }catch(e){bg.querySelector('#agAiRes').innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.message||'desconegut')+'</span></div>';}
+    finally{btn.disabled=false;btn.textContent='🤖 Planifica els fluxos de valor';}
+  };
 }
 // Perfil transversal: mostra tot el que una persona aporta i mou a l'ecosistema (banc, biblioteca, MATRIU).
 function openPersonProfile(nameOrKey){
@@ -3955,6 +4082,45 @@ function buildEquityPie(eq){
     svg.appendChild(p);ang=a2;});
   const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
   return svg;
+}
+// ═══════════ openProjectComando · equip gestor del node (colla castellera) ═══════════
+function openProjectComando(node){
+  const ms=membersOf(node);
+  let c=comandoOf(node);
+  const protoOpts='<option value="">— sense prototip —</option>'+PROTOTYPE_MAPS.map(p=>'<option value="'+p.id+'">'+p.icon+' '+esc(p.name)+'</option>').join('');
+  const bg=modal(`
+    <h2>🏰 Comando · equip gestor</h2>
+    <p class="m-sub">Un Comando és una <strong>colla castellera</strong>: el grup de persones que sostenen el projecte, cadascú al seu lloc. Té la seva pròpia missió i el seu mini mapa de valor (com se subministra el servei / procés / producte).</p>
+    <div id="cmBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="cmCloseBtn">Tanca</button><button class="btn btn-primary" id="cmSaveBtn">⬢ Desa</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const body=bg.querySelector('#cmBody');
+  const render=()=>{
+    c=comandoOf(node);
+    if(!c){
+      body.innerHTML='<div class="ai-note"><span class="ic">🏰</span><span>Encara no hi ha Comando per aquest node. Crea l\'equip gestor amb un nom, una missió i, opcionalment, un prototip de mapa de valor.</span></div>'+
+        '<div class="field"><label>Nom del Comando</label><input id="cmName" value="'+esc('Comando de '+node.name)+'"></div>'+
+        '<div class="field"><label>Missió (una frase)</label><input id="cmMission" placeholder="ex: sostenir el servei X per a la comunitat de Y"></div>'+
+        '<div class="field"><label>Prototip de mapa de valor</label><select id="cmProto">'+protoOpts+'</select></div>'+
+        '<button class="btn btn-primary btn-sm" id="cmCreate">🏰 Crea el Comando</button>';
+      body.querySelector('#cmCreate').onclick=async()=>{const name=body.querySelector('#cmName').value.trim(),mission=body.querySelector('#cmMission').value.trim(),pid=body.querySelector('#cmProto').value||null;newProjectComando(node,{name,mission,prototypeMapId:pid});await persist(node);render();toast('Comando creat');};
+      return;
+    }
+    const memberOpts='<option value="">— tria un membre —</option>'+ms.filter(m=>!c.members.some(x=>x.memberId===m.id)).map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('');
+    const roleOpts='<option value="">rol funcional (obert)</option>'+(c.vna.roles||[]).map(r=>'<option value="'+esc(r.name)+'">'+esc(r.name)+'</option>').join('');
+    body.innerHTML='<div class="cm-hd"><span style="font-size:1.6rem">🏰</span><span class="cm-hd-nm">'+esc(c.name)+'</span></div>'+
+      (c.mission?'<div class="cm-mission">🎯 '+esc(c.mission)+'</div>':'')+
+      '<div class="ent-grp-lbl">👥 Colla castellera · '+c.members.length+' membre'+(c.members.length===1?'':'s')+'</div>'+
+      (c.members.length?'<div class="cm-team">'+c.members.map(mm=>{const m=memberById(node,mm.memberId)||{name:'(desconegut)'};return '<div class="cm-slot"><div class="cm-slot-nm">'+esc(m.name)+'</div>'+(mm.role?'<div class="cm-slot-rl">🎭 '+esc(mm.role)+'</div>':'')+(mm.focus?'<div class="cm-slot-fc">'+esc(mm.focus)+'</div>':'')+'<button class="btn btn-ghost btn-sm cmDel" data-mid="'+mm.memberId+'" style="margin-top:.3rem;align-self:flex-start">Treu del comando</button></div>';}).join('')+'</div>':'<div class="ent-desc">Cap membre al Comando encara.</div>')+
+      '<div class="cm-add-row"><select id="cmAddMem">'+memberOpts+'</select><select id="cmAddRole">'+roleOpts+'</select><input id="cmAddFocus" placeholder="focus (opcional)"><button class="btn btn-ghost btn-sm" id="cmAddBtn">+ Afegeix</button></div>'+
+      (c.vna.roles.length?'<div class="ent-grp-lbl">📐 Mini mapa de valor del Comando · '+c.vna.roles.length+' rols · '+c.vna.exchanges.length+' fluxos</div><div class="ent-desc">Rols funcionals: '+c.vna.roles.map(r=>esc(r.name)).join(' · ')+'</div>':'<div class="ent-grp-lbl">📐 Mini mapa de valor</div><div class="ent-desc">Cap mapa vinculat. Edita el Comando per associar un prototip.</div>');
+    body.querySelector('#cmAddBtn').onclick=async()=>{const mid=body.querySelector('#cmAddMem').value;if(!mid){toast('Tria un membre');return;}comandoAssignRole(node,mid,body.querySelector('#cmAddRole').value,body.querySelector('#cmAddFocus').value);await persist(node);render();};
+    body.querySelectorAll('.cmDel').forEach(b=>b.onclick=async()=>{comandoRemoveMember(node,b.dataset.mid);await persist(node);render();});
+  };
+  render();
+  bg.querySelector('#cmCloseBtn').onclick=closeModal;
+  bg.querySelector('#cmSaveBtn').onclick=async()=>{await persist(node);closeModal();toast('Comando desat');};
 }
 function openContributionModal(node,venture){
   const ms=membersOf(node),cfg=venture?ventureCfg(node,venture):equityCfg(node);
@@ -4563,7 +4729,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
