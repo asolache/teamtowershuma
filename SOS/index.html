@@ -294,6 +294,41 @@ a{color:var(--blue);text-decoration:none}
 .bt-cat{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .4rem}
 .bt-col .ent-card{margin-bottom:.5rem}
 @media(max-width:600px){.bt-cols{grid-template-columns:1fr}}
+/* MATRIU sprint plan (venture backlog · camí de graduació) */
+.vd-ready{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;margin-bottom:.7rem}
+.vd-ready-hd{display:flex;align-items:baseline;gap:.6rem}
+.vd-ready-sc{font-size:1.4rem;font-weight:700;color:var(--indigo)}
+.vd-ready-lb{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.vd-ready-bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin:.4rem 0 .5rem}
+.vd-ready-fill{height:100%;transition:width .3s}
+.vd-ready-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.2rem}
+.vd-ready-list li{font-size:.78rem;color:var(--light)}
+.vd-ready-list li.ok{color:var(--green)}
+.vd-ready-list li.no{color:var(--muted)}
+.vd-ready-hint{color:var(--orange);font-size:.72rem}
+.sp-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;margin-bottom:.55rem;border-left:3px solid var(--muted)}
+.sp-card.sp-active{border-left-color:var(--indigo)}
+.sp-card.sp-done{border-left-color:var(--green);opacity:.85}
+.sp-card.sp-planned{border-left-color:var(--muted)}
+.sp-hd{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.sp-nm{font-weight:700;font-size:.9rem}
+.sp-st{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;padding:.1rem .4rem;border-radius:4px;border:1px solid var(--border);color:var(--muted)}
+.sp-st-active{color:var(--indigo);border-color:var(--indigo)}
+.sp-st-done{color:var(--green);border-color:var(--green-dim)}
+.sp-goal{font-size:.78rem;color:var(--light);margin:.35rem 0}
+.sp-bar{height:4px;background:var(--border);border-radius:3px;overflow:hidden;margin:.35rem 0 .2rem}
+.sp-bar-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--green));transition:width .3s}
+.sp-meta{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.05em}
+.sp-items{list-style:none;padding:.4rem 0 .3rem;margin:0;display:flex;flex-direction:column;gap:.15rem}
+.sp-it{font-size:.83rem;color:var(--light)}
+.sp-it label{display:flex;align-items:flex-start;gap:.4rem;cursor:pointer;padding:.15rem 0}
+.sp-it input{margin-top:.3rem;cursor:pointer;min-width:16px;min-height:16px}
+.sp-it.done .sp-tt{text-decoration:line-through;color:var(--muted)}
+.sp-ic{font-size:.85rem}
+.sp-add{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.4rem}
+.sp-add-in{flex:2;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .5rem;font:inherit;font-size:.78rem}
+.sp-add-k{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .4rem;font:inherit;font-size:.78rem}
+.sp-actions{display:flex;flex-direction:column;gap:.3rem;margin-top:.3rem}
 /* MATRIU equity pie */
 .eq-wrap{display:grid;grid-template-columns:220px 1fr;gap:1.5rem;align-items:center;margin-top:.8rem}
 .eq-pie{display:flex;justify-content:center}
@@ -2230,14 +2265,78 @@ function cooperationSummary(node){
   return{total:coops.length,byVenture:byV,byKind};
 }
 async function graduateVenture(node,v){
+  const rd=ventureReadiness(node,v);
+  if(!rd.graduateReady){const missing=rd.checks.filter(c=>!c.ok).map(c=>'· '+c.label).join('\n');toast('Encara no pot graduar. Falten:\n'+missing);return null;}
   const nn=newNode(v.name,'projecte',node.parentId);
   nn.dynamicType='generic';nn.vna={roles:v.vna.roles.map(r=>({...r})),exchanges:v.vna.exchanges.map(x=>({...x}))};
   (v.kanbanSeed||[]).forEach(t=>nn.kanban.cards.push({id:uid(),text:t,col:'todo'}));
+  // Carry over unfinished backlog items to the graduated node as kanban cards — no work is lost.
+  sprintsOf(v).forEach(sp=>(sp.items||[]).filter(it=>!it.done).forEach(it=>nn.kanban.cards.push({id:uid(),text:'['+sp.name+'] '+it.title,col:'todo'})));
   nn.metaskill.mission='Graduada de la MATRIU: '+actMeta(v.activityId).name+'.';
+  nn.metaskill.legacy={fromVentureId:v.id,graduatedAt:now(),sprintsCompleted:sprintsOf(v).filter(s=>s.status==='done').length};
   v.stage='graduacio';v.graduatedNodeId=nn.id;
   state.nodes.push(nn);await persist(nn);await persist(node);
   if(node.parentId)state.expanded.add(node.parentId);
   selectNode(nn.id);toast('Venture graduada a projecte');
+  return nn;
+}
+// ═══════════ Sprint plan per venture (el mecanisme que fa graduar) ═══════════
+// Cada venture té un backlog dividit en sprints. Els items del backlog cobreixen:
+// (a) rols del mapa de valor (algú l'assumeix) · (b) fluxos VNA (algú els activa) ·
+// (c) entregables del kanban-seed de l'activitat · (d) tests d'aprenentatge.
+// La graduació passa quan la readiness està >= 70% i tots els checks estan verds.
+const sprintsOf=v=>v.sprints||(v.sprints=[]);
+function newSprint(v,{name,goal,weeks}={}){
+  const w=Number(weeks)||2,starts=Date.now(),ends=starts+w*7*864e5;
+  const sp={id:uid(),name:name||('Sprint '+(sprintsOf(v).length+1)),goal:goal||'',weeks:w,status:sprintsOf(v).length?'planned':'active',startsAt:new Date(starts).toISOString(),endsAt:new Date(ends).toISOString(),items:[]};
+  sprintsOf(v).push(sp);return sp;
+}
+function addBacklogItem(sp,{title,kind,mapRef,ownerId,hours}={}){
+  const it={id:uid(),title:(title||'').trim()||'(sense títol)',kind:kind||'deliverable',mapRef:mapRef||null,ownerId:ownerId||null,hours:Number(hours)||0,done:false,doneAt:null};
+  (sp.items||(sp.items=[])).push(it);return it;
+}
+function toggleBacklogItem(sp,itemId){
+  const it=(sp.items||[]).find(x=>x.id===itemId);if(!it)return false;
+  it.done=!it.done;it.doneAt=it.done?now():null;return it.done;
+}
+function sprintProgress(sp){const items=sp.items||[],done=items.filter(x=>x.done).length,total=items.length;return{done,total,pct:total?Math.round(done/total*100):0};}
+function advanceSprint(v,sprintId){
+  const sps=sprintsOf(v),sp=sps.find(x=>x.id===sprintId);if(!sp)return;
+  if(sp.status==='planned')sp.status='active';
+  else if(sp.status==='active'){sp.status='done';sp.closedAt=now();const nx=sps.find(x=>x.status==='planned');if(nx)nx.status='active';}
+}
+// Sembra el pla d'sprints d'una venture des del seu mapa de valor + kanbanSeed.
+// S1 Fonaments: cobreix rols (algú se'ls fa seus). S2 Fluxos: activa intercanvis VNA.
+// S3 Entregables: kanbanSeed de l'activitat crítica esdevé check-list d'MVP.
+function seedSprintPlanFromMap(v){
+  if(sprintsOf(v).length)return sprintsOf(v);
+  const s1=newSprint(v,{name:'S1 · Fonaments',goal:'Cobrir els rols funcionals amb persones reals',weeks:2});
+  (v.vna.roles||[]).slice(0,7).forEach(r=>addBacklogItem(s1,{title:'Assignar owner al rol: '+r.name,kind:'role',mapRef:{type:'role',id:r.id}}));
+  addBacklogItem(s1,{title:'Definir missió/visió/objectius de la venture',kind:'deliverable'});
+  const s2=newSprint(v,{name:'S2 · Activació dels fluxos',goal:'Que cada intercanvi del mapa passi almenys 1 cop',weeks:2});
+  (v.vna.exchanges||[]).slice(0,8).forEach(x=>{const from=(v.vna.roles.find(r=>r.id===x.from)||{}).name||'?',to=(v.vna.roles.find(r=>r.id===x.to)||{}).name||'?';addBacklogItem(s2,{title:'Activar flux '+(x.kind==='I'?'intangible':'tangible')+': '+from+' → '+to+(x.label?' ('+x.label+')':''),kind:'flow',mapRef:{type:'exchange',id:x.id}});});
+  const s3=newSprint(v,{name:'S3 · MVP entregable',goal:'Un MVP funcional replicable — camí a la graduació',weeks:3});
+  (v.kanbanSeed||[]).forEach(t=>addBacklogItem(s3,{title:t,kind:'deliverable'}));
+  addBacklogItem(s3,{title:'Registrar 3 aportacions reals al ledger (Slicing Pie)',kind:'test'});
+  addBacklogItem(s3,{title:'Verificar que cap membre concentra >70% de l\'equity',kind:'test'});
+  return sprintsOf(v);
+}
+// Readiness: 5 checks. Graduate quan tots verds (o overrideable per steward).
+function ventureReadiness(node,v){
+  const sps=sprintsOf(v),allItems=sps.reduce((a,s)=>a.concat(s.items||[]),[]);
+  const doneItems=allItems.filter(x=>x.done).length,itemPct=allItems.length?doneItems/allItems.length:0;
+  const ledger=(v.ledger||[]).length;
+  const eq=(typeof computeVentureEquity==='function')?computeVentureEquity(node,v):[];
+  const maxPct=eq.length?Math.max(...eq.map(e=>e.pct||0)):0;
+  const checks=[
+    {k:'lead',label:'Té soci líder assignat',ok:!!v.leadMemberId,hint:'Assigna un soci lead a la venture'},
+    {k:'sprints',label:'Almenys 1 sprint completat',ok:sps.some(s=>s.status==='done'),hint:'Marca com a fet el primer sprint'},
+    {k:'backlog',label:'≥60% dels items del backlog fets',ok:itemPct>=0.6,hint:'Ara: '+Math.round(itemPct*100)+'%'},
+    {k:'ledger',label:'≥3 aportacions al ledger',ok:ledger>=3,hint:'Registra hores o € reals ('+ledger+'/3)'},
+    {k:'equity',label:'Cap membre concentra >70% equity',ok:maxPct<=70||maxPct===0,hint:'Concentració actual: '+Math.round(maxPct)+'%'}
+  ];
+  const okCount=checks.filter(c=>c.ok).length,score=Math.round(okCount/checks.length*100);
+  return{score,checks,graduateReady:checks.every(c=>c.ok)};
 }
 const norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const entityId=(level,territoryName,entityType,name)=>'e_'+[norm(level),norm(territoryName),norm(entityType),norm(name)].join('_');
@@ -3592,7 +3691,8 @@ function renderMatriuVentures(body,node){
     list.forEach(v=>{
       const a=actMeta(v.activityId),c=el('div','ent-card');c.style.cursor='pointer';
       const lead=v.leadMemberId?memberById(node,v.leadMemberId):null,nAl=allocationsOf(v).length,nAp=ventureLedger(v).length,nCo=cooperationsOf(node).filter(x=>x.fromId===v.id||x.toId===v.id).length;
-      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(nCo?'<span class="ent-b b-ver">🔄 '+nCo+' coop</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
+      const sps=sprintsOf(v),spDone=sps.filter(s=>s.status==='done').length,rd=ventureReadiness(node,v);
+      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(sps.length?'<span class="ent-b">📋 '+spDone+'/'+sps.length+' sprints</span>':'')+'<span class="ent-b '+(rd.graduateReady?'b-ver':(rd.score>=60?'b-form':''))+'">🎓 '+rd.score+'%</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(nCo?'<span class="ent-b b-ver">🔄 '+nCo+' coop</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
       c.onclick=()=>openVentureDetail(node,v);
       const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
       if(v.stage!=='graduacio'){const i=VENTURE_STAGES.indexOf(v.stage);const nx=el('button','btn btn-ghost btn-sm','→ '+({idea:'Prototip',prototip:'Validació',validacio:'Graduar'}[v.stage]));nx.onclick=async ev=>{ev.stopPropagation();if(v.stage==='validacio'){await graduateVenture(node,v);}else{v.stage=VENTURE_STAGES[i+1];await persist(node);renderWorkspace();toast('Venture avançada');}};act.appendChild(nx);}
@@ -3684,6 +3784,8 @@ function openVentureDetail(node,v){
     <div class="ent-grp-lbl">🥧 Slicing Pie de la venture</div>
     <div id="vdEquity"></div>
     <button class="btn btn-ghost btn-sm" id="vdContrib" style="margin-top:.5rem">+ Registra aportació</button>
+    <div class="ent-grp-lbl">📋 Pla d'sprints · camí de graduació</div>
+    <div id="vdSprints"></div>
     <div class="ent-grp-lbl">🔄 Intercooperació entre ventures (Mondragón)</div>
     <div id="vdCoops"></div>
     <button class="btn btn-ghost btn-sm" id="vdCoop" style="margin-top:.4rem">🔄 Coopera amb una altra venture</button>
@@ -3704,6 +3806,65 @@ function openVentureDetail(node,v){
   const eqBox=bg.querySelector('#vdEquity');
   (function renderVEq(){const eq=computeVentureEquity(node,v);eqBox.innerHTML='';if(eq.some(e=>e.slices>0))eqBox.appendChild(buildEquityWrap(eq));else eqBox.appendChild(el('div','ent-desc','Encara cap aportació a aquesta venture. Registra hores o diner dels socis i la tarta es repartirà — cada projecte econòmic té la seva pròpia.'));})();
   bg.querySelector('#vdContrib').onclick=async()=>{if(!ms.length){toast('Dona d\'alta socis a la MATRIU primer');return;}v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);openContributionModal(node,v);};
+  const spBox=bg.querySelector('#vdSprints');
+  const renderSprints=()=>{
+    spBox.innerHTML='';
+    const sps=sprintsOf(v),rd=ventureReadiness(node,v);
+    // Readiness gauge
+    const rdBox=el('div','vd-ready');
+    rdBox.innerHTML='<div class="vd-ready-hd"><span class="vd-ready-sc">'+rd.score+'%</span><span class="vd-ready-lb">readiness per graduar</span></div>'+
+      '<div class="vd-ready-bar"><div class="vd-ready-fill" style="width:'+rd.score+'%;background:'+(rd.graduateReady?'var(--green)':rd.score>=60?'var(--orange)':'var(--indigo)')+'"></div></div>'+
+      '<ul class="vd-ready-list">'+rd.checks.map(c=>'<li class="'+(c.ok?'ok':'no')+'">'+(c.ok?'✅':'⚪')+' '+esc(c.label)+(c.ok?'':' <span class="vd-ready-hint">— '+esc(c.hint)+'</span>')+'</li>').join('')+'</ul>';
+    spBox.appendChild(rdBox);
+    // Sprint list or seed prompt
+    if(!sps.length){
+      const empty=el('div','ent-desc','Cap sprint definit encara. El pla es sembra automàticament des del mapa de valor i el kanban-seed de l\'activitat.');
+      spBox.appendChild(empty);
+      const seed=el('button','btn btn-primary btn-sm','🌱 Sembra pla automàtic (S1 fonaments · S2 fluxos · S3 MVP)');
+      seed.style.marginTop='.5rem';
+      seed.onclick=async()=>{seedSprintPlanFromMap(v);await persist(node);renderSprints();toast('Pla sembrat: 3 sprints amb backlog inicial');};
+      spBox.appendChild(seed);
+      return;
+    }
+    sps.forEach(sp=>{
+      const pr=sprintProgress(sp);
+      const card=el('div','sp-card sp-'+sp.status);
+      card.innerHTML='<div class="sp-hd"><span class="sp-nm">'+esc(sp.name)+'</span><span class="sp-st sp-st-'+sp.status+'">'+({planned:'planificat',active:'actiu',done:'fet ✓'}[sp.status]||sp.status)+'</span></div>'+
+        (sp.goal?'<div class="sp-goal">🎯 '+esc(sp.goal)+'</div>':'')+
+        '<div class="sp-bar"><div class="sp-bar-fill" style="width:'+pr.pct+'%"></div></div>'+
+        '<div class="sp-meta">'+pr.done+'/'+pr.total+' items · '+sp.weeks+' setm.</div>'+
+        '<ul class="sp-items"></ul>'+
+        '<div class="sp-actions"></div>';
+      const ul=card.querySelector('.sp-items');
+      (sp.items||[]).forEach(it=>{
+        const li=el('li','sp-it'+(it.done?' done':'')+' sp-kind-'+it.kind);
+        li.innerHTML='<label><input type="checkbox" '+(it.done?'checked':'')+'> <span class="sp-ic">'+({role:'👤',flow:'⇄',deliverable:'📦',test:'🧪'}[it.kind]||'◇')+'</span> <span class="sp-tt">'+esc(it.title)+'</span></label>';
+        li.querySelector('input').onchange=async()=>{toggleBacklogItem(sp,it.id);await persist(node);renderSprints();};
+        ul.appendChild(li);
+      });
+      const acts=card.querySelector('.sp-actions');
+      // Add-item form
+      const addWrap=el('div','sp-add');
+      addWrap.innerHTML='<input type="text" placeholder="+ nou item al backlog" class="sp-add-in"><select class="sp-add-k"><option value="deliverable">📦 entregable</option><option value="role">👤 rol</option><option value="flow">⇄ flux</option><option value="test">🧪 test</option></select><button class="btn btn-ghost btn-sm sp-add-b">Afegeix</button>';
+      const inp=addWrap.querySelector('.sp-add-in'),ksel=addWrap.querySelector('.sp-add-k');
+      addWrap.querySelector('.sp-add-b').onclick=async()=>{const t=inp.value.trim();if(!t)return;addBacklogItem(sp,{title:t,kind:ksel.value});inp.value='';await persist(node);renderSprints();};
+      acts.appendChild(addWrap);
+      // Advance button
+      if(sp.status!=='done'){
+        const adv=el('button','btn btn-ghost btn-sm','→ '+(sp.status==='planned'?'Activa sprint':'Marca com a fet'));
+        adv.style.marginTop='.4rem';
+        adv.onclick=async()=>{advanceSprint(v,sp.id);await persist(node);renderSprints();toast(sp.status==='done'?'Sprint tancat':'Sprint activat');};
+        acts.appendChild(adv);
+      }
+      spBox.appendChild(card);
+    });
+    // Bulk add sprint
+    const addSp=el('button','btn btn-ghost btn-sm','+ Nou sprint');
+    addSp.style.marginTop='.5rem';
+    addSp.onclick=async()=>{const nm=prompt('Nom del sprint:','S'+(sps.length+1)+' · ');if(!nm)return;newSprint(v,{name:nm.trim(),weeks:2});await persist(node);renderSprints();};
+    spBox.appendChild(addSp);
+  };
+  renderSprints();
   const coopBox=bg.querySelector('#vdCoops');
   (function renderCoops(){const coops=cooperationsOf(node).filter(c=>c.fromId===v.id||c.toId===v.id);coopBox.innerHTML='';if(!coops.length){coopBox.appendChild(el('div','ent-desc','Cap intercooperació encara. Les ventures poden cedir hores, objectes, talent o capital entre elles.'));return;}const grid=el('div','ent-grid');coops.slice(0,20).forEach(c=>{const dir=c.fromId===v.id?'→ dóna a':'← rep de',other=c.fromId===v.id?c.toName:c.fromName;const card=el('div','ent-card');const kmap={hores:'⏱',objecte:'📦',talent:'👤',moneda:'€'};card.innerHTML='<div class="ent-nm">'+kmap[c.kind]+' '+c.qty+' '+c.kind+'</div><div class="ent-badges"><span class="ent-b">'+esc(dir)+'</span><span class="ent-b b-ver">'+esc(other)+'</span>'+(c.sig?'<span class="ent-b b-ver">🔏 firmat</span>':'')+'</div>'+(c.note?'<div class="ent-desc">'+esc(c.note)+'</div>':'');grid.appendChild(card);});coopBox.appendChild(grid);})();
   bg.querySelector('#vdCoop').onclick=()=>{const others=venturesOf(node).filter(x=>x.id!==v.id);if(!others.length){toast('Cal una altra venture per cooperar');return;}closeModal();openCooperationModal(node,v);};
@@ -4402,7 +4563,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
