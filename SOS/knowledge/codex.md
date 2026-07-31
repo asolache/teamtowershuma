@@ -45,6 +45,44 @@ Els arquetips vèdics són **presets funcionals**, no obligació religiosa. Un p
 
 **Shiva** (Tapas · transformació) i **Shakti** (Kriya · creació) són els dos vectors polars de cada superheroi. Un sense l'altre col·lapsa; junts són la gràcia.
 
+## V17 · Mitologia origen — Mazinguer, Horacio i el Gran Molekulon
+
+Enviats a la Terra pel **Gran Molekulon** (la molècula que governa les galàxies des de l'hiperespai), **Mazinguer i Horacio** tenen una missió aparentment impossible: reclutar un **Comando de 150.000 superherois** capaç de vèncer la **Corporació Món Mort** — l'entitat sistèmica que extreu valor sense retornar-lo, que trenca vincles i deixa les comunitats orfes.
+
+Sense talents propis aparents (potser el seu superpoder és haver perdut el seu ego), Mazinguer i Horacio adopten l'estratègia dels **Blues Brothers**: **munten una banda de música** que recorre totes les poblacions de Catalunya i del món per identificar, un a un, els 150.000 superherois amagats a plena vista.
+
+**Superherois canònics presentats als còmics 1 i 2**:
+- **Mazinguer** — líder tècnic sense superpoder aparent
+- **Horacio** — narrador i estratega sense superpoder aparent
+- **Guiriguai** — llenguatges impossibles
+- **Purpleman** — persuasió i visualització
+- **Afrodita** — cures i xarxa afectiva
+- **La Anguila** — mobilitat i escapisme
+- **Barbamuda** — silenci útil i escolta profunda
+- **Ectoplasman** — presència distribuïda / P2P encarnat
+- *(altres — l'univers segueix expandint-se)*
+
+**Rols simbòlics dins del sistema**:
+- La **banda de música** = onboarding + comunicació + performativa
+- Els **150.000** = objectiu del Comando (visible al comptador de la vista Comando)
+- **Corporació Món Mort** = l'antimodel del SOS: extractiu, opac, centralitzat, no signat, sense circulació de valor
+- El **Gran Molekulon** = la font. En el codex tècnic, la font és el codex mateix + la comunitat
+
+## Backlog infraestructura crítica pendent (no oblidar)
+
+Ordenat per crítica → nice-to-have. Es revisa a cada onada d'ampliació:
+
+1. **Sync live per pings offer/demand** — quan un banc de temps registra una demanda que casa amb una oferta d'un altre node aparellat, notifica en directe. Descentralitzat pur (WebRTC + hash de skill matching).
+2. **Guardian request UI visible** — flux per demanar rol de steward + validació pel creator/owner amb un clic. Model ja hi és (proposeChange type steward_add); només falta el flux.
+3. **Sign records via WebAuthn** — passar de did:key a signatures amb passkey per als registres reals (no només vinculació). Requereix conservar did:sos com a identitat i afegir un `signer.type='webauthn'` alternatiu.
+4. **Ancoratge Nostr P1** — publicació signada de mainHash a relés públics. Test smoke amb `wss://relay.damus.io` quan l'entorn ho permeti.
+5. **Snapshot Arweave P2 / IPFS+OTS P3** — notarització permanent opt-in del mainHash.
+6. **AI review PRs deep integration** — mode subscripció (workflow GitHub Actions crida al SOS via webhook local o GitHub App). Actualment un-shot.
+7. **Xifratge AES-GCM per node distribuït entre múltiples membres** — clau vinculada al `did:sos` de cada membre autoritzat. Base ja hi és; falta el flux de repartiment.
+8. **Onboarding tour primer arrencament** — 3-4 pantalles guiades explicant SOS + Comando + Guardians.
+9. **Cerca global (⌘K)** — cercar nodes, socis, superherois, entitats des de qualsevol lloc.
+10. **Wallets W2/W3** — Nostr NIP-07, EIP-712 (adapters per contracte).
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
