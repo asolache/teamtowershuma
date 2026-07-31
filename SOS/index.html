@@ -1562,6 +1562,61 @@ function openOnboardingTour(){
   };
   draw();
 }
+// ═══════════ Anchor Pack · snapshot signat + CID per pinnar a IPFS/Arweave/permaweb (Backlog #5 groundwork) ═══════════
+// Empaqueta {node.id, name, mainHash, ledger_hashes[], envelopes count, ts, signer} + firma.
+// El pack és content-addressable via SHA-256 (equivalent al CIDv0 canònic quan pinnat a IPFS raw).
+async function buildAnchorPack(node){
+  const g=govOf(node);const ledgerHashes=(node.ledger||[]).map(e=>e.hash||'').filter(Boolean);
+  const pack={
+    v:1,type:'sos-anchor-pack',
+    node:{id:node.id,name:node.name,level:node.nodeLevel||'',dynamicType:node.dynamicType||''},
+    mainHash:g.mainHash||'',
+    governance:{owner:g.owner||null,stewards:(g.stewards||[]).slice(),quorum:g.quorum||1},
+    ledger:{count:ledgerHashes.length,root:ledgerHashes.length?await sha256(_te.encode(ledgerHashes.join(':'))):'',hashes:ledgerHashes},
+    envelopes:{count:(node.envelopes||[]).length,recipients:(node.envelopes||[]).map(e=>e.recipientDid).filter(Boolean)},
+    ts:now(),app:'sos-teamtowers'
+  };
+  await signRecord(pack);
+  pack.cid='sha256:'+await sha256(_te.encode(JSON.stringify(pack,Object.keys(pack).sort())));
+  return pack;
+}
+async function verifyAnchorPack(pack){
+  if(!pack||pack.type!=='sos-anchor-pack')return{ok:false,reason:'not_anchor_pack'};
+  const{cid,...rest}=pack;
+  const expected='sha256:'+await sha256(_te.encode(JSON.stringify(rest,Object.keys(rest).sort())));
+  if(expected!==cid)return{ok:false,reason:'cid_mismatch',expected,got:cid};
+  const sig=await verifyRecord(rest);
+  return{ok:sig.ok,reason:sig.reason||'',cid};
+}
+function downloadAnchorPack(pack){
+  const blob=new Blob([JSON.stringify(pack,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='sos-anchor-'+pack.node.id+'-'+(pack.ts||now()).slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function openAnchorPackModal(node){
+  if(!node)node=byId(state.activeId);
+  const bg=modal(`
+    <h2>📦 Anchor Pack</h2>
+    <p class="m-sub">Snapshot signat + <strong>content-addressable</strong> (SHA-256 → CID). Pinna'l a <strong>IPFS/Arweave/permaweb</strong> o guarda'l com evidència. Qualsevol pot verificar la firma + integritat sense servidor.</p>
+    ${!node?'<div class="ai-note"><span class="ic">⚠</span><span>Selecciona primer un node.</span></div>':`<div class="ent-desc">Node: <strong>${esc(node.name)}</strong></div><div id="apBody" style="margin-top:.6rem">Generant pack…</div>`}
+    <div class="modal-actions">${node?'<button class="btn btn-ghost" id="apCopy">📋 Copia JSON</button><button class="btn btn-ghost" id="apCopyCid">🔗 Copia CID</button><button class="btn btn-primary" id="apDl">⭳ Descarrega</button>':''}<button class="btn btn-ghost" id="apClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#apClose').onclick=closeModal;
+  if(!node)return;
+  let pack=null;
+  (async()=>{try{pack=await buildAnchorPack(node);const box=bg.querySelector('#apBody');
+    box.innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+pack.ledger.count+'</div><div class="l">apunts ledger</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+pack.envelopes.count+'</div><div class="l">envelopes</div></div><div class="bib-tile"><div class="n" style="color:var(--orange)">'+(pack.governance.stewards.length+1)+'</div><div class="l">signants</div></div></div>'+
+      '<div class="ent-grp-lbl">🔗 CID (SHA-256)</div><div class="ent-card"><code style="font-size:.72rem;word-break:break-all">'+esc(pack.cid)+'</code></div>'+
+      '<div class="ent-grp-lbl">🌱 mainHash</div><div class="ent-card"><code style="font-size:.72rem;word-break:break-all">'+esc(pack.mainHash||'—')+'</code></div>'+
+      '<div class="ent-grp-lbl">🔏 Signer</div><div class="ent-card"><code style="font-size:.7rem;word-break:break-all">'+esc((pack.signer&&pack.signer.did)||'—')+'</code></div>'+
+      '<div class="ai-note" style="margin-top:.5rem"><span class="ic">🌐</span><span>Per pinnar: puja el JSON a Arweave (arweave.app · pagament únic), Web3.Storage, Pinata, IPFS Desktop, o qualsevol pin service. El CID confirma la immutabilitat.</span></div>';
+  }catch(e){bg.querySelector('#apBody').innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||String(e))+'</span></div>';}})();
+  bg.querySelector('#apCopy').onclick=async()=>{if(!pack)return;const txt=JSON.stringify(pack,null,2);if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(txt);toast('📋 JSON copiat');}else prompt('Copia el pack:',txt);};
+  bg.querySelector('#apCopyCid').onclick=async()=>{if(!pack)return;if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(pack.cid);toast('🔗 CID copiat');}else prompt('CID:',pack.cid);};
+  bg.querySelector('#apDl').onclick=()=>{if(pack)downloadAnchorPack(pack);};
+}
 // ═══════════ Nostr anchor · public timestamped anchor del mainHash del node (Backlog #4) ═══════════
 // Utilitza NIP-33 (kind 30078 replaceable) + NIP-07 (window.nostr.signEvent) per firma real secp256k1.
 // Zero servidor propi: publica a relés WSS públics (Damus, nos.lol, snort.social). Opt-in per node.
@@ -1628,6 +1683,7 @@ function openLauncher(){
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>openMatchesModal()},
     {ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
+    {ic:'📦',t:'Anchor Pack',d:'Snapshot signat + CID · pinna a IPFS/Arweave/permaweb',fn:()=>openAnchorPackModal()},
     {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>openComandoView()},
     {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
@@ -4051,7 +4107,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
