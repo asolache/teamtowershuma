@@ -445,6 +445,40 @@ a{color:var(--blue);text-decoration:none}
 .b-pub{color:var(--blue);border-color:rgba(0,176,255,.3)}
 .b-priv{color:var(--muted)}
 .ent-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+/* Guia contextual · l'eina s'explica allà on estàs */
+.ctx-guide{border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:10px;background:var(--bg-panel);margin:0 0 1rem}
+.ctx-guide>summary{cursor:pointer;padding:.7rem .85rem;list-style:none;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;min-height:44px;touch-action:manipulation}
+.ctx-guide>summary::-webkit-details-marker{display:none}
+.ctx-guide>summary::before{content:'▸';color:var(--muted);transition:transform .12s}
+.ctx-guide[open]>summary::before{transform:rotate(90deg)}
+.ctx-guide[open]>summary{border-bottom:1px solid var(--border)}
+.cg-ic{font-size:1rem}
+.cg-t{font-size:.85rem;font-weight:700}
+.cg-next{font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;color:var(--orange);border:1px solid var(--orange-dim,rgba(255,145,0,.35));border-radius:4px;padding:.1rem .35rem}
+.cg-next.ok{color:var(--green);border-color:var(--green-dim)}
+.cg-cnt{margin-left:auto;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.cg-body{padding:.85rem}
+.cg-one{font-size:.82rem;color:var(--light);line-height:1.5;margin:0 0 .7rem}
+.cg-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:.6rem 0 .35rem}
+.cg-fl{display:flex;gap:.5rem;align-items:baseline;font-size:.78rem;color:var(--light);line-height:1.45;margin-bottom:.3rem}
+.cg-n{flex:0 0 18px;height:18px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-family:var(--mono);font-size:.62rem;display:flex;align-items:center;justify-content:center}
+.cg-lens{background:var(--bg-elevated);border-radius:8px;padding:.5rem .6rem;font-size:.76rem;color:var(--light);line-height:1.45;margin-top:.7rem}
+.cg-lens-r{font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.2rem}
+.cg-st{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted);padding:.35rem .5rem;background:rgba(255,255,255,.03);border-radius:6px;margin-bottom:.25rem}
+.cg-st.done{color:var(--light)}
+.cg-st .btn{margin-left:auto}
+.cg-ck{color:var(--muted)}
+.cg-st.done .cg-ck{color:var(--green)}
+.cg-foot{margin-top:.7rem;display:flex;justify-content:flex-end}
+.gd-flow{display:flex;align-items:stretch;gap:.5rem;flex-wrap:wrap}
+.gd-half{flex:1;min-width:150px;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem;font-size:.8rem;color:var(--light);line-height:1.4}
+.gd-arrow{display:flex;align-items:center;color:var(--indigo);font-size:1.2rem}
+.gd-st{display:flex;gap:.6rem;align-items:center;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem;margin-bottom:.4rem}
+.gd-st.now{border-color:var(--indigo)}
+.gd-st.done .gd-st-n{background:var(--green-dim);color:var(--green)}
+.gd-st-n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--bg-elevated);color:var(--muted);font-family:var(--mono);font-size:.75rem;display:flex;align-items:center;justify-content:center}
+.gd-st-b{flex:1}
+.gd-st-t{font-size:.84rem;font-weight:600;line-height:1.3}
 /* Dossier personal · blocs plegables, quiz del panteó i fitxa de personatge */
 .sh-deep{background:var(--purple-dim,rgba(224,64,251,.1));border:1px solid rgba(224,64,251,.28);border-radius:8px;padding:.6rem .75rem;font-size:.78rem;color:var(--light);line-height:1.5;margin:.9rem 0 .5rem}
 .sh-more{border:1px solid var(--border);border-radius:10px;background:var(--bg-panel);margin-bottom:.5rem}
@@ -868,7 +902,19 @@ const DYNAMICS=[
   vision:'Un barri on ningú està sol: el temps de cadascú és un bé comú i demanar ajuda és tan normal com oferir-la.',
   objectives:'30 sòcies actives el primer any · 80% amb almenys un intercanvi · saldo mitjà proper a zero (reciprocitat sana).',
   roles:['Nucli gestor','Sòcies oferents','Sòcies demandants','Registre d\'hores','Ajuntament','Entitat amfitriona','Comunitat veïnal'],
-  flows:[['Sòcies oferents','Sòcies demandants','tangible','hores de servei'],['Sòcies demandants','Sòcies oferents','intangible','reciprocitat i gratitud'],['Registre d\'hores','Sòcies oferents','tangible','saldo i validació'],['Registre d\'hores','Sòcies demandants','tangible','saldo i validació'],['Nucli gestor','Registre d\'hores','tangible','protocol i manteniment'],['Ajuntament','Entitat amfitriona','tangible','cessió d\'espai'],['Entitat amfitriona','Nucli gestor','tangible','seu i logística'],['Nucli gestor','Comunitat veïnal','intangible','reconeixement i pertinença'],['Comunitat veïnal','Nucli gestor','intangible','captació i legitimitat'],['Nucli gestor','Ajuntament','intangible','dades d\'impacte social'],['Sòcies oferents','Comunitat veïnal','intangible','confiança i vincle']],
+  pairs:[
+   ['Sòcies oferents','Sòcies demandants','tangible','hores de servei','intangible','reciprocitat i gratitud'],
+   ['Sòcies oferents','Registre d\'hores','tangible','hores declarades','tangible','saldo validat'],
+   ['Sòcies demandants','Registre d\'hores','tangible','confirmació del servei rebut','tangible','saldo i historial'],
+   ['Nucli gestor','Registre d\'hores','tangible','protocol i manteniment','tangible','dades d\'activitat'],
+   ['Nucli gestor','Sòcies oferents','intangible','acollida i formació','intangible','disponibilitat i compromís'],
+   ['Nucli gestor','Sòcies demandants','intangible','acompanyament per demanar sense vergonya','intangible','necessitats detectades'],
+   ['Entitat amfitriona','Nucli gestor','tangible','seu i logística','intangible','activitat i vida al local'],
+   ['Ajuntament','Entitat amfitriona','tangible','cessió d\'espai i suport','intangible','ús social de l\'equipament'],
+   ['Nucli gestor','Ajuntament','tangible','memòria i dades d\'impacte','tangible','difusió i finançament'],
+   ['Comunitat veïnal','Nucli gestor','intangible','captació i legitimitat','intangible','reconeixement i pertinença'],
+   ['Sòcies oferents','Comunitat veïnal','intangible','confiança i vincle','intangible','prestigi i noves demandes'],
+   ['Sòcies demandants','Comunitat veïnal','intangible','normalitzar demanar ajuda','intangible','xarxa de suport']],
   kanban:['Definir catàleg d\'ofertes i demandes','Captar les 10 primeres persones','Sessió inaugural','Protocol de registre d\'hores','Primera ronda d\'intercanvis'],
   gov:'Assemblea oberta · una hora val el mateix sigui quin servei sigui · rotació de la coordinació.',
   res:[['Banc del Temps · Salut i Família','https://www.bancdeltemps.org']]},
@@ -877,7 +923,18 @@ const DYNAMICS=[
   vision:'Un barri on tenir accés val més que posseir: menys traster, menys residus i més trobada.',
   objectives:'150 objectes en circulació · 60% amb ús mensual · estalvi i residus evitats mesurats i publicats.',
   roles:['Nucli gestor','Persones sòcies','Donants','Ajuntament','Comerç col·laborador','Servei de reparació','Comunitat del barri'],
-  flows:[['Donants','Nucli gestor','tangible','objectes cedits'],['Nucli gestor','Persones sòcies','tangible','préstecs'],['Persones sòcies','Nucli gestor','tangible','quotes i fiances'],['Persones sòcies','Nucli gestor','tangible','objectes retornats'],['Nucli gestor','Persones sòcies','intangible','coneixement d\'ús i cura'],['Servei de reparació','Nucli gestor','tangible','manteniment d\'objectes'],['Nucli gestor','Servei de reparació','intangible','aprenentatge de reparació'],['Ajuntament','Nucli gestor','tangible','cessió de local'],['Comerç col·laborador','Nucli gestor','tangible','objectes i descomptes'],['Nucli gestor','Comerç col·laborador','intangible','visibilitat i clientela'],['Persones sòcies','Comunitat del barri','intangible','cultura de compartir'],['Nucli gestor','Ajuntament','intangible','estalvi i residus evitats (dades)'],['Donants','Comunitat del barri','intangible','generositat i exemple']],
+  pairs:[
+   ['Donants','Nucli gestor','tangible','objectes cedits','intangible','agraïment i rastre del que han donat'],
+   ['Nucli gestor','Persones sòcies','tangible','préstecs i formació d\'ús','tangible','quotes, fiances i retorns'],
+   ['Servei de reparació','Nucli gestor','tangible','manteniment i reparacions','intangible','casos reals i visibilitat'],
+   ['Servei de reparació','Persones sòcies','intangible','aprendre a reparar','intangible','encàrrecs i peces noves'],
+   ['Ajuntament','Nucli gestor','tangible','cessió de local','tangible','dades d\'estalvi i residus evitats'],
+   ['Comerç col·laborador','Nucli gestor','tangible','objectes i descomptes','intangible','visibilitat i clientela'],
+   ['Comerç col·laborador','Comunitat del barri','tangible','ofertes de proximitat','tangible','compres locals'],
+   ['Persones sòcies','Comunitat del barri','intangible','cultura de compartir','intangible','noves sòcies'],
+   ['Donants','Comunitat del barri','intangible','generositat i exemple','intangible','reconeixement veïnal'],
+   ['Nucli gestor','Comunitat del barri','intangible','inventari obert i confiança','intangible','propostes i demandes'],
+   ['Ajuntament','Comunitat del barri','tangible','difusió pública','intangible','legitimitat i ús']],
   kanban:['Inventari inicial d\'objectes','Sistema de préstec i fitxes','Trobar punt físic','Normes i fiances','Inauguració'],
   gov:'Transparència d\'inventari · normes clares de préstec i cura · rotació de torns d\'obertura.',
   res:[['Pam a Pam','https://pamapam.cat'],['Opcions','https://opcions.org']]},
@@ -886,7 +943,18 @@ const DYNAMICS=[
   vision:'Un territori que gesta els seus propis projectes: idees ciutadanes que es tornen cooperatives i serveis que duren.',
   objectives:'6 ventures incubades l\'any · 50% graduades a projecte propi · equity repartit de forma justa (Slicing Pie).',
   roles:['Facilitador/a','Equips promotors','Mentors','Ajuntament / finançament','Xarxa d\'entitats','Cooperatives madrines','Comunitat destinatària'],
-  flows:[['Ajuntament / finançament','Equips promotors','tangible','microfinançament i espai'],['Equips promotors','Ajuntament / finançament','intangible','impacte i rendició de comptes'],['Mentors','Equips promotors','intangible','mentoria i coneixement'],['Equips promotors','Mentors','intangible','aprenentatge i propòsit'],['Cooperatives madrines','Equips promotors','intangible','xarxa i confiança'],['Facilitador/a','Equips promotors','intangible','mètode i acompanyament'],['Equips promotors','Xarxa d\'entitats','tangible','prototips i entregables'],['Comunitat destinatària','Equips promotors','intangible','necessitats i validació'],['Equips promotors','Comunitat destinatària','tangible','serveis i solucions']],
+  pairs:[
+   ['Ajuntament / finançament','Equips promotors','tangible','microfinançament i espai','intangible','impacte i rendició de comptes'],
+   ['Mentors','Equips promotors','intangible','mentoria i coneixement','intangible','aprenentatge i propòsit'],
+   ['Facilitador/a','Equips promotors','intangible','mètode i acompanyament','intangible','evidència del procés'],
+   ['Facilitador/a','Mentors','intangible','encàrrec i preparació de sessions','intangible','lectura del grup'],
+   ['Cooperatives madrines','Equips promotors','intangible','xarxa i confiança','tangible','encàrrecs i primers clients'],
+   ['Equips promotors','Comunitat destinatària','tangible','serveis i solucions','intangible','necessitats i validació'],
+   ['Equips promotors','Xarxa d\'entitats','tangible','prototips i entregables','tangible','locals, difusió i contactes'],
+   ['Xarxa d\'entitats','Comunitat destinatària','intangible','convocatòria i confiança','intangible','participació'],
+   ['Ajuntament / finançament','Facilitador/a','tangible','encàrrec i pressupost','tangible','memòria i indicadors'],
+   ['Cooperatives madrines','Ajuntament / finançament','intangible','criteri sectorial','tangible','reconeixement i contractació'],
+   ['Facilitador/a','Comunitat destinatària','intangible','retorn obert dels aprenentatges','intangible','demandes reals']],
   kanban:['Convocatòria d\'idees','Selecció d\'idees','Formar equips i rols VNA','Cicles d\'aprenentatge (sprints)','Prototip','Validació','Graduació a cooperativa'],
   gov:'Aprendre fent · equips que s\'autogestionen · repartiment just per aportació (Slicing Pie) · risc compartit.',
   res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coòpolis','https://bcn.coop']]},
@@ -895,7 +963,15 @@ const DYNAMICS=[
   vision:'Un territori que es veu a si mateix: decisions preses sobre el mapa real de qui aporta què, no sobre intuïcions.',
   objectives:'Mapa amb 20+ actors i els seus fluxos · indicadors de salut calculats · pla d\'acció acordat als 3 mesos.',
   roles:['Facilitador VNA','Actors del territori','Ajuntament','Entitats','Comunitat'],
-  flows:[['Ajuntament','Facilitador VNA','tangible','encàrrec'],['Actors del territori','Facilitador VNA','intangible','coneixement del territori'],['Facilitador VNA','Actors del territori','intangible','visió compartida i confiança'],['Facilitador VNA','Ajuntament','tangible','informe i mapa'],['Entitats','Facilitador VNA','intangible','fluxos ocults i vincles'],['Facilitador VNA','Comunitat','intangible','retorn obert i apoderament'],['Comunitat','Actors del territori','intangible','legitimitat i participació']],
+  pairs:[
+   ['Ajuntament','Facilitador VNA','tangible','encàrrec i accés a dades','tangible','informe i mapa'],
+   ['Actors del territori','Facilitador VNA','intangible','coneixement del territori','intangible','visió compartida i confiança'],
+   ['Entitats','Facilitador VNA','intangible','fluxos ocults i vincles','intangible','retorn del seu paper a la xarxa'],
+   ['Facilitador VNA','Comunitat','intangible','retorn obert i apoderament','intangible','validació popular del mapa'],
+   ['Comunitat','Actors del territori','intangible','legitimitat i participació','tangible','serveis i resposta'],
+   ['Entitats','Actors del territori','tangible','col·laboracions concretes','tangible','recursos compartits'],
+   ['Ajuntament','Entitats','tangible','subvencions i espais','tangible','execució de programes'],
+   ['Ajuntament','Comunitat','tangible','rendició de comptes','intangible','mandat i prioritats']],
   kanban:['Definir abast (macro/meso/micro)','Identificar actors','Entrevistes','Construir el mapa VNA','Indicadors de salut','Sessió de retorn','Pla d\'acció'],
   gov:'Metodologia Verna Allee · dades tangibles i intangibles · retorn obert als actors.',
   res:[['Value Network Analysis (Verna Allee)','https://en.wikipedia.org/wiki/Value_network_analysis']]},
@@ -904,7 +980,18 @@ const DYNAMICS=[
   vision:'Energia neta, local i governada per la gent: cada teulada, un bé comú que retorna al territori.',
   objectives:'100 kWp instal·lats · 50 sòcies · 20-40% d\'estalvi a la factura · excedents reinvertits al fons comú.',
   roles:['Nucli promotor','Sòcies consumidores','Ajuntament','Instal·ladora','Cooperativa energètica','Assessoria tècnica-legal','Comunitat local'],
-  flows:[['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes'],['Nucli promotor','Sòcies consumidores','tangible','energia (kWh) i estalvi'],['Ajuntament','Nucli promotor','tangible','cessió de teulades'],['Nucli promotor','Ajuntament','intangible','transició energètica (relat i dades)'],['Instal·ladora','Nucli promotor','tangible','instal·lació fotovoltaica'],['Cooperativa energètica','Nucli promotor','tangible','comercialització i garantia'],['Nucli promotor','Cooperativa energètica','tangible','excedents compartits'],['Assessoria tècnica-legal','Nucli promotor','intangible','viabilitat i seguretat jurídica'],['Nucli promotor','Sòcies consumidores','intangible','sobirania i transparència'],['Sòcies consumidores','Comunitat local','intangible','exemple i confiança'],['Comunitat local','Nucli promotor','intangible','noves sòcies i legitimitat']],
+  pairs:[
+   ['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes','tangible','energia (kWh) i estalvi'],
+   ['Ajuntament','Nucli promotor','tangible','cessió de teulades','intangible','transició energètica (relat i dades)'],
+   ['Instal·ladora','Nucli promotor','tangible','instal·lació fotovoltaica','tangible','contracte i manteniment pagat'],
+   ['Cooperativa energètica','Nucli promotor','tangible','comercialització i garantia','tangible','excedents compartits'],
+   ['Assessoria tècnica-legal','Nucli promotor','intangible','viabilitat i seguretat jurídica','tangible','encàrrec i cas replicable'],
+   ['Nucli promotor','Comunitat local','intangible','sobirania i transparència','intangible','noves sòcies i legitimitat'],
+   ['Sòcies consumidores','Comunitat local','intangible','exemple i confiança','intangible','pressió social per ampliar'],
+   ['Ajuntament','Comunitat local','tangible','pla d\'energia i difusió','intangible','mandat ciutadà'],
+   ['Instal·ladora','Sòcies consumidores','tangible','posada en marxa a casa','intangible','recomanacions'],
+   ['Cooperativa energètica','Sòcies consumidores','tangible','factura i suport','tangible','consum agregat'],
+   ['Assessoria tècnica-legal','Ajuntament','intangible','marc normatiu aplicat','tangible','dades i tràmits']],
   kanban:['Estudi de viabilitat','Captació de sòcies','Teulada municipal','Finançament','Constitució jurídica','Instal·lació','Posada en marxa'],
   gov:'Una persona un vot · excedents reinvertits · transparència d\'inversió i consum.',
   res:[['Som Energia','https://www.somenergia.coop']]},
@@ -913,7 +1000,16 @@ const DYNAMICS=[
   vision:'Un habitatge que no s\'especula: llars estables per a tota la vida i una comunitat que es cuida.',
   objectives:'Grup motor consolidat · sòl cedit · viabilitat tancada · quota d\'ús per sota del mercat · convivència acordada.',
   roles:['Grup motor','Unitats de convivència','Administració (cessió de sòl)','Finançament ètic','Cooperativa','Assessoria tècnica'],
-  flows:[['Administració (cessió de sòl)','Cooperativa','tangible','dret de superfície'],['Cooperativa','Administració (cessió de sòl)','intangible','retorn social i mixtura'],['Unitats de convivència','Cooperativa','tangible','aportació i quota d\'ús'],['Cooperativa','Unitats de convivència','tangible','dret d\'ús indefinit'],['Finançament ètic','Cooperativa','tangible','préstec'],['Cooperativa','Finançament ètic','intangible','projecte solvent i valors'],['Assessoria tècnica','Cooperativa','intangible','viabilitat i seguretat'],['Grup motor','Unitats de convivència','intangible','convivència i confiança']],
+  pairs:[
+   ['Administració (cessió de sòl)','Cooperativa','tangible','dret de superfície','intangible','retorn social i mixtura'],
+   ['Unitats de convivència','Cooperativa','tangible','aportació i quota d\'ús','tangible','dret d\'ús indefinit'],
+   ['Finançament ètic','Cooperativa','tangible','préstec','intangible','projecte solvent i valors'],
+   ['Assessoria tècnica','Cooperativa','intangible','viabilitat i seguretat','tangible','encàrrec i cas de referència'],
+   ['Grup motor','Unitats de convivència','intangible','convivència i confiança','intangible','implicació i cura'],
+   ['Grup motor','Cooperativa','intangible','impuls i governança','tangible','marc jurídic estable'],
+   ['Grup motor','Administració (cessió de sòl)','intangible','interlocució i pressió','tangible','informació de sòl i terminis'],
+   ['Assessoria tècnica','Finançament ètic','intangible','estudi econòmic','intangible','criteris de risc'],
+   ['Unitats de convivència','Administració (cessió de sòl)','intangible','compliment del retorn social','tangible','seguiment i garantia']],
   kanban:['Consolidar el grup motor','Cerca de sòl / cessió','Estudi de viabilitat','Constitució de la cooperativa','Finançament ètic','Projecte i obra','Convivència'],
   gov:'Assemblea + comissions (convivència, economia, obres) · consentiment · quota d\'ús sense especulació.',
   res:[['Sostre Cívic','https://sostrecivic.coop'],['La Dinamo Fundació','https://ladinamofundacio.org']]},
@@ -922,7 +1018,15 @@ const DYNAMICS=[
   vision:'De la terra al plat sense intermediaris: menjar sa, pagesia digna i un grup que menja i decideix junt.',
   objectives:'12 unitats familiars · 3 productors/es · cistella setmanal estable · preu just pactat i avaluat.',
   roles:['Unitats familiars','Productors/es locals','Coordinació','Punt de repartiment','Comunitat'],
-  flows:[['Unitats familiars','Productors/es locals','tangible','comandes i pagament just'],['Productors/es locals','Unitats familiars','tangible','cistelles'],['Productors/es locals','Unitats familiars','intangible','confiança i traçabilitat'],['Coordinació','Unitats familiars','intangible','logística i confiança'],['Unitats familiars','Coordinació','tangible','rotació de tasques'],['Punt de repartiment','Unitats familiars','tangible','lloc i horari'],['Unitats familiars','Comunitat','intangible','cultura alimentària']],
+  pairs:[
+   ['Unitats familiars','Productors/es locals','tangible','comandes i pagament just','tangible','cistelles'],
+   ['Productors/es locals','Coordinació','tangible','disponibilitat i preus','tangible','comanda agregada i pagament únic'],
+   ['Coordinació','Unitats familiars','intangible','logística i confiança','tangible','rotació de tasques'],
+   ['Punt de repartiment','Unitats familiars','tangible','lloc i horari','intangible','vida i clientela al local'],
+   ['Punt de repartiment','Coordinació','tangible','emmagatzematge','tangible','neteja i ordre'],
+   ['Unitats familiars','Comunitat','intangible','cultura alimentària','intangible','noves famílies'],
+   ['Productors/es locals','Comunitat','intangible','traçabilitat i cara visible','intangible','mercat estable i defensa de la pagesia'],
+   ['Coordinació','Comunitat','intangible','obertura del grup','intangible','relleu de tasques']],
   kanban:['Formar el grup','Contactar productors/es','Logística de repartiment','Sistema de comandes','Primera cistella','Avaluació'],
   gov:'Rotació de tasques (comandes, repartiment, caixa) · preu just pactat · assemblea mensual.',
   res:[['Pam a Pam','https://pamapam.cat'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
@@ -931,7 +1035,16 @@ const DYNAMICS=[
   vision:'Un barri que no deixa ningú enrere: la cura és cosa de tothom i el treball invisible es fa visible.',
   objectives:'Mapa de persones en risc · protocol actiu · 15 acompanyaments/mes · hores de cura registrades i reconegudes.',
   roles:['Nucli de cura','Veïnat','Gent gran','CAP / serveis socials','Voluntariat','Comunitat'],
-  flows:[['Nucli de cura','Gent gran','intangible','acompanyament'],['Gent gran','Nucli de cura','intangible','saber i memòria viva'],['Veïnat','Nucli de cura','intangible','detecció i alerta'],['CAP / serveis socials','Nucli de cura','tangible','derivació i suport'],['Nucli de cura','CAP / serveis socials','intangible','detecció precoç i dades'],['Voluntariat','Nucli de cura','tangible','hores de cura'],['Nucli de cura','Voluntariat','intangible','sentit i pertinença'],['Nucli de cura','Comunitat','intangible','visibilitat del treball de cures']],
+  pairs:[
+   ['Nucli de cura','Gent gran','intangible','acompanyament','intangible','saber i memòria viva'],
+   ['Veïnat','Nucli de cura','intangible','detecció i alerta','intangible','formació per detectar'],
+   ['CAP / serveis socials','Nucli de cura','tangible','derivació i suport','intangible','detecció precoç i dades'],
+   ['Voluntariat','Nucli de cura','tangible','hores de cura','intangible','sentit, formació i pertinença'],
+   ['Nucli de cura','Comunitat','intangible','visibilitat del treball de cures','intangible','relleu i nou voluntariat'],
+   ['Voluntariat','Gent gran','tangible','companyia i gestions','intangible','confiança i històries'],
+   ['Veïnat','Gent gran','intangible','veïnatge quotidià','intangible','coneixement del barri'],
+   ['CAP / serveis socials','Gent gran','tangible','atenció sanitària','tangible','adherència i seguiment'],
+   ['Comunitat','Veïnat','intangible','norma de cuidar-se','intangible','exemples concrets']],
   kanban:['Detectar necessitats','Formar el grup de cura','Protocol d\'acompanyament','Primers acompanyaments','Coordinació amb CAP/serveis socials'],
   gov:'Cures compartides (no recaure en poques persones) · confidencialitat · connexió amb serveis públics.',
   res:[['Coòpolis','https://bcn.coop']]},
@@ -940,7 +1053,13 @@ const DYNAMICS=[
   vision:'Junts negociem millor: el poder de compra del veïnat retorna en estalvi i condicions justes.',
   objectives:'10+ participants · una compra tancada · estalvi mesurat per llar · comissions transparents.',
   roles:['Participants','Coordinació','Proveïdor/a','Comunitat'],
-  flows:[['Participants','Coordinació','tangible','demanda agregada'],['Coordinació','Participants','intangible','transparència i confiança'],['Coordinació','Proveïdor/a','tangible','contracte col·lectiu'],['Proveïdor/a','Coordinació','tangible','oferta i condicions'],['Proveïdor/a','Participants','tangible','estalvi'],['Participants','Comunitat','intangible','exemple i noves compres']],
+  pairs:[
+   ['Participants','Coordinació','tangible','demanda agregada','intangible','transparència i confiança'],
+   ['Coordinació','Proveïdor/a','tangible','contracte col·lectiu','tangible','oferta i condicions'],
+   ['Proveïdor/a','Participants','tangible','estalvi i servei','tangible','volum garantit'],
+   ['Participants','Comunitat','intangible','exemple i noves compres','intangible','més massa crítica'],
+   ['Coordinació','Comunitat','intangible','obertura del procés','intangible','relleu de la negociació'],
+   ['Proveïdor/a','Comunitat','tangible','condicions per al barri','intangible','reputació local']],
   kanban:['Identificar la necessitat comuna','Agregar la demanda','Comparar ofertes','Negociar','Contractar','Repartir l\'estalvi'],
   gov:'Transparència de comissions · rotació de la negociació · decisió per consentiment.',
   res:[['Som Energia','https://www.somenergia.coop'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
@@ -949,7 +1068,16 @@ const DYNAMICS=[
   vision:'Feina digna i sobirana: qui hi posa el treball hi té la veu, el vot i part del resultat.',
   objectives:'3+ sòcies treballadores · activitat viable · estatuts i constitució · forquilla salarial acotada.',
   roles:['Sòcies treballadores','Consell rector','Clients','Ateneu Cooperatiu','Finançament','Comunitat'],
-  flows:[['Sòcies treballadores','Clients','tangible','productes i serveis'],['Clients','Sòcies treballadores','tangible','ingressos'],['Clients','Sòcies treballadores','intangible','feedback i fidelitat'],['Ateneu Cooperatiu','Sòcies treballadores','intangible','formació i acompanyament'],['Finançament','Sòcies treballadores','tangible','capital i circulant'],['Sòcies treballadores','Consell rector','intangible','participació democràtica'],['Consell rector','Sòcies treballadores','intangible','estratègia i cura de l\'equip'],['Sòcies treballadores','Comunitat','intangible','arrelament i retorn']],
+  pairs:[
+   ['Sòcies treballadores','Clients','tangible','productes i serveis','tangible','ingressos i feedback'],
+   ['Ateneu Cooperatiu','Sòcies treballadores','intangible','formació i acompanyament','intangible','cas real i dades del sector'],
+   ['Finançament','Sòcies treballadores','tangible','capital i circulant','tangible','retorn i interessos'],
+   ['Sòcies treballadores','Consell rector','intangible','participació democràtica','intangible','estratègia i cura de l\'equip'],
+   ['Sòcies treballadores','Comunitat','intangible','arrelament i retorn','intangible','clientela i suport'],
+   ['Consell rector','Finançament','tangible','comptes auditats','tangible','condicions i confiança'],
+   ['Consell rector','Clients','tangible','garantia i compromís','intangible','exigència i millora'],
+   ['Ateneu Cooperatiu','Consell rector','intangible','marc jurídic i governança','intangible','aprenentatges del cas'],
+   ['Comunitat','Clients','intangible','recomanació','intangible','consum conscient']],
   kanban:['Idea i equip','Estudi de viabilitat','Estatuts','Constitució','Primers ingressos','Consolidació'],
   gov:'Una persona un vot · consell rector rotatiu · forquilla salarial acotada · formació contínua.',
   res:[['Ateneus Cooperatius · aracoop','https://aracoop.coop'],['Coop. de Treball','https://www.cooperativestreball.coop']]},
@@ -958,7 +1086,14 @@ const DYNAMICS=[
   vision:'Un atles viu del teixit comunitari: qualsevol pot saber qui hi ha i connectar-hi, mantingut entre tots.',
   objectives:'50+ entitats censades i verificades · pack públic obert per PR · manteniment repartit.',
   roles:['Equip de cens','Font oberta / IA','Entitats del territori','Ajuntament','Comunitat de l\'atles'],
-  flows:[['Font oberta / IA','Equip de cens','intangible','candidats a verificar'],['Equip de cens','Entitats del territori','intangible','contacte i validació'],['Entitats del territori','Equip de cens','tangible','dades verificades'],['Equip de cens','Comunitat de l\'atles','tangible','pack públic (PR)'],['Comunitat de l\'atles','Equip de cens','intangible','enriquiment i correccions'],['Ajuntament','Equip de cens','tangible','fonts oficials i suport']],
+  pairs:[
+   ['Font oberta / IA','Equip de cens','intangible','candidats a verificar','intangible','correccions al vocabulari'],
+   ['Equip de cens','Entitats del territori','intangible','contacte i validació','tangible','dades verificades'],
+   ['Equip de cens','Comunitat de l\'atles','tangible','pack públic (PR)','intangible','enriquiment i correccions'],
+   ['Ajuntament','Equip de cens','tangible','fonts oficials i suport','tangible','cens verificat i actualitzat'],
+   ['Entitats del territori','Comunitat de l\'atles','intangible','presència pública','intangible','visibilitat i connexions'],
+   ['Ajuntament','Entitats del territori','tangible','registre oficial','tangible','actualització de dades'],
+   ['Font oberta / IA','Comunitat de l\'atles','intangible','cobertura inicial','intangible','límits detectats']],
   kanban:['Definir abast del cens (tipus i zona)','Descoberta amb IA','Verificació de camp','Registre al directori','Publicar al commons (PR)','Manteniment i revisió'],
   gov:'Zero invencions: res es publica sense verificar · fonts obertes · dades públiques al commons, treball intern privat.',
   res:[['Pam a Pam','https://pamapam.cat'],['Xarxa d\'Economia Solidària','https://xes.cat']]},
@@ -974,6 +1109,16 @@ function seedFromDynamic(node,dyn){
   if(dyn.vision)node.metaskill.vision=dyn.vision;
   if(dyn.objectives)node.metaskill.objectives=dyn.objectives;
   const idBy={};(dyn.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;node.vna.roles.push({id,name:nm});});
+  /* `pairs` és la forma canònica: cada fila és un vincle amb les DUES direccions
+     [A, B, tipus A→B, etiqueta A→B, tipus B→A, etiqueta B→A]. Escriure el retorn
+     obliga a pensar-lo, i el mapa neix amb reciprocitat alta en comptes d'una
+     estrella de fletxes que surten del nucli i no tornen mai.
+     `flows` es manté per a l'excepció unidireccional legítima. */
+  (dyn.pairs||[]).forEach(f=>{
+    if(!idBy[f[0]]||!idBy[f[1]])return;
+    node.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});
+    node.vna.exchanges.push({id:uid(),from:idBy[f[1]],to:idBy[f[0]],kind:f[4],label:f[5]||''});
+  });
   (dyn.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])node.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
   (dyn.kanban||[]).forEach(t=>node.kanban.cards.push({id:uid(),text:t,col:'todo'}));
 }
@@ -2260,6 +2405,7 @@ function _searchIndex(){
   const actions=[
     {k:'action',id:'act_hero',label:'Crea el meu perfil superheroi',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
     {k:'action',id:'act_dossier',label:'El meu dossier · CV, recursos i personatge',sub:'📇 acció',action:()=>openDossierEditor(state.activePersona||'')},
+    {k:'action',id:'act_guide',label:'Guia pas a pas del meu rol',sub:'🧭 acció',action:()=>openGuide()},
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · wallets · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
@@ -2314,12 +2460,26 @@ function openSearchPalette(){
 // Onboarding tour · primer arrencament — Backlog #8. Guiar a l'usuari nou pels conceptes clau.
 async function shouldRunOnboarding(){try{const all=await dbGetAll();return !all.find(n=>n.id==='__onboardingDone');}catch(e){return false;}}
 async function markOnboardingDone(){try{await dbPut({id:'__onboardingDone',type:'meta',at:now()});}catch(e){}}
+/* Primer contacte · el que veu algú que no sap què és això.
+   Ordre deliberat: primer el dolor que ja coneix, després com funciona el
+   sistema (una frase, no un manual), després qui és ell aquí dins, i només
+   llavors l'acció. Un tour que explica funcions abans de dir per a què
+   serveixen és un tour que se salta tothom. */
+let _tourRole='simpatitzant';
 function openOnboardingTour(){
   const steps=[
-    {ic:'🎬',t:'Benvingut/da al SOS',b:'Sistema Operatiu Social. Cada comunitat és una xarxa de valor, cada aportació queda signada, cada € del fons cooperatiu circula sense sortir del territori. Local-first: tot al teu navegador.',cta:null},
-    {ic:'🦸',t:'Crea el teu perfil superheroi',b:'Nom + població + fins a 5 superpoders + objectes que poses en comú. En un pas entres al roster del Comando Molekulon.',cta:{label:'✦ Crea el meu perfil',fn:()=>{markOnboardingDone();closeModal();openSuperheroiOnboarding();}}},
-    {ic:'🏛',t:'Guardians i Sabiduria',b:'Cada node pot tenir un owner i stewards (guardians). Les propostes es fusionen quan la sabiduria (quòrum de guardians) les aprova. Assemblees federatives amb pes Penrose-√població.',cta:null},
-    {ic:'🎬',t:'Comando Molekulon · 150.000 superherois',b:'Mazinguer i Horacio, enviats pel Gran Molekulon, munten una banda per reclutar els 150.000 abans que la Corporació Món Mort ho engoleixi tot. Cada acció real que registres és una llavor de la pel·lícula.',cta:{label:'🎬 Veure el Comando',fn:()=>{markOnboardingDone();closeModal();openComandoView();}}}
+    {ic:'🏚',t:'El problema que ja coneixes',
+     b:'«Sempre tirem els mateixos quatre.» «Tenim mil coses i no sabem qui té què.» «Vam decidir-ho fa dos anys i ningú se\'n recorda.» El SOS no és una xarxa social: és la comptabilitat del que una comunitat es dona a si mateixa.',cta:null},
+    {ic:'⇄',t:'Com funciona · el bucle',
+     b:'1 · Es dibuixa qui aporta què a qui (mapa de valor). 2 · Cada aportació real es registra i se signa. 3 · El sistema casa qui ofereix amb qui necessita. 4 · El valor acumulat es reparteix segons el que cadascú hi ha posat. Tot al teu navegador: sense servidor i sense compte.',cta:null},
+    {ic:'🧭',t:'Qui ets tu aquí dins',role:true,
+     b:'Cada rol té el seu camí i el seu flux de valor: què hi poses i què en treus. Tria el que t\'encaixi ara; es pot canviar en qualsevol moment.',cta:null},
+    {ic:'🦸',t:'El primer pas concret',
+     b:'Crea el teu perfil: nom, població, el que saps fer i el que poses en comú. Cinc minuts. A partir d\'aquí el sistema ja et pot connectar amb algú.',
+     cta:{label:'✦ Crea el meu perfil',fn:async()=>{await markOnboardingDone();closeModal();openSuperheroiOnboarding({role:_tourRole});}}},
+    {ic:'🧭',t:'Mai estaràs perdut/da',
+     b:'A cada pantalla hi ha una guia que diu quin valor hi circula, què et toca fer ara i què hi fa el teu rol. I la guia completa del teu camí és sempre a un clic.',
+     cta:{label:'🧭 Obre la meva guia',fn:async()=>{await markOnboardingDone();closeModal();openGuide(_tourRole);}}}
   ];
   let i=0;
   const draw=()=>{
@@ -2327,13 +2487,20 @@ function openOnboardingTour(){
     const bg=modal(`
       <div style="text-align:center;padding:.5rem 0"><div style="font-size:3rem">${s.ic}</div><h2 style="margin:.3rem 0">${esc(s.t)}</h2></div>
       <p style="text-align:center;color:var(--light);line-height:1.55">${esc(s.b)}</p>
+      ${s.role?'<div id="obRoles" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.35rem;margin:.8rem 0">'+Object.entries(SOS_ROLES).map(([k,v])=>'<button type="button" class="btn btn-ghost btn-sm ob-r'+(k===_tourRole?' sel':'')+'" data-r="'+k+'" style="text-align:left;padding:.5rem .6rem"><div style="font-size:.85rem">'+v.ic+' '+esc(v.label)+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:.15rem">'+esc(v.desc)+'</div></button>').join('')+'</div><div id="obRoleFlow" class="cg-lens"></div>':''}
       <div style="display:flex;justify-content:center;gap:.4rem;margin:1rem 0">${steps.map((_,j)=>'<span style="width:8px;height:8px;border-radius:50%;background:'+(i===j?'var(--indigo)':'var(--border)')+'"></span>').join('')}</div>
       <div class="modal-actions" style="justify-content:space-between">
-        <button class="btn btn-ghost" id="obSkip">Salta el tour</button>
-        <div style="display:flex;gap:.4rem">${i>0?'<button class="btn btn-ghost" id="obBack">← Anterior</button>':''}${s.cta?'<button class="btn btn-primary" id="obCta">'+esc(s.cta.label)+'</button>':''}${i<steps.length-1?'<button class="btn btn-primary" id="obNext">Següent →</button>':(!s.cta?'<button class="btn btn-primary" id="obDone">Comença!</button>':'')}</div>
+        <button class="btn btn-ghost" id="obSkip">Salta la introducció</button>
+        <div style="display:flex;gap:.4rem">${i>0?'<button class="btn btn-ghost" id="obBack">← Anterior</button>':''}${s.cta?'<button class="btn btn-primary" id="obCta">'+esc(s.cta.label)+'</button>':''}${i<steps.length-1?'<button class="btn '+(s.cta?'btn-ghost':'btn-primary')+'" id="obNext">Següent →</button>':(!s.cta?'<button class="btn btn-primary" id="obDone">Comença!</button>':'')}</div>
       </div>
     `);
     bg.querySelector('.modal').classList.add('wz-modal');
+    if(s.role){
+      const flow=bg.querySelector('#obRoleFlow');
+      const paint=()=>{const j=ROLE_JOURNEYS[_tourRole];flow.innerHTML='<span class="cg-lens-r">El teu flux de valor</span><strong>Hi poses:</strong> '+esc(j.gives)+'<br><strong>En treus:</strong> '+esc(j.gets);};
+      bg.querySelectorAll('.ob-r').forEach(b=>b.onclick=()=>{_tourRole=b.dataset.r;bg.querySelectorAll('.ob-r').forEach(x=>x.classList.toggle('sel',x===b));paint();});
+      paint();
+    }
     bg.querySelector('#obSkip').onclick=async()=>{await markOnboardingDone();closeModal();};
     const back=bg.querySelector('#obBack');if(back)back.onclick=()=>{i--;draw();};
     const next=bg.querySelector('#obNext');if(next)next.onclick=()=>{i++;draw();};
@@ -2675,6 +2842,7 @@ function openLauncher(){
     {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
     {ic:'📇',t:'El meu dossier',d:'CV en local + recursos + arquetip + personatge amb IA',fn:()=>openDossierEditor(state.activePersona||'')},
+    {ic:'🧭',t:'La meva guia pas a pas',d:'Flux de valor i camí complet segons el teu rol al SOS',fn:()=>openGuide()},
     {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
     {ic:'🔍',t:'Diagnòstic comunitari',d:'3 min · punt de partida, itinerari i proposta d\'acompanyament',fn:()=>window.open('diagnostic.html','_blank','noopener')},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
@@ -3791,6 +3959,8 @@ function renderWorkspace(){
     b.onclick=()=>{state.tab=id;renderWorkspace();};tabs.appendChild(b);
   });
   w.appendChild(tabs);
+  // Guia contextual: cada pestanya explica el seu flux de valor i què toca ara.
+  const g=buildContextGuide(node,state.tab);if(g)w.appendChild(g);
 
   const body=el('div','tab-body');
   if(state.tab==='resum')renderResum(body,node,ru);
@@ -4028,31 +4198,361 @@ function buildVNASvg(node){
   return svg;
 }
 
-function buildHealth(node){
-  const roles=node.vna.roles, ex=node.vna.exchanges, box=el('div','health');
-  box.appendChild(el('h3','','Salut de la xarxa'));
-  const row=(lbl,cls,txt)=>{const r=el('div','h-row');r.appendChild(el('span','h-lbl',lbl));r.appendChild(el('span','h-badge '+cls,txt));box.appendChild(r);};
-  if(roles.length<2){row('Estat','h-warn','Incompleta');const h=el('p','',' Afegeix rols i intercanvis per avaluar la salut.');h.style.cssText='font-size:.75rem;color:var(--muted);margin-top:.5rem;line-height:1.4';box.appendChild(h);return box;}
-  // reciprocity
+/* Diagnòstic VNA d'un mapa. Es calcula en un sol lloc perquè la barra de salut,
+   el reforçador de reciprocitat i els tests mirin exactament el mateix. */
+function vnaAudit(node){
+  const roles=node.vna.roles||[],ex=node.vna.exchanges||[];
   const pairKey=(a,b)=>[a,b].sort().join('|');
   const dir={};ex.forEach(e=>{dir[e.from+'>'+e.to]=1;});
   const pairs=new Set();ex.forEach(e=>pairs.add(pairKey(e.from,e.to)));
-  let recip=0;pairs.forEach(p=>{const[a,b]=p.split('|');if(dir[a+'>'+b]&&dir[b+'>'+a])recip++;});
+  let recip=0;const oneWay=[];
+  pairs.forEach(p=>{const[a,b]=p.split('|');
+    if(dir[a+'>'+b]&&dir[b+'>'+a])recip++;
+    else{const from=dir[a+'>'+b]?a:b,to=dir[a+'>'+b]?b:a;
+      const src=ex.find(e=>e.from===from&&e.to===to)||{};
+      oneWay.push({from,to,label:src.label||'',kind:src.kind||'tangible'});}
+  });
   const recPct=pairs.size?Math.round(recip/pairs.size*100):0;
-  row('Reciprocitat',recPct>=60?'h-ok':recPct>=30?'h-warn':'h-bad',recPct+'%');
-  // density
-  const maxE=roles.length*(roles.length-1)/2;const dens=maxE?Math.round(pairs.size/maxE*100):0;
-  row('Densitat',dens>=40?'h-ok':dens>=20?'h-warn':'h-bad',dens+'%');
-  // diversity
+  const maxE=roles.length*(roles.length-1)/2,dens=maxE?Math.round(pairs.size/maxE*100):0;
   const hasT=ex.some(e=>!isIntangible(e.kind)),hasI=ex.some(e=>isIntangible(e.kind));
-  row('Diversitat',hasT&&hasI?'h-ok':'h-warn',hasT&&hasI?'Equilibri':hasI?'Només intang.':'Només tang.');
-  // isolated
   const connected=new Set();ex.forEach(e=>{connected.add(e.from);connected.add(e.to);});
-  const iso=roles.filter(r=>!connected.has(r.id)).length;
-  row('Rols aïllats',iso===0?'h-ok':'h-warn',iso===0?'Cap':iso+'');
+  const isolated=roles.filter(r=>!connected.has(r.id));
+  // Concentració: quin percentatge de les puntes de flux toca el rol més connectat.
+  // Una xarxa on tot passa pel nucli és fràgil encara que sigui recíproca.
+  const deg={};ex.forEach(e=>{deg[e.from]=(deg[e.from]||0)+1;deg[e.to]=(deg[e.to]||0)+1;});
+  let hubId=null,maxDeg=0;Object.entries(deg).forEach(([k,v])=>{if(v>maxDeg){maxDeg=v;hubId=k;}});
+  const hub=ex.length?Math.round(maxDeg*100/(ex.length*2)):0;
+  const hubRole=roles.find(r=>r.id===hubId)||null;
+  const score=Math.round((Math.min(recPct,100)*0.4)+(Math.min(dens,100)*0.25)+((hasT&&hasI)?15:0)+(isolated.length?0:10)+(hub<=40?10:hub<=55?5:0));
+  return{roles,exchanges:ex,pairs:pairs.size,recPct,dens,hasT,hasI,isolated,hub,hubRole,oneWay,score};
+}
+function buildHealth(node){
+  const box=el('div','health');
+  box.appendChild(el('h3','','Salut de la xarxa'));
+  const row=(lbl,cls,txt)=>{const r=el('div','h-row');r.appendChild(el('span','h-lbl',lbl));r.appendChild(el('span','h-badge '+cls,txt));box.appendChild(r);};
+  if((node.vna.roles||[]).length<2){row('Estat','h-warn','Incompleta');const h=el('p','',' Afegeix rols i intercanvis per avaluar la salut.');h.style.cssText='font-size:.75rem;color:var(--muted);margin-top:.5rem;line-height:1.4';box.appendChild(h);return box;}
+  const a=vnaAudit(node);
+  row('Reciprocitat',a.recPct>=60?'h-ok':a.recPct>=30?'h-warn':'h-bad',a.recPct+'%');
+  row('Densitat',a.dens>=40?'h-ok':a.dens>=20?'h-warn':'h-bad',a.dens+'%');
+  row('Diversitat',a.hasT&&a.hasI?'h-ok':'h-warn',a.hasT&&a.hasI?'Equilibri':a.hasI?'Només intang.':'Només tang.');
+  row('Rols aïllats',a.isolated.length===0?'h-ok':'h-warn',a.isolated.length===0?'Cap':String(a.isolated.length));
+  row('Concentració',a.hub<=40?'h-ok':a.hub<=55?'h-warn':'h-bad',a.hub+'%'+(a.hubRole?' · '+a.hubRole.name:''));
+  // Diagnosticar sense donar la següent passa deixa la feina a mitges.
+  if(a.oneWay.length||a.isolated.length){
+    const fix=el('button','btn btn-primary btn-sm','⚡ Reforça el mapa · '+(a.oneWay.length+a.isolated.length)+' punts febles');
+    fix.style.cssText='margin-top:.6rem;width:100%';
+    fix.onclick=()=>openReciprocityFixer(node);
+    box.appendChild(fix);
+  } else {
+    const okd=el('p','','✓ Mapa recíproc: cada flux té el seu retorn i cap rol queda penjat.');
+    okd.style.cssText='font-size:.72rem;color:var(--green);margin-top:.6rem;line-height:1.4';box.appendChild(okd);
+  }
   return box;
 }
+/* Reforçador de reciprocitat · el defecte més comú d'un mapa fet a mà és la fletxa
+   que surt i no torna. Aquí es llisten totes i es proposa el retorn, amb l'etiqueta
+   editable: el sistema no inventa què torna, però obliga a preguntar-s'ho. */
+const RETURN_HINTS=[
+  [/hores|servei|temps|cura|acompanyament/i,'intangible','reciprocitat i gratitud'],
+  [/diner|quota|pagament|finançament|capital|préstec|subvenc/i,'intangible','rendició de comptes i confiança'],
+  [/espai|local|seu|cessió|teulada|sòl/i,'intangible','ús social i vida al lloc'],
+  [/dades|informe|mapa|memòria|indicador/i,'intangible','validació i correccions'],
+  [/objecte|eina|material|producte|cistell/i,'tangible','retorn, cura i manteniment'],
+  [/formació|mentoria|coneixement|acompanyament|mètode/i,'intangible','aprenentatge aplicat i evidència'],
+  [/difusió|visibilitat|contacte|xarxa/i,'intangible','legitimitat i noves connexions']
+];
+function suggestReturn(label,kind){
+  const h=RETURN_HINTS.find(x=>x[0].test(label||''));
+  if(h)return{kind:h[1],label:h[2]};
+  return{kind:isIntangible(kind)?'tangible':'intangible',label:isIntangible(kind)?'contrapartida concreta':'reconeixement i confiança'};
+}
+function openReciprocityFixer(node){
+  const a=vnaAudit(node),nameOf=id=>((node.vna.roles.find(r=>r.id===id)||{}).name||'—');
+  const rows=a.oneWay.map((w,i)=>{const s=suggestReturn(w.label,w.kind);
+    return '<div class="ent-card" data-i="'+i+'"><div class="ent-nm">'+esc(nameOf(w.from))+' → '+esc(nameOf(w.to))+' <span class="ent-b">'+esc(w.label||'sense etiqueta')+'</span></div>'+
+    '<div class="ent-desc">Què torna '+esc(nameOf(w.to))+' a '+esc(nameOf(w.from))+'?</div>'+
+    '<div class="wz-key"><input class="rf-lb" value="'+esc(s.label)+'"><select class="rf-kd" style="max-width:9rem"><option value="intangible"'+(s.kind==='intangible'?' selected':'')+'>intangible</option><option value="tangible"'+(s.kind==='tangible'?' selected':'')+'>tangible</option></select><label style="display:flex;align-items:center;gap:.3rem;font-size:.75rem"><input type="checkbox" class="rf-on" checked> afegeix</label></div></div>';}).join('');
+  const bg=modal(`
+    <h2>⚡ Reforça el mapa de valor</h2>
+    <p class="m-sub">Un mapa sa no té fletxes que surten i no tornen. Aquí tens els fluxos sense retorn: revisa la proposta, canvia-la si no és certa i afegeix les que sí que ho són.</p>
+    <div class="bib-stats">
+      <div class="bib-tile"><div class="n" style="color:${a.recPct>=60?'var(--green)':'var(--orange)'}">${a.recPct}%</div><div class="l">reciprocitat</div></div>
+      <div class="bib-tile"><div class="n">${a.dens}%</div><div class="l">densitat</div></div>
+      <div class="bib-tile"><div class="n">${a.hub}%</div><div class="l">concentració</div></div>
+      <div class="bib-tile"><div class="n">${a.score}</div><div class="l">salut /100</div></div>
+    </div>
+    ${a.isolated.length?'<div class="ai-note"><span class="ic">⚠</span><span><strong>'+a.isolated.length+' rol(s) sense cap flux</strong>: '+a.isolated.map(r=>esc(r.name)).join(', ')+'. Un rol sense intercanvis o no existeix a la realitat, o no s\'ha mirat prou.</span></div>':''}
+    <div class="ent-grp-lbl">↩ Fluxos sense retorn · ${a.oneWay.length}</div>
+    <div id="rfRows">${rows||'<div class="ent-desc">Cap. Tots els vincles ja són recíprocs.</div>'}</div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="rfClose">Tanca</button>${a.oneWay.length?'<button class="btn btn-primary" id="rfApply">⚡ Afegeix els retorns marcats</button>':''}</div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#rfClose').onclick=closeModal;
+  const ap=bg.querySelector('#rfApply');
+  if(ap)ap.onclick=async()=>{
+    let n=0;
+    bg.querySelectorAll('#rfRows .ent-card').forEach(card=>{
+      if(!card.querySelector('.rf-on').checked)return;
+      const w=a.oneWay[Number(card.dataset.i)];
+      node.vna.exchanges.push({id:uid(),from:w.to,to:w.from,kind:card.querySelector('.rf-kd').value,label:card.querySelector('.rf-lb').value.trim()||'retorn'});
+      n++;
+    });
+    if(!n){toast('No has marcat cap retorn');return;}
+    await persist(node);closeModal();renderWorkspace();
+    const after=vnaAudit(node);toast('⚡ +'+n+' retorns · reciprocitat '+after.recPct+'%');
+  };
+}
 
+/* ═══════════ Guia contextual · que l'eina s'expliqui sola ═══════════
+   Cada context del SOS té un flux de valor concret: qui dona què a qui i què
+   torna. Si això no es diu allà mateix, la persona ha d'endevinar-ho, i
+   endevinar és exactament el que fa que una eina s'abandoni.
+
+   Tres capes, i cadascuna respon una pregunta diferent:
+   · `flow`  — quin valor circula aquí (la lògica, no el botó)
+   · `steps` — què toca ara, comprovat contra el node real, no contra un temari
+   · `lens`  — què hi fa cada rol del SOS en aquest mateix context */
+const CONTEXT_GUIDES={
+  resum:{ic:'◧',t:'Resum del territori',one:'La foto agregada del que passa a sota: projectes, hores, diner i gent.',
+    flow:['Els projectes del territori aporten hores i diner al ledger de cadascun.','El territori els suma i en surt el valor real que sosté la zona.','Amb aquesta suma es negocia amb l\'administració i es reparteix el fons.'],
+    steps:[
+      {k:'proj',label:'Obre el primer projecte del territori',done:n=>children(n.id).some(k=>k.nodeLevel==='projecte'),act:n=>openProjectWizard(n.id)},
+      {k:'ent',label:'Registra les entitats que ja hi són',done:n=>entitiesFor(n.id).length>0,act:n=>{state.tab='entitats';renderWorkspace();}},
+      {k:'act',label:'Que hi hagi activitat comptable a sota',done:n=>descendants(n.id).some(d=>(d.ledger||[]).length)}
+    ],
+    lens:{guardian:'Aquesta és la teva pantalla: mires si el territori creix o només creix un projecte.',agent:'D\'aquí surten les xifres per parlar amb l\'ajuntament i el consell comarcal.',coordinador:'Detecta quin projecte s\'ha aturat i qui hi falta.',superheroi:'Mira on pots aportar el que saps fer.',simpatitzant:'Comença aquí per entendre què s\'hi mou.'}},
+  map:{ic:'◉',t:'Mapa de valor (VNA)',one:'Qui aporta què a qui. Tangible i intangible, amb el retorn de cada flux.',
+    flow:['Cada rol dona alguna cosa i rep alguna cosa: si només dona, s\'esgota.','Els tangibles (hores, diner, objectes) es veuen; els intangibles (confiança, reconeixement) sostenen.','Un mapa recíproc és el que fa que la comunitat no depengui sempre dels mateixos quatre.'],
+    steps:[
+      {k:'roles',label:'Almenys 5 rols funcionals (funcions, no càrrecs)',done:n=>(n.vna.roles||[]).length>=5},
+      {k:'flows',label:'Almenys 8 fluxos de valor',done:n=>(n.vna.exchanges||[]).length>=8},
+      {k:'mix',label:'Barreja de tangibles i intangibles',done:n=>{const a=vnaAudit(n);return a.hasT&&a.hasI;}},
+      {k:'recip',label:'Reciprocitat per sobre del 60%',done:n=>vnaAudit(n).recPct>=60,act:n=>openReciprocityFixer(n)},
+      {k:'iso',label:'Cap rol aïllat',done:n=>vnaAudit(n).isolated.length===0,act:n=>openReciprocityFixer(n)},
+      {k:'meta',label:'Missió, visió i objectius escrits',done:n=>!!(n.metaskill.mission&&n.metaskill.vision&&n.metaskill.objectives)}
+    ],
+    lens:{guardian:'El mapa és el teu instrument de govern: hi veus qui sosté què abans de decidir.',agent:'Ensenya\'l a l\'administració: fa visible el que una memòria no diu.',coordinador:'Els rols buits són la teva llista de qui falta captar.',superheroi:'Busca el rol on encaixa el que tu saps fer.',simpatitzant:'Llegeix-lo com un mapa: entendràs la comunitat en dos minuts.'}},
+  kanban:{ic:'▤',t:'Tauler de tasques',one:'El pla d\'acció. Cada tasca acabada pot passar a comptes com a valor real.',
+    flow:['Una tasca del mapa es converteix en feina concreta amb responsable.','Quan es tanca, es comptabilitza: la feina feta es torna valor amb rastre.','Aquest valor alimenta el fons cooperatiu i el repartiment per aportació.'],
+    steps:[
+      {k:'cards',label:'Hi ha tasques al tauler',done:n=>(n.kanban.cards||[]).length>0},
+      {k:'doing',label:'Alguna cosa en marxa (Fent)',done:n=>(n.kanban.cards||[]).some(c=>c.col==='doing')},
+      {k:'done',label:'Alguna tasca tancada',done:n=>(n.kanban.cards||[]).some(c=>c.col==='done')},
+      {k:'acc',label:'Alguna tasca tancada comptabilitzada',done:n=>(n.kanban.cards||[]).some(c=>c.col==='done'&&c.accounted)}
+    ],
+    lens:{guardian:'Vigila que no s\'acumuli tot a «Fent»: és el símptoma de sobrecàrrega.',coordinador:'Aquí es reparteix la feina de veritat.',superheroi:'Agafa una tasca i comptabilitza-la quan la tanquis.',agent:'Les tasques tancades són la prova d\'execució davant l\'administració.',simpatitzant:'És el lloc més fàcil per començar a aportar.'}},
+  ledger:{ic:'⊞',t:'Comptes',one:'Cada aportació signada. Hores i diner amb rastre verificable.',
+    flow:['Qui aporta hores o diner ho registra i ho signa amb la seva identitat.','Els apunts s\'encadenen: modificar-ne un trenca la cadena i es nota.','D\'aquí surten la reputació, el fons cooperatiu i el repartiment just.'],
+    steps:[
+      {k:'first',label:'Primera aportació registrada',done:n=>(n.ledger||[]).length>0,act:n=>openLedgerEntryModal(n,{})},
+      {k:'signed',label:'Alguna aportació signada',done:n=>(n.ledger||[]).some(e=>e.sig)},
+      {k:'both',label:'Hores i diner (no només una cosa)',done:n=>(n.ledger||[]).some(e=>e.type==='temps')&&(n.ledger||[]).some(e=>e.type==='moneda')},
+      {k:'people',label:'Aportacions de més d\'una persona',done:n=>new Set((n.ledger||[]).map(e=>e.who)).size>1}
+    ],
+    lens:{guardian:'Sense comptes signats no hi ha res a repartir ni a defensar.',superheroi:'Cada apunt teu puja la teva reputació verificable.',coordinador:'Assegura\'t que no aporta sempre la mateixa gent.',agent:'És la justificació que cap subvenció et podrà discutir.',simpatitzant:'Mira d\'on surt el valor abans de decidir on entres.'}},
+  entitats:{ic:'⬡',t:'Entitats del territori',one:'Qui hi ha realment: ajuntaments, entitats, cooperatives, comerços.',
+    flow:['Es registra qui existeix al territori, verificat i sense inventar res.','Les entitats es connecten als rols del mapa: deixen de ser una llista i passen a ser xarxa.','El cens verificat es publica al commons perquè serveixi a tothom.'],
+    steps:[
+      {k:'first',label:'Primera entitat registrada',done:n=>entitiesFor(n.id).length>0,act:n=>openEntityForm(n)},
+      {k:'five',label:'Cinc o més entitats',done:n=>entitiesFor(n.id).length>=5},
+      {k:'ver',label:'Alguna entitat verificada',done:n=>entitiesFor(n.id).some(e=>e.verified)}
+    ],
+    lens:{agent:'Aquesta pantalla és la teva: el cens és la teva moneda de canvi amb les institucions.',guardian:'Sense saber qui hi ha, qualsevol decisió es pren a cegues.',coordinador:'Cada entitat és una porta a desenes de persones.',superheroi:'Mira quines entitats poden fer servir el que tu ofereixes.',simpatitzant:'Descobreix qui es mou al teu poble.'}},
+  socis:{ic:'👥',t:'Socis',one:'Les persones i entitats que formen part d\'aquest projecte.',
+    flow:['Cada persona entra amb nom i rol: sense gent no hi ha xarxa.','Els socis aporten (hores, objectes, diner) i reben (serveis, préstecs, suport).','El saldo de cadascú fa visible si la reciprocitat és real o només un discurs.'],
+    steps:[
+      {k:'first',label:'Primer soci donat d\'alta',done:n=>membersOf(n).length>0,act:n=>openMemberForm(n)},
+      {k:'five',label:'Cinc socis o més',done:n=>membersOf(n).length>=5},
+      {k:'ten',label:'Deu socis: massa crítica per funcionar sol',done:n=>membersOf(n).length>=10}
+    ],
+    lens:{coordinador:'Aquesta pantalla és la teva: el teu valor és que aquesta llista creixi i es quedi.',guardian:'Vigila que no siguin sempre els mateixos qui sostenen.',superheroi:'Convida algú que encara no hi és.',agent:'Les entitats també poden ser sòcies.',simpatitzant:'Dona\'t d\'alta i deixa de ser espectador/a.'}},
+  biblioteca:{ic:'📚',t:'Biblioteca de les coses',one:'Objectes en préstec. Tenir accés val més que posseir.',
+    flow:['Qui té una eina que fa servir dos cops l\'any la posa en comú.','Qui la necessita la demana en préstec i la torna cuidada.','Cada préstec estalvia una compra i genera una trobada al barri.'],
+    steps:[
+      {k:'obj',label:'Primer objecte al catàleg',done:n=>objectsOf(n).length>0,act:n=>openObjectForm(n)},
+      {k:'ten',label:'Deu objectes: ja és un catàleg útil',done:n=>objectsOf(n).length>=10},
+      {k:'lend',label:'Primer préstec real',done:n=>objectsOf(n).some(o=>o.status==='prestat'||(o.history||[]).length)},
+      {k:'owners',label:'Objectes de més d\'un propietari',done:n=>new Set(objectsOf(n).map(o=>o.ownerId)).size>1}
+    ],
+    lens:{superheroi:'Cada objecte teu al catàleg és una superarma per a la comunitat.',coordinador:'Demana objectes a qui ja és soci: és el pas més fàcil per implicar algú.',guardian:'Cuida les normes de préstec i fiances: aquí es guanya o es perd la confiança.',agent:'L\'estalvi i els residus evitats són dades que interessen l\'ajuntament.',simpatitzant:'Mira si hi ha el que necessites abans de comprar-ho.'}},
+  banctemps:{ic:'⏳',t:'Banc de temps',one:'Ofertes i demandes d\'hores. Una hora val una hora.',
+    flow:['Cadascú publica què sap fer (oferta) i què necessita (demanda).','El sistema casa oferta amb demanda encara que siguin de nodes diferents.','L\'intercanvi es registra en hores: ningú queda en deute i tothom queda vinculat.'],
+    steps:[
+      {k:'off',label:'Primera oferta publicada',done:n=>offersOf(n).some(o=>o.kind==='oferta'),act:n=>openOfferForm(n,'oferta')},
+      {k:'dem',label:'Primera demanda publicada',done:n=>offersOf(n).some(o=>o.kind==='demanda'),act:n=>openOfferForm(n,'demanda')},
+      {k:'match',label:'Algun ping oferta ↔ demanda',done:()=>{try{return findMatches().length>0;}catch(e){return false;}},act:()=>routeTo('pings')},
+      {k:'exch',label:'Primer intercanvi registrat en hores',done:n=>(n.ledger||[]).some(e=>e.type==='temps'&&e.counterpartId)}
+    ],
+    lens:{superheroi:'Publica el que saps fer i mira els pings: allà hi ha algú esperant-te.',coordinador:'Sense demandes no hi ha intercanvi: costa més captar-les que les ofertes.',guardian:'Vigila els saldos: una hora val una hora, sempre.',agent:'Les hores intercanviades són l\'indicador social més fàcil d\'explicar.',simpatitzant:'Demana alguna cosa petita: és la millor manera d\'entrar.'}},
+  cartera:{ic:'🌱',t:'Cartera de la MATRIU',one:'Els projectes que s\'incuben fins que poden caminar sols.',
+    flow:['Una necessitat del territori es converteix en una venture amb equip.','La MATRIU hi posa mètode, mentoria i recursos; la venture hi posa treball.','Quan passa el llindar de graduació, marxa amb el seu equity repartit.'],
+    steps:[
+      {k:'v',label:'Primera venture a la cartera',done:n=>venturesOf(n).length>0},
+      {k:'lead',label:'Alguna venture amb qui la lidera',done:n=>venturesOf(n).some(v=>v.leadMemberId)},
+      {k:'sprint',label:'Pla d\'sprints iniciat',done:n=>venturesOf(n).some(v=>(v.sprints||[]).length)},
+      {k:'contrib',label:'Aportacions registrades a alguna venture',done:n=>venturesOf(n).some(v=>(v.ledger||[]).length)}
+    ],
+    lens:{guardian:'Decideix què s\'incuba i què no: incubar-ho tot és no incubar res.',coordinador:'Munta els equips: una venture sense equip no arrenca.',superheroi:'Apunta\'t a la venture on el teu poder faci falta.',agent:'Aquí és on el finançament públic es converteix en projecte real.',simpatitzant:'Mira quines idees es couen abans de decidir on entres.'}},
+  ecosistema:{ic:'🕸',t:'Ecosistema',one:'Els recursos de fora que la MATRIU pot mobilitzar.',
+    flow:['Es connecten talent, hores i objectes que ja existeixen a l\'ecosistema.','Una venture no arrenca de zero: mobilitza el que la comunitat ja té.','Cada connexió aprofitada és una compra que no cal fer.'],
+    steps:[
+      {k:'link',label:'Primer enllaç amb un recurs de l\'ecosistema',done:n=>linksOf(n).length>0},
+      {k:'three',label:'Tres o més enllaços',done:n=>linksOf(n).length>=3}
+    ],
+    lens:{coordinador:'La teva feina: que el que hi ha en un node serveixi a un altre.',guardian:'Aquí es veu si l\'ecosistema coopera o són illes.',agent:'Connecta els recursos públics amb els comunitaris.',superheroi:'El que tens registrat pot acabar sostenint un projecte sencer.',simpatitzant:'Mira com es reaprofita el que ja existeix.'}},
+  equity:{ic:'🥧',t:'Equity · Slicing Pie',one:'El repartiment just segons el que cadascú hi ha posat de debò.',
+    flow:['Cada aportació (hores a la seva tarifa, diner) genera slices.','La tarta es recalcula sola: no es negocia percentatges a priori.','Quan la venture es gradua, l\'equity ja està repartit amb rastre.'],
+    steps:[
+      {k:'contrib',label:'Hi ha aportacions per repartir',done:n=>(n.ledger||[]).length>0||venturesOf(n).some(v=>(v.ledger||[]).length)},
+      {k:'multi',label:'Aportacions de més d\'una persona',done:n=>new Set((n.ledger||[]).map(e=>e.memberId).filter(Boolean)).size>1}
+    ],
+    lens:{guardian:'Mira el Gini: una tarta massa concentrada és un conflicte futur.',superheroi:'El que aportes es veu aquí, sense haver de reclamar res.',coordinador:'Explica-ho aviat: l\'equity mal entès trenca equips.',agent:'És el mecanisme que fa que el projecte no depengui d\'una subvenció.',simpatitzant:'Així es reparteix el que es crea: sense promeses, amb comptes.'}}
+};
+/* Els cinc rols del SOS, cadascun amb el seu flux de valor i el seu camí.
+   No és un temari: cada pas es comprova contra l'estat real del sistema. */
+const ROLE_JOURNEYS={
+  simpatitzant:{gives:'Atenció, mirada de fora i preguntes que ningú es fa',gets:'Entendre com funciona sense compromís i decidir quan pujar',
+    steps:[
+      {ic:'🦸',label:'Crea el teu perfil',detail:'Nom, població i el que saps fer. Cinc minuts.',done:()=>!!state.activePersona,act:()=>openSuperheroiOnboarding()},
+      {ic:'🗺',label:'Mira el mapa del teu territori',detail:'Entendràs qui sosté què abans de decidir res.',done:()=>state.nodes.some(n=>(n.vna.roles||[]).length>=3),act:()=>{state.activeId=null;state.homeView='mapa';render();}},
+      {ic:'📇',label:'Omple el teu dossier',detail:'El que saps fer encara que el SOS no ho hagi vist mai.',done:()=>{const d=state.activePersona?dossierOf(state.activePersona):null;return !!d&&dossierCompleteness(d).pct>=40;},act:()=>openDossierEditor(state.activePersona||'')},
+      {ic:'🔔',label:'Mira si algú necessita el que saps fer',detail:'Els pings casen oferta i demanda entre nodes.',done:()=>{try{return findMatches().length>0;}catch(e){return false;}},act:()=>routeTo('pings')},
+      {ic:'⏱',label:'Fes un primer intercanvi petit',detail:'Demanar és la porta d\'entrada més fàcil, no oferir.',done:()=>state.nodes.some(n=>(n.ledger||[]).some(e=>e.type==='temps'))}
+    ]},
+  superheroi:{gives:'Talents, hores i objectes propis al fons comú',gets:'Reputació verificable, accés a la biblioteca i gent que et coneix',
+    steps:[
+      {ic:'🦸',label:'Crea el teu perfil',detail:'Entra al roster del Comando.',done:()=>!!state.activePersona,act:()=>openSuperheroiOnboarding()},
+      {ic:'📇',label:'Dossier al 50%',detail:'CV, recursos i arquetip: el sistema et podrà trobar.',done:()=>{const d=state.activePersona?dossierOf(state.activePersona):null;return !!d&&dossierCompleteness(d).pct>=50;},act:()=>openDossierEditor(state.activePersona||'')},
+      {ic:'⏳',label:'Publica una oferta i una demanda',detail:'Només oferir cansa; demanar també és aportar.',done:()=>state.nodes.some(n=>offersOf(n).some(o=>o.kind==='oferta'))&&state.nodes.some(n=>offersOf(n).some(o=>o.kind==='demanda'))},
+      {ic:'📦',label:'Posa un objecte a la biblioteca',detail:'El que fas servir dos cops l\'any pot servir a deu persones.',done:()=>state.nodes.some(n=>objectsOf(n).length>0)},
+      {ic:'⬢',label:'Registra i signa una aportació',detail:'Sense firma no hi ha reputació verificable.',done:()=>state.nodes.some(n=>(n.ledger||[]).some(e=>e.sig))},
+      {ic:'🎯',label:'Completa els reptes del teu tier',detail:'Es puja amb evidència, mai amb antiguitat.',done:()=>false,act:()=>{if(state.activePersona)openPersonProfile(state.activePersona);else toast('Crea primer el teu perfil');}}
+    ]},
+  coordinador:{gives:'Acollida, seguiment i que la gent no es perdi pel camí',gets:'Una comunitat que funciona sense dependre d\'una sola persona',
+    steps:[
+      {ic:'🦸',label:'Crea el teu perfil',detail:'També tu ets un node de la xarxa.',done:()=>!!state.activePersona,act:()=>openSuperheroiOnboarding()},
+      {ic:'⏳',label:'Obre un banc de temps o una biblioteca',detail:'És la dinàmica amb menys fricció per començar.',done:()=>state.nodes.some(n=>n.dynamicType==='banc_temps'||n.dynamicType==='biblioteca_coses')},
+      {ic:'👥',label:'Dona d\'alta cinc persones',detail:'Per sota de cinc, encara no hi ha xarxa.',done:()=>state.nodes.some(n=>membersOf(n).length>=5)},
+      {ic:'🔔',label:'Fes que un ping acabi en intercanvi',detail:'La primera parella que funciona ho canvia tot.',done:()=>state.nodes.some(n=>(n.ledger||[]).some(e=>e.counterpartId)),act:()=>routeTo('pings')},
+      {ic:'🗳',label:'Registra una decisió a l\'assemblea',detail:'El que no queda registrat es torna a discutir.',done:()=>state.nodes.some(n=>proposalsOf(n).length>0),act:()=>openAssemblyModal()},
+      {ic:'🎓',label:'Prepara la mentoria d\'algú',detail:'Acció-formació: el segon aprèn del primer.',done:()=>false,act:()=>routeTo('mentoria')}
+    ]},
+  agent:{gives:'Pont amb ajuntaments, consells comarcals i finançament',gets:'Projectes reals que justificar amb dades, no amb relats',
+    steps:[
+      {ic:'🦸',label:'Crea el teu perfil',detail:'Amb el rol d\'agent territorial.',done:()=>!!state.activePersona,act:()=>openSuperheroiOnboarding()},
+      {ic:'⬡',label:'Censa les entitats del territori',detail:'Verificades, sense inventar-ne cap.',done:()=>state.entities.length>=5,act:()=>routeTo('directori')},
+      {ic:'◉',label:'Fes el mapa de valor del municipi',detail:'Amb l\'administració com un rol més, no com un observador.',done:()=>state.nodes.some(n=>isTerritory(n.nodeLevel)&&(n.vna.roles||[]).length>=5)},
+      {ic:'🩺',label:'Deixa el mapa amb reciprocitat verda',detail:'Un mapa on l\'ajuntament només dona i no rep és fals.',done:()=>state.nodes.some(n=>(n.vna.roles||[]).length>=5&&vnaAudit(n).recPct>=60)},
+      {ic:'🌐',label:'Publica el cens al commons',detail:'El que verifiques serveix a tot el territori.',done:()=>false,act:()=>openSettingsModal()},
+      {ic:'🔮',label:'Calcula l\'impacte per defensar-lo',detail:'Xifres amb rang, no promeses.',done:()=>false,act:()=>openImpactSimulator()}
+    ]},
+  guardian:{gives:'Criteri, continuïtat i decisions signades',gets:'Un territori que no depèn de la seva memòria personal',
+    steps:[
+      {ic:'🦸',label:'Crea el teu perfil',detail:'La reputació de guardià es guanya amb evidència.',done:()=>!!state.activePersona,act:()=>openSuperheroiOnboarding()},
+      {ic:'🏛',label:'Reclama un node i posa-hi guardians',detail:'Un sol guardià és un punt únic de fallida.',done:()=>state.nodes.some(n=>(govOf(n).stewards||[]).length>0)},
+      {ic:'◉',label:'Mapa de valor amb salut verda',detail:'Reciprocitat, densitat i cap rol aïllat.',done:()=>state.nodes.some(n=>(n.vna.roles||[]).length>=5&&vnaAudit(n).score>=70)},
+      {ic:'🗳',label:'Fusiona una proposta amb quòrum',detail:'La sabiduria decideix, no la persona.',done:()=>state.nodes.some(n=>proposalsOf(n).some(p=>p.status==='merged')),act:()=>openAssemblyModal()},
+      {ic:'🌱',label:'Incuba una venture a la MATRIU',detail:'Del diagnòstic al projecte que camina sol.',done:()=>state.nodes.some(n=>venturesOf(n).length>0)},
+      {ic:'🛰',label:'Ancora una prova pública',detail:'Verificable per algú de fora sense confiar en ningú.',done:()=>state.nodes.some(n=>n.anchoredAt||n.mainHash),act:()=>openAnchorPackModal()}
+    ]}
+};
+function activeRoleId(){
+  const p=state.activePersona;
+  if(!p)return 'simpatitzant';
+  const r=roleOfPerson(p);
+  return ROLE_JOURNEYS[r]?r:'simpatitzant';
+}
+function journeyProgress(roleId){
+  const j=ROLE_JOURNEYS[roleId]||ROLE_JOURNEYS.simpatitzant;
+  const items=j.steps.map(s=>{let d=false;try{d=!!s.done();}catch(e){d=false;}return{...s,done:d};});
+  const done=items.filter(i=>i.done).length;
+  return{roleId,role:SOS_ROLES[roleId],gives:j.gives,gets:j.gets,items,done,total:items.length,
+    pct:Math.round(done*100/items.length),next:items.find(i=>!i.done)||null};
+}
+function contextGuide(node,tab){
+  const g=CONTEXT_GUIDES[tab];if(!g)return null;
+  const items=g.steps.map(s=>{let d=false;try{d=!!s.done(node);}catch(e){d=false;}return{k:s.k,label:s.label,done:d,act:s.act};});
+  const done=items.filter(i=>i.done).length;
+  return{...g,tab,items,done,total:items.length,next:items.find(i=>!i.done)||null,lensFor:g.lens[activeRoleId()]||''};
+}
+// Estat d'obertura per pestanya: qui ja ho té clar el tanca i no li torna a sortir.
+const _guideOpen={};
+function buildContextGuide(node,tab){
+  const c=contextGuide(node,tab);if(!c)return null;
+  const open=_guideOpen[tab]!==undefined?_guideOpen[tab]:!!c.next;
+  const d=el('details','ctx-guide');if(open)d.open=true;
+  d.ontoggle=()=>{_guideOpen[tab]=d.open;};
+  const sum=el('summary');
+  sum.innerHTML='<span class="cg-ic">'+c.ic+'</span><span class="cg-t">'+esc(c.t)+'</span>'+
+    (c.next?'<span class="cg-next">et toca: '+esc(c.next.label)+'</span>':'<span class="cg-next ok">✓ tot fet en aquest context</span>')+
+    '<span class="cg-cnt">'+c.done+'/'+c.total+'</span>';
+  d.appendChild(sum);
+  const b=el('div','cg-body');
+  b.appendChild(el('p','cg-one',c.one));
+  const fl=el('div','cg-flow');
+  fl.innerHTML='<div class="cg-lbl">Flux de valor</div>'+c.flow.map((f,i)=>'<div class="cg-fl"><span class="cg-n">'+(i+1)+'</span><span>'+esc(f)+'</span></div>').join('');
+  b.appendChild(fl);
+  if(c.lensFor){
+    const role=SOS_ROLES[activeRoleId()];
+    const l=el('div','cg-lens');l.innerHTML='<span class="cg-lens-r">'+role.ic+' '+esc(role.label)+'</span> '+esc(c.lensFor);
+    b.appendChild(l);
+  }
+  const st=el('div','cg-steps');
+  st.appendChild(el('div','cg-lbl','Passos en aquest context'));
+  c.items.forEach(it=>{
+    const r=el('div','cg-st'+(it.done?' done':''));
+    r.innerHTML='<span class="cg-ck">'+(it.done?'✓':'○')+'</span><span>'+esc(it.label)+'</span>';
+    if(!it.done&&it.act){const btn=el('button','btn btn-ghost btn-sm','Fes-ho');btn.onclick=()=>it.act(node);r.appendChild(btn);}
+    st.appendChild(r);
+  });
+  b.appendChild(st);
+  const foot=el('div','cg-foot');
+  const gb=el('button','btn btn-ghost btn-sm','🧭 La meva guia completa');gb.onclick=()=>openGuide();foot.appendChild(gb);
+  b.appendChild(foot);
+  d.appendChild(b);
+  return d;
+}
+/* Guia completa · el camí sencer per rol, amb el flux de valor a dalt de tot.
+   Es pot canviar de rol per veure el camí d'algú altre: entendre el rol del veí
+   és la meitat de la feina de coordinar-se. */
+function openGuide(roleId){
+  const rid=roleId||activeRoleId();
+  const draw=r=>{
+    const j=journeyProgress(r);
+    const bg=modal(`
+      <h2>🧭 Guia del SOS · ${j.role.ic} ${esc(j.role.label)}</h2>
+      <p class="m-sub">Cada rol té el seu flux de valor: què hi poses i què en treus. Els passos es comproven contra el sistema real, no contra un temari.</p>
+      <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.7rem">
+        ${Object.entries(SOS_ROLES).map(([k,v])=>'<button type="button" class="btn btn-ghost btn-sm gd-r'+(k===r?' sel':'')+'" data-r="'+k+'">'+v.ic+' '+esc(v.label.split(' ')[0])+'</button>').join('')}
+      </div>
+      <div class="gd-flow">
+        <div class="gd-half"><div class="cg-lbl">Què hi poses</div><div>${esc(j.gives)}</div></div>
+        <div class="gd-arrow">⇄</div>
+        <div class="gd-half"><div class="cg-lbl">Què en treus</div><div>${esc(j.gets)}</div></div>
+      </div>
+      <div class="ent-card" style="margin:.7rem 0">
+        <div class="ent-nm">${j.done}/${j.total} passos · ${j.pct}%</div>
+        <div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;margin:.4rem 0;overflow:hidden"><div style="height:100%;width:${j.pct}%;background:linear-gradient(90deg,var(--indigo),var(--green))"></div></div>
+        ${j.next?'<div class="ent-desc">Següent: <strong>'+esc(j.next.label)+'</strong> — '+esc(j.next.detail)+'</div>':'<div class="ent-desc">Camí complet. El següent pas és acompanyar-ne un altre.</div>'}
+      </div>
+      <div id="gdSteps"></div>
+      <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="gdForm">🎓 Guia formativa</button><button class="btn btn-ghost" id="gdClose">Tanca</button>${j.next&&j.next.act?'<button class="btn btn-primary" id="gdGo">'+esc(j.next.ic+' '+j.next.label)+'</button>':''}</div>
+    `);
+    bg.querySelector('.modal').classList.add('wz-modal');
+    const box=bg.querySelector('#gdSteps');
+    j.items.forEach((s,i)=>{
+      const c=el('div','gd-st'+(s.done?' done':'')+(j.next&&j.next.label===s.label?' now':''));
+      c.innerHTML='<div class="gd-st-n">'+(s.done?'✓':i+1)+'</div><div class="gd-st-b"><div class="gd-st-t">'+s.ic+' '+esc(s.label)+'</div><div class="ent-desc">'+esc(s.detail)+'</div></div>';
+      if(s.act){const b=el('button','btn btn-ghost btn-sm',s.done?'Repeteix':'Fes-ho');b.onclick=()=>{closeModal();s.act();};c.appendChild(b);}
+      box.appendChild(c);
+    });
+    bg.querySelectorAll('.gd-r').forEach(b=>b.onclick=()=>{closeModal();draw(b.dataset.r);});
+    bg.querySelector('#gdClose').onclick=closeModal;
+    bg.querySelector('#gdForm').onclick=()=>window.open('formacio.html','_blank','noopener');
+    const go=bg.querySelector('#gdGo');if(go)go.onclick=()=>{closeModal();j.next.act();};
+  };
+  draw(rid);
+}
 /* ─── KANBAN ─── */
 const KCOLS=[['todo','Per fer'],['doing','Fent'],['done','Fet']];
 let _kFocus=null; // columna que ha de recuperar el focus de l'input després de re-render
@@ -5579,6 +6079,21 @@ function renderDashboard(w){
     (d.level?'<div class="bib-tile"><div class="n" style="color:var(--blue)">'+d.level+'</div><div class="l">'+esc(levelMeta(d.level).label)+'</div></div>':'');
   body.appendChild(tiles);
 
+  // El camí del teu rol: on ets i què et toca. Va abans dels propers passos
+  // perquè els passos solts sense un camí que els ordeni no diuen on portes.
+  const j=journeyProgress(activeRoleId());
+  body.appendChild(el('div','ent-grp-lbl','🧭 El teu camí · '+j.role.ic+' '+j.role.label));
+  const jc=el('div','ent-card');
+  jc.innerHTML='<div class="ent-nm">'+j.done+'/'+j.total+' passos · '+j.pct+'%</div>'+
+    '<div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;margin:.4rem 0;overflow:hidden"><div style="height:100%;width:'+j.pct+'%;background:linear-gradient(90deg,var(--indigo),var(--green))"></div></div>'+
+    '<div class="ent-desc"><strong>Hi poses:</strong> '+esc(j.gives)+' · <strong>En treus:</strong> '+esc(j.gets)+'</div>'+
+    (j.next?'<div class="ent-desc" style="margin-top:.3rem">Següent: <strong>'+esc(j.next.label)+'</strong> — '+esc(j.next.detail)+'</div>':'<div class="ent-desc" style="margin-top:.3rem">Camí complet: el següent pas és acompanyar-ne un altre.</div>');
+  const jb=el('div','');jb.style.cssText='display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem';
+  const gAll=el('button','btn btn-ghost btn-sm','🧭 Obre la guia');gAll.id='dashGuide';gAll.onclick=()=>openGuide();jb.appendChild(gAll);
+  if(j.next&&j.next.act){const gn=el('button','btn btn-primary btn-sm',j.next.ic+' '+j.next.label);gn.onclick=()=>j.next.act();jb.appendChild(gn);}
+  jc.appendChild(jb);
+  body.appendChild(jc);
+
   // Propers passos — el que fa que l'app serveixi per a alguna cosa avui
   if(d.next.length){
     body.appendChild(el('div','ent-grp-lbl','👣 Els teus propers passos'));
@@ -6547,7 +7062,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

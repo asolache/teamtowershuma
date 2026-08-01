@@ -157,6 +157,27 @@ Tres regles fixes:
 
 Detall a `knowledge/vision/dossier-personal.md`.
 
+## V21 · Veda dels mapes de valor i de la guia
+
+**Els mapes neixen sans o no neixen.** La forma canònica d'un preset a `DYNAMICS`
+és `pairs`: cada fila és un vincle amb les **dues direccions**
+`[A, B, tipus A→B, etiqueta A→B, tipus B→A, etiqueta B→A]`. Escriure el retorn
+obliga a pensar-lo. `flows` queda per a l'excepció unidireccional legítima.
+
+Llindars que cap preset pot baixar: **reciprocitat 100%**, densitat ≥45%, cap rol
+aïllat, barreja de tangible i intangible, concentració al rol més connectat ≤40%.
+Un mapa que neix ambre ensenya a la comunitat que ambre és normal.
+
+`vnaAudit(node)` és l'únic lloc on es calculen aquests indicadors: la barra de
+salut, el reforçador i els tests miren exactament el mateix. Diagnosticar sense
+donar la següent passa és deixar la feina a mitges: per això la salut sempre
+ofereix `openReciprocityFixer`.
+
+**Cada context s'explica sol.** Tota pestanya o vista nova ha de portar entrada a
+`CONTEXT_GUIDES` amb `flow` (3 frases del valor que hi circula), `steps`
+(comprovats contra el node real, no un temari) i `lens` (una frase per als 5
+rols). Detall a `knowledge/vision/guia-i-flux-de-valor.md`.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

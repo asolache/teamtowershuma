@@ -65,6 +65,86 @@ de ser un repositori d'estructures i passi a ser un servei. Després **F4 vista 
 cohort**. La resta: F2 viabilitat econòmica · F5 finançament i tràmits ·
 F6 formació lligada a l'etapa · F7 seguiment post-graduació · F8 evidències.
 
+### Visió de fons · Catalunya com a estat líquid descentralitzat
+
+Anotat com a horitzó del model, no com a feina d'una onada. És el marc que dona
+sentit a la federació de nodes que ja hi ha implementada.
+
+**La tesi.** Catalunya com a **estat líquid**: no una estructura fixa que
+administra un territori, sinó una **federació de federacions** que es recompon
+segons el que cal sostenir en cada moment. La cohesió no la dona l'aparell —
+la dona una **cultura compartida**.
+
+**Els valors.** Sintetitzats en **seny i rauxa**, i el lloc on aquests dos
+conviuen sense contradicció és la **cultura castellera**: el càlcul i el risc a
+la mateixa pinya. D'aquí surten els quatre valors que ja fem servir com a
+criteri de decisió (Força · Equilibri · Valor · Seny) i el fet que el castell
+sigui l'única metàfora del SOS que no és decorativa: descriu una estructura on
+la base és més ampla que el cim i on ningú puja sense que algú el sostingui.
+
+**Què hi ha ja construït que hi apunta**
+- Nodes territorials encaixats (país → província → comarca → municipi → barri)
+  que existeixen i funcionen per separat.
+- Assemblea federativa amb pes **Penrose-√població i correcció de Gini**: un
+  municipi petit no queda esborrat per un de gran.
+- Governança per **sabiduria** (quòrum de guardians) i registre públic de
+  decisions ancorable, que no depèn de cap servidor central.
+- Sync **P2P** entre navegadors: la federació no necessita un node mestre.
+
+**Què hi falta per sostenir la tesi** (no prioritzat, per pensar)
+- **Adhesió i sortida explícites**: com un node entra i surt d'una federació
+  sense trencar el que ja ha comptabilitzat. Un estat líquid sense dret de
+  sortida és un estat sòlid amb bon màrqueting.
+- **Federacions per tema, no només per territori** (energia, cures, habitatge):
+  el mateix node dins de diverses federacions alhora. Vegeu el detall a sota —
+  és la peça que fa que «líquid» vulgui dir alguna cosa operativa.
+- **Subsidiarietat comptable**: quina decisió es pren a quin nivell, i com es
+  resol el conflicte entre nivells sense recentralitzar.
+- **Interoperabilitat entre federacions** que no comparteixen guardians: què és
+  suficient per confiar en el mapa de valor d'algú altre.
+
+#### Federacions temàtiques · el vincle és el tema, no el mapa
+
+El que fa que l'estat sigui **líquid** no és la geografia: és que **et federes
+quan et vincules a un tema**. El territori segueix sent un eix (i el que ja hi ha
+construït), però deixa de ser l'únic.
+
+**El model de referència és `del.icio.us`.** No pel producte —era un gestor
+d'adreces— sinó pel mecanisme: **etiquetaves una cosa i, en fer-ho, apareixia la
+gent que havia etiquetat el mateix**. Ningú havia de crear un grup, demanar
+permís ni acceptar una invitació. El grup emergia de l'acte d'etiquetar. Tres
+propietats que val la pena copiar tal qual:
+
+1. **L'etiqueta és una declaració d'interès, no una categoria administrativa.**
+   La posa qui participa, no un comitè de taxonomia.
+2. **El descobriment és lateral**: de l'etiqueta a les persones, i de les
+   persones a les seves altres etiquetes. Així es troba gent amb qui comparteixes
+   coses que no sabies que compartíeu.
+3. **Els grups es poden agrupar.** Una federació de temes és un tema. Aquesta
+   recursivitat és exactament la mateixa que «federació de federacions», i és el
+   que evita haver de decidir a priori quin és el nivell correcte.
+
+**Com encaixa amb el que ja tenim**
+- Les categories de skills, les tipologies d'objectes i els `dynamicType` ja són,
+  de fet, etiquetes: avui serveixen per classificar, no per federar. El salt és
+  fer que **etiquetar connecti**.
+- Els pings ja fan matching lateral per categoria entre nodes diferents: és el
+  mateix mecanisme, però limitat a oferta↔demanda. Generalitzar-lo a interessos.
+- Els arquetips declarats del dossier són una etiqueta d'un altre ordre (com sóc,
+  no què m'interessa): serveixen per compondre equips, no per federar.
+
+**Preguntes obertes abans de construir res**
+- Qui pot crear una etiqueta i com s'eviten cent variants del mateix tema sense
+  posar-hi un comitè. (Suggerència: fusió proposada, mai automàtica.)
+- Una federació temàtica té ledger i fons propis, o només visibilitat i
+  matching? De la resposta en depèn si és una comunitat o només un filtre.
+- Com es fa visible la persona sense convertir-ho en una xarxa social d'exhibició:
+  el SOS mostra el que has fet, no el que dius que t'agrada.
+- Privadesa: quines etiquetes són públiques i quines es queden al dossier local.
+
+**Font**: converses amb l'Àlvar. Cal desenvolupar-ho com a document de visió
+propi quan toqui; aquí queda anotat perquè no es perdi.
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.
