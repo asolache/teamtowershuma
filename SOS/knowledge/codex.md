@@ -178,6 +178,31 @@ ofereix `openReciprocityFixer`.
 (comprovats contra el node real, no un temari) i `lens` (una frase per als 5
 rols). Detall a `knowledge/vision/guia-i-flux-de-valor.md`.
 
+## V22 · Veda comptable
+
+**Es comptabilitza tot el valor aportat, i el valor és el que defineix el mapa
+de valor.**
+
+D'aquí en surten quatre regles que no es negocien:
+
+1. **El mapa de valor és l'esquema comptable**, no un diagrama il·lustratiu. El
+   que compta com a valor en un node és exactament el que els seus fluxos
+   declaren. Canviar el mapa és canviar què es compta.
+2. **Un intangible declarat al mapa és comptabilitzable.** Aquesta és la
+   diferència entre reconèixer el treball invisible i limitar-se a anomenar-lo.
+3. **Cap agrupació sense mapa.** Territorial o temàtica, si una agrupació no té
+   mapa de valor no té comptes, i sense comptes és un filtre de cerca, no una
+   comunitat. Una federació temàtica no necessita cap primitiva nova: és un node
+   amb metaskill, mapa, ledger i governança, lligat per un tema en comptes d'un
+   límit administratiu.
+4. **Els mateixos indicadors a qualsevol escala.** `vnaAudit` val per a un banc
+   de temps de barri i per a una federació de federacions, perquè la unitat
+   d'anàlisi sempre és el mapa.
+
+Corol·lari operatiu: qualsevol funcionalitat que reculli aportacions ha de dir
+**a quin flux del mapa corresponen**. Si no es pot dir, o el mapa està incomplet
+o la funcionalitat no aporta valor comptable.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
