@@ -93,6 +93,36 @@ a{color:var(--blue);text-decoration:none}
 .lw-role .lr-ic{font-size:1.05rem;line-height:1}
 .lw-role .lr-t{font-size:.8rem;font-weight:600}
 .lw-role .lr-d{font-size:.68rem;color:var(--muted);line-height:1.35}
+/* Tauler d'entrada */
+.dash-next{display:flex;flex-direction:column;gap:.45rem}
+.dash-step{display:flex;align-items:center;gap:.75rem;width:100%;min-height:56px;padding:.7rem .9rem;background:linear-gradient(90deg,rgba(99,102,241,.1),rgba(0,230,118,.04));border:1px solid var(--indigo);border-radius:11px;color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:transform .13s,background .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.dash-step:hover{transform:translateX(3px);background:linear-gradient(90deg,rgba(99,102,241,.18),rgba(0,230,118,.06))}
+.dash-step:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.ds-ic{font-size:1.3rem;flex-shrink:0}
+.ds-b{display:flex;flex-direction:column;gap:.1rem;min-width:0;flex:1}
+.ds-t{font-weight:700;font-size:.92rem;line-height:1.3}
+.ds-d{font-size:.78rem;color:var(--muted);line-height:1.4}
+.ds-go{color:var(--indigo);font-size:1.1rem;flex-shrink:0}
+.dash-att{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.5rem}
+.dash-item{display:flex;align-items:flex-start;gap:.6rem;min-height:52px;padding:.65rem .8rem;background:var(--bg-panel);border:1px solid var(--border);border-left:3px solid var(--muted);border-radius:9px;color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:border-color .13s,background .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.dash-item:hover{background:var(--bg-hover)}
+.dash-item.sev-0{border-left-color:var(--red)}
+.dash-item.sev-1{border-left-color:var(--orange)}
+.dash-item.sev-2{border-left-color:var(--blue)}
+.di-ic{font-size:1.05rem;flex-shrink:0;padding-top:.1rem}
+.di-b{display:flex;flex-direction:column;gap:.1rem;min-width:0}
+.di-t{font-weight:600;font-size:.86rem;line-height:1.35}
+.di-d{font-size:.75rem;color:var(--muted);line-height:1.4}
+.dash-cov{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.45rem}
+.cov{display:flex;flex-direction:column;gap:.2rem;min-height:74px;padding:.65rem .75rem;background:var(--bg-panel);border:1px dashed var(--border);border-radius:9px;color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.cov:hover{border-color:var(--indigo);border-style:solid}
+.cov.done{border-style:solid;border-color:var(--green-dim);background:rgba(0,230,118,.06);min-height:auto;flex-direction:row;align-items:center;gap:.45rem}
+.cov-ic{font-size:1.05rem}
+.cov-t{font-weight:600;font-size:.84rem}
+.cov-why{font-size:.72rem;color:var(--muted);line-height:1.4}
+.cov-ok{margin-left:auto;color:var(--green);font-weight:700}
+.dash-feed{display:flex;flex-direction:column;gap:.1rem}
+@media(max-width:600px){.dash-att,.dash-cov{grid-template-columns:1fr}}
 /* Mentoria preparada per IA */
 .mp-hd{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
 .mp-role{font-weight:700;font-size:.95rem}
@@ -933,7 +963,7 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler'};
 // Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
 async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
 async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
@@ -3005,7 +3035,10 @@ function renderWorkspace(){
   // Punt únic on convergeixen tots els canvis de node i de pestanya: aquí la ruta
   // es manté sincronitzada sense haver de tocar els 12 llocs que muten state.tab.
   syncRoute(true);
-  if(!node){renderCatMap(w);return;}
+  // Sense node actiu: el tauler és la pantalla d'entrada per defecte, i el mapa
+  // de Catalunya queda a un clic. Abans s'anava directe al mapa, que és bonic
+  // però no diu res sobre què et toca fer avui.
+  if(!node){if(state.homeView==='mapa')renderCatMap(w);else renderDashboard(w);return;}
   const meta=LEVEL_META[node.nodeLevel];
 
   const head=el('div','node-head');
@@ -4668,6 +4701,175 @@ function buildEquityPie(eq){
   const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
   return svg;
 }
+/* ═══════════ Tauler · la pantalla d'entrada de qui ja hi torna ═══════════
+   Un visitant nou aterra a #onboarding i tria camí. Qui torna, fins ara, queia
+   al primer node arrel per ordre de creació: arbitrari i mut. El tauler respon
+   les tres preguntes que té algú en obrir l'app —
+     · què reclama la meva atenció?
+     · què s'hi ha mogut d'ençà de l'última vegada?
+     · què encara no he provat i em convindria?
+   L'última és la que fa créixer l'ús: la majoria de funcions no es fan servir
+   perquè no se sap que hi són, no perquè no interessin. */
+
+// Catàleg d'adopció: capacitat, com es detecta que ja s'usa, i per què val la pena.
+const CAPABILITIES=[
+  {id:'mapa',ic:'🗺',t:'Mapa de valor',why:'Veure qui sosté què és el que evita que tot recaigui sempre sobre els mateixos.',
+   used:()=>state.nodes.some(n=>(n.vna&&n.vna.roles||[]).length>=3),act:()=>{const n=state.nodes[0];if(n){selectNode(n.id);state.tab='map';renderWorkspace();}}},
+  {id:'banc',ic:'⏱',t:'Banc de temps',why:'És la dinàmica que menys fricció té per començar: hores per hores.',
+   used:()=>state.nodes.some(n=>offersOf(n).length>0),act:()=>openLauncher()},
+  {id:'biblioteca',ic:'📚',t:'Biblioteca de les coses',why:'Cada objecte compartit multiplica valor sense multiplicar cost.',
+   used:()=>state.nodes.some(n=>objectsOf(n).length>0),act:()=>openLauncher()},
+  {id:'matriu',ic:'🌱',t:'MATRIU · incubar',why:'Convertir una necessitat del territori en un projecte que camini sol.',
+   used:()=>state.nodes.some(n=>venturesOf(n).length>0),act:()=>openLauncher()},
+  {id:'governanca',ic:'🗳',t:'Decisions signades',why:'Una decisió que no queda registrada s\'haurà de tornar a discutir.',
+   used:()=>state.nodes.some(n=>proposalsOf(n).length>0),act:()=>{const n=byId(state.activeId)||state.nodes[0];if(n)openAssemblyModal(n);}},
+  {id:'perfil',ic:'🦸',t:'El teu perfil',why:'Sense perfil no hi ha reputació verificable ni matching amb ningú.',
+   used:()=>!!state.activePersona,act:()=>openSuperheroiOnboarding()},
+  {id:'pings',ic:'🔔',t:'Pings d\'ecosistema',why:'Detecta sols qui ofereix el que algú altre necessita, fins i tot en un altre node.',
+   used:()=>{try{return findMatches().length>0;}catch(e){return false;}},act:()=>routeTo('pings')},
+  {id:'ancoratge',ic:'🛰',t:'Prova pública',why:'Fa el que has construït verificable per algú de fora sense confiar en ningú.',
+   used:()=>state.nodes.some(n=>n.anchoredAt||n.mainHash),act:()=>openAnchorPackModal()},
+  {id:'mentoria',ic:'🎓',t:'Mentoria',why:'L\'itinerari surt del que ja has fet, no d\'un temari.',
+   used:()=>false,act:()=>routeTo('mentoria')}
+];
+
+// Què reclama atenció, ordenat per urgència real i no per ordre de node.
+function dashboardAttention(){
+  const out=[],me=state.activePersona;
+  state.nodes.forEach(nd=>{
+    // Propostes pendents on tinc vot
+    const pend=proposalsOf(nd).filter(p=>p.status==='pending');
+    if(pend.length)out.push({sev:1,ic:'🗳',t:pend.length+' proposta'+(pend.length===1?'':'es')+' pendent'+(pend.length===1?'':'s'),
+      d:nd.name+' · esperen vot per arribar a quòrum',act:()=>openAssemblyModal(nd)});
+    // Préstecs vençuts
+    const late=objectsOf(nd).map(dueStatus).filter(s=>s&&/vençut/.test(s.t));
+    if(late.length)out.push({sev:0,ic:'📚',t:late.length+' préstec'+(late.length===1?'':'s')+' vençut'+(late.length===1?'':'s'),
+      d:nd.name+' · reclamar abans que es normalitzi',act:()=>{selectNode(nd.id);state.tab='biblioteca';renderWorkspace();}});
+    // Ventures amb la porta verda: fa pena deixar-les aturades just quan poden avançar
+    venturesOf(nd).forEach(v=>{
+      if(v.stage==='graduacio')return;
+      try{const g=stageGate(nd,v);
+        if(g.ready)out.push({sev:1,ic:'🚀',t:v.name+' pot passar a '+g.label,
+          d:nd.name+' · totes les comprovacions verdes',act:()=>openVentureDetail(nd,v)});
+      }catch(e){}
+    });
+    // Nodes sense mapa: el diagnòstic que encara no s'ha fet
+    if((nd.vna&&nd.vna.roles||[]).length===0&&nd.nodeLevel==='projecte')
+      out.push({sev:2,ic:'🕸',t:esc(nd.name)+' no té mapa de valor',d:'Sense mapa no es veu qui sosté què',
+        act:()=>{selectNode(nd.id);state.tab='map';renderWorkspace();}});
+  });
+  // Pings que em toquen personalment
+  if(me){try{const m=matchesForPerson(me);
+    if(m.length)out.push({sev:1,ic:'🔔',t:m.length+' coincidència'+(m.length===1?'':'s')+' per a tu',
+      d:'Algú ofereix o necessita el que tu mous',act:()=>routeTo('pings')});
+  }catch(e){}}
+  return out.sort((a,b)=>a.sev-b.sev);
+}
+
+function buildDashboard(){
+  const me=state.activePersona;
+  const sheet=me?characterSheetOf(me):null;
+  const level=sheet?levelOfPerson(sheet):null;
+  const st=activityStats(7),st30=activityStats(30);
+  const coverage=CAPABILITIES.map(c=>{let used=false;try{used=!!c.used();}catch(e){}return{...c,done:used};});
+  const pending=coverage.filter(c=>!c.done);
+  const attention=dashboardAttention();
+  // Els propers passos surten primer del que reclama atenció i, si no n'hi ha,
+  // de la capacitat més valuosa que encara no s'ha tocat.
+  const next=[];
+  attention.slice(0,2).forEach(a=>next.push({ic:a.ic,t:a.t,d:a.d,act:a.act}));
+  pending.slice(0,3-next.length).forEach(c=>next.push({ic:c.ic,t:'Prova: '+c.t,d:c.why,act:c.act}));
+  return{me,sheet,level,attention,coverage,pending,
+    momentum:{d7:st.recent,d30:st30.recent,total:st.total,lastAt:st.lastAt},
+    counts:{nodes:state.nodes.length,entities:state.entities.length,
+      people:new Set(state.nodes.flatMap(n=>membersOf(n).map(m=>personKey(m.name)))).size},
+    next};
+}
+
+function renderDashboard(w){
+  const d=buildDashboard();
+  const head=el('div','node-head');
+  const top=el('div','nh-top');
+  const title=el('div','nh-title');
+  title.appendChild(el('span','tn-lvl lv-pais','Tauler'));
+  const h1=el('h1');h1.textContent=d.me?('Hola, '+d.me.split(/\s+/)[0]):'El teu ecosistema';title.appendChild(h1);
+  top.appendChild(title);
+  const acts=el('div','nh-actions');
+  const mapBtn=el('button','btn btn-ghost btn-sm','🗺 Mapa de Catalunya');
+  mapBtn.onclick=()=>{state.homeView='mapa';renderWorkspace();};
+  acts.appendChild(mapBtn);
+  top.appendChild(acts);head.appendChild(top);w.appendChild(head);
+
+  const body=el('div','tab-body');
+
+  // Estat en una llambregada
+  const tiles=el('div','bib-stats');
+  tiles.innerHTML='<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+d.counts.nodes+'</div><div class="l">nodes</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--green)">'+d.counts.people+'</div><div class="l">persones</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+d.counts.entities+'</div><div class="l">entitats</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--purple)">'+d.momentum.d7+'</div><div class="l">moviments (7 d)</div></div>'+
+    (d.level?'<div class="bib-tile"><div class="n" style="color:var(--blue)">'+d.level+'</div><div class="l">'+esc(levelMeta(d.level).label)+'</div></div>':'');
+  body.appendChild(tiles);
+
+  // Propers passos — el que fa que l'app serveixi per a alguna cosa avui
+  if(d.next.length){
+    body.appendChild(el('div','ent-grp-lbl','👣 Els teus propers passos'));
+    const grid=el('div','dash-next');
+    d.next.forEach(n=>{
+      const c=el('button','dash-step');
+      c.innerHTML='<span class="ds-ic">'+n.ic+'</span><span class="ds-b"><span class="ds-t">'+esc(n.t)+'</span><span class="ds-d">'+esc(n.d)+'</span></span><span class="ds-go">→</span>';
+      c.onclick=n.act;grid.appendChild(c);
+    });
+    body.appendChild(grid);
+  }
+
+  // Reclama atenció
+  body.appendChild(el('div','ent-grp-lbl','⚠️ Reclama la teva atenció'));
+  if(d.attention.length){
+    const grid=el('div','dash-att');
+    d.attention.slice(0,8).forEach(a=>{
+      const c=el('button','dash-item sev-'+a.sev);
+      c.innerHTML='<span class="di-ic">'+a.ic+'</span><span class="di-b"><span class="di-t">'+esc(a.t)+'</span><span class="di-d">'+esc(a.d)+'</span></span>';
+      c.onclick=a.act;grid.appendChild(c);
+    });
+    body.appendChild(grid);
+  } else {
+    const okBox=el('div','ai-note');okBox.innerHTML='<span class="ic">✅</span><span>Res reclama atenció ara mateix. Bon moment per encetar alguna cosa nova o per acompanyar algú.</span>';
+    body.appendChild(okBox);
+  }
+
+  // Adopció · el motor que fa descobrir el que hi ha
+  body.appendChild(el('div','ent-grp-lbl','🧭 Què has fet servir · '+d.coverage.filter(c=>c.done).length+'/'+d.coverage.length));
+  const cov=el('div','dash-cov');
+  d.coverage.forEach(c=>{
+    const b=el('button','cov'+(c.done?' done':''));
+    b.innerHTML='<span class="cov-ic">'+c.ic+'</span><span class="cov-t">'+esc(c.t)+'</span>'+
+      (c.done?'<span class="cov-ok">✓</span>':'<span class="cov-why">'+esc(c.why)+'</span>');
+    b.onclick=c.act;b.title=c.done?(c.t+' · ja ho fas servir'):c.why;
+    cov.appendChild(b);
+  });
+  body.appendChild(cov);
+
+  // Moviment recent
+  body.appendChild(el('div','ent-grp-lbl','📜 Moviment recent'));
+  const feed=activityFeed({limit:6});
+  if(feed.length){
+    const list=el('div','dash-feed');
+    feed.forEach(x=>{
+      const m=ACTIVITY_KINDS[x.kind]||{ic:'◇',color:'var(--muted)'};
+      const r=el('div','al-row');
+      r.innerHTML='<span class="al-ic" style="background:'+m.color+'22;color:'+m.color+'">'+m.ic+'</span>'+
+        '<span class="al-main"><span class="al-tt">'+esc(x.title)+'</span><span class="al-dt">'+esc(x.detail)+'</span></span>'+
+        '<span class="al-ts">'+relTime(x.ts)+'</span>';
+      list.appendChild(r);
+    });
+    body.appendChild(list);
+    const all=el('button','btn btn-ghost btn-sm','📜 Veure tot el registre');
+    all.style.marginTop='.5rem';all.onclick=()=>routeTo('activitat');body.appendChild(all);
+  } else body.appendChild(el('div','ent-desc','Encara no hi ha moviment. El primer que registris apareixerà aquí.'));
+
+  w.appendChild(body);
+}
 // ═══════════ openMentoringPlan · la mentoria que la IA prepara per a cada persona ═══════════
 function openMentoringPlan(personName){
   const bg=modal(`
@@ -5469,25 +5671,27 @@ window.openFounderMap=openFounderMap;
 $('#personaBadge').onclick=()=>{if(state.activePersona){openPersonProfile(state.activePersona);}};
 $('#btnSearch').onclick=openSearchPalette;
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearchPalette();}});
-$('#btnMap').onclick=()=>{state.activeId=null;render();};
+$('#btnMap').onclick=()=>{state.activeId=null;state.homeView='mapa';render();};
 $('#btnDir').onclick=()=>routeTo('directori');
 $('#obDir').onclick=openDirectory;
 $('#btnActivity').onclick=()=>routeTo('activitat');
 $('#btnSync').onclick=openSyncModal;
-$('#homeLogo').onclick=()=>{state.activeId=null;render();};
+$('#homeLogo').onclick=()=>{state.activeId=null;state.homeView='tauler';render();};
 // Escape tanca primer el menú de la barra i, si no n'hi ha cap obert, el modal.
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hidden)closeMoreMenu(true);else closeModal();});
 
 /* ═══════════════════ BOOT ═══════════════════ */
 (async function boot(){
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
-  if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
+  // Qui torna aterra al tauler, no a un node triat per ordre de creació. L'arbre
+  // segueix mostrant-ho tot, i una ruta guardada continua manant per sobre d'això.
+  if(state.nodes.length){state.activeId=null;state.homeView='tauler';children(null).forEach(r=>state.expanded.add(r.id));}
   render();
   // La ruta d'entrada mana per sobre del node per defecte: obrir un enllaç guardat
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
