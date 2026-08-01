@@ -145,7 +145,31 @@ a{color:var(--blue);text-decoration:none}
 .tb-crumbs .cr{cursor:pointer;padding:.2rem .1rem}.tb-crumbs .cr:hover{color:var(--white)}
 .tb-crumbs .cr.active{color:var(--blue);font-weight:600}
 .tb-crumbs .sep{opacity:.4}
-.tb-right{display:flex;align-items:center;gap:.6rem}
+.tb-right{display:flex;align-items:center;gap:.45rem}
+/* Controls de la barra · 44px d'alçada mínima perquè siguin tocables a iPad
+   (els 32px anteriors quedaven per sota de qualsevol guia tàctil). */
+.tb-btn{display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:0 .7rem;background:transparent;border:1px solid var(--border);border-radius:9px;color:var(--muted);font:inherit;font-size:.85rem;cursor:pointer;white-space:nowrap;transition:border-color .13s,color .13s,background .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.tb-btn:hover{border-color:var(--indigo);color:var(--white);background:var(--bg-hover)}
+.tb-btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.tb-btn[hidden]{display:none}
+.tb-ic{font-size:1rem;line-height:1}
+.tb-kbd{font-family:var(--mono);font-size:.6rem;color:var(--muted);border:1px solid var(--border);border-radius:4px;padding:.1rem .25rem;margin-left:.1rem}
+.tb-primary{border-color:var(--indigo-dim,rgba(99,102,241,.4));color:var(--white)}
+.tb-primary:hover{background:rgba(99,102,241,.14)}
+.tb-persona{background:linear-gradient(135deg,var(--indigo),var(--green));color:#fff;font-weight:700;border-color:transparent;padding:0 .75rem}
+.tb-icon-only{padding:0;width:44px;justify-content:center;font-size:1.15rem}
+/* Menú «Més» */
+.tb-more{position:relative}
+.tb-menu{position:absolute;right:0;top:calc(100% + .4rem);min-width:230px;background:var(--bg-panel);border:1px solid var(--border);border-radius:11px;padding:.35rem;box-shadow:0 12px 32px rgba(0,0,0,.5);z-index:60;display:flex;flex-direction:column;gap:.1rem}
+.tb-menu[hidden]{display:none}
+.tb-menu-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:.45rem .6rem .2rem}
+.tb-mi{display:flex;align-items:center;gap:.55rem;width:100%;min-height:42px;padding:.4rem .6rem;background:transparent;border:0;border-radius:7px;color:var(--light);font:inherit;font-size:.86rem;text-align:left;cursor:pointer;transition:background .12s,color .12s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.tb-mi:hover,.tb-mi:focus-visible{background:var(--bg-hover);color:var(--white);outline:none}
+.tb-mi:focus-visible{box-shadow:inset 0 0 0 2px var(--indigo)}
+/* A pantalla estreta les etiquetes desapareixen abans que els botons: val més
+   una barra d'icones que una barra que es desborda o que amaga funcions. */
+@media(max-width:820px){.tb-lb,.tb-kbd{display:none}.tb-btn{padding:0;width:44px;justify-content:center}.tb-persona{width:auto;padding:0 .7rem}}
+@media(max-width:560px){.tb-crumbs{display:none}.sync-pill{display:none}}
 .sync-pill{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;color:var(--muted);background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;padding:.35rem .7rem;text-transform:uppercase}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
 
@@ -534,17 +558,28 @@ a{color:var(--blue);text-decoration:none}
   <div class="topbar">
     <div class="tb-logo" id="homeLogo">SOS<span>·</span><span style="color:var(--white);font-weight:600">Humà</span></div>
     <div class="tb-crumbs" id="crumbs"></div>
+    <!-- Barra ordenada per freqüència d'ús, no per ordre d'aparició històric.
+         Nivell 1 (sempre visible): cercar, actuar, qui sóc — el 90% dels tocs.
+         Nivell 2 (menú «Més»): la resta, amb NOM escrit. Un emoji sense etiqueta
+         no es descobreix; dins d'un menú amb text, sí. -->
     <div class="tb-right">
-      <div class="sync-pill" id="syncPill"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
-      <button class="btn-icon" id="btnMap" title="Mapa de Catalunya">🗺</button>
-      <button class="btn-icon" id="btnDir" title="Directori d'entitats (atles)">🌐</button>
-      <button class="btn-icon" id="personaBadge" title="Sessió activa" style="display:none;background:linear-gradient(135deg,var(--indigo),var(--green));color:#fff;font-weight:700;padding:0 .5rem">·</button>
-      <button class="btn-icon" id="btnActivity" title="Registre d'activitat">📜</button>
-      <button class="btn-icon" id="btnSearch" title="Cerca global (⌘K)">🔍</button>
-      <button class="btn-icon" id="btnLauncher" title="Menú d'accions ràpides">☰</button>
-      <button class="btn-icon" id="btnSync" title="Sincronitza amb un altre dispositiu">🔗</button>
-      <button class="btn-icon" id="btnContact" title="Contacta amb l'Álvaro">✉</button>
-      <button class="btn-icon" id="btnSettings" title="Configuració · dades">⚙</button>
+      <div class="sync-pill" id="syncPill" role="status" aria-live="polite"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
+      <button class="tb-btn" id="btnSearch" aria-label="Cerca global (Command o Control + K)"><span class="tb-ic" aria-hidden="true">🔍</span><span class="tb-lb">Cerca</span><kbd class="tb-kbd" aria-hidden="true">⌘K</kbd></button>
+      <button class="tb-btn tb-primary" id="btnLauncher" aria-label="Menú d'accions"><span class="tb-ic" aria-hidden="true">☰</span><span class="tb-lb">Accions</span></button>
+      <button class="tb-btn tb-persona" id="personaBadge" hidden aria-label="Sessió activa"><span class="tb-ic" aria-hidden="true">·</span></button>
+      <div class="tb-more">
+        <button class="tb-btn tb-icon-only" id="btnMore" aria-label="Més opcions" aria-haspopup="menu" aria-expanded="false" aria-controls="tbMenu"><span aria-hidden="true">⋯</span></button>
+        <div class="tb-menu" id="tbMenu" role="menu" hidden aria-labelledby="btnMore">
+          <div class="tb-menu-lbl" role="presentation">Explorar</div>
+          <button class="tb-mi" role="menuitem" id="btnMap"><span aria-hidden="true">🗺</span> Mapa de Catalunya</button>
+          <button class="tb-mi" role="menuitem" id="btnDir"><span aria-hidden="true">🌐</span> Directori d'entitats</button>
+          <button class="tb-mi" role="menuitem" id="btnActivity"><span aria-hidden="true">📜</span> Registre d'activitat</button>
+          <div class="tb-menu-lbl" role="presentation">Sistema</div>
+          <button class="tb-mi" role="menuitem" id="btnSync"><span aria-hidden="true">🔗</span> Sincronitza un dispositiu</button>
+          <button class="tb-mi" role="menuitem" id="btnSettings"><span aria-hidden="true">⚙</span> Configuració i dades</button>
+          <button class="tb-mi" role="menuitem" id="btnContact"><span aria-hidden="true">✉</span> Contacta amb l'Álvaro</button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="shell">
@@ -902,7 +937,16 @@ const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tom
 // Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
 async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
 async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
-function updatePersonaBadge(){const el=document.getElementById('personaBadge');if(!el)return;if(state.activePersona){el.textContent='👤 '+state.activePersona.split(/\s+/).slice(0,2).map(s=>s.charAt(0).toUpperCase()).join('');el.title='Sessió activa: '+state.activePersona+' · clic per canviar';el.style.display='';}else{el.style.display='none';}}
+function updatePersonaBadge(){
+  const el=document.getElementById('personaBadge');if(!el)return;
+  if(state.activePersona){
+    const ini=state.activePersona.split(/\s+/).slice(0,2).map(s=>s.charAt(0).toUpperCase()).join('');
+    el.innerHTML='<span class="tb-ic" aria-hidden="true">👤</span><span class="tb-lb">'+esc(ini)+'</span>';
+    el.setAttribute('aria-label','Sessió activa: '+state.activePersona+'. Obre el teu perfil');
+    el.title='Sessió activa: '+state.activePersona+' · clic per obrir el perfil';
+    el.hidden=false;
+  } else el.hidden=true;
+}
 const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const now=()=>new Date().toISOString();
 // ═══════════ Identitat descentralitzada · did:key + firma (Arc I1+L1) ═══════════
@@ -5393,6 +5437,31 @@ $('#obExplore').onclick=async()=>{const r=await loadCatalunyaSkeleton();selectNo
 $('#obContact').onclick=()=>{window.location.href=mailto('Repte comunitari — vull explorar el SOS');};
 $('#obEmailLink').onclick=e=>{e.preventDefault();window.location.href=mailto(e.target.dataset.subject);};
 $('#btnNewRoot').onclick=()=>openCreateModal(null);
+/* Menú «Més» · obrir i tancar amb ratolí, tecla i toc. Tot el que hi ha a dins
+   també és accessible des del launcher o la paleta: això és una drecera, no
+   l'únic camí, i per això es pot tancar sense conseqüències. */
+const tbMenu=$('#tbMenu'),btnMore=$('#btnMore');
+function closeMoreMenu(focusBack){
+  if(tbMenu.hidden)return;
+  tbMenu.hidden=true;btnMore.setAttribute('aria-expanded','false');
+  if(focusBack)btnMore.focus();
+}
+function openMoreMenu(){
+  tbMenu.hidden=false;btnMore.setAttribute('aria-expanded','true');
+  const first=tbMenu.querySelector('.tb-mi');if(first)first.focus();
+}
+btnMore.onclick=e=>{e.stopPropagation();tbMenu.hidden?openMoreMenu():closeMoreMenu(true);};
+document.addEventListener('click',e=>{if(!tbMenu.hidden&&!tbMenu.contains(e.target)&&e.target!==btnMore)closeMoreMenu();});
+tbMenu.addEventListener('keydown',e=>{
+  const items=[...tbMenu.querySelectorAll('.tb-mi')],i=items.indexOf(document.activeElement);
+  if(e.key==='Escape'){e.preventDefault();closeMoreMenu(true);}
+  else if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length].focus();}
+  else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length].focus();}
+  else if(e.key==='Home'){e.preventDefault();items[0].focus();}
+  else if(e.key==='End'){e.preventDefault();items[items.length-1].focus();}
+});
+// Triar una opció tanca el menú: si no, queda obert per sobre del que acabes d'obrir.
+tbMenu.querySelectorAll('.tb-mi').forEach(mi=>mi.addEventListener('click',()=>closeMoreMenu()));
 $('#btnContact').onclick=openContactModal;
 $('#btnSettings').onclick=openSettingsModal;
 $('#btnLauncher').onclick=openLauncher;
@@ -5406,7 +5475,8 @@ $('#obDir').onclick=openDirectory;
 $('#btnActivity').onclick=()=>routeTo('activitat');
 $('#btnSync').onclick=openSyncModal;
 $('#homeLogo').onclick=()=>{state.activeId=null;render();};
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+// Escape tanca primer el menú de la barra i, si no n'hi ha cap obert, el modal.
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hidden)closeMoreMenu(true);else closeModal();});
 
 /* ═══════════════════ BOOT ═══════════════════ */
 (async function boot(){
