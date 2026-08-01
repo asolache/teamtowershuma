@@ -191,7 +191,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <h3>Índex de mòduls</h3>
 <ol>
 <li><a href="#m1">Fonaments SOS i codex Antigravity</a> · <em>filosofia + stack W3C + local-first</em></li>
-<li><a href="#m2">Identitat descentralitzada i criptografia</a> · <em>did:sos, firma, cadena hash, wallets</em></li>
+<li><a href="#m2">Identitat descentralitzada i criptografia</a> · <em>did:sos, firma, cadena hash, carteres</em></li>
 <li><a href="#m3">Value Network Analysis (Verna Allee)</a> · <em>rols funcionals + fluxos recíprocs</em></li>
 <li><a href="#m4">Recursos comunitaris</a> · <em>banc de temps + biblioteca de les coses</em></li>
 <li><a href="#m5">Governança i Guardians</a> · <em>sabiduria + quòrum + assemblea federativa Penrose</em></li>
@@ -211,7 +211,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <li><a href="#m16">Formació de formadors</a> · <em>l'ofici de mentorar · N3</em></li>
 </ol>
 <ol start="17" style="list-style:none;padding-left:0;margin-top:.6rem">
-<li><a href="#manual">🔧 Manual tècnic · Developers &amp; Admins</a> · <em>wallets permaweb · Nostr · Claude API · self-hosting</em></li>
+<li><a href="#manual">🔧 Manual tècnic · Desenvolupament i administració</a> · <em>carteres permaweb · Nostr · Claude API · allotjament propi</em></li>
 </ol>
 <h3 style="margin-top:1.2rem">Més enllà dels mòduls</h3>
 <ul class="toc-x">
@@ -265,7 +265,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <section class="module mod-2" id="m2">
 <div class="num">MÒDUL 2 · 6-8 h</div>
 <h2>Identitat descentralitzada i criptografia</h2>
-<p class="subtitle">Sobirania criptogràfica: `did:sos`, firma, cadena hash, wallets, xifratge multi-membre.</p>
+<p class="subtitle">Sobirania criptogràfica: `did:sos`, firma, cadena hash, carteres, xifratge multi-membre.</p>
 <p class="lead">Cada acció al SOS pot ser signada, encadenada i xifrada sense confiar en cap servidor. Aquest mòdul et dóna els fonaments per operar amb identitat auto-sobirana i comptabilitat verificable.</p>
 
 <h3 class="section">Objectius formatius</h3>
@@ -830,18 +830,18 @@ footer a{color:var(--indigo);text-decoration:none}
 </section>
 
 <section class="module mod-manual" id="manual" style="border-left-color:#a3e635">
-<div class="num">MANUAL TÈCNIC · Developers &amp; Admins SOS</div>
+<div class="num">MANUAL TÈCNIC · Desenvolupament i administració SOS</div>
 <h2>Configuració avançada — integracions externes</h2>
-<p class="subtitle">Guia pas a pas per connectar SOS amb wallets permaweb (Arweave), signadors Nostr, IA i identitat forta. Tot opcional: SOS funciona 100% offline sense res d'això.</p>
+<p class="subtitle">Guia pas a pas per connectar SOS amb carteres permaweb (Arweave), signadors Nostr, IA i identitat forta. Tot opcional: SOS funciona 100% offline sense res d'això.</p>
 <p class="lead">SOS és <strong>local-first sense servidor</strong> per disseny. Aquestes integracions són <em>opt-in</em>: només s'activen si tu, com a admin d'una comunitat, vols publicar proves públiques, pagar registres al permaweb, delegar signatures a un signador extern o utilitzar IA per generar mapes. Res arriba a servidors de tercers sense la teva acció explícita.</p>
 
 <h3 class="section">A · Wallet Arweave (permaweb) per pagar registres core</h3>
 <div class="box eines"><h4>🧰 Què cobreix</h4>
-<p>Un registre "core" a SOS (Anchor Pack d'un projecte fundador, backup d'estat cifrat, historial de decisions públic) es pot pinnar de manera <strong>permanent</strong> a Arweave. Cost típic: <code>0.0001–0.001 AR</code> per pack (≈ pocs cèntims). Per fer-ho cal una wallet Arweave amb saldo mínim.</p>
+<p>Un registre "core" a SOS (Anchor Pack d'un projecte fundador, backup d'estat cifrat, historial de decisions públic) es pot pinnar de manera <strong>permanent</strong> a Arweave. Cost típic: <code>0.0001–0.001 AR</code> per pack (≈ pocs cèntims). Per fer-ho cal una cartera Arweave amb saldo mínim.</p>
 </div>
 
 <div class="grid2">
-<div class="box skills"><h4>🛠 Opcions de wallet</h4><ul>
+<div class="box skills"><h4>🛠 Opcions de cartera</h4><ul>
 <li><strong>ArConnect</strong> (extensió navegador · <a href="https://www.arconnect.io" target="_blank" rel="noopener">arconnect.io</a>) — recomanat a desktop. Injecta <code>window.arweaveWallet</code>.</li>
 <li><strong>Wander</strong> (mobile/PWA) — successor d'ArConnect, funciona a iPad.</li>
 <li><strong>JWK paper wallet</strong> (JSON exportat) — la manera air-gapped, funciona a qualsevol navegador sense extensió.</li>
@@ -855,17 +855,17 @@ footer a{color:var(--indigo);text-decoration:none}
 </div>
 
 <div class="box exercici"><h4>✏ Setup a l'iPad</h4>
-<p>1) Instal·la <strong>Wander</strong> (App Store) o obre <a href="https://arweave.app" target="_blank" rel="noopener">arweave.app</a> (PWA). 2) Crea wallet nova → <strong>guarda la seed phrase i el JWK en 2 llocs offline</strong> (paper + gestor de contrasenyes). 3) Envia-hi 0.05 AR des d'exchange. 4) A SOS, obre <strong>Ancora un pack a Arweave</strong> → confirma amb la wallet.</p>
+<p>1) Instal·la <strong>Wander</strong> (App Store) o obre <a href="https://arweave.app" target="_blank" rel="noopener">arweave.app</a> (PWA). 2) Crea cartera nova → <strong>guarda la seed phrase i el JWK en 2 llocs offline</strong> (paper + gestor de contrasenyes). 3) Envia-hi 0.05 AR des d'exchange. 4) A SOS, obre <strong>Ancora un pack a Arweave</strong> → confirma amb la cartera.</p>
 </div>
 
 <div class="box eines"><h4>🧰 Hooks SOS relacionats</h4>
-<p><code>buildAnchorPack(node)</code> · <code>downloadAnchorPack(pack)</code> · <code>uploadToArweave(pack, wallet)</code> · <code>arweaveEstimateFee(bytes)</code> · <code>verifyAnchorPack(pack)</code>. Si la wallet no està disponible el sistema segueix funcionant: sempre pots baixar el pack (JSON) i pinnar-lo manualment.</p>
+<p><code>buildAnchorPack(node)</code> · <code>downloadAnchorPack(pack)</code> · <code>uploadToArweave(pack, wallet)</code> · <code>arweaveEstimateFee(bytes)</code> · <code>verifyAnchorPack(pack)</code>. Si la cartera no està disponible el sistema segueix funcionant: sempre pots baixar el pack (JSON) i pinnar-lo manualment.</p>
 </div>
 
 <h3 class="section">B · Signador Nostr (NIP-07) per ancorar decisions</h3>
 <div class="grid2">
 <div class="box skills"><h4>🛠 Signadors compatibles NIP-07</h4><ul>
-<li><strong>Alby</strong> (extensió · <a href="https://getalby.com" target="_blank" rel="noopener">getalby.com</a>) — wallet Bitcoin/Lightning + signador Nostr integrat.</li>
+<li><strong>Alby</strong> (extensió · <a href="https://getalby.com" target="_blank" rel="noopener">getalby.com</a>) — cartera Bitcoin/Lightning + signador Nostr integrat.</li>
 <li><strong>nos2x</strong> (extensió lleugera, només Nostr).</li>
 <li><strong>Amber</strong> (Android, aïllat).</li>
 <li><strong>nostr-connect / NIP-46</strong> (remote signer, útil des d'iPad — la clau privada viu al mòbil).</li>
@@ -915,7 +915,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <p>1) Obre SOS amb identitat ja creada (Mòdul 2). 2) Launcher → <strong>🔐 Vincula passkey</strong>. 3) El sistema demana Face ID/Touch ID i registra la credencial al Secure Enclave / TPM. 4) Propera vegada: obrir SOS → biometria → sessió activa. La clau privada did:sos mai surt del dispositiu.</p>
 </div>
 
-<h3 class="section">E · GitHub OAuth device flow (per developers)</h3>
+<h3 class="section">E · GitHub OAuth device flow (per desenvolupadores)</h3>
 <div class="box eines"><h4>🧰 Què habilita</h4>
 <p>Vincular el teu compte GitHub permet: (a) revisar PRs del repo <code>asolache/teamtowershuma</code> amb IA des del propi SOS · (b) publicar issues signats · (c) contribuir a l'atles compartit.</p>
 </div>
@@ -933,9 +933,9 @@ footer a{color:var(--indigo);text-decoration:none}
 <p>1) Navegador A → <strong>Sync</strong> → <em>Iniciar</em> → copia el codi (SDP offer). 2) Envia'l per Signal/telegrama/mà a navegador B. 3) B enganxa i genera un codi de resposta. 4) A l'enganxa. 5) Sync completada: tot l'estat de B es fusiona a A (LWW + tombstones).</p>
 </div>
 
-<h3 class="section">G · Self-hosting / deployment de la teva instància SOS</h3>
+<h3 class="section">G · Self-allotjament / deployment de la teva instància SOS</h3>
 <div class="grid2">
-<div class="box skills"><h4>🛠 Opcions de hosting</h4><ul>
+<div class="box skills"><h4>🛠 Opcions de allotjament</h4><ul>
 <li><strong>GitHub Pages</strong> — fork del repo, activa Pages a la branca main, ja tens SOS a <code>usuari.github.io/teamtowershuma</code>.</li>
 <li><strong>Netlify / Cloudflare Pages</strong> — drag &amp; drop de la carpeta <code>SOS/</code>, 0 configuració.</li>
 <li><strong>IPFS pinning</strong> (Pinata, web3.storage, Filebase) — CID permanent, resistent a censura.</li>
