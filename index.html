@@ -43,6 +43,15 @@
         .nav-links a:hover { color:var(--white); }
         .nav-cta { background:transparent!important; border:1px solid var(--accent-indigo)!important; color:var(--accent-indigo)!important; padding:.5rem 1.2rem; border-radius:2px; transition:all .2s!important; }
         .nav-cta:hover { background:var(--accent-indigo)!important; color:var(--white)!important; }
+        /* Botó de menú · només existeix per sota de 900px, que és on la llista es plega.
+           Reutilitza la MATEIXA <ul class="nav-links">: una sola font d'enllaços, així
+           l'i18n i qualsevol enllaç nou hi funcionen sols. */
+        .nav-burger { display:none; background:transparent; border:1px solid rgba(255,255,255,.14); border-radius:3px; width:44px; height:44px; padding:0; cursor:pointer; align-items:center; justify-content:center; flex-direction:column; gap:5px; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+        .nav-burger:focus-visible { outline:2px solid var(--accent-indigo); outline-offset:2px; }
+        .nav-burger span { display:block; width:18px; height:1.5px; background:var(--white); transition:transform .25s, opacity .2s; }
+        .nav-burger[aria-expanded="true"] span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
+        .nav-burger[aria-expanded="true"] span:nth-child(2) { opacity:0; }
+        .nav-burger[aria-expanded="true"] span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
         .lang-switch { display:flex; align-items:center; gap:2px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:3px; padding:2px; }
         .lang-btn { background:transparent; border:none; color:var(--muted); font-family:var(--mono); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; padding:4px 8px; border-radius:2px; transition:all .15s; }
         .lang-btn.active { background:var(--accent-indigo); color:var(--white); font-weight:700; }
@@ -266,7 +275,16 @@
             .hero-visual { height:320px; }
             .triada-grid { grid-template-columns:1fr; }
             .tangible-intangible { grid-template-columns:1fr; }
-            .nav-links { display:none; }
+            /* La llista deixa de ser una fila i passa a ser un panell desplegable.
+               Abans es feia display:none sense cap alternativa, i des del mòbil
+               no s'arribava a cap secció ni a cap pàgina del SOS. */
+            .nav-burger { display:flex; }
+            .nav-links { display:none; position:absolute; top:100%; left:0; right:0; flex-direction:column; align-items:stretch; gap:0; padding:.5rem 0 1rem; background:rgba(5,5,7,.985); backdrop-filter:blur(14px); border-bottom:1px solid rgba(255,255,255,.07); max-height:calc(100dvh - 100%); overflow-y:auto; }
+            nav.nav-open .nav-links { display:flex; }
+            .nav-links li { width:100%; }
+            .nav-links a { display:flex; align-items:center; min-height:48px; padding:0 2rem; font-size:.85rem; letter-spacing:.1em; }
+            .nav-links a:active { background:rgba(255,255,255,.05); }
+            .nav-cta { margin:.7rem 2rem 0; justify-content:center; padding:.9rem 1.2rem!important; }
             .lang-switch { display:flex !important; }
         }
         @media (max-width:600px) { .triada-grid { gap:1px; } }
@@ -278,7 +296,7 @@
 <nav>
     <a href="/" class="nav-logo">Team<span>Towers</span> Humà</a>
     <div style="display:flex;align-items:center;gap:1.5rem;">
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
             <li><a href="#serveis" data-i18n="nav.serveis">Serveis</a></li>
             <li><a href="#fentpinya" data-i18n="nav.fentpinya">Fent Pinya</a></li>
             <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
@@ -294,6 +312,9 @@
             <button class="lang-btn active" data-lang="ca">CA</button>
             <button class="lang-btn" data-lang="es">ES</button>
         </div>
+        <button class="nav-burger" id="navBurger" aria-label="Obre el menú" aria-expanded="false" aria-controls="navLinks">
+            <span></span><span></span><span></span>
+        </button>
     </div>
 </nav>
 
@@ -1137,6 +1158,44 @@ document.querySelectorAll('.lang-btn').forEach(function(btn) {
 });
 
 applyLang(currentLang);
+
+// ── Menú mòbil ────────────────────────────────────────────────────────────────
+// Per sota de 900px la llista d'enllaços es plega en un panell. Fins ara es
+// feia display:none sense alternativa: des del mòbil no s'arribava a cap secció
+// ni a cap pàgina del SOS. Es reutilitza la mateixa <ul>, així no hi ha dues
+// llistes d'enllaços per mantenir ni dos jocs de claus i18n.
+(function () {
+    var navEl = document.querySelector('nav');
+    var burger = document.getElementById('navBurger');
+    var links = document.getElementById('navLinks');
+    if (!navEl || !burger || !links) return;
+
+    function setOpen(open) {
+        navEl.classList.toggle('nav-open', open);
+        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        burger.setAttribute('aria-label', open ? 'Tanca el menú' : 'Obre el menú');
+    }
+    burger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setOpen(!navEl.classList.contains('nav-open'));
+    });
+    // Triar un enllaç tanca: en una sola pàgina amb àncores, si no, el panell
+    // et tapa justament la secció a la qual acabes de saltar.
+    links.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setOpen(false);
+    });
+    document.addEventListener('click', function (e) {
+        if (navEl.classList.contains('nav-open') && !navEl.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && navEl.classList.contains('nav-open')) { setOpen(false); burger.focus(); }
+    });
+    // En tornar a pantalla ampla el panell ja no aplica: netegem l'estat perquè
+    // aria-expanded no quedi mentint sobre una llista que torna a ser una fila.
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 900 && navEl.classList.contains('nav-open')) setOpen(false);
+    });
+})();
 
 // ── Fade-up observer ──────────────────────────────────────────────────────────
 document.querySelectorAll('.fade-up').forEach(function(el){ el.classList.add('animate'); });
