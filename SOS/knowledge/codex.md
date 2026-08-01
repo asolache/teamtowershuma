@@ -138,6 +138,25 @@ l'extracció que buida. Serveixen alhora de narrativa i de diagnòstic.
 Escala de reputació del Comando: **Aprenent → Superheroi/na → Guardià/ana**,
 i es puja amb evidència, mai amb antiguitat.
 
+## V20 · Veda del dossier personal
+
+El **dossier** (CV, recursos, arquetips declarats, personatge) és **material que
+la persona aporta sobre ella mateixa**, i mai es barreja amb l'evidència.
+
+Tres regles fixes:
+
+1. **Privadesa estructural, no promesa.** Es desa amb `type:'dossier'`, dins de
+   `PRIVATE_DB_TYPES`, i queda fora de `state.nodes`. Com que tot el que surt del
+   navegador surt de `state.nodes`/`state.entities`, el CV no pot filtrar-se ni
+   per error. El mateix val per a les narratives.
+2. **La IA proposa, la persona accepta.** Res del que detecti un lector (local o
+   IA) s'afegeix sol al perfil: apareix com a etiqueta acceptable.
+3. **L'ordre de prioritat no es toca.** Evidència > declaració > símbol.
+   `evidenceBased` només és cert si el guanyador té evidència real, no
+   declaracions.
+
+Detall a `knowledge/vision/dossier-personal.md`.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
