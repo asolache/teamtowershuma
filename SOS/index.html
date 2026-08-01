@@ -294,6 +294,20 @@ a{color:var(--blue);text-decoration:none}
 .bt-cat{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .4rem}
 .bt-col .ent-card{margin-bottom:.5rem}
 @media(max-width:600px){.bt-cols{grid-template-columns:1fr}}
+/* Comando · vista dual (pel·lícula ↔ fitxa personatge) */
+.cm-mode-bar{display:flex;gap:.3rem;margin:.4rem 0 .8rem;flex-wrap:wrap}
+.cm-mode-btn{flex:1;min-width:0;padding:.5rem .7rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--muted);font:inherit;font-size:.82rem;cursor:pointer;transition:all .12s}
+.cm-mode-btn:hover{color:var(--text);border-color:var(--purple)}
+.cm-mode-btn.sel{background:linear-gradient(90deg,rgba(224,64,251,.15),rgba(99,102,241,.1));border-color:var(--purple);color:var(--text);font-weight:600}
+.cm-fitxa{padding:0;display:flex;flex-direction:column;gap:.4rem;border-radius:12px;overflow:hidden;background:var(--bg-panel);transition:transform .12s}
+.cm-fitxa:hover{transform:translateY(-2px)}
+.cm-fitxa-hd{display:flex;align-items:center;gap:.55rem;padding:.65rem .8rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.cm-fitxa-sec{padding:0 .8rem}
+.cm-fitxa-sec:last-child{padding-bottom:.7rem}
+.cm-fitxa-lb{font-family:var(--mono);font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.cm-fitxa-body{display:flex;flex-wrap:wrap;gap:.25rem}
+.cm-fitxa-tag{font-size:.68rem;padding:.15rem .45rem;border-radius:10px;border:1px solid;background:rgba(255,255,255,.03)}
+.cm-fitxa-empty{font-size:.68rem;color:var(--muted);opacity:.6;font-style:italic}
 /* MATRIU · Impacte psicosocial (widget flagship) */
 .matriu-psy{background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(0,230,118,.04),rgba(224,64,251,.04));border:1px solid var(--border);border-radius:12px;padding:1rem;margin:.5rem 0 1rem}
 .psy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem}
@@ -2094,16 +2108,34 @@ async function directorFilter(limit){
     return{icon:x.type==='moneda'?'💰':'⏱',title:x.person+' actua a '+x.node,body,person:x.person,ts:x.ts,badge:x.signed?'firmat':'llegat'};
   });
 }
+// Aggregat de "fitxa personatge" — skills + recursos + projectes d'una persona a l'ecosistema.
+// La vista fitxa del Comando i el perfil transversal comparteixen aquest agregat.
+function characterSheetOf(name){
+  const key=personKey(name);
+  const cromo=superheroCromo(name);
+  const projects=[],ventures=[],offers=[],objects=[];
+  state.nodes.forEach(nd=>{
+    const m=membersOf(nd).find(x=>personKey(x.name)===key);
+    if(!m)return;
+    projects.push({nodeId:nd.id,nodeName:nd.name,dynamicType:nd.dynamicType,role:m.role||'membre'});
+    (offersOf(nd)||[]).filter(o=>o.memberId===m.id&&o.status==='activa').forEach(o=>offers.push({node:nd.name,kind:o.kind,category:o.category,title:o.title}));
+    (objectsOf(nd)||[]).filter(o=>o.ownerId===m.id).forEach(o=>objects.push({node:nd.name,name:o.name,typology:o.typology,status:o.status}));
+    venturesOf(nd).filter(v=>v.leadMemberId===m.id).forEach(v=>ventures.push({nodeId:nd.id,nodeName:nd.name,name:v.name,stage:v.stage,activityId:v.activityId}));
+  });
+  return{cromo,projects,ventures,offers,objects};
+}
 // Modal Comando Molekulon: cromos + últimes històries + progrés vers els 150k.
+// Vista dual: 🎬 Pel·lícula (cromos cinematogràfics) · 📇 Fitxes (skills · recursos · projectes de cada personatge).
 function openComandoView(){
   const bg=modal(`
     <h2>🎬 Comando Molekulon</h2>
     <p class="m-sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, Mazinguer i Horacio han de reclutar els <strong>150.000 superherois</strong> abans que la <strong>Corporació Món Mort</strong> engoleixi les comunitats. Cada acció real que registres a SOS és una llavor de la pel·lícula. <em>El Comando Molekulon és una tribu creativa oberta — un dels projectes mestres de la MATRIU.</em></p>
     <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎵</span><span>Transmedia · escolta <a href="${MOLEKULON_LINKS.soundcloud}" target="_blank" rel="noopener" style="color:var(--indigo)">SoundCloud</a> · mira <a href="${MOLEKULON_LINKS.youtube}" target="_blank" rel="noopener" style="color:var(--red)">YouTube</a> · compra el còmic a <a href="${MOLEKULON_LINKS.amazon}" target="_blank" rel="noopener" style="color:var(--orange)">Amazon</a> · segueix a <a href="${MOLEKULON_LINKS.instagram}" target="_blank" rel="noopener" style="color:var(--purple)">Instagram</a></span></div>
+    <div class="cm-mode-bar"><button class="cm-mode-btn sel" data-mode="film">🎬 Vista pel·lícula</button><button class="cm-mode-btn" data-mode="fitxa">📇 Vista fitxes · skills · recursos · projectes</button></div>
     <div id="cmStats"></div>
     <div class="ent-grp-lbl">🌟 Protagonistes originals · còmics 1 i 2</div>
     <div id="cmCanonical" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
-    <div class="ent-grp-lbl" style="margin-top:1rem">🎴 Cromos de la tribu · superheroi validats a l'ecosistema</div>
+    <div class="ent-grp-lbl" style="margin-top:1rem" id="cmRosterLbl">🎴 Cromos de la tribu · superheroi validats a l'ecosistema</div>
     <div id="cmRoster" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
     <div class="ent-grp-lbl">📖 Últimes històries · filtrades pel director</div>
     <div id="cmStories">Carregant…</div>
@@ -2115,7 +2147,9 @@ function openComandoView(){
   const cur=roster.length,pct=Math.min(100,cur/COMANDO_TARGET*100);
   bg.querySelector('#cmStats').innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n">'+cur.toLocaleString('ca')+'</div><div class="l">superherois validats</div></div><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+COMANDO_TARGET.toLocaleString('ca')+'</div><div class="l">visió Comando</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+pct.toFixed(3)+'%</div><div class="l">de la tribu</div></div></div>'+
     '<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;margin:.5rem 0 1rem;overflow:hidden"><div style="height:100%;width:'+Math.max(0.5,pct)+'%;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);border-radius:5px"></div></div>';
-  bg.querySelector('#cmRoster').innerHTML=roster.length?roster.slice(0,60).map(c=>{
+  const rosterBox=bg.querySelector('#cmRoster'),labelBox=bg.querySelector('#cmRosterLbl');
+  // Vista pel·lícula: cromos cinematogràfics (Shakti/Shiva, tier, XP, superpoders resum)
+  const renderFilm=()=>roster.length?roster.slice(0,60).map(c=>{
     const shPct=c.shakti+c.shiva>0?Math.round(c.shakti*100/(c.shakti+c.shiva)):50;
     const lvlPct=c.level&&c.level.next?c.level.pctToNext:100;
     const nextLbl=c.level&&c.level.next?c.level.next.label:'màxim';
@@ -2128,8 +2162,31 @@ function openComandoView(){
       '<div style="padding:.4rem .8rem .7rem;font-size:.7rem;color:var(--muted);display:flex;gap:.6rem;border-top:1px solid rgba(255,255,255,.05);margin-top:.3rem"><span>⏱ '+c.hours+'h</span><span>🏘 '+c.communities+'</span><span>🔏 '+c.signed+'</span></div>'+
     '</div>';
   }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
+  // Vista fitxa: skills + recursos + projectes de cada personatge (agregat sobre tot l'ecosistema)
+  const renderFitxa=()=>roster.length?roster.slice(0,40).map(c=>{
+    const sheet=characterSheetOf(c.name);
+    const skillsHtml=c.superpowers.length?c.superpowers.map(s=>'<span class="cm-fitxa-tag" style="background:rgba(99,102,241,.18);color:var(--indigo);border-color:var(--indigo)">'+esc(s.cat)+' ×'+s.count+'</span>').join(''):'<span class="cm-fitxa-empty">encara cap skill</span>';
+    const resHtml=(sheet.offers.length||sheet.objects.length)?(sheet.offers.slice(0,4).map(o=>'<span class="cm-fitxa-tag" style="background:rgba(0,230,118,.15);color:var(--green);border-color:var(--green)" title="'+esc(o.node)+' · '+o.kind+'">'+esc((o.title||o.category).slice(0,24))+'</span>').join('')+sheet.objects.slice(0,3).map(o=>'<span class="cm-fitxa-tag" style="background:rgba(0,176,255,.15);color:var(--blue);border-color:var(--blue)" title="'+esc(o.node)+'">🔧 '+esc(o.name.slice(0,20))+'</span>').join('')):'<span class="cm-fitxa-empty">cap oferta/objecte</span>';
+    const projHtml=sheet.projects.length?sheet.projects.slice(0,6).map(p=>'<span class="cm-fitxa-tag" style="background:rgba(224,64,251,.15);color:var(--purple);border-color:var(--purple)" title="'+esc(p.dynamicType||'projecte')+'">'+esc(p.nodeName)+'</span>').join(''):'<span class="cm-fitxa-empty">cap projecte</span>';
+    const ventHtml=sheet.ventures.length?sheet.ventures.slice(0,4).map(v=>'<span class="cm-fitxa-tag" style="background:rgba(255,145,0,.15);color:var(--orange);border-color:var(--orange)" title="'+esc(v.stage)+' · '+esc(v.nodeName)+'">🌱 '+esc(v.name)+'</span>').join(''):'';
+    return '<div class="ent-card cm-fitxa" data-cromo="'+esc(c.name)+'" style="cursor:pointer;border:2px solid '+c.tier.color+'">'+
+      '<div class="cm-fitxa-hd"><div style="width:40px;height:40px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(c.initials)+'</div><div style="min-width:0;flex:1"><div style="font-weight:700;font-size:.95rem">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · '+c.hours+'h · '+c.communities+' comunitats</div></div></div>'+
+      '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🧠 Skills (superpoders)</div><div class="cm-fitxa-body">'+skillsHtml+'</div></div>'+
+      '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🔧 Recursos (ofertes · objectes)</div><div class="cm-fitxa-body">'+resHtml+'</div></div>'+
+      '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🏘 Projectes on és membre</div><div class="cm-fitxa-body">'+projHtml+'</div></div>'+
+      (ventHtml?'<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🌱 Ventures que lidera</div><div class="cm-fitxa-body">'+ventHtml+'</div></div>':'')+
+    '</div>';
+  }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
+  let mode='film';
+  const paint=()=>{
+    labelBox.textContent=mode==='film'?'🎴 Cromos de la tribu · superherois validats a l\'ecosistema':'📇 Fitxes personatge · skills · recursos · projectes de cada superheroi';
+    rosterBox.innerHTML=mode==='film'?renderFilm():renderFitxa();
+    rosterBox.style.gridTemplateColumns=mode==='film'?'repeat(auto-fill,minmax(180px,1fr))':'repeat(auto-fill,minmax(260px,1fr))';
+    rosterBox.querySelectorAll('[data-cromo]').forEach(el=>el.onclick=()=>{closeModal();openPersonProfile(el.dataset.cromo);});
+  };
+  bg.querySelectorAll('.cm-mode-btn').forEach(btn=>btn.onclick=()=>{mode=btn.dataset.mode;bg.querySelectorAll('.cm-mode-btn').forEach(x=>x.classList.toggle('sel',x===btn));paint();});
+  paint();
   bg.querySelector('#cmCanonical').innerHTML=CANONICAL_HEROES.map(h=>{const color=_colorFromName(h.name);return '<div class="ent-card" style="padding:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(99,102,241,.08));border:1px solid rgba(224,64,251,.3);border-radius:12px"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(_initialsOf(h.name))+'</div><div style="min-width:0"><div style="font-weight:600;font-size:.9rem">'+esc(h.name)+'</div><div style="font-size:.68rem;color:var(--purple);font-weight:600">'+esc(h.role)+'</div></div></div><div style="font-size:.72rem;color:var(--light);line-height:1.35">'+esc(h.power)+'</div></div>';}).join('');
-  bg.querySelectorAll('[data-cromo]').forEach(el=>el.onclick=()=>{closeModal();openPersonProfile(el.dataset.cromo);});
   (async()=>{const stories=await directorFilter(30);const box=bg.querySelector('#cmStories');
     if(!stories.length){box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Encara cap història real. Registra un intercanvi o guarda una narrativa al multivers per començar.</span></div>';return;}
     box.innerHTML=stories.map(s=>'<div class="ent-card" style="margin-bottom:.5rem"><div class="ent-nm">'+s.icon+' '+esc(s.title)+'</div><div class="ent-badges"><span class="ent-b">'+esc(s.badge)+'</span>'+(s.ts?'<span class="ent-b">'+esc(s.ts.slice(0,10))+'</span>':'')+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(s.body.slice(0,220))+(s.body.length>220?'…':'')+'</div></div>').join('');
@@ -4848,7 +4905,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
