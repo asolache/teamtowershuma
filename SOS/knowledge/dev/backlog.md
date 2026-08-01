@@ -46,14 +46,20 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    tauler: cercar qualsevol node de Catalunya i registrar-hi valor, donar d'alta
    gent, publicar oferta o obrir l'assemblea sense sortir del tauler.
 
+4. **El bucle tancat** — pings a la fila del node i al panell d'accions, intercanvi
+   tancat des del tauler, i **retorn visible** (`valueSnapshot` → `valueDelta` →
+   `showValueReturn`) que diu què ha canviat i proposa el següent moviment.
+
 **Següent, per ordre:**
-1. **Pings al panell del tauler** — que la fila d'un node digui «tens un matching
-   aquí» i es pugui tancar l'intercanvi des del mateix lloc. És el bucle de
-   gamificació que falta: veure → actuar → veure el resultat, sense navegar.
-2. **Reconeixement visible de l'aportació** — quan registres valor des del tauler,
-   que es vegi immediatament l'efecte al teu camí de rol i a la salut del node.
-   Sense retorn immediat no hi ha bucle.
-3. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
+1. **La reputació ignora el banc de temps** — trobat en tancar el bucle.
+   `reputationOf` només compta les aportacions de la **MATRIU**: qui fa 40 h a un
+   banc de temps segueix amb reputació 0. És el defecte de gamificació més gran
+   que queda: l'evidència existeix, es mostra al retorn del bucle, però no puja
+   de tier. **No s'ha tocat aquí a propòsit**: els tiers, els reptes i el cromo hi
+   estan calibrats i canviar-ho sense recalibrar trencaria l'escala. Cal fer-ho
+   com a canvi propi: comptar hores i apunts de tots els nodes i ventures,
+   recalibrar `CROMO_TIERS` i revisar `HERO_CHALLENGES`.
+2. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
    `propi` vs `agregat`, mai sumats. És prerequisit de les federacions temàtiques.
 4. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
    d'abandó) — segueix sent la que fa que la MATRIU sigui un servei i no un
