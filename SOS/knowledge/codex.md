@@ -103,9 +103,44 @@ Ordenat per crítica → nice-to-have. Es revisa a cada onada d'ampliació:
 9. **Cerca global (⌘K)** — cercar nodes, socis, superherois, entitats des de qualsevol lloc.
 10. **Wallets W2/W3** — Nostr NIP-07, EIP-712 (adapters per contracte).
 
+## V19 · Panteó de 12 — reconeixement de competències
+
+Adoptem el model de dotze arquetips de **Pantheon.work** (CC BY, «Exercici
+individual de reconeixement de competències i habilitats» v1.0) com a graella
+de competències del SOS i del Comando. Detall a
+`knowledge/references/pantheon-12.md`.
+
+Tres principis que passen a ser veda:
+
+1. **Les paraules clau són un pack, no una etiqueta.** Ningú «és» informàtic:
+   algú és més o menys referent d'un pack segons quantes de les seves paraules
+   se li poden associar. La reputació al SOS es calcula així i no d'una altra
+   manera.
+2. **Els talents són lliures d'escala.** El mateix talent val per propiciar una
+   conversa entre dues persones i per organitzar un congrés de 3.000. Per això
+   el mateix arquetip serveix a un barri i a una comarca, i **no es fan models
+   diferents per escala**.
+3. **És un inventari col·lectiu i viu, no una avaluació individual.** Cap vista
+   del SOS pot convertir això en una etiqueta fixa a la fitxa d'una persona.
+   És una fotografia que ha d'evolucionar amb l'activitat registrada.
+
+Regla d'implementació: **l'evidència mana sobre el símbol.** `archetypeAffinity`
+pondera primer el que s'ha fet (ledger, ofertes, rols), després el que es
+declara i, només en últim lloc i com a desempat suau, els signes o qualsevol
+altre senyal simbòlic. Un sistema que digui a algú qui és a partir de la seva
+data de naixement per sobre del que ha fet, trairia tot el model.
+
+Els dotze fundadors del Comando encarnen un arquetip cadascun; els tres
+supervilans (Max Miedox, Mala Yerbax, Mc Greggor) són **els tres modes de
+fallida** d'una comunitat: la por que paralitza, el rumor que corroeix i
+l'extracció que buida. Serveixen alhora de narrativa i de diagnòstic.
+
+Escala de reputació del Comando: **Aprenent → Superheroi/na → Guardià/ana**,
+i es puja amb evidència, mai amb antiguitat.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.
-- `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón…).
+- `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).
 - `SOS/knowledge/vision/*.md` guarda decisions d'arquitectura vives.

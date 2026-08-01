@@ -93,6 +93,53 @@ a{color:var(--blue);text-decoration:none}
 .lw-role .lr-ic{font-size:1.05rem;line-height:1}
 .lw-role .lr-t{font-size:.8rem;font-weight:600}
 .lw-role .lr-d{font-size:.68rem;color:var(--muted);line-height:1.35}
+/* Panteó de 12 a la vista del Comando */
+.cm-panth{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.5rem}
+.panth{background:var(--bg-panel);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:10px;padding:.7rem .8rem;display:flex;flex-direction:column;gap:.3rem}
+.panth-hd{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap}
+.panth-ic{font-size:1.15rem}
+.panth-n{font-weight:700;font-size:.9rem}
+.panth-g{font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--purple)}
+.panth-q{font-size:.78rem;color:var(--light);line-height:1.4;font-style:italic}
+.panth-kw{display:flex;flex-wrap:wrap;gap:.2rem}
+.panth-k{font-size:.62rem;background:rgba(99,102,241,.14);border-radius:9px;padding:.08rem .38rem;color:var(--indigo)}
+.panth-w{font-size:.73rem;color:var(--muted);line-height:1.4}
+.panth-s{font-size:.68rem;color:var(--orange);opacity:.85}
+.cm-vill{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.45rem}
+.vill{background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.3);border-radius:9px;padding:.6rem .75rem;display:flex;flex-direction:column;gap:.15rem}
+.vill-n{font-weight:700;font-size:.85rem;color:var(--red)}
+.vill-w{font-size:.75rem;color:var(--light);line-height:1.4}
+@media(max-width:600px){.cm-panth,.cm-vill{grid-template-columns:1fr}}
+/* Benvinguda com a esdeveniment */
+.wc-arq{display:flex;align-items:center;gap:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.14),rgba(99,102,241,.08));border:1px solid var(--purple);border-radius:11px;padding:.75rem .9rem;margin:.5rem 0 .3rem}
+.wc-arq-ic{font-size:1.8rem}
+.wc-arq-n{display:block;font-weight:700;font-size:1rem}
+.wc-arq-r{display:block;font-size:.8rem;color:var(--muted)}
+.wc-list{display:flex;flex-direction:column;gap:.3rem}
+.wc-item{background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem}
+.wc-i-t{display:block;font-weight:600;font-size:.86rem}
+.wc-i-d{display:block;font-size:.75rem;color:var(--muted)}
+/* El teu element */
+.el-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.4rem 0 .8rem}
+@media(max-width:600px){.el-grid{grid-template-columns:1fr}}
+.el-q{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem}
+.el-q-t{font-family:var(--mono);font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--indigo);margin-bottom:.35rem}
+.el-q-b{display:flex;flex-wrap:wrap;gap:.25rem}
+.el-q-e{font-size:.76rem;color:var(--muted);font-style:italic}
+.el-tag{background:rgba(99,102,241,.16);border:1px solid var(--indigo);border-radius:12px;padding:.12rem .5rem;font-size:.75rem}
+.el-found{background:linear-gradient(135deg,rgba(0,230,118,.12),rgba(99,102,241,.06));border:1px solid var(--green);border-radius:11px;padding:.85rem 1rem;font-size:.88rem;line-height:1.55}
+.el-gap{background:rgba(255,145,0,.07);border:1px solid var(--orange);border-radius:11px;padding:.85rem 1rem;font-size:.86rem}
+.el-gap ul{margin:.3rem 0 0;padding-left:1.1rem;color:var(--light);line-height:1.5}
+.el-found-l{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-bottom:.3rem}
+.el-gap .el-found-l{color:var(--orange)}
+.el-arqs{display:flex;flex-direction:column;gap:.35rem}
+.el-arq{display:flex;gap:.65rem;align-items:flex-start;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.6rem .75rem}
+.el-arq.top{border-color:var(--purple);background:rgba(224,64,251,.07)}
+.ea-ic{font-size:1.3rem;flex-shrink:0}
+.ea-b{display:flex;flex-direction:column;gap:.08rem;min-width:0}
+.ea-n{font-weight:700;font-size:.88rem}
+.ea-r{font-size:.78rem;color:var(--light)}
+.ea-s{font-size:.72rem;color:var(--orange);opacity:.85}
 /* Tauler d'entrada */
 .dash-next{display:flex;flex-direction:column;gap:.45rem}
 .dash-step{display:flex;align-items:center;gap:.75rem;width:100%;min-height:56px;padding:.7rem .9rem;background:linear-gradient(90deg,rgba(99,102,241,.1),rgba(0,230,118,.04));border:1px solid var(--indigo);border-radius:11px;color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:transform .13s,background .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -1357,9 +1404,100 @@ const ARCHETYPES={
   saraswati:{name:'Saraswati',ic:'📚',role:'Formació i coneixement',fn:'lms'},
   lakshmi:{name:'Lakshmi',ic:'💰',role:'Gestió del fons cooperatiu',fn:'fund'}
 };
+/* ═══════════ Panteó de 12 · model de reconeixement de competències ═══════════
+   Adaptat de l'«Exercici individual de reconeixement de competències i habilitats»
+   v1.0 de Pantheon.work (llicència CC BY · www.pantheon.work).
+   No són dotze déus decoratius: són dotze PREGUNTES que tota organització ha de
+   saber respondre, i cada paraula clau és un «pack». Com més paraules d'un pack
+   pots associar a una persona, més referent hi és.
+   Idea clau del model original que aquí es respecta: les paraules clau són
+   «lliures d'escala» — el mateix talent serveix per propiciar una conversa entre
+   dues persones i per organitzar un congrés de 3.000. Per això encaixen igual a
+   un barri que a una comarca. */
+const PANTHEON12={
+  zeus:{name:'Zeus',ic:'⚡',role:'Decisió i repartiment',fn:'metaskill',
+    q:'Com prenem les decisions? Com mesurem i repartim el valor?',
+    kw:['decisió','justícia','equitat','repartiment','premi','sanció'],
+    shadow:'Decidir sol i dir-ne lideratge'},
+  hera:{name:'Hera',ic:'👑',role:'Confiança i compromís',fn:'coord',
+    q:'Com generem confiança i compromís? Com segellem i trenquem pactes? Com gestionem expectatives i pors?',
+    kw:['pactes','compromís','confiança','expectatives','lleialtat'],
+    shadow:'Confondre lleialtat amb control'},
+  posido:{name:'Posidó',ic:'🌊',role:'Descobriment i expansió',fn:'territory',
+    q:'Com explorem territori nou i sostenim la tensió del canvi?',
+    kw:['descobriment','colonització','tensió','deconstrucció'],
+    shadow:'Moure-ho tot i no arrelar res'},
+  demeter:{name:'Demèter',ic:'🌾',role:'Generació i cura del flux',fn:'fund',
+    q:'Com podem augmentar el valor i el seu flux a l\'ecosistema? Com tenim cura dels seus integrants?',
+    kw:['creació','generació','replicació','pol·linització'],
+    shadow:'Donar fins a buidar-se'},
+  atenea:{name:'Atenea',ic:'🦉',role:'Estratègia i pràctica',fn:'design',
+    q:'Com passem de la teoria a la pràctica? Com protegim el nostre flux de valor?',
+    kw:['coneixement pràctic','estratègia defensiva','estratègia ofensiva'],
+    shadow:'Planificar per no haver de començar'},
+  apollo:{name:'Apol·lo',ic:'📚',role:'Coneixement i visió',fn:'lms',
+    q:'Quin coneixement teòric hem generat amb la nostra experiència?',
+    kw:['coneixement teòric','anàlisi','estructuració','depuració','visió de futur'],
+    shadow:'Explicar en comptes d\'acompanyar'},
+  hebe:{name:'Hebe',ic:'🍶',role:'Intendència i renovació',fn:'logistics',
+    q:'Com resolem la intendència? Com renovem l\'energia de l\'equip o projecte?',
+    kw:['suport logístic','aprovisionament','intendència','rejoveniment'],
+    shadow:'Sostenir la màquina i oblidar per què gira'},
+  dionis:{name:'Dionís',ic:'🍇',role:'Celebració i obertura',fn:'exec',
+    q:'Com afavorim l\'empatia i l\'obertura? Com celebrem els èxits?',
+    kw:['socialització','celebració','joc','hedonisme','invenció','conquesta'],
+    shadow:'Festa que tapa el que no es vol mirar'},
+  afrodita:{name:'Afrodita',ic:'💗',role:'Estètica i atracció',fn:'bond',
+    q:'Com podem seduir amb el valor que aportem? Amb quin disseny, imatge, paraula, gest o interfície?',
+    kw:['estètica','bellesa','experiència d\'usuari','atracció','transgressió','creativitat'],
+    shadow:'Agradar per sobre de dir la veritat'},
+  hefest:{name:'Hefest',ic:'🔨',role:'Ofici i eines',fn:'craft',
+    q:'Amb quines formes de treball i eines podem produir valor de forma àgil?',
+    kw:['ofici','eines','producció','artesania','automatització'],
+    shadow:'Fer sempre, delegar mai'},
+  hermes:{name:'Hermes',ic:'🪽',role:'Connexió i acompanyament',fn:'facil',
+    q:'Com podem acompanyar? Com ens comuniquem entre nosaltres i amb altres? Com connectem les persones?',
+    kw:['comunicació','intercanvi','guia','invenció','argúcia','transgressió'],
+    shadow:'Estar a tot arreu i enlloc'},
+  hestia:{name:'Hèstia',ic:'🔥',role:'Acollida i espais',fn:'care',
+    q:'Com millorem les dinàmiques i els espais de conversa? Com acollim els nous?',
+    kw:['espais','acollida','trobades','conversa','reunions','menjars'],
+    shadow:'Sostenir sense ser vista'}
+};
+/* Els 12 fundadors del Comando associats al panteó.
+   PROVISIONAL: mapatge raonat a partir del que sabem de cada personatge. Es
+   revisarà a mesura que arribin els perfils complets dels còmics. */
+const COMANDO_FOUNDERS=[
+  {hero:'Mazinguer',god:'zeus',why:'Lidera sense imposar-se: l\'ego perdut és el seu poder'},
+  {hero:'Horacio',god:'apollo',why:'Narrador i estratega · converteix l\'experiència en relat'},
+  {hero:'Guiriguay',god:'hermes',why:'Llenguatges impossibles · parla amb qualsevol tribu'},
+  {hero:'Purpleman',god:'dionis',why:'Transforma l\'ambient · celebració i obertura'},
+  {hero:'Medusa',god:'atenea',why:'Mirada que atura · estratègia defensiva'},
+  {hero:'Barbamuda',god:'hestia',why:'Escolta profunda · sosté els espais de conversa'},
+  {hero:'Aviador',god:'posido',why:'Explora territori nou i el connecta'},
+  {hero:'Afrodita',god:'afrodita',why:'Teixeix vincle on n\'hi ha absència'},
+  {hero:'Ectoplasman',god:'hefest',why:'P2P encarnat · l\'eina distribuïda'},
+  {hero:'Pigmentona',god:'hera',why:'Marca allò que compromet · fa visible el pacte'},
+  {hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
+  {hero:'Supergerminador',god:'demeter',why:'Germina i replica · pol·linització del valor'}
+];
+const COMANDO_ALLIES=[{name:'Formiga Atòmica',role:'Aliada'}];
+const COMANDO_VILLAINS=[
+  {name:'Max Miedox',role:'Supervilà',what:'La por que paralitza abans de començar'},
+  {name:'Mala Yerbax',role:'Supervilà',what:'El rumor que corroeix la confiança'},
+  {name:'Mc Greggor',role:'Supervilà',what:'L\'extracció que buida el territori'}
+];
+// Escala de reputació del Comando dins del SOS: es puja amb evidència, no amb temps.
+const COMANDO_RANKS=[
+  {id:'aprenent',label:'Aprenent',one:'Comença: encara sense aportacions signades'},
+  {id:'superheroi',label:'Superheroi/na',one:'Aporta i intercanvia amb rastre verificable'},
+  {id:'guardia',label:'Guardià/ana',one:'Sosté el territori: signa decisions i acompanya altres'}
+];
+const founderOf=godKey=>COMANDO_FOUNDERS.find(f=>f.god===godKey)||null;
 // Sets alternatius d'arquetips: el sistema tècnic no distingeix; l'usuari tria el simbòlic (codex V13).
 const ARCHETYPE_SETS={
   vedic:{label:'Vèdic',archetypes:ARCHETYPES},
+  panteo:{label:'Panteó de 12',archetypes:PANTHEON12},
   celta:{label:'Celta',archetypes:{
     dagda:{name:'Dagda',ic:'🌳',role:'Veu de la missió',fn:'metaskill'},
     brigit:{name:'Brígit',ic:'🌱',role:'Disseny d\'iniciatives',fn:'design'},
@@ -1623,7 +1761,9 @@ function openSuperheroiOnboarding(prefill){
     if(bib){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bib).push(m);sel.ob.forEach(i=>{const o=OBJECT_TOP20[i];objectsOf(bib).push(newObject({name:o.label+' — '+name,typology:o.typ,ownerId:m.id,condition:'bon estat'}));});await persist(bib);}
     state.expanded.add(placement.id);if(com)state.expanded.add(com.id);if(prov)state.expanded.add(prov.id);state.expanded.add(pais.id);
     await setActivePersona(name);
-    closeModal();selectNode(placement.id);toast('✦ Perfil superheroi creat · sessió iniciada com '+name);setTimeout(()=>openPersonProfile(name),300);
+    // Donar-se d'alta no pot acabar en una pantalla buida: s'obre la benvinguda,
+    // que ja busca gent real amb qui es podria fer un intercanvi avui mateix.
+    closeModal();selectNode(placement.id);toast('✦ Benvingut/da al Comando, '+name.split(/\s+/)[0]);setTimeout(()=>openWelcomeModal(name),350);
   };
 }
 // Assistent de valoració amb IA: rang €-min/esperat/max per skill o objecte amb font (Arc O3 · Glass-Box).
@@ -2306,6 +2446,102 @@ function characterSheetOf(name){
   });
   return{cromo,projects,ventures,offers,objects,hoursGiven};
 }
+/* ═══════════ Senyals de perfil · material per conèixer-se, no per etiquetar-se ═══════════
+   Tot es calcula al navegador a partir de la data de naixement: cap servei extern,
+   cap dada que surti. Són portes d'entrada a una conversa sobre un mateix, i el
+   sistema ho tracta com el que és — una pista, mai un veredicte. El que decideix
+   de debò és l'evidència del ledger. */
+const ZODIAC=[
+  ['capricorn','Capricorn','♑',1,19],['aquari','Aquari','♒',2,18],['peixos','Peixos','♓',3,20],
+  ['aries','Àries','♈',4,19],['taure','Taure','♉',5,20],['bessons','Bessons','♊',6,20],
+  ['cranc','Cranc','♋',7,22],['lleo','Lleó','♌',8,22],['verge','Verge','♍',9,22],
+  ['balanca','Balança','♎',10,22],['escorpi','Escorpí','♏',11,21],['sagitari','Sagitari','♐',12,21],
+  ['capricorn','Capricorn','♑',12,31]
+];
+function zodiacOf(dateStr){
+  if(!dateStr)return null;
+  const d=new Date(dateStr);if(isNaN(d))return null;
+  const m=d.getUTCMonth()+1,day=d.getUTCDate();
+  for(const[id,name,ic,mm,dd]of ZODIAC){if(m<mm||(m===mm&&day<=dd))return{id,name,ic};}
+  return{id:'capricorn',name:'Capricorn',ic:'♑'};
+}
+const CHINESE=[['rata','Rata','🐀'],['bou','Bou','🐂'],['tigre','Tigre','🐅'],['conill','Conill','🐇'],
+  ['drac','Drac','🐉'],['serp','Serp','🐍'],['cavall','Cavall','🐎'],['cabra','Cabra','🐐'],
+  ['mico','Mico','🐒'],['gall','Gall','🐓'],['gos','Gos','🐕'],['porc','Porc','🐖']];
+function chineseZodiacOf(dateStr){
+  if(!dateStr)return null;
+  const d=new Date(dateStr);if(isNaN(d))return null;
+  // 1900 va ser any de la Rata. Aproximació per any solar: no ajusta l'any nou lunar,
+  // i per això es diu «aproximat» a la interfície en comptes de fingir precisió.
+  const i=((d.getUTCFullYear()-1900)%12+12)%12;
+  const[id,name,ic]=CHINESE[i];return{id,name,ic,approx:true};
+}
+/* Afinitat amb els 12 arquetips. Ordre de pes deliberat:
+   1r el que has fet (ledger, ofertes, rols) · 2n el que declares · 3r els símbols.
+   Si algú no ha fet res encara, els símbols li donen un punt de partida; en el
+   moment que hi ha evidència, l'evidència mana. */
+const SKILL_TO_FN={
+  informatica:'craft',reparacions:'craft',bricolatge:'craft',electronica:'craft',costura:'craft',
+  idiomes:'lms',infants:'lms',formacio:'lms',
+  acompanyament:'care',gentgran:'care',salut:'care',cures:'care',
+  cuina:'bond',festes:'bond',estetica:'bond',
+  transport:'territory',mudances:'territory',jardineria:'territory',
+  tramits:'design',neteja:'fund',animals:'care'
+};
+function archetypeAffinity(name,opts){
+  const sheet=(opts&&opts.sheet)||characterSheetOf(name);
+  const score={};Object.values(PANTHEON12).forEach(a=>score[a.fn]=0);
+  const bump=(fn,n)=>{if(fn&&score[fn]!==undefined)score[fn]+=n;};
+  // 1 · Evidència: què ofereixes i què has aportat de debò
+  (sheet.cromo.superpowers||[]).forEach(s=>bump(SKILL_TO_FN[s.cat],4*(s.count||1)));
+  sheet.offers.forEach(o=>bump(SKILL_TO_FN[o.category],2));
+  if(sheet.ventures.length)bump('metaskill',4*sheet.ventures.length);
+  if(sheet.cromo.communities>2)bump('facil',4);
+  if(sheet.objects.length)bump('fund',2*sheet.objects.length);
+  if((sheet.hoursGiven||0)>=20)bump('care',3);
+  // 2 · Rol declarat al SOS
+  const roleFn={guardian:'metaskill',coordinador:'facil',agent:'territory',superheroi:'craft',simpatitzant:'bond'};
+  bump(roleFn[roleOfPerson(name)],3);
+  // 3 · Símbols, només com a desempat suau
+  const decl=(opts&&opts.signals)||{};
+  // Els signes apunten als dotze slots reals del panteó, no a categories inventades.
+  const zFn={aries:'exec',taure:'fund',bessons:'facil',cranc:'care',lleo:'metaskill',verge:'design',
+    balanca:'coord',escorpi:'territory',sagitari:'territory',capricorn:'craft',aquari:'lms',peixos:'bond'};
+  if(decl.zodiac&&zFn[decl.zodiac])bump(zFn[decl.zodiac],2);
+  const ranked=Object.entries(PANTHEON12).map(([k,a])=>({key:k,...a,score:score[a.fn]||0}))
+    .sort((x,y)=>y.score-x.score);
+  const top=ranked.filter(r=>r.score>0);
+  return{ranked,primary:top[0]||null,secondary:top[1]||null,
+    evidenceBased:top.length>0&&top[0].score>2,total:ranked.reduce((a,r)=>a+r.score,0)};
+}
+/* «El teu element» · les quatre preguntes de l'ikigai, respostes amb dades del SOS
+   en comptes d'un test. Tres surten del ledger; només una és declarada. */
+function elementOf(name){
+  const sheet=characterSheetOf(name),key=personKey(name);
+  const aff=archetypeAffinity(name,{sheet});
+  // Se't dona bé · el que has fet més vegades
+  const good=(sheet.cromo.superpowers||[]).map(s=>({t:s.cat,n:s.count}));
+  // Et reconeixen · aportacions signades i validades per altres
+  const recognised=sheet.cromo.signed||0;
+  // La comunitat ho necessita · demandes obertes que casen amb el que ofereixes
+  const needs=[];
+  try{
+    const mine=new Set(sheet.offers.map(o=>o.category));
+    state.nodes.forEach(nd=>offersOf(nd).forEach(o=>{
+      if(o.kind==='demanda'&&o.status==='activa'&&mine.has(o.category)&&!needs.some(n=>n.cat===o.category))
+        needs.push({cat:o.category,node:nd.name,title:o.title});
+    }));
+  }catch(e){}
+  // T'agrada · declarat al perfil (l'única peça que no es pot deduir)
+  const loves=(sheet.cromo.superpowers||[]).slice(0,3).map(s=>s.cat);
+  const overlap=good.filter(g=>needs.some(n=>n.cat===g.t));
+  return{name,sheet,aff,good,loves,needs,recognised,overlap,
+    hasElement:overlap.length>0&&recognised>0,
+    // Falta el que encara no s'ha demostrat, no el que no s'ha declarat.
+    missing:[...(good.length?[]:['encara no has registrat cap aportació: sense això no hi ha res a llegir']),
+             ...(needs.length?[]:['ningú del teu entorn demana el que ofereixes: potser cal ampliar territori o oferta']),
+             ...(recognised?[]:['cap aportació signada encara: el reconeixement verificable comença aquí'])]};
+}
 // ═══════════ Acció-formació · itineraris, nivells i mentoria adaptada per IA ═══════════
 // L'aprenentatge del SOS és acció-formació: s'aprèn fent, i cada evidència que deixes
 // al ledger és alhora la teva certificació. Aquest catàleg és l'índex mínim que
@@ -2409,6 +2645,11 @@ function openComandoView(){
     <div id="cmStats"></div>
     <div class="ent-grp-lbl">🌟 Protagonistes originals · còmics 1 i 2</div>
     <div id="cmCanonical" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
+    <div class="ent-grp-lbl" style="margin-top:1rem">🏛 El panteó de 12 · cada fundador encarna una pregunta</div>
+    <p class="m-sub" style="font-size:.82rem;margin:.1rem 0 .5rem">Dotze preguntes que tota comunitat ha de saber respondre. Model de <a href="https://www.pantheon.work" target="_blank" rel="noopener" style="color:var(--indigo)">Pantheon.work</a> (CC BY), adaptat. <em>Mapatge de fundadors provisional.</em></p>
+    <div id="cmPantheon" class="cm-panth"></div>
+    <div class="ent-grp-lbl" style="margin-top:1rem">☠️ Els tres modes de fallida</div>
+    <div id="cmVillains" class="cm-vill"></div>
     <div class="ent-grp-lbl" style="margin-top:1rem" id="cmRosterLbl">🎴 Cromos de la tribu · superheroi validats a l'ecosistema</div>
     <div id="cmRoster" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
     <div class="ent-grp-lbl">📖 Últimes històries · filtrades pel director</div>
@@ -2461,6 +2702,19 @@ function openComandoView(){
   bg.querySelectorAll('.cm-mode-btn').forEach(btn=>btn.onclick=()=>{mode=btn.dataset.mode;bg.querySelectorAll('.cm-mode-btn').forEach(x=>x.classList.toggle('sel',x===btn));paint();});
   paint();
   bg.querySelector('#cmCanonical').innerHTML=CANONICAL_HEROES.map(h=>{const color=_colorFromName(h.name);return '<div class="ent-card" style="padding:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(99,102,241,.08));border:1px solid rgba(224,64,251,.3);border-radius:12px"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(_initialsOf(h.name))+'</div><div style="min-width:0"><div style="font-weight:600;font-size:.9rem">'+esc(h.name)+'</div><div style="font-size:.68rem;color:var(--purple);font-weight:600">'+esc(h.role)+'</div></div></div><div style="font-size:.72rem;color:var(--light);line-height:1.35">'+esc(h.power)+'</div></div>';}).join('');
+  // El panteó: cada fundador amb la pregunta que encarna, el seu pack de paraules
+  // i l'ombra. Aquí es veu que els dotze no són decoració sinó graella de treball.
+  bg.querySelector('#cmPantheon').innerHTML=COMANDO_FOUNDERS.map(f=>{
+    const g=PANTHEON12[f.god];if(!g)return'';
+    return '<div class="panth"><div class="panth-hd"><span class="panth-ic">'+g.ic+'</span><span class="panth-n">'+esc(f.hero)+'</span><span class="panth-g">'+esc(g.name)+'</span></div>'+
+      '<div class="panth-q">'+esc(g.q)+'</div>'+
+      '<div class="panth-kw">'+g.kw.map(k=>'<span class="panth-k">'+esc(k)+'</span>').join('')+'</div>'+
+      '<div class="panth-w">'+esc(f.why)+'</div>'+
+      '<div class="panth-s">\u26a0 ombra: '+esc(g.shadow)+'</div></div>';
+  }).join('');
+  bg.querySelector('#cmVillains').innerHTML=COMANDO_VILLAINS.map(v=>
+    '<div class="vill"><span class="vill-n">'+esc(v.name)+'</span><span class="vill-w">'+esc(v.what)+'</span></div>').join('')+
+    '<div class="ent-desc" style="grid-column:1/-1;margin-top:.4rem">No s\u00f3n dolents de c\u00f2mic: s\u00f3n les tres maneres reals com mor una comunitat. Per aix\u00f2 serveixen alhora de relat i de diagn\u00f2stic.</div>';
   (async()=>{const stories=await directorFilter(30);const box=bg.querySelector('#cmStories');
     if(!stories.length){box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Encara cap història real. Registra un intercanvi o guarda una narrativa al multivers per començar.</span></div>';return;}
     box.innerHTML=stories.map(s=>'<div class="ent-card" style="margin-bottom:.5rem"><div class="ent-nm">'+s.icon+' '+esc(s.title)+'</div><div class="ent-badges"><span class="ent-b">'+esc(s.badge)+'</span>'+(s.ts?'<span class="ent-b">'+esc(s.ts.slice(0,10))+'</span>':'')+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(s.body.slice(0,220))+(s.body.length>220?'…':'')+'</div></div>').join('');
@@ -4870,6 +5124,92 @@ function renderDashboard(w){
 
   w.appendChild(body);
 }
+/* ═══════════ Benvinguda com a esdeveniment ═══════════
+   Quan entra algú nou a una colla castellera, la colla se n'assabenta. Aquí igual:
+   donar-se d'alta no pot ser omplir un formulari i quedar-se sol davant d'una
+   pantalla buida. Es genera l'anunci per al Comando i, sobretot, es busquen a
+   l'instant persones reals amb qui ja es podria fer un intercanvi — que és
+   l'única benvinguda que val: que algú et necessiti el primer dia. */
+function welcomeEvent(name){
+  const sheet=characterSheetOf(name),aff=archetypeAffinity(name,{sheet});
+  const first=(name||'').split(/\s+/)[0];
+  const powers=(sheet.cromo.superpowers||[]).map(s=>s.cat);
+  const arq=aff.primary;
+  // Coincidències immediates: qui demana el que ofereix, o ofereix el que demana.
+  let matches=[];try{matches=matchesForPerson(name).slice(0,5);}catch(e){}
+  // Veïnatge: gent del mateix territori amb qui coincidir encara que no hi hagi match.
+  const near=[];const myNodes=new Set(sheet.projects.map(p=>p.nodeId));
+  state.nodes.forEach(nd=>{if(!myNodes.has(nd.id))return;
+    membersOf(nd).forEach(m=>{if(personKey(m.name)===personKey(name))return;
+      if(!near.some(x=>personKey(x.name)===personKey(m.name)))near.push({name:m.name,node:nd.name,role:m.role||'membre'});});});
+  const headline=arq
+    ? first+' arriba al Comando com a '+arq.name+' · '+arq.role.toLowerCase()
+    : first+' acaba d\'arribar al Comando';
+  const body=powers.length
+    ? first+' porta '+powers.slice(0,3).join(', ')+(sheet.projects.length?' i s\'incorpora a '+sheet.projects[0].nodeName:'')+'.'
+    : first+' encara no ha declarat superpoders — la primera aportació dirà de què va.';
+  return{name,first,headline,body,archetype:arq,powers,matches,near:near.slice(0,5),
+    hasWelcome:matches.length>0||near.length>0};
+}
+function openWelcomeModal(name){
+  const w=welcomeEvent(name);
+  const bg=modal(`
+    <div style="text-align:center;padding:.4rem 0 .2rem"><div style="font-size:2.6rem">🎬</div></div>
+    <h2 style="text-align:center;margin:.2rem 0">${esc(w.headline)}</h2>
+    <p class="m-sub" style="text-align:center">${esc(w.body)}</p>
+    <div id="wcBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="wcLater">Ja ho miraré</button><button class="btn btn-primary" id="wcGo">${w.matches.length?'🔔 Veure qui em necessita':'🧭 Trobar el meu element'}</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const box=bg.querySelector('#wcBody');
+  let html='';
+  if(w.archetype)html+='<div class="wc-arq"><span class="wc-arq-ic">'+w.archetype.ic+'</span><span><span class="wc-arq-n">'+esc(w.archetype.name)+'</span><span class="wc-arq-r">'+esc(w.archetype.role)+'</span></span></div>';
+  if(w.matches.length){
+    html+='<div class="ent-grp-lbl">🔔 Ja hi ha gent que et pot necessitar</div><div class="wc-list">'+
+      w.matches.map(m=>'<div class="wc-item"><span class="wc-i-t">'+esc(m.demand?m.demand.title||m.demand.category:'')+'</span><span class="wc-i-d">'+esc((m.demand&&m.demand.memberName)||'algú')+' · '+esc(m.nodeName||'')+'</span></div>').join('')+'</div>';
+  }
+  if(w.near.length){
+    html+='<div class="ent-grp-lbl">👋 Al teu territori</div><div class="wc-list">'+
+      w.near.map(n=>'<div class="wc-item"><span class="wc-i-t">'+esc(n.name)+'</span><span class="wc-i-d">'+esc(n.role)+' · '+esc(n.node)+'</span></div>').join('')+'</div>';
+  }
+  if(!w.hasWelcome)html+='<div class="ai-note"><span class="ic">🌱</span><span>Ets de les primeres persones del teu territori. Això vol dir que el que registris marcarà el to per a qui vingui després.</span></div>';
+  box.innerHTML=html;
+  bg.querySelector('#wcLater').onclick=closeModal;
+  bg.querySelector('#wcGo').onclick=()=>{closeModal();if(w.matches.length)routeTo('pings');else openElementModal(name);};
+}
+/* ═══════════ «El teu element» · el Comando com a eina de desenvolupament personal ═══════════ */
+function openElementModal(name){
+  const e=elementOf(name);
+  const bg=modal(`
+    <h2>🧭 El teu element · ${esc(e.name)}</h2>
+    <p class="m-sub">Quatre preguntes que normalment es responen amb un test. Aquí es responen amb el que <strong>has fet de veritat</strong>: tres surten del teu registre i només una és declarada. Per això no es pot fer trampa — i per això val.</p>
+    <div id="elBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="elClose">Tanca</button><button class="btn btn-primary" id="elMent">🎓 Prepara la meva mentoria</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const q=(t,ic,items,empty)=>'<div class="el-q"><div class="el-q-t">'+ic+' '+t+'</div>'+
+    (items.length?'<div class="el-q-b">'+items.map(i=>'<span class="el-tag">'+esc(i)+'</span>').join('')+'</div>':'<div class="el-q-e">'+empty+'</div>')+'</div>';
+  let html='<div class="el-grid">'+
+    q('Se\'t dona bé','💪',e.good.map(g=>g.t+' ×'+g.n),'encara sense evidència')+
+    q('T\'agrada','❤️',e.loves,'declara-ho al teu perfil')+
+    q('La comunitat ho necessita','🌍',e.needs.map(n=>n.cat+' · '+n.node),'ningú ho demana encara')+
+    q('T\'ho reconeixen','🏅',e.recognised?[e.recognised+' aportacions signades']:[],'cap signatura encara')+
+    '</div>';
+  if(e.hasElement){
+    html+='<div class="el-found"><div class="el-found-l">✨ El teu element</div><div>Hi ha encaix real entre el que fas bé i el que el teu entorn necessita: <strong>'+
+      e.overlap.map(o=>esc(o.t)).join(', ')+'</strong>. Això no és un consell, és el que ja passa — i és per on val la pena créixer.</div></div>';
+  } else if(e.missing.length){
+    html+='<div class="el-gap"><div class="el-found-l">🚧 Encara no es pot llegir</div><ul>'+e.missing.map(m=>'<li>'+esc(m)+'</li>').join('')+'</ul></div>';
+  }
+  if(e.aff.primary){
+    html+='<div class="ent-grp-lbl">🏛 Els teus arquetips</div><div class="el-arqs">'+
+      e.aff.ranked.filter(r=>r.score>0).slice(0,3).map((r,i)=>'<div class="el-arq'+(i===0?' top':'')+'"><span class="ea-ic">'+r.ic+'</span><span class="ea-b"><span class="ea-n">'+esc(r.name)+'</span><span class="ea-r">'+esc(r.role)+'</span><span class="ea-s">⚠ ombra: '+esc(r.shadow)+'</span></span></div>').join('')+'</div>'+
+      '<div class="ent-desc" style="margin-top:.4rem">'+(e.aff.evidenceBased?'Calculat a partir del que has fet, no del que has dit.':'Encara amb poca evidència: es refinarà a mesura que registris coses.')+' L\'ombra és la cara que cada força mostra quan es descontrola — mirar-la és la meitat de la feina.</div>';
+  }
+  bg.querySelector('#elBody').innerHTML=html;
+  bg.querySelector('#elClose').onclick=closeModal;
+  bg.querySelector('#elMent').onclick=()=>{closeModal();openMentoringPlan(name);};
+}
 // ═══════════ openMentoringPlan · la mentoria que la IA prepara per a cada persona ═══════════
 function openMentoringPlan(personName){
   const bg=modal(`
@@ -5691,7 +6031,7 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hi
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
