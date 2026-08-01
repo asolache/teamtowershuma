@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnòstic comunitari · SOS · TeamTowers Humà</title>
+<meta name="description" content="Explica'ns d'on véns, què tens i què necessites. En 3 minuts tindràs un diagnòstic del teu punt de partida, l'itinerari formatiu que et toca i una proposta orientativa de com podem acompanyar-te.">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:#2a2a35;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--mono:'SF Mono',Monaco,'Cascadia Code',monospace}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b0b12,#12121c);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:800px;margin:0 auto;padding:2rem 1.2rem 4rem}
+header{padding:3rem 1.2rem 1.5rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.07)}
+header h1{font-size:2rem;margin:0 0 .6rem;background:linear-gradient(90deg,#6366f1,#00e676,#e040fb);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:var(--light);margin:0 auto;font-size:1.02rem;max-width:600px}
+nav{margin-top:1.2rem;font-size:.9rem}
+nav a{color:var(--indigo);text-decoration:none;margin:0 .5rem;white-space:nowrap}
+nav a:hover{text-decoration:underline}
+.prog{display:flex;gap:.35rem;margin:1.5rem 0 1.2rem}
+.prog-s{flex:1;height:4px;background:var(--border);border-radius:2px;transition:background .25s}
+.prog-s.on{background:linear-gradient(90deg,var(--indigo),var(--green))}
+.step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1rem}
+.step[hidden]{display:none}
+.step h2{margin:0 0 .3rem;font-size:1.3rem}
+.step .sub{color:var(--muted);font-size:.88rem;margin:0 0 1.2rem;line-height:1.55}
+.f{margin-bottom:1.1rem}
+.f label{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;color:var(--indigo);margin-bottom:.35rem}
+.f .hint{font-size:.76rem;color:var(--muted);margin-top:.25rem;line-height:1.45}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.6rem .75rem;font:inherit;font-size:.92rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--indigo)}
+textarea{min-height:88px;resize:vertical}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem}
+.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.opt:hover{border-color:var(--indigo)}
+.opt.sel{border-color:var(--c,var(--indigo));background:color-mix(in srgb,var(--c,var(--indigo)) 14%,transparent)}
+.opt .o-t{font-weight:600;font-size:.88rem}
+.opt .o-d{font-size:.74rem;color:var(--muted);line-height:1.4}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:.4rem .8rem;font:inherit;font-size:.83rem;color:var(--light);cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:36px}
+.chip:hover{border-color:var(--indigo);color:var(--text)}
+.chip.sel{background:rgba(99,102,241,.18);border-color:var(--indigo);color:var(--text);font-weight:600}
+.nav-btns{display:flex;gap:.6rem;justify-content:space-between;margin-top:1.4rem;flex-wrap:wrap}
+.btn{background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:.65rem 1.3rem;font:inherit;font-size:.92rem;cursor:pointer;transition:all .13s;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.btn:hover{border-color:var(--indigo)}
+.btn-primary{background:linear-gradient(90deg,var(--indigo),#7c7ef5);border-color:transparent;font-weight:600}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+/* Resultat */
+#result{display:none}
+.dx{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(0,230,118,.06));border:2px solid var(--indigo);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1.2rem}
+.dx h2{margin:0 0 .2rem;font-size:1.4rem}
+.dx .seg{font-family:var(--mono);font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--green)}
+.mt{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:1.1rem 0}
+.mt-t{background:rgba(0,0,0,.25);border-radius:9px;padding:.75rem;text-align:center}
+.mt-n{font-size:1.4rem;font-weight:700;line-height:1}
+.mt-l{font-family:var(--mono);font-size:.58rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.bar{height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin:.4rem 0 .2rem}
+.bar-f{height:100%;transition:width .5s}
+.sec{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem 1.6rem;margin-bottom:1rem}
+.sec h3{margin:0 0 .6rem;font-size:1.05rem;display:flex;align-items:center;gap:.45rem}
+.sec ul{margin:.3rem 0;padding-left:1.2rem;color:var(--light);font-size:.9rem;line-height:1.6}
+.sec ul li{margin:.3rem 0}
+.sec p{color:var(--light);font-size:.9rem;line-height:1.6;margin:.4rem 0}
+.mods{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+.mod{background:rgba(99,102,241,.14);border:1px solid var(--indigo);color:var(--text);border-radius:8px;padding:.3rem .6rem;font-size:.8rem;text-decoration:none;transition:all .12s}
+.mod:hover{background:rgba(99,102,241,.28)}
+.svc{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.svc:last-child{border-bottom:0}
+.svc-n{font-family:var(--mono);font-size:.68rem;color:var(--green);min-width:26px;padding-top:.15rem;font-weight:700}
+.svc-b{min-width:0}
+.svc-t{font-weight:600;font-size:.9rem}
+.svc-d{font-size:.79rem;color:var(--muted);line-height:1.45}
+.gapl li{color:var(--orange)}
+.havl li{color:var(--green)}
+.send{background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(99,102,241,.06));border:2px solid var(--green);border-radius:14px;padding:1.5rem 1.7rem;margin-top:1.2rem}
+.send h3{margin:0 0 .4rem;font-size:1.1rem}
+.send p{color:var(--light);font-size:.88rem;line-height:1.55;margin:.3rem 0 .9rem}
+.send-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.priv{font-size:.78rem;color:var(--muted);margin-top:.9rem;line-height:1.5;border-top:1px solid rgba(255,255,255,.07);padding-top:.7rem}
+.err{color:var(--red);font-size:.83rem;margin-top:.5rem;display:none}
+.err.on{display:block}
+footer{text-align:center;color:var(--muted);padding:2.5rem 1rem 3rem;font-size:.85rem;border-top:1px solid rgba(255,255,255,.05);margin-top:2rem}
+footer a{color:var(--indigo);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+<h1>Diagnòstic comunitari</h1>
+<p>Explica'ns d'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l'itinerari formatiu que et toca i una proposta orientativa d'acompanyament — <strong>l'enviïs o no</strong>.</p>
+<nav>
+<a href="../index.html">← TeamTowers Humà</a> ·
+<a href="index.html">Obre SOS</a> ·
+<a href="formacio.html">Guia formativa</a>
+</nav>
+</header>
+
+<main class="wrap">
+
+<div class="prog" id="prog" aria-hidden="true">
+<div class="prog-s on"></div><div class="prog-s"></div><div class="prog-s"></div><div class="prog-s"></div>
+</div>
+
+<form id="dxForm" autocomplete="on">
+
+<!-- ── Pas 1 ── -->
+<section class="step" id="s1">
+<h2>1 · Qui ets</h2>
+<p class="sub">Per saber amb qui parlem i com respondre't.</p>
+<div class="grid2">
+<div class="f"><label for="nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="carrec">Càrrec o paper</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"></div>
+</div>
+<div class="grid2">
+<div class="f"><label for="mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+</div>
+<div class="err" id="e1">Cal com a mínim el nom i un correu vàlid.</div>
+<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2">Següent →</button></div>
+</section>
+
+<!-- ── Pas 2 ── -->
+<section class="step" id="s2" hidden>
+<h2>2 · D'on véns</h2>
+<p class="sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
+<div class="f">
+<label>Tipus d'organització *</label>
+<div class="opts" id="orgType">
+<button type="button" class="opt" data-v="ajuntament" style="--c:var(--indigo)"><span class="o-t">🏛 Ajuntament</span><span class="o-d">Regidoria, àrea tècnica o servei municipal</span></button>
+<button type="button" class="opt" data-v="comarcal" style="--c:var(--indigo)"><span class="o-t">🗺 Consell comarcal</span><span class="o-d">O mancomunitat de municipis</span></button>
+<button type="button" class="opt" data-v="entitat" style="--c:var(--green)"><span class="o-t">🤝 Entitat o associació</span><span class="o-d">AVV, ateneu, casal, banc de temps</span></button>
+<button type="button" class="opt" data-v="cooperativa" style="--c:var(--orange)"><span class="o-t">🚀 Cooperativa o empresa</span><span class="o-d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="grup" style="--c:var(--blue)"><span class="o-t">🌱 Grup promotor</span><span class="o-d">Encara sense forma jurídica</span></button>
+<button type="button" class="opt" data-v="acompanyament" style="--c:var(--purple)"><span class="o-t">🎓 Entitat d'acompanyament</span><span class="o-d">Ateneu Cooperatiu, consultoria ESS</span></button>
+<button type="button" class="opt" data-v="fundacio" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="particular" style="--c:var(--muted)"><span class="o-t">👤 A títol personal</span><span class="o-d">Professional o persona interessada</span></button>
+</div>
+</div>
+<div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="grid2">
+<div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
+</div>
+<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
+<div class="err" id="e2">Tria el tipus d'organització i escriu el municipi.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-go="3">Següent →</button></div>
+</section>
+
+<!-- ── Pas 3 ── -->
+<section class="step" id="s3" hidden>
+<h2>3 · Què ja teniu</h2>
+<p class="sub">Gairebé sempre hi ha més del que sembla. Això marca per on començar.</p>
+<div class="f">
+<label>Recursos disponibles</label>
+<div class="chips" id="have">
+<button type="button" class="chip" data-v="persones">👥 Grup de persones actives</button>
+<button type="button" class="chip" data-v="espai">🏠 Espai físic</button>
+<button type="button" class="chip" data-v="pressupost">💶 Pressupost propi</button>
+<button type="button" class="chip" data-v="tecnic">🧑‍💼 Persona tècnica dedicada</button>
+<button type="button" class="chip" data-v="dinamica">🔄 Dinàmica ja en marxa</button>
+<button type="button" class="chip" data-v="juridic">📜 Forma jurídica constituïda</button>
+<button type="button" class="chip" data-v="dades">📊 Dades del teixit local</button>
+<button type="button" class="chip" data-v="suport">🤝 Suport institucional</button>
+<button type="button" class="chip" data-v="digital">💻 Capacitat digital a l'equip</button>
+<button type="button" class="chip" data-v="xarxa">🕸 Xarxa d'entitats aliades</button>
+</div>
+</div>
+<div class="f">
+<label>Serveis o projectes que ja teniu en marxa</label>
+<div class="chips" id="serveis">
+<button type="button" class="chip" data-v="banctemps">⏱ Banc de temps</button>
+<button type="button" class="chip" data-v="biblioteca">📚 Biblioteca de les coses</button>
+<button type="button" class="chip" data-v="energia">⚡ Comunitat energètica</button>
+<button type="button" class="chip" data-v="consum">🥬 Grup de consum</button>
+<button type="button" class="chip" data-v="cures">💗 Xarxa de cures</button>
+<button type="button" class="chip" data-v="habitatge">🏘 Habitatge cooperatiu</button>
+<button type="button" class="chip" data-v="cultura">🎭 Projecte cultural</button>
+<button type="button" class="chip" data-v="ocupacio">💼 Inserció o ocupació</button>
+<button type="button" class="chip" data-v="cap">— Encara cap</button>
+</div>
+</div>
+<div class="f"><label for="experiencia">Experiència prèvia en participació o cooperativisme</label>
+<select id="experiencia" name="experiencia">
+<option value="gens">Cap ni una — comencem de zero</option>
+<option value="poca" selected>Alguna cosa hem fet, sense mètode</option>
+<option value="forca">Força: ja hem portat processos</option>
+<option value="molta">Molta: ho fem habitualment</option>
+</select></div>
+<div class="nav-btns"><button type="button" class="btn" data-go="2">← Enrere</button><button type="button" class="btn btn-primary" data-go="4">Següent →</button></div>
+</section>
+
+<!-- ── Pas 4 ── -->
+<section class="step" id="s4" hidden>
+<h2>4 · Què us falta</h2>
+<p class="sub">Aquí és on ens dius com et podem ser útils.</p>
+<div class="f">
+<label>Què necessiteu *</label>
+<div class="chips" id="need">
+<button type="button" class="chip" data-v="diagnostic">🔍 Saber què tenim i què ens falta</button>
+<button type="button" class="chip" data-v="metode">🧭 Un mètode per organitzar-nos</button>
+<button type="button" class="chip" data-v="gent">📣 Més gent implicada</button>
+<button type="button" class="chip" data-v="relleu">🔁 Relleu · no cremar els de sempre</button>
+<button type="button" class="chip" data-v="governanca">🗳 Decidir sense conflictes</button>
+<button type="button" class="chip" data-v="financament">💶 Finançament i subvencions</button>
+<button type="button" class="chip" data-v="juridicN">📜 Saber quina forma jurídica</button>
+<button type="button" class="chip" data-v="equity">🥧 Repartir propietat amb justícia</button>
+<button type="button" class="chip" data-v="impacte">📊 Demostrar el nostre impacte</button>
+<button type="button" class="chip" data-v="formacio">🎓 Formar el nostre equip</button>
+<button type="button" class="chip" data-v="eina">💻 Una eina per gestionar-ho</button>
+<button type="button" class="chip" data-v="mentors">👥 Formar-nos com a mentors</button>
+</div>
+</div>
+<div class="f"><label for="repte">El repte concret, en poques paraules</label><textarea id="repte" name="repte" placeholder="p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys."></textarea></div>
+<div class="grid2">
+<div class="f"><label for="termini">Termini</label>
+<select id="termini" name="termini">
+<option value="explorant">Estem explorant, sense presses</option>
+<option value="curs" selected>Aquest curs / semestre</option>
+<option value="urgent">Urgent — tenim una data</option>
+</select></div>
+<div class="f"><label for="pressupost">Capacitat pressupostària</label>
+<select id="pressupost" name="pressupost">
+<option value="cap">Cap ara mateix</option>
+<option value="petit" selected>Petita o per determinar</option>
+<option value="mitja">Tenim partida assignada</option>
+<option value="subvencio">Dependrà d'una subvenció</option>
+</select></div>
+</div>
+<div class="err" id="e4">Marca com a mínim una necessitat.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="3">← Enrere</button><button type="button" class="btn btn-primary" id="doDx">Veure el meu diagnòstic →</button></div>
+</section>
+
+</form>
+
+<!-- ── Resultat ── -->
+<div id="result">
+<div class="dx">
+<div class="seg" id="rSeg"></div>
+<h2 id="rTitle"></h2>
+<p id="rLead" style="color:var(--light);margin:.3rem 0 0;font-size:.95rem;line-height:1.6"></p>
+<div class="mt" id="rMetrics"></div>
+</div>
+
+<div class="sec"><h3>✅ Amb què compteu</h3><ul class="havl" id="rHave"></ul></div>
+<div class="sec"><h3>🎯 Què cal desfer</h3><ul class="gapl" id="rGaps"></ul></div>
+<div class="sec"><h3>🧭 El vostre itinerari formatiu</h3><p id="rItinLead"></p><div class="mods" id="rMods"></div><p id="rItinMeta" style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.7rem"></p></div>
+<div class="sec"><h3>🤝 Com us podem acompanyar</h3><div id="rSvcs"></div></div>
+<div class="sec" id="rFundBox"><h3>💶 D'on poden sortir els diners</h3><ul id="rFund"></ul></div>
+<div class="sec"><h3>👣 Primer pas, el faci qui el faci</h3><p id="rNext"></p></div>
+
+<div class="send">
+<h3>📨 Vols que ho mirem junts?</h3>
+<p>Si ens ho envies, preparem una <strong>sessió exploratòria de 45 minuts sense compromís</strong> amb aquest diagnòstic ja llegit. Si prefereixes quedar-t'ho, també serveix: <strong>és teu</strong>.</p>
+<div class="send-btns">
+<a class="btn btn-primary" id="bSend" href="#">✉ Envia'ns-ho per correu</a>
+<button type="button" class="btn" id="bCopy">📋 Copia el resum</button>
+<button type="button" class="btn" id="bJson">⬇ Descarrega'l (JSON)</button>
+<button type="button" class="btn" id="bAgain">↺ Refés-lo</button>
+</div>
+<p class="priv">🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d'aquí fins que tu premis «Envia'ns-ho». No hi ha analítica ni seguiment en aquesta pàgina.</p>
+</div>
+</div>
+
+</main>
+
+<footer>
+<p>SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="formacio.html">Guia formativa</a> · Local-first · W3C · Zero servidor</p>
+</footer>
+
+<script type="module">
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const _U='asolache',_D='mac'+'.'+'com';
+const mailAddr=()=>_U+'@'+_D;
+
+/* ── Estat del formulari ─────────────────────────────────────────── */
+const st={org:'',have:new Set(),serveis:new Set(),need:new Set()};
+
+/* Selecció única (tipus d'organització) */
+$$('#orgType .opt').forEach(b=>b.onclick=()=>{
+  st.org=b.dataset.v;
+  $$('#orgType .opt').forEach(x=>x.classList.toggle('sel',x===b));
+});
+/* Selecció múltiple (xips) */
+const wireChips=(sel,set)=>$$(sel+' .chip').forEach(c=>c.onclick=()=>{
+  const v=c.dataset.v;
+  // «Encara cap» és excloent: marcar-lo esborra la resta i viceversa
+  if(v==='cap'){set.clear();$$(sel+' .chip').forEach(x=>x.classList.remove('sel'));}
+  else{const none=document.querySelector(sel+' .chip[data-v="cap"]');if(none){none.classList.remove('sel');set.delete('cap');}}
+  if(set.has(v)){set.delete(v);c.classList.remove('sel');}else{set.add(v);c.classList.add('sel');}
+});
+wireChips('#have',st.have);wireChips('#serveis',st.serveis);wireChips('#need',st.need);
+
+/* ── Navegació per passos ────────────────────────────────────────── */
+let step=1;
+const showStep=n=>{
+  step=n;
+  [1,2,3,4].forEach(i=>$('#s'+i).hidden=(i!==n));
+  $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+const validate=n=>{
+  if(n===1){
+    const okName=$('#nom').value.trim().length>1;
+    const okMail=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('#mail').value.trim());
+    $('#e1').classList.toggle('on',!(okName&&okMail));return okName&&okMail;
+  }
+  if(n===2){
+    const ok=!!st.org&&$('#municipi').value.trim().length>1;
+    $('#e2').classList.toggle('on',!ok);return ok;
+  }
+  return true;
+};
+$$('[data-go]').forEach(b=>b.onclick=()=>{
+  const to=Number(b.dataset.go);
+  if(to>step&&!validate(step))return;   // endavant només amb el pas actual vàlid
+  showStep(to);
+});
+
+/* ── Catàlegs ─────────────────────────────────────────────────────
+   Els itineraris i serveis segueixen knowledge/negoci/formacio-mentoria.md.
+   Si allà canvien els públics, aquí s'ha d'actualitzar. */
+const MODULES={
+  m1:'Fonaments SOS',m2:'Identitat i criptografia',m3:'Mapes de valor (VNA)',m4:'Banc de temps i biblioteca',
+  m5:'Governança i Guardians',m6:'MATRIU i Slicing Pie',m7:'Comando i reputació',m8:'Ancoratge públic i IA',
+  m9:'Facilitació de grups',m10:'Comunicació i captació',m11:'Conflictes, cures i relleu',m12:'Finançament i subvencions',
+  m13:'Formes jurídiques',m14:'Mesura d\'impacte',m15:'Dades i RGPD',m16:'Formació de formadors'
+};
+const SERVICES={
+  S1:['Diagnòstic territorial','2 sessions + informe amb el mapa de valor del vostre teixit.'],
+  S2:['Formació oberta per mòduls','4–8 h per mòdul, en grup. Podeu agafar només els que us toquen.'],
+  S3:['Programa de Gestor/a SOS','~45 h en 3–4 mesos, sobre el vostre territori real. Deixa capacitat instal·lada.'],
+  S4:['Acompanyament de projecte','Sessions quinzenals durant 6–12 mesos mentre poseu la iniciativa en marxa.'],
+  S5:['Formació de formadors','20 h + tutela de 2 casos. Per poder acompanyar altres amb la metodologia.'],
+  S6:['Implantació i suport tècnic','Posada en marxa, sincronització, ancoratge públic i migració de dades.'],
+  S7:['Mesura d\'impacte i justificació','Informe periòdic amb dades verificables per a memòries i justificacions.']
+};
+const PROFILES={
+  ajuntament:{seg:'Administració local',title:'Ajuntament',itin:['m1','m3','m9','m4','m5','m14','m12'],dur:'3–4 mesos',
+    fita:'Un mapa de valor validat per la comunitat i una decisió presa i registrada.',
+    svcs:['S1','S3','S4','S7'],
+    fund:['Partida municipal de participació ciutadana o desenvolupament local','Subvencions de la Diputació de Barcelona','Convocatòries de la Generalitat en ocupació i cohesió'],
+    lead:'Teniu la legitimitat i sovint el pressupost. El que acostuma a faltar és mètode i que el que es fa no depengui de qui hi és.'},
+  comarcal:{seg:'Administració supramunicipal',title:'Consell comarcal',itin:['m1','m3','m9','m5','m14','m12'],dur:'3–4 mesos',
+    fita:'Un mapa comarcal i una decisió presa amb pes federatiu entre municipis desiguals.',
+    svcs:['S1','S3','S6','S7'],
+    fund:['Pressupost de cooperació intermunicipal','Diputació · assistència als municipis','Fons europeus de desenvolupament rural'],
+    lead:'La vostra dificultat no és tècnica, és política: que el municipi gran no decideixi per tots. L\'assemblea federativa amb pes √població i correcció Gini està feta exactament per això.'},
+  entitat:{seg:'Teixit associatiu',title:'Entitat o associació',itin:['m1','m4','m9','m11','m10','m14'],dur:'2 mesos',
+    fita:'8 socis actius, 15 intercanvis registrats i un relleu identificat.',
+    svcs:['S2','S4'],
+    fund:['Subvencions municipals a entitats','Convocatòries de la Diputació','Obra social de fundacions bancàries'],
+    lead:'Sabeu fer-ho: fa temps que ho feu. El que falta és que no depengui sempre dels mateixos i poder demostrar què val el que aporteu.'},
+  cooperativa:{seg:'Economia social i solidària',title:'Cooperativa o projecte econòmic',itin:['m1','m3','m6','m13','m12','m14'],dur:'4–6 mesos',
+    fita:'Una iniciativa a validació amb la propietat repartida i ningú per sobre del 70%.',
+    svcs:['S1','S4','S3'],
+    fund:['Ateneus Cooperatius — acompanyament finançat','Coop57 i finançament ètic','Ajuts a la incorporació de socis treballadors'],
+    lead:'El moment delicat és repartir propietat entre gent que hi posa coses molt diferents. Slicing Pie ho resol sense negociar-ho: es recalcula sol a cada aportació.'},
+  grup:{seg:'Iniciativa ciutadana',title:'Grup promotor',itin:['m1','m3','m13','m12'],dur:'4–6 setmanes',
+    fita:'Forma jurídica decidida i primera convocatòria identificada.',
+    svcs:['S2','S4'],
+    fund:['Ateneus Cooperatius per a la constitució','Subvencions municipals a projectes veïnals','Microfinançament comunitari'],
+    lead:'Sou al moment on més projectes moren: molta empenta i cap estructura. La feina ara és decidir la forma i el calendari, no fer-ho tot alhora.'},
+  acompanyament:{seg:'Canal · multiplicador',title:'Entitat d\'acompanyament',itin:['m1','m3','m6','m16','m9','m11','m15'],dur:'6 mesos',
+    fita:'Dos casos acompanyats amb evidència, tutelats per un mentor N3.',
+    svcs:['S5','S6','S3'],
+    fund:['Programa propi d\'acompanyament','Conveni amb administració','Formació contínua subvencionada'],
+    lead:'No sou el client final: sou qui pot arribar on nosaltres no arribarem mai. L\'objectiu és que incorporeu la metodologia al servei que ja presteu.'},
+  fundacio:{seg:'Finançament i impacte',title:'Fundació o finançador',itin:['m1','m14','m8'],dur:'3 sessions',
+    fita:'Un informe d\'impacte verificat i comprovable per un tercer.',
+    svcs:['S7','S1'],
+    fund:['Pressupost propi de programes','Aliança amb altres finançadors'],
+    lead:'Financeu projectes i us costa demostrar què han provocat més enllà de comptar activitats. Aquí les mètriques surten d\'un registre signat, no d\'una enquesta.'},
+  particular:{seg:'Professional',title:'A títol personal',itin:['m1','m3','m4','m9'],dur:'2–3 mesos',
+    fita:'Nivell N1 amb aportacions reals registrades.',
+    svcs:['S2','S3'],
+    fund:['Formació contínua per a persones treballadores','Ajuts a l\'autoocupació'],
+    lead:'Comença per fer, no per estudiar. Amb una comunitat real i unes quantes hores registrades ja tindràs més criteri que amb tot el temari.'}
+};
+/* Necessitats → mòduls que les cobreixen */
+const NEED_MODS={diagnostic:['m3'],metode:['m1','m3'],gent:['m10'],relleu:['m11'],governanca:['m5'],
+  financament:['m12'],juridicN:['m13'],equity:['m6'],impacte:['m14'],formacio:['m16'],eina:['m1','m2'],mentors:['m16','m9']};
+const HAVE_LBL={persones:'un grup de persones actives',espai:'espai físic propi',pressupost:'pressupost propi',
+  tecnic:'una persona tècnica dedicada',dinamica:'una dinàmica ja en marxa',juridic:'forma jurídica constituïda',
+  dades:'dades del teixit local',suport:'suport institucional',digital:'capacitat digital a l\'equip',xarxa:'una xarxa d\'entitats aliades'};
+const NEED_GAP={diagnostic:'no teniu clar què hi ha ni què falta al vostre teixit',
+  metode:'aneu fent sense un mètode que us sostingui',gent:'us falta gent implicada',
+  relleu:'tot recau sempre sobre les mateixes persones',governanca:'les decisions costen o generen conflicte',
+  financament:'no teniu clar d\'on sortiran els diners',juridicN:'no sabeu quina forma jurídica us convé',
+  equity:'heu de repartir propietat i no sabeu com fer-ho just',impacte:'no podeu demostrar el que aconseguiu',
+  formacio:'l\'equip necessita formació',eina:'no teniu cap eina per gestionar-ho',mentors:'voleu poder formar altres'};
+
+/* ── Motor de diagnòstic ─────────────────────────────────────────── */
+function diagnose(){
+  const P=PROFILES[st.org]||PROFILES.particular;
+  const have=[...st.have],need=[...st.need],serveis=[...st.serveis].filter(x=>x!=='cap');
+  const exp=$('#experiencia').value;
+  // Maduresa: recursos + serveis actius + experiència prèvia. Escala 0-100.
+  const expPts={gens:0,poca:8,forca:16,molta:24}[exp]||0;
+  const maturity=Math.min(100,Math.round(have.length*6+serveis.length*8+expPts));
+  // Urgència del suport: com més necessitats i menys recursos, més acompanyament cal.
+  const support=Math.max(0,Math.min(100,Math.round(need.length*9+(10-have.length)*4)));
+  // Els mòduls de l'itinerari base més els que reclamen les necessitats marcades.
+  const mods=[...P.itin];
+  need.forEach(n=>(NEED_MODS[n]||[]).forEach(m=>{if(!mods.includes(m))mods.push(m);}));
+  mods.sort((a,b)=>Number(a.slice(1))-Number(b.slice(1)));
+  // Serveis: els del perfil, i S6 si demanen eina, S5 si volen ser mentors.
+  const svcs=[...P.svcs];
+  if(need.includes('eina')&&!svcs.includes('S6'))svcs.push('S6');
+  if(need.includes('mentors')&&!svcs.includes('S5'))svcs.push('S5');
+  if(need.includes('impacte')&&!svcs.includes('S7'))svcs.push('S7');
+  // Primer pas, honest i petit
+  let next;
+  if(!have.length&&!serveis.length)next='Reuniu 3–5 persones que ja hi estiguin disposades i feu un primer mapa de valor entre totes. Sense grup no hi ha res a organitzar, i amb cinc persones ja n\'hi ha prou per començar.';
+  else if(serveis.length&&need.includes('relleu'))next='Mireu qui sosté què: obriu el SOS, registreu qui aporta i quant durant un mes. El relleu es dissenya amb dades, no amb bona voluntat — i la conversa és molt més fàcil quan les hores són a la taula.';
+  else if(need.includes('financament'))next='Munteu el calendari de convocatòries dels propers 12 mesos abans de res. Les hores que ja doneu es poden acreditar com a aportació en espècie, que sovint és el cofinançament que falta.';
+  else if(!serveis.length)next='Trieu UNA dinàmica per començar — banc de temps o biblioteca de les coses són les que menys friccions tenen — i poseu-la en marxa amb el mapa de valor fet. Una que funcioni val més que tres començades.';
+  else next='Feu el mapa de valor del que ja teniu en marxa. Gairebé sempre apareixen fluxos que ningú havia anomenat i rols que no cobreix ningú — i aquí és on hi ha el marge de millora immediat.';
+  return{P,have,need,serveis,maturity,support,mods,svcs,next};
+}
+
+function renderDx(d){
+  const {P}=d;
+  $('#rSeg').textContent=P.seg;
+  $('#rTitle').textContent=P.title+' · '+($('#municipi').value.trim()||'el vostre territori');
+  $('#rLead').textContent=P.lead;
+  const cMat=d.maturity>=60?'var(--green)':d.maturity>=30?'var(--orange)':'var(--red)';
+  const cSup=d.support>=60?'var(--orange)':'var(--green)';
+  $('#rMetrics').innerHTML=
+    '<div class="mt-t"><div class="mt-n" style="color:'+cMat+'">'+d.maturity+'%</div><div class="bar"><div class="bar-f" style="width:'+d.maturity+'%;background:'+cMat+'"></div></div><div class="mt-l">punt de partida</div></div>'+
+    '<div class="mt-t"><div class="mt-n" style="color:'+cSup+'">'+d.support+'%</div><div class="bar"><div class="bar-f" style="width:'+d.support+'%;background:'+cSup+'"></div></div><div class="mt-l">acompanyament que cal</div></div>'+
+    '<div class="mt-t"><div class="mt-n" style="color:var(--indigo)">'+d.mods.length+'</div><div class="mt-l">mòduls al vostre itinerari</div></div>'+
+    '<div class="mt-t"><div class="mt-n" style="color:var(--purple)">'+P.dur+'</div><div class="mt-l">durada estimada</div></div>';
+  $('#rHave').innerHTML=(d.have.length||d.serveis.length)
+    ?d.have.map(h=>'<li>'+HAVE_LBL[h]+'</li>').join('')+d.serveis.map(s=>'<li>'+($('#serveis .chip[data-v="'+s+'"]').textContent.trim())+' en marxa</li>').join('')
+    :'<li>Arribeu sense estructura prèvia — cosa que també vol dir sense inèrcies a desfer.</li>';
+  $('#rGaps').innerHTML=d.need.length?d.need.map(n=>'<li>'+(NEED_GAP[n]||n)+'</li>').join(''):'<li>No heu marcat cap necessitat concreta.</li>';
+  $('#rItinLead').textContent='Aquests són els mòduls que us toquen, en ordre. La resta els podeu ignorar: '+P.fita;
+  $('#rMods').innerHTML=d.mods.map(m=>'<a class="mod" href="formacio.html#'+m+'" target="_blank" rel="noopener">'+m.toUpperCase()+' · '+MODULES[m]+'</a>').join('');
+  $('#rItinMeta').textContent='Durada estimada: '+P.dur+' · Fita: '+P.fita;
+  $('#rSvcs').innerHTML=d.svcs.map(s=>'<div class="svc"><span class="svc-n">'+s+'</span><span class="svc-b"><span class="svc-t">'+SERVICES[s][0]+'</span><span class="svc-d">'+SERVICES[s][1]+'</span></span></div>').join('');
+  $('#rFund').innerHTML=P.fund.map(f=>'<li>'+f+'</li>').join('');
+  $('#rNext').textContent=d.next;
+}
+
+/* ── Resum en text pla · el que viatja per correu ────────────────── */
+function buildSummary(d){
+  const L=[],v=id=>$('#'+id).value.trim();
+  const txt=(sel,val)=>{const el=document.querySelector(sel+' [data-v="'+val+'"]');return el?el.textContent.trim():val;};
+  L.push('DIAGNÒSTIC COMUNITARI SOS');
+  L.push('Generat el '+new Date().toLocaleString('ca'));
+  L.push('');
+  L.push('── QUI ──');
+  L.push('Nom: '+v('nom')+(v('carrec')?' ('+v('carrec')+')':''));
+  L.push('Correu: '+v('mail')+(v('tel')?' · Tel: '+v('tel'):''));
+  L.push('');
+  L.push('── D\'ON ──');
+  L.push('Tipus: '+d.P.title+' ['+d.P.seg+']');
+  if(v('orgNom'))L.push('Organització: '+v('orgNom'));
+  L.push('Territori: '+v('municipi')+(v('comarca')?' ('+v('comarca')+')':''));
+  if(v('poblacio'))L.push('Població: '+v('poblacio'));
+  L.push('');
+  L.push('── QUÈ TENEN ──');
+  L.push('Recursos: '+(d.have.length?d.have.map(h=>HAVE_LBL[h]).join(', '):'cap marcat'));
+  L.push('Serveis actius: '+(d.serveis.length?d.serveis.map(s=>txt('#serveis',s)).join(', '):'cap'));
+  L.push('Experiència: '+$('#experiencia').selectedOptions[0].textContent);
+  L.push('');
+  L.push('── QUÈ NECESSITEN ──');
+  L.push(d.need.length?d.need.map(n=>'· '+NEED_GAP[n]).join('\n'):'· no especificat');
+  if(v('repte')){L.push('');L.push('Repte concret:');L.push(v('repte'));}
+  L.push('');
+  L.push('Termini: '+$('#termini').selectedOptions[0].textContent);
+  L.push('Pressupost: '+$('#pressupost').selectedOptions[0].textContent);
+  L.push('');
+  L.push('── DIAGNÒSTIC ──');
+  L.push('Punt de partida: '+d.maturity+'% · Acompanyament necessari: '+d.support+'%');
+  L.push('Itinerari ('+d.P.dur+'): '+d.mods.map(m=>m.toUpperCase()+' '+MODULES[m]).join(' → '));
+  L.push('Fita: '+d.P.fita);
+  L.push('Serveis suggerits: '+d.svcs.map(s=>s+' '+SERVICES[s][0]).join(' · '));
+  L.push('Finançament possible: '+d.P.fund.join(' · '));
+  L.push('');
+  L.push('Primer pas: '+d.next);
+  return L.join('\n');
+}
+function buildJson(d){
+  const v=id=>$('#'+id).value.trim();
+  return{generatedAt:new Date().toISOString(),
+    persona:{nom:v('nom'),carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
+    organitzacio:{tipus:st.org,perfil:d.P.title,segment:d.P.seg,nom:v('orgNom'),municipi:v('municipi'),comarca:v('comarca'),poblacio:v('poblacio')?Number(v('poblacio')):null},
+    te:{recursos:d.have,serveis:d.serveis,experiencia:$('#experiencia').value},
+    necessita:{items:d.need,repte:v('repte'),termini:$('#termini').value,pressupost:$('#pressupost').value},
+    diagnostic:{maturity:d.maturity,support:d.support,itinerari:d.mods,durada:d.P.dur,fita:d.P.fita,serveis:d.svcs,financament:d.P.fund,primerPas:d.next}};
+}
+
+/* ── Sortida ─────────────────────────────────────────────────────── */
+let current=null;
+$('#doDx').onclick=()=>{
+  if(!st.need.size){$('#e4').classList.add('on');return;}
+  $('#e4').classList.remove('on');
+  if(!validate(1)){showStep(1);return;}
+  if(!validate(2)){showStep(2);return;}
+  current=diagnose();
+  renderDx(current);
+  $('#dxForm').style.display='none';
+  $('#prog').style.display='none';
+  $('#result').style.display='block';
+  const summary=buildSummary(current);
+  const subject='Diagnòstic SOS · '+(current.P.title)+' · '+($('#municipi').value.trim()||'');
+  $('#bSend').href='mailto:'+mailAddr()+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(summary);
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+$('#bCopy').onclick=async()=>{
+  const t=buildSummary(current);
+  try{await navigator.clipboard.writeText(t);$('#bCopy').textContent='✓ Copiat';}
+  catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();$('#bCopy').textContent='✓ Copiat';}
+  setTimeout(()=>$('#bCopy').textContent='📋 Copia el resum',2000);
+};
+$('#bJson').onclick=()=>{
+  const blob=new Blob([JSON.stringify(buildJson(current),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='diagnostic-sos-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+$('#bAgain').onclick=()=>{$('#result').style.display='none';$('#dxForm').style.display='';$('#prog').style.display='';showStep(1);};
+
+/* Hook per a proves */
+window.__DX={st,diagnose,buildSummary,buildJson,PROFILES,MODULES,SERVICES,showStep,validate};
+</script>
+</body>
+</html>
