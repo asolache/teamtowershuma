@@ -294,6 +294,80 @@ a{color:var(--blue);text-decoration:none}
 .bt-cat{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .4rem}
 .bt-col .ent-card{margin-bottom:.5rem}
 @media(max-width:600px){.bt-cols{grid-template-columns:1fr}}
+/* Comando · vista dual (pel·lícula ↔ fitxa personatge) */
+.cm-mode-bar{display:flex;gap:.3rem;margin:.4rem 0 .8rem;flex-wrap:wrap}
+.cm-mode-btn{flex:1;min-width:0;padding:.5rem .7rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--muted);font:inherit;font-size:.82rem;cursor:pointer;transition:all .12s}
+.cm-mode-btn:hover{color:var(--text);border-color:var(--purple)}
+.cm-mode-btn.sel{background:linear-gradient(90deg,rgba(224,64,251,.15),rgba(99,102,241,.1));border-color:var(--purple);color:var(--text);font-weight:600}
+.cm-fitxa{padding:0;display:flex;flex-direction:column;gap:.4rem;border-radius:12px;overflow:hidden;background:var(--bg-panel);transition:transform .12s}
+.cm-fitxa:hover{transform:translateY(-2px)}
+.cm-fitxa-hd{display:flex;align-items:center;gap:.55rem;padding:.65rem .8rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.cm-fitxa-sec{padding:0 .8rem}
+.cm-fitxa-sec:last-child{padding-bottom:.7rem}
+.cm-fitxa-lb{font-family:var(--mono);font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.cm-fitxa-body{display:flex;flex-wrap:wrap;gap:.25rem}
+.cm-fitxa-tag{font-size:.68rem;padding:.15rem .45rem;border-radius:10px;border:1px solid;background:rgba(255,255,255,.03)}
+.cm-fitxa-empty{font-size:.68rem;color:var(--muted);opacity:.6;font-style:italic}
+/* MATRIU · Impacte psicosocial (widget flagship) */
+.matriu-psy{background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(0,230,118,.04),rgba(224,64,251,.04));border:1px solid var(--border);border-radius:12px;padding:1rem;margin:.5rem 0 1rem}
+.psy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem}
+.psy-tile{background:var(--bg-panel);border-radius:8px;padding:.7rem .8rem;text-align:center}
+.psy-n{font-family:var(--sans);font-size:1.55rem;font-weight:700;line-height:1}
+.psy-l{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.psy-hint{font-size:.68rem;color:var(--light);opacity:.75;margin-top:.25rem}
+.psy-caption{font-size:.78rem;color:var(--light);line-height:1.5;margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--border)}
+/* Activity gallery tabs (venture creation) */
+.ag-tabs{display:flex;gap:.3rem;margin:.5rem 0 .3rem;flex-wrap:wrap}
+.ag-tab{flex:1;min-width:0;padding:.5rem .6rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--muted);font:inherit;font-size:.82rem;cursor:pointer;transition:all .12s}
+.ag-tab:hover{color:var(--text);border-color:var(--indigo)}
+.ag-tab.sel{background:rgba(99,102,241,.15);border-color:var(--indigo);color:var(--indigo);font-weight:600}
+.ag-pane{margin-top:.5rem}
+/* Comando · equip gestor d'un projecte (colla castellera) */
+.cm-hd{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.cm-hd-nm{font-size:1.1rem;font-weight:700}
+.cm-mission{font-size:.85rem;color:var(--light);padding:.5rem .7rem;background:var(--bg-panel);border-left:3px solid var(--purple);border-radius:6px;margin:.4rem 0}
+.cm-team{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin:.5rem 0}
+.cm-slot{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem;display:flex;flex-direction:column;gap:.3rem}
+.cm-slot-nm{font-weight:700;font-size:.9rem}
+.cm-slot-rl{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;color:var(--purple)}
+.cm-slot-fc{font-size:.78rem;color:var(--muted)}
+.cm-add-row{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem}
+.cm-add-row select,.cm-add-row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.4rem;font:inherit;font-size:.8rem}
+/* MATRIU sprint plan (venture backlog · camí de graduació) */
+.vd-ready{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;margin-bottom:.7rem}
+.vd-ready-hd{display:flex;align-items:baseline;gap:.6rem}
+.vd-ready-sc{font-size:1.4rem;font-weight:700;color:var(--indigo)}
+.vd-ready-lb{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.vd-ready-bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin:.4rem 0 .5rem}
+.vd-ready-fill{height:100%;transition:width .3s}
+.vd-ready-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.2rem}
+.vd-ready-list li{font-size:.78rem;color:var(--light)}
+.vd-ready-list li.ok{color:var(--green)}
+.vd-ready-list li.no{color:var(--muted)}
+.vd-ready-hint{color:var(--orange);font-size:.72rem}
+.sp-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;margin-bottom:.55rem;border-left:3px solid var(--muted)}
+.sp-card.sp-active{border-left-color:var(--indigo)}
+.sp-card.sp-done{border-left-color:var(--green);opacity:.85}
+.sp-card.sp-planned{border-left-color:var(--muted)}
+.sp-hd{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.sp-nm{font-weight:700;font-size:.9rem}
+.sp-st{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;padding:.1rem .4rem;border-radius:4px;border:1px solid var(--border);color:var(--muted)}
+.sp-st-active{color:var(--indigo);border-color:var(--indigo)}
+.sp-st-done{color:var(--green);border-color:var(--green-dim)}
+.sp-goal{font-size:.78rem;color:var(--light);margin:.35rem 0}
+.sp-bar{height:4px;background:var(--border);border-radius:3px;overflow:hidden;margin:.35rem 0 .2rem}
+.sp-bar-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--green));transition:width .3s}
+.sp-meta{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.05em}
+.sp-items{list-style:none;padding:.4rem 0 .3rem;margin:0;display:flex;flex-direction:column;gap:.15rem}
+.sp-it{font-size:.83rem;color:var(--light)}
+.sp-it label{display:flex;align-items:flex-start;gap:.4rem;cursor:pointer;padding:.15rem 0}
+.sp-it input{margin-top:.3rem;cursor:pointer;min-width:16px;min-height:16px}
+.sp-it.done .sp-tt{text-decoration:line-through;color:var(--muted)}
+.sp-ic{font-size:.85rem}
+.sp-add{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.4rem}
+.sp-add-in{flex:2;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .5rem;font:inherit;font-size:.78rem}
+.sp-add-k{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .4rem;font:inherit;font-size:.78rem}
+.sp-actions{display:flex;flex-direction:column;gap:.3rem;margin-top:.3rem}
 /* MATRIU equity pie */
 .eq-wrap{display:grid;grid-template-columns:220px 1fr;gap:1.5rem;align-items:center;margin-top:.8rem}
 .eq-pie{display:flex;justify-content:center}
@@ -370,6 +444,7 @@ a{color:var(--blue);text-decoration:none}
       <div class="sync-pill" id="syncPill"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
       <button class="btn-icon" id="btnMap" title="Mapa de Catalunya">🗺</button>
       <button class="btn-icon" id="btnDir" title="Directori d'entitats (atles)">🌐</button>
+      <button class="btn-icon" id="personaBadge" title="Sessió activa" style="display:none;background:linear-gradient(135deg,var(--indigo),var(--green));color:#fff;font-weight:700;padding:0 .5rem">·</button>
       <button class="btn-icon" id="btnSearch" title="Cerca global (⌘K)">🔍</button>
       <button class="btn-icon" id="btnLauncher" title="Menú d'accions ràpides">☰</button>
       <button class="btn-icon" id="btnSync" title="Sincronitza amb un altre dispositiu">🔗</button>
@@ -728,7 +803,11 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{}};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null};
+// Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
+async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
+async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
+function updatePersonaBadge(){const el=document.getElementById('personaBadge');if(!el)return;if(state.activePersona){el.textContent='👤 '+state.activePersona.split(/\s+/).slice(0,2).map(s=>s.charAt(0).toUpperCase()).join('');el.title='Sessió activa: '+state.activePersona+' · clic per canviar';el.style.display='';}else{el.style.display='none';}}
 const uid=()=>'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const now=()=>new Date().toISOString();
 // ═══════════ Identitat descentralitzada · did:key + firma (Arc I1+L1) ═══════════
@@ -1374,7 +1453,8 @@ function openSuperheroiOnboarding(prefill){
     if(bt){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bt).push(m);sel.sk.forEach(i=>{const s=SKILL_TOP20[i];offersOf(bt).push(newOffer({memberId:m.id,kind:'oferta',category:s.cat,title:s.label+' — '+name}));});await persist(bt);}
     if(bib){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bib).push(m);sel.ob.forEach(i=>{const o=OBJECT_TOP20[i];objectsOf(bib).push(newObject({name:o.label+' — '+name,typology:o.typ,ownerId:m.id,condition:'bon estat'}));});await persist(bib);}
     state.expanded.add(placement.id);if(com)state.expanded.add(com.id);if(prov)state.expanded.add(prov.id);state.expanded.add(pais.id);
-    closeModal();selectNode(placement.id);toast('✦ Perfil superheroi creat a '+placement.name);setTimeout(()=>openPersonProfile(name),300);
+    await setActivePersona(name);
+    closeModal();selectNode(placement.id);toast('✦ Perfil superheroi creat · sessió iniciada com '+name);setTimeout(()=>openPersonProfile(name),300);
   };
 }
 // Assistent de valoració amb IA: rang €-min/esperat/max per skill o objecte amb font (Arc O3 · Glass-Box).
@@ -1490,6 +1570,7 @@ function _searchIndex(){
     {k:'action',id:'act_hero',label:'Crea el meu perfil superheroi',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · wallets · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
+    {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
     {k:'action',id:'act_multi',label:'Multivers Molekulon',sub:'🌌 acció',action:()=>openMultiverse()},
     {k:'action',id:'act_pings',label:'Pings ecosistema',sub:'🔔 acció',action:()=>openMatchesModal()},
     {k:'action',id:'act_kit',label:'Kit narratiu Molekulon',sub:'🎥 acció',action:()=>openNarrativeKit()},
@@ -1814,6 +1895,86 @@ const SOS_ROLES={
   agent:{ic:'🌐',label:'Agent territorial',desc:'Connecta institucions públiques amb l\'ecosistema',color:'var(--blue)'},
   simpatitzant:{ic:'💫',label:'Ciutadà/na simpatitzant',desc:'Explora, aprèn i decideix quan vols pujar',color:'var(--purple)'}
 };
+// Assemblea àgil · vista mòbil-first per propostes + votacions signades + registre públic de decisions
+async function openAssemblyModal(node){
+  if(!node)node=byId(state.activeId);
+  if(!node){toast('Selecciona un node primer');return;}
+  const id=await getIdentity(),myDid=id.did,g=govOf(node),role=roleOf(node,myDid),props=proposalsOf(node);
+  const canVote=role==='owner'||role==='steward';
+  const pending=props.filter(p=>p.status==='pending');
+  const merged=props.filter(p=>p.status==='merged');
+  const rejected=props.filter(p=>p.status==='rejected');
+  const kindLbl=k=>({steward_add:'🛡 Guardian',member:'👥 Soci',ledger:'⬢ Aportació',meta:'📝 Metaskill'}[k]||k);
+  const bg=modal(`
+    <h2>🗳 Assemblea àgil · <em>${esc(node.name)}</em></h2>
+    <p class="m-sub">${state.activePersona?'Sessió: <strong>'+esc(state.activePersona)+'</strong> · ':''}El teu rol: <strong>${role}</strong> · Quòrum: <strong>${g.quorum||1}</strong> · Registre públic ancorable a Nostr/permaweb.</p>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem">
+      <button class="btn btn-primary btn-sm" id="asNew" style="flex:1;min-width:150px">+ Nova proposta</button>
+      <button class="btn btn-ghost btn-sm" id="asHist" style="flex:1;min-width:150px">📖 Historial públic (${merged.length}✅/${rejected.length}❌)</button>
+    </div>
+    <div id="asNewForm" style="display:none" class="ent-card">
+      <div class="field"><label>Tipus</label><select id="asKind"><option value="ledger">⬢ Aportació al ledger</option><option value="member">👥 Alta de soci</option><option value="meta">📝 Canvi de metaskill</option></select></div>
+      <div class="field"><label>Nota / motivació breu</label><input id="asNote" placeholder="p.ex. La Berta puja al banc de temps"></div>
+      <div class="field"><label>Payload (JSON breu)</label><textarea id="asPayload" rows="3" style="width:100%;font-family:var(--mono);font-size:.8rem" placeholder='p.ex. {"name":"Berta"} per member · {"type":"temps","value":2,"who":"Berta"} per ledger'>{}</textarea></div>
+      <div style="display:flex;gap:.4rem;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="asCancel">Cancel·la</button><button class="btn btn-primary btn-sm" id="asSubmit">🖋 Signa i envia</button></div>
+    </div>
+    <div class="ent-grp-lbl">⏳ Pendents · ${pending.length}</div>
+    <div id="asPending"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="asClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#asClose').onclick=closeModal;
+  const drawPending=()=>{
+    const box=bg.querySelector('#asPending');
+    if(!pending.length){box.innerHTML='<div class="ent-desc">Cap proposta pendent. Crea\'n una amb "+ Nova proposta".</div>';return;}
+    box.innerHTML='<div style="display:grid;gap:.5rem">'+pending.map(p=>{
+      const yes=p.votes.filter(v=>v.approve).length,no=p.votes.filter(v=>!v.approve).length;
+      const mine=p.votes.find(v=>v.did===myDid);
+      const need=(g.quorum||1)-yes;
+      return '<div class="ent-card"><div class="ent-nm">'+kindLbl(p.kind)+(p.note?': '+esc(p.note):'')+'</div>'+
+        '<div class="ent-badges" style="margin-top:.3rem"><span class="ent-b b-ver">✅ '+yes+'/'+(g.quorum||1)+'</span>'+(no?'<span class="ent-b b-unver">❌ '+no+'</span>':'')+(mine?'<span class="ent-b">votat: '+(mine.approve?'✅':'❌')+'</span>':'')+'</div>'+
+        (canVote?'<div style="display:flex;gap:.3rem;margin-top:.4rem"><button class="btn btn-primary btn-sm as-yes" data-p="'+p.id+'" style="flex:1">✅ Aprova</button><button class="btn btn-ghost btn-sm as-no" data-p="'+p.id+'" style="flex:1;color:var(--red)">❌ Rebutja</button></div>':'<div class="ent-desc" style="margin-top:.4rem">Cal ser owner/steward per votar. Faltaven '+need+' vot(s) més per aprovar.</div>')+
+      '</div>';
+    }).join('')+'</div>';
+    box.querySelectorAll('.as-yes').forEach(b=>b.onclick=async()=>{try{await voteProposal(node,b.dataset.p,true);await persist(node);closeModal();openAssemblyModal(node);toast('✓ Vot registrat');}catch(e){toast(e.msg||'Error');}});
+    box.querySelectorAll('.as-no').forEach(b=>b.onclick=async()=>{try{await voteProposal(node,b.dataset.p,false);await persist(node);closeModal();openAssemblyModal(node);toast('✓ Vot registrat');}catch(e){toast(e.msg||'Error');}});
+  };
+  drawPending();
+  const form=bg.querySelector('#asNewForm');
+  bg.querySelector('#asNew').onclick=()=>{form.style.display=form.style.display==='none'?'block':'none';};
+  bg.querySelector('#asCancel').onclick=()=>{form.style.display='none';};
+  bg.querySelector('#asSubmit').onclick=async()=>{
+    const kind=bg.querySelector('#asKind').value,note=bg.querySelector('#asNote').value.trim();
+    let payload;try{payload=JSON.parse(bg.querySelector('#asPayload').value||'{}');}catch(e){toast('JSON invàlid');return;}
+    try{await proposeChange(node,kind,payload,note);await persist(node);closeModal();openAssemblyModal(node);toast('🖋 Proposta enviada');}catch(e){toast(e.msg||'Error');}
+  };
+  bg.querySelector('#asHist').onclick=()=>{closeModal();openPublicDecisionsModal(node);};
+}
+function openPublicDecisionsModal(node){
+  if(!node)node=byId(state.activeId);
+  if(!node){toast('Selecciona un node primer');return;}
+  const g=govOf(node),props=proposalsOf(node);
+  const decisions=props.filter(p=>p.status!=='pending').sort((a,b)=>(b.mergedAt||b.rejectedAt||b.ts||'').localeCompare(a.mergedAt||a.rejectedAt||a.ts||''));
+  const kindLbl=k=>({steward_add:'🛡 Guardian',member:'👥 Soci',ledger:'⬢ Aportació',meta:'📝 Metaskill'}[k]||k);
+  const bg=modal(`
+    <h2>📖 Registre públic de decisions · <em>${esc(node.name)}</em></h2>
+    <p class="m-sub">Historial signat i verificable de totes les decisions preses per l'assemblea. mainHash actual: <code style="font-size:.72rem">${esc((g.mainHash||'—').slice(0,32))}${(g.mainHash||'').length>32?'…':''}</code></p>
+    <div id="pdBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="pdAnchor">🛰 Ancora mainHash</button><button class="btn btn-primary" id="pdClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#pdClose').onclick=closeModal;
+  bg.querySelector('#pdAnchor').onclick=()=>{closeModal();openNostrModal(node);};
+  const box=bg.querySelector('#pdBody');
+  if(!decisions.length){box.innerHTML='<div class="ent-desc">Encara cap decisió al registre públic. Les propostes aprovades i rebutjades s\'hi acumularan aquí.</div>';return;}
+  box.innerHTML='<div style="display:grid;gap:.4rem">'+decisions.slice(0,50).map(d=>{
+    const color=d.status==='merged'?'var(--green)':'var(--red)';
+    const emoji=d.status==='merged'?'✅':'❌';
+    const yes=d.votes.filter(v=>v.approve).length,no=d.votes.filter(v=>!v.approve).length;
+    return '<div class="ent-card" style="border-left:3px solid '+color+'"><div class="ent-nm">'+emoji+' '+kindLbl(d.kind)+(d.note?': '+esc(d.note):'')+'</div>'+
+      '<div class="ent-badges" style="margin-top:.3rem"><span class="ent-b">'+d.status+'</span><span class="ent-b">✅ '+yes+' · ❌ '+no+'</span>'+(d.mergedAt||d.rejectedAt?'<span class="ent-b">'+((d.mergedAt||d.rejectedAt).slice(0,16))+'</span>':'')+'</div></div>';
+  }).join('')+'</div>';
+}
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
@@ -1827,6 +1988,8 @@ function openLauncher(){
     {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
     {ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
+    {ic:'🗳',t:'Assemblea àgil (mòbil-first)',d:'Propostes + vots ràpids optimitzats per tauleta/mòbil',fn:()=>openAssemblyModal()},
+    {ic:'📖',t:'Registre públic de decisions',d:'Historial signat i ancorable a Nostr',fn:()=>openPublicDecisionsModal()},
     {ic:'🌐',t:'Assemblea federativa',d:'Pes Penrose √població × activitat + Gini',fn:()=>{const nd=byId(state.activeId);openFederationModal(nd&&isTerritory(nd.nodeLevel)?nd:null);}},
     {ic:'🔮',t:'Impacte hipotètic Catalunya',d:'Simulador psicoeconòmic per municipi',fn:()=>openImpactSimulator()},
     {ic:'💎',t:'Valora un recurs amb IA',d:'Rang min-esperat-max + font Glass-Box',fn:()=>openValuationAssistant()},
@@ -1945,16 +2108,34 @@ async function directorFilter(limit){
     return{icon:x.type==='moneda'?'💰':'⏱',title:x.person+' actua a '+x.node,body,person:x.person,ts:x.ts,badge:x.signed?'firmat':'llegat'};
   });
 }
+// Aggregat de "fitxa personatge" — skills + recursos + projectes d'una persona a l'ecosistema.
+// La vista fitxa del Comando i el perfil transversal comparteixen aquest agregat.
+function characterSheetOf(name){
+  const key=personKey(name);
+  const cromo=superheroCromo(name);
+  const projects=[],ventures=[],offers=[],objects=[];
+  state.nodes.forEach(nd=>{
+    const m=membersOf(nd).find(x=>personKey(x.name)===key);
+    if(!m)return;
+    projects.push({nodeId:nd.id,nodeName:nd.name,dynamicType:nd.dynamicType,role:m.role||'membre'});
+    (offersOf(nd)||[]).filter(o=>o.memberId===m.id&&o.status==='activa').forEach(o=>offers.push({node:nd.name,kind:o.kind,category:o.category,title:o.title}));
+    (objectsOf(nd)||[]).filter(o=>o.ownerId===m.id).forEach(o=>objects.push({node:nd.name,name:o.name,typology:o.typology,status:o.status}));
+    venturesOf(nd).filter(v=>v.leadMemberId===m.id).forEach(v=>ventures.push({nodeId:nd.id,nodeName:nd.name,name:v.name,stage:v.stage,activityId:v.activityId}));
+  });
+  return{cromo,projects,ventures,offers,objects};
+}
 // Modal Comando Molekulon: cromos + últimes històries + progrés vers els 150k.
+// Vista dual: 🎬 Pel·lícula (cromos cinematogràfics) · 📇 Fitxes (skills · recursos · projectes de cada personatge).
 function openComandoView(){
   const bg=modal(`
     <h2>🎬 Comando Molekulon</h2>
     <p class="m-sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, Mazinguer i Horacio han de reclutar els <strong>150.000 superherois</strong> abans que la <strong>Corporació Món Mort</strong> engoleixi les comunitats. Cada acció real que registres a SOS és una llavor de la pel·lícula. <em>El Comando Molekulon és una tribu creativa oberta — un dels projectes mestres de la MATRIU.</em></p>
     <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎵</span><span>Transmedia · escolta <a href="${MOLEKULON_LINKS.soundcloud}" target="_blank" rel="noopener" style="color:var(--indigo)">SoundCloud</a> · mira <a href="${MOLEKULON_LINKS.youtube}" target="_blank" rel="noopener" style="color:var(--red)">YouTube</a> · compra el còmic a <a href="${MOLEKULON_LINKS.amazon}" target="_blank" rel="noopener" style="color:var(--orange)">Amazon</a> · segueix a <a href="${MOLEKULON_LINKS.instagram}" target="_blank" rel="noopener" style="color:var(--purple)">Instagram</a></span></div>
+    <div class="cm-mode-bar"><button class="cm-mode-btn sel" data-mode="film">🎬 Vista pel·lícula</button><button class="cm-mode-btn" data-mode="fitxa">📇 Vista fitxes · skills · recursos · projectes</button></div>
     <div id="cmStats"></div>
     <div class="ent-grp-lbl">🌟 Protagonistes originals · còmics 1 i 2</div>
     <div id="cmCanonical" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
-    <div class="ent-grp-lbl" style="margin-top:1rem">🎴 Cromos de la tribu · superheroi validats a l'ecosistema</div>
+    <div class="ent-grp-lbl" style="margin-top:1rem" id="cmRosterLbl">🎴 Cromos de la tribu · superheroi validats a l'ecosistema</div>
     <div id="cmRoster" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
     <div class="ent-grp-lbl">📖 Últimes històries · filtrades pel director</div>
     <div id="cmStories">Carregant…</div>
@@ -1966,7 +2147,9 @@ function openComandoView(){
   const cur=roster.length,pct=Math.min(100,cur/COMANDO_TARGET*100);
   bg.querySelector('#cmStats').innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n">'+cur.toLocaleString('ca')+'</div><div class="l">superherois validats</div></div><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+COMANDO_TARGET.toLocaleString('ca')+'</div><div class="l">visió Comando</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+pct.toFixed(3)+'%</div><div class="l">de la tribu</div></div></div>'+
     '<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;margin:.5rem 0 1rem;overflow:hidden"><div style="height:100%;width:'+Math.max(0.5,pct)+'%;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);border-radius:5px"></div></div>';
-  bg.querySelector('#cmRoster').innerHTML=roster.length?roster.slice(0,60).map(c=>{
+  const rosterBox=bg.querySelector('#cmRoster'),labelBox=bg.querySelector('#cmRosterLbl');
+  // Vista pel·lícula: cromos cinematogràfics (Shakti/Shiva, tier, XP, superpoders resum)
+  const renderFilm=()=>roster.length?roster.slice(0,60).map(c=>{
     const shPct=c.shakti+c.shiva>0?Math.round(c.shakti*100/(c.shakti+c.shiva)):50;
     const lvlPct=c.level&&c.level.next?c.level.pctToNext:100;
     const nextLbl=c.level&&c.level.next?c.level.next.label:'màxim';
@@ -1979,8 +2162,31 @@ function openComandoView(){
       '<div style="padding:.4rem .8rem .7rem;font-size:.7rem;color:var(--muted);display:flex;gap:.6rem;border-top:1px solid rgba(255,255,255,.05);margin-top:.3rem"><span>⏱ '+c.hours+'h</span><span>🏘 '+c.communities+'</span><span>🔏 '+c.signed+'</span></div>'+
     '</div>';
   }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
+  // Vista fitxa: skills + recursos + projectes de cada personatge (agregat sobre tot l'ecosistema)
+  const renderFitxa=()=>roster.length?roster.slice(0,40).map(c=>{
+    const sheet=characterSheetOf(c.name);
+    const skillsHtml=c.superpowers.length?c.superpowers.map(s=>'<span class="cm-fitxa-tag" style="background:rgba(99,102,241,.18);color:var(--indigo);border-color:var(--indigo)">'+esc(s.cat)+' ×'+s.count+'</span>').join(''):'<span class="cm-fitxa-empty">encara cap skill</span>';
+    const resHtml=(sheet.offers.length||sheet.objects.length)?(sheet.offers.slice(0,4).map(o=>'<span class="cm-fitxa-tag" style="background:rgba(0,230,118,.15);color:var(--green);border-color:var(--green)" title="'+esc(o.node)+' · '+o.kind+'">'+esc((o.title||o.category).slice(0,24))+'</span>').join('')+sheet.objects.slice(0,3).map(o=>'<span class="cm-fitxa-tag" style="background:rgba(0,176,255,.15);color:var(--blue);border-color:var(--blue)" title="'+esc(o.node)+'">🔧 '+esc(o.name.slice(0,20))+'</span>').join('')):'<span class="cm-fitxa-empty">cap oferta/objecte</span>';
+    const projHtml=sheet.projects.length?sheet.projects.slice(0,6).map(p=>'<span class="cm-fitxa-tag" style="background:rgba(224,64,251,.15);color:var(--purple);border-color:var(--purple)" title="'+esc(p.dynamicType||'projecte')+'">'+esc(p.nodeName)+'</span>').join(''):'<span class="cm-fitxa-empty">cap projecte</span>';
+    const ventHtml=sheet.ventures.length?sheet.ventures.slice(0,4).map(v=>'<span class="cm-fitxa-tag" style="background:rgba(255,145,0,.15);color:var(--orange);border-color:var(--orange)" title="'+esc(v.stage)+' · '+esc(v.nodeName)+'">🌱 '+esc(v.name)+'</span>').join(''):'';
+    return '<div class="ent-card cm-fitxa" data-cromo="'+esc(c.name)+'" style="cursor:pointer;border:2px solid '+c.tier.color+'">'+
+      '<div class="cm-fitxa-hd"><div style="width:40px;height:40px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(c.initials)+'</div><div style="min-width:0;flex:1"><div style="font-weight:700;font-size:.95rem">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · '+c.hours+'h · '+c.communities+' comunitats</div></div></div>'+
+      '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🧠 Skills (superpoders)</div><div class="cm-fitxa-body">'+skillsHtml+'</div></div>'+
+      '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🔧 Recursos (ofertes · objectes)</div><div class="cm-fitxa-body">'+resHtml+'</div></div>'+
+      '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🏘 Projectes on és membre</div><div class="cm-fitxa-body">'+projHtml+'</div></div>'+
+      (ventHtml?'<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🌱 Ventures que lidera</div><div class="cm-fitxa-body">'+ventHtml+'</div></div>':'')+
+    '</div>';
+  }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
+  let mode='film';
+  const paint=()=>{
+    labelBox.textContent=mode==='film'?'🎴 Cromos de la tribu · superherois validats a l\'ecosistema':'📇 Fitxes personatge · skills · recursos · projectes de cada superheroi';
+    rosterBox.innerHTML=mode==='film'?renderFilm():renderFitxa();
+    rosterBox.style.gridTemplateColumns=mode==='film'?'repeat(auto-fill,minmax(180px,1fr))':'repeat(auto-fill,minmax(260px,1fr))';
+    rosterBox.querySelectorAll('[data-cromo]').forEach(el=>el.onclick=()=>{closeModal();openPersonProfile(el.dataset.cromo);});
+  };
+  bg.querySelectorAll('.cm-mode-btn').forEach(btn=>btn.onclick=()=>{mode=btn.dataset.mode;bg.querySelectorAll('.cm-mode-btn').forEach(x=>x.classList.toggle('sel',x===btn));paint();});
+  paint();
   bg.querySelector('#cmCanonical').innerHTML=CANONICAL_HEROES.map(h=>{const color=_colorFromName(h.name);return '<div class="ent-card" style="padding:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(99,102,241,.08));border:1px solid rgba(224,64,251,.3);border-radius:12px"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(_initialsOf(h.name))+'</div><div style="min-width:0"><div style="font-weight:600;font-size:.9rem">'+esc(h.name)+'</div><div style="font-size:.68rem;color:var(--purple);font-weight:600">'+esc(h.role)+'</div></div></div><div style="font-size:.72rem;color:var(--light);line-height:1.35">'+esc(h.power)+'</div></div>';}).join('');
-  bg.querySelectorAll('[data-cromo]').forEach(el=>el.onclick=()=>{closeModal();openPersonProfile(el.dataset.cromo);});
   (async()=>{const stories=await directorFilter(30);const box=bg.querySelector('#cmStories');
     if(!stories.length){box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Encara cap història real. Registra un intercanvi o guarda una narrativa al multivers per començar.</span></div>';return;}
     box.innerHTML=stories.map(s=>'<div class="ent-card" style="margin-bottom:.5rem"><div class="ent-nm">'+s.icon+' '+esc(s.title)+'</div><div class="ent-badges"><span class="ent-b">'+esc(s.badge)+'</span>'+(s.ts?'<span class="ent-b">'+esc(s.ts.slice(0,10))+'</span>':'')+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(s.body.slice(0,220))+(s.body.length>220?'…':'')+'</div></div>').join('');
@@ -2142,14 +2348,210 @@ function cooperationSummary(node){
   return{total:coops.length,byVenture:byV,byKind};
 }
 async function graduateVenture(node,v){
+  const rd=ventureReadiness(node,v);
+  if(!rd.graduateReady){const missing=rd.checks.filter(c=>!c.ok).map(c=>'· '+c.label).join('\n');toast('Encara no pot graduar. Falten:\n'+missing);return null;}
   const nn=newNode(v.name,'projecte',node.parentId);
   nn.dynamicType='generic';nn.vna={roles:v.vna.roles.map(r=>({...r})),exchanges:v.vna.exchanges.map(x=>({...x}))};
   (v.kanbanSeed||[]).forEach(t=>nn.kanban.cards.push({id:uid(),text:t,col:'todo'}));
+  // Carry over unfinished backlog items to the graduated node as kanban cards — no work is lost.
+  sprintsOf(v).forEach(sp=>(sp.items||[]).filter(it=>!it.done).forEach(it=>nn.kanban.cards.push({id:uid(),text:'['+sp.name+'] '+it.title,col:'todo'})));
   nn.metaskill.mission='Graduada de la MATRIU: '+actMeta(v.activityId).name+'.';
+  nn.metaskill.legacy={fromVentureId:v.id,graduatedAt:now(),sprintsCompleted:sprintsOf(v).filter(s=>s.status==='done').length};
   v.stage='graduacio';v.graduatedNodeId=nn.id;
   state.nodes.push(nn);await persist(nn);await persist(node);
   if(node.parentId)state.expanded.add(node.parentId);
   selectNode(nn.id);toast('Venture graduada a projecte');
+  return nn;
+}
+// ═══════════ Sprint plan per venture (el mecanisme que fa graduar) ═══════════
+// Cada venture té un backlog dividit en sprints. Els items del backlog cobreixen:
+// (a) rols del mapa de valor (algú l'assumeix) · (b) fluxos VNA (algú els activa) ·
+// (c) entregables del kanban-seed de l'activitat · (d) tests d'aprenentatge.
+// La graduació passa quan la readiness està >= 70% i tots els checks estan verds.
+const sprintsOf=v=>v.sprints||(v.sprints=[]);
+function newSprint(v,{name,goal,weeks}={}){
+  const w=Number(weeks)||2,starts=Date.now(),ends=starts+w*7*864e5;
+  const sp={id:uid(),name:name||('Sprint '+(sprintsOf(v).length+1)),goal:goal||'',weeks:w,status:sprintsOf(v).length?'planned':'active',startsAt:new Date(starts).toISOString(),endsAt:new Date(ends).toISOString(),items:[]};
+  sprintsOf(v).push(sp);return sp;
+}
+function addBacklogItem(sp,{title,kind,mapRef,ownerId,hours}={}){
+  const it={id:uid(),title:(title||'').trim()||'(sense títol)',kind:kind||'deliverable',mapRef:mapRef||null,ownerId:ownerId||null,hours:Number(hours)||0,done:false,doneAt:null};
+  (sp.items||(sp.items=[])).push(it);return it;
+}
+function toggleBacklogItem(sp,itemId){
+  const it=(sp.items||[]).find(x=>x.id===itemId);if(!it)return false;
+  it.done=!it.done;it.doneAt=it.done?now():null;return it.done;
+}
+function sprintProgress(sp){const items=sp.items||[],done=items.filter(x=>x.done).length,total=items.length;return{done,total,pct:total?Math.round(done/total*100):0};}
+function advanceSprint(v,sprintId){
+  const sps=sprintsOf(v),sp=sps.find(x=>x.id===sprintId);if(!sp)return;
+  if(sp.status==='planned')sp.status='active';
+  else if(sp.status==='active'){sp.status='done';sp.closedAt=now();const nx=sps.find(x=>x.status==='planned');if(nx)nx.status='active';}
+}
+// Sembra el pla d'sprints d'una venture des del seu mapa de valor + kanbanSeed.
+// S1 Fonaments: cobreix rols (algú se'ls fa seus). S2 Fluxos: activa intercanvis VNA.
+// S3 Entregables: kanbanSeed de l'activitat crítica esdevé check-list d'MVP.
+function seedSprintPlanFromMap(v){
+  if(sprintsOf(v).length)return sprintsOf(v);
+  const s1=newSprint(v,{name:'S1 · Fonaments',goal:'Cobrir els rols funcionals amb persones reals',weeks:2});
+  (v.vna.roles||[]).slice(0,7).forEach(r=>addBacklogItem(s1,{title:'Assignar owner al rol: '+r.name,kind:'role',mapRef:{type:'role',id:r.id}}));
+  addBacklogItem(s1,{title:'Definir missió/visió/objectius de la venture',kind:'deliverable'});
+  const s2=newSprint(v,{name:'S2 · Activació dels fluxos',goal:'Que cada intercanvi del mapa passi almenys 1 cop',weeks:2});
+  (v.vna.exchanges||[]).slice(0,8).forEach(x=>{const from=(v.vna.roles.find(r=>r.id===x.from)||{}).name||'?',to=(v.vna.roles.find(r=>r.id===x.to)||{}).name||'?';addBacklogItem(s2,{title:'Activar flux '+(x.kind==='I'?'intangible':'tangible')+': '+from+' → '+to+(x.label?' ('+x.label+')':''),kind:'flow',mapRef:{type:'exchange',id:x.id}});});
+  const s3=newSprint(v,{name:'S3 · MVP entregable',goal:'Un MVP funcional replicable — camí a la graduació',weeks:3});
+  (v.kanbanSeed||[]).forEach(t=>addBacklogItem(s3,{title:t,kind:'deliverable'}));
+  addBacklogItem(s3,{title:'Registrar 3 aportacions reals al ledger (Slicing Pie)',kind:'test'});
+  addBacklogItem(s3,{title:'Verificar que cap membre concentra >70% de l\'equity',kind:'test'});
+  return sprintsOf(v);
+}
+// ═══════════ Tipus de projecte + mapes prototip (cobreixen el 80% dels casos) ═══════════
+// Sempre personalitzable — són plantilles, no restriccions. La MATRIU pot incubar qualsevol tipus.
+const PROJECT_TYPES=[
+  {id:'comunitari',name:'Projecte comunitari',icon:'🏘',one:'Associació, col·lectiu o iniciativa sense lucre.',equity:{fmv:15,nonCash:1,cash:2},lucre:'no',juridic:['associació','fundació','plataforma informal']},
+  {id:'cooperativa',name:'Cooperativa',icon:'🤝',one:'Empresa col·lectiva democràtica (SCCL, treball associat o consum).',equity:{fmv:25,nonCash:2,cash:4},lucre:'limitat',juridic:['SCCL','SCP','SL cooperativa']},
+  {id:'autonom',name:'Autònom / freelance',icon:'👤',one:'Iniciativa individual amb possible xarxa d\'aliats.',equity:{fmv:30,nonCash:2,cash:5},lucre:'sí',juridic:['autònom','autònom col·laborador']},
+  {id:'empresa',name:'Empresa mercantil',icon:'🏢',one:'PIME o start-up amb objectiu de creixement i retribució.',equity:{fmv:40,nonCash:3,cash:6},lucre:'sí',juridic:['SL','SLU','SA']}
+];
+const _pt=(()=>{const m={};PROJECT_TYPES.forEach(t=>m[t.id]=t);return m;})();
+const projectTypeMeta=id=>_pt[id]||PROJECT_TYPES[0];
+// Prototips de mapes de valor genèrics — per servei/procés/producte. 80% dels casos coberts.
+// Cadascun personalitzable al 100% després d'instanciar.
+const PROTOTYPE_MAPS=[
+  {id:'servei_proximitat',name:'Servei de proximitat',icon:'🛎',one:'Servei que s\'ofereix directament a la comunitat local (educació, cures, reparacions, atenció).',projectTypes:['comunitari','cooperativa','autonom'],
+   roles:['Persones oferents','Persones usuàries','Nucli gestor','Referent territorial','Ecosistema aliat'],
+   flows:[['Persones oferents','Persones usuàries','tangible','servei directe'],['Persones usuàries','Persones oferents','tangible','pagament o hores banc de temps'],['Persones oferents','Persones oferents','intangible','pràctica reflexiva compartida'],['Nucli gestor','Persones oferents','intangible','coordinació i cura'],['Referent territorial','Nucli gestor','tangible','legitimitat i espai'],['Persones usuàries','Nucli gestor','intangible','reputació i vincle'],['Ecosistema aliat','Nucli gestor','tangible','derivacions'],['Nucli gestor','Ecosistema aliat','intangible','coneixement i confiança']],
+   kanban:['Definir el servei mínim viable','Formar el primer equip d\'oferents','Publicar al banc de temps','Primeres 10 prestacions','Feedback i ajust','Ampliació territorial']},
+  {id:'producte_artesa',name:'Producte artesà / manufactura',icon:'🧶',one:'Producció física en petit format, taller propi o compartit.',projectTypes:['cooperativa','autonom','empresa'],
+   roles:['Artesans/es','Proveïdors locals','Punt de venda','Clientes','Comunitat i formació'],
+   flows:[['Proveïdors locals','Artesans/es','tangible','matèria primera km0'],['Artesans/es','Punt de venda','tangible','producte acabat'],['Punt de venda','Clientes','tangible','venda'],['Clientes','Artesans/es','tangible','ingressos'],['Artesans/es','Comunitat i formació','intangible','ofici i tallers'],['Comunitat i formació','Artesans/es','intangible','aprenents i renovació'],['Clientes','Punt de venda','intangible','reputació i boca-orella'],['Punt de venda','Proveïdors locals','tangible','pagament just']],
+   kanban:['Prototipar 3 SKUs','Muntar el taller','Preus i marges','Canal de venda pilot','Iterar amb feedback client','Escalar producció']},
+  {id:'servei_tecnic',name:'Consultoria / servei tècnic',icon:'💼',one:'Consultoria, disseny, IT, arquitectura, assessoria — projecte per projecte.',projectTypes:['cooperativa','autonom','empresa'],
+   roles:['Consultors/es','Clients institucionals','Clients privats','Xarxa de partners','Nucli operatiu'],
+   flows:[['Consultors/es','Clients institucionals','tangible','entregable especialitzat'],['Consultors/es','Clients privats','tangible','entregable especialitzat'],['Clients institucionals','Consultors/es','tangible','honoraris'],['Clients privats','Consultors/es','tangible','honoraris'],['Xarxa de partners','Consultors/es','intangible','peer review'],['Consultors/es','Xarxa de partners','tangible','sub-encàrrecs'],['Nucli operatiu','Consultors/es','intangible','back-office i comercial'],['Consultors/es','Nucli operatiu','tangible','% de facturació']],
+   kanban:['Definir 2-3 verticals','Cas d\'ús anchor','Portfoli i propostes tipus','Primer contracte','Referral loop','Estabilitzar cartera']},
+  {id:'producte_digital',name:'Producte digital / SaaS',icon:'📱',one:'App, plataforma, servei online — usuaris massius o de nínxol.',projectTypes:['cooperativa','empresa','autonom'],
+   roles:['Equip producte','Usuaris/es','Comunitat contributora','Sponsors/inversors','Infraestructura'],
+   flows:[['Equip producte','Usuaris/es','tangible','funcionalitat'],['Usuaris/es','Equip producte','tangible','subscripció o donació'],['Usuaris/es','Comunitat contributora','intangible','feedback i casos d\'ús'],['Comunitat contributora','Equip producte','tangible','PRs, traduccions, docs'],['Sponsors/inversors','Equip producte','tangible','capital'],['Equip producte','Sponsors/inversors','intangible','tracció i mètriques'],['Infraestructura','Equip producte','tangible','runtime i dades'],['Equip producte','Infraestructura','tangible','pagament hosting']],
+   kanban:['MVP fumo','Landing + waitlist','Primer usuari real','Iterar sobre feedback','Model de monetització','Escalar amb la comunitat']},
+  {id:'cura_social',name:'Cura i acompanyament social',icon:'💗',one:'Xarxa de cures, salut comunitària, acompanyament a persones vulnerables.',projectTypes:['comunitari','cooperativa'],
+   roles:['Persones cuidadores','Persones cuidades','Famílies','Serveis socials/CAP','Voluntariat'],
+   flows:[['Persones cuidadores','Persones cuidades','intangible','acompanyament i escolta'],['Persones cuidades','Persones cuidadores','intangible','vincle i sentit'],['Famílies','Persones cuidadores','tangible','confiança i suport econòmic'],['Persones cuidadores','Famílies','tangible','descàrrega i informació'],['Serveis socials/CAP','Persones cuidadores','tangible','derivacions i formació'],['Persones cuidadores','Serveis socials/CAP','tangible','dades i seguiment'],['Voluntariat','Persones cuidadores','tangible','hores gratuïtes'],['Persones cuidadores','Voluntariat','intangible','formació i cura mútua']],
+   kanban:['Diagnòstic de necessitats','Formar cuidadores','Protocol de casos','Primeres 5 famílies','Enllaç serveis públics','Prevenció del burnout']},
+  {id:'formacio',name:'Educació / formació',icon:'📚',one:'Formació reglada o lliure, mentoria, escola comunitària.',projectTypes:['comunitari','cooperativa','autonom'],
+   roles:['Formadors/es','Aprenents','Coordinació pedagògica','Espai formatiu','Comunitat de pràctica'],
+   flows:[['Formadors/es','Aprenents','tangible','sessions i materials'],['Aprenents','Formadors/es','tangible','matrícula o hores banc'],['Coordinació pedagògica','Formadors/es','intangible','disseny curricular'],['Formadors/es','Coordinació pedagògica','tangible','avaluació i millora'],['Espai formatiu','Formadors/es','tangible','aules i eines'],['Aprenents','Comunitat de pràctica','intangible','xarxa d\'exalumnes'],['Comunitat de pràctica','Aprenents','intangible','mentoria peer'],['Formadors/es','Comunitat de pràctica','intangible','recerca compartida']],
+   kanban:['Currículum mínim','Reclutar formadors','Espai i horaris','Cohort pilot','Avaluació i certificació','Bucle amb ex-alumnes']}
+];
+const _pm=(()=>{const m={};PROTOTYPE_MAPS.forEach(p=>m[p.id]=p);return m;})();
+const prototypeMapMeta=id=>_pm[id];
+// Instanciar una venture des d'un prototip: converteix roles+flows en vna, hereta kanban, associa tipus.
+function newVentureFromPrototype(node,proto,{name,type}={}){
+  const idBy={},roles=[],exch=[];
+  (proto.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
+  (proto.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+  const t=type||(proto.projectTypes&&proto.projectTypes[0])||'comunitari';
+  return{id:uid(),name:(name||proto.name).trim(),activityId:'proto_'+proto.id,prototypeId:proto.id,projectType:t,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(proto.kanban||[]).slice(),notes:'',graduatedNodeId:null,equity:{...projectTypeMeta(t).equity}};
+}
+// ═══════════ Comando · equip gestor d'un projecte (colla castellera) ═══════════
+// Un Comando és un subconjunt de membres d'un node organitzats per rols funcionals,
+// amb el seu mini mapa de valor propi (com se subministra el servei/procés/producte).
+const comandoOf=node=>node.comando||null;
+function newProjectComando(node,{name,mission,memberIds,prototypeMapId}={}){
+  const proto=prototypeMapId?prototypeMapMeta(prototypeMapId):null;
+  const c={id:uid(),name:(name||'Comando de '+node.name).trim(),mission:mission||'',prototypeMapId:prototypeMapId||null,
+    members:(memberIds||[]).map(mid=>{const m=memberById(node,mid);return{memberId:mid,personKey:m?personKey(m.name):null,role:'',focus:''};}),
+    vna:proto?{roles:proto.roles.map(nm=>({id:uid(),name:nm})),exchanges:[]}:{roles:[],exchanges:[]},
+    createdAt:now(),updatedAt:now()};
+  if(proto){
+    const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
+    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+  }
+  node.comando=c;return c;
+}
+function comandoAssignRole(node,memberId,role,focus){const c=comandoOf(node);if(!c)return;const m=c.members.find(x=>x.memberId===memberId);if(m){m.role=role||'';if(focus!==undefined)m.focus=focus;}else c.members.push({memberId,personKey:(memberById(node,memberId)||{name:''}).name?personKey(memberById(node,memberId).name):null,role:role||'',focus:focus||''});c.updatedAt=now();}
+function comandoRemoveMember(node,memberId){const c=comandoOf(node);if(!c)return;c.members=c.members.filter(x=>x.memberId!==memberId);c.updatedAt=now();}
+// ═══════════ Entity Comando · «les entitats i els comandos són cosins» ═══════════
+// Cada entitat pot tenir el seu propi Comando (equip gestor). Els membres es
+// referencien per nom (personKey) — així es poden lligar amb el roster global
+// del Comando Molekulon sense duplicar registres.
+const entityComandoOf=e=>e&&e.comando||null;
+function newEntityComando(entity,{name,mission,memberNames,prototypeMapId}={}){
+  const proto=prototypeMapId?prototypeMapMeta(prototypeMapId):null;
+  const c={id:uid(),name:(name||'Comando de '+(entity.name||'l\'entitat')).trim(),mission:mission||'',prototypeMapId:prototypeMapId||null,
+    members:(memberNames||[]).filter(Boolean).map(nm=>({name:nm.trim(),personKey:personKey(nm),role:'',focus:''})),
+    vna:proto?{roles:proto.roles.map(nm=>({id:uid(),name:nm})),exchanges:[]}:{roles:[],exchanges:[]},
+    createdAt:now(),updatedAt:now()};
+  if(proto){
+    const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
+    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+  }
+  entity.comando=c;return c;
+}
+function entityComandoAssign(entity,personName,role,focus){const c=entityComandoOf(entity);if(!c)return;const nk=personKey(personName);const m=c.members.find(x=>x.personKey===nk);if(m){m.role=role||'';if(focus!==undefined)m.focus=focus;}else c.members.push({name:personName,personKey:nk,role:role||'',focus:focus||''});c.updatedAt=now();}
+function entityComandoRemove(entity,personKeyToRemove){const c=entityComandoOf(entity);if(!c)return;c.members=c.members.filter(x=>x.personKey!==personKeyToRemove);c.updatedAt=now();}
+// ═══════════ MATRIU · impacte psicosocial (valor viu, més enllà de l'euro) ═══════════
+// El que fa la MATRIU imprescindible: no només es mou capital, també es mouen cures,
+// vincles, reciprocitat i temps donat. Aquest widget els fa visibles.
+function matriuPsychoImpact(node){
+  const vs=venturesOf(node),ms=membersOf(node),links=linksOf(node).map(id=>byId(id)).filter(Boolean);
+  // Hores donades = suma d'entrades ledger type=temps (venture + node)
+  let horesDonades=0,horesRebudes=0,capital=0;
+  (node.ledger||[]).forEach(e=>{if(e.type==='temps')horesDonades+=Number(e.value)||0;else if(e.type==='moneda')capital+=Number(e.value)||0;});
+  vs.forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps')horesDonades+=Number(e.value)||0;else if(e.type==='moneda')capital+=Number(e.value)||0;}));
+  // Fluxos intangibles vs tangibles a tot l'arbre de ventures (índex de riquesa relacional)
+  let intg=0,tang=0;vs.forEach(v=>(v.vna.exchanges||[]).forEach(x=>{if(x.kind==='I')intg++;else tang++;}));
+  const reciprocitat=tang?Math.round(intg/(intg+tang)*100):0;
+  // Persones actives = membres únics amb almenys una aportació signada o no
+  const activeIds=new Set();(node.ledger||[]).forEach(e=>e.memberId&&activeIds.add(e.memberId));vs.forEach(v=>(v.ledger||[]).forEach(e=>e.memberId&&activeIds.add(e.memberId)));
+  // Ventures amb enfoc de cura (heurístic: nom, descripció o categoria conté paraules clau)
+  const careWords=/cur[ae]s?|salut|acompan|gent gran|infan|inclus|inserci|integra|solidar|conviv/i;
+  const careVentures=vs.filter(v=>careWords.test(v.name+' '+(actMeta(v.activityId).one||'')+' '+(v.notes||'')));
+  // Connexions creuades = ventures + entitats de l'ecosistema (proxies de teixit)
+  const connexions=vs.length+links.length;
+  // Índex de solidaritat = hores donades sense contrapartida econòmica (heurístic simplificat)
+  let solidariHores=0;vs.forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps'&&(!e.rate||e.rate<10))solidariHores+=Number(e.value)||0;}));
+  return{
+    horesDonades:Math.round(horesDonades),
+    reciprocitat,
+    intangibles:intg,tangibles:tang,
+    personesActives:activeIds.size,
+    membresTotal:ms.length,
+    venturesCura:careVentures.length,
+    connexions,
+    capitalMobilitzat:Math.round(capital),
+    solidariHores:Math.round(solidariHores),
+    ventures:vs.length,
+    ecosystem:links.length
+  };
+}
+// ═══════════ AI planner de fluxos de valor per demanda comunitària ═══════════
+// Delega a AI.call('plan_value_flows', ctx) si hi ha key; retorna {roles, flows} en el mateix format que un prototip.
+async function aiPlanValueFlows(demand,ctx){
+  const context={demand:(demand||'').trim(),territory:(ctx&&ctx.territory)||'',projectType:(ctx&&ctx.projectType)||'comunitari',existingMap:(ctx&&ctx.existingMap)||null,prototypes:PROTOTYPE_MAPS.map(p=>({id:p.id,name:p.name,one:p.one}))};
+  if(typeof AI==='object'&&typeof AI.call==='function'){
+    try{const r=await AI.call('plan_value_flows',context);if(r&&r.roles&&r.flows)return r;}catch(e){/* fallthrough to heuristic */}
+  }
+  // Fallback heurístic: escull el prototip més proper per keyword-match i el retorna.
+  const dl=(demand||'').toLowerCase();
+  const guess=PROTOTYPE_MAPS.find(p=>[p.id,p.name,p.one].join(' ').toLowerCase().split(/\W+/).some(w=>w.length>4&&dl.includes(w)))||PROTOTYPE_MAPS[0];
+  return{roles:guess.roles,flows:guess.flows,kanban:guess.kanban,fromPrototype:guess.id,heuristic:true};
+}
+// Readiness: 5 checks. Graduate quan tots verds (o overrideable per steward).
+function ventureReadiness(node,v){
+  const sps=sprintsOf(v),allItems=sps.reduce((a,s)=>a.concat(s.items||[]),[]);
+  const doneItems=allItems.filter(x=>x.done).length,itemPct=allItems.length?doneItems/allItems.length:0;
+  const ledger=(v.ledger||[]).length;
+  const eq=(typeof computeVentureEquity==='function')?computeVentureEquity(node,v):[];
+  const maxPct=eq.length?Math.max(...eq.map(e=>e.pct||0)):0;
+  const checks=[
+    {k:'lead',label:'Té soci líder assignat',ok:!!v.leadMemberId,hint:'Assigna un soci lead a la venture'},
+    {k:'sprints',label:'Almenys 1 sprint completat',ok:sps.some(s=>s.status==='done'),hint:'Marca com a fet el primer sprint'},
+    {k:'backlog',label:'≥60% dels items del backlog fets',ok:itemPct>=0.6,hint:'Ara: '+Math.round(itemPct*100)+'%'},
+    {k:'ledger',label:'≥3 aportacions al ledger',ok:ledger>=3,hint:'Registra hores o € reals ('+ledger+'/3)'},
+    {k:'equity',label:'Cap membre concentra >70% equity',ok:maxPct<=70||maxPct===0,hint:'Concentració actual: '+Math.round(maxPct)+'%'}
+  ];
+  const okCount=checks.filter(c=>c.ok).length,score=Math.round(okCount/checks.length*100);
+  return{score,checks,graduateReady:checks.every(c=>c.ok)};
 }
 const norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const entityId=(level,territoryName,entityType,name)=>'e_'+[norm(level),norm(territoryName),norm(entityType),norm(name)].join('_');
@@ -3076,12 +3478,16 @@ function openEntityForm(territoryId,existing){
       <label class="pick ${e&&e.visibility==='private'?'sel':''}" id="enVisPriv"><input type="radio" name="enVis" ${e&&e.visibility==='private'?'checked':''}><span class="pk-t">Privada (només tu)</span></label>
     </div>
     ${e&&e.verification&&!e.verification.verified?'<div class="ent-toggles"><label class="pick" id="enVerify"><input type="checkbox"><span class="pk-t">✓ Confirmo que és real i correcta</span></label></div>':''}
+    ${e?'<div class="modal-actions" style="justify-content:flex-start;margin-top:.5rem"><button class="btn btn-ghost btn-sm" id="enComando" style="border-color:var(--purple);color:var(--purple)">🏰 Comando de l\'entitat '+(entityComandoOf(e)?'('+entityComandoOf(e).members.length+')':'· crear')+'</button></div>':''}
     <div class="modal-actions">${e?'<button class="btn btn-ghost" id="enDelete" style="border-color:var(--red-dim);color:var(--red)">Elimina</button>':'<button class="btn btn-ghost" id="enCancel">Cancel·la</button>'}<button class="btn btn-primary" id="enSave">${e?'Desa':'⬡ Registra'}</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const nm=bg.querySelector('#enName');nm.focus();
   bg.querySelectorAll('.ent-toggles').forEach(g=>g.querySelectorAll('.pick').forEach(l=>l.onclick=ev=>{const inp=l.querySelector('input');if(inp.type==='radio'){g.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel'));l.classList.add('sel');inp.checked=true;}else{l.classList.toggle('sel');}}));
-  if(e){bg.querySelector('#enDelete').onclick=()=>{closeModal();deleteEntity(e);};}
+  if(e){
+    bg.querySelector('#enDelete').onclick=()=>{closeModal();deleteEntity(e);};
+    const cmBtn=bg.querySelector('#enComando');if(cmBtn)cmBtn.onclick=()=>{closeModal();openEntityComando(e);};
+  }
   else{bg.querySelector('#enCancel').onclick=closeModal;}
   bg.querySelector('#enSave').onclick=async()=>{
     const name=nm.value.trim();if(!name){nm.focus();return;}
@@ -3476,6 +3882,19 @@ function renderMatriuVentures(body,node){
   body.appendChild(bar);
   const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🌱</span><span>Incuba iniciatives crítiques de desenvolupament comunitari i econòmic amb <strong>acció-formació</strong>: cada venture arriba amb el seu mapa de valor i el seu tauler d\'aprenentatge, i pot <strong>graduar-se</strong> a projecte propi.</span>';body.appendChild(note);
   if(!vs.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Cap venture encara</h2><p>Tria una activitat crítica del territori i instancia-la, o carrega un exemple.</p>';body.appendChild(emp);return;}
+  // Widget d'impacte psicosocial — el que fa la MATRIU imprescindible més enllà de l'euro
+  const psy=matriuPsychoImpact(node);
+  body.appendChild(el('div','ent-grp-lbl','🌊 Impacte psicosocial · el valor viu que crea la MATRIU'));
+  const psyBox=el('div','matriu-psy');
+  psyBox.innerHTML='<div class="psy-grid">'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--indigo)">'+psy.horesDonades+'h</div><div class="psy-l">temps donat total</div><div class="psy-hint">'+(psy.solidariHores>0?psy.solidariHores+'h solidàries':'sense hores solidàries encara')+'</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--green)">'+psy.reciprocitat+'%</div><div class="psy-l">reciprocitat</div><div class="psy-hint">'+psy.intangibles+' intang. · '+psy.tangibles+' tang.</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--purple)">'+psy.personesActives+'/'+psy.membresTotal+'</div><div class="psy-l">persones actives</div><div class="psy-hint">'+(psy.personesActives?Math.round(psy.personesActives/Math.max(1,psy.membresTotal)*100):0)+'% del cens</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--red)">'+psy.venturesCura+'</div><div class="psy-l">ventures de cura</div><div class="psy-hint">contra la soledat i l\'exclusió</div></div>'+
+    '<div class="psy-tile"><div class="psy-n" style="color:var(--orange)">'+psy.connexions+'</div><div class="psy-l">connexions creuades</div><div class="psy-hint">'+psy.ventures+' ventures · '+psy.ecosystem+' entitats</div></div>'+
+    '</div>'+
+    '<div class="psy-caption">Aquestes són les mètriques que expliquen per què la MATRIU és un model: no només mou capital, també <strong>cura, vincle, reciprocitat i temps donat</strong>. La densitat relacional (fluxos intangibles) i el temps solidari són indicadors de sortida de la salut psicosocial del territori.</div>';
+  body.appendChild(psyBox);
   const f=fundRollup(node);
   body.appendChild(el('div','ent-grp-lbl','🏦 Fons cooperatiu · valor mobilitzat'));
   const fund=el('div','bib-stats');fund.innerHTML=
@@ -3504,7 +3923,8 @@ function renderMatriuVentures(body,node){
     list.forEach(v=>{
       const a=actMeta(v.activityId),c=el('div','ent-card');c.style.cursor='pointer';
       const lead=v.leadMemberId?memberById(node,v.leadMemberId):null,nAl=allocationsOf(v).length,nAp=ventureLedger(v).length,nCo=cooperationsOf(node).filter(x=>x.fromId===v.id||x.toId===v.id).length;
-      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(nCo?'<span class="ent-b b-ver">🔄 '+nCo+' coop</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
+      const sps=sprintsOf(v),spDone=sps.filter(s=>s.status==='done').length,rd=ventureReadiness(node,v);
+      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(sps.length?'<span class="ent-b">📋 '+spDone+'/'+sps.length+' sprints</span>':'')+'<span class="ent-b '+(rd.graduateReady?'b-ver':(rd.score>=60?'b-form':''))+'">🎓 '+rd.score+'%</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(nCo?'<span class="ent-b b-ver">🔄 '+nCo+' coop</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
       c.onclick=()=>openVentureDetail(node,v);
       const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
       if(v.stage!=='graduacio'){const i=VENTURE_STAGES.indexOf(v.stage);const nx=el('button','btn btn-ghost btn-sm','→ '+({idea:'Prototip',prototip:'Validació',validacio:'Graduar'}[v.stage]));nx.onclick=async ev=>{ev.stopPropagation();if(v.stage==='validacio'){await graduateVenture(node,v);}else{v.stage=VENTURE_STAGES[i+1];await persist(node);renderWorkspace();toast('Venture avançada');}};act.appendChild(nx);}
@@ -3515,11 +3935,42 @@ function renderMatriuVentures(body,node){
   });
 }
 function openActivityGallery(node){
-  const cards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
-  const bg=modal('<h2>Activitats crítiques del territori</h2><p class="m-sub">Tria l\'activitat a incubar: precarregarem el seu mapa de valor i el tauler d\'acció-formació.</p><div class="dyn-grid">'+cards+'</div><div class="modal-actions"><button class="btn btn-ghost" id="agCancel">Cancel·la</button></div>');
+  const critCards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
+  const protoCards=PROTOTYPE_MAPS.map(p=>'<div class="dyn-card" data-proto="'+p.id+'"><span class="dyn-ic">'+p.icon+'</span><span class="dyn-nm">'+esc(p.name)+'</span><span class="dyn-one">'+esc(p.one)+'</span><span class="dyn-one" style="opacity:.65;font-style:italic">Tipus habituals: '+p.projectTypes.map(t=>projectTypeMeta(t).icon).join(' ')+'</span></div>').join('');
+  const typeOpts=PROJECT_TYPES.map(t=>'<option value="'+t.id+'">'+t.icon+' '+esc(t.name)+' — '+esc(t.one)+'</option>').join('');
+  const bg=modal('<h2>Nova venture · MATRIU</h2>'+
+    '<p class="m-sub">Escull d\'on partir: <strong>activitat crítica</strong> del territori (10 predefinides), <strong>prototip de mapa de valor</strong> (per servei/procés/producte, cobreix el 80% dels casos), o <strong>demanda</strong> que la IA planificarà.</p>'+
+    '<div class="ag-tabs"><button class="ag-tab sel" data-t="crit">🎯 Activitats crítiques</button><button class="ag-tab" data-t="proto">📐 Prototips de mapa de valor</button><button class="ag-tab" data-t="ai">🤖 Demana a la IA</button></div>'+
+    '<div class="field" style="margin-top:.6rem"><label>Tipus de projecte</label><select id="agType">'+typeOpts+'</select></div>'+
+    '<div id="agCrit" class="ag-pane"><p class="m-sub" style="font-size:.82rem">Plantilles del territori (dinamització, ocupació, habitatge, energia, alimentació, cures, cultura…). Cada activitat inclou rols, fluxos i pla d\'acció.</p><div class="dyn-grid">'+critCards+'</div></div>'+
+    '<div id="agProto" class="ag-pane" style="display:none"><p class="m-sub" style="font-size:.82rem">Mapes genèrics reutilitzables per <strong>servei</strong>, <strong>procés</strong> o <strong>producte</strong>. Personalitzables al 100% després.</p><div class="dyn-grid">'+protoCards+'</div></div>'+
+    '<div id="agAi" class="ag-pane" style="display:none"><p class="m-sub" style="font-size:.82rem">Descriu la <strong>demanda comunitària</strong>. La IA (o el fallback heurístic sense clau) proposarà un mapa de valor amb rols i fluxos, editable després.</p><textarea id="agDemand" style="width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.5rem;font:inherit" placeholder="Ex: cal un servei de reparació de bicicletes de barri accessible per a joves i gent gran, obert els caps de setmana"></textarea><button class="btn btn-primary btn-sm" id="agAiGo" style="margin-top:.5rem">🤖 Planifica els fluxos de valor</button><div id="agAiRes" style="margin-top:.6rem"></div></div>'+
+    '<div class="modal-actions"><button class="btn btn-ghost" id="agCancel">Cancel·la</button></div>');
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#agCancel').onclick=closeModal;
-  bg.querySelectorAll('.dyn-card').forEach(c=>c.onclick=async()=>{venturesOf(node).push(newVenture(node,actMeta(c.dataset.act)));await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada');});
+  bg.querySelectorAll('.ag-tab').forEach(tab=>tab.onclick=()=>{const t=tab.dataset.t;bg.querySelectorAll('.ag-tab').forEach(x=>x.classList.toggle('sel',x===tab));bg.querySelector('#agCrit').style.display=t==='crit'?'':'none';bg.querySelector('#agProto').style.display=t==='proto'?'':'none';bg.querySelector('#agAi').style.display=t==='ai'?'':'none';});
+  const getType=()=>bg.querySelector('#agType').value;
+  bg.querySelectorAll('#agCrit .dyn-card').forEach(c=>c.onclick=async()=>{const v=newVenture(node,actMeta(c.dataset.act));v.projectType=getType();v.equity={...projectTypeMeta(getType()).equity};venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada — '+projectTypeMeta(getType()).name);});
+  bg.querySelectorAll('#agProto .dyn-card').forEach(c=>c.onclick=async()=>{const v=newVentureFromPrototype(node,prototypeMapMeta(c.dataset.proto),{type:getType()});venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture des de prototip — '+v.name);});
+  bg.querySelector('#agAiGo').onclick=async()=>{
+    const demand=bg.querySelector('#agDemand').value.trim();if(!demand){toast('Descriu la demanda comunitària');return;}
+    const btn=bg.querySelector('#agAiGo');btn.disabled=true;btn.textContent='🤖 Planificant…';
+    try{
+      const plan=await aiPlanValueFlows(demand,{projectType:getType()});
+      const rolesHtml=plan.roles.map(r=>'<li>'+esc(typeof r==='string'?r:(r.name||''))+'</li>').join('');
+      const flowsHtml=plan.flows.slice(0,12).map(f=>'<li>'+esc(f[0])+' '+(f[2]==='tangible'||f[2]==='T'?'→':'⇢')+' '+esc(f[1])+(f[3]?' <em style="color:var(--muted)">('+esc(f[3])+')</em>':'')+'</li>').join('');
+      bg.querySelector('#agAiRes').innerHTML='<div class="ai-note"><span class="ic">🤖</span><span>'+(plan.heuristic?'<em>Sense clau IA: fallback heurístic al prototip <strong>'+esc(prototypeMapMeta(plan.fromPrototype).name)+'</strong>.</em>':'Pla generat.')+'</span></div>'+
+        '<div class="ent-grp-lbl">Rols</div><ul style="font-size:.85rem;color:var(--light);margin:0;padding-left:1.2rem">'+rolesHtml+'</ul>'+
+        '<div class="ent-grp-lbl">Fluxos</div><ul style="font-size:.85rem;color:var(--light);margin:0;padding-left:1.2rem">'+flowsHtml+'</ul>'+
+        '<button class="btn btn-primary btn-sm" id="agAiUse" style="margin-top:.6rem">✓ Crea la venture amb aquest pla</button>';
+      bg.querySelector('#agAiUse').onclick=async()=>{
+        const proto={id:'ai_'+Date.now(),name:demand.slice(0,60),icon:'🤖',one:demand,roles:plan.roles.map(r=>typeof r==='string'?r:r.name),flows:plan.flows,kanban:plan.kanban||['Definir MVP','Primer prototip','Test amb 3 persones','Iterar','Consolidar']};
+        const v=newVentureFromPrototype(node,proto,{type:getType(),name:demand.slice(0,60)});
+        venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada des de plan IA');
+      };
+    }catch(e){bg.querySelector('#agAiRes').innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.message||'desconegut')+'</span></div>';}
+    finally{btn.disabled=false;btn.textContent='🤖 Planifica els fluxos de valor';}
+  };
 }
 // Perfil transversal: mostra tot el que una persona aporta i mou a l'ecosistema (banc, biblioteca, MATRIU).
 function openPersonProfile(nameOrKey){
@@ -3596,6 +4047,8 @@ function openVentureDetail(node,v){
     <div class="ent-grp-lbl">🥧 Slicing Pie de la venture</div>
     <div id="vdEquity"></div>
     <button class="btn btn-ghost btn-sm" id="vdContrib" style="margin-top:.5rem">+ Registra aportació</button>
+    <div class="ent-grp-lbl">📋 Pla d'sprints · camí de graduació</div>
+    <div id="vdSprints"></div>
     <div class="ent-grp-lbl">🔄 Intercooperació entre ventures (Mondragón)</div>
     <div id="vdCoops"></div>
     <button class="btn btn-ghost btn-sm" id="vdCoop" style="margin-top:.4rem">🔄 Coopera amb una altra venture</button>
@@ -3616,6 +4069,65 @@ function openVentureDetail(node,v){
   const eqBox=bg.querySelector('#vdEquity');
   (function renderVEq(){const eq=computeVentureEquity(node,v);eqBox.innerHTML='';if(eq.some(e=>e.slices>0))eqBox.appendChild(buildEquityWrap(eq));else eqBox.appendChild(el('div','ent-desc','Encara cap aportació a aquesta venture. Registra hores o diner dels socis i la tarta es repartirà — cada projecte econòmic té la seva pròpia.'));})();
   bg.querySelector('#vdContrib').onclick=async()=>{if(!ms.length){toast('Dona d\'alta socis a la MATRIU primer');return;}v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);openContributionModal(node,v);};
+  const spBox=bg.querySelector('#vdSprints');
+  const renderSprints=()=>{
+    spBox.innerHTML='';
+    const sps=sprintsOf(v),rd=ventureReadiness(node,v);
+    // Readiness gauge
+    const rdBox=el('div','vd-ready');
+    rdBox.innerHTML='<div class="vd-ready-hd"><span class="vd-ready-sc">'+rd.score+'%</span><span class="vd-ready-lb">readiness per graduar</span></div>'+
+      '<div class="vd-ready-bar"><div class="vd-ready-fill" style="width:'+rd.score+'%;background:'+(rd.graduateReady?'var(--green)':rd.score>=60?'var(--orange)':'var(--indigo)')+'"></div></div>'+
+      '<ul class="vd-ready-list">'+rd.checks.map(c=>'<li class="'+(c.ok?'ok':'no')+'">'+(c.ok?'✅':'⚪')+' '+esc(c.label)+(c.ok?'':' <span class="vd-ready-hint">— '+esc(c.hint)+'</span>')+'</li>').join('')+'</ul>';
+    spBox.appendChild(rdBox);
+    // Sprint list or seed prompt
+    if(!sps.length){
+      const empty=el('div','ent-desc','Cap sprint definit encara. El pla es sembra automàticament des del mapa de valor i el kanban-seed de l\'activitat.');
+      spBox.appendChild(empty);
+      const seed=el('button','btn btn-primary btn-sm','🌱 Sembra pla automàtic (S1 fonaments · S2 fluxos · S3 MVP)');
+      seed.style.marginTop='.5rem';
+      seed.onclick=async()=>{seedSprintPlanFromMap(v);await persist(node);renderSprints();toast('Pla sembrat: 3 sprints amb backlog inicial');};
+      spBox.appendChild(seed);
+      return;
+    }
+    sps.forEach(sp=>{
+      const pr=sprintProgress(sp);
+      const card=el('div','sp-card sp-'+sp.status);
+      card.innerHTML='<div class="sp-hd"><span class="sp-nm">'+esc(sp.name)+'</span><span class="sp-st sp-st-'+sp.status+'">'+({planned:'planificat',active:'actiu',done:'fet ✓'}[sp.status]||sp.status)+'</span></div>'+
+        (sp.goal?'<div class="sp-goal">🎯 '+esc(sp.goal)+'</div>':'')+
+        '<div class="sp-bar"><div class="sp-bar-fill" style="width:'+pr.pct+'%"></div></div>'+
+        '<div class="sp-meta">'+pr.done+'/'+pr.total+' items · '+sp.weeks+' setm.</div>'+
+        '<ul class="sp-items"></ul>'+
+        '<div class="sp-actions"></div>';
+      const ul=card.querySelector('.sp-items');
+      (sp.items||[]).forEach(it=>{
+        const li=el('li','sp-it'+(it.done?' done':'')+' sp-kind-'+it.kind);
+        li.innerHTML='<label><input type="checkbox" '+(it.done?'checked':'')+'> <span class="sp-ic">'+({role:'👤',flow:'⇄',deliverable:'📦',test:'🧪'}[it.kind]||'◇')+'</span> <span class="sp-tt">'+esc(it.title)+'</span></label>';
+        li.querySelector('input').onchange=async()=>{toggleBacklogItem(sp,it.id);await persist(node);renderSprints();};
+        ul.appendChild(li);
+      });
+      const acts=card.querySelector('.sp-actions');
+      // Add-item form
+      const addWrap=el('div','sp-add');
+      addWrap.innerHTML='<input type="text" placeholder="+ nou item al backlog" class="sp-add-in"><select class="sp-add-k"><option value="deliverable">📦 entregable</option><option value="role">👤 rol</option><option value="flow">⇄ flux</option><option value="test">🧪 test</option></select><button class="btn btn-ghost btn-sm sp-add-b">Afegeix</button>';
+      const inp=addWrap.querySelector('.sp-add-in'),ksel=addWrap.querySelector('.sp-add-k');
+      addWrap.querySelector('.sp-add-b').onclick=async()=>{const t=inp.value.trim();if(!t)return;addBacklogItem(sp,{title:t,kind:ksel.value});inp.value='';await persist(node);renderSprints();};
+      acts.appendChild(addWrap);
+      // Advance button
+      if(sp.status!=='done'){
+        const adv=el('button','btn btn-ghost btn-sm','→ '+(sp.status==='planned'?'Activa sprint':'Marca com a fet'));
+        adv.style.marginTop='.4rem';
+        adv.onclick=async()=>{advanceSprint(v,sp.id);await persist(node);renderSprints();toast(sp.status==='done'?'Sprint tancat':'Sprint activat');};
+        acts.appendChild(adv);
+      }
+      spBox.appendChild(card);
+    });
+    // Bulk add sprint
+    const addSp=el('button','btn btn-ghost btn-sm','+ Nou sprint');
+    addSp.style.marginTop='.5rem';
+    addSp.onclick=async()=>{const nm=prompt('Nom del sprint:','S'+(sps.length+1)+' · ');if(!nm)return;newSprint(v,{name:nm.trim(),weeks:2});await persist(node);renderSprints();};
+    spBox.appendChild(addSp);
+  };
+  renderSprints();
   const coopBox=bg.querySelector('#vdCoops');
   (function renderCoops(){const coops=cooperationsOf(node).filter(c=>c.fromId===v.id||c.toId===v.id);coopBox.innerHTML='';if(!coops.length){coopBox.appendChild(el('div','ent-desc','Cap intercooperació encara. Les ventures poden cedir hores, objectes, talent o capital entre elles.'));return;}const grid=el('div','ent-grid');coops.slice(0,20).forEach(c=>{const dir=c.fromId===v.id?'→ dóna a':'← rep de',other=c.fromId===v.id?c.toName:c.fromName;const card=el('div','ent-card');const kmap={hores:'⏱',objecte:'📦',talent:'👤',moneda:'€'};card.innerHTML='<div class="ent-nm">'+kmap[c.kind]+' '+c.qty+' '+c.kind+'</div><div class="ent-badges"><span class="ent-b">'+esc(dir)+'</span><span class="ent-b b-ver">'+esc(other)+'</span>'+(c.sig?'<span class="ent-b b-ver">🔏 firmat</span>':'')+'</div>'+(c.note?'<div class="ent-desc">'+esc(c.note)+'</div>':'');grid.appendChild(card);});coopBox.appendChild(grid);})();
   bg.querySelector('#vdCoop').onclick=()=>{const others=venturesOf(node).filter(x=>x.id!==v.id);if(!others.length){toast('Cal una altra venture per cooperar');return;}closeModal();openCooperationModal(node,v);};
@@ -3706,6 +4218,85 @@ function buildEquityPie(eq){
     svg.appendChild(p);ang=a2;});
   const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
   return svg;
+}
+// ═══════════ openEntityComando · l'equip gestor d'una entitat existent ═══════════
+function openEntityComando(entity){
+  // Reunim tots els noms de persona coneguts a l'ecosistema per suggerir-los
+  const allNames=new Set();state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{if(m.kind!=='entitat')allNames.add(m.name);}));
+  const namesArr=[...allNames].sort();
+  let c=entityComandoOf(entity);
+  const protoOpts='<option value="">— sense prototip —</option>'+PROTOTYPE_MAPS.map(p=>'<option value="'+p.id+'">'+p.icon+' '+esc(p.name)+'</option>').join('');
+  const bg=modal(`
+    <h2>🏰 Comando · ${esc(entity.name)}</h2>
+    <p class="m-sub">Cada entitat pot tenir el seu propi Comando (equip gestor). Els membres es referencien per nom i queden vinculats al roster global del Comando Molekulon.</p>
+    <div id="ecBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ecCloseBtn">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const body=bg.querySelector('#ecBody');
+  const render=()=>{
+    c=entityComandoOf(entity);
+    if(!c){
+      body.innerHTML='<div class="ai-note"><span class="ic">🏰</span><span>Aquesta entitat encara no té Comando. Crea l\'equip gestor.</span></div>'+
+        '<div class="field"><label>Nom del Comando</label><input id="ecName" value="'+esc('Comando de '+entity.name)+'"></div>'+
+        '<div class="field"><label>Missió (una frase)</label><input id="ecMission" placeholder="ex: sostenir el projecte X..."></div>'+
+        '<div class="field"><label>Prototip de mapa de valor</label><select id="ecProto">'+protoOpts+'</select></div>'+
+        '<button class="btn btn-primary btn-sm" id="ecCreate">🏰 Crea el Comando</button>';
+      body.querySelector('#ecCreate').onclick=async()=>{const name=body.querySelector('#ecName').value.trim(),mission=body.querySelector('#ecMission').value.trim(),pid=body.querySelector('#ecProto').value||null;newEntityComando(entity,{name,mission,prototypeMapId:pid});await persistEntity(entity);render();toast('Comando creat');};
+      return;
+    }
+    const roleOpts='<option value="">rol funcional (obert)</option>'+(c.vna.roles||[]).map(r=>'<option value="'+esc(r.name)+'">'+esc(r.name)+'</option>').join('');
+    const dataListNames='<datalist id="ecNamesDL">'+namesArr.map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist>';
+    body.innerHTML='<div class="cm-hd"><span style="font-size:1.6rem">🏰</span><span class="cm-hd-nm">'+esc(c.name)+'</span></div>'+
+      (c.mission?'<div class="cm-mission">🎯 '+esc(c.mission)+'</div>':'')+
+      '<div class="ent-grp-lbl">👥 Colla castellera · '+c.members.length+' membre'+(c.members.length===1?'':'s')+'</div>'+
+      (c.members.length?'<div class="cm-team">'+c.members.map(mm=>'<div class="cm-slot"><div class="cm-slot-nm">'+esc(mm.name)+'</div>'+(mm.role?'<div class="cm-slot-rl">🎭 '+esc(mm.role)+'</div>':'')+(mm.focus?'<div class="cm-slot-fc">'+esc(mm.focus)+'</div>':'')+'<button class="btn btn-ghost btn-sm ecDel" data-pk="'+esc(mm.personKey)+'" style="margin-top:.3rem;align-self:flex-start">Treu</button></div>').join('')+'</div>':'<div class="ent-desc">Cap membre encara.</div>')+
+      '<div class="cm-add-row"><input list="ecNamesDL" id="ecAddName" placeholder="nom de persona"><select id="ecAddRole">'+roleOpts+'</select><input id="ecAddFocus" placeholder="focus (opcional)"><button class="btn btn-ghost btn-sm" id="ecAddBtn">+ Afegeix</button></div>'+dataListNames+
+      (c.vna.roles.length?'<div class="ent-grp-lbl">📐 Mini mapa de valor del Comando · '+c.vna.roles.length+' rols · '+c.vna.exchanges.length+' fluxos</div><div class="ent-desc">Rols funcionals: '+c.vna.roles.map(r=>esc(r.name)).join(' · ')+'</div>':'');
+    body.querySelector('#ecAddBtn').onclick=async()=>{const nm=body.querySelector('#ecAddName').value.trim();if(!nm){toast('Escriu un nom');return;}entityComandoAssign(entity,nm,body.querySelector('#ecAddRole').value,body.querySelector('#ecAddFocus').value);await persistEntity(entity);render();};
+    body.querySelectorAll('.ecDel').forEach(b=>b.onclick=async()=>{entityComandoRemove(entity,b.dataset.pk);await persistEntity(entity);render();});
+  };
+  render();
+  bg.querySelector('#ecCloseBtn').onclick=closeModal;
+}
+// ═══════════ openProjectComando · equip gestor del node (colla castellera) ═══════════
+function openProjectComando(node){
+  const ms=membersOf(node);
+  let c=comandoOf(node);
+  const protoOpts='<option value="">— sense prototip —</option>'+PROTOTYPE_MAPS.map(p=>'<option value="'+p.id+'">'+p.icon+' '+esc(p.name)+'</option>').join('');
+  const bg=modal(`
+    <h2>🏰 Comando · equip gestor</h2>
+    <p class="m-sub">Un Comando és una <strong>colla castellera</strong>: el grup de persones que sostenen el projecte, cadascú al seu lloc. Té la seva pròpia missió i el seu mini mapa de valor (com se subministra el servei / procés / producte).</p>
+    <div id="cmBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="cmCloseBtn">Tanca</button><button class="btn btn-primary" id="cmSaveBtn">⬢ Desa</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const body=bg.querySelector('#cmBody');
+  const render=()=>{
+    c=comandoOf(node);
+    if(!c){
+      body.innerHTML='<div class="ai-note"><span class="ic">🏰</span><span>Encara no hi ha Comando per aquest node. Crea l\'equip gestor amb un nom, una missió i, opcionalment, un prototip de mapa de valor.</span></div>'+
+        '<div class="field"><label>Nom del Comando</label><input id="cmName" value="'+esc('Comando de '+node.name)+'"></div>'+
+        '<div class="field"><label>Missió (una frase)</label><input id="cmMission" placeholder="ex: sostenir el servei X per a la comunitat de Y"></div>'+
+        '<div class="field"><label>Prototip de mapa de valor</label><select id="cmProto">'+protoOpts+'</select></div>'+
+        '<button class="btn btn-primary btn-sm" id="cmCreate">🏰 Crea el Comando</button>';
+      body.querySelector('#cmCreate').onclick=async()=>{const name=body.querySelector('#cmName').value.trim(),mission=body.querySelector('#cmMission').value.trim(),pid=body.querySelector('#cmProto').value||null;newProjectComando(node,{name,mission,prototypeMapId:pid});await persist(node);render();toast('Comando creat');};
+      return;
+    }
+    const memberOpts='<option value="">— tria un membre —</option>'+ms.filter(m=>!c.members.some(x=>x.memberId===m.id)).map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('');
+    const roleOpts='<option value="">rol funcional (obert)</option>'+(c.vna.roles||[]).map(r=>'<option value="'+esc(r.name)+'">'+esc(r.name)+'</option>').join('');
+    body.innerHTML='<div class="cm-hd"><span style="font-size:1.6rem">🏰</span><span class="cm-hd-nm">'+esc(c.name)+'</span></div>'+
+      (c.mission?'<div class="cm-mission">🎯 '+esc(c.mission)+'</div>':'')+
+      '<div class="ent-grp-lbl">👥 Colla castellera · '+c.members.length+' membre'+(c.members.length===1?'':'s')+'</div>'+
+      (c.members.length?'<div class="cm-team">'+c.members.map(mm=>{const m=memberById(node,mm.memberId)||{name:'(desconegut)'};return '<div class="cm-slot"><div class="cm-slot-nm">'+esc(m.name)+'</div>'+(mm.role?'<div class="cm-slot-rl">🎭 '+esc(mm.role)+'</div>':'')+(mm.focus?'<div class="cm-slot-fc">'+esc(mm.focus)+'</div>':'')+'<button class="btn btn-ghost btn-sm cmDel" data-mid="'+mm.memberId+'" style="margin-top:.3rem;align-self:flex-start">Treu del comando</button></div>';}).join('')+'</div>':'<div class="ent-desc">Cap membre al Comando encara.</div>')+
+      '<div class="cm-add-row"><select id="cmAddMem">'+memberOpts+'</select><select id="cmAddRole">'+roleOpts+'</select><input id="cmAddFocus" placeholder="focus (opcional)"><button class="btn btn-ghost btn-sm" id="cmAddBtn">+ Afegeix</button></div>'+
+      (c.vna.roles.length?'<div class="ent-grp-lbl">📐 Mini mapa de valor del Comando · '+c.vna.roles.length+' rols · '+c.vna.exchanges.length+' fluxos</div><div class="ent-desc">Rols funcionals: '+c.vna.roles.map(r=>esc(r.name)).join(' · ')+'</div>':'<div class="ent-grp-lbl">📐 Mini mapa de valor</div><div class="ent-desc">Cap mapa vinculat. Edita el Comando per associar un prototip.</div>');
+    body.querySelector('#cmAddBtn').onclick=async()=>{const mid=body.querySelector('#cmAddMem').value;if(!mid){toast('Tria un membre');return;}comandoAssignRole(node,mid,body.querySelector('#cmAddRole').value,body.querySelector('#cmAddFocus').value);await persist(node);render();};
+    body.querySelectorAll('.cmDel').forEach(b=>b.onclick=async()=>{comandoRemoveMember(node,b.dataset.mid);await persist(node);render();});
+  };
+  render();
+  bg.querySelector('#cmCloseBtn').onclick=closeModal;
+  bg.querySelector('#cmSaveBtn').onclick=async()=>{await persist(node);closeModal();toast('Comando desat');};
 }
 function openContributionModal(node,venture){
   const ms=membersOf(node),cfg=venture?ventureCfg(node,venture):equityCfg(node);
@@ -4299,6 +4890,7 @@ $('#btnContact').onclick=openContactModal;
 $('#btnSettings').onclick=openSettingsModal;
 $('#btnLauncher').onclick=openLauncher;
 window.openFounderMap=openFounderMap;
+$('#personaBadge').onclick=()=>{if(state.activePersona){openPersonProfile(state.activePersona);}};
 $('#btnSearch').onclick=openSearchPalette;
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearchPalette();}});
 $('#btnMap').onclick=()=>{state.activeId=null;render();};
@@ -4310,10 +4902,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ═══════════════════ BOOT ═══════════════════ */
 (async function boot(){
-  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');}catch(e){console.error('DB error',e);}
+  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

@@ -26,6 +26,10 @@ nav a:hover{text-decoration:underline}
 .module{background:var(--card);border-radius:14px;padding:1.8rem 2rem;margin-bottom:1.8rem;border:1px solid var(--border);border-left:4px solid var(--indigo)}
 .module.mod-1{border-left-color:var(--indigo)} .module.mod-2{border-left-color:var(--blue)} .module.mod-3{border-left-color:var(--green)} .module.mod-4{border-left-color:#facc15}
 .module.mod-5{border-left-color:var(--orange)} .module.mod-6{border-left-color:var(--red)} .module.mod-7{border-left-color:var(--purple)} .module.mod-8{border-left-color:#00e5ff}
+.module.mod-manual{border-left-color:#a3e635;background:linear-gradient(180deg,var(--card),rgba(163,230,53,.04))}
+.module.mod-manual h3.section{color:#a3e635;border-top:1px solid rgba(163,230,53,.15);padding-top:1.2rem;margin-top:1.8rem}
+.module.mod-manual h3.section:first-of-type{border-top:0;padding-top:0}
+.module.mod-manual pre{max-width:100%}
 .module .num{color:var(--muted);font-size:.85rem;font-family:'SF Mono',Monaco,monospace;letter-spacing:.1em}
 .module h2{margin:.2rem 0 .3rem;font-size:1.5rem}
 .module .subtitle{color:var(--light);font-size:1rem;margin:0 0 1.2rem}
@@ -80,6 +84,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <li><a href="#m6">MATRIU, Slicing Pie i intercooperació</a> · <em>ventures + equity dinàmic + Mondragón</em></li>
 <li><a href="#m7">Comando Molekulon i reputació</a> · <em>superheroi + cromos + multivers narratiu</em></li>
 <li><a href="#m8">Ancoratge públic i IA integrada</a> · <em>Nostr + IPFS/Arweave + AI adapter DRY</em></li>
+<li><a href="#manual">Manual tècnic · Developers & Admins</a> · <em>wallets permaweb · Nostr · Claude API · self-hosting · dev workflow</em></li>
 </ol>
 </div>
 
@@ -399,6 +404,179 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Un cop tens un node amb activitat real (Mòdul 6 completat), fes un cicle complet d'ancoratge: (a) genera Anchor Pack + CID · (b) puja'l a Arweave/IPFS · (c) publica el mainHash a Nostr. Cadascú pot verificar el pack sense confiar en TeamTowers.</p></div>
 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Simula l'<strong>Impacte cas Catalunya</strong> per al teu municipi. Ajusta la penetració al 10%. Anota l'estalvi €/any + reducció solitud + tCO2. Fes captura i comparteix-la a xarxes amb link a SOS.</p></div>
+</section>
+
+<section class="module mod-manual" id="manual" style="border-left-color:#a3e635">
+<div class="num">MANUAL TÈCNIC · Developers &amp; Admins SOS</div>
+<h2>Configuració avançada — integracions externes</h2>
+<p class="subtitle">Guia pas a pas per connectar SOS amb wallets permaweb (Arweave), signadors Nostr, IA i identitat forta. Tot opcional: SOS funciona 100% offline sense res d'això.</p>
+<p class="lead">SOS és <strong>local-first sense servidor</strong> per disseny. Aquestes integracions són <em>opt-in</em>: només s'activen si tu, com a admin d'una comunitat, vols publicar proves públiques, pagar registres al permaweb, delegar signatures a un signador extern o utilitzar IA per generar mapes. Res arriba a servidors de tercers sense la teva acció explícita.</p>
+
+<h3 class="section">A · Wallet Arweave (permaweb) per pagar registres core</h3>
+<div class="box eines"><h4>🧰 Què cobreix</h4>
+<p>Un registre "core" a SOS (Anchor Pack d'un projecte fundador, backup d'estat cifrat, historial de decisions públic) es pot pinnar de manera <strong>permanent</strong> a Arweave. Cost típic: <code>0.0001–0.001 AR</code> per pack (≈ pocs cèntims). Per fer-ho cal una wallet Arweave amb saldo mínim.</p>
+</div>
+
+<div class="grid2">
+<div class="box skills"><h4>🛠 Opcions de wallet</h4><ul>
+<li><strong>ArConnect</strong> (extensió navegador · <a href="https://www.arconnect.io" target="_blank" rel="noopener">arconnect.io</a>) — recomanat a desktop. Injecta <code>window.arweaveWallet</code>.</li>
+<li><strong>Wander</strong> (mobile/PWA) — successor d'ArConnect, funciona a iPad.</li>
+<li><strong>JWK paper wallet</strong> (JSON exportat) — la manera air-gapped, funciona a qualsevol navegador sense extensió.</li>
+<li><strong>othent</strong> / <strong>Beacon</strong> — login social (Google/Apple) sobre Arweave, útil per onboarding no-tècnic.</li>
+</ul></div>
+<div class="box metode"><h4>💰 Aconseguir AR</h4><ul>
+<li>Exchange centralitzat (Kraken, Gate.io, MEXC).</li>
+<li><a href="https://permaswap.network" target="_blank" rel="noopener">Permaswap</a> (DEX natiu Arweave, swap ETH→AR).</li>
+<li>Saldo mínim recomanat: <strong>0.05 AR</strong> (≈ 50 packs · pocs €).</li>
+</ul></div>
+</div>
+
+<div class="box exercici"><h4>✏ Setup a l'iPad</h4>
+<p>1) Instal·la <strong>Wander</strong> (App Store) o obre <a href="https://arweave.app" target="_blank" rel="noopener">arweave.app</a> (PWA). 2) Crea wallet nova → <strong>guarda la seed phrase i el JWK en 2 llocs offline</strong> (paper + gestor de contrasenyes). 3) Envia-hi 0.05 AR des d'exchange. 4) A SOS, obre <strong>Ancora un pack a Arweave</strong> → confirma amb la wallet.</p>
+</div>
+
+<div class="box eines"><h4>🧰 Hooks SOS relacionats</h4>
+<p><code>buildAnchorPack(node)</code> · <code>downloadAnchorPack(pack)</code> · <code>uploadToArweave(pack, wallet)</code> · <code>arweaveEstimateFee(bytes)</code> · <code>verifyAnchorPack(pack)</code>. Si la wallet no està disponible el sistema segueix funcionant: sempre pots baixar el pack (JSON) i pinnar-lo manualment.</p>
+</div>
+
+<h3 class="section">B · Signador Nostr (NIP-07) per ancorar decisions</h3>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Signadors compatibles NIP-07</h4><ul>
+<li><strong>Alby</strong> (extensió · <a href="https://getalby.com" target="_blank" rel="noopener">getalby.com</a>) — wallet Bitcoin/Lightning + signador Nostr integrat.</li>
+<li><strong>nos2x</strong> (extensió lleugera, només Nostr).</li>
+<li><strong>Amber</strong> (Android, aïllat).</li>
+<li><strong>nostr-connect / NIP-46</strong> (remote signer, útil des d'iPad — la clau privada viu al mòbil).</li>
+</ul></div>
+<div class="box metode"><h4>🔑 Nsec vs npub</h4><ul>
+<li><strong>nsec1...</strong> — clau privada (mai la comparteixis, mai a un formulari web).</li>
+<li><strong>npub1...</strong> — clau pública (identificador, comparteix-la lliurement).</li>
+<li>SOS <strong>mai</strong> demana la nsec: sempre delega al signador.</li>
+</ul></div>
+</div>
+
+<div class="box exercici"><h4>✏ Setup + primer ancoratge</h4>
+<p>1) Instal·la Alby. 2) Menú Alby → <em>Nostr</em> → generar / importar clau. 3) Autoritza <code>*.teamtowershuma.com</code> i <code>file://</code> (per obrir SOS local). 4) A SOS, node amb mainHash calculat → <strong>🛰 Ancora mainHash</strong> → confirma al popup Alby. 5) Verifica al relay públic: <code>wss://relay.damus.io</code>.</p>
+</div>
+
+<div class="box eines"><h4>🧰 Relays configurables</h4>
+<p><code>NOSTR_RELAYS_DEFAULT = ['wss://relay.damus.io','wss://nos.lol','wss://relay.snort.social']</code>. Pots editar-los des del launcher <strong>⚙ Config Nostr</strong> per afegir relays privats o de la teva comarca.</p>
+</div>
+
+<h3 class="section">C · Claude API key (IA integrada, BYO)</h3>
+<div class="box eines"><h4>🧰 Model Glass-Box</h4>
+<p>SOS utilitza <strong>Claude API</strong> (<code>claude-opus-4-8</code> per defecte) via <code>AI.call(intent, ctx)</code>. La clau la portes tu (<em>BYO key</em>) i es guarda <strong>només</strong> a IndexedDB del teu navegador — mai surt cap enllà. Tots els prompts són versionats a <code>SOS/prompts/*.md</code> (Glass-Box: pots auditar què s'envia).</p>
+</div>
+
+<div class="grid2">
+<div class="box metode"><h4>🔧 Setup</h4><ul>
+<li>1) Aconsegueix una API key a <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>.</li>
+<li>2) SOS → launcher → <strong>🤖 Config IA</strong> → enganxa la key.</li>
+<li>3) Escull model (opus-4-8 recomanat per mapes VNA; sonnet-5 per generar copy ràpid).</li>
+<li>4) Cost típic: 0.01–0.05 € per mapa VNA generat.</li>
+</ul></div>
+<div class="box skills"><h4>🛠 Intents disponibles</h4><ul>
+<li><code>value_map</code> — genera mapa VNA d'una dinàmica.</li>
+<li><code>pr_review</code> — revisa un pull request de GitHub.</li>
+<li><code>narrative_kit</code> — còmic + himne + escena performativa.</li>
+<li><code>impact_report</code> — informe psicoeconòmic territorial.</li>
+<li><code>governance_summary</code> · <code>onboarding_hint</code> · <code>skill_suggest</code> · <code>equity_advisor</code>.</li>
+</ul></div>
+</div>
+
+<h3 class="section">D · WebAuthn / passkeys — login persistent amb Face/Touch ID</h3>
+<div class="box eines"><h4>🧰 Què fa</h4>
+<p>Vincula la teva did:sos a un <strong>passkey W3C WebAuthn</strong> del sistema operatiu (Touch ID / Face ID / Windows Hello / clau FIDO2). A partir d'aquí, obrir SOS demana biometria en lloc de tenir la sessió sempre oberta.</p>
+</div>
+
+<div class="box exercici"><h4>✏ Setup</h4>
+<p>1) Obre SOS amb identitat ja creada (Mòdul 2). 2) Launcher → <strong>🔐 Vincula passkey</strong>. 3) El sistema demana Face ID/Touch ID i registra la credencial al Secure Enclave / TPM. 4) Propera vegada: obrir SOS → biometria → sessió activa. La clau privada did:sos mai surt del dispositiu.</p>
+</div>
+
+<h3 class="section">E · GitHub OAuth device flow (per developers)</h3>
+<div class="box eines"><h4>🧰 Què habilita</h4>
+<p>Vincular el teu compte GitHub permet: (a) revisar PRs del repo <code>asolache/teamtowershuma</code> amb IA des del propi SOS · (b) publicar issues signats · (c) contribuir a l'atles compartit.</p>
+</div>
+
+<div class="box metode"><h4>🔧 Device flow (sense servidor OAuth)</h4>
+<p>1) Launcher → <strong>🐙 Connecta GitHub</strong>. 2) SOS mostra un codi curt (<code>ABCD-1234</code>). 3) Obre <a href="https://github.com/login/device" target="_blank" rel="noopener">github.com/login/device</a> i enganxa'l. 4) Autoritza els scopes <code>repo</code>, <code>read:user</code>. 5) SOS emmagatzema el token a IndexedDB xifrat.</p>
+</div>
+
+<h3 class="section">F · Sincronització P2P WebRTC entre navegadors</h3>
+<div class="box eines"><h4>🧰 Com funciona</h4>
+<p>Sincronització <strong>directa entre 2 navegadors</strong> sense servidor via WebRTC + copia-enganxa de codis SDP. Ideal per compartir estat entre iPad ↔ desktop, o entre membres d'una assemblea al mateix espai. Ara mateix (v17): sync puntual d'una vegada. En backlog: patch en viu + room-code descentralitzat via trackers WSS.</p>
+</div>
+
+<div class="box exercici"><h4>✏ Aparellament manual</h4>
+<p>1) Navegador A → <strong>Sync</strong> → <em>Iniciar</em> → copia el codi (SDP offer). 2) Envia'l per Signal/telegrama/mà a navegador B. 3) B enganxa i genera un codi de resposta. 4) A l'enganxa. 5) Sync completada: tot l'estat de B es fusiona a A (LWW + tombstones).</p>
+</div>
+
+<h3 class="section">G · Self-hosting / deployment de la teva instància SOS</h3>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Opcions de hosting</h4><ul>
+<li><strong>GitHub Pages</strong> — fork del repo, activa Pages a la branca main, ja tens SOS a <code>usuari.github.io/teamtowershuma</code>.</li>
+<li><strong>Netlify / Cloudflare Pages</strong> — drag &amp; drop de la carpeta <code>SOS/</code>, 0 configuració.</li>
+<li><strong>IPFS pinning</strong> (Pinata, web3.storage, Filebase) — CID permanent, resistent a censura.</li>
+<li><strong>Arweave permanent</strong> — pug tota l'app com a Anchor Pack (~50 KB gzipped, cost ≈ 0.001 AR).</li>
+<li><strong>Local file://</strong> — dobla-clic al <code>index.html</code>, funciona igual (sense sync WebRTC entre navegadors diferents).</li>
+</ul></div>
+<div class="box metode"><h4>🔒 Zero variables d'entorn</h4><ul>
+<li>SOS <strong>no</strong> necessita <code>.env</code>, backend, base de dades ni build.</li>
+<li>Tot el que és sensible (API keys, tokens OAuth, clau did:sos) viu a IndexedDB del navegador de cada usuari.</li>
+<li>Pots servir la mateixa còpia de SOS a milers d'usuaris — cadascú tindrà el seu estat privat.</li>
+</ul></div>
+</div>
+
+<h3 class="section">H · Dev workflow — treballar sobre el codi SOS</h3>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Stack de dev</h4><ul>
+<li><strong>Node 18+</strong> per Playwright (només per tests).</li>
+<li><strong>Playwright + Chromium</strong> (<code>pnpm i -D playwright</code>).</li>
+<li><strong>Cap build step</strong> — edita <code>SOS/index.html</code>, recarrega, ja està.</li>
+<li>Un servidor estàtic qualsevol (<code>python -m http.server</code>, <code>npx serve</code>) o directament <code>file://</code>.</li>
+</ul></div>
+<div class="box metode"><h4>🎓 Convencions del repo</h4><ul>
+<li>Branca de desenvolupament: <code>claude/teamtowershuma-landing-review-cl2ltc</code> (per contribucions IA-assistides).</li>
+<li>Codex Antigravity V11-V17 a <code>SOS/knowledge/codex.md</code> — cal llegir-lo <strong>abans</strong> de qualsevol PR.</li>
+<li>Tots els helpers de SOS s'exposen a <code>window.__SOS</code> per testejar sense mocks.</li>
+<li>Testejar amb Playwright, no amb frameworks pesants.</li>
+</ul></div>
+</div>
+
+<div class="box exercici"><h4>✏ El teu primer PR</h4>
+<p>1) Fork del repo <code>asolache/teamtowershuma</code>. 2) Llegeix el codex sencer. 3) Escull un veda que <strong>no</strong> es compleix del tot i escriu una prova Playwright que ho demostri (roig). 4) Fixa el bug al <code>SOS/index.html</code> fins que la prova sigui verda. 5) Obre PR mencionant el veda que resols.</p>
+</div>
+
+<h3 class="section">I · Debugging &amp; recovery</h3>
+<div class="box eines"><h4>🧰 Snippets DevTools útils</h4>
+<pre style="background:rgba(0,0,0,.4);padding:.8rem 1rem;border-radius:6px;overflow-x:auto;font-size:.82rem;color:var(--light);margin:.5rem 0"><code>// Veure tot l'estat
+window.__SOS.state
+
+// Exportar backup complet
+JSON.stringify(await window.__SOS.dbGetAll())
+
+// Reset total (compte!)
+indexedDB.deleteDatabase('sos-v1'); location.reload();
+
+// Forçar re-sembra d'una dinàmica
+window.__SOS.seedFromDynamic(node, 'banc_temps')
+
+// Veure la teva did:sos
+(await window.__SOS.getIdentity()).did
+
+// Comptar helpers exposats
+Object.keys(window.__SOS).length</code></pre>
+</div>
+
+<div class="box metode"><h4>🎓 Problemes comuns</h4><ul>
+<li><strong>iPad no deixa seleccionar múltiples</strong> — comprova <code>touch-action:manipulation</code> al CSS del control.</li>
+<li><strong>Nostr no publica</strong> — el signador NIP-07 sovint bloqueja <code>file://</code>. Serveix SOS via <code>http://localhost:PORT</code>.</li>
+<li><strong>Sync WebRTC falla</strong> — CGNAT bloqueja P2P; toca fer servir un TURN server (fora d'abast per defecte).</li>
+<li><strong>Anchor Pack diferent en dos navegadors</strong> — verifica que el <code>tombstones</code> està sincronitzat abans de fer <code>buildAnchorPack</code>.</li>
+</ul></div>
+
+<div class="box exercici"><h4>✏ Certificació developer/admin</h4>
+<p>Un cop hagis completat A→I amb la teva pròpia comunitat pilot (mínim 5 socis actius, 1 mapa VNA validat, 1 Anchor Pack ancorat a Arweave i publicat a Nostr, 1 PR merged al repo): ets <strong>Admin SOS certificat</strong>. La certificació és el propi ledger signat + npub Nostr amb els events publicats — no cal cap òrgan que la validi.</p>
+</div>
 </section>
 
 <div class="expert-cert" id="cert">
