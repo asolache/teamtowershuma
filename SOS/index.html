@@ -2074,15 +2074,15 @@ function openPublicDecisionsModal(node){
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
-    {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>openIdentityDashboard()},
+    {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
-    {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>{const n=state.activePersona;if(!n){toast('Identifica\'t primer (crea el teu perfil)');return;}openMentoringPlan(n);}},
-    {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>openMatchesModal()},
+    {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
+    {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
     {ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
     {ic:'📦',t:'Anchor Pack',d:'Snapshot signat + CID · pinna a IPFS/Arweave/permaweb',fn:()=>openAnchorPackModal()},
-    {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>openComandoView()},
-    {ic:'🗺',t:'Mapa estratègic fundador',d:'Missió, visió, rols, fluxos, KPIs 2030 · base del model',fn:()=>openFounderMap()},
-    {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
+    {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>routeTo('comando')},
+    {ic:'🗺',t:'Mapa estratègic fundador',d:'Missió, visió, rols, fluxos, KPIs 2030 · base del model',fn:()=>routeTo('mapa')},
+    {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>routeTo('multivers')},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
     {ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
     {ic:'🗳',t:'Assemblea àgil (mòbil-first)',d:'Propostes + vots ràpids optimitzats per tauleta/mòbil',fn:()=>openAssemblyModal()},
@@ -2956,6 +2956,9 @@ function selectNode(id){state.activeId=id;const nn=byId(id);state.tab=(nn&&isTer
 function renderWorkspace(){
   const w=$('#workspace');w.innerHTML='';
   const node=byId(state.activeId);
+  // Punt únic on convergeixen tots els canvis de node i de pestanya: aquí la ruta
+  // es manté sincronitzada sense haver de tocar els 12 llocs que muten state.tab.
+  syncRoute(true);
   if(!node){renderCatMap(w);return;}
   const meta=LEVEL_META[node.nodeLevel];
 
@@ -3391,7 +3394,82 @@ function openLedgerEntryModal(node,prefill,card){
 }
 
 /* ═══════════════════ MODALS ═══════════════════ */
-function closeModal(){$('#modalRoot').innerHTML='';}
+/* ═══════════ Rutes · una URL per vista, enllaçable i navegable ═══════════
+   Hash routing (#/…) i no History API a propòsit: pushState no funciona sota
+   file:// i exigeix reescriptures al servidor. El SOS ha de poder obrir-se des
+   del disc, IPFS o Arweave sense configurar res — el hash hi funciona a tot arreu.
+   Avís: els ids de node surten d'uid() i són locals a cada dispositiu, així que
+   una ruta de node és per a la teva navegació i els teus marcadors, no per
+   compartir. Si l'id no existeix, la ruta degrada sense trencar res. */
+const MODAL_ROUTES={
+  comando:{open:()=>openComandoView(),label:'Comando Molekulon'},
+  activitat:{open:()=>openActivityLog(),label:'Registre d\'activitat'},
+  mapa:{open:()=>openFounderMap(),label:'Mapa estratègic fundador'},
+  directori:{open:()=>openDirectory(),label:'Directori d\'entitats'},
+  identitat:{open:()=>openIdentityDashboard(),label:'La meva identitat'},
+  multivers:{open:()=>openMultiverse(),label:'Multivers Molekulon'},
+  pings:{open:()=>openMatchesModal(),label:'Pings ecosistema'},
+  mentoria:{open:()=>{const n=state.activePersona;if(!n){toast('Identifica\'t primer per preparar la mentoria');return false;}openMentoringPlan(n);},label:'La meva mentoria'}
+};
+let _routeLock=false;          // evita que aplicar una ruta en torni a escriure una altra
+let _routeModal=null;          // quin modal ha obert la ruta actual
+function buildRoute(){
+  if(_routeModal)return'#/'+_routeModal;
+  const nd=byId(state.activeId);
+  if(!nd)return'#/';
+  return'#/n/'+nd.id+(state.tab?'/'+state.tab:'');
+}
+function parseRoute(hash){
+  const raw=(hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
+  if(!raw.length)return{kind:'home'};
+  if(raw[0]==='n'&&raw[1])return{kind:'node',id:decodeURIComponent(raw[1]),tab:raw[2]||null};
+  if(MODAL_ROUTES[raw[0]])return{kind:'modal',name:raw[0]};
+  return{kind:'unknown',name:raw[0]};
+}
+// Escriu la ruta a partir de l'estat. replace: true per no omplir l'historial de sorolls.
+function syncRoute(replace){
+  if(_routeLock)return;
+  const next=buildRoute();
+  if(location.hash===next)return;
+  _routeLock=true;
+  try{
+    if(replace&&history.replaceState)history.replaceState(null,'',next);
+    else location.hash=next;
+  }catch(e){location.hash=next;}
+  setTimeout(()=>{_routeLock=false;},0);
+}
+// Aplica la ruta actual a l'estat. Retorna false si no s'ha pogut resoldre.
+function applyRoute(){
+  if(_routeLock)return true;
+  const r=parseRoute(location.hash);
+  _routeLock=true;
+  let okRoute=true;
+  try{
+    if(r.kind==='modal'){
+      if(_routeModal!==r.name){_routeModal=r.name;const res=MODAL_ROUTES[r.name].open();if(res===false){_routeModal=null;okRoute=false;}}
+    } else {
+      if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
+      if(r.kind==='node'){
+        const nd=byId(r.id);
+        if(nd){
+          state.activeId=nd.id;
+          let n=nd;while(n&&n.parentId){state.expanded.add(n.parentId);n=byId(n.parentId);}
+          if(r.tab)state.tab=r.tab;
+          render();
+        } else { okRoute=false; toast('Aquesta vista no existeix en aquest dispositiu'); }
+      }
+    }
+  }finally{setTimeout(()=>{_routeLock=false;},0);}
+  return okRoute;
+}
+function closeModal(){$('#modalRoot').innerHTML='';if(_routeModal){_routeModal=null;syncRoute(true);}}
+// Obrir una vista enllaçable sempre passa per la ruta: així el clic i l'URL
+// recorren exactament el mateix camí i la barra d'adreces mai queda desincronitzada.
+function routeTo(name){
+  if(!MODAL_ROUTES[name]){toast('Vista desconeguda');return;}
+  if(location.hash==='#/'+name)applyRoute();
+  else location.hash='#/'+name;
+}
 function modal(html){const bg=el('div','modal-bg');bg.innerHTML='<div class="modal">'+html+'</div>';bg.onclick=e=>{if(e.target===bg)closeModal();};$('#modalRoot').innerHTML='';$('#modalRoot').appendChild(bg);return bg;}
 
 // Motor de suggeriment determinista: coneixement del nivell + dolors triats + biaix pel prompt lliure
@@ -5321,9 +5399,9 @@ $('#personaBadge').onclick=()=>{if(state.activePersona){openPersonProfile(state.
 $('#btnSearch').onclick=openSearchPalette;
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearchPalette();}});
 $('#btnMap').onclick=()=>{state.activeId=null;render();};
-$('#btnDir').onclick=openDirectory;
+$('#btnDir').onclick=()=>routeTo('directori');
 $('#obDir').onclick=openDirectory;
-$('#btnActivity').onclick=openActivityLog;
+$('#btnActivity').onclick=()=>routeTo('activitat');
 $('#btnSync').onclick=openSyncModal;
 $('#homeLogo').onclick=()=>{state.activeId=null;render();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
@@ -5333,7 +5411,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  // La ruta d'entrada mana per sobre del node per defecte: obrir un enllaç guardat
+  // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
+  window.addEventListener('hashchange',()=>applyRoute());
+  if(location.hash&&location.hash!=='#/')applyRoute();
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
