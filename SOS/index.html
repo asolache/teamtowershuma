@@ -445,6 +445,16 @@ a{color:var(--blue);text-decoration:none}
 .b-pub{color:var(--blue);border-color:rgba(0,176,255,.3)}
 .b-priv{color:var(--muted)}
 .ent-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.dash-net{display:flex;flex-direction:column;gap:.5rem}
+.dash-net input{width:100%;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:.6rem .7rem;font-size:.85rem;min-height:44px}
+.dash-net-list{display:flex;flex-direction:column;gap:.3rem}
+.dash-net-row{display:flex;align-items:center;gap:.6rem;text-align:left;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;color:var(--light);cursor:pointer;min-height:52px;transition:border-color .12s}
+.dash-net-row:hover{border-color:var(--indigo)}
+.dn-ic{font-size:1.1rem;flex:0 0 auto}
+.dn-b{flex:1;display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.dn-t{font-size:.85rem;font-weight:600}
+.dn-d{font-family:var(--mono);font-size:.62rem;letter-spacing:.03em;color:var(--muted);text-transform:uppercase}
+.dn-go{color:var(--indigo);font-size:.9rem}
 /* Guia contextual · l'eina s'explica allà on estàs */
 .ctx-guide{border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:10px;background:var(--bg-panel);margin:0 0 1rem}
 .ctx-guide>summary{cursor:pointer;padding:.7rem .85rem;list-style:none;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;min-height:44px;touch-action:manipulation}
@@ -845,52 +855,154 @@ function geoFor(level,parentName){const list=CAT_GEO[level]||[];return parentNam
    Per nivell: rols típics, flux de valor clàssic i dolors/necessitats. Cada dolor
    pot afegir rols i intercanvis específics. Alimenta el wizard de creació. */
 const LEVEL_KNOWLEDGE={
+  pais:{
+    roles:['Generalitat','Diputacions','Consells comarcals','Federacions d\'entitats','Xarxa cooperativa','Universitats i recerca','Ciutadania'],
+    pairs:[
+     ['Generalitat','Diputacions','tangible','marc normatiu i finançament','tangible','execució territorial i dades'],
+     ['Generalitat','Federacions d\'entitats','tangible','convenis i subvencions','intangible','veu del tercer sector'],
+     ['Generalitat','Universitats i recerca','tangible','finançament de recerca','intangible','evidència per a polítiques'],
+     ['Diputacions','Consells comarcals','tangible','fons i assistència tècnica','tangible','diagnòstic comarcal'],
+     ['Consells comarcals','Federacions d\'entitats','tangible','espais i programes','intangible','capil·laritat al territori'],
+     ['Xarxa cooperativa','Generalitat','tangible','ocupació i serveis','tangible','ateneus i acompanyament'],
+     ['Xarxa cooperativa','Consells comarcals','tangible','serveis de proximitat','tangible','contractació pública responsable'],
+     ['Universitats i recerca','Xarxa cooperativa','intangible','coneixement aplicat','intangible','casos reals i pràctiques'],
+     ['Ciutadania','Generalitat','intangible','mandat i legitimitat','tangible','serveis públics'],
+     ['Ciutadania','Federacions d\'entitats','tangible','voluntariat i quotes','intangible','pertinença i acció col·lectiva'],
+     ['Ciutadania','Xarxa cooperativa','tangible','consum i sòcies','tangible','béns i serveis'],
+     ['Universitats i recerca','Ciutadania','intangible','formació i divulgació','intangible','demanda social de recerca']],
+    pains:[
+      {id:'sobirania',t:'Dependència de decisions llunyanes',d:'El que es decideix a fora condiciona el que es pot fer aquí.',roles:['Generalitat','Ciutadania','Xarxa cooperativa'],pairs:[
+       ['Ciutadania','Xarxa cooperativa','intangible','sobirania econòmica pràctica','tangible','alternativa real al mercat extractiu']]},
+      {id:'desconnexio',t:'Iniciatives que no es coneixen entre elles',d:'Es reinventa a cada comarca el que ja funciona tres pobles enllà.',roles:['Federacions d\'entitats','Consells comarcals','Universitats i recerca'],pairs:[
+       ['Federacions d\'entitats','Consells comarcals','intangible','transferència del que funciona','intangible','demanda de rèplica']]},
+      {id:'relleu-pais',t:'Relleu i cremada del teixit',d:'Les mateixes persones sostenen la xarxa durant dècades.',roles:['Federacions d\'entitats','Ciutadania','Universitats i recerca'],pairs:[
+       ['Universitats i recerca','Federacions d\'entitats','intangible','formació de relleu','tangible','pràctiques amb sentit']]}
+    ]
+  },
   provincia:{
     roles:['Diputació','Consells Comarcals','Ajuntaments grans','Universitats','Agents econòmics','Xarxa d\'ateneus'],
-    flows:[['Diputació','Consells Comarcals','tangible','fons i assistència'],['Consells Comarcals','Diputació','intangible','dades territorials'],['Universitats','Agents econòmics','intangible','coneixement i talent']],
+    pairs:[
+     ['Diputació','Consells Comarcals','tangible','fons i assistència','intangible','dades territorials'],
+     ['Diputació','Ajuntaments grans','tangible','plans i cofinançament','tangible','execució i coneixement de camp'],
+     ['Consells Comarcals','Ajuntaments grans','tangible','serveis mancomunats','tangible','quota i encàrrecs'],
+     ['Universitats','Agents econòmics','intangible','coneixement i talent','tangible','pràctiques i càtedres'],
+     ['Universitats','Diputació','intangible','estudis i avaluació','tangible','convenis i beques'],
+     ['Xarxa d\'ateneus','Agents econòmics','intangible','acompanyament cooperatiu','tangible','casos i demanda'],
+     ['Xarxa d\'ateneus','Ajuntaments grans','tangible','programes d\'economia social','tangible','locals i difusió'],
+     ['Xarxa d\'ateneus','Consells Comarcals','intangible','arrelament comarcal','intangible','detecció d\'iniciatives'],
+     ['Agents econòmics','Ajuntaments grans','tangible','ocupació i activitat','tangible','sòl i llicències']],
     pains:[
-      {id:'desequilibri',t:'Desequilibri territorial',d:'Àrees urbanes fortes i comarques interiors que es despoblen.',roles:['Consells Comarcals','Agents econòmics'],flows:[['Agents econòmics','Consells Comarcals','tangible','inversió']]},
-      {id:'coord-supra',t:'Coordinació supramunicipal feble',d:'Els municipis no comparteixen serveis ni estratègia.',roles:['Consells Comarcals','Ajuntaments grans'],flows:[]}
+      {id:'desequilibri',t:'Desequilibri territorial',d:'Àrees urbanes fortes i comarques interiors que es despoblen.',roles:['Consells Comarcals','Agents econòmics'],pairs:[
+       ['Agents econòmics','Consells Comarcals','tangible','inversió i llocs de treball','tangible','sòl, incentius i talent local']]},
+      {id:'coord-supra',t:'Coordinació supramunicipal feble',d:'Els municipis no comparteixen serveis ni estratègia.',roles:['Consells Comarcals','Ajuntaments grans'],pairs:[
+       ['Consells Comarcals','Ajuntaments grans','intangible','planificació compartida','intangible','cessió de sobirania operativa']]}
     ]
   },
   comarca:{
     roles:['Consell Comarcal','Ajuntaments','Grup d\'Acció Local','Consorcis','Federació d\'entitats','Cooperatives 2n grau','Agents econòmics'],
-    flows:[['Consell Comarcal','Ajuntaments','tangible','serveis compartits'],['Ajuntaments','Consell Comarcal','intangible','legitimitat i dades'],['Grup d\'Acció Local','Cooperatives 2n grau','tangible','fons Leader'],['Federació d\'entitats','Ajuntaments','intangible','veu col·lectiva']],
+    pairs:[
+     ['Consell Comarcal','Ajuntaments','tangible','serveis compartits','intangible','legitimitat i dades'],
+     ['Grup d\'Acció Local','Cooperatives 2n grau','tangible','fons Leader','tangible','projectes executats'],
+     ['Federació d\'entitats','Ajuntaments','intangible','veu col·lectiva','tangible','espais i suport'],
+     ['Consell Comarcal','Consorcis','tangible','encàrrec de gestió','tangible','serveis especialitzats'],
+     ['Consorcis','Ajuntaments','tangible','residus, aigua i energia','tangible','taxes i corresponsabilitat'],
+     ['Cooperatives 2n grau','Agents econòmics','tangible','compra agregada','tangible','condicions i volum'],
+     ['Federació d\'entitats','Consell Comarcal','intangible','detecció de necessitats','tangible','programes i finançament'],
+     ['Grup d\'Acció Local','Consell Comarcal','intangible','estratègia rural','intangible','coordinació institucional'],
+     ['Agents econòmics','Ajuntaments','tangible','activitat i ocupació','tangible','promoció econòmica'],
+     ['Cooperatives 2n grau','Federació d\'entitats','intangible','model cooperatiu','intangible','base social']],
     pains:[
-      {id:'campanarisme',t:'Campanarisme / rivalitat entre pobles',d:'Cada municipi va sol; no hi ha projectes compartits.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[['Consell Comarcal','Federació d\'entitats','intangible','confiança supramunicipal']]},
-      {id:'subvencio-dep',t:'Dependència de subvencions',d:'Projectes sense estructura pròpia sostenible.',roles:['Grup d\'Acció Local','Cooperatives 2n grau'],flows:[['Cooperatives 2n grau','Ajuntaments','tangible','serveis autofinançats']]},
-      {id:'despoblament',t:'Despoblament i envelliment rural',d:'Marxa del jovent i manca de relleu.',roles:['Grup d\'Acció Local','Agents econòmics'],flows:[]},
-      {id:'tecnic-cremat',t:'Tècnics comarcals sobrecarregats',d:'Poca gent fa de tot i es crema.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[]},
-      {id:'no-escala',t:'Pilots que no escalen',d:'El que funciona en un poble no es transfereix.',roles:['Consell Comarcal','Federació d\'entitats'],flows:[['Federació d\'entitats','Ajuntaments','intangible','transferència de coneixement']]}
+      {id:'campanarisme',t:'Campanarisme / rivalitat entre pobles',d:'Cada municipi va sol; no hi ha projectes compartits.',roles:['Consell Comarcal','Federació d\'entitats'],pairs:[
+       ['Consell Comarcal','Federació d\'entitats','intangible','confiança supramunicipal','intangible','projectes que creuen fronteres']]},
+      {id:'subvencio-dep',t:'Dependència de subvencions',d:'Projectes sense estructura pròpia sostenible.',roles:['Grup d\'Acció Local','Cooperatives 2n grau'],pairs:[
+       ['Cooperatives 2n grau','Ajuntaments','tangible','serveis autofinançats','tangible','contractes estables']]},
+      {id:'despoblament',t:'Despoblament i envelliment rural',d:'Marxa del jovent i manca de relleu.',roles:['Grup d\'Acció Local','Agents econòmics'],pairs:[
+       ['Grup d\'Acció Local','Agents econòmics','tangible','sòl i ajuts al relleu','tangible','llocs de treball arrelats']]},
+      {id:'tecnic-cremat',t:'Tècnics comarcals sobrecarregats',d:'Poca gent fa de tot i es crema.',roles:['Consell Comarcal','Federació d\'entitats'],pairs:[
+       ['Federació d\'entitats','Consell Comarcal','tangible','execució delegada','intangible','reconeixement i estabilitat']]},
+      {id:'no-escala',t:'Pilots que no escalen',d:'El que funciona en un poble no es transfereix.',roles:['Consell Comarcal','Federació d\'entitats'],pairs:[
+       ['Federació d\'entitats','Ajuntaments','intangible','transferència de coneixement','intangible','casos i condicions reals']]}
     ]
   },
   municipi:{
     roles:['Ajuntament','Entitats i associacions','Comerç local','Cooperatives','Centres educatius','CAP / salut','Veïnat','Voluntariat','Colles culturals'],
-    flows:[['Ajuntament','Entitats i associacions','tangible','equipaments i subvenció'],['Entitats i associacions','Veïnat','intangible','cohesió i identitat'],['Veïnat','Ajuntament','intangible','participació i legitimitat'],['Comerç local','Veïnat','tangible','proximitat i vida al carrer'],['Centres educatius','Veïnat','intangible','formació i xarxa de famílies']],
+    pairs:[
+     ['Ajuntament','Entitats i associacions','tangible','equipaments i subvenció','intangible','activitat i cohesió'],
+     ['Ajuntament','Veïnat','tangible','serveis municipals','intangible','participació i legitimitat'],
+     ['Entitats i associacions','Veïnat','intangible','cohesió i identitat','tangible','quotes i voluntariat'],
+     ['Comerç local','Veïnat','tangible','proximitat i vida al carrer','tangible','compra local'],
+     ['Centres educatius','Veïnat','intangible','formació i xarxa de famílies','intangible','implicació de les famílies'],
+     ['Cooperatives','Veïnat','tangible','serveis autogestionats','tangible','sòcies i consum'],
+     ['CAP / salut','Veïnat','tangible','atenció i prevenció','intangible','detecció precoç al carrer'],
+     ['Voluntariat','Entitats i associacions','tangible','hores de treball','intangible','sentit i formació'],
+     ['Colles culturals','Veïnat','intangible','festa i pertinença','tangible','canalla, músics i mans'],
+     ['Ajuntament','Comerç local','tangible','fires i dinamització','tangible','taxes i vida econòmica'],
+     ['Ajuntament','Centres educatius','tangible','manteniment i programes','intangible','diagnòstic educatiu'],
+     ['Ajuntament','CAP / salut','tangible','salut comunitària','tangible','dades de salut del municipi'],
+     ['Entitats i associacions','Colles culturals','intangible','calendari compartit','intangible','massa crítica'],
+     ['Cooperatives','Comerç local','tangible','proveïment i serveis','tangible','clientela i local'],
+     ['Centres educatius','Colles culturals','tangible','assaigs i cantera','intangible','arrelament de l\'alumnat'],
+     ['Voluntariat','CAP / salut','tangible','acompanyaments','intangible','formació i protocol']],
     pains:[
-      {id:'participacio',t:'Participació feble o tokenística',d:'Els processos no vinculen ni arriben a la gent.',roles:['Ajuntament','Veïnat','Entitats i associacions'],flows:[['Veïnat','Ajuntament','intangible','deliberació real']]},
-      {id:'relleu',t:'Entitats envellides sense relleu',d:'2-3 persones ho sostenen tot fins que es cremen.',roles:['Entitats i associacions','Voluntariat','Colles culturals'],flows:[['Voluntariat','Entitats i associacions','intangible','relleu generacional']]},
-      {id:'jovent',t:'Desconnexió amb el jovent',d:'Els joves no troben el seu lloc al poble.',roles:['Centres educatius','Ajuntament','Colles culturals'],flows:[['Centres educatius','Ajuntament','intangible','veu jove']]},
-      {id:'nouvinguts',t:'Nouvinguts no integrats',d:'Segregació i comunitats paral·leles.',roles:['Entitats i associacions','Veïnat','Centres educatius'],flows:[]},
-      {id:'governanca',t:'Projectes ciutadans sense governança',d:'Bancs de temps, hortes o comunitats energètiques que fracassen.',roles:['Cooperatives','Voluntariat','Ajuntament'],flows:[['Cooperatives','Veïnat','tangible','servei autogestionat']]},
-      {id:'soledat',t:'Soledat i salut mental no detectades',d:'Malestar que no arriba als serveis a temps.',roles:['CAP / salut','Veïnat','Entitats i associacions'],flows:[['Veïnat','CAP / salut','intangible','detecció precoç']]},
-      {id:'comerc',t:'Comerç local en declivi',d:'Grans superfícies i online buiden el carrer.',roles:['Comerç local','Ajuntament'],flows:[]}
+      {id:'participacio',t:'Participació feble o tokenística',d:'Els processos no vinculen ni arriben a la gent.',roles:['Ajuntament','Veïnat','Entitats i associacions'],pairs:[
+       ['Veïnat','Ajuntament','intangible','deliberació real','tangible','decisions vinculants i retorn']]},
+      {id:'relleu',t:'Entitats envellides sense relleu',d:'2-3 persones ho sostenen tot fins que es cremen.',roles:['Entitats i associacions','Voluntariat','Colles culturals'],pairs:[
+       ['Voluntariat','Entitats i associacions','intangible','relleu generacional','intangible','traspàs de responsabilitat real']]},
+      {id:'jovent',t:'Desconnexió amb el jovent',d:'Els joves no troben el seu lloc al poble.',roles:['Centres educatius','Ajuntament','Colles culturals'],pairs:[
+       ['Centres educatius','Ajuntament','intangible','veu jove','tangible','espais i pressupost propi']]},
+      {id:'nouvinguts',t:'Nouvinguts no integrats',d:'Segregació i comunitats paral·leles.',roles:['Entitats i associacions','Veïnat','Centres educatius'],pairs:[
+       ['Entitats i associacions','Centres educatius','intangible','acollida i llengua','intangible','contacte amb les famílies']]},
+      {id:'governanca',t:'Projectes ciutadans sense governança',d:'Bancs de temps, hortes o comunitats energètiques que fracassen.',roles:['Cooperatives','Voluntariat','Ajuntament'],pairs:[
+       ['Cooperatives','Veïnat','tangible','servei autogestionat','intangible','compromís i corresponsabilitat']]},
+      {id:'soledat',t:'Soledat i salut mental no detectades',d:'Malestar que no arriba als serveis a temps.',roles:['CAP / salut','Veïnat','Entitats i associacions'],pairs:[
+       ['Veïnat','CAP / salut','intangible','detecció precoç','tangible','circuit d\'atenció ràpid']]},
+      {id:'comerc',t:'Comerç local en declivi',d:'Grans superfícies i online buiden el carrer.',roles:['Comerç local','Ajuntament'],pairs:[
+       ['Comerç local','Ajuntament','intangible','diagnòstic del carrer','tangible','pla de dinamització comercial']]}
     ]
   },
   barri:{
     roles:['Associació de veïns','Veïnat','Comerç de proximitat','Escola / AMPA','Centre cívic','Grups de cura','Gent gran','Jovent'],
-    flows:[['Veïnat','Veïnat','intangible','cura, favors i informació'],['Associació de veïns','Veïnat','intangible','activitats i reivindicació'],['Veïnat','Associació de veïns','tangible','quotes i participació'],['Comerç de proximitat','Veïnat','intangible','punt de trobada i confiança'],['Escola / AMPA','Veïnat','intangible','xarxa de famílies']],
+    pairs:[
+     ['Associació de veïns','Veïnat','intangible','activitats i reivindicació','tangible','quotes i participació'],
+     ['Comerç de proximitat','Veïnat','intangible','punt de trobada i confiança','tangible','compra diària'],
+     ['Escola / AMPA','Veïnat','intangible','xarxa de famílies','tangible','mans per a les activitats'],
+     ['Centre cívic','Veïnat','tangible','espai obert i tallers','intangible','usos i demanda real'],
+     ['Grups de cura','Gent gran','intangible','acompanyament','intangible','memòria viva i saber'],
+     ['Grups de cura','Veïnat','intangible','reconeixement de les cures','intangible','relleu i detecció'],
+     ['Jovent','Gent gran','intangible','acompanyament digital','intangible','història del barri'],
+     ['Jovent','Centre cívic','tangible','programació pròpia','tangible','local i horaris'],
+     ['Associació de veïns','Centre cívic','intangible','programació conjunta','tangible','sala i logística'],
+     ['Associació de veïns','Comerç de proximitat','intangible','campanyes de barri','tangible','patrocini i cartelleria'],
+     ['Escola / AMPA','Jovent','intangible','monitoratge i cantera','intangible','referents propers'],
+     ['Gent gran','Comerç de proximitat','tangible','compra i encàrrecs','intangible','vigilància i companyia'],
+     ['Escola / AMPA','Grups de cura','intangible','detecció de famílies','tangible','conciliació i cangurs']],
     pains:[
-      {id:'aillament',t:'Aïllament i soledat no volguda',d:'Gent gran sola, sense xarxa quotidiana.',roles:['Gent gran','Grups de cura','Veïnat'],flows:[['Grups de cura','Gent gran','intangible','acompanyament']]},
-      {id:'convivencia',t:'Conflictes de convivència',d:'Soroll, usos de l\'espai, incivisme.',roles:['Associació de veïns','Veïnat','Centre cívic'],flows:[['Centre cívic','Veïnat','intangible','mediació i trobada']]},
-      {id:'gentrificacio',t:'Gentrificació i pèrdua d\'identitat',d:'Expulsió de veïnat i comerç de tota la vida.',roles:['Associació de veïns','Comerç de proximitat','Veïnat'],flows:[]},
-      {id:'espais',t:'Manca d\'espais i temps de trobada',d:'No hi ha on ni quan trobar-se.',roles:['Centre cívic','Associació de veïns','Escola / AMPA'],flows:[['Centre cívic','Veïnat','tangible','espai obert']]},
-      {id:'bretxa',t:'Bretxa digital',d:'Gent gran fora dels grups on passa tot.',roles:['Gent gran','Jovent','Centre cívic'],flows:[['Jovent','Gent gran','intangible','acompanyament digital']]},
-      {id:'cures',t:'Sobrecàrrega i invisibilitat de les cures',d:'Recau en poques persones, sovint dones.',roles:['Grups de cura','Veïnat','Gent gran'],flows:[['Veïnat','Grups de cura','intangible','reconeixement i relleu']]}
+      {id:'aillament',t:'Aïllament i soledat no volguda',d:'Gent gran sola, sense xarxa quotidiana.',roles:['Gent gran','Grups de cura','Veïnat'],pairs:[
+       ['Grups de cura','Gent gran','intangible','acompanyament regular','intangible','confiança i porta oberta']]},
+      {id:'convivencia',t:'Conflictes de convivència',d:'Soroll, usos de l\'espai, incivisme.',roles:['Associació de veïns','Veïnat','Centre cívic'],pairs:[
+       ['Centre cívic','Veïnat','intangible','mediació i trobada','intangible','acords de convivència']]},
+      {id:'gentrificacio',t:'Gentrificació i pèrdua d\'identitat',d:'Expulsió de veïnat i comerç de tota la vida.',roles:['Associació de veïns','Comerç de proximitat','Veïnat'],pairs:[
+       ['Associació de veïns','Comerç de proximitat','intangible','defensa del comerç arrelat','tangible','suport a les campanyes']]},
+      {id:'espais',t:'Manca d\'espais i temps de trobada',d:'No hi ha on ni quan trobar-se.',roles:['Centre cívic','Associació de veïns','Escola / AMPA'],pairs:[
+       ['Centre cívic','Associació de veïns','tangible','espai i calendari','intangible','programació que omple']]},
+      {id:'bretxa',t:'Bretxa digital',d:'Gent gran fora dels grups on passa tot.',roles:['Gent gran','Jovent','Centre cívic'],pairs:[
+       ['Jovent','Gent gran','intangible','acompanyament digital','intangible','paciència i reconeixement']]},
+      {id:'cures',t:'Sobrecàrrega i invisibilitat de les cures',d:'Recau en poques persones, sovint dones.',roles:['Grups de cura','Veïnat','Gent gran'],pairs:[
+       ['Veïnat','Grups de cura','intangible','reconeixement i relleu','intangible','visibilitat del que sosté el barri']]}
     ]
   }
 };
-const knowFor=level=>LEVEL_KNOWLEDGE[level]||{roles:[],flows:[],pains:[]};
+const knowFor=level=>LEVEL_KNOWLEDGE[level]||{roles:[],pairs:[],flows:[],pains:[]};
+/* ═══════════ Expansió canònica de mapes · un sol lloc ═══════════
+   Tota definició de mapa del SOS (nivell territorial, repte, dinàmica, prototip
+   de venture) es declara amb `pairs`: cada fila és un vincle amb les DUES
+   direccions. Escriure el retorn obliga a pensar-lo, i el mapa neix recíproc.
+
+   `flows` es manté per a l'excepció unidireccional legítima. Qualsevol camí que
+   sembri un mapa passa per aquí — si no, tornarem a tenir mapes de dues
+   qualitats diferents segons per on s'hi entri. */
+const expandPairs=ps=>(ps||[]).flatMap(f=>[[f[0],f[1],f[2],f[3]||''],[f[1],f[0],f[4],f[5]||'']]);
+const mapFlowsOf=def=>expandPairs(def&&def.pairs).concat(((def&&def.flows)||[]).map(f=>f.slice()));
 
 /* ═══════════ CATÀLEG DE DINÀMIQUES (prototips d'acció-formació) ═══════════
    Cada dinàmica és un projecte instanciable sota un territori. Precarrega
@@ -1114,12 +1226,7 @@ function seedFromDynamic(node,dyn){
      obliga a pensar-lo, i el mapa neix amb reciprocitat alta en comptes d'una
      estrella de fletxes que surten del nucli i no tornen mai.
      `flows` es manté per a l'excepció unidireccional legítima. */
-  (dyn.pairs||[]).forEach(f=>{
-    if(!idBy[f[0]]||!idBy[f[1]])return;
-    node.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});
-    node.vna.exchanges.push({id:uid(),from:idBy[f[1]],to:idBy[f[0]],kind:f[4],label:f[5]||''});
-  });
-  (dyn.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])node.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
+  mapFlowsOf(dyn).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])node.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   (dyn.kanban||[]).forEach(t=>node.kanban.cards.push({id:uid(),text:t,col:'todo'}));
 }
 
@@ -1476,59 +1583,143 @@ function memberBalance(node,memberId){let given=0,recv=0;(node.ledger||[]).forEa
 const CRITICAL_ACTIVITIES=[
  {id:'dinamitzacio_comercial',name:'Dinamització comercial',icon:'🏪',one:'Revitalitzar el comerç i l\'economia de proximitat.',
   roles:['Comerços de proximitat','Ajuntament','Associació de comerciants','Veïnat','Consumidors'],
-  flows:[['Comerços de proximitat','Veïnat','tangible','productes i serveis'],['Ajuntament','Associació de comerciants','tangible','suport i espais'],['Veïnat','Comerços de proximitat','intangible','fidelitat i vida al carrer']],
+  pairs:[
+   ['Comerços de proximitat','Consumidors','tangible','producte i servei de proximitat','tangible','compra local'],
+   ['Associació de comerciants','Comerços de proximitat','tangible','campanyes i formació','tangible','quotes i participació'],
+   ['Ajuntament','Associació de comerciants','tangible','fires i finançament','intangible','diagnòstic del carrer'],
+   ['Veïnat','Comerços de proximitat','intangible','fidelitat i boca-orella','intangible','vida i seguretat al carrer'],
+   ['Ajuntament','Veïnat','tangible','espai públic i mercats','intangible','legitimitat de les mesures'],
+   ['Associació de comerciants','Consumidors','tangible','moneda local i promocions','tangible','despesa que es queda al poble']],
   kanban:['Diagnòstic del teixit comercial','Constituir l\'associació','Campanya de proximitat','Fires i mercats','Fidelització i moneda local']},
  {id:'ocupacio',name:'Ocupació i inserció laboral',icon:'💼',one:'Crear ocupació digna i itineraris d\'inserció.',
   roles:['Persones en cerca de feina','Empreses locals','Ajuntament','Entitats formatives','Servei d\'ocupació'],
-  flows:[['Entitats formatives','Persones en cerca de feina','tangible','formació'],['Empreses locals','Persones en cerca de feina','tangible','llocs de treball'],['Ajuntament','Servei d\'ocupació','tangible','recursos']],
+  pairs:[
+   ['Persones en cerca de feina','Empreses locals','tangible','treball i talent','tangible','contracte i salari'],
+   ['Entitats formatives','Persones en cerca de feina','tangible','formació i acreditació','intangible','motivació i assistència'],
+   ['Servei d\'ocupació','Persones en cerca de feina','tangible','orientació i intermediació','tangible','perfil i disponibilitat'],
+   ['Empreses locals','Entitats formatives','intangible','què necessita el sector','tangible','pràctiques i formació dual'],
+   ['Ajuntament','Servei d\'ocupació','tangible','plans i recursos','tangible','dades d\'inserció'],
+   ['Ajuntament','Empreses locals','tangible','sòl, incentius i contractació','tangible','ocupació arrelada al municipi']],
   kanban:['Mapar necessitats i perfils','Aliances amb empreses','Formació a mida','Pràctiques i inserció','Seguiment']},
  {id:'habitatge',name:'Habitatge assequible',icon:'🏘️',one:'Accés a habitatge digne sense especulació.',
   roles:['Grup motor','Administració','Finançament ètic','Cooperativa','Unitats de convivència'],
-  flows:[['Administració','Cooperativa','tangible','cessió de sòl'],['Finançament ètic','Cooperativa','tangible','préstec'],['Unitats de convivència','Cooperativa','tangible','quota d\'ús']],
+  pairs:[
+   ['Administració','Cooperativa','tangible','cessió de sòl o dret de superfície','intangible','retorn social i mixtura'],
+   ['Unitats de convivència','Cooperativa','tangible','aportació i quota d\'ús','tangible','dret d\'ús indefinit'],
+   ['Finançament ètic','Cooperativa','tangible','préstec','intangible','projecte solvent i valors'],
+   ['Grup motor','Unitats de convivència','intangible','convivència i confiança','intangible','implicació i cura'],
+   ['Grup motor','Administració','intangible','interlocució i pressió','tangible','informació de sòl i terminis'],
+   ['Grup motor','Finançament ètic','tangible','pla econòmic','intangible','criteris i acompanyament']],
   kanban:['Grup motor','Cerca de sòl','Viabilitat','Constitució','Finançament','Obra','Convivència']},
  {id:'energia',name:'Comunitat energètica',icon:'⚡',one:'Produir i compartir energia renovable localment.',
   roles:['Nucli promotor','Sòcies consumidores','Ajuntament','Instal·ladora','Assessoria'],
-  flows:[['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes'],['Ajuntament','Nucli promotor','tangible','teulades'],['Instal·ladora','Sòcies consumidores','tangible','energia (kWh)']],
+  pairs:[
+   ['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes','tangible','energia i estalvi'],
+   ['Ajuntament','Nucli promotor','tangible','cessió de teulades','intangible','transició energètica amb dades'],
+   ['Instal·ladora','Nucli promotor','tangible','instal·lació i manteniment','tangible','contracte i pagament'],
+   ['Assessoria','Nucli promotor','intangible','viabilitat i seguretat jurídica','tangible','encàrrec i cas replicable'],
+   ['Instal·ladora','Sòcies consumidores','tangible','posada en marxa a casa','intangible','recomanacions'],
+   ['Ajuntament','Sòcies consumidores','tangible','difusió i tràmits','intangible','mandat ciutadà']],
   kanban:['Viabilitat','Captació de sòcies','Teulada','Finançament','Constitució','Instal·lació','Posada en marxa']},
  {id:'alimentacio',name:'Alimentació sostenible',icon:'🥬',one:'Aliments sans i de proximitat, de la terra al plat.',
   roles:['Pagesia local','Grup de consum','Obrador','Punt de repartiment','Consumidors'],
-  flows:[['Pagesia local','Grup de consum','tangible','cistelles'],['Grup de consum','Pagesia local','tangible','preu just'],['Obrador','Consumidors','tangible','producte transformat']],
+  pairs:[
+   ['Pagesia local','Grup de consum','tangible','cistelles i producte','tangible','comandes i preu just'],
+   ['Obrador','Pagesia local','tangible','transformació del producte','tangible','matèria primera'],
+   ['Punt de repartiment','Grup de consum','tangible','lloc i horari','intangible','vida al local'],
+   ['Grup de consum','Consumidors','tangible','accés a producte de proximitat','tangible','quotes i rotació de tasques'],
+   ['Consumidors','Pagesia local','intangible','confiança i traçabilitat','intangible','mercat estable'],
+   ['Obrador','Consumidors','tangible','producte elaborat','tangible','demanda que sosté l\'obrador']],
   kanban:['Formar el grup','Contactar pagesia','Logística','Sistema de comandes','Primera cistella','Obrador']},
  {id:'cures',name:'Cures i salut comunitària',icon:'💗',one:'Xarxa de cures i benestar contra la soledat.',
   roles:['Nucli de cura','Veïnat','Gent gran','CAP / serveis socials','Voluntariat'],
-  flows:[['Nucli de cura','Gent gran','intangible','acompanyament'],['CAP / serveis socials','Nucli de cura','tangible','derivació'],['Voluntariat','Nucli de cura','tangible','hores de cura']],
+  pairs:[
+   ['Nucli de cura','Gent gran','intangible','acompanyament','intangible','saber i memòria viva'],
+   ['Veïnat','Nucli de cura','intangible','detecció i alerta','intangible','formació per detectar'],
+   ['CAP / serveis socials','Nucli de cura','tangible','derivació i suport','intangible','detecció precoç i dades'],
+   ['Voluntariat','Nucli de cura','tangible','hores de cura','intangible','sentit i pertinença'],
+   ['Voluntariat','Gent gran','tangible','companyia i gestions','intangible','confiança i històries'],
+   ['CAP / serveis socials','Veïnat','tangible','salut comunitària','intangible','coneixement del carrer']],
   kanban:['Detectar necessitats','Formar el grup','Protocol','Primers acompanyaments','Coordinació amb serveis']},
  {id:'cultura',name:'Cultura i patrimoni',icon:'🎭',one:'Activar la cultura, la festa i el patrimoni local.',
   roles:['Entitats culturals','Ajuntament','Artistes','Veïnat','Escoles'],
-  flows:[['Ajuntament','Entitats culturals','tangible','equipaments i subvenció'],['Artistes','Veïnat','intangible','experiència cultural'],['Escoles','Veïnat','intangible','patrimoni viu']],
+  pairs:[
+   ['Ajuntament','Entitats culturals','tangible','equipaments i subvenció','intangible','programació i vida cultural'],
+   ['Artistes','Veïnat','intangible','experiència cultural','tangible','públic i taquilla'],
+   ['Escoles','Veïnat','intangible','patrimoni viu','intangible','implicació de les famílies'],
+   ['Entitats culturals','Artistes','tangible','espai i caixet','tangible','obra i assaig'],
+   ['Escoles','Entitats culturals','tangible','cantera i espais','intangible','arrelament de l\'alumnat'],
+   ['Ajuntament','Veïnat','tangible','festa major i espai públic','intangible','participació i memòria']],
   kanban:['Mapa d\'agents culturals','Programació compartida','Recuperar patrimoni','Festa major participativa','Avaluació']},
  {id:'turisme',name:'Turisme de poble sostenible',icon:'🧭',one:'Turisme responsable que reverteix al territori.',
   roles:['Allotjaments','Ajuntament','Restauració','Guies locals','Productors'],
-  flows:[['Guies locals','Allotjaments','tangible','experiències'],['Ajuntament','Restauració','tangible','promoció'],['Productors','Restauració','tangible','producte km0']],
+  pairs:[
+   ['Guies locals','Allotjaments','tangible','experiències','tangible','clientela i comissió'],
+   ['Ajuntament','Restauració','tangible','promoció i fires','tangible','taxes i activitat'],
+   ['Productors','Restauració','tangible','producte km0','tangible','compra estable'],
+   ['Allotjaments','Productors','tangible','esmorzars i botiga','intangible','visibilitat del producte'],
+   ['Ajuntament','Guies locals','tangible','formació i acreditació','intangible','relat del territori'],
+   ['Restauració','Guies locals','tangible','àpats i rutes','tangible','reserves i grups']],
   kanban:['Inventari d\'atractius','Producte turístic','Aliances locals','Promoció responsable','Gestió de fluxos']},
  {id:'economia_circular',name:'Economia circular',icon:'♻️',one:'Reduir, reparar i reutilitzar en clau local.',
   roles:['Nucli gestor','Veïnat','Comerços','Ajuntament','Recicladors'],
-  flows:[['Veïnat','Nucli gestor','tangible','objectes i residus'],['Nucli gestor','Veïnat','tangible','productes reparats'],['Ajuntament','Nucli gestor','tangible','espai i suport']],
+  pairs:[
+   ['Veïnat','Nucli gestor','tangible','objectes i residus','tangible','productes reparats'],
+   ['Ajuntament','Nucli gestor','tangible','espai i suport','tangible','residus evitats amb dades'],
+   ['Recicladors','Nucli gestor','tangible','tractament del que no es repara','tangible','material separat i net'],
+   ['Comerços','Nucli gestor','tangible','excedents i estocs','intangible','imatge i clientela conscient'],
+   ['Comerços','Veïnat','tangible','reparació i segona mà','tangible','compra reparada'],
+   ['Recicladors','Ajuntament','tangible','valorització i informe','tangible','contracte i taxa']],
   kanban:['Punt de reparació','Biblioteca de les coses','Mercat de segona mà','Compostatge','Sensibilització']},
  {id:'digitalitzacio',name:'Digitalització i sobirania tecnològica',icon:'🖥️',one:'Autonomia digital del teixit local.',
   roles:['Nucli tècnic','Entitats','Ajuntament','Veïnat','Formadors'],
-  flows:[['Formadors','Entitats','intangible','capacitació'],['Nucli tècnic','Veïnat','tangible','eines digitals'],['Ajuntament','Nucli tècnic','tangible','recursos']],
+  pairs:[
+   ['Formadors','Entitats','intangible','capacitació','intangible','casos reals per ensenyar'],
+   ['Nucli tècnic','Veïnat','tangible','eines digitals sobiranes','intangible','usos i incidències detectades'],
+   ['Ajuntament','Nucli tècnic','tangible','recursos i infraestructura','tangible','serveis mantinguts'],
+   ['Nucli tècnic','Entitats','tangible','migració i suport','tangible','contribucions i documentació'],
+   ['Formadors','Veïnat','tangible','alfabetització digital','intangible','confiança per demanar ajuda'],
+   ['Ajuntament','Entitats','tangible','connectivitat i espais','intangible','diagnòstic de bretxa']],
   kanban:['Diagnòstic digital','Formació bàsica','Eines sobiranes','Presència digital','Manteniment comunitari']},
  {id:'joventut',name:'Joventut i lleure',icon:'🛹',one:'Espais i oportunitats per al jovent.',
   roles:['Jovent','Esplai / entitats','Ajuntament','Escoles','Monitoratge'],
-  flows:[['Ajuntament','Esplai / entitats','tangible','espais i beca'],['Monitoratge','Jovent','intangible','acompanyament'],['Jovent','Esplai / entitats','intangible','participació']],
+  pairs:[
+   ['Ajuntament','Esplai / entitats','tangible','espais i beca','intangible','activitat i cohesió juvenil'],
+   ['Monitoratge','Jovent','intangible','acompanyament','intangible','confiança i referència'],
+   ['Jovent','Esplai / entitats','intangible','participació i propostes','tangible','espai i recursos per fer-les'],
+   ['Escoles','Jovent','tangible','formació i orientació','intangible','clima i implicació'],
+   ['Esplai / entitats','Monitoratge','tangible','formació i condicions dignes','tangible','hores i projecte educatiu'],
+   ['Ajuntament','Jovent','tangible','pressupost i espai jove','intangible','mandat i prioritats reals']],
   kanban:['Escoltar el jovent','Espai jove','Programació','Projectes liderats per joves','Relleu']},
  {id:'mobilitat',name:'Mobilitat sostenible',icon:'🚲',one:'Moure\'s millor amb menys cotxe.',
   roles:['Veïnat','Ajuntament','Transport públic','Grups ciclistes','Escoles'],
-  flows:[['Ajuntament','Veïnat','tangible','carrils i aparcaments'],['Escoles','Veïnat','intangible','camins escolars'],['Grups ciclistes','Ajuntament','intangible','propostes']],
+  pairs:[
+   ['Ajuntament','Veïnat','tangible','carrils, aparcaments i transport','intangible','ús i legitimitat'],
+   ['Escoles','Veïnat','intangible','camins escolars','tangible','famílies acompanyants'],
+   ['Grups ciclistes','Ajuntament','intangible','propostes i diagnòstic','tangible','infraestructura i seguretat'],
+   ['Transport públic','Veïnat','tangible','freqüència i cobertura','tangible','demanda i validacions'],
+   ['Ajuntament','Transport públic','tangible','concessió i finançament','tangible','servei i dades d\'ús'],
+   ['Grups ciclistes','Escoles','intangible','formació en bici segura','intangible','nova generació ciclista']],
   kanban:['Diagnòstic de mobilitat','Camins escolars','Cotxe compartit','Carril bici','Avaluació']},
  {id:'acollida',name:'Acollida i inclusió',icon:'🫂',one:'Integrar i cohesionar amb qui arriba.',
   roles:['Nouvinguts','Entitats d\'acollida','Ajuntament','Veïnat','Escoles'],
-  flows:[['Entitats d\'acollida','Nouvinguts','intangible','acompanyament'],['Ajuntament','Entitats d\'acollida','tangible','recursos'],['Veïnat','Nouvinguts','intangible','xarxa i pertinença']],
+  pairs:[
+   ['Entitats d\'acollida','Nouvinguts','intangible','acompanyament i orientació','intangible','confiança i xarxa pròpia'],
+   ['Ajuntament','Entitats d\'acollida','tangible','recursos i espai','tangible','itineraris i seguiment'],
+   ['Veïnat','Nouvinguts','intangible','xarxa i pertinença','intangible','nova mirada i barreja'],
+   ['Escoles','Nouvinguts','tangible','llengua i escolarització','intangible','diversitat a l\'aula'],
+   ['Escoles','Veïnat','intangible','trobada entre famílies','tangible','mans per a les activitats'],
+   ['Ajuntament','Nouvinguts','tangible','empadronament i drets','intangible','coneixement de les necessitats reals']],
   kanban:['Mapa de necessitats','Punt d\'acollida','Aprenentatge de la llengua','Mentories veïnals','Participació']},
  {id:'territori',name:'Custòdia del territori',icon:'🌳',one:'Tenir cura del medi natural i agrari.',
   roles:['Custòdia / entitat','Propietaris','Ajuntament','Voluntariat','Pagesia'],
-  flows:[['Propietaris','Custòdia / entitat','tangible','acord de custòdia'],['Voluntariat','Custòdia / entitat','tangible','hores de conservació'],['Ajuntament','Custòdia / entitat','tangible','suport']],
+  pairs:[
+   ['Propietaris','Custòdia / entitat','tangible','acord de custòdia','intangible','assessorament i manteniment'],
+   ['Voluntariat','Custòdia / entitat','tangible','hores de conservació','intangible','formació i natura viscuda'],
+   ['Ajuntament','Custòdia / entitat','tangible','suport i finançament','tangible','indicadors ambientals'],
+   ['Pagesia','Custòdia / entitat','tangible','gestió agrària compatible','intangible','reconeixement i assessorament'],
+   ['Pagesia','Propietaris','tangible','ús productiu de la terra','tangible','arrendament i cura'],
+   ['Ajuntament','Voluntariat','tangible','jornades i materials','intangible','implicació ciutadana']],
   kanban:['Diagnòstic ambiental','Acords de custòdia','Jornades de voluntariat','Recuperació d\'hàbitats','Seguiment']}
 ];
 const _am=(()=>{const m={};CRITICAL_ACTIVITIES.forEach(a=>m[a.id]=a);return m;})();
@@ -1540,7 +1731,7 @@ const VENTURE_STAGES=['idea','prototip','validacio','graduacio'];
 function newVenture(node,act){
   const idBy={},roles=[],exch=[];
   (act.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
-  (act.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
+  mapFlowsOf(act).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null,createdAt:now()};
 }
 const allocationsOf=v=>v.allocations||(v.allocations=[]);
@@ -3559,27 +3750,75 @@ const projectTypeMeta=id=>_pt[id]||PROJECT_TYPES[0];
 const PROTOTYPE_MAPS=[
   {id:'servei_proximitat',name:'Servei de proximitat',icon:'🛎',one:'Servei que s\'ofereix directament a la comunitat local (educació, cures, reparacions, atenció).',projectTypes:['comunitari','cooperativa','autonom'],
    roles:['Persones oferents','Persones usuàries','Nucli gestor','Referent territorial','Ecosistema aliat'],
-   flows:[['Persones oferents','Persones usuàries','tangible','servei directe'],['Persones usuàries','Persones oferents','tangible','pagament o hores banc de temps'],['Persones oferents','Persones oferents','intangible','pràctica reflexiva compartida'],['Nucli gestor','Persones oferents','intangible','coordinació i cura'],['Referent territorial','Nucli gestor','tangible','legitimitat i espai'],['Persones usuàries','Nucli gestor','intangible','reputació i vincle'],['Ecosistema aliat','Nucli gestor','tangible','derivacions'],['Nucli gestor','Ecosistema aliat','intangible','coneixement i confiança']],
+   pairs:[
+    ['Persones oferents','Persones usuàries','tangible','servei directe','tangible','pagament o hores del banc de temps'],
+    ['Persones oferents','Nucli gestor','tangible','disponibilitat i qualitat','intangible','coordinació, formació i cura'],
+    ['Persones usuàries','Nucli gestor','intangible','reputació i vincle','intangible','garantia i resolució d\'incidències'],
+    ['Referent territorial','Nucli gestor','tangible','legitimitat i espai','tangible','memòria i indicadors d\'ús'],
+    ['Ecosistema aliat','Nucli gestor','tangible','derivacions','intangible','coneixement i confiança'],
+    ['Ecosistema aliat','Persones usuàries','intangible','informació del servei','intangible','necessitats detectades'],
+    ['Referent territorial','Persones usuàries','tangible','difusió pública','intangible','valoració del servei'],
+    ['Persones oferents','Ecosistema aliat','intangible','pràctica reflexiva compartida','intangible','criteris i bones pràctiques']],
    kanban:['Definir el servei mínim viable','Formar el primer equip d\'oferents','Publicar al banc de temps','Primeres 10 prestacions','Feedback i ajust','Ampliació territorial']},
   {id:'producte_artesa',name:'Producte artesà / manufactura',icon:'🧶',one:'Producció física en petit format, taller propi o compartit.',projectTypes:['cooperativa','autonom','empresa'],
    roles:['Artesans/es','Proveïdors locals','Punt de venda','Clientes','Comunitat i formació'],
-   flows:[['Proveïdors locals','Artesans/es','tangible','matèria primera km0'],['Artesans/es','Punt de venda','tangible','producte acabat'],['Punt de venda','Clientes','tangible','venda'],['Clientes','Artesans/es','tangible','ingressos'],['Artesans/es','Comunitat i formació','intangible','ofici i tallers'],['Comunitat i formació','Artesans/es','intangible','aprenents i renovació'],['Clientes','Punt de venda','intangible','reputació i boca-orella'],['Punt de venda','Proveïdors locals','tangible','pagament just']],
+   pairs:[
+    ['Proveïdors locals','Artesans/es','tangible','matèria primera km0','tangible','comandes estables i pagament just'],
+    ['Artesans/es','Punt de venda','tangible','producte acabat','tangible','liquidació de vendes'],
+    ['Punt de venda','Clientes','tangible','venda i assessorament','tangible','ingressos'],
+    ['Clientes','Artesans/es','intangible','feedback i encàrrecs a mida','intangible','història i traçabilitat de la peça'],
+    ['Artesans/es','Comunitat i formació','intangible','ofici i tallers','intangible','aprenents i renovació'],
+    ['Comunitat i formació','Clientes','intangible','cultura del fet a mà','intangible','demanda que valora l\'ofici'],
+    ['Punt de venda','Proveïdors locals','tangible','previsió de demanda','tangible','estoc i terminis'],
+    ['Comunitat i formació','Proveïdors locals','intangible','coneixement del material','tangible','restes i materials per practicar']],
    kanban:['Prototipar 3 SKUs','Muntar el taller','Preus i marges','Canal de venda pilot','Iterar amb feedback client','Escalar producció']},
   {id:'servei_tecnic',name:'Consultoria / servei tècnic',icon:'💼',one:'Consultoria, disseny, IT, arquitectura, assessoria — projecte per projecte.',projectTypes:['cooperativa','autonom','empresa'],
    roles:['Consultors/es','Clients institucionals','Clients privats','Xarxa de partners','Nucli operatiu'],
-   flows:[['Consultors/es','Clients institucionals','tangible','entregable especialitzat'],['Consultors/es','Clients privats','tangible','entregable especialitzat'],['Clients institucionals','Consultors/es','tangible','honoraris'],['Clients privats','Consultors/es','tangible','honoraris'],['Xarxa de partners','Consultors/es','intangible','peer review'],['Consultors/es','Xarxa de partners','tangible','sub-encàrrecs'],['Nucli operatiu','Consultors/es','intangible','back-office i comercial'],['Consultors/es','Nucli operatiu','tangible','% de facturació']],
+   pairs:[
+    ['Consultors/es','Clients institucionals','tangible','entregable especialitzat','tangible','honoraris'],
+    ['Consultors/es','Clients privats','tangible','entregable especialitzat','tangible','honoraris'],
+    ['Xarxa de partners','Consultors/es','intangible','peer review','tangible','sub-encàrrecs'],
+    ['Nucli operatiu','Consultors/es','intangible','back-office i comercial','tangible','% de facturació'],
+    ['Clients institucionals','Nucli operatiu','tangible','licitacions i marc de contractació','tangible','documentació i justificació'],
+    ['Clients privats','Xarxa de partners','intangible','recomanació','tangible','capacitat extra quan cal'],
+    ['Nucli operatiu','Xarxa de partners','tangible','contractes marc','intangible','fiabilitat i compliment'],
+    ['Clients institucionals','Clients privats','intangible','cas d\'ús públic replicable','intangible','validació de mercat']],
    kanban:['Definir 2-3 verticals','Cas d\'ús anchor','Portfoli i propostes tipus','Primer contracte','Referral loop','Estabilitzar cartera']},
   {id:'producte_digital',name:'Producte digital / SaaS',icon:'📱',one:'App, plataforma, servei online — usuaris massius o de nínxol.',projectTypes:['cooperativa','empresa','autonom'],
    roles:['Equip producte','Usuaris/es','Comunitat contributora','Sponsors/inversors','Infraestructura'],
-   flows:[['Equip producte','Usuaris/es','tangible','funcionalitat'],['Usuaris/es','Equip producte','tangible','subscripció o donació'],['Usuaris/es','Comunitat contributora','intangible','feedback i casos d\'ús'],['Comunitat contributora','Equip producte','tangible','PRs, traduccions, docs'],['Sponsors/inversors','Equip producte','tangible','capital'],['Equip producte','Sponsors/inversors','intangible','tracció i mètriques'],['Infraestructura','Equip producte','tangible','runtime i dades'],['Equip producte','Infraestructura','tangible','pagament hosting']],
+   pairs:[
+    ['Equip producte','Usuaris/es','tangible','funcionalitat','tangible','subscripció o donació'],
+    ['Usuaris/es','Comunitat contributora','intangible','feedback i casos d\'ús','intangible','suport entre iguals'],
+    ['Comunitat contributora','Equip producte','tangible','PRs, traduccions i docs','intangible','governança oberta i mèrit'],
+    ['Sponsors/inversors','Equip producte','tangible','capital','intangible','tracció i mètriques'],
+    ['Infraestructura','Equip producte','tangible','runtime i dades','tangible','pagament de hosting'],
+    ['Usuaris/es','Sponsors/inversors','intangible','prova d\'ús real','tangible','finançament que abarateix el servei'],
+    ['Comunitat contributora','Infraestructura','tangible','rèpliques i mirroring','tangible','accés i quotes'],
+    ['Equip producte','Comunitat contributora','intangible','full de ruta obert','intangible','prioritats de la base']],
    kanban:['MVP fumo','Landing + waitlist','Primer usuari real','Iterar sobre feedback','Model de monetització','Escalar amb la comunitat']},
   {id:'cura_social',name:'Cura i acompanyament social',icon:'💗',one:'Xarxa de cures, salut comunitària, acompanyament a persones vulnerables.',projectTypes:['comunitari','cooperativa'],
    roles:['Persones cuidadores','Persones cuidades','Famílies','Serveis socials/CAP','Voluntariat'],
-   flows:[['Persones cuidadores','Persones cuidades','intangible','acompanyament i escolta'],['Persones cuidades','Persones cuidadores','intangible','vincle i sentit'],['Famílies','Persones cuidadores','tangible','confiança i suport econòmic'],['Persones cuidadores','Famílies','tangible','descàrrega i informació'],['Serveis socials/CAP','Persones cuidadores','tangible','derivacions i formació'],['Persones cuidadores','Serveis socials/CAP','tangible','dades i seguiment'],['Voluntariat','Persones cuidadores','tangible','hores gratuïtes'],['Persones cuidadores','Voluntariat','intangible','formació i cura mútua']],
+   pairs:[
+    ['Persones cuidadores','Persones cuidades','intangible','acompanyament i escolta','intangible','vincle i sentit'],
+    ['Famílies','Persones cuidadores','tangible','confiança i suport econòmic','tangible','descàrrega i informació'],
+    ['Serveis socials/CAP','Persones cuidadores','tangible','derivacions i formació','tangible','dades i seguiment'],
+    ['Voluntariat','Persones cuidadores','tangible','hores gratuïtes','intangible','formació i cura mútua'],
+    ['Voluntariat','Persones cuidades','tangible','companyia i gestions','intangible','confiança i històries'],
+    ['Famílies','Serveis socials/CAP','intangible','context i alertes','tangible','recursos i prestacions'],
+    ['Persones cuidades','Serveis socials/CAP','intangible','consentiment i preferències','tangible','atenció adaptada'],
+    ['Famílies','Voluntariat','intangible','acollida a casa','intangible','relleu i respir']],
    kanban:['Diagnòstic de necessitats','Formar cuidadores','Protocol de casos','Primeres 5 famílies','Enllaç serveis públics','Prevenció del burnout']},
   {id:'formacio',name:'Educació / formació',icon:'📚',one:'Formació reglada o lliure, mentoria, escola comunitària.',projectTypes:['comunitari','cooperativa','autonom'],
    roles:['Formadors/es','Aprenents','Coordinació pedagògica','Espai formatiu','Comunitat de pràctica'],
-   flows:[['Formadors/es','Aprenents','tangible','sessions i materials'],['Aprenents','Formadors/es','tangible','matrícula o hores banc'],['Coordinació pedagògica','Formadors/es','intangible','disseny curricular'],['Formadors/es','Coordinació pedagògica','tangible','avaluació i millora'],['Espai formatiu','Formadors/es','tangible','aules i eines'],['Aprenents','Comunitat de pràctica','intangible','xarxa d\'exalumnes'],['Comunitat de pràctica','Aprenents','intangible','mentoria peer'],['Formadors/es','Comunitat de pràctica','intangible','recerca compartida']],
+   pairs:[
+    ['Formadors/es','Aprenents','tangible','sessions i materials','tangible','matrícula o hores del banc'],
+    ['Coordinació pedagògica','Formadors/es','intangible','disseny curricular','tangible','avaluació i millora'],
+    ['Espai formatiu','Formadors/es','tangible','aules i eines','tangible','ús i manteniment'],
+    ['Aprenents','Comunitat de pràctica','intangible','xarxa d\'exalumnes','intangible','mentoria entre iguals'],
+    ['Formadors/es','Comunitat de pràctica','intangible','recerca compartida','intangible','casos reals per ensenyar'],
+    ['Coordinació pedagògica','Aprenents','intangible','itinerari i acreditació','intangible','expectatives i necessitats'],
+    ['Espai formatiu','Aprenents','tangible','lloc de trobada','intangible','vida i ús de l\'equipament'],
+    ['Comunitat de pràctica','Coordinació pedagògica','intangible','què demana el sector','intangible','formació que s\'hi ajusta']],
    kanban:['Currículum mínim','Reclutar formadors','Espai i horaris','Cohort pilot','Avaluació i certificació','Bucle amb ex-alumnes']}
 ];
 const _pm=(()=>{const m={};PROTOTYPE_MAPS.forEach(p=>m[p.id]=p);return m;})();
@@ -3593,7 +3832,7 @@ const isIntangible=k=>normKind(k)==='intangible';
 function newVentureFromPrototype(node,proto,{name,type}={}){
   const idBy={},roles=[],exch=[];
   (proto.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
-  (proto.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
+  mapFlowsOf(proto).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   const t=type||(proto.projectTypes&&proto.projectTypes[0])||'comunitari';
   return{id:uid(),name:(name||proto.name).trim(),activityId:'proto_'+proto.id,prototypeId:proto.id,projectType:t,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(proto.kanban||[]).slice(),notes:'',graduatedNodeId:null,equity:{...projectTypeMeta(t).equity},createdAt:now()};
 }
@@ -3609,7 +3848,7 @@ function newProjectComando(node,{name,mission,memberIds,prototypeMapId}={}){
     createdAt:now(),updatedAt:now()};
   if(proto){
     const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
-    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
+    mapFlowsOf(proto).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   }
   node.comando=c;return c;
 }
@@ -3628,7 +3867,7 @@ function newEntityComando(entity,{name,mission,memberNames,prototypeMapId}={}){
     createdAt:now(),updatedAt:now()};
   if(proto){
     const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
-    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
+    mapFlowsOf(proto).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   }
   entity.comando=c;return c;
 }
@@ -3744,7 +3983,7 @@ async function aiPlanValueFlows(demand,ctx){
   // Fallback heurístic: escull el prototip més proper per keyword-match i el retorna.
   const dl=(demand||'').toLowerCase();
   const guess=PROTOTYPE_MAPS.find(p=>[p.id,p.name,p.one].join(' ').toLowerCase().split(/\W+/).some(w=>w.length>4&&dl.includes(w)))||PROTOTYPE_MAPS[0];
-  return{roles:guess.roles,flows:guess.flows,kanban:guess.kanban,fromPrototype:guess.id,heuristic:true};
+  return{roles:guess.roles,flows:mapFlowsOf(guess),kanban:guess.kanban,fromPrototype:guess.id,heuristic:true};
 }
 // ═══════════ Portes d'etapa · cada salt demana evidència, no només l'última ═══════════
 // Un incubadora de veritat no deixa avançar per clic: cada transició té criteris propis.
@@ -4753,8 +4992,8 @@ function modal(html){const bg=el('div','modal-bg');bg.innerHTML='<div class="mod
 function suggestMap(level,selectedPainIds,promptText){
   const k=knowFor(level);
   const roleSet=new Set(k.roles);
-  const flows=k.flows.map(f=>f.slice());
-  const addPain=p=>{(p.roles||[]).forEach(r=>roleSet.add(r));(p.flows||[]).forEach(f=>flows.push(f.slice()));};
+  const flows=mapFlowsOf(k);
+  const addPain=p=>{(p.roles||[]).forEach(r=>roleSet.add(r));mapFlowsOf(p).forEach(f=>flows.push(f));};
   k.pains.forEach(p=>{if(selectedPainIds.has(p.id))addPain(p);});
   // biaix pel prompt: si el text menciona el títol/descr d'un dolor no triat, incorpora'l
   const txt=(promptText||'').toLowerCase();
@@ -6054,6 +6293,85 @@ function buildDashboard(){
     next};
 }
 
+/* ═══════════ Actuar a distància · el tauler com a lloc únic ═══════════
+   Fins ara, per fer qualsevol cosa en un node calia navegar-hi: seleccionar-lo,
+   canviar de pestanya i tornar. Amb 900 municipis això és inviable i, sobretot,
+   trenca el fil de qui té cinc minuts per registrar una hora.
+
+   `NODE_ACTIONS` és el registre únic del que es pot fer sobre un node. El fa
+   servir el panell del tauler i qualsevol lloc que hagi d'oferir accions: si
+   s'afegeix una acció nova, apareix a tot arreu alhora. */
+const NODE_ACTIONS=[
+  {id:'hores',ic:'⏱',label:'Registra hores o diner',why:'Cada aportació signada puja la teva reputació i el fons comú',
+   when:n=>true,fn:n=>openLedgerEntryModal(n,{})},
+  {id:'soci',ic:'👥',label:'Dona d\'alta una persona',why:'Sense gent no hi ha xarxa',
+   when:n=>n.nodeLevel==='projecte',fn:n=>openMemberForm(n)},
+  {id:'oferta',ic:'🧠',label:'Publica una oferta',why:'Perquè el matching et trobi',
+   when:n=>n.dynamicType==='banc_temps',fn:n=>openOfferForm(n,'oferta')},
+  {id:'demanda',ic:'🙋',label:'Publica una demanda',why:'Demanar també és aportar: sense demandes no hi ha intercanvi',
+   when:n=>n.dynamicType==='banc_temps',fn:n=>openOfferForm(n,'demanda')},
+  {id:'objecte',ic:'📦',label:'Posa un objecte en comú',why:'El que fas servir dos cops l\'any pot servir a deu persones',
+   when:n=>n.dynamicType==='biblioteca_coses',fn:n=>openObjectForm(n)},
+  {id:'venture',ic:'🌱',label:'Obre la cartera de ventures',why:'Del diagnòstic al projecte que camina sol',
+   when:n=>n.dynamicType==='matriu',fn:n=>{selectNode(n.id);state.tab='cartera';renderWorkspace();}},
+  {id:'assemblea',ic:'🗳',label:'Assemblea i propostes',why:'El que no queda registrat es torna a discutir',
+   when:n=>true,fn:n=>openAssemblyModal(n)},
+  {id:'mapa',ic:'◉',label:'Mapa de valor',why:'Qui sosté què, abans de decidir res',
+   when:n=>true,fn:n=>{selectNode(n.id);state.tab='map';renderWorkspace();}},
+  {id:'reforca',ic:'⚡',label:'Reforça el mapa',why:'Té fluxos que surten i no tornen',
+   when:n=>{try{const a=vnaAudit(n);return (n.vna.roles||[]).length>=2&&(a.oneWay.length>0||a.isolated.length>0);}catch(e){return false;}},
+   fn:n=>openReciprocityFixer(n)},
+  {id:'projecte',ic:'✚',label:'Obre un projecte aquí',why:'Una dinàmica concreta és el que fa que la gent entri',
+   when:n=>isTerritory(n.nodeLevel),fn:n=>openProjectWizard(n.id)},
+  {id:'entitat',ic:'⬡',label:'Registra una entitat',why:'Saber qui hi ha és la base de tot',
+   when:n=>isTerritory(n.nodeLevel),fn:n=>openEntityForm(n)}
+];
+const actionsFor=node=>NODE_ACTIONS.filter(a=>{try{return a.when(node);}catch(e){return false;}});
+// Estat resumit d'un node per decidir a què val la pena entrar sense obrir-lo.
+function nodePulse(node){
+  const a=(node.vna&&(node.vna.roles||[]).length>=2)?vnaAudit(node):null;
+  const pend=proposalsOf(node).filter(p=>p.status==='pending').length;
+  const late=objectsOf(node).map(dueStatus).filter(s=>s&&/vençut/.test(s.t)).length;
+  const hores=(node.ledger||[]).filter(e=>e.type==='temps').reduce((s,e)=>s+(Number(e.value)||0),0);
+  return{people:membersOf(node).length,offers:offersOf(node).length,objects:objectsOf(node).length,
+    ventures:venturesOf(node).length,hores,pend,late,health:a?a.score:null,
+    needsMap:(node.vna&&(node.vna.roles||[]).length===0)};
+}
+/* Actuar sobre un node sense sortir d'on ets. Reutilitza els mateixos formularis
+   que la vista del node — no hi ha una segona implementació que es pugui desviar. */
+function openQuickAct(node){
+  const p=nodePulse(node),acts=actionsFor(node);
+  const meta=LEVEL_META[node.nodeLevel]||{label:'node'};
+  const dyn=node.dynamicType?dynById(node.dynamicType):null;
+  const bg=modal(`
+    <h2>⚡ ${esc(node.name)}</h2>
+    <p class="m-sub">${dyn?dyn.icon+' '+esc(dyn.name):esc(meta.label)} · actua-hi des d'aquí, sense perdre el fil del tauler.</p>
+    <div class="bib-stats">
+      ${p.people?'<div class="bib-tile"><div class="n">'+p.people+'</div><div class="l">persones</div></div>':''}
+      ${p.hores?'<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+p.hores+'</div><div class="l">hores</div></div>':''}
+      ${p.offers?'<div class="bib-tile"><div class="n" style="color:var(--green)">'+p.offers+'</div><div class="l">ofertes</div></div>':''}
+      ${p.objects?'<div class="bib-tile"><div class="n" style="color:var(--green)">'+p.objects+'</div><div class="l">objectes</div></div>':''}
+      ${p.ventures?'<div class="bib-tile"><div class="n" style="color:var(--orange)">'+p.ventures+'</div><div class="l">ventures</div></div>':''}
+      ${p.health!==null?'<div class="bib-tile"><div class="n" style="color:'+(p.health>=70?'var(--green)':p.health>=45?'var(--orange)':'var(--red)')+'">'+p.health+'</div><div class="l">salut del mapa</div></div>':''}
+    </div>
+    ${p.pend?'<div class="ai-note"><span class="ic">🗳</span><span>'+p.pend+' proposta(es) esperant vot.</span></div>':''}
+    ${p.late?'<div class="ai-note"><span class="ic">📚</span><span>'+p.late+' préstec(s) vençut(s).</span></div>':''}
+    ${p.needsMap?'<div class="ai-note"><span class="ic">🕸</span><span>Aquest node encara no té mapa de valor: sense mapa no hi ha comptes.</span></div>':''}
+    <div class="ent-grp-lbl">Què hi vols fer</div>
+    <div id="qaActs" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="qaOpen">↗ Obre el node sencer</button><button class="btn btn-primary" id="qaClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const box=bg.querySelector('#qaActs');
+  acts.forEach(a=>{
+    const c=el('div','ent-card');
+    c.innerHTML='<div class="ent-nm">'+a.ic+' '+esc(a.label)+'</div><div class="ent-desc">'+esc(a.why)+'</div>';
+    c.onclick=()=>{closeModal();a.fn(node);};
+    box.appendChild(c);
+  });
+  bg.querySelector('#qaClose').onclick=closeModal;
+  bg.querySelector('#qaOpen').onclick=()=>{closeModal();selectNode(node.id);};
+}
 function renderDashboard(w){
   const d=buildDashboard();
   const head=el('div','node-head');
@@ -6132,6 +6450,39 @@ function renderDashboard(w){
     cov.appendChild(b);
   });
   body.appendChild(cov);
+
+  // Actua a qualsevol punt de la xarxa · sense navegar-hi
+  body.appendChild(el('div','ent-grp-lbl','⚡ Actua a qualsevol punt de la xarxa'));
+  const net=el('div','dash-net');
+  const q=el('input');q.id='dashNetQ';q.placeholder='Cerca un municipi, barri o projecte…';q.setAttribute('aria-label','Cerca un node de la xarxa per actuar-hi');
+  net.appendChild(q);
+  const list=el('div','dash-net-list');net.appendChild(list);
+  const paint=()=>{
+    const t=q.value.trim().toLowerCase();
+    // Sense cerca, els nodes on hi ha alguna cosa a fer o on ja tens presència.
+    let nodes=state.nodes.filter(n=>!t||n.name.toLowerCase().includes(t));
+    if(!t){
+      const mine=new Set();
+      if(state.activePersona)state.nodes.forEach(n=>{if(membersOf(n).some(m=>personKey(m.name)===personKey(state.activePersona)))mine.add(n.id);});
+      nodes=nodes.map(n=>({n,p:nodePulse(n),mine:mine.has(n.id)}))
+        .sort((a,b)=>(b.p.pend+b.p.late+(b.mine?2:0)+(b.p.needsMap?1:0))-(a.p.pend+a.p.late+(a.mine?2:0)+(a.p.needsMap?1:0)))
+        .slice(0,8).map(x=>x.n);
+    } else nodes=nodes.slice(0,12);
+    list.innerHTML='';
+    if(!nodes.length){list.appendChild(el('div','ent-desc','Cap node amb aquest nom. Crea\'l des del mapa de Catalunya.'));return;}
+    nodes.forEach(n=>{
+      const p=nodePulse(n),dyn=n.dynamicType?dynById(n.dynamicType):null;
+      const r=el('button','dash-net-row');
+      const badges=[p.pend?'🗳 '+p.pend:'',p.late?'📚 '+p.late:'',p.needsMap?'🕸 sense mapa':'',
+        p.health!==null?'salut '+p.health:'',p.people?'👥 '+p.people:''].filter(Boolean);
+      r.innerHTML='<span class="dn-ic">'+(dyn?dyn.icon:(LEVEL_META[n.nodeLevel]||{}).ic||'◇')+'</span>'+
+        '<span class="dn-b"><span class="dn-t">'+esc(n.name)+'</span><span class="dn-d">'+esc(badges.join(' · ')||'sense activitat encara')+'</span></span><span class="dn-go">⚡</span>';
+      r.onclick=()=>openQuickAct(n);
+      list.appendChild(r);
+    });
+  };
+  q.oninput=paint;paint();
+  body.appendChild(net);
 
   // Moviment recent
   body.appendChild(el('div','ent-grp-lbl','📜 Moviment recent'));
@@ -7062,7 +7413,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

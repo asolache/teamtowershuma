@@ -32,6 +32,33 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 
 ## Bloc pendent (prioritzat)
 
+### Onada en curs · qualitat dels mapes + tauler com a lloc únic
+
+**Fet:**
+1. **Auditoria completa dels mapes precarregats** — les 36 definicions que sembren
+   mapes (5 nivells territorials + 23 reptes, 11 dinàmiques, 14 activitats
+   crítiques, 6 prototips). Resultat i llindars a
+   `../vision/auditoria-mapes.md`. Salut mínima del sistema: 13/100 → **86/100**.
+2. **DRY de la sembra** — forma canònica `pairs` i un únic `mapFlowsOf`, que fan
+   servir els sis camins que creen mapes. Abans: quatre implementacions, quatre
+   qualitats.
+3. **Actuar sense navegar** — `NODE_ACTIONS` + `openQuickAct` + panell de xarxa al
+   tauler: cercar qualsevol node de Catalunya i registrar-hi valor, donar d'alta
+   gent, publicar oferta o obrir l'assemblea sense sortir del tauler.
+
+**Següent, per ordre:**
+1. **Pings al panell del tauler** — que la fila d'un node digui «tens un matching
+   aquí» i es pugui tancar l'intercanvi des del mateix lloc. És el bucle de
+   gamificació que falta: veure → actuar → veure el resultat, sense navegar.
+2. **Reconeixement visible de l'aportació** — quan registres valor des del tauler,
+   que es vegi immediatament l'efecte al teu camí de rol i a la salut del node.
+   Sense retorn immediat no hi ha bucle.
+3. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
+   `propi` vs `agregat`, mai sumats. És prerequisit de les federacions temàtiques.
+4. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
+   d'abandó) — segueix sent la que fa que la MATRIU sigui un servei i no un
+   repositori d'estructures.
+
 ### Onada actual — user acquisition + traction
 1. **Landing/onboarding més agressiu** — crear vista/pantalla dedicada a captació d'usuaris amb funcionalitats crítiques de tracció (CTA directe a crear perfil, comptador de superherois viu, testimonis).
 2. **Registre d'usuaris descentralitzat** — perfil accessible des de la web SOS única, integrant amb els sistemes ja disponibles (did:key + WebAuthn passkey + Nostr NIP-05).
