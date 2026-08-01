@@ -96,13 +96,53 @@ la base és més ampla que el cim i on ningú puja sense que algú el sostingui.
   sense trencar el que ja ha comptabilitzat. Un estat líquid sense dret de
   sortida és un estat sòlid amb bon màrqueting.
 - **Federacions per tema, no només per territori** (energia, cures, habitatge):
-  el mateix node dins de diverses federacions alhora.
+  el mateix node dins de diverses federacions alhora. Vegeu el detall a sota —
+  és la peça que fa que «líquid» vulgui dir alguna cosa operativa.
 - **Subsidiarietat comptable**: quina decisió es pren a quin nivell, i com es
   resol el conflicte entre nivells sense recentralitzar.
 - **Interoperabilitat entre federacions** que no comparteixen guardians: què és
   suficient per confiar en el mapa de valor d'algú altre.
 
-**Font**: conversa amb l'Àlvar. Cal desenvolupar-ho com a document de visió
+#### Federacions temàtiques · el vincle és el tema, no el mapa
+
+El que fa que l'estat sigui **líquid** no és la geografia: és que **et federes
+quan et vincules a un tema**. El territori segueix sent un eix (i el que ja hi ha
+construït), però deixa de ser l'únic.
+
+**El model de referència és `del.icio.us`.** No pel producte —era un gestor
+d'adreces— sinó pel mecanisme: **etiquetaves una cosa i, en fer-ho, apareixia la
+gent que havia etiquetat el mateix**. Ningú havia de crear un grup, demanar
+permís ni acceptar una invitació. El grup emergia de l'acte d'etiquetar. Tres
+propietats que val la pena copiar tal qual:
+
+1. **L'etiqueta és una declaració d'interès, no una categoria administrativa.**
+   La posa qui participa, no un comitè de taxonomia.
+2. **El descobriment és lateral**: de l'etiqueta a les persones, i de les
+   persones a les seves altres etiquetes. Així es troba gent amb qui comparteixes
+   coses que no sabies que compartíeu.
+3. **Els grups es poden agrupar.** Una federació de temes és un tema. Aquesta
+   recursivitat és exactament la mateixa que «federació de federacions», i és el
+   que evita haver de decidir a priori quin és el nivell correcte.
+
+**Com encaixa amb el que ja tenim**
+- Les categories de skills, les tipologies d'objectes i els `dynamicType` ja són,
+  de fet, etiquetes: avui serveixen per classificar, no per federar. El salt és
+  fer que **etiquetar connecti**.
+- Els pings ja fan matching lateral per categoria entre nodes diferents: és el
+  mateix mecanisme, però limitat a oferta↔demanda. Generalitzar-lo a interessos.
+- Els arquetips declarats del dossier són una etiqueta d'un altre ordre (com sóc,
+  no què m'interessa): serveixen per compondre equips, no per federar.
+
+**Preguntes obertes abans de construir res**
+- Qui pot crear una etiqueta i com s'eviten cent variants del mateix tema sense
+  posar-hi un comitè. (Suggerència: fusió proposada, mai automàtica.)
+- Una federació temàtica té ledger i fons propis, o només visibilitat i
+  matching? De la resposta en depèn si és una comunitat o només un filtre.
+- Com es fa visible la persona sense convertir-ho en una xarxa social d'exhibició:
+  el SOS mostra el que has fet, no el que dius que t'agrada.
+- Privadesa: quines etiquetes són públiques i quines es queden al dossier local.
+
+**Font**: converses amb l'Àlvar. Cal desenvolupar-ho com a document de visió
 propi quan toqui; aquí queda anotat perquè no es perdi.
 
 ### Idees a explorar (paraking lot)
