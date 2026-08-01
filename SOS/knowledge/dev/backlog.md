@@ -55,6 +55,16 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 - Test de rendiment amb 500 nodes + 5.000 apunts al ledger.
 - Compatibilitat: iPad Safari, Android Chrome, Firefox desktop, Edge.
 
+### MATRIU · pla de millora èpic
+Auditoria completa, defectes corregits i 8 fases pendents a
+**`../matriu/pla-millora.md`**. Com funciona avui: **`../matriu/guia-funcionament.md`**.
+
+Ordre recomanat: **F1 acompanyament** (mentors + sessions al ledger + alertes
+d'abandó) i **F3 riscos/bloquejos** primer — són les que fan que la MATRIU deixi
+de ser un repositori d'estructures i passi a ser un servei. Després **F4 vista de
+cohort**. La resta: F2 viabilitat econòmica · F5 finançament i tràmits ·
+F6 formació lligada a l'etapa · F7 seguiment post-graduació · F8 evidències.
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.

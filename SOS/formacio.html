@@ -54,6 +54,58 @@ h3.section{color:var(--indigo);font-size:1rem;letter-spacing:.05em;text-transfor
 .stack strong{color:var(--text)}
 footer{text-align:center;color:var(--muted);padding:2.5rem 1rem 3rem;font-size:.85rem;border-top:1px solid rgba(255,255,255,.05);margin-top:2rem}
 footer a{color:var(--indigo);text-decoration:none}
+/* Model acció-formació + nivells */
+.model,.itineraris,.gestor,.mentoria,.recursos{background:var(--card);border-radius:14px;padding:1.8rem 2rem;margin-bottom:1.8rem;border:1px solid var(--border)}
+.model{border-left:4px solid var(--green)}
+.itineraris{border-left:4px solid var(--blue)}
+.gestor{border-left:4px solid #facc15}
+.mentoria{border-left:4px solid var(--orange)}
+.recursos{border-left:4px solid var(--purple)}
+.model h2,.itineraris h2,.gestor h2,.mentoria h2,.recursos h2{margin:0 0 .5rem;font-size:1.5rem}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.7rem;margin-top:.6rem}
+.lvl{background:rgba(255,255,255,.03);border-radius:10px;padding:.9rem 1rem;border-top:3px solid var(--muted)}
+.lvl.l0{border-top-color:var(--muted)}.lvl.l1{border-top-color:var(--green)}
+.lvl.l2{border-top-color:var(--indigo)}.lvl.l3{border-top-color:var(--purple)}
+.lvl-id{font-family:'SF Mono',Monaco,monospace;font-size:.7rem;letter-spacing:.1em;color:var(--muted)}
+.lvl-nm{font-size:1rem;font-weight:700;margin:.15rem 0}
+.lvl-ds{font-size:.82rem;color:var(--light);line-height:1.45}
+.lvl-ev{font-size:.7rem;color:var(--muted);margin-top:.4rem;font-style:italic;line-height:1.4}
+.toc-x{margin:.3rem 0 0;padding-left:1.2rem;color:var(--light)}
+.toc-x li{margin:.3rem 0}
+.toc-x li a{color:var(--text);text-decoration:none}
+.toc-x li a:hover{color:var(--indigo)}
+.toc-x li em{color:var(--muted);font-style:normal;font-size:.85rem}
+/* Taula de rols / calendari / fonts */
+.rt{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:.86rem;display:block;overflow-x:auto}
+.rt th{text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap}
+.rt td{padding:.6rem .7rem;border-bottom:1px solid rgba(255,255,255,.05);color:var(--light);line-height:1.5;vertical-align:top}
+.rt tbody tr:hover{background:rgba(255,255,255,.02)}
+.rt-r{font-weight:600;color:var(--c,var(--text));white-space:nowrap}
+/* Programa de gestor */
+.g-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:1rem 0}
+.g-tile{background:rgba(255,255,255,.03);border-radius:10px;padding:.8rem;text-align:center}
+.g-n{font-size:1.35rem;font-weight:700;color:#facc15;line-height:1}
+.g-l{font-family:'SF Mono',Monaco,monospace;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.comp{background:rgba(255,255,255,.03);border-radius:12px;padding:1.2rem 1.3rem;margin-bottom:1rem;border-left:3px solid #facc15}
+.comp.c1{border-left-color:var(--green)}.comp.c2{border-left-color:var(--blue)}.comp.c3{border-left-color:var(--indigo)}
+.comp.c4{border-left-color:var(--orange)}.comp.c5{border-left-color:var(--purple)}.comp.c6{border-left-color:#00e5ff}
+.comp-hd{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;margin-bottom:.4rem}
+.comp-n{font-family:'SF Mono',Monaco,monospace;font-size:.75rem;letter-spacing:.1em;color:var(--muted)}
+.comp-hd h4{margin:0;font-size:1.12rem;flex:1;min-width:180px}
+.comp-m{font-family:'SF Mono',Monaco,monospace;font-size:.65rem;color:var(--muted);white-space:nowrap}
+.comp-d{color:var(--light);font-size:.92rem;margin:.2rem 0 .6rem;line-height:1.6}
+.comp .box h4{font-size:.7rem}
+/* Sessió de mentoria */
+.sess{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem}
+.s-row{display:flex;gap:.85rem;align-items:flex-start;background:rgba(255,255,255,.03);border-radius:8px;padding:.7rem .9rem;font-size:.87rem;color:var(--light);line-height:1.55}
+.s-min{font-family:'SF Mono',Monaco,monospace;font-size:.75rem;font-weight:700;color:var(--orange);min-width:34px;flex-shrink:0}
+/* Recursos */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.6rem;margin-top:.6rem}
+.res{display:flex;flex-direction:column;gap:.2rem;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;text-decoration:none;transition:border-color .14s,transform .14s}
+.res:hover{border-color:var(--purple);transform:translateY(-2px)}
+.res-t{font-size:.9rem;font-weight:700;color:var(--text);line-height:1.3}
+.res-d{font-size:.78rem;color:var(--muted);line-height:1.45}
+.res-k{font-family:'SF Mono',Monaco,monospace;font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--purple);margin-top:.2rem}
 .expert-cert{background:linear-gradient(135deg,rgba(224,64,251,.15),rgba(99,102,241,.1));border:2px solid var(--purple);border-radius:14px;padding:2rem;margin-top:2rem;text-align:center}
 .expert-cert h2{margin:0 0 .5rem;background:linear-gradient(90deg,#e040fb,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent}
 </style>
@@ -61,17 +113,56 @@ footer a{color:var(--indigo);text-decoration:none}
 <body>
 <header>
 <h1>Guia formativa SOS · Fes-te expert/a</h1>
-<p><strong>8 mòduls progressius</strong> per dominar totes les metodologies i tecnologies del Sistema Operatiu Social. Al final tindràs skills, aptituds i experiència pràctica per implementar SOS a qualsevol comunitat.</p>
+<p>El model d'aprenentatge del SOS és l'<strong>acció-formació</strong>: es fa, i el fet queda com a certificació. Aquesta pàgina és el <strong>repositori per preparar-te</strong> — 8 mòduls, itineraris per rol, el programa de Gestor/a i les fonts per ampliar. La mentoria la fan els primers formats en la gestió del SOS.</p>
 <nav>
 <a href="../index.html">← TeamTowers Humà</a> ·
 <a href="index.html">Obre SOS</a> ·
-<a href="blog.html">Blog</a> ·
-<a href="comando.html">Comando</a> ·
-<a href="#cert">Certificat expert</a>
+<a href="#itineraris">Itineraris</a> ·
+<a href="#gestor">Gestor/a SOS</a> ·
+<a href="#mentoria">Mentoria</a> ·
+<a href="#recursos">Recursos</a> ·
+<a href="comando.html">Comando</a>
 </nav>
 </header>
 
 <main class="wrap">
+
+<section class="model">
+<h2>🌀 El model: acció-formació</h2>
+<p class="lead">Aquí no s'estudia primer i es fa després. <strong>Es fa, i el fet queda com a certificació.</strong> Cada hora que aportes, cada mapa que dibuixes, cada decisió que signes queda al ledger — i aquest mateix registre és el que acredita el teu aprenentatge. No hi ha examen perquè no cal: l'evidència ja hi és.</p>
+<div class="grid2">
+<div class="box metode"><h4>🔁 El cicle</h4><ul>
+<li><strong>Fas</strong> una acció real al teu territori (no un exercici).</li>
+<li><strong>Queda registrada</strong> i signada criptogràficament.</li>
+<li><strong>La reflexiones</strong> amb un mentor que ja ha passat per allà.</li>
+<li><strong>Marxes amb un encàrrec</strong> concret per a la propera vegada.</li>
+</ul></div>
+<div class="box exercici"><h4>👥 Qui mentora</h4><p>Els <strong>primers formats en la gestió del SOS</strong>. Qui arriba a N2 (Gestor) pot acompanyar practicants; qui arriba a N3 (Mentor) forma gestors. La cadena es sosté sola: cada promoció forma la següent, i la mentoria rebuda i donada queda igualment registrada com a aportació de valor.</p></div>
+</div>
+<h3 class="section">Els 4 nivells</h3>
+<div class="levels">
+<div class="lvl l0"><div class="lvl-id">N0</div><div class="lvl-nm">Explorador/a</div><div class="lvl-ds">Tens perfil i entens per a què serveix el SOS.</div><div class="lvl-ev">Evidència: perfil creat</div></div>
+<div class="lvl l1"><div class="lvl-id">N1</div><div class="lvl-nm">Practicant</div><div class="lvl-ds">Operes una dinàmica real: aportes, intercanvies, registres.</div><div class="lvl-ev">Evidència: aportacions signades + oferta o objecte publicat</div></div>
+<div class="lvl l2"><div class="lvl-id">N2</div><div class="lvl-nm">Gestor/a SOS</div><div class="lvl-ds">Sostens un node sencer: mapa, governança, comptabilitat i incubació.</div><div class="lvl-ev">Evidència: ≥20 h · ≥3 comunitats o 1 venture liderada</div></div>
+<div class="lvl l3"><div class="lvl-id">N3</div><div class="lvl-nm">Mentor/a</div><div class="lvl-ds">Formes altres gestors i certifiques la seva pràctica.</div><div class="lvl-ev">Evidència: ≥50 h · ≥3 comunitats · 2 ventures o 1 graduada</div></div>
+</div>
+<p class="lead" style="margin-top:1rem">Al SOS, <strong>el launcher → 🎓 Prepara la meva mentoria</strong> llegeix el teu ledger i genera l'itinerari adaptat: què ja domines, què et falta, quins mòduls et toquen i el guió de la sessió de 60 minuts. Aquesta pàgina és el repositori on t'hi prepares.</p>
+</section>
+
+<section class="itineraris" id="itineraris">
+<h2>🧭 Itineraris per rol</h2>
+<p class="lead">Els 8 mòduls són el cos complet, però ningú els necessita tots alhora. Cada rol del SOS té el seu camí curt fins a ser útil, i després amplia.</p>
+<table class="rt">
+<thead><tr><th>Rol</th><th>Camí curt (ser útil ja)</th><th>Amplia després</th><th>Fita</th></tr></thead>
+<tbody>
+<tr><td><span class="rt-r" style="--c:var(--indigo)">🏛 Guardian del territori</span></td><td>M1 · M3 · M5</td><td>M2 · M6 · M8</td><td>Signar decisions amb quòrum</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--green)">🦸 Superheroi/na</span></td><td>M1 · M4 · M7</td><td>M3 · M6</td><td>Primer intercanvi signat</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--orange)">👥 Coordinador/a de comunitat</span></td><td>M1 · M3 · M4</td><td>M6 · M7 · M2</td><td>Onboarding de 5 persones</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--blue)">🌐 Agent territorial</span></td><td>M1 · M3 · M8</td><td>M5 · M2</td><td>Ancorar un pack públic</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--purple)">💫 Simpatitzant</span></td><td>M1 · M4</td><td>M7</td><td>Entendre on encaixes</td></tr>
+</tbody>
+</table>
+</section>
 
 <div class="toc">
 <h3>Índex de mòduls</h3>
@@ -86,6 +177,14 @@ footer a{color:var(--indigo);text-decoration:none}
 <li><a href="#m8">Ancoratge públic i IA integrada</a> · <em>Nostr + IPFS/Arweave + AI adapter DRY</em></li>
 <li><a href="#manual">Manual tècnic · Developers & Admins</a> · <em>wallets permaweb · Nostr · Claude API · self-hosting · dev workflow</em></li>
 </ol>
+<h3 style="margin-top:1.2rem">Més enllà dels mòduls</h3>
+<ul class="toc-x">
+<li><a href="#itineraris">🧭 Itineraris per rol</a> · <em>el camí curt de cada rol</em></li>
+<li><a href="#gestor">🎖 Programa de Gestor/a SOS</a> · <em>les 6 competències i les seves evidències</em></li>
+<li><a href="#mentoria">🤝 Preparar-se per a la mentoria</a> · <em>què porta cadascú a la sessió</em></li>
+<li><a href="#recursos">📚 Recursos i fonts</a> · <em>on ampliar coneixements</em></li>
+<li><a href="#cert">🎓 Certificació</a> · <em>com s'acredita</em></li>
+</ul>
 </div>
 
 <section class="module mod-1" id="m1">
@@ -406,6 +505,124 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Simula l'<strong>Impacte cas Catalunya</strong> per al teu municipi. Ajusta la penetració al 10%. Anota l'estalvi €/any + reducció solitud + tCO2. Fes captura i comparteix-la a xarxes amb link a SOS.</p></div>
 </section>
 
+<section class="gestor" id="gestor">
+<h2>🎖 Programa de Gestor/a SOS</h2>
+<p class="lead">Un gestor SOS no és qui sap fer servir l'app: és qui <strong>pot posar un territori en marxa i sostenir-lo</strong>. Aquest programa és el pont entre N1 (Practicant) i N2 (Gestor), i el requisit per després mentorar.</p>
+
+<div class="g-meta">
+<div class="g-tile"><div class="g-n">~45 h</div><div class="g-l">dedicació total</div></div>
+<div class="g-tile"><div class="g-n">6</div><div class="g-l">competències</div></div>
+<div class="g-tile"><div class="g-n">3–4 mesos</div><div class="g-l">durada típica</div></div>
+<div class="g-tile"><div class="g-n">1</div><div class="g-l">territori real</div></div>
+</div>
+
+<p class="lead"><strong>Regla d'or:</strong> el programa es fa sobre <em>una comunitat de veritat</em>, no un cas d'estudi. Si no tens territori, el primer encàrrec és trobar-lo.</p>
+
+<h3 class="section">Les 6 competències</h3>
+
+<div class="comp c1">
+<div class="comp-hd"><span class="comp-n">C1</span><h4>Diagnosticar una comunitat</h4><span class="comp-m">M3 · 8 h</span></div>
+<p class="comp-d">Entrar en una comunitat que no coneixes i sortir-ne amb el seu mapa de valor dibuixat i validat pels seus membres.</p>
+<div class="grid2">
+<div class="box skills"><h4>Sabràs fer</h4><ul><li>Facilitar una sessió de mapatge VNA amb 6–10 persones</li><li>Distingir rols funcionals de càrrecs i noms propis</li><li>Detectar topologia estrella i rols aïllats</li><li>Nomenar els intangibles que ningú anomena</li></ul></div>
+<div class="box exercici"><h4>Evidència per superar-la</h4><p>Un mapa de valor real, fet amb la comunitat (no per a ella), amb <strong>≥5 rols i ≥8 fluxos</strong>, diversitat tangible/intangible i <code>buildHealth</code> sense rols aïllats. La comunitat l'ha de reconèixer com a seu.</p></div>
+</div>
+</div>
+
+<div class="comp c2">
+<div class="comp-hd"><span class="comp-n">C2</span><h4>Obrir i sostenir una dinàmica</h4><span class="comp-m">M4 · 8 h</span></div>
+<p class="comp-d">Posar en marxa un banc de temps o una biblioteca de les coses i que segueixi viu tres mesos després.</p>
+<div class="grid2">
+<div class="box skills"><h4>Sabràs fer</h4><ul><li>Onboarding de socis sense fricció (flux superheroi)</li><li>Dissenyar el catàleg inicial amb els top-20 curats</li><li>Registrar intercanvis signats i gestionar venciments</li><li>Detectar i prevenir el burnout dels que sempre donen</li></ul></div>
+<div class="box exercici"><h4>Evidència per superar-la</h4><p>Una dinàmica amb <strong>≥8 socis actius i ≥15 intercanvis signats</strong>, amb saldos que no estiguin tots del mateix costat. El desequilibri crònic és el senyal que la dinàmica no és recíproca.</p></div>
+</div>
+</div>
+
+<div class="comp c3">
+<div class="comp-hd"><span class="comp-n">C3</span><h4>Governar amb legitimitat</h4><span class="comp-m">M5 · 8 h</span></div>
+<p class="comp-d">Que les decisions es prenguin, quedin i es puguin defensar davant de qualsevol — inclosa una administració.</p>
+<div class="grid2">
+<div class="box skills"><h4>Sabràs fer</h4><ul><li>Reclamar node, configurar quòrum i repartir guardians</li><li>Portar una assemblea àgil des del mòbil</li><li>Explicar per què √població reparteix pes just entre municipis desiguals</li><li>Aplicar la correcció Gini quan un bloc concentra</li></ul></div>
+<div class="box exercici"><h4>Evidència per superar-la</h4><p><strong>≥5 propostes signades i votades</strong>, de les quals almenys una rebutjada (una governança on tot s'aprova no està decidint, està ratificant) i el registre públic de decisions ancorat.</p></div>
+</div>
+</div>
+
+<div class="comp c4">
+<div class="comp-hd"><span class="comp-n">C4</span><h4>Incubar amb la MATRIU</h4><span class="comp-m">M6 · 10 h</span></div>
+<p class="comp-d">Acompanyar una iniciativa des de la idea fins que camina sola, amb la propietat repartida amb justícia.</p>
+<div class="grid2">
+<div class="box skills"><h4>Sabràs fer</h4><ul><li>Triar la via de creació correcta (activitat crítica · prototip · IA)</li><li>Sembrar el pla d'sprints des del mapa de valor</li><li>Sostenir les portes d'etapa quan algú té pressa per avançar</li><li>Explicar Slicing Pie a qui tem perdre-hi</li><li>Provocar intercooperació entre ventures germanes</li></ul></div>
+<div class="box exercici"><h4>Evidència per superar-la</h4><p>Una venture que arriba a <strong>validació</strong> amb readiness ≥80%, o una <strong>graduada</strong>. Més una intercooperació signada entre dues ventures. Detall clau: cap membre amb >70% d'equity.</p></div>
+</div>
+</div>
+
+<div class="comp c5">
+<div class="comp-hd"><span class="comp-n">C5</span><h4>Comptabilitzar el valor</h4><span class="comp-m">M6 · M8 · 6 h</span></div>
+<p class="comp-d">Poder respondre «i això quant val?» amb una xifra defensable i el seu desglossament.</p>
+<div class="grid2">
+<div class="box skills"><h4>Sabràs fer</h4><ul><li>Ajustar l'oracle FMV al teu territori (no val el mateix a Barcelona que a Torrelles)</li><li>Llegir <code>fundValue</code> amb el seu rang i explicar la incertesa</li><li>Defensar la valoració d'hores davant d'algú que només compta euros</li><li>Interpretar l'impacte psicosocial: reciprocitat, hores solidàries, persones actives</li></ul></div>
+<div class="box exercici"><h4>Evidència per superar-la</h4><p>Un <strong>informe de valor del fons</strong> amb oracle calibrat al territori, i saber explicar per què la reciprocitat és una xifra tan important com el capital mobilitzat.</p></div>
+</div>
+</div>
+
+<div class="comp c6">
+<div class="comp-hd"><span class="comp-n">C6</span><h4>Fer-ho verificable i transmissible</h4><span class="comp-m">M2 · M8 · 5 h</span></div>
+<p class="comp-d">Que el que has construït sobrevisqui a la teva marxa i qualsevol el pugui auditar.</p>
+<div class="grid2">
+<div class="box skills"><h4>Sabràs fer</h4><ul><li>Generar Anchor Packs i verificar-los sense confiar en ningú</li><li>Ancorar el mainHash a Nostr i explicar què demostra i què no</li><li>Sincronitzar entre dispositius i deixar rellevament</li><li>Documentar el node perquè el següent gestor l'entengui</li></ul></div>
+<div class="box exercici"><h4>Evidència per superar-la</h4><p>Un <strong>Anchor Pack verificat per una tercera persona</strong> i un event Nostr públic. Prova final: algú altre agafa el teu node i el continua sense trucar-te.</p></div>
+</div>
+</div>
+
+<h3 class="section">Calendari suggerit</h3>
+<table class="rt">
+<thead><tr><th>Mes</th><th>Focus</th><th>Competències</th><th>Mentoria</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Entrar i diagnosticar</td><td>C1 · inici C2</td><td>2 sessions</td></tr>
+<tr><td>2</td><td>Fer circular</td><td>C2 · C3</td><td>2 sessions</td></tr>
+<tr><td>3</td><td>Incubar</td><td>C4 · C5</td><td>2 sessions</td></tr>
+<tr><td>4</td><td>Consolidar i transmetre</td><td>C6 · revisió</td><td>1 sessió + avaluació</td></tr>
+</tbody>
+</table>
+
+<div class="box exercici" style="margin-top:1rem"><h4>🎖 Acreditació com a Gestor/a</h4><p>Les 6 competències amb la seva evidència al ledger. No hi ha tribunal: hi ha un <strong>Anchor Pack signat</strong> amb el teu recorregut que qualsevol pot verificar, i un mentor N3 que hi posa la seva signatura. La teva acreditació és tan sòlida com les dades que la sostenen — i tan pública com vulguis.</p></div>
+</section>
+
+<section class="mentoria" id="mentoria">
+<h2>🤝 Preparar-se per a la mentoria</h2>
+<p class="lead">La sessió dura 60 minuts i no serveix per explicar teoria — per això hi ha aquesta pàgina. Serveix per <strong>desencallar el que t'has trobat fent</strong>.</p>
+
+<div class="grid2">
+<div class="box metode"><h4>📥 Si et mentoren · porta això</h4><ul>
+<li>El teu <strong>perfil transversal</strong> obert (hores, superpoders, comunitats).</li>
+<li>Una <strong>cosa concreta que t'ha encallat</strong>, no una pregunta general.</li>
+<li>L'<strong>encàrrec anterior</strong>: fet, a mitges o no fet — les tres respostes són vàlides, amagar-ho no.</li>
+<li>La pantalla del SOS on passa el problema, no una descripció.</li>
+</ul></div>
+<div class="box eines"><h4>📤 Si mentores · prepara això</h4><ul>
+<li>Obre <strong>🎓 Prepara la meva mentoria</strong> sobre el seu perfil: et dona nivell, punts forts, buits, mòduls i guió.</li>
+<li>Repassa el seu <strong>registre d'activitat</strong> des de l'última sessió.</li>
+<li>Decideix <strong>un</strong> buit a atacar. Un. Atacar-ne tres és no atacar-ne cap.</li>
+<li>Pensa l'encàrrec abans: petit, verificable al ledger, fet en una setmana.</li>
+</ul></div>
+</div>
+
+<h3 class="section">L'estructura de 60 minuts</h3>
+<div class="sess">
+<div class="s-row"><span class="s-min">10'</span><div><strong>Reconèixer el que ja porta.</strong> Obrir el cromo i llegir-lo junts. Es comença pel que ja ha fet, mai per la llista del que falta — qui arriba sentint-se deutor no aprèn.</div></div>
+<div class="s-row"><span class="s-min">15'</span><div><strong>El model en una frase.</strong> A N0, explicar acció-formació. A partir de N1, situar on és entre els 4 nivells i què separa el seu del següent.</div></div>
+<div class="s-row"><span class="s-min">20'</span><div><strong>Mòdul de l'etapa, en pràctica.</strong> Obrint l'eina real. Si es fa teoria, la sessió ha fracassat: la teoria és aquesta pàgina i se la pot llegir sol.</div></div>
+<div class="s-row"><span class="s-min">10'</span><div><strong>Desfer un buit concret.</strong> En directe, a la seva instància, amb les seves dades.</div></div>
+<div class="s-row"><span class="s-min">5'</span><div><strong>Encàrrec i propera cita.</strong> Escrits. <em>Sense encàrrec la sessió no compta</em> — i el temps de mentoria es registra al ledger com el que és: aportació de valor.</div></div>
+</div>
+
+<div class="box exercici" style="margin-top:1rem"><h4>⚖️ Tres regles del mentor SOS</h4><ul>
+<li><strong>No facis la feina.</strong> Si prens el teclat, has resolt un problema i n'has creat un de pitjor: dependència.</li>
+<li><strong>Les portes no es regalen.</strong> Si algú vol saltar una etapa sense evidència, la resposta és què li falta, no un permís.</li>
+<li><strong>Registra la sessió.</strong> El teu temps de mentoria és aportació de valor i genera slices. Que no quedi és regalar valor a un sistema que precisament existeix per no perdre'l.</li>
+</ul></div>
+</section>
+
 <section class="module mod-manual" id="manual" style="border-left-color:#a3e635">
 <div class="num">MANUAL TÈCNIC · Developers &amp; Admins SOS</div>
 <h2>Configuració avançada — integracions externes</h2>
@@ -579,11 +796,73 @@ Object.keys(window.__SOS).length</code></pre>
 </div>
 </section>
 
+<section class="recursos" id="recursos">
+<h2>📚 Recursos i fonts</h2>
+<p class="lead">On ampliar. Ordenat per proximitat a la pràctica del SOS: primer el que fem servir cada dia, després el que hi ha darrere.</p>
+
+<h3 class="section">Documentació interna del SOS</h3>
+<div class="res-grid">
+<a class="res" href="knowledge/matriu/guia-funcionament.md"><span class="res-t">Guia de funcionament de la MATRIU</span><span class="res-d">Les 4 pestanyes, el cicle amb les 3 portes i el perquè de cada criteri, les 3 vies de creació, la comptabilitat i una recepta d'arrencada.</span><span class="res-k">imprescindible · C4</span></a>
+<a class="res" href="knowledge/matriu/pla-millora.md"><span class="res-t">Pla de millora de la MATRIU</span><span class="res-d">Auditoria de capacitats, defectes trobats i les 8 fases pendents. Útil per entendre els límits actuals abans de prometre res.</span><span class="res-k">context · C4</span></a>
+<a class="res" href="knowledge/references/vna-verna-allee.md"><span class="res-t">Referència VNA · Verna Allee</span><span class="res-d">La metodologia de mapatge tal com l'apliquem: rols funcionals, reciprocitat, intangibles, indicadors de salut.</span><span class="res-k">imprescindible · C1</span></a>
+<a class="res" href="knowledge/vision/mapa-estrategic-regio.md"><span class="res-t">Mapa estratègic de la regió</span><span class="res-d">Missió, visió, rols i KPIs del projecte fundador a l'Alt Penedès i el Garraf. El context on s'aplica tot això.</span><span class="res-k">context</span></a>
+<a class="res" href="knowledge/codex.md"><span class="res-t">Codex Antigravity V11–V17</span><span class="res-d">Els vedes de desenvolupament: Zero Redundancy, excel·lència W3C, Glass-Box AI, Local-First.</span><span class="res-k">devs · C6</span></a>
+<a class="res" href="knowledge/dev/backlog.md"><span class="res-t">Backlog de desenvolupament</span><span class="res-d">Què s'està construint i què està bloquejat. Per no proposar el que ja hi és.</span><span class="res-k">devs</span></a>
+</div>
+
+<h3 class="section">Fonts metodològiques</h3>
+<table class="rt">
+<thead><tr><th>Font</th><th>Què n'agafem</th><th>Comp.</th></tr></thead>
+<tbody>
+<tr><td><strong>Verna Allee</strong> — <em>The Future of Knowledge</em> · <em>Value Networks and the true nature of collaboration</em></td><td>Tot el mapatge VNA: rols funcionals, intercanvis tangibles i intangibles, anàlisi d'impacte i valor.</td><td>C1</td></tr>
+<tr><td><strong>Mike Moyer</strong> — <em>Slicing Pie: Funding Your Company Without Funds</em></td><td>L'equity dinàmic. El principi que el diner val més multiplicador que el temps perquè té risc de pèrdua total.</td><td>C4 · C5</td></tr>
+<tr><td><strong>Elinor Ostrom</strong> — <em>Governing the Commons</em></td><td>Els 8 principis de gestió de comuns. Per què les comunitats sí que poden autogovernar recursos compartits sense privatitzar ni estatalitzar.</td><td>C3</td></tr>
+<tr><td><strong>Mondragón Corporación Cooperativa</strong></td><td>Intercooperació entre cooperatives, fons de reserva comú, i la idea que el valor circuli entre germanes.</td><td>C4</td></tr>
+<tr><td><strong>Lionel Penrose</strong> (1946) — <em>The elementary statistics of majority voting</em></td><td>La llei de l'arrel quadrada: per què √població reparteix pes just en assemblees de territoris desiguals.</td><td>C3</td></tr>
+<tr><td><strong>Edgar Cahn</strong> — <em>No More Throw-Away People</em></td><td>Time banking i co-producció. La idea que tothom té alguna cosa per aportar i que l'hora de tothom val igual.</td><td>C2</td></tr>
+<tr><td><strong>Frédéric Laloux</strong> — <em>Reinventing Organizations</em></td><td>Autogestió, plenitud i propòsit evolutiu. Vocabulari per parlar d'organitzacions sense organigrama.</td><td>C3</td></tr>
+<tr><td><strong>Donella Meadows</strong> — <em>Thinking in Systems</em> · <em>Leverage Points</em></td><td>Pensament sistèmic. On intervenir en un sistema perquè el canvi es multipliqui.</td><td>C1</td></tr>
+<tr><td><strong>Kate Raworth</strong> — <em>Doughnut Economics</em></td><td>El marc de sostre ecològic i terra social. Per situar l'impacte del que construïm.</td><td>C5</td></tr>
+<tr><td><strong>Jason Fried &amp; DHH</strong> — <em>Shape Up</em></td><td>Cicles amb apetit fix i abast variable. Inspira els sprints de la MATRIU.</td><td>C4</td></tr>
+</tbody>
+</table>
+
+<h3 class="section">Estàndards i especificacions</h3>
+<div class="res-grid">
+<a class="res" href="https://www.w3.org/TR/webcrypto-2/" target="_blank" rel="noopener"><span class="res-t">W3C Web Cryptography API</span><span class="res-d">Ed25519, ECDSA, ECDH, AES-GCM, HKDF, PBKDF2 — tota la criptografia del SOS.</span><span class="res-k">M2 · C6</span></a>
+<a class="res" href="https://www.w3.org/TR/webauthn-3/" target="_blank" rel="noopener"><span class="res-t">W3C WebAuthn Level 3</span><span class="res-d">Passkeys: Face ID, Touch ID, claus FIDO2 lligades a la identitat did:sos.</span><span class="res-k">M2</span></a>
+<a class="res" href="https://www.w3.org/TR/IndexedDB-3/" target="_blank" rel="noopener"><span class="res-t">W3C IndexedDB 3.0</span><span class="res-d">La base de dades local on viu tot. El fonament del local-first.</span><span class="res-k">M1</span></a>
+<a class="res" href="https://www.w3.org/TR/webrtc/" target="_blank" rel="noopener"><span class="res-t">W3C WebRTC</span><span class="res-d">Sincronització P2P entre dispositius sense servidor intermedi.</span><span class="res-k">M1 · C6</span></a>
+<a class="res" href="https://www.w3.org/TR/did-1.1/" target="_blank" rel="noopener"><span class="res-t">W3C Decentralized Identifiers (DID)</span><span class="res-d">L'estàndard darrere de did:sos: identitat que no depèn de cap registre central.</span><span class="res-k">M2</span></a>
+<a class="res" href="https://github.com/nostr-protocol/nips" target="_blank" rel="noopener"><span class="res-t">Nostr NIPs (NIP-07 · NIP-33)</span><span class="res-d">Signador de navegador i events replaceable. Com ancorem decisions en públic.</span><span class="res-k">M8 · C6</span></a>
+<a class="res" href="https://docs.arweave.org" target="_blank" rel="noopener"><span class="res-t">Arweave · permaweb</span><span class="res-d">Emmagatzematge permanent per als Anchor Packs dels projectes core.</span><span class="res-k">M8</span></a>
+<a class="res" href="https://www.w3.org/WAI/WCAG22/quickref/" target="_blank" rel="noopener"><span class="res-t">WCAG 2.2 Quick Reference</span><span class="res-d">Accessibilitat. Una eina comunitària que exclou per disseny no és comunitària.</span><span class="res-k">devs</span></a>
+</div>
+
+<h3 class="section">Ecosistema català</h3>
+<div class="res-grid">
+<a class="res" href="https://www.economiasolidaria.org/xes/" target="_blank" rel="noopener"><span class="res-t">XES · Xarxa d'Economia Solidària</span><span class="res-d">La xarxa de referència de l'ESS catalana. Balanç social, fires, mercat social.</span><span class="res-k">context</span></a>
+<a class="res" href="https://www.ateneuscoop.cat" target="_blank" rel="noopener"><span class="res-t">Ateneus Cooperatius</span><span class="res-d">Suport públic a la creació de cooperatives per territori. Aliat natural de qualsevol MATRIU.</span><span class="res-k">C4</span></a>
+<a class="res" href="https://www.coopcat.coop" target="_blank" rel="noopener"><span class="res-t">Confederació de Cooperatives de Catalunya</span><span class="res-d">Marc jurídic, formes societàries i acompanyament a la constitució.</span><span class="res-k">C4</span></a>
+<a class="res" href="https://www.idescat.cat" target="_blank" rel="noopener"><span class="res-t">Idescat</span><span class="res-d">Dades de població per comarca i municipi — les que alimenten el vot federatiu √població.</span><span class="res-k">C3</span></a>
+<a class="res" href="https://som-energia.coop" target="_blank" rel="noopener"><span class="res-t">Som Energia</span><span class="res-d">Cas d'èxit de comunitat energètica cooperativa a escala. Referència per a ventures del sector.</span><span class="res-k">C4</span></a>
+</div>
+
+<div class="box metode" style="margin-top:1.2rem"><h4>🧭 Per on començar segons on ets</h4><ul>
+<li><strong>Acabes d'arribar</strong> → M1, després el teu itinerari de rol. Res més.</li>
+<li><strong>Vols muntar una dinàmica</strong> → M4 + Cahn + la guia de la MATRIU.</li>
+<li><strong>Et costa la governança</strong> → M5 + Ostrom + Penrose.</li>
+<li><strong>No et creus la valoració</strong> → M6 + Moyer, i calibra l'oracle al teu territori.</li>
+<li><strong>Vols mentorar</strong> → completa les 6 competències i llegeix la secció de mentoria dues vegades.</li>
+</ul></div>
+</section>
+
 <div class="expert-cert" id="cert">
 <h2>🎓 Expert/a SOS · llibre obert</h2>
 <p style="color:var(--light);margin:.4rem 0 1rem">Has completat els 8 mòduls. Domines:</p>
 <p style="color:var(--muted);font-size:.9rem"><span class="tag done">Filosofia + codex</span><span class="tag done">Criptografia W3C</span><span class="tag done">VNA Verna Allee</span><span class="tag done">Recursos comunitaris</span><span class="tag done">Governança federativa</span><span class="tag done">Slicing Pie + Mondragón</span><span class="tag done">Comando + narrativa</span><span class="tag done">Nostr + IPFS + IA</span></p>
-<p style="color:var(--light);margin-top:1rem">Estàs preparat/da per <strong>implementar SOS a qualsevol comunitat</strong> i formar altres persones. La certificació surt del teu propi <strong>perfil transversal</strong> al SOS: cada mòdul completat és un repte del tier corresponent.</p>
+<p style="color:var(--light);margin-top:1rem">Estàs preparat/da per <strong>implementar SOS a qualsevol comunitat</strong> i per <strong>mentorar la següent promoció</strong>. La certificació no la dona ningú: surt del teu propi <strong>ledger signat</strong>. Cada hora, cada mapa, cada decisió votada és una prova que qualsevol pot verificar amb un Anchor Pack — sense confiar en TeamTowers ni en cap tribunal.</p>
+<p style="color:var(--muted);font-size:.88rem;margin-top:.8rem">Al SOS: <strong>launcher → 🎓 Prepara la meva mentoria</strong> per veure el teu nivell, els teus buits i el guió de la propera sessió.</p>
 <p style="margin-top:1.2rem"><a href="index.html" style="background:linear-gradient(90deg,#e040fb,#6366f1);color:#fff;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">Obre SOS i comença →</a></p>
 </div>
 

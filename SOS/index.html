@@ -93,6 +93,30 @@ a{color:var(--blue);text-decoration:none}
 .lw-role .lr-ic{font-size:1.05rem;line-height:1}
 .lw-role .lr-t{font-size:.8rem;font-weight:600}
 .lw-role .lr-d{font-size:.68rem;color:var(--muted);line-height:1.35}
+/* Mentoria preparada per IA */
+.mp-hd{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
+.mp-role{font-weight:700;font-size:.95rem}
+.mp-tier{font-family:var(--mono);font-size:.66rem;color:var(--muted)}
+.mp-lvls{display:flex;gap:.25rem;flex-wrap:wrap}
+.mp-lvl{font-family:var(--mono);font-size:.6rem;letter-spacing:.04em;padding:.2rem .5rem;border-radius:12px;border:1px solid var(--border);color:var(--muted)}
+.mp-lvl.sel{background:linear-gradient(90deg,rgba(99,102,241,.2),rgba(0,230,118,.12));border-color:var(--indigo);color:var(--text);font-weight:700}
+.mp-list{margin:.2rem 0 .5rem;padding-left:1.1rem;font-size:.83rem;line-height:1.5}
+.mp-list.ok li{color:var(--green)}
+.mp-list.gap li{color:var(--orange)}
+.mp-mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.4rem}
+.mp-mod{display:flex;flex-direction:column;gap:.15rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:.5rem .65rem;text-decoration:none;color:var(--text);transition:border-color .12s}
+.mp-mod:hover{border-color:var(--indigo)}
+.mp-mod-n{font-family:var(--mono);font-size:.6rem;color:var(--indigo);letter-spacing:.06em}
+.mp-mod-t{font-size:.82rem;font-weight:600;line-height:1.25}
+.mp-mod-l{font-family:var(--mono);font-size:.58rem;color:var(--muted)}
+.mp-sess{display:flex;flex-direction:column;gap:.3rem}
+.mp-step{display:flex;gap:.6rem;align-items:flex-start;background:var(--bg-panel);border-radius:8px;padding:.5rem .65rem}
+.mp-min{font-family:var(--mono);font-size:.68rem;color:var(--indigo);font-weight:700;min-width:30px;padding-top:.1rem}
+.mp-step-b{display:flex;flex-direction:column;gap:.1rem;min-width:0}
+.mp-step-t{font-size:.84rem;font-weight:600}
+.mp-step-w{font-size:.76rem;color:var(--muted);line-height:1.45}
+.mp-assign{margin-top:.8rem;background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(99,102,241,.06));border:1px solid var(--green-dim);border-radius:10px;padding:.7rem .85rem;font-size:.85rem;line-height:1.5}
+.mp-assign-l{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-bottom:.25rem}
 /* Registre d'activitat */
 .al-filters{display:flex;gap:.3rem;flex-wrap:wrap;margin:.7rem 0}
 .al-chip{background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;padding:.3rem .65rem;font:inherit;font-size:.75rem;color:var(--muted);cursor:pointer;transition:all .12s}
@@ -1642,6 +1666,7 @@ function _searchIndex(){
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
     {k:'action',id:'act_activity',label:'Registre d\'activitat',sub:'📜 acció · log de projectes, socis, entitats i decisions',action:()=>openActivityLog()},
+    {k:'action',id:'act_mentoria',label:'Prepara la meva mentoria',sub:'🎓 acció · itinerari adaptat al rol i les evidències',action:()=>{const n=state.activePersona;if(!n){toast('Identifica\'t primer (crea el teu perfil)');return;}openMentoringPlan(n);}},
     {k:'action',id:'act_multi',label:'Multivers Molekulon',sub:'🌌 acció',action:()=>openMultiverse()},
     {k:'action',id:'act_pings',label:'Pings ecosistema',sub:'🔔 acció',action:()=>openMatchesModal()},
     {k:'action',id:'act_kit',label:'Kit narratiu Molekulon',sub:'🎥 acció',action:()=>openNarrativeKit()},
@@ -2049,14 +2074,15 @@ function openPublicDecisionsModal(node){
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
-    {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>openIdentityDashboard()},
+    {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
-    {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>openMatchesModal()},
+    {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
+    {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
     {ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
     {ic:'📦',t:'Anchor Pack',d:'Snapshot signat + CID · pinna a IPFS/Arweave/permaweb',fn:()=>openAnchorPackModal()},
-    {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>openComandoView()},
-    {ic:'🗺',t:'Mapa estratègic fundador',d:'Missió, visió, rols, fluxos, KPIs 2030 · base del model',fn:()=>openFounderMap()},
-    {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>openMultiverse()},
+    {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>routeTo('comando')},
+    {ic:'🗺',t:'Mapa estratègic fundador',d:'Missió, visió, rols, fluxos, KPIs 2030 · base del model',fn:()=>routeTo('mapa')},
+    {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>routeTo('multivers')},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
     {ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
     {ic:'🗳',t:'Assemblea àgil (mòbil-first)',d:'Propostes + vots ràpids optimitzats per tauleta/mòbil',fn:()=>openAssemblyModal()},
@@ -2193,7 +2219,108 @@ function characterSheetOf(name){
     (objectsOf(nd)||[]).filter(o=>o.ownerId===m.id).forEach(o=>objects.push({node:nd.name,name:o.name,typology:o.typology,status:o.status}));
     venturesOf(nd).filter(v=>v.leadMemberId===m.id).forEach(v=>ventures.push({nodeId:nd.id,nodeName:nd.name,name:v.name,stage:v.stage,activityId:v.activityId}));
   });
-  return{cromo,projects,ventures,offers,objects};
+  // `cromo.hours` només compta les aportacions de MATRIU (així ho fa personProfile, i tota
+  // la reputació hi està calibrada). Per mesurar aprenentatge cal el temps donat REAL, també
+  // el del banc de temps — si no, qui hi porta 40 h surt com si no hagués fet res.
+  let hoursGiven=0;
+  state.nodes.forEach(nd=>{
+    const m=membersOf(nd).find(x=>personKey(x.name)===key);if(!m)return;
+    (nd.ledger||[]).forEach(e=>{if(e.type==='temps'&&e.memberId===m.id)hoursGiven+=Number(e.value)||0;});
+    venturesOf(nd).forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps'&&e.memberId===m.id)hoursGiven+=Number(e.value)||0;}));
+  });
+  return{cromo,projects,ventures,offers,objects,hoursGiven};
+}
+// ═══════════ Acció-formació · itineraris, nivells i mentoria adaptada per IA ═══════════
+// L'aprenentatge del SOS és acció-formació: s'aprèn fent, i cada evidència que deixes
+// al ledger és alhora la teva certificació. Aquest catàleg és l'índex mínim que
+// necessita l'app per raonar sobre itineraris; el contingut pedagògic complet viu a
+// formacio.html (font única de la docència — aquí només l'esquelet referenciable).
+const FORMACIO_MODULES=[
+  {id:'m1',n:1,title:'Fonaments SOS i codex Antigravity',hours:5,level:'N0',roles:['guardian','superheroi','coordinador','agent','simpatitzant']},
+  {id:'m2',n:2,title:'Identitat descentralitzada i criptografia',hours:7,level:'N1',roles:['guardian','coordinador','agent']},
+  {id:'m3',n:3,title:'Value Network Analysis (Verna Allee)',hours:6,level:'N1',roles:['guardian','coordinador','agent']},
+  {id:'m4',n:4,title:'Recursos comunitaris · banc de temps i biblioteca',hours:5,level:'N1',roles:['superheroi','coordinador','simpatitzant']},
+  {id:'m5',n:5,title:'Governança i Guardians',hours:7,level:'N2',roles:['guardian','agent']},
+  {id:'m6',n:6,title:'MATRIU, Slicing Pie i intercooperació',hours:8,level:'N2',roles:['guardian','coordinador']},
+  {id:'m7',n:7,title:'Comando Molekulon i reputació',hours:6,level:'N1',roles:['superheroi','coordinador','simpatitzant']},
+  {id:'m8',n:8,title:'Ancoratge públic i IA integrada',hours:7,level:'N2',roles:['guardian','agent']}
+];
+const moduleMeta=id=>FORMACIO_MODULES.find(m=>m.id===id)||null;
+// Quatre nivells d'acció-formació. Cada nivell es demostra amb evidència del ledger,
+// no amb un examen: el mateix sistema que comptabilitza el valor certifica l'aprenentatge.
+const SOS_LEVELS=[
+  {id:'N0',label:'Explorador/a',one:'Has entrat, tens perfil i entens per a què serveix el SOS.'},
+  {id:'N1',label:'Practicant',one:'Operes una dinàmica real: aportes, intercanvies, registres.'},
+  {id:'N2',label:'Gestor/a SOS',one:'Sostens un node sencer: mapa, governança, comptabilitat i incubació.'},
+  {id:'N3',label:'Mentor/a',one:'Formes altres gestors i certifiques la seva pràctica.'}
+];
+const levelMeta=id=>SOS_LEVELS.find(l=>l.id===id)||SOS_LEVELS[0];
+// Nivell assolit segons evidència real (no autodeclarat).
+function levelOfPerson(sheet){
+  const c=sheet.cromo,h=sheet.hoursGiven!=null?sheet.hoursGiven:c.hours;
+  const led=sheet.ventures.length,grad=sheet.ventures.filter(v=>v.stage==='graduacio').length;
+  if((led>=2||grad>=1)&&h>=50&&c.communities>=3)return'N3';
+  if((led>=1||c.communities>=3)&&h>=20)return'N2';
+  if(h>0||sheet.offers.length>0||sheet.objects.length>0)return'N1';
+  return'N0';
+}
+// Rol declarat de la persona (el primer que trobem a l'ecosistema).
+function roleOfPerson(name){
+  const key=personKey(name);
+  for(const nd of state.nodes){const m=membersOf(nd).find(x=>personKey(x.name)===key);if(m&&m.role)return m.role;}
+  return'simpatitzant';
+}
+// Prepara una mentoria adaptada: què ja domina, què li falta, quins mòduls toquen,
+// com estructurar la sessió i amb quin encàrrec marxa. Delega a la IA si hi ha clau;
+// si no, un pla heurístic complet a partir del rol, el nivell i les evidències.
+async function aiPrepareMentoring(personName,opts){
+  const sheet=characterSheetOf(personName);
+  const role=(opts&&opts.role)||roleOfPerson(personName);
+  const level=levelOfPerson(sheet);
+  const ctx={person:personName,role,roleLabel:(SOS_ROLES[role]||{}).label||role,level,levelLabel:levelMeta(level).label,
+    hours:sheet.hoursGiven!=null?sheet.hoursGiven:sheet.cromo.hours,communities:sheet.cromo.communities,tier:sheet.cromo.tier.label,
+    superpowers:sheet.cromo.superpowers.map(s=>s.cat),
+    projects:sheet.projects.map(p=>p.nodeName),ventures:sheet.ventures.map(v=>v.name),
+    offers:sheet.offers.length,objects:sheet.objects.length,
+    modules:FORMACIO_MODULES.map(m=>({id:m.id,title:m.title,level:m.level,roles:m.roles}))};
+  if(typeof AI==='object'&&typeof AI.call==='function'){
+    try{const r=await AI.call('mentoring_plan',ctx);if(r&&r.modules&&r.sessionPlan)return Object.assign({level,role,sheet},r);}catch(e){/* fallback heurístic */}
+  }
+  // ── Pla heurístic ──────────────────────────────────────────────────────
+  const lvlOrder=['N0','N1','N2','N3'],li=lvlOrder.indexOf(level);
+  const h=sheet.hoursGiven!=null?sheet.hoursGiven:sheet.cromo.hours;
+  // Mòduls del seu rol que encara no li toca haver superat pel nivell actual, prioritzant els del seu esglaó i el següent.
+  const mods=FORMACIO_MODULES.filter(m=>m.roles.includes(role)).filter(m=>lvlOrder.indexOf(m.level)<=Math.min(3,li+1))
+    .sort((a,b)=>(lvlOrder.indexOf(a.level)-lvlOrder.indexOf(b.level))||a.n-b.n);
+  const strengths=[];
+  if(h>0)strengths.push(h+' h aportades i signades');
+  if(sheet.cromo.superpowers.length)strengths.push('superpoders actius: '+sheet.cromo.superpowers.map(s=>s.cat).join(', '));
+  if(sheet.cromo.communities>1)strengths.push('presència a '+sheet.cromo.communities+' comunitats');
+  if(sheet.ventures.length)strengths.push('lidera '+sheet.ventures.length+' venture'+(sheet.ventures.length===1?'':'s'));
+  if(!strengths.length)strengths.push('arriba sense càrrega prèvia: pot aprendre el model net');
+  const gaps=[];
+  if(!h)gaps.push('encara no ha fet cap aportació signada al ledger');
+  if(!sheet.offers.length&&!sheet.objects.length)gaps.push('no ha publicat cap oferta ni objecte: no és trobable per la comunitat');
+  if(sheet.cromo.communities<2)gaps.push('només toca una comunitat: no ha vist el valor creuant nodes');
+  if(!sheet.ventures.length&&(role==='guardian'||role==='coordinador'))gaps.push('el seu rol demana incubar, i encara no lidera cap venture');
+  if(li<2&&role==='guardian')gaps.push('té rol de guardian però encara no ha exercit governança signada');
+  if(!gaps.length)gaps.push('cap buit evident: la mentoria hauria d\'anar cap a formar altres');
+  // Guió de sessió: 60 min útils, sempre acabant amb una acció al SOS.
+  const sessionPlan=[
+    {min:10,title:'Reconèixer el que ja porta',what:'Obrir el seu perfil transversal i llegir junts el cromo: hores, superpoders, comunitats. Començar pel que ja ha fet, no pel que li falta.'},
+    {min:15,title:'El model en una frase',what:level==='N0'?'Explicar acció-formació: aquí no s\'estudia i després es fa; es fa i el fet queda com a certificació.':'Situar on és dins dels 4 nivells i què separa el seu del següent.'},
+    {min:20,title:'Mòdul de l\'etapa, en pràctica',what:mods.length?('Treballar '+mods[0].title+' obrint l\'eina real, no la teoria. '+(mods[1]?'Si va sobrat, encetar '+mods[1].title+'.':'')):'Repassar el mòdul que triï.'},
+    {min:10,title:'Desfer un buit concret',what:'Atacar en directe: '+gaps[0]+'.'},
+    {min:5,title:'Encàrrec i propera cita',what:'Deixar l\'encàrrec escrit i la data. Sense encàrrec la sessió no compta.'}
+  ];
+  // L'encàrrec ha de ser fiable, petit i verificable al ledger.
+  const assignment=!h?'Registra la teva primera aportació signada (unes hores reals que hagis dedicat aquesta setmana).'
+    :(!sheet.offers.length&&!sheet.objects.length)?'Publica 1 oferta al banc de temps i registra 1 objecte a la biblioteca.'
+    :sheet.cromo.communities<2?'Connecta amb una segona comunitat del territori i fes-hi un intercanvi.'
+    :!sheet.ventures.length?'Incuba una venture a la MATRIU i passa-li la porta 1 (lead + 3 rols + 3 fluxos).'
+    :'Acompanya una persona nova en la seva primera aportació signada i registra la sessió.';
+  return{level,levelLabel:levelMeta(level).label,role,roleLabel:(SOS_ROLES[role]||{}).label||role,
+    sheet,strengths,gaps,modules:mods,sessionPlan,assignment,heuristic:true};
 }
 // Modal Comando Molekulon: cromos + últimes històries + progrés vers els 150k.
 // Vista dual: 🎬 Pel·lícula (cromos cinematogràfics) · 📇 Fitxes (skills · recursos · projectes de cada personatge).
@@ -2468,7 +2595,7 @@ function seedSprintPlanFromMap(v){
   (v.vna.roles||[]).slice(0,7).forEach(r=>addBacklogItem(s1,{title:'Assignar owner al rol: '+r.name,kind:'role',mapRef:{type:'role',id:r.id}}));
   addBacklogItem(s1,{title:'Definir missió/visió/objectius de la venture',kind:'deliverable'});
   const s2=newSprint(v,{name:'S2 · Activació dels fluxos',goal:'Que cada intercanvi del mapa passi almenys 1 cop',weeks:2});
-  (v.vna.exchanges||[]).slice(0,8).forEach(x=>{const from=(v.vna.roles.find(r=>r.id===x.from)||{}).name||'?',to=(v.vna.roles.find(r=>r.id===x.to)||{}).name||'?';addBacklogItem(s2,{title:'Activar flux '+(x.kind==='I'?'intangible':'tangible')+': '+from+' → '+to+(x.label?' ('+x.label+')':''),kind:'flow',mapRef:{type:'exchange',id:x.id}});});
+  (v.vna.exchanges||[]).slice(0,8).forEach(x=>{const from=(v.vna.roles.find(r=>r.id===x.from)||{}).name||'?',to=(v.vna.roles.find(r=>r.id===x.to)||{}).name||'?';addBacklogItem(s2,{title:'Activar flux '+normKind(x.kind)+': '+from+' → '+to+(x.label?' ('+x.label+')':''),kind:'flow',mapRef:{type:'exchange',id:x.id}});});
   const s3=newSprint(v,{name:'S3 · MVP entregable',goal:'Un MVP funcional replicable — camí a la graduació',weeks:3});
   (v.kanbanSeed||[]).forEach(t=>addBacklogItem(s3,{title:t,kind:'deliverable'}));
   addBacklogItem(s3,{title:'Registrar 3 aportacions reals al ledger (Slicing Pie)',kind:'test'});
@@ -2515,11 +2642,16 @@ const PROTOTYPE_MAPS=[
 ];
 const _pm=(()=>{const m={};PROTOTYPE_MAPS.forEach(p=>m[p.id]=p);return m;})();
 const prototypeMapMeta=id=>_pm[id];
+// Els fluxos VNA es desen canònicament com 'tangible' | 'intangible' (ho esperen buildHealth,
+// el render SVG i el wizard). Tolerant en lectura amb les abreviatures 'T'/'I' que van arribar
+// a persistir-se a IndexedDB abans de normalitzar l'escriptura.
+const normKind=k=>(k==='I'||k==='intangible')?'intangible':'tangible';
+const isIntangible=k=>normKind(k)==='intangible';
 // Instanciar una venture des d'un prototip: converteix roles+flows en vna, hereta kanban, associa tipus.
 function newVentureFromPrototype(node,proto,{name,type}={}){
   const idBy={},roles=[],exch=[];
   (proto.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
-  (proto.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+  (proto.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   const t=type||(proto.projectTypes&&proto.projectTypes[0])||'comunitari';
   return{id:uid(),name:(name||proto.name).trim(),activityId:'proto_'+proto.id,prototypeId:proto.id,projectType:t,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(proto.kanban||[]).slice(),notes:'',graduatedNodeId:null,equity:{...projectTypeMeta(t).equity},createdAt:now()};
 }
@@ -2535,7 +2667,7 @@ function newProjectComando(node,{name,mission,memberIds,prototypeMapId}={}){
     createdAt:now(),updatedAt:now()};
   if(proto){
     const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
-    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   }
   node.comando=c;return c;
 }
@@ -2554,7 +2686,7 @@ function newEntityComando(entity,{name,mission,memberNames,prototypeMapId}={}){
     createdAt:now(),updatedAt:now()};
   if(proto){
     const idBy={};c.vna.roles.forEach(r=>idBy[r.name]=r.id);
-    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
+    proto.flows.forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])c.vna.exchanges.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:normKind(f[2]),label:f[3]||''});});
   }
   entity.comando=c;return c;
 }
@@ -2570,7 +2702,7 @@ function matriuPsychoImpact(node){
   (node.ledger||[]).forEach(e=>{if(e.type==='temps')horesDonades+=Number(e.value)||0;else if(e.type==='moneda')capital+=Number(e.value)||0;});
   vs.forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps')horesDonades+=Number(e.value)||0;else if(e.type==='moneda')capital+=Number(e.value)||0;}));
   // Fluxos intangibles vs tangibles a tot l'arbre de ventures (índex de riquesa relacional)
-  let intg=0,tang=0;vs.forEach(v=>(v.vna.exchanges||[]).forEach(x=>{if(x.kind==='I')intg++;else tang++;}));
+  let intg=0,tang=0;vs.forEach(v=>(v.vna.exchanges||[]).forEach(x=>{if(isIntangible(x.kind))intg++;else tang++;}));
   const reciprocitat=tang?Math.round(intg/(intg+tang)*100):0;
   // Persones actives = membres únics amb almenys una aportació signada o no
   const activeIds=new Set();(node.ledger||[]).forEach(e=>e.memberId&&activeIds.add(e.memberId));vs.forEach(v=>(v.ledger||[]).forEach(e=>e.memberId&&activeIds.add(e.memberId)));
@@ -2671,6 +2803,39 @@ async function aiPlanValueFlows(demand,ctx){
   const dl=(demand||'').toLowerCase();
   const guess=PROTOTYPE_MAPS.find(p=>[p.id,p.name,p.one].join(' ').toLowerCase().split(/\W+/).some(w=>w.length>4&&dl.includes(w)))||PROTOTYPE_MAPS[0];
   return{roles:guess.roles,flows:guess.flows,kanban:guess.kanban,fromPrototype:guess.id,heuristic:true};
+}
+// ═══════════ Portes d'etapa · cada salt demana evidència, no només l'última ═══════════
+// Un incubadora de veritat no deixa avançar per clic: cada transició té criteris propis.
+// idea → prototip: hi ha qui ho lidera i el mapa de valor té cos.
+// prototip → validació: el pla existeix, s'ha tancat el primer sprint i hi ha aportacions reals.
+// validació → graduació: readiness complet (les 5 comprovacions de ventureReadiness).
+const STAGE_LABELS={idea:'Idea',prototip:'Prototip',validacio:'Validació',graduacio:'Graduada'};
+function stageGate(node,v){
+  const i=VENTURE_STAGES.indexOf(v.stage),next=VENTURE_STAGES[i+1];
+  if(!next)return{next:null,checks:[],ready:false,label:'Graduada'};
+  const sps=sprintsOf(v),items=sps.reduce((a,s)=>a.concat(s.items||[]),[]);
+  let checks;
+  if(v.stage==='idea')checks=[
+    {label:'Algú lidera la venture',ok:!!v.leadMemberId,hint:'Assigna un soci lead'},
+    {label:'≥3 rols funcionals al mapa',ok:(v.vna.roles||[]).length>=3,hint:(v.vna.roles||[]).length+'/3 rols'},
+    {label:'≥3 fluxos de valor',ok:(v.vna.exchanges||[]).length>=3,hint:(v.vna.exchanges||[]).length+'/3 fluxos'}
+  ];
+  else if(v.stage==='prototip')checks=[
+    {label:'Pla d\'sprints sembrat',ok:sps.length>0,hint:'Sembra el pla des del mapa de valor'},
+    {label:'Primer sprint tancat',ok:sps.some(s=>s.status==='done'),hint:'Tanca l\'sprint actiu'},
+    {label:'≥30% del backlog fet',ok:items.length?items.filter(x=>x.done).length/items.length>=0.3:false,hint:items.length?Math.round(items.filter(x=>x.done).length/items.length*100)+'%':'sense backlog'},
+    {label:'≥1 aportació al ledger',ok:(v.ledger||[]).length>=1,hint:'Registra hores o € reals'}
+  ];
+  else checks=ventureReadiness(node,v).checks;
+  return{next,checks,ready:checks.every(c=>c.ok),label:STAGE_LABELS[next]||next};
+}
+// Avança una etapa només si la porta està verda. Retorna la nova etapa o null si bloqueja.
+async function advanceStage(node,v){
+  const g=stageGate(node,v);
+  if(!g.next){toast('Aquesta venture ja està graduada');return null;}
+  if(!g.ready){toast('Encara no pot passar a '+g.label+'. Falten:\n'+g.checks.filter(c=>!c.ok).map(c=>'· '+c.label).join('\n'));return null;}
+  if(g.next==='graduacio')return await graduateVenture(node,v);
+  v.stage=g.next;v.stageAt=now();await persist(node);return v.stage;
 }
 // Readiness: 5 checks. Graduate quan tots verds (o overrideable per steward).
 function ventureReadiness(node,v){
@@ -2791,6 +2956,9 @@ function selectNode(id){state.activeId=id;const nn=byId(id);state.tab=(nn&&isTer
 function renderWorkspace(){
   const w=$('#workspace');w.innerHTML='';
   const node=byId(state.activeId);
+  // Punt únic on convergeixen tots els canvis de node i de pestanya: aquí la ruta
+  // es manté sincronitzada sense haver de tocar els 12 llocs que muten state.tab.
+  syncRoute(true);
   if(!node){renderCatMap(w);return;}
   const meta=LEVEL_META[node.nodeLevel];
 
@@ -3009,7 +3177,7 @@ function renderVNA(body,node){
   // side
   const side=el('div','vna-side');
   // add role
-  side.appendChild(el('h3','Rols / Actors'));
+  side.appendChild(el('h3','','Rols / Actors'));
   const addR=el('div','add-inline');
   const inp=el('input');inp.placeholder='Nou rol (p.ex. Ateneu)';inp.maxLength=40;
   const addBtn=el('button','btn btn-primary btn-sm','+');
@@ -3033,7 +3201,7 @@ function renderVNA(body,node){
   side.appendChild(rl);
   // add exchange
   if(node.vna.roles.length>=2){
-    side.appendChild(el('h3','Nou intercanvi'));
+    side.appendChild(el('h3','','Nou intercanvi'));
     const f=el('div','exch-form');
     const from=el('select'),to=el('select');
     node.vna.roles.forEach(r=>{from.appendChild(new Option(r.name,r.id));to.appendChild(new Option(r.name,r.id));});
@@ -3085,7 +3253,7 @@ function buildVNASvg(node){
 
 function buildHealth(node){
   const roles=node.vna.roles, ex=node.vna.exchanges, box=el('div','health');
-  box.appendChild(el('h3','Salut de la xarxa'));
+  box.appendChild(el('h3','','Salut de la xarxa'));
   const row=(lbl,cls,txt)=>{const r=el('div','h-row');r.appendChild(el('span','h-lbl',lbl));r.appendChild(el('span','h-badge '+cls,txt));box.appendChild(r);};
   if(roles.length<2){row('Estat','h-warn','Incompleta');const h=el('p','',' Afegeix rols i intercanvis per avaluar la salut.');h.style.cssText='font-size:.75rem;color:var(--muted);margin-top:.5rem;line-height:1.4';box.appendChild(h);return box;}
   // reciprocity
@@ -3099,7 +3267,7 @@ function buildHealth(node){
   const maxE=roles.length*(roles.length-1)/2;const dens=maxE?Math.round(pairs.size/maxE*100):0;
   row('Densitat',dens>=40?'h-ok':dens>=20?'h-warn':'h-bad',dens+'%');
   // diversity
-  const hasT=ex.some(e=>e.kind==='tangible'),hasI=ex.some(e=>e.kind==='intangible');
+  const hasT=ex.some(e=>!isIntangible(e.kind)),hasI=ex.some(e=>isIntangible(e.kind));
   row('Diversitat',hasT&&hasI?'h-ok':'h-warn',hasT&&hasI?'Equilibri':hasI?'Només intang.':'Només tang.');
   // isolated
   const connected=new Set();ex.forEach(e=>{connected.add(e.from);connected.add(e.to);});
@@ -3226,7 +3394,82 @@ function openLedgerEntryModal(node,prefill,card){
 }
 
 /* ═══════════════════ MODALS ═══════════════════ */
-function closeModal(){$('#modalRoot').innerHTML='';}
+/* ═══════════ Rutes · una URL per vista, enllaçable i navegable ═══════════
+   Hash routing (#/…) i no History API a propòsit: pushState no funciona sota
+   file:// i exigeix reescriptures al servidor. El SOS ha de poder obrir-se des
+   del disc, IPFS o Arweave sense configurar res — el hash hi funciona a tot arreu.
+   Avís: els ids de node surten d'uid() i són locals a cada dispositiu, així que
+   una ruta de node és per a la teva navegació i els teus marcadors, no per
+   compartir. Si l'id no existeix, la ruta degrada sense trencar res. */
+const MODAL_ROUTES={
+  comando:{open:()=>openComandoView(),label:'Comando Molekulon'},
+  activitat:{open:()=>openActivityLog(),label:'Registre d\'activitat'},
+  mapa:{open:()=>openFounderMap(),label:'Mapa estratègic fundador'},
+  directori:{open:()=>openDirectory(),label:'Directori d\'entitats'},
+  identitat:{open:()=>openIdentityDashboard(),label:'La meva identitat'},
+  multivers:{open:()=>openMultiverse(),label:'Multivers Molekulon'},
+  pings:{open:()=>openMatchesModal(),label:'Pings ecosistema'},
+  mentoria:{open:()=>{const n=state.activePersona;if(!n){toast('Identifica\'t primer per preparar la mentoria');return false;}openMentoringPlan(n);},label:'La meva mentoria'}
+};
+let _routeLock=false;          // evita que aplicar una ruta en torni a escriure una altra
+let _routeModal=null;          // quin modal ha obert la ruta actual
+function buildRoute(){
+  if(_routeModal)return'#/'+_routeModal;
+  const nd=byId(state.activeId);
+  if(!nd)return'#/';
+  return'#/n/'+nd.id+(state.tab?'/'+state.tab:'');
+}
+function parseRoute(hash){
+  const raw=(hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
+  if(!raw.length)return{kind:'home'};
+  if(raw[0]==='n'&&raw[1])return{kind:'node',id:decodeURIComponent(raw[1]),tab:raw[2]||null};
+  if(MODAL_ROUTES[raw[0]])return{kind:'modal',name:raw[0]};
+  return{kind:'unknown',name:raw[0]};
+}
+// Escriu la ruta a partir de l'estat. replace: true per no omplir l'historial de sorolls.
+function syncRoute(replace){
+  if(_routeLock)return;
+  const next=buildRoute();
+  if(location.hash===next)return;
+  _routeLock=true;
+  try{
+    if(replace&&history.replaceState)history.replaceState(null,'',next);
+    else location.hash=next;
+  }catch(e){location.hash=next;}
+  setTimeout(()=>{_routeLock=false;},0);
+}
+// Aplica la ruta actual a l'estat. Retorna false si no s'ha pogut resoldre.
+function applyRoute(){
+  if(_routeLock)return true;
+  const r=parseRoute(location.hash);
+  _routeLock=true;
+  let okRoute=true;
+  try{
+    if(r.kind==='modal'){
+      if(_routeModal!==r.name){_routeModal=r.name;const res=MODAL_ROUTES[r.name].open();if(res===false){_routeModal=null;okRoute=false;}}
+    } else {
+      if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
+      if(r.kind==='node'){
+        const nd=byId(r.id);
+        if(nd){
+          state.activeId=nd.id;
+          let n=nd;while(n&&n.parentId){state.expanded.add(n.parentId);n=byId(n.parentId);}
+          if(r.tab)state.tab=r.tab;
+          render();
+        } else { okRoute=false; toast('Aquesta vista no existeix en aquest dispositiu'); }
+      }
+    }
+  }finally{setTimeout(()=>{_routeLock=false;},0);}
+  return okRoute;
+}
+function closeModal(){$('#modalRoot').innerHTML='';if(_routeModal){_routeModal=null;syncRoute(true);}}
+// Obrir una vista enllaçable sempre passa per la ruta: així el clic i l'URL
+// recorren exactament el mateix camí i la barra d'adreces mai queda desincronitzada.
+function routeTo(name){
+  if(!MODAL_ROUTES[name]){toast('Vista desconeguda');return;}
+  if(location.hash==='#/'+name)applyRoute();
+  else location.hash='#/'+name;
+}
 function modal(html){const bg=el('div','modal-bg');bg.innerHTML='<div class="modal">'+html+'</div>';bg.onclick=e=>{if(e.target===bg)closeModal();};$('#modalRoot').innerHTML='';$('#modalRoot').appendChild(bg);return bg;}
 
 // Motor de suggeriment determinista: coneixement del nivell + dolors triats + biaix pel prompt lliure
@@ -4031,6 +4274,17 @@ function renderMatriuVentures(body,node){
     '</div>'+
     '<div class="psy-caption">Aquestes són les mètriques que expliquen per què la MATRIU és un model: no només mou capital, també <strong>cura, vincle, reciprocitat i temps donat</strong>. La densitat relacional (fluxos intangibles) i el temps solidari són indicadors de sortida de la salut psicosocial del territori.</div>';
   body.appendChild(psyBox);
+  // Intercooperació agregada (model Mondragón) — fins ara només es veia venture a venture.
+  const coop=cooperationSummary(node);
+  if(coop.total){
+    body.appendChild(el('div','ent-grp-lbl','🔄 Intercooperació · el fons circula entre ventures'));
+    const cw=el('div','ent-card');cw.style.background='linear-gradient(180deg,rgba(224,64,251,.07),transparent)';
+    const kmap={hores:['⏱','hores'],objecte:['📦','objectes'],talent:['👤','talent'],moneda:['€','capital']};
+    cw.innerHTML='<div class="ent-nm">'+coop.total+' transferència'+(coop.total===1?'':'s')+' entre ventures</div>'+
+      '<div class="ent-badges" style="margin-top:.35rem">'+Object.entries(coop.byKind).filter(([,q])=>q>0).map(([k,q])=>'<span class="ent-b b-ver">'+kmap[k][0]+' '+q+' '+kmap[k][1]+'</span>').join('')+'</div>'+
+      '<div class="ent-desc" style="margin-top:.4rem">Cada transferència queda <strong>signada i encadenada</strong>. Que el valor circuli entre projectes germans — i no s\'acumuli en un de sol — és el que distingeix una incubadora cooperativa d\'una cartera d\'inversió.</div>';
+    body.appendChild(cw);
+  }
   const f=fundRollup(node);
   body.appendChild(el('div','ent-grp-lbl','🏦 Fons cooperatiu · valor mobilitzat'));
   const fund=el('div','bib-stats');fund.innerHTML=
@@ -4063,7 +4317,13 @@ function renderMatriuVentures(body,node){
       c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(sps.length?'<span class="ent-b">📋 '+spDone+'/'+sps.length+' sprints</span>':'')+'<span class="ent-b '+(rd.graduateReady?'b-ver':(rd.score>=60?'b-form':''))+'">🎓 '+rd.score+'%</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(nCo?'<span class="ent-b b-ver">🔄 '+nCo+' coop</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
       c.onclick=()=>openVentureDetail(node,v);
       const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
-      if(v.stage!=='graduacio'){const i=VENTURE_STAGES.indexOf(v.stage);const nx=el('button','btn btn-ghost btn-sm','→ '+({idea:'Prototip',prototip:'Validació',validacio:'Graduar'}[v.stage]));nx.onclick=async ev=>{ev.stopPropagation();if(v.stage==='validacio'){await graduateVenture(node,v);}else{v.stage=VENTURE_STAGES[i+1];await persist(node);renderWorkspace();toast('Venture avançada');}};act.appendChild(nx);}
+      if(v.stage!=='graduacio'){
+        const g=stageGate(node,v),pend=g.checks.filter(c=>!c.ok).length;
+        const nx=el('button','btn btn-sm '+(g.ready?'btn-primary':'btn-ghost'),(g.ready?'→ ':'🔒 ')+g.label+(pend?' ('+pend+')':''));
+        nx.title=g.ready?('Tot a punt per passar a '+g.label):('Falten: '+g.checks.filter(c=>!c.ok).map(c=>c.label).join(' · '));
+        nx.onclick=async ev=>{ev.stopPropagation();const r=await advanceStage(node,v);if(r){renderWorkspace();toast(r==='graduacio'||r&&r.id?'Venture graduada':'Ara a '+STAGE_LABELS[v.stage]);}};
+        act.appendChild(nx);
+      }
       const del=el('button','btn btn-ghost btn-sm','🗑');del.onclick=async ev=>{ev.stopPropagation();node.ventures=venturesOf(node).filter(x=>x.id!==v.id);await persist(node);renderWorkspace();toast('Venture eliminada');};act.appendChild(del);
       c.appendChild(act);grid.appendChild(c);
     });
@@ -4122,6 +4382,7 @@ function openPersonProfile(nameOrKey){
     ${(function(){const rep=reputationOf(p.key||p.name);const shakti=Math.round(rep.shakti*100),shiva=Math.round(rep.shiva*100);const powers=rep.superpowers.map(s=>'<span class="ent-b">'+esc(s.cat)+' ×'+s.count+'</span>').join('');return '<div class="ent-card" style="background:linear-gradient(90deg,rgba(0,230,118,.1) '+shakti+'%,rgba(255,145,0,.1) '+shakti+'%);margin-bottom:.6rem"><div class="ent-nm">🦸 Superheroi · reputació '+rep.reputationScore+'</div><div class="ent-badges"><span class="ent-b b-ver">💫 Shakti '+shakti+'%</span><span class="ent-b">🔥 Shiva '+shiva+'%</span>'+(rep.signed?'<span class="ent-b b-ver">🔏 '+rep.signed+' apunts firmats</span>':'')+(rep.unsigned?'<span class="ent-b">⋯ '+rep.unsigned+' legacy</span>':'')+'</div>'+(powers?'<div class="ent-desc" style="margin-top:.4rem"><strong>Superpoders:</strong> '+powers+'</div>':'')+'</div>';})()}
     <div class="ent-grp-lbl">🎯 Reptes actius · guanya XP per pujar de tier</div>
     <div id="ppChallenges" class="ent-card"><div class="ent-desc">Avaluant reptes…</div></div>
+    <button class="btn btn-ghost btn-sm" id="ppMentoria" style="margin-top:.5rem">🎓 Prepara la seva mentoria</button>
     <div class="bib-stats">
       <div class="bib-tile"><div class="n">${p.totals.nodes}</div><div class="l">presència</div></div>
       <div class="bib-tile"><div class="n" style="color:var(--indigo)">${p.totals.hores}</div><div class="l">hores aport.</div></div>
@@ -4155,6 +4416,7 @@ function openPersonProfile(nameOrKey){
   bg.querySelector('#ppMulti').onclick=()=>{closeModal();openMultiverse();};
   bg.querySelector('#ppWallet').onclick=async()=>{try{const pk=await hasPasskey();if(pk){if(confirm('Ja tens un passkey vinculat ('+pk.credId.slice(0,20)+'…). El vols eliminar?')){await unbindPasskey();toast('Passkey desvinculat');}return;}await bindPasskey();toast('✓ Passkey vinculat a la teva identitat did:sos');}catch(e){toast(e.msg||'Error vinculant passkey');}};
   bg.querySelector('#ppClose').onclick=closeModal;
+  bg.querySelector('#ppMentoria').onclick=()=>{closeModal();openMentoringPlan(p.name);};
   (async()=>{try{const c=await evaluateChallenges(p.name);const box=bg.querySelector('#ppChallenges');if(!box)return;
     const pct=c.total?Math.round(c.done*100/c.total):0;
     box.innerHTML='<div class="ent-nm">Tier: '+esc(c.tier)+' · '+c.done+'/'+c.total+' reptes complerts</div>'+
@@ -4183,6 +4445,8 @@ function openVentureDetail(node,v){
     <div class="ent-grp-lbl">🥧 Slicing Pie de la venture</div>
     <div id="vdEquity"></div>
     <button class="btn btn-ghost btn-sm" id="vdContrib" style="margin-top:.5rem">+ Registra aportació</button>
+    <div class="ent-grp-lbl">🩺 Salut del mapa de valor</div>
+    <div id="vdHealth"></div>
     <div class="ent-grp-lbl">📋 Pla d'sprints · camí de graduació</div>
     <div id="vdSprints"></div>
     <div class="ent-grp-lbl">🔄 Intercooperació entre ventures (Mondragón)</div>
@@ -4205,6 +4469,9 @@ function openVentureDetail(node,v){
   const eqBox=bg.querySelector('#vdEquity');
   (function renderVEq(){const eq=computeVentureEquity(node,v);eqBox.innerHTML='';if(eq.some(e=>e.slices>0))eqBox.appendChild(buildEquityWrap(eq));else eqBox.appendChild(el('div','ent-desc','Encara cap aportació a aquesta venture. Registra hores o diner dels socis i la tarta es repartirà — cada projecte econòmic té la seva pròpia.'));})();
   bg.querySelector('#vdContrib').onclick=async()=>{if(!ms.length){toast('Dona d\'alta socis a la MATRIU primer');return;}v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);openContributionModal(node,v);};
+  // El mateix diagnòstic VNA que fem servir al node, ara aplicat al mapa de la venture:
+  // reciprocitat, densitat, diversitat i rols aïllats. Sense això la venture neix cega.
+  bg.querySelector('#vdHealth').appendChild(buildHealth(v));
   const spBox=bg.querySelector('#vdSprints');
   const renderSprints=()=>{
     spBox.innerHTML='';
@@ -4354,6 +4621,36 @@ function buildEquityPie(eq){
     svg.appendChild(p);ang=a2;});
   const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
   return svg;
+}
+// ═══════════ openMentoringPlan · la mentoria que la IA prepara per a cada persona ═══════════
+function openMentoringPlan(personName){
+  const bg=modal(`
+    <h2>🎓 Mentoria preparada · ${esc(personName)}</h2>
+    <p class="m-sub">L'aprenentatge del SOS és <strong>acció-formació</strong>: no s'estudia i després es fa, es fa i el fet queda com a certificació. Aquest pla surt del que aquesta persona <em>ja ha fet</em> al ledger, no d'un qüestionari.</p>
+    <div id="mpBody"><div class="ai-note"><span class="ic">🤖</span><span>Preparant la mentoria…</span></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="mpGuide">📖 Guia formativa</button><button class="btn btn-primary" id="mpClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#mpClose').onclick=closeModal;
+  bg.querySelector('#mpGuide').onclick=()=>window.open('formacio.html','_blank','noopener');
+  (async()=>{
+    let p;
+    try{p=await aiPrepareMentoring(personName);}
+    catch(e){bg.querySelector('#mpBody').innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>No s\'ha pogut preparar: '+esc(e.message||'error')+'</span></div>';return;}
+    const lvlBar=SOS_LEVELS.map(l=>'<span class="mp-lvl'+(l.id===p.level?' sel':'')+'">'+l.id+' · '+esc(l.label)+'</span>').join('');
+    bg.querySelector('#mpBody').innerHTML=
+      '<div class="mp-hd"><span class="mp-role">'+((SOS_ROLES[p.role]||{}).ic||'👤')+' '+esc(p.roleLabel)+'</span><span class="mp-tier">'+esc(p.sheet.cromo.tier.label)+' · '+(p.sheet.hoursGiven!=null?p.sheet.hoursGiven:p.sheet.cromo.hours)+'h · '+p.sheet.cromo.communities+' comunitats</span></div>'+
+      '<div class="mp-lvls">'+lvlBar+'</div>'+
+      '<div class="ent-desc" style="margin:.3rem 0 .8rem">'+esc(levelMeta(p.level).one)+'</div>'+
+      (p.heuristic?'<div class="ai-note" style="margin-bottom:.7rem"><span class="ic">🧭</span><span><em>Sense clau IA: pla generat per regles a partir del rol, el nivell i les evidències. Amb clau Claude el pla s\'afina al cas concret.</em></span></div>':'')+
+      '<div class="ent-grp-lbl">💪 Amb què arriba</div><ul class="mp-list ok">'+p.strengths.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>'+
+      '<div class="ent-grp-lbl">🎯 Què cal desfer</div><ul class="mp-list gap">'+p.gaps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>'+
+      '<div class="ent-grp-lbl">📚 Mòduls que li toquen</div>'+
+      (p.modules.length?'<div class="mp-mods">'+p.modules.map(m=>'<a class="mp-mod" href="formacio.html#'+esc(m.id)+'" target="_blank" rel="noopener"><span class="mp-mod-n">M'+m.n+'</span><span class="mp-mod-t">'+esc(m.title)+'</span><span class="mp-mod-l">'+esc(m.level)+' · '+m.hours+'h</span></a>').join('')+'</div>':'<div class="ent-desc">Ja té coberts els mòduls del seu rol — toca formar altres.</div>')+
+      '<div class="ent-grp-lbl">🗓 Guió de la sessió · 60 min</div>'+
+      '<div class="mp-sess">'+p.sessionPlan.map(s=>'<div class="mp-step"><span class="mp-min">'+s.min+"'</span><span class=\"mp-step-b\"><span class=\"mp-step-t\">"+esc(s.title)+'</span><span class="mp-step-w">'+esc(s.what)+'</span></span></div>').join('')+'</div>'+
+      '<div class="mp-assign"><div class="mp-assign-l">📌 Encàrrec amb què marxa</div><div>'+esc(p.assignment)+'</div></div>';
+  })();
 }
 // ═══════════ openActivityLog · registre viu de tota l'activitat de l'ecosistema ═══════════
 function openActivityLog(){
@@ -5102,9 +5399,9 @@ $('#personaBadge').onclick=()=>{if(state.activePersona){openPersonProfile(state.
 $('#btnSearch').onclick=openSearchPalette;
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearchPalette();}});
 $('#btnMap').onclick=()=>{state.activeId=null;render();};
-$('#btnDir').onclick=openDirectory;
+$('#btnDir').onclick=()=>routeTo('directori');
 $('#obDir').onclick=openDirectory;
-$('#btnActivity').onclick=openActivityLog;
+$('#btnActivity').onclick=()=>routeTo('activitat');
 $('#btnSync').onclick=openSyncModal;
 $('#homeLogo').onclick=()=>{state.activeId=null;render();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
@@ -5114,7 +5411,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  // La ruta d'entrada mana per sobre del node per defecte: obrir un enllaç guardat
+  // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
+  window.addEventListener('hashchange',()=>applyRoute());
+  if(location.hash&&location.hash!=='#/')applyRoute();
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
