@@ -133,11 +133,33 @@ propietats que val la pena copiar tal qual:
 - Els arquetips declarats del dossier són una etiqueta d'un altre ordre (com sóc,
   no què m'interessa): serveixen per compondre equips, no per federar.
 
-**Preguntes obertes abans de construir res**
+**Decidit · tot valor aportat es comptabilitza, i el valor és el que defineix
+el mapa de valor.**
+
+Això tanca la pregunta que quedava oberta (si una federació temàtica és una
+comunitat o només un filtre de cerca): **és una comunitat**, perquè té mapa i,
+per tant, té comptes. I té una conseqüència de disseny que estalvia feina:
+
+- **No cal cap primitiva nova.** Una federació temàtica és un node com qualsevol
+  altre: metaskill + mapa de valor + ledger + governança. L'únic que canvia és
+  què la lliga — un tema en comptes d'un límit administratiu.
+- **El mapa de valor és l'esquema comptable, no la decoració.** El que compta com
+  a valor en aquella federació és exactament el que els seus fluxos declaren.
+  Dues federacions poden comptar coses diferents sense contradir-se, perquè
+  cadascuna ha declarat el seu mapa.
+- **Res queda fora per ser intangible.** Si un flux intangible és al mapa, és
+  comptabilitzable: aquesta és la diferència entre reconèixer el treball
+  invisible i només anomenar-lo.
+- **La reciprocitat és auditable a qualsevol escala.** Els mateixos indicadors
+  (`vnaAudit`) valen per a un banc de temps de barri i per a una federació de
+  federacions, perquè la unitat d'anàlisi és sempre el mapa.
+
+**El que continua obert**
 - Qui pot crear una etiqueta i com s'eviten cent variants del mateix tema sense
   posar-hi un comitè. (Suggerència: fusió proposada, mai automàtica.)
-- Una federació temàtica té ledger i fons propis, o només visibilitat i
-  matching? De la resposta en depèn si és una comunitat o només un filtre.
+- Com es consolida el valor entre nivells sense comptar-lo dues vegades: el
+  `rollup` territorial ja ho fa cap amunt; una persona dins de tres federacions
+  temàtiques necessita la mateixa regla.
 - Com es fa visible la persona sense convertir-ho en una xarxa social d'exhibició:
   el SOS mostra el que has fet, no el que dius que t'agrada.
 - Privadesa: quines etiquetes són públiques i quines es queden al dossier local.
