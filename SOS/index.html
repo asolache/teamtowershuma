@@ -445,6 +445,32 @@ a{color:var(--blue);text-decoration:none}
 .b-pub{color:var(--blue);border-color:rgba(0,176,255,.3)}
 .b-priv{color:var(--muted)}
 .ent-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+/* Dossier personal · blocs plegables, quiz del panteó i fitxa de personatge */
+.sh-deep{background:var(--purple-dim,rgba(224,64,251,.1));border:1px solid rgba(224,64,251,.28);border-radius:8px;padding:.6rem .75rem;font-size:.78rem;color:var(--light);line-height:1.5;margin:.9rem 0 .5rem}
+.sh-more{border:1px solid var(--border);border-radius:10px;background:var(--bg-panel);margin-bottom:.5rem}
+.sh-more>summary{cursor:pointer;padding:.75rem .85rem;font-size:.85rem;font-weight:600;list-style:none;min-height:44px;display:flex;align-items:center;gap:.4rem;touch-action:manipulation}
+.sh-more>summary::-webkit-details-marker{display:none}
+.sh-more>summary::before{content:'▸';color:var(--muted);transition:transform .12s}
+.sh-more[open]>summary::before{transform:rotate(90deg)}
+.sh-more[open]>summary{border-bottom:1px solid var(--border)}
+.sh-more-b{padding:.85rem}
+.sh-more-b textarea{width:100%;background:var(--bg-dark);border:1px solid var(--border);border-radius:7px;color:var(--white);padding:.6rem;font-size:.82rem;font-family:inherit;line-height:1.5;resize:vertical}
+.sh-more-b input[type=text],.sh-more-b input[type=date],.sh-more-b input:not([type]){width:100%;background:var(--bg-dark);border:1px solid var(--border);border-radius:7px;color:var(--white);padding:.5rem .6rem;font-size:.82rem}
+.sh-more-b .wz-key input{background:var(--bg-dark)}
+.dx-lb{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .35rem}
+.chip-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;padding:0 0 0 .2rem;line-height:1}
+.chip-x:hover{color:var(--red)}
+.pan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.4rem}
+.pan-card{text-align:left;background:var(--bg-dark);border:1px solid var(--border);border-radius:9px;padding:.55rem .6rem;color:var(--light);cursor:pointer;transition:border-color .12s,background .12s;min-height:44px}
+.pan-card:hover{border-color:var(--purple)}
+.pan-card.sel{border-color:var(--purple);background:var(--purple-dim,rgba(224,64,251,.12))}
+.pan-hd{font-size:.82rem;font-weight:700;margin-bottom:.2rem}
+.pan-q{font-size:.68rem;color:var(--muted);line-height:1.35}
+.pan-kw{font-family:var(--mono);font-size:.55rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);opacity:.75;margin-top:.25rem}
+.ch-card{background:linear-gradient(160deg,rgba(224,64,251,.1),rgba(99,102,241,.06));border:1px solid rgba(224,64,251,.3);border-radius:12px;padding:.9rem}
+.ch-alias{font-size:1.3rem;font-weight:800;line-height:1.15}
+.ch-motto{font-size:.85rem;color:var(--light);font-style:italic;margin:.2rem 0 .5rem}
+.ch-sec{font-family:var(--mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .3rem}
 .ent-url{font-size:.72rem;color:var(--blue);text-decoration:none;word-break:break-all}
 .ent-url:hover{text-decoration:underline}
 .ent-toggles{display:flex;gap:.45rem;margin-top:.5rem}
@@ -1010,7 +1036,7 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler'};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler',dossiers:{}};
 // Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
 async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
 async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
@@ -1125,6 +1151,47 @@ async function unbindPasskey(){const id=await getIdentity();delete id.passkey;co
 async function saveNarrative(personKey,narrative){const rec={id:'__narr_'+personKey+'_'+uid(),type:'narrative',personKey,narrative,createdAt:now()};await dbPut(rec);return rec;}
 async function loadNarrativesOf(personKey){try{const all=await dbGetAll();return all.filter(n=>n.type==='narrative'&&n.personKey===personKey).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));}catch(e){return[];}}
 async function loadAllNarratives(){try{const all=await dbGetAll();return all.filter(n=>n.type==='narrative').sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));}catch(e){return[];}}
+/* ═══════════ Dossier personal · el que tu aportes sobre tu ═══════════
+   El ledger diu què has fet; el dossier diu qui ets i què saps fer encara que
+   el SOS no ho hagi vist mai. CV, recursos, arquetips declarats, disponibilitat.
+
+   PRIVAT PER CONSTRUCCIÓ: es desa amb type:'dossier', que queda fora de
+   state.nodes i, per tant, fora del sync P2P i del pack públic. El CV mai
+   viatja: només en surten les etiquetes que tu acceptes (skills i recursos),
+   i aquestes sí que es publiquen com a ofertes perquè serveixin d'alguna cosa. */
+const PRIVATE_DB_TYPES=new Set(['meta','narrative','dossier']);
+const dossierId=key=>'__dossier_'+key;
+function dossierOf(nameOrKey){return state.dossiers[personKey(nameOrKey)]||null;}
+function emptyDossier(name){return{name:name||'',birth:'',cv:null,skillsFree:[],resources:[],languages:[],availability:'',wants:[],links:[],declared:[],quiz:{},character:null};}
+async function saveDossier(nameOrKey,data){
+  const key=personKey(nameOrKey);
+  const prev=state.dossiers[key]||emptyDossier(typeof nameOrKey==='string'?nameOrKey:'');
+  const rec=Object.assign({},prev,data,{id:dossierId(key),type:'dossier',personKey:key,updatedAt:now()});
+  if(!rec.createdAt)rec.createdAt=now();
+  await dbPut(rec);state.dossiers[key]=rec;return rec;
+}
+async function loadAllDossiers(){
+  try{const all=await dbGetAll();state.dossiers={};all.filter(n=>n.type==='dossier').forEach(d=>{state.dossiers[d.personKey]=d;});}catch(e){state.dossiers={};}
+  return state.dossiers;
+}
+async function deleteDossier(nameOrKey){const key=personKey(nameOrKey);delete state.dossiers[key];try{await dbDelete(dossierId(key));}catch(e){}}
+/* Completesa del dossier · no és una barra decorativa: cada peça desbloqueja
+   alguna cosa concreta, i es diu quina. */
+const DOSSIER_PARTS=[
+  {id:'name',label:'Nom',w:10,unlocks:'Et pots donar d\'alta al roster',has:d=>!!(d&&d.name)},
+  {id:'skills',label:'Superpoders',w:20,unlocks:'Apareixes als pings d\'oferta ↔ demanda',has:d=>!!(d&&((d.skillsFree||[]).length||(d.skillsTop||[]).length))},
+  {id:'cv',label:'CV o trajectòria',w:20,unlocks:'La IA pot escriure el teu personatge amb material real',has:d=>!!(d&&d.cv&&(d.cv.text||'').length>80)},
+  {id:'resources',label:'Recursos',w:15,unlocks:'Les ventures de la MATRIU poden mobilitzar el que tens',has:d=>!!(d&&(d.resources||[]).length)},
+  {id:'archetype',label:'Arquetip declarat',w:15,unlocks:'El teu lloc al panteó de 12 i al Comando',has:d=>!!(d&&(d.declared||[]).length)},
+  {id:'birth',label:'Data de naixement',w:5,unlocks:'Senyals simbòlics com a desempat suau',has:d=>!!(d&&d.birth)},
+  {id:'character',label:'Personatge',w:15,unlocks:'Cromo complet amb àlies, origen i primera missió',has:d=>!!(d&&d.character&&d.character.alias)}
+];
+function dossierCompleteness(nameOrKey){
+  const d=typeof nameOrKey==='object'?nameOrKey:dossierOf(nameOrKey);
+  const items=DOSSIER_PARTS.map(p=>({id:p.id,label:p.label,unlocks:p.unlocks,done:!!p.has(d)}));
+  const pct=items.reduce((a,it,i)=>a+(it.done?DOSSIER_PARTS[i].w:0),0);
+  return{pct,items,done:items.filter(i=>i.done).length,total:items.length,next:items.find(i=>!i.done)||null};
+}
 // Signa un registre: adjunta signer + sig sobre el JSON canònic del registre (sense els propis camps de firma).
 async function signRecord(rec){
   const id=await getIdentity();
@@ -1706,6 +1773,306 @@ const OBJECT_TOP20=[
   {label:'Trona o cotxet',typ:'infancia'},{label:'Bicicleta o patinet',typ:'esport'},{label:'Crosses o cadira de rodes',typ:'salut'},
   {label:'Màquina de cosir',typ:'costura'},{label:'Barbacoa portàtil',typ:'festes'}
 ];
+/* ═══════════ Lectura local del CV · sense IA i sense xarxa ═══════════
+   La IA millora el resultat, però no pot ser un peatge: qui no té clau d'API
+   també ha de poder buidar el seu CV al perfil. Aquest lector fa una passada
+   de vocabulari sobre el text i proposa skills, recursos i idiomes. Proposa:
+   no decideix. Tot el que troba surt marcat i s'ha d'acceptar a mà. */
+const CV_SKILL_HINTS=[
+  {re:/cuin|xef|cheff?|fogons|càtering|catering|rebosteria|forn(er|era)/i,cat:'cuina',label:'Cuinar en grup'},
+  {re:/monitor|lleure|esplai|casal|infant|educaci[óo] infantil|cangur|nadó/i,cat:'infants',label:'Cuidar infants'},
+  {re:/inform[àa]tic|programa|desenvolupa|developer|software|sistemes|xarxes|helpdesk|suport t[èe]cnic|ofim[àa]tica|excel/i,cat:'informatica',label:'Ajudar amb ordinadors i mòbils'},
+  {re:/angl[èe]s|franc[èe]s|alemany|itali[àa]|tradu|int[èe]rpret|filologia|professor[a]? de llengua|catal[àa] nivell|castell[àa]/i,cat:'idiomes',label:'Idiomes i traduccions'},
+  {re:/professor|mestre|docent|formador|classes|repàs|tutoria|pedagog/i,cat:'idiomes',label:'Classes i repàs'},
+  {re:/lampist|electricist|paleta|fuster|mec[àa]nic|manteniment|reparaci|instal·la|instala/i,cat:'reparacions',label:'Reparacions domèstiques'},
+  {re:/jardin|hort|agr[íi]cola|pag[èe]s|vinya|viticultura|poda|permacultura|forestal/i,cat:'jardineria',label:'Jardineria i hort'},
+  {re:/geriatr|gent gran|depend[èe]ncia|acompanyament|treball social|educador social|voluntari/i,cat:'acompanyament',label:'Acompanyament a gent gran'},
+  {re:/conductor|xofer|transportist|carnet [bc]|furgonet|repartiment|log[íi]stica/i,cat:'transport',label:'Transport i repartiment'},
+  {re:/costura|modist|sastre|patronatge|teixit|ganxet|punt de creu/i,cat:'costura',label:'Costura i arreglos'},
+  {re:/neteja|netejador|hostaleria de cambra|cambrer[a]? de pisos/i,cat:'neteja',label:'Neteja'},
+  {re:/fotograf|v[íi]deo|c[àa]mera|edici[óo] de v[íi]deo|audiovisual|il·luminaci|so directe/i,cat:'electronica',label:'Fotografia i vídeo'},
+  {re:/m[úu]sic|guitarr|piano|percussi|cor[al]?\b|banda|dj\b|cantant/i,cat:'festes',label:'Música'},
+  {re:/redacci|periodis|escriptor|copywrit|comunicaci|premsa|xarxes socials|community manager/i,cat:'idiomes',label:'Escriure i comunicar'},
+  {re:/infermer|metge|metgess|fisio|terapeut|massatg|psic[òo]leg|psicolog|nutrici|farmac/i,cat:'salut',label:'Salut i benestar'},
+  {re:/administrati|comptab|gestori|facturaci|n[òo]mines|secretari|tresorer/i,cat:'informatica',label:'Suport administratiu'},
+  {re:/bricolatge|fusteria|soldadur|obra|pintar parets|reforma/i,cat:'bricolatge',label:'Bricolatge'},
+  {re:/dissenyador|disseny gr[àa]fic|il·lustra|ilustra|retol|maquetaci|arquitect/i,cat:'electronica',label:'Disseny i retolisme'},
+  {re:/perruquer|est[èe]tica|barber|maquillatge/i,cat:'salut',label:'Perruqueria i estètica'},
+  {re:/facilitaci|dinamitzaci|mediaci|assemblea|governan[çc]a|cooperativ|economia social/i,cat:'acompanyament',label:'Facilitació de grups'}
+];
+const CV_RESOURCE_HINTS=[
+  {re:/furgonet|camió|camio\b|remolc/i,label:'Vehicle gran (furgoneta o remolc)',typ:'transport'},
+  {re:/taller|garatge amb eines|banc de treball/i,label:'Taller amb eines',typ:'bricolatge'},
+  {re:/local|nau|magatzem|sala polivalent|espai propi/i,label:'Espai o local disponible',typ:'espai'},
+  {re:/hort|terreny|finca|parcel·la|vinya pr[òo]pia/i,label:'Terreny o hort',typ:'jardineria'},
+  {re:/impressora 3d|cnc|l[àa]ser|torn\b/i,label:'Fabricació digital (3D, làser, CNC)',typ:'bricolatge'},
+  {re:/equip de so|altaveus|micro|taula de mescles/i,label:'Equip de so',typ:'festes'},
+  {re:/projector|pantalla de projecci/i,label:'Projector',typ:'electronica'},
+  {re:/c[àa]mera r[èe]flex|objectiu|tr[íi]pode|estudi fotogr[àa]fic/i,label:'Equip fotogràfic',typ:'electronica'},
+  {re:/cuina industrial|paella gran|fogons de gas/i,label:'Equipament de cuina per a grups',typ:'cuina'},
+  {re:/bicicleta de c[àa]rrega|remolc de bici/i,label:'Bicicleta de càrrega',typ:'esport'}
+];
+const CV_LANG_HINTS=[[/catal[àa]/i,'Català'],[/castell[àa]|espa[ñn]ol/i,'Castellà'],[/angl[èe]s|english/i,'Anglès'],[/franc[èe]s|fran[çc]ais/i,'Francès'],[/alemany|deutsch/i,'Alemany'],[/itali[àa]/i,'Italià'],[/[àa]rab/i,'Àrab'],[/portugu[èe]s/i,'Portuguès'],[/romanès|român/i,'Romanès'],[/amazic|tamazight/i,'Amazic']];
+function parseCVLocal(text){
+  const t=String(text||'');
+  if(!t.trim())return{skills:[],resources:[],languages:[],years:0,chars:0};
+  const count=re=>{const m=t.match(new RegExp(re.source,'gi'));return m?m.length:0;};
+  const skills=[];CV_SKILL_HINTS.forEach(h=>{const n=count(h.re);if(n)skills.push({cat:h.cat,label:h.label,hits:n});});
+  skills.sort((a,b)=>b.hits-a.hits);
+  const resources=[];CV_RESOURCE_HINTS.forEach(h=>{if(h.re.test(t))resources.push({label:h.label,typ:h.typ});});
+  const languages=CV_LANG_HINTS.filter(([re])=>re.test(t)).map(([,n])=>n);
+  // Anys d'experiència: es dedueix del rang d'anys que apareix al text, no d'una frase
+  // com «10 anys d'experiència», que sovint és aspiracional.
+  const yrs=(t.match(/\b(19[6-9]\d|20[0-4]\d)\b/g)||[]).map(Number);
+  const years=yrs.length>1?Math.min(new Date().getFullYear()-Math.min(...yrs),60):0;
+  return{skills:skills.slice(0,12),resources,languages,years,chars:t.length};
+}
+// Lectura de fitxer en local. Text pla i marcatge: el que el navegador sap llegir sol.
+// Un PDF o un .docx no es poden llegir sense una llibreria externa, i el codex diu
+// zero dependències: es demana enganxar el text i s'explica per què.
+const CV_TEXT_EXT=/\.(txt|md|markdown|csv|json|rtf|htm|html|vcf)$/i;
+function readCVFile(file){
+  return new Promise((res,rej)=>{
+    if(!file)return rej({msg:'Cap fitxer'});
+    if(!CV_TEXT_EXT.test(file.name||''))return rej({msg:'Format no llegible al navegador ('+(file.name||'').split('.').pop()+'). Obre el document i enganxa el text: així res no puja a cap servidor.'});
+    if(file.size>800000)return rej({msg:'Fitxer massa gran (màx. 800 kB)'});
+    const r=new FileReader();
+    r.onload=()=>res({text:String(r.result||'').replace(/<[^>]+>/g,' ').replace(/[ \t]+/g,' '),filename:file.name});
+    r.onerror=()=>rej({msg:'No s\'ha pogut llegir el fitxer'});
+    r.readAsText(file);
+  });
+}
+/* ═══════════ Blocs de dossier · la mateixa peça a l'alta i a l'editor ═══════════
+   Es construeixen amb prefix d'id perquè dues instàncies puguin conviure sense
+   xocar. Qui els fa servir només ha de cridar dossierBlocksHTML + wireDossierBlocks
+   i, en desar, demanar el `collect()`. */
+function dossierBlocksHTML(d,p,opts){
+  d=d||{};opts=opts||{};
+  const catOpts=TIMEBANK_CATS.map(([id,label,ic])=>'<option value="'+id+'">'+ic+' '+esc(label)+'</option>').join('');
+  const typOpts=LIBRARY_TYPES.map(([id,label,ic])=>'<option value="'+id+'">'+ic+' '+esc(label)+'</option>').join('');
+  const panCards=Object.entries(PANTHEON12).map(([k,a])=>
+    '<button type="button" class="pan-card'+((d.declared||[]).includes(k)?' sel':'')+'" data-god="'+k+'">'+
+    '<div class="pan-hd">'+a.ic+' <span>'+esc(a.name)+'</span></div>'+
+    '<div class="pan-q">'+esc(a.q)+'</div>'+
+    '<div class="pan-kw">'+a.kw.slice(0,3).map(x=>esc(x)).join(' · ')+'</div></button>').join('');
+  return `
+  <details class="sh-more" id="${p}MoreCv"${opts.open?' open':''}>
+    <summary>📄 La teva trajectòria · perquè la IA pugui escriure el teu personatge</summary>
+    <div class="sh-more-b">
+      <p class="m-sub" style="margin-top:0">Enganxa el CV, la teva història laboral o simplement què has fet a la vida. <strong>No surt del navegador</strong>: es desa a la teva base local, no viatja pel sync ni entra al pack públic. Del text només se'n publiquen les etiquetes que tu acceptis.</p>
+      <textarea id="${p}CV" rows="6" placeholder="p.ex. 12 anys de lampista a Vilafranca. Monitor de lleure al casal. Toco la guitarra a una colla. Tinc furgoneta i taller…">${esc((d.cv&&d.cv.text)||'')}</textarea>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem;align-items:center">
+        <button type="button" class="btn btn-ghost btn-sm" id="${p}CVPick">📎 Importa un fitxer de text</button>
+        <input type="file" id="${p}CVFile" accept=".txt,.md,.markdown,.csv,.json,.rtf,.html,.htm,.vcf" style="display:none">
+        <button type="button" class="btn btn-primary btn-sm" id="${p}CVScan">🔎 Analitza-ho en local</button>
+      </div>
+      <div class="ent-desc" style="margin-top:.3rem">L'anàlisi local no fa cap crida a internet: és un lector de vocabulari dins la pàgina. Un PDF o un .docx el navegador no els sap llegir sense llibreries externes — obre'l i enganxa el text.</div>
+      <div id="${p}CVOut" style="margin-top:.5rem"></div>
+    </div>
+  </details>
+  <details class="sh-more" id="${p}MoreSk"${opts.open?' open':''}>
+    <summary>🧩 Superpoders propis, recursos i disponibilitat</summary>
+    <div class="sh-more-b">
+      <label class="dx-lb">Superpoders que no són a la llista</label>
+      <div class="wz-key"><input id="${p}SkillFree" placeholder="p.ex. Coordinar assemblees"><select id="${p}SkillCat" style="max-width:11rem">${catOpts}</select><button type="button" class="btn btn-ghost btn-sm" id="${p}SkillAdd">+</button></div>
+      <div class="ent-badges" id="${p}SkillChips"></div>
+      <label class="dx-lb">🧰 Recursos que poses a disposició (espais, vehicles, eines, equips)</label>
+      <div class="wz-key"><input id="${p}Res" placeholder="p.ex. Furgoneta amb remolc"><select id="${p}ResTyp" style="max-width:11rem">${typOpts}</select><button type="button" class="btn btn-ghost btn-sm" id="${p}ResAdd">+</button></div>
+      <div class="ent-badges" id="${p}ResChips"></div>
+      <label class="dx-lb">🎯 Què vols aprendre o què necessites</label>
+      <div class="wz-key"><input id="${p}Want" placeholder="p.ex. Aprendre a portar la comptabilitat"><button type="button" class="btn btn-ghost btn-sm" id="${p}WantAdd">+</button></div>
+      <div class="ent-badges" id="${p}WantChips"></div>
+      <label class="dx-lb">🗓 Disponibilitat</label>
+      <input id="${p}Avail" placeholder="p.ex. dues tardes entre setmana i dissabtes al matí" value="${esc(d.availability||'')}">
+      <label class="dx-lb">🌍 Idiomes (separats per coma)</label>
+      <input id="${p}Langs" placeholder="Català, castellà, anglès" value="${esc((d.languages||[]).join(', '))}">
+      <label class="dx-lb">🎂 Data de naixement (opcional)</label>
+      <input type="date" id="${p}Birth" value="${esc(d.birth||'')}">
+      <div class="ent-desc" id="${p}Signals" style="margin-top:.3rem"></div>
+    </div>
+  </details>
+  <details class="sh-more" id="${p}MorePan"${opts.open?' open':''}>
+    <summary>🏛 El teu lloc al panteó de 12 · tria les preguntes que són teves</summary>
+    <div class="sh-more-b">
+      <p class="m-sub" style="margin-top:0">Cadascun dels dotze arquetips és una <strong>pregunta</strong> que algú ha de sostenir a qualsevol grup. Marca fins a 3 que sentis teves. No és un test de personalitat: és una declaració, i al SOS pesa menys que el que facis però més que el teu signe.</p>
+      <div class="pan-grid" id="${p}Pan">${panCards}</div>
+      <div id="${p}PanOut" style="margin-top:.5rem"></div>
+    </div>
+  </details>
+  <details class="sh-more" id="${p}MoreChar"${opts.open?' open':''}>
+    <summary>✦ El teu personatge · àlies, origen, poders i primera missió</summary>
+    <div class="sh-more-b">
+      <p class="m-sub" style="margin-top:0">La IA llegeix el teu material i te'n torna un personatge: àlies, història d'origen, poders amb la seva evidència, l'ombra i una primera missió possible aquesta setmana. Si no tens clau d'API, tota la resta del dossier funciona igual.</p>
+      <button type="button" class="btn btn-primary btn-sm" id="${p}Char">✦ Crea el meu personatge amb IA</button>
+      <div id="${p}CharOut" style="margin-top:.6rem"></div>
+    </div>
+  </details>`;
+}
+function wireDossierBlocks(bg,d,p,opts){
+  opts=opts||{};
+  const q=id=>bg.querySelector('#'+p+id);
+  const st={cv:(d&&d.cv)||null,skillsFree:((d&&d.skillsFree)||[]).slice(),resources:((d&&d.resources)||[]).slice(),
+    wants:((d&&d.wants)||[]).slice(),declared:((d&&d.declared)||[]).slice(),character:(d&&d.character)||null};
+  const chip=(txt,sub,on)=>{const b=el('span','ent-b');b.innerHTML=esc(txt)+(sub?' <span style="opacity:.6">'+esc(sub)+'</span>':'')+' <button type="button" class="chip-x" aria-label="Treu">✕</button>';b.querySelector('.chip-x').onclick=on;return b;};
+  const renderChips=()=>{
+    const sk=q('SkillChips');sk.innerHTML='';st.skillsFree.forEach((s,i)=>sk.appendChild(chip(s.label,tbCatMeta(s.cat).label,()=>{st.skillsFree.splice(i,1);renderChips();})));
+    const rs=q('ResChips');rs.innerHTML='';st.resources.forEach((r,i)=>rs.appendChild(chip(r.label,libTypeMeta(r.typ).label,()=>{st.resources.splice(i,1);renderChips();})));
+    const wt=q('WantChips');wt.innerHTML='';st.wants.forEach((w,i)=>wt.appendChild(chip(w.label||w,'',()=>{st.wants.splice(i,1);renderChips();})));
+  };
+  renderChips();
+  const addSkill=()=>{const v=q('SkillFree').value.trim();if(!v)return;st.skillsFree.push({label:v,cat:q('SkillCat').value});q('SkillFree').value='';renderChips();};
+  const addRes=()=>{const v=q('Res').value.trim();if(!v)return;st.resources.push({label:v,typ:q('ResTyp').value});q('Res').value='';renderChips();};
+  const addWant=()=>{const v=q('Want').value.trim();if(!v)return;st.wants.push({label:v});q('Want').value='';renderChips();};
+  q('SkillAdd').onclick=addSkill;q('ResAdd').onclick=addRes;q('WantAdd').onclick=addWant;
+  [['SkillFree',addSkill],['Res',addRes],['Want',addWant]].forEach(([id,fn])=>q(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();fn();}}));
+  // Senyals: es calculen al navegador i es diuen amb el seu grau de certesa.
+  const renderSignals=()=>{
+    const v=q('Birth').value,box=q('Signals');
+    if(!v){box.textContent='';return;}
+    const z=zodiacOf(v),cz=chineseZodiacOf(v);
+    box.innerHTML='Senyals: '+(z?'<span class="ent-b">'+z.ic+' '+esc(z.name)+'</span> ':'')+(cz?'<span class="ent-b">'+cz.ic+' '+esc(cz.name)+' <span style="opacity:.6">aprox.</span></span>':'')+
+      ' <span style="opacity:.7">— pista feble: al SOS mana el que has fet, no el que t\'ha tocat.</span>';
+  };
+  q('Birth').addEventListener('change',renderSignals);renderSignals();
+  // Panteó declarat · màxim 3, i es diu què passa quan te'n passes.
+  const renderPanOut=()=>{
+    const box=q('PanOut');
+    if(!st.declared.length){box.innerHTML='<div class="ent-desc">Cap arquetip declarat encara.</div>';return;}
+    box.innerHTML=st.declared.map((k,i)=>{const a=PANTHEON12[k],f=founderOf(k);
+      return '<div class="ent-card" style="border-left:3px solid var(--purple)"><div class="ent-nm">'+a.ic+' '+esc(a.name)+(i===0?' <span class="ent-b b-ver">principal</span>':'')+'</div>'+
+      '<div class="ent-desc">'+esc(a.role)+' · ombra: '+esc(a.shadow)+'</div>'+
+      (f?'<div class="ent-desc" style="margin-top:.2rem">Al Comando, aquesta cadira la sosté <strong>'+esc(f.hero)+'</strong> — '+esc(f.why)+'</div>':'')+'</div>';}).join('');
+  };
+  bg.querySelectorAll('#'+p+'Pan .pan-card').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.god,i=st.declared.indexOf(k);
+    if(i>=0)st.declared.splice(i,1);
+    else if(st.declared.length<3)st.declared.push(k);
+    else{toast('Ja en tens 3. Treu-ne un abans d\'afegir-ne un altre.');return;}
+    b.classList.toggle('sel',st.declared.includes(k));renderPanOut();
+  });
+  renderPanOut();
+  // CV: importació de fitxer + anàlisi local, amb tot el que troba acceptable a mà.
+  q('CVPick').onclick=()=>q('CVFile').click();
+  q('CVFile').onchange=async e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    try{const r=await readCVFile(f);q('CV').value=r.text;st.cv={text:r.text,filename:r.filename,importedAt:now()};toast('📄 '+r.filename+' llegit en local');q('CVScan').click();}
+    catch(err){toast(err.msg||'No s\'ha pogut llegir');}
+    e.target.value='';
+  };
+  q('CVScan').onclick=()=>{
+    const text=q('CV').value;const box=q('CVOut');
+    const r=parseCVLocal(text);
+    if(!text.trim()){box.innerHTML='<div class="ai-note"><span class="ic">✎</span><span>Encara no hi ha text. Enganxa\'l o importa un fitxer.</span></div>';return;}
+    st.cv={text,filename:(st.cv&&st.cv.filename)||'',importedAt:now(),parsedAt:now()};
+    if(!r.skills.length&&!r.resources.length&&!r.languages.length){
+      box.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>El lector local no hi ha reconegut cap ofici conegut. El text queda desat igualment i la IA sí que el pot llegir.</span></div>';return;}
+    box.innerHTML='<div class="ent-desc" style="margin-bottom:.4rem">Trobat al text'+(r.years?' · ≈'+r.years+' anys de recorregut':'')+'. <strong>Res s\'afegeix sol</strong>: accepta el que sigui cert.</div>'+
+      (r.skills.length?'<div class="ent-grp-lbl">🧠 Superpoders proposats</div><div class="ent-badges" id="'+p+'CVSk">'+r.skills.map((s,i)=>'<button type="button" class="btn btn-ghost btn-sm cvadd" data-k="sk" data-i="'+i+'">+ '+esc(s.label)+'</button>').join('')+'</div>':'')+
+      (r.resources.length?'<div class="ent-grp-lbl">🧰 Recursos proposats</div><div class="ent-badges">'+r.resources.map((x,i)=>'<button type="button" class="btn btn-ghost btn-sm cvadd" data-k="rs" data-i="'+i+'">+ '+esc(x.label)+'</button>').join('')+'</div>':'')+
+      (r.languages.length?'<div class="ent-grp-lbl">🌍 Idiomes</div><div class="ent-badges"><button type="button" class="btn btn-ghost btn-sm cvadd" data-k="lg" data-i="0">+ '+esc(r.languages.join(', '))+'</button></div>':'');
+    box.querySelectorAll('.cvadd').forEach(b=>b.onclick=()=>{
+      const i=Number(b.dataset.i);
+      if(b.dataset.k==='sk'){const s=r.skills[i];if(!st.skillsFree.some(x=>x.label===s.label))st.skillsFree.push({label:s.label,cat:s.cat,from:'cv'});}
+      else if(b.dataset.k==='rs'){const x=r.resources[i];if(!st.resources.some(y=>y.label===x.label))st.resources.push({label:x.label,typ:x.typ,from:'cv'});}
+      else{q('Langs').value=[...new Set(q('Langs').value.split(',').map(s=>s.trim()).filter(Boolean).concat(r.languages))].join(', ');}
+      // El que acceptes va a parar al bloc de superpoders i recursos: s'obre perquè
+      // ho vegis. Acceptar una cosa i no veure on cau és el mateix que no fer res.
+      const more=bg.querySelector('#'+p+'MoreSk');if(more)more.open=true;
+      b.classList.add('sel');b.disabled=true;renderChips();
+    });
+  };
+  const collect=()=>({
+    cv:q('CV').value.trim()?Object.assign({},st.cv||{},{text:q('CV').value}):null,
+    skillsFree:st.skillsFree,resources:st.resources,wants:st.wants,declared:st.declared,
+    availability:q('Avail').value.trim(),
+    languages:q('Langs').value.split(',').map(s=>s.trim()).filter(Boolean),
+    birth:q('Birth').value||'',
+    character:st.character
+  });
+  const renderChar=ch=>{
+    const box=q('CharOut');
+    if(!ch){box.innerHTML='';return;}
+    const g=ch.archetype&&PANTHEON12[ch.archetype]?PANTHEON12[ch.archetype]:null,f=ch.archetype?founderOf(ch.archetype):null;
+    box.innerHTML='<div class="ch-card"><div class="ch-alias">'+esc(ch.alias||'—')+'</div>'+
+      (ch.motto?'<div class="ch-motto">«'+esc(ch.motto)+'»</div>':'')+
+      (g?'<div class="ent-badges"><span class="ent-b b-ver">'+g.ic+' '+esc(g.name)+'</span>'+(f?'<span class="ent-b">llinatge de '+esc(f.hero)+'</span>':'')+'</div>':'')+
+      (ch.origin?'<div class="ch-sec">Origen</div><div class="ent-desc">'+esc(ch.origin)+'</div>':'')+
+      ((ch.powers||[]).length?'<div class="ch-sec">Poders</div>'+ch.powers.map(pw=>'<div class="ent-card"><div class="ent-nm">✦ '+esc(pw.name)+'</div><div class="ent-desc">'+esc(pw.what)+(pw.evidence?'<br><span style="opacity:.7">d\'on surt: '+esc(pw.evidence)+'</span>':'')+'</div></div>').join(''):'')+
+      (ch.shadow?'<div class="ch-sec">Ombra</div><div class="ent-desc">'+esc(ch.shadow)+'</div>':'')+
+      (ch.firstMission?'<div class="ch-sec">Primera missió</div><div class="ent-card" style="border-left:3px solid var(--green)"><div class="ent-desc">'+esc(ch.firstMission)+'</div></div>':'')+
+      '</div>';
+  };
+  renderChar(st.character);
+  q('Char').onclick=async()=>{
+    const name=(opts.nameFn?opts.nameFn():'')||'';
+    if(!name){toast('Escriu primer el teu nom');return;}
+    const box=q('CharOut');box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Llegint el teu material i construint el personatge…</span></div>';
+    try{
+      const draft=Object.assign({name},collect());
+      const ch=await AI.call('character_dossier',characterContext(name,draft));
+      st.character=Object.assign({},ch,{ts:now(),by:'ia'});
+      renderChar(st.character);
+      // El que la IA detecta del CV entra com a proposta, mai directament.
+      (ch.skillsDetected||[]).forEach(s=>{if(!st.skillsFree.some(x=>x.label.toLowerCase()===s.label.toLowerCase()))st.skillsFree.push({label:s.label,cat:s.cat,from:'ia'});});
+      (ch.resourcesDetected||[]).forEach(l=>{if(!st.resources.some(x=>x.label.toLowerCase()===String(l).toLowerCase()))st.resources.push({label:String(l),typ:'altres',from:'ia'});});
+      renderChips();
+      if(opts.onCharacter)opts.onCharacter(st.character);
+    }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.noKey?'Cal clau d\'Anthropic a Configuració · la resta del dossier funciona igual':(e.msg||String(e)))+'</span></div>';}
+  };
+  return{state:st,collect,renderChips,renderChar};
+}
+/* Editor del dossier · el mateix material, però quan ja existeixes al sistema.
+   Aquí la IA sí que té evidència del ledger per treballar, no només declaracions. */
+function openDossierEditor(nameOrKey){
+  const name=String(nameOrKey||state.activePersona||'');
+  const d=dossierOf(name)||emptyDossier(name);
+  const comp=dossierCompleteness(d);
+  const bg=modal(`
+    <h2>📇 El dossier de ${esc(d.name||name)}</h2>
+    <p class="m-sub">El ledger diu què has fet. El dossier diu qui ets i què saps fer encara que el SOS no ho hagi vist mai. <strong>Tot queda en local</strong>.</p>
+    <div class="ent-card" style="margin-bottom:.6rem">
+      <div class="ent-nm">Dossier al ${comp.pct}%</div>
+      <div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;margin:.4rem 0;overflow:hidden"><div style="height:100%;width:${comp.pct}%;background:linear-gradient(90deg,var(--purple),var(--indigo))"></div></div>
+      <div style="display:grid;gap:.25rem">${comp.items.map(it=>'<div style="display:flex;gap:.5rem;align-items:baseline"><span style="color:'+(it.done?'var(--green)':'var(--muted)')+'">'+(it.done?'✓':'○')+'</span><span style="'+(it.done?'color:var(--light)':'color:var(--muted)')+'">'+esc(it.label)+'</span><span class="ent-desc" style="opacity:.7">'+esc(it.unlocks)+'</span></div>').join('')}</div>
+    </div>
+    ${dossierBlocksHTML(d,'dx',{open:true})}
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="dxWipe">🗑 Esborra el dossier</button><button class="btn btn-ghost" id="dxClose">Tanca</button><button class="btn btn-primary" id="dxSave">⬢ Desa el dossier</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const blocks=wireDossierBlocks(bg,d,'dx',{nameFn:()=>name});
+  bg.querySelector('#dxClose').onclick=closeModal;
+  bg.querySelector('#dxWipe').onclick=async()=>{if(!confirm('Esborrar tot el dossier de '+name+'? El CV i el personatge es perdran. Les ofertes i objectes ja publicats es queden.'))return;await deleteDossier(name);closeModal();toast('Dossier esborrat');};
+  bg.querySelector('#dxSave').onclick=async()=>{
+    const data=Object.assign({name},blocks.collect());
+    await saveDossier(name,data);
+    // Les skills i recursos declarats han de servir d'alguna cosa: es publiquen
+    // com a ofertes i objectes al node on la persona ja és membre.
+    const pub=await publishDossierResources(name,data);
+    closeModal();
+    toast('📇 Dossier desat'+(pub.offers||pub.objects?' · +'+pub.offers+' ofertes, +'+pub.objects+' objectes':''));
+    render();
+  };
+}
+/* Publica al SOS el que el dossier declara: skills → ofertes al banc de temps,
+   recursos → objectes a la biblioteca. Només als nodes on la persona ja és membre,
+   i sense duplicar el que ja hi és. */
+async function publishDossierResources(name,d){
+  const key=personKey(name);let offers=0,objects=0;
+  for(const nd of state.nodes){
+    const m=membersOf(nd).find(x=>personKey(x.name)===key);if(!m)continue;
+    let added=0;
+    if(nd.dynamicType==='banc_temps'){
+      const have=new Set(offersOf(nd).filter(o=>o.memberId===m.id).map(o=>(o.title||'').toLowerCase()));
+      (d.skillsFree||[]).forEach(s=>{const t=s.label+' — '+name;if(have.has(t.toLowerCase()))return;offersOf(nd).push(newOffer({memberId:m.id,kind:'oferta',category:s.cat||'altres',title:t}));have.add(t.toLowerCase());offers++;added++;});
+    }
+    if(nd.dynamicType==='biblioteca_coses'){
+      const have=new Set(objectsOf(nd).filter(o=>o.ownerId===m.id).map(o=>(o.name||'').toLowerCase()));
+      (d.resources||[]).forEach(r=>{const t=r.label+' — '+name;if(have.has(t.toLowerCase()))return;objectsOf(nd).push(newObject({name:t,typology:r.typ||'altres',ownerId:m.id,condition:'bon estat'}));have.add(t.toLowerCase());objects++;added++;});
+    }
+    if(added)await persist(nd);
+  }
+  return{offers,objects};
+}
 // Onboarding Superheroi/na: crea perfil + ubicació + habilitats + objectes en un únic pas.
 function openSuperheroiOnboarding(prefill){
   prefill=prefill||{};
@@ -1729,10 +2096,13 @@ function openSuperheroiOnboarding(prefill){
     <div class="field"><label>📦 Objectes propis que poses en comú <span id="shObCnt" style="color:var(--muted);font-weight:normal">(0 tries)</span></label>
       <div id="shObjs" style="display:flex;flex-wrap:wrap;gap:.35rem">${OBJECT_TOP20.map((o,i)=>'<button type="button" class="btn btn-ghost btn-sm sh-ob" data-i="'+i+'">'+esc(o.label)+'</button>').join('')}</div>
     </div>
+    <div class="sh-deep">Amb això ja entres al roster. Si vols un <strong>personatge de debò</strong> — àlies, origen, poders i primera missió — obre els blocs de sota: el teu CV, els teus recursos i el teu arquetip. Tot queda al teu navegador.</div>
+    ${dossierBlocksHTML(prefill.dossier||{},'sh',{})}
     <div class="modal-actions"><button class="btn btn-ghost" id="shCancel">Cancel·la</button><button class="btn btn-primary" id="shSave">✦ Crea el meu perfil</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const sel={sk:new Set(),ob:new Set(),role:prefill.role||'superheroi'};
+  const blocks=wireDossierBlocks(bg,prefill.dossier||{},'sh',{nameFn:()=>bg.querySelector('#shName').value.trim()});
   bg.querySelectorAll('.sh-role').forEach(b=>b.onclick=()=>{sel.role=b.dataset.role;bg.querySelectorAll('.sh-role').forEach(x=>x.classList.toggle('sel',x===b));});
   const skCnt=bg.querySelector('#shSkCnt'),obCnt=bg.querySelector('#shObCnt');
   const updCounts=()=>{skCnt.textContent='(tria fins a 5 · '+sel.sk.size+'/5)';skCnt.style.color=sel.sk.size===5?'var(--orange)':'var(--muted)';obCnt.textContent='('+sel.ob.size+' tri'+(sel.ob.size===1?'a':'es')+')';};
@@ -1752,18 +2122,30 @@ function openSuperheroiOnboarding(prefill){
     if(barri){placement=await ensureNode(barri,'barri',muni.id);}
     // Assegura banc de temps + biblioteca dins del node ubicació si cal
     const kids=children(placement.id);
+    // El dossier també compta a l'hora de decidir si cal obrir banc de temps o
+    // biblioteca: si algú només ha declarat skills del seu CV, també ha de tenir on posar-les.
+    const draft=blocks.collect();
+    const wantsBt=sel.sk.size||(draft.skillsFree||[]).length,wantsBib=sel.ob.size||(draft.resources||[]).length;
     let bt=kids.find(k=>k.dynamicType==='banc_temps');
-    if(!bt&&sel.sk.size){bt=newNode('Banc de temps de '+placement.name,'projecte',placement.id);bt.dynamicType='banc_temps';seedFromDynamic(bt,dynById('banc_temps'));state.nodes.push(bt);await persist(bt);}
+    if(!bt&&wantsBt){bt=newNode('Banc de temps de '+placement.name,'projecte',placement.id);bt.dynamicType='banc_temps';seedFromDynamic(bt,dynById('banc_temps'));state.nodes.push(bt);await persist(bt);}
     let bib=kids.find(k=>k.dynamicType==='biblioteca_coses');
-    if(!bib&&sel.ob.size){bib=newNode('Biblioteca de les coses de '+placement.name,'projecte',placement.id);bib.dynamicType='biblioteca_coses';seedFromDynamic(bib,dynById('biblioteca_coses'));state.nodes.push(bib);await persist(bib);}
+    if(!bib&&wantsBib){bib=newNode('Biblioteca de les coses de '+placement.name,'projecte',placement.id);bib.dynamicType='biblioteca_coses';seedFromDynamic(bib,dynById('biblioteca_coses'));state.nodes.push(bib);await persist(bib);}
     // Alta de membre + skills + objectes
     if(bt){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bt).push(m);sel.sk.forEach(i=>{const s=SKILL_TOP20[i];offersOf(bt).push(newOffer({memberId:m.id,kind:'oferta',category:s.cat,title:s.label+' — '+name}));});await persist(bt);}
     if(bib){const m=newMember({name,kind:'persona',role:sel.role});membersOf(bib).push(m);sel.ob.forEach(i=>{const o=OBJECT_TOP20[i];objectsOf(bib).push(newObject({name:o.label+' — '+name,typology:o.typ,ownerId:m.id,condition:'bon estat'}));});await persist(bib);}
+    // Dossier: el material que la persona ha aportat sobre ella mateixa. Es desa
+    // sempre (encara que sigui mig buit) perquè el pugui continuar omplint més tard.
+    const dd=Object.assign({name,role:sel.role,municipi:muniName,barri},draft,blocks.collect(),
+      {skillsTop:[...sel.sk].map(i=>({label:SKILL_TOP20[i].label,cat:SKILL_TOP20[i].cat}))});
+    await saveDossier(name,dd);
+    const pub=await publishDossierResources(name,dd);
     state.expanded.add(placement.id);if(com)state.expanded.add(com.id);if(prov)state.expanded.add(prov.id);state.expanded.add(pais.id);
     await setActivePersona(name);
     // Donar-se d'alta no pot acabar en una pantalla buida: s'obre la benvinguda,
     // que ja busca gent real amb qui es podria fer un intercanvi avui mateix.
-    closeModal();selectNode(placement.id);toast('✦ Benvingut/da al Comando, '+name.split(/\s+/)[0]);setTimeout(()=>openWelcomeModal(name),350);
+    closeModal();selectNode(placement.id);
+    toast('✦ Benvingut/da al Comando, '+name.split(/\s+/)[0]+(pub.offers||pub.objects?' · +'+(pub.offers+pub.objects)+' del teu dossier':''));
+    setTimeout(()=>openWelcomeModal(name),350);
   };
 }
 // Assistent de valoració amb IA: rang €-min/esperat/max per skill o objecte amb font (Arc O3 · Glass-Box).
@@ -1877,6 +2259,7 @@ function _searchIndex(){
   const ents=(state.entities||[]).map(e=>({k:'entity',id:e.id,label:e.name,sub:'🏛 '+(e.entityType||'entitat'),action:()=>openEntityForm(e)}));
   const actions=[
     {k:'action',id:'act_hero',label:'Crea el meu perfil superheroi',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
+    {k:'action',id:'act_dossier',label:'El meu dossier · CV, recursos i personatge',sub:'📇 acció',action:()=>openDossierEditor(state.activePersona||'')},
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · wallets · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
@@ -2291,6 +2674,7 @@ function openLauncher(){
   const items=[
     {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
+    {ic:'📇',t:'El meu dossier',d:'CV en local + recursos + arquetip + personatge amb IA',fn:()=>openDossierEditor(state.activePersona||'')},
     {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
     {ic:'🔍',t:'Diagnòstic comunitari',d:'3 min · punt de partida, itinerari i proposta d\'acompanyament',fn:()=>window.open('diagnostic.html','_blank','noopener')},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
@@ -2388,8 +2772,16 @@ function superheroCromo(nameOrKey){
   const p=personProfile(nameOrKey),r=reputationOf(nameOrKey);
   const tier=cromoTier(r.reputationScore||0);
   const superarmes=(p.objects||[]).slice(0,5).map(o=>({name:o.object.name,typology:o.object.typology,node:o.nodeName}));
+  // El dossier és el que la persona aporta sobre ella mateixa: àlies, lema, arquetip.
+  // Si encara no n'hi ha, el cromo funciona igual — només surt més nu.
+  const dos=dossierOf(nameOrKey),ch=(dos&&dos.character)||null;
+  const godKey=(ch&&ch.archetype)||((dos&&(dos.declared||[])[0])||null);
+  const god=godKey&&PANTHEON12[godKey]?Object.assign({key:godKey},PANTHEON12[godKey]):null;
   return{
     name:p.name,key:p.key,initials:_initialsOf(p.name),color:_colorFromName(p.name),
+    alias:(ch&&ch.alias)||'',motto:(ch&&ch.motto)||'',origin:(ch&&ch.origin)||'',
+    character:ch,god,founder:godKey?founderOf(godKey):null,
+    dossier:dos,dossierPct:dossierCompleteness(dos).pct,
     tier,score:Math.round(r.reputationScore||0),level:heroLevel(r.reputationScore||0),
     superpowers:(r.superpowers||[]).slice(0,3),
     superarmes,
@@ -2446,6 +2838,46 @@ function characterSheetOf(name){
   });
   return{cromo,projects,ventures,offers,objects,hoursGiven};
 }
+/* Material que se li dona a la IA per construir el personatge. Es munta aquí i no
+   dins del modal perquè el mateix context serveix a l'alta i a l'editor del dossier,
+   i perquè es pugui inspeccionar en un test sense obrir cap finestra. */
+function characterContext(name,dossier){
+  const d=dossier||dossierOf(name)||{};
+  let sheet={cromo:{superpowers:[],signed:0,communities:0,hours:0},offers:[],objects:[],projects:[],ventures:[],hoursGiven:0};
+  try{sheet=characterSheetOf(name);}catch(e){}
+  const skills=[...new Set([]
+    .concat((d.skillsTop||[]).map(s=>s.label||s))
+    .concat((d.skillsFree||[]).map(s=>s.label||s))
+    .concat(sheet.offers.filter(o=>o.kind!=='demanda').map(o=>o.title||o.category))
+  )].filter(Boolean).slice(0,20);
+  const resources=[...new Set([]
+    .concat((d.resources||[]).map(r=>r.label||r))
+    .concat(sheet.objects.map(o=>o.name))
+  )].filter(Boolean).slice(0,20);
+  const ev=[];
+  if(sheet.hoursGiven)ev.push(sheet.hoursGiven+' h donades');
+  if(sheet.cromo.signed)ev.push(sheet.cromo.signed+' apunts signats');
+  if(sheet.projects.length)ev.push('present a '+sheet.projects.length+' projecte(s): '+sheet.projects.map(p=>p.nodeName).slice(0,4).join(', '));
+  if(sheet.ventures.length)ev.push('lidera '+sheet.ventures.length+' venture(s)');
+  const z=d.birth?zodiacOf(d.birth):null,cz=d.birth?chineseZodiacOf(d.birth):null;
+  const sig=[z?z.name:'',cz?cz.name+' (aprox.)':''].filter(Boolean).join(' · ');
+  return{name,municipi:d.municipi||'',role:d.role||roleOfPerson(name)||'',
+    skills,resources,languages:(d.languages||[]).slice(0,8),availability:d.availability||'',
+    wants:(d.wants||[]).map(w=>w.label||w).slice(0,8),
+    declared:(d.declared||[]).map(k=>(PANTHEON12[k]||{}).name).filter(Boolean),
+    signals:sig,evidence:ev.join(' · '),
+    cv:(d.cv&&d.cv.text)||''};
+}
+// Genera el personatge amb IA i el desa al dossier. Un sol camí: qui el crida no
+// ha de saber ni què és un intent ni com es persisteix.
+async function aiBuildCharacter(name,dossier){
+  const ctx=characterContext(name,dossier);
+  if(!ctx.skills.length&&!ctx.cv&&!ctx.declared.length)throw{msg:'Encara no hi ha material. Afegeix superpoders, recursos o el teu CV abans de generar el personatge.'};
+  const r=await AI.call('character_dossier',ctx);
+  const character=Object.assign({},r,{ts:now(),by:'ia'});
+  await saveDossier(name,{character});
+  return character;
+}
 /* ═══════════ Senyals de perfil · material per conèixer-se, no per etiquetar-se ═══════════
    Tot es calcula al navegador a partir de la data de naixement: cap servei extern,
    cap dada que surti. Són portes d'entrada a una conversa sobre un mateix, i el
@@ -2490,29 +2922,41 @@ const SKILL_TO_FN={
 };
 function archetypeAffinity(name,opts){
   const sheet=(opts&&opts.sheet)||characterSheetOf(name);
-  const score={};Object.values(PANTHEON12).forEach(a=>score[a.fn]=0);
-  const bump=(fn,n)=>{if(fn&&score[fn]!==undefined)score[fn]+=n;};
+  const score={},ev={};Object.values(PANTHEON12).forEach(a=>{score[a.fn]=0;ev[a.fn]=0;});
+  // `isEv` marca el que surt del ledger. Es compta a part perquè «basat en evidència»
+  // vulgui dir el que diu: si el pes ve de declaracions, no és evidència.
+  const bump=(fn,n,isEv)=>{if(fn&&score[fn]!==undefined){score[fn]+=n;if(isEv)ev[fn]+=n;}};
   // 1 · Evidència: què ofereixes i què has aportat de debò
-  (sheet.cromo.superpowers||[]).forEach(s=>bump(SKILL_TO_FN[s.cat],4*(s.count||1)));
-  sheet.offers.forEach(o=>bump(SKILL_TO_FN[o.category],2));
-  if(sheet.ventures.length)bump('metaskill',4*sheet.ventures.length);
-  if(sheet.cromo.communities>2)bump('facil',4);
-  if(sheet.objects.length)bump('fund',2*sheet.objects.length);
-  if((sheet.hoursGiven||0)>=20)bump('care',3);
+  (sheet.cromo.superpowers||[]).forEach(s=>bump(SKILL_TO_FN[s.cat],4*(s.count||1),true));
+  sheet.offers.forEach(o=>bump(SKILL_TO_FN[o.category],2,true));
+  if(sheet.ventures.length)bump('metaskill',4*sheet.ventures.length,true);
+  if(sheet.cromo.communities>2)bump('facil',4,true);
+  if(sheet.objects.length)bump('fund',2*sheet.objects.length,true);
+  if((sheet.hoursGiven||0)>=20)bump('care',3,true);
   // 2 · Rol declarat al SOS
   const roleFn={guardian:'metaskill',coordinador:'facil',agent:'territory',superheroi:'craft',simpatitzant:'bond'};
   bump(roleFn[roleOfPerson(name)],3);
+  // 2b · Dossier: el que la persona declara sobre si mateixa. Pesa menys que
+  // l'evidència però més que els símbols — és una tria conscient, no un signe.
+  const dos=(opts&&opts.dossier!==undefined)?opts.dossier:dossierOf(name);
+  if(dos){
+    (dos.declared||[]).forEach((k,i)=>{const a=PANTHEON12[k];if(a)bump(a.fn,[5,4,2][i]||2);});
+    (dos.skillsFree||[]).forEach(s=>bump(SKILL_TO_FN[s.cat||s],1));
+    if(dos.character&&dos.character.archetype&&PANTHEON12[dos.character.archetype])bump(PANTHEON12[dos.character.archetype].fn,2);
+  }
   // 3 · Símbols, només com a desempat suau
-  const decl=(opts&&opts.signals)||{};
+  const decl=(opts&&opts.signals)||(dos&&dos.birth?{zodiac:(zodiacOf(dos.birth)||{}).id}:{})||{};
   // Els signes apunten als dotze slots reals del panteó, no a categories inventades.
   const zFn={aries:'exec',taure:'fund',bessons:'facil',cranc:'care',lleo:'metaskill',verge:'design',
     balanca:'coord',escorpi:'territory',sagitari:'territory',capricorn:'craft',aquari:'lms',peixos:'bond'};
   if(decl.zodiac&&zFn[decl.zodiac])bump(zFn[decl.zodiac],2);
-  const ranked=Object.entries(PANTHEON12).map(([k,a])=>({key:k,...a,score:score[a.fn]||0}))
+  const ranked=Object.entries(PANTHEON12).map(([k,a])=>({key:k,...a,score:score[a.fn]||0,evidence:ev[a.fn]||0}))
     .sort((x,y)=>y.score-x.score);
   const top=ranked.filter(r=>r.score>0);
   return{ranked,primary:top[0]||null,secondary:top[1]||null,
-    evidenceBased:top.length>0&&top[0].score>2,total:ranked.reduce((a,r)=>a+r.score,0)};
+    evidenceBased:top.length>0&&top[0].evidence>2,
+    evidenceTotal:ranked.reduce((a,r)=>a+r.evidence,0),
+    total:ranked.reduce((a,r)=>a+r.score,0)};
 }
 /* «El teu element» · les quatre preguntes de l'ikigai, respostes amb dades del SOS
    en comptes d'un test. Tres surten del ledger; només una és declarada. */
@@ -3888,6 +4332,49 @@ const AI_INTENTS={
     build:ctx=>'Molekulon: '+(ctx.name||'')+'\nPersonatges: '+(ctx.members||[]).join(', ')+'\nRepte comunitari: '+(ctx.challenge||'')+(ctx.mode?'\nMode: '+ctx.mode:''),
     coerce:tu=>({title:(tu.title||'').trim(),synopsis:(tu.synopsis||'').trim(),anthem:(tu.anthem||'').trim(),scene:(tu.scene||'').trim()})
   },
+  character_dossier:{
+    model:'claude-opus-4-8',max_tokens:2500,
+    system:'Ets guionista de còmic i alhora analista de talent comunitari. A partir de material REAL d\'una persona (CV o trajectòria, habilitats declarades, recursos, arquetips que ella mateixa ha triat i evidència comptable del seu pas pel SOS), construeixes el seu personatge dins l\'univers del Comando Molekulon: superherois quotidians que sostenen un territori.\n\nREGLES DURES:\n1) No inventis fets biogràfics. Si una dada no és al material, no la facis servir. Millor un origen curt i cert que un de llarg i fals.\n2) Cada poder ha de sortir d\'alguna cosa que la persona sap fer de debò, i has de dir de quin tros del material surt.\n3) L\'ombra no és un defecte inventat: és l\'excés del seu propi poder (l\'ombra de l\'arquetip).\n4) Res de superlatius buits ni d\'èpica militar. Èpica quotidiana: el que fa aquesta persona un dimarts.\n5) Català, frases curtes. La primera missió ha de ser un intercanvi concret i possible aquesta setmana.\nSortida sempre via l\'eina.',
+    tool:{name:'crear_personatge',description:'Retorna el personatge construït a partir del material real.',input_schema:{type:'object',properties:{
+      alias:{type:'string',description:'Àlies de superheroi/na en català, evocador i no ridícul.'},
+      origin:{type:'string',description:'Història d\'origen de 3 a 6 frases, només amb fets del material.'},
+      powers:{type:'array',items:{type:'object',properties:{name:{type:'string'},what:{type:'string'},evidence:{type:'string'}},required:['name','what']}},
+      shadow:{type:'string',description:'L\'excés del seu propi poder.'},
+      motto:{type:'string'},
+      archetype:{type:'string',enum:['zeus','hera','posido','demeter','atenea','apollo','hebe','dionis','afrodita','hefest','hermes','hestia']},
+      archetype_why:{type:'string'},
+      archetype_secondary:{type:'string',enum:['zeus','hera','posido','demeter','atenea','apollo','hebe','dionis','afrodita','hefest','hermes','hestia']},
+      first_mission:{type:'string',description:'Un intercanvi concret i possible aquesta setmana al seu territori.'},
+      skills_detected:{type:'array',items:{type:'object',properties:{label:{type:'string'},category:{type:'string',enum:['idiomes','cuina','infants','informatica','acompanyament','jardineria','festes','transport','costura','reparacions','neteja','electronica','bricolatge','salut','altres']}},required:['label','category']}},
+      resources_detected:{type:'array',items:{type:'string'}}
+    },required:['alias','origin','powers','motto','archetype','first_mission']}},
+    build:ctx=>{
+      const L=[];
+      L.push('Persona: '+(ctx.name||'—')+(ctx.municipi?' · '+ctx.municipi:''));
+      if(ctx.role)L.push('Rol declarat al SOS: '+ctx.role);
+      if((ctx.skills||[]).length)L.push('Habilitats declarades: '+ctx.skills.join(', '));
+      if((ctx.resources||[]).length)L.push('Recursos que posa en comú: '+ctx.resources.join(', '));
+      if((ctx.languages||[]).length)L.push('Idiomes: '+ctx.languages.join(', '));
+      if(ctx.availability)L.push('Disponibilitat: '+ctx.availability);
+      if((ctx.wants||[]).length)L.push('Vol aprendre o necessita: '+ctx.wants.join(', '));
+      if((ctx.declared||[]).length)L.push('Arquetips que ella mateixa ha triat: '+ctx.declared.join(', '));
+      if(ctx.signals)L.push('Senyals simbòlics (pista feble, mai veredicte): '+ctx.signals);
+      if(ctx.evidence)L.push('Evidència comptable al SOS: '+ctx.evidence);
+      if(ctx.cv)L.push('\n--- CV / trajectòria aportada per la persona ---\n'+String(ctx.cv).slice(0,9000));
+      return L.join('\n');
+    },
+    coerce:tu=>({
+      alias:(tu.alias||'').trim(),origin:(tu.origin||'').trim(),
+      powers:(tu.powers||[]).slice(0,6).map(p=>({name:String(p.name||'').trim(),what:String(p.what||'').trim(),evidence:String(p.evidence||'').trim()})),
+      shadow:(tu.shadow||'').trim(),motto:(tu.motto||'').trim(),
+      archetype:PANTHEON12[tu.archetype]?tu.archetype:null,
+      archetypeSecondary:PANTHEON12[tu.archetype_secondary]&&tu.archetype_secondary!==tu.archetype?tu.archetype_secondary:null,
+      archetypeWhy:(tu.archetype_why||'').trim(),
+      firstMission:(tu.first_mission||'').trim(),
+      skillsDetected:(tu.skills_detected||[]).slice(0,12).map(s=>({label:String(s.label||'').trim(),cat:SKILL_POLARITY[s.category]!==undefined?s.category:'altres'})),
+      resourcesDetected:(tu.resources_detected||[]).slice(0,12).map(String)
+    })
+  },
   valuation:{
     model:'claude-opus-4-8',max_tokens:1200,
     system:'Ets valorador expert en economia col·laborativa. Donada una descripció d\'un recurs (skill o objecte), proposa un rang de valor (mínim/esperat/màxim) en €/hora (si és skill) o €/unitat (si és objecte). Sempre indica la font o hipòtesi. Preferència per estimacions conservadores.',
@@ -4713,6 +5200,30 @@ function openPersonProfile(nameOrKey){
     <p class="m-sub">Perfil transversal · aporta i mou recursos a ${p.totals.nodes} node${p.totals.nodes===1?'':'s'} de l'ecosistema.</p>
     ${p.contacts.length?'<div class="ent-desc" style="margin-bottom:.6rem">'+esc(p.contacts.join(' · '))+'</div>':''}
     ${(function(){const rep=reputationOf(p.key||p.name);const shakti=Math.round(rep.shakti*100),shiva=Math.round(rep.shiva*100);const powers=rep.superpowers.map(s=>'<span class="ent-b">'+esc(s.cat)+' ×'+s.count+'</span>').join('');return '<div class="ent-card" style="background:linear-gradient(90deg,rgba(0,230,118,.1) '+shakti+'%,rgba(255,145,0,.1) '+shakti+'%);margin-bottom:.6rem"><div class="ent-nm">🦸 Superheroi · reputació '+rep.reputationScore+'</div><div class="ent-badges"><span class="ent-b b-ver">💫 Shakti '+shakti+'%</span><span class="ent-b">🔥 Shiva '+shiva+'%</span>'+(rep.signed?'<span class="ent-b b-ver">🔏 '+rep.signed+' apunts firmats</span>':'')+(rep.unsigned?'<span class="ent-b">⋯ '+rep.unsigned+' legacy</span>':'')+'</div>'+(powers?'<div class="ent-desc" style="margin-top:.4rem"><strong>Superpoders:</strong> '+powers+'</div>':'')+'</div>';})()}
+    ${(function(){
+      const cr=superheroCromo(p.key||p.name),comp=dossierCompleteness(cr.dossier);
+      const aff=archetypeAffinity(p.name);
+      const god=cr.god||(aff.primary?Object.assign({key:aff.primary.key},aff.primary):null);
+      const f=god?founderOf(god.key):null;
+      let h='<div class="ent-grp-lbl">📇 Dossier · el que aportes tu, no el ledger</div>';
+      if(cr.character&&cr.character.alias){
+        const ch=cr.character;
+        h+='<div class="ch-card"><div class="ch-alias">'+esc(ch.alias)+'</div>'+
+          (ch.motto?'<div class="ch-motto">«'+esc(ch.motto)+'»</div>':'')+
+          (god?'<div class="ent-badges"><span class="ent-b b-ver">'+god.ic+' '+esc(god.name)+'</span>'+(f?'<span class="ent-b">llinatge de '+esc(f.hero)+'</span>':'')+'</div>':'')+
+          (ch.origin?'<div class="ch-sec">Origen</div><div class="ent-desc">'+esc(ch.origin)+'</div>':'')+
+          ((ch.powers||[]).length?'<div class="ch-sec">Poders</div><div class="ent-badges">'+ch.powers.map(pw=>'<span class="ent-b">✦ '+esc(pw.name)+'</span>').join('')+'</div>':'')+
+          (ch.firstMission?'<div class="ch-sec">Primera missió</div><div class="ent-desc">'+esc(ch.firstMission)+'</div>':'')+
+          '</div>';
+      } else {
+        h+='<div class="ai-note"><span class="ic">📇</span><span>Encara no hi ha personatge. Afegeix el teu CV, els teus recursos i el teu arquetip al dossier i la IA el podrà escriure amb material real.</span></div>';
+      }
+      h+='<div class="ent-card"><div class="ent-nm">Dossier al '+comp.pct+'%'+(god&&!cr.character?' · afinitat '+god.ic+' '+esc(god.name):'')+'</div>'+
+        '<div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;margin:.4rem 0;overflow:hidden"><div style="height:100%;width:'+comp.pct+'%;background:linear-gradient(90deg,var(--purple),var(--indigo))"></div></div>'+
+        (comp.next?'<div class="ent-desc">Següent: <strong>'+esc(comp.next.label)+'</strong> — '+esc(comp.next.unlocks)+'</div>':'<div class="ent-desc">Dossier complet.</div>')+'</div>'+
+        '<button class="btn btn-ghost btn-sm" id="ppDossier" style="margin-top:.5rem">📇 Obre el meu dossier</button>';
+      return h;
+    })()}
     <div class="ent-grp-lbl">🎯 Reptes actius · guanya XP per pujar de tier</div>
     <div id="ppChallenges" class="ent-card"><div class="ent-desc">Avaluant reptes…</div></div>
     <button class="btn btn-ghost btn-sm" id="ppMentoria" style="margin-top:.5rem">🎓 Prepara la seva mentoria</button>
@@ -4750,6 +5261,7 @@ function openPersonProfile(nameOrKey){
   bg.querySelector('#ppWallet').onclick=async()=>{try{const pk=await hasPasskey();if(pk){if(confirm('Ja tens un passkey vinculat ('+pk.credId.slice(0,20)+'…). El vols eliminar?')){await unbindPasskey();toast('Passkey desvinculat');}return;}await bindPasskey();toast('✓ Passkey vinculat a la teva identitat did:sos');}catch(e){toast(e.msg||'Error vinculant passkey');}};
   bg.querySelector('#ppClose').onclick=closeModal;
   bg.querySelector('#ppMentoria').onclick=()=>{closeModal();openMentoringPlan(p.name);};
+  const dsBtn=bg.querySelector('#ppDossier');if(dsBtn)dsBtn.onclick=()=>{closeModal();openDossierEditor(p.name);};
   (async()=>{try{const c=await evaluateChallenges(p.name);const box=bg.querySelector('#ppChallenges');if(!box)return;
     const pct=c.total?Math.round(c.done*100/c.total):0;
     box.innerHTML='<div class="ent-nm">Tier: '+esc(c.tier)+' · '+c.done+'/'+c.total+' reptes complerts</div>'+
@@ -4979,6 +5491,8 @@ const CAPABILITIES=[
    used:()=>state.nodes.some(n=>proposalsOf(n).length>0),act:()=>{const n=byId(state.activeId)||state.nodes[0];if(n)openAssemblyModal(n);}},
   {id:'perfil',ic:'🦸',t:'El teu perfil',why:'Sense perfil no hi ha reputació verificable ni matching amb ningú.',
    used:()=>!!state.activePersona,act:()=>openSuperheroiOnboarding()},
+  {id:'dossier',ic:'📇',t:'El teu dossier',why:'El ledger diu què has fet; el dossier diu què saps fer encara que el SOS no ho hagi vist mai.',
+   used:()=>{const d=state.activePersona?dossierOf(state.activePersona):null;return !!d&&dossierCompleteness(d).pct>=50;},act:()=>openDossierEditor(state.activePersona||'')},
   {id:'pings',ic:'🔔',t:'Pings d\'ecosistema',why:'Detecta sols qui ofereix el que algú altre necessita, fins i tot en un altre node.',
    used:()=>{try{return findMatches().length>0;}catch(e){return false;}},act:()=>routeTo('pings')},
   {id:'ancoratge',ic:'🛰',t:'Prova pública',why:'Fa el que has construït verificable per algú de fora sense confiar en ningú.',
@@ -6022,7 +6536,9 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hi
 
 /* ═══════════════════ BOOT ═══════════════════ */
 (async function boot(){
-  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
+  try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};// Els registres privats (identitat, claus, narratives, dossiers) no són nodes: si
+// entren a state.nodes acaben viatjant pel sync i pel pack públic. Es filtren aquí.
+state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();await loadAllDossiers();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   // Qui torna aterra al tauler, no a un node triat per ordre de creació. L'arbre
   // segueix mostrant-ho tot, i una ruta guardada continua manant per sobre d'això.
   if(state.nodes.length){state.activeId=null;state.homeView='tauler';children(null).forEach(r=>state.expanded.add(r.id));}
@@ -6031,7 +6547,7 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hi
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
