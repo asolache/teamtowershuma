@@ -519,7 +519,8 @@ a{color:var(--blue);text-decoration:none}
     </div>
     <div class="ob-secondary">
       <button class="ob-link" id="obDir">🌐 Directori d'entitats</button>
-      <a class="ob-link" href="formacio.html">🎓 Guia formativa · 8 mòduls</a>
+      <a class="ob-link" href="diagnostic.html">🔍 Diagnòstic en 3 min</a>
+      <a class="ob-link" href="formacio.html">🎓 Guia formativa · 16 mòduls</a>
       <a class="ob-link" href="comando.html">🎬 Comando Molekulon</a>
       <button class="ob-link" id="obContact">✉ Parla amb l'Álvaro</button>
     </div>
@@ -2077,6 +2078,7 @@ function openLauncher(){
     {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
     {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
+    {ic:'🔍',t:'Diagnòstic comunitari',d:'3 min · punt de partida, itinerari i proposta d\'acompanyament',fn:()=>window.open('diagnostic.html','_blank','noopener')},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
     {ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
     {ic:'📦',t:'Anchor Pack',d:'Snapshot signat + CID · pinna a IPFS/Arweave/permaweb',fn:()=>openAnchorPackModal()},

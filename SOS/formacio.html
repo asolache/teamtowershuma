@@ -26,6 +26,11 @@ nav a:hover{text-decoration:underline}
 .module{background:var(--card);border-radius:14px;padding:1.8rem 2rem;margin-bottom:1.8rem;border:1px solid var(--border);border-left:4px solid var(--indigo)}
 .module.mod-1{border-left-color:var(--indigo)} .module.mod-2{border-left-color:var(--blue)} .module.mod-3{border-left-color:var(--green)} .module.mod-4{border-left-color:#facc15}
 .module.mod-5{border-left-color:var(--orange)} .module.mod-6{border-left-color:var(--red)} .module.mod-7{border-left-color:var(--purple)} .module.mod-8{border-left-color:#00e5ff}
+.module.mod-9{border-left-color:#f472b6} .module.mod-10{border-left-color:#38bdf8} .module.mod-11{border-left-color:#fb7185} .module.mod-12{border-left-color:#4ade80}
+.module.mod-13{border-left-color:#c084fc} .module.mod-14{border-left-color:#fbbf24} .module.mod-15{border-left-color:#2dd4bf} .module.mod-16{border-left-color:#e879f9}
+.bloc-sep{background:linear-gradient(135deg,rgba(224,64,251,.1),rgba(99,102,241,.06));border:1px solid var(--border);border-radius:14px;padding:1.5rem 2rem;margin:2.5rem 0 1.8rem}
+.bloc-sep h2{margin:0 0 .5rem;font-size:1.45rem;background:linear-gradient(90deg,#e879f9,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bloc-sep p{margin:0;color:var(--light);line-height:1.65;font-size:.95rem}
 .module.mod-manual{border-left-color:#a3e635;background:linear-gradient(180deg,var(--card),rgba(163,230,53,.04))}
 .module.mod-manual h3.section{color:#a3e635;border-top:1px solid rgba(163,230,53,.15);padding-top:1.2rem;margin-top:1.8rem}
 .module.mod-manual h3.section:first-of-type{border-top:0;padding-top:0}
@@ -81,6 +86,7 @@ footer a{color:var(--indigo);text-decoration:none}
 .rt td{padding:.6rem .7rem;border-bottom:1px solid rgba(255,255,255,.05);color:var(--light);line-height:1.5;vertical-align:top}
 .rt tbody tr:hover{background:rgba(255,255,255,.02)}
 .rt-r{font-weight:600;color:var(--c,var(--text));white-space:nowrap}
+.rt-s{display:block;font-weight:400;font-size:.74rem;color:var(--muted);white-space:normal;margin-top:.15rem}
 /* Programa de gestor */
 .g-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:1rem 0}
 .g-tile{background:rgba(255,255,255,.03);border-radius:10px;padding:.8rem;text-align:center}
@@ -113,11 +119,12 @@ footer a{color:var(--indigo);text-decoration:none}
 <body>
 <header>
 <h1>Guia formativa SOS · Fes-te expert/a</h1>
-<p>El model d'aprenentatge del SOS és l'<strong>acció-formació</strong>: es fa, i el fet queda com a certificació. Aquesta pàgina és el <strong>repositori per preparar-te</strong> — 8 mòduls, itineraris per rol, el programa de Gestor/a i les fonts per ampliar. La mentoria la fan els primers formats en la gestió del SOS.</p>
+<p>El model d'aprenentatge del SOS és l'<strong>acció-formació</strong>: es fa, i el fet queda com a certificació. Aquesta pàgina és el <strong>repositori per preparar-te</strong> — 16 mòduls en dos blocs, itineraris per rol i per tipus d'organització, el programa de Gestor/a i les fonts per ampliar. La mentoria la fan els primers formats en la gestió del SOS.</p>
 <nav>
 <a href="../index.html">← TeamTowers Humà</a> ·
 <a href="index.html">Obre SOS</a> ·
 <a href="#itineraris">Itineraris</a> ·
+<a href="diagnostic.html">Diagnòstic</a> ·
 <a href="#gestor">Gestor/a SOS</a> ·
 <a href="#mentoria">Mentoria</a> ·
 <a href="#recursos">Recursos</a> ·
@@ -150,18 +157,34 @@ footer a{color:var(--indigo);text-decoration:none}
 </section>
 
 <section class="itineraris" id="itineraris">
-<h2>🧭 Itineraris per rol</h2>
-<p class="lead">Els 8 mòduls són el cos complet, però ningú els necessita tots alhora. Cada rol del SOS té el seu camí curt fins a ser útil, i després amplia.</p>
+<h2>🧭 Itineraris</h2>
+<p class="lead">Són <strong>16 mòduls</strong> i <strong>ningú els fa tots</strong>. Hi ha dues maneres d'entrar: pel <em>rol</em> que tens dins del SOS, o pel <em>tipus d'organització</em> des d'on véns. Tria la que t'expliqui millor.</p>
+
+<h3 class="section">Per rol dins del SOS</h3>
 <table class="rt">
 <thead><tr><th>Rol</th><th>Camí curt (ser útil ja)</th><th>Amplia després</th><th>Fita</th></tr></thead>
 <tbody>
-<tr><td><span class="rt-r" style="--c:var(--indigo)">🏛 Guardian del territori</span></td><td>M1 · M3 · M5</td><td>M2 · M6 · M8</td><td>Signar decisions amb quòrum</td></tr>
-<tr><td><span class="rt-r" style="--c:var(--green)">🦸 Superheroi/na</span></td><td>M1 · M4 · M7</td><td>M3 · M6</td><td>Primer intercanvi signat</td></tr>
-<tr><td><span class="rt-r" style="--c:var(--orange)">👥 Coordinador/a de comunitat</span></td><td>M1 · M3 · M4</td><td>M6 · M7 · M2</td><td>Onboarding de 5 persones</td></tr>
-<tr><td><span class="rt-r" style="--c:var(--blue)">🌐 Agent territorial</span></td><td>M1 · M3 · M8</td><td>M5 · M2</td><td>Ancorar un pack públic</td></tr>
-<tr><td><span class="rt-r" style="--c:var(--purple)">💫 Simpatitzant</span></td><td>M1 · M4</td><td>M7</td><td>Entendre on encaixes</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--indigo)">🏛 Guardian del territori</span></td><td>M1 · M3 · M5</td><td>M9 · M11 · M14 · M2</td><td>Signar decisions amb quòrum</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--green)">🦸 Superheroi/na</span></td><td>M1 · M4 · M7</td><td>M10 · M3</td><td>Primer intercanvi signat</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--orange)">👥 Coordinador/a de comunitat</span></td><td>M1 · M3 · M4 · M9</td><td>M10 · M11 · M6</td><td>Onboarding de 5 persones</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--blue)">🌐 Agent territorial</span></td><td>M1 · M3 · M8</td><td>M12 · M14 · M5</td><td>Ancorar un pack públic</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--purple)">💫 Simpatitzant</span></td><td>M1 · M4</td><td>M7 · M10</td><td>Entendre on encaixes</td></tr>
 </tbody>
 </table>
+
+<h3 class="section">Per tipus d'organització</h3>
+<table class="rt">
+<thead><tr><th>D'on véns</th><th>Itinerari</th><th>Fita</th><th>Durada</th></tr></thead>
+<tbody>
+<tr><td><span class="rt-r" style="--c:var(--indigo)">🏛 Ajuntament o consell comarcal</span><br><span class="rt-s">tècnic/a de participació o promoció</span></td><td>M1 · M3 · M9 · M4 · M5 · M14 · M12</td><td>Un mapa validat per la comunitat i una decisió presa i registrada</td><td>3–4 mesos</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--green)">🤝 Entitat o associació</span><br><span class="rt-s">AVV, ateneu, banc de temps, casal</span></td><td>M1 · M4 · M9 · M11 · M10 · M14</td><td>8 socis actius, 15 intercanvis signats i un relleu identificat</td><td>2 mesos</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--orange)">🚀 Projecte econòmic o cooperativa</span><br><span class="rt-s">SCCL en creació o consolidació</span></td><td>M1 · M3 · M6 · M13 · M12 · M14</td><td>Una venture a validació amb equity repartit i ningú per sobre del 70%</td><td>4–6 mesos</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--blue)">🌱 Grup promotor sense forma jurídica</span><br><span class="rt-s">comunitat energètica, grup de consum, habitatge</span></td><td>M1 · M3 · M13 · M12</td><td>Forma jurídica decidida i primera convocatòria identificada</td><td>4–6 setmanes</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--purple)">🎓 Professional o entitat d'acompanyament</span><br><span class="rt-s">Ateneu, consultoria ESS, dinamització</span></td><td>Les 6 competències + M16 · M9 · M11 · M15</td><td>Dos casos acompanyats amb evidència, tutelats per un N3</td><td>6 mesos des de N2</td></tr>
+<tr><td><span class="rt-r" style="--c:#fbbf24">💛 Fundació o finançador</span><br><span class="rt-s">obra social, convocatòries</span></td><td>M1 · M14 · M8</td><td>Un informe d'impacte verificat amb Anchor Pack</td><td>3 sessions</td></tr>
+</tbody>
+</table>
+<p class="lead" style="margin-top:1rem">No saps quin et toca? El <a href="diagnostic.html"><strong>diagnòstic de 3 minuts</strong></a> te'l diu, amb els recursos que ja tens i els que et falten.</p>
 </section>
 
 <div class="toc">
@@ -175,7 +198,20 @@ footer a{color:var(--indigo);text-decoration:none}
 <li><a href="#m6">MATRIU, Slicing Pie i intercooperació</a> · <em>ventures + equity dinàmic + Mondragón</em></li>
 <li><a href="#m7">Comando Molekulon i reputació</a> · <em>superheroi + cromos + multivers narratiu</em></li>
 <li><a href="#m8">Ancoratge públic i IA integrada</a> · <em>Nostr + IPFS/Arweave + AI adapter DRY</em></li>
-<li><a href="#manual">Manual tècnic · Developers & Admins</a> · <em>wallets permaweb · Nostr · Claude API · self-hosting · dev workflow</em></li>
+</ol>
+<h3 style="margin-top:1.2rem">Bloc B · L'ofici comunitari</h3>
+<ol start="9">
+<li><a href="#m9">Facilitació i dinamització de grups</a> · <em>portar la sala, no exposar-hi</em></li>
+<li><a href="#m10">Comunicació i captació de persones</a> · <em>que la gent vingui i es quedi</em></li>
+<li><a href="#m11">Conflictes, cures i relleu</a> · <em>el burnout mata més projectes que el mètode</em></li>
+<li><a href="#m12">Finançament i subvencions a Catalunya</a> · <em>convocatòries + justificació</em></li>
+<li><a href="#m13">Formes jurídiques i tràmits</a> · <em>associació · SCCL · SL · autònom</em></li>
+<li><a href="#m14">Mesura d'impacte i justificació</a> · <em>demostrar, no llistar</em></li>
+<li><a href="#m15">Dades, privadesa i RGPD</a> · <em>què és públic i què és irreversible</em></li>
+<li><a href="#m16">Formació de formadors</a> · <em>l'ofici de mentorar · N3</em></li>
+</ol>
+<ol start="17" style="list-style:none;padding-left:0;margin-top:.6rem">
+<li><a href="#manual">🔧 Manual tècnic · Developers &amp; Admins</a> · <em>wallets permaweb · Nostr · Claude API · self-hosting</em></li>
 </ol>
 <h3 style="margin-top:1.2rem">Més enllà dels mòduls</h3>
 <ul class="toc-x">
@@ -505,6 +541,176 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Simula l'<strong>Impacte cas Catalunya</strong> per al teu municipi. Ajusta la penetració al 10%. Anota l'estalvi €/any + reducció solitud + tCO2. Fes captura i comparteix-la a xarxes amb link a SOS.</p></div>
 </section>
 
+<div class="bloc-sep" id="blocB">
+<h2>🧰 Bloc B · L'ofici comunitari</h2>
+<p>Els vuit mòduls anteriors ensenyen <strong>el sistema</strong>. Aquests vuit ensenyen <strong>l'ofici</strong> — i és per aquí per on moren els projectes: no per falta de mètode, sinó per falta de gent, per conflictes que ningú tracta i per no saber com finançar-se. Cap itinerari els fa tots: agafa els que et toquen.</p>
+</div>
+
+<section class="module mod-9" id="m9">
+<div class="num">MÒDUL 9 · 5-7 h · Bloc B</div>
+<h2>Facilitació i dinamització de grups</h2>
+<p class="subtitle">Portar una sala amb deu persones que no s'escolten, i sortir-ne amb un mapa que reconeixen com a seu.</p>
+<p class="lead">Sabies fer el mapa VNA; ara has d'aconseguir que el faci <em>la comunitat</em>. Un mapa dibuixat per tu és una opinió; un mapa dibuixat per elles és un acord.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Dissenyar una sessió de mapatge de 2 h amb objectius i sortida clara.</li>
+<li>Gestionar la persona que ho monopolitza tot i la que no parla mai.</li>
+<li>Fer emergir <strong>intangibles</strong> que ningú anomena espontàniament.</li>
+<li>Tancar sense acords falsos: distingir consens de silenci.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Disseny de sessions participatives</li><li>Preguntes obertes i reformulació</li><li>Tècniques de torn i de grup petit</li><li>Registre en directe sense perdre el fil</li><li>Tancament amb acords verificables</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Neutralitat activa</li><li>Tolerància al silenci</li><li>Detecció del que no es diu</li><li>Renúncia a tenir raó</li></ul></div>
+</div>
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Co-facilita abans de facilitar sol. Grava't (amb permís) i escolta quant parles: si passes del 20% del temps, no estàs facilitant, estàs exposant.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Facilita una sessió de mapatge real de 90 min. Mesura: quantes persones han parlat, quants intangibles han sortit sense que els proposessis tu, i si al final el grup ha reconegut el mapa com a seu.</p></div>
+</section>
+
+<section class="module mod-10" id="m10">
+<div class="num">MÒDUL 10 · 4-6 h · Bloc B</div>
+<h2>Comunicació i captació de persones</h2>
+<p class="subtitle">Els projectes comunitaris no moren per mal mètode. Moren perquè no hi va ningú.</p>
+<p class="lead">Tenir el millor mapa de valor del món no serveix de res amb quatre persones esgotades. Aquest mòdul va de la feina menys glamurosa i més decisiva: que la gent vingui i es quedi.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Explicar el projecte en <strong>una frase</strong> que algú repeteixi bé.</li>
+<li>Passar del «col·labora amb nosaltres» al <strong>demanar concret</strong>.</li>
+<li>Dissenyar una primera experiència que no espanti.</li>
+<li>Convertir el boca-orella en un mecanisme, no en un accident.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Proposta de valor en veu de comunitat</li><li>Demanda concreta i acotada</li><li>Onboarding de baixa fricció</li><li>Ús del cromo i dels reptes com a ganxo</li><li>Xarxes sense cremar-s'hi</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Empatia amb qui encara no hi és</li><li>Concreció</li><li>Persistència sense insistència</li><li>Celebració pública del que fan altres</li></ul></div>
+</div>
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Prova la teva frase amb cinc persones alienes al projecte. Si l'han de repetir i no poden, la frase és teva, no seva. Reescriu fins que la puguin dir elles.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Fes una demanda concreta i acotada (una tasca, una data, dues hores) a deu persones. Compta quantes diuen que sí. Repeteix amb una demanda genèrica. Compara.</p></div>
+</section>
+
+<section class="module mod-11" id="m11">
+<div class="num">MÒDUL 11 · 5-7 h · Bloc B</div>
+<h2>Conflictes, cures i relleu</h2>
+<p class="subtitle">El burnout dels que sempre donen és la primera causa de mort d'un projecte comunitari.</p>
+<p class="lead">Al SOS ho pots veure abans que passi: el mapa ensenya qui sosté què i el ledger ensenya qui aporta sempre. Aquest mòdul t'ensenya a llegir aquests senyals i a actuar-hi mentre encara es pot.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Detectar sobrecàrrega llegint <code>buildHealth</code> i el balanç d'hores.</li>
+<li>Distingir conflicte de tasca, de relació i de poder — i tractar cadascun diferent.</li>
+<li>Dissenyar <strong>relleu</strong> abans que calgui, no quan algú ja peta.</li>
+<li>Posar límits sense que sembli abandonament.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Lectura de senyals d'esgotament al ledger</li><li>Mediació bàsica</li><li>Repartiment de càrrega invisible</li><li>Protocols de relleu i documentació</li><li>Converses difícils</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Cura de si mateix i dels altres</li><li>Valentia per nomenar l'evident</li><li>Desapego del propi protagonisme</li><li>Paciència amb els ritmes</li></ul></div>
+</div>
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Revisa mensualment el balanç d'hores per persona. Si algú porta tres mesos donant molt més del que rep, això no és generositat: és una baixa que encara no s'ha produït.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Identifica la persona més sobrecarregada del teu node amb dades, no amb intuïció. Dissenya amb ella un pla de relleu de tres mesos i registra'l com a decisió pública.</p></div>
+</section>
+
+<section class="module mod-12" id="m12">
+<div class="num">MÒDUL 12 · 6-8 h · Bloc B</div>
+<h2>Finançament i subvencions a Catalunya</h2>
+<p class="subtitle">El mur real d'un projecte comunitari no és la idea: és el calendari de convocatòries i la justificació.</p>
+<p class="lead">Saber fer un mapa de valor excel·lent i no saber d'on surten els diners per sostenir-lo és una manera elegant de fracassar. Aquest mòdul és el més prosaic i el que més projectes salva.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Conèixer el mapa de finançadors: ajuntament, consell comarcal, Diputació, Generalitat, Ateneus, obra social, finançament ètic.</li>
+<li>Llegir unes bases i decidir en 10 minuts si encaixa o no.</li>
+<li>Preparar la <strong>justificació des del dia u</strong>, no al final.</li>
+<li>Combinar fonts sense doble finançament.</li>
+<li>Valorar l'aportació en espècie i el voluntariat com a cofinançament.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Cerca i calendari de convocatòries</li><li>Pressupost de projecte realista</li><li>Justificació econòmica i tècnica</li><li>Ús del ledger SOS com a base justificativa</li><li>Finançament ètic (Coop57, Fiare)</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Rigor administratiu</li><li>Anticipació</li><li>Honestedat en la imputació</li><li>Resistència a la burocràcia</li></ul></div>
+</div>
+<div class="box eines"><h4>🧰 Enllaç amb el SOS</h4><p>Les hores del banc de temps i el <code>fundValue</code> amb el seu desglossament serveixen per acreditar <strong>aportació en espècie</strong> — sovint el cofinançament que falta per arribar al percentatge exigit.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Munta el calendari de convocatòries del teu territori per als propers 12 mesos. Tria'n una i prepara el pressupost complet, incloent-hi l'aportació en espècie treta del SOS.</p></div>
+</section>
+
+<section class="module mod-13" id="m13">
+<div class="num">MÒDUL 13 · 5-7 h · Bloc B</div>
+<h2>Formes jurídiques i tràmits</h2>
+<p class="subtitle">Associació, SCCL, SCP, SL, autònom col·laborador. Quina, quan i per què.</p>
+<p class="lead">La MATRIU ja et suggereix formes jurídiques segons el tipus de projecte. Aquest mòdul t'ensenya què hi ha darrere de cada suggeriment i com fer el tràmit sense encallar-te.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Triar la forma segons activitat, nombre de socis, ànim de lucre i risc.</li>
+<li>Conèixer el cost i el termini real de cada constitució.</li>
+<li>Entendre què implica fiscalment i laboralment cadascuna.</li>
+<li>Saber quan <strong>no cal constituir res encara</strong> — l'error més car és fer-ho massa aviat.</li>
+<li>Preveure la transformació futura sense refer-ho tot.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Comparativa de formes societàries</li><li>Estatuts bàsics i pactes de socis</li><li>Tràmits de constitució i registre</li><li>Obligacions comptables i fiscals</li><li>Relació entre Slicing Pie i participacions reals</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Prudència jurídica</li><li>Saber quan derivar a un professional</li><li>Lectura de lletra petita</li></ul></div>
+</div>
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Treballa-ho amb l'Ateneu Cooperatiu del teu territori: l'acompanyament a la constitució és gratuït i ells coneixen les particularitats locals. Aquest mòdul et prepara per aprofitar-lo, no per substituir-lo.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Per a una venture real de la teva MATRIU, compara tres formes jurídiques amb cost, termini i implicacions. Argumenta la recomanació i registra-la com a decisió.</p></div>
+</section>
+
+<section class="module mod-14" id="m14">
+<div class="num">MÒDUL 14 · 5-7 h · Bloc B</div>
+<h2>Mesura d'impacte i justificació</h2>
+<p class="subtitle">Demostrar què has provocat, no llistar què has fet.</p>
+<p class="lead">Comptar activitats i assistents no és mesurar impacte. El SOS et dona mètriques relacionals — reciprocitat, hores donades, persones actives, ventures de cura — sostingudes per un ledger signat. Aquest mòdul t'ensenya a defensar-les davant de qui paga.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Distingir activitat, resultat i impacte.</li>
+<li>Construir una teoria del canvi senzilla i defensable.</li>
+<li>Interpretar l'<strong>impacte psicosocial</strong> de la MATRIU i explicar-lo.</li>
+<li>Fer servir l'Anchor Pack com a prova verificable per un tercer.</li>
+<li>Escriure un informe que un finançador entengui i es cregui.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Teoria del canvi</li><li>Indicadors relacionals i no només de volum</li><li>Lectura de <code>matriuPsychoImpact</code></li><li>Balanç social i marcs ESS</li><li>Redacció d'informes amb dades verificables</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Honestedat amb els números</li><li>Resistència a inflar resultats</li><li>Claredat expositiva</li></ul></div>
+</div>
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Explica sempre la incertesa. Un rang honest (<code>fundValue</code> dona ±30%) genera més confiança que una xifra exacta que ningú pot comprovar.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Redacta un informe d'impacte d'una pàgina del teu node: què ha canviat, per a qui, amb quines dades i com es pot verificar. Que algú de fora el llegeixi i et digui si s'ho creu.</p></div>
+</section>
+
+<section class="module mod-15" id="m15">
+<div class="num">MÒDUL 15 · 4-5 h · Bloc B</div>
+<h2>Dades, privadesa i RGPD</h2>
+<p class="subtitle">Una comunitat que gestiona dades de persones té obligacions legals, encara que sigui voluntària.</p>
+<p class="lead">El SOS és local-first i xifrat, cosa que et posa molt per davant de qualsevol full de càlcul compartit. Però local-first no vol dir exempt: si tractes dades de socis, has de saber què pots fer i què no.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Saber quines dades del SOS són personals i quines no.</li>
+<li>Entendre base legal, consentiment i minimització.</li>
+<li>Gestionar drets d'accés, rectificació i supressió (i com ho fan els tombstones).</li>
+<li>Decidir amb criteri què és <strong>públic</strong> i què no en ancorar a Nostr o Arweave — l'ancoratge és irreversible.</li>
+<li>Redactar un avís de privadesa comprensible.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Inventari de tractaments</li><li>Consentiment informat real</li><li>Xifratge per node i distribució de claus</li><li>Criteri de publicació i pseudonimització</li><li>Resposta a exercicis de drets</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Respecte per la intimitat aliena</li><li>Prudència amb l'irreversible</li><li>Transparència sense exhibicionisme</li></ul></div>
+</div>
+<div class="box eines"><h4>⚠️ Regla d'or de l'ancoratge</h4><p>El que ancores a Arweave <strong>és per sempre</strong>. Abans de publicar, revisa el <code>toPublicPack</code>: ancora hashos i agregats, mai dades personals en clar. Un error aquí no té marxa enrere.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Fes l'inventari de dades personals del teu node. Per cadascuna: base legal, qui hi accedeix, quant temps es conserva. Després genera un Anchor Pack i verifica que no hi ha res personal en clar.</p></div>
+</section>
+
+<section class="module mod-16" id="m16">
+<div class="num">MÒDUL 16 · 8-10 h · Bloc B · nivell N3</div>
+<h2>Formació de formadors · l'ofici de mentorar</h2>
+<p class="subtitle">Com acompanyar altres perquè aprenguin fent, sense fer-los la feina.</p>
+<p class="lead">Aquest mòdul és el que fa que el model se sostingui: cada promoció ha de poder formar la següent. Sense mentors, això és consultoria; amb mentors, és una xarxa.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul>
+<li>Preparar una sessió a partir del <strong>ledger real</strong> de la persona, no d'un temari.</li>
+<li>Diagnosticar nivell i buits amb evidència.</li>
+<li>Dissenyar encàrrecs petits, verificables i assolibles en una setmana.</li>
+<li>Sostenir les portes: dir què falta sense desanimar ni regalar.</li>
+<li>Certificar amb criteri i deixar-ne rastre.</li>
+</ul>
+<div class="grid2">
+<div class="box skills"><h4>🛠 Skills que desenvolupes</h4><ul><li>Ús de <code>aiPrepareMentoring</code> com a punt de partida, no com a guió tancat</li><li>Preguntes que desencallen</li><li>Disseny d'encàrrecs</li><li>Avaluació per evidència</li><li>Tutela de casos i supervisió entre mentors</li></ul></div>
+<div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul><li>Contenció: no prendre el teclat</li><li>Confiança en el ritme aliè</li><li>Generositat amb el mèrit</li><li>Rigor a l'hora de certificar</li></ul></div>
+</div>
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Acompanya els dos primers casos amb un mentor N3 al costat. Després de cada sessió, escriviu per separat què creieu que ha passat i compareu-ho: aquí és on s'aprèn a mentorar.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Acompanya una persona de N0 a N1 amb evidència al ledger. Registra cada sessió com a aportació de valor. Al final, escriu què faries diferent — i comparteix-ho amb els altres mentors.</p></div>
+</section>
+
 <section class="gestor" id="gestor">
 <h2>🎖 Programa de Gestor/a SOS</h2>
 <p class="lead">Un gestor SOS no és qui sap fer servir l'app: és qui <strong>pot posar un territori en marxa i sostenir-lo</strong>. Aquest programa és el pont entre N1 (Practicant) i N2 (Gestor), i el requisit per després mentorar.</p>
@@ -802,6 +1008,7 @@ Object.keys(window.__SOS).length</code></pre>
 
 <h3 class="section">Documentació interna del SOS</h3>
 <div class="res-grid">
+<a class="res" href="knowledge/negoci/formacio-mentoria.md"><span class="res-t">Model de negoci · formació i mentoria</span><span class="res-d">Públics objectiu, què compra cadascú, amb quins diners ho paga i quin itinerari li correspon. Riscos del model.</span><span class="res-k">context · mentors</span></a>
 <a class="res" href="knowledge/matriu/guia-funcionament.md"><span class="res-t">Guia de funcionament de la MATRIU</span><span class="res-d">Les 4 pestanyes, el cicle amb les 3 portes i el perquè de cada criteri, les 3 vies de creació, la comptabilitat i una recepta d'arrencada.</span><span class="res-k">imprescindible · C4</span></a>
 <a class="res" href="knowledge/matriu/pla-millora.md"><span class="res-t">Pla de millora de la MATRIU</span><span class="res-d">Auditoria de capacitats, defectes trobats i les 8 fases pendents. Útil per entendre els límits actuals abans de prometre res.</span><span class="res-k">context · C4</span></a>
 <a class="res" href="knowledge/references/vna-verna-allee.md"><span class="res-t">Referència VNA · Verna Allee</span><span class="res-d">La metodologia de mapatge tal com l'apliquem: rols funcionals, reciprocitat, intangibles, indicadors de salut.</span><span class="res-k">imprescindible · C1</span></a>
