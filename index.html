@@ -43,6 +43,25 @@
         .nav-links a:hover { color:var(--white); }
         .nav-cta { background:transparent!important; border:1px solid var(--accent-indigo)!important; color:var(--accent-indigo)!important; padding:.5rem 1.2rem; border-radius:2px; transition:all .2s!important; }
         .nav-cta:hover { background:var(--accent-indigo)!important; color:var(--white)!important; }
+        /* Dolor en veu de qui el pateix · guia d'estil §3 */
+        .hero-pains { list-style:none; padding:0; margin:0 0 1.6rem; display:flex; flex-direction:column; gap:.4rem; max-width:460px; }
+        .hero-pains li { font-size:.92rem; color:var(--light); padding-left:1.1rem; position:relative; line-height:1.5; }
+        .hero-pains li::before { content:'—'; position:absolute; left:0; color:var(--accent-orange); }
+        .hero-note { font-size:.8rem; color:var(--muted); margin:.8rem 0 0; }
+        .cta-mail { font-size:.9rem; color:var(--muted); margin-top:1.2rem; }
+        .cta-mail a { color:var(--accent-indigo); border-bottom:1px solid var(--indigo-dim); text-decoration:none; }
+        .cta-mail a:hover { border-color:var(--accent-blue); }
+        /* Inventari de què es pot fer servir avui */
+        .oferta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; margin-top:2.5rem; }
+        .oferta-card { background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:1.4rem; display:flex; flex-direction:column; gap:.5rem; text-decoration:none; color:inherit; transition:border-color .2s, transform .2s; }
+        .oferta-card:hover { border-color:var(--accent-indigo); transform:translateY(-3px); }
+        .oferta-k { font-family:var(--mono); font-size:.6rem; letter-spacing:.09em; text-transform:uppercase; color:var(--accent-indigo); }
+        .oferta-t { font-size:1.05rem; font-weight:700; }
+        .oferta-d { font-size:.85rem; color:var(--muted); line-height:1.55; flex:1; }
+        .oferta-go { font-family:var(--mono); font-size:.7rem; color:var(--accent-indigo); }
+        .oferta-card.lliure { border-left:3px solid var(--accent-green); }
+        .oferta-card.lliure .oferta-k { color:var(--accent-green); }
+        .oferta-card.lliure .oferta-go { color:var(--accent-green); }
         /* Botó de menú · només existeix per sota de 900px, que és on la llista es plega.
            Reutilitza la MATEIXA <ul class="nav-links">: una sola font d'enllaços, així
            l'i18n i qualsevol enllaç nou hi funcionen sols. */
@@ -300,6 +319,7 @@
             <li><a href="#serveis" data-i18n="nav.serveis">Serveis</a></li>
             <li><a href="#fentpinya" data-i18n="nav.fentpinya">Fent Pinya</a></li>
             <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
+            <li><a href="#oferta" data-i18n="nav.oferta">Què oferim</a></li>
             <li><a href="#beneficis" data-i18n="nav.beneficis">Beneficis</a></li>
             <li><a href="#trajectoria" data-i18n="nav.traj">Trajectòria</a></li>
             <li><a href="/SOS/comando.html" target="_blank" rel="noopener" data-i18n="nav.comando">Comando</a></li>
@@ -326,10 +346,16 @@
                 <div class="hero-eyebrow fade-up" data-i18n="hero.eyebrow">Per a ajuntaments, consells comarcals i entitats</div>
                 <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Projectes comunitaris que <em>funcionen i duren</em></h1>
                 <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Ajudem el teu ajuntament o consell comarcal a posar en marxa i sostenir iniciatives veïnals —bancs de temps, biblioteques de coses, comunitats energètiques— amb mètode, cohesió d'equips i eines digitals. <strong>Finançable amb subvencions: sense càrrega per al pressupost municipal.</strong></p>
+                <ul class="hero-pains fade-up" style="animation-delay:.25s">
+                    <li data-i18n="hero.pain1">«Sempre tirem els mateixos quatre.»</li>
+                    <li data-i18n="hero.pain2">«Ningú sap què fem ni quant val.»</li>
+                    <li data-i18n="hero.pain3">«Quan marxa el tècnic, el projecte mor.»</li>
+                </ul>
                 <div class="hero-actions fade-up" style="animation-delay:.3s">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" rel="noopener" class="btn-primary" data-i18n="hero.cta1">Parla'ns del teu territori</a>
+                    <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="hero.cta1">Diagnostica el teu territori · 3 min</a>
                     <a href="/SOS/" target="_blank" rel="noopener" class="btn-ghost" data-i18n="hero.cta2">Veure el SOS en viu →</a>
                 </div>
+                <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Te'n vas amb el diagnòstic fet, l'enviïs o no. Sense registre ni compte.</p>
             </div>
             <div class="hero-visual fade-up" style="animation-delay:.4s">
                 <svg class="vna-diagram" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -817,6 +843,53 @@
     </div>
 </section>
 
+<!-- QUÈ POTS FER SERVIR AVUI -->
+<section id="oferta">
+    <div class="container">
+        <div class="section-label fade-up" data-i18n="oferta.label">Què pots fer servir avui</div>
+        <h2 class="fade-up" data-i18n-html="oferta.h2">Tot això ja <em>existeix i és obert</em></h2>
+        <p class="section-desc fade-up" data-i18n="oferta.desc">No venem el programari: és gratuït i local-first. El que oferim és l'acompanyament. Si l'acompanyament no val, te'l pots quedar igualment — no hi ha res que t'hi lligui.</p>
+        <div class="oferta-grid">
+            <a class="oferta-card lliure fade-up" href="/SOS/diagnostic.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="oferta.k1">Lliure · 3 min</span>
+                <span class="oferta-t" data-i18n="oferta.t1">Diagnòstic comunitari</span>
+                <span class="oferta-d" data-i18n="oferta.d1">Digues d'on véns, què tens i què et falta. En surts amb el teu punt de partida, l'itinerari formatiu que et toca i d'on poden sortir els diners.</span>
+                <span class="oferta-go" data-i18n="oferta.g1">Comença →</span>
+            </a>
+            <a class="oferta-card lliure fade-up" style="animation-delay:.05s" href="/SOS/" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="oferta.k2">Lliure · sense compte</span>
+                <span class="oferta-t" data-i18n="oferta.t2">SOS · l'eina</span>
+                <span class="oferta-d" data-i18n="oferta.d2">Mapes de valor, banc de temps, biblioteca de les coses, MATRIU incubadora, decisions signades i proves públiques verificables. Tot al teu navegador.</span>
+                <span class="oferta-go" data-i18n="oferta.g2">Obre'l →</span>
+            </a>
+            <a class="oferta-card lliure fade-up" style="animation-delay:.1s" href="/SOS/formacio.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="oferta.k3">Lliure · 16 mòduls</span>
+                <span class="oferta-t" data-i18n="oferta.t3">Guia formativa</span>
+                <span class="oferta-d" data-i18n="oferta.d3">Del mètode VNA a la governança, la incubació, el finançament i les cures d'equip. Amb itineraris per rol i el programa de Gestor/a SOS.</span>
+                <span class="oferta-go" data-i18n="oferta.g3">Llegeix-la →</span>
+            </a>
+            <a class="oferta-card fade-up" style="animation-delay:.15s" href="/SOS/comando.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="oferta.k4">Lliure</span>
+                <span class="oferta-t" data-i18n="oferta.t4">Comando Molekulon</span>
+                <span class="oferta-d" data-i18n="oferta.d4">La capa narrativa: dotze arquetips per reconèixer talents, reputació que surt del que has fet, i una història que fa que la gent torni.</span>
+                <span class="oferta-go" data-i18n="oferta.g4">Descobreix-lo →</span>
+            </a>
+            <div class="oferta-card fade-up" style="animation-delay:.2s">
+                <span class="oferta-k" data-i18n="oferta.k5">Acompanyament</span>
+                <span class="oferta-t" data-i18n="oferta.t5">Diagnòstic territorial</span>
+                <span class="oferta-d" data-i18n="oferta.d5">Dues sessions i un informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i per on començar.</span>
+                <span class="oferta-go" data-i18n="oferta.g5">Al diagnòstic ho concretem</span>
+            </div>
+            <div class="oferta-card fade-up" style="animation-delay:.25s">
+                <span class="oferta-k" data-i18n="oferta.k6">Acompanyament</span>
+                <span class="oferta-t" data-i18n="oferta.t6">Programa de Gestor/a SOS</span>
+                <span class="oferta-d" data-i18n="oferta.d6">Unes 45 hores en 3-4 mesos, sobre un territori real. Sis competències amb la seva evidència. En surt capacitat instal·lada, no dependència.</span>
+                <span class="oferta-go" data-i18n="oferta.g6">Finançable amb subvenció</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CTA FINAL -->
 <section class="cta-final">
     <div class="container">
@@ -828,10 +901,10 @@
             <cite data-i18n="cta.cite">— El que un tècnic de promoció econòmica pot dir després d'un diagnòstic VNA</cite>
         </div>
         <div class="actions fade-up" style="animation-delay:.2s">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSclry3yYF0M5f2xq3A1Cp6kBVufZ-ewZTzZ7XcCtctLrhXc1A/viewform?usp=header" target="_blank" rel="noopener" class="btn-primary" data-i18n="cta.btn1">Parla'ns del teu repte local</a>
-            <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-ghost" data-i18n="cta.btn3">Fes el diagnòstic en 3 min →</a>
+            <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="cta.btn3">Fes el diagnòstic en 3 min →</a>
             <a href="/SOS/" target="_blank" rel="noopener" class="btn-ghost" data-i18n="cta.btn2">Explora el SOS en viu →</a>
         </div>
+        <p class="cta-mail fade-up" style="animation-delay:.3s" data-i18n-html="cta.mail">O escriu directament a <a id="ctaMail" href="#">l'Álvaro</a> i ho valorem junts. Sense compromís.</p>
     </div>
 </section>
 
@@ -855,7 +928,7 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
-  'nav.enfoc':'El Repte','nav.serveis':'Serveis','nav.fentpinya':'Fent Pinya','nav.eines':'Sessions','nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formació','nav.diagnostic':'Diagnòstic','nav.demo':'Viu-ho →',
+  'oferta.label':'Què pots fer servir avui','oferta.h2':'Tot això ja <em>existeix i és obert</em>','oferta.desc':'No venem el programari: és gratuït i local-first. El que oferim és l\'acompanyament. Si l\'acompanyament no val, te\'l pots quedar igualment — no hi ha res que t\'hi lligui.','oferta.k1':'Lliure · 3 min','oferta.t1':'Diagnòstic comunitari','oferta.d1':'Digues d\'on véns, què tens i què et falta. En surts amb el teu punt de partida, l\'itinerari formatiu que et toca i d\'on poden sortir els diners.','oferta.g1':'Comença →','oferta.k2':'Lliure · sense compte','oferta.t2':'SOS · l\'eina','oferta.d2':'Mapes de valor, banc de temps, biblioteca de les coses, MATRIU incubadora, decisions signades i proves públiques verificables. Tot al teu navegador.','oferta.g2':'Obre\'l →','oferta.k3':'Lliure · 16 mòduls','oferta.t3':'Guia formativa','oferta.d3':'Del mètode VNA a la governança, la incubació, el finançament i les cures d\'equip. Amb itineraris per rol i el programa de Gestor/a SOS.','oferta.g3':'Llegeix-la →','oferta.k4':'Lliure','oferta.t4':'Comando Molekulon','oferta.d4':'La capa narrativa: dotze arquetips per reconèixer talents, reputació que surt del que has fet, i una història que fa que la gent torni.','oferta.g4':'Descobreix-lo →','oferta.k5':'Acompanyament','oferta.t5':'Diagnòstic territorial','oferta.d5':'Dues sessions i un informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i per on començar.','oferta.g5':'Al diagnòstic ho concretem','oferta.k6':'Acompanyament','oferta.t6':'Programa de Gestor/a SOS','oferta.d6':'Unes 45 hores en 3-4 mesos, sobre un territori real. Sis competències amb la seva evidència. En surt capacitat instal·lada, no dependència.','oferta.g6':'Finançable amb subvenció','nav.enfoc':'El Repte','nav.serveis':'Serveis','nav.fentpinya':'Fent Pinya','nav.eines':'Sessions','nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.oferta':'Qué ofrecemos','nav.oferta':'Què oferim','nav.traj':'Trajectòria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formació','nav.diagnostic':'Diagnòstic','nav.demo':'Viu-ho →',
   'serv.eyebrow':'Serveis','serv.h2':'Què podem fer <em>al teu territori</em>','serv.intro':'Serveis contractables per ajuntaments, consells comarcals i entitats — pensats per finançar-se amb subvencions, sense càrrega directa per al poble o el barri.',
   'serv.metod':'Metodològics · psicologia social i acció comunitària','serv.tec':'Tecnològics · eines digitals sobiranes',
   'serv.m1.n':'Diagnòstic VNA del territori','serv.m1.d':'Mapem qui es relaciona amb qui i quins fluxos de valor —confiança, favors, coneixement— sostenen o trenquen la comunitat.',
@@ -884,7 +957,7 @@ ca: {
   'hero.eyebrow':'Per a ajuntaments, consells comarcals i entitats',
   'hero.h1':'Comunitats <em>antifràgils, comptables i verificables</em>',
   'hero.desc':'Ajudem el teu ajuntament o consell comarcal a posar en marxa i sostenir iniciatives veïnals —bancs de temps, biblioteques de coses, comunitats energètiques, MATRIU incubadora— amb <strong>mètode Verna Allee (VNA)</strong>, cohesió d\'equips i eines digitals sobiranes (local-first, signades i verificables). <strong>Finançable amb subvencions: sense càrrega per al pressupost municipal.</strong>',
-  'hero.cta1':'Parla\'ns del teu territori','hero.cta2':'Veure el SOS en viu →',
+  'hero.cta1':'Diagnostica el teu territori · 3 min','hero.cta2':'Veure el SOS en viu →','hero.pain1':'«Sempre tirem els mateixos quatre.»','hero.pain2':'«Ningú sap què fem ni quant val.»','hero.pain3':'«Quan marxa el tècnic, el projecte mor.»','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El repte',
   'enfoc.h3':'Moltes ganes. <em>Poca estructura.</em>',
   'enfoc.p1':'La majoria de projectes ciutadans —bancs de temps, biblioteques de coses, comunitats energètiques, horts comunitaris— neixen amb una empenta enorme de voluntariat. I s\'apaguen igual de ràpid: no per falta d\'il·lusió, sinó per falta de governança, rols clars i relleu generacional.',
@@ -974,11 +1047,11 @@ ca: {
   'cta.h2':'Té el teu territori un projecte<br>que <em>necessita estructura?</em>',
   'cta.quote':'"Teníem un banc de temps amb moltes ganes i cap manera de saber qui aportava què. Ara tenim un mapa, uns rols i un tauler que ho sostenen tot."',
   'cta.cite':'— El que un tècnic de promoció econòmica pot dir després d\'un diagnòstic VNA',
-  'cta.btn1':'Parla\'ns del teu repte local','cta.btn2':'Explora el SOS en viu →','cta.btn3':'Fes el diagnòstic en 3 min →',
+  'cta.btn2':'Explora el SOS en viu →','cta.btn3':'Fes el diagnòstic en 3 min →',
   'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprenentatge','footer.facilitador':'Facilitador'
 },
 es: {
-  'nav.enfoc':'El Reto','nav.serveis':'Servicios','nav.fentpinya':'Fent Pinya','nav.eines':'Sesiones','nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formación','nav.diagnostic':'Diagnóstico','nav.demo':'Verlo en vivo →',
+  'oferta.label':'Qué puedes usar hoy','oferta.h2':'Todo esto ya <em>existe y es abierto</em>','oferta.desc':'No vendemos el software: es gratuito y local-first. Lo que ofrecemos es el acompañamiento. Si el acompañamiento no vale, te lo puedes quedar igualmente — no hay nada que te ate.','oferta.k1':'Libre · 3 min','oferta.t1':'Diagnóstico comunitario','oferta.d1':'Dinos de dónde vienes, qué tienes y qué te falta. Sales con tu punto de partida, el itinerario formativo que te toca y de dónde pueden salir los fondos.','oferta.g1':'Empieza →','oferta.k2':'Libre · sin cuenta','oferta.t2':'SOS · la herramienta','oferta.d2':'Mapas de valor, banco de tiempo, biblioteca de las cosas, MATRIU incubadora, decisiones firmadas y pruebas públicas verificables. Todo en tu navegador.','oferta.g2':'Ábrelo →','oferta.k3':'Libre · 16 módulos','oferta.t3':'Guía formativa','oferta.d3':'Del método VNA a la gobernanza, la incubación, la financiación y los cuidados de equipo. Con itinerarios por rol y el programa de Gestor/a SOS.','oferta.g3':'Léela →','oferta.k4':'Libre','oferta.t4':'Comando Molekulon','oferta.d4':'La capa narrativa: doce arquetipos para reconocer talentos, reputación que sale de lo que has hecho, y una historia que hace que la gente vuelva.','oferta.g4':'Descúbrelo →','oferta.k5':'Acompañamiento','oferta.t5':'Diagnóstico territorial','oferta.d5':'Dos sesiones y un informe con el mapa de valor del tejido real: quién sostiene qué, qué flujos faltan y por dónde empezar.','oferta.g5':'En el diagnóstico lo concretamos','oferta.k6':'Acompañamiento','oferta.t6':'Programa de Gestor/a SOS','oferta.d6':'Unas 45 horas en 3-4 meses, sobre un territorio real. Seis competencias con su evidencia. Deja capacidad instalada, no dependencia.','oferta.g6':'Financiable con subvención','nav.enfoc':'El Reto','nav.serveis':'Servicios','nav.fentpinya':'Fent Pinya','nav.eines':'Sesiones','nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formación','nav.diagnostic':'Diagnóstico','nav.demo':'Verlo en vivo →',
   'serv.eyebrow':'Servicios','serv.h2':'Qué podemos hacer <em>en tu territorio</em>','serv.intro':'Servicios contratables por ayuntamientos, consejos comarcales y entidades — pensados para financiarse con subvenciones, sin carga directa para el pueblo o el barrio.',
   'serv.metod':'Metodológicos · psicología social y acción comunitaria','serv.tec':'Tecnológicos · herramientas digitales soberanas',
   'serv.m1.n':'Diagnóstico VNA del territorio','serv.m1.d':'Mapeamos quién se relaciona con quién y qué flujos de valor —confianza, favores, conocimiento— sostienen o rompen la comunidad.',
@@ -1007,7 +1080,7 @@ es: {
   'hero.eyebrow':'Para ayuntamientos, consejos comarcales y entidades',
   'hero.h1':'Comunidades <em>antifrágiles, contables y verificables</em>',
   'hero.desc':'Ayudamos a tu ayuntamiento o consejo comarcal a poner en marcha y sostener iniciativas vecinales —bancos de tiempo, bibliotecas de las cosas, comunidades energéticas, MATRIU incubadora— con <strong>método Verna Allee (VNA)</strong>, cohesión de equipos y herramientas digitales soberanas (local-first, firmadas y verificables). <strong>Financiable con subvenciones: sin carga para el presupuesto municipal.</strong>',
-  'hero.cta1':'Hablemos de tu territorio','hero.cta2':'Ver el SOS en vivo →',
+  'hero.cta1':'Hablemos de tu territorio','hero.cta1':'Diagnostica tu territorio · 3 min','hero.cta2':'Ver el SOS en vivo →','hero.pain1':'«Siempre tiramos los mismos cuatro.»','hero.pain2':'«Nadie sabe qué hacemos ni cuánto vale.»','hero.pain3':'«Cuando se va el técnico, el proyecto muere.»','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El reto',
   'enfoc.h3':'Muchas ganas. <em>Poca estructura.</em>',
   'enfoc.p1':'La mayoría de proyectos ciudadanos —bancos de tiempo, bibliotecas de las cosas, comunidades energéticas, huertos comunitarios— nacen con un empujón enorme de voluntariado. Y se apagan igual de rápido: no por falta de ilusión, sino por falta de gobernanza, roles claros y relevo generacional.',
@@ -1158,6 +1231,22 @@ document.querySelectorAll('.lang-btn').forEach(function(btn) {
 });
 
 applyLang(currentLang);
+
+// ── Correu ofuscat ────────────────────────────────────────────────────────────
+// Muntat en temps d'execució perquè no viatgi en clar dins de l'HTML.
+(function () {
+    var u = 'asolache', d = 'mac' + '.' + 'com';
+    function wire() {
+        var a = document.getElementById('ctaMail');
+        if (a) a.href = 'mailto:' + u + '@' + d + '?subject=' +
+            encodeURIComponent('Repte comunitari — parlem-ne');
+    }
+    wire();
+    // applyLang reescriu el bloc: cal tornar-hi després de cada canvi d'idioma.
+    document.querySelectorAll('.lang-btn').forEach(function (b) {
+        b.addEventListener('click', function () { setTimeout(wire, 0); });
+    });
+})();
 
 // ── Menú mòbil ────────────────────────────────────────────────────────────────
 // Per sota de 900px la llista d'enllaços es plega en un panell. Fins ara es

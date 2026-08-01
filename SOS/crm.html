@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>CRM privat · TeamTowers Humà</title>
+<meta name="description" content="Seguiment privat de diagnòstics i contactes. Local-first: les dades viuen només en aquest navegador.">
+<style>
+:root{--bg:#050507;--panel:#0a0a0f;--card:#111118;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:rgba(255,255,255,.07);--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--mono:'JetBrains Mono',SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
+header{padding:2rem 1.2rem 1.2rem;border-bottom:1px solid var(--border)}
+.hd{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+h1{font-size:1.5rem;margin:0 0 .3rem}
+.sub{color:var(--muted);font-size:.88rem;margin:0;max-width:620px;line-height:1.55}
+nav a{color:var(--indigo);text-decoration:none;font-size:.85rem;margin-left:.8rem}
+nav a:hover{text-decoration:underline}
+.priv{background:rgba(0,230,118,.07);border:1px solid var(--green);border-radius:10px;padding:.8rem 1rem;margin:1.2rem 0;font-size:.84rem;line-height:1.55;color:var(--light)}
+.priv strong{color:var(--green)}
+.btn{background:var(--panel);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:.6rem 1rem;font:inherit;font-size:.88rem;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;gap:.4rem;transition:border-color .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn:hover{border-color:var(--indigo)}
+.btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn-primary{background:linear-gradient(90deg,var(--indigo),#7c7ef5);border-color:transparent;font-weight:600}
+.btn-danger:hover{border-color:var(--red);color:var(--red)}
+.bar{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+textarea,input[type=text],input[type=search],input[type=date],select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.55rem .7rem;font:inherit;font-size:.88rem}
+textarea{min-height:110px;resize:vertical;font-family:var(--mono);font-size:.8rem}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--indigo)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.5rem;margin:1rem 0}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:.7rem;text-align:center}
+.stat-n{font-size:1.4rem;font-weight:700;line-height:1}
+.stat-l{font-family:var(--mono);font-size:.56rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.filters{display:flex;gap:.3rem;flex-wrap:wrap;margin:.8rem 0}
+.chip{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:.35rem .7rem;font:inherit;font-size:.78rem;color:var(--muted);cursor:pointer;min-height:36px}
+.chip.sel{background:rgba(99,102,241,.18);border-color:var(--indigo);color:var(--text);font-weight:600}
+.lead{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--muted);border-radius:10px;padding:.85rem 1rem;margin-bottom:.6rem}
+.lead.s-nou{border-left-color:var(--blue)}
+.lead.s-contactat{border-left-color:var(--indigo)}
+.lead.s-sessio{border-left-color:var(--purple)}
+.lead.s-proposta{border-left-color:var(--orange)}
+.lead.s-client{border-left-color:var(--green)}
+.lead.s-descartat{border-left-color:var(--muted);opacity:.6}
+.l-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;flex-wrap:wrap}
+.l-nm{font-weight:700;font-size:1rem}
+.l-org{font-size:.82rem;color:var(--light)}
+.l-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted);text-align:right;white-space:nowrap}
+.l-badges{display:flex;gap:.3rem;flex-wrap:wrap;margin:.45rem 0}
+.b{font-family:var(--mono);font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--border);border-radius:4px;padding:.1rem .35rem;color:var(--muted)}
+.b-hot{color:var(--orange);border-color:var(--orange)}
+.b-ok{color:var(--green);border-color:var(--green)}
+.l-body{font-size:.83rem;color:var(--light);line-height:1.5;margin:.4rem 0}
+.l-body em{color:var(--muted);font-style:normal}
+.l-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.5rem}
+.l-row select,.l-row input{flex:1;min-width:130px}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.imp{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem}
+.imp h2{margin:0 0 .3rem;font-size:1.05rem}
+.imp p{margin:0 0 .7rem;font-size:.83rem;color:var(--muted);line-height:1.5}
+.msg{font-size:.83rem;margin-top:.5rem;min-height:1.2em}
+.msg.ok{color:var(--green)}.msg.err{color:var(--red)}
+details summary{cursor:pointer;font-size:.85rem;color:var(--indigo);padding:.3rem 0}
+footer{text-align:center;color:var(--muted);padding:2rem 1rem;font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
+footer a{color:var(--indigo);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+<div class="hd">
+<div>
+<h1>CRM privat</h1>
+<p class="sub">Seguiment dels diagnòstics que arriben per correu. <strong>Local-first</strong>: les dades viuen només en aquest navegador i no s'envien enlloc.</p>
+</div>
+<nav>
+<a href="../index.html">← TeamTowers</a>
+<a href="diagnostic.html">Diagnòstic</a>
+<a href="index.html">SOS</a>
+</nav>
+</div>
+</header>
+
+<main class="wrap">
+
+<div class="priv">
+🔒 <strong>Res surt d'aquest dispositiu.</strong> No hi ha servidor, ni compte, ni analítica. Tot es desa a l'<code>IndexedDB</code> d'aquest navegador i d'aquest perfil. Si esborres les dades del navegador, es perd — per això hi ha <strong>còpia de seguretat</strong>. Avui només hi accedeixes tu; el camp <em>assignat a</em> queda preparat per derivar a un gestor o guardià quan es defineixi com.
+</div>
+
+<div class="imp">
+<h2>📥 Afegeix un diagnòstic</h2>
+<p>Enganxa el correu que has rebut (sencer, tal qual) o el JSON adjunt. El sistema detecta el format sol.</p>
+<textarea id="impText" placeholder="Enganxa aquí el cos del correu del diagnòstic, o el contingut del fitxer JSON…" aria-label="Contingut del diagnòstic a importar"></textarea>
+<div class="bar">
+<button class="btn btn-primary" id="btnImport">＋ Importa</button>
+<label class="btn" for="fileInput">📎 Des d'un fitxer JSON</label>
+<input type="file" id="fileInput" accept=".json,.txt" hidden>
+<button class="btn" id="btnManual">✎ Alta manual</button>
+</div>
+<div class="msg" id="impMsg" role="status" aria-live="polite"></div>
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="bar">
+<input type="search" id="q" placeholder="Cerca per nom, organització, municipi o comarca…" aria-label="Cerca">
+</div>
+<div class="filters" id="filters"></div>
+
+<div id="list"></div>
+
+<div class="bar" style="margin-top:1.5rem">
+<button class="btn" id="btnBackup">⬇ Còpia de seguretat (JSON)</button>
+<label class="btn" for="restoreInput">⬆ Restaura una còpia</label>
+<input type="file" id="restoreInput" accept=".json" hidden>
+<button class="btn" id="btnCsv">📊 Exporta CSV</button>
+<button class="btn btn-danger" id="btnWipe">🗑 Esborra-ho tot</button>
+</div>
+<div class="msg" id="opMsg" role="status" aria-live="polite"></div>
+
+<details style="margin-top:1.5rem">
+<summary>Com arriba un diagnòstic fins aquí</summary>
+<p style="font-size:.84rem;color:var(--light);line-height:1.6">
+Algú omple el <a href="diagnostic.html" style="color:var(--indigo)">diagnòstic</a> i prem «Envia'ns-ho». El seu navegador obre el seu client de correu amb el resum ja escrit — <strong>en cap moment passa per un servidor nostre</strong>. Tu reps el correu, l'enganxes aquí, i queda al teu seguiment. Si la persona t'ha adjuntat el JSON, encara millor: hi ha totes les dades estructurades.
+</p>
+</details>
+
+</main>
+
+<footer>
+<p>TeamTowers Humà · CRM privat · sense servidor · <a href="../index.html">Inici</a></p>
+</footer>
+
+<script type="module">
+const $=s=>document.querySelector(s);
+/* ── Emmagatzematge local ────────────────────────────────────────────
+   IndexedDB i no localStorage: hi cabran centenars de fitxes amb notes
+   sense topar amb el límit de 5 MB, i no bloqueja el fil principal. */
+const DB='ttcrm',STORE='leads';
+let _db=null;
+const openDB=()=>new Promise((res,rej)=>{
+  if(_db)return res(_db);
+  const r=indexedDB.open(DB,1);
+  r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};
+  r.onsuccess=()=>{_db=r.result;res(_db);};r.onerror=()=>rej(r.error);
+});
+const tx=(mode)=>openDB().then(d=>d.transaction(STORE,mode).objectStore(STORE));
+const dbAll=()=>tx('readonly').then(s=>new Promise((res,rej)=>{const r=s.getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);}));
+const dbPut=v=>tx('readwrite').then(s=>new Promise((res,rej)=>{const r=s.put(v);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);}));
+const dbDel=id=>tx('readwrite').then(s=>new Promise((res,rej)=>{const r=s.delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);}));
+const dbClear=()=>tx('readwrite').then(s=>new Promise((res,rej)=>{const r=s.clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);}));
+
+const STAGES=[
+  {id:'nou',label:'Nou'},{id:'contactat',label:'Contactat'},{id:'sessio',label:'Sessió feta'},
+  {id:'proposta',label:'Proposta enviada'},{id:'client',label:'Client'},{id:'descartat',label:'Descartat'}
+];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>'l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const relTime=ts=>{if(!ts)return'';const d=(Date.now()-new Date(ts))/1000;
+  if(d<3600)return'fa '+Math.max(1,Math.floor(d/60))+' min';
+  if(d<86400)return'fa '+Math.floor(d/3600)+' h';
+  if(d<604800)return'fa '+Math.floor(d/86400)+' d';
+  return new Date(ts).toLocaleDateString('ca',{day:'2-digit',month:'2-digit',year:'2-digit'});};
+
+/* ── Importació ──────────────────────────────────────────────────────
+   Dos formats: el JSON que genera el diagnòstic, i el cos del correu en
+   text pla. El text pla es parseja pels encapçalaments que escriu
+   diagnostic.html; si canvien allà, s'han de canviar aquí. */
+function fromJson(o){
+  const p=o.persona||{},g=o.organitzacio||{},t=o.te||{},n=o.necessita||{},d=o.diagnostic||{};
+  return{id:uid(),createdAt:o.generatedAt||new Date().toISOString(),source:'json',
+    nom:p.nom||'',carrec:p.carrec||'',email:p.email||'',telefon:p.telefon||'',
+    orgTipus:g.tipus||'',orgPerfil:g.perfil||'',orgNom:g.nom||'',municipi:g.municipi||'',comarca:g.comarca||'',poblacio:g.poblacio||null,
+    recursos:t.recursos||[],serveis:t.serveis||[],experiencia:t.experiencia||'',
+    necessitats:n.items||[],repte:n.repte||'',termini:n.termini||'',pressupost:n.pressupost||'',
+    maturity:d.maturity!=null?d.maturity:null,support:d.support!=null?d.support:null,
+    itinerari:d.itinerari||[],serveisSuggerits:d.serveis||[],primerPas:d.primerPas||'',
+    stage:'nou',assignat:'',nota:'',proximaAccio:'',raw:null};
+}
+function fromEmail(txt){
+  const get=re=>{const m=txt.match(re);return m?m[1].trim():'';};
+  const nom=get(/Nom:\s*([^\n(]+)/i);
+  if(!nom&&!/DIAGN[ÒO]STIC COMUNITARI/i.test(txt))return null;
+  const carrec=(txt.match(/Nom:\s*[^\n(]*\(([^)]+)\)/i)||[])[1]||'';
+  const correu=get(/Correu:\s*([^\s·\n]+)/i);
+  const tel=get(/Tel:\s*([^\n]+)/i);
+  const tipus=get(/Tipus:\s*([^\[\n]+)/i);
+  const seg=(txt.match(/Tipus:[^\[\n]*\[([^\]]+)\]/i)||[])[1]||'';
+  const terr=get(/Territori:\s*([^\n]+)/i);
+  const mm=terr.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/)||[];
+  const mat=get(/Punt de partida:\s*(\d+)%/i);
+  const sup=get(/Acompanyament necessari:\s*(\d+)%/i);
+  const itin=(txt.match(/Itinerari[^:]*:\s*([^\n]+)/i)||[])[1]||'';
+  return{id:uid(),createdAt:new Date().toISOString(),source:'email',
+    nom,carrec,email:correu,telefon:tel,
+    orgTipus:'',orgPerfil:(tipus||'').trim(),orgNom:get(/Organitzaci[óo]:\s*([^\n]+)/i),
+    municipi:(mm[1]||'').trim(),comarca:(mm[2]||'').trim(),poblacio:Number(get(/Poblaci[óo]:\s*(\d+)/i))||null,
+    recursos:[],serveis:[],experiencia:get(/Experi[èe]ncia:\s*([^\n]+)/i),
+    necessitats:[],repte:get(/Repte concret:\s*\n?([^\n]+)/i),
+    termini:get(/Termini:\s*([^\n]+)/i),pressupost:get(/Pressupost:\s*([^\n]+)/i),
+    maturity:mat?Number(mat):null,support:sup?Number(sup):null,
+    itinerari:itin?itin.split('→').map(s=>s.trim().split(' ')[0]).filter(Boolean):[],
+    serveisSuggerits:[],primerPas:get(/Primer pas:\s*([^\n]+)/i),
+    segment:seg,stage:'nou',assignat:'',nota:'',proximaAccio:'',raw:txt.slice(0,4000)};
+}
+function parseAny(txt){
+  const t=(txt||'').trim();if(!t)return null;
+  try{const o=JSON.parse(t);if(o&&(o.persona||o.diagnostic))return fromJson(o);}catch(e){}
+  return fromEmail(t);
+}
+
+/* ── Prioritat · qui val la pena trucar primer ───────────────────────
+   Molta necessitat i poc recorregut = més urgent. Amb pressupost o
+   termini curt, encara més. No és una ciència: és un ordre de trucades. */
+function priority(l){
+  let p=0;
+  if(l.support!=null)p+=l.support/20;
+  if(l.maturity!=null)p+=(100-l.maturity)/25;
+  if(l.termini&&/urgent/i.test(l.termini))p+=3;
+  if(l.pressupost&&/(assignada|mitja|subvenci)/i.test(l.pressupost))p+=2;
+  if((l.necessitats||[]).length>=4)p+=1;
+  if(['ajuntament','comarcal','acompanyament'].includes(l.orgTipus))p+=1.5;
+  return Math.round(p*10)/10;
+}
+
+let LEADS=[],filter='',query='';
+
+async function load(){LEADS=await dbAll();paint();}
+
+function paint(){
+  // Comptadors
+  const by={};STAGES.forEach(s=>by[s.id]=0);
+  LEADS.forEach(l=>{if(by[l.stage]!=null)by[l.stage]++;});
+  const week=LEADS.filter(l=>(Date.now()-new Date(l.createdAt))<7*864e5).length;
+  $('#stats').innerHTML=
+    '<div class="stat"><div class="stat-n">'+LEADS.length+'</div><div class="stat-l">total</div></div>'+
+    '<div class="stat"><div class="stat-n" style="color:var(--blue)">'+by.nou+'</div><div class="stat-l">sense contactar</div></div>'+
+    '<div class="stat"><div class="stat-n" style="color:var(--purple)">'+(by.sessio+by.proposta)+'</div><div class="stat-l">en curs</div></div>'+
+    '<div class="stat"><div class="stat-n" style="color:var(--green)">'+by.client+'</div><div class="stat-l">clients</div></div>'+
+    '<div class="stat"><div class="stat-n" style="color:var(--orange)">'+week+'</div><div class="stat-l">últims 7 dies</div></div>';
+  // Filtres
+  $('#filters').innerHTML='<button class="chip'+(filter?'':' sel')+'" data-f="">Tots ('+LEADS.length+')</button>'+
+    STAGES.map(s=>'<button class="chip'+(filter===s.id?' sel':'')+'" data-f="'+s.id+'">'+s.label+' ('+by[s.id]+')</button>').join('');
+  $('#filters').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{filter=c.dataset.f;paint();});
+  // Llista
+  const q=query.toLowerCase();
+  let rows=LEADS.filter(l=>!filter||l.stage===filter)
+    .filter(l=>!q||[l.nom,l.orgNom,l.municipi,l.comarca,l.orgPerfil].join(' ').toLowerCase().includes(q))
+    .sort((a,b)=>priority(b)-priority(a)||(b.createdAt||'').localeCompare(a.createdAt||''));
+  if(!rows.length){
+    $('#list').innerHTML='<div class="empty">'+(LEADS.length?'Cap fitxa amb aquest filtre.':'Encara no hi ha cap diagnòstic. Enganxa\'n un a dalt per començar.')+'</div>';
+    return;
+  }
+  $('#list').innerHTML=rows.map(l=>{
+    const pr=priority(l);
+    return '<div class="lead s-'+esc(l.stage)+'" data-id="'+esc(l.id)+'">'+
+      '<div class="l-hd"><div><div class="l-nm">'+esc(l.nom||'(sense nom)')+(l.carrec?' <span class="l-org">· '+esc(l.carrec)+'</span>':'')+'</div>'+
+        '<div class="l-org">'+esc(l.orgNom||l.orgPerfil||'—')+(l.municipi?' · '+esc(l.municipi):'')+(l.comarca?' ('+esc(l.comarca)+')':'')+'</div></div>'+
+        '<div class="l-meta">'+relTime(l.createdAt)+'<br>prioritat '+pr+'</div></div>'+
+      '<div class="l-badges">'+
+        (l.maturity!=null?'<span class="b">partida '+l.maturity+'%</span>':'')+
+        (l.support!=null?'<span class="b'+(l.support>=60?' b-hot':'')+'">suport '+l.support+'%</span>':'')+
+        (l.termini?'<span class="b'+(/urgent/i.test(l.termini)?' b-hot':'')+'">'+esc(l.termini)+'</span>':'')+
+        (l.pressupost?'<span class="b">'+esc(l.pressupost)+'</span>':'')+
+        (l.email?'<span class="b b-ok">'+esc(l.email)+'</span>':'')+
+        (l.telefon?'<span class="b">'+esc(l.telefon)+'</span>':'')+
+      '</div>'+
+      (l.repte?'<div class="l-body">“'+esc(l.repte)+'”</div>':'')+
+      (l.primerPas?'<div class="l-body"><em>Primer pas suggerit:</em> '+esc(l.primerPas)+'</div>':'')+
+      ((l.itinerari||[]).length?'<div class="l-body"><em>Itinerari:</em> '+l.itinerari.map(m=>esc(String(m).toUpperCase())).join(' · ')+'</div>':'')+
+      '<div class="l-row">'+
+        '<select class="st" aria-label="Estat">'+STAGES.map(s=>'<option value="'+s.id+'"'+(l.stage===s.id?' selected':'')+'>'+s.label+'</option>').join('')+'</select>'+
+        '<input class="ac" type="date" value="'+esc(l.proximaAccio||'')+'" aria-label="Propera acció">'+
+        '<input class="as" type="text" placeholder="assignat a (futur)" value="'+esc(l.assignat||'')+'" aria-label="Assignat a">'+
+      '</div>'+
+      '<div class="l-row"><input class="nt" type="text" placeholder="Nota…" value="'+esc(l.nota||'')+'" aria-label="Nota">'+
+        (l.email?'<a class="btn" href="mailto:'+esc(l.email)+'?subject='+encodeURIComponent('Sobre el teu diagnòstic · TeamTowers Humà')+'">✉ Respon</a>':'')+
+        '<button class="btn btn-danger del">🗑</button></div>'+
+    '</div>';
+  }).join('');
+  // Enllaç dels controls
+  $('#list').querySelectorAll('.lead').forEach(el=>{
+    const id=el.dataset.id,lead=LEADS.find(x=>x.id===id);if(!lead)return;
+    const save=async()=>{await dbPut(lead);};
+    el.querySelector('.st').onchange=async e=>{lead.stage=e.target.value;await save();paint();};
+    el.querySelector('.ac').onchange=async e=>{lead.proximaAccio=e.target.value;await save();};
+    el.querySelector('.as').onchange=async e=>{lead.assignat=e.target.value;await save();};
+    el.querySelector('.nt').onchange=async e=>{lead.nota=e.target.value;await save();};
+    el.querySelector('.del').onclick=async()=>{
+      if(!confirm('Esborrar la fitxa de '+(lead.nom||'aquest contacte')+'? No es pot desfer.'))return;
+      await dbDel(id);await load();
+    };
+  });
+}
+
+const say=(sel,txt,ok)=>{const e=$(sel);e.textContent=txt;e.className='msg '+(ok?'ok':'err');setTimeout(()=>{e.textContent='';},4000);};
+
+$('#btnImport').onclick=async()=>{
+  const l=parseAny($('#impText').value);
+  if(!l){say('#impMsg','No s\'ha reconegut el format. Enganxa el correu sencer o el JSON.',false);return;}
+  const dup=LEADS.find(x=>x.email&&l.email&&x.email.toLowerCase()===l.email.toLowerCase());
+  if(dup&&!confirm('Ja hi ha una fitxa amb el correu '+l.email+' ('+dup.nom+'). Vols afegir-la igualment?'))return;
+  await dbPut(l);$('#impText').value='';await load();
+  say('#impMsg','Importat: '+(l.nom||'sense nom')+(l.municipi?' · '+l.municipi:''),true);
+};
+$('#fileInput').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  $('#impText').value=await f.text();e.target.value='';
+  say('#impMsg','Fitxer carregat. Revisa i prem Importa.',true);
+};
+$('#btnManual').onclick=async()=>{
+  const nom=prompt('Nom del contacte:');if(!nom)return;
+  await dbPut({id:uid(),createdAt:new Date().toISOString(),source:'manual',nom,carrec:'',email:prompt('Correu (opcional):')||'',telefon:'',
+    orgTipus:'',orgPerfil:'',orgNom:prompt('Organització (opcional):')||'',municipi:prompt('Municipi (opcional):')||'',comarca:'',poblacio:null,
+    recursos:[],serveis:[],experiencia:'',necessitats:[],repte:'',termini:'',pressupost:'',
+    maturity:null,support:null,itinerari:[],serveisSuggerits:[],primerPas:'',stage:'nou',assignat:'',nota:'',proximaAccio:'',raw:null});
+  await load();say('#impMsg','Fitxa creada.',true);
+};
+$('#q').oninput=e=>{query=e.target.value;paint();};
+
+$('#btnBackup').onclick=()=>{
+  const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),leads:LEADS},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='crm-teamtowers-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);say('#opMsg','Còpia descarregada · '+LEADS.length+' fitxes.',true);
+};
+$('#restoreInput').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;e.target.value='';
+  try{
+    const o=JSON.parse(await f.text());
+    const arr=Array.isArray(o)?o:(o.leads||[]);
+    if(!arr.length){say('#opMsg','La còpia no conté cap fitxa.',false);return;}
+    if(!confirm('Afegir '+arr.length+' fitxes a les '+LEADS.length+' actuals? Les que tinguin el mateix id se sobreescriuran.'))return;
+    for(const l of arr)await dbPut(l);
+    await load();say('#opMsg','Restaurades '+arr.length+' fitxes.',true);
+  }catch(err){say('#opMsg','No s\'ha pogut llegir la còpia.',false);}
+};
+$('#btnCsv').onclick=()=>{
+  const cols=['createdAt','stage','nom','carrec','email','telefon','orgPerfil','orgNom','municipi','comarca','maturity','support','termini','pressupost','repte','assignat','proximaAccio','nota'];
+  const csv=[cols.join(',')].concat(LEADS.map(l=>cols.map(c=>'"'+String(l[c]==null?'':l[c]).replace(/"/g,'""')+'"').join(','))).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='crm-teamtowers-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);say('#opMsg','CSV exportat.',true);
+};
+$('#btnWipe').onclick=async()=>{
+  if(!LEADS.length){say('#opMsg','No hi ha res per esborrar.',false);return;}
+  if(!confirm('Esborrar les '+LEADS.length+' fitxes? Fes-te una còpia abans: això no es pot desfer.'))return;
+  if(!confirm('Segur del tot? Última oportunitat.'))return;
+  await dbClear();await load();say('#opMsg','Tot esborrat.',true);
+};
+
+load();
+window.__CRM={parseAny,fromJson,fromEmail,priority,STAGES,dbAll,dbPut,dbClear,load,get leads(){return LEADS;}};
+</script>
+</body>
+</html>
