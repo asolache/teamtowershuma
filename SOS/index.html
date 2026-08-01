@@ -61,7 +61,51 @@ a{color:var(--blue);text-decoration:none}
 .ob-chip.c3{border-top:2px solid var(--indigo)}.ob-chip.c3 .lbl{color:var(--indigo)}
 .ob-chip .nm{font-size:.95rem;font-weight:600}
 .ob-chip .ds{font-size:.75rem;color:var(--muted);margin-top:.2rem;line-height:1.4}
-.ob-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+/* Home · dolors que curem */
+.ob-pains{display:flex;flex-direction:column;gap:.5rem;margin:0 auto 2.25rem;max-width:600px;text-align:left}
+.ob-pain{display:grid;grid-template-columns:auto 1fr;gap:.2rem .55rem;align-items:baseline;background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:8px;padding:.6rem .8rem;font-size:.86rem;color:var(--light)}
+.ob-pain .px{color:var(--red);font-weight:700;font-size:.8rem}
+.ob-pain .pv{grid-column:2;color:var(--green);font-size:.8rem;line-height:1.45}
+/* Home · 3 camins d'entrada */
+.ob-paths{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.5rem;text-align:left}
+.ob-path{display:flex;flex-direction:column;gap:.35rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1rem;cursor:pointer;font:inherit;color:var(--text);transition:border-color .14s,transform .14s,background .14s}
+.ob-path:hover{transform:translateY(-3px)}
+.ob-path.p1{border-top:3px solid var(--purple)}
+.ob-path.p1:hover{border-color:var(--purple);background:linear-gradient(180deg,rgba(224,64,251,.08),transparent)}
+.ob-path.p2{border-top:3px solid var(--indigo)}
+.ob-path.p2:hover{border-color:var(--indigo);background:linear-gradient(180deg,rgba(99,102,241,.08),transparent)}
+.ob-path.p3{border-top:3px solid var(--blue)}
+.ob-path.p3:hover{border-color:var(--blue);background:linear-gradient(180deg,rgba(0,176,255,.08),transparent)}
+.ob-path .op-ic{font-size:1.7rem;line-height:1}
+.ob-path .op-t{font-size:1rem;font-weight:700}
+.ob-path .op-d{font-size:.79rem;color:var(--muted);line-height:1.5;flex:1}
+.ob-path .op-cta{font-family:var(--mono);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;margin-top:.35rem}
+.ob-path.p1 .op-cta{color:var(--purple)}.ob-path.p2 .op-cta{color:var(--indigo)}.ob-path.p3 .op-cta{color:var(--blue)}
+.ob-secondary{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+.ob-link{background:none;border:1px solid var(--border);border-radius:20px;padding:.35rem .8rem;font:inherit;font-size:.78rem;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .12s}
+.ob-link:hover{color:var(--text);border-color:var(--indigo)}
+@media(max-width:720px){.ob-paths{grid-template-columns:1fr}}
+/* Selector de rol al wizard d'ubicació */
+.lw-roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.4rem}
+.lw-role{display:flex;flex-direction:column;gap:.15rem;text-align:left;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:.55rem .65rem;font:inherit;color:var(--text);cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.lw-role:hover{border-color:var(--rc,var(--indigo))}
+.lw-role.sel{border-color:var(--rc,var(--indigo));background:color-mix(in srgb,var(--rc,var(--indigo)) 14%,transparent)}
+.lw-role .lr-ic{font-size:1.05rem;line-height:1}
+.lw-role .lr-t{font-size:.8rem;font-weight:600}
+.lw-role .lr-d{font-size:.68rem;color:var(--muted);line-height:1.35}
+/* Registre d'activitat */
+.al-filters{display:flex;gap:.3rem;flex-wrap:wrap;margin:.7rem 0}
+.al-chip{background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;padding:.3rem .65rem;font:inherit;font-size:.75rem;color:var(--muted);cursor:pointer;transition:all .12s}
+.al-chip:hover{color:var(--text);border-color:var(--chip,var(--indigo))}
+.al-chip.sel{background:color-mix(in srgb,var(--chip,var(--indigo)) 18%,transparent);border-color:var(--chip,var(--indigo));color:var(--text);font-weight:600}
+.al-day{font-family:var(--mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--border)}
+.al-row{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem .3rem;border-radius:6px;transition:background .12s}
+.al-row:hover{background:var(--bg-panel)}
+.al-ic{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.al-main{display:flex;flex-direction:column;gap:.1rem;min-width:0;flex:1}
+.al-tt{font-size:.86rem;font-weight:600;line-height:1.3}
+.al-dt{font-size:.74rem;color:var(--muted);line-height:1.35}
+.al-ts{font-family:var(--mono);font-size:.62rem;color:var(--muted);white-space:nowrap;flex-shrink:0;padding-top:.2rem}
 .ob-contact{font-size:.9rem;color:var(--muted)}
 .ob-contact a{border-bottom:1px solid var(--indigo-dim);padding-bottom:1px}
 .ob-contact a:hover{border-color:var(--blue)}
@@ -418,20 +462,45 @@ a{color:var(--blue);text-decoration:none}
   <div class="ob-inner">
     <div class="ob-eyebrow">Social Operating System · TeamTowers Humà</div>
     <h1>Converteix la voluntat veïnal<br>en <em>xarxes que duren.</em></h1>
-    <p class="ob-sub">El SOS és l'eina local del teu navegador per donar estructura a projectes comunitaris. Cada territori —país, comarca, municipi o barri— té el seu <strong>mapa de valor</strong>, el seu <strong>tauler</strong> i la seva <strong>comptabilitat de valor</strong>. Les teves dades viuen al teu dispositiu.</p>
+    <p class="ob-sub">Banc de temps, biblioteca de les coses, comunitat energètica, cooperativa… El SOS els dóna a tots <strong>el mateix esquelet</strong>: mapa de valor, tauler d'acció i comptabilitat signada. Sense servidor, sense quota, sense cedir dades — <strong>tot viu al teu navegador</strong>.</p>
+    <div class="ob-pains">
+      <div class="ob-pain"><span class="px">✕</span><span>«Sempre tirem els mateixos quatre.»</span><span class="pv">→ el mapa de valor ensenya qui sosté què, i on cal rellevar</span></div>
+      <div class="ob-pain"><span class="px">✕</span><span>«Ningú sap què fem ni quant val.»</span><span class="pv">→ comptabilitat de valor signada: hores, objectes, € i intangibles</span></div>
+      <div class="ob-pain"><span class="px">✕</span><span>«Les decisions no queden enlloc.»</span><span class="pv">→ propostes votades i ancorades públicament, verificables</span></div>
+    </div>
     <div class="ob-triad">
       <div class="ob-chip c1"><div class="lbl">Cohesió</div><div class="nm">Fent Pinya</div><div class="ds">Confiança i interdependència veïnal</div></div>
       <div class="ob-chip c2"><div class="lbl">Diagnòstic</div><div class="nm">Mapa VNA</div><div class="ds">Els fluxos de valor, visibles</div></div>
       <div class="ob-chip c3"><div class="lbl">Sostenibilitat</div><div class="nm">SOS</div><div class="ds">Autogestió justa i transparent</div></div>
     </div>
-    <div class="ob-actions">
-      <button class="btn btn-primary" id="obLocate">📍 Ubica el teu projecte</button>
-      <button class="btn btn-ghost" id="obExplore">🗺 Explora Catalunya</button>
-      <button class="btn btn-ghost" id="obDir">🌐 Directori d'entitats</button>
-      <button class="btn btn-ghost" id="obContact">Parla amb l'Álvaro</button>
+    <div class="ob-paths">
+      <button class="ob-path p1" id="obHero">
+        <span class="op-ic">🦸</span>
+        <span class="op-t">Sóc una persona</span>
+        <span class="op-d">Crea el teu perfil, tria el teu rol i descobreix amb qui pots col·laborar al teu territori.</span>
+        <span class="op-cta">Crea el meu perfil →</span>
+      </button>
+      <button class="ob-path p2" id="obLocate">
+        <span class="op-ic">📍</span>
+        <span class="op-t">Tinc un projecte</span>
+        <span class="op-d">Ubica'l al mapa i el SOS et munta la jerarquia territorial, el mapa de valor i el tauler.</span>
+        <span class="op-cta">Ubica el projecte →</span>
+      </button>
+      <button class="ob-path p3" id="obExplore">
+        <span class="op-ic">🗺</span>
+        <span class="op-t">Vull explorar</span>
+        <span class="op-d">Carrega l'esquelet de Catalunya i navega comarques, municipis i entitats reals.</span>
+        <span class="op-cta">Explora Catalunya →</span>
+      </button>
+    </div>
+    <div class="ob-secondary">
+      <button class="ob-link" id="obDir">🌐 Directori d'entitats</button>
+      <a class="ob-link" href="formacio.html">🎓 Guia formativa · 8 mòduls</a>
+      <a class="ob-link" href="comando.html">🎬 Comando Molekulon</a>
+      <button class="ob-link" id="obContact">✉ Parla amb l'Álvaro</button>
     </div>
     <p class="ob-contact">Tens un repte comunitari al teu territori? Escriu directament a <a href="#" id="obEmailLink" data-subject="Repte comunitari — vull explorar el SOS">l'Álvaro Solache</a> i ho valorem junts. Sense compromís.</p>
-    <div class="ob-foot">Local-first · W3C · Força · Equilibri · Valor · Seny</div>
+    <div class="ob-foot">Local-first · W3C · Zero servidor · Força · Equilibri · Valor · Seny</div>
   </div>
 </section>
 
@@ -445,6 +514,7 @@ a{color:var(--blue);text-decoration:none}
       <button class="btn-icon" id="btnMap" title="Mapa de Catalunya">🗺</button>
       <button class="btn-icon" id="btnDir" title="Directori d'entitats (atles)">🌐</button>
       <button class="btn-icon" id="personaBadge" title="Sessió activa" style="display:none;background:linear-gradient(135deg,var(--indigo),var(--green));color:#fff;font-weight:700;padding:0 .5rem">·</button>
+      <button class="btn-icon" id="btnActivity" title="Registre d'activitat">📜</button>
       <button class="btn-icon" id="btnSearch" title="Cerca global (⌘K)">🔍</button>
       <button class="btn-icon" id="btnLauncher" title="Menú d'accions ràpides">☰</button>
       <button class="btn-icon" id="btnSync" title="Sincronitza amb un altre dispositiu">🔗</button>
@@ -1113,7 +1183,7 @@ function newVenture(node,act){
   const idBy={},roles=[],exch=[];
   (act.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
   (act.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2],label:f[3]||''});});
-  return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null};
+  return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null,createdAt:now()};
 }
 const allocationsOf=v=>v.allocations||(v.allocations=[]);
 // Fons cooperatiu local: valor mobilitzat per la MATRIU cap a les seves ventures (recursos assignats + € aportat)
@@ -1571,6 +1641,7 @@ function _searchIndex(){
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · wallets · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
+    {k:'action',id:'act_activity',label:'Registre d\'activitat',sub:'📜 acció · log de projectes, socis, entitats i decisions',action:()=>openActivityLog()},
     {k:'action',id:'act_multi',label:'Multivers Molekulon',sub:'🌌 acció',action:()=>openMultiverse()},
     {k:'action',id:'act_pings',label:'Pings ecosistema',sub:'🔔 acció',action:()=>openMatchesModal()},
     {k:'action',id:'act_kit',label:'Kit narratiu Molekulon',sub:'🎥 acció',action:()=>openNarrativeKit()},
@@ -2357,7 +2428,7 @@ async function graduateVenture(node,v){
   sprintsOf(v).forEach(sp=>(sp.items||[]).filter(it=>!it.done).forEach(it=>nn.kanban.cards.push({id:uid(),text:'['+sp.name+'] '+it.title,col:'todo'})));
   nn.metaskill.mission='Graduada de la MATRIU: '+actMeta(v.activityId).name+'.';
   nn.metaskill.legacy={fromVentureId:v.id,graduatedAt:now(),sprintsCompleted:sprintsOf(v).filter(s=>s.status==='done').length};
-  v.stage='graduacio';v.graduatedNodeId=nn.id;
+  v.stage='graduacio';v.graduatedNodeId=nn.id;v.graduatedAt=now();
   state.nodes.push(nn);await persist(nn);await persist(node);
   if(node.parentId)state.expanded.add(node.parentId);
   selectNode(nn.id);toast('Venture graduada a projecte');
@@ -2450,7 +2521,7 @@ function newVentureFromPrototype(node,proto,{name,type}={}){
   (proto.roles||[]).forEach(nm=>{const id=uid();idBy[nm]=id;roles.push({id,name:nm});});
   (proto.flows||[]).forEach(f=>{if(idBy[f[0]]&&idBy[f[1]])exch.push({id:uid(),from:idBy[f[0]],to:idBy[f[1]],kind:f[2]==='tangible'?'T':'I',label:f[3]||''});});
   const t=type||(proto.projectTypes&&proto.projectTypes[0])||'comunitari';
-  return{id:uid(),name:(name||proto.name).trim(),activityId:'proto_'+proto.id,prototypeId:proto.id,projectType:t,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(proto.kanban||[]).slice(),notes:'',graduatedNodeId:null,equity:{...projectTypeMeta(t).equity}};
+  return{id:uid(),name:(name||proto.name).trim(),activityId:'proto_'+proto.id,prototypeId:proto.id,projectType:t,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(proto.kanban||[]).slice(),notes:'',graduatedNodeId:null,equity:{...projectTypeMeta(t).equity},createdAt:now()};
 }
 // ═══════════ Comando · equip gestor d'un projecte (colla castellera) ═══════════
 // Un Comando és un subconjunt de membres d'un node organitzats per rols funcionals,
@@ -2523,6 +2594,71 @@ function matriuPsychoImpact(node){
     ventures:vs.length,
     ecosystem:links.length
   };
+}
+// ═══════════ Registre d'activitat · el log viu de tot el que passa a l'ecosistema ═══════════
+// Agrega tota la creació i moviment de l'ecosistema en una sola línia temporal ordenada.
+// Fonts: territoris · projectes · socis · entitats · ventures · propostes · aportacions ·
+// intercooperacions · comandos · sprints tancats. Tot local, res surt del navegador.
+const ACTIVITY_KINDS={
+  territori:{ic:'🗺',label:'Territoris',color:'var(--blue)'},
+  projecte:{ic:'🌱',label:'Projectes',color:'var(--green)'},
+  soci:{ic:'👤',label:'Socis',color:'var(--indigo)'},
+  entitat:{ic:'🏛',label:'Entitats',color:'var(--orange)'},
+  venture:{ic:'🚀',label:'Ventures',color:'var(--purple)'},
+  proposta:{ic:'🗳',label:'Propostes',color:'var(--red)'},
+  aportacio:{ic:'⏱',label:'Aportacions',color:'var(--green)'},
+  cooperacio:{ic:'🔄',label:'Intercooperació',color:'var(--purple)'},
+  comando:{ic:'🏰',label:'Comandos',color:'var(--purple)'},
+  sprint:{ic:'📋',label:'Sprints',color:'var(--indigo)'}
+};
+function activityFeed({limit,kinds,since}={}){
+  const items=[];
+  const push=(kind,ts,title,detail,ref)=>{if(!ts)return;items.push({kind,ts,title,detail:detail||'',ref:ref||null});};
+  state.nodes.forEach(nd=>{
+    const isTerr=typeof isTerritory==='function'&&isTerritory(nd.nodeLevel);
+    push(isTerr?'territori':'projecte',nd.createdAt,nd.name,
+      isTerr?('nou '+(LEVEL_META[nd.nodeLevel]?LEVEL_META[nd.nodeLevel].label.toLowerCase():'territori')):('nou projecte'+(nd.dynamicType&&nd.dynamicType!=='generic'?' · '+nd.dynamicType.replace(/_/g,' '):'')),
+      {nodeId:nd.id});
+    membersOf(nd).forEach(m=>push('soci',m.joinedAt,m.name,'s\'incorpora a '+nd.name+(m.role?' com a '+m.role:''),{nodeId:nd.id}));
+    venturesOf(nd).forEach(v=>{
+      push('venture',v.createdAt,v.name,'venture incubada a '+nd.name+(v.projectType?' · '+projectTypeMeta(v.projectType).name:''),{nodeId:nd.id});
+      if(v.graduatedNodeId&&v.graduatedAt)push('venture',v.graduatedAt,v.name,'🎓 graduada a projecte propi',{nodeId:v.graduatedNodeId});
+      sprintsOf(v).filter(s=>s.status==='done'&&s.closedAt).forEach(s=>push('sprint',s.closedAt,s.name,'sprint tancat a '+v.name+' · '+sprintProgress(s).done+' items fets',{nodeId:nd.id}));
+      (v.ledger||[]).forEach(e=>{const m=e.memberId?memberById(nd,e.memberId):null;push('aportacio',e.ts,(m?m.name:'algú')+' → '+v.name,(e.type==='moneda'?(e.value+' €'):(e.value+' h'))+(e.what?' · '+e.what:''),{nodeId:nd.id});});
+    });
+    (nd.ledger||[]).forEach(e=>{const m=e.memberId?memberById(nd,e.memberId):null;push('aportacio',e.ts,(m?m.name:e.who||'algú')+' → '+nd.name,(e.type==='moneda'?(e.value+' €'):(e.value+' h'))+(e.what?' · '+e.what:''),{nodeId:nd.id});});
+    proposalsOf(nd).forEach(p=>push('proposta',p.createdAt,(p.note||p.kind)+' · '+nd.name,'proposta '+p.status+' · '+(p.votes||[]).length+' vots',{nodeId:nd.id}));
+    cooperationsOf(nd).forEach(c=>push('cooperacio',c.ts,c.fromName+' → '+c.toName,c.qty+' '+c.kind+(c.note?' · '+c.note:''),{nodeId:nd.id}));
+    const cm=comandoOf(nd);if(cm)push('comando',cm.createdAt,cm.name,'equip gestor de '+nd.name+' · '+cm.members.length+' membres',{nodeId:nd.id});
+  });
+  state.entities.forEach(e=>{
+    push('entitat',e.createdAt,e.name,(e.geo&&e.geo.territoryName?e.geo.territoryName+' · ':'')+(e.entityType||'entitat')+(e.source==='ai'?' · descoberta per IA':''),{entityId:e.id});
+    const ec=entityComandoOf(e);if(ec)push('comando',ec.createdAt,ec.name,'equip gestor de '+e.name+' · '+ec.members.length+' membres',{entityId:e.id});
+  });
+  let out=items.filter(x=>x.ts);
+  if(kinds&&kinds.length)out=out.filter(x=>kinds.includes(x.kind));
+  if(since)out=out.filter(x=>x.ts>=since);
+  out.sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  return limit?out.slice(0,limit):out;
+}
+// Resum per tipus + finestra temporal — alimenta els comptadors del registre i la home.
+function activityStats(days){
+  const all=activityFeed({});
+  const cutoff=days?new Date(Date.now()-days*864e5).toISOString():null;
+  const recent=cutoff?all.filter(x=>x.ts>=cutoff):all;
+  const byKind={};Object.keys(ACTIVITY_KINDS).forEach(k=>byKind[k]=0);
+  recent.forEach(x=>{if(byKind[x.kind]!==undefined)byKind[x.kind]++;});
+  return{total:all.length,recent:recent.length,byKind,lastAt:all.length?all[0].ts:null};
+}
+// Data relativa curta i llegible (fa 3 h · fa 2 d · 12/03)
+function relTime(ts){
+  if(!ts)return'';
+  const d=new Date(ts),diff=(Date.now()-d.getTime())/1000;
+  if(diff<60)return'ara mateix';
+  if(diff<3600)return'fa '+Math.floor(diff/60)+' min';
+  if(diff<86400)return'fa '+Math.floor(diff/3600)+' h';
+  if(diff<604800)return'fa '+Math.floor(diff/86400)+' d';
+  return d.toLocaleDateString('ca',{day:'2-digit',month:'2-digit',year:'2-digit'});
 }
 // ═══════════ AI planner de fluxos de valor per demanda comunitària ═══════════
 // Delega a AI.call('plan_value_flows', ctx) si hi ha key; retorna {roles, flows} en el mateix format que un prototip.
@@ -4219,6 +4355,61 @@ function buildEquityPie(eq){
   const hole=document.createElementNS('http://www.w3.org/2000/svg','circle');hole.setAttribute('cx',cx);hole.setAttribute('cy',cy);hole.setAttribute('r',38);hole.setAttribute('fill','var(--bg-panel)');svg.appendChild(hole);
   return svg;
 }
+// ═══════════ openActivityLog · registre viu de tota l'activitat de l'ecosistema ═══════════
+function openActivityLog(){
+  let active=[]; // buit = tots els tipus
+  const bg=modal(`
+    <h2>📜 Registre d'activitat</h2>
+    <p class="m-sub">Tot el que ha passat al teu ecosistema, en ordre cronològic: nous territoris i projectes, socis que s'incorporen, entitats registrades, ventures incubades i graduades, propostes votades, aportacions i intercooperacions. <strong>Tot local</strong> — res surt del navegador.</p>
+    <div id="alStats"></div>
+    <div class="al-filters" id="alFilters"></div>
+    <div id="alFeed"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="alExport">⬇ Exporta CSV</button><button class="btn btn-primary" id="alClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#alClose').onclick=closeModal;
+  const statsBox=bg.querySelector('#alStats'),filtBox=bg.querySelector('#alFilters'),feedBox=bg.querySelector('#alFeed');
+  const st=activityStats(30);
+  statsBox.innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n">'+st.total+'</div><div class="l">esdeveniments totals</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--green)">'+st.recent+'</div><div class="l">últims 30 dies</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+(st.lastAt?relTime(st.lastAt):'—')+'</div><div class="l">última activitat</div></div></div>';
+  const paintFilters=()=>{
+    filtBox.innerHTML='<button class="al-chip'+(active.length?'':' sel')+'" data-k="">Tot ('+st.total+')</button>'+
+      Object.entries(ACTIVITY_KINDS).map(([k,m])=>{const n=activityFeed({kinds:[k]}).length;return n?'<button class="al-chip'+(active.includes(k)?' sel':'')+'" data-k="'+k+'" style="--chip:'+m.color+'">'+m.ic+' '+m.label+' ('+n+')</button>':'';}).join('');
+    filtBox.querySelectorAll('.al-chip').forEach(c=>c.onclick=()=>{
+      const k=c.dataset.k;
+      if(!k)active=[];
+      else if(active.includes(k))active=active.filter(x=>x!==k);
+      else active=active.concat(k);
+      paintFilters();paintFeed();
+    });
+  };
+  const paintFeed=()=>{
+    const items=activityFeed({limit:200,kinds:active.length?active:null});
+    if(!items.length){feedBox.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Encara no hi ha activitat d\'aquest tipus. Crea un territori, dona d\'alta un soci o incuba una venture i apareixerà aquí a l\'instant.</span></div>';return;}
+    // Agrupació per dia perquè el log es llegeixi com un diari
+    let lastDay='';const rows=[];
+    items.forEach(x=>{
+      const day=(x.ts||'').slice(0,10);
+      if(day!==lastDay){lastDay=day;rows.push('<div class="al-day">'+new Date(day).toLocaleDateString('ca',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'</div>');}
+      const m=ACTIVITY_KINDS[x.kind]||{ic:'◇',color:'var(--muted)',label:x.kind};
+      rows.push('<div class="al-row"'+(x.ref&&x.ref.nodeId?' data-node="'+esc(x.ref.nodeId)+'" style="cursor:pointer"':'')+'>'+
+        '<span class="al-ic" style="background:'+m.color+'22;color:'+m.color+'">'+m.ic+'</span>'+
+        '<span class="al-main"><span class="al-tt">'+esc(x.title)+'</span><span class="al-dt">'+esc(x.detail)+'</span></span>'+
+        '<span class="al-ts">'+relTime(x.ts)+'</span></div>');
+    });
+    feedBox.innerHTML=rows.join('');
+    feedBox.querySelectorAll('[data-node]').forEach(r=>r.onclick=()=>{const nd=byId(r.dataset.node);if(nd){closeModal();selectNode(nd.id);}});
+  };
+  paintFilters();paintFeed();
+  bg.querySelector('#alExport').onclick=()=>{
+    const items=activityFeed({kinds:active.length?active:null});
+    const csv=['data,tipus,titol,detall'].concat(items.map(x=>[x.ts,x.kind,x.title,x.detail].map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(','))).join('\n');
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    const a=document.createElement('a');a.href=url;a.download='sos-activitat-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);toast('CSV exportat · '+items.length+' esdeveniments');
+  };
+}
 // ═══════════ openEntityComando · l'equip gestor d'una entitat existent ═══════════
 function openEntityComando(entity){
   // Reunim tots els noms de persona coneguts a l'ecosistema per suggerir-los
@@ -4814,7 +5005,7 @@ function resolveChainFromComarca(comName){
 }
 
 function openLocateWizard(){
-  const st={level:'municipi',municipi:'',comarca:'',barri:'',genMap:true};
+  const st={level:'municipi',municipi:'',comarca:'',barri:'',genMap:true,personName:'',role:'superheroi'};
   function draw(){
     const muniOpts=CAT_GEO.municipi.map(m=>'<option value="'+esc(m.n)+'">'+esc(m.p)+'</option>').join('');
     const known=st.municipi?resolveChainFromMunicipi(st.municipi):null;
@@ -4847,6 +5038,12 @@ function openLocateWizard(){
       `}
       ${chainHtml}
       <label class="pick${st.genMap?' sel':''}" id="lwGen" style="margin-top:.8rem"><input type="checkbox" ${st.genMap?'checked':''}><span><span class="pk-t">Genera el mapa de valor suggerit</span><span class="pk-d">Sembra rols i intercanvis típics del nivell (els pots editar després).</span></span></label>
+      <div class="ent-grp-lbl" style="margin-top:1.1rem">👤 I tu, qui hi ets? <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400">(opcional — pots fer-ho més tard)</span></div>
+      <p class="m-sub" style="font-size:.8rem;margin:.1rem 0 .5rem">Si t'identifiques ara, la sessió queda oberta amb el teu nom i el sistema pot suggerir-te amb qui col·laborar. Sense compte ni contrasenya: la identitat viu al teu navegador.</p>
+      <div class="field"><label>El teu nom</label><input id="lwName" autocomplete="off" placeholder="p.ex. Àlvar Solache" value="${esc(st.personName)}"></div>
+      <div class="field"><label>El teu rol al SOS</label>
+        <div class="lw-roles">${Object.entries(SOS_ROLES).map(([k,r])=>'<button type="button" class="lw-role'+(st.role===k?' sel':'')+'" data-role="'+k+'" style="--rc:'+r.color+'"><span class="lr-ic">'+r.ic+'</span><span class="lr-t">'+esc(r.label)+'</span><span class="lr-d">'+esc(r.desc)+'</span></button>').join('')}</div>
+      </div>
       <div class="modal-actions"><button class="btn btn-ghost" id="lwCancel">Cancel·la</button><button class="btn btn-primary" id="lwCreate"${canCreate?'':' disabled style="opacity:.5"'}>⬢ Crea i ubica</button></div>
     `);
     bg.querySelector('.modal').classList.add('wz-modal');
@@ -4856,6 +5053,8 @@ function openLocateWizard(){
     const com=bg.querySelector('#lwComarca');if(com){com.oninput=()=>{st.comarca=com.value.trim();};com.onchange=()=>{st.comarca=com.value.trim();rerun();};com.onblur=rerun;}
     const barri=bg.querySelector('#lwBarri');if(barri){barri.oninput=()=>{st.barri=barri.value.trim();};barri.onblur=rerun;}
     const gen=bg.querySelector('#lwGen');gen.querySelector('input').onchange=e=>{st.genMap=e.target.checked;gen.classList.toggle('sel',st.genMap);};
+    const nameIn=bg.querySelector('#lwName');nameIn.oninput=()=>{st.personName=nameIn.value;};
+    bg.querySelectorAll('.lw-role').forEach(b=>b.onclick=()=>{st.role=b.dataset.role;bg.querySelectorAll('.lw-role').forEach(x=>x.classList.toggle('sel',x===b));});
     bg.querySelector('#lwCancel').onclick=closeModal;
     bg.querySelector('#lwCreate').onclick=async()=>{
       let r;
@@ -4871,15 +5070,24 @@ function openLocateWizard(){
         if(st.level==='barri'&&st.barri)targetNode=await ensureNode(st.barri,'barri',targetNode.id);}
       // sembra mapa si cal i si el node és nou (buit)
       if(st.genMap&&targetNode.vna.roles.length===0){seedDefaultMap(targetNode);await dbPut(targetNode);}
+      // Si s'ha identificat, l'alta el deixa com a soci del territori i obre la sessió persistent.
+      const pname=(st.personName||'').trim();
+      if(pname){
+        if(!membersOf(targetNode).some(m=>personKey(m.name)===personKey(pname)))
+          membersOf(targetNode).push(newMember({name:pname,kind:'persona',role:st.role}));
+        await dbPut(targetNode);
+        await setActivePersona(pname);
+      }
       [pais.id,prov.id,com.id].forEach(id=>state.expanded.add(id));if(targetNode.parentId)state.expanded.add(targetNode.parentId);
       flashSync();closeModal();selectNode(targetNode.id);
-      toast('Ubicat: '+targetNode.name+(_ensureCreated?' (+'+_ensureCreated+' territoris)':''));
+      toast(pname?('Hola '+pname.split(/\s+/)[0]+' · ubicat a '+targetNode.name):('Ubicat: '+targetNode.name+(_ensureCreated?' (+'+_ensureCreated+' territoris)':'')));
     };
   }
   draw();
 }
 
 /* ═══════════════════ WIRING ═══════════════════ */
+$('#obHero').onclick=()=>openSuperheroiOnboarding();
 $('#obLocate').onclick=()=>openLocateWizard();
 $('#btnLocate').onclick=()=>openLocateWizard();
 $('#obExplore').onclick=async()=>{const r=await loadCatalunyaSkeleton();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
@@ -4896,6 +5104,7 @@ document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){
 $('#btnMap').onclick=()=>{state.activeId=null;render();};
 $('#btnDir').onclick=openDirectory;
 $('#obDir').onclick=openDirectory;
+$('#btnActivity').onclick=openActivityLog;
 $('#btnSync').onclick=openSyncModal;
 $('#homeLogo').onclick=()=>{state.activeId=null;render();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
@@ -4905,7 +5114,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};state.nodes=all.filter(n=>n.id!=='__tombstones'&&n.type!=='meta'&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   if(state.nodes.length){state.activeId=children(null)[0]?children(null)[0].id:state.nodes[0].id;children(null).forEach(r=>state.expanded.add(r.id));}
   render();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
