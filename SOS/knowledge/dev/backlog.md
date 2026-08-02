@@ -50,6 +50,11 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    tancat des del tauler, i **retorn visible** (`valueSnapshot` → `valueDelta` →
    `showValueReturn`) que diu què ha canviat i proposa el següent moviment.
 
+6. **Ledger personal i registre públic cercable** — `ledgerIndex` com a font
+   única, `openMyLedger` accessible des del tauler i del perfil, i
+   `openPublicRegister` amb cerca en text lliure i **verificació criptogràfica
+   real** de cada firma. Exportable a CSV/JSON i enllaçat amb l'ancoratge.
+
 5. **La reputació compta tot el valor aportat** — `personProfile` recull les
    aportacions de tots els nodes i ventures, el diner entra com a hores
    equivalents i l'escala s'ha recalibrat (40/150/450/1100). Veda V23.
