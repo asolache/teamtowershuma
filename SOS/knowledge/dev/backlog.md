@@ -197,6 +197,57 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
   el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
+### Publicar a la permaweb · el repositori públic del SOS
+
+**L'objectiu, dit clar**: que una persona d'un poble faci servir el SOS, premi
+un botó, i **el que ha decidit compartir quedi publicat** perquè algú altre ho
+trobi. Que se senti la màgia. Tot el que hem construït fins ara és el registre
+privat; això és la cara pública.
+
+**Què hi ha ja i què falta.** No es comença de zero — cal **investigar què està
+acabat abans de tocar res**:
+
+- `toPublicPack` / `mergePack` — ja publiquen i fusionen **entitats** del
+  directori amb `visibility==='public'`, amb tombstones i LWW. És el patró bo,
+  però **només cobreix entitats**.
+- `buildRegisterPack` / `verifyRegisterPack` (V26) — arrel i CID sobre el
+  registre sencer. Serveix per **provar** el que es publica, no per publicar-ho.
+- `nostrPublishAnchor` (NIP-07) i `rememberAnchor` / `compareAnchor` (V30) — ja
+  ancoren i comparen. **Falta la publicació del contingut**, no només de l'arrel.
+- `GH` (device flow) — hi és, i el control de versions de git **pot ser útil de
+  debò aquí**: un repositori públic és un lloc perfectament vàlid per a un
+  paquet signat i versionat, i ja en sabem el camí.
+
+**El que falta de veritat, per ordre:**
+
+1. **Un `publicPack` que cobreixi habilitats i objectes, no només entitats.**
+   Habilitats i ofertes **per ubicació**, amb la mateixa forma canònica i
+   signada que la resta.
+2. **Privadesa per disseny, i verificable.** Aquesta és la part que no es pot
+   improvisar: publicar «hi ha algú a Manresa que fa fusteria» no és publicar
+   qui és, ni el seu telèfon, ni el seu ledger. Cal decidir **el gra**
+   —probablement categoria + municipi + un identificador opac de contacte— i
+   tenir **un test que ho comprovi**: cap dada privada dins del pack, com ja fa
+   `privacyNoLeak` a `test-matriu`. La regla ha de ser *deny by default*: només
+   surt el que està marcat explícitament com a públic.
+3. **Sincronització automàtica de la part que triïs, amb control de versions.**
+   Escollir l'abast (aquest node, aquests temes, aquesta comarca), i que es
+   publiqui sol quan canvia. Cada publicació és **una versió**, amb el seu CID i
+   el seu pare: es pot veure què va canviar, i tornar enrere. Aquí git no és una
+   metàfora, és una opció real d'implementació.
+4. **Que sigui intuïtiu, o no servirà de res.** Aquesta és la condició, no un
+   acabat: com més senzill sigui publicar, més comunitat. La forma que volem és
+   **formar agents locals** —persones del territori amb l'habilitat de publicar
+   a la permaweb— i això vol dir que el camí ha de ser prou curt perquè es pugui
+   ensenyar en una tarda i recordar la setmana següent.
+
+**Riscos que cal dir en veu alta**: publicar és irreversible a la pràctica
+—un pack replicat no es desfà—, així que el pas de publicar ha de mostrar
+**exactament què sortirà** abans de fer-ho, i qui no ho entengui no ha de poder
+prémer el botó sense veure-ho. I depèn de relés i xarxes de tercers
+(Nostr, Arweave, IPFS), que és l'únic tros del SOS que no és autosuficient: cal
+que funcioni degradat quan no hi ha xarxa, i que ho digui.
+
 ### Després de l'MVP · l'app de mòbil per a la gent
 
 **On som i on anem.** Ara mateix estem construint les **bases** i l'app
