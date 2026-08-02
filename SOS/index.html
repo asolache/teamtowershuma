@@ -1887,6 +1887,58 @@ const allocationsOf=v=>v.allocations||(v.allocations=[]);
    3. **Silenci.** Una venture que fa setmanes que no es mou surt marcada. El
       silenci és el primer símptoma abans que un projecte mori, i és
       precisament el que ningú mira. */
+/* ═══════════ RISCOS I BLOQUEJOS · F3 ═══════════
+   Avui una venture aturada i una que va bé són visualment idèntiques a la
+   Cartera. Qui coordina se n'assabenta quan ja és tard, perquè el que mata un
+   projecte no surt enlloc: un permís que no arriba, una persona que se'n va,
+   un local que es perd.
+
+   Dues coses, i la segona és la que fa mal:
+   1. **Riscos** amb probabilitat i impacte. Un risc sense mitigació escrita no
+      és un risc identificat, és una excusa preparada.
+   2. **Bloquejos** amb motiu i **qui els desbloqueja**. Un bloqueig sense nom
+      no el desbloqueja ningú.
+   I el semàfor, que és el que fa que això es vegi sense obrir res. */
+const RISK_LEVELS=[{id:'baixa',label:'Baixa',w:1},{id:'mitjana',label:'Mitjana',w:2},{id:'alta',label:'Alta',w:3}];
+const riskWeight=id=>(RISK_LEVELS.find(x=>x.id===id)||{w:1}).w;
+const risksOf=v=>v.risks||(v.risks=[]);
+const blocksOf=v=>v.blocks||(v.blocks=[]);
+function addRisk(v,{what,prob,impact,mitigation}={}){
+  const r={id:uid(),what:(what||'').trim(),prob:prob||'mitjana',impact:impact||'mitjana',
+    mitigation:(mitigation||'').trim(),open:true,ts:now()};
+  if(!r.what)return null;
+  risksOf(v).unshift(r);return r;
+}
+const closeRisk=(v,id)=>{const r=risksOf(v).find(x=>x.id===id);if(r)r.open=false;return !!r;};
+function addBlock(v,{what,who}={}){
+  const b={id:uid(),what:(what||'').trim(),who:(who||'').trim(),open:true,ts:now()};
+  if(!b.what)return null;
+  blocksOf(v).unshift(b);return b;
+}
+const closeBlock=(v,id)=>{const b=blocksOf(v).find(x=>x.id===id);if(b){b.open=false;b.closedAt=now();}return !!b;};
+const blockDays=b=>b&&b.ts?Math.floor((Date.now()-new Date(b.ts).getTime())/86400000):0;
+/* El semàfor. Vermell mana sobre ambre, i un risc alt **sense mitigació** és
+   vermell encara que tot avanci: el que et tomba és el que no has previst. */
+function ventureLight(v){
+  const risks=risksOf(v).filter(r=>r.open),blocks=blocksOf(v).filter(b=>b.open);
+  const sil=ventureSilence(v);
+  const grave=risks.filter(r=>riskWeight(r.prob)+riskWeight(r.impact)>=5&&!r.mitigation);
+  const stuck=blocks.filter(b=>blockDays(b)>=14);
+  if(v.stage==='graduacio')return{level:'verd',why:'Graduada',risks:risks.length,blocks:blocks.length};
+  if(grave.length)return{level:'vermell',why:grave.length+' risc(os) alts sense mitigació',risks:risks.length,blocks:blocks.length};
+  if(stuck.length)return{level:'vermell',why:'Bloquejada fa '+Math.max(...stuck.map(blockDays))+' dies',risks:risks.length,blocks:blocks.length};
+  if(blocks.length)return{level:'ambre',why:blocks.length+' bloqueig(os) obert(s)',risks:risks.length,blocks:blocks.length};
+  if(sil.level==='greu')return{level:'vermell',why:'Sense senyals de vida fa '+sil.days+' dies',risks:risks.length,blocks:blocks.length};
+  if(sil.level==='avis')return{level:'ambre',why:'Fa '+sil.days+' dies que no es mou',risks:risks.length,blocks:blocks.length};
+  if(risks.length)return{level:'ambre',why:risks.length+' risc(os) oberts',risks:risks.length,blocks:blocks.length};
+  return{level:'verd',why:'Avança',risks:0,blocks:0};
+}
+const LIGHT_META={verd:{ic:'🟢',color:'var(--green)',label:'Avança'},ambre:{ic:'🟠',color:'var(--orange)',label:'Vigilar'},vermell:{ic:'🔴',color:'var(--red)',label:'Aturada o en risc'}};
+// Semàfor de tota la MATRIU, pitjor primer.
+function matriuLights(node){
+  return venturesOf(node).map(v=>({v,light:ventureLight(v)}))
+    .sort((a,b)=>({vermell:0,ambre:1,verd:2})[a.light.level]-({vermell:0,ambre:1,verd:2})[b.light.level]);
+}
 const MENTOR_SCOPES=[
   {id:'juridic',ic:'⚖',label:'Jurídic',one:'Forma jurídica, estatuts, obligacions'},
   {id:'economic',ic:'💶',label:'Econòmic',one:'Viabilitat, preus, tresoreria, finançament'},
@@ -3411,7 +3463,24 @@ async function markOnboardingDone(){try{await dbPut({id:'__onboardingDone',type:
    llavors l'acció. Un tour que explica funcions abans de dir per a què
    serveixen és un tour que se salta tothom. */
 let _tourRole='simpatitzant';
-function openOnboardingTour(){
+/* La benvinguda no pot trepitjar ningú.
+   `modal()` buida `#modalRoot`, així que qualsevol pantalla que s'obri destrueix
+   la que hi hagués. El tour arriba amb retard des de l'arrencada: si mentrestant
+   la persona ja ha obert alguna cosa —un intercanvi a mig omplir, una alta de
+   soci— li desapareixia de sota els dits, amb el que hagués escrit a dins.
+
+   No és un cas rebuscat: passa sempre que algú es mou ràpid els primers segons,
+   i era la causa del `#exSave` que es desenganxava del DOM. La regla és
+   general: **una presentació mai interromp una feina començada.** Si hi ha res
+   obert, el tour espera i ho torna a provar. */
+const modalOpen=()=>{const r=$('#modalRoot');return !!(r&&r.querySelector('.modal-bg'));};
+function openOnboardingTour(retry){
+  if(modalOpen()){
+    // Reintenta amb calma, i es rendeix si la persona segueix ocupada: ja
+    // trobarà la guia al llançador quan li vagi bé.
+    if((retry||0)<10)setTimeout(()=>openOnboardingTour((retry||0)+1),1500);
+    return false;
+  }
   const steps=[
     {ic:'🏚',t:'El problema que ja coneixes',
      b:'«Sempre tirem els mateixos quatre.» «Tenim mil coses i no sabem qui té què.» «Vam decidir-ho fa dos anys i ningú se\'n recorda.» El SOS no és una xarxa social: és la comptabilitat del que una comunitat es dona a si mateixa.',cta:null},
@@ -7148,6 +7217,26 @@ function renderMatriuVentures(body,node){
     '</div>'+
     '<div class="psy-caption">Aquestes són les mètriques que expliquen per què la MATRIU és un model: no només mou capital, també <strong>cura, vincle, reciprocitat i temps donat</strong>. La densitat relacional (fluxos intangibles) i el temps solidari són indicadors de sortida de la salut psicosocial del territori.</div>';
   body.appendChild(psyBox);
+  /* Semàfor · una venture aturada i una que va bé ja no s'assemblen. */
+  const lights=matriuLights(node);
+  const cnt={verd:0,ambre:0,vermell:0};lights.forEach(x=>cnt[x.light.level]++);
+  body.appendChild(el('div','ent-grp-lbl','🚦 Semàfor de la cartera'));
+  const lb=el('div','bib-stats');
+  lb.innerHTML='<div class="bib-tile"><div class="n" style="color:var(--green)">'+cnt.verd+'</div><div class="l">avancen</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+cnt.ambre+'</div><div class="l">a vigilar</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--red)">'+cnt.vermell+'</div><div class="l">aturades o en risc</div></div>';
+  body.appendChild(lb);
+  if(cnt.vermell||cnt.ambre){
+    const box=el('div','ent-grid');box.style.marginTop='.5rem';
+    lights.filter(x=>x.light.level!=='verd').slice(0,8).forEach(x=>{
+      const lm=LIGHT_META[x.light.level],c=el('div','ent-card');
+      c.style.cursor='pointer';c.style.borderLeft='3px solid '+lm.color;
+      c.innerHTML='<div class="ent-nm">'+lm.ic+' '+esc(x.v.name)+'</div><div class="ent-desc">'+esc(x.light.why)+'</div>';
+      c.onclick=()=>openVentureDetail(node,x.v);
+      box.appendChild(c);
+    });
+    body.appendChild(box);
+  }
   /* Acompanyament · el servei, no el magatzem. Primer el que demana atenció. */
   const mt=mentoringSummary(node);
   body.appendChild(el('div','ent-grp-lbl','🎓 Acompanyament · el servei que presta aquesta MATRIU'));
@@ -7429,6 +7518,52 @@ function openPersonProfile(nameOrKey){
 }
 const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'⏱',label:'Hores',unit:'hores'},objecte:{ic:'📦',label:'Objectes',unit:'objectes'}};
 // Detall d'una venture: assigna el soci que lidera i mobilitza recursos de l'ecosistema (talent, hores, objectes).
+/* Un risc sense mitigació escrita no és un risc identificat: és una excusa
+   preparada. Per això el camp hi és des del primer moment, encara que es pugui
+   deixar buit — i si es deixa buit i el risc és gros, el semàfor es posa vermell. */
+function openRiskForm(node,v,onDone){
+  const bg=modal(`
+    <h2>⚠ Apunta un risc</h2>
+    <p class="m-sub"><strong>${esc(v.name)}</strong> · el que podria tombar aquest projecte. Escriure-ho és el primer pas per evitar-ho.</p>
+    <div class="field"><label>Quin risc</label><input id="rkWhat" maxlength="140" placeholder="p. ex. depenem d'una sola persona per a la comptabilitat"></div>
+    <div class="wz-key">
+      <div class="field" style="flex:1"><label>Probabilitat</label><select id="rkProb">${RISK_LEVELS.map(l=>'<option value="'+l.id+'"'+(l.id==='mitjana'?' selected':'')+'>'+l.label+'</option>').join('')}</select></div>
+      <div class="field" style="flex:1"><label>Impacte</label><select id="rkImp">${RISK_LEVELS.map(l=>'<option value="'+l.id+'"'+(l.id==='mitjana'?' selected':'')+'>'+l.label+'</option>').join('')}</select></div>
+    </div>
+    <div class="field"><label>Com es mitiga</label><textarea id="rkMit" rows="2" placeholder="Què fareu perquè no passi, o què fareu si passa"></textarea>
+      <div class="wz-key-note">Si el risc és gros i això queda buit, la venture surt en <strong>vermell</strong> a la Cartera. És intencionat.</div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="rkCancel">Cancel·la</button><button class="btn btn-primary" id="rkSave">⬢ Apunta'l</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#rkCancel').onclick=closeModal;
+  bg.querySelector('#rkSave').onclick=async()=>{
+    const r=addRisk(v,{what:bg.querySelector('#rkWhat').value,prob:bg.querySelector('#rkProb').value,
+      impact:bg.querySelector('#rkImp').value,mitigation:bg.querySelector('#rkMit').value});
+    if(!r){toast('Digues quin és el risc');return;}
+    await persist(node);closeModal();toast('⚠ Risc apuntat');if(onDone)onDone();render();
+  };
+}
+/* Un bloqueig sense nom no el desbloqueja ningú. */
+function openBlockForm(node,v,onDone){
+  const ms=membersOf(node);
+  const bg=modal(`
+    <h2>⛔ Apunta un bloqueig</h2>
+    <p class="m-sub"><strong>${esc(v.name)}</strong> · què impedeix avançar ara mateix, i <strong>qui</strong> ho pot desencallar.</p>
+    <div class="field"><label>Què bloqueja</label><input id="bkWhat" maxlength="140" placeholder="p. ex. falta la llicència d'activitat"></div>
+    <div class="field"><label>Qui ho desbloqueja</label>
+      <input id="bkWho" list="bkWhoList" placeholder="Nom de qui se'n fa càrrec">
+      <datalist id="bkWhoList">${ms.map(m=>'<option value="'+esc(m.name)+'">').join('')}</datalist>
+      <div class="wz-key-note">Pot ser algú de fora (un ajuntament, una gestoria). Sense nom, no el desbloqueja ningú.</div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="bkCancel">Cancel·la</button><button class="btn btn-primary" id="bkSave">⬢ Apunta'l</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#bkCancel').onclick=closeModal;
+  bg.querySelector('#bkSave').onclick=async()=>{
+    const b=addBlock(v,{what:bg.querySelector('#bkWhat').value,who:bg.querySelector('#bkWho').value});
+    if(!b){toast('Digues què bloqueja');return;}
+    await persist(node);closeModal();toast('⛔ Bloqueig apuntat');if(onDone)onDone();render();
+  };
+}
 /* Acta d'una sessió d'acompanyament. Els camps són els d'una acta de debò —
    temes, acords, proper pas — perquè el que no queda escrit es torna a discutir. */
 function openSessionForm(node,v,onDone){
@@ -7484,6 +7619,9 @@ function openVentureDetail(node,v){
       <div class="ent-desc" id="vdHint" style="margin-top:.3rem">Ecosistema: ${eco.talent.length} talent · ${eco.hores} ofertes d'hores · ${eco.objectes} objectes disponibles.</div>
       <button class="btn btn-ghost btn-sm" id="vdAdd" style="margin-top:.4rem">+ Assigna</button>
     </div>
+    <div class="ent-grp-lbl">🚦 Riscos i bloquejos</div>
+    <div id="vdRisks"></div>
+    <div class="ent-badges" style="margin-top:.4rem"><button class="btn btn-ghost btn-sm" id="vdRisk">⚠ Apunta un risc</button><button class="btn btn-ghost btn-sm" id="vdBlock">⛔ Apunta un bloqueig</button></div>
     <div class="ent-grp-lbl">🎓 Acompanyament · qui la sosté</div>
     <div id="vdMentors"></div>
     <div id="vdSessions"></div>
@@ -7512,6 +7650,38 @@ function openVentureDetail(node,v){
     else{const q=Number(qty.value)||0;if(q<=0){toast('Indica una quantitat');return;}al={id:uid(),kind,label:(kind==='hores'?q+' hores del banc de temps':q+' objectes de la biblioteca'),qty:q};}
     allocationsOf(v).push(al);bg.querySelector('#vdAllocs').innerHTML=allocRows();wireX();
   };
+  /* Riscos i bloquejos, amb el semàfor a dalt perquè es vegi abans que res. */
+  const paintRisks=()=>{
+    const box=bg.querySelector('#vdRisks');if(!box||!box.isConnected)return;
+    const light=ventureLight(v),lm=LIGHT_META[light.level];
+    box.innerHTML='<div class="ent-card" style="border-left:3px solid '+lm.color+'"><div class="ent-nm">'+lm.ic+' '+esc(lm.label)+'</div><div class="ent-desc">'+esc(light.why)+'</div></div>';
+    const rs=risksOf(v).filter(r=>r.open),bs=blocksOf(v).filter(b=>b.open);
+    if(!rs.length&&!bs.length)box.appendChild(el('div','ent-desc','Cap risc ni bloqueig apuntat. Un risc que no s\'escriu no existeix fins que passa.'));
+    bs.forEach(b=>{
+      const c=el('div','ent-card');c.style.marginTop='.3rem';c.style.borderLeft='3px solid var(--red)';
+      c.innerHTML='<div class="ent-nm">⛔ '+esc(b.what)+'</div><div class="ent-badges" style="margin-top:.2rem">'+
+        (b.who?'<span class="ent-b b-ver">desbloqueja: '+esc(b.who)+'</span>':'<span class="ent-b b-unver">sense ningú assignat</span>')+
+        '<span class="ent-b">'+blockDays(b)+' dies</span></div>';
+      const done=el('button','btn btn-ghost btn-sm','✓ Desbloquejat');done.style.marginTop='.3rem';
+      done.onclick=async()=>{closeBlock(v,b.id);await persist(node);paintRisks();};
+      c.appendChild(done);box.appendChild(c);
+    });
+    rs.forEach(r=>{
+      const heavy=riskWeight(r.prob)+riskWeight(r.impact)>=5;
+      const c=el('div','ent-card');c.style.marginTop='.3rem';
+      if(heavy&&!r.mitigation)c.style.borderLeft='3px solid var(--red)';
+      c.innerHTML='<div class="ent-nm">⚠ '+esc(r.what)+'</div><div class="ent-badges" style="margin-top:.2rem">'+
+        '<span class="ent-b">probabilitat '+esc(r.prob)+'</span><span class="ent-b">impacte '+esc(r.impact)+'</span>'+
+        (r.mitigation?'<span class="ent-b b-ver">mitigat</span>':'<span class="ent-b b-unver">sense mitigació</span>')+'</div>'+
+        (r.mitigation?'<div class="ent-desc" style="margin-top:.25rem">'+esc(r.mitigation)+'</div>':'');
+      const done=el('button','btn btn-ghost btn-sm','✓ Tancat');done.style.marginTop='.3rem';
+      done.onclick=async()=>{closeRisk(v,r.id);await persist(node);paintRisks();};
+      c.appendChild(done);box.appendChild(c);
+    });
+  };
+  bg.querySelector('#vdRisk').onclick=()=>openRiskForm(node,v,paintRisks);
+  bg.querySelector('#vdBlock').onclick=()=>openBlockForm(node,v,paintRisks);
+  paintRisks();
   /* Acompanyament: mentors amb àmbit, i les actes de les sessions. */
   const paintMentors=()=>{
     const box=bg.querySelector('#vdMentors');if(!box||!box.isConnected)return;
@@ -7770,6 +7940,19 @@ function dashboardAttention(){
         if(g.ready)out.push({sev:1,ic:'🚀',t:v.name+' pot passar a '+g.label,
           d:nd.name+' · totes les comprovacions verdes',act:()=>openVentureDetail(nd,v)});
       }catch(e){}
+    });
+    /* Bloquejos i riscos alts: el que impedeix avançar avui, amb nom i cognoms
+       de qui ho pot desencallar. */
+    venturesOf(nd).forEach(v=>{
+      if(v.stage==='graduacio')return;
+      blocksOf(v).filter(b=>b.open&&blockDays(b)>=14).forEach(b=>out.push({
+        sev:0,ic:'⛔',t:v.name+' bloquejada fa '+blockDays(b)+' dies',
+        d:nd.name+' · '+b.what+(b.who?' — ho desbloqueja '+b.who:' — sense ningú assignat'),
+        act:()=>openVentureDetail(nd,v)}));
+      const grave=risksOf(v).filter(r=>r.open&&riskWeight(r.prob)+riskWeight(r.impact)>=5&&!r.mitigation);
+      if(grave.length)out.push({sev:1,ic:'⚠',t:v.name+' té '+grave.length+' risc(os) alts sense mitigació',
+        d:nd.name+' · '+grave[0].what+'. Un risc sense pla no és un risc identificat',
+        act:()=>openVentureDetail(nd,v)});
     });
     /* Ventures en silenci. Un projecte que deixa de moure's no avisa: per això
        ha d'avisar el tauler, abans que la mort sigui un fet consumat. */
@@ -9465,7 +9648,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
