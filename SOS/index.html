@@ -1553,6 +1553,51 @@ async function decryptWithKey(key,packet){if(!packet||!packet.iv||!packet.ct)thr
 async function _kekFromPass(pass,saltB64){const salt=saltB64?_unb64u(saltB64):crypto.getRandomValues(new Uint8Array(16));const km=await crypto.subtle.importKey('raw',_te.encode(pass),{name:'PBKDF2'},false,['deriveKey']);const kek=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:210000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);return{kek,salt:_b64u(salt)};}
 async function wrapKeyWithPass(key,pass){const raw=await crypto.subtle.exportKey('raw',key);const{kek,salt}=await _kekFromPass(pass);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},kek,raw);return{v:1,alg:'AES-GCM-PBKDF2',salt,iv:_b64u(iv),ct:_b64u(ct),iters:210000};}
 async function unwrapKeyWithPass(bundle,pass){if(!bundle||bundle.alg!=='AES-GCM-PBKDF2')throw{msg:'Invalid bundle'};const{kek}=await _kekFromPass(pass,bundle.salt);const raw=await crypto.subtle.decrypt({name:'AES-GCM',iv:_unb64u(bundle.iv)},kek,_unb64u(bundle.ct));return crypto.subtle.importKey('raw',raw,{name:'AES-GCM',length:256},true,['encrypt','decrypt']);}
+/* ═══════════ Còpia de la identitat · la mateixa persona a tots els seus dispositius ═══════════
+   «La clau privada mai surt del navegador» era mitja veritat: també volia dir que
+   si esborraves les dades del navegador perdies el did:sos per sempre, i que el
+   mateix humà amb un iMac i un iPad eren dues persones diferents al registre.
+
+   La sortida no és pujar la clau a cap servei: és una **còpia xifrada amb
+   contrasenya** (PBKDF2 210k · AES-GCM) que tu custodies i que pots portar al
+   segon dispositiu. Sense la contrasenya el fitxer no val res; amb ella, els dos
+   navegadors signen amb el mateix DID i el registre veu una sola persona. */
+const IDENTITY_BACKUP_TYPE='sos-identity-backup';
+async function _identityRecord(){await getIdentity();const all=await dbGetAll();return all.find(n=>n.id==='__identity')||null;}
+async function exportIdentity(pass){
+  if(!pass||String(pass).length<8)throw{msg:'Cal una contrasenya de 8 caràcters o més'};
+  const rec=await _identityRecord();
+  if(!rec||!rec.privJwk)throw{msg:'Encara no hi ha identitat en aquest dispositiu'};
+  const secret={did:rec.did,alg:rec.alg,pubJwk:rec.pubJwk,privJwk:rec.privJwk,
+    exPubJwk:rec.exPubJwk||null,exPrivJwk:rec.exPrivJwk||null,createdAt:rec.createdAt||''};
+  const{kek,salt}=await _kekFromPass(pass);
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},kek,_te.encode(JSON.stringify(secret)));
+  return{v:1,type:IDENTITY_BACKUP_TYPE,alg:'AES-GCM-PBKDF2',iters:210000,
+    did:rec.did,salt,iv:_b64u(iv),ct:_b64u(ct),ts:now(),app:'sos-teamtowers'};
+}
+/* Restaura la identitat en aquest dispositiu. Per defecte NO sobreescriu una
+   identitat existent que ja hagi signat coses: cal dir-ho explícitament, perquè
+   perdre-la és irreversible. */
+async function importIdentity(backup,pass,{overwrite}={}){
+  if(!backup||backup.type!==IDENTITY_BACKUP_TYPE)throw{msg:'Això no és una còpia d\'identitat SOS'};
+  const existing=await _identityRecord();
+  if(existing&&existing.did!==backup.did&&!overwrite)
+    throw{msg:'Aquest dispositiu ja té una identitat pròpia ('+existing.did.slice(0,24)+'…). Confirma que la vols substituir.',code:'exists',existingDid:existing.did};
+  let secret;
+  try{
+    const{kek}=await _kekFromPass(pass,backup.salt);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:_unb64u(backup.iv)},kek,_unb64u(backup.ct));
+    secret=JSON.parse(_td.decode(pt));
+  }catch(e){throw{msg:'Contrasenya incorrecta o fitxer malmès',code:'bad_pass'};}
+  if(!secret||!secret.privJwk||!secret.did)throw{msg:'Còpia incompleta'};
+  await dbPut({id:'__identity',type:'meta',did:secret.did,alg:secret.alg,pubJwk:secret.pubJwk,
+    privJwk:secret.privJwk,exPubJwk:secret.exPubJwk,exPrivJwk:secret.exPrivJwk,
+    passkey:null,createdAt:secret.createdAt||now(),restoredAt:now()});
+  _identity=null;                       // força rellegir des de la base de dades
+  const id=await getIdentity();
+  return{did:id.did,alg:id.alg};
+}
 // ═══════════ Sabiduria · governança + main canònic (Arc G1-G5, R1-R3) ═══════════
 // Cada node té governança lleugera: owner (creador), stewards (co-lideren), quorum de sabiduria.
 // Propostes (altes, canvis) entren pending → stewards signen vot → si arriba a quorum, es validen i s'apliquen al main.
@@ -2948,13 +2993,84 @@ async function openIdentityDashboard(){
       (owns.length?'<div class="ent-desc">Owner de: '+owns.slice(0,10).map(esc).join(', ')+'</div>':'')+
       (stewards.length?'<div class="ent-desc">Steward a: '+stewards.slice(0,10).map(esc).join(', ')+'</div>':'')+
       '<div class="ent-grp-lbl">🔓 Nodes on tinc accés desxifrat · '+decryptable.length+'</div>'+(decryptable.length?'<div class="ent-grid">'+decryptable.slice(0,10).map(d=>'<div class="ent-card"><div class="ent-nm">'+esc(d.name)+'</div><div class="ent-badges"><span class="ent-b">sender '+esc(d.sender)+'</span></div></div>').join('')+'</div>':'<div class="ent-desc">Cap encara. Comparteix la teva carta d\'intercanvi amb un owner perquè t\'obri accés.</div>')+
-      '<div class="ai-note" style="margin-top:.6rem"><span class="ic">🌱</span><span>Tot això és <strong>local i sobirà</strong>. La teva clau privada mai surt del navegador. Els envelopes ECDH t\'obren accés punt-a-punt sense servidor.</span></div>';
+      '<div class="ent-grp-lbl">💾 Còpia de la identitat · el mateix tu a tots els dispositius</div>'+
+      '<div class="ent-card"><div class="ent-desc">La clau privada viu en aquest navegador. Si esborres les dades, la perds; i al segon dispositiu series una altra persona al registre. Fes-ne una <strong>còpia xifrada amb contrasenya</strong> i porta-la a l\'altre aparell.</div>'+
+      '<div class="ent-badges" style="margin-top:.5rem"><button class="btn btn-primary btn-sm" id="idExport">⭳ Exporta còpia xifrada</button><button class="btn btn-ghost btn-sm" id="idImport">⭱ Restaura una còpia</button></div>'+
+      '<div class="wz-key-note" style="margin-top:.4rem">Sense la contrasenya el fitxer no serveix de res. Guarda\'l on guardaries una clau de casa.</div></div>'+
+      '<div class="ai-note" style="margin-top:.6rem"><span class="ic">🌱</span><span>Tot això és <strong>local i sobirà</strong>. La teva clau privada només surt d\'aquí si tu la xifres i te l\'emportes. Els envelopes ECDH t\'obren accés punt-a-punt sense servidor.</span></div>';
     bg.querySelector('#idCopyDid').onclick=async()=>{if(navigator.clipboard)await navigator.clipboard.writeText(id.did);toast('📋 DID copiat');};
     bg.querySelector('#idCopyExch').onclick=async()=>{const c=await myExchangeCard();if(navigator.clipboard)await navigator.clipboard.writeText(JSON.stringify(c));toast('🎫 Carta copiada');};
     bg.querySelector('#idPasskey').onclick=async()=>{try{if(passkey){await unbindPasskey();toast('Passkey desvinculat');}else{await bindPasskey();toast('Passkey vinculat ✓');}closeModal();openIdentityDashboard();}catch(e){toast(e.msg||'Error');}};
     bg.querySelector('#idNostr').onclick=()=>{closeModal();openNostrModal();};
+    bg.querySelector('#idExport').onclick=()=>{closeModal();openIdentityBackup('export');};
+    bg.querySelector('#idImport').onclick=()=>{closeModal();openIdentityBackup('import');};
   }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.msg||String(e))+'</span></div>';}
 }
+/* Portar la identitat d'un dispositiu a l'altre. Dues pantalles, una contrasenya
+   i cap servei enmig. */
+function openIdentityBackup(mode){
+  const isExp=mode!=='import';
+  const bg=modal(`
+    <h2>${isExp?'⭳ Exporta la teva identitat':'⭱ Restaura la teva identitat'}</h2>
+    <p class="m-sub">${isExp
+      ?'Es xifra amb la contrasenya que posis (PBKDF2 · AES-GCM) i es descarrega com a fitxer. <strong>Ningú més la veu.</strong> Si perds la contrasenya, el fitxer és paper mullat.'
+      :'Enganxa o carrega la còpia i posa la contrasenya amb què la vas xifrar. A partir d\'aquí, aquest dispositiu signarà amb el <strong>mateix did:sos</strong>.'}</p>
+    ${isExp?'':'<input type="file" id="ibFile" accept="application/json,.json" style="margin-bottom:.5rem"><textarea id="ibText" placeholder="…o enganxa aquí el contingut del fitxer" style="width:100%;min-height:80px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--light);font-family:var(--mono);font-size:.66rem;padding:.6rem;word-break:break-all"></textarea>'}
+    <input type="password" id="ibPass" placeholder="Contrasenya (mínim 8 caràcters)" autocomplete="${isExp?'new-password':'current-password'}" style="width:100%;margin-top:.4rem">
+    ${isExp?'<input type="password" id="ibPass2" placeholder="Repeteix la contrasenya" autocomplete="new-password" style="width:100%;margin-top:.4rem">':''}
+    <div id="ibMsg" style="margin-top:.5rem"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="ibGo">${isExp?'⭳ Xifra i descarrega':'⭱ Restaura'}</button><button class="btn btn-ghost" id="ibClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#ibClose').onclick=closeModal;
+  const msg=(txt,ic)=>{const m=bg.querySelector('#ibMsg');if(m)m.innerHTML='<div class="ai-note"><span class="ic">'+(ic||'⚠')+'</span><span>'+esc(txt)+'</span></div>';};
+  if(!isExp){
+    const f=bg.querySelector('#ibFile');
+    f.onchange=()=>{const file=f.files&&f.files[0];if(!file)return;const r=new FileReader();
+      r.onload=()=>{bg.querySelector('#ibText').value=String(r.result||'');msg('Fitxer carregat. Ara la contrasenya.','📄');};r.readAsText(file);};
+  }
+  bg.querySelector('#ibGo').onclick=async()=>{
+    const pass=bg.querySelector('#ibPass').value;
+    try{
+      if(isExp){
+        if(pass!==bg.querySelector('#ibPass2').value)return msg('Les dues contrasenyes no coincideixen');
+        const pack=await exportIdentity(pass);
+        downloadText('sos-identitat-'+pack.did.slice(-12)+'.json',JSON.stringify(pack,null,2),'application/json');
+        msg('Còpia descarregada. Porta-la al segon dispositiu i restaura-la allà.','✅');
+        toast('💾 Identitat exportada');
+      }else{
+        let backup;try{backup=JSON.parse(bg.querySelector('#ibText').value.trim());}catch(e){return msg('El text no és un JSON vàlid');}
+        let res;
+        try{res=await importIdentity(backup,pass);}
+        catch(e){
+          if(e&&e.code==='exists'){
+            if(!confirm(e.msg+'\n\nSubstituir la identitat d\'aquest dispositiu és irreversible. Continuo?'))return;
+            res=await importIdentity(backup,pass,{overwrite:true});
+          }else return msg(e.msg||String(e));
+        }
+        msg('Restaurada: '+res.did,'✅');
+        toast('🆔 Identitat restaurada');
+        setTimeout(()=>{closeModal();openIdentityDashboard();},900);
+      }
+    }catch(e){msg(e.msg||String(e));}
+  };
+}
+/* Serialització canònica per al CID: claus ordenades a TOTS els nivells.
+   El primer intent feia servir `JSON.stringify(pack, Object.keys(pack).sort())`,
+   i el segon argument en forma de llista de claus **filtra a tota la
+   profunditat**: `{totals:{hores:8}}` sortia com a `{totals:{}}`. És a dir, el
+   CID no cobria res del que hi havia a dins — podies canviar hores i euros i el
+   CID no es movia. Aquí les claus s'ordenen sense filtrar res.
+
+   No es pot reaprofitar el `_canon` de les firmes: aquell deixa fora `sig` i
+   `signer` a propòsit (són el que es firma, no part del missatge), i un CID que
+   ignorés la firma permetria canviar-la sense moure l'adreça del contingut. */
+function _canonAll(v){
+  if(v===null||typeof v!=='object')return JSON.stringify(v===undefined?null:v);
+  if(Array.isArray(v))return '['+v.map(_canonAll).join(',')+']';
+  return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+_canonAll(v[k])).join(',')+'}';
+}
+const _cidOf=async obj=>'sha256:'+await sha256(_te.encode(_canonAll(obj)));
 // ═══════════ Paquet d'ancoratge · snapshot signat + CID per pinnar a IPFS/Arweave/permaweb (Backlog #5 groundwork) ═══════════
 // Empaqueta {node.id, name, mainHash, ledger_hashes[], envelopes count, ts, signer} + firma.
 // El pack és content-addressable via SHA-256 (equivalent al CIDv0 canònic quan pinnat a IPFS raw).
@@ -2970,16 +3086,45 @@ async function buildAnchorPack(node){
     ts:now(),app:'sos-teamtowers'
   };
   await signRecord(pack);
-  pack.cid='sha256:'+await sha256(_te.encode(JSON.stringify(pack,Object.keys(pack).sort())));
+  pack.cid=await _cidOf(pack);
   return pack;
 }
 async function verifyAnchorPack(pack){
   if(!pack||pack.type!=='sos-anchor-pack')return{ok:false,reason:'not_anchor_pack'};
   const{cid,...rest}=pack;
-  const expected='sha256:'+await sha256(_te.encode(JSON.stringify(rest,Object.keys(rest).sort())));
+  const expected=await _cidOf(rest);
   if(expected!==cid)return{ok:false,reason:'cid_mismatch',expected,got:cid};
   const sig=await verifyRecord(rest);
   return{ok:sig.ok,reason:sig.reason||'',cid};
+}
+/* El registre públic travessa tots els nodes: ancorar-ne un de sol no el prova.
+   Aquest pack cobreix TOTES les accions del registre alhora, amb una arrel que
+   depèn de cada hash d'apunt — si en canvia un, l'arrel canvia i l'ancoratge
+   publicat deixa de quadrar. */
+async function buildRegisterPack(list){
+  const acts=(list||ledgerIndex()).slice().sort((a,b)=>(a.ts||'').localeCompare(b.ts||'')||String(a.id).localeCompare(String(b.id)));
+  const leaves=acts.map(x=>x.hash||('unhashed:'+x.nodeId+':'+x.id));
+  const t=ledgerTotals(acts);
+  const pack={
+    v:1,type:'sos-register-pack',
+    scope:{nodes:t.nodes,persones:t.persones,accions:acts.length},
+    totals:{hores:t.hores,euros:t.euros,signats:t.signats,encadenats:t.encadenats},
+    root:leaves.length?await sha256(_te.encode(leaves.join(':'))):'',
+    leaves,ts:now(),app:'sos-teamtowers'
+  };
+  await signRecord(pack);
+  pack.cid=await _cidOf(pack);
+  return pack;
+}
+async function verifyRegisterPack(pack){
+  if(!pack||pack.type!=='sos-register-pack')return{ok:false,reason:'not_register_pack'};
+  const{cid,...rest}=pack;
+  const expected=await _cidOf(rest);
+  if(expected!==cid)return{ok:false,reason:'cid_mismatch',expected,got:cid};
+  const root=(pack.leaves||[]).length?await sha256(_te.encode((pack.leaves||[]).join(':'))):'';
+  if(root!==pack.root)return{ok:false,reason:'root_mismatch',expected:root,got:pack.root};
+  const sig=await verifyRecord(rest);
+  return{ok:sig.ok,reason:sig.reason||'',cid,root};
 }
 function downloadAnchorPack(pack){
   const blob=new Blob([JSON.stringify(pack,null,2)],{type:'application/json'});
@@ -3009,6 +3154,37 @@ function openAnchorPackModal(node){
   bg.querySelector('#apCopy').onclick=async()=>{if(!pack)return;const txt=JSON.stringify(pack,null,2);if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(txt);toast('📋 JSON copiat');}else prompt('Copia el pack:',txt);};
   bg.querySelector('#apCopyCid').onclick=async()=>{if(!pack)return;if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(pack.cid);toast('🔗 CID copiat');}else prompt('CID:',pack.cid);};
   bg.querySelector('#apDl').onclick=()=>{if(pack)downloadAnchorPack(pack);};
+}
+/* Ancoratge del registre públic sencer. Abans el botó del registre obria
+   l'ancoratge d'un node — i des del tauler, sense node actiu, no obria res. */
+function openRegisterPackModal(list){
+  const bg=modal(`
+    <h2>🛰 Ancora el registre públic</h2>
+    <p class="m-sub">Una arrel criptogràfica de <strong>totes les accions</strong> del registre, signada i content-addressable. Publica-la i qualsevol podrà demostrar que aquestes accions ja hi eren en aquesta data — sense servidor i sense confiar en ningú.</p>
+    <div id="rpBody">Calculant l'arrel…</div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="rpCopyRoot">🌱 Copia arrel</button><button class="btn btn-ghost" id="rpCopyCid">🔗 Copia CID</button><button class="btn btn-primary" id="rpDl">⭳ Descarrega</button><button class="btn btn-ghost" id="rpClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#rpClose').onclick=closeModal;
+  let pack=null;
+  (async()=>{try{
+    pack=await buildRegisterPack(list);
+    const ver=await verifyRegisterPack(pack);
+    const box=bg.querySelector('#rpBody');if(!box||!box.isConnected)return;
+    box.innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+pack.scope.accions+'</div><div class="l">accions</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--green)">'+pack.totals.signats+'</div><div class="l">signades</div></div>'+
+      '<div class="bib-tile"><div class="n">'+pack.scope.nodes+'</div><div class="l">nodes</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+pack.scope.persones+'</div><div class="l">persones</div></div></div>'+
+      '<div class="ent-grp-lbl">🌱 Arrel del registre</div><div class="ent-card"><code style="font-size:.72rem;word-break:break-all">'+esc(pack.root||'—')+'</code></div>'+
+      '<div class="ent-grp-lbl">🔗 CID (SHA-256)</div><div class="ent-card"><code style="font-size:.72rem;word-break:break-all">'+esc(pack.cid)+'</code></div>'+
+      '<div class="ent-grp-lbl">🔏 Signat per</div><div class="ent-card"><code style="font-size:.7rem;word-break:break-all">'+esc((pack.signer&&pack.signer.did)||'—')+'</code></div>'+
+      '<div class="ai-note" style="margin-top:.5rem"><span class="ic">'+(ver.ok?'✅':'⚠')+'</span><span>'+(ver.ok?'Verificat aquí mateix: l\'arrel quadra amb els apunts i la firma és vàlida.':'Atenció: '+esc(ver.reason||'no verificat'))+'</span></div>'+
+      '<div class="ai-note"><span class="ic">🌐</span><span>Per fer-lo permanent: puja el JSON a <strong>Arweave</strong> (pagament únic) o pinna\'l a IPFS, i publica el CID. També pots ancorar l\'arrel a <strong>Nostr</strong>.</span></div>';
+  }catch(e){const box=bg.querySelector('#rpBody');if(box&&box.isConnected)box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||String(e))+'</span></div>';}})();
+  const cp=async(txt,msg)=>{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(txt);toast(msg);}else prompt(msg,txt);};
+  bg.querySelector('#rpCopyRoot').onclick=()=>{if(pack)cp(pack.root||'','🌱 Arrel copiada');};
+  bg.querySelector('#rpCopyCid').onclick=()=>{if(pack)cp(pack.cid,'🔗 CID copiat');};
+  bg.querySelector('#rpDl').onclick=()=>{if(!pack)return;downloadText('sos-registre-'+(pack.ts||now()).slice(0,10)+'.json',JSON.stringify(pack,null,2),'application/json');};
 }
 // ═══════════ Nostr anchor · public timestamped anchor del mainHash del node (Backlog #4) ═══════════
 // Utilitza NIP-33 (kind 30078 replaceable) + NIP-07 (window.nostr.signEvent) per firma real secp256k1.
@@ -7098,7 +7274,8 @@ function openPublicRegister(){
     downloadText('sos-registre-public.json',JSON.stringify({v:1,type:'sos-public-register',ts:now(),count:list.length,actions:list},null,2),'application/json');
     toast('JSON descarregat');
   };
-  bg.querySelector('#prAnchor').onclick=()=>{closeModal();openAnchorPackModal();};
+  // Ancora el que s'està veient: el registre filtrat, no un node qualsevol.
+  bg.querySelector('#prAnchor').onclick=()=>{const list=v.current();closeModal();openRegisterPackModal(list);};
 }
 /* ═══════════ Actuar a distància · el tauler com a lloc únic ═══════════
    Fins ara, per fer qualsevol cosa en un node calia navegar-hi: seleccionar-lo,
@@ -8256,7 +8433,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

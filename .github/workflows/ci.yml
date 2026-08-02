@@ -18,6 +18,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      # El SOS és un HTML autocontingut: un error de sintaxi deixa la pàgina en
+      # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
+      # que atura la construcció.
+      - name: Sintaxi dels HTML autocontinguts
+        run: node SOS/tools/check-syntax.js SOS/*.html
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests
