@@ -285,6 +285,24 @@ deixa de quadrar. Es verifica **a la mateixa pantalla** on es genera: un
 ancoratge que digui «signat» sense comprovar-ho no val res (veda V22 aplicada a
 la permaweb).
 
+## V27 · Veda de la col·laboració
+
+Una eina que sincronitza però no diu **amb qui** no és col·laborativa: és una
+transferència a cegues. I una que exigeix copiar i enganxar un codi de dos
+quilobytes cada vegada no la farà servir ningú dues vegades.
+
+Tres regles:
+
+1. **Compartir no és copiar.** L'aparellament viatja com a **enllaç**
+   (`#/sync/<codi>`), que s'envia pel canal que sigui i s'obre d'un clic. El
+   codi cru i el QR segueixen sent-hi per quan no hi ha canal.
+2. **Sempre saps amb qui parles.** Cada costat es presenta amb el seu `did:sos`
+   i el nom amb què treballa, abans que res es fusioni. Obrir el teu SOS sencer
+   a un codi anònim és el que fèiem fins ara i no s'ha de tornar a fer.
+3. **La segona vegada no comença de zero.** Es recorda l'últim company i quan
+   va ser, de manera que tornar a aparellar és reconèixer algú, no saltar a
+   les fosques.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

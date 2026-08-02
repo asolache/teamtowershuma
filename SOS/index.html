@@ -5575,6 +5575,8 @@ function parseRoute(hash){
   const raw=(hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
   if(!raw.length)return{kind:'home'};
   if(raw[0]==='n'&&raw[1])return{kind:'node',id:decodeURIComponent(raw[1]),tab:raw[2]||null};
+  // Enllaç d'invitació: qui el rep no ha de copiar cap codi, només obrir-lo.
+  if(raw[0]==='sync'&&raw[1])return{kind:'sync',code:decodeURIComponent(raw.slice(1).join('/'))};
   if(MODAL_ROUTES[raw[0]])return{kind:'modal',name:raw[0]};
   return{kind:'unknown',name:raw[0]};
 }
@@ -5599,6 +5601,11 @@ function applyRoute(){
   try{
     if(r.kind==='modal'){
       if(_routeModal!==r.name){_routeModal=r.name;const res=MODAL_ROUTES[r.name].open();if(res===false){_routeModal=null;okRoute=false;}}
+    } else if(r.kind==='sync'){
+      // No es marca com a _routeModal: en acabar l'aparellament la ruta ha de
+      // tornar a l'estat normal i no quedar-se enganxada a un codi ja gastat.
+      if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
+      openSyncModal({invite:r.code});
     } else {
       if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
       if(r.kind==='node'){
@@ -8129,13 +8136,37 @@ let _liveConnected=false;
 function _chanOpen(){return _dc&&_dc.readyState==='open';}
 // Emet un canvi en viu pel canal obert (delta). No fa res si no hi ha connexió.
 function syncBroadcast(rec,kind){if(!_chanOpen())return;try{_dc.send(JSON.stringify({type:'patch',kind,rec:rec||null,tombstones:state.tombstones}));}catch(e){}}
+/* ═══ Amb QUI sincronitzo ═══
+   Sincronitzar a cegues no és col·laborar: si no saps qui hi ha a l'altre
+   costat, has d'obrir el teu SOS sencer a un codi enganxat. Cada costat es
+   presenta amb el seu `did:sos` i el nom amb què treballa, i es recorda l'últim
+   company perquè la propera vegada ja sàpigues amb qui tornes a parlar. */
+let _peer=null;
+const _peerLabel=()=>_peer?(_peer.name||'Sense nom')+' · '+String(_peer.did||'').slice(-12):'';
+async function _selfCard(){
+  try{const id=await getIdentity();return{did:id.did,name:state.activePersona||'',app:'sos-teamtowers'};}
+  catch(e){return{did:'',name:state.activePersona||''};}
+}
+async function lastPeer(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__lastpeer');return r&&r.peer?r:null;}catch(e){return null;}}
+async function rememberPeer(peer){try{await dbPut({id:'__lastpeer',type:'meta',peer,ts:now()});}catch(e){}}
 function _wireChannel(dc,onReady){
-  dc.onopen=()=>{_liveConnected=true;_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');dc.send(JSON.stringify({type:'hello',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));if(onReady)onReady();document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'open'}}));};
-  dc.onmessage=ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}
-    if(msg.type==='hello'||msg.type==='data'){mergeIncoming(msg);if(msg.type==='hello')dc.send(JSON.stringify({type:'data',nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}
+  const greet=async()=>{try{dc.send(JSON.stringify({type:'hello',me:await _selfCard(),nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}catch(e){}};
+  const notePeer=async msg=>{
+    if(!msg.me)return;
+    _peer=msg.me;await rememberPeer(msg.me);
+    document.dispatchEvent(new CustomEvent('sos:peer',{detail:_peer}));
+    toast('🤝 Connectat amb '+(_peer.name||'un altre SOS'));
+  };
+  dc.onopen=()=>{_liveConnected=true;_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');greet();if(onReady)onReady();document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'open'}}));};
+  dc.onmessage=async ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}
+    if(msg.type==='hello'||msg.type==='data'){
+      await notePeer(msg);
+      mergeIncoming(msg);
+      if(msg.type==='hello'){try{dc.send(JSON.stringify({type:'data',me:await _selfCard(),nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}catch(e){}}
+    }
     else if(msg.type==='patch'){mergeIncoming({nodes:msg.kind==='node'?[msg.rec]:[],entities:msg.kind==='entity'?[msg.rec]:[],tombstones:msg.tombstones});}
   };
-  dc.onclose=()=>{_liveConnected=false;_syncLock=false;setSyncPill('Local','var(--green)');document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'closed'}}));};
+  dc.onclose=()=>{_liveConnected=false;_syncLock=false;_peer=null;setSyncPill('Local','var(--green)');document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'closed'}}));};
 }
 async function syncCreateOffer(onReady){
   _closePc();_pc=new RTCPeerConnection(RTC_CFG);
@@ -8176,8 +8207,15 @@ function _qrBlock(text){
 }
 function _codeArea(val,ph){const t=el('textarea');t.readOnly=!!val;t.value=val||'';t.placeholder=ph||'';t.style.cssText='width:100%;min-height:70px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--light);font-family:var(--mono);font-size:.66rem;padding:.6rem;resize:vertical;word-break:break-all';return t;}
 
-function openSyncModal(){
+// Enllaç d'invitació: la mateixa pàgina, amb el codi a la ruta. Qui el rep no
+// ha de copiar res — obre l'enllaç i el SOS ja sap què fer-ne.
+function inviteLink(code){
+  const base=location.href.split('#')[0];
+  return base+'#/sync/'+encodeURIComponent(code);
+}
+function openSyncModal(opts){
   if(_chanOpen()){openSyncConnected();return;}
+  const invite=opts&&opts.invite;
   const bg=modal(`
     <h2>🔗 Sincronitza amb un altre dispositiu</h2>
     <p class="m-sub">Directe navegador-a-navegador (WebRTC), <strong>sense cap servidor</strong>. Se sincronitza <strong>tot el teu SOS</strong> (territoris, projectes, socis, objectes, ofertes, ventures, directori…) i, mentre la finestra queda oberta, <strong>els canvis viatgen en viu</strong> als dos sentits.</p>
@@ -8195,6 +8233,15 @@ function openSyncModal(){
   const rA=bg.querySelector('#syRoleA'),rB=bg.querySelector('#syRoleB');
   function setRole(a){rA.classList.toggle('sel',a);rB.classList.toggle('sel',!a);a?roleA():roleB();}
   rA.onclick=()=>setRole(true);rB.onclick=()=>setRole(false);
+  // Amb qui vas sincronitzar l'última vegada: tornar a aparellar deixa de ser
+  // un salt a les fosques.
+  (async()=>{
+    const lp=await lastPeer();
+    if(!lp||!bg.isConnected)return;
+    const n=el('div','ai-note');n.style.marginBottom='.6rem';
+    n.innerHTML='<span class="ic">🤝</span><span>L\'última vegada vas sincronitzar amb <strong>'+esc(lp.peer.name||'un SOS sense nom')+'</strong> <span style="font-family:var(--mono);font-size:.7rem">'+esc(String(lp.peer.did||'').slice(-14))+'</span> · '+esc(relTime(lp.ts))+'.</span>';
+    bg.querySelector('#syBody').parentNode.insertBefore(n,bg.querySelector('#syBody'));
+  })();
 
   function roleA(){ // initiator
     body.innerHTML='';
@@ -8207,8 +8254,24 @@ function openSyncModal(){
         body.innerHTML='';
         const l1=el('div','wz-sec-lbl','El teu codi d\'invitació');body.appendChild(l1);
         const ta=_codeArea(code);body.appendChild(ta);
-        body.appendChild(_copyBtn(()=>code));
-        const q=_qrBlock(code);if(q)body.appendChild(q);
+        const row=el('div','ent-badges');row.style.marginTop='.3rem';
+        row.appendChild(_copyBtn(()=>code));
+        // L'enllaç estalvia el pas de copiar: s'envia per on sigui i l'altre
+        // només l'obre.
+        const link=inviteLink(code);
+        const lb=el('button','btn btn-primary btn-sm','🔗 Copia enllaç d\'invitació');
+        lb.onclick=async()=>{try{await navigator.clipboard.writeText(link);lb.textContent='✓ Enllaç copiat';setTimeout(()=>lb.textContent='🔗 Copia enllaç d\'invitació',1800);}catch(e){prompt('Enllaç d\'invitació:',link);}};
+        row.appendChild(lb);
+        if(navigator.share){
+          const sb=el('button','btn btn-ghost btn-sm','↗ Comparteix');
+          sb.onclick=()=>navigator.share({title:'Sincronitza amb el meu SOS',url:link}).catch(()=>{});
+          row.appendChild(sb);
+        }
+        body.appendChild(row);
+        const hint=el('div','wz-key-note');hint.style.marginTop='.3rem';
+        hint.textContent='Envia l\'enllaç per on vulguis. Qui l\'obri entrarà directament amb el codi carregat.';
+        body.appendChild(hint);
+        const q=_qrBlock(link.length<=1600?link:code);if(q)body.appendChild(q);
         const l2=el('div','wz-sec-lbl','Enganxa aquí la resposta de l\'altre dispositiu');body.appendChild(l2);
         const ans=_codeArea('','Codi de resposta…');body.appendChild(ans);
         const con=el('button','btn btn-primary btn-sm','Connecta');con.style.marginTop='.5rem';body.appendChild(con);
@@ -8218,8 +8281,12 @@ function openSyncModal(){
   }
   function roleB(){ // joiner
     body.innerHTML='';
-    const p=el('div','dyn-one');p.style.marginBottom='.6rem';p.textContent='1) Enganxa el codi d\'invitació que t\'han passat.';body.appendChild(p);
-    const inv=_codeArea('','Codi d\'invitació…');body.appendChild(inv);
+    const p=el('div','dyn-one');p.style.marginBottom='.6rem';
+    p.textContent=invite?'Has obert un enllaç d\'invitació: el codi ja hi és. Genera la resposta i torna-la a qui te l\'ha enviat.':'1) Enganxa el codi d\'invitació que t\'han passat.';
+    body.appendChild(p);
+    const inv=_codeArea('','Codi d\'invitació…');
+    if(invite){inv.value=invite;inv.readOnly=false;}
+    body.appendChild(inv);
     const gen=el('button','btn btn-primary btn-sm','Genera resposta');gen.style.marginTop='.5rem';body.appendChild(gen);
     gen.onclick=async()=>{
       if(!inv.value.trim())return;gen.disabled=true;gen.textContent='Generant…';
@@ -8228,25 +8295,44 @@ function openSyncModal(){
         body.innerHTML='';
         const l=el('div','wz-sec-lbl','Envia aquesta resposta de tornada al primer dispositiu');body.appendChild(l);
         const ta=_codeArea(ans);body.appendChild(ta);
-        body.appendChild(_copyBtn(()=>ans));
+        const row2=el('div','ent-badges');row2.style.marginTop='.3rem';
+        row2.appendChild(_copyBtn(()=>ans));
+        if(navigator.share){const sb=el('button','btn btn-ghost btn-sm','↗ Comparteix');sb.onclick=()=>navigator.share({title:'Resposta de sincronització SOS',text:ans}).catch(()=>{});row2.appendChild(sb);}
+        body.appendChild(row2);
         const q=_qrBlock(ans);if(q)body.appendChild(q);
         const note=el('div','dyn-one');note.style.marginTop='.6rem';note.textContent='Quan l\'altre dispositiu enganxi aquesta resposta, la sincronització serà automàtica.';body.appendChild(note);
       }catch(e){gen.disabled=false;gen.textContent='Genera resposta';toast('Codi d\'invitació no vàlid');}
     };
   }
-  roleA();
+  // Si venim d'un enllaç d'invitació, la pantalla útil és la de qui rep.
+  if(invite)setRole(false); else roleA();
 }
 // Panell d'estat quan la connexió està establerta (sync en viu actiu)
 function openSyncConnected(){
   const bg=modal(`
     <h2>✅ Connectat · sincronització en viu</h2>
     <p class="m-sub">Els dos dispositius estan enllaçats. <strong>Tot el que creïs o editis apareixerà a l'altre a l'instant</strong> (i a l'inrevés), mentre mantinguis la connexió oberta. Guanya sempre la versió més recent.</p>
+    <div id="scPeer"></div>
     <div class="ai-note"><span class="ic">⟳</span><span>Directe navegador-a-navegador, xifrat i sense servidor. Si tanques la pestanya o el navegador, la connexió s'acaba; per tornar-hi, torna a aparellar.</span></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="scStop" style="border-color:var(--red-dim);color:var(--red)">Desconnecta</button><button class="btn btn-primary" id="scOk">Continua treballant</button></div>
   `);
   bg.querySelector('#scOk').onclick=closeModal;
   bg.querySelector('#scStop').onclick=()=>{_closePc();setSyncPill('Local','var(--green)');closeModal();toast('Desconnectat');};
   setSyncPill('En viu','var(--accent-green)');
+  /* Qui hi ha a l'altre costat. Pot arribar un instant després d'obrir-se el
+     panell, així que s'escolta la presentació i es repinta. */
+  const paintPeer=()=>{
+    const box=bg.querySelector('#scPeer');if(!box||!box.isConnected)return;
+    box.innerHTML=_peer
+      ?'<div class="ent-card" style="border-left:3px solid var(--green)"><div class="ent-nm">🤝 '+esc(_peer.name||'SOS sense nom')+'</div><div class="ent-desc" style="font-family:var(--mono);font-size:.7rem;word-break:break-all;margin-top:.2rem">'+esc(_peer.did||'sense identitat')+'</div></div>'
+      :'<div class="ai-note"><span class="ic">…</span><span>Esperant que l\'altre costat es presenti.</span></div>';
+  };
+  paintPeer();
+  const onPeer=()=>paintPeer();
+  document.addEventListener('sos:peer',onPeer);
+  bg.addEventListener('sos:closed',()=>document.removeEventListener('sos:peer',onPeer));
+  const mo=new MutationObserver(()=>{if(!bg.isConnected){document.removeEventListener('sos:peer',onPeer);mo.disconnect();}});
+  mo.observe(document.body,{childList:true,subtree:true});
 }
 
 /* ═══════════ CREACIÓ DE NODES GEOGRÀFICS (compartit) ═══════════ */
@@ -8433,11 +8519,20 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
-  try{if(await shouldRunOnboarding())setTimeout(async()=>{if(await shouldRunOnboarding())openOnboardingTour();},400);}catch(e){}
+  /* El tour de benvinguda no pot tapar una invitació. Qui obre un enllaç de
+     sincronització en un dispositiu on el SOS és nou ve a fer una cosa
+     concreta; la presentació ja la veurà després. */
+  try{
+    const invited=parseRoute(location.hash).kind==='sync';
+    if(!invited&&await shouldRunOnboarding())setTimeout(async()=>{
+      if(parseRoute(location.hash).kind==='sync')return;
+      if(await shouldRunOnboarding())openOnboardingTour();
+    },400);
+  }catch(e){}
 })();
 </script>
 </body>
