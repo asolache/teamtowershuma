@@ -409,6 +409,38 @@ objectes i demandes de qualsevol node, ordenats de més a prop a més lluny. És
 això el que fa que un SOS pugui operar amb un altre sense fusionar-se ni demanar
 permís a ningú.
 
+## V33 · Veda d'operar, no només mirar
+
+Trobar una cosa no serveix de res si després has de navegar fins al node i
+buscar-la una altra vegada. Un catàleg que només *mostra* fa que dos bancs de
+temps veïns es mirin; un que deixa **tancar l'intercanvi** fa que operin.
+
+Tres regles:
+
+1. **Cada resultat porta la seva acció**, i és la que li toca: una habilitat es
+   demana en hores, una demanda s'ofereix a cobrir, un objecte lliure es demana
+   en préstec, i un de prestat et posa a la llista d'espera. No un botó genèric.
+2. **Buscar allà és voler-hi participar.** Si operes amb un node del qual no ets
+   soci, l'alta es fa sola. Demanar permís per donar d'alta algú que ja està
+   actuant és burocràcia inventada.
+3. **Operar mai treu res a ningú.** Posar-se a la cua no aixeca el préstec de qui
+   el té, i repetir-ho no et duplica a la llista.
+
+## V34 · Veda de les coordenades
+
+Les coordenades reals **no me les invento**: hi ha tres vies i cap és aquesta.
+
+1. **L'aparell** — l'API de geolocalització diu on ets i ho desa a la teva
+   població. És la més exacta i no depèn de ningú.
+2. **Un fitxer obert** — CSV o JSON `municipi,lat,lon` de l'ICGC, l'Idescat o
+   OpenStreetMap. S'assigna als nodes que coincideixin de nom; **no en crea cap
+   de nou** i diu quins no ha trobat.
+3. **A mà**, node a node.
+
+I mentre no n'hi ha, l'eina **ho diu**: l'ordre és per proximitat territorial i
+no es mostra cap quilòmetre. Es rebutja el que no és coordenada — capçaleres,
+text, i qualsevol punt fora del planeta.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
