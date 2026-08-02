@@ -1868,6 +1868,98 @@ function newVenture(node,act){
   return{id:uid(),name:act.name,activityId:act.id,stage:'idea',leadMemberId:null,allocations:[],ledger:[],vna:{roles,exchanges:exch},kanbanSeed:(act.kanban||[]).slice(),notes:'',graduatedNodeId:null,createdAt:now()};
 }
 const allocationsOf=v=>v.allocations||(v.allocations=[]);
+/* ═══════════ ACOMPANYAMENT · el servei que fa que una MATRIU no sigui un magatzem ═══════════
+   Una incubadora sense mentoria és un repositori d'estructures. Fins ara el SOS
+   sabia quines ventures existien i quant valor movien, però no deixava cap
+   rastre de la feina que les sosté: qui acompanya qui, què es va acordar, i què
+   passa quan un projecte deixa de moure's.
+
+   Tres peces, i la del mig és la que ho lliga tot:
+
+   1. **Mentors** amb àmbit (jurídic, econòmic, tècnic, relacional…). Acompanyar
+      no és «ajudar en general».
+   2. **Sessions que compten.** Cada sessió registrada és una entrada més al
+      ledger de la venture — signada i encadenada com qualsevol altra. El temps
+      de mentoria **és** valor aportat, i per tant genera slices. Si no
+      s'hagués fet així, l'acompanyament seria l'única feina de la MATRIU que
+      no comptaria (veda V22).
+   3. **Silenci.** Una venture que fa setmanes que no es mou surt marcada. El
+      silenci és el primer símptoma abans que un projecte mori, i és
+      precisament el que ningú mira. */
+const MENTOR_SCOPES=[
+  {id:'juridic',ic:'⚖',label:'Jurídic',one:'Forma jurídica, estatuts, obligacions'},
+  {id:'economic',ic:'💶',label:'Econòmic',one:'Viabilitat, preus, tresoreria, finançament'},
+  {id:'tecnic',ic:'🛠',label:'Tècnic',one:'L\'ofici concret del projecte'},
+  {id:'relacional',ic:'🤝',label:'Relacional',one:'Conflictes, rols, decisions, cohesió'},
+  {id:'comunitari',ic:'🌱',label:'Comunitari',one:'Arrelament al territori i a la xarxa'}
+];
+const scopeMeta=id=>MENTOR_SCOPES.find(s=>s.id===id)||{id,ic:'•',label:id,one:''};
+const mentorsOf=v=>v.mentors||(v.mentors=[]);
+const sessionsOf=v=>v.sessions||(v.sessions=[]);
+function addMentor(v,memberId,scope){
+  if(!memberId)return null;
+  const arr=mentorsOf(v);
+  const i=arr.findIndex(m=>m.memberId===memberId&&m.scope===scope);
+  if(i>=0)return arr[i];
+  const m={id:uid(),memberId,scope:scope||'comunitari',since:now()};
+  arr.push(m);return m;
+}
+const removeMentor=(v,id)=>{const arr=mentorsOf(v);const i=arr.findIndex(m=>m.id===id);if(i>=0)arr.splice(i,1);return i>=0;};
+/* Registrar una sessió: queda a `v.sessions` per llegir-la com a acta, i alhora
+   entra al ledger de la venture com a aportació de temps del mentor. Un sol
+   camí d'escriptura, com la resta de valor del sistema. */
+async function logSession(node,v,{mentorMemberId,attendees,topics,agreements,next,hours,ts}={}){
+  const h=Math.max(0,Number(hours)||0);
+  const s={id:uid(),ts:ts||now(),mentorMemberId:mentorMemberId||null,
+    attendees:(attendees||[]).slice(),topics:topics||'',agreements:agreements||'',
+    next:next||'',hours:h,entryId:null};
+  if(h>0&&mentorMemberId){
+    const m=memberById(node,mentorMemberId);
+    const e=await pushLedger(v.ledger||(v.ledger=[]),{
+      id:uid(),who:(m&&m.name)||'',memberId:mentorMemberId,type:'temps',value:h,
+      what:'Sessió d\'acompanyament'+(topics?' · '+topics:''),
+      deliverables:agreements||'',ts:s.ts});
+    s.entryId=e.id;
+  }
+  sessionsOf(v).unshift(s);
+  await persist(node);
+  return s;
+}
+/* Fa quant que aquesta venture no es mou? Mira l'últim senyal de vida real:
+   sessions, apunts al ledger, assignacions i la data de creació. */
+function ventureSilence(v){
+  const stamps=[v.createdAt||''];
+  sessionsOf(v).forEach(s=>stamps.push(s.ts||''));
+  (v.ledger||[]).forEach(e=>stamps.push(e.ts||''));
+  allocationsOf(v).forEach(a=>stamps.push(a.ts||''));
+  const last=stamps.filter(Boolean).sort().pop()||'';
+  if(!last)return{last:'',days:null,weeks:null,level:'unknown'};
+  const days=Math.floor((Date.now()-new Date(last).getTime())/86400000);
+  const weeks=Math.floor(days/7);
+  // Una venture graduada ja no s'acompanya: no té sentit alertar-ne.
+  const level=v.stage==='graduacio'?'ok':(days>=56?'greu':(days>=28?'avis':'ok'));
+  return{last,days,weeks,level};
+}
+const SILENCE_LABEL={greu:'Sense senyals de vida',avis:'Fa setmanes que no es mou',ok:'Amb activitat',unknown:'Sense dades'};
+// Ventures que demanen atenció, les més silencioses primer.
+function silentVentures(node){
+  return venturesOf(node).map(v=>({v,s:ventureSilence(v)}))
+    .filter(x=>x.s.level==='avis'||x.s.level==='greu')
+    .sort((a,b)=>(b.s.days||0)-(a.s.days||0));
+}
+// Resum d'acompanyament d'una MATRIU: qui acompanya, quantes sessions i quantes hores.
+function mentoringSummary(node){
+  const vs=venturesOf(node);
+  let sessions=0,hores=0;const mentors=new Set(),sense=[];
+  vs.forEach(v=>{
+    mentorsOf(v).forEach(m=>mentors.add(m.memberId));
+    const ss=sessionsOf(v);sessions+=ss.length;
+    ss.forEach(s=>{hores+=Number(s.hours)||0;});
+    if(!mentorsOf(v).length&&v.stage!=='graduacio')sense.push(v);
+  });
+  return{ventures:vs.length,mentors:mentors.size,sessions,
+    hores:Math.round(hores*10)/10,senseMentor:sense,silencioses:silentVentures(node)};
+}
 // Fons cooperatiu local: valor mobilitzat per la MATRIU cap a les seves ventures (recursos assignats + € aportat)
 function fundRollup(node){
   let hores=0,objectes=0,talent=0;const vs=venturesOf(node);
@@ -2859,6 +2951,8 @@ function _searchIndex(){
     {k:'action',id:'act_ledger',label:'El meu ledger SOS',sub:'⊞ acció',action:()=>openMyLedger(state.activePersona||'')},
     {k:'action',id:'act_register',label:'Registre públic d\'accions signades',sub:'🌐 acció',action:()=>openPublicRegister()},
     {k:'action',id:'act_federacions',label:'Federacions temàtiques',sub:'🏷 acció · qui treballa el mateix tema',action:()=>openFederations()},
+    {k:'action',id:'act_ancoratges',label:'Els meus ancoratges',sub:'🛰 acció · què he segellat i si encara quadra',action:()=>openAnchors()},
+    {k:'action',id:'act_verifica',label:'Verifica un paquet SOS',sub:'🔍 acció · comprova firma i integritat',action:()=>openVerifier()},
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · carteres · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
@@ -3158,6 +3252,150 @@ function openAnchorPackModal(node){
 }
 /* Ancoratge del registre públic sencer. Abans el botó del registre obria
    l'ancoratge d'un node — i des del tauler, sense node actiu, no obria res. */
+/* ═══════════ ANCORATGES AMB MEMÒRIA ═══════════
+   Fins ara ancorar era un carreró: generaves el paquet, el descarregaves, el
+   pujaves a Arweave… i el SOS se n'oblidava. Al cap d'un mes no podies dir ni
+   què havies ancorat ni si el registre d'avui encara quadrava amb allò.
+
+   Un ancoratge que no es recorda no serveix per demostrar res: la gràcia és
+   poder tornar-hi i comprovar-ho. Aquí queda l'historial, amb un lloc per
+   apuntar **on** l'has publicat (transacció d'Arweave, CID d'IPFS, event de
+   Nostr) i una comprovació contra el registre actual. */
+const ANCHORS_ID='__anchors';
+async function loadAnchors(){
+  try{const all=await dbGetAll();const r=all.find(n=>n.id===ANCHORS_ID);return (r&&r.list)||[];}
+  catch(e){return[];}
+}
+async function saveAnchors(list){await dbPut({id:ANCHORS_ID,type:'meta',list:list.slice(0,200),updatedAt:now()});}
+async function rememberAnchor(pack,extra){
+  if(!pack||!pack.cid)return null;
+  const list=await loadAnchors();
+  if(list.some(a=>a.cid===pack.cid))return list.find(a=>a.cid===pack.cid);
+  const rec={id:uid(),kind:pack.type,cid:pack.cid,root:pack.root||'',ts:pack.ts||now(),
+    signer:(pack.signer&&pack.signer.did)||'',
+    scope:pack.scope?{...pack.scope}:(pack.node?{node:pack.node.name}:null),
+    totals:pack.totals?{...pack.totals}:null,
+    leaves:(pack.leaves||[]).slice(),location:(extra&&extra.location)||'',
+    note:(extra&&extra.note)||''};
+  list.unshift(rec);await saveAnchors(list);return rec;
+}
+async function setAnchorLocation(id,location){
+  const list=await loadAnchors();const a=list.find(x=>x.id===id);if(!a)return null;
+  a.location=location||'';await saveAnchors(list);return a;
+}
+async function forgetAnchor(id){
+  const list=await loadAnchors();const i=list.findIndex(x=>x.id===id);
+  if(i<0)return false;list.splice(i,1);await saveAnchors(list);return true;
+}
+/* La pregunta que importa d'un ancoratge vell: el que vaig segellar, hi és
+   encara i diu el mateix? Es compara fulla per fulla contra el registre d'avui. */
+function compareAnchor(anchor){
+  const leaves=(anchor&&anchor.leaves)||[];
+  if(!leaves.length)return{comparable:false};
+  const today=new Set(ledgerIndex().map(x=>x.hash||('unhashed:'+x.nodeId+':'+x.id)));
+  const present=leaves.filter(h=>today.has(h)).length;
+  return{comparable:true,ancorades:leaves.length,presents:present,
+    perdudes:leaves.length-present,noves:Math.max(0,today.size-present),intacte:present===leaves.length};
+}
+/* Un sol lloc per verificar qualsevol paquet SOS: no cal que qui el rep sàpiga
+   quin dels tres és. */
+async function verifyPack(obj){
+  if(!obj||typeof obj!=='object')return{ok:false,kind:'',reason:'not_json'};
+  if(obj.type==='sos-register-pack'){const v=await verifyRegisterPack(obj);return{...v,kind:obj.type,pack:obj};}
+  if(obj.type==='sos-anchor-pack'){const v=await verifyAnchorPack(obj);return{...v,kind:obj.type,pack:obj};}
+  if(obj.type===IDENTITY_BACKUP_TYPE)
+    return{ok:!!(obj.ct&&obj.salt&&obj.did),kind:obj.type,pack:obj,
+      reason:obj.ct?'encrypted':'incomplete',
+      note:'Còpia d\'identitat xifrada. No es pot verificar sense la contrasenya, i això és el que ha de passar.'};
+  return{ok:false,kind:obj.type||'',reason:'unknown_type'};
+}
+/* Historial: què he ancorat, on ho vaig publicar, i si encara quadra. */
+function openAnchors(){
+  const bg=modal(`
+    <h2>🛰 Els meus ancoratges</h2>
+    <p class="m-sub">Cada paquet que has segellat, amb un lloc per apuntar <strong>on</strong> l'has publicat i una comprovació contra el registre d'avui. Un ancoratge que no es recorda no demostra res.</p>
+    <div id="anList">Carregant…</div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="anNew">🛰 Ancora ara</button><button class="btn btn-ghost" id="anVerify">🔍 Verifica un paquet</button><button class="btn btn-primary" id="anClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#anClose').onclick=closeModal;
+  bg.querySelector('#anNew').onclick=()=>{closeModal();openRegisterPackModal();};
+  bg.querySelector('#anVerify').onclick=()=>{closeModal();openVerifier();};
+  const paint=async()=>{
+    const list=await loadAnchors(),box=bg.querySelector('#anList');
+    if(!box||!box.isConnected)return;
+    box.innerHTML='';
+    if(!list.length){
+      box.innerHTML='<div class="ai-note"><span class="ic">🌱</span><span>Cap ancoratge encara. Obre el <strong>registre públic</strong> → <strong>Ancora</strong> i descarrega el paquet: quedarà apuntat aquí.</span></div>';
+      return;
+    }
+    list.forEach(a=>{
+      const cmp=compareAnchor(a);
+      const c=el('div','ent-card');c.style.marginBottom='.45rem';
+      const when=(a.ts||'').slice(0,10);
+      c.innerHTML='<div class="ent-nm">🛰 '+esc(when)+' · '+esc(a.kind==='sos-register-pack'?'registre sencer':'node')+'</div>'+
+        '<div class="ent-badges" style="margin-top:.25rem">'+
+        (a.scope&&a.scope.accions!=null?'<span class="ent-b b-ver">'+a.scope.accions+' accions</span>':'')+
+        (a.totals&&a.totals.hores?'<span class="ent-b">'+a.totals.hores+' h</span>':'')+
+        (cmp.comparable?'<span class="ent-b '+(cmp.intacte?'b-ver':'b-unver')+'">'+(cmp.intacte?'intacte':cmp.perdudes+' ja no hi són')+'</span>':'')+
+        (cmp.comparable&&cmp.noves?'<span class="ent-b">+'+cmp.noves+' de noves des de llavors</span>':'')+
+        '</div>'+
+        '<div class="ent-desc" style="margin-top:.3rem;font-family:var(--mono);font-size:.68rem;word-break:break-all">'+esc(a.cid)+'</div>';
+      const row=el('div','wz-key');row.style.marginTop='.4rem';
+      const inp=el('input');inp.placeholder='On l\'has publicat (Arweave, IPFS, Nostr…)';inp.value=a.location||'';
+      const sv=el('button','btn btn-ghost btn-sm','Desa');
+      sv.onclick=async()=>{await setAnchorLocation(a.id,inp.value.trim());sv.textContent='✓';setTimeout(()=>sv.textContent='Desa',1200);};
+      const del=el('button','btn btn-ghost btn-sm','🗑');
+      del.onclick=async()=>{await forgetAnchor(a.id);paint();};
+      row.appendChild(inp);row.appendChild(sv);row.appendChild(del);
+      c.appendChild(row);
+      if(a.location&&/^https?:\/\//.test(a.location)){
+        const lk=el('a','btn btn-ghost btn-sm','↗ Obre');lk.href=a.location;lk.target='_blank';lk.rel='noopener';
+        lk.style.marginTop='.3rem';lk.style.display='inline-block';lk.style.textDecoration='none';c.appendChild(lk);
+      }
+      box.appendChild(c);
+    });
+  };
+  paint();
+}
+/* Verificador universal: enganxa qualsevol paquet SOS i digues-li què és. */
+function openVerifier(){
+  const bg=modal(`
+    <h2>🔍 Verifica un paquet SOS</h2>
+    <p class="m-sub">Enganxa o carrega qualsevol paquet — registre, node o còpia d'identitat. Es comprova <strong>aquí</strong>, sense enviar-lo enlloc i sense confiar en ningú.</p>
+    <input type="file" id="vfFile" accept="application/json,.json" style="margin-bottom:.5rem">
+    <textarea id="vfText" placeholder="…o enganxa el JSON aquí" style="width:100%;min-height:90px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--light);font-family:var(--mono);font-size:.66rem;padding:.6rem;word-break:break-all"></textarea>
+    <div id="vfOut" style="margin-top:.6rem"></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="vfGo">🔍 Verifica</button><button class="btn btn-ghost" id="vfClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#vfClose').onclick=closeModal;
+  const f=bg.querySelector('#vfFile');
+  f.onchange=()=>{const file=f.files&&f.files[0];if(!file)return;const r=new FileReader();
+    r.onload=()=>{bg.querySelector('#vfText').value=String(r.result||'');};r.readAsText(file);};
+  bg.querySelector('#vfGo').onclick=async()=>{
+    const out=bg.querySelector('#vfOut');
+    let obj;
+    try{obj=JSON.parse(bg.querySelector('#vfText').value.trim());}
+    catch(e){out.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Això no és un JSON vàlid.</span></div>';return;}
+    const v=await verifyPack(obj);
+    const KIND={'sos-register-pack':'Registre públic sencer','sos-anchor-pack':'Ancoratge d\'un node',[IDENTITY_BACKUP_TYPE]:'Còpia d\'identitat xifrada'};
+    let html='<div class="ai-note"><span class="ic">'+(v.ok?'✅':'❌')+'</span><span><strong>'+esc(KIND[v.kind]||'Paquet desconegut')+'</strong> · '+
+      (v.ok?'verificat':'no verificat')+(v.reason&&v.reason!=='valid'?' ('+esc(v.reason)+')':'')+'</span></div>';
+    if(v.note)html+='<div class="ai-note"><span class="ic">ℹ</span><span>'+esc(v.note)+'</span></div>';
+    if(v.pack&&v.pack.signer&&v.pack.signer.did)
+      html+='<div class="ent-grp-lbl">🔏 Signat per</div><div class="ent-card"><code style="font-size:.7rem;word-break:break-all">'+esc(v.pack.signer.did)+'</code></div>';
+    // Si és un registre, la pregunta útil és si el que segellava encara hi és.
+    if(v.kind==='sos-register-pack'&&v.ok){
+      const cmp=compareAnchor({leaves:v.pack.leaves||[]});
+      if(cmp.comparable)
+        html+='<div class="ai-note"><span class="ic">'+(cmp.intacte?'🟢':'🟠')+'</span><span>De les <strong>'+cmp.ancorades+'</strong> accions segellades, <strong>'+cmp.presents+'</strong> segueixen al teu registre'+
+          (cmp.perdudes?' i <strong>'+cmp.perdudes+'</strong> ja no hi són o han canviat':' i cap ha canviat')+
+          (cmp.noves?'. Des de llavors n\'has fet <strong>'+cmp.noves+'</strong> de noves.':'.')+'</span></div>';
+    }
+    out.innerHTML=html;
+  };
+}
 function openRegisterPackModal(list){
   const bg=modal(`
     <h2>🛰 Ancora el registre públic</h2>
@@ -3185,7 +3423,13 @@ function openRegisterPackModal(list){
   const cp=async(txt,msg)=>{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(txt);toast(msg);}else prompt(msg,txt);};
   bg.querySelector('#rpCopyRoot').onclick=()=>{if(pack)cp(pack.root||'','🌱 Arrel copiada');};
   bg.querySelector('#rpCopyCid').onclick=()=>{if(pack)cp(pack.cid,'🔗 CID copiat');};
-  bg.querySelector('#rpDl').onclick=()=>{if(!pack)return;downloadText('sos-registre-'+(pack.ts||now()).slice(0,10)+'.json',JSON.stringify(pack,null,2),'application/json');};
+  // Descarregar és el moment en què l'ancoratge existeix de debò: es recorda.
+  bg.querySelector('#rpDl').onclick=async()=>{
+    if(!pack)return;
+    downloadText('sos-registre-'+(pack.ts||now()).slice(0,10)+'.json',JSON.stringify(pack,null,2),'application/json');
+    await rememberAnchor(pack);
+    toast('🛰 Ancoratge desat a l\'historial');
+  };
 }
 // ═══════════ Nostr anchor · public timestamped anchor del mainHash del node (Backlog #4) ═══════════
 // Utilitza NIP-33 (kind 30078 replaceable) + NIP-07 (window.nostr.signEvent) per firma real secp256k1.
@@ -3430,6 +3674,8 @@ function openLauncher(){
     {ic:'⊞',t:'El meu ledger SOS',d:'Totes les meves aportacions, a tots els nodes, amb la seva firma',fn:()=>openMyLedger(state.activePersona||'')},
     {ic:'🌐',t:'Registre públic d\'accions signades',d:'Cercable i amb la firma comprovada · exportable i ancorable',fn:()=>openPublicRegister()},
     {ic:'🏷',t:'Federacions temàtiques',d:'Vincula\'t a un tema i troba qui treballa el mateix · valor consolidat sense doble comptatge',fn:()=>openFederations()},
+    {ic:'🛰',t:'Els meus ancoratges',d:'Historial del que has segellat · on ho vas publicar i si encara quadra',fn:()=>openAnchors()},
+    {ic:'🔍',t:'Verifica un paquet SOS',d:'Enganxa qualsevol paquet i comprova firma i integritat, sense servidor',fn:()=>openVerifier()},
     {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
     {ic:'🔍',t:'Diagnòstic comunitari',d:'3 min · punt de partida, itinerari i proposta d\'acompanyament',fn:()=>window.open('diagnostic.html','_blank','noopener')},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
@@ -5559,6 +5805,7 @@ const MODAL_ROUTES={
   ledger:{open:()=>openMyLedger(state.activePersona||''),label:'El meu ledger SOS'},
   registre:{open:()=>openPublicRegister(),label:'Registre públic d\'accions signades'},
   federacions:{open:()=>openFederations(),label:'Federacions temàtiques'},
+  ancoratges:{open:()=>openAnchors(),label:'Els meus ancoratges'},
   mapa:{open:()=>openFounderMap(),label:'Mapa estratègic fundador'},
   directori:{open:()=>openDirectory(),label:'Directori d\'entitats'},
   identitat:{open:()=>openIdentityDashboard(),label:'La meva identitat'},
@@ -6499,6 +6746,29 @@ function renderMatriuVentures(body,node){
     '</div>'+
     '<div class="psy-caption">Aquestes són les mètriques que expliquen per què la MATRIU és un model: no només mou capital, també <strong>cura, vincle, reciprocitat i temps donat</strong>. La densitat relacional (fluxos intangibles) i el temps solidari són indicadors de sortida de la salut psicosocial del territori.</div>';
   body.appendChild(psyBox);
+  /* Acompanyament · el servei, no el magatzem. Primer el que demana atenció. */
+  const mt=mentoringSummary(node);
+  body.appendChild(el('div','ent-grp-lbl','🎓 Acompanyament · el servei que presta aquesta MATRIU'));
+  const mtBox=el('div','bib-stats');
+  mtBox.innerHTML=
+    '<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+mt.mentors+'</div><div class="l">mentores</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:var(--green)">'+mt.sessions+'</div><div class="l">sessions</div></div>'+
+    '<div class="bib-tile"><div class="n">'+mt.hores+'</div><div class="l">hores acompanyant</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:'+(mt.senseMentor.length?'var(--orange)':'var(--green)')+'">'+mt.senseMentor.length+'</div><div class="l">sense mentor</div></div>'+
+    '<div class="bib-tile"><div class="n" style="color:'+(mt.silencioses.length?'var(--red)':'var(--green)')+'">'+mt.silencioses.length+'</div><div class="l">en silenci</div></div>';
+  body.appendChild(mtBox);
+  if(mt.silencioses.length){
+    const w=el('div','ai-note');w.style.marginTop='.5rem';
+    w.innerHTML='<span class="ic">🔕</span><span><strong>'+mt.silencioses.length+'</strong> venture(s) fa setmanes que no es mouen: '+
+      mt.silencioses.slice(0,4).map(x=>esc(x.v.name)+' ('+x.s.days+' d)').join(', ')+
+      '. El silenci és el primer símptoma abans que un projecte mori.</span>';
+    body.appendChild(w);
+  }
+  if(mt.senseMentor.length){
+    const w=el('div','ai-note');
+    w.innerHTML='<span class="ic">🎓</span><span>Sense acompanyant: '+mt.senseMentor.slice(0,5).map(x=>esc(x.name)).join(', ')+'. Una venture sense mentor és una carpeta.</span>';
+    body.appendChild(w);
+  }
   // Intercooperació agregada (model Mondragón) — fins ara només es veia venture a venture.
   const coop=cooperationSummary(node);
   if(coop.total){
@@ -6757,6 +7027,45 @@ function openPersonProfile(nameOrKey){
 }
 const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'⏱',label:'Hores',unit:'hores'},objecte:{ic:'📦',label:'Objectes',unit:'objectes'}};
 // Detall d'una venture: assigna el soci que lidera i mobilitza recursos de l'ecosistema (talent, hores, objectes).
+/* Acta d'una sessió d'acompanyament. Els camps són els d'una acta de debò —
+   temes, acords, proper pas — perquè el que no queda escrit es torna a discutir. */
+function openSessionForm(node,v,onDone){
+  const ms=membersOf(node),mts=mentorsOf(v);
+  const cand=mts.length?mts.map(m=>memberById(node,m.memberId)).filter(Boolean):ms;
+  const bg=modal(`
+    <h2>📓 Sessió d'acompanyament</h2>
+    <p class="m-sub"><strong>${esc(v.name)}</strong> · el temps que hi dediques compta com a aportació: entra al ledger de la venture, signat, i genera slices.</p>
+    <div class="field"><label>Qui acompanya</label><select id="ssWho"><option value="">— tria —</option>${cand.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('')}</select>${cand.length?'':'<div class="ent-desc" style="margin-top:.3rem">Dona d\'alta socis a la MATRIU per poder registrar sessions.</div>'}</div>
+    <div class="wz-key">
+      <div class="field" style="flex:1"><label>Data</label><input id="ssDate" type="date" value="${now().slice(0,10)}"></div>
+      <div class="field" style="width:110px"><label>Hores</label><input id="ssHours" type="number" min="0" step="0.5" value="1.5"></div>
+    </div>
+    <div class="field"><label>Temes tractats</label><input id="ssTopics" maxlength="140" placeholder="p. ex. forma jurídica i repartiment de rols"></div>
+    <div class="field"><label>Acords</label><textarea id="ssAgree" rows="2" placeholder="A què us heu compromès"></textarea></div>
+    <div class="field"><label>Proper pas</label><input id="ssNext" maxlength="140" placeholder="Què ha de passar abans de la propera sessió"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ssClose">Cancel·la</button><button class="btn btn-primary" id="ssSave">⬢ Registra la sessió</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#ssClose').onclick=closeModal;
+  bg.querySelector('#ssSave').onclick=async()=>{
+    const who=bg.querySelector('#ssWho').value;
+    if(!who){toast('Digues qui ha acompanyat');return;}
+    const d=bg.querySelector('#ssDate').value;
+    const s=await logSession(node,v,{
+      mentorMemberId:who,hours:Number(bg.querySelector('#ssHours').value)||0,
+      topics:bg.querySelector('#ssTopics').value.trim(),
+      agreements:bg.querySelector('#ssAgree').value.trim(),
+      next:bg.querySelector('#ssNext').value.trim(),
+      ts:d?new Date(d+'T12:00:00').toISOString():now()
+    });
+    // Si encara no consta com a mentor, l'acompanyament l'hi converteix.
+    if(!mentorsOf(v).some(m=>m.memberId===who)){addMentor(v,who,'comunitari');await persist(node);}
+    closeModal();
+    toast(s.hours?('📓 Sessió registrada · '+s.hours+' h al ledger'):'📓 Sessió registrada');
+    if(onDone)onDone();
+    render();
+  };
+}
 function openVentureDetail(node,v){
   const a=actMeta(v.activityId),ms=membersOf(node),eco=ecosystemResources(node),allocs=allocationsOf(v);
   const talentOpts=eco.talent.map((t,i)=>'<option value="'+i+'">'+esc(t.name)+' · '+esc(t.role)+'</option>').join('');
@@ -6773,6 +7082,10 @@ function openVentureDetail(node,v){
       <div class="ent-desc" id="vdHint" style="margin-top:.3rem">Ecosistema: ${eco.talent.length} talent · ${eco.hores} ofertes d'hores · ${eco.objectes} objectes disponibles.</div>
       <button class="btn btn-ghost btn-sm" id="vdAdd" style="margin-top:.4rem">+ Assigna</button>
     </div>
+    <div class="ent-grp-lbl">🎓 Acompanyament · qui la sosté</div>
+    <div id="vdMentors"></div>
+    <div id="vdSessions"></div>
+    <button class="btn btn-ghost btn-sm" id="vdSession" style="margin-top:.4rem">📓 Registra una sessió</button>
     <div class="ent-grp-lbl">🥧 Slicing Pie de la venture</div>
     <div id="vdEquity"></div>
     <button class="btn btn-ghost btn-sm" id="vdContrib" style="margin-top:.5rem">+ Registra aportació</button>
@@ -6797,8 +7110,57 @@ function openVentureDetail(node,v){
     else{const q=Number(qty.value)||0;if(q<=0){toast('Indica una quantitat');return;}al={id:uid(),kind,label:(kind==='hores'?q+' hores del banc de temps':q+' objectes de la biblioteca'),qty:q};}
     allocationsOf(v).push(al);bg.querySelector('#vdAllocs').innerHTML=allocRows();wireX();
   };
+  /* Acompanyament: mentors amb àmbit, i les actes de les sessions. */
+  const paintMentors=()=>{
+    const box=bg.querySelector('#vdMentors');if(!box||!box.isConnected)return;
+    const list=mentorsOf(v),sil=ventureSilence(v);
+    box.innerHTML='';
+    if(sil.level!=='ok'){
+      const w=el('div','ai-note');
+      w.innerHTML='<span class="ic">'+(sil.level==='greu'?'🔴':'🟠')+'</span><span><strong>'+esc(SILENCE_LABEL[sil.level])+'</strong> · '+(sil.days!=null?sil.days+' dies des de l\'últim moviment':'sense dades')+'. El silenci és el primer símptoma abans que un projecte mori.</span>';
+      box.appendChild(w);
+    }
+    if(!list.length)box.appendChild(el('div','ent-desc','Cap mentor assignat. Una venture sense acompanyant és una carpeta.'));
+    list.forEach(m=>{
+      const per=memberById(node,m.memberId),sc=scopeMeta(m.scope);
+      const c=el('div','ent-card');
+      c.innerHTML='<div class="ent-nm">'+sc.ic+' '+esc((per&&per.name)||'—')+'</div><div class="ent-badges" style="margin-top:.2rem"><span class="ent-b b-ver">'+esc(sc.label)+'</span><span class="ent-b">'+esc(sc.one)+'</span></div>';
+      const x=el('button','btn btn-ghost btn-sm','🗑');x.style.marginTop='.3rem';
+      x.onclick=async()=>{removeMentor(v,m.id);await persist(node);paintMentors();};
+      c.appendChild(x);box.appendChild(c);
+    });
+    const add=el('div','wz-key');add.style.marginTop='.4rem';
+    const sel=el('select');sel.innerHTML='<option value="">— qui acompanya —</option>'+ms.map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join('');
+    const sc=el('select');sc.innerHTML=MENTOR_SCOPES.map(s=>'<option value="'+s.id+'">'+s.ic+' '+s.label+'</option>').join('');
+    const b=el('button','btn btn-ghost btn-sm','+ Mentor');
+    b.onclick=async()=>{
+      if(!sel.value){toast(ms.length?'Tria qui acompanya':'Dona d\'alta socis a la MATRIU primer');return;}
+      addMentor(v,sel.value,sc.value);await persist(node);paintMentors();
+    };
+    add.appendChild(sel);add.appendChild(sc);add.appendChild(b);box.appendChild(add);
+  };
+  const paintSessions=()=>{
+    const box=bg.querySelector('#vdSessions');if(!box||!box.isConnected)return;
+    const ss=sessionsOf(v);box.innerHTML='';
+    if(!ss.length){box.appendChild(el('div','ent-desc','Cap sessió registrada. El temps d\'acompanyament també és valor aportat: registrat, compta i genera slices.'));return;}
+    const tot=ss.reduce((s,x)=>s+(Number(x.hours)||0),0);
+    box.appendChild(el('div','wz-key-note',ss.length+' sessió'+(ss.length===1?'':'ns')+' · '+(Math.round(tot*10)/10)+' h d\'acompanyament comptabilitzades'));
+    ss.slice(0,8).forEach(s=>{
+      const per=s.mentorMemberId?memberById(node,s.mentorMemberId):null;
+      const c=el('div','ent-card');c.style.marginTop='.3rem';
+      c.innerHTML='<div class="ent-nm">📓 '+esc((s.ts||'').slice(0,10))+(per?' · '+esc(per.name):'')+'</div>'+
+        '<div class="ent-badges" style="margin-top:.2rem">'+(s.hours?'<span class="ent-b b-ver">'+s.hours+' h</span>':'')+(s.entryId?'<span class="ent-b b-ver">al ledger</span>':'<span class="ent-b b-unver">sense hores</span>')+'</div>'+
+        (s.topics?'<div class="ent-desc" style="margin-top:.25rem"><strong>Temes:</strong> '+esc(s.topics)+'</div>':'')+
+        (s.agreements?'<div class="ent-desc"><strong>Acords:</strong> '+esc(s.agreements)+'</div>':'')+
+        (s.next?'<div class="ent-desc"><strong>Proper pas:</strong> '+esc(s.next)+'</div>':'');
+      box.appendChild(c);
+    });
+  };
+  bg.querySelector('#vdSession').onclick=()=>openSessionForm(node,v,()=>{paintMentors();paintSessions();renderVEq();});
+  paintMentors();paintSessions();
   const eqBox=bg.querySelector('#vdEquity');
-  (function renderVEq(){const eq=computeVentureEquity(node,v);eqBox.innerHTML='';if(eq.some(e=>e.slices>0))eqBox.appendChild(buildEquityWrap(eq));else eqBox.appendChild(el('div','ent-desc','Encara cap aportació a aquesta venture. Registra hores o diner dels socis i la tarta es repartirà — cada projecte econòmic té la seva pròpia.'));})();
+  const renderVEq=()=>{const eq=computeVentureEquity(node,v);eqBox.innerHTML='';if(eq.some(e=>e.slices>0))eqBox.appendChild(buildEquityWrap(eq));else eqBox.appendChild(el('div','ent-desc','Encara cap aportació a aquesta venture. Registra hores o diner dels socis i la tarta es repartirà — cada projecte econòmic té la seva pròpia.'));};
+  renderVEq();
   bg.querySelector('#vdContrib').onclick=async()=>{if(!ms.length){toast('Dona d\'alta socis a la MATRIU primer');return;}v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);openContributionModal(node,v);};
   // El mateix diagnòstic VNA que fem servir al node, ara aplicat al mapa de la venture:
   // reciprocitat, densitat, diversitat i rols aïllats. Sense això la venture neix cega.
@@ -7007,6 +7369,13 @@ function dashboardAttention(){
           d:nd.name+' · totes les comprovacions verdes',act:()=>openVentureDetail(nd,v)});
       }catch(e){}
     });
+    /* Ventures en silenci. Un projecte que deixa de moure's no avisa: per això
+       ha d'avisar el tauler, abans que la mort sigui un fet consumat. */
+    silentVentures(nd).forEach(x=>out.push({
+      sev:x.s.level==='greu'?0:1,ic:'🔕',
+      t:x.v.name+' fa '+x.s.days+' dies que no es mou',
+      d:nd.name+' · '+SILENCE_LABEL[x.s.level].toLowerCase()+'; una trucada arriba a temps, un tancament no',
+      act:()=>openVentureDetail(nd,x.v)}));
     // Nodes sense mapa: el diagnòstic que encara no s'ha fet
     if((nd.vna&&nd.vna.roles||[]).length===0&&nd.nodeLevel==='projecte')
       out.push({sev:2,ic:'🕸',t:esc(nd.name)+' no té mapa de valor',d:'Sense mapa no es veu qui sosté què',
@@ -7607,6 +7976,8 @@ function renderDashboard(w){
   const gPub=el('button','btn btn-ghost btn-sm','🌐 Registre públic');gPub.id='dashRegister';gPub.onclick=()=>openPublicRegister();jb.appendChild(gPub);
   // Les federacions són la manera de trobar gent fora del teu territori.
   const gFed=el('button','btn btn-ghost btn-sm','🏷 Federacions');gFed.id='dashFederacions';gFed.onclick=()=>openFederations();jb.appendChild(gFed);
+  // Els ancoratges només serveixen si hi pots tornar.
+  const gAnc=el('button','btn btn-ghost btn-sm','🛰 Ancoratges');gAnc.id='dashAncoratges';gAnc.onclick=()=>openAnchors();jb.appendChild(gAnc);
   if(j.next&&j.next.act){const gn=el('button','btn btn-primary btn-sm',j.next.ic+' '+j.next.label);gn.onclick=()=>j.next.act();jb.appendChild(gn);}
   jc.appendChild(jb);
   body.appendChild(jc);
@@ -8691,7 +9062,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

@@ -327,6 +327,47 @@ Els temes viuen al node (`node.themes`), així que **viatgen amb la
 sincronització** com qualsevol altra dada: no calen ni servidor ni registre
 central de federacions.
 
+## V29 · Veda de l'acompanyament
+
+Una incubadora sense mentoria és un repositori d'estructures. El SOS sabia
+quines ventures existien i quant valor movien, però no deixava **cap rastre de
+la feina que les sosté**: qui acompanya qui, què es va acordar, i què passa quan
+un projecte deixa de moure's.
+
+Tres regles:
+
+1. **Acompanyar no és «ajudar en general».** Cada mentor porta el seu **àmbit**
+   (jurídic, econòmic, tècnic, relacional, comunitari). Sense àmbit no se sap
+   què s'està cobrint ni què falta.
+2. **El temps d'acompanyament és valor aportat.** Cada sessió registrada entra
+   al ledger de la venture, **signada i encadenada**, i genera slices com
+   qualsevol altra aportació. Si no fos així, l'acompanyament seria l'única
+   feina de la MATRIU que no comptaria — i és justament la principal (veda
+   V22). Una sessió sense hores segueix sent acta, però no inventa cap apunt.
+3. **El silenci és un símptoma, i s'ha de veure.** Una venture que fa setmanes
+   que no es mou surt marcada a la Cartera i al tauler. Un projecte que mor no
+   avisa; per això ha d'avisar l'eina. Les graduades no s'empaiten: ja no
+   s'acompanyen.
+
+## V30 · Veda de l'ancoratge que es recorda
+
+Ancorar era un carreró: generaves el paquet, el descarregaves, el pujaves a
+Arweave… i el SOS se n'oblidava. Al cap d'un mes no podies dir ni què havies
+ancorat ni si el registre d'avui encara quadrava amb allò.
+
+**Un ancoratge que no es pot tornar a comprovar no demostra res.** La gràcia de
+segellar és poder-hi tornar. Tres regles:
+
+1. **Descarregar un paquet és ancorar-lo**, i queda a l'historial amb la seva
+   arrel, les seves fulles i qui el va signar.
+2. **On s'ha publicat també és dada.** Hi ha un lloc per apuntar la transacció
+   d'Arweave, el CID d'IPFS o l'event de Nostr — perquè si no, l'evidència viu
+   només al cap de qui la va pujar.
+3. **La comprovació es fa contra el registre d'avui**, fulla per fulla: quantes
+   accions segellades hi són encara, quantes han canviat, quantes n'hi ha de
+   noves. I `verifyPack` accepta qualsevol dels tres paquets sense que qui el
+   rep hagi de saber quin és.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
