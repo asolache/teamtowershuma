@@ -113,11 +113,25 @@ nos2x instal·lats a Chrome/Firefox. **Fes els ancoratges Nostr des de l'iMac.**
 ### Ancoratge permanent · Arweave
 
 1. Al registre: **🛰 Ancora** → es calcula l'arrel de totes les accions, es signa
-   i es verifica a la mateixa pantalla. **⭳ Descarrega** el JSON.
+   i es verifica a la mateixa pantalla. **⭳ Descarrega** el JSON: en descarregar-lo
+   queda apuntat automàticament a **🛰 Els meus ancoratges**.
 2. Puja'l a [arweave.app](https://arweave.app) des de l'**iMac** (necessites una
    cartera Arweave amb saldo; és pagament únic per fitxer, cèntims per un JSON
    d'aquesta mida).
-3. Guarda l'enllaç resultant amb el **CID** que et donava el SOS.
+3. Torna a **🛰 Els meus ancoratges** i **enganxa l'enllaç d'Arweave** al camp de
+   l'ancoratge. A partir d'aquí saps què vas segellar, quan, i on és publicat.
+
+### Comprovar que un ancoratge segueix valent
+
+Obre **🛰 Els meus ancoratges**: cada entrada et diu si el que vas segellar
+**segueix intacte** al registre d'avui, quantes accions han canviat i quantes
+n'has fet de noves des de llavors. Un ancoratge que no es pot tornar a comprovar
+no demostra res.
+
+Per verificar un paquet que t'ha passat **una altra persona**: **🔍 Verifica un
+paquet SOS** → enganxa'l o carrega'l. Et dirà de quin tipus és, si la firma i la
+integritat quadren, i qui el va signar. Tot es comprova al teu aparell: el
+paquet no s'envia enlloc.
 
 > **Per què des de l'iMac i no des de l'iPad:** crear i custodiar una cartera
 > Arweave a Safari d'iPad és incòmode i fràgil (l'emmagatzematge del navegador es

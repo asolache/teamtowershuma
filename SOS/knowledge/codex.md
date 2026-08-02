@@ -349,6 +349,25 @@ Tres regles:
    avisa; per això ha d'avisar l'eina. Les graduades no s'empaiten: ja no
    s'acompanyen.
 
+## V30 · Veda de l'ancoratge que es recorda
+
+Ancorar era un carreró: generaves el paquet, el descarregaves, el pujaves a
+Arweave… i el SOS se n'oblidava. Al cap d'un mes no podies dir ni què havies
+ancorat ni si el registre d'avui encara quadrava amb allò.
+
+**Un ancoratge que no es pot tornar a comprovar no demostra res.** La gràcia de
+segellar és poder-hi tornar. Tres regles:
+
+1. **Descarregar un paquet és ancorar-lo**, i queda a l'historial amb la seva
+   arrel, les seves fulles i qui el va signar.
+2. **On s'ha publicat també és dada.** Hi ha un lloc per apuntar la transacció
+   d'Arweave, el CID d'IPFS o l'event de Nostr — perquè si no, l'evidència viu
+   només al cap de qui la va pujar.
+3. **La comprovació es fa contra el registre d'avui**, fulla per fulla: quantes
+   accions segellades hi són encara, quantes han canviat, quantes n'hi ha de
+   noves. I `verifyPack` accepta qualsevol dels tres paquets sense que qui el
+   rep hagi de saber quin és.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
