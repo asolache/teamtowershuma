@@ -493,6 +493,37 @@ calaix.
 I surt en **CSV**, perquè les memòries i les justificacions de subvenció es fan
 en full de càlcul, no mirant una pantalla.
 
+## Veda 38 — Una subvenció no és un model de negoci
+
+`fundValue` diu què s'ha mobilitzat, no si allò se sosté. Graduar una
+cooperativa que no sap si cobreix costos és enviar-la a tancar en sis mesos amb
+la gent que hi ha posat la vida a dins.
+
+Tres decisions perquè el número no menteixi:
+
+1. **Els ajuts no compten al llindar.** Un ajut que tapa el forat fa que un
+   model insostenible sembli sostenible fins al dia que s'acaba la
+   convocatòria. El llindar es calcula **només amb ingressos propis**; els ajuts
+   surten a part, com el coixí que són. Un projecte que quadra només amb ells és
+   `dependent`, i se li diu quantes unitats li falten per deixar de ser-ho.
+2. **Hi ha models que cap volum no salva.** Si cada unitat es ven per sota del
+   seu cost variable, vendre'n més accelera la caiguda. Això no és «falta poc»:
+   és `impossible`, i es diu amb aquesta paraula.
+3. **Sense volum no hi ha diagnòstic.** Dir «cada unitat perd 0 €» quan no hi ha
+   cap unitat és una frase buida que sona a anàlisi. Es diu `incomplet` i què
+   falta.
+
+El llindar és `costos fixos ÷ marge per unitat`. Separar fix de variable no és
+burocràcia: sense aquesta divisió no hi ha llindar.
+
+A la **porta de graduació**, els tipus amb ànim de lucre han de tenir el llindar
+calculat i assolible. A un projecte comunitari no se li demana — però se li
+mostra igualment, que saber-ho evita ensurts.
+
+El **runway del fons** és el capital dividit pel que es crema cada mes entre les
+iniciatives vives. Una graduada ja no crema el fons de ningú. I les que no tenen
+números es compten a part: el que no es compta no es crema menys.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
