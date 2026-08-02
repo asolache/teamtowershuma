@@ -197,6 +197,66 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
   el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
+### Biblioteca de les coses · valor de l'aportació i economia circular
+
+**Pendent.** Avui donar un objecte a la biblioteca no val res al registre: es
+publica i prou. Però una biblioteca de les coses **produeix valor real** que ara
+no es comptabilitza enlloc, i per això no es pot certificar ni retribuir.
+
+**1 · Valor de l'aportació en posar un objecte.** El formulari d'objecte ha de
+distingir dues coses que ara es confonen:
+
+- **Donació** — l'objecte passa al comú. El valor és el bé cedit: entra al
+  ledger com a aportació de qui el dona, valorat amb l'oracle
+  (`oracleObjectValue`) i ajustat per estat i antiguitat.
+- **Posada a disposició** (segueix sent teu, el prestes) — el valor **no** és el
+  preu de l'objecte, perquè no el regales. El que aportes és **el risc i el
+  desgast**: que se't faci malbé, que torni pitjor, i la revisió, reparació o
+  reciclatge que aquell objecte generarà. Aquest és un flux de valor propi de la
+  biblioteca, i és exactament el que un certificat d'economia circular ha de
+  poder demostrar.
+
+Cal, doncs, un **coeficient de desgast per tipologia i ús**: una eina elèctrica
+prestada quaranta vegades no aporta el mateix que una tenda de campanya
+prestada dues. La proposta és valorar per préstec, no d'una sola vegada: cada
+retorn genera un apunt petit i signat a favor de qui l'ha posat a disposició.
+Així el valor s'acumula amb l'ús real i no amb una declaració inicial.
+
+**Regla d'honestedat**: aquests valors són **estimacions de l'oracle**, i s'han
+de mostrar com a tals, amb la font a la vista (Glass-Box, com `fundValue`). Un
+número inventat que sembli comptabilitat és pitjor que no tenir-lo.
+
+**2 · Reparació: mentor i aprenent aporten valor tots dos.** La vessant de
+reparació és on la biblioteca deixa de ser un magatzem i passa a ser una escola.
+El model ha d'incentivar les dues bandes:
+
+- **La mentora** aporta hores d'ofici i, sobretot, **transferència de
+  coneixement** — un intangible que a la VNA és el flux que sosté tota la resta.
+- **L'aprenent no és un cost**: mentre aprèn, **repara de debò**, i aquella
+  reparació és valor lliurat a la comunitat. Ha de generar-li reputació pel que
+  aporta, no només un certificat pel que aprèn.
+
+Encaixa amb el que ja hi ha: `logSession` de la MATRIU (F1) ja converteix una
+sessió d'acompanyament en apunts signats al ledger. Aquí caldria l'equivalent
+per a la biblioteca —una **sessió de reparació** amb objecte, mentora, aprenents
+i hores— que generi apunts per a tothom qui hi ha posat temps. Reutilitzar el
+mateix camí d'escriptura, no inventar-ne un de nou (veda V22: un sol camí).
+
+**3 · Per què això importa.** L'objectiu de fons és **automatitzar el registre
+de la comptabilitat de valor** de tothom qui hi participa. Un model *fair*
+no és el que reparteix bé al final: és el que **compta bé pel camí**, i que
+compta el que normalment no es compta —el risc de qui presta, el temps de qui
+ensenya, i la feina de qui aprèn fent.
+
+**Ordre suggerit**: (1) donació vs posada a disposició amb valor per préstec ·
+(2) sessió de reparació amb mentora i aprenents · (3) indicadors agregats per al
+certificat circular (objectes salvats de l'abocador, reparacions, hores
+formatives, valor evitat).
+
+**Depèn de**: `oracleObjectValue` i `ORACLE_OBJECT_DEFAULTS` (ja hi són),
+`pushLedger` (ja és el choke point), i el pont de taxonomies entre banc de temps
+i biblioteca que ja consta com a pendent més amunt.
+
 ### Identitat i alta de socis · fet (V39)
 
 **El problema que hi havia.** `newMember` encunyava un `uid()` nou cada vegada. La mateixa
