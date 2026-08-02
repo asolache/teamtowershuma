@@ -126,6 +126,26 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 3. **Més de dos alhora** — avui la sincronització és punt a punt; una assemblea
    de debò en vol N.
 
+### Onada UX · el perfil s'edita i el catàleg és únic
+
+**Fet:**
+1. **El perfil s'edita, no es torna a començar** — `profileSnapshot` reconstrueix
+   què té publicat la persona a tot el SOS, el formulari s'obre omplert i marcat,
+   i desar **reconcilia** (afegeix el nou, retira el desmarcat) en comptes de
+   duplicar. Els botons diuen «Edita» quan toca. Un objecte prestat no es
+   retira mai. Veda V31.
+2. **Cerca centralitzada per proximitat** — `supplyIndex`/`searchSupply` són el
+   catàleg únic de tot el SOS (habilitats, objectes, demandes de qualsevol
+   node), i `proximity` ordena de més a prop a més lluny **sense inventar
+   quilòmetres**: es fa servir l'arbre territorial, i coordenades reals només si
+   n'hi ha. Pantalla `🔎 Què hi ha a prop` al tauler i a `#/aprop`. Veda V32.
+
+**Pendent d'aquesta línia:**
+- **Coordenades reals dels municipis** — el model ja les accepta (`node.lat/lon`,
+  heretades pels projectes); falta una via d'import que no sigui inventar-les.
+- **Acció directa des del resultat** — avui el resultat porta al node; hauria de
+  poder demanar l'objecte o l'intercanvi sense sortir de la cerca.
+
 ### Defectes trobats i encara oberts
 
 - **`updateAtles` no és idempotent.** Cridar-la dues vegades seguides deixa un
