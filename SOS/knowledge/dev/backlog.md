@@ -116,9 +116,21 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    `silentVentures`) visible a la Cartera i al tauler. Veda V29. La MATRIU deixa
    de ser un repositori d'estructures i passa a ser un servei.
 
+8. **F3 de la MATRIU · riscos i bloquejos** — riscos amb probabilitat, impacte
+   i **pla de mitigació**; bloquejos amb **qui els desbloqueja** i quants dies
+   fa que duren; `ventureLight` calcula el semàfor de cada iniciativa i
+   `matriuLights` ordena la cartera pitjor primer. El tauler d'atenció puja els
+   bloquejos de 14 dies o més per damunt de tot i avisa dels riscos alts sense
+   pla. Veda V36.
+
+9. **Res no interromp el que estàs fent** — `modal()` buida `#modalRoot`, així
+   que el tour d'acollida amb retard destruïa la pantalla que tenies oberta i
+   el que hi havies escrit (el registre d'hores inclòs). Ara `modalOpen()`
+   comprova si estàs ocupat i el tour espera o renuncia. Veda V35.
+
 **Següent, per ordre:**
-1. **F3 de la MATRIU · riscos i bloquejos** — l'altra meitat del que fa que la
-   MATRIU sigui un servei.
+1. **F4 de la MATRIU · vista de cohort** — veure totes les iniciatives d'una
+   promoció juntes i comparar-les.
 2. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
 2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
@@ -183,10 +195,9 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 Auditoria completa, defectes corregits i 8 fases pendents a
 **`../matriu/pla-millora.md`**. Com funciona avui: **`../matriu/guia-funcionament.md`**.
 
-Ordre recomanat: **F1 acompanyament** (mentors + sessions al ledger + alertes
-d'abandó) i **F3 riscos/bloquejos** primer — són les que fan que la MATRIU deixi
-de ser un repositori d'estructures i passi a ser un servei. Després **F4 vista de
-cohort**. La resta: F2 viabilitat econòmica · F5 finançament i tràmits ·
+**F1 acompanyament** i **F3 riscos/bloquejos** ja estan fetes — són les que fan
+que la MATRIU deixi de ser un repositori d'estructures i passi a ser un servei.
+Següent: **F4 vista de cohort**. La resta: F2 viabilitat econòmica · F5 finançament i tràmits ·
 F6 formació lligada a l'etapa · F7 seguiment post-graduació · F8 evidències.
 
 ### Visió de fons · Catalunya com a estat líquid descentralitzat

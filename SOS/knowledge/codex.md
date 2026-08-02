@@ -441,6 +441,34 @@ I mentre no n'hi ha, l'eina **ho diu**: l'ordre és per proximitat territorial i
 no es mostra cap quilòmetre. Es rebutja el que no és coordenada — capçaleres,
 text, i qualsevol punt fora del planeta.
 
+## Veda 35 — Res no interromp el que estàs fent
+
+`modal()` buida `#modalRoot` sencer. Vol dir que **qualsevol** pantalla que
+s'obri per iniciativa de l'app destrueix la que tenies oberta, i amb ella tot
+el que hi havies escrit. El tour d'acollida arribava amb retard i feia
+exactament això: si mentrestant havies obert el registre d'hores i n'havies
+omplert la meitat, es perdia.
+
+La norma: **cap pantalla automàtica s'obre a sobre d'una d'oberta**. Espera i
+torna-ho a provar; si al cap d'una estona segueixes ocupat, renuncia. Val més
+un tour que no surt que un formulari perdut.
+
+## Veda 36 — El semàfor no és decoració
+
+Cada iniciativa té un color, i el color surt de fets, no d'opinions:
+
+- **Vermell** — un risc de probabilitat i impacte alts **sense pla de
+  mitigació**, o un bloqueig que fa 14 dies o més que dura, o silenci greu.
+- **Ambre** — qualsevol bloqueig obert, silenci d'avís, o qualsevol risc apuntat.
+- **Verd** — res de tot això. Una graduada sempre és verda: ja no la vigilem.
+
+Un risc **amb** pla baixa a ambre. Aquesta és la diferència que compta: apuntar
+un risc no és gestionar-lo, escriure què faràs sí. Un bloqueig demana **qui el
+desbloqueja** — sense nom no és un bloqueig, és una queixa.
+
+La cartera de la MATRIU mostra el semàfor **pitjor primer**, i el tauler
+d'atenció puja els bloquejos encallats per damunt de tota la resta.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
