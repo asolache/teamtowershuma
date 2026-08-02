@@ -110,8 +110,16 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    entrada des del tauler, del llançador, de la paleta, de les accions del node
    i de la ruta `#/federacions`. Veda V28.
 
+7. **F1 de la MATRIU · acompanyament** — mentors amb àmbit
+   (`MENTOR_SCOPES`), sessions que entren al ledger de la venture signades i
+   generen slices (`logSession`), i detecció de silenci (`ventureSilence`,
+   `silentVentures`) visible a la Cartera i al tauler. Veda V29. La MATRIU deixa
+   de ser un repositori d'estructures i passa a ser un servei.
+
 **Següent, per ordre:**
-1. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
+1. **F3 de la MATRIU · riscos i bloquejos** — l'altra meitat del que fa que la
+   MATRIU sigui un servei.
+2. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
 2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
    però l'escaneig depèn de la càmera del sistema.
