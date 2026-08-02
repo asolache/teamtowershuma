@@ -469,6 +469,61 @@ desbloqueja** — sense nom no és un bloqueig, és una queixa.
 La cartera de la MATRIU mostra el semàfor **pitjor primer**, i el tauler
 d'atenció puja els bloquejos encallats per damunt de tota la resta.
 
+## Veda 37 — Comparar no pot ser una opinió
+
+Qui coordina una MATRIU no pot obrir dotze pantalles per saber com va la
+promoció. La vista de cohort posa **una fila per iniciativa amb les mateixes
+columnes**: etapa, semàfor, preparació, backlog, hores, equity concentrada,
+salut del mapa, dies sense moure's, mentores i incidències.
+
+Dues condicions, o la taula menteix:
+
+1. **Cap xifra és nova.** Tot surt del mateix estat que ja es podia llegir
+   venture a venture. El semàfor de la taula i el de la cartera són el mateix
+   càlcul; si un dia divergissin, la taula seria una segona veritat.
+2. **La salut del mapa és un sol número comparable.** Reciprocitat (45),
+   densitat (25), barreja tangible/intangible (15), cap rol aïllat (10) i que
+   no tot passi pel nucli (5). Un mapa amb menys de dos rols o sense fluxos
+   puntua zero i **ho diu**: «Mapa incomplet», no un 0% que sembli un suspens.
+
+L'**embut** diu si la MATRIU incuba o acumula: quantes a cada estadi i quin
+percentatge n'ha sortit. Vint idees i cap graduada no és una cartera, és un
+calaix.
+
+I surt en **CSV**, perquè les memòries i les justificacions de subvenció es fan
+en full de càlcul, no mirant una pantalla.
+
+## Veda 38 — Una subvenció no és un model de negoci
+
+`fundValue` diu què s'ha mobilitzat, no si allò se sosté. Graduar una
+cooperativa que no sap si cobreix costos és enviar-la a tancar en sis mesos amb
+la gent que hi ha posat la vida a dins.
+
+Tres decisions perquè el número no menteixi:
+
+1. **Els ajuts no compten al llindar.** Un ajut que tapa el forat fa que un
+   model insostenible sembli sostenible fins al dia que s'acaba la
+   convocatòria. El llindar es calcula **només amb ingressos propis**; els ajuts
+   surten a part, com el coixí que són. Un projecte que quadra només amb ells és
+   `dependent`, i se li diu quantes unitats li falten per deixar de ser-ho.
+2. **Hi ha models que cap volum no salva.** Si cada unitat es ven per sota del
+   seu cost variable, vendre'n més accelera la caiguda. Això no és «falta poc»:
+   és `impossible`, i es diu amb aquesta paraula.
+3. **Sense volum no hi ha diagnòstic.** Dir «cada unitat perd 0 €» quan no hi ha
+   cap unitat és una frase buida que sona a anàlisi. Es diu `incomplet` i què
+   falta.
+
+El llindar és `costos fixos ÷ marge per unitat`. Separar fix de variable no és
+burocràcia: sense aquesta divisió no hi ha llindar.
+
+A la **porta de graduació**, els tipus amb ànim de lucre han de tenir el llindar
+calculat i assolible. A un projecte comunitari no se li demana — però se li
+mostra igualment, que saber-ho evita ensurts.
+
+El **runway del fons** és el capital dividit pel que es crema cada mes entre les
+iniciatives vives. Una graduada ja no crema el fons de ningú. I les que no tenen
+números es compten a part: el que no es compta no es crema menys.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

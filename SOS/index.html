@@ -494,6 +494,26 @@ a{color:var(--blue);text-decoration:none}
 .vr-row{display:flex;align-items:center;gap:.6rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.55rem .7rem;font-size:.82rem;color:var(--light)}
 .vr-row.big{border-color:var(--green);background:linear-gradient(90deg,rgba(0,230,118,.12),transparent)}
 .vr-ic{font-size:1.1rem}
+/* Vista de cohort · la taula ha de poder desbordar en horitzontal sense trencar la pàgina */
+.coh-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:12px}
+.coh-table{min-width:860px}
+.coh-table th.coh-th{cursor:pointer;white-space:nowrap;user-select:none}
+.coh-table th.coh-th:hover{color:var(--light)}
+.coh-table th.coh-th.on{color:var(--indigo)}
+.coh-table th.num{text-align:right}
+.coh-row:hover{background:rgba(255,255,255,.03)}
+.coh-sub{font-size:.7rem;color:var(--muted)}
+.coh-light{font-size:.78rem;white-space:nowrap}
+.coh-sel{background:var(--bg-panel);border:1px solid var(--border);color:var(--light);border-radius:8px;padding:.35rem .5rem;font-size:.8rem}
+.coh-funnel{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.6rem 0}
+.coh-step{flex:1 1 120px;min-width:0}
+.coh-step-h{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:.25rem}
+.coh-step-h strong{color:var(--light);font-family:var(--mono)}
+.coh-bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.coh-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--green))}
+.coh-conv{flex:1 1 100%;font-size:.78rem;color:var(--muted);margin-top:.2rem}
+.econ-bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:.45rem}
+.econ-bar>i{display:block;height:100%;transition:width .3s}
 .cons{margin-top:1rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:.75rem .8rem}
 .cons-h{font-size:.85rem;font-weight:600;color:var(--light);margin-bottom:.5rem}
 .cons-h span{font-weight:400;color:var(--muted)}
@@ -1938,6 +1958,228 @@ const LIGHT_META={verd:{ic:'🟢',color:'var(--green)',label:'Avança'},ambre:{i
 function matriuLights(node){
   return venturesOf(node).map(v=>({v,light:ventureLight(v)}))
     .sort((a,b)=>({vermell:0,ambre:1,verd:2})[a.light.level]-({vermell:0,ambre:1,verd:2})[b.light.level]);
+}
+/* ═══════════ VISTA DE COHORT · el conjunt en una pantalla ═══════════
+   Veda V37. Qui coordina una MATRIU no pot obrir dotze modals per saber com va
+   la promoció. Aquí cada iniciativa és **una fila** amb les mateixes columnes,
+   totes calculades del mateix estat que ja hi havia — no hi ha cap xifra nova
+   inventada per a aquesta pantalla, només les que ja es podien llegir una a una.
+
+   La taula ordena i filtra per qualsevol columna, i surt en CSV perquè les
+   memòries i les justificacions de subvenció es fan en full de càlcul, no
+   mirant una pantalla. */
+const LIGHT_RANK={vermell:0,ambre:1,verd:2};
+/* Salut del mapa d'una iniciativa, en un sol número comparable entre files.
+   Els pesos diuen què importa: que els fluxos tornin (45), que la xarxa sigui
+   densa (25), que hi hagi tangible i intangible (15), que ningú quedi penjat
+   (10) i que no tot passi pel nucli (5). */
+function mapHealthScore(v){
+  const roles=(v.vna&&v.vna.roles)||[],ex=(v.vna&&v.vna.exchanges)||[];
+  if(roles.length<2||!ex.length)return{score:0,why:'Mapa incomplet',recPct:0,dens:0,isolated:roles.length,hub:0};
+  const a=vnaAudit(v);
+  const score=Math.min(100,Math.round(a.recPct*0.45+a.dens*0.25+((a.hasT&&a.hasI)?15:5)+(a.isolated.length?0:10)+(a.hub<=55?5:0)));
+  return{score,why:'',recPct:a.recPct,dens:a.dens,isolated:a.isolated.length,hub:a.hub};
+}
+function cohortRow(node,v){
+  const sps=sprintsOf(v),items=sps.reduce((a,s)=>a.concat(s.items||[]),[]);
+  const bDone=items.filter(x=>x.done).length;
+  const led=v.ledger||[];
+  let hours=0,euros=0;
+  led.forEach(e=>{const q=Number(e.value)||0;if(e.type==='temps')hours+=q;else if(e.type==='moneda')euros+=q;});
+  allocationsOf(v).forEach(a=>{if(a.kind==='hores')hours+=Number(a.qty)||0;});
+  const eq=computeVentureEquity(node,v);
+  const light=ventureLight(v),sil=ventureSilence(v),rd=ventureReadiness(node,v),mh=mapHealthScore(v);
+  const ec=ventureEconomics(v);
+  const lead=v.leadMemberId?memberById(node,v.leadMemberId):null;
+  return{v,id:v.id,name:v.name||'',
+    stage:v.stage,stageLabel:STAGE_LABELS[v.stage]||v.stage,stageRank:VENTURE_STAGES.indexOf(v.stage),
+    light:light.level,lightWhy:light.why,lightRank:LIGHT_RANK[light.level],
+    readiness:rd.score,readinessPending:rd.checks.filter(c=>!c.ok).length,
+    backlogDone:bDone,backlogTotal:items.length,backlog:items.length?Math.round(bDone/items.length*100):0,
+    hours:Math.round(hours*10)/10,euros:Math.round(euros),
+    equity:eq.length?Math.round(Math.max(...eq.map(e=>e.pct||0))):0,equityPeople:eq.length,
+    health:mh.score,healthWhy:mh.why,
+    econ:ec.estat,econWhy:ec.why,econRank:['impossible','dependent','incomplet','assolible','sostenible'].indexOf(ec.estat),
+    resultat:ec.resultat,llindar:ec.llindar,cobertura:ec.cobertura,
+    silence:sil.days==null?9999:sil.days,silenceLevel:sil.level,lastTs:sil.last,
+    mentors:mentorsOf(v).length,sessions:sessionsOf(v).length,
+    risks:risksOf(v).filter(r=>r.open).length,blocks:blocksOf(v).filter(b=>b.open).length,
+    issues:risksOf(v).filter(r=>r.open).length+blocksOf(v).filter(b=>b.open).length,
+    lead:lead?lead.name:'',graduated:!!v.graduatedNodeId};
+}
+const COHORT_COLS=[
+  {id:'name',label:'Iniciativa',num:false,dir:'asc'},
+  {id:'stage',label:'Etapa',num:false,key:'stageRank',dir:'asc'},
+  {id:'light',label:'Semàfor',num:false,key:'lightRank',dir:'asc'},
+  {id:'readiness',label:'Preparació',num:true,suf:'%',dir:'desc'},
+  {id:'backlog',label:'Backlog',num:true,suf:'%',dir:'desc'},
+  {id:'hours',label:'Hores',num:true,dir:'desc'},
+  {id:'equity',label:'Equity màx',num:true,suf:'%',dir:'desc'},
+  {id:'health',label:'Salut del mapa',num:true,suf:'%',dir:'desc'},
+  {id:'econ',label:'Viabilitat',num:false,key:'econRank',dir:'asc'},
+  {id:'silence',label:'Dies sense moure\'s',num:true,dir:'desc'},
+  {id:'mentors',label:'Mentores',num:true,dir:'asc'},
+  {id:'issues',label:'Riscos i blocs',num:true,dir:'desc'}
+];
+const cohortCol=id=>COHORT_COLS.find(c=>c.id===id)||COHORT_COLS[0];
+/* Ordena i filtra. Per defecte, el mateix criteri que el semàfor: primer el que
+   demana atenció, i entre iguals el que fa més dies que no es mou. */
+function cohortTable(node,{sort,dir,stage,light}={}){
+  let rows=venturesOf(node).map(v=>cohortRow(node,v));
+  const total=rows.length;
+  if(stage)rows=rows.filter(r=>r.stage===stage);
+  if(light)rows=rows.filter(r=>r.light===light);
+  const col=cohortCol(sort||'light'),key=col.key||col.id;
+  const d=(dir||col.dir)==='desc'?-1:1;
+  rows.sort((a,b)=>{
+    const x=a[key],y=b[key];
+    let c=(typeof x==='number'&&typeof y==='number')?x-y:String(x).localeCompare(String(y),'ca');
+    if(!c)c=(a.silence-b.silence)*-1;
+    return c*d;
+  });
+  return{rows,total,shown:rows.length,sort:col.id,dir:(dir||col.dir)};
+}
+/* Embut: quantes iniciatives hi ha a cada estadi i quantes n'han sortit.
+   Una MATRIU amb vint idees i cap graduada no està incubant, està acumulant. */
+function cohortFunnel(node){
+  const vs=venturesOf(node);
+  const stages=VENTURE_STAGES.map(id=>({id,label:STAGE_LABELS[id]||id,
+    n:vs.filter(v=>v.stage===id).length}));
+  const max=Math.max(1,...stages.map(s=>s.n));
+  stages.forEach(s=>{s.pct=Math.round(s.n/max*100);});
+  const graduades=vs.filter(v=>v.graduatedNodeId||v.stage==='graduacio').length;
+  return{stages,max,total:vs.length,graduades,
+    conversio:vs.length?Math.round(graduades/vs.length*100):0};
+}
+function cohortCSV(rows){
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const head=['iniciativa','etapa','semafor','motiu','preparacio_%','backlog_fets','backlog_total','backlog_%',
+    'hores','euros','equity_max_%','persones_equity','salut_mapa_%','viabilitat','viabilitat_motiu',
+    'resultat_mes_€','llindar_unitats_mes','cobertura_llindar_%','dies_sense_moures','ultima_activitat',
+    'mentores','sessions','riscos_oberts','bloquejos_oberts','lead','graduada'];
+  return [head.map(q).join(',')].concat(rows.map(r=>[r.name,r.stageLabel,r.light,r.lightWhy,r.readiness,
+    r.backlogDone,r.backlogTotal,r.backlog,r.hours,r.euros,r.equity,r.equityPeople,r.health,
+    r.econ,r.econWhy,r.resultat,r.llindar==null?'':r.llindar,r.cobertura,
+    r.silence===9999?'':r.silence,r.lastTs,r.mentors,r.sessions,r.risks,r.blocks,r.lead,
+    r.graduated?'sí':'no'].map(q).join(','))).join('\n');
+}
+/* ═══════════ VIABILITAT ECONÒMICA · si el projecte se sosté ═══════════
+   Veda V38. `fundValue` diu què s'ha mobilitzat, no si allò se sosté. Graduar
+   una cooperativa que no sap si cobreix costos és enviar-la a tancar en sis
+   mesos amb la gent hi ha posat la vida a dins.
+
+   Dues decisions que fan que el número no menteixi:
+
+   1) **Les subvencions no compten al llindar.** Un ajut que tapa el forat fa
+      que un model insostenible sembli sostenible fins al dia que s'acaba la
+      convocatòria. Aquí el llindar es calcula **només amb ingressos propis**, i
+      els ajuts es mostren a part com el coixí que són.
+   2) **Hi ha models que cap volum no salva.** Si cada unitat es ven per sota
+      del seu cost variable, vendre'n més accelera la caiguda. Això no és «falta
+      poc», és `impossible`, i es diu amb aquesta paraula. */
+const REVENUE_KINDS=[
+  {id:'venda',ic:'🛒',label:'Venda de producte',one:'Cada unitat que surt del taller'},
+  {id:'servei',ic:'🛎',label:'Servei prestat',one:'Hores, sessions, encàrrecs'},
+  {id:'quota',ic:'🎫',label:'Quota de sòcia',one:'Ingrés recurrent de la base social'},
+  {id:'subvencio',ic:'🏛',label:'Subvenció o ajut',one:'No compta al llindar: s\'acaba'},
+  {id:'altres',ic:'•',label:'Altres',one:''}
+];
+const revKindMeta=id=>REVENUE_KINDS.find(k=>k.id===id)||REVENUE_KINDS[REVENUE_KINDS.length-1];
+const COST_KINDS=[
+  {id:'fix',ic:'🏠',label:'Fix',one:'Es paga cada mes, venguis el que venguis'},
+  {id:'variable',ic:'📦',label:'Variable',one:'Es paga per cada unitat produïda o servida'}
+];
+const revenuesOf=v=>v.revenues||(v.revenues=[]);
+const costsOf=v=>v.costs||(v.costs=[]);
+function addRevenue(v,{source,kind,price,units}={}){
+  const r={id:uid(),source:(source||'').trim(),kind:kind||'venda',
+    price:Math.max(0,Number(price)||0),units:Math.max(0,Number(units)||0),ts:now()};
+  if(!r.source)return null;
+  revenuesOf(v).push(r);return r;
+}
+function addCost(v,{what,kind,amount}={}){
+  const c={id:uid(),what:(what||'').trim(),kind:kind==='variable'?'variable':'fix',
+    amount:Math.max(0,Number(amount)||0),ts:now()};
+  if(!c.what)return null;
+  costsOf(v).push(c);return c;
+}
+const removeRevenue=(v,id)=>{const a=revenuesOf(v),i=a.findIndex(x=>x.id===id);if(i>=0)a.splice(i,1);return i>=0;};
+const removeCost=(v,id)=>{const a=costsOf(v),i=a.findIndex(x=>x.id===id);if(i>=0)a.splice(i,1);return i>=0;};
+const ECON_META={
+  sostenible:{ic:'✅',color:'var(--green)',label:'Se sosté'},
+  assolible:{ic:'🟠',color:'var(--orange)',label:'Llindar assolible'},
+  impossible:{ic:'🔴',color:'var(--red)',label:'Model impossible'},
+  dependent:{ic:'🏛',color:'var(--orange)',label:'Depèn d\'ajuts'},
+  incomplet:{ic:'○',color:'var(--muted)',label:'Sense números'}
+};
+const econMeta=id=>ECON_META[id]||ECON_META.incomplet;
+const _eur=n=>Math.round(n*100)/100;
+/* Tot en €/mes i unitats/mes. Una sola unitat de temps, o comparar no vol dir res. */
+function ventureEconomics(v){
+  const revs=revenuesOf(v),cos=costsOf(v);
+  let ingressos=0,unitats=0,ajuts=0;
+  revs.forEach(r=>{
+    const m=(Number(r.price)||0)*(Number(r.units)||0);
+    if(r.kind==='subvencio')ajuts+=m;
+    else{ingressos+=m;unitats+=Number(r.units)||0;}
+  });
+  const fixos=cos.filter(c=>c.kind==='fix').reduce((a,c)=>a+(Number(c.amount)||0),0);
+  const variableUnitari=cos.filter(c=>c.kind==='variable').reduce((a,c)=>a+(Number(c.amount)||0),0);
+  const variables=variableUnitari*unitats;
+  const preuMig=unitats?ingressos/unitats:0;
+  const marge=preuMig-variableUnitari;
+  const margePct=preuMig?Math.round(marge/preuMig*100):0;
+  const costos=fixos+variables;
+  const resultat=ingressos-costos;            // sense ajuts: la veritat nua
+  const resultatAmbAjuts=resultat+ajuts;
+  const llindar=marge>0?Math.ceil(fixos/marge):null;   // unitats/mes per cobrir els fixos
+  const falten=llindar==null?null:Math.max(0,llindar-unitats);
+  const cobertura=llindar?Math.min(999,Math.round(unitats/llindar*100)):(fixos?0:100);
+  const base={ingressos:_eur(ingressos),ajuts:_eur(ajuts),unitats,preuMig:_eur(preuMig),
+    fixos:_eur(fixos),variableUnitari:_eur(variableUnitari),variables:_eur(variables),costos:_eur(costos),
+    marge:_eur(marge),margePct,resultat:_eur(resultat),resultatAmbAjuts:_eur(resultatAmbAjuts),
+    llindar,falten,cobertura,revenues:revs.length,costsN:cos.length};
+  if(!revs.length||!cos.length)
+    return Object.assign(base,{estat:'incomplet',why:!revs.length?'Falta el model d\'ingressos':'Falten els costos'});
+  if(!unitats&&ajuts>0)
+    return Object.assign(base,{estat:'dependent',why:'Viu només d\'ajuts: sense ells, '+_eur(-costos)+' €/mes'});
+  /* Sense volum no hi ha marge del qual parlar. Dir «cada unitat perd 0 €»
+     quan no hi ha cap unitat és una frase buida que sona a diagnòstic. */
+  if(!unitats)
+    return Object.assign(base,{estat:'incomplet',why:'Cap font declara unitats al mes: sense volum no hi ha llindar'});
+  if(marge<=0)
+    return Object.assign(base,{estat:'impossible',why:'Cada unitat perd '+_eur(-marge)+' €: cap volum no ho arregla'});
+  if(resultat>=0)
+    return Object.assign(base,{estat:'sostenible',why:'Cobreix costos amb ingressos propis ('+_eur(resultat)+' €/mes)'});
+  if(ajuts>0&&resultatAmbAjuts>=0)
+    return Object.assign(base,{estat:'dependent',why:'Quadra només amb els ajuts: falten '+falten+' unitats/mes per no dependre\'n'});
+  return Object.assign(base,{estat:'assolible',why:'Falten '+falten+' unitats/mes ('+cobertura+'% del llindar)'});
+}
+/* Runway del fons: amb el capital que hi ha i el ritme de crema, quants mesos.
+   Es compta el capital de tota la MATRIU i la pèrdua de les ventures que encara
+   s'incuben — una graduada ja no crema el fons de ningú. */
+function fundRunway(node){
+  let capital=0;
+  const add=led=>(led||[]).forEach(e=>{if(e.type==='moneda')capital+=Number(e.value)||0;});
+  add(node.ledger);venturesOf(node).forEach(v=>add(v.ledger));
+  const vives=venturesOf(node).filter(v=>v.stage!=='graduacio');
+  let crema=0;const perdedores=[];let senseNumeros=0;
+  vives.forEach(v=>{
+    const e=ventureEconomics(v);
+    if(e.estat==='incomplet'){senseNumeros++;return;}
+    if(e.resultatAmbAjuts<0){crema+=-e.resultatAmbAjuts;perdedores.push({v,net:e.resultatAmbAjuts,econ:e});}
+  });
+  perdedores.sort((a,b)=>a.net-b.net);
+  const mesos=crema>0?Math.floor(capital/crema*10)/10:null;
+  return{capital:Math.round(capital),crema:_eur(crema),mesos,perdedores,senseNumeros,vives:vives.length};
+}
+/* Resum de viabilitat de tota la cartera, per al panell de la MATRIU. */
+function viabilitySummary(node){
+  const vs=venturesOf(node).filter(v=>v.stage!=='graduacio');
+  const cnt={sostenible:0,assolible:0,impossible:0,dependent:0,incomplet:0};
+  const rows=vs.map(v=>({v,econ:ventureEconomics(v)}));
+  rows.forEach(r=>{cnt[r.econ.estat]++;});
+  return{cnt,rows,runway:fundRunway(node),total:vs.length};
 }
 const MENTOR_SCOPES=[
   {id:'juridic',ic:'⚖',label:'Jurídic',one:'Forma jurídica, estatuts, obligacions'},
@@ -5175,6 +5417,13 @@ function ventureReadiness(node,v){
     {k:'ledger',label:'≥3 aportacions al ledger',ok:ledger>=3,hint:'Registra hores o € reals ('+ledger+'/3)'},
     {k:'equity',label:'Cap membre concentra >70% equity',ok:maxPct<=70||maxPct===0,hint:'Concentració actual: '+Math.round(maxPct)+'%'}
   ];
+  /* Als tipus amb ànim de lucre, graduar sense saber si es cobreixen costos és
+     enviar el projecte a tancar. A un projecte comunitari no se li demana. */
+  if(projectTypeMeta(v.projectType||'comunitari').lucre!=='no'){
+    const ec=ventureEconomics(v);
+    checks.push({k:'econ',label:'El llindar de sostenibilitat és assolible',
+      ok:ec.estat==='sostenible'||ec.estat==='assolible',hint:ec.why});
+  }
   const okCount=checks.filter(c=>c.ok).length,score=Math.round(okCount/checks.length*100);
   return{score,checks,graduateReady:checks.every(c=>c.ok)};
 }
@@ -5334,7 +5583,7 @@ function renderWorkspace(){
   if(territory)tdefs.push(['entitats','⬡ Entitats',entitiesFor(node.id).length]);
   if(node.dynamicType==='biblioteca_coses')tdefs.push(['socis','👥 Socis',membersOf(node).length],['biblioteca','📚 Biblioteca',objectsOf(node).length]);
   else if(node.dynamicType==='banc_temps')tdefs.push(['socis','👥 Socis',membersOf(node).length],['banctemps','⏳ Ofertes',offersOf(node).length]);
-  else if(node.dynamicType==='matriu')tdefs.push(['socis','👥 Socis',membersOf(node).length],['cartera','🌱 Cartera',venturesOf(node).length],['ecosistema','🕸 Ecosistema',linksOf(node).length],['equity','🥧 Equity',membersOf(node).length]);
+  else if(node.dynamicType==='matriu')tdefs.push(['socis','👥 Socis',membersOf(node).length],['cartera','🌱 Cartera',venturesOf(node).length],['cohort','▦ Cohort',venturesOf(node).length],['ecosistema','🕸 Ecosistema',linksOf(node).length],['equity','🥧 Equity',membersOf(node).length]);
   if(!tdefs.some(t=>t[0]===state.tab))state.tab=tdefs[0][0];
   tdefs.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
@@ -5353,6 +5602,7 @@ function renderWorkspace(){
   else if(state.tab==='biblioteca')renderBiblioteca(body,node);
   else if(state.tab==='banctemps')renderBancTemps(body,node);
   else if(state.tab==='cartera')renderMatriuVentures(body,node);
+  else if(state.tab==='cohort')renderMatriuCohort(body,node);
   else if(state.tab==='ecosistema')renderMatriuResources(body,node);
   else if(state.tab==='equity')renderEquity(body,node);
   else renderLedger(body,node);
@@ -5970,9 +6220,19 @@ const CONTEXT_GUIDES={
       {k:'v',label:'Primera venture a la cartera',done:n=>venturesOf(n).length>0},
       {k:'lead',label:'Alguna venture amb qui la lidera',done:n=>venturesOf(n).some(v=>v.leadMemberId)},
       {k:'sprint',label:'Pla d\'sprints iniciat',done:n=>venturesOf(n).some(v=>(v.sprints||[]).length)},
-      {k:'contrib',label:'Aportacions registrades a alguna venture',done:n=>venturesOf(n).some(v=>(v.ledger||[]).length)}
+      {k:'contrib',label:'Aportacions registrades a alguna venture',done:n=>venturesOf(n).some(v=>(v.ledger||[]).length)},
+      {k:'econ',label:'Les que tenen ànim de lucre saben si cobreixen costos',done:n=>venturesOf(n).filter(v=>projectTypeMeta(v.projectType||'comunitari').lucre!=='no'&&v.stage!=='graduacio').every(v=>ventureEconomics(v).estat!=='incomplet')}
     ],
     lens:{guardian:'Decideix què s\'incuba i què no: incubar-ho tot és no incubar res.',coordinador:'Munta els equips: una venture sense equip no arrenca.',superheroi:'Apunta\'t a la venture on el teu poder faci falta.',agent:'Aquí és on el finançament públic es converteix en projecte real.',simpatitzant:'Mira quines idees es couen abans de decidir on entres.'}},
+  cohort:{ic:'▦',t:'Vista de cohort',one:'Tota la promoció en una taula: qui avança, qui s\'ha aturat i qui necessita algú.',
+    flow:['Cada iniciativa és una fila amb les mateixes columnes: comparar deixa de ser una opinió.','Ordena pel que et preocupi avui — semàfor, dies sense moure\'s, equity concentrada.','Exporta en CSV: les memòries i les justificacions es fan en full de càlcul.'],
+    steps:[
+      {k:'v',label:'Hi ha iniciatives a comparar',done:n=>venturesOf(n).length>0},
+      {k:'few',label:'Almenys tres, que és quan comparar serveix',done:n=>venturesOf(n).length>=3},
+      {k:'mentor',label:'Totes tenen algú que les acompanya',done:n=>venturesOf(n).filter(v=>v.stage!=='graduacio').every(v=>mentorsOf(v).length)},
+      {k:'grad',label:'Alguna ha graduat',done:n=>venturesOf(n).some(v=>v.graduatedNodeId||v.stage==='graduacio')}
+    ],
+    lens:{guardian:'Aquí veus si la MATRIU incuba o només acumula: mira la conversió de l\'embut.',coordinador:'Ordena per dies sense moure\'s i truca a qui fa més temps que calla.',superheroi:'Mira on falta gent: mentores a zero i semàfors vermells.',agent:'Aquesta taula és la memòria de la subvenció, exportada en un clic.',simpatitzant:'D\'un cop d\'ull saps quines idees estan vives.'}},
   ecosistema:{ic:'🕸',t:'Ecosistema',one:'Els recursos de fora que la MATRIU pot mobilitzar.',
     flow:['Es connecten talent, hores i objectes que ja existeixen a l\'ecosistema.','Una venture no arrenca de zero: mobilitza el que la comunitat ja té.','Cada connexió aprofitada és una compra que no cal fer.'],
     steps:[
@@ -7237,6 +7497,32 @@ function renderMatriuVentures(body,node){
     });
     body.appendChild(box);
   }
+  /* Viabilitat · què se sosté i quants mesos aguanta el fons. */
+  const vb=viabilitySummary(node);
+  if(vb.total){
+    body.appendChild(el('div','ent-grp-lbl','💶 Viabilitat econòmica · què se sosté'));
+    const vbx=el('div','bib-stats');
+    vbx.innerHTML='<div class="bib-tile"><div class="n" style="color:var(--green)">'+vb.cnt.sostenible+'</div><div class="l">se sostenen</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+vb.cnt.assolible+'</div><div class="l">llindar assolible</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--orange)">'+vb.cnt.dependent+'</div><div class="l">depenen d\'ajuts</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--red)">'+vb.cnt.impossible+'</div><div class="l">models impossibles</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--muted)">'+vb.cnt.incomplet+'</div><div class="l">sense números</div></div>';
+    body.appendChild(vbx);
+    const rw=vb.runway;
+    const rwc=el('div','ent-card');rwc.style.marginTop='.5rem';
+    if(rw.crema>0){
+      const curt=rw.mesos!=null&&rw.mesos<6;
+      rwc.style.borderLeft='3px solid '+(curt?'var(--red)':'var(--green)');
+      rwc.innerHTML='<div class="ent-nm">⏳ Runway del fons: <strong>'+(rw.mesos==null?'—':rw.mesos+' mesos')+'</strong></div>'+
+        '<div class="ent-desc">'+rw.capital+' € de capital · es cremen '+rw.crema+' €/mes entre '+rw.perdedores.length+' iniciativ'+(rw.perdedores.length===1?'a':'es')+'. '+
+        (curt?'<strong>Menys de sis mesos.</strong> O entren ingressos, o entra capital, o s\'atura alguna cosa.':'Amb aquest ritme hi ha marge, però el ritme canvia.')+'</div>'+
+        (rw.perdedores.length?'<div class="ent-badges" style="margin-top:.35rem">'+rw.perdedores.slice(0,4).map(x=>'<span class="ent-b b-unver">'+esc(x.v.name)+' · '+x.net+' €/mes</span>').join('')+'</div>':'');
+    } else {
+      rwc.style.borderLeft='3px solid var(--green)';
+      rwc.innerHTML='<div class="ent-nm">⏳ Cap iniciativa crema fons</div><div class="ent-desc">'+rw.capital+' € de capital i cap pèrdua mensual declarada'+(rw.senseNumeros?' — però '+rw.senseNumeros+' encara no tenen números, i el que no es compta no es crema menys.':'.')+'</div>';
+    }
+    body.appendChild(rwc);
+  }
   /* Acompanyament · el servei, no el magatzem. Primer el que demana atenció. */
   const mt=mentoringSummary(node);
   body.appendChild(el('div','ent-grp-lbl','🎓 Acompanyament · el servei que presta aquesta MATRIU'));
@@ -7315,6 +7601,96 @@ function renderMatriuVentures(body,node){
     });
     body.appendChild(grid);
   });
+}
+/* Vista de cohort · totes les iniciatives en una taula, ordenable, filtrable i
+   exportable. Res d'aquí no és una xifra nova: és el mateix estat que ja podies
+   llegir venture a venture, posat de manera que es pugui comparar. */
+let _cohortView={sort:'light',dir:'asc',stage:'',light:''};
+function renderMatriuCohort(body,node){
+  const vs=venturesOf(node);
+  if(!vs.length){
+    const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';
+    emp.innerHTML='<h2 style="font-size:1.05rem">Cap iniciativa a la cohort</h2><p>Quan la MATRIU incubi la primera venture, aquí en veuràs el conjunt d\'un cop d\'ull.</p>';
+    body.appendChild(emp);return;
+  }
+  const paint=()=>{body.innerHTML='';draw();};
+  function draw(){
+    const note=el('div','ai-note');
+    note.innerHTML='<span class="ic">▦</span><span>Tota la promoció en una pantalla. Ordena per qualsevol columna, filtra per etapa o semàfor, i <strong>exporta en CSV</strong> per a memòries i justificacions. Cap xifra és nova: és el que ja hi havia, comparable.</span>';
+    body.appendChild(note);
+    /* Embut · quantes n'hi ha a cada estadi i quantes n'han sortit. */
+    const fn=cohortFunnel(node);
+    body.appendChild(el('div','ent-grp-lbl','⬗ Embut per etapes'));
+    const fb=el('div','coh-funnel');
+    fb.innerHTML=fn.stages.map(s=>'<div class="coh-step"><div class="coh-step-h"><span>'+esc(s.label)+'</span><strong>'+s.n+'</strong></div>'+
+      '<div class="coh-bar"><i style="width:'+s.pct+'%"></i></div></div>').join('')+
+      '<div class="coh-conv">'+fn.graduades+' de '+fn.total+' han graduat · <strong>'+fn.conversio+'%</strong> de conversió</div>';
+    body.appendChild(fb);
+    /* Filtres. */
+    const bar=el('div','ent-bar');bar.style.flexWrap='wrap';
+    const stSel=el('select');stSel.id='cohStage';stSel.className='coh-sel';
+    stSel.innerHTML='<option value="">Totes les etapes</option>'+VENTURE_STAGES.map(s=>'<option value="'+s+'"'+(_cohortView.stage===s?' selected':'')+'>'+esc(STAGE_LABELS[s]||s)+'</option>').join('');
+    stSel.onchange=()=>{_cohortView.stage=stSel.value;paint();};
+    const liSel=el('select');liSel.id='cohLight';liSel.className='coh-sel';
+    liSel.innerHTML='<option value="">Tots els semàfors</option>'+['vermell','ambre','verd'].map(l=>'<option value="'+l+'"'+(_cohortView.light===l?' selected':'')+'>'+LIGHT_META[l].ic+' '+esc(LIGHT_META[l].label)+'</option>').join('');
+    liSel.onchange=()=>{_cohortView.light=liSel.value;paint();};
+    bar.appendChild(stSel);bar.appendChild(liSel);
+    const t=cohortTable(node,_cohortView);
+    const csv=el('button','btn btn-ghost btn-sm','⬇ CSV');csv.id='cohCSV';
+    csv.onclick=()=>{downloadText('cohort-'+norm(node.name||'matriu')+'.csv',cohortCSV(t.rows),'text/csv;charset=utf-8');toast(t.rows.length+' files exportades');};
+    bar.appendChild(csv);
+    if(_cohortView.stage||_cohortView.light){
+      const clr=el('button','btn btn-ghost btn-sm','✕ Treu filtres');
+      clr.onclick=()=>{_cohortView.stage='';_cohortView.light='';paint();};
+      bar.appendChild(clr);
+    }
+    body.appendChild(bar);
+    body.appendChild(el('div','ent-grp-lbl','▦ Taula comparativa · '+t.shown+(t.shown===t.total?'':' de '+t.total)+' iniciativ'+(t.shown===1?'a':'es')));
+    if(!t.rows.length){
+      const emp=el('div','ai-note');emp.innerHTML='<span class="ic">🔍</span><span>Cap iniciativa amb aquests filtres.</span>';
+      body.appendChild(emp);return;
+    }
+    const wrap=el('div','coh-wrap');
+    const tab=el('table','ledger-table coh-table');tab.id='cohTable';
+    const th=COHORT_COLS.map(c=>{
+      const on=t.sort===c.id,ar=on?(t.dir==='desc'?' ▾':' ▴'):'';
+      return '<th class="coh-th'+(on?' on':'')+(c.num?' num':'')+'" data-col="'+c.id+'">'+esc(c.label)+ar+'</th>';
+    }).join('');
+    tab.innerHTML='<thead><tr>'+th+'</tr></thead>';
+    const tb=el('tbody');
+    t.rows.forEach(r=>{
+      const lm=LIGHT_META[r.light],tr=el('tr');tr.className='coh-row';tr.dataset.v=r.id;
+      tr.style.cursor='pointer';
+      const dim=v=>'<span style="opacity:.5">'+v+'</span>';
+      tr.innerHTML='<td><strong>'+esc(r.name)+'</strong>'+(r.lead?'<br><span class="coh-sub">👤 '+esc(r.lead)+'</span>':'')+'</td>'+
+        '<td><span class="ent-b">'+esc(r.stageLabel)+'</span></td>'+
+        '<td><span class="coh-light" style="color:'+lm.color+'" title="'+esc(r.lightWhy)+'">'+lm.ic+' '+esc(r.lightWhy)+'</span></td>'+
+        '<td class="num">'+r.readiness+'%'+(r.readinessPending?dim(' ('+r.readinessPending+' pend.)'):'')+'</td>'+
+        '<td class="num">'+(r.backlogTotal?r.backlog+'% '+dim(r.backlogDone+'/'+r.backlogTotal):dim('—'))+'</td>'+
+        '<td class="num">'+(r.hours||dim('0'))+(r.euros?'<br><span class="coh-sub">'+r.euros+' €</span>':'')+'</td>'+
+        '<td class="num">'+(r.equityPeople?r.equity+'%'+dim(' · '+r.equityPeople):dim('—'))+'</td>'+
+        '<td class="num">'+(r.health||dim('—'))+(r.health?'%':'')+'</td>'+
+        '<td><span class="coh-light" style="color:'+econMeta(r.econ).color+'" title="'+esc(r.econWhy)+'">'+econMeta(r.econ).ic+' '+esc(econMeta(r.econ).label)+'</span></td>'+
+        '<td class="num">'+(r.silence===9999?dim('—'):r.silence)+'</td>'+
+        '<td class="num">'+(r.mentors?r.mentors:'<span style="color:var(--orange)">0</span>')+'</td>'+
+        '<td class="num">'+(r.issues?(r.blocks?'⛔'+r.blocks+' ':'')+(r.risks?'⚠'+r.risks:''):dim('—'))+'</td>';
+      tr.onclick=()=>openVentureDetail(node,r.v);
+      tb.appendChild(tr);
+    });
+    tab.appendChild(tb);wrap.appendChild(tab);body.appendChild(wrap);
+    tab.querySelectorAll('.coh-th').forEach(h=>{
+      h.onclick=()=>{
+        const id=h.dataset.col,c=cohortCol(id);
+        if(_cohortView.sort===id)_cohortView.dir=_cohortView.dir==='desc'?'asc':'desc';
+        else{_cohortView.sort=id;_cohortView.dir=c.dir;}
+        paint();
+      };
+    });
+    const leg=el('div','ent-desc');leg.style.marginTop='.5rem';
+    leg.innerHTML='<strong>Preparació</strong>: comprovacions de graduació superades. <strong>Salut del mapa</strong>: reciprocitat, densitat, barreja tangible/intangible, rols aïllats i concentració, en un sol número. <strong>Equity màx</strong>: quant concentra la persona amb més slices — per damunt del 70% la venture no pot graduar. Clica una fila per obrir-la.';
+    body.appendChild(leg);
+  }
+  draw();
 }
 function openActivityGallery(node){
   const critCards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
@@ -7521,6 +7897,59 @@ const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'
 /* Un risc sense mitigació escrita no és un risc identificat: és una excusa
    preparada. Per això el camp hi és des del primer moment, encara que es pugui
    deixar buit — i si es deixa buit i el risc és gros, el semàfor es posa vermell. */
+/* Una font d'ingressos, en preu per unitat i unitats al mes. Demanar-ho així
+   obliga a saber què és una «unitat» del projecte, que és la pregunta que
+   normalment no s'ha fet ningú. */
+function openRevenueForm(node,v,onDone){
+  const bg=modal(`
+    <h2>💶 D'on entren diners</h2>
+    <p class="m-sub"><strong>${esc(v.name)}</strong> · una font cada cop, en preu per unitat i unitats al mes.</p>
+    <div class="field"><label>Font</label><input id="rvSrc" maxlength="120" placeholder="p. ex. cistelles setmanals a famílies"></div>
+    <div class="field"><label>Tipus</label><select id="rvKind">${REVENUE_KINDS.map(k=>'<option value="'+k.id+'">'+k.ic+' '+esc(k.label)+(k.one?' — '+esc(k.one):'')+'</option>').join('')}</select></div>
+    <div class="wz-key">
+      <div class="field" style="flex:1"><label>Preu per unitat (€)</label><input id="rvPrice" type="number" min="0" step="0.5" value="0"></div>
+      <div class="field" style="flex:1"><label>Unitats al mes</label><input id="rvUnits" type="number" min="0" step="1" value="0"></div>
+    </div>
+    <div class="wz-key-note">Les <strong>subvencions no compten al llindar</strong>: es mostren a part com el coixí que són. Un ajut que tapa el forat fa que un model insostenible sembli sostenible fins que s'acaba la convocatòria.</div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="rvCancel">Cancel·la</button><button class="btn btn-primary" id="rvSave">⬢ Afegeix</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#rvCancel').onclick=closeModal;
+  bg.querySelector('#rvSave').onclick=async()=>{
+    const r=addRevenue(v,{source:bg.querySelector('#rvSrc').value,kind:bg.querySelector('#rvKind').value,
+      price:bg.querySelector('#rvPrice').value,units:bg.querySelector('#rvUnits').value});
+    if(!r){toast('Digues d\'on entren els diners');return;}
+    await persist(node);closeModal();toast('💶 Font afegida');if(onDone)onDone();render();
+  };
+}
+/* Fix o variable. La distinció no és burocràcia: el llindar surt de dividir els
+   fixos pel marge que deixa cada unitat, i sense separar-los no hi ha llindar. */
+function openCostForm(node,v,onDone){
+  const bg=modal(`
+    <h2>📉 Què costa</h2>
+    <p class="m-sub"><strong>${esc(v.name)}</strong> · separa el que pagues cada mes del que pagues per unitat.</p>
+    <div class="field"><label>Concepte</label><input id="csWhat" maxlength="120" placeholder="p. ex. lloguer del local"></div>
+    <div class="field"><label>Tipus</label>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">${COST_KINDS.map((k,i)=>'<button type="button" class="btn btn-ghost btn-sm cs-k'+(i===0?' sel':'')+'" data-k="'+k.id+'" style="flex:1">'+k.ic+' '+k.label+'</button>').join('')}</div>
+      <div class="wz-key-note" id="csHint">${esc(COST_KINDS[0].one)}</div></div>
+    <div class="field"><label>Import (€)</label><input id="csAmt" type="number" min="0" step="0.5" value="0"><div class="wz-key-note" id="csUnit">€ cada mes</div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="csCancel">Cancel·la</button><button class="btn btn-primary" id="csSave">⬢ Afegeix</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let kind='fix';
+  bg.querySelectorAll('.cs-k').forEach(b=>b.onclick=()=>{
+    kind=b.dataset.k;bg.querySelectorAll('.cs-k').forEach(x=>x.classList.toggle('sel',x===b));
+    const km=COST_KINDS.find(x=>x.id===kind);
+    bg.querySelector('#csHint').textContent=km.one;
+    bg.querySelector('#csUnit').textContent=kind==='fix'?'€ cada mes':'€ per cada unitat';
+  });
+  bg.querySelector('#csCancel').onclick=closeModal;
+  bg.querySelector('#csSave').onclick=async()=>{
+    const c=addCost(v,{what:bg.querySelector('#csWhat').value,kind,amount:bg.querySelector('#csAmt').value});
+    if(!c){toast('Digues quin cost és');return;}
+    await persist(node);closeModal();toast('📉 Cost afegit');if(onDone)onDone();render();
+  };
+}
 function openRiskForm(node,v,onDone){
   const bg=modal(`
     <h2>⚠ Apunta un risc</h2>
@@ -7622,6 +8051,9 @@ function openVentureDetail(node,v){
     <div class="ent-grp-lbl">🚦 Riscos i bloquejos</div>
     <div id="vdRisks"></div>
     <div class="ent-badges" style="margin-top:.4rem"><button class="btn btn-ghost btn-sm" id="vdRisk">⚠ Apunta un risc</button><button class="btn btn-ghost btn-sm" id="vdBlock">⛔ Apunta un bloqueig</button></div>
+    <div class="ent-grp-lbl">💶 Viabilitat econòmica · si se sosté</div>
+    <div id="vdEcon"></div>
+    <div class="ent-badges" style="margin-top:.4rem"><button class="btn btn-ghost btn-sm" id="vdRev">+ Font d'ingressos</button><button class="btn btn-ghost btn-sm" id="vdCost">+ Cost</button></div>
     <div class="ent-grp-lbl">🎓 Acompanyament · qui la sosté</div>
     <div id="vdMentors"></div>
     <div id="vdSessions"></div>
@@ -7682,6 +8114,50 @@ function openVentureDetail(node,v){
   bg.querySelector('#vdRisk').onclick=()=>openRiskForm(node,v,paintRisks);
   bg.querySelector('#vdBlock').onclick=()=>openBlockForm(node,v,paintRisks);
   paintRisks();
+  /* Viabilitat: el llindar a dalt, i el detall d'on surt cada número a sota.
+     Els ajuts sempre a part, mai barrejats amb els ingressos propis. */
+  const paintEcon=()=>{
+    const box=bg.querySelector('#vdEcon');if(!box||!box.isConnected)return;
+    const e=ventureEconomics(v),em=econMeta(e.estat);
+    const pt=projectTypeMeta(v.projectType||'comunitari');
+    box.innerHTML='<div class="ent-card" style="border-left:3px solid '+em.color+'"><div class="ent-nm">'+em.ic+' '+esc(em.label)+'</div><div class="ent-desc">'+esc(e.why)+'</div>'+
+      (e.llindar!=null?'<div class="econ-bar" title="'+e.unitats+' de '+e.llindar+' unitats/mes"><i style="width:'+Math.min(100,e.cobertura)+'%;background:'+em.color+'"></i></div><div class="ent-desc" style="margin-top:.25rem"><strong>Llindar: '+e.llindar+' unitats/mes</strong> · ara en fas '+e.unitats+' ('+e.cobertura+'%)</div>':'')+
+      '</div>';
+    if(pt.lucre==='no'&&e.estat!=='incomplet'){
+      const n=el('div','ent-desc');n.style.marginTop='.3rem';
+      n.textContent='Projecte comunitari: el llindar no és una condició per graduar, però saber-lo evita ensurts.';
+      box.appendChild(n);
+    }
+    const st=el('div','bib-stats');st.style.margin='.5rem 0';
+    st.innerHTML='<div class="bib-tile"><div class="n" style="color:var(--green)">'+e.ingressos+' €</div><div class="l">ingressos propis/mes</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--red)">'+e.costos+' €</div><div class="l">costos/mes</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:'+(e.resultat>=0?'var(--green)':'var(--red)')+'">'+e.resultat+' €</div><div class="l">resultat sense ajuts</div></div>'+
+      (e.ajuts?'<div class="bib-tile"><div class="n" style="color:var(--orange)">'+e.ajuts+' €</div><div class="l">ajuts/mes (coixí)</div></div>':'')+
+      (e.unitats?'<div class="bib-tile"><div class="n">'+e.marge+' €</div><div class="l">marge per unitat ('+e.margePct+'%)</div></div>':'');
+    box.appendChild(st);
+    const revs=revenuesOf(v),cos=costsOf(v);
+    if(!revs.length&&!cos.length)box.appendChild(el('div','ent-desc','Sense números no se sap si això se sosté. Apunta d\'on entren diners i què costa cada mes.'));
+    revs.forEach(r=>{
+      const km=revKindMeta(r.kind),c=el('div','ent-card');c.style.marginTop='.3rem';
+      c.innerHTML='<div class="ent-nm">'+km.ic+' '+esc(r.source)+'</div><div class="ent-badges" style="margin-top:.2rem">'+
+        '<span class="ent-b">'+esc(km.label)+'</span><span class="ent-b">'+r.price+' €/unitat</span><span class="ent-b">'+r.units+' unitats/mes</span>'+
+        '<span class="ent-b '+(r.kind==='subvencio'?'b-unver':'b-ver')+'">'+_eur(r.price*r.units)+' €/mes'+(r.kind==='subvencio'?' · no compta al llindar':'')+'</span></div>';
+      const x=el('button','btn btn-ghost btn-sm','🗑');x.style.marginTop='.3rem';
+      x.onclick=async()=>{removeRevenue(v,r.id);await persist(node);paintEcon();};
+      c.appendChild(x);box.appendChild(c);
+    });
+    cos.forEach(k=>{
+      const km=COST_KINDS.find(x=>x.id===k.kind)||COST_KINDS[0],c=el('div','ent-card');c.style.marginTop='.3rem';
+      c.innerHTML='<div class="ent-nm">'+km.ic+' '+esc(k.what)+'</div><div class="ent-badges" style="margin-top:.2rem">'+
+        '<span class="ent-b">'+esc(km.label)+'</span><span class="ent-b">'+k.amount+' €'+(k.kind==='fix'?'/mes':'/unitat')+'</span></div>';
+      const x=el('button','btn btn-ghost btn-sm','🗑');x.style.marginTop='.3rem';
+      x.onclick=async()=>{removeCost(v,k.id);await persist(node);paintEcon();};
+      c.appendChild(x);box.appendChild(c);
+    });
+  };
+  bg.querySelector('#vdRev').onclick=()=>openRevenueForm(node,v,paintEcon);
+  bg.querySelector('#vdCost').onclick=()=>openCostForm(node,v,paintEcon);
+  paintEcon();
   /* Acompanyament: mentors amb àmbit, i les actes de les sessions. */
   const paintMentors=()=>{
     const box=bg.querySelector('#vdMentors');if(!box||!box.isConnected)return;
@@ -9648,7 +10124,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

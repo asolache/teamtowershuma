@@ -128,10 +128,34 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    el que hi havies escrit (el registre d'hores inclòs). Ara `modalOpen()`
    comprova si estàs ocupat i el tour espera o renuncia. Veda V35.
 
+10. **F4 de la MATRIU · vista de cohort** — pestanya `▦ Cohort` amb una fila per
+    iniciativa i les mateixes onze columnes (etapa, semàfor, preparació,
+    backlog, hores, equity màx, salut del mapa, dies sense moure's, mentores,
+    incidències). Ordenable per qualsevol columna en tots dos sentits, filtrable
+    per etapa i semàfor, amb **embut per estadis** i **exportació CSV**.
+    `mapHealthScore` resumeix el mapa de valor en un número comparable. Cap
+    xifra és nova: el semàfor de la taula és el mateix `ventureLight` de la
+    cartera. Veda V37.
+
+11. **F2 de la MATRIU · viabilitat econòmica** — model d'ingressos (font, tipus,
+    preu per unitat, unitats/mes) i estructura de costos separada en fixos i
+    variables. `ventureEconomics` calcula el **llindar de sostenibilitat**
+    (fixos ÷ marge unitari) i en diu l'estat: sostenible · assolible ·
+    dependent · impossible · incomplet. **Els ajuts no compten al llindar.**
+    `fundRunway` diu quants mesos aguanta el fons amb el ritme de crema actual.
+    Nova comprovació a la porta 3 **només** per als tipus amb ànim de lucre.
+    Columna de viabilitat a la cohort i al CSV. Veda V38.
+
 **Següent, per ordre:**
-1. **F4 de la MATRIU · vista de cohort** — veure totes les iniciatives d'una
-   promoció juntes i comparar-les.
-2. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
+1. **Alta de soci reutilitzant qui ja hi és** — avui cada `newMember` crea una
+   persona nova encara que ja existeixi a un altre node. Cal poder triar d'entre
+   les persones que el SOS ja coneix, i que una persona pugui reclamar la seva
+   fitxa amb la seva identitat `did:sos` i fusionar-la. Veure «Identitat i alta
+   de socis» més avall.
+2. **Cerca per habilitat i objecte, no per oferta/demanda** — l'eix de la cerca
+   ha de ser la cosa (habilitat o objecte), i oferta/demanda un atribut
+   ordenable, no la categoria principal.
+3. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
 2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
    però l'escaneig depèn de la càmera del sistema.
@@ -166,6 +190,56 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
   el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
+### Identitat i alta de socis · disseny pendent
+
+**El problema real.** `newMember` encunya un `uid()` nou cada vegada. La mateixa
+persona donada d'alta a la MATRIU, al banc de temps i a la biblioteca són **tres
+registres sense cap relació**, units només pel `personKey`, que avui és
+literalment el nom normalitzat. Conseqüències: canvia-li el nom en un lloc i es
+parteix en dues persones; dues Martes de pobles diferents es fusionen soles.
+
+**Disseny en tres capes, de menys a més compromís:**
+
+1. **Triar d'entre qui ja hi és.** Un índex de persones derivat (no desat) que
+   escombra tots els nodes i agrupa per `personKey`. El formulari d'alta passa a
+   tenir dues portes: *«Ja hi és»* — llista de qui el SOS ja coneix, amb els
+   nodes on participa i el seu nivell — i *«Algú nou»*. Triar-ne una copia nom,
+   contacte i entitat, i **estampa el `personKey`** al registre nou: el vincle
+   passa a ser explícit, no una coincidència d'ortografia.
+
+2. **`did` al registre de soci.** Quan una persona **reclama** la seva fitxa amb
+   la seva identitat (`getIdentity()` → `did:sos`), el registre guarda el `did` i
+   una **reclamació signada** sobre `{nodeId, memberId, did}`. A partir d'aquí el
+   que uneix els registres és la identitat, no el nom: canvia't el nom quan
+   vulguis. Dos registres amb el mateix `did` són la mateixa persona **per
+   prova**, no per suposició. Una fitxa ja reclamada per un altre `did` no es pot
+   tornar a reclamar sense que l'original signi el traspàs.
+
+3. **Fusió de fitxes duplicades.** `mergePersons(a,b)` per quan un mateix humà té
+   dues fitxes (una errata, «Marta R.» i «Marta Roca»). Ha de repuntar
+   `memberId` a ledger, ofertes, propietaris i prestataris d'objectes, mentors i
+   leads de venture. **Mai reescriu història signada**: un apunt signat amb l'id
+   antic conserva la seva signatura i es resol per una taula d'àlies; reescriure
+   l'apunt trencaria la seva cadena de hash. La fitxa absorbida queda com a
+   làpida amb `mergedInto`, i la fusió és ella mateixa un registre signat.
+
+**Ordre**: (1) sol ja treu la major part del dolor i no toca criptografia. (2) i
+(3) van juntes i necessiten el seu test de cadena de hash.
+
+### Cerca · l'eix és la cosa, no la direcció
+
+Avui `searchSupply` tracta habilitat, objecte i demanda com tres categories
+paral·leles. Però **una demanda no és una mena de cosa, és una direcció sobre
+una cosa**. La forma correcta:
+
+- **Eix**: habilitat o objecte. Dos tipus, no tres.
+- **Cada resultat porta la direcció**: s'ofereix / es busca.
+- **Ordenable i filtrable**: proximitat (per defecte), direcció, disponibilitat.
+
+Buscar «fusteria» ha de donar en una sola llista qui l'ofereix **i** qui la
+busca, marcats. Ara mateix són dues cerques diferents, i això amaga justament la
+coincidència que fa que passi alguna cosa.
+
 ### Defectes trobats i encara oberts
 
 - **`updateAtles` no és idempotent.** Cridar-la dues vegades seguides deixa un
@@ -195,10 +269,11 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 Auditoria completa, defectes corregits i 8 fases pendents a
 **`../matriu/pla-millora.md`**. Com funciona avui: **`../matriu/guia-funcionament.md`**.
 
-**F1 acompanyament** i **F3 riscos/bloquejos** ja estan fetes — són les que fan
-que la MATRIU deixi de ser un repositori d'estructures i passi a ser un servei.
-Següent: **F4 vista de cohort**. La resta: F2 viabilitat econòmica · F5 finançament i tràmits ·
-F6 formació lligada a l'etapa · F7 seguiment post-graduació · F8 evidències.
+**F1 acompanyament**, **F2 viabilitat econòmica**, **F3 riscos/bloquejos** i
+**F4 vista de cohort** ja estan fetes — són les que fan que la MATRIU deixi de
+ser un repositori d'estructures i passi a ser un servei que es pot coordinar.
+Pendents: F5 finançament i tràmits · F6 formació lligada a l'etapa ·
+F7 seguiment post-graduació · F8 evidències.
 
 ### Visió de fons · Catalunya com a estat líquid descentralitzat
 
