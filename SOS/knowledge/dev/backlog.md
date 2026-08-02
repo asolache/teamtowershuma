@@ -57,7 +57,7 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 **Següent, per ordre:**
 1. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
    `propi` vs `agregat`, mai sumats. És prerequisit de les federacions temàtiques.
-4. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
+2. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
    d'abandó) — segueix sent la que fa que la MATRIU sigui un servei i no un
    repositori d'estructures.
 
