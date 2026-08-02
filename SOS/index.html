@@ -494,6 +494,14 @@ a{color:var(--blue);text-decoration:none}
 .vr-row{display:flex;align-items:center;gap:.6rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.55rem .7rem;font-size:.82rem;color:var(--light)}
 .vr-row.big{border-color:var(--green);background:linear-gradient(90deg,rgba(0,230,118,.12),transparent)}
 .vr-ic{font-size:1.1rem}
+.cons{margin-top:1rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:.75rem .8rem}
+.cons-h{font-size:.85rem;font-weight:600;color:var(--light);margin-bottom:.5rem}
+.cons-h span{font-weight:400;color:var(--muted)}
+.cons-t{width:100%}
+.cons-t th{font-size:.78rem;color:var(--muted);font-weight:500}
+.cons-t tbody th{text-align:left;color:var(--light);font-weight:500}
+.cons-t td.tot{color:var(--green);font-weight:600}
+.cons-n{margin-top:.5rem;font-size:.78rem;color:var(--muted);line-height:1.5}
 .acts{display:flex;flex-direction:column;gap:.3rem}
 .act-row{display:flex;gap:.6rem;align-items:flex-start;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.5rem .65rem;cursor:pointer;transition:border-color .12s}
 .act-row:hover{border-color:var(--indigo)}
@@ -4458,19 +4466,101 @@ function renderWorkspace(){
   w.appendChild(body);
 }
 
-/* ─── ROLL-UP: valor agregat d'un territori des dels seus descendents ─── */
-function rollup(id){
-  const desc=descendants(id);
-  let hores=0,moneda=0,tasks=0,done=0,roles=0,exch=0,projectes=0,territoris=0,persones=new Set();
-  const byDyn={};
-  desc.forEach(n=>{
-    if(n.nodeLevel==='projecte'){projectes++;byDyn[n.dynamicType]=(byDyn[n.dynamicType]||0)+1;}
-    else territoris++;
-    (n.ledger||[]).forEach(e=>{if(e.type==='moneda')moneda+=Number(e.value)||0;else hores+=Number(e.value)||0;if(e.who)persones.add(e.who.toLowerCase());});
-    tasks+=(n.kanban.cards||[]).length; done+=(n.kanban.cards||[]).filter(c=>c.col==='done').length;
-    roles+=n.vna.roles.length; exch+=n.vna.exchanges.length;
+/* ═══════════ CONSOLIDACIÓ ENTRE NIVELLS · propi vs agregat, mai sumats ═══════════
+   Veda V24. Una xarxa que suma xifres ja calculades menteix. Si la comarca diu
+   «1.200 h» i el municipi de dins diu «800 h», sumar-les dóna 2.000 h que no ha
+   fet ningú: les 800 h ja hi eren, comptades des de la comarca.
+
+   La regla, doncs, té tres cares:
+   1) Cap consolidació es fa sumant consolidacions. Tota xifra es calcula un sol
+      cop sobre el CONJUNT D'APUNTS, deduplicats per identitat (node · venture ·
+      apunt). `measure` és l'únic lloc on es compta.
+   2) Tota xifra territorial es reporta en dues columnes que no es toquen:
+      PROPI (el que ha passat en aquest node) i AGREGAT (el que ha passat a sota).
+      El TOTAL no és propi+agregat calculat a mà: es torna a mesurar sobre la unió.
+   3) Les persones no se sumen mai — s'uneixen. La mateixa persona aporta a
+      diversos nodes; sumar comptadors la clonaria.
+
+   `consolidateSet` estén la regla a conjunts arbitraris de nodes (que és el que
+   serà una federació temàtica: nodes lligats per un tema, no per l'arbre). Si el
+   conjunt conté una comarca i un municipi de dins, el municipi és REDUNDANT: el
+   seu valor ja entra per la comarca. S'informa, no es suma dues vegades. */
+const subtreeIds=id=>{const s=new Set([id]);descendants(id).forEach(n=>s.add(n.id));return s;};
+const scopeIds=ids=>{const s=new Set();(ids||[]).forEach(id=>{if(byId(id))subtreeIds(id).forEach(x=>s.add(x));});return s;};
+/* L'únic lloc del sistema on es compta valor territorial. Rep nodes explícits
+   (no els expandeix) i garanteix que cada apunt entra una sola vegada. */
+function measure(nodeIds){
+  const ids=[...new Set((nodeIds||[]).filter(Boolean))];
+  const seen=new Set(),pers=new Set();
+  const r={hores:0,moneda:0,apunts:0,signats:0,tasks:0,done:0,roles:0,exch:0,
+    projectes:0,territoris:0,nodes:0,ventures:0,byDyn:{}};
+  ids.forEach(id=>{
+    const n=byId(id);if(!n)return;r.nodes++;
+    if(n.nodeLevel==='projecte'){r.projectes++;if(n.dynamicType)r.byDyn[n.dynamicType]=(r.byDyn[n.dynamicType]||0)+1;}
+    else r.territoris++;
+    const cards=(n.kanban&&n.kanban.cards)||[];
+    r.tasks+=cards.length;r.done+=cards.filter(c=>c.col==='done').length;
+    r.roles+=((n.vna&&n.vna.roles)||[]).length;r.exch+=((n.vna&&n.vna.exchanges)||[]).length;
+    const eat=(e,vn)=>{
+      const k=id+'§'+(vn||'')+'§'+(e.id||((e.ts||'')+'|'+(e.who||'')+'|'+(e.what||'')));
+      if(seen.has(k))return;seen.add(k);
+      r.apunts++;if(e.sig)r.signats++;
+      if(e.type==='moneda')r.moneda+=Number(e.value)||0;else r.hores+=Number(e.value)||0;
+      const m=e.memberId?memberById(n,e.memberId):null;
+      const who=(m&&m.name)||e.who||'';
+      if(who)pers.add(personKey(who));
+    };
+    (n.ledger||[]).forEach(e=>eat(e,''));
+    venturesOf(n).forEach(v=>{r.ventures++;(v.ledger||[]).forEach(e=>eat(e,v.name||v.id));});
   });
-  return {desc,hores,moneda,tasks,done,roles,exch,byDyn,projectes,territoris,persones:persones.size};
+  r.persones=pers.size;r.personKeys=[...pers];
+  r.hores=Math.round(r.hores*10)/10;r.moneda=Math.round(r.moneda*10)/10;
+  return r;
+}
+/* Consolidació d'un node de l'arbre: propi, agregat i total, cadascun mesurat. */
+function consolidate(nodeOrId){
+  const node=typeof nodeOrId==='string'?byId(nodeOrId):nodeOrId;
+  if(!node)return null;
+  const sota=descendants(node.id).map(n=>n.id);
+  return{node,sota,propi:measure([node.id]),agregat:measure(sota),total:measure([node.id].concat(sota))};
+}
+/* Consolidació d'un conjunt qualsevol de nodes (base de les federacions temàtiques).
+   Detecta els redundants (ja coberts per un avantpassat del conjunt) i mesura una
+   sola vegada sobre l'abast real. */
+function consolidateSet(ids){
+  const given=[...new Set((ids||[]).filter(id=>byId(id)))];
+  const inSet=new Set(given);
+  const redundants=given.filter(id=>ancestors(id).slice(0,-1).some(a=>inSet.has(a.id)));
+  const red=new Set(redundants);
+  const arrels=given.filter(id=>!red.has(id));
+  const abast=[...scopeIds(arrels)];
+  return{given,arrels,redundants,abast,total:measure(abast),
+    parts:arrels.map(id=>({node:byId(id),propi:measure([id]),total:measure([...subtreeIds(id)])}))};
+}
+/* ─── ROLL-UP: valor agregat d'un territori des dels seus descendents ───
+   Els camps plans segueixen sent l'AGREGAT (el que hi ha a sota), que és el que
+   llegeixen les vistes de sempre; `cons` hi afegeix propi/agregat/total. */
+function rollup(id){
+  const c=consolidate(id);
+  const a=c?c.agregat:measure([]);
+  return {desc:c?descendants(id):[],hores:a.hores,moneda:a.moneda,tasks:a.tasks,done:a.done,
+    roles:a.roles,exch:a.exch,byDyn:a.byDyn,projectes:a.projectes,territoris:a.territoris,
+    persones:a.persones,cons:c,propi:c&&c.propi,agregat:a,total:c&&c.total};
+}
+/* Panell de consolidació: dues columnes que no se sumen a mà, i el total mesurat. */
+function buildConsolidation(node,pre){
+  const c=pre||consolidate(node);if(!c)return null;
+  const box=el('div','cons');
+  const row=(lbl,f,fmt)=>{const g=v=>fmt?fmt(v):String(v);
+    return '<tr><th>'+lbl+'</th><td class="num">'+g(c.propi[f])+'</td><td class="num">'+g(c.agregat[f])+'</td><td class="num tot">'+g(c.total[f])+'</td></tr>';};
+  const h=v=>Number(v).toFixed(0),n=v=>String(v);
+  box.innerHTML='<div class="cons-h">⚖ Consolidació · <span>propi i agregat no se sumen a mà</span></div>'+
+    '<table class="ledger-table cons-t"><thead><tr><th></th><th class="num">Propi</th><th class="num">Agregat (a sota)</th><th class="num">Total</th></tr></thead><tbody>'+
+    row('Hores','hores',h)+row('Euros','moneda',h)+row('Apunts','apunts',n)+
+    row('Signats','signats',n)+row('Persones','persones',n)+row('Nodes','nodes',n)+
+    '</tbody></table>'+
+    '<div class="cons-n">El <strong>total</strong> no és la suma de les dues columnes: es torna a mesurar sobre el conjunt, apunt per apunt. Les <strong>persones</strong> no se sumen mai — s\'uneixen, perquè la mateixa persona aporta a diversos nodes.</div>';
+  return box;
 }
 function renderResum(body,node,ru){
   const meta=LEVEL_META[node.nodeLevel];
@@ -4558,6 +4648,8 @@ function renderResum(body,node,ru){
   tot.appendChild(tile(ru.moneda.toFixed(0)+'<span style="font-size:1rem"> €</span>','Valor monetari','var(--accent-orange)'));
   tot.appendChild(tile(ru.persones,'Persones','var(--accent-indigo)'));
   body.appendChild(tot);
+  // Consolidació explícita: el que ha passat aquí i el que ha passat a sota, mai sumats a mà.
+  const cons=buildConsolidation(node,ru.cons);if(cons)body.appendChild(cons);
   // Novetats · link a blog intern
   body.appendChild(el('div','wz-sec-lbl','📰 Novetats del desenvolupament'));
   const news=el('div','ent-card');news.style.background='linear-gradient(180deg,rgba(224,64,251,.06),rgba(99,102,241,.03))';
@@ -7072,12 +7164,20 @@ function openQuickAct(node){
     ${p.pend?'<div class="ai-note"><span class="ic">🗳</span><span>'+p.pend+' proposta(es) esperant vot.</span></div>':''}
     ${p.late?'<div class="ai-note"><span class="ic">📚</span><span>'+p.late+' préstec(s) vençut(s).</span></div>':''}
     ${p.needsMap?'<div class="ai-note"><span class="ic">🕸</span><span>Aquest node encara no té mapa de valor: sense mapa no hi ha comptes.</span></div>':''}
+    <div id="qaCons"></div>
     <div id="qaPings"></div>
     <div class="ent-grp-lbl">Què hi vols fer</div>
     <div id="qaActs" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))"></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="qaOpen">↗ Obre el node sencer</button><button class="btn btn-primary" id="qaClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
+  /* Si el node té descendents, la xifra que compta no és una: són dues. Aquí
+     també, perquè no calgui obrir el territori per saber què és seu i què és de
+     sota. */
+  if(descendants(node.id).length){
+    const cb=buildConsolidation(node);
+    if(cb)bg.querySelector('#qaCons').appendChild(cb);
+  }
   /* Els pings deixen de ser una pantalla a part: si hi ha un matching en aquest
      node, es tanca des d'aquí mateix. Aquest és el bucle sencer en un sol lloc:
      veus que algú necessita el que algú altre ofereix, ho tanques, i el retorn
@@ -8156,7 +8256,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

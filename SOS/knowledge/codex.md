@@ -225,6 +225,33 @@ Referència de cada esglaó: Bronze ≈ mitja dotzena d'aportacions reals · Pla
 una vintena en més d'una comunitat · Or ≈ una seixantena, referent del territori
 · Llegenda ≈ centenars, infraestructura humana.
 
+## V24 · Veda de la consolidació
+
+Una xarxa que suma xifres ja calculades menteix. Si el Bages diu «49 h» i
+Manresa, que hi és a dins, diu «37 h», sumar-les dóna 86 h que no ha fet ningú:
+les 37 ja hi eren.
+
+Tres regles:
+
+1. **Cap consolidació es fa sumant consolidacions.** Tota xifra es calcula un sol
+   cop sobre el conjunt d'apunts, deduplicats per identitat (node · venture ·
+   apunt). `measure(nodeIds)` és l'únic lloc del sistema on es compta valor
+   territorial; `consolidate` i `consolidateSet` només li donen conjunts.
+2. **Dues columnes que no es toquen: `propi` i `agregat`.** El que ha passat en
+   aquest node i el que ha passat a sota mai es barregen en una sola xifra
+   ambigua. El `total` tampoc és propi+agregat calculat a mà: es torna a mesurar
+   sobre la unió. Coincideixen a l'arbre, però la coincidència és el resultat,
+   no el mètode.
+3. **Les persones no se sumen mai — s'uneixen.** La mateixa persona aporta a
+   diversos nodes; sumar comptadors la clonaria. Sempre `Set` de `personKey`.
+
+**Per què és prerequisit de les federacions temàtiques.** Una federació no és una
+branca de l'arbre: és un conjunt de nodes lligats per un tema, i pot contenir
+alhora una comarca i un municipi de dins. `consolidateSet` ho resol declarant el
+node interior **redundant** (el seu valor ja entra per l'avantpassat) i mesurant
+una sola vegada sobre l'abast real. Sense això, cada federació que es creï
+inflaria les xifres de Catalunya.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

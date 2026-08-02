@@ -59,12 +59,19 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    aportacions de tots els nodes i ventures, el diner entra com a hores
    equivalents i l'escala s'ha recalibrat (40/150/450/1100). Veda V23.
 
+7. **Consolidació entre nivells sense doble comptatge** — `measure(nodeIds)` com a
+   únic lloc on es compta valor territorial (apunts deduplicats per node ·
+   venture · apunt), `consolidate` amb columnes `propi` / `agregat` / `total`
+   mesurat, i `consolidateSet` que detecta els nodes **redundants** d'un conjunt
+   qualsevol. Panell visible al Resum del territori i a les accions ràpides del
+   tauler. Veda V24. Prerequisit resolt per a les federacions temàtiques.
+
 **Següent, per ordre:**
-1. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
-   `propi` vs `agregat`, mai sumats. És prerequisit de les federacions temàtiques.
-2. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
+1. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
    d'abandó) — segueix sent la que fa que la MATRIU sigui un servei i no un
    repositori d'estructures.
+2. **Federacions temàtiques** (model del.icio.us): vincular nodes a un tema,
+   veure qui més l'ha etiquetat i consolidar-ne el valor amb `consolidateSet`.
 
 ### Onada actual — user acquisition + traction
 1. **Landing/onboarding més agressiu** — crear vista/pantalla dedicada a captació d'usuaris amb funcionalitats crítiques de tracció (CTA directe a crear perfil, comptador de superherois viu, testimonis).
