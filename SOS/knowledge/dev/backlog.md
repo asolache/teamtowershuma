@@ -59,12 +59,19 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    aportacions de tots els nodes i ventures, el diner entra com a hores
    equivalents i l'escala s'ha recalibrat (40/150/450/1100). Veda V23.
 
+7. **Consolidació entre nivells sense doble comptatge** — `measure(nodeIds)` com a
+   únic lloc on es compta valor territorial (apunts deduplicats per node ·
+   venture · apunt), `consolidate` amb columnes `propi` / `agregat` / `total`
+   mesurat, i `consolidateSet` que detecta els nodes **redundants** d'un conjunt
+   qualsevol. Panell visible al Resum del territori i a les accions ràpides del
+   tauler. Veda V24. Prerequisit resolt per a les federacions temàtiques.
+
 **Següent, per ordre:**
-1. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
-   `propi` vs `agregat`, mai sumats. És prerequisit de les federacions temàtiques.
-2. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
+1. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
    d'abandó) — segueix sent la que fa que la MATRIU sigui un servei i no un
    repositori d'estructures.
+2. **Federacions temàtiques** (model del.icio.us): vincular nodes a un tema,
+   veure qui més l'ha etiquetat i consolidar-ne el valor amb `consolidateSet`.
 
 ### Onada actual — user acquisition + traction
 1. **Landing/onboarding més agressiu** — crear vista/pantalla dedicada a captació d'usuaris amb funcionalitats crítiques de tracció (CTA directe a crear perfil, comptador de superherois viu, testimonis).
@@ -73,6 +80,16 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 4. **Gamification per nivells** *(fet — Aprenent/Bronze/Plata/Or/Llegenda + reptes per desbloquejar el següent)*.
 5. **Transmedia enllaços** *(fet — SoundCloud, YouTube, Amazon, Instagram al modal Comando)*.
 6. **Vista territorial resum + incentiu al terreny** *(fet — panell "Baixa al terreny" a país/provincia/comarca).
+
+### Defectes trobats i encara oberts
+
+- **`updateAtles` no és idempotent.** Cridar-la dues vegades seguides deixa un
+  nombre d'entitats diferent (18 · 17 · 20 · 28 en quatre execucions), i el
+  comportament és idèntic a `origin/main` — no és cap regressió, és un defecte
+  de fons. `test-atles` ho detecta amb l'asserció «second pull changed count»,
+  que porta temps vermella. Cal una clau d'identitat estable per entitat i que
+  la segona passada no en creï de noves.
+- **`ventureGraduates`** (`test-matriu`) — vermell també a `origin/main`.
 
 ### Backlog crític restant (del codex V17)
 3. **Sign records via WebAuthn** (no només vinculació) — refactor de signRecord per acceptar signer alternatiu
