@@ -368,6 +368,47 @@ segellar és poder-hi tornar. Tres regles:
    noves. I `verifyPack` accepta qualsevol dels tres paquets sense que qui el
    rep hagi de saber quin és.
 
+## V31 · Veda del perfil que s'edita
+
+Tornar a prémer «Crea el meu perfil» obria un formulari en blanc i, en desar,
+**tornava a publicar** les mateixes habilitats i els mateixos objectes: dues
+ofertes de «Cuinar en grup» de la mateixa persona, dos trepants iguals. El que
+semblava una molèstia d'interfície era una font de dades brutes que embrutava
+el catàleg de tothom.
+
+Tres regles:
+
+1. **Cap formulari d'alta s'obre en blanc si la cosa ja existeix.** Si hi ha
+   perfil, s'obre amb tot omplert i marcat, i el botó diu «Desa els canvis».
+   Els botons de tot el sistema (roadmap, llançador, paleta) diuen «Edita»
+   quan toca dir «Edita».
+2. **Desar reconcilia, no afegeix.** S'afegeix el que és nou, es retira el que
+   s'ha desmarcat i es deixa igual la resta — a **tots** els nodes on la
+   persona és membre, no només a la població actual.
+3. **Reconciliar no pot trencar el que un altre depèn.** Un objecte prestat no
+   es retira mai: esborrar-lo deixaria un préstec orfe. Tampoc es toca res que
+   la persona hagi escrit a mà fora de les llistes.
+
+## V32 · Veda de la proximitat honesta
+
+Perquè dos bancs de temps veïns puguin operar junts cal respondre «qui té això,
+i a quina distància». El catàleg estava tancat dins de cada node.
+
+**No s'inventen quilòmetres.** Posar coordenades a 217 municipis de memòria
+seria fabricar dades i presentar-les com a exactes. El que sí que és cert és
+l'arbre territorial: mateixa població < mateixa comarca < mateixa província <
+a Catalunya. Això ordena bé i no menteix mai, i és el que es mostra: «a la teva
+comarca», no «a 23 km».
+
+Si un node porta coordenades reals (`lat`/`lon`), llavors sí que es calculen
+quilòmetres de debò i afinen l'ordre dins del mateix nivell — i un projecte
+hereta les del seu municipi. Honest per defecte, precís quan hi ha amb què.
+
+`supplyIndex` i `searchSupply` són el catàleg únic de tot el SOS: habilitats,
+objectes i demandes de qualsevol node, ordenats de més a prop a més lluny. És
+això el que fa que un SOS pugui operar amb un altre sense fusionar-se ni demanar
+permís a ningú.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
