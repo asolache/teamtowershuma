@@ -140,11 +140,19 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    quilòmetres**: es fa servir l'arbre territorial, i coordenades reals només si
    n'hi ha. Pantalla `🔎 Què hi ha a prop` al tauler i a `#/aprop`. Veda V32.
 
+3. **Operar des del resultat** — `supplyAction`: cada resultat porta l'acció que
+   li toca (hores, oferir-se, préstec, llista d'espera) i, si no ets soci
+   d'aquell node, l'alta es fa sola. Veda V33.
+4. **Coordenades reals** — `parseCoordText`/`applyCoords` llegeixen CSV i JSON
+   d'ICGC/Idescat/OSM, la geolocalització del navegador marca la teva població,
+   i la pantalla `📍 Coordenades` mostra la cobertura. Sense coordenades, la
+   cerca **diu** que ordena per territori i no per km. Veda V34.
+
 **Pendent d'aquesta línia:**
-- **Coordenades reals dels municipis** — el model ja les accepta (`node.lat/lon`,
-  heretades pels projectes); falta una via d'import que no sigui inventar-les.
-- **Acció directa des del resultat** — avui el resultat porta al node; hauria de
-  poder demanar l'objecte o l'intercanvi sense sortir de la cerca.
+- **Confirmació de l'altra banda** — avui operar deixa el moviment fet; un
+  intercanvi entre nodes diferents hauria de poder esperar el vistiplau de qui
+  el rep.
+- **Coordenades a les entitats del directori**, no només als territoris.
 
 ### Defectes trobats i encara oberts
 

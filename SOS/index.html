@@ -2686,6 +2686,61 @@ function coordsOf(node){
   while(n){if(n.lat!=null&&n.lon!=null)return{lat:Number(n.lat),lon:Number(n.lon)};n=n.parentId?byId(n.parentId):null;}
   return null;
 }
+/* ═══ D'on surten les coordenades reals ═══
+   Tres vies, i cap d'elles és que me les inventi jo:
+   1. **El teu aparell.** L'API de geolocalització del navegador diu on ets, i
+      això marca la teva població. És la més exacta i la que no depèn de ningú.
+   2. **Un fitxer obert.** CSV o JSON amb `municipi,lat,lon` — de l'ICGC, de
+      l'Idescat, d'OpenStreetMap. S'enganxa i es reparteix pels nodes que
+      coincideixin de nom.
+   3. **A mà**, per un node concret.
+   Mentre no n'hi hagi, l'ordre es fa per arbre territorial i no es mostra cap
+   quilòmetre (veda V32). */
+function parseCoordText(text){
+  const out=[],seen=new Set();
+  const t=String(text||'').trim();
+  if(!t)return out;
+  const push=(name,lat,lon)=>{
+    const n=String(name||'').trim();
+    const la=Number(lat),lo=Number(lon);
+    if(!n||!isFinite(la)||!isFinite(lo))return;
+    if(Math.abs(la)>90||Math.abs(lo)>180)return;      // fora del planeta, fora
+    const k=norm(n);if(!k||seen.has(k))return;seen.add(k);
+    out.push({name:n,lat:la,lon:lo});
+  };
+  if(t[0]==='['||t[0]==='{'){
+    try{
+      const j=JSON.parse(t),arr=Array.isArray(j)?j:(j.municipis||j.items||[]);
+      arr.forEach(r=>push(r.n||r.name||r.municipi||r.nom,r.lat!=null?r.lat:r.latitude,r.lon!=null?r.lon:(r.lng!=null?r.lng:r.longitude)));
+      return out;
+    }catch(e){/* si no és JSON vàlid, provem com a CSV */}
+  }
+  t.split(/\r?\n/).forEach(line=>{
+    if(!line.trim())return;
+    const c=line.split(/[;,\t]/).map(s=>s.trim().replace(/^"|"$/g,''));
+    if(c.length<3)return;
+    if(!isFinite(Number(c[1]))||!isFinite(Number(c[2])))return;   // capçalera o brossa
+    push(c[0],c[1],c[2]);
+  });
+  return out;
+}
+/* Aplica coordenades als nodes que coincideixin de nom. No crea nodes: només
+   enriqueix els que ja existeixen, i diu quants n'ha trobat i quants no. */
+async function applyCoords(list){
+  let set=0;const missing=[];
+  for(const c of (list||[])){
+    const hits=state.nodes.filter(n=>GEO_LEVELS.indexOf(n.nodeLevel)>=0&&norm(n.name)===norm(c.name));
+    if(!hits.length){missing.push(c.name);continue;}
+    for(const n of hits){n.lat=c.lat;n.lon=c.lon;await persist(n);set++;}
+  }
+  return{set,missing,total:(list||[]).length};
+}
+// Quants nodes territorials tenen coordenades, per no vendre precisió que no hi és.
+function coordCoverage(){
+  const terr=state.nodes.filter(n=>GEO_LEVELS.indexOf(n.nodeLevel)>=0);
+  const withC=terr.filter(n=>n.lat!=null&&n.lon!=null);
+  return{total:terr.length,with:withC.length,pct:terr.length?Math.round(withC.length/terr.length*100):0};
+}
 const PROXIMITY=[
   {rank:0,label:'aquí mateix',one:'a la teva població'},
   {rank:1,label:'al barri del costat',one:'al mateix municipi'},
@@ -2757,6 +2812,80 @@ function myPlace(){
   return state.nodes.find(n=>n.nodeLevel==='municipi')||state.nodes.find(n=>isTerritory(n.nodeLevel))||null;
 }
 const SUPPLY_KINDS=[{id:'habilitat',ic:'🧠',label:'Habilitats'},{id:'objecte',ic:'📦',label:'Objectes'},{id:'demanda',ic:'🙋',label:'Demandes'}];
+/* Trobar-ho no serveix de res si després has de navegar fins al node i buscar-ho
+   una altra vegada. Des del resultat es tanca l'intercanvi directament, i si tu
+   encara no ets soci d'aquell node, l'alta es fa sola: buscar allà és voler-hi
+   participar. Aquest és el pas que fa que dos bancs de temps veïns operin de
+   debò i no només es mirin. */
+function supplyAction(x){
+  const nd=x.node,me=state.activePersona;
+  if(!me)return{label:'✦ Fes-te el perfil per operar',fn:()=>{closeModal();openSuperheroiOnboarding();}};
+  const join=()=>joinNode(nd,{name:me});
+  if(x.kind==='objecte'){
+    if(x.status!=='disponible')
+      return{label:'🔖 Posa\'t a la llista d\'espera',fn:async()=>{const m=join();const o=x.raw;
+        o.reservations=o.reservations||[];if(o.reservations.indexOf(m.id)<0)o.reservations.push(m.id);
+        await persist(nd);closeModal();toast('🔖 Ets a la llista d\'espera de «'+o.name+'»');}};
+    return{label:'📦 Demana\'l en préstec',fn:async()=>{join();await persist(nd);closeModal();lendObject(nd,x.raw);}};
+  }
+  if(x.kind==='demanda')
+    return{label:'🤝 Ofereix-te a cobrir-ho',fn:async()=>{const m=join();await persist(nd);closeModal();
+      exchangeHours(nd,{fromId:m.id,toId:x.raw.memberId,what:x.title});}};
+  // habilitat: qui la té dona hores, jo les rebo
+  return{label:'⏱ Demana-li hores',fn:async()=>{const m=join();await persist(nd);closeModal();
+    exchangeHours(nd,{fromId:x.raw.memberId,toId:m.id,what:x.title});}};
+}
+// Pantalla de coordenades: les tres vies honestes, i la cobertura real.
+function openCoords(){
+  const cov=coordCoverage();
+  const bg=modal(`
+    <h2>📍 Coordenades dels territoris</h2>
+    <p class="m-sub">Sense coordenades, «a prop» s'ordena per l'arbre territorial i <strong>no es mostra cap quilòmetre</strong> — perquè no me'ls invento. Amb coordenades reals, sí.</p>
+    <div class="bib-stats">
+      <div class="bib-tile"><div class="n" style="color:${cov.pct>0?'var(--green)':'var(--muted)'}">${cov.with}</div><div class="l">amb coordenades</div></div>
+      <div class="bib-tile"><div class="n">${cov.total}</div><div class="l">territoris</div></div>
+      <div class="bib-tile"><div class="n">${cov.pct}%</div><div class="l">cobertura</div></div>
+    </div>
+    <div class="ent-grp-lbl">1 · Des d'aquest aparell</div>
+    <div class="ent-card"><div class="ent-desc">El navegador diu on ets i es guarda a la teva població. És la via més exacta i no depèn de ningú.</div>
+      <button class="btn btn-primary btn-sm" id="cdHere" style="margin-top:.4rem">📡 Sóc aquí</button>
+      <div id="cdHereOut" style="margin-top:.3rem"></div></div>
+    <div class="ent-grp-lbl">2 · Des d'un fitxer obert</div>
+    <div class="ent-card"><div class="ent-desc">CSV o JSON amb <code>municipi, lat, lon</code> — de l'ICGC, l'Idescat o OpenStreetMap. S'assigna als nodes que coincideixin de nom; no en crea cap de nou.</div>
+      <input type="file" id="cdFile" accept=".csv,.json,.txt,text/csv,application/json" style="margin:.4rem 0">
+      <textarea id="cdText" placeholder="Manresa,41.7230,1.8265&#10;Vic,41.9301,2.2545" style="width:100%;min-height:70px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--light);font-family:var(--mono);font-size:.7rem;padding:.5rem"></textarea>
+      <button class="btn btn-primary btn-sm" id="cdImport" style="margin-top:.4rem">⭱ Importa</button>
+      <div id="cdOut" style="margin-top:.3rem"></div></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="cdClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#cdClose').onclick=closeModal;
+  const note=(sel,txt,ic)=>{const b=bg.querySelector(sel);if(b)b.innerHTML='<div class="ai-note"><span class="ic">'+(ic||'ℹ')+'</span><span>'+esc(txt)+'</span></div>';};
+  bg.querySelector('#cdHere').onclick=()=>{
+    if(!navigator.geolocation)return note('#cdHereOut','Aquest navegador no sap dir on ets.','⚠');
+    const place=myPlace();
+    if(!place)return note('#cdHereOut','Encara no hi ha cap territori on desar-ho. Crea el teu perfil o un node primer.','⚠');
+    note('#cdHereOut','Demanant permís al navegador…','📡');
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      place.lat=Math.round(pos.coords.latitude*1e5)/1e5;
+      place.lon=Math.round(pos.coords.longitude*1e5)/1e5;
+      await persist(place);
+      note('#cdHereOut',place.name+' → '+place.lat+', '+place.lon+'. Ara les distàncies des d\'aquí seran en quilòmetres reals.','✅');
+    },err=>note('#cdHereOut','No s\'ha pogut: '+(err&&err.message||'permís denegat'),'⚠'),{timeout:10000});
+  };
+  const f=bg.querySelector('#cdFile');
+  f.onchange=()=>{const file=f.files&&f.files[0];if(!file)return;const r=new FileReader();
+    r.onload=()=>{bg.querySelector('#cdText').value=String(r.result||'');};r.readAsText(file);};
+  bg.querySelector('#cdImport').onclick=async()=>{
+    const list=parseCoordText(bg.querySelector('#cdText').value);
+    if(!list.length)return note('#cdOut','No hi he trobat cap coordenada vàlida. Cal nom, latitud i longitud.','⚠');
+    const res=await applyCoords(list);
+    note('#cdOut',res.set+' node(s) amb coordenades de '+res.total+' llegides'+
+      (res.missing.length?' · '+res.missing.length+' no existeixen al teu SOS ('+res.missing.slice(0,4).join(', ')+(res.missing.length>4?'…':'')+')':''),
+      res.set?'✅':'⚠');
+    render();
+  };
+}
 function openSupplySearch(prefill){
   let kinds=['habilitat','objecte','demanda'],onlyAvail=true;
   const from=myPlace();
@@ -2769,6 +2898,7 @@ function openSupplySearch(prefill){
       <button type="button" class="btn btn-ghost btn-sm sel" id="spAvail">✅ Només disponibles</button>
     </div>
     <div id="spStats" class="wz-key-note"></div>
+    <div id="spCoord"></div>
     <div id="spList" class="acts" style="margin-top:.5rem"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="spClose">Tanca</button></div>
   `);
@@ -2797,6 +2927,11 @@ function openSupplySearch(prefill){
         '<div class="act-d">'+esc(x.who||'—')+' · '+esc(x.nodeName)+
         (x.prox.km!=null?' · '+x.prox.km+' km':'')+
         (x.kind==='objecte'&&x.status!=='disponible'?' · <strong>'+esc(x.status)+'</strong>':'')+'</div></div>';
+      const act=supplyAction(x);
+      const btn=el('button','btn btn-primary btn-sm',act.label);
+      btn.style.flex='0 0 auto';
+      btn.onclick=ev=>{ev.stopPropagation();act.fn();};
+      row.appendChild(btn);
       row.onclick=()=>{closeModal();openQuickAct(x.node);};
       listBox.appendChild(row);
     });
@@ -2811,6 +2946,12 @@ function openSupplySearch(prefill){
   });
   const av=bg.querySelector('#spAvail');
   av.onclick=()=>{onlyAvail=!onlyAvail;av.classList.toggle('sel',onlyAvail);paint();};
+  /* Dir per què no hi ha quilòmetres és més honest que fer-ne veure. */
+  const cov=coordCoverage(),cb=bg.querySelector('#spCoord');
+  if(cb&&!cov.with){
+    cb.innerHTML='<div class="ai-note"><span class="ic">📍</span><span>L\'ordre és per <strong>proximitat territorial</strong>, no per quilòmetres: encara no hi ha coordenades. <button class="btn btn-ghost btn-sm" id="spCoordGo">Posa-les</button></span></div>';
+    const g=bg.querySelector('#spCoordGo');if(g)g.onclick=()=>{closeModal();openCoords();};
+  }
   paint();setTimeout(()=>q.focus(),80);
 }
 // Els botons han de dir la veritat: si ja tens perfil, no el crees, l'edites.
@@ -3205,6 +3346,7 @@ function _searchIndex(){
     {k:'action',id:'act_guide',label:'Guia pas a pas del meu rol',sub:'🧭 acció',action:()=>openGuide()},
     {k:'action',id:'act_ledger',label:'El meu ledger SOS',sub:'⊞ acció',action:()=>openMyLedger(state.activePersona||'')},
     {k:'action',id:'act_register',label:'Registre públic d\'accions signades',sub:'🌐 acció',action:()=>openPublicRegister()},
+    {k:'action',id:'act_coords',label:'Coordenades dels territoris',sub:'📍 acció · perquè les distàncies siguin en km reals',action:()=>openCoords()},
     {k:'action',id:'act_aprop',label:'Què hi ha a prop · habilitats i objectes',sub:'🔎 acció · tot el SOS ordenat per proximitat',action:()=>openSupplySearch()},
     {k:'action',id:'act_federacions',label:'Federacions temàtiques',sub:'🏷 acció · qui treballa el mateix tema',action:()=>openFederations()},
     {k:'action',id:'act_ancoratges',label:'Els meus ancoratges',sub:'🛰 acció · què he segellat i si encara quadra',action:()=>openAnchors()},
@@ -3929,6 +4071,7 @@ function openLauncher(){
     {ic:'🧭',t:'La meva guia pas a pas',d:'Flux de valor i camí complet segons el teu rol al SOS',fn:()=>openGuide()},
     {ic:'⊞',t:'El meu ledger SOS',d:'Totes les meves aportacions, a tots els nodes, amb la seva firma',fn:()=>openMyLedger(state.activePersona||'')},
     {ic:'🌐',t:'Registre públic d\'accions signades',d:'Cercable i amb la firma comprovada · exportable i ancorable',fn:()=>openPublicRegister()},
+    {ic:'📍',t:'Coordenades dels territoris',d:'Importa coordenades reals o marca on ets · sense elles no es mostren km',fn:()=>openCoords()},
     {ic:'🔎',t:'Què hi ha a prop',d:'Habilitats, objectes i demandes de tot el SOS, de més a prop a més lluny',fn:()=>openSupplySearch()},
     {ic:'🏷',t:'Federacions temàtiques',d:'Vincula\'t a un tema i troba qui treballa el mateix · valor consolidat sense doble comptatge',fn:()=>openFederations()},
     {ic:'🛰',t:'Els meus ancoratges',d:'Historial del que has segellat · on ho vas publicar i si encara quadra',fn:()=>openAnchors()},
@@ -6063,6 +6206,7 @@ const MODAL_ROUTES={
   registre:{open:()=>openPublicRegister(),label:'Registre públic d\'accions signades'},
   federacions:{open:()=>openFederations(),label:'Federacions temàtiques'},
   aprop:{open:()=>openSupplySearch(),label:'Què hi ha a prop'},
+  coordenades:{open:()=>openCoords(),label:'Coordenades dels territoris'},
   ancoratges:{open:()=>openAnchors(),label:'Els meus ancoratges'},
   mapa:{open:()=>openFounderMap(),label:'Mapa estratègic fundador'},
   directori:{open:()=>openDirectory(),label:'Directori d\'entitats'},
@@ -9321,7 +9465,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
