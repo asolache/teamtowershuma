@@ -513,6 +513,17 @@ a{color:var(--blue);text-decoration:none}
 .coh-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--green))}
 .coh-conv{flex:1 1 100%;font-size:.78rem;color:var(--muted);margin-top:.2rem}
 /* Alta de soci · les dues portes i la llista de qui ja hi és */
+/* Cerca · l'eix és la cosa, la direcció és un atribut visible */
+.sp-filters{margin:.6rem 0;display:flex;flex-direction:column;gap:.4rem}
+.sp-row{display:flex;gap:.35rem;align-items:center;flex-wrap:wrap}
+.sp-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:0 0 62px}
+.sp-dir{font-size:.68rem;font-family:var(--mono);padding:.05rem .3rem;border-radius:5px;white-space:nowrap}
+.sp-ofereix{color:var(--green);background:rgba(0,230,118,.1)}
+.sp-busca{color:var(--orange);background:rgba(255,145,0,.12)}
+.sp-r[data-dir="busca"]{border-left:2px solid rgba(255,145,0,.35)}
+.sp-r[data-dir="ofereix"]{border-left:2px solid rgba(0,230,118,.3)}
+.sp-match{background:linear-gradient(180deg,rgba(0,230,118,.06),transparent);margin-bottom:.35rem}
+.sp-match:hover{border-color:var(--green)}
 .mb-doors{display:flex;gap:.4rem;margin-bottom:.7rem}
 .mb-doors .mb-door{flex:1}
 .mb-doors .mb-door.sel{border-color:var(--indigo);color:var(--indigo)}
@@ -3222,37 +3233,112 @@ function proximity(fromNode,toNode){
    Cada oferta d'hores i cada objecte de qualsevol node, amb qui el té i a quina
    distància. És el que fa que dos bancs de temps veïns puguin operar junts
    sense fusionar-se ni demanar permís a ningú. */
+/* Veda V40. Fins ara el catàleg tenia tres categories paral·leles —habilitat,
+   objecte i demanda— i això és un error de fons: **una demanda no és una mena
+   de cosa, és una direcció sobre una cosa**. Amb l'esquema vell, buscar
+   «fusteria» eren dues cerques diferents, i partia en dues justament la
+   coincidència que fa que passi alguna cosa.
+
+   L'eix és la cosa: **habilitat** o **objecte**. La direcció —s'ofereix o es
+   busca— és un atribut, filtrable i ordenable com qualsevol altre. */
+const SUPPLY_KINDS=[
+  {id:'habilitat',ic:'🧠',label:'Habilitats',one:'el que algú sap fer'},
+  {id:'objecte',ic:'📦',label:'Objectes',one:'el que algú té'}
+];
+const SUPPLY_DIRS=[
+  {id:'ofereix',ic:'✅',label:'S\'ofereix',one:'algú ho té o ho sap fer'},
+  {id:'busca',ic:'🙋',label:'Es busca',one:'algú ho necessita'}
+];
+const kindMeta=id=>SUPPLY_KINDS.find(k=>k.id===id)||SUPPLY_KINDS[0];
+const dirMeta=id=>SUPPLY_DIRS.find(d=>d.id===id)||SUPPLY_DIRS[0];
+const SUPPLY_SORTS=[
+  {id:'prox',label:'Proximitat',one:'de més a prop a més lluny'},
+  {id:'nom',label:'Nom'},{id:'dir',label:'Direcció'},{id:'node',label:'Node'},{id:'qui',label:'Qui'}
+];
+const _tbCat=(()=>{const m={};TIMEBANK_CATS.forEach(([id,label,ic])=>m[id]={id,label,ic});return m;})();
+/* La «cosa» és el que permet aparellar oferta i demanda. La categoria és millor
+   clau que el títol lliure: «Necessito muntar una prestatgeria» i «Petites
+   reparacions» no s'assemblen escrites, però són la mateixa cosa. */
+function supplyThing(kind,category,title){
+  const c=norm(category||'');
+  if(c)return c;
+  return norm(title||'')||'altres';
+}
+function thingLabel(kind,thing,fallback){
+  const tab=kind==='objecte'?_lm:_tbCat;
+  const hit=tab[thing];
+  return hit?hit.label:(fallback||thing);
+}
 function supplyIndex(){
   const out=[];
+  const push=x=>{x.thing=supplyThing(x.kind,x.category,x.title);
+    x.thingLabel=thingLabel(x.kind,x.thing,x.title);out.push(x);};
   state.nodes.forEach(nd=>{
     const dyn=nd.dynamicType||'';
     offersOf(nd).forEach(o=>{
       const m=o.memberId?memberById(nd,o.memberId):null;
-      out.push({kind:o.kind==='demanda'?'demanda':'habilitat',id:o.id,title:o.title||'',
-        desc:o.desc||'',category:o.category||'',who:(m&&m.name)||'',node:nd,nodeName:nd.name,dyn,
-        status:o.status||'activa',raw:o});
+      push({kind:'habilitat',dir:o.kind==='demanda'?'busca':'ofereix',id:o.id,title:o.title||'',
+        desc:o.desc||'',category:o.category||'',who:(m&&m.name)||'',whoId:o.memberId||null,
+        node:nd,nodeName:nd.name,dyn,status:o.status||'activa',raw:o});
     });
     objectsOf(nd).forEach(o=>{
       const m=o.ownerId?memberById(nd,o.ownerId):null;
-      out.push({kind:'objecte',id:o.id,title:o.name||'',desc:o.notes||'',category:o.typology||'',
-        who:(m&&m.name)||'',node:nd,nodeName:nd.name,dyn,status:o.status||'disponible',raw:o});
+      push({kind:'objecte',dir:'ofereix',id:o.id,title:o.name||'',desc:o.notes||'',category:o.typology||'',
+        who:(m&&m.name)||'',whoId:o.ownerId||null,node:nd,nodeName:nd.name,dyn,
+        status:o.status||'disponible',raw:o});
+      /* Una llista d'espera és demanda d'objecte declarada, i fins ara no es
+         veia enlloc. Si tres persones esperen un trepant, qui en té un hauria
+         de poder-ho saber sense entrar a la fitxa de l'objecte. */
+      (o.reservations||[]).forEach(rid=>{
+        const r=memberById(nd,rid);
+        push({kind:'objecte',dir:'busca',id:o.id+'§'+rid,title:o.name||'',
+          desc:'A la llista d\'espera',category:o.typology||'',who:(r&&r.name)||'',whoId:rid,
+          node:nd,nodeName:nd.name,dyn,status:'esperant',raw:o,waiting:true});
+      });
     });
   });
   return out;
 }
-function searchSupply(q,{from,kinds,onlyAvailable}={}){
+function searchSupply(q,{from,kinds,dirs,onlyAvailable,sort,desc}={}){
   const terms=norm(q||'').split('-').filter(Boolean);
   const base=supplyIndex().filter(x=>{
     if(kinds&&kinds.length&&kinds.indexOf(x.kind)<0)return false;
-    if(onlyAvailable&&x.kind==='objecte'&&x.status!=='disponible')return false;
+    if(dirs&&dirs.length&&dirs.indexOf(x.dir)<0)return false;
+    /* «Només disponibles» és sobre el que s'ofereix. Una demanda no està
+       disponible ni deixa d'estar-ho: existeix. */
+    if(onlyAvailable&&x.kind==='objecte'&&x.dir==='ofereix'&&x.status!=='disponible')return false;
     if(!terms.length)return true;
-    const hay=norm([x.title,x.desc,x.category,x.who,x.nodeName].join(' '));
+    const hay=norm([x.title,x.desc,x.category,x.thingLabel,x.who,x.nodeName].join(' '));
     return terms.every(t=>hay.includes(t));
   });
-  return base.map(x=>({...x,prox:proximity(from,x.node)}))
-    .sort((a,b)=>a.prox.rank-b.prox.rank
-      ||((a.prox.km==null?1e9:a.prox.km)-(b.prox.km==null?1e9:b.prox.km))
-      ||a.title.localeCompare(b.title));
+  const rows=base.map(x=>({...x,prox:proximity(from,x.node)}));
+  const dir=desc?-1:1;
+  const byProx=(a,b)=>a.prox.rank-b.prox.rank
+    ||((a.prox.km==null?1e9:a.prox.km)-(b.prox.km==null?1e9:b.prox.km))
+    ||a.title.localeCompare(b.title,'ca');
+  const cmp={
+    prox:byProx,
+    nom:(a,b)=>a.title.localeCompare(b.title,'ca')||byProx(a,b),
+    dir:(a,b)=>a.dir.localeCompare(b.dir)||byProx(a,b),
+    node:(a,b)=>a.nodeName.localeCompare(b.nodeName,'ca')||byProx(a,b),
+    qui:(a,b)=>(a.who||'~').localeCompare(b.who||'~','ca')||byProx(a,b)
+  }[sort||'prox']||byProx;
+  return rows.sort((a,b)=>cmp(a,b)*dir);
+}
+/* La coincidència: una cosa que algú ofereix i algú altre busca. És l'única
+   cosa d'aquesta pantalla que produeix un intercanvi tota sola. */
+function supplyMatches(q,{from,kinds,onlyAvailable}={}){
+  const rows=searchSupply(q,{from,kinds,onlyAvailable});
+  const by={};
+  rows.forEach(x=>{
+    const k=x.kind+'§'+x.thing;
+    const g=by[k]||(by[k]={key:k,kind:x.kind,thing:x.thing,label:x.thingLabel,
+      ofereix:[],busca:[],rank:9});
+    g[x.dir].push(x);
+    if(x.prox.rank<g.rank)g.rank=x.prox.rank;
+  });
+  return Object.values(by).filter(g=>g.ofereix.length&&g.busca.length)
+    .sort((a,b)=>a.rank-b.rank||b.ofereix.length+b.busca.length-(a.ofereix.length+a.busca.length));
 }
 /* On sóc jo, per poder mesurar des d'aquí: el node actiu, o el municipi del meu
    perfil, o el primer territori que hi hagi. Sense un origen, «a prop» no vol
@@ -3267,7 +3353,6 @@ function myPlace(){
   }
   return state.nodes.find(n=>n.nodeLevel==='municipi')||state.nodes.find(n=>isTerritory(n.nodeLevel))||null;
 }
-const SUPPLY_KINDS=[{id:'habilitat',ic:'🧠',label:'Habilitats'},{id:'objecte',ic:'📦',label:'Objectes'},{id:'demanda',ic:'🙋',label:'Demandes'}];
 /* Trobar-ho no serveix de res si després has de navegar fins al node i buscar-ho
    una altra vegada. Des del resultat es tanca l'intercanvi directament, i si tu
    encara no ets soci d'aquell node, l'alta es fa sola: buscar allà és voler-hi
@@ -3278,16 +3363,21 @@ function supplyAction(x){
   if(!me)return{label:'✦ Fes-te el perfil per operar',fn:()=>{closeModal();openSuperheroiOnboarding();}};
   const join=()=>joinNode(nd,{name:me});
   if(x.kind==='objecte'){
+    /* Algú que espera aquest objecte: el que puc fer és oferir-li el meu, no
+       posar-me a la cua darrere seu. */
+    if(x.dir==='busca')
+      return{label:'📦 Ofereix-li el teu',fn:async()=>{join();await persist(nd);closeModal();
+        openObjectForm(nd,null);toast('Publica el teu i qui l\'espera el veurà');}};
     if(x.status!=='disponible')
       return{label:'🔖 Posa\'t a la llista d\'espera',fn:async()=>{const m=join();const o=x.raw;
         o.reservations=o.reservations||[];if(o.reservations.indexOf(m.id)<0)o.reservations.push(m.id);
         await persist(nd);closeModal();toast('🔖 Ets a la llista d\'espera de «'+o.name+'»');}};
     return{label:'📦 Demana\'l en préstec',fn:async()=>{join();await persist(nd);closeModal();lendObject(nd,x.raw);}};
   }
-  if(x.kind==='demanda')
+  if(x.dir==='busca')
     return{label:'🤝 Ofereix-te a cobrir-ho',fn:async()=>{const m=join();await persist(nd);closeModal();
       exchangeHours(nd,{fromId:m.id,toId:x.raw.memberId,what:x.title});}};
-  // habilitat: qui la té dona hores, jo les rebo
+  // habilitat que s'ofereix: qui la té dona hores, jo les rebo
   return{label:'⏱ Demana-li hores',fn:async()=>{const m=join();await persist(nd);closeModal();
     exchangeHours(nd,{fromId:x.raw.memberId,toId:m.id,what:x.title});}};
 }
@@ -3343,64 +3433,97 @@ function openCoords(){
   };
 }
 function openSupplySearch(prefill){
-  let kinds=['habilitat','objecte','demanda'],onlyAvail=true;
+  let kinds=['habilitat','objecte'],dirs=['ofereix','busca'],onlyAvail=true,sort='prox',desc=false;
   const from=myPlace();
   const bg=modal(`
     <h2>🔎 Què hi ha a prop</h2>
-    <p class="m-sub">Busca a <strong>tot el SOS</strong> alhora — habilitats, objectes i demandes de qualsevol banc de temps o biblioteca — i ho tens ordenat <strong>de més a prop a més lluny</strong>${from?' des de <strong>'+esc(from.name)+'</strong>':''}.</p>
+    <p class="m-sub">Busca a <strong>tot el SOS</strong> alhora. L'eix és <strong>la cosa</strong> —una habilitat o un objecte—, i si <strong>s'ofereix</strong> o <strong>es busca</strong> és un atribut: buscar «fusteria» et dona qui la fa i qui la necessita, en una sola llista${from?', ordenada des de <strong>'+esc(from.name)+'</strong>':''}.</p>
     <input id="spQ" placeholder="p. ex. trepant, català, acompanyament…" autocomplete="off" value="${esc((prefill&&prefill.q)||'')}">
-    <div class="ent-badges" style="margin:.5rem 0">
-      ${SUPPLY_KINDS.map(k=>'<button type="button" class="btn btn-ghost btn-sm sp-k sel" data-k="'+k.id+'">'+k.ic+' '+k.label+'</button>').join('')}
-      <button type="button" class="btn btn-ghost btn-sm sel" id="spAvail">✅ Només disponibles</button>
+    <div class="sp-filters">
+      <div class="sp-row"><span class="sp-lbl">Què</span>${SUPPLY_KINDS.map(k=>'<button type="button" class="btn btn-ghost btn-sm sp-k sel" data-k="'+k.id+'">'+k.ic+' '+k.label+'</button>').join('')}</div>
+      <div class="sp-row"><span class="sp-lbl">Direcció</span>${SUPPLY_DIRS.map(d=>'<button type="button" class="btn btn-ghost btn-sm sp-d sel" data-d="'+d.id+'">'+d.ic+' '+d.label+'</button>').join('')}</div>
+      <div class="sp-row"><span class="sp-lbl">Ordena</span><select id="spSort" class="coh-sel">${SUPPLY_SORTS.map(o=>'<option value="'+o.id+'">'+esc(o.label)+'</option>').join('')}</select><button type="button" class="btn btn-ghost btn-sm" id="spDir" title="Inverteix l'ordre">▴</button><button type="button" class="btn btn-ghost btn-sm sel" id="spAvail">✅ Només disponibles</button></div>
     </div>
     <div id="spStats" class="wz-key-note"></div>
+    <div id="spMatch"></div>
     <div id="spCoord"></div>
     <div id="spList" class="acts" style="margin-top:.5rem"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="spClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#spClose').onclick=closeModal;
-  const q=bg.querySelector('#spQ'),listBox=bg.querySelector('#spList'),stats=bg.querySelector('#spStats');
+  const q=bg.querySelector('#spQ'),listBox=bg.querySelector('#spList'),stats=bg.querySelector('#spStats'),matchBox=bg.querySelector('#spMatch'),av=bg.querySelector('#spAvail');
+  const rowFor=x=>{
+    const km=kindMeta(x.kind),dm=dirMeta(x.dir);
+    const row=el('div','act-row sp-r');row.style.cursor='pointer';
+    row.dataset.dir=x.dir;
+    row.innerHTML='<div class="act-ic">'+km.ic+'</div><div style="flex:1;min-width:0">'+
+      '<div class="act-t"><span class="sp-dir sp-'+x.dir+'">'+dm.ic+' '+esc(dm.label)+'</span> '+esc(x.title||'(sense títol)')+'</div>'+
+      '<div class="act-d">'+esc(x.who||'—')+' · '+esc(x.nodeName)+
+      (x.prox&&x.prox.km!=null?' · '+x.prox.km+' km':'')+
+      (x.thingLabel&&norm(x.thingLabel)!==norm(x.title)?' · '+esc(x.thingLabel):'')+
+      (x.kind==='objecte'&&x.dir==='ofereix'&&x.status!=='disponible'?' · <strong>'+esc(x.status)+'</strong>':'')+'</div></div>';
+    const act=supplyAction(x);
+    const btn=el('button','btn btn-primary btn-sm',act.label);
+    btn.style.flex='0 0 auto';
+    btn.onclick=ev=>{ev.stopPropagation();act.fn();};
+    row.appendChild(btn);
+    row.onclick=()=>{closeModal();openQuickAct(x.node);};
+    return row;
+  };
   const paint=()=>{
-    const res=searchSupply(q.value,{from,kinds,onlyAvailable:onlyAvail});
+    const res=searchSupply(q.value,{from,kinds,dirs,onlyAvailable:onlyAvail,sort,desc});
     const nodes=new Set(res.map(x=>x.node.id)),people=new Set(res.map(x=>personKey(x.who)).filter(Boolean));
-    stats.textContent=res.length+' resultat'+(res.length===1?'':'s')+' · '+nodes.size+' node'+(nodes.size===1?'':'s')+' · '+people.size+' persona'+(people.size===1?'':'es');
+    const nOf=res.filter(x=>x.dir==='ofereix').length,nBu=res.length-nOf;
+    stats.textContent=res.length+' resultat'+(res.length===1?'':'s')+' · '+nOf+' s\'ofereixen · '+nBu+' es busquen · '+
+      nodes.size+' node'+(nodes.size===1?'':'s')+' · '+people.size+' '+(people.size===1?'persona':'persones');
+    /* Coincidències primer: el que algú ofereix i algú altre busca. */
+    matchBox.innerHTML='';
+    const ms=supplyMatches(q.value,{from,kinds,onlyAvailable:onlyAvail});
+    if(ms.length){
+      matchBox.appendChild(el('div','ent-grp-lbl','⚡ Coincidències · algú ho té i algú ho busca'));
+      ms.slice(0,6).forEach(g=>{
+        const c=el('div','ent-card sp-match');c.style.cursor='pointer';
+        c.innerHTML='<div class="ent-nm">'+kindMeta(g.kind).ic+' '+esc(g.label)+'</div><div class="ent-badges">'+
+          '<span class="ent-b b-ver">✅ '+g.ofereix.length+' ofereixen</span>'+
+          '<span class="ent-b b-unver">🙋 '+g.busca.length+' busquen</span>'+
+          '<span class="ent-b">'+esc(g.ofereix.concat(g.busca)[0].prox.one)+'</span></div>';
+        /* Una coincidència inclou, per definició, coses que potser estan
+           prestades. Si en clicar-la el filtre de disponibilitat n'amaga la
+           meitat, la banda de coincidències menteix. */
+        c.onclick=()=>{q.value=g.label;
+          if(onlyAvail){onlyAvail=false;av.classList.remove('sel');}
+          paint();};
+        matchBox.appendChild(c);
+      });
+    }
     listBox.innerHTML='';
     if(!res.length){
       listBox.innerHTML='<div class="ai-note"><span class="ic">🌱</span><span>Res encara. Si el que busques no hi és, <strong>publica la demanda</strong>: és així com apareix qui ho té.</span></div>';
       return;
     }
-    let lastRank=-1;
+    /* Els encapçalaments només tenen sentit quan l'ordre és per proximitat.
+       Posar «📍 a la teva població» sobre una llista ordenada per nom seria
+       mentir sobre com està ordenada. */
+    let last=null;
     res.slice(0,120).forEach(x=>{
-      if(x.prox.rank!==lastRank){
-        lastRank=x.prox.rank;
-        listBox.appendChild(el('div','ent-grp-lbl','📍 '+x.prox.one));
-      }
-      const k=SUPPLY_KINDS.find(z=>z.id===x.kind)||{ic:'•'};
-      const row=el('div','act-row');row.style.cursor='pointer';
-      row.innerHTML='<div class="act-ic">'+k.ic+'</div><div style="flex:1;min-width:0">'+
-        '<div class="act-t">'+esc(x.title||'(sense títol)')+'</div>'+
-        '<div class="act-d">'+esc(x.who||'—')+' · '+esc(x.nodeName)+
-        (x.prox.km!=null?' · '+x.prox.km+' km':'')+
-        (x.kind==='objecte'&&x.status!=='disponible'?' · <strong>'+esc(x.status)+'</strong>':'')+'</div></div>';
-      const act=supplyAction(x);
-      const btn=el('button','btn btn-primary btn-sm',act.label);
-      btn.style.flex='0 0 auto';
-      btn.onclick=ev=>{ev.stopPropagation();act.fn();};
-      row.appendChild(btn);
-      row.onclick=()=>{closeModal();openQuickAct(x.node);};
-      listBox.appendChild(row);
+      if(sort==='prox'&&x.prox.rank!==last){last=x.prox.rank;listBox.appendChild(el('div','ent-grp-lbl','📍 '+x.prox.one));}
+      else if(sort==='dir'&&x.dir!==last){last=x.dir;listBox.appendChild(el('div','ent-grp-lbl',dirMeta(x.dir).ic+' '+dirMeta(x.dir).label+' · '+dirMeta(x.dir).one));}
+      listBox.appendChild(rowFor(x));
     });
     if(res.length>120)listBox.appendChild(el('div','wz-key-note','…i '+(res.length-120)+' més. Afina la cerca.'));
   };
   let t=null;q.oninput=()=>{clearTimeout(t);t=setTimeout(paint,140);};
-  bg.querySelectorAll('.sp-k').forEach(b=>b.onclick=()=>{
-    const id=b.dataset.k,i=kinds.indexOf(id);
-    if(i>=0&&kinds.length>1){kinds.splice(i,1);b.classList.remove('sel');}
-    else if(i<0){kinds.push(id);b.classList.add('sel');}
+  const toggle=(sel,arr)=>bg.querySelectorAll(sel).forEach(b=>b.onclick=()=>{
+    const id=b.dataset.k||b.dataset.d,i=arr.indexOf(id);
+    if(i>=0&&arr.length>1){arr.splice(i,1);b.classList.remove('sel');}
+    else if(i<0){arr.push(id);b.classList.add('sel');}
     paint();
   });
-  const av=bg.querySelector('#spAvail');
+  toggle('.sp-k',kinds);toggle('.sp-d',dirs);
+  const sortSel=bg.querySelector('#spSort'),dirBtn=bg.querySelector('#spDir');
+  sortSel.onchange=()=>{sort=sortSel.value;paint();};
+  dirBtn.onclick=()=>{desc=!desc;dirBtn.textContent=desc?'▾':'▴';paint();};
   av.onclick=()=>{onlyAvail=!onlyAvail;av.classList.toggle('sel',onlyAvail);paint();};
   /* Dir per què no hi ha quilòmetres és més honest que fer-ne veure. */
   const cov=coordCoverage(),cb=bg.querySelector('#spCoord');
@@ -10416,7 +10539,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
