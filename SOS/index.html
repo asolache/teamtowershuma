@@ -494,6 +494,16 @@ a{color:var(--blue);text-decoration:none}
 .vr-row{display:flex;align-items:center;gap:.6rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.55rem .7rem;font-size:.82rem;color:var(--light)}
 .vr-row.big{border-color:var(--green);background:linear-gradient(90deg,rgba(0,230,118,.12),transparent)}
 .vr-ic{font-size:1.1rem}
+.acts{display:flex;flex-direction:column;gap:.3rem}
+.act-row{display:flex;gap:.6rem;align-items:flex-start;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.5rem .65rem;cursor:pointer;transition:border-color .12s}
+.act-row:hover{border-color:var(--indigo)}
+.act-ts{font-family:var(--mono);font-size:.6rem;color:var(--muted);white-space:nowrap;padding-top:.15rem}
+.act-b{flex:1;display:flex;flex-direction:column;gap:.2rem;min-width:0}
+.act-t{font-size:.83rem;font-weight:600;color:var(--white)}
+.act-d{font-size:.7rem;color:var(--muted);line-height:1.4}
+.act-v{font-family:var(--mono);font-size:.72rem;color:var(--green);white-space:nowrap;padding-top:.15rem}
+#mlSearch,#prSearch{width:100%;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:.6rem .7rem;font-size:.85rem;min-height:44px;margin-bottom:.6rem}
+.acts{display:flex;flex-direction:column;gap:.3rem}
 .dash-net{display:flex;flex-direction:column;gap:.5rem}
 .dash-net input{width:100%;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:.6rem .7rem;font-size:.85rem;min-height:44px}
 .dash-net-list{display:flex;flex-direction:column;gap:.3rem}
@@ -2793,6 +2803,8 @@ function _searchIndex(){
     {k:'action',id:'act_hero',label:'Crea el meu perfil superheroi',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
     {k:'action',id:'act_dossier',label:'El meu dossier · CV, recursos i personatge',sub:'📇 acció',action:()=>openDossierEditor(state.activePersona||'')},
     {k:'action',id:'act_guide',label:'Guia pas a pas del meu rol',sub:'🧭 acció',action:()=>openGuide()},
+    {k:'action',id:'act_ledger',label:'El meu ledger SOS',sub:'⊞ acció',action:()=>openMyLedger(state.activePersona||'')},
+    {k:'action',id:'act_register',label:'Registre públic d\'accions signades',sub:'🌐 acció',action:()=>openPublicRegister()},
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · carteres · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
@@ -3230,6 +3242,8 @@ function openLauncher(){
     {ic:'🦸',t:'Crea el meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes',fn:()=>openSuperheroiOnboarding()},
     {ic:'📇',t:'El meu dossier',d:'CV en local + recursos + arquetip + personatge amb IA',fn:()=>openDossierEditor(state.activePersona||'')},
     {ic:'🧭',t:'La meva guia pas a pas',d:'Flux de valor i camí complet segons el teu rol al SOS',fn:()=>openGuide()},
+    {ic:'⊞',t:'El meu ledger SOS',d:'Totes les meves aportacions, a tots els nodes, amb la seva firma',fn:()=>openMyLedger(state.activePersona||'')},
+    {ic:'🌐',t:'Registre públic d\'accions signades',d:'Cercable i amb la firma comprovada · exportable i ancorable',fn:()=>openPublicRegister()},
     {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
     {ic:'🔍',t:'Diagnòstic comunitari',d:'3 min · punt de partida, itinerari i proposta d\'acompanyament',fn:()=>window.open('diagnostic.html','_blank','noopener')},
     {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
@@ -5272,6 +5286,8 @@ function openLedgerEntryModal(node,prefill,card){
 const MODAL_ROUTES={
   comando:{open:()=>openComandoView(),label:'Comando Molekulon'},
   activitat:{open:()=>openActivityLog(),label:'Registre d\'activitat'},
+  ledger:{open:()=>openMyLedger(state.activePersona||''),label:'El meu ledger SOS'},
+  registre:{open:()=>openPublicRegister(),label:'Registre públic d\'accions signades'},
   mapa:{open:()=>openFounderMap(),label:'Mapa estratègic fundador'},
   directori:{open:()=>openDirectory(),label:'Directori d\'entitats'},
   identitat:{open:()=>openIdentityDashboard(),label:'La meva identitat'},
@@ -6418,7 +6434,7 @@ function openPersonProfile(nameOrKey){
     ${sec('🌱 Ventures que lidera',p.ventures,p.ventures.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.venture.name)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b">'+esc(x.venture.stage)+'</span></div></div>').join(''))}
     ${sec('🥧 Slicing Pie',p.slices,p.slices.map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.scope==='matriu'?'Fons de la MATRIU':x.ventureName)+'</div><div class="ent-badges">'+nodeBadge('matriu',x.nodeName)+'<span class="ent-b b-ver">'+x.pct.toFixed(1)+'%</span><span class="ent-b">'+Math.round(x.slices).toLocaleString('ca')+' slices</span></div></div>').join(''))}
     ${sec('⬢ Aportacions comptables',p.contributions,p.contributions.slice(0,60).map(x=>'<div class="ent-card"><div class="ent-nm">'+esc(x.entry.what||(x.entry.type==='moneda'?'Diner':'Hores'))+'</div><div class="ent-badges">'+nodeBadge(x.scope==='venture'?'matriu':x.scope,x.nodeName+(x.scope==='venture'?' · '+x.ventureName:''))+'<span class="ent-b">'+(x.entry.type==='moneda'?(x.entry.value+' €'):(x.entry.value+' h'))+'</span></div></div>').join(''))}
-    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="ppPings">🔔 Pings</button><button class="btn btn-ghost" id="ppCard">🎫 Carta intercanvi</button><button class="btn btn-ghost" id="ppWallet">🔐 Passkey</button><button class="btn btn-ghost" id="ppMulti">🌌 Multivers</button><button class="btn btn-ghost" id="ppKit">🎬 Kit narratiu</button><button class="btn btn-primary" id="ppClose">Tanca</button></div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="ppLedger">⊞ Ledger</button><button class="btn btn-ghost" id="ppPings">🔔 Pings</button><button class="btn btn-ghost" id="ppCard">🎫 Carta intercanvi</button><button class="btn btn-ghost" id="ppWallet">🔐 Passkey</button><button class="btn btn-ghost" id="ppMulti">🌌 Multivers</button><button class="btn btn-ghost" id="ppKit">🎬 Kit narratiu</button><button class="btn btn-primary" id="ppClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#ppKit').onclick=()=>{closeModal();openNarrativeKit({name:'El molekulon de '+p.name,members:[p.name].concat((p.ventures||[]).slice(0,4).map(v=>v.venture.name)),challenge:''});};
@@ -6434,6 +6450,7 @@ function openPersonProfile(nameOrKey){
   bg.querySelector('#ppClose').onclick=closeModal;
   bg.querySelector('#ppMentoria').onclick=()=>{closeModal();openMentoringPlan(p.name);};
   const dsBtn=bg.querySelector('#ppDossier');if(dsBtn)dsBtn.onclick=()=>{closeModal();openDossierEditor(p.name);};
+  const ldBtn=bg.querySelector('#ppLedger');if(ldBtn)ldBtn.onclick=()=>{closeModal();openMyLedger(p.name);};
   // La història es carrega a part perquè necessita IndexedDB (narratives). Si
   // falla, es diu — no es deixa un «carregant» etern com passava al Comando.
   (async()=>{
@@ -6745,6 +6762,81 @@ function buildDashboard(){
     next};
 }
 
+/* ═══════════ Índex d'accions signades · una sola font ═══════════
+   Els apunts del ledger viuen escampats: al node, a cada venture, i a més hi ha
+   les decisions de govern. Fins ara cada vista els recollia pel seu compte i
+   cap oferia el que un registre públic necessita: cercar i verificar.
+
+   `ledgerIndex()` els aplana en registres uniformes. El ledger personal i el
+   registre públic són **la mateixa llista amb filtres diferents** — si algun dia
+   divergissin, un dels dos estaria mentint. */
+function ledgerIndex(){
+  const out=[];
+  const flowLabel=(nd,fid)=>{
+    if(!fid)return '';
+    const f=(nd.vna&&nd.vna.exchanges||[]).find(x=>x.id===fid);if(!f)return '';
+    const nm=id=>(((nd.vna.roles||[]).find(r=>r.id===id)||{}).name||'—');
+    return nm(f.from)+' → '+nm(f.to)+(f.label?' · '+f.label:'');
+  };
+  const add=(nd,e,scope,ventureName)=>{
+    const m=e.memberId?memberById(nd,e.memberId):null;
+    const who=(m&&m.name)||e.who||'';
+    const cp=e.counterpartId?memberById(nd,e.counterpartId):null;
+    out.push({id:e.id,ts:e.ts||'',who,personKey:who?personKey(who):'',
+      counterpart:cp?cp.name:'',what:e.what||'',deliverables:e.deliverables||'',
+      type:e.type||'temps',value:Number(e.value)||0,
+      nodeId:nd.id,nodeName:nd.name,scope,ventureName:ventureName||'',
+      flow:flowLabel(nd,e.flowId),signed:!!e.sig,chained:!!e.hash,
+      signer:(e.signer&&e.signer.did)||'',hash:e.hash||'',entry:e,node:nd});
+  };
+  state.nodes.forEach(nd=>{
+    (nd.ledger||[]).forEach(e=>add(nd,e,nd.dynamicType||'node'));
+    venturesOf(nd).forEach(v=>(v.ledger||[]).forEach(e=>add(nd,e,'venture',v.name)));
+  });
+  out.sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  return out;
+}
+// Cerca en text lliure sobre tot el que una persona podria recordar d'una acció.
+function searchActions(list,q){
+  const t=(q||'').trim().toLowerCase();
+  if(!t)return list;
+  const terms=t.split(/\s+/);
+  return list.filter(x=>{
+    const hay=[x.who,x.counterpart,x.what,x.deliverables,x.nodeName,x.ventureName,x.flow,x.type,String(x.value),(x.ts||'').slice(0,10),x.signer].join(' ').toLowerCase();
+    return terms.every(w=>hay.includes(w));
+  });
+}
+function ledgerTotals(list){
+  const t={hores:0,euros:0,signats:0,encadenats:0,persones:new Set(),nodes:new Set()};
+  list.forEach(x=>{if(x.type==='moneda')t.euros+=x.value;else t.hores+=x.value;
+    if(x.signed)t.signats++;if(x.chained)t.encadenats++;
+    if(x.personKey)t.persones.add(x.personKey);t.nodes.add(x.nodeId);});
+  return{hores:Math.round(t.hores*10)/10,euros:Math.round(t.euros*10)/10,signats:t.signats,
+    encadenats:t.encadenats,persones:t.persones.size,nodes:t.nodes.size,total:list.length};
+}
+/* Verificació criptogràfica de debò: es torna a comprovar la firma de cada apunt
+   contra la clau pública que porta a sobre. Un registre públic que digui
+   «signat» sense comprovar-ho no val res. */
+async function verifyActions(list,limit){
+  const out={};
+  await Promise.all(list.slice(0,limit||120).map(async x=>{
+    if(!x.signed){out[x.id]={ok:false,reason:'unsigned'};return;}
+    try{out[x.id]=await verifyRecord(x.entry);}catch(e){out[x.id]={ok:false,reason:'error'};}
+  }));
+  return out;
+}
+const myLedger=nameOrKey=>{const k=personKey(nameOrKey);return ledgerIndex().filter(x=>x.personKey===k);};
+function actionsCSV(list){
+  const esc2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const head=['data','qui','contrapart','què','entregables','tipus','valor','node','àmbit','venture','flux','signat','encadenat','signant','hash'];
+  return [head.map(esc2).join(',')].concat(list.map(x=>[x.ts,x.who,x.counterpart,x.what,x.deliverables,x.type,x.value,x.nodeName,x.scope,x.ventureName,x.flow,x.signed?'sí':'no',x.chained?'sí':'no',x.signer,x.hash].map(esc2).join(','))).join('\n');
+}
+function downloadText(name,text,mime){
+  const blob=new Blob([text],{type:mime||'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},100);
+}
 /* ═══════════ El bucle · veure → actuar → veure el resultat ═══════════
    Registrar valor i que no passi res visible és la manera més eficient de fer
    que ningú torni a registrar-ne. Aquí es fotografia l'estat abans d'una acció
@@ -6824,6 +6916,98 @@ function showValueReturn(before,{node,title}={}){
 }
 // Pings que toquen un node concret · el matching deixa de ser una pantalla a part.
 function matchesForNode(nodeId){try{return findMatches().filter(m=>m.offer.nodeId===nodeId||m.demand.nodeId===nodeId);}catch(e){return[];}}
+/* Vista compartida pel ledger personal i el registre públic. La diferència entre
+   els dos és el filtre inicial i el to, no el codi: així no poden divergir. */
+function buildActionsView(bg,{source,searchId,listId,statsId,verify}){
+  const q=bg.querySelector('#'+searchId),box=bg.querySelector('#'+listId),stats=bg.querySelector('#'+statsId);
+  let verified={};
+  // `skipVerify` evita que el repintat torni a verificar i es cridi a si mateix:
+  // la verificació és una segona passada, no un bucle.
+  const paint=async(skipVerify)=>{
+    const list=searchActions(source(),q?q.value:'');
+    const t=ledgerTotals(list);
+    if(stats)stats.innerHTML='<div class="bib-stats">'+
+      '<div class="bib-tile"><div class="n">'+t.total+'</div><div class="l">accions</div></div>'+
+      (t.hores?'<div class="bib-tile"><div class="n" style="color:var(--indigo)">'+t.hores+'</div><div class="l">hores</div></div>':'')+
+      (t.euros?'<div class="bib-tile"><div class="n">'+t.euros+' €</div><div class="l">diner</div></div>':'')+
+      '<div class="bib-tile"><div class="n" style="color:var(--green)">'+t.signats+'</div><div class="l">signades</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--purple)">'+t.persones+'</div><div class="l">persones</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--blue)">'+t.nodes+'</div><div class="l">nodes</div></div></div>';
+    if(!list.length){box.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>'+(q&&q.value.trim()?'Cap acció que coincideixi amb «'+esc(q.value.trim())+'».':'Encara no hi ha cap acció registrada.')+'</span></div>';return;}
+    box.innerHTML='<div class="acts">'+list.slice(0,150).map(x=>{
+      const v=verified[x.id];
+      const badge=!x.signed?'<span class="ent-b">sense firma</span>'
+        :v?(v.ok?'<span class="ent-b b-ver">🔏 firma verificada</span>':'<span class="ent-b" style="color:var(--red);border-color:var(--red)">⚠ firma invàlida</span>')
+        :'<span class="ent-b">🔏 signada</span>';
+      return '<div class="act-row" data-node="'+esc(x.nodeId)+'">'+
+        '<span class="act-ts">'+esc((x.ts||'').slice(0,10))+'</span>'+
+        '<span class="act-b"><span class="act-t">'+esc(x.what||'aportació')+'</span>'+
+        '<span class="act-d">'+esc(x.who)+(x.counterpart?' → '+esc(x.counterpart):'')+' · '+esc(x.nodeName)+(x.ventureName?' · '+esc(x.ventureName):'')+
+        (x.flow?' · <em>'+esc(x.flow)+'</em>':'')+(x.deliverables?' · '+esc(x.deliverables):'')+'</span>'+
+        '<span class="ent-badges">'+badge+(x.chained?'<span class="ent-b">⛓ encadenada</span>':'')+'</span></span>'+
+        '<span class="act-v">'+(x.type==='moneda'?(x.value+' €'):(x.value+' h'))+'</span></div>';
+    }).join('')+'</div>'+(list.length>150?'<div class="ent-desc">… i '+(list.length-150)+' més. Afina la cerca.</div>':'');
+    box.querySelectorAll('.act-row').forEach(r=>r.onclick=()=>{closeModal();selectNode(r.dataset.node);});
+    if(verify&&!skipVerify){
+      verified=await verifyActions(list);
+      // Repintat una sola vegada, i només si la cerca no ha canviat mentrestant
+      if(box.isConnected&&searchActions(source(),q?q.value:'').length===list.length)await paint(true);
+    }
+  };
+  if(q){let t=null;q.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{verified={};paint();},180);};}
+  paint();
+  return{repaint:paint,current:()=>searchActions(source(),q?q.value:'')};
+}
+/* El meu ledger SOS · tot el que he aportat, a tots els nodes, amb la seva firma.
+   Fins ara només es podia veure com una llista dins del perfil; ara és un lloc
+   propi, cercable i exportable, i s'hi arriba des del tauler. */
+function openMyLedger(nameOrKey){
+  const name=String(nameOrKey||state.activePersona||'');
+  if(!name){toast('Crea primer el teu perfil');return;}
+  const bg=modal(`
+    <h2>⊞ El meu ledger SOS</h2>
+    <p class="m-sub"><strong>${esc(name)}</strong> · totes les teves aportacions, a tots els nodes i ventures, amb la seva firma i la seva posició a la cadena. És la teva comptabilitat: ningú te la pot canviar sense que es noti.</p>
+    <div id="mlStats"></div>
+    <input id="mlSearch" placeholder="Cerca per concepte, node, entregable, data…" aria-label="Cerca al teu ledger">
+    <div id="mlList"></div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="mlCsv">⬇ Exporta CSV</button><button class="btn btn-ghost" id="mlPub">🌐 Registre públic</button><button class="btn btn-primary" id="mlClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const v=buildActionsView(bg,{source:()=>myLedger(name),searchId:'mlSearch',listId:'mlList',statsId:'mlStats',verify:true});
+  bg.querySelector('#mlClose').onclick=closeModal;
+  bg.querySelector('#mlPub').onclick=()=>{closeModal();openPublicRegister();};
+  bg.querySelector('#mlCsv').onclick=()=>{downloadText('sos-ledger-'+personKey(name)+'.csv',actionsCSV(v.current()),'text/csv;charset=utf-8');toast('CSV descarregat');};
+}
+/* Registre públic d'accions signades · cercable i verificable.
+   El registre de decisions ja existia, però només cobria propostes de govern.
+   Això cobreix el que sosté la comunitat de debò: les aportacions. */
+function openPublicRegister(){
+  let onlySigned=true;
+  const bg=modal(`
+    <h2>🌐 Registre públic d'accions signades</h2>
+    <p class="m-sub">Totes les accions comptabilitzades a l'ecosistema, cercables i amb la firma comprovada de debò contra la clau pública de qui la va fer. <strong>Local-first</strong>: aquest registre és el que veus tu al teu navegador; per fer-lo verificable des de fora, ancora'l.</p>
+    <div id="prStats"></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem">
+      <button type="button" class="btn btn-ghost btn-sm pr-f sel" data-f="signed">🔏 Només signades</button>
+      <button type="button" class="btn btn-ghost btn-sm pr-f" data-f="all">Totes</button>
+    </div>
+    <input id="prSearch" placeholder="Cerca qui, què, node, entregable, data…" aria-label="Cerca al registre públic">
+    <div id="prList"></div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="prCsv">⬇ CSV</button><button class="btn btn-ghost" id="prJson">⬇ JSON</button><button class="btn btn-ghost" id="prAnchor">🛰 Ancora</button><button class="btn btn-primary" id="prClose">Tanca</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const src=()=>{const l=ledgerIndex();return onlySigned?l.filter(x=>x.signed):l;};
+  const v=buildActionsView(bg,{source:src,searchId:'prSearch',listId:'prList',statsId:'prStats',verify:true});
+  bg.querySelectorAll('.pr-f').forEach(b=>b.onclick=()=>{onlySigned=b.dataset.f==='signed';bg.querySelectorAll('.pr-f').forEach(x=>x.classList.toggle('sel',x===b));v.repaint();});
+  bg.querySelector('#prClose').onclick=closeModal;
+  bg.querySelector('#prCsv').onclick=()=>{downloadText('sos-registre-public.csv',actionsCSV(v.current()),'text/csv;charset=utf-8');toast('CSV descarregat');};
+  bg.querySelector('#prJson').onclick=()=>{
+    const list=v.current().map(x=>({ts:x.ts,who:x.who,what:x.what,deliverables:x.deliverables,type:x.type,value:x.value,node:x.nodeName,venture:x.ventureName,flow:x.flow,signed:x.signed,signer:x.signer,hash:x.hash}));
+    downloadText('sos-registre-public.json',JSON.stringify({v:1,type:'sos-public-register',ts:now(),count:list.length,actions:list},null,2),'application/json');
+    toast('JSON descarregat');
+  };
+  bg.querySelector('#prAnchor').onclick=()=>{closeModal();openAnchorPackModal();};
+}
 /* ═══════════ Actuar a distància · el tauler com a lloc únic ═══════════
    Fins ara, per fer qualsevol cosa en un node calia navegar-hi: seleccionar-lo,
    canviar de pestanya i tornar. Amb 900 municipis això és inviable i, sobretot,
@@ -6963,6 +7147,10 @@ function renderDashboard(w){
     (j.next?'<div class="ent-desc" style="margin-top:.3rem">Següent: <strong>'+esc(j.next.label)+'</strong> — '+esc(j.next.detail)+'</div>':'<div class="ent-desc" style="margin-top:.3rem">Camí complet: el següent pas és acompanyar-ne un altre.</div>');
   const jb=el('div','');jb.style.cssText='display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem';
   const gAll=el('button','btn btn-ghost btn-sm','🧭 Obre la guia');gAll.id='dashGuide';gAll.onclick=()=>openGuide();jb.appendChild(gAll);
+  // El teu ledger, a un clic: és la teva comptabilitat i has de poder-hi entrar sempre.
+  const gLed=el('button','btn btn-ghost btn-sm','⊞ El meu ledger SOS');gLed.id='dashLedger';
+  gLed.onclick=()=>{if(state.activePersona)openMyLedger(state.activePersona);else openSuperheroiOnboarding();};jb.appendChild(gLed);
+  const gPub=el('button','btn btn-ghost btn-sm','🌐 Registre públic');gPub.id='dashRegister';gPub.onclick=()=>openPublicRegister();jb.appendChild(gPub);
   if(j.next&&j.next.act){const gn=el('button','btn btn-primary btn-sm',j.next.ic+' '+j.next.label);gn.onclick=()=>j.next.act();jb.appendChild(gn);}
   jc.appendChild(jb);
   body.appendChild(jc);
@@ -7968,7 +8156,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
