@@ -103,6 +103,13 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    d'un clic amb el codi carregat, presentació mútua (`did:sos` + nom) abans que
    res es fusioni, i memòria de l'últim company. Veda V27.
 
+6. **Federacions temàtiques** (model del.icio.us) — `node.themes`, `allThemes`,
+   `themeFederation` (sobre `consolidateSet`, sense doble comptatge) i
+   `themeNeighbours`, que és el moviment que fa que etiquetar valgui la pena:
+   des d'un node veus **qui més treballa els teus temes**. Pantalles pròpies,
+   entrada des del tauler, del llançador, de la paleta, de les accions del node
+   i de la ruta `#/federacions`. Veda V28.
+
 **Següent, per ordre:**
 1. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
