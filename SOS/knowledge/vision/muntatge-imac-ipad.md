@@ -68,23 +68,29 @@ Mentre la finestra queda oberta, **els canvis viatgen en viu** als dos sentits.
 
 ### Primera vegada
 
-1. A l'**iMac**: `🔗 Sincronitza amb un altre dispositiu` → **① Crea invitació**.
-   Surt un codi llarg i un **QR**.
-2. A l'**iPad**: obre la càmera i apunta al QR de la pantalla de l'iMac per
-   copiar-ne el codi. Si no funciona, comparteix el codi per Notes o AirDrop.
-3. A l'**iPad**: `🔗 Sincronitza…` → **② Tinc una invitació** → enganxa el codi.
-   Et donarà un codi de resposta (amb el seu QR).
-4. Torna el codi de resposta a l'**iMac** i enganxa'l. Connectats.
+1. A l'**iMac**: `🔗 Sincronitza amb un altre dispositiu` → **① Crea invitació**
+   → **🔗 Copia enllaç d'invitació**.
+2. Envia't l'enllaç a l'**iPad** pel canal que vulguis (Missatges, Notes,
+   AirDrop, correu). També pots apuntar la càmera de l'iPad al **QR**, que ja
+   porta l'enllaç a dins.
+3. A l'**iPad**, obre l'enllaç: el SOS s'obre amb el codi **ja carregat** i a la
+   pantalla de qui rep. Prem **Genera resposta**.
+4. Torna la resposta a l'**iMac** (copia-la o comparteix-la) i enganxa-la.
+   Connectats.
+
+Quan connecteu, cada costat **et diu qui és** —nom i `did:sos`— abans que res es
+fusioni. Si el nom que surt no és qui esperaves, desconnecta.
 
 ### Cada dia
 
 Mentre les dues finestres estan obertes i connectades, no has de fer res: el que
 registres a l'iPad apareix a l'iMac a l'instant. Quan tanques, la connexió cau i
-cal repetir el aparellament la propera vegada.
+cal tornar a aparellar; el SOS **recorda amb qui vas sincronitzar l'última
+vegada** i t'ho diu en obrir la pantalla.
 
-> **Limitació coneguda, dita clara:** avui l'aparellament és manual cada cop
-> (codi o QR) i no hi ha reconnexió automàtica ni codi de sala. Està identificat
-> i pendent — mira "Què encara no hi és" al final.
+> **Limitació coneguda, dita clara:** cal repetir l'aparellament cada sessió. No
+> hi ha ni codi de sala ni reconnexió automàtica. Està identificat i pendent —
+> mira "Què encara no hi és" al final.
 
 ---
 

@@ -99,11 +99,17 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    `_canon` (claus ordenades a tots els nivells) per als dos packs.
 4. **Pla de muntatge iMac + iPad** — `../vision/muntatge-imac-ipad.md`.
 
+5. **Col·laboració de debò** — enllaç d'invitació (`#/sync/<codi>`) que s'obre
+   d'un clic amb el codi carregat, presentació mútua (`did:sos` + nom) abans que
+   res es fusioni, i memòria de l'últim company. Veda V27.
+
 **Següent, per ordre:**
-1. **Codi de sala per sincronitzar** — avui l'aparellament és manual cada
-   vegada. Descobriment via trackers WSS + reconnexió amb l'últim codi.
+1. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
+   Descobriment via trackers WSS + reconnexió amb l'últim codi.
 2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
    però l'escaneig depèn de la càmera del sistema.
+3. **Més de dos alhora** — avui la sincronització és punt a punt; una assemblea
+   de debò en vol N.
 
 ### Defectes trobats i encara oberts
 
