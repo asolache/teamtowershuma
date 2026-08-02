@@ -252,6 +252,39 @@ node interior **redundant** (el seu valor ja entra per l'avantpassat) i mesurant
 una sola vegada sobre l'abast real. Sense això, cada federació que es creï
 inflaria les xifres de Catalunya.
 
+## V25 · Veda de la identitat portable
+
+«La clau privada mai surt del navegador» sonava a virtut i era mitja veritat.
+També volia dir dues coses que ningú havia dit en veu alta:
+
+- Esborrar les dades del navegador **destruïa** el `did:sos` per sempre.
+- El mateix humà amb dos aparells eren **dues persones diferents** al registre,
+  amb dues reputacions i dues meitats de la seva pròpia història.
+
+Tres regles:
+
+1. **La sobirania no és no poder emportar-te la teva clau; és que ningú més
+   pugui.** La còpia és **xifrada amb contrasenya** (PBKDF2 210k · AES-GCM), la
+   custodies tu, i cap servei hi toca. Al fitxer no hi ha res en clar.
+2. **Substituir una identitat és irreversible i es demana explícitament.**
+   `importIdentity` es nega si el dispositiu ja en té una de pròpia mentre no li
+   passis `overwrite`.
+3. **Un passkey no és una còpia de seguretat.** És una segona via d'accés. Qui
+   confongui les dues coses perdrà la identitat el dia que perdi l'aparell.
+
+## V26 · Veda de l'ancoratge
+
+Ancorar un node no prova el registre. El registre públic travessa **tots** els
+nodes i totes les ventures; una empremta d'un sol node no diu res de la resta, i
+el botó «Ancora» del registre obria justament això — i des del tauler, sense node
+actiu, no obria res.
+
+`buildRegisterPack` fa una arrel sobre **totes** les accions ordenades, amb una
+fulla per apunt. Canviar un sol valor mou l'arrel i el CID, i el pack publicat
+deixa de quadrar. Es verifica **a la mateixa pantalla** on es genera: un
+ancoratge que digui «signat» sense comprovar-ho no val res (veda V22 aplicada a
+la permaweb).
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

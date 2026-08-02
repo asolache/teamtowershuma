@@ -81,6 +81,30 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 5. **Transmedia enllaços** *(fet — SoundCloud, YouTube, Amazon, Instagram al modal Comando)*.
 6. **Vista territorial resum + incentiu al terreny** *(fet — panell "Baixa al terreny" a país/provincia/comarca).
 
+### Onada permaweb · identitat portable + ancoratge del registre
+
+**Fet:**
+1. **Còpia xifrada de la identitat** — `exportIdentity` / `importIdentity`
+   (PBKDF2 210k · AES-GCM), amb pantalla pròpia i entrada des del panell
+   d'identitat. Resol que esborrar el navegador destruïa el `did:sos` i que el
+   mateix humà amb dos aparells fos dues persones al registre. Veda V25.
+2. **Ancoratge del registre sencer** — `buildRegisterPack` /
+   `verifyRegisterPack` amb una arrel sobre totes les accions. El botó «Ancora»
+   del registre obria l'ancoratge d'un node i, des del tauler, no obria res.
+   Veda V26.
+3. **CID que no cobria res** — `JSON.stringify(pack, Object.keys(pack).sort())`
+   filtra les claus **a tota la profunditat**: `{totals:{hores:8}}` es
+   serialitzava com `{totals:{}}`, així que es podien canviar hores i euros
+   sense moure el CID. Defecte heretat de `buildAnchorPack`, corregit amb
+   `_canon` (claus ordenades a tots els nivells) per als dos packs.
+4. **Pla de muntatge iMac + iPad** — `../vision/muntatge-imac-ipad.md`.
+
+**Següent, per ordre:**
+1. **Codi de sala per sincronitzar** — avui l'aparellament és manual cada
+   vegada. Descobriment via trackers WSS + reconnexió amb l'últim codi.
+2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
+   però l'escaneig depèn de la càmera del sistema.
+
 ### Defectes trobats i encara oberts
 
 - **`updateAtles` no és idempotent.** Cridar-la dues vegades seguides deixa un
