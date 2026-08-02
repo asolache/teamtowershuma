@@ -197,6 +197,65 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
   el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
+### Després de l'MVP · l'app de mòbil per a la gent
+
+**On som i on anem.** Ara mateix estem construint les **bases** i l'app
+d'**administració i gestió**: la MATRIU, la biblioteca i el banc de temps
+operatius, i el SOS com a escola i facilitador del desenvolupament comunitari.
+Això és feina de qui coordina, no de qui participa.
+
+Un cop l'MVP estigui polit amb les tres eines funcionant, el pas següent és
+**una altra app, no la mateixa amb la pantalla més petita**:
+
+- **Fluxos totalment predefinits.** Res de configurar. Cada cosa que es pot fer
+  és un camí tancat, d'una pantalla a la següent, sense decisions de disseny per
+  a l'usuari.
+- **Llista de missions.** La unitat d'ús no és el menú, és **la missió**: què em
+  toca fer ara i què passarà quan ho faci. La llista viu a la portada.
+  L'esquelet ja existeix (`ROLE_JOURNEYS`, `journeyProgress`, `HERO_CHALLENGES`,
+  `dashboardAttention`); el que falta és que **sigui la interfície**, no un
+  panell més dins d'un tauler.
+- **User-friendly de debò**: poques accions per pantalla, text curt, res que
+  demani entendre el model de dades. Tot el que avui és un modal amb quinze
+  camps ha de ser tres passos amb un camp cadascun.
+
+**La línia que separa les dues apps**: la de gestió mostra **estructura** (qui,
+on, quant, per què); la de mòbil mostra **el següent pas**. Barrejar-les és el
+que fa que una eina comunitària només l'acabin fent servir tres persones.
+
+**Pendent de decidir**: si és la mateixa `index.html` amb una capa de portada
+diferent —cosa que manté el zero-servidor i el fitxer únic— o un segon fitxer
+autocontingut que comparteix el mateix IndexedDB i el mateix `did:sos`. La
+primera opció és la coherent amb les vedes; cal comprovar que no fa la pàgina
+massa gran.
+
+### Una persona té diversos rols alhora
+
+**Defecte de model, no de pantalla.** `roleOfPerson` retorna **un** rol i
+`activeRoleId()` n'agafa un de sol per decidir la lent de tot el SOS. Però una
+persona real és **superheroina al seu barri, mentora d'una MATRIU i
+simpatitzant en un altre poble** a la vegada. La implicació no és un estat
+global: **depèn del node i del que hi fa**.
+
+Cap on ha d'anar:
+
+- **Els rols són per context**, no per persona. El mateix humà pot ser
+  `superheroi` a la biblioteca del seu barri i `mentor` a la MATRIU de la
+  comarca, i totes dues coses són certes alhora.
+- **El rol es dedueix del que fa, no d'una casella.** Si acompanya ventures, és
+  mentora — ja hi ha `mentorsOf`. Si aporta hores i objectes, és superheroina.
+  Si coordina un node, guardiana. El sistema ja té l'evidència; el que fa és
+  aplanar-la a un sol valor.
+- **`mentor` ni tan sols existeix a `SOS_ROLES`**, tot i que la MATRIU (F1) ja
+  té mentors amb àmbit. Cal afegir-l'hi amb el seu recorregut propi.
+- **La lent del SOS ha de ser triable**: «ara miro el SOS com a mentora» i la
+  guia contextual, les missions i el tauler canvien en conseqüència. Amb un
+  selector visible, no endevinat.
+
+Encaixa amb V39: quan una persona reclama la seva fitxa amb el seu `did`, els
+seus rols de tots els nodes es poden reunir sota una sola identitat sense
+haver-los d'aplanar a un.
+
 ### Biblioteca de les coses · valor de l'aportació i economia circular
 
 **Pendent.** Avui donar un objecte a la biblioteca no val res al registre: es
