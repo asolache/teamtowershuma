@@ -494,6 +494,24 @@ a{color:var(--blue);text-decoration:none}
 .vr-row{display:flex;align-items:center;gap:.6rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:9px;padding:.55rem .7rem;font-size:.82rem;color:var(--light)}
 .vr-row.big{border-color:var(--green);background:linear-gradient(90deg,rgba(0,230,118,.12),transparent)}
 .vr-ic{font-size:1.1rem}
+/* Vista de cohort · la taula ha de poder desbordar en horitzontal sense trencar la pàgina */
+.coh-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:12px}
+.coh-table{min-width:860px}
+.coh-table th.coh-th{cursor:pointer;white-space:nowrap;user-select:none}
+.coh-table th.coh-th:hover{color:var(--light)}
+.coh-table th.coh-th.on{color:var(--indigo)}
+.coh-table th.num{text-align:right}
+.coh-row:hover{background:rgba(255,255,255,.03)}
+.coh-sub{font-size:.7rem;color:var(--muted)}
+.coh-light{font-size:.78rem;white-space:nowrap}
+.coh-sel{background:var(--bg-panel);border:1px solid var(--border);color:var(--light);border-radius:8px;padding:.35rem .5rem;font-size:.8rem}
+.coh-funnel{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.6rem 0}
+.coh-step{flex:1 1 120px;min-width:0}
+.coh-step-h{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:.25rem}
+.coh-step-h strong{color:var(--light);font-family:var(--mono)}
+.coh-bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.coh-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--green))}
+.coh-conv{flex:1 1 100%;font-size:.78rem;color:var(--muted);margin-top:.2rem}
 .cons{margin-top:1rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:.75rem .8rem}
 .cons-h{font-size:.85rem;font-weight:600;color:var(--light);margin-bottom:.5rem}
 .cons-h span{font-weight:400;color:var(--muted)}
@@ -1938,6 +1956,104 @@ const LIGHT_META={verd:{ic:'🟢',color:'var(--green)',label:'Avança'},ambre:{i
 function matriuLights(node){
   return venturesOf(node).map(v=>({v,light:ventureLight(v)}))
     .sort((a,b)=>({vermell:0,ambre:1,verd:2})[a.light.level]-({vermell:0,ambre:1,verd:2})[b.light.level]);
+}
+/* ═══════════ VISTA DE COHORT · el conjunt en una pantalla ═══════════
+   Veda V37. Qui coordina una MATRIU no pot obrir dotze modals per saber com va
+   la promoció. Aquí cada iniciativa és **una fila** amb les mateixes columnes,
+   totes calculades del mateix estat que ja hi havia — no hi ha cap xifra nova
+   inventada per a aquesta pantalla, només les que ja es podien llegir una a una.
+
+   La taula ordena i filtra per qualsevol columna, i surt en CSV perquè les
+   memòries i les justificacions de subvenció es fan en full de càlcul, no
+   mirant una pantalla. */
+const LIGHT_RANK={vermell:0,ambre:1,verd:2};
+/* Salut del mapa d'una iniciativa, en un sol número comparable entre files.
+   Els pesos diuen què importa: que els fluxos tornin (45), que la xarxa sigui
+   densa (25), que hi hagi tangible i intangible (15), que ningú quedi penjat
+   (10) i que no tot passi pel nucli (5). */
+function mapHealthScore(v){
+  const roles=(v.vna&&v.vna.roles)||[],ex=(v.vna&&v.vna.exchanges)||[];
+  if(roles.length<2||!ex.length)return{score:0,why:'Mapa incomplet',recPct:0,dens:0,isolated:roles.length,hub:0};
+  const a=vnaAudit(v);
+  const score=Math.min(100,Math.round(a.recPct*0.45+a.dens*0.25+((a.hasT&&a.hasI)?15:5)+(a.isolated.length?0:10)+(a.hub<=55?5:0)));
+  return{score,why:'',recPct:a.recPct,dens:a.dens,isolated:a.isolated.length,hub:a.hub};
+}
+function cohortRow(node,v){
+  const sps=sprintsOf(v),items=sps.reduce((a,s)=>a.concat(s.items||[]),[]);
+  const bDone=items.filter(x=>x.done).length;
+  const led=v.ledger||[];
+  let hours=0,euros=0;
+  led.forEach(e=>{const q=Number(e.value)||0;if(e.type==='temps')hours+=q;else if(e.type==='moneda')euros+=q;});
+  allocationsOf(v).forEach(a=>{if(a.kind==='hores')hours+=Number(a.qty)||0;});
+  const eq=computeVentureEquity(node,v);
+  const light=ventureLight(v),sil=ventureSilence(v),rd=ventureReadiness(node,v),mh=mapHealthScore(v);
+  const lead=v.leadMemberId?memberById(node,v.leadMemberId):null;
+  return{v,id:v.id,name:v.name||'',
+    stage:v.stage,stageLabel:STAGE_LABELS[v.stage]||v.stage,stageRank:VENTURE_STAGES.indexOf(v.stage),
+    light:light.level,lightWhy:light.why,lightRank:LIGHT_RANK[light.level],
+    readiness:rd.score,readinessPending:rd.checks.filter(c=>!c.ok).length,
+    backlogDone:bDone,backlogTotal:items.length,backlog:items.length?Math.round(bDone/items.length*100):0,
+    hours:Math.round(hours*10)/10,euros:Math.round(euros),
+    equity:eq.length?Math.round(Math.max(...eq.map(e=>e.pct||0))):0,equityPeople:eq.length,
+    health:mh.score,healthWhy:mh.why,
+    silence:sil.days==null?9999:sil.days,silenceLevel:sil.level,lastTs:sil.last,
+    mentors:mentorsOf(v).length,sessions:sessionsOf(v).length,
+    risks:risksOf(v).filter(r=>r.open).length,blocks:blocksOf(v).filter(b=>b.open).length,
+    issues:risksOf(v).filter(r=>r.open).length+blocksOf(v).filter(b=>b.open).length,
+    lead:lead?lead.name:'',graduated:!!v.graduatedNodeId};
+}
+const COHORT_COLS=[
+  {id:'name',label:'Iniciativa',num:false,dir:'asc'},
+  {id:'stage',label:'Etapa',num:false,key:'stageRank',dir:'asc'},
+  {id:'light',label:'Semàfor',num:false,key:'lightRank',dir:'asc'},
+  {id:'readiness',label:'Preparació',num:true,suf:'%',dir:'desc'},
+  {id:'backlog',label:'Backlog',num:true,suf:'%',dir:'desc'},
+  {id:'hours',label:'Hores',num:true,dir:'desc'},
+  {id:'equity',label:'Equity màx',num:true,suf:'%',dir:'desc'},
+  {id:'health',label:'Salut del mapa',num:true,suf:'%',dir:'desc'},
+  {id:'silence',label:'Dies sense moure\'s',num:true,dir:'desc'},
+  {id:'mentors',label:'Mentores',num:true,dir:'asc'},
+  {id:'issues',label:'Riscos i blocs',num:true,dir:'desc'}
+];
+const cohortCol=id=>COHORT_COLS.find(c=>c.id===id)||COHORT_COLS[0];
+/* Ordena i filtra. Per defecte, el mateix criteri que el semàfor: primer el que
+   demana atenció, i entre iguals el que fa més dies que no es mou. */
+function cohortTable(node,{sort,dir,stage,light}={}){
+  let rows=venturesOf(node).map(v=>cohortRow(node,v));
+  const total=rows.length;
+  if(stage)rows=rows.filter(r=>r.stage===stage);
+  if(light)rows=rows.filter(r=>r.light===light);
+  const col=cohortCol(sort||'light'),key=col.key||col.id;
+  const d=(dir||col.dir)==='desc'?-1:1;
+  rows.sort((a,b)=>{
+    const x=a[key],y=b[key];
+    let c=(typeof x==='number'&&typeof y==='number')?x-y:String(x).localeCompare(String(y),'ca');
+    if(!c)c=(a.silence-b.silence)*-1;
+    return c*d;
+  });
+  return{rows,total,shown:rows.length,sort:col.id,dir:(dir||col.dir)};
+}
+/* Embut: quantes iniciatives hi ha a cada estadi i quantes n'han sortit.
+   Una MATRIU amb vint idees i cap graduada no està incubant, està acumulant. */
+function cohortFunnel(node){
+  const vs=venturesOf(node);
+  const stages=VENTURE_STAGES.map(id=>({id,label:STAGE_LABELS[id]||id,
+    n:vs.filter(v=>v.stage===id).length}));
+  const max=Math.max(1,...stages.map(s=>s.n));
+  stages.forEach(s=>{s.pct=Math.round(s.n/max*100);});
+  const graduades=vs.filter(v=>v.graduatedNodeId||v.stage==='graduacio').length;
+  return{stages,max,total:vs.length,graduades,
+    conversio:vs.length?Math.round(graduades/vs.length*100):0};
+}
+function cohortCSV(rows){
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const head=['iniciativa','etapa','semafor','motiu','preparacio_%','backlog_fets','backlog_total','backlog_%',
+    'hores','euros','equity_max_%','persones_equity','salut_mapa_%','dies_sense_moures','ultima_activitat',
+    'mentores','sessions','riscos_oberts','bloquejos_oberts','lead','graduada'];
+  return [head.map(q).join(',')].concat(rows.map(r=>[r.name,r.stageLabel,r.light,r.lightWhy,r.readiness,
+    r.backlogDone,r.backlogTotal,r.backlog,r.hours,r.euros,r.equity,r.equityPeople,r.health,
+    r.silence===9999?'':r.silence,r.lastTs,r.mentors,r.sessions,r.risks,r.blocks,r.lead,
+    r.graduated?'sí':'no'].map(q).join(','))).join('\n');
 }
 const MENTOR_SCOPES=[
   {id:'juridic',ic:'⚖',label:'Jurídic',one:'Forma jurídica, estatuts, obligacions'},
@@ -5334,7 +5450,7 @@ function renderWorkspace(){
   if(territory)tdefs.push(['entitats','⬡ Entitats',entitiesFor(node.id).length]);
   if(node.dynamicType==='biblioteca_coses')tdefs.push(['socis','👥 Socis',membersOf(node).length],['biblioteca','📚 Biblioteca',objectsOf(node).length]);
   else if(node.dynamicType==='banc_temps')tdefs.push(['socis','👥 Socis',membersOf(node).length],['banctemps','⏳ Ofertes',offersOf(node).length]);
-  else if(node.dynamicType==='matriu')tdefs.push(['socis','👥 Socis',membersOf(node).length],['cartera','🌱 Cartera',venturesOf(node).length],['ecosistema','🕸 Ecosistema',linksOf(node).length],['equity','🥧 Equity',membersOf(node).length]);
+  else if(node.dynamicType==='matriu')tdefs.push(['socis','👥 Socis',membersOf(node).length],['cartera','🌱 Cartera',venturesOf(node).length],['cohort','▦ Cohort',venturesOf(node).length],['ecosistema','🕸 Ecosistema',linksOf(node).length],['equity','🥧 Equity',membersOf(node).length]);
   if(!tdefs.some(t=>t[0]===state.tab))state.tab=tdefs[0][0];
   tdefs.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
@@ -5353,6 +5469,7 @@ function renderWorkspace(){
   else if(state.tab==='biblioteca')renderBiblioteca(body,node);
   else if(state.tab==='banctemps')renderBancTemps(body,node);
   else if(state.tab==='cartera')renderMatriuVentures(body,node);
+  else if(state.tab==='cohort')renderMatriuCohort(body,node);
   else if(state.tab==='ecosistema')renderMatriuResources(body,node);
   else if(state.tab==='equity')renderEquity(body,node);
   else renderLedger(body,node);
@@ -5973,6 +6090,15 @@ const CONTEXT_GUIDES={
       {k:'contrib',label:'Aportacions registrades a alguna venture',done:n=>venturesOf(n).some(v=>(v.ledger||[]).length)}
     ],
     lens:{guardian:'Decideix què s\'incuba i què no: incubar-ho tot és no incubar res.',coordinador:'Munta els equips: una venture sense equip no arrenca.',superheroi:'Apunta\'t a la venture on el teu poder faci falta.',agent:'Aquí és on el finançament públic es converteix en projecte real.',simpatitzant:'Mira quines idees es couen abans de decidir on entres.'}},
+  cohort:{ic:'▦',t:'Vista de cohort',one:'Tota la promoció en una taula: qui avança, qui s\'ha aturat i qui necessita algú.',
+    flow:['Cada iniciativa és una fila amb les mateixes columnes: comparar deixa de ser una opinió.','Ordena pel que et preocupi avui — semàfor, dies sense moure\'s, equity concentrada.','Exporta en CSV: les memòries i les justificacions es fan en full de càlcul.'],
+    steps:[
+      {k:'v',label:'Hi ha iniciatives a comparar',done:n=>venturesOf(n).length>0},
+      {k:'few',label:'Almenys tres, que és quan comparar serveix',done:n=>venturesOf(n).length>=3},
+      {k:'mentor',label:'Totes tenen algú que les acompanya',done:n=>venturesOf(n).filter(v=>v.stage!=='graduacio').every(v=>mentorsOf(v).length)},
+      {k:'grad',label:'Alguna ha graduat',done:n=>venturesOf(n).some(v=>v.graduatedNodeId||v.stage==='graduacio')}
+    ],
+    lens:{guardian:'Aquí veus si la MATRIU incuba o només acumula: mira la conversió de l\'embut.',coordinador:'Ordena per dies sense moure\'s i truca a qui fa més temps que calla.',superheroi:'Mira on falta gent: mentores a zero i semàfors vermells.',agent:'Aquesta taula és la memòria de la subvenció, exportada en un clic.',simpatitzant:'D\'un cop d\'ull saps quines idees estan vives.'}},
   ecosistema:{ic:'🕸',t:'Ecosistema',one:'Els recursos de fora que la MATRIU pot mobilitzar.',
     flow:['Es connecten talent, hores i objectes que ja existeixen a l\'ecosistema.','Una venture no arrenca de zero: mobilitza el que la comunitat ja té.','Cada connexió aprofitada és una compra que no cal fer.'],
     steps:[
@@ -7315,6 +7441,95 @@ function renderMatriuVentures(body,node){
     });
     body.appendChild(grid);
   });
+}
+/* Vista de cohort · totes les iniciatives en una taula, ordenable, filtrable i
+   exportable. Res d'aquí no és una xifra nova: és el mateix estat que ja podies
+   llegir venture a venture, posat de manera que es pugui comparar. */
+let _cohortView={sort:'light',dir:'asc',stage:'',light:''};
+function renderMatriuCohort(body,node){
+  const vs=venturesOf(node);
+  if(!vs.length){
+    const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';
+    emp.innerHTML='<h2 style="font-size:1.05rem">Cap iniciativa a la cohort</h2><p>Quan la MATRIU incubi la primera venture, aquí en veuràs el conjunt d\'un cop d\'ull.</p>';
+    body.appendChild(emp);return;
+  }
+  const paint=()=>{body.innerHTML='';draw();};
+  function draw(){
+    const note=el('div','ai-note');
+    note.innerHTML='<span class="ic">▦</span><span>Tota la promoció en una pantalla. Ordena per qualsevol columna, filtra per etapa o semàfor, i <strong>exporta en CSV</strong> per a memòries i justificacions. Cap xifra és nova: és el que ja hi havia, comparable.</span>';
+    body.appendChild(note);
+    /* Embut · quantes n'hi ha a cada estadi i quantes n'han sortit. */
+    const fn=cohortFunnel(node);
+    body.appendChild(el('div','ent-grp-lbl','⬗ Embut per etapes'));
+    const fb=el('div','coh-funnel');
+    fb.innerHTML=fn.stages.map(s=>'<div class="coh-step"><div class="coh-step-h"><span>'+esc(s.label)+'</span><strong>'+s.n+'</strong></div>'+
+      '<div class="coh-bar"><i style="width:'+s.pct+'%"></i></div></div>').join('')+
+      '<div class="coh-conv">'+fn.graduades+' de '+fn.total+' han graduat · <strong>'+fn.conversio+'%</strong> de conversió</div>';
+    body.appendChild(fb);
+    /* Filtres. */
+    const bar=el('div','ent-bar');bar.style.flexWrap='wrap';
+    const stSel=el('select');stSel.id='cohStage';stSel.className='coh-sel';
+    stSel.innerHTML='<option value="">Totes les etapes</option>'+VENTURE_STAGES.map(s=>'<option value="'+s+'"'+(_cohortView.stage===s?' selected':'')+'>'+esc(STAGE_LABELS[s]||s)+'</option>').join('');
+    stSel.onchange=()=>{_cohortView.stage=stSel.value;paint();};
+    const liSel=el('select');liSel.id='cohLight';liSel.className='coh-sel';
+    liSel.innerHTML='<option value="">Tots els semàfors</option>'+['vermell','ambre','verd'].map(l=>'<option value="'+l+'"'+(_cohortView.light===l?' selected':'')+'>'+LIGHT_META[l].ic+' '+esc(LIGHT_META[l].label)+'</option>').join('');
+    liSel.onchange=()=>{_cohortView.light=liSel.value;paint();};
+    bar.appendChild(stSel);bar.appendChild(liSel);
+    const t=cohortTable(node,_cohortView);
+    const csv=el('button','btn btn-ghost btn-sm','⬇ CSV');csv.id='cohCSV';
+    csv.onclick=()=>{downloadText('cohort-'+norm(node.name||'matriu')+'.csv',cohortCSV(t.rows),'text/csv;charset=utf-8');toast(t.rows.length+' files exportades');};
+    bar.appendChild(csv);
+    if(_cohortView.stage||_cohortView.light){
+      const clr=el('button','btn btn-ghost btn-sm','✕ Treu filtres');
+      clr.onclick=()=>{_cohortView.stage='';_cohortView.light='';paint();};
+      bar.appendChild(clr);
+    }
+    body.appendChild(bar);
+    body.appendChild(el('div','ent-grp-lbl','▦ Taula comparativa · '+t.shown+(t.shown===t.total?'':' de '+t.total)+' iniciativ'+(t.shown===1?'a':'es')));
+    if(!t.rows.length){
+      const emp=el('div','ai-note');emp.innerHTML='<span class="ic">🔍</span><span>Cap iniciativa amb aquests filtres.</span>';
+      body.appendChild(emp);return;
+    }
+    const wrap=el('div','coh-wrap');
+    const tab=el('table','ledger-table coh-table');tab.id='cohTable';
+    const th=COHORT_COLS.map(c=>{
+      const on=t.sort===c.id,ar=on?(t.dir==='desc'?' ▾':' ▴'):'';
+      return '<th class="coh-th'+(on?' on':'')+(c.num?' num':'')+'" data-col="'+c.id+'">'+esc(c.label)+ar+'</th>';
+    }).join('');
+    tab.innerHTML='<thead><tr>'+th+'</tr></thead>';
+    const tb=el('tbody');
+    t.rows.forEach(r=>{
+      const lm=LIGHT_META[r.light],tr=el('tr');tr.className='coh-row';tr.dataset.v=r.id;
+      tr.style.cursor='pointer';
+      const dim=v=>'<span style="opacity:.5">'+v+'</span>';
+      tr.innerHTML='<td><strong>'+esc(r.name)+'</strong>'+(r.lead?'<br><span class="coh-sub">👤 '+esc(r.lead)+'</span>':'')+'</td>'+
+        '<td><span class="ent-b">'+esc(r.stageLabel)+'</span></td>'+
+        '<td><span class="coh-light" style="color:'+lm.color+'" title="'+esc(r.lightWhy)+'">'+lm.ic+' '+esc(r.lightWhy)+'</span></td>'+
+        '<td class="num">'+r.readiness+'%'+(r.readinessPending?dim(' ('+r.readinessPending+' pend.)'):'')+'</td>'+
+        '<td class="num">'+(r.backlogTotal?r.backlog+'% '+dim(r.backlogDone+'/'+r.backlogTotal):dim('—'))+'</td>'+
+        '<td class="num">'+(r.hours||dim('0'))+(r.euros?'<br><span class="coh-sub">'+r.euros+' €</span>':'')+'</td>'+
+        '<td class="num">'+(r.equityPeople?r.equity+'%'+dim(' · '+r.equityPeople):dim('—'))+'</td>'+
+        '<td class="num">'+(r.health||dim('—'))+(r.health?'%':'')+'</td>'+
+        '<td class="num">'+(r.silence===9999?dim('—'):r.silence)+'</td>'+
+        '<td class="num">'+(r.mentors?r.mentors:'<span style="color:var(--orange)">0</span>')+'</td>'+
+        '<td class="num">'+(r.issues?(r.blocks?'⛔'+r.blocks+' ':'')+(r.risks?'⚠'+r.risks:''):dim('—'))+'</td>';
+      tr.onclick=()=>openVentureDetail(node,r.v);
+      tb.appendChild(tr);
+    });
+    tab.appendChild(tb);wrap.appendChild(tab);body.appendChild(wrap);
+    tab.querySelectorAll('.coh-th').forEach(h=>{
+      h.onclick=()=>{
+        const id=h.dataset.col,c=cohortCol(id);
+        if(_cohortView.sort===id)_cohortView.dir=_cohortView.dir==='desc'?'asc':'desc';
+        else{_cohortView.sort=id;_cohortView.dir=c.dir;}
+        paint();
+      };
+    });
+    const leg=el('div','ent-desc');leg.style.marginTop='.5rem';
+    leg.innerHTML='<strong>Preparació</strong>: comprovacions de graduació superades. <strong>Salut del mapa</strong>: reciprocitat, densitat, barreja tangible/intangible, rols aïllats i concentració, en un sol número. <strong>Equity màx</strong>: quant concentra la persona amb més slices — per damunt del 70% la venture no pot graduar. Clica una fila per obrir-la.';
+    body.appendChild(leg);
+  }
+  draw();
 }
 function openActivityGallery(node){
   const critCards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
@@ -9648,7 +9863,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

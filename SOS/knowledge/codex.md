@@ -469,6 +469,30 @@ desbloqueja** — sense nom no és un bloqueig, és una queixa.
 La cartera de la MATRIU mostra el semàfor **pitjor primer**, i el tauler
 d'atenció puja els bloquejos encallats per damunt de tota la resta.
 
+## Veda 37 — Comparar no pot ser una opinió
+
+Qui coordina una MATRIU no pot obrir dotze pantalles per saber com va la
+promoció. La vista de cohort posa **una fila per iniciativa amb les mateixes
+columnes**: etapa, semàfor, preparació, backlog, hores, equity concentrada,
+salut del mapa, dies sense moure's, mentores i incidències.
+
+Dues condicions, o la taula menteix:
+
+1. **Cap xifra és nova.** Tot surt del mateix estat que ja es podia llegir
+   venture a venture. El semàfor de la taula i el de la cartera són el mateix
+   càlcul; si un dia divergissin, la taula seria una segona veritat.
+2. **La salut del mapa és un sol número comparable.** Reciprocitat (45),
+   densitat (25), barreja tangible/intangible (15), cap rol aïllat (10) i que
+   no tot passi pel nucli (5). Un mapa amb menys de dos rols o sense fluxos
+   puntua zero i **ho diu**: «Mapa incomplet», no un 0% que sembli un suspens.
+
+L'**embut** diu si la MATRIU incuba o acumula: quantes a cada estadi i quin
+percentatge n'ha sortit. Vint idees i cap graduada no és una cartera, és un
+calaix.
+
+I surt en **CSV**, perquè les memòries i les justificacions de subvenció es fan
+en full de càlcul, no mirant una pantalla.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

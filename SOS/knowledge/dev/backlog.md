@@ -128,10 +128,17 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    el que hi havies escrit (el registre d'hores inclòs). Ara `modalOpen()`
    comprova si estàs ocupat i el tour espera o renuncia. Veda V35.
 
+10. **F4 de la MATRIU · vista de cohort** — pestanya `▦ Cohort` amb una fila per
+    iniciativa i les mateixes onze columnes (etapa, semàfor, preparació,
+    backlog, hores, equity màx, salut del mapa, dies sense moure's, mentores,
+    incidències). Ordenable per qualsevol columna en tots dos sentits, filtrable
+    per etapa i semàfor, amb **embut per estadis** i **exportació CSV**.
+    `mapHealthScore` resumeix el mapa de valor en un número comparable. Cap
+    xifra és nova: el semàfor de la taula és el mateix `ventureLight` de la
+    cartera. Veda V37.
+
 **Següent, per ordre:**
-1. **F4 de la MATRIU · vista de cohort** — veure totes les iniciatives d'una
-   promoció juntes i comparar-les.
-2. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
+1. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
 2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
    però l'escaneig depèn de la càmera del sistema.
@@ -195,10 +202,11 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 Auditoria completa, defectes corregits i 8 fases pendents a
 **`../matriu/pla-millora.md`**. Com funciona avui: **`../matriu/guia-funcionament.md`**.
 
-**F1 acompanyament** i **F3 riscos/bloquejos** ja estan fetes — són les que fan
-que la MATRIU deixi de ser un repositori d'estructures i passi a ser un servei.
-Següent: **F4 vista de cohort**. La resta: F2 viabilitat econòmica · F5 finançament i tràmits ·
-F6 formació lligada a l'etapa · F7 seguiment post-graduació · F8 evidències.
+**F1 acompanyament**, **F3 riscos/bloquejos** i **F4 vista de cohort** ja estan
+fetes — són les que fan que la MATRIU deixi de ser un repositori d'estructures i
+passi a ser un servei que es pot coordinar. Pendents: **F2 viabilitat
+econòmica** · F5 finançament i tràmits · F6 formació lligada a l'etapa ·
+F7 seguiment post-graduació · F8 evidències.
 
 ### Visió de fons · Catalunya com a estat líquid descentralitzat
 
