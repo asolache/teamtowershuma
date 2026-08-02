@@ -303,6 +303,30 @@ Tres regles:
    va ser, de manera que tornar a aparellar és reconèixer algú, no saltar a
    les fosques.
 
+## V28 · Veda de la federació temàtica
+
+Una federació **no és una branca de l'arbre territorial**: es forma quan et
+vincules a un **tema**. El model és `del.icio.us` — etiquetes una cosa i
+descobreixes qui més ha etiquetat el mateix. Aquí, en comptes de pàgines, són
+nodes: bancs de temps, biblioteques, cooperatives, MATRIUs.
+
+Tres regles:
+
+1. **El tema és la porta, no el permís.** Etiquetar un node amb un tema ja et
+   posa dins la federació; no hi ha alta, ni aprovació, ni cap llista de socis
+   que mantenir. Sortir-ne és treure l'etiqueta.
+2. **Etiquetar només val la pena si et retorna algú.** Per això la pantalla de
+   temes ensenya, al mateix moment, **qui més treballa els teus temes**. Una
+   etiqueta que no connecta amb ningú és metadada morta.
+3. **Una federació pot contenir una comarca i un municipi de dins.** La veda
+   V24 ho resol: `consolidateSet` marca el node interior com a **redundant** i
+   el compta una sola vegada. Sense allò, cada tema nou inflava Catalunya —
+   per això la consolidació era el prerequisit i no una millora a part.
+
+Els temes viuen al node (`node.themes`), així que **viatgen amb la
+sincronització** com qualsevol altra dada: no calen ni servidor ni registre
+central de federacions.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
