@@ -203,6 +203,28 @@ Corol·lari operatiu: qualsevol funcionalitat que reculli aportacions ha de dir
 **a quin flux del mapa corresponen**. Si no es pot dir, o el mapa està incomplet
 o la funcionalitat no aporta valor comptable.
 
+## V23 · Veda del reconeixement
+
+La veda V22 diu que **es comptabilitza tot el valor aportat**. Durant temps això
+va ser cert al ledger i fals al reconeixement: `reputationOf` només mirava les
+aportacions de la **MATRIU**, així que qui feia 40 h a un banc de temps tenia
+exactament la mateixa reputació que qui no havia fet res.
+
+Tres regles:
+
+1. **Una hora val una hora, vingui d'on vingui.** Les aportacions es compten a
+   tots els nodes i ventures on la persona és membre. Cap dinàmica és de segona.
+2. **El diner també és valor**, però no es barreja d'amagat: es converteix a
+   **hores equivalents** amb la tarifa per defecte de l'oracle (20 €/h) i es
+   veu com a tal al camp `effort`.
+3. **Canviar què es compta obliga a recalibrar l'escala.** Si no, tothom salta
+   de graó sense haver fet res nou i el reconeixement perd sentit. Els llindars
+   de `CROMO_TIERS` i el repte de Llegenda es mouen junts, sempre.
+
+Referència de cada esglaó: Bronze ≈ mitja dotzena d'aportacions reals · Plata ≈
+una vintena en més d'una comunitat · Or ≈ una seixantena, referent del territori
+· Llegenda ≈ centenars, infraestructura humana.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

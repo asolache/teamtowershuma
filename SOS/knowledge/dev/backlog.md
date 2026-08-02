@@ -50,16 +50,12 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    tancat des del tauler, i **retorn visible** (`valueSnapshot` → `valueDelta` →
    `showValueReturn`) que diu què ha canviat i proposa el següent moviment.
 
+5. **La reputació compta tot el valor aportat** — `personProfile` recull les
+   aportacions de tots els nodes i ventures, el diner entra com a hores
+   equivalents i l'escala s'ha recalibrat (40/150/450/1100). Veda V23.
+
 **Següent, per ordre:**
-1. **La reputació ignora el banc de temps** — trobat en tancar el bucle.
-   `reputationOf` només compta les aportacions de la **MATRIU**: qui fa 40 h a un
-   banc de temps segueix amb reputació 0. És el defecte de gamificació més gran
-   que queda: l'evidència existeix, es mostra al retorn del bucle, però no puja
-   de tier. **No s'ha tocat aquí a propòsit**: els tiers, els reptes i el cromo hi
-   estan calibrats i canviar-ho sense recalibrar trencaria l'escala. Cal fer-ho
-   com a canvi propi: comptar hores i apunts de tots els nodes i ventures,
-   recalibrar `CROMO_TIERS` i revisar `HERO_CHALLENGES`.
-2. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
+1. **Consolidació entre nivells sense doble comptatge** (v. estat líquid): regla
    `propi` vs `agregat`, mai sumats. És prerequisit de les federacions temàtiques.
 4. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
    d'abandó) — segueix sent la que fa que la MATRIU sigui un servei i no un
