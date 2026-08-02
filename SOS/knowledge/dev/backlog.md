@@ -197,6 +197,176 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
   el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
+### Publicar a la permaweb · el repositori públic del SOS
+
+**L'objectiu, dit clar**: que una persona d'un poble faci servir el SOS, premi
+un botó, i **el que ha decidit compartir quedi publicat** perquè algú altre ho
+trobi. Que se senti la màgia. Tot el que hem construït fins ara és el registre
+privat; això és la cara pública.
+
+**Què hi ha ja i què falta.** No es comença de zero — cal **investigar què està
+acabat abans de tocar res**:
+
+- `toPublicPack` / `mergePack` — ja publiquen i fusionen **entitats** del
+  directori amb `visibility==='public'`, amb tombstones i LWW. És el patró bo,
+  però **només cobreix entitats**.
+- `buildRegisterPack` / `verifyRegisterPack` (V26) — arrel i CID sobre el
+  registre sencer. Serveix per **provar** el que es publica, no per publicar-ho.
+- `nostrPublishAnchor` (NIP-07) i `rememberAnchor` / `compareAnchor` (V30) — ja
+  ancoren i comparen. **Falta la publicació del contingut**, no només de l'arrel.
+- `GH` (device flow) — hi és, i el control de versions de git **pot ser útil de
+  debò aquí**: un repositori públic és un lloc perfectament vàlid per a un
+  paquet signat i versionat, i ja en sabem el camí.
+
+**El que falta de veritat, per ordre:**
+
+1. **Un `publicPack` que cobreixi habilitats i objectes, no només entitats.**
+   Habilitats i ofertes **per ubicació**, amb la mateixa forma canònica i
+   signada que la resta.
+2. **Privadesa per disseny, i verificable.** Aquesta és la part que no es pot
+   improvisar: publicar «hi ha algú a Manresa que fa fusteria» no és publicar
+   qui és, ni el seu telèfon, ni el seu ledger. Cal decidir **el gra**
+   —probablement categoria + municipi + un identificador opac de contacte— i
+   tenir **un test que ho comprovi**: cap dada privada dins del pack, com ja fa
+   `privacyNoLeak` a `test-matriu`. La regla ha de ser *deny by default*: només
+   surt el que està marcat explícitament com a públic.
+3. **Sincronització automàtica de la part que triïs, amb control de versions.**
+   Escollir l'abast (aquest node, aquests temes, aquesta comarca), i que es
+   publiqui sol quan canvia. Cada publicació és **una versió**, amb el seu CID i
+   el seu pare: es pot veure què va canviar, i tornar enrere. Aquí git no és una
+   metàfora, és una opció real d'implementació.
+4. **Que sigui intuïtiu, o no servirà de res.** Aquesta és la condició, no un
+   acabat: com més senzill sigui publicar, més comunitat. La forma que volem és
+   **formar agents locals** —persones del territori amb l'habilitat de publicar
+   a la permaweb— i això vol dir que el camí ha de ser prou curt perquè es pugui
+   ensenyar en una tarda i recordar la setmana següent.
+
+**Riscos que cal dir en veu alta**: publicar és irreversible a la pràctica
+—un pack replicat no es desfà—, així que el pas de publicar ha de mostrar
+**exactament què sortirà** abans de fer-ho, i qui no ho entengui no ha de poder
+prémer el botó sense veure-ho. I depèn de relés i xarxes de tercers
+(Nostr, Arweave, IPFS), que és l'únic tros del SOS que no és autosuficient: cal
+que funcioni degradat quan no hi ha xarxa, i que ho digui.
+
+### Després de l'MVP · l'app de mòbil per a la gent
+
+**On som i on anem.** Ara mateix estem construint les **bases** i l'app
+d'**administració i gestió**: la MATRIU, la biblioteca i el banc de temps
+operatius, i el SOS com a escola i facilitador del desenvolupament comunitari.
+Això és feina de qui coordina, no de qui participa.
+
+Un cop l'MVP estigui polit amb les tres eines funcionant, el pas següent és
+**una altra app, no la mateixa amb la pantalla més petita**:
+
+- **Fluxos totalment predefinits.** Res de configurar. Cada cosa que es pot fer
+  és un camí tancat, d'una pantalla a la següent, sense decisions de disseny per
+  a l'usuari.
+- **Llista de missions.** La unitat d'ús no és el menú, és **la missió**: què em
+  toca fer ara i què passarà quan ho faci. La llista viu a la portada.
+  L'esquelet ja existeix (`ROLE_JOURNEYS`, `journeyProgress`, `HERO_CHALLENGES`,
+  `dashboardAttention`); el que falta és que **sigui la interfície**, no un
+  panell més dins d'un tauler.
+- **User-friendly de debò**: poques accions per pantalla, text curt, res que
+  demani entendre el model de dades. Tot el que avui és un modal amb quinze
+  camps ha de ser tres passos amb un camp cadascun.
+
+**La línia que separa les dues apps**: la de gestió mostra **estructura** (qui,
+on, quant, per què); la de mòbil mostra **el següent pas**. Barrejar-les és el
+que fa que una eina comunitària només l'acabin fent servir tres persones.
+
+**Pendent de decidir**: si és la mateixa `index.html` amb una capa de portada
+diferent —cosa que manté el zero-servidor i el fitxer únic— o un segon fitxer
+autocontingut que comparteix el mateix IndexedDB i el mateix `did:sos`. La
+primera opció és la coherent amb les vedes; cal comprovar que no fa la pàgina
+massa gran.
+
+### Una persona té diversos rols alhora
+
+**Defecte de model, no de pantalla.** `roleOfPerson` retorna **un** rol i
+`activeRoleId()` n'agafa un de sol per decidir la lent de tot el SOS. Però una
+persona real és **superheroina al seu barri, mentora d'una MATRIU i
+simpatitzant en un altre poble** a la vegada. La implicació no és un estat
+global: **depèn del node i del que hi fa**.
+
+Cap on ha d'anar:
+
+- **Els rols són per context**, no per persona. El mateix humà pot ser
+  `superheroi` a la biblioteca del seu barri i `mentor` a la MATRIU de la
+  comarca, i totes dues coses són certes alhora.
+- **El rol es dedueix del que fa, no d'una casella.** Si acompanya ventures, és
+  mentora — ja hi ha `mentorsOf`. Si aporta hores i objectes, és superheroina.
+  Si coordina un node, guardiana. El sistema ja té l'evidència; el que fa és
+  aplanar-la a un sol valor.
+- **`mentor` ni tan sols existeix a `SOS_ROLES`**, tot i que la MATRIU (F1) ja
+  té mentors amb àmbit. Cal afegir-l'hi amb el seu recorregut propi.
+- **La lent del SOS ha de ser triable**: «ara miro el SOS com a mentora» i la
+  guia contextual, les missions i el tauler canvien en conseqüència. Amb un
+  selector visible, no endevinat.
+
+Encaixa amb V39: quan una persona reclama la seva fitxa amb el seu `did`, els
+seus rols de tots els nodes es poden reunir sota una sola identitat sense
+haver-los d'aplanar a un.
+
+### Biblioteca de les coses · valor de l'aportació i economia circular
+
+**Pendent.** Avui donar un objecte a la biblioteca no val res al registre: es
+publica i prou. Però una biblioteca de les coses **produeix valor real** que ara
+no es comptabilitza enlloc, i per això no es pot certificar ni retribuir.
+
+**1 · Valor de l'aportació en posar un objecte.** El formulari d'objecte ha de
+distingir dues coses que ara es confonen:
+
+- **Donació** — l'objecte passa al comú. El valor és el bé cedit: entra al
+  ledger com a aportació de qui el dona, valorat amb l'oracle
+  (`oracleObjectValue`) i ajustat per estat i antiguitat.
+- **Posada a disposició** (segueix sent teu, el prestes) — el valor **no** és el
+  preu de l'objecte, perquè no el regales. El que aportes és **el risc i el
+  desgast**: que se't faci malbé, que torni pitjor, i la revisió, reparació o
+  reciclatge que aquell objecte generarà. Aquest és un flux de valor propi de la
+  biblioteca, i és exactament el que un certificat d'economia circular ha de
+  poder demostrar.
+
+Cal, doncs, un **coeficient de desgast per tipologia i ús**: una eina elèctrica
+prestada quaranta vegades no aporta el mateix que una tenda de campanya
+prestada dues. La proposta és valorar per préstec, no d'una sola vegada: cada
+retorn genera un apunt petit i signat a favor de qui l'ha posat a disposició.
+Així el valor s'acumula amb l'ús real i no amb una declaració inicial.
+
+**Regla d'honestedat**: aquests valors són **estimacions de l'oracle**, i s'han
+de mostrar com a tals, amb la font a la vista (Glass-Box, com `fundValue`). Un
+número inventat que sembli comptabilitat és pitjor que no tenir-lo.
+
+**2 · Reparació: mentor i aprenent aporten valor tots dos.** La vessant de
+reparació és on la biblioteca deixa de ser un magatzem i passa a ser una escola.
+El model ha d'incentivar les dues bandes:
+
+- **La mentora** aporta hores d'ofici i, sobretot, **transferència de
+  coneixement** — un intangible que a la VNA és el flux que sosté tota la resta.
+- **L'aprenent no és un cost**: mentre aprèn, **repara de debò**, i aquella
+  reparació és valor lliurat a la comunitat. Ha de generar-li reputació pel que
+  aporta, no només un certificat pel que aprèn.
+
+Encaixa amb el que ja hi ha: `logSession` de la MATRIU (F1) ja converteix una
+sessió d'acompanyament en apunts signats al ledger. Aquí caldria l'equivalent
+per a la biblioteca —una **sessió de reparació** amb objecte, mentora, aprenents
+i hores— que generi apunts per a tothom qui hi ha posat temps. Reutilitzar el
+mateix camí d'escriptura, no inventar-ne un de nou (veda V22: un sol camí).
+
+**3 · Per què això importa.** L'objectiu de fons és **automatitzar el registre
+de la comptabilitat de valor** de tothom qui hi participa. Un model *fair*
+no és el que reparteix bé al final: és el que **compta bé pel camí**, i que
+compta el que normalment no es compta —el risc de qui presta, el temps de qui
+ensenya, i la feina de qui aprèn fent.
+
+**Ordre suggerit**: (1) donació vs posada a disposició amb valor per préstec ·
+(2) sessió de reparació amb mentora i aprenents · (3) indicadors agregats per al
+certificat circular (objectes salvats de l'abocador, reparacions, hores
+formatives, valor evitat).
+
+**Depèn de**: `oracleObjectValue` i `ORACLE_OBJECT_DEFAULTS` (ja hi són),
+`pushLedger` (ja és el choke point), i el pont de taxonomies entre banc de temps
+i biblioteca que ja consta com a pendent més amunt.
+
 ### Identitat i alta de socis · fet (V39)
 
 **El problema que hi havia.** `newMember` encunyava un `uid()` nou cada vegada. La mateixa
@@ -253,13 +423,18 @@ vagin plegats a la vida real. Caldria un pont entre les dues taxonomies.
 
 ### Defectes trobats i encara oberts
 
-- **`updateAtles` no és idempotent.** Cridar-la dues vegades seguides deixa un
-  nombre d'entitats diferent (18 · 17 · 20 · 28 en quatre execucions), i el
-  comportament és idèntic a `origin/main` — no és cap regressió, és un defecte
-  de fons. `test-atles` ho detecta amb l'asserció «second pull changed count»,
-  que porta temps vermella. Cal una clau d'identitat estable per entitat i que
-  la segona passada no en creï de noves.
-- **`ventureGraduates`** (`test-matriu`) — vermell també a `origin/main`.
+- ~~`updateAtles` no era idempotent~~ · **resolt (V41)**. Eren dues coses: el
+  `catch` buit s'empassava els paquets que fallaven i deia «ja estava al dia», i
+  la càrrega automàtica d'arrencada corria alhora que la manual fusionant els
+  mateixos paquets. Amb el recompte de fallades i un pany d'una sola càrrega en
+  vol: 17 · 17 · 17 estable.
+- ~~`ventureGraduates` i `home3ActionButtons`~~ · **no eren defectes de l'app,
+  eren tests obsolets**. El primer esperava que una venture sense feina feta
+  gradués —la porta fa bé de bloquejar-la—; ara comprova les dues cares. El
+  segon comptava exactament tres botons a la home, que se'n va menjar cada cop
+  que hi afegíem una targeta; ara comprova que cada perfil tingui la seva acció.
+  Tenir tests vermells que no són defectes erosiona la confiança en tota la
+  suite: o són verds o no hi són.
 
 ### Backlog crític restant (del codex V17)
 3. **Sign records via WebAuthn** (no només vinculació) — refactor de signRecord per acceptar signer alternatiu

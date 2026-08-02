@@ -601,6 +601,26 @@ I l'ordre no menteix: els encapçalaments de proximitat només surten quan
 l'ordre **és** per proximitat. Posar «📍 a la teva població» sobre una llista
 ordenada per nom seria dir una cosa falsa sobre com està ordenada.
 
+## Veda 41 — Una càrrega parcial no és una càrrega correcta
+
+`updateAtles` s'empassava els errors de cada paquet en un `catch` buit i després
+deia **«L'atles ja estava al dia»**. Si tres dels cinc paquets no arribaven,
+l'usuari veia exactament el mateix missatge que si tot hagués anat bé.
+
+Callar un error de xarxa no el fa desaparèixer: fa que algú es fiï de dades que
+no hi són. Ara es compten els paquets que fallen i es diu —«Atles incomplet · 3
+de 5 paquets no han arribat»— i queda a `updateAtles.last` per si algú ho vol
+comprovar.
+
+I la segona meitat del mateix defecte: la càrrega **automàtica d'arrencada**
+corria alhora que la manual, i totes dues fusionaven els mateixos paquets des de
+dos punts diferents. D'aquí que dues càrregues seguides donessin un nombre
+d'entitats diferent cada vegada (18 · 17 · 20 · 28). Amb un pany d'una sola
+càrrega en vol: **17 · 17 · 17**.
+
+La regla general: **tota operació que fusiona estat compartit ha de ser una a la
+vegada**, i ha de dir la veritat sobre què ha entrat i què no.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
