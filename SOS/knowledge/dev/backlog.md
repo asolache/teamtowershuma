@@ -81,6 +81,16 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 5. **Transmedia enllaços** *(fet — SoundCloud, YouTube, Amazon, Instagram al modal Comando)*.
 6. **Vista territorial resum + incentiu al terreny** *(fet — panell "Baixa al terreny" a país/provincia/comarca).
 
+### Defectes trobats i encara oberts
+
+- **`updateAtles` no és idempotent.** Cridar-la dues vegades seguides deixa un
+  nombre d'entitats diferent (18 · 17 · 20 · 28 en quatre execucions), i el
+  comportament és idèntic a `origin/main` — no és cap regressió, és un defecte
+  de fons. `test-atles` ho detecta amb l'asserció «second pull changed count»,
+  que porta temps vermella. Cal una clau d'identitat estable per entitat i que
+  la segona passada no en creï de noves.
+- **`ventureGraduates`** (`test-matriu`) — vermell també a `origin/main`.
+
 ### Backlog crític restant (del codex V17)
 3. **Sign records via WebAuthn** (no només vinculació) — refactor de signRecord per acceptar signer alternatiu
 4. **Ancoratge Nostr P1** — `wss://relay.damus.io` publicació de mainHash *(bloqueja: cal relés reachable)*
