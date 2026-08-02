@@ -423,13 +423,18 @@ vagin plegats a la vida real. Caldria un pont entre les dues taxonomies.
 
 ### Defectes trobats i encara oberts
 
-- **`updateAtles` no és idempotent.** Cridar-la dues vegades seguides deixa un
-  nombre d'entitats diferent (18 · 17 · 20 · 28 en quatre execucions), i el
-  comportament és idèntic a `origin/main` — no és cap regressió, és un defecte
-  de fons. `test-atles` ho detecta amb l'asserció «second pull changed count»,
-  que porta temps vermella. Cal una clau d'identitat estable per entitat i que
-  la segona passada no en creï de noves.
-- **`ventureGraduates`** (`test-matriu`) — vermell també a `origin/main`.
+- ~~`updateAtles` no era idempotent~~ · **resolt (V41)**. Eren dues coses: el
+  `catch` buit s'empassava els paquets que fallaven i deia «ja estava al dia», i
+  la càrrega automàtica d'arrencada corria alhora que la manual fusionant els
+  mateixos paquets. Amb el recompte de fallades i un pany d'una sola càrrega en
+  vol: 17 · 17 · 17 estable.
+- ~~`ventureGraduates` i `home3ActionButtons`~~ · **no eren defectes de l'app,
+  eren tests obsolets**. El primer esperava que una venture sense feina feta
+  gradués —la porta fa bé de bloquejar-la—; ara comprova les dues cares. El
+  segon comptava exactament tres botons a la home, que se'n va menjar cada cop
+  que hi afegíem una targeta; ara comprova que cada perfil tingui la seva acció.
+  Tenir tests vermells que no són defectes erosiona la confiança en tota la
+  suite: o són verds o no hi són.
 
 ### Backlog crític restant (del codex V17)
 3. **Sign records via WebAuthn** (no només vinculació) — refactor de signRecord per acceptar signer alternatiu

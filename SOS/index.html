@@ -10090,15 +10090,49 @@ async function mergePack(pack){
   if(n)flashSync();
   return n;
 }
+/* Veda V41. Aquesta funció s'empassava els errors de cada paquet en silenci i
+   després deia «L'atles ja estava al dia». Si tres dels cinc paquets no
+   arribaven, l'usuari veia el mateix missatge que si tot hagués anat bé, i
+   l'atles quedava incomplet sense que ningú ho sabés — d'aquí que dues
+   càrregues seguides donessin un nombre d'entitats diferent.
+
+   La norma: **una càrrega parcial no és una càrrega correcta**. Es compten els
+   paquets que fallen i es diu. Callar un error de xarxa no és fer-lo
+   desaparèixer, és fer que l'usuari es fiï de dades que no hi són. */
+let _atlesInFlight=null;
 async function updateAtles(silent){
+  /* La càrrega automàtica d'arrencada i la manual podien córrer alhora i
+     fusionar el mateix paquet dues vegades des de dos punts diferents. Una sola
+     càrrega en vol: qui arribi segon espera la que ja hi ha. */
+  if(_atlesInFlight)return _atlesInFlight;
+  _atlesInFlight=_updateAtles(silent).finally(()=>{_atlesInFlight=null;});
+  return _atlesInFlight;
+}
+async function _updateAtles(silent){
   if(!silent)toast('Carregant l\'atles…');
+  let total=0,packs=0,failed=0;
   try{
     const idx=await (await fetch(ATLES_BASE+'index.json',{cache:'no-store'})).json();
-    let total=0;
-    for(const p of ((idx&&idx.packs)||[])){try{const pk=await (await fetch(ATLES_BASE+p.file,{cache:'no-store'})).json();total+=await mergePack(pk);}catch(e){}}
-    render();if(!silent)toast(total?('Atles actualitzat · '+total+' entitats noves o enriquides'):'L\'atles ja estava al dia');else if(total)flashSync();
+    const list=(idx&&idx.packs)||[];packs=list.length;
+    for(const p of list){
+      try{
+        const res=await fetch(ATLES_BASE+p.file,{cache:'no-store'});
+        if(!res.ok)throw new Error('HTTP '+res.status);
+        total+=await mergePack(await res.json());
+      }catch(e){failed++;}
+    }
+    render();
+    if(!silent){
+      if(failed)toast('Atles incomplet · '+failed+' de '+packs+' paquets no han arribat'+(total?' ('+total+' entitats sí)':''));
+      else toast(total?('Atles actualitzat · '+total+' entitats noves o enriquides'):'L\'atles ja estava al dia');
+    } else if(total)flashSync();
+    updateAtles.last={total,packs,failed,complete:failed===0};
     return total;
-  }catch(e){if(!silent)toast('No s\'ha pogut carregar l\'atles');return 0;}
+  }catch(e){
+    updateAtles.last={total:0,packs,failed:packs||1,complete:false};
+    if(!silent)toast('No s\'ha pogut carregar l\'atles');
+    return 0;
+  }
 }
 function shareAtles(){
   const pack=toPublicPack();
