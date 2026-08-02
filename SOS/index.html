@@ -512,6 +512,13 @@ a{color:var(--blue);text-decoration:none}
 .coh-bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden}
 .coh-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--green))}
 .coh-conv{flex:1 1 100%;font-size:.78rem;color:var(--muted);margin-top:.2rem}
+/* Alta de soci · les dues portes i la llista de qui ja hi és */
+.mb-doors{display:flex;gap:.4rem;margin-bottom:.7rem}
+.mb-doors .mb-door{flex:1}
+.mb-doors .mb-door.sel{border-color:var(--indigo);color:var(--indigo)}
+.mb-known input#mbSearch{width:100%;background:var(--bg-panel);border:1px solid var(--border);color:var(--light);border-radius:8px;padding:.5rem .6rem;font-size:.9rem}
+.mb-list{max-height:280px;overflow-y:auto;margin:.5rem 0;display:flex;flex-direction:column;gap:.35rem}
+.mb-p:hover{border-color:var(--indigo)}
 .econ-bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:.45rem}
 .econ-bar>i{display:block;height:100%;transition:width .3s}
 .cons{margin-top:1rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:.75rem .8rem}
@@ -1723,14 +1730,166 @@ function joinNode(node,{name,kind,role,entityId,phone,email}={}){
 }
 const objectsOf=node=>node.objects||(node.objects=[]);
 const offersOf=node=>node.offers||(node.offers=[]);
-const memberById=(node,id)=>membersOf(node).find(m=>m.id===id);
+/* ═══════════ IDENTITAT DE LES PERSONES · qui és qui, entre nodes ═══════════
+   Veda V39. `newMember` encunyava un `uid()` nou cada vegada, així que la
+   mateixa persona donada d'alta a la MATRIU, al banc de temps i a la biblioteca
+   eren **tres registres sense cap relació**, units només perquè s'escriuen
+   igual. Canvia-li el nom en un lloc i es partia en dues persones.
+
+   Tres capes, de menys a més compromís:
+
+   1) **Triar d'entre qui ja hi és.** `knownPersons()` és un índex derivat —mai
+      desat— de tota la gent que el SOS ja coneix. L'alta deixa de ser sempre
+      «crea'n una de nova».
+   2) **`did` a la fitxa.** Qui vol pot **reclamar** la seva fitxa signant
+      `{nodeId, memberId, did}` amb la seva identitat. A partir d'aquí el que
+      uneix els registres és la clau, no el nom. Una fitxa reclamada per un
+      altre no es pot prendre: cal que l'amo la deixi anar.
+   3) **Fusió de duplicats dins d'un node.** I aquí la regla que ho governa
+      tot: **la fusió no reescriu mai història signada**. Els apunts del ledger
+      conserven el seu `memberId` original i es resolen per una taula d'àlies;
+      reescriure'ls trencaria la seva signatura i la cadena de hash. El que sí
+      que es repunta és l'estat mutable —ofertes, objectes, mentors, leads—,
+      que no porta signatura de ningú. */
+const aliasesOf=node=>node.memberAliases||(node.memberAliases={});
+function resolveMemberId(node,id){
+  const a=aliasesOf(node);let cur=id,hop=0;
+  while(a[cur]&&hop++<20)cur=a[cur];
+  return cur;
+}
+const memberById=(node,id)=>{
+  const ms=membersOf(node);
+  return ms.find(m=>m.id===id)||ms.find(m=>m.id===resolveMemberId(node,id))||undefined;
+};
+/* Tots els ids que apunten a aquest soci: el seu, i els dels que s'hi han
+   fusionat. Cal per llegir història escrita abans de la fusió. */
+function memberIdsOf(node,member){
+  if(!member)return[];
+  const out=[member.id];
+  Object.keys(aliasesOf(node)).forEach(k=>{if(resolveMemberId(node,k)===member.id&&out.indexOf(k)<0)out.push(k);});
+  return out;
+}
+/* Índex de les persones que el SOS ja coneix, de tots els nodes alhora.
+   Derivat: la veritat segueixen sent els registres de soci de cada node. */
+function knownPersons(){
+  const by={};
+  state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{
+    if(m.mergedInto)return;
+    const key=personKey(m.name);if(!key)return;
+    const p=by[key]||(by[key]={key,name:m.name,kind:m.kind||'persona',dids:[],nodes:[],
+      contact:{phone:'',email:''},entityId:null,role:null});
+    if(m.did&&p.dids.indexOf(m.did)<0)p.dids.push(m.did);
+    p.nodes.push({nodeId:nd.id,nodeName:nd.name,dynamicType:nd.dynamicType,memberId:m.id,did:m.did||null});
+    if(m.contact){if(m.contact.phone&&!p.contact.phone)p.contact.phone=m.contact.phone;
+      if(m.contact.email&&!p.contact.email)p.contact.email=m.contact.email;}
+    if(m.entityId&&!p.entityId)p.entityId=m.entityId;
+    if(m.role&&!p.role)p.role=m.role;
+  }));
+  return Object.values(by).map(p=>Object.assign(p,{
+    did:p.dids[0]||null,claimed:p.dids.length>0,
+    /* Dos `did` diferents sota el mateix nom no és un error a amagar: són dues
+       persones que es diuen igual, i cal dir-ho. */
+    conflict:p.dids.length>1,nodeCount:p.nodes.length}))
+    .sort((a,b)=>b.nodeCount-a.nodeCount||a.name.localeCompare(b.name,'ca'));
+}
+const personsNotIn=nodeId=>knownPersons().filter(p=>!p.nodes.some(x=>x.nodeId===nodeId));
+function findKnownPersons(q,{excludeNode}={}){
+  const t=personKey(q||'');
+  let list=excludeNode?personsNotIn(excludeNode):knownPersons();
+  if(t)list=list.filter(p=>p.key.indexOf(t)>=0);
+  return list;
+}
+/* Reclamar una fitxa: una signatura sobre {nodeId, memberId, did}. */
+const MEMBER_CLAIM_TYPE='sos-member-claim';
+async function claimMember(node,member){
+  if(!node||!member)throw{code:'missing'};
+  const id=await getIdentity();
+  if(member.did&&member.did!==id.did)throw{code:'claimed',did:member.did};
+  const claim={type:MEMBER_CLAIM_TYPE,nodeId:node.id,memberId:member.id,name:member.name,did:id.did,ts:now()};
+  await signRecord(claim);
+  member.did=id.did;member.claim=claim;member.updatedAt=now();
+  await persist(node);
+  return claim;
+}
+/* Deixar-la anar. Només qui la té la pot alliberar: així un traspàs és una
+   acció de l'amo, no una apropiació de qui passi per allà. */
+async function releaseMember(node,member){
+  const id=await getIdentity();
+  if(!member.did)return false;
+  if(member.did!==id.did)throw{code:'notyours',did:member.did};
+  delete member.did;delete member.claim;member.updatedAt=now();
+  await persist(node);return true;
+}
+/* La comprovació que compta: que qui va signar sigui el mateix did que diu ser.
+   Sense això, qualsevol podria signar una reclamació posant-hi el did d'un altre. */
+async function verifyClaim(member){
+  if(!member)return{ok:false,reason:'missing'};
+  if(!member.did&&!member.claim)return{ok:false,reason:'unclaimed'};
+  if(!member.claim)return{ok:false,reason:'no-claim'};
+  const r=await verifyRecord(member.claim);
+  if(!r.ok)return r;
+  if(member.claim.did!==member.did)return{ok:false,reason:'did-mismatch'};
+  if(!member.claim.signer||member.claim.signer.did!==member.did)return{ok:false,reason:'signer-mismatch'};
+  if(member.claim.memberId!==member.id)return{ok:false,reason:'member-mismatch'};
+  return{ok:true,reason:'valid'};
+}
+async function myMemberFiles(){
+  const id=await getIdentity();const out=[];
+  state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{if(m.did===id.did)out.push({node:nd,member:m});}));
+  return out;
+}
+/* Fusiona dues fitxes del mateix node. `fromId` s'absorbeix dins de `toId`.
+   Repunta només l'estat mutable; la història signada es queda com estava i es
+   llegeix per àlies. */
+async function mergeMembers(node,fromId,toId){
+  if(!node||!fromId||!toId||fromId===toId)return null;
+  const from=membersOf(node).find(m=>m.id===fromId),to=membersOf(node).find(m=>m.id===toId);
+  if(!from||!to)return null;
+  if(from.did&&to.did&&from.did!==to.did)throw{code:'twoidentities'};
+  const moved={offers:0,objects:0,borrowed:0,reservations:0,leads:0,mentors:0,sessions:0};
+  offersOf(node).forEach(o=>{if(o.memberId===fromId){o.memberId=toId;moved.offers++;}});
+  objectsOf(node).forEach(o=>{
+    if(o.ownerId===fromId){o.ownerId=toId;moved.objects++;}
+    if(o.borrowerId===fromId){o.borrowerId=toId;moved.borrowed++;}
+    if(Array.isArray(o.reservations)&&o.reservations.indexOf(fromId)>=0){
+      o.reservations=o.reservations.map(x=>x===fromId?toId:x).filter((x,i,a)=>a.indexOf(x)===i);
+      moved.reservations++;}
+  });
+  venturesOf(node).forEach(v=>{
+    if(v.leadMemberId===fromId){v.leadMemberId=toId;moved.leads++;}
+    (v.mentors||[]).forEach(m=>{if(m.memberId===fromId){m.memberId=toId;moved.mentors++;}});
+    (v.sessions||[]).forEach(s=>{
+      if(s.mentorMemberId===fromId){s.mentorMemberId=toId;moved.sessions++;}
+      if(Array.isArray(s.attendees))s.attendees=s.attendees.map(x=>x===fromId?toId:x);
+    });
+  });
+  if(!to.did&&from.did){to.did=from.did;to.claim=from.claim;}
+  if(from.contact){to.contact=to.contact||{};
+    if(from.contact.phone&&!to.contact.phone)to.contact.phone=from.contact.phone;
+    if(from.contact.email&&!to.contact.email)to.contact.email=from.contact.email;}
+  if(from.entityId&&!to.entityId)to.entityId=from.entityId;
+  aliasesOf(node)[fromId]=toId;
+  from.mergedInto=toId;from.active=false;from.mergedAt=now();
+  node.members=membersOf(node).filter(m=>m.id!==fromId);
+  node.memberTombstones=(node.memberTombstones||[]).concat([from]);
+  to.updatedAt=now();
+  await persist(node);
+  return{from,to,moved,aliases:aliasesOf(node)};
+}
+/* Duplicats candidats dins d'un node: mateix nom normalitzat, fitxes diferents. */
+function duplicateMembers(node){
+  const by={};
+  membersOf(node).forEach(m=>{const k=personKey(m.name);if(!k)return;(by[k]||(by[k]=[])).push(m);});
+  return Object.entries(by).filter(([,list])=>list.length>1).map(([key,list])=>({key,name:list[0].name,list}));
+}
 function newMember({name,kind,entityId,phone,email,role}){return{id:uid(),name:(name||'').trim(),kind:kind||'persona',entityId:entityId||null,role:role||'superheroi',contact:{phone:phone||'',email:email||''},joinedAt:now(),active:true,notes:''};}
 function newObject({name,typology,ownerId,condition,deposit}){return{id:uid(),name:(name||'').trim(),typology:typology||'altres',ownerId:ownerId||null,status:'disponible',borrowerId:null,since:null,dueDate:null,reservations:[],condition:condition||'',deposit:Number(deposit)||0,notes:''};}
 function newOffer({memberId,kind,category,title,desc}){return{id:uid(),memberId:memberId||null,kind:kind||'oferta',category:category||'altres',title:(title||'').trim(),desc:(desc||'').trim(),status:'activa'};}
 // Estat de venciment d'un préstec: vençut / venç aviat (≤3 dies) / en termini
 function dueStatus(o){if(o.status!=='prestat'||!o.dueDate)return null;const d=Math.ceil((new Date(o.dueDate)-new Date())/864e5);if(d<0)return{t:'vençut ('+(-d)+'d)',cls:'b-unver'};if(d<=3)return{t:'venç en '+d+'d',cls:'b-form'};return null;}
 // Saldo d'hores d'un soci = hores aportades − hores rebudes (entrades del ledger etiquetades)
-function memberBalance(node,memberId){let given=0,recv=0;(node.ledger||[]).forEach(e=>{if(e.type!=='temps')return;const v=Number(e.value)||0;if(e.memberId===memberId)given+=v;if(e.counterpartId===memberId)recv+=v;});return{given,recv,net:given-recv};}
+// Es resolen els àlies: una fitxa fusionada conserva les hores que va fer amb l'id antic.
+function memberBalance(node,memberId){let given=0,recv=0;const me=resolveMemberId(node,memberId);(node.ledger||[]).forEach(e=>{if(e.type!=='temps')return;const v=Number(e.value)||0;if(resolveMemberId(node,e.memberId)===me)given+=v;if(e.counterpartId&&resolveMemberId(node,e.counterpartId)===me)recv+=v;});return{given,recv,net:given-recv};}
 
 /* ═══════════ MATRIU · INCUBADORA (activitats crítiques + ecosistema + equity dinàmic) ═══════════ */
 // Activitats crítiques de desenvolupament comunitari i econòmic (plantilles de mapa de valor + acció-formació)
@@ -2292,17 +2451,20 @@ function fundValue(node){
 // Slicing Pie: slices = valor de l'aportació × multiplicador (temps a preu FMV × nonCash; diner × cash)
 const ventureLedger=v=>v.ledger||(v.ledger=[]);
 const ventureCfg=(node,v)=>v.equity||equityCfg(node);
-function computeEquityCore(members,ledger,cfg){
+/* `resolve` tradueix els ids antics d'una fitxa fusionada. Sense això, fusionar
+   dues fitxes esborraria de la tarta les aportacions fetes abans de fusionar. */
+function computeEquityCore(members,ledger,cfg,resolve){
   const slby={};members.forEach(m=>slby[m.id]=0);
-  (ledger||[]).forEach(e=>{if(!e.memberId||slby[e.memberId]===undefined)return;const v=Number(e.value)||0;
-    if(e.type==='moneda')slby[e.memberId]+=v*cfg.cash;
-    else{const rate=Number(e.rate)||cfg.fmv;slby[e.memberId]+=v*rate*cfg.nonCash;}});
+  const rid=resolve||(x=>x);
+  (ledger||[]).forEach(e=>{if(!e.memberId)return;const id=rid(e.memberId);if(slby[id]===undefined)return;const v=Number(e.value)||0;
+    if(e.type==='moneda')slby[id]+=v*cfg.cash;
+    else{const rate=Number(e.rate)||cfg.fmv;slby[id]+=v*rate*cfg.nonCash;}});
   const total=Object.values(slby).reduce((a,b)=>a+b,0);
   return members.map(m=>({memberId:m.id,name:m.name,slices:slby[m.id],pct:total?slby[m.id]/total*100:0})).sort((a,b)=>b.slices-a.slices);
 }
 // Equity de la MATRIU (fons global) i equity per venture econòmica (cada projecte té la seva tarta).
-function computeEquity(node){return computeEquityCore(membersOf(node),node.ledger,equityCfg(node));}
-function computeVentureEquity(node,v){return computeEquityCore(membersOf(node),ventureLedger(v),ventureCfg(node,v));}
+function computeEquity(node){return computeEquityCore(membersOf(node),node.ledger,equityCfg(node),id=>resolveMemberId(node,id));}
+function computeVentureEquity(node,v){return computeEquityCore(membersOf(node),ventureLedger(v),ventureCfg(node,v),id=>resolveMemberId(node,id));}
 // Recursos de l'ecosistema: talent (socis + entitats) + hores (bancs de temps enllaçats) + objectes (biblioteques)
 function ecosystemResources(node){
   const links=linksOf(node).map(id=>byId(id)).filter(Boolean);
@@ -4553,8 +4715,9 @@ function characterSheetOf(name){
   let hoursGiven=0;
   state.nodes.forEach(nd=>{
     const m=membersOf(nd).find(x=>personKey(x.name)===key);if(!m)return;
-    (nd.ledger||[]).forEach(e=>{if(e.type==='temps'&&e.memberId===m.id)hoursGiven+=Number(e.value)||0;});
-    venturesOf(nd).forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps'&&e.memberId===m.id)hoursGiven+=Number(e.value)||0;}));
+    const mine=id=>resolveMemberId(nd,id)===m.id;
+    (nd.ledger||[]).forEach(e=>{if(e.type==='temps'&&mine(e.memberId))hoursGiven+=Number(e.value)||0;});
+    venturesOf(nd).forEach(v=>(v.ledger||[]).forEach(e=>{if(e.type==='temps'&&mine(e.memberId))hoursGiven+=Number(e.value)||0;}));
   });
   return{cromo,projects,ventures,offers,objects,hoursGiven};
 }
@@ -5026,8 +5189,11 @@ function personProfile(nameOrKey){
          reputació: l'evidència existia al ledger però el sistema no la mirava.
          Contradeia la veda V22 —es comptabilitza tot el valor aportat— just al
          lloc on més es nota, que és el reconeixement. */
-      (nd.ledger||[]).filter(e=>e.memberId===m.id).forEach(e=>contributions.push({nodeId:nd.id,nodeName:nd.name,scope:nd.dynamicType||'node',entry:e}));
-      venturesOf(nd).forEach(v=>(v.ledger||[]).filter(e=>e.memberId===m.id).forEach(e=>contributions.push({nodeId:nd.id,nodeName:nd.name,scope:'venture',ventureName:v.name,entry:e})));
+      /* Per àlies: una fitxa que ha absorbit una altra segueix veient les
+         aportacions fetes amb l'id antic, que conserven la seva signatura. */
+      const mine=id=>resolveMemberId(nd,id)===m.id;
+      (nd.ledger||[]).filter(e=>mine(e.memberId)).forEach(e=>contributions.push({nodeId:nd.id,nodeName:nd.name,scope:nd.dynamicType||'node',entry:e}));
+      venturesOf(nd).forEach(v=>(v.ledger||[]).filter(e=>mine(e.memberId)).forEach(e=>contributions.push({nodeId:nd.id,nodeName:nd.name,scope:'venture',ventureName:v.name,entry:e})));
       if(nd.dynamicType==='matriu'){
         venturesOf(nd).filter(v=>v.leadMemberId===m.id).forEach(v=>ventures.push({nodeId:nd.id,nodeName:nd.name,venture:v}));
         const my=computeEquity(nd).find(x=>x.memberId===m.id);if(my&&my.slices>0)slices.push({nodeId:nd.id,nodeName:nd.name,scope:'matriu',slices:my.slices,pct:my.pct});
@@ -7224,14 +7390,33 @@ function renderSocis(body,node){
   body.appendChild(bar);
   const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">👥</span><span>Persones i entitats que <strong>socialitzen</strong> en aquesta dinàmica. Les dades són <strong>privades</strong> (local + P2P); no surten mai a l\'atles públic.</span>';body.appendChild(note);
   if(!ms.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Encara no hi ha socis</h2><p>Dona d\'alta persones o entitats, o carrega un exemple per provar-ho.</p>';body.appendChild(emp);return;}
+  /* Duplicats: dues fitxes amb el mateix nom al mateix node parteixen les hores,
+     l'equity i la reputació d'una sola persona. Es proposa fusionar-les. */
+  const dups=duplicateMembers(node);
+  if(dups.length){
+    body.appendChild(el('div','ent-grp-lbl','⧉ Fitxes duplicades · '+dups.length));
+    const dg=el('div','ent-grid');
+    dups.forEach(d=>{
+      const c=el('div','ent-card');c.style.borderLeft='3px solid var(--orange)';
+      c.innerHTML='<div class="ent-nm">⧉ '+esc(d.name)+'</div><div class="ent-desc">'+d.list.length+
+        ' fitxes al mateix node. Mentre estiguin separades, les hores, l\'equity i la reputació d\'una sola persona van partides.</div>';
+      const btn=el('button','btn btn-primary btn-sm','⧉ Fusiona-les');btn.style.marginTop='.4rem';
+      btn.onclick=()=>openMergeMembers(node,d);
+      c.appendChild(btn);dg.appendChild(c);
+    });
+    body.appendChild(dg);
+  }
   const grid=el('div','ent-grid');
   ms.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(m=>{
     const c=el('div','ent-card');
     const objs=objectsOf(node).filter(o=>o.ownerId===m.id).length,offs=offersOf(node).filter(o=>o.memberId===m.id).length,bal=memberBalance(node,m.id);
     const kindB='<span class="ent-b">'+(m.kind==='entitat'?'entitat':'persona')+'</span>';
     const linkB=m.entityId&&byEnt(m.entityId)?'<span class="ent-b b-ver">↗ directori</span>':'';
+    const others=knownPersons().find(p=>p.key===personKey(m.name));
+    const elsewhere=others&&others.nodeCount>1?'<span class="ent-b">a '+others.nodeCount+' nodes</span>':'';
+    const didB=m.did?'<span class="ent-b b-ver" title="'+esc(m.did)+'">⬢ '+(m.claim?'reclamada':'identitat')+'</span>':'';
     let stat=node.dynamicType==='biblioteca_coses'?'<span class="ent-b">'+objs+' objecte'+(objs===1?'':'s')+'</span>':'<span class="ent-b">'+offs+' oferta/es</span><span class="ent-b '+(bal.net>=0?'b-ver':'b-unver')+'">saldo '+(bal.net>0?'+':'')+bal.net+' h</span>';
-    c.innerHTML='<div class="ent-nm">'+esc(m.name)+'</div><div class="ent-badges">'+kindB+linkB+stat+'</div>'+((m.contact&&(m.contact.phone||m.contact.email))?'<div class="ent-desc">'+esc([m.contact.phone,m.contact.email].filter(Boolean).join(' · '))+'</div>':'');
+    c.innerHTML='<div class="ent-nm">'+esc(m.name)+'</div><div class="ent-badges">'+kindB+didB+linkB+elsewhere+stat+'</div>'+((m.contact&&(m.contact.phone||m.contact.email))?'<div class="ent-desc">'+esc([m.contact.phone,m.contact.email].filter(Boolean).join(' · '))+'</div>':'');
     const acts=el('div');acts.style.marginTop='.5rem';acts.style.display='flex';acts.style.gap='.3rem';acts.style.flexWrap='wrap';
     const prof=el('button','btn btn-ghost btn-sm','👁 Perfil');prof.onclick=e=>{e.stopPropagation();openPersonProfile(m.name);};acts.appendChild(prof);
     c.appendChild(acts);
@@ -7241,9 +7426,22 @@ function renderSocis(body,node){
 }
 function openMemberForm(node,e){
   const ents=state.entities.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  /* L'alta té dues portes: qui el SOS ja coneix, i algú nou. Abans només hi
+     havia la segona, i per això la mateixa persona acabava amb una fitxa
+     diferent a cada node. */
+  const known=e?[]:personsNotIn(node.id);
+  const claimState=e&&e.did?'<div class="ent-badges" style="margin-bottom:.5rem"><span class="ent-b b-ver">⬢ Fitxa reclamada</span><span class="ent-b" style="font-family:var(--mono);font-size:.62rem">'+esc(String(e.did).slice(0,28))+'…</span></div>':'';
   const bg=modal(`
     <h2>${e?'Soci':'Alta de soci'}</h2>
     <p class="m-sub">Persona o entitat que participa en «${esc(node.name)}».</p>
+    ${claimState}
+    ${known.length?`<div class="mb-doors"><button type="button" class="btn btn-ghost btn-sm mb-door sel" data-d="known">👥 Ja el coneixem (${known.length})</button><button type="button" class="btn btn-ghost btn-sm mb-door" data-d="new">✦ Algú nou</button></div>
+    <div id="mbKnown" class="mb-known">
+      <input id="mbSearch" placeholder="Cerca entre qui ja hi és…" autocomplete="off">
+      <div id="mbList" class="mb-list"></div>
+      <div class="wz-key-note">Triar d'aquí <strong>enllaça</strong> la persona en comptes de duplicar-la: el seu historial, la seva reputació i les seves hores són els mateixos a tot el SOS.</div>
+    </div>`:''}
+    <div id="mbNew"${known.length?' style="display:none"':''}>
     <div class="field"><label>Nom</label><input id="mbName" autocomplete="off" value="${e?esc(e.name):''}"></div>
     <div class="ent-toggles">
       <label class="pick ${!e||e.kind==='persona'?'sel':''}" id="mbKp"><input type="radio" name="mbK" ${!e||e.kind==='persona'?'checked':''}><span class="pk-t">Persona</span></label>
@@ -7251,11 +7449,59 @@ function openMemberForm(node,e){
     </div>
     <div class="field"><label>Enllaça a una entitat del directori (opcional)</label><input id="mbEnt" list="mbEntList" autocomplete="off" placeholder="Cerca al directori…" value="${e&&e.entityId&&byEnt(e.entityId)?esc(byEnt(e.entityId).name):''}"><datalist id="mbEntList">${ents.map(x=>'<option value="'+esc(x.name)+'">').join('')}</datalist></div>
     <div class="field"><label>Contacte (opcional)</label><div class="wz-key"><input id="mbPhone" placeholder="Telèfon" value="${e?esc(e.contact.phone||''):''}"><input id="mbEmail" placeholder="Correu" value="${e?esc(e.contact.email||''):''}"></div></div>
+    </div>
+    ${e?'<div class="ent-badges" style="margin-top:.6rem"><button class="btn btn-ghost btn-sm" id="mbClaim">'+(e.did?'⬡ Deixa anar la fitxa':'⬢ Aquesta fitxa és meva')+'</button></div><div class="wz-key-note">Reclamar-la la lliga a la teva identitat amb una signatura. A partir d\'aquí el que t\'identifica és la clau, no el nom.</div>':''}
     <div class="modal-actions">${e?'<button class="btn btn-ghost" id="mbDel" style="border-color:var(--red-dim);color:var(--red)">Baixa</button>':'<button class="btn btn-ghost" id="mbCancel">Cancel·la</button>'}<button class="btn btn-primary" id="mbSave">${e?'Desa':'Alta'}</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const nm=bg.querySelector('#mbName');nm.focus();
   bg.querySelectorAll('.ent-toggles .pick').forEach(l=>l.onclick=()=>{bg.querySelectorAll('.ent-toggles .pick').forEach(x=>x.classList.remove('sel'));l.classList.add('sel');l.querySelector('input').checked=true;});
+  if(known.length){
+    const listBox=bg.querySelector('#mbList'),search=bg.querySelector('#mbSearch');
+    const paintList=()=>{
+      const list=findKnownPersons(search.value,{excludeNode:node.id});
+      listBox.innerHTML='';
+      if(!list.length){listBox.appendChild(el('div','ent-desc','Ningú amb aquest nom. Prova «Algú nou».'));return;}
+      list.slice(0,40).forEach(p=>{
+        const c=el('div','ent-card mb-p');c.dataset.k=p.key;c.style.cursor='pointer';
+        c.innerHTML='<div class="ent-nm">'+(p.claimed?'⬢ ':'')+esc(p.name)+'</div><div class="ent-badges">'+
+          '<span class="ent-b">'+p.nodeCount+' '+(p.nodeCount===1?'node':'nodes')+'</span>'+
+          p.nodes.slice(0,3).map(x=>'<span class="ent-b">'+esc(x.nodeName)+'</span>').join('')+
+          (p.claimed?'<span class="ent-b b-ver">identitat pròpia</span>':'')+
+          (p.conflict?'<span class="ent-b b-unver">dues identitats amb aquest nom</span>':'')+'</div>';
+        c.onclick=async()=>{
+          const m=joinNode(node,{name:p.name,kind:p.kind,entityId:p.entityId,
+            phone:p.contact.phone,email:p.contact.email,role:p.role});
+          /* Si la persona ja té identitat pròpia, la fitxa nova neix amb el seu
+             `did` però SENSE reclamació signada: només ella la pot signar. */
+          if(m&&p.did&&!m.did)m.did=p.did;
+          await persist(node);closeModal();state.tab='socis';renderWorkspace();
+          toast('Enllaçat: '+p.name+' ja hi era a '+p.nodeCount+' node'+(p.nodeCount===1?'':'s'));
+        };
+        listBox.appendChild(c);
+      });
+    };
+    search.oninput=paintList;paintList();
+    bg.querySelectorAll('.mb-door').forEach(btn=>btn.onclick=()=>{
+      bg.querySelectorAll('.mb-door').forEach(x=>x.classList.toggle('sel',x===btn));
+      const isKnown=btn.dataset.d==='known';
+      bg.querySelector('#mbKnown').style.display=isKnown?'':'none';
+      bg.querySelector('#mbNew').style.display=isKnown?'none':'';
+      if(!isKnown)nm.focus();
+    });
+  }
+  if(e){
+    bg.querySelector('#mbClaim').onclick=async()=>{
+      try{
+        if(e.did){await releaseMember(node,e);toast('Fitxa alliberada');}
+        else{await claimMember(node,e);toast('⬢ Fitxa reclamada i signada');}
+        closeModal();renderWorkspace();
+      }catch(err){
+        toast(err&&err.code==='claimed'?'Aquesta fitxa ja és d\'una altra identitat':
+          (err&&err.code==='notyours'?'Aquesta fitxa no és teva: només qui la té la pot alliberar':'No s\'ha pogut'));
+      }
+    };
+  }
   if(e)bg.querySelector('#mbDel').onclick=async()=>{if(!confirm('Donar de baixa «'+e.name+'»?'))return;node.members=membersOf(node).filter(x=>x.id!==e.id);await persist(node);closeModal();renderWorkspace();toast('Soci donat de baixa');};
   else bg.querySelector('#mbCancel').onclick=closeModal;
   bg.querySelector('#mbSave').onclick=async()=>{
@@ -7380,6 +7626,52 @@ function renderBancTemps(body,node){
   });
   body.appendChild(cols);
   if(ms.length){body.appendChild(el('div','ent-grp-lbl','⚖ Saldo d\'hores per soci'));const grid=el('div','ent-grid');ms.forEach(m=>{const b=memberBalance(node,m.id);const c=el('div','ent-card');c.innerHTML='<div class="ent-nm">'+esc(m.name)+'</div><div class="ent-badges"><span class="ent-b b-ver">+'+b.given+' h dona</span><span class="ent-b b-unver">−'+b.recv+' h rep</span><span class="ent-b">saldo '+(b.net>0?'+':'')+b.net+' h</span></div>';grid.appendChild(c);});body.appendChild(grid);}
+}
+/* Fusionar dues fitxes. Es tria quina queda, i es diu exactament què es mou i
+   què no: la història signada es queda on és i es llegeix per àlies. */
+function openMergeMembers(node,dup){
+  const opts=dup.list.map(m=>{
+    const h=memberBalance(node,m.id),objs=objectsOf(node).filter(o=>o.ownerId===m.id).length;
+    const led=(node.ledger||[]).filter(x=>x.memberId===m.id).length;
+    return{m,label:m.name+(m.did?' ⬢':'')+' · '+led+' apunts · '+h.given+' h dona'+(objs?' · '+objs+' objectes':'')+' · alta '+(m.joinedAt||'').slice(0,10)};
+  });
+  const bg=modal(`
+    <h2>⧉ Fusiona «${esc(dup.name)}»</h2>
+    <p class="m-sub">Hi ha ${dup.list.length} fitxes d'aquesta persona al mateix node. Tria quina es queda; la resta s'hi absorbeixen.</p>
+    <div class="field"><label>Fitxa que es queda</label><select id="mgKeep">${opts.map((o,i)=>'<option value="'+o.m.id+'"'+(i===0?' selected':'')+'>'+esc(o.label)+'</option>').join('')}</select></div>
+    <div id="mgWhat" class="ent-card" style="margin-top:.6rem"></div>
+    <div class="wz-key-note"><strong>La història signada no es toca.</strong> Els apunts del ledger conserven el seu identificador original i la seva signatura; es llegeixen per una taula d'àlies. Reescriure'ls trencaria la cadena de hash i la fusió deixaria de ser auditable.</div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="mgCancel">Cancel·la</button><button class="btn btn-primary" id="mgGo">⧉ Fusiona</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const keep=bg.querySelector('#mgKeep'),what=bg.querySelector('#mgWhat');
+  const paint=()=>{
+    const keepId=keep.value,gone=dup.list.filter(m=>m.id!==keepId);
+    let offs=0,objs=0,leads=0,led=0;
+    gone.forEach(m=>{
+      offs+=offersOf(node).filter(o=>o.memberId===m.id).length;
+      objs+=objectsOf(node).filter(o=>o.ownerId===m.id||o.borrowerId===m.id).length;
+      venturesOf(node).forEach(v=>{if(v.leadMemberId===m.id)leads++;});
+      led+=(node.ledger||[]).filter(x=>x.memberId===m.id).length;
+    });
+    what.innerHTML='<div class="ent-nm">Què passarà</div><div class="ent-badges" style="margin-top:.3rem">'+
+      '<span class="ent-b b-ver">'+offs+' ofertes repuntades</span>'+
+      '<span class="ent-b b-ver">'+objs+' objectes repuntats</span>'+
+      (leads?'<span class="ent-b b-ver">'+leads+' lead(s) de venture</span>':'')+
+      '<span class="ent-b">'+led+' apunts intactes, llegits per àlies</span></div>'+
+      '<div class="ent-desc" style="margin-top:.3rem">'+gone.length+' fitxa(es) quedaran com a làpida amb <code>mergedInto</code>. No s\'esborra res.</div>';
+  };
+  keep.onchange=paint;paint();
+  bg.querySelector('#mgCancel').onclick=closeModal;
+  bg.querySelector('#mgGo').onclick=async()=>{
+    const keepId=keep.value,gone=dup.list.filter(m=>m.id!==keepId);
+    try{
+      for(const m of gone)await mergeMembers(node,m.id,keepId);
+      closeModal();renderWorkspace();toast('⧉ '+gone.length+' fitxa(es) fusionades');
+    }catch(err){
+      toast(err&&err.code==='twoidentities'?'Aquestes fitxes tenen identitats diferents: no són la mateixa persona':'No s\'ha pogut fusionar');
+    }
+  };
 }
 function openOfferForm(node,kind,e){
   const ms=membersOf(node);
@@ -10124,7 +10416,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,myPlace,openSupplySearch,SUPPLY_KINDS,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

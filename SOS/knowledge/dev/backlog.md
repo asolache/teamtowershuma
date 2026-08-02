@@ -146,16 +146,19 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
     Nova comprovació a la porta 3 **només** per als tipus amb ànim de lucre.
     Columna de viabilitat a la cohort i al CSV. Veda V38.
 
+12. **Alta de soci i identitat de les persones** — les tres capes fetes:
+    `knownPersons()` (índex derivat de tota la gent del SOS) amb el formulari
+    d'alta de **dues portes**; reclamació de fitxa **signada** amb el `did`
+    propi, amb la comprovació `signer.did === member.did`; i **fusió de
+    duplicats** que repunta l'estat mutable però **no reescriu mai història
+    signada** —s'hi accedeix per taula d'àlies. Equity, saldos, reputació i
+    perfil resolen per àlies. Veda V39.
+
 **Següent, per ordre:**
-1. **Alta de soci reutilitzant qui ja hi és** — avui cada `newMember` crea una
-   persona nova encara que ja existeixi a un altre node. Cal poder triar d'entre
-   les persones que el SOS ja coneix, i que una persona pugui reclamar la seva
-   fitxa amb la seva identitat `did:sos` i fusionar-la. Veure «Identitat i alta
-   de socis» més avall.
-2. **Cerca per habilitat i objecte, no per oferta/demanda** — l'eix de la cerca
+1. **Cerca per habilitat i objecte, no per oferta/demanda** — l'eix de la cerca
    ha de ser la cosa (habilitat o objecte), i oferta/demanda un atribut
    ordenable, no la categoria principal.
-3. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
+2. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
 2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
    però l'escaneig depèn de la càmera del sistema.
@@ -190,9 +193,9 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
   el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
-### Identitat i alta de socis · disseny pendent
+### Identitat i alta de socis · fet (V39)
 
-**El problema real.** `newMember` encunya un `uid()` nou cada vegada. La mateixa
+**El problema que hi havia.** `newMember` encunyava un `uid()` nou cada vegada. La mateixa
 persona donada d'alta a la MATRIU, al banc de temps i a la biblioteca són **tres
 registres sense cap relació**, units només pel `personKey`, que avui és
 literalment el nom normalitzat. Conseqüències: canvia-li el nom en un lloc i es
@@ -223,8 +226,12 @@ parteix en dues persones; dues Martes de pobles diferents es fusionen soles.
    l'apunt trencaria la seva cadena de hash. La fitxa absorbida queda com a
    làpida amb `mergedInto`, i la fusió és ella mateixa un registre signat.
 
-**Ordre**: (1) sol ja treu la major part del dolor i no toca criptografia. (2) i
-(3) van juntes i necessiten el seu test de cadena de hash.
+**Estat**: les tres capes fetes i verificades (74 assercions a `test-identitat`),
+inclosa la prova que la cadena de hash i les signatures sobreviuen una fusió.
+
+**Pendent d'aquesta línia**: propagar la reclamació entre nodes (avui es reclama
+fitxa a fitxa; hauria de poder-se reclamar tot el que és teu d'un cop), i que
+la fusió entre nodes diferents —no només dins d'un— tingui sentit quan calgui.
 
 ### Cerca · l'eix és la cosa, no la direcció
 

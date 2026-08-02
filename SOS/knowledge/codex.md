@@ -524,6 +524,46 @@ El **runway del fons** és el capital dividit pel que es crema cada mes entre le
 iniciatives vives. Una graduada ja no crema el fons de ningú. I les que no tenen
 números es compten a part: el que no es compta no es crema menys.
 
+## Veda 39 — Una persona és una, encara que estigui a cinc llocs
+
+`newMember` encunyava un `uid()` nou cada vegada. La mateixa persona donada
+d'alta a la MATRIU, al banc de temps i a la biblioteca eren **tres registres
+sense cap relació**, units només perquè s'escriuen igual. Canvia-li el nom en un
+lloc i es partia en dues. Les seves hores, la seva equity i la seva reputació
+anaven partides amb ella.
+
+Tres capes, de menys a més compromís:
+
+1. **Triar d'entre qui ja hi és.** `knownPersons()` és un índex **derivat, mai
+   desat** de tota la gent que el SOS coneix. L'alta té dues portes i la primera
+   és «Ja el coneixem». Triar-hi enllaça en comptes de duplicar.
+2. **`did` a la fitxa.** Qui vol **reclama** la seva fitxa signant
+   `{nodeId, memberId, did}`. A partir d'aquí el que uneix els registres és la
+   clau, no el nom. Una fitxa reclamada per un altre no es pot prendre: només
+   qui la té la pot deixar anar.
+   La comprovació que ho aguanta tot és `signer.did === member.did`. Sense ella,
+   qualsevol podria signar una reclamació posant-hi el `did` d'un altre — i la
+   signatura seria **vàlida**, perquè l'ha feta de debò. Que la signatura sigui
+   vàlida no vol dir que digui la veritat sobre qui és.
+3. **Fusió de duplicats.** I aquí la regla que governa la resta:
+
+> **La fusió no reescriu mai història signada.**
+
+Els apunts del ledger conserven el seu `memberId` original i es llegeixen per
+una **taula d'àlies** (`node.memberAliases`). Reescriure'ls trencaria la seva
+signatura i la cadena de hash, i la fusió deixaria de ser auditable. El que sí
+que es repunta és l'**estat mutable** —ofertes, objectes, mentors, leads,
+reserves—, que no porta la signatura de ningú.
+
+La línia és aquesta: **el que està signat es resol; el que no, es mou.**
+
+Equity, saldos, reputació i perfil resolen per àlies, així que fusionar reuneix
+les hores en comptes de perdre-les. La fitxa absorbida queda com a làpida amb
+`mergedInto`: no s'esborra res.
+
+I dos `did` diferents sota el mateix nom **no es fusionen**: són dues persones
+que es diuen igual, es marca com a conflicte i es diu.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
