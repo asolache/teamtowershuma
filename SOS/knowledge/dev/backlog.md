@@ -154,11 +154,15 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
     signada** —s'hi accedeix per taula d'àlies. Equity, saldos, reputació i
     perfil resolen per àlies. Veda V39.
 
+13. **Cerca: l'eix és la cosa, la direcció és un atribut** — dos tipus
+    (habilitat, objecte) en comptes de tres, i s'ofereix/es busca com a atribut
+    filtrable, ordenable i visible a cada fila. La categoria és la clau
+    d'aparellament, i d'aquí surt la banda de **coincidències**. Les llistes
+    d'espera passen a ser demanda d'objecte visible. Cinc criteris d'ordre en
+    tots dos sentits. Veda V40.
+
 **Següent, per ordre:**
-1. **Cerca per habilitat i objecte, no per oferta/demanda** — l'eix de la cerca
-   ha de ser la cosa (habilitat o objecte), i oferta/demanda un atribut
-   ordenable, no la categoria principal.
-2. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
+1. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
 2. **Lectura de QR des de dins del SOS** (`BarcodeDetector`) — el QR es genera
    però l'escaneig depèn de la càmera del sistema.
@@ -233,19 +237,19 @@ inclosa la prova que la cadena de hash i les signatures sobreviuen una fusió.
 fitxa a fitxa; hauria de poder-se reclamar tot el que és teu d'un cop), i que
 la fusió entre nodes diferents —no només dins d'un— tingui sentit quan calgui.
 
-### Cerca · l'eix és la cosa, no la direcció
+### Cerca · l'eix és la cosa, no la direcció — fet (V40)
 
-Avui `searchSupply` tracta habilitat, objecte i demanda com tres categories
+`searchSupply` tractava habilitat, objecte i demanda com tres categories
 paral·leles. Però **una demanda no és una mena de cosa, és una direcció sobre
-una cosa**. La forma correcta:
+una cosa**. Fet: dos tipus (habilitat, objecte); `dir` (`ofereix`/`busca`) com a
+atribut a cada fila; cinc criteris d'ordre (`SUPPLY_SORTS`) en tots dos sentits;
+`supplyMatches` per a la banda de coincidències; i les llistes d'espera
+convertides en demanda d'objecte visible.
 
-- **Eix**: habilitat o objecte. Dos tipus, no tres.
-- **Cada resultat porta la direcció**: s'ofereix / es busca.
-- **Ordenable i filtrable**: proximitat (per defecte), direcció, disponibilitat.
-
-Buscar «fusteria» ha de donar en una sola llista qui l'ofereix **i** qui la
-busca, marcats. Ara mateix són dues cerques diferents, i això amaga justament la
-coincidència que fa que passi alguna cosa.
+**Pendent d'aquesta línia**: la clau d'aparellament és la categoria, i les
+taxonomies del banc de temps i de la biblioteca són diferents — una habilitat
+de «reparacions» i un objecte de «bricolatge» no s'aparellen mai encara que
+vagin plegats a la vida real. Caldria un pont entre les dues taxonomies.
 
 ### Defectes trobats i encara oberts
 

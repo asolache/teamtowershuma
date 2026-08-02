@@ -564,6 +564,43 @@ les hores en comptes de perdre-les. La fitxa absorbida queda com a làpida amb
 I dos `did` diferents sota el mateix nom **no es fusionen**: són dues persones
 que es diuen igual, es marca com a conflicte i es diu.
 
+## Veda 40 — Una demanda no és una mena de cosa
+
+El catàleg tenia tres categories paral·leles: habilitat, objecte i **demanda**.
+I això és un error de fons, no de vocabulari:
+
+> Una demanda no és una mena de cosa. És una **direcció** sobre una cosa.
+
+Amb l'esquema vell, buscar «fusteria» eren dues cerques diferents — i partia en
+dues justament **la coincidència que fa que passi alguna cosa**. Qui la fa i qui
+la necessita no es veien mai a la mateixa pantalla.
+
+La forma correcta:
+
+- **L'eix és la cosa**: habilitat o objecte. Dos tipus, no tres.
+- **La direcció és un atribut**: s'ofereix / es busca. Filtrable i ordenable com
+  qualsevol altre camp, i visible a cada fila.
+- **La clau d'aparellament és la categoria, no el títol.** «Necessito muntar una
+  prestatgeria» i «Faig fusteria» no s'assemblen escrites, però són la mateixa
+  cosa. Sense una clau compartida, la coincidència no existeix.
+
+D'aquí surt la banda de **coincidències**: les coses que algú ofereix i algú
+altre busca a prop. És l'única part d'aquesta pantalla que produeix un
+intercanvi tota sola.
+
+Dues conseqüències que semblen detalls i no ho són:
+
+1. **Una llista d'espera és demanda d'objecte declarada**, i fins ara no es veia
+   enlloc. Si tres persones esperen un trepant, qui en té un ha de poder-ho
+   saber sense entrar a la fitxa de l'objecte.
+2. **«Només disponibles» és sobre el que s'ofereix.** Una demanda no està
+   disponible ni deixa d'estar-ho: existeix. I en obrir una coincidència el
+   filtre s'aixeca sol — amagar-ne la meitat faria de la banda una mentida.
+
+I l'ordre no menteix: els encapçalaments de proximitat només surten quan
+l'ordre **és** per proximitat. Posar «📍 a la teva població» sobre una llista
+ordenada per nom seria dir una cosa falsa sobre com està ordenada.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.
