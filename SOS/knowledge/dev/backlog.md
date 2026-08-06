@@ -32,6 +32,88 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 
 ## Bloc pendent (prioritzat)
 
+### Ordre recomanat · la meva prioritització
+
+**Criteri**, dit abans de la llista perquè es pugui discutir l'ordre sense
+discutir cada punt: (1) primer el que **avui impedeix que el SOS el faci servir
+més d'una persona**; (2) després el que fa que **el valor comptat sigui just**,
+perquè comptar malament durant mesos no es pot corregir després; (3) després **la
+cara pública**, que és la que dona tracció però és **irreversible**; (4) al final
+el que **depèn de tercers** (relés, trackers, proveïdors), que no pot ser mai el
+camí crític d'una eina que ha de funcionar sense xarxa.
+
+---
+
+**P1 · Ara — sense això, el SOS és monousuari**
+
+1. **Sync en viu** (`A1` del pla). Avui l'aparellament és **una sola vegada**:
+   el que crees després de connectar no arriba a l'altra banda. Emetre un delta
+   per `RTCDataChannel` a cada `persist` i passar-lo per `mergeIncoming` és
+   **poc codi i cent per cent local** —no depèn de cap tracker— i és el que
+   converteix el sync d'una demo en una eina. **Aquesta és la primera.**
+2. **Vistiplau de l'altra banda.** Operar des d'un resultat deixa el moviment
+   **fet**, també quan afecta algú d'un altre node. Això vol dir que avui puc
+   escriure hores al teu nom sense que hi diguis res. En una comunitat de deu
+   persones és una anècdota; en una de cent és el motiu pel qual la gent deixa
+   de confiar en el registre. **És un defecte d'integritat, no una millora d'UX.**
+3. **Pont entre taxonomies** banc de temps ↔ biblioteca. És la peça **més barata
+   de tota la llista** i desbloqueja la banda de coincidències (V40), que ara no
+   aparella «reparacions» amb «bricolatge» encara que a la vida vagin plegats.
+
+**P2 · Tot seguit — que el que es compta sigui just**
+
+4. **Biblioteca circular** (donació vs posada a disposició · valor per préstec ·
+   sessió de reparació amb mentora i aprenents). És **el model fair a la
+   pràctica**: avui donar un objecte no val res al registre, i el risc de qui
+   presta i el temps de qui ensenya no es compten enlloc. Reutilitza
+   `oracleObjectValue`, `pushLedger` i el camí de `logSession` —no cal primitiva
+   nova. Ordre intern: donació/disposició → sessió de reparació → indicadors del
+   certificat circular.
+5. **Rols múltiples per context.** `roleOfPerson` retorna **un** rol i decideix
+   la lent de tot el SOS; una persona real és superheroina al seu barri i mentora
+   d'una MATRIU alhora. Va aquí i no més avall perquè **l'app de missions depèn
+   d'això**: sense rols per context, la llista de missions no pot saber què et
+   toca fer.
+
+**P3 · Després — la cara pública, quan ja hi ha què publicar**
+
+6. **`publicPack` d'habilitats i objectes amb privadesa verificable.** L'ordre
+   dins d'aquest punt no és negociable: **primer el gra i el test de no-fuita**
+   (deny by default, com `privacyNoLeak`), després la publicació. Publicar és
+   irreversible: un pack replicat no es desfà.
+7. **Sincronització automàtica amb control de versions** (abast triable, cada
+   publicació una versió amb CID i pare). Sense el punt 6 no té sobre què córrer.
+8. **Codi de sala** (`A3`) i **lectura de QR des de dins** (`A4`). Van aquí, no
+   a P1, per una raó concreta: **depenen de trackers WSS públics i de
+   `BarcodeDetector`**. Milloren molt l'experiència, però el sync ha de
+   funcionar sense ells —per això el punt 1 va primer i aquests després.
+
+**P4 · Quan l'MVP estigui polit**
+
+9. **App de mòbil per missions.** És una **altra app**, no la mateixa amb la
+   pantalla petita. Depèn del punt 5.
+10. **MATRIU F5–F8** (finançament i tràmits · formació per etapa · seguiment
+    post-graduació · evidències). F1–F4 ja fan que sigui un servei; aquestes la
+    completen.
+11. **Rendiment amb 500 nodes i 5.000 apunts** i **accessibilitat WCAG 2.1 AA**.
+    Els poso junts perquè tots dos són **proves, no funcions**, i tots dos fallen
+    silenciosament fins que és car arreglar-los.
+
+**P5 · Bloquejat per tercers — no és camí crític**
+
+12. Ancoratge Nostr / Arweave / IPFS, wallets W2/W3, integració profunda d'AI
+    review de PRs, coordenades a les entitats del directori. Tot això depèn
+    d'infraestructura externa. Que quedi al backlog no vol dir que sigui el
+    següent: vol dir que **quan la xarxa hi sigui, ja sabem què fer-hi**.
+
+---
+
+**El que NO faria ara**, i per què val la pena dir-ho: multi-peer (>2 alhora),
+hub always-on, i conversió d'slices a participacions jurídiques. Els tres són
+grans, cap dels tres no desbloqueja res del que hi ha per sobre, i els tres
+tenen molt més sentit quan hi hagi comunitats reals fent-lo servir i sabrem què
+demanen de debò.
+
 ### Onada en curs · qualitat dels mapes + tauler com a lloc únic
 
 **Fet:**
