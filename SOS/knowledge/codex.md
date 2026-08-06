@@ -653,6 +653,41 @@ restaurava **zero** i deia que tot havia anat bé. Un `|| []` que amagava un
 fitxer trencat. Ara distingeix «no hi ha registres» de «no hi ha llista de
 registres», que no és el mateix.
 
+## Veda 43 — Un apunt parla de dues persones; només una l'escrivia
+
+Operar des d'un resultat de cerca deixava el moviment **fet**. Registres dues
+hores i ja està: el saldo de l'altre s'ha mogut, i l'altre no se n'ha assabentat.
+Dit sense embuts, es podien **escriure hores en nom d'algú altre**. En un grup de
+deu persones és una anècdota; en un de cent és el motiu pel qual la gent deixa de
+creure's el registre.
+
+La temptació és fer que tot demani permís. Seria correcte i inservible: avui la
+majoria de fitxes no tenen ningú al darrere a qui preguntar —són noms que algú ha
+donat d'alta— i demanar-los un vistiplau que ningú pot signar és teatre.
+
+Per això la regla és la mínima que resol el problema: **cal el vistiplau de qui
+ha reclamat la seva fitxa**. Mentre ningú no l'ha reclamada, el SOS es comporta
+exactament com abans i no es trenca res. Des del moment que dius «aquesta sóc jo»
+amb el teu `did` i una reclamació signada (V39), ningú escriu al teu nom sense que
+hi diguis la teva. **La firma protegeix el nom de qui l'ha posat**, i reclamar la
+fitxa passa a tenir una conseqüència pràctica i no només simbòlica.
+
+Tres conseqüències que no són negociables:
+
+- **Una petició pendent no és mitja comptabilitat.** L'apunt **no entra al
+  ledger** fins que hi ha tots els vistiplaus. Res de saldos provisionals: o hi
+  és o no hi és, i mentre no hi és, la pantalla ho diu.
+- **L'apunt conserva la data del fet, no la de la confirmació.** El que va passar
+  va passar quan va passar; qui ho ha validat queda a dins de l'apunt, amb el seu
+  `did`.
+- **Un sol camí** (V22). `submitEntry` decideix si escriu ara o si envia la
+  petició; qui el crida no ho ha de saber. El préstec d'un objecte passa pel
+  mateix lloc, perquè és el mateix problema: posa una responsabilitat a nom d'algú.
+
+I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
+res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
+la podria activar qualsevol contra qualsevol.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

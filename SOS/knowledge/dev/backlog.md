@@ -46,19 +46,24 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 **P1 · Ara — sense això, el SOS és monousuari**
 
-1. **Sync en viu** (`A1` del pla). Avui l'aparellament és **una sola vegada**:
-   el que crees després de connectar no arriba a l'altra banda. Emetre un delta
-   per `RTCDataChannel` a cada `persist` i passar-lo per `mergeIncoming` és
-   **poc codi i cent per cent local** —no depèn de cap tracker— i és el que
-   converteix el sync d'una demo en una eina. **Aquesta és la primera.**
-2. **Vistiplau de l'altra banda.** Operar des d'un resultat deixa el moviment
-   **fet**, també quan afecta algú d'un altre node. Això vol dir que avui puc
-   escriure hores al teu nom sense que hi diguis res. En una comunitat de deu
-   persones és una anècdota; en una de cent és el motiu pel qual la gent deixa
-   de confiar en el registre. **És un defecte d'integritat, no una millora d'UX.**
+1. ~~**Sync en viu**~~ · **ja hi era**. En anar a fer-ho es va comprovar que
+   `syncBroadcast` ja emet un `patch` a cada `persist`/`persistEntity` i que
+   `deleteNode`/`deleteEntity` propaguen tombstone; `test-collab` ho verifica
+   d'extrem a extrem amb dos navegadors (`liveChangeReachesTheOtherSide`). El que
+   queda d'aquella línia és el **codi de sala** i el **QR**, que són a P3 perquè
+   depenen de tercers. *Prioritzar sobre memòria i no sobre el codi porta a
+   posar de primer el que ja està fet.*
+2. **Vistiplau de l'altra banda** · **fet (V43)**. `submitEntry` és el camí únic:
+   si la contrapart ha reclamat la fitxa amb el seu `did`, l'apunt **no entra al
+   ledger** i queda com a petició signada fins que hi digui la seva; si no l'ha
+   reclamada, tot funciona com abans. Els préstecs passen pel mateix lloc
+   (`submitLoan`). Safata `⏳ Esperen el teu vistiplau` amb pastilla a la barra,
+   entrada al tauler d'atenció i a la paleta. L'apunt guarda la data del fet i
+   qui l'ha validat. 46 assercions a `test-vistiplau`.
 3. **Pont entre taxonomies** banc de temps ↔ biblioteca. És la peça **més barata
    de tota la llista** i desbloqueja la banda de coincidències (V40), que ara no
    aparella «reparacions» amb «bricolatge» encara que a la vida vagin plegats.
+   **La següent.**
 
 **P2 · Tot seguit — que el que es compta sigui just**
 
@@ -284,10 +289,13 @@ demanen de debò.
    i la pantalla `📍 Coordenades` mostra la cobertura. Sense coordenades, la
    cerca **diu** que ordena per territori i no per km. Veda V34.
 
+5. **Confirmació de l'altra banda** — `submitEntry`/`submitLoan` com a camí
+   únic: si la contrapart ha reclamat la fitxa, l'apunt queda com a **petició
+   signada** i no toca el ledger fins que hi ha vistiplau; si no l'ha reclamada,
+   res canvia. Safata pròpia, pastilla a la barra i primer lloc al tauler
+   d'atenció. Veda V43.
+
 **Pendent d'aquesta línia:**
-- **Confirmació de l'altra banda** — avui operar deixa el moviment fet; un
-  intercanvi entre nodes diferents hauria de poder esperar el vistiplau de qui
-  el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
 ### Publicar a la permaweb · el repositori públic del SOS
