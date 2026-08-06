@@ -161,6 +161,17 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
     d'espera passen a ser demanda d'objecte visible. Cinc criteris d'ordre en
     tots dos sentits. Veda V40.
 
+14. **Còpia de seguretat de tot el SOS local** — `exportBackup` /
+    `importBackup` s'emporten **la base de dades sencera** (no només la
+    identitat): nodes, socis, registre, iniciatives, biblioteca, entitats. Amb
+    contrasenya, el fitxer va xifrat (PBKDF2 210k · AES-GCM, la mateixa pila que
+    la identitat); **en blanc, va en clar** —i llavors el botó ho diu: «⚠
+    Descarrega SENSE xifrar», perquè qui tingui el fitxer podrà llegir-ho tot i
+    **signar en el teu nom**. Hi ha casella per treure la identitat de la còpia.
+    En restaurar, primer es mostra què hi ha dins (registres, data, si porta
+    identitat) i només després s'importa; substituir-ho tot és opcional i
+    demana confirmació. Entrada des del panell d'identitat. Veda V42.
+
 **Següent, per ordre:**
 1. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.

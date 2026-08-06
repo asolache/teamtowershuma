@@ -621,6 +621,38 @@ càrrega en vol: **17 · 17 · 17**.
 La regla general: **tota operació que fusiona estat compartit ha de ser una a la
 vegada**, i ha de dir la veritat sobre què ha entrat i què no.
 
+## Veda 42 — Qui exporta ha de saber què s'emporta
+
+La còpia de la identitat (V25) resolia una pèrdua: esborrar el navegador
+destruïa el `did:sos`. Però la identitat sola no és el teu SOS. Si perds el
+navegador amb els nodes, els socis, el registre d'hores i la biblioteca, el que
+et queda és una clau sense res a obrir.
+
+`exportBackup` s'emporta la base de dades sencera. I aquí hi ha la decisió que
+importa: **la contrasenya en blanc és una opció legítima** —hi ha gent que fa la
+còpia en un disc que ja té xifrat, o que necessita poder-la obrir sense
+recordar res— **però un fitxer en clar amb la teva clau privada dins no és una
+còpia de seguretat qualsevol**. Qui el tingui no només et pot llegir: et pot
+**signar coses en nom teu**, i les signatures del SOS són el que fa que el
+registre valgui alguna cosa.
+
+Per això el botó no diu el mateix en els dos casos. Amb contrasenya:
+«Descarrega la còpia xifrada». Sense: **«⚠ Descarrega SENSE xifrar»**, i
+l'avís diu exactament què implica. No es bloqueja, no es fa un sermó: es diu.
+I hi ha una casella per treure la identitat de la còpia, que és la resposta
+raonable per a qui vol les dades però no el poder de signar.
+
+L'altra meitat és la restauració. **Importar és sobreescriure**, i ningú hauria
+de sobreescriure a cegues: primer es llegeix el paquet i es diu què porta
+—quants registres, de quin dia, si hi ha identitat a dins— i només llavors
+s'importa. Substituir-ho tot (esborrar el que hi ha abans d'entrar el nou) és
+una casella a part, apagada per defecte, amb confirmació.
+
+I una cosa que semblava un detall: un fitxer malmès sense la llista de registres
+restaurava **zero** i deia que tot havia anat bé. Un `|| []` que amagava un
+fitxer trencat. Ara distingeix «no hi ha registres» de «no hi ha llista de
+registres», que no és el mateix.
+
 ## Recorda
 
 - Tot autocontingut a `SOS/index.html` per defecte.

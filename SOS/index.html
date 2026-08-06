@@ -4086,14 +4086,180 @@ async function openIdentityDashboard(){
       '<div class="ent-card"><div class="ent-desc">La clau privada viu en aquest navegador. Si esborres les dades, la perds; i al segon dispositiu series una altra persona al registre. Fes-ne una <strong>còpia xifrada amb contrasenya</strong> i porta-la a l\'altre aparell.</div>'+
       '<div class="ent-badges" style="margin-top:.5rem"><button class="btn btn-primary btn-sm" id="idExport">⭳ Exporta còpia xifrada</button><button class="btn btn-ghost btn-sm" id="idImport">⭱ Restaura una còpia</button></div>'+
       '<div class="wz-key-note" style="margin-top:.4rem">Sense la contrasenya el fitxer no serveix de res. Guarda\'l on guardaries una clau de casa.</div></div>'+
+      '<div class="ent-grp-lbl">🗄 Còpia de TOT el teu SOS</div>'+
+      '<div class="ent-card"><div class="ent-desc">La còpia d\'identitat salva <strong>qui ets</strong>, però no <strong>el que has fet</strong>. Aquesta s\'emporta nodes, socis, comptes, ventures, dossiers i ancoratges — tot el que hi ha en aquest navegador.</div>'+
+      '<div class="ent-badges" style="margin-top:.5rem"><button class="btn btn-primary btn-sm" id="idBkExp">🗄 Còpia completa</button><button class="btn btn-ghost btn-sm" id="idBkImp">⭱ Restaura-la</button></div>'+
+      '<div class="wz-key-note" style="margin-top:.4rem">Amb contrasenya va xifrada. En blanc es desa en clar i <strong>la clau privada hi és a la vista</strong>: qui tingui el fitxer podrà signar en el teu nom.</div></div>'+
       '<div class="ai-note" style="margin-top:.6rem"><span class="ic">🌱</span><span>Tot això és <strong>local i sobirà</strong>. La teva clau privada només surt d\'aquí si tu la xifres i te l\'emportes. Els envelopes ECDH t\'obren accés punt-a-punt sense servidor.</span></div>';
     bg.querySelector('#idCopyDid').onclick=async()=>{if(navigator.clipboard)await navigator.clipboard.writeText(id.did);toast('📋 DID copiat');};
     bg.querySelector('#idCopyExch').onclick=async()=>{const c=await myExchangeCard();if(navigator.clipboard)await navigator.clipboard.writeText(JSON.stringify(c));toast('🎫 Carta copiada');};
     bg.querySelector('#idPasskey').onclick=async()=>{try{if(passkey){await unbindPasskey();toast('Passkey desvinculat');}else{await bindPasskey();toast('Passkey vinculat ✓');}closeModal();openIdentityDashboard();}catch(e){toast(e.msg||'Error');}};
     bg.querySelector('#idNostr').onclick=()=>{closeModal();openNostrModal();};
+    bg.querySelector('#idBkExp').onclick=()=>{closeModal();openBackup('export');};
+    bg.querySelector('#idBkImp').onclick=()=>{closeModal();openBackup('import');};
     bg.querySelector('#idExport').onclick=()=>{closeModal();openIdentityBackup('export');};
     bg.querySelector('#idImport').onclick=()=>{closeModal();openIdentityBackup('import');};
   }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.msg||String(e))+'</span></div>';}
+}
+/* ═══════════ CÒPIA DE TOT EL SOS · el teu registre sencer en un fitxer ═══════════
+   Veda V42. La còpia d'identitat (V25) salva la clau, però no el que has fet amb
+   ella: nodes, socis, ledger, ventures, dossiers, ancoratges. Si esborres el
+   navegador, conserves qui ets i perds tot el que has construït.
+
+   Una còpia completa és, per definició, **la teva vida al SOS en un fitxer**.
+   Per això:
+
+   1) **Amb contrasenya**, tot va xifrat (PBKDF2 210k + AES-GCM), igual que la
+      identitat. És el camí recomanat.
+   2) **En blanc**, es desa en clar. Es permet perquè de vegades el que vols és
+      poder llegir el fitxer, migrar-lo o inspeccionar-lo — però llavors la
+      **clau privada hi és a la vista**, i qui tingui el fitxer pot signar en el
+      teu nom. Això no s'amaga en lletra petita: es diu al botó mateix, i
+      s'ofereix treure la identitat de la còpia.
+
+   La regla: qui exporta ha de saber què s'emporta. Un fitxer que sembla innocu i
+   conté la teva clau és pitjor que no tenir còpia. */
+const SOS_BACKUP_TYPE='sos-full-backup';
+const IDENTITY_RECORD_ID='__identity';
+async function exportBackup(pass,{withIdentity}={}){
+  const all=await dbGetAll();
+  const keep=withIdentity===false?all.filter(r=>r&&r.id!==IDENTITY_RECORD_ID):all;
+  const payload={records:keep,count:keep.length,
+    hasIdentity:keep.some(r=>r&&r.id===IDENTITY_RECORD_ID),app:'sos-teamtowers',ts:now()};
+  const head={v:1,type:SOS_BACKUP_TYPE,count:payload.count,hasIdentity:payload.hasIdentity,
+    ts:payload.ts,app:'sos-teamtowers'};
+  if(!pass||!String(pass).length)
+    return Object.assign(head,{enc:false,data:payload});
+  if(String(pass).length<8)throw{msg:'La contrasenya ha de tenir 8 caràcters o més (o deixa-la en blanc)'};
+  const{kek,salt}=await _kekFromPass(pass);
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},kek,_te.encode(JSON.stringify(payload)));
+  return Object.assign(head,{enc:true,alg:'AES-GCM-PBKDF2',iters:210000,salt,iv:_b64u(iv),ct:_b64u(ct)});
+}
+/* `mode`: 'merge' afegeix i sobreescriu el que coincideix; 'replace' esborra
+   abans el que hi ha. Replace és destructiu i per això no és el valor per
+   defecte: cal demanar-lo. */
+async function importBackup(backup,pass,{mode}={}){
+  if(!backup||backup.type!==SOS_BACKUP_TYPE)throw{msg:'Això no és una còpia completa del SOS'};
+  let payload;
+  if(backup.enc){
+    if(!pass)throw{msg:'Aquesta còpia està xifrada: cal la contrasenya',code:'needpass'};
+    try{
+      const{kek}=await _kekFromPass(pass,backup.salt);
+      const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:_unb64u(backup.iv)},kek,_unb64u(backup.ct));
+      payload=JSON.parse(_td.decode(pt));
+    }catch(e){throw{msg:'Contrasenya incorrecta o fitxer malmès',code:'badpass'};}
+  } else payload=backup.data;
+  /* Una llista buida és legítima (una còpia d'un SOS acabat d'estrenar). Que la
+     clau no hi sigui, no: vol dir que el fitxer està malmès, i restaurar-lo en
+     silenci com si fos buit amagaria que s'ha perdut alguna cosa. */
+  const recs=payload&&payload.records;
+  if(!Array.isArray(recs))throw{msg:'La còpia no té registres llegibles: el fitxer està malmès'};
+  if(mode==='replace'){
+    const old=await dbGetAll();
+    for(const r of old){if(r&&r.id)await dbDelete(r.id);}
+  }
+  let n=0;
+  for(const r of recs){if(r&&r.id){await dbPut(r);n++;}}
+  return{restored:n,replaced:mode==='replace',hadIdentity:!!payload.hasIdentity};
+}
+/* Què hi ha dins d'una còpia, abans de restaurar-la. Restaurar sense saber què
+   entra és el mateix error que publicar sense saber què surt. */
+function backupSummary(payload){
+  const recs=(payload&&payload.records)||[];
+  const by={};recs.forEach(r=>{const t=(r&&r.type)||(r&&r.nodeLevel?'node':'altre');by[t]=(by[t]||0)+1;});
+  const nodes=recs.filter(r=>r&&!r.type&&r.nodeLevel);
+  return{total:recs.length,byType:by,nodes:nodes.length,
+    members:nodes.reduce((a,n)=>a+((n.members||[]).length),0),
+    ledger:nodes.reduce((a,n)=>a+((n.ledger||[]).length),0),
+    ventures:nodes.reduce((a,n)=>a+((n.ventures||[]).length),0),
+    hasIdentity:recs.some(r=>r&&r.id===IDENTITY_RECORD_ID)};
+}
+function openBackup(mode){
+  const isExp=mode!=='import';
+  const bg=modal(`
+    <h2>${isExp?'💾 Còpia de tot el teu SOS':'⭱ Restaura una còpia'}</h2>
+    <p class="m-sub">${isExp
+      ?'Tot el que tens en aquest navegador —nodes, socis, comptes, ventures, dossiers i ancoratges— en un sol fitxer.'
+      :'Torna a posar en aquest navegador una còpia que tinguis desada.'}</p>
+    ${isExp?`
+      <div class="field"><label>Contrasenya (recomanada)</label><input id="bkPass" type="password" autocomplete="new-password" placeholder="8 caràcters o més"></div>
+      <div class="field"><label>Repeteix-la</label><input id="bkPass2" type="password" autocomplete="new-password"></div>
+      <div class="ai-note" id="bkWarn"><span class="ic">🔓</span><span><strong>Si la deixes en blanc</strong>, la còpia es desa <strong>en clar</strong>: qualsevol que tingui el fitxer podrà llegir-ho tot i <strong>signar en el teu nom</strong>, perquè la clau privada hi va a dins.</span></div>
+      <label class="pick" id="bkNoId" style="margin-top:.5rem"><input type="checkbox" id="bkNoIdC"><span class="pk-t">Treu la identitat de la còpia</span></label>
+      <div class="wz-key-note">Sense identitat el fitxer és molt menys perillós, però en restaurar-lo series una persona nova: la teva història signada no seria teva. Per a una còpia de seguretat de debò, deixa-la dins i posa contrasenya.</div>
+    `:`
+      <div class="field"><label>Fitxer de còpia</label><input id="bkFile" type="file" accept="application/json,.json"></div>
+      <div class="field"><label>o enganxa'n el contingut</label><textarea id="bkText" rows="4" placeholder='{"type":"sos-full-backup",…}'></textarea></div>
+      <div class="field"><label>Contrasenya (si en té)</label><input id="bkPass" type="password" autocomplete="current-password"></div>
+      <div id="bkPeek"></div>
+      <label class="pick" id="bkRep" style="margin-top:.5rem"><input type="checkbox" id="bkRepC"><span class="pk-t">Esborra el que hi ha ara i deixa només la còpia</span></label>
+      <div class="wz-key-note">Sense marcar, la còpia <strong>s'afegeix</strong> al que ja tens i sobreescriu el que coincideixi. Marcant-ho, el que hi ha ara <strong>es perd</strong>.</div>
+    `}
+    <div id="bkMsg" class="wz-key-note"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="bkClose">Tanca</button><button class="btn btn-primary" id="bkGo">${isExp?'⭳ Descarrega la còpia':'⭱ Restaura'}</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#bkClose').onclick=closeModal;
+  const msg=bg.querySelector('#bkMsg'),go=bg.querySelector('#bkGo');
+  if(isExp){
+    const p1=bg.querySelector('#bkPass'),p2=bg.querySelector('#bkPass2'),warn=bg.querySelector('#bkWarn');
+    /* El botó diu la veritat sobre què farà: xifrada o en clar. */
+    const paint=()=>{
+      const blank=!p1.value.length;
+      warn.style.display=blank?'':'none';
+      go.textContent=blank?'⚠ Descarrega SENSE xifrar':'⭳ Descarrega la còpia xifrada';
+    };
+    p1.oninput=paint;paint();
+    bg.querySelectorAll('.pick').forEach(l=>l.onclick=e=>{if(e.target.tagName!=='INPUT'){const c=l.querySelector('input');c.checked=!c.checked;}l.classList.toggle('sel',l.querySelector('input').checked);});
+    go.onclick=async()=>{
+      const pass=p1.value;
+      if(pass.length&&pass!==p2.value){msg.textContent='Les dues contrasenyes no coincideixen.';return;}
+      try{
+        const withIdentity=!bg.querySelector('#bkNoIdC').checked;
+        const pack=await exportBackup(pass,{withIdentity});
+        downloadText('sos-copia-'+now().slice(0,10)+(pack.enc?'':'-EN-CLAR')+'.json',JSON.stringify(pack,null,2),'application/json');
+        closeModal();
+        toast(pack.enc?'💾 Còpia xifrada descarregada':'⚠ Còpia EN CLAR descarregada · guarda-la bé');
+      }catch(e){msg.textContent=e.msg||'No s\'ha pogut fer la còpia.';}
+    };
+  } else {
+    const file=bg.querySelector('#bkFile'),text=bg.querySelector('#bkText'),peek=bg.querySelector('#bkPeek');
+    let loaded=null;
+    const readIn=async()=>{
+      let raw=text.value.trim();
+      if(!raw&&file.files&&file.files[0])raw=await file.files[0].text();
+      if(!raw)return null;
+      try{return JSON.parse(raw);}catch(e){throw{msg:'El fitxer no és un JSON vàlid'};}
+    };
+    /* Ensenyar què entrarà abans d'entrar-hi. */
+    const preview=async()=>{
+      peek.innerHTML='';
+      try{
+        loaded=await readIn();
+        if(!loaded)return;
+        if(loaded.type!==SOS_BACKUP_TYPE){peek.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Això no és una còpia completa del SOS.</span></div>';return;}
+        peek.innerHTML='<div class="ent-card"><div class="ent-nm">'+(loaded.enc?'🔒 Còpia xifrada':'🔓 Còpia en clar')+'</div>'+
+          '<div class="ent-badges" style="margin-top:.3rem"><span class="ent-b">'+(loaded.count||0)+' registres</span>'+
+          '<span class="ent-b">'+esc((loaded.ts||'').slice(0,10))+'</span>'+
+          (loaded.hasIdentity?'<span class="ent-b b-ver">amb identitat</span>':'<span class="ent-b b-unver">sense identitat</span>')+'</div></div>';
+      }catch(e){peek.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||'Error llegint el fitxer')+'</span></div>';}
+    };
+    file.onchange=preview;text.oninput=preview;
+    bg.querySelectorAll('.pick').forEach(l=>l.onclick=e=>{if(e.target.tagName!=='INPUT'){const c=l.querySelector('input');c.checked=!c.checked;}l.classList.toggle('sel',l.querySelector('input').checked);});
+    go.onclick=async()=>{
+      try{
+        const pack=loaded||await readIn();
+        if(!pack){msg.textContent='Tria un fitxer o enganxa el contingut.';return;}
+        const replace=bg.querySelector('#bkRepC').checked;
+        if(replace&&!confirm('Això esborrarà tot el que tens ara en aquest navegador i el substituirà per la còpia. Segur?'))return;
+        const r=await importBackup(pack,bg.querySelector('#bkPass').value,{mode:replace?'replace':'merge'});
+        closeModal();
+        toast('⭱ '+r.restored+' registres restaurats'+(r.replaced?' (substituïts)':''));
+        setTimeout(()=>location.reload(),700);
+      }catch(e){msg.textContent=e.msg||'No s\'ha pogut restaurar.';}
+    };
+  }
 }
 /* Portar la identitat d'un dispositiu a l'altre. Dues pantalles, una contrasenya
    i cap servei enmig. */
@@ -10573,7 +10739,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // ha de portar-te on diu l'URL, no a l'últim node que toqui per ordre.
   window.addEventListener('hashchange',()=>applyRoute());
   if(location.hash&&location.hash!=='#/')applyRoute();
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
