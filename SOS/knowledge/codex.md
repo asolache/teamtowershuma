@@ -688,7 +688,39 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
-## Recorda
+## Veda 44 — Dues llistes raonables poden no parlar-se
+
+El banc de temps té «petites reparacions de la llar». La biblioteca de les coses
+té «bricolatge i eines». Cadascuna és correcta al seu lloc i cap de les dues està
+mal feta. El problema apareix quan es creuen: **qui ofereix reparar i qui busca un
+trepant no s'han trobat mai**, encara que a la vida vagin sempre plegats — són la
+mateixa tarda de dissabte.
+
+La sortida fàcil seria unificar les dues llistes. Seria un error: la categoria
+d'un objecte i la d'un servei no volen dir el mateix ni serveixen per al mateix,
+i fondre-les faria pitjors les dues pantalles per arreglar una tercera.
+
+L'**àmbit** és la capa de sobre. No substitueix cap taxonomia, no en canvia cap
+fitxa, i **no s'inventa equivalències**: només uneix el que de debò es fa junt.
+Set àmbits fan de pont de veritat; vuit en tenen una sola banda, i així ha de ser
+—dir que «tràmits i paperassa» té un objecte equivalent seria fer-ho quadrar a la
+força, i un pont que va a lloc no es nota.
+
+Dues regles que eviten que la banda de coincidències menteixi:
+
+- **Una coincidència d'àmbit no és una coincidència exacta**, i no es poden
+  presentar iguals. La targeta ho diu amb el nom: «es creuen *reparacions* i
+  *bricolatge* — no és la mateixa cosa, és el mateix àmbit». Vendre-ho com a
+  equivalent seria prometre un aparellament que no existeix.
+- **Un àmbit que no travessa res no es mostra.** Si el que s'ofereix i el que es
+  busca són la mateixa cosa de la mateixa taxonomia, la coincidència exacta ja ho
+  diu i l'àmbit només ocuparia el lloc de la que sí aporta.
+
+I una conseqüència d'interfície que era un defecte esperant: **un àmbit no es pot
+escriure a la caixa de cerca**. «Reparar i bricolar» no és el text de cap fitxa,
+així que clicar-hi i posar-ho al camp de text hauria donat zero resultats. Es
+filtra pel que és —un xip d'àmbit que es pot treure—, no per un text que ho
+imita.
 
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.

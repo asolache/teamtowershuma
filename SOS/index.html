@@ -524,6 +524,10 @@ a{color:var(--blue);text-decoration:none}
 .sp-r[data-dir="busca"]{border-left:2px solid rgba(255,145,0,.35)}
 .sp-r[data-dir="ofereix"]{border-left:2px solid rgba(0,230,118,.3)}
 .sp-match{background:linear-gradient(180deg,rgba(0,230,118,.06),transparent);margin-bottom:.35rem}
+.sp-match-dom{background:linear-gradient(180deg,rgba(99,102,241,.09),transparent);border-left:3px solid var(--indigo)}
+.sp-chip{display:inline-flex;align-items:center;gap:.35rem;background:var(--bg-panel);border:1px solid var(--indigo);color:var(--light);border-radius:999px;padding:.25rem .7rem;font-size:.75rem;font-weight:600;cursor:pointer;margin-bottom:.4rem}
+.sp-chip .x{color:var(--muted);font-weight:400}
+.sp-chip:hover .x{color:var(--red)}
 .sp-match:hover{border-color:var(--green)}
 .mb-doors{display:flex;gap:.4rem;margin-bottom:.7rem}
 .mb-doors .mb-door{flex:1}
@@ -3416,10 +3420,54 @@ function thingLabel(kind,thing,fallback){
   const hit=tab[thing];
   return hit?hit.label:(fallback||thing);
 }
+/* ═══ El pont entre les dues taxonomies ═══
+   El banc de temps i la biblioteca de les coses tenen llistes de categories
+   diferents, fetes per separat i totes dues raonables. El problema apareix quan
+   es creuen: qui ofereix «petites reparacions» i qui busca un trepant de
+   «bricolatge» no s'han trobat mai, encara que a la vida vagin sempre plegats.
+
+   L'àmbit és la capa de sobre. No substitueix cap de les dues llistes —cadascuna
+   segueix dient el que ha de dir al seu lloc— i no s'inventa equivalències:
+   només uneix el que de debò es fa junt. Molts àmbits tenen una sola banda, i
+   així ha de ser: dir que «tràmits» té un objecte equivalent seria fer-ho quadrar
+   a la força. */
+const SUPPLY_DOMAINS=[
+  {id:'reparacio',label:'Reparar i bricolar',ic:'🔧',objecte:['bricolatge'],habilitat:['reparacions']},
+  {id:'electronica',label:'Aparells i informàtica',ic:'🔌',objecte:['electronica'],habilitat:['informatica']},
+  {id:'cuina',label:'Cuina i alimentació',ic:'🍳',objecte:['cuina'],habilitat:['cuina']},
+  {id:'hort',label:'Jardineria i hort',ic:'🌿',objecte:['jardineria'],habilitat:['jardineria']},
+  {id:'costura',label:'Costura i tèxtil',ic:'🧵',objecte:['costura'],habilitat:['costura']},
+  {id:'infancia',label:'Infància',ic:'🧸',objecte:['infancia'],habilitat:['infants']},
+  {id:'cura',label:'Cures i acompanyament',ic:'♿',objecte:['salut'],habilitat:['acompanyament','gentgran']},
+  {id:'llar',label:'Llar i neteja',ic:'🧽',objecte:['neteja'],habilitat:[]},
+  {id:'festa',label:'Festes i esdeveniments',ic:'🎉',objecte:['festes'],habilitat:[]},
+  {id:'lleure',label:'Esport, jocs i lleure',ic:'⛺',objecte:['esport','jocs'],habilitat:[]},
+  {id:'mobilitat',label:'Transport i càrregues',ic:'🚗',objecte:[],habilitat:['transport','mudances']},
+  {id:'formacio',label:'Idiomes i reforç',ic:'📚',objecte:[],habilitat:['idiomes']},
+  {id:'animals',label:'Cura d\'animals',ic:'🐕',objecte:[],habilitat:['animals']},
+  {id:'tramits',label:'Tràmits i paperassa',ic:'📄',objecte:[],habilitat:['tramits']},
+  {id:'estetica',label:'Perruqueria i estètica',ic:'✂️',objecte:[],habilitat:['estetica']}
+];
+const _domIdx=(()=>{const m={};SUPPLY_DOMAINS.forEach(d=>{
+  (d.objecte||[]).forEach(c=>m['objecte§'+c]=d.id);
+  (d.habilitat||[]).forEach(c=>m['habilitat§'+c]=d.id);});return m;})();
+const domainOf=(kind,thing)=>_domIdx[kind+'§'+norm(thing||'')]||null;
+const domainMeta=id=>SUPPLY_DOMAINS.find(d=>d.id===id)||null;
+// Un àmbit només fa de pont si té les dues bandes. La resta són agrupacions
+// útils, però no connecten res que abans no es connectés.
+const bridgedDomains=()=>SUPPLY_DOMAINS.filter(d=>(d.objecte||[]).length&&(d.habilitat||[]).length);
+/* Què hi ha a l'altra taxonomia dins del meu àmbit. Serveix per dir-ho a la
+   pantalla: «si busques un trepant, mira també qui fa reparacions». */
+function bridgedCats(kind,thing){
+  const d=domainMeta(domainOf(kind,thing));if(!d)return [];
+  const other=kind==='objecte'?'habilitat':'objecte';
+  return (d[other]||[]).map(c=>({kind:other,category:c,label:thingLabel(other,c,c)}));
+}
 function supplyIndex(){
   const out=[];
   const push=x=>{x.thing=supplyThing(x.kind,x.category,x.title);
-    x.thingLabel=thingLabel(x.kind,x.thing,x.title);out.push(x);};
+    x.thingLabel=thingLabel(x.kind,x.thing,x.title);
+    x.domain=domainOf(x.kind,x.thing);out.push(x);};
   state.nodes.forEach(nd=>{
     const dyn=nd.dynamicType||'';
     offersOf(nd).forEach(o=>{
@@ -3446,9 +3494,10 @@ function supplyIndex(){
   });
   return out;
 }
-function searchSupply(q,{from,kinds,dirs,onlyAvailable,sort,desc}={}){
+function searchSupply(q,{from,kinds,dirs,onlyAvailable,sort,desc,domain}={}){
   const terms=norm(q||'').split('-').filter(Boolean);
   const base=supplyIndex().filter(x=>{
+    if(domain&&x.domain!==domain)return false;
     if(kinds&&kinds.length&&kinds.indexOf(x.kind)<0)return false;
     if(dirs&&dirs.length&&dirs.indexOf(x.dir)<0)return false;
     /* «Només disponibles» és sobre el que s'ofereix. Una demanda no està
@@ -3474,18 +3523,30 @@ function searchSupply(q,{from,kinds,dirs,onlyAvailable,sort,desc}={}){
 }
 /* La coincidència: una cosa que algú ofereix i algú altre busca. És l'única
    cosa d'aquesta pantalla que produeix un intercanvi tota sola. */
-function supplyMatches(q,{from,kinds,onlyAvailable}={}){
-  const rows=searchSupply(q,{from,kinds,onlyAvailable});
+function supplyMatches(q,{from,kinds,onlyAvailable,domain}={}){
+  const rows=searchSupply(q,{from,kinds,onlyAvailable,domain});
   const by={};
-  rows.forEach(x=>{
-    const k=x.kind+'§'+x.thing;
-    const g=by[k]||(by[k]={key:k,kind:x.kind,thing:x.thing,label:x.thingLabel,
-      ofereix:[],busca:[],rank:9});
+  const grp=(key,seed,x)=>{
+    const g=by[key]||(by[key]=Object.assign({key,ofereix:[],busca:[],rank:9},seed));
     g[x.dir].push(x);
     if(x.prox.rank<g.rank)g.rank=x.prox.rank;
+  };
+  rows.forEach(x=>{
+    // Exacta: la mateixa cosa dins de la mateixa taxonomia.
+    grp('x§'+x.kind+'§'+x.thing,{exact:true,kind:x.kind,thing:x.thing,label:x.thingLabel},x);
+    // D'àmbit: el pont entre les dues taxonomies.
+    if(x.domain){const d=domainMeta(x.domain);
+      grp('d§'+x.domain,{exact:false,domain:x.domain,ic:d.ic,label:d.label},x);}
   });
-  return Object.values(by).filter(g=>g.ofereix.length&&g.busca.length)
-    .sort((a,b)=>a.rank-b.rank||b.ofereix.length+b.busca.length-(a.ofereix.length+a.busca.length));
+  /* Una coincidència d'àmbit que aparella exactament el mateix que ja diu la
+     coincidència exacta no aporta res i ocupa el lloc de la que sí. Només val
+     la pena si travessa: si el que s'ofereix i el que es busca són coses
+     diferents o de taxonomies diferents. */
+  const crosses=g=>g.ofereix.some(a=>g.busca.some(b=>a.kind!==b.kind||a.thing!==b.thing));
+  return Object.values(by)
+    .filter(g=>g.ofereix.length&&g.busca.length&&(g.exact||crosses(g)))
+    .sort((a,b)=>(a.exact?0:1)-(b.exact?0:1)||a.rank-b.rank
+      ||b.ofereix.length+b.busca.length-(a.ofereix.length+a.busca.length));
 }
 /* On sóc jo, per poder mesurar des d'aquí: el node actiu, o el municipi del meu
    perfil, o el primer territori que hi hagi. Sense un origen, «a prop» no vol
@@ -3581,6 +3642,7 @@ function openCoords(){
 }
 function openSupplySearch(prefill){
   let kinds=['habilitat','objecte'],dirs=['ofereix','busca'],onlyAvail=true,sort='prox',desc=false;
+  let domain=null;
   const from=myPlace();
   const bg=modal(`
     <h2>🔎 Què hi ha a prop</h2>
@@ -3619,34 +3681,71 @@ function openSupplySearch(prefill){
     return row;
   };
   const paint=()=>{
-    const res=searchSupply(q.value,{from,kinds,dirs,onlyAvailable:onlyAvail,sort,desc});
+    const res=searchSupply(q.value,{from,kinds,dirs,onlyAvailable:onlyAvail,sort,desc,domain});
     const nodes=new Set(res.map(x=>x.node.id)),people=new Set(res.map(x=>personKey(x.who)).filter(Boolean));
     const nOf=res.filter(x=>x.dir==='ofereix').length,nBu=res.length-nOf;
     stats.textContent=res.length+' resultat'+(res.length===1?'':'s')+' · '+nOf+' s\'ofereixen · '+nBu+' es busquen · '+
       nodes.size+' node'+(nodes.size===1?'':'s')+' · '+people.size+' '+(people.size===1?'persona':'persones');
     /* Coincidències primer: el que algú ofereix i algú altre busca. */
     matchBox.innerHTML='';
-    const ms=supplyMatches(q.value,{from,kinds,onlyAvailable:onlyAvail});
+    if(domain){
+      const dm=domainMeta(domain);
+      const chip=el('div','sp-chip',dm.ic+' Àmbit · '+esc(dm.label)+' <span class="x">✕</span>');
+      chip.title='Treu el filtre d\'àmbit';
+      chip.onclick=()=>{domain=null;paint();};
+      matchBox.appendChild(chip);
+    }
+    const ms=supplyMatches(q.value,{from,kinds,onlyAvailable:onlyAvail,domain});
     if(ms.length){
       matchBox.appendChild(el('div','ent-grp-lbl','⚡ Coincidències · algú ho té i algú ho busca'));
       ms.slice(0,6).forEach(g=>{
-        const c=el('div','ent-card sp-match');c.style.cursor='pointer';
-        c.innerHTML='<div class="ent-nm">'+kindMeta(g.kind).ic+' '+esc(g.label)+'</div><div class="ent-badges">'+
+        const c=el('div','ent-card sp-match'+(g.exact?'':' sp-match-dom'));c.style.cursor='pointer';
+        /* Una coincidència d'àmbit no és el mateix que una d'exacta, i fer-les
+           passar per iguals seria vendre una equivalència que no hi és. Es diu
+           quines dues coses s'estan creuant. */
+        const cross=g.exact?'':(()=>{
+          const of=[...new Set(g.ofereix.map(x=>x.thingLabel))].slice(0,2).join(', ');
+          const bu=[...new Set(g.busca.map(x=>x.thingLabel))].slice(0,2).join(', ');
+          return '<div class="act-d" style="margin-top:.2rem">Es creuen <strong>'+esc(of)+'</strong> i <strong>'+esc(bu)+'</strong> — no és la mateixa cosa, és el mateix àmbit.</div>';
+        })();
+        c.innerHTML='<div class="ent-nm">'+(g.exact?kindMeta(g.kind).ic:g.ic)+' '+esc(g.label)+'</div><div class="ent-badges">'+
+          '<span class="ent-b '+(g.exact?'b-ver':'')+'">'+(g.exact?'⚡ Exacta':'🌉 Mateix àmbit')+'</span>'+
           '<span class="ent-b b-ver">✅ '+g.ofereix.length+' ofereixen</span>'+
           '<span class="ent-b b-unver">🙋 '+g.busca.length+' busquen</span>'+
-          '<span class="ent-b">'+esc(g.ofereix.concat(g.busca)[0].prox.one)+'</span></div>';
+          '<span class="ent-b">'+esc(g.ofereix.concat(g.busca)[0].prox.one)+'</span></div>'+cross;
         /* Una coincidència inclou, per definició, coses que potser estan
            prestades. Si en clicar-la el filtre de disponibilitat n'amaga la
            meitat, la banda de coincidències menteix. */
-        c.onclick=()=>{q.value=g.label;
+        c.onclick=()=>{
           if(onlyAvail){onlyAvail=false;av.classList.remove('sel');}
+          /* L'àmbit no es pot escriure a la caixa de cerca: «Reparar i bricolar»
+             no és cap text de cap fitxa. Es filtra pel que és. */
+          if(g.exact){domain=null;q.value=g.label;}
+          else{q.value='';domain=g.domain;}
           paint();};
         matchBox.appendChild(c);
       });
     }
     listBox.innerHTML='';
     if(!res.length){
+      /* Abans de dir «res», mirar l'altra banda del pont: qui busca un trepant
+         potser troba qui fa reparacions, i no ho sabrà mai si la pantalla només
+         sap dir que no hi ha res. */
+      const nq=norm(q.value||'');
+      let bridge=null;
+      if(nq)['objecte','habilitat'].forEach(k=>{
+        if(bridge)return;
+        const d=domainMeta(domainOf(k,nq));
+        if(d&&searchSupply('',{from,domain:d.id}).length)bridge={d,k};
+      });
       listBox.innerHTML='<div class="ai-note"><span class="ic">🌱</span><span>Res encara. Si el que busques no hi és, <strong>publica la demanda</strong>: és així com apareix qui ho té.</span></div>';
+      if(bridge){
+        const n=el('div','ent-card sp-match');n.style.cursor='pointer';
+        n.innerHTML='<div class="ent-nm">🌉 Prova l\'àmbit «'+esc(bridge.d.label)+'»</div>'+
+          '<div class="act-d">El banc de temps i la biblioteca fan servir llistes de categories diferents. Aquí hi ha totes dues bandes del mateix àmbit.</div>';
+        n.onclick=()=>{q.value='';domain=bridge.d.id;paint();};
+        listBox.appendChild(n);
+      }
       return;
     }
     /* Els encapçalaments només tenen sentit quan l'ordre és per proximitat.
@@ -10960,7 +11059,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

@@ -60,10 +60,17 @@ camí crític d'una eina que ha de funcionar sense xarxa.
    (`submitLoan`). Safata `⏳ Esperen el teu vistiplau` amb pastilla a la barra,
    entrada al tauler d'atenció i a la paleta. L'apunt guarda la data del fet i
    qui l'ha validat. 46 assercions a `test-vistiplau`.
-3. **Pont entre taxonomies** banc de temps ↔ biblioteca. És la peça **més barata
-   de tota la llista** i desbloqueja la banda de coincidències (V40), que ara no
-   aparella «reparacions» amb «bricolatge» encara que a la vida vagin plegats.
-   **La següent.**
+3. **Pont entre taxonomies** banc de temps ↔ biblioteca · **fet (V44)**.
+   `SUPPLY_DOMAINS` és una capa d'àmbits per sobre de les dues llistes, que no en
+   substitueix cap: set àmbits fan de pont de debò (reparació, electrònica,
+   cuina, hort, costura, infància, cures) i vuit tenen una sola banda a
+   consciència. La banda de coincidències distingeix **exacta** de **mateix
+   àmbit** i diu quines dues coses creua; un àmbit que no travessa res no es
+   mostra. Filtre d'àmbit amb xip (no es pot escriure a la caixa de cerca perquè
+   no és el text de cap fitxa) i sortida des del «no hi ha res». 36 assercions a
+   `test-pont`.
+
+**P1 completat.** El següent és P2.
 
 **P2 · Tot seguit — que el que es compta sigui just**
 
@@ -517,10 +524,13 @@ atribut a cada fila; cinc criteris d'ordre (`SUPPLY_SORTS`) en tots dos sentits;
 `supplyMatches` per a la banda de coincidències; i les llistes d'espera
 convertides en demanda d'objecte visible.
 
-**Pendent d'aquesta línia**: la clau d'aparellament és la categoria, i les
-taxonomies del banc de temps i de la biblioteca són diferents — una habilitat
-de «reparacions» i un objecte de «bricolatge» no s'aparellen mai encara que
-vagin plegats a la vida real. Caldria un pont entre les dues taxonomies.
+**El pont entre les dues taxonomies · fet (V44)**: `SUPPLY_DOMAINS` posa una capa
+d'àmbits per sobre de les dues llistes sense substituir-ne cap. Set fan de pont
+de debò; vuit tenen una sola banda perquè forçar-hi una equivalència seria
+mentir. La banda de coincidències separa **exacta** de **mateix àmbit**, diu
+quines dues coses creua, i amaga l'àmbit que no travessa res que l'exacta no
+digui ja. El filtre d'àmbit és un xip, no un text a la caixa de cerca —«Reparar i
+bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultats.
 
 ### Defectes trobats i encara oberts
 
