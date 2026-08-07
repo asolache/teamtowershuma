@@ -34,6 +34,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-matriu-f78.mjs` | V53 | Seguiment post-graduació i evidències |
 | `test-model-pais.mjs` | V54 | Catalunya i Euskadi com a models editables, i que forkejar-los no els toqui |
 | `test-fons.mjs` | V55 | El fons cooperatiu: verificat vs estimat, cobertura i cabina del país |
+| `test-gent.mjs` | V56 · V57 | Rànquing recíproc, presència honesta i xat ancorat que no perd missatges |
 
 `serve.mjs` és un servidor estàtic mínim per als tests que necessiten `http://`
 (l'atles fa `fetch`, i `file://` el bloqueja). Els que el necessiten se
