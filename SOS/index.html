@@ -524,6 +524,7 @@ a{color:var(--blue);text-decoration:none}
 .sp-r[data-dir="busca"]{border-left:2px solid rgba(255,145,0,.35)}
 .sp-r[data-dir="ofereix"]{border-left:2px solid rgba(0,230,118,.3)}
 .sp-match{background:linear-gradient(180deg,rgba(0,230,118,.06),transparent);margin-bottom:.35rem}
+.wz-chips{display:flex;gap:.35rem;flex-wrap:wrap}
 .sp-match-dom{background:linear-gradient(180deg,rgba(99,102,241,.09),transparent);border-left:3px solid var(--indigo)}
 .sp-chip{display:inline-flex;align-items:center;gap:.35rem;background:var(--bg-panel);border:1px solid var(--indigo);color:var(--light);border-radius:999px;padding:.25rem .7rem;font-size:.75rem;font-weight:600;cursor:pointer;margin-bottom:.4rem}
 .sp-chip .x{color:var(--muted);font-weight:400}
@@ -2045,7 +2046,7 @@ function duplicateMembers(node){
   return Object.entries(by).filter(([,list])=>list.length>1).map(([key,list])=>({key,name:list[0].name,list}));
 }
 function newMember({name,kind,entityId,phone,email,role}){return{id:uid(),name:(name||'').trim(),kind:kind||'persona',entityId:entityId||null,role:role||'superheroi',contact:{phone:phone||'',email:email||''},joinedAt:now(),active:true,notes:''};}
-function newObject({name,typology,ownerId,condition,deposit}){return{id:uid(),name:(name||'').trim(),typology:typology||'altres',ownerId:ownerId||null,status:'disponible',borrowerId:null,since:null,dueDate:null,reservations:[],condition:condition||'',deposit:Number(deposit)||0,notes:''};}
+function newObject({name,typology,ownerId,condition,deposit,mode,years}){return{id:uid(),name:(name||'').trim(),typology:typology||'altres',ownerId:ownerId||null,status:'disponible',borrowerId:null,since:null,dueDate:null,reservations:[],condition:condition||'',deposit:Number(deposit)||0,notes:'',mode:mode==='donacio'?'donacio':'disposicio',years:Number(years)||0,loans:0,repairs:0};}
 function newOffer({memberId,kind,category,title,desc}){return{id:uid(),memberId:memberId||null,kind:kind||'oferta',category:category||'altres',title:(title||'').trim(),desc:(desc||'').trim(),status:'activa'};}
 // Estat de venciment d'un préstec: vençut / venç aviat (≤3 dies) / en termini
 function dueStatus(o){if(o.status!=='prestat'||!o.dueDate)return null;const d=Math.ceil((new Date(o.dueDate)-new Date())/864e5);if(d<0)return{t:'vençut ('+(-d)+'d)',cls:'b-unver'};if(d<=3)return{t:'venç en '+d+'d',cls:'b-form'};return null;}
@@ -2593,6 +2594,42 @@ const ORACLE_OBJECT_DEFAULTS={bricolatge:80,cuina:60,jardineria:120,neteja:90,el
 const oracleOf=node=>node.oracle||(node.oracle={fmv:{},objects:{}});
 function oracleFmv(node,cat){const o=oracleOf(node);return Number(o.fmv&&o.fmv[cat])||ORACLE_FMV_DEFAULTS[cat]||ORACLE_FMV_DEFAULTS.altres;}
 function oracleObjectValue(node,obj){const o=oracleOf(node),base=Number(o.objects&&o.objects[obj.typology])||ORACLE_OBJECT_DEFAULTS[obj.typology]||ORACLE_OBJECT_DEFAULTS.altres;const years=obj.years?Number(obj.years):0;return Math.round(base*Math.max(0.3,1-0.1*years));}
+/* ═══════════ Biblioteca de les coses · el valor que no es comptava ═══════════
+   Posar un objecte a la biblioteca no valia res al registre: es publicava i
+   prou. Però una biblioteca de les coses **produeix valor real**, i el que no
+   es compta no es pot ni certificar ni retribuir.
+
+   Hi ha dues coses que fins ara es confonien i que no són la mateixa:
+
+   · **Donació** — l'objecte passa al comú. El valor és el bé cedit, una vegada.
+   · **Posada a disposició** — segueix sent teu, el prestes. El valor **no** és
+     el preu de l'objecte, perquè no el regales: el que aportes és el **risc i
+     el desgast**, i la revisió o reparació que aquell objecte generarà. Per això
+     es valora **per préstec i no d'una sola vegada**: una eina elèctrica
+     prestada quaranta vegades no aporta el mateix que una tenda plantada dues.
+     El valor s'acumula amb l'ús real, no amb una declaració inicial.
+
+   Tot això són **estimacions de l'oracle** i s'han de mostrar com a tals, amb la
+   font a la vista. Un número inventat que sembli comptabilitat és pitjor que no
+   tenir-lo. */
+const OBJECT_MODES=[
+  {id:'disposicio',label:'El poso a disposició',ic:'🤝',one:'segueix sent teu · el valor és el risc i el desgast de cada préstec'},
+  {id:'donacio',label:'El dono al comú',ic:'🎁',one:'passa a ser de la comunitat · el valor és el bé cedit, una vegada'}
+];
+const objectModeMeta=id=>OBJECT_MODES.find(m=>m.id===id)||OBJECT_MODES[0];
+/* Coeficient de desgast per préstec, per tipologia. Una eina elèctrica pateix
+   més per ús que una tenda o un joc de taula, i la revisió que necessita costa
+   més. Són percentatges del valor estimat de l'objecte. */
+const WEAR_RATES={bricolatge:.05,electronica:.05,cuina:.035,jardineria:.045,neteja:.03,
+  festes:.02,esport:.025,infancia:.03,costura:.03,salut:.02,jocs:.015,altres:.03};
+const wearRate=(node,o)=>{const c=oracleOf(node);return Number(c.wear&&c.wear[o.typology])||WEAR_RATES[o.typology]||WEAR_RATES.altres;};
+// Què val un préstec a qui ha posat l'objecte a disposició, i per què val això.
+function loanValue(node,o){
+  const base=oracleObjectValue(node,o),rate=wearRate(node,o);
+  const eur=Math.round(base*rate*100)/100;
+  return{eur,base,rate,pct:Math.round(rate*1000)/10,
+    why:base+' € (valor estimat) × '+(Math.round(rate*1000)/10)+' % (desgast, risc i revisió de «'+libTypeMeta(o.typology).label.toLowerCase()+'»)'};
+}
 // Valor total del fons cooperatiu — inclou hores mobilitzades, objectes, talent i capital, amb rang d'incertesa.
 function fundValue(node){
   const vs=venturesOf(node);const links=linksOf(node).map(id=>byId(id)).filter(Boolean);
@@ -2620,6 +2657,10 @@ function computeEquityCore(members,ledger,cfg,resolve){
   const rid=resolve||(x=>x);
   (ledger||[]).forEach(e=>{if(!e.memberId)return;const id=rid(e.memberId);if(slby[id]===undefined)return;const v=Number(e.value)||0;
     if(e.type==='moneda')slby[id]+=v*cfg.cash;
+    /* Un objecte ja ve valorat en euros. Passar-lo per la tarifa horària com si
+       fossin hores el multiplicaria per quinze: és una aportació no dinerària
+       valorada en diners, i entra com a tal. */
+    else if(e.type==='objecte')slby[id]+=v*cfg.nonCash;
     else{const rate=Number(e.rate)||cfg.fmv;slby[id]+=v*rate*cfg.nonCash;}});
   const total=Object.values(slby).reduce((a,b)=>a+b,0);
   return members.map(m=>({memberId:m.id,name:m.name,slices:slby[m.id],pct:total?slby[m.id]/total*100:0})).sort((a,b)=>b.slices-a.slices);
@@ -3981,7 +4022,7 @@ function molekulonEvidence(names){
   const keys=[...new Set((names||[]).map(n=>personKey(n)).filter(Boolean))];
   const has=k=>keys.includes(k);
   const exchanges=[],contributions=[],offers=[],objects=[],nodes=new Set();
-  let hores=0,euros=0;
+  let hores=0,euros=0,objectes=0;
   state.nodes.forEach(nd=>{
     const byId={};membersOf(nd).forEach(m=>byId[m.id]=m);
     const mine=membersOf(nd).filter(m=>has(personKey(m.name)));
@@ -3995,7 +4036,7 @@ function molekulonEvidence(names){
       const who=m?m.name:(e.who||'');
       if(!who||!has(personKey(who)))return;
       const val=Number(e.value)||0;
-      if(e.type==='moneda')euros+=val;else hores+=val;
+      if(e.type==='moneda')euros+=val;else if(e.type==='objecte')objectes+=val;else hores+=val;
       const cp=e.counterpartId?byId[e.counterpartId]:null;
       if(cp)exchanges.push({from:who,to:cp.name,what:e.what||'servei',value:val,type:e.type,node:nd.name,ts:e.ts,deliverables:e.deliverables||''});
       else contributions.push({who,what:e.what||'aportació',value:val,type:e.type,node:nd.name,ts:e.ts,deliverables:e.deliverables||''});
@@ -4012,7 +4053,7 @@ function molekulonEvidence(names){
   objects.forEach(o=>add(o.who,'Comunitat','tangible',o.name));
   contributions.forEach(c=>add(c.who,c.node,c.type==='moneda'?'tangible':'tangible',c.what));
   return{people:keys,names:(names||[]).filter(Boolean),exchanges,contributions,offers,objects,
-    nodes:[...nodes],hores,euros,suggested,
+    nodes:[...nodes],hores,euros,objectes,suggested,
     total:exchanges.length+contributions.length+offers.length+objects.length};
 }
 // Kit narratiu Molekulon: crida narrative_kit → sinopsi de còmic, himne, escena performativa (Arc CU2).
@@ -5737,10 +5778,10 @@ function personProfile(nameOrKey){
       }
     });
   });
-  let hores=0,euros=0;
-  contributions.forEach(c=>{const v=Number(c.entry.value)||0;if(c.entry.type==='temps')hores+=v;else if(c.entry.type==='moneda')euros+=v;});
+  let hores=0,euros=0,objectes=0;
+  contributions.forEach(c=>{const v=Number(c.entry.value)||0;if(c.entry.type==='temps')hores+=v;else if(c.entry.type==='moneda')euros+=v;else if(c.entry.type==='objecte')objectes+=v;});
   const netHours=balances.reduce((a,b)=>a+b.net,0);
-  return{key,name:presence[0]?presence[0].member.name:nameOrKey,kinds:[...kinds],contacts:[...contacts],presence,offers,demands,objects,borrowed,reservations,ventures,contributions,balances,slices,totals:{hores,euros,ofertes:offers.length,demandes:demands.length,objectesPropis:objects.length,netHoursBank:netHours,ventures:ventures.length,nodes:presence.length}};
+  return{key,name:presence[0]?presence[0].member.name:nameOrKey,kinds:[...kinds],contacts:[...contacts],presence,offers,demands,objects,borrowed,reservations,ventures,contributions,balances,slices,totals:{hores,euros,objectes:Math.round(objectes*100)/100,ofertes:offers.length,demandes:demands.length,objectesPropis:objects.length,netHoursBank:netHours,ventures:ventures.length,nodes:presence.length}};
 }
 // Intercooperació entre ventures (model Mondragón · Arc #4). Flux de recursos entre projectes econòmics
 // dins d'una mateixa MATRIU: hores, objectes, talent o capital viatgen d'una venture a una altra amb registre
@@ -8059,6 +8100,26 @@ function renderBiblioteca(body,node){
   body.appendChild(bar);
   const disp=objs.filter(o=>o.status==='disponible').length,prest=objs.filter(o=>o.status==='prestat').length;
   const stats=el('div','bib-stats');stats.innerHTML='<div class="bib-tile"><div class="n">'+objs.length+'</div><div class="l">objectes</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+disp+'</div><div class="l">disponibles</div></div><div class="bib-tile"><div class="n" style="color:var(--orange)">'+prest+'</div><div class="l">prestats</div></div>';body.appendChild(stats);
+  if(objs.length){
+    const cs=circularStats(node);
+    const box=el('div','ent-card');box.style.borderLeft='3px solid var(--green)';
+    box.innerHTML='<div class="ent-nm">🔄 Economia circular · el que aquesta biblioteca produeix</div>'+
+      '<div class="bib-stats" style="margin:.4rem 0">'+
+      '<div class="bib-tile"><div class="n">'+cs.prestecs+'</div><div class="l">préstecs</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--green)">'+cs.compraEvitada+' €</div><div class="l">compra evitada</div></div>'+
+      '<div class="bib-tile"><div class="n">'+cs.reparacions+'</div><div class="l">reparacions</div></div>'+
+      '<div class="bib-tile"><div class="n">'+cs.horesFormatives+' h</div><div class="l">aprenent fent</div></div>'+
+      '<div class="bib-tile"><div class="n">'+cs.valorTotal+' €</div><div class="l">valor registrat</div></div>'+
+      '</div>'+
+      '<div class="ent-badges">'+
+      '<span class="ent-b">🎁 '+cs.donats+' donats · '+cs.valorDonat+' €</span>'+
+      '<span class="ent-b">🤝 '+cs.disposicio+' a disposició · '+cs.valorDesgast+' € de desgast</span>'+
+      '<span class="ent-b">🛠 '+cs.objectesReparats+' objectes salvats</span>'+
+      '<span class="ent-b">👥 '+cs.mentors+' mentores · '+cs.aprenents+' aprenents</span>'+
+      '</div>'+
+      '<div class="ent-desc" style="margin-top:.35rem">La <strong>compra evitada</strong> i el valor dels objectes són <em>estimacions de l\'oracle</em> a partir de la tipologia i els anys. Les hores són reals: surten del registre signat.</div>';
+    body.appendChild(box);
+  }
   if(!objs.length){const emp=el('div','ws-empty');emp.style.height='auto';emp.style.padding='2rem 1rem';emp.innerHTML='<h2 style="font-size:1.05rem">Catàleg buit</h2><p>Afegeix objectes que els socis vulguin compartir, o carrega un exemple.</p>';body.appendChild(emp);return;}
   LIBRARY_TYPES.forEach(([tp,label,icon])=>{
     const list=objs.filter(o=>o.typology===tp);if(!list.length)return;
@@ -8075,9 +8136,22 @@ function renderBiblioteca(body,node){
       const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
       if(o.status==='disponible'){const b=el('button','btn btn-ghost btn-sm','↗ Presta');b.onclick=ev=>{ev.stopPropagation();lendObject(node,o);};act.appendChild(b);}
       else if(o.status==='prestat'){
-        const b=el('button','btn btn-ghost btn-sm','↩ Retorna');b.onclick=async ev=>{ev.stopPropagation();o.status='disponible';o.borrowerId=null;o.since=null;o.dueDate=null;await persist(node);renderWorkspace();const nx=(o.reservations||[])[0];toast(nx?('Retornat · reservat per '+(memberById(node,nx)||{name:'?'}).name):'Objecte retornat');};act.appendChild(b);
+        const b=el('button','btn btn-ghost btn-sm','↩ Retorna');b.onclick=async ev=>{ev.stopPropagation();
+          o.status='disponible';o.borrowerId=null;o.since=null;o.dueDate=null;
+          /* El retorn és el moment en què el préstec s'ha consumat de debò, i
+             per tant quan el desgast s'ha produït. Comptar-lo en prestar seria
+             cobrar per una cosa que encara no ha passat. */
+          o.loans=(Number(o.loans)||0)+1;
+          const w=await recordLoanWear(node,o,(meIn(node)||{}).id||null);
+          await persist(node);renderWorkspace();
+          const nx=(o.reservations||[])[0];
+          if(w&&w.status==='pendent')toast('Retornat · l\'apunt de desgast espera el vistiplau de qui l\'aporta',4000);
+          else if(w)toast('↩ Retornat · +'+w.entry.value+' € per a '+((memberById(node,o.ownerId)||{}).name||'qui el posa')+' (desgast i risc)',4000);
+          else toast(nx?('Retornat · reservat per '+(memberById(node,nx)||{name:'?'}).name):'Objecte retornat');};
+        act.appendChild(b);
         const r=el('button','btn btn-ghost btn-sm','🔖 Reserva');r.onclick=ev=>{ev.stopPropagation();reserveObject(node,o);};act.appendChild(r);
       }
+      const rp=el('button','btn btn-ghost btn-sm','🛠 Reparació');rp.onclick=ev=>{ev.stopPropagation();openRepairForm(node,o);};act.appendChild(rp);
       const ed=el('button','btn btn-ghost btn-sm','✎');ed.onclick=ev=>{ev.stopPropagation();openObjectForm(node,o);};act.appendChild(ed);
       c.appendChild(act);grid.appendChild(c);
     });
@@ -8092,20 +8166,171 @@ function openObjectForm(node,e){
     <h2>${e?'Objecte':'Afegeix objecte'}</h2>
     <div class="field"><label>Nom de l'objecte</label><input id="obName" autocomplete="off" placeholder="p.ex. Taladre percutor" value="${e?esc(e.name):''}"></div>
     <div class="field"><label>Tipologia</label><select id="obType">${typeOpts}</select></div>
-    <div class="field"><label>Propietari/a (soci que el socialitza)</label><select id="obOwner">${ownerOpts}</select></div>
+    <div class="field"><label>Qui l'aporta</label><select id="obOwner">${ownerOpts}</select></div>
+    <div class="field"><label>Com l'aporta</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">${OBJECT_MODES.map(m=>'<button type="button" class="btn btn-ghost btn-sm ob-m'+((e?(e.mode||'disposicio'):'disposicio')===m.id?' sel':'')+'" data-m="'+m.id+'" style="flex:1;min-width:150px">'+m.ic+' '+m.label+'</button>').join('')}</div>
+      <div class="wz-key-note" id="obModeNote" style="margin-top:.3rem"></div></div>
+    <div class="field"><label>Anys que té (opcional)</label><input id="obYears" type="number" min="0" max="40" placeholder="0" value="${e&&e.years?e.years:''}"></div>
+    <div id="obVal"></div>
     <div class="field"><label>Estat i fiança (opcional)</label><div class="wz-key"><input id="obCond" placeholder="Estat (p.ex. bon estat)" value="${e?esc(e.condition||''):''}"><input id="obDep" type="number" min="0" placeholder="Fiança €" value="${e&&e.deposit?e.deposit:''}"></div></div>
     <div class="modal-actions">${e?'<button class="btn btn-ghost" id="obDel" style="border-color:var(--red-dim);color:var(--red)">Elimina</button>':'<button class="btn btn-ghost" id="obCancel">Cancel·la</button>'}<button class="btn btn-primary" id="obSave">${e?'Desa':'Afegeix'}</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const nm=bg.querySelector('#obName');nm.focus();
+  let mode=e?(e.mode||'disposicio'):'disposicio';
+  /* El número es veu abans de desar, i es veu d'on surt. Un valor de l'oracle
+     que no ensenya el seu càlcul acaba semblant comptabilitat, i no ho és. */
+  const paintVal=()=>{
+    const probe={typology:bg.querySelector('#obType').value,years:Number(bg.querySelector('#obYears').value)||0};
+    const base=oracleObjectValue(node,probe),lv=loanValue(node,probe);
+    bg.querySelector('#obModeNote').textContent=objectModeMeta(mode).one;
+    bg.querySelector('#obVal').innerHTML=mode==='donacio'
+      ? '<div class="ai-note"><span class="ic">🎁</span><span>Entrarà al registre com a aportació de <strong>'+base+' €</strong>, una sola vegada. <em>Estimació de l\'oracle</em> a partir de la tipologia i els anys — no és un preu de venda.</span></div>'
+      : '<div class="ai-note"><span class="ic">🤝</span><span>No entra res ara: <strong>cada retorn</strong> generarà un apunt de <strong>'+lv.eur+' €</strong> a favor de qui el posa a disposició. '+esc(lv.why)+'. <em>Estimació de l\'oracle.</em></span></div>';
+  };
+  bg.querySelectorAll('.ob-m').forEach(b=>b.onclick=()=>{mode=b.dataset.m;
+    bg.querySelectorAll('.ob-m').forEach(x=>x.classList.toggle('sel',x===b));paintVal();});
+  bg.querySelector('#obType').onchange=paintVal;
+  bg.querySelector('#obYears').oninput=paintVal;
+  paintVal();
   if(e)bg.querySelector('#obDel').onclick=async()=>{node.objects=objectsOf(node).filter(x=>x.id!==e.id);await persist(node);closeModal();renderWorkspace();toast('Objecte eliminat');};
   else bg.querySelector('#obCancel').onclick=closeModal;
   bg.querySelector('#obSave').onclick=async()=>{
     const name=nm.value.trim();if(!name){nm.focus();return;}
     const typology=bg.querySelector('#obType').value,ownerId=bg.querySelector('#obOwner').value,condition=bg.querySelector('#obCond').value.trim(),deposit=Number(bg.querySelector('#obDep').value)||0;
-    if(e){e.name=name;e.typology=typology;e.ownerId=ownerId;e.condition=condition;e.deposit=deposit;}
-    else objectsOf(node).push(newObject({name,typology,ownerId,condition,deposit}));
-    await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();toast(e?'Objecte desat':'Objecte afegit');
+    const years=Number(bg.querySelector('#obYears').value)||0;
+    const me=meIn(node);
+    let donation=null;
+    if(e){
+      /* Una donació ja registrada no es pot desfer canviant un desplegable: el
+         que ha entrat al registre hi és. Es pot passar de disposició a donació,
+         però no al revés. */
+      const wasDonated=e.mode==='donacio';
+      e.name=name;e.typology=typology;e.ownerId=ownerId;e.condition=condition;e.deposit=deposit;e.years=years;
+      if(!wasDonated&&mode==='donacio'){e.mode='donacio';donation=await recordDonation(node,e,me?me.id:null);}
+      else if(wasDonated&&mode!=='donacio')toast('Una donació ja registrada no es pot tornar enrere');
+    }else{
+      const o=newObject({name,typology,ownerId,condition,deposit,mode,years});
+      objectsOf(node).push(o);
+      if(mode==='donacio')donation=await recordDonation(node,o,me?me.id:null);
+    }
+    await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();
+    if(donation&&donation.status==='pendent')toast('Objecte afegit · la donació espera el vistiplau de qui l\'aporta',4000);
+    else if(donation)toast('🎁 Donació registrada · '+donation.entry.value+' € (estimació de l\'oracle)',4000);
+    else toast(e?'Objecte desat':'Objecte afegit');
+  };
+}
+/* Les tres escriptures de la biblioteca circular. Totes tres passen per
+   `submitEntry` (V22 i V43): un sol camí, i si l'altra banda ha reclamat la
+   fitxa, espera el seu vistiplau. */
+async function recordDonation(node,o,actorId){
+  const v=oracleObjectValue(node,o);
+  if(!v)return null;
+  const m=memberById(node,o.ownerId);
+  return submitEntry(node,{id:uid(),who:m?m.name:'',what:'Donació · '+o.name,deliverables:'',
+    type:'objecte',value:v,memberId:o.ownerId,counterpartId:null,objectId:o.id,circular:'donacio',
+    estimate:true,oracle:{base:v,typology:o.typology,years:Number(o.years)||0},ts:now()},actorId);
+}
+async function recordLoanWear(node,o,actorId){
+  if(o.mode==='donacio')return null;      // el que és del comú no desgasta ningú en particular
+  const lv=loanValue(node,o);
+  if(!lv.eur)return null;
+  const m=memberById(node,o.ownerId);
+  o.wearEarned=Math.round(((Number(o.wearEarned)||0)+lv.eur)*100)/100;
+  return submitEntry(node,{id:uid(),who:m?m.name:'',what:'Desgast i risc · '+o.name,deliverables:'',
+    type:'objecte',value:lv.eur,memberId:o.ownerId,counterpartId:null,objectId:o.id,circular:'desgast',
+    estimate:true,oracle:{base:lv.base,rate:lv.rate,why:lv.why},ts:now()},actorId);
+}
+/* Una sessió de reparació. La mentora aporta ofici i, sobretot, transferència
+   de coneixement; **l'aprenent no és un cost**: mentre aprèn repara de debò, i
+   aquella reparació és valor lliurat a la comunitat. Per això els dos hi
+   generen apunt, i no només la mentora. */
+async function logRepair(node,{objectId,mentorId,learnerIds,hours,what},actorId){
+  const o=objectsOf(node).find(x=>x.id===objectId);
+  if(!o)throw{msg:'Aquest objecte no hi és'};
+  const h=Number(hours)||0;
+  if(h<=0)throw{msg:'Una sessió de reparació dura alguna estona: posa-hi les hores'};
+  const learners=[...new Set((learnerIds||[]).filter(Boolean))];
+  if(!mentorId&&!learners.length)throw{msg:'Cal com a mínim qui repara'};
+  const label=(what||'').trim()||'Reparació';
+  const out=[];
+  if(mentorId){const m=memberById(node,mentorId);
+    out.push(await submitEntry(node,{id:uid(),who:m?m.name:'',what:label+' · mentoria a '+o.name,
+      deliverables:'Reparació i transferència de coneixement',type:'temps',value:h,memberId:mentorId,
+      counterpartId:null,objectId:o.id,circular:'reparacio',role:'mentor',ts:now()},actorId));}
+  for(const lid of learners){const m=memberById(node,lid);
+    out.push(await submitEntry(node,{id:uid(),who:m?m.name:'',what:label+' · '+o.name+' (aprenent)',
+      deliverables:'Reparació feta aprenent',type:'temps',value:h,memberId:lid,counterpartId:null,
+      objectId:o.id,circular:'reparacio',role:'aprenent',ts:now()},actorId));}
+  o.repairs=(Number(o.repairs)||0)+1;
+  o.lastRepair=now();
+  if(o.status==='reparacio')o.status='disponible';
+  return{results:out,pending:out.filter(r=>r&&r.status==='pendent').length};
+}
+/* Els indicadors del certificat d'economia circular. Cap número nou: tots
+   surten del registre i dels objectes que ja hi són. */
+function circularStats(node){
+  const objs=objectsOf(node),led=(node.ledger||[]);
+  const donats=objs.filter(o=>o.mode==='donacio');
+  const disp=objs.filter(o=>o.mode!=='donacio');
+  const prestecs=objs.reduce((a,o)=>a+(Number(o.loans)||0),0);
+  const reparats=objs.filter(o=>(Number(o.repairs)||0)>0);
+  const reparacions=objs.reduce((a,o)=>a+(Number(o.repairs)||0),0);
+  let valorDonat=0,valorDesgast=0,horesFormatives=0,horesMentoria=0;
+  const aprenents=new Set(),mentors=new Set();
+  led.forEach(e=>{
+    const v=Number(e.value)||0;
+    if(e.circular==='donacio')valorDonat+=v;
+    else if(e.circular==='desgast')valorDesgast+=v;
+    else if(e.circular==='reparacio'){
+      if(e.role==='aprenent'){horesFormatives+=v;if(e.memberId)aprenents.add(resolveMemberId(node,e.memberId));}
+      else{horesMentoria+=v;if(e.memberId)mentors.add(resolveMemberId(node,e.memberId));}
+    }
+  });
+  /* «Compra evitada» és el que la comunitat s'ha estalviat de comprar: cada
+     préstec és una compra que algú no ha fet. És una estimació de l'oracle i es
+     diu que ho és. */
+  const compraEvitada=objs.reduce((a,o)=>a+(Number(o.loans)||0)*oracleObjectValue(node,o),0);
+  const r2=n=>Math.round(n*100)/100;
+  return{objectes:objs.length,donats:donats.length,disposicio:disp.length,
+    prestecs,reparacions,objectesReparats:reparats.length,
+    valorDonat:r2(valorDonat),valorDesgast:r2(valorDesgast),compraEvitada:Math.round(compraEvitada),
+    horesFormatives:r2(horesFormatives),horesMentoria:r2(horesMentoria),
+    aprenents:aprenents.size,mentors:mentors.size,
+    valorTotal:r2(valorDonat+valorDesgast)};
+}
+/* Sessió de reparació. La pantalla ha de dir el que el model diu: que l'aprenent
+   hi guanya reputació **pel que aporta**, no només un certificat pel que aprèn. */
+function openRepairForm(node,o){
+  const ms=membersOf(node);
+  if(ms.length<1){toast('Dona d\'alta algú primer');return;}
+  const opt=ms.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join('');
+  const bg=modal(`
+    <h2>🛠 Sessió de reparació · ${esc(o.name)}</h2>
+    <p class="m-sub">Aquí la biblioteca deixa de ser un magatzem i passa a ser una escola. <strong>Les dues bandes aporten valor</strong>: qui ensenya hi posa ofici i transferència de coneixement, i qui aprèn <strong>repara de debò</strong> — la seva reparació és valor lliurat a la comunitat, no un cost de formació.</p>
+    <div class="field"><label>Qui ensenya (opcional)</label><select id="rpMentor"><option value="">— ningú, es repara sense mentoria —</option>${opt}</select></div>
+    <div class="field"><label>Qui repara aprenent</label>
+      <div class="wz-chips" id="rpLearners">${ms.map(m=>'<button type="button" class="btn btn-ghost btn-sm rp-l" data-id="'+m.id+'">'+esc(m.name)+'</button>').join('')}</div></div>
+    <div class="field"><label>Hores de la sessió (per persona)</label><input id="rpH" type="number" min="0" step="0.5" placeholder="2"></div>
+    <div class="field"><label>Què s'ha arreglat</label><input id="rpWhat" maxlength="80" placeholder="p.ex. Canvi d'escombretes i cable"></div>
+    <div class="ai-note"><span class="ic">⬢</span><span>Cada persona que hi posa temps genera el seu apunt signat al registre. Les hores són <strong>reals</strong>, no estimades.</span></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="rpCancel">Cancel·la</button><button class="btn btn-primary" id="rpSave">⬢ Registra la sessió</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const learners=[];
+  bg.querySelectorAll('.rp-l').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.id,i=learners.indexOf(id);
+    if(i>=0){learners.splice(i,1);b.classList.remove('sel');}else{learners.push(id);b.classList.add('sel');}
+  });
+  bg.querySelector('#rpCancel').onclick=closeModal;
+  bg.querySelector('#rpSave').onclick=async()=>{
+    const mentorId=bg.querySelector('#rpMentor').value||null;
+    try{
+      const r=await logRepair(node,{objectId:o.id,mentorId,learnerIds:learners,
+        hours:bg.querySelector('#rpH').value,what:bg.querySelector('#rpWhat').value},(meIn(node)||{}).id||null);
+      await persist(node);closeModal();state.tab='biblioteca';renderWorkspace();
+      toast(r.pending?('Sessió enviada · '+r.pending+' apunt(s) esperen vistiplau'):'🛠 Sessió registrada · '+r.results.length+' aportació(ns) al registre',4000);
+    }catch(e){toast(e&&e.msg?e.msg:'No s\'ha pogut registrar');}
   };
 }
 function reserveObject(node,o){
@@ -9412,11 +9637,11 @@ function searchActions(list,q){
   });
 }
 function ledgerTotals(list){
-  const t={hores:0,euros:0,signats:0,encadenats:0,persones:new Set(),nodes:new Set()};
-  list.forEach(x=>{if(x.type==='moneda')t.euros+=x.value;else t.hores+=x.value;
+  const t={hores:0,euros:0,objectes:0,signats:0,encadenats:0,persones:new Set(),nodes:new Set()};
+  list.forEach(x=>{if(x.type==='moneda')t.euros+=x.value;else if(x.type==='objecte')t.objectes+=x.value;else t.hores+=x.value;
     if(x.signed)t.signats++;if(x.chained)t.encadenats++;
     if(x.personKey)t.persones.add(x.personKey);t.nodes.add(x.nodeId);});
-  return{hores:Math.round(t.hores*10)/10,euros:Math.round(t.euros*10)/10,signats:t.signats,
+  return{hores:Math.round(t.hores*10)/10,euros:Math.round(t.euros*10)/10,objectes:Math.round(t.objectes*100)/100,signats:t.signats,
     encadenats:t.encadenats,persones:t.persones.size,nodes:t.nodes.size,total:list.length};
 }
 /* Verificació criptogràfica de debò: es torna a comprovar la firma de cada apunt
@@ -11059,7 +11284,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

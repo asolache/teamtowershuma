@@ -688,6 +688,42 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 45 — Donar una cosa i deixar-la no és el mateix
+
+Posar un objecte a la biblioteca no valia res al registre: es publicava i prou.
+Però una biblioteca de les coses **produeix valor real**, i el que no es compta
+no es pot ni certificar ni retribuir.
+
+Hi havia dues coses confoses en una:
+
+- **Donació** — l'objecte passa al comú. El valor és el bé cedit, **una vegada**.
+- **Posada a disposició** — segueix sent teu, el prestes. El valor **no és el
+  preu de l'objecte**, perquè no el regales. El que aportes és **el risc i el
+  desgast**, i la revisió o reparació que aquell objecte generarà.
+
+D'aquí surt la decisió que ho canvia tot: **es valora per préstec, no d'una sola
+vegada**. Una eina elèctrica prestada quaranta vegades no aporta el mateix que
+una tenda plantada dues, i una declaració inicial no pot saber quina de les dues
+serà. Cada retorn genera un apunt petit i signat a favor de qui l'ha posat a
+disposició, i el valor s'acumula amb **l'ús real**. Es compta al retorn i no en
+prestar, perquè el desgast encara no s'ha produït quan surt per la porta.
+
+**L'aprenent no és un cost.** A la sessió de reparació hi ha dues aportacions,
+no una amb un beneficiari: qui ensenya hi posa ofici i transferència de
+coneixement —l'intangible que a la VNA sosté tota la resta— i **qui aprèn repara
+de debò**, i aquella reparació és valor lliurat a la comunitat. Els dos generen
+apunt. Un model *fair* no és el que reparteix bé al final: és el que **compta bé
+pel camí**, i que compta el que normalment no es compta.
+
+I la regla que impedeix que tot això es converteixi en fum: **un valor estimat no
+pot passar per diner real**. Els objectes tenen el seu propi tipus d'apunt
+(`objecte`), amb `estimate:true` i la font de l'oracle a dins. No sumen amb les
+hores, no sumen amb el capital, i a l'equity entren com a aportació no dinerària
+**ja valorada en euros** —passar-los per la tarifa horària els hauria multiplicat
+per quinze. La pantalla diu sempre quins números són estimació i quins surten del
+registre signat. Un número inventat que sembli comptabilitat és pitjor que no
+tenir-lo.
+
 ## Veda 44 — Dues llistes raonables poden no parlar-se
 
 El banc de temps té «petites reparacions de la llar». La biblioteca de les coses

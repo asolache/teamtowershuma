@@ -74,13 +74,14 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 **P2 · Tot seguit — que el que es compta sigui just**
 
-4. **Biblioteca circular** (donació vs posada a disposició · valor per préstec ·
-   sessió de reparació amb mentora i aprenents). És **el model fair a la
-   pràctica**: avui donar un objecte no val res al registre, i el risc de qui
-   presta i el temps de qui ensenya no es compten enlloc. Reutilitza
-   `oracleObjectValue`, `pushLedger` i el camí de `logSession` —no cal primitiva
-   nova. Ordre intern: donació/disposició → sessió de reparació → indicadors del
-   certificat circular.
+4. **Biblioteca circular** · **fet (V45)**. `OBJECT_MODES` separa donació de
+   posada a disposició; `loanValue` valora **per préstec** amb coeficient de
+   desgast per tipologia i s'escriu **al retorn**, no en prestar; `logRepair`
+   registra la sessió amb mentora **i aprenents**, tots dos com a aportació;
+   `circularStats` dona els indicadors del certificat (préstecs, compra evitada,
+   reparacions, hores formatives, objectes salvats). Tipus d'apunt propi
+   (`objecte`, amb `estimate:true`) perquè un valor estimat no es coli on hi ha
+   d'haver diner real. 54 assercions a `test-circular`.
 5. **Rols múltiples per context.** `roleOfPerson` retorna **un** rol i decideix
    la lent de tot el SOS; una persona real és superheroina al seu barri i mentora
    d'una MATRIU alhora. Va aquí i no més avall perquè **l'app de missions depèn
