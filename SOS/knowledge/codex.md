@@ -688,6 +688,42 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 47 — Publicar no és publicar-ho tot
+
+L'objectiu és que algú d'un poble premi un botó i el que ha decidit compartir
+quedi publicat perquè algú altre ho trobi. La temptació és òbvia: agafar el
+catàleg i penjar-lo. Però publicar «hi ha algú a Manresa que fa fusteria» **no
+és** publicar qui és, ni el seu telèfon, ni el seu registre. I publicar és
+irreversible a la pràctica: un paquet que algú ja ha copiat no es retira.
+
+Per això la decisió del **gra** va abans que el botó, i és aquesta: **el que surt
+és agregat**. Categoria + municipi + quants. El paquet et diu **on preguntar, no
+a qui**. El node és la porta, i un node és una comunitat, no una persona.
+
+D'aquí surten tres coses que semblaven detalls i no ho són:
+
+- **Els títols lliures no surten.** Sonava excessiu fins que es va veure el cas:
+  algú escriu «Trepant d'en Quim Ferrer» o «Fusteria a casa de la Berta», i el
+  nom hauria sortit igualment **sense que ningú ho hagués decidit**. Un camp que
+  qualsevol pot omplir amb el que vulgui no es pot publicar mai.
+- **Deny by default, i node a node.** No surt res de cap node fins que aquell
+  node ho demana explícitament, i per separat per a habilitats i per a objectes.
+  Un valor per defecte que publica és una fuita amb bona intenció.
+- **La comprovació és codi, no un test.** `verifyNoLeak` recorre tots els noms,
+  contactes, `did`, títols i apunts que hi ha al SOS i els busca dins del JSON
+  que viatjarà; i a més rebutja **qualsevol clau fora de la llista blanca**,
+  encara que el valor sembli innocu. Si falla, **el botó no publica**. Una
+  garantia que només viu a la suite de tests protegeix el desenvolupador, no la
+  persona.
+
+I la mateixa porta funciona en tots dos sentits: el paquet que **entra** passa
+pel mateix sedàs que el que surt. Un paquet manipulat amb camps de més no pot
+afegir res de nou al SOS de qui el llegeix.
+
+Finalment, la pantalla ensenya **la taula sencera del que sortirà** abans de
+deixar-te descarregar res. Qui no ho entengui no ha de poder prémer el botó
+sense haver-ho vist.
+
 ## Veda 46 — Una persona no és un rol
 
 `roleOfPerson` retornava **un** rol, i amb aquell rol es decidia la lent de tot

@@ -95,10 +95,17 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 **P3 · Després — la cara pública, quan ja hi ha què publicar**
 
-6. **`publicPack` d'habilitats i objectes amb privadesa verificable.** L'ordre
-   dins d'aquest punt no és negociable: **primer el gra i el test de no-fuita**
-   (deny by default, com `privacyNoLeak`), després la publicació. Publicar és
-   irreversible: un pack replicat no es desfà.
+6. **`publicPack` d'habilitats i objectes amb privadesa verificable** ·
+   **fet (V47)**. El gra és **agregat**: categoria + municipi + quants, i el
+   paquet diu **on preguntar, no a qui**. *Deny by default* node a node i per
+   separat per a habilitats i objectes (`publishScopeOf`, `setPublishScope`).
+   **Els títols lliures no surten** —«Trepant d'en Quim Ferrer» hauria publicat
+   un nom sense que ningú ho decidís. `verifyNoLeak` és **codi i no un test**:
+   busca tots els noms, contactes, `did`, títols i apunts del SOS dins del JSON
+   que viatjarà, rebutja qualsevol clau fora de la llista blanca, i **si falla
+   el botó no publica**. `readSupplyPack` aplica el mateix sedàs a l'entrada.
+   La pantalla ensenya la taula sencera abans de descarregar. 43 assercions a
+   `test-publica`.
 7. **Sincronització automàtica amb control de versions** (abast triable, cada
    publicació una versió amb CID i pare). Sense el punt 6 no té sobre què córrer.
 8. **Codi de sala** (`A3`) i **lectura de QR des de dins** (`A4`). Van aquí, no
@@ -552,6 +559,15 @@ bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultat
   que hi afegíem una targeta; ara comprova que cada perfil tingui la seva acció.
   Tenir tests vermells que no són defectes erosiona la confiança en tota la
   suite: o són verds o no hi són.
+- ~~`test-atles`, `test-atles-main`, `test-atles2`, `test-dir`~~ · **infraestructura
+  i recomptes fixos, no defectes**. Els quatre esperaven un servidor HTTP que
+  ningú arrencava (l'atles fa `fetch` i `file://` el bloqueja): ara se'l munten
+  ells amb `serve.mjs`. Tres fixaven «6 entitats» quan l'atles ja en té 17;
+  comproven la invariant —que en carrega alguna, que **tots els paquets
+  arriben** (`updateAtles.last.complete`, V41) i que la segona càrrega dona el
+  mateix— en comptes d'un número que canvia cada cop que l'atles creix. I
+  `test-dir` llegia el recompte **amb la càrrega a mig fer**, així que la
+  comparació d'després de recarregar fallava per una cursa del test.
 - ~~`test-formacio`~~ · **tampoc era un defecte, era un test obsolet**. Fixava
   `.module === 8` i quatre recomptes de caixes a 8, i `formacio.html` ja té 16
   mòduls; a més, els mòduls nous fan servir `.box.metode` on els primers feien
