@@ -141,8 +141,20 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 **P4 · Quan l'MVP estigui polit**
 
-9. **App de mòbil per missions.** És una **altra app**, no la mateixa amb la
-   pantalla petita. Depèn del punt 5.
+9. **App de mòbil per missions** · **fet (V51)**. `missions()` reuneix el que el
+   sistema ja sabia (`pendingInbox`, `dashboardAttention`, `supplyMatches`,
+   `dueStatus`, `journeyProgress`, reptes del tier) i ho converteix en una
+   **portada pròpia** sense arbre, sense pestanyes i sense res per configurar:
+   una llista, un botó gros per missió. Cada missió diu **què passarà si la fas**
+   i quant costa; l'ordre és **per qui espera**, no per importància abstracta.
+   Mai és buida per a qui té perfil. Ruta `#/missions`, entrada des del tauler i
+   de la paleta. 36 assercions a `test-missions`.
+
+   **Decisió d'arquitectura resolta**: un sol fitxer amb capa de portada, no un
+   segon `index.html`. El cost mesurat és una funció i un bloc de CSS, i es manté
+   el zero-servidor. *(Va aparèixer un tercer desbordament a 360 px: amb la
+   sessió activa la barra tornava a sortir. El text de l'estat de sync s'amaga
+   de la vista però no dels lectors de pantalla.)*
 10. **MATRIU F5–F8** (finançament i tràmits · formació per etapa · seguiment
     post-graduació · evidències). F1–F4 ja fan que sigui un servei; aquestes la
     completen.

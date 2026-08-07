@@ -688,6 +688,41 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 51 — L'app de gestió ensenya estructura; la de la gent ensenya el següent pas
+
+El SOS que hem construït fins ara és l'app d'**administració**: mostra qui, on,
+quant i per què, i està feta per a qui coordina. Qui participa no necessita
+estructura —necessita **el següent pas**. Barrejar les dues coses és el que fa
+que una eina comunitària només l'acabin fent servir tres persones.
+
+Per això les missions **no són un panell més dins del tauler**: són una portada
+pròpia, sense arbre, sense pestanyes i sense res per configurar. Una llista, i
+cada cosa amb un sol botó gros. La pantalla ho diu de si mateixa: «aquesta
+pantalla no et deixa configurar res, només fer».
+
+Res d'això inventa dades. Totes les missions surten del que el sistema ja sabia
+—`pendingInbox`, `dashboardAttention`, `supplyMatches`, `dueStatus`,
+`journeyProgress`, els reptes del tier. El que canvia és **què és el centre de la
+pantalla**, i això és precisament el disseny.
+
+Tres decisions que fan que sigui una llista de missions i no una llista de
+deures:
+
+- **Cada missió diu què passarà si la fas.** «Fins que no responguis, no compta
+  per a ningú.» «Qui l'espera el podrà fer servir.» Sense aquesta frase, una
+  llista de coses per fer és una llista de retrets.
+- **L'ordre és per qui espera, no per importància abstracta.** Primer el que té
+  algú altre aturat, després el que et frena a tu, i al final el que et fa
+  créixer. **Fer esperar una persona és més urgent que qualsevol progrés propi.**
+- **Mai és buida per a qui té perfil.** Algú acabat d'arribar no té ningú
+  esperant-lo, però tampoc es queda davant d'una pantalla muda: el seu recorregut
+  i els seus reptes ja són missions. Una portada que de vegades no diu res no pot
+  ser la portada.
+
+I la que decideix l'arquitectura: **un sol fitxer, una capa de portada**. No un
+segon `index.html`. Mantenir el zero-servidor i el fitxer únic era la condició, i
+el cost mesurat és una funció i un bloc de CSS —res comparat amb duplicar l'app.
+
 ## Veda 50 — Mesurar abans de patir, i comprovar que la prova comprova
 
 500 nodes i 5.000 apunts —l'ordre de magnitud d'una comarca al cap de dos
