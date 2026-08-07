@@ -688,6 +688,40 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 48 — Una versió és un canvi, no una data
+
+Publicar una vegada és fàcil. El problema és el segon dia: has canviat coses, i
+ni tu ni ningú sap què va sortir l'última vegada ni què ha canviat des de
+llavors. Sense això, «torna-ho a publicar» és una acció a cegues, i qui la fa no
+pot respondre la pregunta que importa —*què estic canviant del que la gent ja
+té?*
+
+Cada publicació guarda el seu **CID** i el **CID del seu pare**, i d'aquí surten
+les tres coses que ho fan utilitzable: saber si el que tens ara és diferent del
+que vas publicar, veure **què** ha canviat, i poder tornar enrere.
+
+La decisió que ho fa funcionar és petita i fàcil de fer malament: **el CID no
+inclou la data de generació**. Si la inclogués, construir el paquet dues vegades
+seguides en donaria dues versions diferents sense haver tocat res, i l'historial
+passaria a ser un registre del rellotge en comptes d'un registre dels canvis.
+Per la mateixa raó, publicar contingut idèntic a l'últim **no crea cap versió
+nova**: repetir el mateix amb una data diferent no és versionar, és fer soroll.
+
+**Tornar enrere no esborra res.** Restaurar publica una versió *nova* amb el
+contingut d'una d'antiga, encadenada a sobre de la que hi havia. Esborrar la
+versió intermèdia seria mentir sobre el que es va publicar —i el que ja s'ha
+replicat no es desfà igualment.
+
+I una que val per a qualsevol automatisme: **l'automàtic no es salta la
+comprovació**. Si `verifyNoLeak` troba una fuita, el versionat automàtic
+s'atura. Un automatisme que es salta la revisió perquè «ja anirà bé» és pitjor
+que no tenir-lo, perquè la fa a la teva esquena.
+
+Finalment, l'automatisme es diu **amb el que fa i amb el que no**: estampa
+versions al teu historial, **no puja res a cap servidor**. Anomenar-ho
+«sincronització» quan el destí depèn de relés de tercers que encara no hi són
+seria vendre el que no hi ha.
+
 ## Veda 47 — Publicar no és publicar-ho tot
 
 L'objectiu és que algú d'un poble premi un botó i el que ha decidit compartir

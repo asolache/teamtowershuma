@@ -106,8 +106,21 @@ camí crític d'una eina que ha de funcionar sense xarxa.
    el botó no publica**. `readSupplyPack` aplica el mateix sedàs a l'entrada.
    La pantalla ensenya la taula sencera abans de descarregar. 43 assercions a
    `test-publica`.
-7. **Sincronització automàtica amb control de versions** (abast triable, cada
-   publicació una versió amb CID i pare). Sense el punt 6 no té sobre què córrer.
+7. **Control de versions de les publicacions** · **fet (V48)**. Cada publicació
+   guarda el seu **CID i el del seu pare**; `publicationDiff` diu **què** ha
+   canviat (afegit, modificat, retirat) i `pubStatus` si el que tens ara és
+   diferent del que vas publicar. El CID **no inclou la data de generació**, així
+   que una versió és un canvi de contingut i no una passada de rellotge, i
+   publicar el mateix dues vegades no crea versió nova. `rollbackPublication`
+   torna enrere **publicant una versió nova** amb contingut antic, sense esborrar
+   cap versió intermèdia. El versionat automàtic (`setAutoPublish`) s'atura si
+   `verifyNoLeak` troba una fuita. 42 assercions a `test-versions`.
+
+   **El que NO fa, dit clar**: no puja res a cap servidor. La sincronització
+   remota depèn de relés de tercers (Nostr, Arweave, IPFS) i és al tram P5;
+   anomenar «sincronització» el que és versionat local seria vendre el que no hi
+   ha. L'historial és el que farà que, quan la xarxa hi sigui, publicar-hi sigui
+   només el darrer pas.
 8. **Codi de sala** (`A3`) i **lectura de QR des de dins** (`A4`). Van aquí, no
    a P1, per una raó concreta: **depenen de trackers WSS públics i de
    `BarcodeDetector`**. Milloren molt l'experiència, però el sync ha de

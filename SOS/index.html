@@ -1403,7 +1403,7 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler',dossiers:{},lensRole:null};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler',dossiers:{},lensRole:null,autoPublish:false};
 // Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
 async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
 async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
@@ -1689,7 +1689,7 @@ function newNode(name,level,parentId){return{id:uid(),name:name.trim(),nodeLevel
   metaskill:{mission:'',vision:'',objectives:''},
   vna:{roles:[],exchanges:[]},kanban:{cards:[]},ledger:[],
   createdAt:now(),updatedAt:now()};}
-async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();syncBroadcast(node,'node');}
+async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();syncBroadcast(node,'node');schedulePublish();}
 
 /* ═══════════ ENTITATS (directori / atles d'economia social) ═══════════ */
 // Tipus d'entitat per nivell territorial [id, etiqueta, icona]
@@ -10994,6 +10994,110 @@ function readSupplyPack(pack){
   return rows.map(r=>{const o={};PUBLIC_SUPPLY_FIELDS.forEach(f=>{if(r[f]!==undefined)o[f]=r[f];});return o;})
     .filter(o=>o.kind&&o.category);
 }
+/* ═══════════ Cada publicació és una versió ═══════════
+   Publicar una vegada és fàcil. El problema apareix el segon dia: has canviat
+   coses, i ni tu ni ningú sap què va sortir l'última vegada ni què ha canviat
+   des de llavors. Sense això, «tornar-ho a publicar» és una acció a cegues.
+
+   Cada publicació guarda el seu **CID** i el **CID del seu pare**, i d'aquí
+   surten les tres coses que fan que això sigui utilitzable: saber si el que
+   tens ara és diferent del que vas publicar, veure **què** ha canviat, i poder
+   tornar a una versió anterior.
+
+   La decisió que ho fa funcionar: **el CID no inclou la data de generació**. Si
+   la inclogués, cada vegada que construïssis el paquet en sortiria una versió
+   nova encara que no haguessis tocat res, i l'historial es convertiria en un
+   registre del rellotge en comptes d'un registre dels canvis. Una versió és un
+   canvi de contingut. */
+const PUBS_ID='__publications';
+const pubBody=pack=>({supply:(pack&&pack.supply)||[]});
+const publicationCid=async pack=>_cidOf(pubBody(pack));
+async function loadPublications(){
+  try{const all=await dbGetAll();const r=all.find(n=>n.id===PUBS_ID);return(r&&r.list)||[];}catch(e){return [];}
+}
+async function savePublications(list){
+  try{await dbPut({id:PUBS_ID,type:'meta',list:list.slice(0,50)});}catch(e){}
+  return list;
+}
+/* Desa una versió. Si el contingut és idèntic a l'última, **no en crea cap de
+   nova**: repetir la mateixa versió amb una data diferent no és versionar, és
+   fer soroll. */
+async function recordPublication(pack,{note,auto}={}){
+  const list=await loadPublications();
+  const cid=await publicationCid(pack);
+  const last=list[0]||null;
+  if(last&&last.cid===cid){last.seenAt=now();await savePublications(list);return{version:last,isNew:false};}
+  const v={cid,parent:last?last.cid:null,ts:now(),seenAt:now(),
+    count:(pack.supply||[]).length,nodes:pack.nodes||0,auto:!!auto,note:(note||'').trim(),
+    body:pubBody(pack)};
+  list.unshift(v);await savePublications(list);
+  return{version:v,isNew:true};
+}
+// Què hi ha ara que no hi hagués abans, i a l'inrevés. La clau d'una fila és
+// què és i on: node + mena + direcció + categoria.
+const _pubKey=r=>[r.nodeId,r.kind,r.dir,r.category].join('§');
+function publicationDiff(fromBody,toBody){
+  const A={},B={};
+  ((fromBody&&fromBody.supply)||[]).forEach(r=>A[_pubKey(r)]=r);
+  ((toBody&&toBody.supply)||[]).forEach(r=>B[_pubKey(r)]=r);
+  const added=[],removed=[],changed=[];
+  Object.keys(B).forEach(k=>{
+    if(!A[k]){added.push(B[k]);return;}
+    if(A[k].count!==B[k].count||A[k].people!==B[k].people)changed.push({from:A[k],to:B[k]});
+  });
+  Object.keys(A).forEach(k=>{if(!B[k])removed.push(A[k]);});
+  return{added,removed,changed,total:added.length+removed.length+changed.length};
+}
+/* Si el que tens ara és diferent del que vas publicar. Sense última versió, el
+   que hi ha pendent és **tot**: no s'ha publicat mai res. */
+async function pubStatus(){
+  const pack=supplyPublicPack();
+  const list=await loadPublications();
+  const last=list[0]||null;
+  const cid=await publicationCid(pack);
+  if(!last)return{pack,cid,last:null,fresh:!pack.count,diff:publicationDiff({supply:[]},pubBody(pack)),versions:0};
+  return{pack,cid,last,fresh:last.cid===cid,diff:publicationDiff(last.body,pubBody(pack)),versions:list.length};
+}
+// Publicació automàtica: quan està encesa, cada canvi del que has decidit
+// compartir queda estampat com a versió sense que hagis de recordar-te'n.
+async function setAutoPublish(on){
+  state.autoPublish=!!on;
+  try{if(on)await dbPut({id:'__autopub',type:'meta',on:true});else await dbDelete('__autopub');}catch(e){}
+  if(on)await autoPublishTick();
+  return state.autoPublish;
+}
+async function loadAutoPublish(){try{const all=await dbGetAll();state.autoPublish=!!all.find(n=>n.id==='__autopub');}catch(e){}return state.autoPublish;}
+let _autoPubT=null;
+async function autoPublishTick(){
+  if(!state.autoPublish)return null;
+  const pack=supplyPublicPack();
+  if(!pack.count)return null;
+  const leak=verifyNoLeak(pack);
+  /* Ni tan sols automàticament: si hi ha una fuita, no es versiona. Un
+     automatisme que es salta la comprovació és pitjor que no tenir-lo. */
+  if(!leak.ok)return{blocked:leak.leaks};
+  return await recordPublication(pack,{auto:true});
+}
+// S'agenda enrere de `persist` perquè un canvi qualsevol pot moure el paquet,
+// i es fa amb retard perquè escriure deu coses seguides és **un** canvi.
+function schedulePublish(){
+  if(!state.autoPublish)return;
+  clearTimeout(_autoPubT);
+  _autoPubT=setTimeout(()=>{autoPublishTick().catch(()=>{});},2500);
+}
+async function rollbackPublication(cid){
+  const list=await loadPublications();
+  const v=list.find(x=>x.cid===cid);
+  if(!v)throw{msg:'Aquesta versió no hi és'};
+  /* Tornar enrere **no** reescriu l'historial: es publica una versió nova amb
+     el contingut d'una d'antiga. Esborrar el que va passar seria mentir sobre
+     el que es va publicar, i el que ja s'ha replicat no es desfà igualment. */
+  const pack={'@context':'https://teamtowers.io/sos/v11','@type':SUPPLY_PACK_TYPE,
+    generated:now(),count:v.body.supply.length,
+    nodes:[...new Set(v.body.supply.map(r=>r.nodeId))].length,supply:v.body.supply};
+  const res=await recordPublication(pack,{note:'Torna a la versió de '+relTime(v.ts)});
+  return{pack,...res};
+}
 /* Publicar és irreversible a la pràctica: un paquet replicat no es desfà. Per
    això la pantalla ensenya **exactament què sortirà**, fila a fila, abans de
    deixar-te descarregar res —i qui no ho entengui no ha de poder prémer el botó
@@ -11012,6 +11116,7 @@ function openPublishSupply(){
       <div class="ai-note"><span class="ic">⚠</span><span><strong>Publicar no es pot desfer.</strong> Un paquet que algú altre ja ha copiat no es retira. Mira la taula de sota: això és exactament el que sortirà.</span></div>
       <div class="ent-grp-lbl">1 · Quins nodes publiquen</div>
       <div id="psNodes"></div>
+      <div id="psAuto"></div>
       <div class="ent-grp-lbl">2 · Què sortirà · ${pack.count} fila${pack.count===1?'':'es'} de ${pack.nodes} node${pack.nodes===1?'':'s'}</div>
       ${leak.ok
         ? '<div class="ai-note"><span class="ic">✓</span><span>Comprovat: cap nom, contacte, identitat, títol lliure ni apunt del registre dins del paquet.</span></div>'
@@ -11020,6 +11125,7 @@ function openPublishSupply(){
       <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem">
         <button class="btn btn-ghost" id="psClose">Tanca</button>
         <button class="btn btn-ghost" id="psRead">📥 Llegeix un paquet</button>
+        <button class="btn btn-ghost" id="psHist">🗂 Versions</button>
         <button class="btn btn-primary" id="psGo"${(!pack.count||!leak.ok)?' disabled style="opacity:.45"':''}>⬇ Descarrega el paquet</button>
       </div>`;
   };
@@ -11043,17 +11149,83 @@ function openPublishSupply(){
       });
       c.appendChild(row);box.appendChild(c);
     });
+    /* L'automatisme es diu amb el que fa i amb el que no: estampa versions al
+       teu historial, no puja res enlloc. Prometre una sincronització remota que
+       depèn de relés de tercers seria vendre el que no hi ha. */
+    const ab=bg.querySelector('#psAuto');
+    const auto=el('button','btn btn-ghost btn-sm'+(state.autoPublish?' sel':''),
+      (state.autoPublish?'⟳ Versionat automàtic actiu':'⟳ Versiona automàticament'));
+    auto.onclick=async()=>{await setAutoPublish(!state.autoPublish);
+      const m=bg.querySelector('.modal');m.innerHTML=paint();wire();};
+    ab.innerHTML='';ab.appendChild(auto);
+    ab.appendChild(el('div','wz-key-note','Estampa una versió al teu historial cada cop que canvia el que has decidit compartir. <strong>No puja res a cap servidor</strong> — descarregar i publicar el fitxer segueix sent cosa teva.'));
+    (async()=>{
+      const st=await pubStatus();
+      if(!st.last)return;
+      const d=st.diff;
+      ab.appendChild(el('div','wz-key-note',st.fresh
+        ?'✓ El paquet és igual que l\'última versió publicada ('+st.versions+' al total).'
+        :'⟳ '+d.total+' canvi'+(d.total===1?'':'s')+' des de l\'última versió: '+d.added.length+' nous · '+d.changed.length+' modificats · '+d.removed.length+' retirats.'));
+    })();
     bg.querySelector('#psClose').onclick=closeModal;
+    bg.querySelector('#psHist').onclick=()=>openPublicationHistory();
     bg.querySelector('#psRead').onclick=()=>openReadSupplyPack();
     const go=bg.querySelector('#psGo');
     if(go&&!go.disabled)go.onclick=()=>{
       const pack=supplyPublicPack(),leak=verifyNoLeak(pack);
       if(!leak.ok){toast('No es publica: '+leak.leaks[0]);return;}
       downloadText('sos-habilitats-'+now().slice(0,10)+'.json',JSON.stringify(pack,null,2));
-      toast('Paquet descarregat · '+pack.count+' files agregades',4000);
+      recordPublication(pack).then(r=>{
+        toast(r.isNew
+          ?('Paquet descarregat i versionat · '+pack.count+' files')
+          :('Paquet descarregat · idèntic a l\'última versió, no se n\'ha creat cap de nova'),4200);
+      }).catch(()=>toast('Paquet descarregat · '+pack.count+' files agregades',4000));
     };
   };
   wire();
+}
+/* L'historial. Es llegeix com un registre de canvis, no com una llista de
+   dates: cada versió diu **què va canviar respecte de l'anterior**. */
+function openPublicationHistory(){
+  const bg=modal('<h2>🗂 Versions publicades</h2><div id="phBody">Carregant…</div><div class="modal-actions"><button class="btn btn-ghost" id="phClose">Tanca</button></div>');
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#phClose').onclick=closeModal;
+  const paint=async()=>{
+    const box=bg.querySelector('#phBody');if(!box||!box.isConnected)return;
+    const list=await loadPublications(),st=await pubStatus();
+    if(!list.length){
+      box.innerHTML='<div class="ai-note"><span class="ic">🌱</span><span>Encara no has publicat res. Quan ho facis, cada publicació quedarà aquí amb el seu CID i el seu pare, i podràs veure què va canviar entre una i l\'altra.</span></div>';
+      return;
+    }
+    const d=st.diff;
+    box.innerHTML=(st.fresh
+      ? '<div class="ai-note"><span class="ic">✓</span><span>El que tens ara és <strong>exactament</strong> l\'última versió publicada.</span></div>'
+      : '<div class="ai-note"><span class="ic">⟳</span><span><strong>'+d.total+' canvi'+(d.total===1?'':'s')+' sense publicar</strong> · '+d.added.length+' nous, '+d.changed.length+' modificats, '+d.removed.length+' retirats.</span></div>')+
+      list.map((v,i)=>{
+        const prev=list[i+1];
+        const dd=prev?publicationDiff(prev.body,v.body):publicationDiff({supply:[]},v.body);
+        return '<div class="ent-card"'+(i===0?' style="border-left:3px solid var(--green)"':'')+'>'+
+          '<div class="ent-nm">'+(i===0?'▸ ':'')+'v'+(list.length-i)+' · '+esc(relTime(v.ts))+(v.auto?' <span class="ent-b">automàtica</span>':'')+'</div>'+
+          '<div class="ent-desc" style="font-family:var(--mono);font-size:.66rem;word-break:break-all">'+esc(v.cid)+'</div>'+
+          (v.parent?'<div class="ent-desc" style="color:var(--muted);font-size:.68rem">pare: '+esc(v.parent.slice(0,24))+'…</div>':'<div class="ent-desc" style="color:var(--muted);font-size:.68rem">primera versió</div>')+
+          '<div class="ent-badges"><span class="ent-b">'+v.count+' files</span>'+
+          (dd.added.length?'<span class="ent-b b-ver">+'+dd.added.length+'</span>':'')+
+          (dd.changed.length?'<span class="ent-b b-form">~'+dd.changed.length+'</span>':'')+
+          (dd.removed.length?'<span class="ent-b b-unver">−'+dd.removed.length+'</span>':'')+'</div>'+
+          (v.note?'<div class="ent-desc">'+esc(v.note)+'</div>':'')+
+          (i>0?'<button class="btn btn-ghost btn-sm ph-back" data-cid="'+esc(v.cid)+'" style="margin-top:.4rem">↩ Torna a aquesta versió</button>':'')+
+          '</div>';
+      }).join('')+
+      '<div class="wz-key-note">Tornar enrere <strong>no esborra</strong> cap versió: publica una de nova amb el contingut d\'una d\'antiga. El que ja s\'ha replicat no es desfà, i fer veure que sí seria mentir sobre el que va sortir.</div>';
+    box.querySelectorAll('.ph-back').forEach(b2=>b2.onclick=async()=>{
+      if(!confirm('Publicar una versió nova amb el contingut d\'aquella? El teu SOS local no canvia: només el paquet.'))return;
+      try{const r=await rollbackPublication(b2.dataset.cid);
+        downloadText('sos-habilitats-'+now().slice(0,10)+'.json',JSON.stringify(r.pack,null,2));
+        toast('Versió restaurada i descarregada · '+r.pack.count+' files',4000);paint();
+      }catch(e){toast((e&&e.msg)||'No s\'ha pogut');}
+    });
+  };
+  paint();
 }
 function openReadSupplyPack(){
   const bg=modal(`
@@ -11582,7 +11754,7 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hi
 (async function boot(){
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};// Els registres privats (identitat, claus, narratives, dossiers) no són nodes: si
 // entren a state.nodes acaben viatjant pel sync i pel pack públic. Es filtren aquí.
-state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();await loadAllDossiers();await loadLensRole();updatePersonaBadge();}catch(e){console.error('DB error',e);}
+state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();await loadAllDossiers();await loadLensRole();await loadAutoPublish();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   // Qui torna aterra al tauler, no a un node triat per ordre de creació. L'arbre
   // segueix mostrant-ho tot, i una ruta guardada continua manant per sobre d'això.
   if(state.nodes.length){state.activeId=null;state.homeView='tauler';children(null).forEach(r=>state.expanded.add(r.id));}
@@ -11594,7 +11766,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
