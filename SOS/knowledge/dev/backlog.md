@@ -146,9 +146,18 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 10. **MATRIU F5–F8** (finançament i tràmits · formació per etapa · seguiment
     post-graduació · evidències). F1–F4 ja fan que sigui un servei; aquestes la
     completen.
-11. **Rendiment amb 500 nodes i 5.000 apunts** i **accessibilitat WCAG 2.1 AA**.
-    Els poso junts perquè tots dos són **proves, no funcions**, i tots dos fallen
-    silenciosament fins que és car arreglar-los.
+11. **Rendiment amb 500 nodes i 5.000 apunts** + **accessibilitat** ·
+    **fet (V50)**. No s'ofega: render 33 ms (el segon, 5 ms), i cap funció que
+    recorri tot el SOS passa de 25 ms —`ledgerIndex` 11, `supplyIndex` 4,
+    `searchSupply` 21, `knownPersons` 6, `rolesOfPerson` 2. L'única cara és
+    `verifyNoLeak` (211 ms) i ho és a posta: compara tot el SOS contra el JSON
+    que sortirà, un cop per publicació. Accessibilitat: `lang`, títol, cap
+    `tabindex` positiu, 37 botons amb nom, 7 camps etiquetats, un sol `h1`
+    visible, sense salts de nivell, i Escape tanca els modals.
+    **Dos defectes reals trobats, tots dos a 360 px** (`test-mobilenav` corre a
+    375 i no els veia): la barra de pestanyes no podia encongir-se i feia
+    desplaçar la pàgina —ara llisca ella—, i la barra superior sumava 361 px.
+    32 assercions a `test-escala`.
 
 **P5 · Bloquejat per tercers — no és camí crític**
 
@@ -589,6 +598,24 @@ bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultat
   que hi afegíem una targeta; ara comprova que cada perfil tingui la seva acció.
   Tenir tests vermells que no són defectes erosiona la confiança en tota la
   suite: o són verds o no hi són.
+- ~~`tier1IsSearchActionsPersona`~~ · **sí que era una regressió meva**, i la
+  única d'aquesta línia. La pastilla del vistiplau (V43) es va afegir com a quart
+  botó permanent de la barra, amagat amb `display:none`. La barra té **tres**
+  controls d'alta freqüència i prou. Ara la pastilla **no existeix al DOM** quan
+  no hi ha res esperant, i el test comprova les dues cares: tres per defecte,
+  quatre quan algú espera. Un botó invisible que ocupa lloc a l'estructura és un
+  botó que algun dia sortirà per accident.
+- ~~`everyRoleHasItsCard`~~ · **buit real de la V46**: `mentor` va entrar a
+  `SOS_ROLES` amb recorregut, lents i mòduls, però **la portada es va quedar
+  enrere** i el rol no hi tenia targeta. Afegir un rol i deixar-lo sense targeta
+  el fa invisible justament al lloc on la gent decideix què és. (El test antic
+  buscava la paraula «Comunitat» i s'havia trencat en renombrar l'etiqueta; ara
+  comprova que **cap rol es quedi sense targeta**, que és la invariant.)
+- ~~`ventureGraduates` a `test-matriu-main`~~ · el mateix test obsolet que ja es
+  va corregir a `test-matriu`, en un segon fitxer. Ara comprova les dues cares, i
+  de passada documenta una cosa que val la pena: amb **una sola persona
+  aportant-hi, l'equity és del 100% i la porta ho para**. Una iniciativa que
+  depèn d'algú sol no està preparada per sortir.
 - ~~`test-atles`, `test-atles-main`, `test-atles2`, `test-dir`~~ · **infraestructura
   i recomptes fixos, no defectes**. Els quatre esperaven un servidor HTTP que
   ningú arrencava (l'atles fa `fetch` i `file://` el bloqueja): ara se'l munten

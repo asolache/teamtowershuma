@@ -247,6 +247,10 @@ a{color:var(--blue);text-decoration:none}
 /* A pantalla estreta les etiquetes desapareixen abans que els botons: val més
    una barra d'icones que una barra que es desborda o que amaga funcions. */
 @media(max-width:820px){.tb-lb,.tb-kbd{display:none}.tb-btn{padding:0;width:44px;justify-content:center}.tb-persona{width:auto;padding:0 .7rem}}
+/* A 360 px —l'amplada de molts Androids— la barra sumava 361 px i feia
+   desplaçar la pàgina sencera per un píxel. Es reparteix l'espai en comptes
+   d'amagar res: menys marge lateral i menys separació entre botons. */
+@media(max-width:400px){.topbar{padding:.75rem .6rem;gap:.5rem}.tb-right{gap:.3rem}.tb-brand{min-width:0;overflow:hidden;text-overflow:ellipsis}}
 @media(max-width:560px){.tb-crumbs{display:none}.sync-pill{display:none}}
 .sync-pill{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;color:var(--muted);background:var(--bg-panel);border:1px solid var(--border);border-radius:20px;padding:.35rem .7rem;text-transform:uppercase}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
@@ -292,8 +296,12 @@ a{color:var(--blue);text-decoration:none}
 .ms-v[contenteditable]:focus{background:var(--bg-hover);box-shadow:0 0 0 1px var(--indigo)}
 .ms-v:empty::before{content:attr(data-ph);color:var(--muted);font-style:italic}
 
-.tabs{display:flex;gap:.25rem;padding:1.25rem 1.75rem 0;border-bottom:1px solid var(--border);margin-top:1.25rem}
-.tab{background:transparent;border:none;color:var(--muted);font-size:.9rem;font-weight:600;padding:.6rem 1rem;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:.45rem}
+/* La barra de pestanyes és una fila que no pot encongir-se: amb totes les eines
+   obertes, a 360 px (molts Androids) sortia de la pantalla i feia desplaçar la
+   pàgina sencera en horitzontal. Que llisqui ella, no la pàgina. */
+.tabs{display:flex;gap:.25rem;padding:1.25rem 1.75rem 0;border-bottom:1px solid var(--border);margin-top:1.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:transparent;border:none;color:var(--muted);font-size:.9rem;font-weight:600;padding:.6rem 1rem;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:.45rem;flex:0 0 auto;white-space:nowrap}
 .tab:hover{color:var(--light)}
 .tab.active{color:var(--white);border-bottom-color:var(--indigo)}
 .tab .cnt{font-family:var(--mono);font-size:.62rem;background:var(--bg-elevated);border-radius:10px;padding:.05rem .4rem;color:var(--muted)}
@@ -827,7 +835,6 @@ a{color:var(--blue);text-decoration:none}
       <div class="sync-pill" id="syncPill" role="status" aria-live="polite"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
       <button class="tb-btn" id="btnSearch" aria-label="Cerca global (Command o Control + K)"><span class="tb-ic" aria-hidden="true">🔍</span><span class="tb-lb">Cerca</span><kbd class="tb-kbd" aria-hidden="true">⌘K</kbd></button>
       <button class="tb-btn tb-primary" id="btnLauncher" aria-label="Menú d'accions"><span class="tb-ic" aria-hidden="true">☰</span><span class="tb-lb">Accions</span></button>
-      <button class="tb-btn tb-pend" id="pendBadge" style="display:none" aria-label="Esperen el teu vistiplau"><span class="tb-ic" aria-hidden="true">⏳</span><span id="pendN">0</span></button>
       <button class="tb-btn tb-persona" id="personaBadge" hidden aria-label="Sessió activa"><span class="tb-ic" aria-hidden="true">·</span></button>
       <div class="tb-more">
         <button class="tb-btn tb-icon-only" id="btnMore" aria-label="Més opcions" aria-haspopup="menu" aria-expanded="false" aria-controls="tbMenu"><span aria-hidden="true">⋯</span></button>
@@ -6569,6 +6576,16 @@ function renderResum(body,node,ru){
     'Configura l\'<strong>Assemblea federativa</strong> a nivell comarcal',
     'Enllaça el directori d\'entitats oficials · aporta a l\'atles comú'
   ],{label:'🔮 Simulador impacte',onclick:()=>openImpactSimulator()},SOS_ROLES.agent.color));
+  /* Afegir un rol a `SOS_ROLES` i deixar-lo sense targeta el fa invisible
+     exactament al lloc on la gent decideix què és. La MATRIU tenia mentors des
+     de F1; el rol va arribar a V46 i la portada s'havia quedat enrere. */
+  flow.appendChild(flowCard('🎓','Mentor/a d\'iniciatives','Acompanya ventures de la MATRIU · sessions que queden registrades',[
+    'Fes-te <strong>mentora</strong> d\'una iniciativa amb àmbit: qui acompanya què',
+    'Registra cada <strong>sessió</strong> — el que no s\'escriu no ha passat',
+    'Obre els <strong>riscos</strong> amb pla de mitigació, no només amb nom',
+    'Truca a qui fa dies que calla: el <strong>silenci</strong> arriba abans que l\'abandó',
+    'Mira la <strong>cohort</strong> sencera · comparar-les és el que fa que sigui un servei'
+  ],{label:'🎓 Obre la meva guia',onclick:()=>openGuide('mentor')},SOS_ROLES.mentor.color));
   flow.appendChild(flowCard('💫','Ciutadà/na simpatitzant','Explora, aprèn i decideix quan vols pujar',[
     'Llegeix la <strong>Guia formativa</strong> (8 mòduls)',
     'Recorre les <strong>Dinàmiques</strong> del territori (chips)',
@@ -8620,11 +8637,21 @@ function openPendingInbox(){
   };
   wire();
 }
+/* La barra de dalt té tres controls d'alta freqüència i prou: cercar, accions i
+   qui ets. La pastilla del vistiplau no n'és un quart permanent —quan no hi ha
+   res esperant **no existeix**, no és que estigui amagada. Un botó invisible que
+   ocupa lloc a l'estructura és un botó que algun dia sortirà per accident. */
 function updatePendingBadge(){
-  const b=$('#pendBadge');if(!b)return;
+  const right=$('.tb-right');if(!right)return;
   let n=0;try{n=pendingInbox().length;}catch(e){}
-  b.style.display=n?'inline-flex':'none';
-  const t=$('#pendN');if(t)t.textContent=n>9?'9+':String(n);
+  let b=$('#pendBadge');
+  if(!n){if(b)b.remove();return;}
+  if(!b){
+    b=el('button','tb-btn tb-pend','<span class="tb-ic" aria-hidden="true">⏳</span><span id="pendN"></span>');
+    b.id='pendBadge';b.onclick=()=>openPendingInbox();
+    right.insertBefore(b,$('#personaBadge')||null);
+  }
+  $('#pendN').textContent=n>9?'9+':String(n);
   b.setAttribute('aria-label',n+(n===1?' cosa espera':' coses esperen')+' el teu vistiplau');
 }
 function exchangeHours(node,prefill){
@@ -11837,7 +11864,6 @@ $('#btnSettings').onclick=openSettingsModal;
 $('#btnLauncher').onclick=openLauncher;
 window.openFounderMap=openFounderMap;
 $('#personaBadge').onclick=()=>{if(state.activePersona){openPersonProfile(state.activePersona);}};
-$('#pendBadge').onclick=()=>openPendingInbox();
 $('#btnSearch').onclick=openSearchPalette;
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearchPalette();}});
 $('#btnMap').onclick=()=>{state.activeId=null;state.homeView='mapa';render();};

@@ -688,6 +688,40 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 50 — Mesurar abans de patir, i comprovar que la prova comprova
+
+500 nodes i 5.000 apunts —l'ordre de magnitud d'una comarca al cap de dos
+anys— per veure si el SOS s'ofega. **No s'ofega**: el render triga 33 ms, el
+segon 5 ms, i cap funció que recorri tot el SOS passa de 25 ms. Val la pena
+haver-ho mesurat precisament perquè el resultat és aquest: ara ja no cal
+optimitzar res «per si de cas», i qualsevol regressió futura es veurà contra un
+número i no contra una impressió.
+
+La única cara és `verifyNoLeak` (211 ms), i és cara **a posta**: compara cada
+nom, contacte i títol del SOS sencer contra el JSON que sortirà. Es paga un cop
+per publicació i és el preu de no filtrar dades de ningú.
+
+Dos defectes reals que només apareixen a escala i en pantalla petita, tots dos a
+**360 px** —l'amplada de molts Androids, i per això `test-mobilenav` a 375 px no
+els veia mai:
+
+- **La barra de pestanyes** era una fila que no podia encongir-se: amb totes les
+  eines obertes sortia de la pantalla i feia desplaçar la pàgina sencera. Ara
+  llisca ella, no la pàgina.
+- **La barra superior** sumava 361 px. Un píxel. Prou perquè tota la pàgina es
+  pogués moure en horitzontal.
+
+I la lliçó que val més que les dues: **una prova que passa per no haver-hi res
+no prova res**. Les comprovacions d'accessibilitat corrien sobre la pantalla
+d'entrada buida i deien «0 camps sense etiqueta» perquè no hi havia cap camp.
+Ara carreguen dades i obren un formulari de debò —37 botons, 7 camps— i el test
+comprova **primer que hi ha alguna cosa a comprovar**. Un verd buit és pitjor
+que un vermell: el vermell almenys demana atenció.
+
+De la mateixa manera, «aquest element surt de la pantalla» no és un defecte si
+el seu contenidor **llisca a posta**. La comprovació ha de ser sobre la pàgina,
+no sobre el fill.
+
 ## Veda 49 — Una capacitat que no hi és s'ha de dir, no suplir a qualsevol preu
 
 El QR ja es generava, però escanejar-lo obligava a sortir a l'app de càmera del
