@@ -688,6 +688,34 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 49 — Una capacitat que no hi és s'ha de dir, no suplir a qualsevol preu
+
+El QR ja es generava, però escanejar-lo obligava a sortir a l'app de càmera del
+sistema, copiar un text llarguíssim i tornar a entrar. `BarcodeDetector` —W3C,
+natiu— ho resol des de dins.
+
+El problema: **no hi és a tot arreu**. Comprovat en aquest entorn, el Chromium
+d'escriptori (Linux) no el porta; Android i ChromeOS sí. Hi havia dues sortides
+fàcils i totes dues dolentes: fer veure que va i deixar l'usuari clicant un botó
+mort, o encastar un descodificador de tercers de 250 KB al fitxer per cobrir un
+navegador que **no és el que escaneja**.
+
+Perquè aquí hi ha el detall que decideix: **el que escaneja és el mòbil**. El
+d'escriptori és el que *ensenya* el codi. La capacitat falta exactament on no
+fa falta, i per tant la resposta correcta no és suplir-la sinó **dir-ho**: la
+pantalla anomena l'API que li manca, diu on sí que funciona, i deixa sempre a la
+vista el camí d'enganxar el text, que no depèn de res.
+
+La mateixa regla val per als **trackers WSS** del codi de sala: es van provar i
+en aquest entorn no responen. Escriure codi de xarxa que no es pot verificar de
+cap manera és pitjor que no escriure'l —queda com si estigués fet, i el dia que
+falli ningú sabrà si va funcionar mai. Es queda al tram bloquejat, amb la prova
+anotada, i el que sí que funciona (enganxar, enllaç, QR) segueix sent el camí.
+
+Dues coses més que un escàner ha de fer bé i és fàcil oblidar: **apagar la
+càmera** quan es tanca el modal per qualsevol via —també per fora—, i demanar
+**només** el format que vol (`formats:['qr_code']`) en comptes de tots.
+
 ## Veda 48 — Una versió és un canvi, no una data
 
 Publicar una vegada és fàcil. El problema és el segon dia: has canviat coses, i

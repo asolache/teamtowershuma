@@ -121,10 +121,23 @@ camí crític d'una eina que ha de funcionar sense xarxa.
    anomenar «sincronització» el que és versionat local seria vendre el que no hi
    ha. L'historial és el que farà que, quan la xarxa hi sigui, publicar-hi sigui
    només el darrer pas.
-8. **Codi de sala** (`A3`) i **lectura de QR des de dins** (`A4`). Van aquí, no
-   a P1, per una raó concreta: **depenen de trackers WSS públics i de
-   `BarcodeDetector`**. Milloren molt l'experiència, però el sync ha de
-   funcionar sense ells —per això el punt 1 va primer i aquests després.
+8. **Lectura de QR des de dins** (`A4`) · **fet (V49)**. `qrCapabilities`,
+   `decodeQR` i `openQRScanner` amb `BarcodeDetector`: càmera en viu o foto
+   triada, i el codi arriba directament a la casella d'aparellament (les dues
+   bandes: invitació i resposta). **No hi és a tot arreu** —comprovat: el
+   Chromium d'escriptori Linux no el porta, Android i ChromeOS sí— i com que
+   **el que escaneja és el mòbil**, la resposta correcta no és encastar un
+   descodificador de 250 KB sinó dir-ho: la pantalla anomena l'API que falta,
+   diu on sí que va, i deixa sempre el camí d'enganxar el text. 30 assercions a
+   `test-qr`.
+
+   **Codi de sala** (`A3`) · **mogut a P5, amb prova**. Els trackers WSS
+   (`tracker.openwebtorrent.com`, `tracker.webtorrent.dev`, `tracker.files.fm`)
+   **no responen des d'aquest entorn**. Escriure el client de tracker sense
+   poder-lo verificar de cap manera deixaria codi que sembla fet i que ningú
+   sabria si ha funcionat mai. Es fa quan hi hagi una xarxa on provar-ho.
+
+**P3 completat** (excepte el codi de sala, mogut a P5 per la prova de dalt).
 
 **P4 · Quan l'MVP estigui polit**
 
@@ -143,6 +156,10 @@ camí crític d'una eina que ha de funcionar sense xarxa.
     review de PRs, coordenades a les entitats del directori. Tot això depèn
     d'infraestructura externa. Que quedi al backlog no vol dir que sigui el
     següent: vol dir que **quan la xarxa hi sigui, ja sabem què fer-hi**.
+13. **Codi de sala per sincronitzar** (trackers WSS + reconnexió). Baixat aquí
+    des de P3 amb la prova feta: cap dels tres trackers públics respon des de
+    l'entorn de desenvolupament. La publicació remota del `SupplyPack` (V47/V48)
+    viu al mateix calaix i pel mateix motiu.
 
 ---
 
