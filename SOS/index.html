@@ -858,6 +858,8 @@ a{color:var(--blue);text-decoration:none}
           <div class="tb-menu-lbl" role="presentation">Explorar</div>
           <button class="tb-mi" role="menuitem" id="btnMap"><span aria-hidden="true">🗺</span> Mapa de Catalunya</button>
           <button class="tb-mi" role="menuitem" id="btnDir"><span aria-hidden="true">🌐</span> Directori d'entitats</button>
+          <button class="tb-mi" role="menuitem" id="btnFons"><span aria-hidden="true">🏦</span> Fons cooperatiu</button>
+          <button class="tb-mi" role="menuitem" id="btnModels"><span aria-hidden="true">🧭</span> Models de país</button>
           <button class="tb-mi" role="menuitem" id="btnActivity"><span aria-hidden="true">📜</span> Registre d'activitat</button>
           <div class="tb-menu-lbl" role="presentation">Sistema</div>
           <button class="tb-mi" role="menuitem" id="btnSync"><span aria-hidden="true">🔗</span> Sincronitza un dispositiu</button>
@@ -987,7 +989,9 @@ const CAT_GEO={
     {n:'Part Alta',p:'Tarragona'},{n:'Eixample (Tarragona)',p:'Tarragona'},{n:'El Serrallo',p:'Tarragona'},{n:'Sant Pere i Sant Pau',p:'Tarragona'},{n:'Torreforta',p:'Tarragona'},{n:'Bonavista',p:'Tarragona'}
   ]
 };
-function geoFor(level,parentName){const list=CAT_GEO[level]||[];return parentName?list.filter(x=>x.p===parentName):list;}
+/* El catàleg territorial surt del model del país, no d'una constant global: un
+   SOS pot tenir Catalunya i un segon país oberts alhora sense barrejar-los. */
+function geoFor(level,parentName,model){const g=(model&&model.geo)||CAT_GEO;const list=g[level]||[];return parentName?list.filter(x=>x.p===parentName):list;}
 
 /* ═══════════════ CONEIXEMENT PER NIVELL (psicologia comunitària + VNA) ═══════════════
    Per nivell: rols típics, flux de valor clàssic i dolors/necessitats. Cada dolor
@@ -1131,6 +1135,109 @@ const LEVEL_KNOWLEDGE={
   }
 };
 const knowFor=level=>LEVEL_KNOWLEDGE[level]||{roles:[],pairs:[],flows:[],pains:[]};
+
+/* ═══════════ MODEL DE PAÍS · Catalunya és el primer cas, no l'únic ═══════════
+   Veda V54. Fins ara Catalunya no era un cas d'ús: estava soldada en sis llocs
+   del fitxer. Qui volia crear Euskadi obtenia un node buit on els nivells es
+   deien «província» i «comarca», i el mapa de valor del seu país naixia amb un
+   rol anomenat «Generalitat». Tot funcionava; el model era el que estava
+   equivocat — hi havia un cas particular al lloc on hi ha d'haver una plantilla.
+
+   La separació que ho resol:
+
+   · **Els ids dels nivells no canvien mai.** Hi pengen les classes CSS, els
+     mapes de valor per nivell i els tipus d'entitat. Renombrar-los trencaria
+     tots els SOS que ja existeixen.
+   · **Les etiquetes i el nombre de nivells són dades.** Un model pot dir-li
+     «herrialdea» a `provincia` i pot tenir-ne tres en comptes de cinc.
+   · **`null` vol dir «el de sempre».** Un model que no declara geografia,
+     institucions ni tipus d'entitat es comporta exactament com abans d'aquest
+     canvi. Per això Catalunya és un model amb tres nulls i cap SOS existent
+     nota res.
+
+   Catalunya és de només lectura. Forkejar-la en fa una còpia amb id nou: el cas
+   de referència no es pot espatllar sense voler. */
+const BASE_LEVELS=['pais','provincia','comarca','municipi','barri'];
+const MODELS_ID='__countrymodels';
+const COUNTRY_REF='catalunya';
+const CATALUNYA_MODEL={
+  id:COUNTRY_REF,name:'Catalunya',flag:'🏴',ref:true,
+  one:'El primer cas complet: províncies i comarques del catàleg, amb les institucions i els tipus d\'entitat que hi corresponen.',
+  source:'Divisió administrativa vigent · Idescat',
+  levels:BASE_LEVELS.map(id=>({id})),
+  geo:null,institutions:null,entityTypes:null
+};
+const customModels=()=>(state.models||[]);
+const countryModels=()=>[CATALUNYA_MODEL].concat(customModels());
+const modelById=id=>countryModels().find(m=>m.id===id)||CATALUNYA_MODEL;
+/* Els nivells efectius d'un model, ja resolts: etiqueta, fill i etiqueta del
+   fill. El fill surt de l'ordre de la llista, no de `LEVEL_META`, perquè un
+   model que es salta un nivell ha de saltar-se'l de debò. */
+function levelsOf(model){
+  const m=model||CATALUNYA_MODEL;
+  const raw=(m.levels&&m.levels.length?m.levels:CATALUNYA_MODEL.levels).filter(l=>l&&BASE_LEVELS.includes(l.id));
+  const list=raw.length?raw:CATALUNYA_MODEL.levels;
+  const lbl=l=>l.label||LEVEL_META[l.id].label;
+  return list.map((l,i)=>{
+    const base=LEVEL_META[l.id],nxt=list[i+1]||null;
+    return{id:l.id,label:lbl(l),cls:base.cls,zoom:base.zoom,ph:l.ph||base.ph,
+      child:nxt?nxt.id:null,childLabel:nxt?lbl(nxt).toLowerCase():null};
+  });
+}
+// El model d'un node és el del seu país arrel. Sense arrel declarada, Catalunya.
+function rootOf(nodeOrId){
+  let n=typeof nodeOrId==='string'?byId(nodeOrId):nodeOrId;
+  const seen=new Set();
+  while(n&&n.parentId&&!seen.has(n.id)){seen.add(n.id);const p=byId(n.parentId);if(!p)break;n=p;}
+  return n||null;
+}
+const modelOf=nodeOrId=>{const r=rootOf(nodeOrId);return modelById(r&&r.modelId);};
+/* Substitut de `LEVEL_META[nivell]` allà on hi ha un node a la mà: retorna la
+   fitxa del nivell tal com la diu el model d'aquell país. Sense node, o per a
+   projectes, es comporta com abans. */
+function metaOf(node,level){
+  const lvl=level||(node&&node.nodeLevel)||'pais';
+  if(lvl==='projecte')return LEVEL_META.projecte;
+  const found=levelsOf(modelOf(node)).find(l=>l.id===lvl);
+  return found||LEVEL_META[lvl]||LEVEL_META.barri;
+}
+const nextLevelOf=(node,level)=>{const m=metaOf(node,level);return m?m.child:null;};
+// El nivell arrel d'un model no té per què ser 'pais' si algú l'ha retallat.
+const rootLevelOf=model=>levelsOf(model)[0].id;
+async function saveModels(list){
+  state.models=(list||[]).filter(m=>m&&m.id&&m.id!==COUNTRY_REF).slice(0,40);
+  try{await dbPut({id:MODELS_ID,type:'meta',list:state.models,updatedAt:now()});}catch(e){}
+}
+async function loadModels(){
+  try{const all=await dbGetAll();const r=all.find(n=>n.id===MODELS_ID);state.models=(r&&r.list)||[];}
+  catch(e){state.models=[];}
+  return state.models;
+}
+/* Forkejar Catalunya (o qualsevol model) en fa una còpia editable. Els nulls es
+   materialitzen aquí: a partir d'ara el model nou porta la seva pròpia
+   geografia i les seves pròpies institucions, i deixa de seguir les de casa. */
+function forkModel(srcId,{id,name,flag}={}){
+  const src=modelById(srcId);
+  const slug=(id||name||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const newId=(slug||'pais')+'-'+Math.random().toString(36).slice(2,7);
+  return{
+    id:newId,name:name||('Còpia de '+src.name),flag:flag||'🏳',ref:false,
+    forkedFrom:src.id,createdAt:now(),
+    one:'Model derivat de '+src.name+'.',source:'',
+    levels:levelsOf(src).map(l=>({id:l.id,label:l.label,ph:l.ph})),
+    geo:JSON.parse(JSON.stringify(src.geo||CAT_GEO)),
+    institutions:src.institutions?JSON.parse(JSON.stringify(src.institutions))
+      :BASE_LEVELS.reduce((a,l)=>{a[l]=knowFor(l).roles.slice();return a;},{}),
+    entityTypes:src.entityTypes?JSON.parse(JSON.stringify(src.entityTypes)):null
+  };
+}
+// Rols institucionals del mapa de valor d'un nivell, segons el model del país.
+function institutionsFor(model,level){
+  const m=model||CATALUNYA_MODEL;
+  const own=m.institutions&&m.institutions[level];
+  return (own&&own.length?own:knowFor(level).roles).slice();
+}
+
 /* ═══════════ Expansió canònica de mapes · un sol lloc ═══════════
    Tota definició de mapa del SOS (nivell territorial, repte, dinàmica, prototip
    de venture) es declara amb `pairs`: cada fila és un vincle amb les DUES
@@ -1426,7 +1533,7 @@ function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').del
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler',dossiers:{},lensRole:null,autoPublish:false};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler',dossiers:{},lensRole:null,autoPublish:false,models:[],fundScope:null};
 // Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
 async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
 async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
@@ -3920,8 +4027,8 @@ function openSuperheroiOnboarding(prefill){
     const name=bg.querySelector('#shName').value.trim(),muniName=bg.querySelector('#shMuni').value.trim(),barri=bg.querySelector('#shBarri').value.trim();
     if(!name||!muniName){toast('Cal nom i població');return;}
     // Resol / crea la cadena territorial fins al municipi/barri
-    const chain=resolveChainFromMunicipi(muniName)||{pais:'Catalunya',provincia:null,comarca:null,municipi:muniName};
-    const pais=await ensureNode('Catalunya','pais',null);
+    const chain=resolveChainFromMunicipi(muniName)||{pais:geoRootName(null),provincia:null,comarca:null,municipi:muniName};
+    const pais=await ensureNode(chain.pais,'pais',null);
     let prov=null;if(chain.provincia)prov=await ensureNode(chain.provincia,'provincia',pais.id);
     let com=null;if(chain.comarca)com=await ensureNode(chain.comarca,'comarca',prov?prov.id:pais.id);
     const muni=await ensureNode(muniName,'municipi',com?com.id:(prov?prov.id:pais.id));
@@ -4229,7 +4336,7 @@ function openMatchesModal(personName){
 }
 // Cerca global (⌘K / Ctrl+K) — Backlog #9. Palette per accedir a qualsevol node · persona · entitat · acció.
 function _searchIndex(){
-  const nodes=state.nodes.map(n=>{const d=n.dynamicType?dynById(n.dynamicType):null;return{k:'node',id:n.id,label:n.name,sub:(d?d.icon+' ':'')+(LEVEL_META[n.nodeLevel]?LEVEL_META[n.nodeLevel].label:''),action:()=>selectNode(n.id)};});
+  const nodes=state.nodes.map(n=>{const d=n.dynamicType?dynById(n.dynamicType):null;return{k:'node',id:n.id,label:n.name,sub:(d?d.icon+' ':'')+metaOf(n).label,action:()=>selectNode(n.id)};});
   const persons=[];const seen=new Set();state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{const k=personKey(m.name);if(seen.has(k))return;seen.add(k);persons.push({k:'person',id:k,label:m.name,sub:'🦸 superheroi',action:()=>openPersonProfile(m.name)});}));
   const ents=(state.entities||[]).map(e=>({k:'entity',id:e.id,label:e.name,sub:'🏛 '+(e.entityType||'entitat'),action:()=>openEntityForm(e)}));
   const actions=[
@@ -5226,6 +5333,8 @@ function openLauncher(){
     {ic:'📦',t:'Paquet d\'ancoratge',d:'Snapshot signat + CID · pinna a IPFS/Arweave/permaweb',fn:()=>openAnchorPackModal()},
     {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>routeTo('comando')},
     {ic:'🗺',t:'Mapa estratègic fundador',d:'Missió, visió, rols, fluxos, KPIs 2030 · base del model',fn:()=>routeTo('mapa')},
+    {ic:'🏦',t:'Fons cooperatiu',d:'Verificat vs mobilitzat, cobertura i comparació amb el pla',fn:()=>{location.hash='#/fons';}},
+    {ic:'🧭',t:'Models de país',d:'Catalunya com a model editable per crear-ne un altre',fn:()=>routeTo('paisos')},
     {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>routeTo('multivers')},
     {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
     {ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
@@ -6149,7 +6258,7 @@ function activityFeed({limit,kinds,since}={}){
   state.nodes.forEach(nd=>{
     const isTerr=typeof isTerritory==='function'&&isTerritory(nd.nodeLevel);
     push(isTerr?'territori':'projecte',nd.createdAt,nd.name,
-      isTerr?('nou '+(LEVEL_META[nd.nodeLevel]?LEVEL_META[nd.nodeLevel].label.toLowerCase():'territori')):('nou projecte'+(nd.dynamicType&&nd.dynamicType!=='generic'?' · '+nd.dynamicType.replace(/_/g,' '):'')),
+      isTerr?('nou '+metaOf(nd).label.toLowerCase()):('nou projecte'+(nd.dynamicType&&nd.dynamicType!=='generic'?' · '+nd.dynamicType.replace(/_/g,' '):'')),
       {nodeId:nd.id});
     membersOf(nd).forEach(m=>push('soci',m.joinedAt,m.name,'s\'incorpora a '+nd.name+(m.role?' com a '+m.role:''),{nodeId:nd.id}));
     venturesOf(nd).forEach(v=>{
@@ -6594,7 +6703,7 @@ function renderTree(){
   if(roots.length===0){t.appendChild(el('div','tree-empty','Encara no hi ha cap territori. Fes clic a + per crear-ne el primer.'));return;}
   const draw=(node,depth)=>{
     const kids=children(node.id);
-    const meta=LEVEL_META[node.nodeLevel];
+    const meta=metaOf(node);
     const row=el('div','tree-node'+(state.activeId===node.id?' sel':''));
     row.style.paddingLeft=(.55+depth*.85)+'rem';
     const caret=el('span','tn-caret'+(state.expanded.has(node.id)?' open':''),kids.length?'▶':'');
@@ -6622,8 +6731,8 @@ function renderWorkspace(){
   // Sense node actiu: el tauler és la pantalla d'entrada per defecte, i el mapa
   // de Catalunya queda a un clic. Abans s'anava directe al mapa, que és bonic
   // però no diu res sobre què et toca fer avui.
-  if(!node){if(state.homeView==='mapa')renderCatMap(w);else if(state.homeView==='missions')renderMissions(w);else renderDashboard(w);return;}
-  const meta=LEVEL_META[node.nodeLevel];
+  if(!node){if(state.homeView==='mapa')renderCatMap(w);else if(state.homeView==='missions')renderMissions(w);else if(state.homeView==='fons')renderFons(w);else renderDashboard(w);return;}
+  const meta=metaOf(node);
 
   const head=el('div','node-head');
   const top=el('div','nh-top');
@@ -6722,7 +6831,11 @@ const scopeIds=ids=>{const s=new Set();(ids||[]).forEach(id=>{if(byId(id))subtre
 function measure(nodeIds){
   const ids=[...new Set((nodeIds||[]).filter(Boolean))];
   const seen=new Set(),pers=new Set();
-  const r={hores:0,moneda:0,apunts:0,signats:0,tasks:0,done:0,roles:0,exch:0,
+  /* `objectes` és el valor en € del que aporta la biblioteca (donacions i
+     desgast per préstec). Va a part perquè V45 va afegir el tipus `objecte` amb
+     valor en euros i aquí seguia caient al calaix de les hores: cada préstec
+     inflava les hores del territori amb un import en €. */
+  const r={hores:0,moneda:0,objectes:0,estimats:0,apunts:0,signats:0,tasks:0,done:0,roles:0,exch:0,
     projectes:0,territoris:0,nodes:0,ventures:0,byDyn:{}};
   ids.forEach(id=>{
     const n=byId(id);if(!n)return;r.nodes++;
@@ -6734,8 +6847,9 @@ function measure(nodeIds){
     const eat=(e,vn)=>{
       const k=id+'§'+(vn||'')+'§'+(e.id||((e.ts||'')+'|'+(e.who||'')+'|'+(e.what||'')));
       if(seen.has(k))return;seen.add(k);
-      r.apunts++;if(e.sig)r.signats++;
-      if(e.type==='moneda')r.moneda+=Number(e.value)||0;else r.hores+=Number(e.value)||0;
+      r.apunts++;if(e.sig)r.signats++;if(e.estimate)r.estimats++;
+      const q=Number(e.value)||0;
+      if(e.type==='moneda')r.moneda+=q;else if(e.type==='objecte')r.objectes+=q;else r.hores+=q;
       const m=e.memberId?memberById(n,e.memberId):null;
       const who=(m&&m.name)||e.who||'';
       if(who)pers.add(personKey(who));
@@ -6744,7 +6858,7 @@ function measure(nodeIds){
     venturesOf(n).forEach(v=>{r.ventures++;(v.ledger||[]).forEach(e=>eat(e,v.name||v.id));});
   });
   r.persones=pers.size;r.personKeys=[...pers];
-  r.hores=Math.round(r.hores*10)/10;r.moneda=Math.round(r.moneda*10)/10;
+  r.hores=Math.round(r.hores*10)/10;r.moneda=Math.round(r.moneda*10)/10;r.objectes=Math.round(r.objectes*100)/100;
   return r;
 }
 /* Consolidació d'un node de l'arbre: propi, agregat i total, cadascun mesurat. */
@@ -6792,8 +6906,84 @@ function buildConsolidation(node,pre){
     '<div class="cons-n">El <strong>total</strong> no és la suma de les dues columnes: es torna a mesurar sobre el conjunt, apunt per apunt. Les <strong>persones</strong> no se sumen mai — s\'uneixen, perquè la mateixa persona aporta a diversos nodes.</div>';
   return box;
 }
+/* ═══════════ COBERTURA · la xifra que fa moure gent ═══════════
+   El fons diu quant s'ha mogut; la cobertura diu on encara no s'ha mogut res.
+   Sense la segona, la primera només és una notícia. Es mira al primer nivell
+   per sota de l'arrel (províncies a Catalunya, el que digui el model a la
+   resta): és l'escala on algú pot dir «me n'encarrego jo». */
+function countryCoverage(rootId){
+  const root=byId(rootId);if(!root)return null;
+  const kids=children(rootId);
+  const regions=kids.map(k=>{
+    const ids=[...scopeIds([k.id])];
+    const m=measure(ids);
+    return{node:k,projectes:m.projectes,territoris:m.territoris,persones:m.persones,
+      hores:m.hores,moneda:m.moneda+m.objectes,apunts:m.apunts,viva:m.projectes>0};
+  });
+  const vives=regions.filter(r=>r.viva);
+  return{root,regions,vives:vives.length,total:regions.length,
+    pct:regions.length?Math.round(vives.length/regions.length*100):0,
+    buides:regions.filter(r=>!r.viva),
+    capdavanteres:vives.slice().sort((a,b)=>b.apunts-a.apunts).slice(0,3)};
+}
+function buildCountryCockpit(node){
+  const box=el('div');
+  const f=networkFund(node.id),cov=countryCoverage(node.id),plan=fundPlan();
+  box.appendChild(el('div','ent-grp-lbl','🏦 La xarxa de '+esc(node.name)+' en tres xifres'));
+  const row=el('div','ledger-total');
+  const c1=el('div','lt-card');c1.style.cursor='pointer';c1.title='Obre el fons cooperatiu de '+node.name;
+  c1.innerHTML='<div class="v">'+eurFmt(f.mobilitzat.total)+'<span style="font-size:1rem"> €</span></div><div class="l">Fons mobilitzat · estimat</div>';
+  c1.onclick=()=>{state.fundScope=node.id;state.activeId=null;state.homeView='fons';render();};
+  const c2=el('div','lt-card');c2.style.borderTopColor=cov.pct>=50?'var(--green)':'var(--orange)';
+  const regLbl=(metaOf(node).childLabel||'regions');
+  c2.innerHTML='<div class="v">'+cov.pct+'<span style="font-size:1rem"> %</span></div><div class="l">'+esc(regLbl)+' vives</div>';
+  c2.title=cov.vives+' de '+cov.total+' '+regLbl+' amb almenys una dinàmica';
+  const c3=el('div','lt-card');c3.style.borderTopColor='var(--indigo)';
+  c3.innerHTML='<div class="v">'+f.persones+'</div><div class="l">Persones que hi aporten</div>';
+  row.append(c1,c2,c3);box.appendChild(row);
+  const pct=plan&&plan.target?Math.round(f.mobilitzat.total/plan.target*1000)/10:null;
+  box.appendChild(el('div','wz-key-note',
+    (pct!=null?'Fita '+plan.year+' del pla fundador: '+eurFmt(plan.target)+' €/any — hi som al '+pct+' %. ':'')+
+    'El fons es mesura sobre el que hi ha registrat; la cobertura, sobre el que encara no existeix.'));
+
+  if(cov.buides.length){
+    box.appendChild(el('div','ent-grp-lbl','◌ On no hi ha res encara · '+cov.buides.length+' de '+cov.total));
+    const g=el('div','ent-grid');
+    cov.buides.slice(0,6).forEach(r=>{
+      const c=el('div','ent-card');c.style.borderLeft='3px solid var(--orange)';
+      c.innerHTML='<div class="ent-nm">'+esc(r.node.name)+'</div>'+
+        '<div class="ent-desc" style="margin-top:.3rem">'+(r.territoris>1?(r.territoris-1)+' territoris dins, cap dinàmica':'sense territoris ni dinàmiques')+'</div>';
+      const b=el('button','btn btn-ghost btn-sm','Obre-la →');b.style.marginTop='.5rem';
+      b.onclick=()=>selectNode(r.node.id);c.appendChild(b);g.appendChild(c);
+    });
+    box.appendChild(g);
+    if(cov.buides.length>6)box.appendChild(el('div','wz-key-note','I '+(cov.buides.length-6)+' més. Una regió buida no és un fracàs: és l\'única llista que diu on val la pena trucar.'));
+  }
+  if(cov.capdavanteres.length){
+    box.appendChild(el('div','ent-grp-lbl','▲ On més es mou'));
+    const g=el('div','ent-grid');
+    cov.capdavanteres.forEach(r=>{
+      const c=el('div','ent-card');c.style.borderLeft='3px solid var(--green)';
+      c.innerHTML='<div class="ent-nm">'+esc(r.node.name)+'</div>'+
+        '<div class="ent-desc" style="margin-top:.3rem">'+r.projectes+' projecte'+(r.projectes===1?'':'s')+' · '+
+        r.hores.toFixed(0)+' h · '+eurFmt(r.moneda)+' € · '+r.persones+' persones</div>';
+      const b=el('button','btn btn-ghost btn-sm','Obre-la →');b.style.marginTop='.5rem';
+      b.onclick=()=>selectNode(r.node.id);c.appendChild(b);g.appendChild(c);
+    });
+    box.appendChild(g);
+  }
+  // Quin model fa servir aquest país, i com se'n fa un altre.
+  const m=modelOf(node);
+  const mb=el('div','ai-note');mb.style.marginTop='.7rem';
+  mb.innerHTML='<span class="ic">🧭</span><span>Model territorial: <strong>'+esc(m.flag||'🏳')+' '+esc(m.name)+'</strong> · '+
+    levelsOf(m).map(l=>esc(l.label)).join(' → ')+(m.ref?' · <em>referència, no es modifica</em>':'')+'</span>';
+  const mbtn=el('button','btn btn-ghost btn-sm','🧭 Models de país');mbtn.style.marginTop='.5rem';
+  mbtn.onclick=()=>routeTo('paisos');
+  box.appendChild(mb);box.appendChild(mbtn);
+  return box;
+}
 function renderResum(body,node,ru){
-  const meta=LEVEL_META[node.nodeLevel];
+  const meta=metaOf(node);
   // Story hero: què és aquest territori/projecte i on està al viatge
   const empty=(ru.projectes===0&&ru.territoris===0);
   const stage=empty?'llavor':(ru.projectes>=5?'expansió':(ru.projectes>=2?'creixement':'primeres passes'));
@@ -6813,6 +7003,14 @@ function renderResum(body,node,ru){
     else{const a=el('a','btn btn-ghost btn-sm','Coneix-lo →');a.href=cp.url;a.target='_blank';a.style.marginTop='.4rem';a.style.display='inline-block';a.style.textDecoration='none';c.appendChild(a);}
     cores.appendChild(c);});
   body.appendChild(cores);
+  /* Cabina del país. Un node arrel amb 44 comarques a sota ensenyava exactament
+     la mateixa pantalla que un barri: sis targetes de rol amb trenta passos, i
+     cap xifra que digués com va la xarxa. Aquí hi va el que només té sentit a
+     dalt de tot — quant fons acumula i quina part del territori encara és
+     buida— i les targetes de rol es queden per als nivells on serveixen. */
+  const isRoot=!node.parentId;
+  if(isRoot)body.appendChild(buildCountryCockpit(node));
+  if(!isRoot||ru.projectes===0){
   // Roadmaps per rol · 5 fluxos d'acció adaptats
   body.appendChild(el('div','wz-sec-lbl','🎯 Roadmap segons el teu rol · quin és el teu proper pas?'));
   const flow=el('div','ent-grid');
@@ -6865,6 +7063,7 @@ function renderResum(body,node,ru){
     'Prova a crear el teu perfil quan et sentis preparat/da'
   ],{label:'🎬 Comando Molekulon',onclick:()=>openComandoView()},SOS_ROLES.simpatitzant.color));
   body.appendChild(flow);
+  }
   // Panell d'incentiu territorial: si estem a país/província/comarca, mostrar baixada a poblacions
   if(['pais','provincia','comarca'].includes(node.nodeLevel)){
     body.appendChild(el('div','wz-sec-lbl','🌍 Baixa al terreny · el valor es crea a nivell local'));
@@ -6914,7 +7113,7 @@ function renderResum(body,node,ru){
     projs.sort((a,b)=>a.name.localeCompare(b.name)).forEach(p=>{
       const d=dynById(p.dynamicType);
       const parent=p.parentId?byId(p.parentId):null;
-      let h=0,m=0;(p.ledger||[]).forEach(e=>{if(e.type==='moneda')m+=Number(e.value)||0;else h+=Number(e.value)||0;});
+      let h=0,m=0;(p.ledger||[]).forEach(e=>{const q=Number(e.value)||0;if(e.type==='moneda'||e.type==='objecte')m+=q;else h+=q;});
       const tr=el('tr');tr.style.cursor='pointer';tr.onclick=()=>selectNode(p.id);
       tr.appendChild(el('td',null,(d?d.icon+' ':'')+esc(p.name)));
       tr.appendChild(el('td',null,'<span style="color:var(--muted);font-size:.8rem">'+esc(parent?parent.name:'')+'</span>'));
@@ -7581,8 +7780,9 @@ function renderKanban(body,node){
 /* ─── LEDGER ─── */
 const entryUnit=e=>e.type==='moneda'?'€':'h';
 function renderLedger(body,node){
-  const hores=node.ledger.filter(e=>e.type!=='moneda').reduce((s,e)=>s+(Number(e.value)||0),0);
-  const moneda=node.ledger.filter(e=>e.type==='moneda').reduce((s,e)=>s+(Number(e.value)||0),0);
+  const sum=f=>node.ledger.filter(f).reduce((s,e)=>s+(Number(e.value)||0),0);
+  const hores=sum(e=>e.type!=='moneda'&&e.type!=='objecte');
+  const moneda=sum(e=>e.type==='moneda')+sum(e=>e.type==='objecte');
   const contribs=new Set(node.ledger.map(e=>e.who)).size;
   const tot=el('div','ledger-total');
   const c1=el('div','lt-card');c1.innerHTML='<div class="v">'+hores.toFixed(1)+'<span style="font-size:1rem"> h</span></div><div class="l">Temps aportat</div>';tot.appendChild(c1);
@@ -7682,6 +7882,7 @@ const MODAL_ROUTES={
   coordenades:{open:()=>openCoords(),label:'Coordenades dels territoris'},
   ancoratges:{open:()=>openAnchors(),label:'Els meus ancoratges'},
   mapa:{open:()=>openFounderMap(),label:'Mapa estratègic fundador'},
+  paisos:{open:()=>openCountryModels(),label:'Models de país'},
   directori:{open:()=>openDirectory(),label:'Directori d\'entitats'},
   identitat:{open:()=>openIdentityDashboard(),label:'La meva identitat'},
   multivers:{open:()=>openMultiverse(),label:'Multivers Molekulon'},
@@ -7693,7 +7894,7 @@ let _routeModal=null;          // quin modal ha obert la ruta actual
 function buildRoute(){
   if(_routeModal)return'#/'+_routeModal;
   const nd=byId(state.activeId);
-  if(!nd)return state.homeView==='missions'?'#/missions':'#/';
+  if(!nd)return state.homeView==='missions'?'#/missions':(state.homeView==='fons'?'#/fons':'#/');
   return'#/n/'+nd.id+(state.tab?'/'+state.tab:'');
 }
 function parseRoute(hash){
@@ -7704,6 +7905,8 @@ function parseRoute(hash){
   if(raw[0]==='sync'&&raw[1])return{kind:'sync',code:decodeURIComponent(raw.slice(1).join('/'))};
   // Les missions són una portada, no un modal: han de ser enllaçables com a tal.
   if(raw[0]==='missions')return{kind:'missions'};
+  // El fons és la destinació del flux de valor: ha de ser enllaçable i compartible.
+  if(raw[0]==='fons')return{kind:'fons'};
   if(MODAL_ROUTES[raw[0]])return{kind:'modal',name:raw[0]};
   return{kind:'unknown',name:raw[0]};
 }
@@ -7736,6 +7939,7 @@ function applyRoute(){
     } else {
       if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
       if(r.kind==='missions'){state.activeId=null;state.homeView='missions';render();}
+      else if(r.kind==='fons'){state.activeId=null;state.homeView='fons';render();}
       else if(r.kind==='node'){
         const nd=byId(r.id);
         if(nd){
@@ -7760,9 +7964,11 @@ function routeTo(name){
 function modal(html){const bg=el('div','modal-bg');bg.innerHTML='<div class="modal">'+html+'</div>';bg.onclick=e=>{if(e.target===bg)closeModal();};$('#modalRoot').innerHTML='';$('#modalRoot').appendChild(bg);return bg;}
 
 // Motor de suggeriment determinista: coneixement del nivell + dolors triats + biaix pel prompt lliure
-function suggestMap(level,selectedPainIds,promptText){
+function suggestMap(level,selectedPainIds,promptText,roleSeed){
   const k=knowFor(level);
-  const roleSet=new Set(k.roles);
+  /* Els rols institucionals els posa el model del país. Sense això, el mapa de
+     valor d'Euskadi neix amb un rol anomenat «Generalitat». */
+  const roleSet=new Set((roleSeed&&roleSeed.length?roleSeed:k.roles));
   const flows=mapFlowsOf(k);
   const addPain=p=>{(p.roles||[]).forEach(r=>roleSet.add(r));mapFlowsOf(p).forEach(f=>flows.push(f));};
   k.pains.forEach(p=>{if(selectedPainIds.has(p.id))addPain(p);});
@@ -7967,16 +8173,218 @@ function mergeAiIntoWizard(wz,ai){
 // Descoberta d'entitats REALS existents amb IA (verify-first · zero-hallucination) — delega a AI.call
 async function aiDiscoverEntities(ctx){return AI.call('discover_entities',ctx);}
 
-function openCreateModal(parentId){
-  const level=parentId?nextLevel(byId(parentId).nodeLevel):'pais';
-  const meta=LEVEL_META[level];
-  const parentName=parentId?byId(parentId).name:null;
+/* ═══════════ ASSISTENT «CREA EL TEU PAÍS» · el cas Catalunya com a plantilla ═══════════
+   Veda V54. Abans, crear un territori arrel donava un node buit: sense esquelet,
+   sense fons i amb els nivells de l'administració catalana. Ara es tria un model
+   de partida, se'n canvien els noms i les institucions, i el que en surt és un
+   país viu. Catalunya no es toca mai: forkejar-la en fa una còpia.
+
+   Els quatre passos són deliberats — cadascun tanca una de les quatre coses que
+   feien que un segon país no fos usable: d'on part, com es diuen els nivells,
+   qui hi mana i què hi ha dins. */
+function openCountryWizard(){
+  const st={src:COUNTRY_REF,name:'',flag:'🏳',levels:null,inst:null,skeleton:true,lvlEdit:'pais'};
+
+  function step(n,total,title,sub,bodyHtml,actions){
+    const bg=modal('<div class="wz-steps">'+Array.from({length:total},(_,i)=>'<div class="wz-step'+(i<n?' on':'')+'"></div>').join('')+'</div>'+
+      '<h2>'+title+'</h2><p class="m-sub">'+sub+'</p>'+bodyHtml+
+      '<div class="modal-actions">'+actions+'</div>');
+    bg.querySelector('.modal').classList.add('wz-modal');
+    return bg;
+  }
+
+  // 1 · D'on parteix
+  function s1(){
+    const cards=countryModels().map(m=>{
+      const size=skeletonSize(m),lv=levelsOf(m);
+      return '<button class="fork-card" data-src="'+esc(m.id)+'"><span class="fork-ic">'+esc(m.flag||'🏳')+'</span>'+
+        '<span class="fork-nm">'+esc(m.name)+(m.ref?' <span class="ent-b b-ver">referència</span>':'')+'</span>'+
+        '<span class="fork-one">'+esc(m.one||'')+'</span>'+
+        '<span class="fork-one">'+lv.length+' nivells · '+(size-1)+' territoris al catàleg</span></button>';
+    }).join('')+
+    '<button class="fork-card" data-src="__zero"><span class="fork-ic">◌</span><span class="fork-nm">Des de zero</span>'+
+    '<span class="fork-one">Tu poses els nivells, les institucions i la geografia. Més feina, cap supòsit.</span></button>';
+    const bg=step(1,4,'Crea el teu país','Tries un model de partida i el fas teu. <strong>El model de referència no es modifica mai</strong>: se\'n fa una còpia editable.',
+      '<div class="fork-grid">'+cards+'</div>',
+      '<button class="btn btn-ghost" id="cwCancel">Cancel·la</button>');
+    bg.querySelector('#cwCancel').onclick=closeModal;
+    bg.querySelectorAll('.fork-card').forEach(b=>b.onclick=()=>{
+      st.src=b.dataset.src;
+      const base=st.src==='__zero'?null:modelById(st.src);
+      st.levels=base?levelsOf(base).map(l=>({id:l.id,label:l.label,on:true}))
+        :BASE_LEVELS.map((id,i)=>({id,label:LEVEL_META[id].label,on:i<4}));
+      st.inst=BASE_LEVELS.reduce((a,l)=>{a[l]=base?institutionsFor(base,l).slice():[];return a;},{});
+      st.skeleton=!!base;
+      s2();
+    });
+  }
+
+  // 2 · Com es diu i com es diuen els seus nivells
+  function s2(){
+    const rows=st.levels.map((l,i)=>
+      '<label class="pick'+(l.on?' sel':'')+'" data-lvl="'+l.id+'">'+
+      '<input type="checkbox" '+(l.on?'checked':'')+(i===0?' disabled':'')+'>'+
+      '<span style="flex:1"><input class="cw-lvl" data-lvl="'+l.id+'" value="'+esc(l.label)+'" maxlength="24" '+
+      'style="width:100%;background:transparent;border:0;border-bottom:1px dashed var(--border);color:inherit;font:inherit;padding:.15rem 0">'+
+      '<span class="pk-d">nivell '+(i+1)+' · id intern <code>'+l.id+'</code></span></span></label>').join('');
+    const bg=step(2,4,'Nom i nivells','Els nivells són <strong>dades, no codi</strong>: canvia\'ls el nom i treu els que al teu país no existeixin. El primer no es pot treure.',
+      '<div class="field"><label>Nom del país</label><input id="cwName" placeholder="p.ex. Euskadi" value="'+esc(st.name)+'" autocomplete="off"></div>'+
+      '<div class="field"><label>Bandera o icona</label><input id="cwFlag" maxlength="4" value="'+esc(st.flag)+'" style="max-width:6rem"></div>'+
+      '<div class="wz-sec-lbl">Nivells territorials<span class="wz-count" id="cwLC"></span></div>'+
+      '<div class="pick-list">'+rows+'</div>',
+      '<button class="btn btn-ghost" id="cwBack">← Enrere</button><button class="btn btn-primary" id="cwNext">Continua → institucions</button>');
+    const upd=()=>{bg.querySelector('#cwLC').textContent=st.levels.filter(l=>l.on).length+' actius';};upd();
+    bg.querySelector('#cwName').focus();
+    bg.querySelectorAll('.cw-lvl').forEach(inp=>{
+      inp.onclick=e=>e.stopPropagation();
+      inp.oninput=()=>{const l=st.levels.find(x=>x.id===inp.dataset.lvl);if(l)l.label=inp.value;};
+    });
+    bg.querySelectorAll('.pick[data-lvl]').forEach(row=>row.querySelector('input[type=checkbox]').onchange=e=>{
+      const l=st.levels.find(x=>x.id===row.dataset.lvl);if(!l)return;
+      l.on=e.target.checked;row.classList.toggle('sel',l.on);upd();
+    });
+    bg.querySelector('#cwBack').onclick=s1;
+    bg.querySelector('#cwNext').onclick=()=>{
+      st.name=bg.querySelector('#cwName').value.trim();
+      st.flag=bg.querySelector('#cwFlag').value.trim()||'🏳';
+      if(!st.name){bg.querySelector('#cwName').focus();toast('El país necessita un nom');return;}
+      if(st.levels.filter(l=>l.on).length<2){toast('Fan falta almenys dos nivells');return;}
+      st.levels.forEach(l=>{if(!l.label.trim())l.label=LEVEL_META[l.id].label;});
+      s3();
+    };
+  }
+
+  // 3 · Qui hi mana: els rols institucionals del mapa de valor, per nivell
+  function s3(){
+    const on=st.levels.filter(l=>l.on);
+    if(!on.some(l=>l.id===st.lvlEdit))st.lvlEdit=on[0].id;
+    const tabs=on.map(l=>'<button class="tab'+(st.lvlEdit===l.id?' active':'')+'" data-lvl="'+l.id+'">'+esc(l.label)+'</button>').join('');
+    const bg=step(3,4,'Institucions del mapa de valor','Aquests rols sembren el mapa de valor de cada nivell. <strong>Un per línia.</strong> Si els deixes com estan, el teu país parlarà de la Generalitat i dels consells comarcals.',
+      '<div class="tabs" style="padding:0;margin:.4rem 0 .6rem;border:0">'+tabs+'</div>'+
+      '<div class="field"><textarea id="cwInst" rows="8" spellcheck="false">'+esc((st.inst[st.lvlEdit]||[]).join('\n'))+'</textarea></div>'+
+      '<div class="ai-note"><span class="ic">◉</span><span>Són els rols que veuràs al <strong>mapa de valor</strong> del node quan el creïs. Es poden canviar després, però costa menys ara.</span></div>',
+      '<button class="btn btn-ghost" id="cwBack">← Enrere</button><button class="btn btn-primary" id="cwNext">Continua → territoris</button>');
+    const ta=bg.querySelector('#cwInst');
+    const save=()=>{st.inst[st.lvlEdit]=ta.value.split('\n').map(x=>x.trim()).filter(Boolean);};
+    bg.querySelectorAll('.tab[data-lvl]').forEach(b=>b.onclick=()=>{save();st.lvlEdit=b.dataset.lvl;s3();});
+    bg.querySelector('#cwBack').onclick=()=>{save();s2();};
+    bg.querySelector('#cwNext').onclick=()=>{save();s4();};
+  }
+
+  // 4 · Què hi ha dins, i quant se'n crearà — dit abans de crear-ho
+  function s4(){
+    const draft=buildModel();
+    const n=skeletonSize(draft)-1;
+    const lv=levelsOf(draft);
+    const bg=step(4,4,'Territoris de partida',
+      n?('El model porta <strong>'+n+' territoris</strong> al catàleg. Es crearan de cop com a esquelet, i després hi penges el que sigui.')
+       :'Aquest model no porta catàleg territorial. Es crearà el país sol i hi aniràs afegint regions a mà.',
+      (n?'<label class="pick'+(st.skeleton?' sel':'')+'" id="cwSkRow"><input type="checkbox" '+(st.skeleton?'checked':'')+'>'+
+        '<span><span class="pk-t">Crea l\'esquelet ara ('+n+' territoris)</span><span class="pk-d">'+
+        esc(lv.slice(1,3).map(l=>l.label.toLowerCase()).join(' i '))+' del catàleg del model</span></span></label>':'')+
+      '<div class="ent-card" style="margin-top:.7rem"><div class="ent-nm">'+esc(st.flag)+' '+esc(st.name)+'</div>'+
+      '<div class="ent-desc" style="margin-top:.35rem">'+lv.map(l=>esc(l.label)).join(' → ')+'</div>'+
+      '<div class="ent-desc" style="margin-top:.3rem">'+esc((st.inst[lv[0].id]||[]).length)+' rols institucionals a l\'arrel'+
+      (st.src===COUNTRY_REF?' · derivat del model <strong>Catalunya</strong>, que no es modifica':'')+'</div></div>',
+      '<button class="btn btn-ghost" id="cwBack">← Enrere</button><button class="btn btn-primary" id="cwGo">⬢ Crea '+esc(st.name)+'</button>');
+    const row=bg.querySelector('#cwSkRow');
+    if(row)row.querySelector('input').onchange=e=>{st.skeleton=e.target.checked;row.classList.toggle('sel',st.skeleton);};
+    bg.querySelector('#cwBack').onclick=s3;
+    bg.querySelector('#cwGo').onclick=async()=>{
+      const btn=bg.querySelector('#cwGo');btn.disabled=true;btn.textContent='Creant…';
+      try{await create();}catch(e){btn.disabled=false;btn.textContent='⬢ Crea '+st.name;toast('No s\'ha pogut crear: '+(e&&e.message||e));}
+    };
+  }
+
+  function buildModel(){
+    const base=st.src==='__zero'?null:modelById(st.src);
+    const m=base?forkModel(base.id,{name:st.name||base.name,flag:st.flag})
+      :{id:'pais-'+Math.random().toString(36).slice(2,7),name:st.name,flag:st.flag,ref:false,
+        createdAt:now(),one:'Model creat des de zero.',source:'',levels:[],geo:{},institutions:{},entityTypes:null};
+    m.name=st.name||m.name;m.flag=st.flag;
+    m.levels=st.levels.filter(l=>l.on).map(l=>({id:l.id,label:l.label.trim()}));
+    m.institutions=Object.assign({},m.institutions,st.inst);
+    return m;
+  }
+
+  async function create(){
+    const model=buildModel();
+    await saveModels(customModels().concat([model]));
+    const lv=levelsOf(model),rootLvl=lv[0].id;
+    const root=newNode(model.name,rootLvl,null);
+    root.modelId=model.id;
+    root.metaskill.mission='Teixir '+model.name+' com a xarxa de valor: que el que la gent ja fa es pugui comptar, compartir i finançar.';
+    const inst=institutionsFor(model,rootLvl);
+    const idBy={};inst.forEach(nm=>{const id=uid();idBy[nm]=id;root.vna.roles.push({id,name:nm});});
+    /* Els fluxos només es sembren si els rols institucionals segueixen sent els
+       del model d'origen. Si algú els ha reescrit, un mapa amb rols nous i
+       fluxos vells seria pitjor que un mapa buit. */
+    mapFlowsOf(knowFor(rootLvl)).forEach(([a,b,kind,label])=>{
+      if(idBy[a]&&idBy[b])root.vna.exchanges.push({id:uid(),from:idBy[a],to:idBy[b],kind:kind||'tangible',label:label||''});
+    });
+    state.nodes.push(root);await persist(root);
+    let created=0;
+    if(st.skeleton){const r=await loadModelSkeleton(model,model.name,root);created=r.created;}
+    closeModal();render();selectNode(root.id);
+    toast(model.flag+' '+model.name+' creat'+(created?' · '+created+' territoris':'')+' · model «'+model.id+'»');
+  }
+
+  s1();
+}
+
+/* Els models de país que hi ha en aquest SOS, amb Catalunya sempre al capdavant
+   com a referència de només lectura. */
+function openCountryModels(){
+  const rows=countryModels().map(m=>{
+    const lv=levelsOf(m),size=skeletonSize(m)-1;
+    const used=state.nodes.filter(n=>!n.parentId&&modelById(n.modelId).id===m.id);
+    return '<div class="ent-card"><div class="ent-nm">'+esc(m.flag||'🏳')+' '+esc(m.name)+
+      (m.ref?' <span class="ent-b b-ver">referència · només lectura</span>':'')+
+      (m.forkedFrom?' <span class="ent-b b-unver">derivat de '+esc(modelById(m.forkedFrom).name)+'</span>':'')+'</div>'+
+      '<div class="ent-desc" style="margin-top:.35rem">'+lv.map(l=>esc(l.label)).join(' → ')+'</div>'+
+      '<div class="ent-desc" style="margin-top:.25rem">'+size+' territoris al catàleg · '+
+      used.length+' país'+(used.length===1?'':'os')+' en ús'+(m.source?' · '+esc(m.source):'')+'</div>'+
+      '<button class="btn btn-ghost btn-sm cm-fork" data-id="'+esc(m.id)+'" style="margin-top:.5rem">⑂ Fes-ne el meu país</button>'+
+      (m.ref?'':'<button class="btn btn-ghost btn-sm cm-del" data-id="'+esc(m.id)+'" style="margin-top:.5rem;margin-left:.4rem">🗑 Elimina el model</button>')+
+      '</div>';
+  }).join('');
+  const bg=modal('<h2>🗺 Models de país</h2>'+
+    '<p class="m-sub">Un model diu <strong>com es diuen els nivells</strong>, <strong>quines institucions</strong> hi ha al mapa de valor i <strong>quina geografia</strong> es pot carregar. Catalunya és el primer cas i es manté intacte: qui en vol un altre, la forkeja.</p>'+
+    '<div class="ent-grid">'+rows+'</div>'+
+    '<div class="ai-note" style="margin-top:.7rem"><span class="ic">⬢</span><span>Eliminar un model <strong>no esborra cap territori</strong>: els països que el feien servir passen a mostrar els noms de nivell per defecte.</span></div>'+
+    '<div class="modal-actions"><button class="btn btn-ghost" id="cmClose">Tanca</button><button class="btn btn-primary" id="cmNew">+ Crea un país</button></div>');
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#cmClose').onclick=closeModal;
+  bg.querySelector('#cmNew').onclick=()=>{closeModal();openCountryWizard();};
+  bg.querySelectorAll('.cm-fork').forEach(b=>b.onclick=async()=>{
+    const m=forkModel(b.dataset.id,{name:'Còpia de '+modelById(b.dataset.id).name});
+    await saveModels(customModels().concat([m]));
+    openCountryModels();toast('Model copiat · edita\'l creant-hi un país');
+  });
+  bg.querySelectorAll('.cm-del').forEach(b=>b.onclick=async()=>{
+    await saveModels(customModels().filter(x=>x.id!==b.dataset.id));
+    openCountryModels();toast('Model eliminat · els territoris segueixen on eren');
+  });
+}
+
+function openCreateModal(parentId,opts){
+  /* Crear un territori arrel ja no vol dir crear un node buit amb els noms de
+     l'administració catalana. Es tria model de país primer; el wizard de sempre
+     continua a partir d'aquí, però parlant l'idioma del model triat. */
+  if(!parentId&&!(opts&&opts.model))return openCountryWizard();
+  const parent=parentId?byId(parentId):null;
+  const model=(opts&&opts.model)||modelOf(parent);
+  const level=parent?nextLevelOf(parent):rootLevelOf(model);
+  if(!level){toast('Aquest model no té cap nivell per sota de '+metaOf(parent).label.toLowerCase());return;}
+  const meta=levelsOf(model).find(l=>l.id===level)||LEVEL_META[level];
+  const parentName=parent?parent.name:null;
   const k=knowFor(level);
+  const institutions=institutionsFor(model,level);
   // estat del wizard
   const wz={name:'',prompt:'',pains:new Set(),roles:[],exchanges:[],mission:''};
 
   function step1(){
-    const opts=geoFor(level,parentName).map(g=>'<option value="'+esc(g.n)+'">').join('');
+    const opts=geoFor(level,parentName,model).map(g=>'<option value="'+esc(g.n)+'">').join('');
     const painsHtml=k.pains.length?k.pains.map(p=>`
       <label class="pick${wz.pains.has(p.id)?' sel':''}" data-pain="${p.id}">
         <input type="checkbox" ${wz.pains.has(p.id)?'checked':''}>
@@ -8007,7 +8415,7 @@ function openCreateModal(parentId){
     bg.querySelector('#wzNext').onclick=()=>{
       wz.name=nm.value.trim();wz.prompt=bg.querySelector('#wzPrompt').value.trim();
       if(!wz.name){nm.focus();return;}
-      const sug=suggestMap(level,wz.pains,wz.prompt);
+      const sug=suggestMap(level,wz.pains,wz.prompt,institutions);
       wz.roles=sug.roles.map(n=>({name:n,on:true}));
       wz.exchanges=sug.flows.map(f=>({from:f.from,to:f.to,kind:f.kind,label:f.label,on:true}));
       wz.mission=draftMission(wz.name,level,wz.pains);
@@ -8091,6 +8499,9 @@ function openCreateModal(parentId){
     bg.querySelector('#wzBack').onclick=step1;
     bg.querySelector('#wzCreate').onclick=async()=>{
       const node=newNode(wz.name,level,parentId);
+      // El model queda escrit al node arrel: és d'allà que la resta de l'arbre
+      // llegeix com es diuen els seus nivells.
+      if(!parentId&&model&&model.id!==COUNTRY_REF)node.modelId=model.id;
       node.metaskill.mission=bg.querySelector('#wzMission').value.trim();
       const active=wz.roles.filter(r=>r.on);
       const nameToId={};active.forEach(r=>{const id=uid();nameToId[r.name]=id;node.vna.roles.push({id,name:r.name});});
@@ -10726,7 +11137,7 @@ function openTheme(slug){
     const c=el('div','ent-card');c.style.cursor='pointer';c.style.marginBottom='.35rem';
     const own=measure([n.id]);
     c.innerHTML='<div class="ent-nm">'+esc(n.name)+'</div><div class="ent-badges" style="margin-top:.2rem">'+
-      '<span class="ent-b">'+esc((LEVEL_META[n.nodeLevel]||{label:'node'}).label)+'</span>'+
+      '<span class="ent-b">'+esc(metaOf(n).label)+'</span>'+
       (own.hores?'<span class="ent-b b-ver">'+own.hores.toFixed(0)+' h pròpies</span>':'')+
       (red.has(n.id)?'<span class="ent-b b-unver">ja comptat des de dalt</span>':'')+'</div>';
     c.onclick=()=>{closeModal();openQuickAct(n);};
@@ -10735,7 +11146,7 @@ function openTheme(slug){
 }
 function openQuickAct(node){
   const p=nodePulse(node),acts=actionsFor(node);
-  const meta=LEVEL_META[node.nodeLevel]||{label:'node'};
+  const meta=metaOf(node);
   const dyn=node.dynamicType?dynById(node.dynamicType):null;
   const bg=modal(`
     <h2>⚡ ${esc(node.name)}</h2>
@@ -10932,6 +11343,188 @@ function renderMissions(w){
   body.appendChild(el('div','wz-key-note','Aquesta pantalla no et deixa configurar res: només fer. Per veure l\'estructura —nodes, comptes, mapes— hi ha la vista de gestió.'));
   w.appendChild(body);
 }
+/* ═══════════ FONS COOPERATIU · la destinació del flux de valor ═══════════
+   Veda V55. El fons era una funció, no una pantalla: `fundValue` només sabia
+   comptar el que penjava d'una MATRIU, i es dibuixava dins d'una pestanya
+   d'un node concret. Un territori amb tres bancs de temps i dues biblioteques
+   movent hores cada setmana tenia un fons de zero.
+
+   Dues regles que aquesta pantalla no pot trencar:
+
+   · **Verificat i estimat no se sumen mai.** El que encapçala és el que està
+     signat i encadenat, i les hores signades es diuen en hores, no convertides
+     a euros. La conversió a € és de l'oracle i va marcada com a tal, amb rang.
+   · **Res es compta dues vegades.** El mateix apunt pot arribar-hi pel node i
+     per la venture; la clau de deduplicació és la mateixa que fa servir
+     `measure`, perquè si divergeixen tindrem dues xifres del mateix fons. */
+const FUND_UNCERTAINTY=.3;
+// FMV mitjà de l'àmbit: el preu/hora que la gent d'aquí ha declarat, no un de global.
+function fundFmv(ids){
+  let s=0,n=0;
+  (ids||[]).forEach(id=>{const nd=byId(id);if(!nd||nd.dynamicType!=='banc_temps')return;
+    offersOf(nd).forEach(o=>{if(o.kind==='oferta'){s+=oracleFmv(nd,o.category);n++;}});});
+  return n?Math.round(s/n):ORACLE_FMV_DEFAULTS.altres;
+}
+function networkFund(rootId){
+  const ids=rootId?[...scopeIds([rootId])]:state.nodes.map(n=>n.id);
+  const seen=new Set(),pers=new Set();
+  const r={nodes:0,ambit:rootId?(byId(rootId)||{}).name:'tota la xarxa',
+    verificat:{eur:0,hores:0,apunts:0},
+    registrat:{eur:0,hores:0,objectes:0,apunts:0},
+    estimats:0,byNode:[],byDyn:{}};
+  ids.forEach(id=>{
+    const n=byId(id);if(!n)return;r.nodes++;
+    const loc={id:n.id,name:n.name,eur:0,hores:0,objectes:0,dyn:n.dynamicType||null};
+    const eat=(e,vn)=>{
+      const k=id+'§'+(vn||'')+'§'+(e.id||((e.ts||'')+'|'+(e.who||'')+'|'+(e.what||'')));
+      if(seen.has(k))return;seen.add(k);
+      const q=Number(e.value)||0,est=!!e.estimate,firm=!!e.sig&&!est;
+      r.registrat.apunts++;if(est)r.estimats++;
+      if(e.type==='moneda'){loc.eur+=q;r.registrat.eur+=q;if(firm){r.verificat.eur+=q;r.verificat.apunts++;}}
+      else if(e.type==='objecte'){loc.objectes+=q;r.registrat.objectes+=q;}
+      else{loc.hores+=q;r.registrat.hores+=q;if(firm){r.verificat.hores+=q;r.verificat.apunts++;}}
+      const m=e.memberId?memberById(n,e.memberId):null;const who=(m&&m.name)||e.who||'';
+      if(who)pers.add(personKey(who));
+    };
+    (n.ledger||[]).forEach(e=>eat(e,''));
+    venturesOf(n).forEach(v=>(v.ledger||[]).forEach(e=>eat(e,v.name||v.id)));
+    if(loc.eur||loc.hores||loc.objectes)r.byNode.push(loc);
+    if(n.dynamicType){const d=r.byDyn[n.dynamicType]||(r.byDyn[n.dynamicType]={eur:0,hores:0,objectes:0,n:0});
+      d.n++;d.eur+=loc.eur;d.hores+=loc.hores;d.objectes+=loc.objectes;}
+  });
+  const fmv=fundFmv(ids);
+  const hV=r.registrat.hores*fmv;
+  const total=r.registrat.eur+r.registrat.objectes+hV;
+  r.fmv=fmv;r.persones=pers.size;
+  r.mobilitzat={total:Math.round(total),min:Math.round(total*(1-FUND_UNCERTAINTY)),max:Math.round(total*(1+FUND_UNCERTAINTY)),
+    parts:[
+      {label:'Diner registrat',value:Math.round(r.registrat.eur),source:'ledger real',qty:null},
+      {label:'Hores mobilitzades',value:Math.round(hV),source:'oracle FMV',qty:r.registrat.hores.toFixed(0)+' h × '+fmv+' €/h'},
+      {label:'Objectes compartits',value:Math.round(r.registrat.objectes),source:'oracle objectes',qty:null}
+    ].filter(p=>p.value)};
+  const w=x=>x.eur+x.objectes+x.hores*fmv;
+  r.byNode.sort((a,b)=>w(b)-w(a));
+  return r;
+}
+// «30M» i «400k» del pla fundador, en números comparables amb el ledger.
+const parseKpiNum=v=>{const m=String(v==null?'':v).trim().replace(',','.').match(/^([\d.]+)\s*([kKmM])?$/);
+  if(!m)return null;const u=(m[2]||'').toLowerCase();return Number(m[1])*(u==='k'?1e3:u==='m'?1e6:1);};
+/* On hauríem de ser aquest any segons el pla fundador. Si l'any en curs no hi
+   és, s'agafa la fita declarada següent i es diu que és la següent — inventar
+   una interpolació seria posar-hi una xifra que ningú ha promès. */
+function fundPlan(year){
+  const row=(FOUNDER_MAP.kpis||[]).find(k=>/fons/i.test(k.name));if(!row)return null;
+  const years=Object.keys(row).filter(k=>/^\d{4}$/.test(k)).sort();
+  if(!years.length)return null;
+  const y=String(year||new Date().getFullYear());
+  if(row[y]!=null)return{year:y,target:parseKpiNum(row[y]),exact:true,base:parseKpiNum(row.base)};
+  const next=years.find(k=>k>y);
+  return next?{year:next,target:parseKpiNum(row[next]),exact:false,base:parseKpiNum(row.base)}:
+    {year:years[years.length-1],target:parseKpiNum(row[years[years.length-1]]),exact:false,base:parseKpiNum(row.base)};
+}
+const eurFmt=v=>Math.round(Number(v)||0).toLocaleString('ca');
+function renderFons(w){
+  const rootId=state.fundScope&&byId(state.fundScope)?state.fundScope:null;
+  const f=networkFund(rootId);
+  const plan=fundPlan();
+  const head=el('div','node-head');
+  const top=el('div','nh-top');
+  const title=el('div','nh-title');
+  title.appendChild(el('span','tn-lvl lv-pais','Fons cooperatiu'));
+  const h1=el('h1');h1.textContent=f.ambit;title.appendChild(h1);
+  top.appendChild(title);
+  const acts=el('div','nh-actions');
+  const roots=state.nodes.filter(n=>!n.parentId);
+  if(roots.length){
+    const sel=el('select','btn btn-ghost btn-sm');sel.style.padding='.35rem .5rem';
+    sel.innerHTML='<option value="">Tota la xarxa</option>'+roots.map(n=>'<option value="'+esc(n.id)+'"'+(rootId===n.id?' selected':'')+'>'+esc(n.name)+'</option>').join('');
+    sel.onchange=()=>{state.fundScope=sel.value||null;renderWorkspace();};
+    acts.appendChild(sel);
+  }
+  const back=el('button','btn btn-ghost btn-sm','⚙ Vista de gestió');
+  back.onclick=()=>{state.homeView='tauler';renderWorkspace();};
+  acts.appendChild(back);top.appendChild(acts);head.appendChild(top);w.appendChild(head);
+
+  const body=el('div','tab-body');
+
+  if(!f.registrat.apunts){
+    body.innerHTML='<div class="ai-note"><span class="ic">🏦</span><span><strong>El fons encara és zero, i està bé que ho digui.</strong> '+
+      'S\'omple sol a mesura que la gent registra hores, diner i objectes a les dinàmiques del territori. '+
+      'No cal cap MATRIU: un banc de temps que funciona ja hi aporta.</span></div>';
+    const b=el('button','btn btn-primary','⏱ Registra la primera aportació');b.style.marginTop='.6rem';
+    b.onclick=()=>{const n=state.nodes.find(x=>x.dynamicType)||state.nodes[0];if(n)selectNode(n.id);else openCountryWizard();};
+    body.appendChild(b);w.appendChild(body);return;
+  }
+
+  // ── 1 · Verificat. Encapçala perquè és el que aguanta una auditoria.
+  body.appendChild(el('div','ent-grp-lbl','✓ Verificat · signat i encadenat'));
+  const ver=el('div','ledger-total');
+  const vc1=el('div','lt-card');vc1.innerHTML='<div class="v">'+eurFmt(f.verificat.eur)+'<span style="font-size:1rem"> €</span></div><div class="l">Diner signat</div>';
+  const vc2=el('div','lt-card');vc2.style.borderTopColor='var(--green)';
+  vc2.innerHTML='<div class="v">'+f.verificat.hores.toFixed(0)+'<span style="font-size:1rem"> h</span></div><div class="l">Hores signades</div>';
+  const vc3=el('div','lt-card');vc3.style.borderTopColor='var(--indigo)';
+  vc3.innerHTML='<div class="v">'+f.persones+'</div><div class="l">Persones que hi aporten</div>';
+  ver.append(vc1,vc2,vc3);body.appendChild(ver);
+  body.appendChild(el('div','wz-key-note','Les hores es diuen en hores. Convertir-les a euros és una estimació, i va a sota amb aquest nom.'));
+
+  // ── 2 · Mobilitzat. Estimació honesta, amb rang i font a la vista.
+  const mo=f.mobilitzat;
+  body.appendChild(el('div','ent-grp-lbl','≈ Mobilitzat · estimació de l\'oracle'));
+  const est=el('div','ent-card');
+  est.style.background='linear-gradient(180deg,rgba(99,102,241,.1),rgba(0,230,118,.04))';
+  est.innerHTML='<div style="font-size:2rem;font-weight:700;line-height:1.1">'+eurFmt(mo.total)+' €</div>'+
+    '<div class="ent-desc" style="margin-top:.25rem">entre <strong>'+eurFmt(mo.min)+' €</strong> i <strong>'+eurFmt(mo.max)+' €</strong> · ±'+Math.round(FUND_UNCERTAINTY*100)+' % d\'incertesa</div>'+
+    '<div style="margin-top:.6rem;overflow-x:auto"><table class="ledger-table" style="min-width:340px"><tbody>'+
+    mo.parts.map(p=>'<tr><td>'+esc(p.label)+(p.qty?'<br><span style="font-size:.78rem;color:var(--muted)">'+esc(p.qty)+'</span>':'')+
+      '</td><td class="num">'+eurFmt(p.value)+' €</td><td><span class="ent-b '+(p.source==='ledger real'?'b-ver':'b-unver')+'">'+esc(p.source)+'</span></td></tr>').join('')+
+    '</tbody></table></div>';
+  body.appendChild(est);
+  if(f.estimats)body.appendChild(el('div','wz-key-note',f.estimats+' apunt'+(f.estimats===1?'':'s')+' del registre ja són estimacions de l\'oracle (desgast de préstecs). No compten com a verificats.'));
+
+  // ── 3 · Respecte del pla. La pregunta que farà qui et financi.
+  if(plan&&plan.target){
+    const pct=plan.target?Math.round(mo.total/plan.target*1000)/10:0;
+    const late=pct<100;
+    const p=el('div','ent-card');p.style.borderLeft='3px solid '+(late?'var(--orange)':'var(--green)');
+    p.innerHTML='<div class="ent-nm">📈 Respecte del pla fundador</div>'+
+      '<div class="ent-desc" style="margin-top:.35rem">Fita '+esc(plan.year)+(plan.exact?'':' (la següent declarada)')+': <strong>'+eurFmt(plan.target)+' €/any</strong>. '+
+      'Mobilitzat avui: <strong>'+eurFmt(mo.total)+' €</strong> — <strong style="color:'+(late?'var(--orange)':'var(--green)')+'">'+pct+' %</strong>.</div>'+
+      '<div class="ent-desc" style="margin-top:.3rem">'+(late
+        ?'Anem per sota del que el pla diu. La xifra que falta no surt de registrar millor: surt de tenir més dinàmiques vives.'
+        :'Per sobre de la fita. Val la pena revisar si la fita s\'ha quedat curta abans de celebrar-ho.')+'</div>';
+    body.appendChild(p);
+  }
+
+  // ── 4 · D'on surt. Sense això la xifra de dalt no es pot defensar.
+  const dyns=Object.keys(f.byDyn);
+  if(dyns.length){
+    body.appendChild(el('div','ent-grp-lbl','⬢ Per dinàmica'));
+    const grid=el('div','ent-grid');
+    dyns.map(k=>({k,d:f.byDyn[k]})).sort((a,b)=>(b.d.eur+b.d.objectes+b.d.hores*f.fmv)-(a.d.eur+a.d.objectes+a.d.hores*f.fmv)).forEach(({k,d})=>{
+      const meta=dynById(k)||{name:k,icon:'◇'};
+      const c=el('div','ent-card');
+      c.innerHTML='<div class="ent-nm">'+(meta.icon||'◇')+' '+esc(meta.name)+'</div>'+
+        '<div class="ent-desc" style="margin-top:.3rem">'+d.n+' projecte'+(d.n===1?'':'s')+' · '+
+        eurFmt(d.eur+d.objectes+d.hores*f.fmv)+' € estimats</div>'+
+        '<div class="ent-desc" style="margin-top:.2rem;font-size:.8rem">'+d.hores.toFixed(0)+' h · '+eurFmt(d.eur)+' € · '+eurFmt(d.objectes)+' € en objectes</div>';
+      grid.appendChild(c);
+    });
+    body.appendChild(grid);
+  }
+  if(f.byNode.length){
+    body.appendChild(el('div','ent-grp-lbl','📍 On es crea · els 10 que més hi aporten'));
+    const box=el('div','ent-card');box.style.overflowX='auto';
+    box.innerHTML='<table class="ledger-table" style="min-width:420px"><thead><tr><th>Node</th><th class="num">Hores</th><th class="num">Diner</th><th class="num">Objectes</th></tr></thead><tbody>'+
+      f.byNode.slice(0,10).map(n=>'<tr data-go="'+esc(n.id)+'" style="cursor:pointer"><td>'+esc(n.name)+'</td>'+
+        '<td class="num">'+n.hores.toFixed(0)+' h</td><td class="num">'+eurFmt(n.eur)+' €</td><td class="num">'+eurFmt(n.objectes)+' €</td></tr>').join('')+
+      '</tbody></table>';
+    box.querySelectorAll('tr[data-go]').forEach(tr=>tr.onclick=()=>selectNode(tr.dataset.go));
+    body.appendChild(box);
+  }
+  body.appendChild(el('div','wz-key-note','Aquesta xifra no es publica sola: per fer-la oposable a tercers cal ancorar-la. Configuració → Ancoratges.'));
+  w.appendChild(body);
+}
+
 function renderDashboard(w){
   const d=buildDashboard();
   const head=el('div','node-head');
@@ -11047,7 +11640,7 @@ function renderDashboard(w){
       const r=el('button','dash-net-row');
       const badges=[p.pings?'🔔 '+p.pings+' matching':'',p.pend?'🗳 '+p.pend:'',p.late?'📚 '+p.late:'',p.needsMap?'🕸 sense mapa':'',
         p.health!==null?'salut '+p.health:'',p.people?'👥 '+p.people:''].filter(Boolean);
-      r.innerHTML='<span class="dn-ic">'+(dyn?dyn.icon:(LEVEL_META[n.nodeLevel]||{}).ic||'◇')+'</span>'+
+      r.innerHTML='<span class="dn-ic">'+(dyn?dyn.icon:(metaOf(n)||{}).ic||'◇')+'</span>'+
         '<span class="dn-b"><span class="dn-t">'+esc(n.name)+'</span><span class="dn-d">'+esc(badges.join(' · ')||'sense activitat encara')+'</span></span><span class="dn-go">⚡</span>';
       r.onclick=()=>openQuickAct(n);
       list.appendChild(r);
@@ -11458,7 +12051,7 @@ async function deleteNode(node){
 
 function openContactModal(){
   const active=byId(state.activeId);
-  const subj=active?('SOS — '+LEVEL_META[active.nodeLevel].label+' '+active.name):'SOS — vull explorar el meu territori';
+  const subj=active?('SOS — '+metaOf(active).label+' '+active.name):'SOS — vull explorar el meu territori';
   const bg=modal(`
     <h2>Parla amb l'Álvaro</h2>
     <p class="m-sub">Álvaro Solache · psicòleg social, Torrelles de Foix. T'ajuda a donar estructura real a la teva iniciativa comunitària. Zero fum.</p>
@@ -12384,30 +12977,52 @@ function seedDefaultMap(node){
   sug.flows.forEach(f=>{if(idBy[f.from]&&idBy[f.to])node.vna.exchanges.push({id:uid(),from:idBy[f.from],to:idBy[f.to],kind:f.kind,label:f.label});});
 }
 
-/* ═══════════ ESQUELET DE CATALUNYA (país + províncies + comarques) ═══════════ */
-async function loadCatalunyaSkeleton(){
+/* ═══════════ ESQUELET D'UN PAÍS · dos nivells des de l'arrel del model ═══════════
+   Abans això només sabia carregar Catalunya. Ara carrega el que digui el model:
+   els dos primers nivells per sota de l'arrel, siguin com es diguin. */
+async function loadModelSkeleton(model,rootName,rootNode){
+  const m=model||CATALUNYA_MODEL;
+  const lv=levelsOf(m);
   _ensureCreated=0;
-  const pais=await ensureNode('Catalunya','pais',null);
-  for(const pr of CAT_GEO.provincia){
-    const prov=await ensureNode(pr.n,'provincia',pais.id);
-    state.expanded.add(prov.id);
-    for(const co of geoFor('comarca',pr.n)) await ensureNode(co.n,'comarca',prov.id);
+  const root=rootNode||await ensureNode(rootName||m.name,lv[0].id,null);
+  if(m.id!==COUNTRY_REF&&root.modelId!==m.id){root.modelId=m.id;await persist(root);}
+  const l1=lv[1],l2=lv[2];
+  if(l1)for(const a of geoFor(l1.id,null,m)){
+    const n1=await ensureNode(a.n,l1.id,root.id);
+    state.expanded.add(n1.id);
+    if(l2)for(const b of geoFor(l2.id,a.n,m))await ensureNode(b.n,l2.id,n1.id);
   }
-  state.expanded.add(pais.id);
+  state.expanded.add(root.id);
   flashSync();
-  return {created:_ensureCreated,pais};
+  return{created:_ensureCreated,root,pais:root};
 }
+// Quants territoris crearia un model, per poder-ho dir ABANS de crear-los.
+function skeletonSize(model){
+  const lv=levelsOf(model);let n=1;
+  if(lv[1])n+=geoFor(lv[1].id,null,model).length;
+  if(lv[2])n+=geoFor(lv[2].id,null,model).length;
+  return n;
+}
+async function loadCatalunyaSkeleton(){return loadModelSkeleton(CATALUNYA_MODEL,'Catalunya');}
 
 /* ═══════════ WIZARD D'UBICACIÓ (extrapola la jerarquia des del nivell baix) ═══════════ */
 // Resol la cadena de pares d'un municipi conegut del catàleg → {pais,provincia,comarca}
-function resolveChainFromMunicipi(muniName){
-  const m=CAT_GEO.municipi.find(x=>x.n===muniName);if(!m)return null;
-  const comarca=m.p;const c=CAT_GEO.comarca.find(x=>x.n===comarca);const provincia=c?c.p:null;
-  return {pais:'Catalunya',provincia,comarca,municipi:muniName};
+/* El nom del país surt del catàleg del model, no d'una constant literal. Amb
+   `pais:'Catalunya'` escrit a mà, ubicar-se a qualsevol altre país penjava la
+   cadena territorial del node equivocat. */
+const geoRootName=model=>{const g=(model&&model.geo)||CAT_GEO;return ((g.pais||[])[0]||{}).n||(model&&model.name)||'Catalunya';};
+function resolveChainFromMunicipi(muniName,model){
+  const g=(model&&model.geo)||CAT_GEO;
+  const m=(g.municipi||[]).find(x=>x.n===muniName);if(!m)return null;
+  const comarca=m.p;const c=(g.comarca||[]).find(x=>x.n===comarca);const provincia=c?c.p:null;
+  const pr=provincia?(g.provincia||[]).find(x=>x.n===provincia):null;
+  return {pais:(pr&&pr.p)||geoRootName(model),provincia,comarca,municipi:muniName};
 }
-function resolveChainFromComarca(comName){
-  const c=CAT_GEO.comarca.find(x=>x.n===comName);if(!c)return null;
-  return {pais:'Catalunya',provincia:c.p,comarca:comName};
+function resolveChainFromComarca(comName,model){
+  const g=(model&&model.geo)||CAT_GEO;
+  const c=(g.comarca||[]).find(x=>x.n===comName);if(!c)return null;
+  const pr=(g.provincia||[]).find(x=>x.n===c.p);
+  return {pais:(pr&&pr.p)||geoRootName(model),provincia:c.p,comarca:comName};
 }
 
 function openLocateWizard(){
@@ -12533,6 +13148,8 @@ $('#personaBadge').onclick=()=>{if(state.activePersona){openPersonProfile(state.
 $('#btnSearch').onclick=openSearchPalette;
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearchPalette();}});
 $('#btnMap').onclick=()=>{state.activeId=null;state.homeView='mapa';render();};
+$('#btnModels').onclick=()=>routeTo('paisos');
+$('#btnFons').onclick=()=>{location.hash='#/fons';};
 $('#btnDir').onclick=()=>routeTo('directori');
 $('#obDir').onclick=openDirectory;
 $('#btnActivity').onclick=()=>routeTo('activitat');
@@ -12545,7 +13162,7 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hi
 (async function boot(){
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};// Els registres privats (identitat, claus, narratives, dossiers) no són nodes: si
 // entren a state.nodes acaben viatjant pel sync i pel pack públic. Es filtren aquí.
-state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();await loadAllDossiers();await loadLensRole();await loadAutoPublish();updatePersonaBadge();}catch(e){console.error('DB error',e);}
+state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();await loadAllDossiers();await loadLensRole();await loadAutoPublish();await loadModels();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   // Qui torna aterra al tauler, no a un node triat per ordre de creació. L'arbre
   // segueix mostrant-ho tot, i una ruta guardada continua manant per sobre d'això.
   if(state.nodes.length){state.activeId=null;state.homeView='tauler';children(null).forEach(r=>state.expanded.add(r.id));}
@@ -12557,7 +13174,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,geoFor,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,measure,scopeIds,countryCoverage,buildCountryCockpit,children,byId,persist,venturesOf,offersOf,oracleFmv}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

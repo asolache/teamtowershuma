@@ -48,6 +48,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <a href="#post-shiva">Shiva</a> ·
 <a href="#post-shakti">Shakti</a> ·
 <a href="#post-molekulon">Molekulon</a> ·
+<a href="#post-model-pais">Models de país</a> ·
 <a href="#post-equip-v1">Equip gestor v1</a> ·
 <a href="#post-1">Guardians</a> ·
 <a href="#post-2">Molekulon (perfil)</a> ·
@@ -202,6 +203,51 @@ footer a{color:var(--indigo);text-decoration:none}
 <div style="color:var(--muted);font-size:.85rem">Muntem el proper projecte? Obre SOS, crea un molekulon i mira com es materialitza la síntesi.</div>
 <a href="index.html">Comença un molekulon →</a>
 </div>
+</article>
+
+<article id="post-model-pais">
+<h2>🧭 Catalunya no era un cas d'ús: estava soldada</h2>
+<div class="meta">
+<span class="tag">Arquitectura</span>
+<span class="tag">Model de negoci</span>
+<span class="tag">Fons cooperatiu</span>
+<span>Agost 2026</span>
+</div>
+<p class="lead">Deiem tres coses: que el model és replicable, que la destinació és el <strong>fons cooperatiu</strong>, i que Catalunya és el <strong>primer</strong> cas i no l'únic. L'app en feia tres de diferents. Aquesta és la revisió que ho ha destapat i el que s'hi ha fet.</p>
+
+<div class="who"><strong>Per a qui:</strong> qui vulgui portar el SOS a un altre territori sense tocar-ne el codi, i qui hagi de defensar davant d'un ajuntament o d'un finançador quant val el que la seva comunitat ja fa.</div>
+
+<h3>La prova era clicar «nou país»</h3>
+<p>Sortia un node buit. L'autocompletar oferia una sola opció —Catalunya—, i el mapa de valor d'Euskadi naixia amb un rol anomenat <strong>«Generalitat»</strong> i un altre «Consells comarcals». Quan hi afegies territoris, el sistema els deia «província» i «comarca», que allà no són les divisions que la gent fa servir.</p>
+
+<p>Res d'això era un error de programació: tot funcionava. Era un error de model — hi havia <strong>un cas particular al lloc on hi ha d'haver una plantilla</strong>, en sis punts del fitxer alhora.</p>
+
+<h3>Els nivells passen a ser dades</h3>
+<p>Ara hi ha un objecte que abans no existia: el <strong>model de país</strong>. Diu com es diuen els nivells, quines institucions surten al mapa de valor i quina geografia es pot carregar. Tres regles el fan útil de debò:</p>
+<ul>
+<li><strong>Els ids interns no canvien mai.</strong> Hi pengen els mapes de valor per nivell i els tipus d'entitat; renombrar-los trencaria tots els SOS que ja existeixen. El que canvia és l'etiqueta i <em>quants n'hi ha</em>: es pot dir «herrialdea» i es pot passar de cinc nivells a tres.</li>
+<li><strong>Catalunya és de només lectura.</strong> Forkejar-la en fa una còpia amb geografia i institucions pròpies. Un cas de referència que es pot espatllar sense voler deixa de ser una referència.</li>
+<li><strong>Eliminar un model no esborra cap territori.</strong> Els països que el feien servir tornen als noms per defecte. Un catàleg no pot ser propietari de la cosa catalogada.</li>
+</ul>
+<p>I l'assistent «crea el teu país» ja no deixa un node buit: tries model, en canvies els noms i les institucions, i el que en surt és un <strong>país viu</strong>, amb esquelet territorial i mapa de valor.</p>
+
+<h3>El fons tenia xifra però no tenia porta</h3>
+<p>El segon defecte era més gros. El fons cooperatiu era una funció dins d'una pestanya d'un node MATRIU: tres clics des de la portada, i només si aquell node existia. <strong>Un territori amb tres bancs de temps i dues biblioteques movent hores cada setmana tenia un fons de zero</strong>, perquè el càlcul només sabia comptar el que penjava d'una incubadora.</p>
+
+<p>Ara el fons és una pantalla enllaçable, es mesura sobre l'àmbit sencer, i té dues xifres que <strong>no es barregen mai</strong>:</p>
+<ul>
+<li><strong>Verificat</strong> — el que està signat i encadenat. Els euros en euros i <strong>les hores en hores</strong>. Presentar-ho tot com un sol número en euros obligaria a valorar les hores, i llavors ja no seria verificat.</li>
+<li><strong>Mobilitzat</strong> — l'estimació de l'oracle, amb rang i amb la font escrita al costat de cada partida.</li>
+</ul>
+<p>A sota, la comparació amb la fita del pla fundador d'aquell any. Si anem endarrerits, ho diu. I si l'any en curs no és una fita declarada, agafa la següent i <strong>diu que és la següent</strong>: inventar una xifra intermèdia seria posar-hi un compromís que ningú ha pres.</p>
+
+<h3>La cobertura, que és el que fa moure gent</h3>
+<p>El fons diu quant s'ha mogut. La cobertura diu <strong>on encara no s'ha mogut res</strong>. Sense la segona, la primera només és una notícia. La portada d'un país ara encapçala amb totes dues i llista les regions buides amb nom i botó — no és un retret, és l'única llista que diu on val la pena trucar.</p>
+
+<h3>El defecte que va sortir pel camí</h3>
+<p>Revisant els comptes n'hi havia un que no estava a la llista: <strong>un objecte valia hores</strong>. Quan la biblioteca circular va començar a registrar el desgast dels préstecs en euros, tres llocs seguien assumint que «el que no és diner són hores». Cada préstec inflava les hores del territori amb un import en €. Corregit als tres. Les xifres de consolidació d'abans d'avui estaven inflades i ara no ho estan.</p>
+
+<p><em>Un cas d'ús que no es pot obrir, editar ni copiar no és un cas d'ús: és documentació. Catalunya ja es pot copiar.</em></p>
 </article>
 
 <article id="post-equip-v1">

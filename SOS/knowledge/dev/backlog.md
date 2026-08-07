@@ -44,6 +44,37 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+**P0 · Revisió UX del flux de valor cap al fons** — feta i implementada
+
+La revisió completa és a `SOS/knowledge/vision/review-ux-flux-de-valor.md`. Va
+sortir de tres coses que el SOS deia i l'app no feia: que el model és replicable,
+que la destinació és el fons cooperatiu, i que Catalunya és el primer cas i no
+l'únic.
+
+1. ~~**Catalunya soldada al codi**~~ · **fet (V54)**. Era un cas particular al
+   lloc d'una plantilla, en sis punts: nivells, institucions del mapa de valor,
+   tipus d'entitat, catàleg geogràfic, resolutors de cadena amb `pais:'Catalunya'`
+   literal, i un esquelet d'un sol país. Ara hi ha `COUNTRY_MODELS` amb Catalunya
+   com a referència de només lectura, forkejable; els nivells són dades
+   (renombrables i retallables) però els seus ids no canvien mai; i l'assistent
+   «crea el teu país» deixa un país viu en comptes d'un node buit.
+2. ~~**El fons no tenia porta**~~ · **fet (V55)**. Ruta `#/fons` enllaçable, amb
+   verificat (signat, hores en hores) separat de l'estimació de l'oracle (amb
+   rang i font), comparació amb la fita del pla fundador sense interpolar, i
+   desglossament per dinàmica i per node. `networkFund` ja no depèn de la MATRIU:
+   un territori amb bancs de temps i biblioteques té fons.
+3. ~~**El país ensenyava la portada d'un barri**~~ · **fet (V55)**. Cabina amb
+   fons, cobertura (quines regions encara no tenen res) i les que més es mouen.
+   Les sis targetes de rol es queden per als nivells on serveixen.
+4. **Missions de xarxa** · **pendent**. Avui `missions()` només diu què *em* toca
+   a mi. La feina que no és de ningú en particular —«tres comarques sense cap
+   dinàmica»— no la veu ningú i per tant no la fa ningú. La cobertura ja la
+   calcula (`countryCoverage`); falta convertir-la en missions.
+5. **Catàleg territorial d'un segon país** · **bloquejat per dades, no per codi**.
+   El model ja permet carregar-lo; algú l'ha d'aportar.
+
+---
+
 **P1 · Ara — sense això, el SOS és monousuari**
 
 1. ~~**Sync en viu**~~ · **ja hi era**. En anar a fer-ho es va comprovar que
@@ -623,6 +654,15 @@ digui ja. El filtre d'àmbit és un xip, no un text a la caixa de cerca —«Rep
 bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultats.
 
 ### Defectes trobats i encara oberts
+
+- ~~**Un objecte valia hores**~~ · **resolt (V55)**. V45 va afegir el tipus
+  d'apunt `objecte` amb el valor **en euros** (donacions i desgast per préstec),
+  però tres llocs seguien assumint «el que no és moneda són hores»: `measure()`
+  —que alimenta cada roll-up i cada panell de consolidació—, el total «Temps
+  aportat» de `renderLedger`, i la taula de projectes del dashboard. Cada préstec
+  d'una biblioteca inflava les hores del territori amb un import en €. Ara
+  `measure` retorna `objectes` com a calaix propi i cap dels tres el barreja.
+
 
 - **El selector d'idioma de la landing és inabastable a 1280 px** · **obert, i
   fora de l'abast d'aquesta línia**. A `index.html` (arrel), el botó

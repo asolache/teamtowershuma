@@ -688,6 +688,71 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 55 — El fons cooperatiu ha de tenir porta, i no pot mentir
+
+El SOS deia a la seva pròpia documentació que la destinació és un fons
+cooperatiu, i li posava xifra i any. A l'app, el fons era **una funció dins d'una
+pestanya d'un node MATRIU**: tres clics des de la portada, i només si aquell node
+existia. Un territori amb tres bancs de temps i dues biblioteques movent hores
+cada setmana tenia un fons de **zero**, perquè `fundValue` només sabia comptar el
+que penjava d'una incubadora.
+
+El múscul d'un territori no és la seva MATRIU: és tot el que hi ha a sota. El
+fons es mesura sobre l'àmbit sencer (`scopeIds` + el mateix desduplicat que fa
+servir `measure`, perquè dues xifres del mateix fons són pitjor que cap).
+
+Tres regles que la pantalla no pot trencar:
+
+- **Verificat i estimat no se sumen mai.** El que encapçala és el que està signat
+  i encadenat. La conversió d'hores a euros és de l'oracle, va a sota, amb rang i
+  amb la font escrita al costat de cada partida.
+- **Les hores es diuen en hores.** Presentar «verificat» com un sol número en
+  euros obligaria a valorar-les, i llavors ja no seria verificat. Són dues xifres
+  bessones, no una de sola.
+- **La comparació amb el pla no interpola.** Si l'any en curs no és una fita
+  declarada, s'agafa la següent i **es diu que és la següent**. Inventar una
+  xifra intermèdia seria posar-hi un compromís que ningú ha pres.
+
+I la cobertura al costat del fons, perquè no són la mateixa pregunta: el fons diu
+quant s'ha mogut; la cobertura diu **on encara no s'ha mogut res**. Sense la
+segona, la primera només és una notícia. Una llista de regions buides no és un
+retret: és l'única llista que diu on val la pena trucar.
+
+## Veda 54 — Un cas particular al lloc d'una plantilla
+
+Catalunya no era un cas d'ús del SOS: estava **soldada en sis llocs del fitxer**.
+Els nivells (`província`, `comarca`, `municipi`, `barri`), els rols institucionals
+del mapa de valor de qualsevol país (`Generalitat`, `Diputacions`, `Consells
+comarcals`), els tipus d'entitat, el catàleg territorial, els resolutors de
+cadena amb `pais:'Catalunya'` escrit a mà, i una funció d'esquelet d'un sol país.
+
+Res d'això era un error de programació —tot funcionava. Era un error de model: hi
+havia un cas particular al lloc on hi ha d'haver una plantilla. La prova és què
+passava en clicar «nou país»: sortia un node buit, l'autocompletar oferia una
+sola opció (Catalunya), i el mapa de valor d'Euskadi naixia amb un rol anomenat
+«Generalitat».
+
+La separació que ho resol:
+
+- **Els ids dels nivells no canvien mai.** Hi pengen les classes CSS, els mapes
+  de valor per nivell i els tipus d'entitat. Renombrar-los trencaria tots els SOS
+  que ja existeixen.
+- **Les etiquetes i el nombre de nivells són dades.** Un model pot dir-li
+  «herrialdea» a `provincia` i tenir-ne tres en comptes de cinc. Retallar un
+  nivell del mig el salta de debò: el fill surt de l'ordre de la llista.
+- **`null` vol dir «el de sempre».** Un model que no declara geografia,
+  institucions ni tipus d'entitat es comporta exactament com abans del canvi. Per
+  això Catalunya és un model amb tres nulls i cap SOS existent nota res.
+- **La referència no es toca.** Catalunya és de només lectura; forkejar-la en fa
+  una còpia amb id nou i geografia pròpia materialitzada. Un cas de referència
+  que es pot espatllar sense voler deixa de ser una referència.
+- **Eliminar un model no esborra cap territori.** Els països que el feien servir
+  tornen als noms de nivell per defecte. Un catàleg no pot ser propietari de la
+  cosa catalogada.
+
+Un cas d'ús que no es pot obrir, editar ni copiar no és un cas d'ús: és
+documentació.
+
 ## Veda 53 — Graduar no és el final del camí
 
 `graduatedNodeId` existia des del primer dia i **no el llegia ningú**. La venture
