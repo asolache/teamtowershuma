@@ -542,6 +542,7 @@ a{color:var(--blue);text-decoration:none}
 .sp-match-dom{background:linear-gradient(180deg,rgba(99,102,241,.09),transparent);border-left:3px solid var(--indigo)}
 /* Missions · targetes grosses, un sol botó, res per configurar. Pensades per a
    un polze en un mòbil, no per a un ratolí en una taula. */
+.sp-ev{flex-basis:100%;display:flex;gap:.25rem;flex-wrap:wrap;margin:.15rem 0 0 1.4rem}
 .ms-card{background:var(--bg-elevated);border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:12px;padding:.85rem .9rem;margin-bottom:.6rem}
 .ms-card.now{border-left-color:var(--amber);background:linear-gradient(180deg,var(--amber-dim),transparent)}
 .ms-t{font-size:1rem;font-weight:700;color:var(--light);line-height:1.35}
@@ -735,7 +736,7 @@ a{color:var(--blue);text-decoration:none}
 .sp-bar-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--green));transition:width .3s}
 .sp-meta{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.05em}
 .sp-items{list-style:none;padding:.4rem 0 .3rem;margin:0;display:flex;flex-direction:column;gap:.15rem}
-.sp-it{font-size:.83rem;color:var(--light)}
+.sp-it{font-size:.83rem;color:var(--light);display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
 .sp-it label{display:flex;align-items:flex-start;gap:.4rem;cursor:pointer;padding:.15rem 0}
 .sp-it input{margin-top:.3rem;cursor:pointer;min-width:16px;min-height:16px}
 .sp-it.done .sp-tt{text-decoration:line-through;color:var(--muted)}
@@ -1548,7 +1549,9 @@ async function loadAllNarratives(){try{const all=await dbGetAll();return all.fil
    state.nodes i, per tant, fora del sync P2P i del pack públic. El CV mai
    viatja: només en surten les etiquetes que tu acceptes (skills i recursos),
    i aquestes sí que es publiquen com a ofertes perquè serveixin d'alguna cosa. */
-const PRIVATE_DB_TYPES=new Set(['meta','narrative','dossier']);
+/* `evidence` hi entra amb la resta: un fitxer adjunt a una tasca és local i no
+   ha de viatjar pel sync ni pel pack públic. Al backlog només hi queda el hash. */
+const PRIVATE_DB_TYPES=new Set(['meta','narrative','dossier','evidence']);
 const dossierId=key=>'__dossier_'+key;
 function dossierOf(nameOrKey){return state.dossiers[personKey(nameOrKey)]||null;}
 function emptyDossier(name){return{name:name||'',birth:'',cv:null,skillsFree:[],resources:[],languages:[],availability:'',wants:[],links:[],declared:[],quiz:{},character:null};}
@@ -6235,6 +6238,123 @@ async function advanceStage(node,v){
   v.stage=g.next;v.stageAt=now();await persist(node);return v.stage;
 }
 // Readiness: 5 checks. Graduate quan tots verds (o overrideable per steward).
+/* ═══════════ F7 · Seguiment post-graduació ═══════════
+   `graduatedNodeId` existia i **no el llegia ningú**. Graduar era el final del
+   camí: la venture sortia de la cartera i el que passés després no es tornava a
+   mirar mai. Una incubadora que no sap què va passar amb el que va graduar no
+   pot millorar el seu mètode —només pot repetir-lo.
+
+   Les revisions són a **3, 6 i 12 mesos**, i el que es pregunta és el que de
+   debò decideix si allò va funcionar: *segueix viu? ha crescut? què n'hem
+   après?* La resposta no es dedueix: **la posa una persona**, perquè un projecte
+   pot tenir el registre quiet i estar viu, i pot tenir moviment i estar mort. */
+const REVIEW_MONTHS=[3,6,12];
+const reviewsOf=v=>v.reviews||(v.reviews=[]);
+const graduatedNodeOf=v=>v.graduatedNodeId?byId(v.graduatedNodeId):null;
+const _monthsSince=iso=>iso?Math.floor((Date.now()-new Date(iso))/(30.44*864e5)):null;
+/* Què hi ha per revisar d'una venture graduada. Una revisió venç quan han passat
+   els mesos; abans no es demana res, perquè preguntar «segueix viu?» al mes de
+   graduar no informa de res. */
+function postGradReviews(v){
+  if(!v.graduatedAt)return{graduated:false,rows:[],due:[],months:null};
+  const done=reviewsOf(v),m=_monthsSince(v.graduatedAt);
+  /* Una fita que ja ha quedat enrere per una revisió posterior **deixa de
+     vèncer**: si has revisat als 12 mesos, demanar-te la dels 3 és demanar-te
+     que t'inventis un record. La revisió més recent ja respon millor la
+     pregunta. */
+  const maxDone=done.reduce((a2,r)=>Math.max(a2,r.months||0),0);
+  const rows=REVIEW_MONTHS.map(mo=>{
+    const r=done.find(x=>x.months===mo)||null;
+    return{months:mo,done:!!r,review:r,
+      due:m!=null&&m>=mo&&!r&&mo>maxDone,
+      superseded:!r&&mo<maxDone,
+      dueAt:new Date(new Date(v.graduatedAt).getTime()+mo*30.44*864e5).toISOString().slice(0,10)};
+  });
+  return{graduated:true,months:m,rows,due:rows.filter(x=>x.due),
+    last:done.slice().sort((a,b)=>b.months-a.months)[0]||null};
+}
+function addReview(v,{months,alive,grew,note}={}){
+  if(!v.graduatedAt)throw{msg:'Aquesta iniciativa encara no ha graduat'};
+  const mo=Number(months)||0;
+  if(REVIEW_MONTHS.indexOf(mo)<0)throw{msg:'Les revisions són als 3, 6 i 12 mesos'};
+  const arr=reviewsOf(v),i=arr.findIndex(x=>x.months===mo);
+  const r={id:uid(),months:mo,alive:alive!==false,grew:!!grew,note:(note||'').trim(),ts:now()};
+  if(i>=0)arr[i]=r;else arr.push(r);
+  return r;
+}
+/* La taxa de supervivència de la MATRIU, que és un indicador **de la incubadora
+   i no dels projectes**. Es compta només sobre les que ja tenen revisió: dir que
+   una graduada fa dues setmanes «sobreviu» seria inflar el número amb temps que
+   encara no ha passat. */
+function survivalRate(node){
+  const grads=venturesOf(node).filter(v=>v.graduatedAt);
+  const revised=grads.filter(v=>reviewsOf(v).length);
+  const alive=revised.filter(v=>{const rs=reviewsOf(v).slice().sort((a,b)=>b.months-a.months);return rs[0].alive;});
+  const grew=revised.filter(v=>reviewsOf(v).some(r=>r.grew));
+  const pending=grads.filter(v=>postGradReviews(v).due.length);
+  return{graduades:grads.length,revisades:revised.length,vives:alive.length,creixen:grew.length,
+    pendents:pending.length,pendentsList:pending,
+    taxa:revised.length?Math.round(alive.length*100/revised.length):null,
+    /* Sense revisions, la taxa és `null` i no zero: no saber-ho no és el mateix
+       que saber que han mort totes. */
+    why:revised.length?(alive.length+' de '+revised.length+' revisades segueixen vives'):'Encara no s\'ha revisat cap graduada'};
+}
+/* ═══════════ F8 · Evidències ═══════════
+   Un checklist marcat és una promesa; un checklist amb proves és un expedient.
+   Cada item del backlog pot portar un enllaç, una nota o un fitxer, i de cada
+   prova se'n guarda el **hash**: així es pot ancorar després sense haver de
+   publicar el contingut. */
+const EVIDENCE_KINDS=[{id:'enllac',label:'Enllaç',ic:'🔗'},{id:'fitxer',label:'Fitxer',ic:'📎'},{id:'nota',label:'Nota',ic:'📝'}];
+const evidenceOf=item=>item.evidence||(item.evidence=[]);
+async function addEvidence(item,{kind,label,url,text,file}={}){
+  const k=(EVIDENCE_KINDS.find(x=>x.id===kind)||EVIDENCE_KINDS[0]).id;
+  const ev={id:uid(),kind:k,label:(label||'').trim(),ts:now()};
+  if(k==='enllac'){
+    const u=(url||'').trim();
+    if(!/^https?:\/\//i.test(u))throw{msg:'Un enllaç ha de començar per http:// o https://'};
+    ev.url=u;ev.hash=await sha256(u);
+  }else if(k==='nota'){
+    const t=(text||'').trim();
+    if(!t)throw{msg:'Una nota buida no és una prova'};
+    ev.text=t;ev.hash=await sha256(t);
+  }else{
+    if(!file)throw{msg:'Tria un fitxer'};
+    const buf=new Uint8Array(await file.arrayBuffer());
+    if(buf.length>4*1024*1024)throw{msg:'El fitxer és massa gros (màxim 4 MB). Puja\'l a un altre lloc i enganxa l\'enllaç.'};
+    ev.hash=await sha256(buf);ev.name=file.name;ev.size=buf.length;ev.mime=file.type||'';
+    /* El fitxer es guarda a IndexedDB com a registre propi i **no dins del
+       node**: si anés al node viatjaria pel sync i pel pack públic, i una foto
+       de tres megues no ha de creuar un canal P2P sense que ningú ho hagi
+       demanat. Al backlog només hi queda el hash i el nom. */
+    ev.blobId='ev_'+ev.id;
+    await dbPut({id:ev.blobId,type:'evidence',data:buf,mime:ev.mime,name:ev.name,ts:ev.ts});
+  }
+  if(!ev.label)ev.label=ev.name||ev.url||(ev.text||'').slice(0,40);
+  evidenceOf(item).push(ev);
+  return ev;
+}
+async function removeEvidence(item,evId){
+  const arr=evidenceOf(item),i=arr.findIndex(x=>x.id===evId);
+  if(i<0)return false;
+  const ev=arr[i];
+  if(ev.blobId){try{await dbDelete(ev.blobId);}catch(e){}}
+  arr.splice(i,1);return true;
+}
+async function loadEvidenceBlob(ev){
+  if(!ev||!ev.blobId)return null;
+  try{const all=await dbGetAll();const r=all.find(x=>x.id===ev.blobId);
+    return r&&r.data?new Blob([r.data],{type:r.mime||'application/octet-stream'}):null;}catch(e){return null;}
+}
+/* Quants dels items FETS porten prova. Es mira només sobre els fets a posta: una
+   tasca que encara no s'ha fet no pot tenir evidència, i comptar-la baixaria el
+   percentatge castigant qui va per feina. */
+function evidenceCoverage(v){
+  const items=sprintsOf(v).reduce((a,s)=>a.concat(s.items||[]),[]).filter(x=>x.done);
+  const withEv=items.filter(x=>(x.evidence||[]).length);
+  return{done:items.length,amb:withEv.length,
+    pct:items.length?Math.round(withEv.length*100/items.length):0,
+    sense:items.filter(x=>!(x.evidence||[]).length)};
+}
 /* ═══════════ F5 · Finançament i tràmits ═══════════
    El mur real d'un projecte comunitari no és la idea: és **la paperassa i el
    calendari de convocatòries**. Una subvenció es perd per no haver mirat una
@@ -6380,11 +6500,18 @@ function ventureReadiness(node,v){
   /* La formació de l'etapa és un **suggeriment**, no una porta: es marca a mà i
      ningú no ha de quedar bloquejat per una casella que ell mateix omple. Surt
      a la llista perquè es vegi, amb `soft:true` perquè no compti per graduar. */
-  const tr=stageTraining(node,v);
+  const tr=stageTraining(node,v),ev=evidenceCoverage(v);
   const soft=[{k:'formacio',soft:true,label:'L\'equip ha fet el mòdul de l\'etapa · '+tr.module.title,
     ok:tr.total?tr.done===tr.total:false,
-    hint:tr.total?(tr.done+' de '+tr.total+' persones · '+tr.module.hours+' h, nivell '+tr.module.level):'Encara no hi ha equip a la venture'}];
-  return{score,checks,soft,graduateReady:checks.every(c=>c.ok),training:tr};
+    hint:tr.total?(tr.done+' de '+tr.total+' persones · '+tr.module.hours+' h, nivell '+tr.module.level):'Encara no hi ha equip a la venture'},
+    /* L'evidència també és `soft`: la posa qui fa la feina, i demanar-la com a
+       porta convidaria a adjuntar qualsevol cosa per passar-la. Es veu, i qui
+       vulgui defensar l'expedient davant d'una administració ja sap què li
+       falta. */
+    {k:'evidencia',soft:true,label:'Els entregables fets tenen prova',
+     ok:ev.done?ev.pct>=60:false,
+     hint:ev.done?(ev.amb+' de '+ev.done+' items fets amb evidència · '+ev.pct+'%'):'Encara no hi ha cap item fet'}];
+  return{score,checks,soft,graduateReady:checks.every(c=>c.ok),training:tr,evidence:ev};
 }
 const norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const entityId=(level,territoryName,entityType,name)=>'e_'+[norm(level),norm(territoryName),norm(entityType),norm(name)].join('_');
@@ -8899,6 +9026,31 @@ function renderMatriuVentures(body,node){
     });
     body.appendChild(box);
   }
+  /* Supervivència · l'indicador de la incubadora, no dels projectes. Sense cap
+     revisió feta la taxa és **desconeguda i no zero**: no saber-ho no és el
+     mateix que saber que han mort totes. */
+  const sv=survivalRate(node);
+  if(sv.graduades){
+    body.appendChild(el('div','ent-grp-lbl','🔭 Després de graduar · com li va a la MATRIU'));
+    const sx=el('div','bib-stats');
+    sx.innerHTML='<div class="bib-tile"><div class="n">'+sv.graduades+'</div><div class="l">graduades</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--green)">'+sv.vives+'</div><div class="l">segueixen vives</div></div>'+
+      '<div class="bib-tile"><div class="n">'+sv.creixen+'</div><div class="l">han crescut</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:'+(sv.taxa==null?'var(--muted)':'var(--green)')+'">'+(sv.taxa==null?'—':sv.taxa+'%')+'</div><div class="l">supervivència</div></div>'+
+      (sv.pendents?'<div class="bib-tile"><div class="n" style="color:var(--amber)">'+sv.pendents+'</div><div class="l">revisions a fer</div></div>':'');
+    body.appendChild(sx);
+    const note=el('div','ent-desc');note.style.marginTop='.3rem';
+    note.innerHTML=esc(sv.why)+'. La taxa es calcula <strong>només sobre les revisades</strong>: comptar una graduada de fa dues setmanes com a supervivent seria inflar el número amb temps que encara no ha passat.';
+    body.appendChild(note);
+    sv.pendentsList.forEach(v2=>{
+      const due=postGradReviews(v2).due;
+      const c=el('div','ent-card');c.style.borderLeft='3px solid var(--amber)';c.style.marginTop='.3rem';
+      c.innerHTML='<div class="ent-nm">🔭 '+esc(v2.name)+'</div><div class="ent-desc">Toca la revisió dels '+due.map(d=>d.months).join(' i ')+' mesos.</div>';
+      const b2=el('button','btn btn-ghost btn-sm','Fes-la');b2.style.marginTop='.4rem';
+      b2.onclick=()=>openReviewForm(node,v2,due[0].months,()=>renderWorkspace());
+      c.appendChild(b2);body.appendChild(c);
+    });
+  }
   /* Viabilitat · què se sosté i quants mesos aguanta el fons. */
   const vb=viabilitySummary(node);
   if(vb.total){
@@ -9315,6 +9467,64 @@ const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'
 /* Una font d'ingressos, en preu per unitat i unitats al mes. Demanar-ho així
    obliga a saber què és una «unitat» del projecte, que és la pregunta que
    normalment no s'ha fet ningú. */
+function openReviewForm(node,v,months,onDone){
+  const pg=postGradReviews(v),prev=(pg.rows.find(r=>r.months===months)||{}).review||null;
+  const bg=modal(`
+    <h2>🔭 Revisió als ${months} mesos</h2>
+    <p class="m-sub"><strong>${esc(v.name)}</strong> · va graduar ${esc(relTime(v.graduatedAt))}. Això <strong>no es dedueix del registre</strong>: un projecte pot tenir el ledger quiet i estar viu, i tenir moviment i estar mort. Ho has de mirar tu.</p>
+    <div class="field"><label>Segueix en marxa?</label>
+      <div style="display:flex;gap:.4rem"><button type="button" class="btn btn-ghost btn-sm rv-a sel" data-a="1" style="flex:1">✅ Sí, segueix viu</button><button type="button" class="btn btn-ghost btn-sm rv-a" data-a="0" style="flex:1">✕ Ha parat</button></div></div>
+    <div class="field"><label>Ha crescut des que va graduar?</label>
+      <div style="display:flex;gap:.4rem"><button type="button" class="btn btn-ghost btn-sm rv-g" data-g="1" style="flex:1">📈 Sí</button><button type="button" class="btn btn-ghost btn-sm rv-g sel" data-g="0" style="flex:1">→ Es manté</button></div></div>
+    <div class="field"><label>Què n'hem après</label><input id="rvNote" maxlength="140" placeholder="El que caldria fer diferent la propera vegada" value="${prev?esc(prev.note||''):''}"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="rvCancel">Cancel·la</button><button class="btn btn-primary" id="rvSave">⬢ Desa la revisió</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let alive=prev?prev.alive!==false:true,grew=prev?!!prev.grew:false;
+  const paint=(sel,val)=>bg.querySelectorAll(sel).forEach(b=>b.classList.toggle('sel',
+    (sel==='.rv-a'?(b.dataset.a==='1')===val:(b.dataset.g==='1')===val)));
+  paint('.rv-a',alive);paint('.rv-g',grew);
+  bg.querySelectorAll('.rv-a').forEach(b=>b.onclick=()=>{alive=b.dataset.a==='1';paint('.rv-a',alive);});
+  bg.querySelectorAll('.rv-g').forEach(b=>b.onclick=()=>{grew=b.dataset.g==='1';paint('.rv-g',grew);});
+  bg.querySelector('#rvCancel').onclick=closeModal;
+  bg.querySelector('#rvSave').onclick=async()=>{
+    try{addReview(v,{months,alive,grew,note:bg.querySelector('#rvNote').value});
+      await persist(node);closeModal();if(onDone)onDone();toast('Revisió desada');
+    }catch(e){toast((e&&e.msg)||'No s\'ha pogut');}
+  };
+}
+function openEvidenceForm(node,v,item,onDone){
+  const bg=modal(`
+    <h2>📎 Prova de «${esc(item.title)}»</h2>
+    <p class="m-sub">Un checklist marcat és una promesa; amb prova és un expedient. De cada prova se'n guarda el <strong>hash</strong>, així es pot ancorar després sense publicar-ne el contingut.</p>
+    <div class="field"><label>Quina mena de prova</label>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap">${EVIDENCE_KINDS.map((k,i)=>'<button type="button" class="btn btn-ghost btn-sm ev-k'+(i?'':' sel')+'" data-k="'+k.id+'">'+k.ic+' '+k.label+'</button>').join('')}</div></div>
+    <div class="field" id="evUrlF"><label>Enllaç</label><input id="evUrl" placeholder="https://…"></div>
+    <div class="field" id="evTextF" style="display:none"><label>Nota</label><input id="evText" maxlength="200" placeholder="Què demostra"></div>
+    <div class="field" id="evFileF" style="display:none"><label>Fitxer (màx. 4 MB)</label><input type="file" id="evFile">
+      <div class="wz-key-note">El fitxer es queda <strong>al teu navegador</strong>: no viatja pel sync ni pel paquet públic. Al backlog només hi queda el hash i el nom.</div></div>
+    <div class="field"><label>Etiqueta (opcional)</label><input id="evLabel" maxlength="60" placeholder="Com vols que es vegi"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="evCancel">Cancel·la</button><button class="btn btn-primary" id="evSave">⬢ Adjunta</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let kind='enllac';
+  const show=()=>{bg.querySelector('#evUrlF').style.display=kind==='enllac'?'':'none';
+    bg.querySelector('#evTextF').style.display=kind==='nota'?'':'none';
+    bg.querySelector('#evFileF').style.display=kind==='fitxer'?'':'none';};
+  bg.querySelectorAll('.ev-k').forEach(b=>b.onclick=()=>{kind=b.dataset.k;
+    bg.querySelectorAll('.ev-k').forEach(x=>x.classList.toggle('sel',x===b));show();});
+  show();
+  bg.querySelector('#evCancel').onclick=closeModal;
+  bg.querySelector('#evSave').onclick=async()=>{
+    const f=bg.querySelector('#evFile');
+    try{
+      await addEvidence(item,{kind,label:bg.querySelector('#evLabel').value,
+        url:bg.querySelector('#evUrl').value,text:bg.querySelector('#evText').value,
+        file:f&&f.files&&f.files[0]});
+      await persist(node);closeModal();if(onDone)onDone();toast('Prova adjuntada');
+    }catch(e){toast((e&&e.msg)||'No s\'ha pogut');}
+  };
+}
 function openFundingForm(node,v,onDone){
   const bg=modal(`
     <h2>🏦 Convocatòria, préstec o premi</h2>
@@ -9496,6 +9706,7 @@ function openVentureDetail(node,v){
     <div class="ent-grp-lbl">💶 Viabilitat econòmica · si se sosté</div>
     <div id="vdEcon"></div>
     <div class="ent-badges" style="margin-top:.4rem"><button class="btn btn-ghost btn-sm" id="vdRev">+ Font d'ingressos</button><button class="btn btn-ghost btn-sm" id="vdCost">+ Cost</button></div>
+    <div id="vdPost"></div>
     <div class="ent-grp-lbl">🏦 Finançament i tràmits · el mur real</div>
     <div id="vdFund"></div>
     <button class="btn btn-ghost btn-sm" id="vdFundAdd" style="margin-top:.4rem">+ Convocatòria o préstec</button>
@@ -9639,6 +9850,38 @@ function openVentureDetail(node,v){
   };
   bg.querySelector('#vdFundAdd').onclick=()=>openFundingForm(node,v,paintFund);
   paintFund();
+  /* Seguiment post-graduació: només surt si ja ha graduat, perquè abans no hi ha
+     res a seguir. Graduar deixa de ser el final del camí. */
+  const paintPost=()=>{
+    const box=bg.querySelector('#vdPost');if(!box||!box.isConnected)return;
+    const pg=postGradReviews(v);
+    if(!pg.graduated){box.innerHTML='';return;}
+    const nn=graduatedNodeOf(v);
+    box.innerHTML='<div class="ent-grp-lbl">🔭 Després de graduar · '+(pg.months!=null?pg.months+' mesos':'—')+'</div>'+
+      (nn?'<div class="ent-card"><div class="ent-nm">'+esc(nn.name)+'</div><div class="ent-desc">'+
+        (children(nn.id).length||membersOf(nn).length||(nn.ledger||[]).length
+          ? membersOf(nn).length+' socis · '+(nn.ledger||[]).length+' apunts · '+children(nn.id).length+' sub-nodes'
+          : 'Encara no hi ha res registrat al node graduat.')+'</div></div>'
+        :'<div class="ai-note"><span class="ic">⚠</span><span>El node graduat ja no hi és. La revisió segueix tenint sentit: potser va continuar fora del SOS.</span></div>');
+    pg.rows.forEach(r=>{
+      const c2=el('div','ent-card');c2.style.marginTop='.3rem';
+      if(r.due)c2.style.borderLeft='3px solid var(--amber)';
+      c2.innerHTML='<div class="ent-nm">'+(r.done?'✓':(r.due?'⏰':(r.superseded?'–':'○')))+' Revisió als '+r.months+' mesos</div>'+
+        '<div class="ent-desc">'+(r.done
+          ? (r.review.alive?'Segueix en marxa':'Ha parat')+(r.review.grew?' · ha crescut':'')+(r.review.note?' · '+esc(r.review.note):'')
+          : (r.due?'Toca fer-la: ja han passat els '+r.months+' mesos.'
+            : r.superseded?'Ja no cal: una revisió posterior respon millor la pregunta.'
+            : 'Toca el '+r.dueAt+'.'))+'</div>';
+      if(r.due||r.done){
+        const b2=el('button','btn btn-ghost btn-sm',r.done?'✎ Revisa-la':'🔭 Fes la revisió');
+        b2.style.marginTop='.4rem';
+        b2.onclick=()=>openReviewForm(node,v,r.months,()=>{paintPost();});
+        c2.appendChild(b2);
+      }
+      box.appendChild(c2);
+    });
+  };
+  paintPost();
   /* Els tràmits del tipus de projecte: la llista que et demanaran, perquè ningú
      es trobi el mur el dia abans. No és assessorament jurídic i no ho pretén. */
   const paintLegal=()=>{
@@ -9772,8 +10015,23 @@ function openVentureDetail(node,v){
       const ul=card.querySelector('.sp-items');
       (sp.items||[]).forEach(it=>{
         const li=el('li','sp-it'+(it.done?' done':'')+' sp-kind-'+it.kind);
-        li.innerHTML='<label><input type="checkbox" '+(it.done?'checked':'')+'> <span class="sp-ic">'+({role:'👤',flow:'⇄',deliverable:'📦',test:'🧪'}[it.kind]||'◇')+'</span> <span class="sp-tt">'+esc(it.title)+'</span></label>';
+        const evs=it.evidence||[];
+        li.innerHTML='<label><input type="checkbox" '+(it.done?'checked':'')+'> <span class="sp-ic">'+({role:'👤',flow:'⇄',deliverable:'📦',test:'🧪'}[it.kind]||'◇')+'</span> <span class="sp-tt">'+esc(it.title)+'</span></label>'+
+          (evs.length?'<div class="sp-ev">'+evs.map(e=>'<span class="ent-b" title="'+esc(e.hash||'')+'">'+((EVIDENCE_KINDS.find(k=>k.id===e.kind)||{}).ic||'◇')+' '+esc(e.label||'prova')+'</span>').join('')+'</div>':'');
         li.querySelector('input').onchange=async()=>{toggleBacklogItem(sp,it.id);await persist(node);renderSprints();};
+        /* La prova només té sentit sobre el que ja està fet: adjuntar-la abans
+           seria documentar una intenció. */
+        if(it.done){
+          const ev=el('button','btn btn-ghost btn-sm',evs.length?'📎 '+evs.length:'📎 Prova');
+          ev.style.cssText='margin-left:auto;flex:0 0 auto';
+          ev.onclick=()=>openEvidenceForm(node,v,it,renderSprints);
+          li.appendChild(ev);
+          if(evs.length){
+            const del=el('button','btn btn-ghost btn-sm','🗑');del.style.flex='0 0 auto';
+            del.onclick=async()=>{await removeEvidence(it,evs[evs.length-1].id);await persist(node);renderSprints();};
+            li.appendChild(del);
+          }
+        }
         ul.appendChild(li);
       });
       const acts=card.querySelector('.sp-actions');
@@ -9940,6 +10198,12 @@ function dashboardAttention(){
       d:nd.name+' · esperen vot per arribar a quòrum',act:()=>openAssemblyModal(nd)});
     /* Un termini de subvenció que passa no es recupera. Va amb la severitat més
        alta perquè és l'única cosa d'aquesta llista que caduca sola. */
+    /* Una revisió post-graduació que toca fa mesos no és urgent com un termini,
+       però sense ella la MATRIU no sap si el seu mètode funciona. */
+    try{survivalRate(nd).pendentsList.forEach(v2=>{const d=postGradReviews(v2).due[0];
+      out.push({sev:1,ic:'🔭',t:'Toca revisar «'+v2.name+'» als '+d.months+' mesos',
+        d:nd.name+' · una incubadora que no sap què va passar amb el que va graduar no pot millorar el mètode',
+        act:()=>openVentureDetail(nd,v2)});});}catch(e){}
     fundingSummary&&fundingAlerts(nd).forEach(x=>out.push({sev:0,ic:'⏰',
       t:x.f.name+(x.dies<0?' · ha passat fa '+(-x.dies)+' dies':' · venç en '+x.dies+' dies'),
       d:nd.name+' · '+x.v.name+(x.f.amount?' · '+x.f.amount+' €':'')+(x.dies<0?'. Un termini passat no es recupera.':''),
@@ -12293,7 +12557,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

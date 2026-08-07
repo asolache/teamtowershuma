@@ -688,6 +688,38 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 53 — Graduar no és el final del camí
+
+`graduatedNodeId` existia des del primer dia i **no el llegia ningú**. La venture
+sortia de la cartera i el que passés després no es tornava a mirar mai. Una
+incubadora que no sap què va passar amb el que va graduar no pot millorar el seu
+mètode: només pot repetir-lo.
+
+Les revisions són a **3, 6 i 12 mesos**, i la resposta **la posa una persona**.
+No es dedueix del registre a posta: un projecte pot tenir el ledger quiet i estar
+ben viu, i pot tenir moviment i estar mort. Automatitzar aquesta pregunta seria
+donar-li precisió a una cosa que no en té.
+
+Tres decisions sobre com es compta, que és on això es fa honest o es fa
+propaganda:
+
+- **Sense revisions, la taxa és desconeguda, no zero.** `null` i no `0`: no
+  saber-ho no és el mateix que saber que han mort totes.
+- **La taxa es calcula només sobre les revisades.** Comptar una graduada de fa
+  dues setmanes com a supervivent és inflar el número amb temps que encara no ha
+  passat.
+- **Una fita superada per una revisió posterior deixa de vèncer.** Si has revisat
+  als 12 mesos, demanar-te la dels 3 és demanar-te que t'inventis un record.
+
+I a les **evidències**, la mateixa lògica que a la formació: un checklist marcat
+és una promesa i un checklist amb proves és un expedient, però la cobertura de
+proves **no és una porta**. Demanar-la per graduar convidaria a adjuntar
+qualsevol cosa per passar-la, i llavors l'expedient deixaria de valer justament
+per al que serveix. De cada prova se'n guarda el **hash**, així es pot ancorar
+sense publicar-ne el contingut; i **el fitxer no entra al node** —viatjaria pel
+sync i pel pack públic— sinó a un registre local propi, amb el tipus `evidence`
+dins de `PRIVATE_DB_TYPES`. Al backlog només hi queda el hash i el nom.
+
 ## Veda 52 — El mur no és la idea, és la data
 
 El que atura un projecte comunitari no acostuma a ser que l'idea no valgui: és

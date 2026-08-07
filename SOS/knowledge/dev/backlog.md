@@ -168,9 +168,22 @@ camí crític d'una eina que ha de funcionar sense xarxa.
       graduació→M5) i `stageTraining` diu qui de l'equip real l'ha fet. Surt a
       les comprovacions marcat com a **`soft`: no bloqueja graduar**, perquè es
       marca a mà i no es pot aturar ningú per una casella que ell mateix omple.
-    - 46 assercions a `test-matriu-f56`.
-    - **Pendents: F7** (seguiment post-graduació: revisions a 3/6/12 mesos i
-      taxa de supervivència) **i F8** (evidències adjuntes als items, amb hash).
+    - **F7 seguiment post-graduació** · **fet (V53)**. `graduatedNodeId` existia
+      i no el llegia ningú. `postGradReviews` obre les fites de **3, 6 i 12
+      mesos** —la resposta la posa una persona, perquè un projecte pot tenir el
+      ledger quiet i estar viu— i `survivalRate` dona l'indicador **de la
+      incubadora**. Sense revisions la taxa és `null` i no zero; es calcula
+      **només sobre les revisades**; i una fita superada per una revisió
+      posterior deixa de reclamar-se.
+    - **F8 evidències** · **fet (V53)**. `addEvidence` accepta enllaç, nota o
+      fitxer i en guarda sempre el **hash**, així es pot ancorar sense publicar
+      el contingut. **El fitxer no entra al node** (viatjaria pel sync i pel pack
+      públic): va a un registre local de tipus `evidence`, dins de
+      `PRIVATE_DB_TYPES`. `evidenceCoverage` mira **només els items fets**, i és
+      `soft`: demanar-la per graduar convidaria a adjuntar qualsevol cosa.
+    - 46 assercions a `test-matriu-f56` i 42 a `test-matriu-f78`.
+
+**P4 completat.** La MATRIU té les vuit fases del pla.
 11. **Rendiment amb 500 nodes i 5.000 apunts** + **accessibilitat** ·
     **fet (V50)**. No s'ofega: render 33 ms (el segon, 5 ms), i cap funció que
     recorri tot el SOS passa de 25 ms —`ledgerIndex` 11, `supplyIndex` 4,
