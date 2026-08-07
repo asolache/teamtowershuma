@@ -51,6 +51,10 @@ nav a:hover{text-decoration:underline}
 .box ul li{margin:.2rem 0;font-size:.9rem}
 .box p{margin:.3rem 0;color:var(--light);font-size:.9rem}
 .box code{background:rgba(99,102,241,.15);padding:.05rem .35rem;border-radius:4px;font-size:.85em;color:var(--indigo)}
+/* Un fragment de codi llarg (una llista de relés, per exemple) empenyia la
+   pàgina sencera en horitzontal a 360 px, l'amplada de molts Androids. La
+   formació es llegeix al mòbil: que parteixi el codi abans que la pàgina. */
+code{overflow-wrap:anywhere;word-break:break-word}
 h3.section{color:var(--indigo);font-size:1rem;letter-spacing:.05em;text-transform:uppercase;margin:1.5rem 0 .5rem}
 .lead{font-size:1.02rem;color:var(--light);margin:.5rem 0}
 .tag{display:inline-block;background:rgba(99,102,241,.15);color:var(--indigo);padding:.15rem .55rem;border-radius:20px;font-size:.72rem;margin-right:.3rem}
@@ -126,6 +130,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <a href="#itineraris">Itineraris</a> ·
 <a href="diagnostic.html">Diagnòstic</a> ·
 <a href="#gestor">Gestor/a SOS</a> ·
+<a href="#equipv1">Equip gestor v1</a> ·
 <a href="#mentoria">Mentoria</a> ·
 <a href="#recursos">Recursos</a> ·
 <a href="comando.html">Comando</a>
@@ -217,6 +222,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <ul class="toc-x">
 <li><a href="#itineraris">🧭 Itineraris per rol</a> · <em>el camí curt de cada rol</em></li>
 <li><a href="#gestor">🎖 Programa de Gestor/a SOS</a> · <em>les 6 competències i les seves evidències</em></li>
+<li><a href="#equipv1">👥 Equip gestor v1</a> · <em>les 12 setmanes que posen un territori en marxa</em></li>
 <li><a href="#mentoria">🤝 Preparar-se per a la mentoria</a> · <em>què porta cadascú a la sessió</em></li>
 <li><a href="#recursos">📚 Recursos i fonts</a> · <em>on ampliar coneixements</em></li>
 <li><a href="#cert">🎓 Certificació</a> · <em>com s'acredita</em></li>
@@ -792,6 +798,98 @@ footer a{color:var(--indigo);text-decoration:none}
 </table>
 
 <div class="box exercici" style="margin-top:1rem"><h4>🎖 Acreditació com a Gestor/a</h4><p>Les 6 competències amb la seva evidència al ledger. No hi ha tribunal: hi ha un <strong>Anchor Pack signat</strong> amb el teu recorregut que qualsevol pot verificar, i un mentor N3 que hi posa la seva signatura. La teva acreditació és tan sòlida com les dades que la sostenen — i tan pública com vulguis.</p></div>
+</section>
+
+<section class="gestor" id="equipv1" style="border-left-color:var(--green)">
+<h2>👥 Equip gestor v1 · les 12 setmanes que posen un territori en marxa</h2>
+<p class="lead">El programa de dalt forma <strong>una persona</strong>. I això és exactament el defecte que denunciem als altres: el SOS diu a tot arreu que <strong>cap projecte pot dependre d'una sola persona</strong> —és el primer dels quatre valors, és la comprovació que fa saltar la governança, és la porta que impedeix graduar amb el 70% de l'equity a les mateixes mans— i tanmateix acreditava gestors solitaris. Si aquella persona plega, el territori es queda igual que estava.</p>
+<p class="lead">Aquest programa és el mateix, repartit. <strong>Les sis competències no canvien: canvia que ningú les ha de tenir totes.</strong> L'acreditació és de l'equip, i l'entrega no és una persona formada sinó una comunitat que segueix sense nosaltres.</p>
+
+<div class="g-meta">
+<div class="g-tile"><div class="g-n">12 setm.</div><div class="g-l">durada</div></div>
+<div class="g-tile"><div class="g-n">5</div><div class="g-l">rols</div></div>
+<div class="g-tile"><div class="g-n">6–7</div><div class="g-l">persones mínim</div></div>
+<div class="g-tile"><div class="g-n">~34 h</div><div class="g-l">de mentoria</div></div>
+</div>
+
+<h3 class="section">On es fa el primer</h3>
+<p class="lead">No s'escull el segment que més paga ni el que més multiplica: s'escull <strong>el que produeix el cas d'èxit més ràpid i més defensable</strong>.</p>
+<div class="box metode"><h4>🎯 La recomanació</h4><p>Una <strong>dinàmica comunitària que ja existeix i que s'està apagant</strong> —un banc de temps amb tres anys i la meitat de socis, una biblioteca de les coses que porta una persona sola amb una llibreta— en un municipi de menys de 20.000 habitants, <strong>amb l'ajuntament pagant l'acompanyament i l'entitat posant-hi les hores</strong>.</p>
+<p>El dolor ja existeix i no cal convèncer ningú. El resultat es veu en setmanes, no en un pla estratègic. No es toca res que hagi de decidir un ple. I el cas que en surt —«passaven de 40 socis a 18 i ara en tenen 35 actius»— ven sol davant del següent ajuntament.</p></div>
+
+<div class="grid2">
+<div class="box skills"><h4>✅ Senyals de bon encaix</h4><ul>
+<li><strong>Hi ha almenys dues persones</strong> disposades a assumir un rol. Amb una de sola, es repeteix el problema que venim a arreglar.</li>
+<li>Hi ha <strong>activitat real que no es registra enlloc</strong>. Si no passa res, el SOS no té què comptar.</li>
+<li>Algú de l'ajuntament ho <strong>vol</strong>, no només ho autoritza.</li>
+</ul></div>
+<div class="box exercici"><h4>⛔ Senyals d'alerta, i què fer</h4><ul>
+<li>«Volem una app» → dir que no. L'eina és gratuïta; que se l'agafin.</li>
+<li>Una persona ho sosté tot i no en vol deixar anar cap tros → el problema no és de mètode. M11 abans que res.</li>
+<li>Ho impulsa un càrrec electe amb eleccions a menys d'un any → demanar que el titular sigui un tècnic.</li>
+<li>Ni una hora setmanal per persona → no hi ha equip, hi ha bona voluntat. Ajornar.</li>
+</ul></div>
+</div>
+
+<h3 class="section">Cinc rols, sis persones</h3>
+<p class="lead">Els dos rols crítics porten <strong>parella de relleu des del primer dia</strong>, no quan algú avisa que plega. Aquesta és la diferència pràctica entre predicar Força i practicar-la.</p>
+<table class="rt">
+<thead><tr><th>Rol</th><th>Qui és a la vida real</th><th>Competències</th><th>Mòduls</th><th>h/setm.</th></tr></thead>
+<tbody>
+<tr><td><span class="rt-r" style="--c:var(--indigo)">🏛 Guardiana ×2</span></td><td>Qui ja convoca les reunions</td><td>C3 · C6</td><td>M5 · M9 · M2</td><td>3</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--green)">⏳ Dinamitzadora ×2</span></td><td>Qui té la llibreta de les hores</td><td>C2</td><td>M4 · M10</td><td>3</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--orange)">⬢ Comptable de valor</span></td><td>Qui porta els números o en té ganes</td><td>C5</td><td>M6 · M14</td><td>2</td></tr>
+<tr><td><span class="rt-r" style="--c:#fbbf24">🎓 Mentora d'iniciatives</span></td><td>Qui acompanya els projectes que neixen</td><td>C1 · C4</td><td>M3 · M6 · M16</td><td>2</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--blue)">🌐 Enllaç institucional</span></td><td>El tècnic o tècnica municipal</td><td>—</td><td>M12 · M13 · M14</td><td>1</td></tr>
+</tbody>
+</table>
+
+<div class="box eines"><h4>🧭 Qui fa què, sense argot</h4><ul>
+<li><strong>Guardiana</strong> — que les decisions es prenguin, quedin escrites i es puguin defensar. No decideix ella: fa que es decideixi.</li>
+<li><strong>Dinamitzadora</strong> — que la gent torni. És l'únic rol que es mesura pel que fan els altres, no pel que fa ella.</li>
+<li><strong>Comptable de valor</strong> — que el que es fa es compti, i que la xifra es pugui explicar a algú que només compta euros.</li>
+<li><strong>Mentora d'iniciatives</strong> — quan del banc de temps en surt un projecte, que no es perdi. Obre la MATRIU quan toca, i <em>no abans</em>.</li>
+<li><strong>Enllaç institucional</strong> — tradueix en les dues direccions entre l'entitat i l'ajuntament. Sovint és qui aconsegueix que això es pagui.</li>
+</ul></div>
+
+<h3 class="section">Les quatre fases</h3>
+<p class="lead"><strong>Regla que no es negocia</strong>: cada setmana ha de deixar evidència al ledger. Una setmana que acaba sense res registrat no ha passat — i és el senyal més primerenc que això s'està tornant un curs en comptes d'una posada en marxa.</p>
+<table class="rt">
+<thead><tr><th>Fase</th><th>Objectiu</th><th>Evidència acumulada</th><th>Fita que no es salta</th></tr></thead>
+<tbody>
+<tr><td><strong>1 · Existir</strong><br><span class="rt-s">setmanes 1–3</span></td><td>Que el que ja passa quedi registrat, i que l'equip existeixi</td><td>6 perfils amb fitxa reclamada · node amb 2 guardians · mapa de ≥5 rols i ≥8 fluxos · ≥15 socis</td><td>La comunitat s'ha de reconèixer al mapa. Si algú diu «això no som nosaltres», es torna a la setmana 2</td></tr>
+<tr><td><strong>2 · Circular</strong><br><span class="rt-s">setmanes 4–6</span></td><td>Que passin coses i quedin comptades</td><td>≥8 intercanvis signats · ≥5 apunts confirmats per l'altra banda · ≥3 propostes votades amb ≥1 rebutjada</td><td>Saldos que no estiguin tots del mateix costat. Millor saber-ho la setmana 6 que el mes 12</td></tr>
+<tr><td><strong>3 · Comptar i defensar</strong><br><span class="rt-s">setmanes 7–9</span></td><td>Poder respondre «i això quant val?» davant de qui ho paga</td><td>Oracle calibrat amb el seu perquè · <code>fundValue</code> amb rang · Anchor Pack verificat per algú de fora</td><td>L'enllaç presenta les xifres a l'ajuntament i les sosté. Aquesta sessió decideix si hi ha segon any</td></tr>
+<tr><td><strong>4 · Sostenir sense nosaltres</strong><br><span class="rt-s">setmanes 10–12</span></td><td>Que sobrevisqui a la nostra marxa i a la d'ells</td><td>Còpia restaurada en un altre aparell · publicació versionada o decisió registrada de no publicar · acreditació d'equip</td><td><strong>La prova del relleu</strong>: algú que no ha portat un rol agafa el node d'una altra i el continua una setmana sense trucar a ningú</td></tr>
+</tbody>
+</table>
+
+<h3 class="section">Com se sap si hi ha tracció</h3>
+<p class="lead">La tracció no és que els agradi: és que <strong>segueixin sense nosaltres</strong>. Tot això surt de l'app; no cal cap enquesta.</p>
+<table class="rt">
+<thead><tr><th>Indicador</th><th>Llindar als 3 mesos</th><th>On es mira</th></tr></thead>
+<tbody>
+<tr><td>Socis actius</td><td>≥ els que tenien abans, i cap dinàmica per sota de 8</td><td>Pestanya Socis</td></tr>
+<tr><td>Intercanvis signats</td><td>≥25 acumulats, ≥5 el darrer mes</td><td>Registre</td></tr>
+<tr><td>Reciprocitat del mapa</td><td>≥60%</td><td><code>vnaAudit</code></td></tr>
+<tr><td>Dies sense moure's</td><td>&lt;21</td><td>Tauler d'atenció</td></tr>
+<tr><td>Persones amb fitxa reclamada</td><td>≥6</td><td>Identitat</td></tr>
+<tr><td>Rols amb relleu identificat</td><td>5 de 5</td><td>Comando del node</td></tr>
+<tr><td>Decisions registrades</td><td>≥5, amb ≥1 rebutjada</td><td>Registre públic</td></tr>
+</tbody>
+</table>
+<div class="box exercici"><h4>🎯 El que decideix de veritat</h4><p>No és cap dels anteriors: és que <strong>algú de l'equip convoqui una sessió que no hem convocat nosaltres</strong>. El dia que això passa, hi ha tracció. Fins llavors hi ha un servei ben valorat, que no és el mateix.</p>
+<p style="margin-top:.5rem"><strong>Senyals d'alerta, per ordre d'aparició:</strong> les hores es registren totes el mateix dia just abans de la sessió (s'està fent el deure) · tots els apunts els escriu la mateixa persona (hi ha un gestor, no un equip) · ningú ha rebutjat mai cap proposta (no s'està decidint, s'està ratificant) · la comunitat parla del SOS i no de la seva dinàmica (l'eina ha tapat el fons).</p></div>
+
+<div class="box metode"><h4>↗ Del primer equip al segon</h4><p>L'entrega real de les dotze setmanes no és l'acreditació: és que <strong>dues persones de l'equip vulguin formar-ne un altre</strong>. Cada pas necessita la prova de l'anterior — anar a un Ateneu sense casos és vendre teoria, i anar a un consell comarcal sense un municipi funcionant és demanar un acte de fe.</p>
+<p style="margin-top:.5rem">Equip v1 → cas + 2 persones amb ruta cap a N3 → equip v2 (que ja no formem sols) → consell comarcal → formació de formadors. <strong>Si el primer equip no produeix cap futura mentora, el model no escala i ens quedem fent consultoria.</strong></p></div>
+
+<div class="box skills"><h4>🚫 El que aquest pla no promet</h4><ul>
+<li><strong>Que la dinàmica es recuperi.</strong> Si el que la mata és que ningú vol el relleu, això no es resol amb mètode. Es diu a la setmana 3 i s'ajusta l'objectiu; no s'infla l'informe.</li>
+<li><strong>Segon any.</strong> Depèn d'un pressupost que sovint es decideix per raons alienes als resultats.</li>
+<li><strong>Substituir la dinamització.</strong> El SOS compta el que passa; que passi és feina de persones.</li>
+<li><strong>Servir per a un col·lectiu que encara no fa res.</strong> Sense activitat no hi ha res a comptabilitzar i el SOS es converteix en deures.</li>
+</ul></div>
 </section>
 
 <section class="mentoria" id="mentoria">

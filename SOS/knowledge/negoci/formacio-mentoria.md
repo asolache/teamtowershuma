@@ -128,6 +128,7 @@ Dinamitzadors, consultors ESS, tècnics en atur o transició.
 | S1 | **Diagnòstic territorial** | 2 sessions + informe VNA + mapa | P1 · P2 · P7 | 1.500–3.000 € |
 | S2 | **Formació oberta per mòduls** | 4–8 h per mòdul, grup | tots | 40–90 €/persona/mòdul |
 | S3 | **Programa Gestor/a SOS** | ~45 h · 3–4 mesos · territori real | P1 · P2 · P8 | 1.200–2.000 €/persona |
+| S3b | **Programa d'equip gestor v1** | 12 setmanes · 5 rols · ~34 h de mentoria | P3 finançat per P1 | 4.500–7.000 €/equip |
 | S4 | **Acompanyament de projecte** | 6–12 mesos, sessions quinzenals | P4 · P6 | 400–900 €/mes |
 | S5 | **Formació de formadors (N3)** | 20 h + tutela de 2 casos | P5 · P8 | 2.000–3.500 €/persona |
 | S6 | **Implantació i suport tècnic** | Instal·lació, sync, ancoratge, dades | P1 · P2 · P5 | 800–2.500 € |
@@ -141,6 +142,18 @@ Dinamitzadors, consultors ESS, tècnics en atur o transició.
 
 Cada itinerari és un camí pels mòduls (§5) i les competències del programa de
 Gestor/a. **Ningú fa els 16 mòduls.**
+
+### Equip gestor v1 · el primer de tots
+
+Abans que cap d'aquestes rutes individuals, hi ha una decisió que aquest document
+no resolia: **el programa de Gestor/a forma una persona**, i això contradiu el
+primer dels nostres valors. Un territori no el sosté un gestor; el sosté un equip
+amb rols repartits i relleu previst.
+
+El pla concret —cinc rols, sis persones, dotze setmanes, quin col·lectiu primer i
+com se sap si hi ha tracció— és a **[`equip-gestor-v1.md`](equip-gestor-v1.md)**.
+És el que s'ven a un P3 finançat per un P1, i és el que produeix el cas i les
+primeres mentores sense les quals la resta del model no escala.
 
 ### Ruta Tècnic municipal · P1 · P2
 > Objectiu: poder engegar i sostenir participació estructurada sense dependre de ningú.
@@ -241,7 +254,7 @@ El **formulari de diagnòstic** (`diagnostic.html`) fa tres feines alhora:
 
 | Risc | Mitigació |
 |---|---|
-| **Dependència d'una sola persona** | És el risc principal. Es mitiga només amb P5 i P8: formar mentors abans que la demanda arribi, no després |
+| **Dependència d'una sola persona** | És el risc principal, i el teníem **a dins de casa**: el programa de Gestor/a acreditava gestors solitaris. Es mitiga formant **equips** (`equip-gestor-v1.md`) i amb P5 i P8: formar mentors abans que la demanda arribi, no després |
 | **Confondre's amb una empresa de programari** | Dir que no quan algú vol comprar «l'app». El servei és l'acompanyament |
 | **Estacionalitat de les subvencions** | Diversificar entre pressupost municipal (estable) i convocatòries (a cops) |
 | **Escalar abans de tenir casos** | Un territori funcionant abans que deu començats |

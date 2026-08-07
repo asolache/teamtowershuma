@@ -624,6 +624,14 @@ bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultat
 
 ### Defectes trobats i encara oberts
 
+- **El selector d'idioma de la landing és inabastable a 1280 px** · **obert, i
+  fora de l'abast d'aquesta línia**. A `index.html` (arrel), el botó
+  `.lang-btn[data-lang="es"]` queda a **x=1342 en una finestra de 1280 px**: surt
+  del viewport per la dreta. Vol dir que **ningú pot canviar a castellà en un
+  portàtil normal**. Ho ha destapat `test-landing`, que fallava per timeout en
+  clicar-lo —no per l'i18n, com semblava. No s'ha tocat perquè la landing és
+  explícitament fora d'abast; queda anotat per a qui hi entri.
+
 - ~~`updateAtles` no era idempotent~~ · **resolt (V41)**. Eren dues coses: el
   `catch` buit s'empassava els paquets que fallaven i deia «ja estava al dia», i
   la càrrega automàtica d'arrencada corria alhora que la manual fusionant els
