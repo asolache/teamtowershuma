@@ -1167,8 +1167,129 @@ const CATALUNYA_MODEL={
   levels:BASE_LEVELS.map(id=>({id})),
   geo:null,institutions:null,entityTypes:null
 };
+/* ═══════════ MODEL D'EUSKADI · l'estructura foral, que no és la catalana ═══════════
+   Segon cas de referència, i la prova que el model de V54 serveix per a alguna
+   cosa: aquí el nivell intermedi **no és una província** —és un Territori
+   Històric amb Diputació Foral i Juntes Generals pròpies—, i el de sota són
+   comarques a Bizkaia i Gipuzkoa però **quadrilles** a Araba.
+
+   El mapa de valor tampoc s'assembla al català, i el motiu és el Concert
+   Econòmic: aquí **les Diputacions Forals recapten i aporten** al Govern Basc,
+   no al revés. Un mapa que ho dibuixés a l'inrevés seria fals encara que
+   quedés simètric.
+
+   Les etiquetes són en català perquè és l'idioma de l'app avui. Els noms dels
+   territoris són els oficials (bilingües on ho són) i **no s'han traduït**: un
+   topònim traduït no és el mateix topònim. */
+const EUS_GEO={
+  pais:[{n:'Euskadi'}],
+  provincia:[{n:'Araba/Álava',p:'Euskadi'},{n:'Bizkaia',p:'Euskadi'},{n:'Gipuzkoa',p:'Euskadi'}],
+  comarca:[
+    // Araba · les 7 quadrilles (entitats forals reals, no una divisió estadística)
+    {n:'Quadrilla de Vitoria-Gasteiz',p:'Araba/Álava'},{n:'Quadrilla d\'Ayala/Aiara',p:'Araba/Álava'},
+    {n:'Quadrilla d\'Añana',p:'Araba/Álava'},{n:'Quadrilla de Salvatierra/Agurain',p:'Araba/Álava'},
+    {n:'Quadrilla de Zuia',p:'Araba/Álava'},{n:'Quadrilla de Laguardia-Rioja Alavesa',p:'Araba/Álava'},
+    {n:'Quadrilla de Campezo-Montaña Alavesa',p:'Araba/Álava'},
+    // Bizkaia · 7 comarques
+    {n:'Bilbo Handia',p:'Bizkaia'},{n:'Uribe',p:'Bizkaia'},{n:'Durangaldea',p:'Bizkaia'},
+    {n:'Busturialdea',p:'Bizkaia'},{n:'Lea-Artibai',p:'Bizkaia'},{n:'Enkarterri',p:'Bizkaia'},
+    {n:'Arratia-Nerbioi',p:'Bizkaia'},
+    // Gipuzkoa · 7 comarques
+    {n:'Donostialdea',p:'Gipuzkoa'},{n:'Bidasoa Beherea',p:'Gipuzkoa'},{n:'Debabarrena',p:'Gipuzkoa'},
+    {n:'Debagoiena',p:'Gipuzkoa'},{n:'Goierri',p:'Gipuzkoa'},{n:'Tolosaldea',p:'Gipuzkoa'},
+    {n:'Urola Kosta',p:'Gipuzkoa'}
+  ],
+  /* Municipis: llista **parcial**. Hi són els de més població de cada comarca,
+     que és el que fa servible l'autocompletar; Euskadi en té 251 i posar-los
+     tots de memòria seria inventar-ne uns quants. Qui hi treballi els afegeix. */
+  municipi:[
+    {n:'Vitoria-Gasteiz',p:'Quadrilla de Vitoria-Gasteiz'},
+    {n:'Llodio/Laudio',p:'Quadrilla d\'Ayala/Aiara'},{n:'Amurrio',p:'Quadrilla d\'Ayala/Aiara'},{n:'Artziniega',p:'Quadrilla d\'Ayala/Aiara'},
+    {n:'Iruña Oka/Iruña de Oca',p:'Quadrilla d\'Añana'},{n:'Lantarón',p:'Quadrilla d\'Añana'},
+    {n:'Agurain/Salvatierra',p:'Quadrilla de Salvatierra/Agurain'},{n:'Alegría-Dulantzi',p:'Quadrilla de Salvatierra/Agurain'},{n:'Asparrena',p:'Quadrilla de Salvatierra/Agurain'},
+    {n:'Zuia',p:'Quadrilla de Zuia'},{n:'Legutio',p:'Quadrilla de Zuia'},{n:'Zigoitia',p:'Quadrilla de Zuia'},{n:'Aramaio',p:'Quadrilla de Zuia'},
+    {n:'Laguardia',p:'Quadrilla de Laguardia-Rioja Alavesa'},{n:'Oyón-Oion',p:'Quadrilla de Laguardia-Rioja Alavesa'},{n:'Labastida/Bastida',p:'Quadrilla de Laguardia-Rioja Alavesa'},{n:'Elciego',p:'Quadrilla de Laguardia-Rioja Alavesa'},
+    {n:'Campezo/Kanpezu',p:'Quadrilla de Campezo-Montaña Alavesa'},{n:'Bernedo',p:'Quadrilla de Campezo-Montaña Alavesa'},
+    {n:'Bilbao',p:'Bilbo Handia'},{n:'Barakaldo',p:'Bilbo Handia'},{n:'Getxo',p:'Bilbo Handia'},{n:'Portugalete',p:'Bilbo Handia'},{n:'Santurtzi',p:'Bilbo Handia'},{n:'Basauri',p:'Bilbo Handia'},{n:'Sestao',p:'Bilbo Handia'},{n:'Leioa',p:'Bilbo Handia'},{n:'Galdakao',p:'Bilbo Handia'},{n:'Erandio',p:'Bilbo Handia'},{n:'Arrigorriaga',p:'Bilbo Handia'},{n:'Etxebarri',p:'Bilbo Handia'},{n:'Ortuella',p:'Bilbo Handia'},{n:'Muskiz',p:'Bilbo Handia'},
+    {n:'Mungia',p:'Uribe'},{n:'Sopela',p:'Uribe'},{n:'Plentzia',p:'Uribe'},{n:'Gorliz',p:'Uribe'},{n:'Berango',p:'Uribe'},{n:'Urduliz',p:'Uribe'},{n:'Bakio',p:'Uribe'},{n:'Derio',p:'Uribe'},{n:'Zamudio',p:'Uribe'},{n:'Larrabetzu',p:'Uribe'},
+    {n:'Durango',p:'Durangaldea'},{n:'Amorebieta-Etxano',p:'Durangaldea'},{n:'Abadiño',p:'Durangaldea'},{n:'Elorrio',p:'Durangaldea'},{n:'Ermua',p:'Durangaldea'},{n:'Berriz',p:'Durangaldea'},{n:'Iurreta',p:'Durangaldea'},{n:'Zaldibar',p:'Durangaldea'},
+    {n:'Gernika-Lumo',p:'Busturialdea'},{n:'Bermeo',p:'Busturialdea'},{n:'Mundaka',p:'Busturialdea'},{n:'Busturia',p:'Busturialdea'},{n:'Muxika',p:'Busturialdea'},
+    {n:'Markina-Xemein',p:'Lea-Artibai'},{n:'Ondarroa',p:'Lea-Artibai'},{n:'Lekeitio',p:'Lea-Artibai'},{n:'Berriatua',p:'Lea-Artibai'},
+    {n:'Balmaseda',p:'Enkarterri'},{n:'Zalla',p:'Enkarterri'},{n:'Güeñes',p:'Enkarterri'},{n:'Sopuerta',p:'Enkarterri'},{n:'Gordexola',p:'Enkarterri'},{n:'Karrantza Harana/Valle de Carranza',p:'Enkarterri'},
+    {n:'Igorre',p:'Arratia-Nerbioi'},{n:'Areatza',p:'Arratia-Nerbioi'},{n:'Zeanuri',p:'Arratia-Nerbioi'},{n:'Lemoa',p:'Arratia-Nerbioi'},{n:'Ugao-Miraballes',p:'Arratia-Nerbioi'},{n:'Orozko',p:'Arratia-Nerbioi'},{n:'Orduña/Urduña',p:'Arratia-Nerbioi'},
+    {n:'Donostia/San Sebastián',p:'Donostialdea'},{n:'Errenteria',p:'Donostialdea'},{n:'Pasaia',p:'Donostialdea'},{n:'Lasarte-Oria',p:'Donostialdea'},{n:'Hernani',p:'Donostialdea'},{n:'Oiartzun',p:'Donostialdea'},{n:'Andoain',p:'Donostialdea'},{n:'Usurbil',p:'Donostialdea'},{n:'Astigarraga',p:'Donostialdea'},{n:'Urnieta',p:'Donostialdea'},{n:'Lezo',p:'Donostialdea'},
+    {n:'Irun',p:'Bidasoa Beherea'},{n:'Hondarribia',p:'Bidasoa Beherea'},
+    {n:'Eibar',p:'Debabarrena'},{n:'Elgoibar',p:'Debabarrena'},{n:'Deba',p:'Debabarrena'},{n:'Mutriku',p:'Debabarrena'},{n:'Mendaro',p:'Debabarrena'},{n:'Soraluze-Placencia de las Armas',p:'Debabarrena'},
+    {n:'Arrasate/Mondragón',p:'Debagoiena'},{n:'Bergara',p:'Debagoiena'},{n:'Oñati',p:'Debagoiena'},{n:'Aretxabaleta',p:'Debagoiena'},{n:'Eskoriatza',p:'Debagoiena'},{n:'Antzuola',p:'Debagoiena'},{n:'Elgeta',p:'Debagoiena'},
+    {n:'Beasain',p:'Goierri'},{n:'Ordizia',p:'Goierri'},{n:'Zumarraga',p:'Goierri'},{n:'Urretxu',p:'Goierri'},{n:'Legazpi',p:'Goierri'},{n:'Lazkao',p:'Goierri'},{n:'Idiazabal',p:'Goierri'},{n:'Ataun',p:'Goierri'},{n:'Segura',p:'Goierri'},{n:'Zegama',p:'Goierri'},
+    {n:'Tolosa',p:'Tolosaldea'},{n:'Villabona',p:'Tolosaldea'},{n:'Ibarra',p:'Tolosaldea'},{n:'Anoeta',p:'Tolosaldea'},{n:'Alegia',p:'Tolosaldea'},{n:'Asteasu',p:'Tolosaldea'},{n:'Zizurkil',p:'Tolosaldea'},{n:'Berastegi',p:'Tolosaldea'},
+    {n:'Zarautz',p:'Urola Kosta'},{n:'Azpeitia',p:'Urola Kosta'},{n:'Azkoitia',p:'Urola Kosta'},{n:'Zumaia',p:'Urola Kosta'},{n:'Orio',p:'Urola Kosta'},{n:'Getaria',p:'Urola Kosta'},{n:'Zestoa',p:'Urola Kosta'},{n:'Aia',p:'Urola Kosta'}
+  ],
+  barri:[]
+};
+/* El mapa de valor foral. Cada fila declara les DUES direccions, com marca la
+   veda 21: escriure el retorn obliga a pensar-lo i el mapa neix recíproc. */
+const EUS_MAPS={
+  pais:{
+    roles:['Eusko Jaurlaritza','Diputacions Forals','Juntes Generals','Ajuntaments · EUDEL',
+      'Xarxa cooperativa','Universitats i recerca','Tercer sector social','Ciutadania'],
+    pairs:[
+      ['Diputacions Forals','Eusko Jaurlaritza','tangible','aportacions del Concert Econòmic','tangible','competències i marc de despesa comuna'],
+      ['Juntes Generals','Diputacions Forals','intangible','normes forals i control polític','tangible','pressupost i rendició de comptes'],
+      ['Eusko Jaurlaritza','Ajuntaments · EUDEL','tangible','finançament i marc normatiu','tangible','serveis de proximitat i dades reals'],
+      ['Diputacions Forals','Ajuntaments · EUDEL','tangible','fons i assistència tècnica','tangible','diagnòstic del territori'],
+      ['Xarxa cooperativa','Eusko Jaurlaritza','tangible','ocupació i teixit industrial','tangible','polítiques i suport a la intercooperació'],
+      ['Xarxa cooperativa','Ciutadania','tangible','llocs de treball i serveis','tangible','consum i sòcies'],
+      ['Universitats i recerca','Xarxa cooperativa','intangible','coneixement aplicat i formació dual','intangible','casos reals i pràctiques'],
+      ['Eusko Jaurlaritza','Universitats i recerca','tangible','finançament de recerca','intangible','evidència per a les polítiques'],
+      ['Tercer sector social','Diputacions Forals','tangible','serveis socials concertats','tangible','concerts i finançament estable'],
+      ['Ciutadania','Juntes Generals','intangible','mandat i legitimitat','intangible','representació foral i debat públic'],
+      ['Ciutadania','Tercer sector social','tangible','voluntariat i quotes','intangible','pertinença i acció col·lectiva'],
+      ['Ajuntaments · EUDEL','Ciutadania','tangible','serveis i equipaments','intangible','participació i control']]
+  },
+  provincia:{
+    roles:['Diputació Foral','Juntes Generals','Quadrilles i mancomunitats','Agències de desenvolupament comarcal',
+      'Ajuntaments','Xarxa cooperativa','Ciutadania'],
+    pairs:[
+      ['Juntes Generals','Diputació Foral','intangible','norma foral i fiscalització','tangible','pressupost i comptes'],
+      ['Diputació Foral','Quadrilles i mancomunitats','tangible','fons i assistència tècnica','tangible','serveis mancomunats i diagnòstic'],
+      ['Diputació Foral','Agències de desenvolupament comarcal','tangible','programes i finançament','tangible','projectes i indicadors d\'ocupació'],
+      ['Agències de desenvolupament comarcal','Xarxa cooperativa','intangible','acompanyament i intercooperació','tangible','activitat econòmica i llocs de treball'],
+      ['Quadrilles i mancomunitats','Ajuntaments','tangible','serveis compartits','tangible','quotes i corresponsabilitat'],
+      ['Ajuntaments','Ciutadania','tangible','serveis de proximitat','intangible','participació i legitimitat'],
+      ['Ciutadania','Juntes Generals','intangible','vot i mandat','intangible','representació del territori'],
+      ['Xarxa cooperativa','Ciutadania','tangible','ocupació i serveis','tangible','consum i base social']]
+  },
+  comarca:{
+    roles:['Quadrilla / mancomunitat','Agència de desenvolupament (Garapen)','Ajuntaments',
+      'Entitats i associacions','Cooperatives i empreses','Ciutadania'],
+    pairs:[
+      ['Quadrilla / mancomunitat','Ajuntaments','tangible','serveis mancomunats','tangible','quotes i decisió compartida'],
+      ['Agència de desenvolupament (Garapen)','Cooperatives i empreses','intangible','assessorament i formació','tangible','activitat i ocupació local'],
+      ['Agència de desenvolupament (Garapen)','Quadrilla / mancomunitat','tangible','projectes i captació de fons','tangible','encàrrec i finançament'],
+      ['Entitats i associacions','Ciutadania','tangible','activitats i cures','intangible','voluntariat i pertinença'],
+      ['Ajuntaments','Entitats i associacions','tangible','espais i subvencions','intangible','vida social i capil·laritat'],
+      ['Cooperatives i empreses','Ciutadania','tangible','béns i serveis','tangible','consum i treball'],
+      ['Ciutadania','Quadrilla / mancomunitat','intangible','necessitats i control','tangible','serveis que arriben als pobles petits']]
+  }
+};
+const EUSKADI_MODEL={
+  id:'euskadi',name:'Euskadi',flag:'🏴',ref:true,
+  one:'Estructura foral: 3 territoris històrics, 21 comarques i quadrilles, i un mapa de valor on les Diputacions aporten al Govern, no al revés.',
+  source:'Territoris històrics i quadrilles d\'Araba · comarques d\'Eustat · municipis, llista parcial',
+  levels:[{id:'pais',label:'Comunitat Autònoma'},{id:'provincia',label:'Territori Històric'},
+    {id:'comarca',label:'Comarca / Quadrilla'},{id:'municipi',label:'Municipi'},{id:'barri',label:'Barri'}],
+  geo:EUS_GEO,institutions:EUS_MAPS,
+  entityTypes:{
+    pais:[['institucio','Institució','🏛'],['federacio','Federació d\'entitats','🕸'],['coop2','Cooperativa de 2n grau','⬡'],['xarxa','Xarxa / moviment','🔗'],['altre','Altre','◦']],
+    provincia:[['diputacio_foral','Diputació Foral','🏛'],['juntes','Juntes Generals','⚖'],['universitat','Universitat','🎓'],['coop2','Cooperativa de 2n grau','⬡'],['federacio','Federació d\'entitats','🕸'],['altre','Altre','◦']],
+    comarca:[['quadrilla','Quadrilla / mancomunitat','🏛'],['garapen','Agència de desenvolupament','🌾'],['federacio','Federació d\'entitats','🕸'],['coop2','Cooperativa de 2n grau','⬡'],['banc_temps','Banc de temps','⏱'],['altre','Altre','◦']]
+  }
+};
+const BUILTIN_MODELS=[CATALUNYA_MODEL,EUSKADI_MODEL];
+const isBuiltinModel=id=>BUILTIN_MODELS.some(m=>m.id===id);
 const customModels=()=>(state.models||[]);
-const countryModels=()=>[CATALUNYA_MODEL].concat(customModels());
+const countryModels=()=>BUILTIN_MODELS.concat(customModels());
 const modelById=id=>countryModels().find(m=>m.id===id)||CATALUNYA_MODEL;
 /* Els nivells efectius d'un model, ja resolts: etiqueta, fill i etiqueta del
    fill. El fill surt de l'ordre de la llista, no de `LEVEL_META`, perquè un
@@ -1205,12 +1326,13 @@ const nextLevelOf=(node,level)=>{const m=metaOf(node,level);return m?m.child:nul
 // El nivell arrel d'un model no té per què ser 'pais' si algú l'ha retallat.
 const rootLevelOf=model=>levelsOf(model)[0].id;
 async function saveModels(list){
-  state.models=(list||[]).filter(m=>m&&m.id&&m.id!==COUNTRY_REF).slice(0,40);
+  state.models=(list||[]).filter(m=>m&&m.id&&!isBuiltinModel(m.id)).slice(0,40);
   try{await dbPut({id:MODELS_ID,type:'meta',list:state.models,updatedAt:now()});}catch(e){}
 }
 async function loadModels(){
   try{const all=await dbGetAll();const r=all.find(n=>n.id===MODELS_ID);state.models=(r&&r.list)||[];}
   catch(e){state.models=[];}
+  customModels().forEach(registerEntityTypes);
   return state.models;
 }
 /* Forkejar Catalunya (o qualsevol model) en fa una còpia editable. Els nulls es
@@ -1227,15 +1349,31 @@ function forkModel(srcId,{id,name,flag}={}){
     levels:levelsOf(src).map(l=>({id:l.id,label:l.label,ph:l.ph})),
     geo:JSON.parse(JSON.stringify(src.geo||CAT_GEO)),
     institutions:src.institutions?JSON.parse(JSON.stringify(src.institutions))
-      :BASE_LEVELS.reduce((a,l)=>{a[l]=knowFor(l).roles.slice();return a;},{}),
+      :BASE_LEVELS.reduce((a,l)=>{a[l]={roles:knowFor(l).roles.slice(),pairs:(knowFor(l).pairs||[]).map(x=>x.slice())};return a;},{}),
     entityTypes:src.entityTypes?JSON.parse(JSON.stringify(src.entityTypes)):null
   };
 }
+/* Un model pot declarar les seves institucions de dues maneres: una llista de
+   noms (el que produeix forkejar i editar al wizard) o un `{roles,pairs}` sencer
+   com el d'Euskadi, amb els intercanvis que hi corresponen. Les dues han de
+   funcionar, perquè editar els rols d'un model amb mapa no li ha de fer perdre
+   el mapa —només els fluxos que apunten a rols que ja no hi són. */
+function mapDefFor(model,level){
+  const own=(model||CATALUNYA_MODEL).institutions;
+  const d=own&&own[level];
+  if(!d)return knowFor(level);
+  if(Array.isArray(d))return d.length?{roles:d.slice(),pairs:[],flows:[]}:knowFor(level);
+  return{roles:(d.roles||[]).slice(),pairs:d.pairs||[],flows:d.flows||[]};
+}
 // Rols institucionals del mapa de valor d'un nivell, segons el model del país.
-function institutionsFor(model,level){
-  const m=model||CATALUNYA_MODEL;
-  const own=m.institutions&&m.institutions[level];
-  return (own&&own.length?own:knowFor(level).roles).slice();
+function institutionsFor(model,level){return mapDefFor(model,level).roles.slice();}
+/* Els fluxos del model, ja expandits en les dues direccions i filtrats pels
+   rols que segueixen existint. Sense el filtre, editar les institucions
+   deixaria fluxos penjant d'un rol esborrat. */
+function institutionFlowsFor(model,level,roles){
+  const def=mapDefFor(model,level);
+  const ok=new Set(roles&&roles.length?roles:def.roles);
+  return mapFlowsOf(def).filter(f=>ok.has(f[0])&&ok.has(f[1]));
 }
 
 /* ═══════════ Expansió canònica de mapes · un sol lloc ═══════════
@@ -1834,8 +1972,21 @@ const ENTITY_TYPES={
   projecte:[['iniciativa','Iniciativa','✦'],['altre','Altre','◦']]
 };
 const ENTITY_TYPE_META=(()=>{const m={};Object.values(ENTITY_TYPES).forEach(l=>l.forEach(([id,label,icon])=>{if(!m[id])m[id]={id,label,icon:icon||'◦'};}));return m;})();
+/* Els models de país poden portar tipus d'entitat propis —«Juntes Generals»,
+   «Quadrilla»— i es registren al mapa comú. Així `entTypeMeta` els troba als set
+   llocs on es dibuixen sense haver de fer passar el model per tots ells. */
+function registerEntityTypes(model){
+  const et=model&&model.entityTypes;if(!et)return;
+  Object.values(et).forEach(l=>(l||[]).forEach(([id,label,icon])=>{if(!ENTITY_TYPE_META[id])ENTITY_TYPE_META[id]={id,label,icon:icon||'◦'};}));
+}
 const entTypeMeta=id=>ENTITY_TYPE_META[id]||{id,label:id,icon:'◦'};
-const entityTypesFor=level=>ENTITY_TYPES[level]||ENTITY_TYPES.municipi;
+const entityTypesFor=(level,model)=>{
+  const own=model&&model.entityTypes&&model.entityTypes[level];
+  return (own&&own.length?own:(ENTITY_TYPES[level]||ENTITY_TYPES.municipi)).slice();
+};
+// Els models de referència es registren aquí i no on es declaren: `ENTITY_TYPE_META`
+// encara no existeix allà dalt, i cridar-lo abans peta amb un error de TDZ.
+BUILTIN_MODELS.forEach(registerEntityTypes);
 
 /* ═══════════ PROTOTIP OPERATIU · Biblioteca de les Coses + Banc de Temps ═══════════ */
 // Tipologies d'objectes de la biblioteca de les coses [id,label,icon]
@@ -7964,12 +8115,13 @@ function routeTo(name){
 function modal(html){const bg=el('div','modal-bg');bg.innerHTML='<div class="modal">'+html+'</div>';bg.onclick=e=>{if(e.target===bg)closeModal();};$('#modalRoot').innerHTML='';$('#modalRoot').appendChild(bg);return bg;}
 
 // Motor de suggeriment determinista: coneixement del nivell + dolors triats + biaix pel prompt lliure
-function suggestMap(level,selectedPainIds,promptText,roleSeed){
+function suggestMap(level,selectedPainIds,promptText,roleSeed,flowSeed){
   const k=knowFor(level);
-  /* Els rols institucionals els posa el model del país. Sense això, el mapa de
-     valor d'Euskadi neix amb un rol anomenat «Generalitat». */
+  /* Els rols i els fluxos institucionals els posa el model del país. Sense
+     això, el mapa de valor d'Euskadi neix amb un rol anomenat «Generalitat» i
+     amb els intercanvis de la Generalitat amb les diputacions. */
   const roleSet=new Set((roleSeed&&roleSeed.length?roleSeed:k.roles));
-  const flows=mapFlowsOf(k);
+  const flows=(flowSeed&&flowSeed.length?flowSeed.map(f=>f.slice()):mapFlowsOf(k));
   const addPain=p=>{(p.roles||[]).forEach(r=>roleSet.add(r));mapFlowsOf(p).forEach(f=>flows.push(f));};
   k.pains.forEach(p=>{if(selectedPainIds.has(p.id))addPain(p);});
   // biaix pel prompt: si el text menciona el títol/descr d'un dolor no triat, incorpora'l
@@ -8214,6 +8366,8 @@ function openCountryWizard(){
       st.levels=base?levelsOf(base).map(l=>({id:l.id,label:l.label,on:true}))
         :BASE_LEVELS.map((id,i)=>({id,label:LEVEL_META[id].label,on:i<4}));
       st.inst=BASE_LEVELS.reduce((a,l)=>{a[l]=base?institutionsFor(base,l).slice():[];return a;},{});
+      // Còpia del punt de partida: només es desa el que s'hagi tocat de debò.
+      st.inst0=JSON.parse(JSON.stringify(st.inst));
       st.skeleton=!!base;
       s2();
     });
@@ -8303,7 +8457,20 @@ function openCountryWizard(){
         createdAt:now(),one:'Model creat des de zero.',source:'',levels:[],geo:{},institutions:{},entityTypes:null};
     m.name=st.name||m.name;m.flag=st.flag;
     m.levels=st.levels.filter(l=>l.on).map(l=>({id:l.id,label:l.label.trim()}));
-    m.institutions=Object.assign({},m.institutions,st.inst);
+    /* Els rols es desen com a `{roles,pairs}`, conservant els intercanvis del
+       model de partida. I un nivell que no s'ha tocat **no es desa**: així
+       segueix agafant els seus fluxos per defecte en comptes de quedar-se amb
+       una llista de noms i cap intercanvi. */
+    const prevInst=m.institutions||{};
+    m.institutions=BASE_LEVELS.reduce((acc,l)=>{
+      const roles=(st.inst[l]||[]).slice();
+      const before=(st.inst0&&st.inst0[l])||[];
+      const touched=roles.length!==before.length||roles.some((r,i)=>r!==before[i]);
+      const prev=prevInst[l];
+      if(!touched){if(prev)acc[l]=prev;return acc;}   // intacte: es queda tal com era
+      if(!roles.length)return acc;                    // buidat a mà: torna al per defecte
+      acc[l]={roles,pairs:(prev&&!Array.isArray(prev)&&prev.pairs)?prev.pairs:[]};
+      return acc;},{});
     return m;
   }
 
@@ -8316,10 +8483,10 @@ function openCountryWizard(){
     root.metaskill.mission='Teixir '+model.name+' com a xarxa de valor: que el que la gent ja fa es pugui comptar, compartir i finançar.';
     const inst=institutionsFor(model,rootLvl);
     const idBy={};inst.forEach(nm=>{const id=uid();idBy[nm]=id;root.vna.roles.push({id,name:nm});});
-    /* Els fluxos només es sembren si els rols institucionals segueixen sent els
-       del model d'origen. Si algú els ha reescrit, un mapa amb rols nous i
-       fluxos vells seria pitjor que un mapa buit. */
-    mapFlowsOf(knowFor(rootLvl)).forEach(([a,b,kind,label])=>{
+    /* Els fluxos surten del model, no de Catalunya, i només els que connecten
+       dos rols que hi segueixen sent. Si algú ha reescrit les institucions, un
+       mapa amb rols nous i fluxos vells seria pitjor que un mapa sense fluxos. */
+    institutionFlowsFor(model,rootLvl,inst).forEach(([a,b,kind,label])=>{
       if(idBy[a]&&idBy[b])root.vna.exchanges.push({id:uid(),from:idBy[a],to:idBy[b],kind:kind||'tangible',label:label||''});
     });
     state.nodes.push(root);await persist(root);
@@ -8415,7 +8582,7 @@ function openCreateModal(parentId,opts){
     bg.querySelector('#wzNext').onclick=()=>{
       wz.name=nm.value.trim();wz.prompt=bg.querySelector('#wzPrompt').value.trim();
       if(!wz.name){nm.focus();return;}
-      const sug=suggestMap(level,wz.pains,wz.prompt,institutions);
+      const sug=suggestMap(level,wz.pains,wz.prompt,institutions,institutionFlowsFor(model,level,institutions));
       wz.roles=sug.roles.map(n=>({name:n,on:true}));
       wz.exchanges=sug.flows.map(f=>({from:f.from,to:f.to,kind:f.kind,label:f.label,on:true}));
       wz.mission=draftMission(wz.name,level,wz.pains);
@@ -8596,7 +8763,7 @@ function openEntityForm(territoryId,existing){
   const level=existing&&existing.geo&&existing.geo.level?existing.geo.level:(node?node.nodeLevel:'municipi');
   const territoryName=existing&&existing.geo&&existing.geo.territoryName?existing.geo.territoryName:(node?node.name:'');
   const chain=node?ancestors(node.id).map(n=>n.name):[];
-  const types=entityTypesFor(level);
+  const types=entityTypesFor(level,modelOf(node));
   const e=existing;
   const opts=types.map(t=>'<option value="'+t[0]+'"'+(e&&e.entityType===t[0]?' selected':'')+'>'+t[1]+'</option>').join('');
   const bg=modal(`
@@ -13174,7 +13341,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,geoFor,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,measure,scopeIds,countryCoverage,buildCountryCockpit,children,byId,persist,venturesOf,offersOf,oracleFmv}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,geoFor,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,measure,scopeIds,countryCoverage,buildCountryCockpit,children,byId,persist,venturesOf,offersOf,oracleFmv,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

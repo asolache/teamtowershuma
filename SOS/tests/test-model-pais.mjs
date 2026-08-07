@@ -115,7 +115,7 @@ const two = await page.evaluate(async () => {
 ok(two.eusRoot === 'Herrialdea' && two.eusChild === 'Lurraldea', 'l\'arbre d\'Euskadi parla en basc');
 ok(two.catRoot === 'País' && two.catChild === 'Província', 'i el de Catalunya segueix en català, al mateix SOS');
 ok(two.eusNext === 'municipi' && two.catNext === 'comarca', 'cada arbre segueix la seva pròpia cadena de nivells');
-ok(two.inList === 2, 'el model guardat surt al catàleg al costat de Catalunya');
+ok(two.inList === 3, 'el model guardat surt al catàleg al costat dels dos de referència');
 
 console.log('\n5 · La cadena territorial ja no diu «Catalunya» a pinyó');
 const chain = await page.evaluate(() => {
@@ -193,7 +193,134 @@ const del = await page.evaluate(async () => {
 });
 ok(del.nodesKept, 'els nodes segueixen tots on eren');
 ok(del.fallback === 'País', 'i el país torna als noms de nivell per defecte en comptes de petar');
-ok(del.modelsLeft === 1, 'Catalunya no es pot eliminar: sempre queda com a referència');
+ok(del.modelsLeft === 2, 'els models de referència no es poden eliminar: sempre hi queden');
+
+console.log('\n9 · Euskadi ve de sèrie, amb estructura foral');
+const eus = await page.evaluate(() => {
+  const S = window.__SOS;
+  const E = S.EUSKADI_MODEL;
+  const lv = S.levelsOf(E);
+  return {
+    inList: S.countryModels().map(m => m.id).sort(),
+    ref: E.ref,
+    labels: lv.map(l => l.label),
+    prov: S.geoFor('provincia', null, E).map(x => x.n),
+    nCom: S.geoFor('comarca', null, E).length,
+    comAraba: S.geoFor('comarca', 'Araba/Álava', E).length,
+    comBiz: S.geoFor('comarca', 'Bizkaia', E).length,
+    comGip: S.geoFor('comarca', 'Gipuzkoa', E).length,
+    size: S.skeletonSize(E),
+    orphanCom: S.geoFor('comarca', null, E).filter(c => !S.geoFor('provincia', null, E).some(p => p.n === c.p)).map(c => c.n),
+    orphanMuni: S.geoFor('municipi', null, E).filter(m => !S.geoFor('comarca', null, E).some(c => c.n === m.p)).map(m => m.n)
+  };
+});
+ok(eus.inList.join(',') === 'catalunya,euskadi', 'els dos models de referència hi són de sèrie');
+ok(eus.ref === true, 'Euskadi també és de només lectura');
+ok(eus.labels[1] === 'Territori Històric', 'el nivell intermedi no és una província: és un Territori Històric');
+ok(eus.labels[2] === 'Comarca / Quadrilla', 'i el de sota admet les dues coses, perquè a Araba són quadrilles');
+ok(eus.prov.join(',') === 'Araba/Álava,Bizkaia,Gipuzkoa', 'els tres territoris històrics, amb el nom oficial bilingüe');
+ok(eus.comAraba === 7 && eus.comBiz === 7 && eus.comGip === 7, 'set comarques o quadrilles a cada territori');
+ok(eus.nCom === 21, 'vint-i-una en total');
+ok(eus.size === 1 + 3 + 21, 'skeletonSize ho diu abans de crear res');
+ok(!eus.orphanCom.length, 'cap comarca penja d\'un territori que no existeix: ' + eus.orphanCom.join(', '));
+ok(!eus.orphanMuni.length, 'cap municipi penja d\'una comarca que no existeix: ' + eus.orphanMuni.join(', '));
+
+console.log('\n10 · El mapa foral no és el català');
+const foral = await page.evaluate(() => {
+  const S = window.__SOS;
+  const E = S.EUSKADI_MODEL;
+  const roles = S.institutionsFor(E, 'pais');
+  const flows = S.institutionFlowsFor(E, 'pais', roles);
+  const conc = flows.find(f => /concert/i.test(f[3] || ''));
+  const kinds = new Set(flows.map(f => f[2]));
+  const deg = {}; flows.forEach(f => { deg[f[0]] = (deg[f[0]] || 0) + 1; });
+  return {
+    roles, nFlows: flows.length,
+    noGeneralitat: !roles.join(' ').includes('Generalitat'),
+    hasJaurlaritza: roles.includes('Eusko Jaurlaritza'),
+    hasJuntes: roles.includes('Juntes Generals'),
+    concertFrom: conc ? conc[0] : null, concertTo: conc ? conc[1] : null,
+    bothKinds: kinds.has('tangible') && kinds.has('intangible'),
+    maxDeg: Math.max(...Object.values(deg)), nRolesWithFlows: Object.keys(deg).length,
+    catRoles: S.institutionsFor(S.CATALUNYA_MODEL, 'pais')
+  };
+});
+ok(foral.noGeneralitat && foral.hasJaurlaritza && foral.hasJuntes, 'els rols són els forals, no els catalans');
+ok(foral.roles.length >= 5, 'entre 5 i 8 rols, com demana la metodologia');
+ok(foral.nFlows === 24, 'dotze parells expandits en les dues direccions');
+ok(foral.concertFrom === 'Diputacions Forals' && foral.concertTo === 'Eusko Jaurlaritza',
+  'el Concert Econòmic va de les Diputacions al Govern, no al revés');
+ok(foral.bothKinds, 'barreja tangibles i intangibles');
+ok(foral.maxDeg <= foral.nFlows / 2, 'cap rol concentra la meitat dels fluxos: no és una estrella');
+ok(foral.catRoles[0] === 'Generalitat', 'i Catalunya segueix amb els seus');
+
+console.log('\n11 · Crear Euskadi deixa un país foral sencer');
+const built2 = await page.evaluate(async (n0) => {
+  const S = window.__SOS;
+  const E = S.EUSKADI_MODEL;
+  const before = S.state.nodes.length;
+  const r = await S.loadModelSkeleton(E, 'Euskadi');
+  const kids = S.children(r.root.id);
+  const araba = kids.find(k => /Araba/.test(k.name));
+  return {
+    created: r.created, grew: S.state.nodes.length - before,
+    nProv: S.children(r.root.id).length,
+    nCom: S.children(r.root.id).reduce((a, k) => a + S.children(k.id).length, 0),
+    kidLabel: kids.length ? S.metaOf(kids[0]).label : null,
+    kidNext: kids.length ? S.nextLevelOf(kids[0]) : null,
+    arabaKids: araba ? S.children(araba.id).length : 0,
+    arabaChildLabel: araba ? S.metaOf(S.children(araba.id)[0]).label : null,
+    entTypes: S.entityTypesFor('provincia', E).map(t => t[1]),
+    entMeta: S.entTypeMeta('juntes').label
+  };
+});
+ok(built2.grew === built2.created, 'no es creen nodes que el recompte no digui');
+ok(built2.nProv === 3 && built2.nCom === 21, 'l\'arbre queda amb 3 territoris i 21 comarques, reaprofitant els que ja hi eren');
+ok(built2.kidLabel === 'Territori Històric', 'l\'arbre parla de territoris històrics');
+ok(built2.kidNext === 'comarca', 'i per sota hi van les comarques i quadrilles');
+ok(built2.arabaKids === 7, 'Araba rep les seves 7 quadrilles');
+ok(built2.arabaChildLabel === 'Comarca / Quadrilla', 'que es diuen com el model diu');
+ok(built2.entTypes.includes('Diputació Foral') && built2.entTypes.includes('Juntes Generals'),
+  'els tipus d\'entitat del territori històric són els forals');
+ok(built2.entMeta === 'Juntes Generals', 'i el seu nom es troba allà on es dibuixen, no surt l\'id cru');
+
+console.log('\n12 · Forkejar Euskadi conserva el mapa; editar-lo no el trenca');
+const forkEus = await page.evaluate(() => {
+  const S = window.__SOS;
+  const f = S.forkModel('euskadi', { name: 'Nafarroa' });
+  const rolesBefore = S.institutionsFor(f, 'pais');
+  const flowsBefore = S.institutionFlowsFor(f, 'pais', rolesBefore);
+  // Treu un rol: els seus fluxos han de desaparèixer, la resta quedar-se.
+  const kept = rolesBefore.filter(r => r !== 'Juntes Generals');
+  const flowsAfter = S.institutionFlowsFor(f, 'pais', kept);
+  return {
+    keepsPairs: flowsBefore.length === 24,
+    ownGeo: S.geoFor('comarca', null, f).length === 21,
+    after: flowsAfter.length,
+    noneDangling: !flowsAfter.some(x => x[0] === 'Juntes Generals' || x[1] === 'Juntes Generals'),
+    eusUntouched: S.institutionFlowsFor(S.EUSKADI_MODEL, 'pais').length === 24
+  };
+});
+ok(forkEus.keepsPairs, 'la còpia s\'endú els intercanvis, no només els noms dels rols');
+ok(forkEus.ownGeo, 'i la geografia foral sencera');
+ok(forkEus.after < 24 && forkEus.after > 0, 'treure un rol es queda amb els fluxos que encara tenen els dos extrems');
+ok(forkEus.noneDangling, 'i cap flux apunta a un rol que ja no hi és');
+ok(forkEus.eusUntouched, 'Euskadi no ha canviat');
+
+console.log('\n13 · Cap model de referència es pot sobreescriure ni esborrar');
+const guard = await page.evaluate(async () => {
+  const S = window.__SOS;
+  await S.saveModels([{ id: 'euskadi', name: 'Segrestada' }, { id: 'catalunya', name: 'També' }, { id: 'propi-x', name: 'Propi' }]);
+  return {
+    stored: S.customModels().map(m => m.id),
+    eus: S.modelById('euskadi').name,
+    cat: S.modelById('catalunya').name,
+    total: S.countryModels().length
+  };
+});
+ok(guard.stored.join(',') === 'propi-x', 'desar un model amb l\'id d\'un de referència no l\'escriu');
+ok(guard.eus === 'Euskadi' && guard.cat === 'Catalunya', 'i els de referència segueixen sent els seus');
+ok(guard.total === 3, 'els dos de sèrie més el propi');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));

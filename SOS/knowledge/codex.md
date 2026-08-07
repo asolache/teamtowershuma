@@ -753,6 +753,31 @@ La separació que ho resol:
 Un cas d'ús que no es pot obrir, editar ni copiar no és un cas d'ús: és
 documentació.
 
+**El segon cas és el que ho demostra.** Un model sol no prova res —el codi
+segueix podent tenir supòsits d'un sol país amagats. Euskadi els destapa tots
+alhora: el nivell intermedi **no és una província** sinó un Territori Històric
+amb Diputació Foral i Juntes Generals; el de sota són comarques a Bizkaia i
+Gipuzkoa però **quadrilles** a Araba; i el mapa de valor va **al revés** que el
+català, perquè amb el Concert Econòmic són les Diputacions les que recapten i
+aporten al Govern Basc. Un mapa que ho dibuixés a l'inrevés seria fals encara
+que quedés més simètric.
+
+D'aquí surten dues regles més:
+
+- **Un model porta els seus intercanvis, no només els noms dels rols.** Copiar
+  només els rols i sembrar-hi els fluxos de casa donaria un mapa que parla
+  d'institucions basques amb les relacions catalanes.
+- **Editar els rols no pot trencar el mapa.** En canviar-los, els fluxos que
+  apunten a un rol que ja no hi és **es descarten**, i la resta es queden. Un
+  nivell que no s'ha tocat no es desa, per no deixar-lo amb una llista de noms
+  i cap intercanvi.
+
+I una de dades, no de codi: els topònims **no es tradueixen**. Els noms van com
+són oficialment —bilingües quan ho són— i el que és parcial es diu que és
+parcial. La llista de municipis d'Euskadi porta els de més població de cada
+comarca perquè l'autocompletar sigui útil; posar-ne 251 de memòria seria
+inventar-ne uns quants.
+
 ## Veda 53 — Graduar no és el final del camí
 
 `graduatedNodeId` existia des del primer dia i **no el llegia ningú**. La venture

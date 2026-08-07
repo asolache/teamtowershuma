@@ -70,8 +70,15 @@ l'únic.
    a mi. La feina que no és de ningú en particular —«tres comarques sense cap
    dinàmica»— no la veu ningú i per tant no la fa ningú. La cobertura ja la
    calcula (`countryCoverage`); falta convertir-la en missions.
-5. **Catàleg territorial d'un segon país** · **bloquejat per dades, no per codi**.
-   El model ja permet carregar-lo; algú l'ha d'aportar.
+5. ~~**Catàleg territorial d'un segon país**~~ · **fet (V54)**. **Euskadi** entra
+   de sèrie amb estructura foral: 3 territoris històrics, 21 comarques i
+   quadrilles, municipis principals de cada comarca (llista **parcial**, i ho
+   diu), tipus d'entitat forals (Diputació Foral, Juntes Generals, Quadrilla) i
+   un mapa de valor propi on **les Diputacions aporten al Govern**, no al revés.
+   Etiquetes en català; la traducció a l'èuscar queda per a la beta.
+6. **Traducció a l'èuscar del model d'Euskadi** · **pendent, per a la beta**.
+   Els topònims ja hi són en la seva forma oficial i no s'han de tocar; el que
+   falta traduir són les etiquetes de nivell i els noms dels rols.
 
 ---
 

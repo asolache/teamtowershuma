@@ -32,7 +32,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-missions.mjs` | V51 | La portada de missions |
 | `test-matriu-f56.mjs` | V52 | Finançament, tràmits i formació per etapa |
 | `test-matriu-f78.mjs` | V53 | Seguiment post-graduació i evidències |
-| `test-model-pais.mjs` | V54 | Catalunya com a model editable, i que forkejar-la no la toqui |
+| `test-model-pais.mjs` | V54 | Catalunya i Euskadi com a models editables, i que forkejar-los no els toqui |
 | `test-fons.mjs` | V55 | El fons cooperatiu: verificat vs estimat, cobertura i cabina del país |
 
 `serve.mjs` és un servidor estàtic mínim per als tests que necessiten `http://`
