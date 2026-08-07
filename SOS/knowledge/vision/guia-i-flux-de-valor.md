@@ -78,3 +78,30 @@ d'endevinar.** Cada pestanya o vista nova ha de portar:
 
 La guia es pot tancar i **no torna a obrir-se sola** en aquella pestanya: qui ja
 ho té clar no ha de tornar a llegir-ho.
+
+---
+
+## 5. On va a parar tot això
+
+La guia resol «què em toca ara». Faltava la pregunta de darrere: **cap a on**.
+
+Registrar hores demana esforç, i durant molt de temps l'esforç no ensenyava
+destinació: el fons cooperatiu era una funció dins d'una pestanya d'un node
+MATRIU, i un territori amb tres bancs de temps vius en tenia zero.
+
+Ara el flux té un final visible i enllaçable (`#/fons`), i el final té dues
+xifres que no s'han de barrejar mai:
+
+| Xifra | Què és | Com es presenta |
+|---|---|---|
+| **Verificat** | El que està signat i encadenat | € i **hores en hores** — dues xifres bessones, mai una de sola |
+| **Mobilitzat** | L'estimació de l'oracle | Un € amb **rang** i la font escrita a cada partida |
+
+I al costat, la que converteix la xifra en feina: **la cobertura**. El fons diu
+quant s'ha mogut; la cobertura diu on encara no s'ha mogut res. Una llista de
+regions buides no és un retret — és l'única llista que diu on val la pena trucar.
+
+**Regla per a qui hi afegeixi vistes:** cap pantalla nova pot sumar una hora
+signada amb una hora estimada, ni convertir hores a euros sense dir-ho al costat
+del número. El dia que ho fem, la xifra deixa de ser defensable davant de qui la
+financi, i és l'única cosa que aquesta eina té per oferir.

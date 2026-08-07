@@ -621,7 +621,493 @@ càrrega en vol: **17 · 17 · 17**.
 La regla general: **tota operació que fusiona estat compartit ha de ser una a la
 vegada**, i ha de dir la veritat sobre què ha entrat i què no.
 
-## Recorda
+## Veda 42 — Qui exporta ha de saber què s'emporta
+
+La còpia de la identitat (V25) resolia una pèrdua: esborrar el navegador
+destruïa el `did:sos`. Però la identitat sola no és el teu SOS. Si perds el
+navegador amb els nodes, els socis, el registre d'hores i la biblioteca, el que
+et queda és una clau sense res a obrir.
+
+`exportBackup` s'emporta la base de dades sencera. I aquí hi ha la decisió que
+importa: **la contrasenya en blanc és una opció legítima** —hi ha gent que fa la
+còpia en un disc que ja té xifrat, o que necessita poder-la obrir sense
+recordar res— **però un fitxer en clar amb la teva clau privada dins no és una
+còpia de seguretat qualsevol**. Qui el tingui no només et pot llegir: et pot
+**signar coses en nom teu**, i les signatures del SOS són el que fa que el
+registre valgui alguna cosa.
+
+Per això el botó no diu el mateix en els dos casos. Amb contrasenya:
+«Descarrega la còpia xifrada». Sense: **«⚠ Descarrega SENSE xifrar»**, i
+l'avís diu exactament què implica. No es bloqueja, no es fa un sermó: es diu.
+I hi ha una casella per treure la identitat de la còpia, que és la resposta
+raonable per a qui vol les dades però no el poder de signar.
+
+L'altra meitat és la restauració. **Importar és sobreescriure**, i ningú hauria
+de sobreescriure a cegues: primer es llegeix el paquet i es diu què porta
+—quants registres, de quin dia, si hi ha identitat a dins— i només llavors
+s'importa. Substituir-ho tot (esborrar el que hi ha abans d'entrar el nou) és
+una casella a part, apagada per defecte, amb confirmació.
+
+I una cosa que semblava un detall: un fitxer malmès sense la llista de registres
+restaurava **zero** i deia que tot havia anat bé. Un `|| []` que amagava un
+fitxer trencat. Ara distingeix «no hi ha registres» de «no hi ha llista de
+registres», que no és el mateix.
+
+## Veda 43 — Un apunt parla de dues persones; només una l'escrivia
+
+Operar des d'un resultat de cerca deixava el moviment **fet**. Registres dues
+hores i ja està: el saldo de l'altre s'ha mogut, i l'altre no se n'ha assabentat.
+Dit sense embuts, es podien **escriure hores en nom d'algú altre**. En un grup de
+deu persones és una anècdota; en un de cent és el motiu pel qual la gent deixa de
+creure's el registre.
+
+La temptació és fer que tot demani permís. Seria correcte i inservible: avui la
+majoria de fitxes no tenen ningú al darrere a qui preguntar —són noms que algú ha
+donat d'alta— i demanar-los un vistiplau que ningú pot signar és teatre.
+
+Per això la regla és la mínima que resol el problema: **cal el vistiplau de qui
+ha reclamat la seva fitxa**. Mentre ningú no l'ha reclamada, el SOS es comporta
+exactament com abans i no es trenca res. Des del moment que dius «aquesta sóc jo»
+amb el teu `did` i una reclamació signada (V39), ningú escriu al teu nom sense que
+hi diguis la teva. **La firma protegeix el nom de qui l'ha posat**, i reclamar la
+fitxa passa a tenir una conseqüència pràctica i no només simbòlica.
+
+Tres conseqüències que no són negociables:
+
+- **Una petició pendent no és mitja comptabilitat.** L'apunt **no entra al
+  ledger** fins que hi ha tots els vistiplaus. Res de saldos provisionals: o hi
+  és o no hi és, i mentre no hi és, la pantalla ho diu.
+- **L'apunt conserva la data del fet, no la de la confirmació.** El que va passar
+  va passar quan va passar; qui ho ha validat queda a dins de l'apunt, amb el seu
+  `did`.
+- **Un sol camí** (V22). `submitEntry` decideix si escriu ara o si envia la
+  petició; qui el crida no ho ha de saber. El préstec d'un objecte passa pel
+  mateix lloc, perquè és el mateix problema: posa una responsabilitat a nom d'algú.
+
+I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
+res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
+la podria activar qualsevol contra qualsevol.
+
+## Veda 55 — El fons cooperatiu ha de tenir porta, i no pot mentir
+
+El SOS deia a la seva pròpia documentació que la destinació és un fons
+cooperatiu, i li posava xifra i any. A l'app, el fons era **una funció dins d'una
+pestanya d'un node MATRIU**: tres clics des de la portada, i només si aquell node
+existia. Un territori amb tres bancs de temps i dues biblioteques movent hores
+cada setmana tenia un fons de **zero**, perquè `fundValue` només sabia comptar el
+que penjava d'una incubadora.
+
+El múscul d'un territori no és la seva MATRIU: és tot el que hi ha a sota. El
+fons es mesura sobre l'àmbit sencer (`scopeIds` + el mateix desduplicat que fa
+servir `measure`, perquè dues xifres del mateix fons són pitjor que cap).
+
+Tres regles que la pantalla no pot trencar:
+
+- **Verificat i estimat no se sumen mai.** El que encapçala és el que està signat
+  i encadenat. La conversió d'hores a euros és de l'oracle, va a sota, amb rang i
+  amb la font escrita al costat de cada partida.
+- **Les hores es diuen en hores.** Presentar «verificat» com un sol número en
+  euros obligaria a valorar-les, i llavors ja no seria verificat. Són dues xifres
+  bessones, no una de sola.
+- **La comparació amb el pla no interpola.** Si l'any en curs no és una fita
+  declarada, s'agafa la següent i **es diu que és la següent**. Inventar una
+  xifra intermèdia seria posar-hi un compromís que ningú ha pres.
+
+I la cobertura al costat del fons, perquè no són la mateixa pregunta: el fons diu
+quant s'ha mogut; la cobertura diu **on encara no s'ha mogut res**. Sense la
+segona, la primera només és una notícia. Una llista de regions buides no és un
+retret: és l'única llista que diu on val la pena trucar.
+
+## Veda 54 — Un cas particular al lloc d'una plantilla
+
+Catalunya no era un cas d'ús del SOS: estava **soldada en sis llocs del fitxer**.
+Els nivells (`província`, `comarca`, `municipi`, `barri`), els rols institucionals
+del mapa de valor de qualsevol país (`Generalitat`, `Diputacions`, `Consells
+comarcals`), els tipus d'entitat, el catàleg territorial, els resolutors de
+cadena amb `pais:'Catalunya'` escrit a mà, i una funció d'esquelet d'un sol país.
+
+Res d'això era un error de programació —tot funcionava. Era un error de model: hi
+havia un cas particular al lloc on hi ha d'haver una plantilla. La prova és què
+passava en clicar «nou país»: sortia un node buit, l'autocompletar oferia una
+sola opció (Catalunya), i el mapa de valor d'Euskadi naixia amb un rol anomenat
+«Generalitat».
+
+La separació que ho resol:
+
+- **Els ids dels nivells no canvien mai.** Hi pengen les classes CSS, els mapes
+  de valor per nivell i els tipus d'entitat. Renombrar-los trencaria tots els SOS
+  que ja existeixen.
+- **Les etiquetes i el nombre de nivells són dades.** Un model pot dir-li
+  «herrialdea» a `provincia` i tenir-ne tres en comptes de cinc. Retallar un
+  nivell del mig el salta de debò: el fill surt de l'ordre de la llista.
+- **`null` vol dir «el de sempre».** Un model que no declara geografia,
+  institucions ni tipus d'entitat es comporta exactament com abans del canvi. Per
+  això Catalunya és un model amb tres nulls i cap SOS existent nota res.
+- **La referència no es toca.** Catalunya és de només lectura; forkejar-la en fa
+  una còpia amb id nou i geografia pròpia materialitzada. Un cas de referència
+  que es pot espatllar sense voler deixa de ser una referència.
+- **Eliminar un model no esborra cap territori.** Els països que el feien servir
+  tornen als noms de nivell per defecte. Un catàleg no pot ser propietari de la
+  cosa catalogada.
+
+Un cas d'ús que no es pot obrir, editar ni copiar no és un cas d'ús: és
+documentació.
+
+**El segon cas és el que ho demostra.** Un model sol no prova res —el codi
+segueix podent tenir supòsits d'un sol país amagats. Euskadi els destapa tots
+alhora: el nivell intermedi **no és una província** sinó un Territori Històric
+amb Diputació Foral i Juntes Generals; el de sota són comarques a Bizkaia i
+Gipuzkoa però **quadrilles** a Araba; i el mapa de valor va **al revés** que el
+català, perquè amb el Concert Econòmic són les Diputacions les que recapten i
+aporten al Govern Basc. Un mapa que ho dibuixés a l'inrevés seria fals encara
+que quedés més simètric.
+
+D'aquí surten dues regles més:
+
+- **Un model porta els seus intercanvis, no només els noms dels rols.** Copiar
+  només els rols i sembrar-hi els fluxos de casa donaria un mapa que parla
+  d'institucions basques amb les relacions catalanes.
+- **Editar els rols no pot trencar el mapa.** En canviar-los, els fluxos que
+  apunten a un rol que ja no hi és **es descarten**, i la resta es queden. Un
+  nivell que no s'ha tocat no es desa, per no deixar-lo amb una llista de noms
+  i cap intercanvi.
+
+I una de dades, no de codi: els topònims **no es tradueixen**. Els noms van com
+són oficialment —bilingües quan ho són— i el que és parcial es diu que és
+parcial. La llista de municipis d'Euskadi porta els de més població de cada
+comarca perquè l'autocompletar sigui útil; posar-ne 251 de memòria seria
+inventar-ne uns quants.
+
+## Veda 53 — Graduar no és el final del camí
+
+`graduatedNodeId` existia des del primer dia i **no el llegia ningú**. La venture
+sortia de la cartera i el que passés després no es tornava a mirar mai. Una
+incubadora que no sap què va passar amb el que va graduar no pot millorar el seu
+mètode: només pot repetir-lo.
+
+Les revisions són a **3, 6 i 12 mesos**, i la resposta **la posa una persona**.
+No es dedueix del registre a posta: un projecte pot tenir el ledger quiet i estar
+ben viu, i pot tenir moviment i estar mort. Automatitzar aquesta pregunta seria
+donar-li precisió a una cosa que no en té.
+
+Tres decisions sobre com es compta, que és on això es fa honest o es fa
+propaganda:
+
+- **Sense revisions, la taxa és desconeguda, no zero.** `null` i no `0`: no
+  saber-ho no és el mateix que saber que han mort totes.
+- **La taxa es calcula només sobre les revisades.** Comptar una graduada de fa
+  dues setmanes com a supervivent és inflar el número amb temps que encara no ha
+  passat.
+- **Una fita superada per una revisió posterior deixa de vèncer.** Si has revisat
+  als 12 mesos, demanar-te la dels 3 és demanar-te que t'inventis un record.
+
+I a les **evidències**, la mateixa lògica que a la formació: un checklist marcat
+és una promesa i un checklist amb proves és un expedient, però la cobertura de
+proves **no és una porta**. Demanar-la per graduar convidaria a adjuntar
+qualsevol cosa per passar-la, i llavors l'expedient deixaria de valer justament
+per al que serveix. De cada prova se'n guarda el **hash**, així es pot ancorar
+sense publicar-ne el contingut; i **el fitxer no entra al node** —viatjaria pel
+sync i pel pack públic— sinó a un registre local propi, amb el tipus `evidence`
+dins de `PRIVATE_DB_TYPES`. Al backlog només hi queda el hash i el nom.
+
+## Veda 52 — El mur no és la idea, és la data
+
+El que atura un projecte comunitari no acostuma a ser que l'idea no valgui: és
+la paperassa i el calendari de convocatòries. **Una subvenció es perd per no
+haver mirat una data**, no per no tenir raó. Per això el pipeline de
+finançament té una severitat que no té res més al tauler: és **l'única cosa que
+caduca sola**. Un termini passat no és una alerta, és una pèrdua, i es diu així
+—«ha passat fa 3 dies»— en comptes de continuar dient «pendent».
+
+I una separació que sembla comptable i és ètica: **el que has demanat no és
+teu**. Demanat i concedit són dues columnes diferents, i una convocatòria
+denegada es queda a la banda del demanat. Sumar-ho tot és la manera més ràpida
+de fer un pressupost fals i prendre decisions sobre diners que no existeixen.
+
+Els **tràmits** eren Zero Redundancy pur: cada `PROJECT_TYPE` ja portava la seva
+llista `juridic` i no servia per a res. Ara cada forma té els seus passos reals.
+Qui encara no ha decidit què serà veu les opcions; qui ja ho sap, només la seva.
+
+I la decisió que costa més de prendre bé, a la **formació lligada a l'etapa**:
+el mòdul que toca a cada etapa surt a la llista de comprovacions **però marcat
+com a `soft`, i no bloqueja graduar**. Es marca a mà, sense examen ni servidor
+que ho certifiqui —i **no es pot aturar ningú per una casella que ell mateix
+omple**. Una porta que qualsevol pot obrir sol no és una porta; posar-la seria
+donar-li l'aparença d'un requisit a una cosa que és un suggeriment.
+
+## Veda 51 — L'app de gestió ensenya estructura; la de la gent ensenya el següent pas
+
+El SOS que hem construït fins ara és l'app d'**administració**: mostra qui, on,
+quant i per què, i està feta per a qui coordina. Qui participa no necessita
+estructura —necessita **el següent pas**. Barrejar les dues coses és el que fa
+que una eina comunitària només l'acabin fent servir tres persones.
+
+Per això les missions **no són un panell més dins del tauler**: són una portada
+pròpia, sense arbre, sense pestanyes i sense res per configurar. Una llista, i
+cada cosa amb un sol botó gros. La pantalla ho diu de si mateixa: «aquesta
+pantalla no et deixa configurar res, només fer».
+
+Res d'això inventa dades. Totes les missions surten del que el sistema ja sabia
+—`pendingInbox`, `dashboardAttention`, `supplyMatches`, `dueStatus`,
+`journeyProgress`, els reptes del tier. El que canvia és **què és el centre de la
+pantalla**, i això és precisament el disseny.
+
+Tres decisions que fan que sigui una llista de missions i no una llista de
+deures:
+
+- **Cada missió diu què passarà si la fas.** «Fins que no responguis, no compta
+  per a ningú.» «Qui l'espera el podrà fer servir.» Sense aquesta frase, una
+  llista de coses per fer és una llista de retrets.
+- **L'ordre és per qui espera, no per importància abstracta.** Primer el que té
+  algú altre aturat, després el que et frena a tu, i al final el que et fa
+  créixer. **Fer esperar una persona és més urgent que qualsevol progrés propi.**
+- **Mai és buida per a qui té perfil.** Algú acabat d'arribar no té ningú
+  esperant-lo, però tampoc es queda davant d'una pantalla muda: el seu recorregut
+  i els seus reptes ja són missions. Una portada que de vegades no diu res no pot
+  ser la portada.
+
+I la que decideix l'arquitectura: **un sol fitxer, una capa de portada**. No un
+segon `index.html`. Mantenir el zero-servidor i el fitxer únic era la condició, i
+el cost mesurat és una funció i un bloc de CSS —res comparat amb duplicar l'app.
+
+## Veda 50 — Mesurar abans de patir, i comprovar que la prova comprova
+
+500 nodes i 5.000 apunts —l'ordre de magnitud d'una comarca al cap de dos
+anys— per veure si el SOS s'ofega. **No s'ofega**: el render triga 33 ms, el
+segon 5 ms, i cap funció que recorri tot el SOS passa de 25 ms. Val la pena
+haver-ho mesurat precisament perquè el resultat és aquest: ara ja no cal
+optimitzar res «per si de cas», i qualsevol regressió futura es veurà contra un
+número i no contra una impressió.
+
+La única cara és `verifyNoLeak` (211 ms), i és cara **a posta**: compara cada
+nom, contacte i títol del SOS sencer contra el JSON que sortirà. Es paga un cop
+per publicació i és el preu de no filtrar dades de ningú.
+
+Dos defectes reals que només apareixen a escala i en pantalla petita, tots dos a
+**360 px** —l'amplada de molts Androids, i per això `test-mobilenav` a 375 px no
+els veia mai:
+
+- **La barra de pestanyes** era una fila que no podia encongir-se: amb totes les
+  eines obertes sortia de la pantalla i feia desplaçar la pàgina sencera. Ara
+  llisca ella, no la pàgina.
+- **La barra superior** sumava 361 px. Un píxel. Prou perquè tota la pàgina es
+  pogués moure en horitzontal.
+
+I la lliçó que val més que les dues: **una prova que passa per no haver-hi res
+no prova res**. Les comprovacions d'accessibilitat corrien sobre la pantalla
+d'entrada buida i deien «0 camps sense etiqueta» perquè no hi havia cap camp.
+Ara carreguen dades i obren un formulari de debò —37 botons, 7 camps— i el test
+comprova **primer que hi ha alguna cosa a comprovar**. Un verd buit és pitjor
+que un vermell: el vermell almenys demana atenció.
+
+De la mateixa manera, «aquest element surt de la pantalla» no és un defecte si
+el seu contenidor **llisca a posta**. La comprovació ha de ser sobre la pàgina,
+no sobre el fill.
+
+## Veda 49 — Una capacitat que no hi és s'ha de dir, no suplir a qualsevol preu
+
+El QR ja es generava, però escanejar-lo obligava a sortir a l'app de càmera del
+sistema, copiar un text llarguíssim i tornar a entrar. `BarcodeDetector` —W3C,
+natiu— ho resol des de dins.
+
+El problema: **no hi és a tot arreu**. Comprovat en aquest entorn, el Chromium
+d'escriptori (Linux) no el porta; Android i ChromeOS sí. Hi havia dues sortides
+fàcils i totes dues dolentes: fer veure que va i deixar l'usuari clicant un botó
+mort, o encastar un descodificador de tercers de 250 KB al fitxer per cobrir un
+navegador que **no és el que escaneja**.
+
+Perquè aquí hi ha el detall que decideix: **el que escaneja és el mòbil**. El
+d'escriptori és el que *ensenya* el codi. La capacitat falta exactament on no
+fa falta, i per tant la resposta correcta no és suplir-la sinó **dir-ho**: la
+pantalla anomena l'API que li manca, diu on sí que funciona, i deixa sempre a la
+vista el camí d'enganxar el text, que no depèn de res.
+
+La mateixa regla val per als **trackers WSS** del codi de sala: es van provar i
+en aquest entorn no responen. Escriure codi de xarxa que no es pot verificar de
+cap manera és pitjor que no escriure'l —queda com si estigués fet, i el dia que
+falli ningú sabrà si va funcionar mai. Es queda al tram bloquejat, amb la prova
+anotada, i el que sí que funciona (enganxar, enllaç, QR) segueix sent el camí.
+
+Dues coses més que un escàner ha de fer bé i és fàcil oblidar: **apagar la
+càmera** quan es tanca el modal per qualsevol via —també per fora—, i demanar
+**només** el format que vol (`formats:['qr_code']`) en comptes de tots.
+
+## Veda 48 — Una versió és un canvi, no una data
+
+Publicar una vegada és fàcil. El problema és el segon dia: has canviat coses, i
+ni tu ni ningú sap què va sortir l'última vegada ni què ha canviat des de
+llavors. Sense això, «torna-ho a publicar» és una acció a cegues, i qui la fa no
+pot respondre la pregunta que importa —*què estic canviant del que la gent ja
+té?*
+
+Cada publicació guarda el seu **CID** i el **CID del seu pare**, i d'aquí surten
+les tres coses que ho fan utilitzable: saber si el que tens ara és diferent del
+que vas publicar, veure **què** ha canviat, i poder tornar enrere.
+
+La decisió que ho fa funcionar és petita i fàcil de fer malament: **el CID no
+inclou la data de generació**. Si la inclogués, construir el paquet dues vegades
+seguides en donaria dues versions diferents sense haver tocat res, i l'historial
+passaria a ser un registre del rellotge en comptes d'un registre dels canvis.
+Per la mateixa raó, publicar contingut idèntic a l'últim **no crea cap versió
+nova**: repetir el mateix amb una data diferent no és versionar, és fer soroll.
+
+**Tornar enrere no esborra res.** Restaurar publica una versió *nova* amb el
+contingut d'una d'antiga, encadenada a sobre de la que hi havia. Esborrar la
+versió intermèdia seria mentir sobre el que es va publicar —i el que ja s'ha
+replicat no es desfà igualment.
+
+I una que val per a qualsevol automatisme: **l'automàtic no es salta la
+comprovació**. Si `verifyNoLeak` troba una fuita, el versionat automàtic
+s'atura. Un automatisme que es salta la revisió perquè «ja anirà bé» és pitjor
+que no tenir-lo, perquè la fa a la teva esquena.
+
+Finalment, l'automatisme es diu **amb el que fa i amb el que no**: estampa
+versions al teu historial, **no puja res a cap servidor**. Anomenar-ho
+«sincronització» quan el destí depèn de relés de tercers que encara no hi són
+seria vendre el que no hi ha.
+
+## Veda 47 — Publicar no és publicar-ho tot
+
+L'objectiu és que algú d'un poble premi un botó i el que ha decidit compartir
+quedi publicat perquè algú altre ho trobi. La temptació és òbvia: agafar el
+catàleg i penjar-lo. Però publicar «hi ha algú a Manresa que fa fusteria» **no
+és** publicar qui és, ni el seu telèfon, ni el seu registre. I publicar és
+irreversible a la pràctica: un paquet que algú ja ha copiat no es retira.
+
+Per això la decisió del **gra** va abans que el botó, i és aquesta: **el que surt
+és agregat**. Categoria + municipi + quants. El paquet et diu **on preguntar, no
+a qui**. El node és la porta, i un node és una comunitat, no una persona.
+
+D'aquí surten tres coses que semblaven detalls i no ho són:
+
+- **Els títols lliures no surten.** Sonava excessiu fins que es va veure el cas:
+  algú escriu «Trepant d'en Quim Ferrer» o «Fusteria a casa de la Berta», i el
+  nom hauria sortit igualment **sense que ningú ho hagués decidit**. Un camp que
+  qualsevol pot omplir amb el que vulgui no es pot publicar mai.
+- **Deny by default, i node a node.** No surt res de cap node fins que aquell
+  node ho demana explícitament, i per separat per a habilitats i per a objectes.
+  Un valor per defecte que publica és una fuita amb bona intenció.
+- **La comprovació és codi, no un test.** `verifyNoLeak` recorre tots els noms,
+  contactes, `did`, títols i apunts que hi ha al SOS i els busca dins del JSON
+  que viatjarà; i a més rebutja **qualsevol clau fora de la llista blanca**,
+  encara que el valor sembli innocu. Si falla, **el botó no publica**. Una
+  garantia que només viu a la suite de tests protegeix el desenvolupador, no la
+  persona.
+
+I la mateixa porta funciona en tots dos sentits: el paquet que **entra** passa
+pel mateix sedàs que el que surt. Un paquet manipulat amb camps de més no pot
+afegir res de nou al SOS de qui el llegeix.
+
+Finalment, la pantalla ensenya **la taula sencera del que sortirà** abans de
+deixar-te descarregar res. Qui no ho entengui no ha de poder prémer el botó
+sense haver-ho vist.
+
+## Veda 46 — Una persona no és un rol
+
+`roleOfPerson` retornava **un** rol, i amb aquell rol es decidia la lent de tot
+el SOS. Hi fallaven dues coses alhora, i la segona és pitjor que la primera.
+
+La primera és de model: la mateixa persona és **superheroina al seu barri i
+mentora d'una MATRIU de la comarca** a la vegada. La implicació no és un estat
+global —**depèn del node i del que hi fa**— i aplanar-la a un sol valor obliga a
+triar quina de les dues veritats s'esborra.
+
+La segona és pitjor perquè era invisible: quan la casella no deia res, el rol
+sortia del **primer node que es trobava recorrent la llista**. Dues persones
+idèntiques podien acabar amb lents diferents per l'ordre en què s'havien creat
+els nodes. Un resultat que depèn de l'ordre d'iteració no és un resultat, és un
+accident.
+
+Ara el rol es **dedueix de l'evidència que el sistema ja tenia**: qui acompanya
+ventures és mentora (`mentorsOf`), qui reclama o custodia un node és guardiana
+(`govOf`), qui aporta hores i objectes és superheroina. Cada rol porta **el seu
+perquè** —«acompanya 2 iniciatives», «3 aportacions · 1 objecte»— perquè un rol
+que no es pot explicar és una etiqueta.
+
+Tres coses que això obliga a decidir bé:
+
+- **Una casella per defecte no és una declaració.** `newMember` posa
+  `superheroi` a tothom, així que comptar-lo com a evidència seria dir que tot
+  el món ha declarat el mateix. Només compta la casella quan hi ha una **altra**
+  cosa; i «superheroi» es dedueix de l'activitat, que és més veritat.
+- **`mentor` no existia a `SOS_ROLES`** tot i que la MATRIU ja tenia mentors amb
+  àmbit i sessions al registre. Es podia ser mentora sense que el SOS ho digués.
+  Ara hi és, amb recorregut propi.
+- **La lent es tria, no s'endevina.** «Ara miro el SOS com a mentora» és una
+  decisió teva, amb un selector visible quan tens més d'un rol —i cap selector
+  quan en tens un de sol, que seria soroll. El selector **no** viu dins del bloc
+  que pinta la frase de la lent: un rol sense frase per a aquest context segueix
+  sent un rol teu, i amagar-li el botó el faria desaparèixer del SOS.
+
+## Veda 45 — Donar una cosa i deixar-la no és el mateix
+
+Posar un objecte a la biblioteca no valia res al registre: es publicava i prou.
+Però una biblioteca de les coses **produeix valor real**, i el que no es compta
+no es pot ni certificar ni retribuir.
+
+Hi havia dues coses confoses en una:
+
+- **Donació** — l'objecte passa al comú. El valor és el bé cedit, **una vegada**.
+- **Posada a disposició** — segueix sent teu, el prestes. El valor **no és el
+  preu de l'objecte**, perquè no el regales. El que aportes és **el risc i el
+  desgast**, i la revisió o reparació que aquell objecte generarà.
+
+D'aquí surt la decisió que ho canvia tot: **es valora per préstec, no d'una sola
+vegada**. Una eina elèctrica prestada quaranta vegades no aporta el mateix que
+una tenda plantada dues, i una declaració inicial no pot saber quina de les dues
+serà. Cada retorn genera un apunt petit i signat a favor de qui l'ha posat a
+disposició, i el valor s'acumula amb **l'ús real**. Es compta al retorn i no en
+prestar, perquè el desgast encara no s'ha produït quan surt per la porta.
+
+**L'aprenent no és un cost.** A la sessió de reparació hi ha dues aportacions,
+no una amb un beneficiari: qui ensenya hi posa ofici i transferència de
+coneixement —l'intangible que a la VNA sosté tota la resta— i **qui aprèn repara
+de debò**, i aquella reparació és valor lliurat a la comunitat. Els dos generen
+apunt. Un model *fair* no és el que reparteix bé al final: és el que **compta bé
+pel camí**, i que compta el que normalment no es compta.
+
+I la regla que impedeix que tot això es converteixi en fum: **un valor estimat no
+pot passar per diner real**. Els objectes tenen el seu propi tipus d'apunt
+(`objecte`), amb `estimate:true` i la font de l'oracle a dins. No sumen amb les
+hores, no sumen amb el capital, i a l'equity entren com a aportació no dinerària
+**ja valorada en euros** —passar-los per la tarifa horària els hauria multiplicat
+per quinze. La pantalla diu sempre quins números són estimació i quins surten del
+registre signat. Un número inventat que sembli comptabilitat és pitjor que no
+tenir-lo.
+
+## Veda 44 — Dues llistes raonables poden no parlar-se
+
+El banc de temps té «petites reparacions de la llar». La biblioteca de les coses
+té «bricolatge i eines». Cadascuna és correcta al seu lloc i cap de les dues està
+mal feta. El problema apareix quan es creuen: **qui ofereix reparar i qui busca un
+trepant no s'han trobat mai**, encara que a la vida vagin sempre plegats — són la
+mateixa tarda de dissabte.
+
+La sortida fàcil seria unificar les dues llistes. Seria un error: la categoria
+d'un objecte i la d'un servei no volen dir el mateix ni serveixen per al mateix,
+i fondre-les faria pitjors les dues pantalles per arreglar una tercera.
+
+L'**àmbit** és la capa de sobre. No substitueix cap taxonomia, no en canvia cap
+fitxa, i **no s'inventa equivalències**: només uneix el que de debò es fa junt.
+Set àmbits fan de pont de veritat; vuit en tenen una sola banda, i així ha de ser
+—dir que «tràmits i paperassa» té un objecte equivalent seria fer-ho quadrar a la
+força, i un pont que va a lloc no es nota.
+
+Dues regles que eviten que la banda de coincidències menteixi:
+
+- **Una coincidència d'àmbit no és una coincidència exacta**, i no es poden
+  presentar iguals. La targeta ho diu amb el nom: «es creuen *reparacions* i
+  *bricolatge* — no és la mateixa cosa, és el mateix àmbit». Vendre-ho com a
+  equivalent seria prometre un aparellament que no existeix.
+- **Un àmbit que no travessa res no es mostra.** Si el que s'ofereix i el que es
+  busca són la mateixa cosa de la mateixa taxonomia, la coincidència exacta ja ho
+  diu i l'àmbit només ocuparia el lloc de la que sí aporta.
+
+I una conseqüència d'interfície que era un defecte esperant: **un àmbit no es pot
+escriure a la caixa de cerca**. «Reparar i bricolar» no és el text de cap fitxa,
+així que clicar-hi i posar-ho al camp de text hauria donat zero resultats. Es
+filtra pel que és —un xip d'àmbit que es pot treure—, no per un text que ho
+imita.
 
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.

@@ -32,6 +32,228 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 
 ## Bloc pendent (prioritzat)
 
+### Ordre recomanat · la meva prioritització
+
+**Criteri**, dit abans de la llista perquè es pugui discutir l'ordre sense
+discutir cada punt: (1) primer el que **avui impedeix que el SOS el faci servir
+més d'una persona**; (2) després el que fa que **el valor comptat sigui just**,
+perquè comptar malament durant mesos no es pot corregir després; (3) després **la
+cara pública**, que és la que dona tracció però és **irreversible**; (4) al final
+el que **depèn de tercers** (relés, trackers, proveïdors), que no pot ser mai el
+camí crític d'una eina que ha de funcionar sense xarxa.
+
+---
+
+**P0 · Revisió UX del flux de valor cap al fons** — feta i implementada
+
+La revisió completa és a `SOS/knowledge/vision/review-ux-flux-de-valor.md`. Va
+sortir de tres coses que el SOS deia i l'app no feia: que el model és replicable,
+que la destinació és el fons cooperatiu, i que Catalunya és el primer cas i no
+l'únic.
+
+1. ~~**Catalunya soldada al codi**~~ · **fet (V54)**. Era un cas particular al
+   lloc d'una plantilla, en sis punts: nivells, institucions del mapa de valor,
+   tipus d'entitat, catàleg geogràfic, resolutors de cadena amb `pais:'Catalunya'`
+   literal, i un esquelet d'un sol país. Ara hi ha `COUNTRY_MODELS` amb Catalunya
+   com a referència de només lectura, forkejable; els nivells són dades
+   (renombrables i retallables) però els seus ids no canvien mai; i l'assistent
+   «crea el teu país» deixa un país viu en comptes d'un node buit.
+2. ~~**El fons no tenia porta**~~ · **fet (V55)**. Ruta `#/fons` enllaçable, amb
+   verificat (signat, hores en hores) separat de l'estimació de l'oracle (amb
+   rang i font), comparació amb la fita del pla fundador sense interpolar, i
+   desglossament per dinàmica i per node. `networkFund` ja no depèn de la MATRIU:
+   un territori amb bancs de temps i biblioteques té fons.
+3. ~~**El país ensenyava la portada d'un barri**~~ · **fet (V55)**. Cabina amb
+   fons, cobertura (quines regions encara no tenen res) i les que més es mouen.
+   Les sis targetes de rol es queden per als nivells on serveixen.
+4. **Missions de xarxa** · **pendent**. Avui `missions()` només diu què *em* toca
+   a mi. La feina que no és de ningú en particular —«tres comarques sense cap
+   dinàmica»— no la veu ningú i per tant no la fa ningú. La cobertura ja la
+   calcula (`countryCoverage`); falta convertir-la en missions.
+5. ~~**Catàleg territorial d'un segon país**~~ · **fet (V54)**. **Euskadi** entra
+   de sèrie amb estructura foral: 3 territoris històrics, 21 comarques i
+   quadrilles, municipis principals de cada comarca (llista **parcial**, i ho
+   diu), tipus d'entitat forals (Diputació Foral, Juntes Generals, Quadrilla) i
+   un mapa de valor propi on **les Diputacions aporten al Govern**, no al revés.
+   Etiquetes en català; la traducció a l'èuscar queda per a la beta.
+6. **Traducció a l'èuscar del model d'Euskadi** · **pendent, per a la beta**.
+   Els topònims ja hi són en la seva forma oficial i no s'han de tocar; el que
+   falta traduir són les etiquetes de nivell i els noms dels rols.
+
+---
+
+**P1 · Ara — sense això, el SOS és monousuari**
+
+1. ~~**Sync en viu**~~ · **ja hi era**. En anar a fer-ho es va comprovar que
+   `syncBroadcast` ja emet un `patch` a cada `persist`/`persistEntity` i que
+   `deleteNode`/`deleteEntity` propaguen tombstone; `test-collab` ho verifica
+   d'extrem a extrem amb dos navegadors (`liveChangeReachesTheOtherSide`). El que
+   queda d'aquella línia és el **codi de sala** i el **QR**, que són a P3 perquè
+   depenen de tercers. *Prioritzar sobre memòria i no sobre el codi porta a
+   posar de primer el que ja està fet.*
+2. **Vistiplau de l'altra banda** · **fet (V43)**. `submitEntry` és el camí únic:
+   si la contrapart ha reclamat la fitxa amb el seu `did`, l'apunt **no entra al
+   ledger** i queda com a petició signada fins que hi digui la seva; si no l'ha
+   reclamada, tot funciona com abans. Els préstecs passen pel mateix lloc
+   (`submitLoan`). Safata `⏳ Esperen el teu vistiplau` amb pastilla a la barra,
+   entrada al tauler d'atenció i a la paleta. L'apunt guarda la data del fet i
+   qui l'ha validat. 46 assercions a `test-vistiplau`.
+3. **Pont entre taxonomies** banc de temps ↔ biblioteca · **fet (V44)**.
+   `SUPPLY_DOMAINS` és una capa d'àmbits per sobre de les dues llistes, que no en
+   substitueix cap: set àmbits fan de pont de debò (reparació, electrònica,
+   cuina, hort, costura, infància, cures) i vuit tenen una sola banda a
+   consciència. La banda de coincidències distingeix **exacta** de **mateix
+   àmbit** i diu quines dues coses creua; un àmbit que no travessa res no es
+   mostra. Filtre d'àmbit amb xip (no es pot escriure a la caixa de cerca perquè
+   no és el text de cap fitxa) i sortida des del «no hi ha res». 36 assercions a
+   `test-pont`.
+
+**P1 completat.** El següent és P2.
+
+**P2 · Tot seguit — que el que es compta sigui just**
+
+4. **Biblioteca circular** · **fet (V45)**. `OBJECT_MODES` separa donació de
+   posada a disposició; `loanValue` valora **per préstec** amb coeficient de
+   desgast per tipologia i s'escriu **al retorn**, no en prestar; `logRepair`
+   registra la sessió amb mentora **i aprenents**, tots dos com a aportació;
+   `circularStats` dona els indicadors del certificat (préstecs, compra evitada,
+   reparacions, hores formatives, objectes salvats). Tipus d'apunt propi
+   (`objecte`, amb `estimate:true`) perquè un valor estimat no es coli on hi ha
+   d'haver diner real. 54 assercions a `test-circular`.
+5. **Rols múltiples per context** · **fet (V46)**. `rolesOfPersonIn(node,nom)` i
+   `rolesOfPerson(nom)` dedueixen els rols de l'evidència que ja hi havia
+   (`mentorsOf`, `govOf`, ledger, objectes, ofertes), cadascun amb el seu perquè
+   i els nodes on el fa. `primaryRole` substitueix el «primer que trobo
+   recorrent nodes», que depenia de l'ordre de creació. `mentor` entra a
+   `SOS_ROLES` amb recorregut propi i frase de lent a les dotze pantalles. La
+   lent es tria amb un selector visible (`setLensRole`) i el perfil mostra tots
+   els rols alhora. 44 assercions a `test-rols`.
+
+**P2 completat.** El següent és P3 · la cara pública.
+
+**P3 · Després — la cara pública, quan ja hi ha què publicar**
+
+6. **`publicPack` d'habilitats i objectes amb privadesa verificable** ·
+   **fet (V47)**. El gra és **agregat**: categoria + municipi + quants, i el
+   paquet diu **on preguntar, no a qui**. *Deny by default* node a node i per
+   separat per a habilitats i objectes (`publishScopeOf`, `setPublishScope`).
+   **Els títols lliures no surten** —«Trepant d'en Quim Ferrer» hauria publicat
+   un nom sense que ningú ho decidís. `verifyNoLeak` és **codi i no un test**:
+   busca tots els noms, contactes, `did`, títols i apunts del SOS dins del JSON
+   que viatjarà, rebutja qualsevol clau fora de la llista blanca, i **si falla
+   el botó no publica**. `readSupplyPack` aplica el mateix sedàs a l'entrada.
+   La pantalla ensenya la taula sencera abans de descarregar. 43 assercions a
+   `test-publica`.
+7. **Control de versions de les publicacions** · **fet (V48)**. Cada publicació
+   guarda el seu **CID i el del seu pare**; `publicationDiff` diu **què** ha
+   canviat (afegit, modificat, retirat) i `pubStatus` si el que tens ara és
+   diferent del que vas publicar. El CID **no inclou la data de generació**, així
+   que una versió és un canvi de contingut i no una passada de rellotge, i
+   publicar el mateix dues vegades no crea versió nova. `rollbackPublication`
+   torna enrere **publicant una versió nova** amb contingut antic, sense esborrar
+   cap versió intermèdia. El versionat automàtic (`setAutoPublish`) s'atura si
+   `verifyNoLeak` troba una fuita. 42 assercions a `test-versions`.
+
+   **El que NO fa, dit clar**: no puja res a cap servidor. La sincronització
+   remota depèn de relés de tercers (Nostr, Arweave, IPFS) i és al tram P5;
+   anomenar «sincronització» el que és versionat local seria vendre el que no hi
+   ha. L'historial és el que farà que, quan la xarxa hi sigui, publicar-hi sigui
+   només el darrer pas.
+8. **Lectura de QR des de dins** (`A4`) · **fet (V49)**. `qrCapabilities`,
+   `decodeQR` i `openQRScanner` amb `BarcodeDetector`: càmera en viu o foto
+   triada, i el codi arriba directament a la casella d'aparellament (les dues
+   bandes: invitació i resposta). **No hi és a tot arreu** —comprovat: el
+   Chromium d'escriptori Linux no el porta, Android i ChromeOS sí— i com que
+   **el que escaneja és el mòbil**, la resposta correcta no és encastar un
+   descodificador de 250 KB sinó dir-ho: la pantalla anomena l'API que falta,
+   diu on sí que va, i deixa sempre el camí d'enganxar el text. 30 assercions a
+   `test-qr`.
+
+   **Codi de sala** (`A3`) · **mogut a P5, amb prova**. Els trackers WSS
+   (`tracker.openwebtorrent.com`, `tracker.webtorrent.dev`, `tracker.files.fm`)
+   **no responen des d'aquest entorn**. Escriure el client de tracker sense
+   poder-lo verificar de cap manera deixaria codi que sembla fet i que ningú
+   sabria si ha funcionat mai. Es fa quan hi hagi una xarxa on provar-ho.
+
+**P3 completat** (excepte el codi de sala, mogut a P5 per la prova de dalt).
+
+**P4 · Quan l'MVP estigui polit**
+
+9. **App de mòbil per missions** · **fet (V51)**. `missions()` reuneix el que el
+   sistema ja sabia (`pendingInbox`, `dashboardAttention`, `supplyMatches`,
+   `dueStatus`, `journeyProgress`, reptes del tier) i ho converteix en una
+   **portada pròpia** sense arbre, sense pestanyes i sense res per configurar:
+   una llista, un botó gros per missió. Cada missió diu **què passarà si la fas**
+   i quant costa; l'ordre és **per qui espera**, no per importància abstracta.
+   Mai és buida per a qui té perfil. Ruta `#/missions`, entrada des del tauler i
+   de la paleta. 36 assercions a `test-missions`.
+
+   **Decisió d'arquitectura resolta**: un sol fitxer amb capa de portada, no un
+   segon `index.html`. El cost mesurat és una funció i un bloc de CSS, i es manté
+   el zero-servidor. *(Va aparèixer un tercer desbordament a 360 px: amb la
+   sessió activa la barra tornava a sortir. El text de l'estat de sync s'amaga
+   de la vista però no dels lectors de pantalla.)*
+10. **MATRIU F5–F8**. F1–F4 ja fan que sigui un servei; aquestes la completen.
+    - **F5 finançament i tràmits** · **fet (V52)**. Pipeline (`fundingOf`,
+      `addFunding`, `fundingSummary`) que separa **demanat de concedit** —el que
+      has demanat no és teu— i `fundingAlerts` que puja els venciments al tauler
+      amb **severitat màxima**: és l'única cosa que caduca sola, i un termini
+      passat es diu «ha passat fa N dies», no «pendent». Checklist jurídica
+      (`LEGAL_STEPS`, `legalChecklist`) sobre el `juridic` que cada
+      `PROJECT_TYPE` ja portava i que no servia per a res.
+    - **F6 formació lligada a l'etapa** · **fet (V52)**. `STAGE_MODULE` connecta
+      cada etapa amb el seu mòdul (idea→M3, prototip→M4, validació→M6,
+      graduació→M5) i `stageTraining` diu qui de l'equip real l'ha fet. Surt a
+      les comprovacions marcat com a **`soft`: no bloqueja graduar**, perquè es
+      marca a mà i no es pot aturar ningú per una casella que ell mateix omple.
+    - **F7 seguiment post-graduació** · **fet (V53)**. `graduatedNodeId` existia
+      i no el llegia ningú. `postGradReviews` obre les fites de **3, 6 i 12
+      mesos** —la resposta la posa una persona, perquè un projecte pot tenir el
+      ledger quiet i estar viu— i `survivalRate` dona l'indicador **de la
+      incubadora**. Sense revisions la taxa és `null` i no zero; es calcula
+      **només sobre les revisades**; i una fita superada per una revisió
+      posterior deixa de reclamar-se.
+    - **F8 evidències** · **fet (V53)**. `addEvidence` accepta enllaç, nota o
+      fitxer i en guarda sempre el **hash**, així es pot ancorar sense publicar
+      el contingut. **El fitxer no entra al node** (viatjaria pel sync i pel pack
+      públic): va a un registre local de tipus `evidence`, dins de
+      `PRIVATE_DB_TYPES`. `evidenceCoverage` mira **només els items fets**, i és
+      `soft`: demanar-la per graduar convidaria a adjuntar qualsevol cosa.
+    - 46 assercions a `test-matriu-f56` i 42 a `test-matriu-f78`.
+
+**P4 completat.** La MATRIU té les vuit fases del pla.
+11. **Rendiment amb 500 nodes i 5.000 apunts** + **accessibilitat** ·
+    **fet (V50)**. No s'ofega: render 33 ms (el segon, 5 ms), i cap funció que
+    recorri tot el SOS passa de 25 ms —`ledgerIndex` 11, `supplyIndex` 4,
+    `searchSupply` 21, `knownPersons` 6, `rolesOfPerson` 2. L'única cara és
+    `verifyNoLeak` (211 ms) i ho és a posta: compara tot el SOS contra el JSON
+    que sortirà, un cop per publicació. Accessibilitat: `lang`, títol, cap
+    `tabindex` positiu, 37 botons amb nom, 7 camps etiquetats, un sol `h1`
+    visible, sense salts de nivell, i Escape tanca els modals.
+    **Dos defectes reals trobats, tots dos a 360 px** (`test-mobilenav` corre a
+    375 i no els veia): la barra de pestanyes no podia encongir-se i feia
+    desplaçar la pàgina —ara llisca ella—, i la barra superior sumava 361 px.
+    32 assercions a `test-escala`.
+
+**P5 · Bloquejat per tercers — no és camí crític**
+
+12. Ancoratge Nostr / Arweave / IPFS, wallets W2/W3, integració profunda d'AI
+    review de PRs, coordenades a les entitats del directori. Tot això depèn
+    d'infraestructura externa. Que quedi al backlog no vol dir que sigui el
+    següent: vol dir que **quan la xarxa hi sigui, ja sabem què fer-hi**.
+13. **Codi de sala per sincronitzar** (trackers WSS + reconnexió). Baixat aquí
+    des de P3 amb la prova feta: cap dels tres trackers públics respon des de
+    l'entorn de desenvolupament. La publicació remota del `SupplyPack` (V47/V48)
+    viu al mateix calaix i pel mateix motiu.
+
+---
+
+**El que NO faria ara**, i per què val la pena dir-ho: multi-peer (>2 alhora),
+hub always-on, i conversió d'slices a participacions jurídiques. Els tres són
+grans, cap dels tres no desbloqueja res del que hi ha per sobre, i els tres
+tenen molt més sentit quan hi hagi comunitats reals fent-lo servir i sabrem què
+demanen de debò.
+
 ### Onada en curs · qualitat dels mapes + tauler com a lloc únic
 
 **Fet:**
@@ -161,6 +383,17 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
     d'espera passen a ser demanda d'objecte visible. Cinc criteris d'ordre en
     tots dos sentits. Veda V40.
 
+14. **Còpia de seguretat de tot el SOS local** — `exportBackup` /
+    `importBackup` s'emporten **la base de dades sencera** (no només la
+    identitat): nodes, socis, registre, iniciatives, biblioteca, entitats. Amb
+    contrasenya, el fitxer va xifrat (PBKDF2 210k · AES-GCM, la mateixa pila que
+    la identitat); **en blanc, va en clar** —i llavors el botó ho diu: «⚠
+    Descarrega SENSE xifrar», perquè qui tingui el fitxer podrà llegir-ho tot i
+    **signar en el teu nom**. Hi ha casella per treure la identitat de la còpia.
+    En restaurar, primer es mostra què hi ha dins (registres, data, si porta
+    identitat) i només després s'importa; substituir-ho tot és opcional i
+    demana confirmació. Entrada des del panell d'identitat. Veda V42.
+
 **Següent, per ordre:**
 1. **Codi de sala per sincronitzar** — l'aparellament segueix sent per sessió.
    Descobriment via trackers WSS + reconnexió amb l'últim codi.
@@ -191,10 +424,13 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
    i la pantalla `📍 Coordenades` mostra la cobertura. Sense coordenades, la
    cerca **diu** que ordena per territori i no per km. Veda V34.
 
+5. **Confirmació de l'altra banda** — `submitEntry`/`submitLoan` com a camí
+   únic: si la contrapart ha reclamat la fitxa, l'apunt queda com a **petició
+   signada** i no toca el ledger fins que hi ha vistiplau; si no l'ha reclamada,
+   res canvia. Safata pròpia, pastilla a la barra i primer lloc al tauler
+   d'atenció. Veda V43.
+
 **Pendent d'aquesta línia:**
-- **Confirmació de l'altra banda** — avui operar deixa el moviment fet; un
-  intercanvi entre nodes diferents hauria de poder esperar el vistiplau de qui
-  el rep.
 - **Coordenades a les entitats del directori**, no només als territoris.
 
 ### Publicar a la permaweb · el repositori públic del SOS
@@ -416,12 +652,32 @@ atribut a cada fila; cinc criteris d'ordre (`SUPPLY_SORTS`) en tots dos sentits;
 `supplyMatches` per a la banda de coincidències; i les llistes d'espera
 convertides en demanda d'objecte visible.
 
-**Pendent d'aquesta línia**: la clau d'aparellament és la categoria, i les
-taxonomies del banc de temps i de la biblioteca són diferents — una habilitat
-de «reparacions» i un objecte de «bricolatge» no s'aparellen mai encara que
-vagin plegats a la vida real. Caldria un pont entre les dues taxonomies.
+**El pont entre les dues taxonomies · fet (V44)**: `SUPPLY_DOMAINS` posa una capa
+d'àmbits per sobre de les dues llistes sense substituir-ne cap. Set fan de pont
+de debò; vuit tenen una sola banda perquè forçar-hi una equivalència seria
+mentir. La banda de coincidències separa **exacta** de **mateix àmbit**, diu
+quines dues coses creua, i amaga l'àmbit que no travessa res que l'exacta no
+digui ja. El filtre d'àmbit és un xip, no un text a la caixa de cerca —«Reparar i
+bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultats.
 
 ### Defectes trobats i encara oberts
+
+- ~~**Un objecte valia hores**~~ · **resolt (V55)**. V45 va afegir el tipus
+  d'apunt `objecte` amb el valor **en euros** (donacions i desgast per préstec),
+  però tres llocs seguien assumint «el que no és moneda són hores»: `measure()`
+  —que alimenta cada roll-up i cada panell de consolidació—, el total «Temps
+  aportat» de `renderLedger`, i la taula de projectes del dashboard. Cada préstec
+  d'una biblioteca inflava les hores del territori amb un import en €. Ara
+  `measure` retorna `objectes` com a calaix propi i cap dels tres el barreja.
+
+
+- **El selector d'idioma de la landing és inabastable a 1280 px** · **obert, i
+  fora de l'abast d'aquesta línia**. A `index.html` (arrel), el botó
+  `.lang-btn[data-lang="es"]` queda a **x=1342 en una finestra de 1280 px**: surt
+  del viewport per la dreta. Vol dir que **ningú pot canviar a castellà en un
+  portàtil normal**. Ho ha destapat `test-landing`, que fallava per timeout en
+  clicar-lo —no per l'i18n, com semblava. No s'ha tocat perquè la landing és
+  explícitament fora d'abast; queda anotat per a qui hi entri.
 
 - ~~`updateAtles` no era idempotent~~ · **resolt (V41)**. Eren dues coses: el
   `catch` buit s'empassava els paquets que fallaven i deia «ja estava al dia», i
@@ -435,6 +691,40 @@ vagin plegats a la vida real. Caldria un pont entre les dues taxonomies.
   que hi afegíem una targeta; ara comprova que cada perfil tingui la seva acció.
   Tenir tests vermells que no són defectes erosiona la confiança en tota la
   suite: o són verds o no hi són.
+- ~~`tier1IsSearchActionsPersona`~~ · **sí que era una regressió meva**, i la
+  única d'aquesta línia. La pastilla del vistiplau (V43) es va afegir com a quart
+  botó permanent de la barra, amagat amb `display:none`. La barra té **tres**
+  controls d'alta freqüència i prou. Ara la pastilla **no existeix al DOM** quan
+  no hi ha res esperant, i el test comprova les dues cares: tres per defecte,
+  quatre quan algú espera. Un botó invisible que ocupa lloc a l'estructura és un
+  botó que algun dia sortirà per accident.
+- ~~`everyRoleHasItsCard`~~ · **buit real de la V46**: `mentor` va entrar a
+  `SOS_ROLES` amb recorregut, lents i mòduls, però **la portada es va quedar
+  enrere** i el rol no hi tenia targeta. Afegir un rol i deixar-lo sense targeta
+  el fa invisible justament al lloc on la gent decideix què és. (El test antic
+  buscava la paraula «Comunitat» i s'havia trencat en renombrar l'etiqueta; ara
+  comprova que **cap rol es quedi sense targeta**, que és la invariant.)
+- ~~`ventureGraduates` a `test-matriu-main`~~ · el mateix test obsolet que ja es
+  va corregir a `test-matriu`, en un segon fitxer. Ara comprova les dues cares, i
+  de passada documenta una cosa que val la pena: amb **una sola persona
+  aportant-hi, l'equity és del 100% i la porta ho para**. Una iniciativa que
+  depèn d'algú sol no està preparada per sortir.
+- ~~`test-atles`, `test-atles-main`, `test-atles2`, `test-dir`~~ · **infraestructura
+  i recomptes fixos, no defectes**. Els quatre esperaven un servidor HTTP que
+  ningú arrencava (l'atles fa `fetch` i `file://` el bloqueja): ara se'l munten
+  ells amb `serve.mjs`. Tres fixaven «6 entitats» quan l'atles ja en té 17;
+  comproven la invariant —que en carrega alguna, que **tots els paquets
+  arriben** (`updateAtles.last.complete`, V41) i que la segona càrrega dona el
+  mateix— en comptes d'un número que canvia cada cop que l'atles creix. I
+  `test-dir` llegia el recompte **amb la càrrega a mig fer**, així que la
+  comparació d'després de recarregar fallava per una cursa del test.
+- ~~`test-formacio`~~ · **tampoc era un defecte, era un test obsolet**. Fixava
+  `.module === 8` i quatre recomptes de caixes a 8, i `formacio.html` ja té 16
+  mòduls; a més, els mòduls nous fan servir `.box.metode` on els primers feien
+  servir `.box.eines` —la mateixa caixa amb un altre nom, no una que falti. Ara
+  comprova les invariants de debò: els ids van de `m1` fins a l'últim **sense
+  forats**, i **cap mòdul es queda sense les seves quatre caixes**. Deixa de
+  posar-se vermell cada cop que la formació creix.
 
 ### Backlog crític restant (del codex V17)
 3. **Sign records via WebAuthn** (no només vinculació) — refactor de signRecord per acceptar signer alternatiu
