@@ -82,11 +82,16 @@ camí crític d'una eina que ha de funcionar sense xarxa.
    reparacions, hores formatives, objectes salvats). Tipus d'apunt propi
    (`objecte`, amb `estimate:true`) perquè un valor estimat no es coli on hi ha
    d'haver diner real. 54 assercions a `test-circular`.
-5. **Rols múltiples per context.** `roleOfPerson` retorna **un** rol i decideix
-   la lent de tot el SOS; una persona real és superheroina al seu barri i mentora
-   d'una MATRIU alhora. Va aquí i no més avall perquè **l'app de missions depèn
-   d'això**: sense rols per context, la llista de missions no pot saber què et
-   toca fer.
+5. **Rols múltiples per context** · **fet (V46)**. `rolesOfPersonIn(node,nom)` i
+   `rolesOfPerson(nom)` dedueixen els rols de l'evidència que ja hi havia
+   (`mentorsOf`, `govOf`, ledger, objectes, ofertes), cadascun amb el seu perquè
+   i els nodes on el fa. `primaryRole` substitueix el «primer que trobo
+   recorrent nodes», que depenia de l'ordre de creació. `mentor` entra a
+   `SOS_ROLES` amb recorregut propi i frase de lent a les dotze pantalles. La
+   lent es tria amb un selector visible (`setLensRole`) i el perfil mostra tots
+   els rols alhora. 44 assercions a `test-rols`.
+
+**P2 completat.** El següent és P3 · la cara pública.
 
 **P3 · Després — la cara pública, quan ja hi ha què publicar**
 
@@ -547,6 +552,13 @@ bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultat
   que hi afegíem una targeta; ara comprova que cada perfil tingui la seva acció.
   Tenir tests vermells que no són defectes erosiona la confiança en tota la
   suite: o són verds o no hi són.
+- ~~`test-formacio`~~ · **tampoc era un defecte, era un test obsolet**. Fixava
+  `.module === 8` i quatre recomptes de caixes a 8, i `formacio.html` ja té 16
+  mòduls; a més, els mòduls nous fan servir `.box.metode` on els primers feien
+  servir `.box.eines` —la mateixa caixa amb un altre nom, no una que falti. Ara
+  comprova les invariants de debò: els ids van de `m1` fins a l'últim **sense
+  forats**, i **cap mòdul es queda sense les seves quatre caixes**. Deixa de
+  posar-se vermell cada cop que la formació creix.
 
 ### Backlog crític restant (del codex V17)
 3. **Sign records via WebAuthn** (no només vinculació) — refactor de signRecord per acceptar signer alternatiu

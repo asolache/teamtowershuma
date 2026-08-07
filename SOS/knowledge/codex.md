@@ -688,6 +688,43 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 46 — Una persona no és un rol
+
+`roleOfPerson` retornava **un** rol, i amb aquell rol es decidia la lent de tot
+el SOS. Hi fallaven dues coses alhora, i la segona és pitjor que la primera.
+
+La primera és de model: la mateixa persona és **superheroina al seu barri i
+mentora d'una MATRIU de la comarca** a la vegada. La implicació no és un estat
+global —**depèn del node i del que hi fa**— i aplanar-la a un sol valor obliga a
+triar quina de les dues veritats s'esborra.
+
+La segona és pitjor perquè era invisible: quan la casella no deia res, el rol
+sortia del **primer node que es trobava recorrent la llista**. Dues persones
+idèntiques podien acabar amb lents diferents per l'ordre en què s'havien creat
+els nodes. Un resultat que depèn de l'ordre d'iteració no és un resultat, és un
+accident.
+
+Ara el rol es **dedueix de l'evidència que el sistema ja tenia**: qui acompanya
+ventures és mentora (`mentorsOf`), qui reclama o custodia un node és guardiana
+(`govOf`), qui aporta hores i objectes és superheroina. Cada rol porta **el seu
+perquè** —«acompanya 2 iniciatives», «3 aportacions · 1 objecte»— perquè un rol
+que no es pot explicar és una etiqueta.
+
+Tres coses que això obliga a decidir bé:
+
+- **Una casella per defecte no és una declaració.** `newMember` posa
+  `superheroi` a tothom, així que comptar-lo com a evidència seria dir que tot
+  el món ha declarat el mateix. Només compta la casella quan hi ha una **altra**
+  cosa; i «superheroi» es dedueix de l'activitat, que és més veritat.
+- **`mentor` no existia a `SOS_ROLES`** tot i que la MATRIU ja tenia mentors amb
+  àmbit i sessions al registre. Es podia ser mentora sense que el SOS ho digués.
+  Ara hi és, amb recorregut propi.
+- **La lent es tria, no s'endevina.** «Ara miro el SOS com a mentora» és una
+  decisió teva, amb un selector visible quan tens més d'un rol —i cap selector
+  quan en tens un de sol, que seria soroll. El selector **no** viu dins del bloc
+  que pinta la frase de la lent: un rol sense frase per a aquest context segueix
+  sent un rol teu, i amagar-li el botó el faria desaparèixer del SOS.
+
 ## Veda 45 — Donar una cosa i deixar-la no és el mateix
 
 Posar un objecte a la biblioteca no valia res al registre: es publicava i prou.
