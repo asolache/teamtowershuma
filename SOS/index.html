@@ -6235,6 +6235,127 @@ async function advanceStage(node,v){
   v.stage=g.next;v.stageAt=now();await persist(node);return v.stage;
 }
 // Readiness: 5 checks. Graduate quan tots verds (o overrideable per steward).
+/* ═══════════ F5 · Finançament i tràmits ═══════════
+   El mur real d'un projecte comunitari no és la idea: és **la paperassa i el
+   calendari de convocatòries**. Una subvenció es perd per no haver mirat una
+   data, no per no tenir raó.
+
+   Dues coses, i cap de les dues inventa números: el **pipeline** del que s'ha
+   demanat i en quin estat és, i la **llista de passos jurídics** del tipus de
+   projecte que ja porta cada `PROJECT_TYPE` a `juridic` i que fins ara no
+   servia per a res. */
+const FUNDING_STATES=[
+  {id:'preparant',label:'Preparant',ic:'✎',open:true},
+  {id:'presentada',label:'Presentada',ic:'📤',open:true},
+  {id:'concedida',label:'Concedida',ic:'✅',open:false},
+  {id:'denegada',label:'Denegada',ic:'✕',open:false},
+  {id:'justificant',label:'Justificant',ic:'📑',open:true},
+  {id:'tancada',label:'Tancada',ic:'🔒',open:false}
+];
+const fundingStateMeta=id=>FUNDING_STATES.find(s=>s.id===id)||FUNDING_STATES[0];
+const FUNDING_KINDS=[{id:'subvencio',label:'Subvenció'},{id:'prestec',label:'Préstec'},
+  {id:'premi',label:'Premi'},{id:'aportacio',label:'Aportació privada'}];
+const fundingOf=v=>v.funding||(v.funding=[]);
+function addFunding(v,{name,kind,amount,state,deadline,who,notes}={}){
+  const nm=(name||'').trim();if(!nm)throw{msg:'Posa-li nom a la convocatòria'};
+  const f={id:uid(),name:nm,kind:kind||'subvencio',amount:Number(amount)||0,
+    state:fundingStateMeta(state).id,deadline:deadline||null,who:(who||'').trim(),
+    notes:(notes||'').trim(),createdAt:now(),updatedAt:now()};
+  fundingOf(v).push(f);return f;
+}
+function setFundingState(v,id,state){
+  const f=fundingOf(v).find(x=>x.id===id);if(!f)return null;
+  f.state=fundingStateMeta(state).id;f.updatedAt=now();return f;
+}
+const removeFunding=(v,id)=>{const a=fundingOf(v);const i=a.findIndex(x=>x.id===id);if(i>=0)a.splice(i,1);return i>=0;};
+const daysTo=d=>d?Math.ceil((new Date(d)-new Date())/864e5):null;
+/* Diners demanats, diners concedits i diners que encara no són de ningú. Es
+   separen perquè comptar com a teu el que has demanat és la manera més ràpida
+   de fer un pressupost fals. */
+function fundingSummary(v){
+  const fs=fundingOf(v);
+  let demanat=0,concedit=0,obert=0,perJustificar=0;
+  fs.forEach(f=>{const a=Number(f.amount)||0;
+    if(f.state==='concedida'||f.state==='justificant'||f.state==='tancada')concedit+=a;else demanat+=a;
+    if(fundingStateMeta(f.state).open)obert++;
+    if(f.state==='justificant')perJustificar+=a;});
+  const venc=fs.filter(f=>f.deadline&&fundingStateMeta(f.state).open)
+    .map(f=>({f,dies:daysTo(f.deadline)})).filter(x=>x.dies!=null)
+    .sort((a,b)=>a.dies-b.dies);
+  return{total:fs.length,demanat,concedit,obert,perJustificar,
+    venciments:venc,proper:venc[0]||null,
+    urgents:venc.filter(x=>x.dies<=14)};
+}
+// Els venciments de tota la cartera, pitjor primer. El que es passa de data ja
+// no és una alerta, és una pèrdua: es diu així.
+function fundingAlerts(node){
+  const out=[];
+  venturesOf(node).forEach(v=>fundingSummary(v).urgents.forEach(x=>out.push({v,f:x.f,dies:x.dies})));
+  return out.sort((a,b)=>a.dies-b.dies);
+}
+/* Els passos reals de constituir cada forma jurídica. No és assessorament: és la
+   llista del que et demanaran, perquè ningú es trobi el mur el dia abans. */
+const LEGAL_STEPS={
+  'associació':['Acta fundacional signada per 3 persones o més','Estatuts aprovats a l\'assemblea constituent','Sol·licitud d\'inscripció al Registre d\'Entitats Jurídiques','NIF provisional a l\'Agència Tributària','Llibre d\'actes i de socis','Compte bancari a nom de l\'entitat'],
+  'fundació':['Escriptura pública de constitució davant notari','Dotació fundacional mínima acreditada','Estatuts i patronat designat','Inscripció al Registre de Fundacions','NIF i alta censal'],
+  'plataforma informal':['Acord escrit entre les persones participants','Qui signa i qui respon davant de tercers','Compte compartit o entitat amfitriona que faci de paraigua'],
+  'SCCL':['Assemblea constituent amb 3 sòcies mínim (treball associat: 2)','Certificat de denominació no coincident','Estatuts socials adaptats a la Llei 12/2015','Escriptura pública davant notari','Aportació al capital social mínim','Inscripció al Registre de Cooperatives','NIF definitiu i alta censal','Alta a la Seguretat Social del règim triat'],
+  'SCP':['Contracte de societat civil entre les parts','NIF de la societat','Alta censal i d\'IAE','Alta d\'autònoms de cada soci'],
+  'SL cooperativa':['Estatuts amb clàusules cooperatives','Escriptura pública i capital mínim','Inscripció al Registre Mercantil'],
+  'autònom':['Alta censal (model 036/037)','Alta al RETA dins dels 60 dies','Epígraf d\'IAE correcte','Comprovar la tarifa plana si escau','Obligacions trimestrals: IVA i IRPF'],
+  'autònom col·laborador':['Parentiu i convivència acreditats','Alta al RETA com a col·laborador','Sense obligacions trimestrals pròpies'],
+  'SL':['Certificat de denominació social','Compte bancari i desemborsament del capital','Escriptura pública davant notari','Inscripció al Registre Mercantil','NIF definitiu, alta censal i llibres'],
+  'SLU':['Igual que la SL, amb soci únic declarat a l\'escriptura'],
+  'SA':['Capital social mínim de 60.000 €, 25% desemborsat','Informe d\'expert per a aportacions no dineràries','Escriptura i inscripció al Registre Mercantil']
+};
+const legalDoneOf=v=>v.legalDone||(v.legalDone={});
+/* La llista del tipus triat, o de la forma concreta si ja s'ha decidit. Un
+   projecte que encara no sap què serà veu les opcions; un que ja ho sap veu
+   només la seva. */
+function legalChecklist(v){
+  const t=projectTypeMeta(v.projectType||'comunitari');
+  const forms=v.legalForm?[v.legalForm]:(t.juridic||[]);
+  const done=legalDoneOf(v);
+  return forms.map(f=>{
+    const steps=(LEGAL_STEPS[f]||[]).map((s,i)=>({id:f+'§'+i,label:s,done:!!done[f+'§'+i]}));
+    const d=steps.filter(s=>s.done).length;
+    return{form:f,steps,done:d,total:steps.length,pct:steps.length?Math.round(d*100/steps.length):0};
+  });
+}
+function toggleLegalStep(v,stepId){
+  const d=legalDoneOf(v);
+  if(d[stepId])delete d[stepId];else d[stepId]=now();
+  return !!d[stepId];
+}
+/* ═══════════ F6 · Formació lligada a l'etapa ═══════════
+   `formacio.html` té els seus mòduls i la MATRIU no els citava mai, tot i que el
+   seu propi text promet el bucle acció-formació. No cal res nou: només
+   connectar-ho (Zero Redundancy). Cada etapa té el mòdul que li toca. */
+const STAGE_MODULE={idea:'m3',prototip:'m4',validacio:'m6',graduacio:'m5'};
+const stageModule=stage=>moduleMeta(STAGE_MODULE[stage]||'m1');
+/* Qui de l'equip ha fet el mòdul de l'etapa. Es marca a mà —no hi ha examen ni
+   servidor que ho certifiqui— i per això la comprovació de graduació que en surt
+   és **opcional**: no es bloqueja ningú per una casella que ell mateix marca. */
+const trainingOf=v=>v.training||(v.training={});
+function markTraining(v,memberId,moduleId,on){
+  const t=trainingOf(v),k=memberId+'§'+moduleId;
+  if(on===false||(on===undefined&&t[k]))delete t[k];else t[k]=now();
+  return !!t[k];
+}
+function stageTraining(node,v){
+  const mod=stageModule(v.stage||'idea');
+  const t=trainingOf(v);
+  const team=[];
+  if(v.leadMemberId)team.push(v.leadMemberId);
+  mentorsOf(v).forEach(m=>{if(team.indexOf(m.memberId)<0)team.push(m.memberId);});
+  (v.ledger||[]).forEach(e=>{if(e.memberId&&team.indexOf(e.memberId)<0)team.push(e.memberId);});
+  const rows=team.map(id=>({memberId:id,name:(memberById(node,id)||{}).name||'—',
+    done:!!t[resolveMemberId(node,id)+'§'+mod.id]||!!t[id+'§'+mod.id]}));
+  const done=rows.filter(r=>r.done).length;
+  return{module:mod,rows,done,total:rows.length,
+    pct:rows.length?Math.round(done*100/rows.length):0,
+    leadDone:v.leadMemberId?!!(t[v.leadMemberId+'§'+mod.id]):false};
+}
 function ventureReadiness(node,v){
   const sps=sprintsOf(v),allItems=sps.reduce((a,s)=>a.concat(s.items||[]),[]);
   const doneItems=allItems.filter(x=>x.done).length,itemPct=allItems.length?doneItems/allItems.length:0;
@@ -6256,7 +6377,14 @@ function ventureReadiness(node,v){
       ok:ec.estat==='sostenible'||ec.estat==='assolible',hint:ec.why});
   }
   const okCount=checks.filter(c=>c.ok).length,score=Math.round(okCount/checks.length*100);
-  return{score,checks,graduateReady:checks.every(c=>c.ok)};
+  /* La formació de l'etapa és un **suggeriment**, no una porta: es marca a mà i
+     ningú no ha de quedar bloquejat per una casella que ell mateix omple. Surt
+     a la llista perquè es vegi, amb `soft:true` perquè no compti per graduar. */
+  const tr=stageTraining(node,v);
+  const soft=[{k:'formacio',soft:true,label:'L\'equip ha fet el mòdul de l\'etapa · '+tr.module.title,
+    ok:tr.total?tr.done===tr.total:false,
+    hint:tr.total?(tr.done+' de '+tr.total+' persones · '+tr.module.hours+' h, nivell '+tr.module.level):'Encara no hi ha equip a la venture'}];
+  return{score,checks,soft,graduateReady:checks.every(c=>c.ok),training:tr};
 }
 const norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const entityId=(level,territoryName,entityType,name)=>'e_'+[norm(level),norm(territoryName),norm(entityType),norm(name)].join('_');
@@ -9187,6 +9315,33 @@ const ALLOC_KINDS={talent:{ic:'👤',label:'Talent',unit:'persones'},hores:{ic:'
 /* Una font d'ingressos, en preu per unitat i unitats al mes. Demanar-ho així
    obliga a saber què és una «unitat» del projecte, que és la pregunta que
    normalment no s'ha fet ningú. */
+function openFundingForm(node,v,onDone){
+  const bg=modal(`
+    <h2>🏦 Convocatòria, préstec o premi</h2>
+    <p class="m-sub"><strong>${esc(v.name)}</strong> · el que compta és <strong>la data</strong>. Una subvenció es perd per no haver-la mirat, no per no tenir raó.</p>
+    <div class="field"><label>Nom de la convocatòria</label><input id="fdName" maxlength="80" placeholder="p.ex. Subvenció d'entitats · Ajuntament"></div>
+    <div class="field"><label>Tipus</label><div style="display:flex;gap:.3rem;flex-wrap:wrap">${FUNDING_KINDS.map((k,i)=>'<button type="button" class="btn btn-ghost btn-sm fd-k'+(i?'':' sel')+'" data-k="'+k.id+'">'+esc(k.label)+'</button>').join('')}</div></div>
+    <div class="field"><label>Import i termini</label><div class="wz-key"><input id="fdAmt" type="number" min="0" placeholder="Import €"><input id="fdDue" type="date"></div></div>
+    <div class="field"><label>Estat</label><select id="fdState">${FUNDING_STATES.map(s=>'<option value="'+s.id+'">'+s.ic+' '+s.label+'</option>').join('')}</select></div>
+    <div class="field"><label>Qui se n'ocupa i notes (opcional)</label><div class="wz-key"><input id="fdWho" maxlength="60" placeholder="Nom"><input id="fdNotes" maxlength="120" placeholder="Què cal preparar"></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="fdCancel">Cancel·la</button><button class="btn btn-primary" id="fdSave">⬢ Apunta-la</button></div>
+  `);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  let kind='subvencio';
+  bg.querySelectorAll('.fd-k').forEach(b=>b.onclick=()=>{kind=b.dataset.k;
+    bg.querySelectorAll('.fd-k').forEach(x=>x.classList.toggle('sel',x===b));});
+  bg.querySelector('#fdCancel').onclick=closeModal;
+  bg.querySelector('#fdName').focus();
+  bg.querySelector('#fdSave').onclick=async()=>{
+    try{
+      addFunding(v,{name:bg.querySelector('#fdName').value,kind,
+        amount:bg.querySelector('#fdAmt').value,deadline:bg.querySelector('#fdDue').value||null,
+        state:bg.querySelector('#fdState').value,who:bg.querySelector('#fdWho').value,
+        notes:bg.querySelector('#fdNotes').value});
+      await persist(node);closeModal();if(onDone)onDone();toast('Convocatòria apuntada');
+    }catch(e){toast((e&&e.msg)||'No s\'ha pogut');}
+  };
+}
 function openRevenueForm(node,v,onDone){
   const bg=modal(`
     <h2>💶 D'on entren diners</h2>
@@ -9341,6 +9496,12 @@ function openVentureDetail(node,v){
     <div class="ent-grp-lbl">💶 Viabilitat econòmica · si se sosté</div>
     <div id="vdEcon"></div>
     <div class="ent-badges" style="margin-top:.4rem"><button class="btn btn-ghost btn-sm" id="vdRev">+ Font d'ingressos</button><button class="btn btn-ghost btn-sm" id="vdCost">+ Cost</button></div>
+    <div class="ent-grp-lbl">🏦 Finançament i tràmits · el mur real</div>
+    <div id="vdFund"></div>
+    <button class="btn btn-ghost btn-sm" id="vdFundAdd" style="margin-top:.4rem">+ Convocatòria o préstec</button>
+    <div id="vdLegal" style="margin-top:.6rem"></div>
+    <div class="ent-grp-lbl">🎓 Formació de l'etapa</div>
+    <div id="vdTrain"></div>
     <div class="ent-grp-lbl">🎓 Acompanyament · qui la sosté</div>
     <div id="vdMentors"></div>
     <div id="vdSessions"></div>
@@ -9445,6 +9606,85 @@ function openVentureDetail(node,v){
   bg.querySelector('#vdRev').onclick=()=>openRevenueForm(node,v,paintEcon);
   bg.querySelector('#vdCost').onclick=()=>openCostForm(node,v,paintEcon);
   paintEcon();
+  /* Finançament: el que s'ha demanat, el que s'ha concedit, i sobretot **quan
+     venç**. Una convocatòria es perd per una data, no per manca de raó. */
+  const paintFund=()=>{
+    const box=bg.querySelector('#vdFund');if(!box||!box.isConnected)return;
+    const fs=fundingOf(v),su=fundingSummary(v);
+    box.innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n">'+su.demanat+' €</div><div class="l">demanat</div></div>'+
+      '<div class="bib-tile"><div class="n" style="color:var(--green)">'+su.concedit+' €</div><div class="l">concedit</div></div>'+
+      '<div class="bib-tile"><div class="n">'+su.obert+'</div><div class="l">en marxa</div></div></div>'+
+      (su.urgents.length?'<div class="ai-note" style="border-color:var(--red)"><span class="ic">⏰</span><span><strong>'+su.urgents.length+' venciment'+(su.urgents.length===1?'':'s')+' a menys de 15 dies</strong>: '+su.urgents.map(x=>esc(x.f.name)+' ('+(x.dies<0?'fa '+(-x.dies)+' dies que ha passat':'en '+x.dies+' dies')+')').join(' · ')+'</span></div>':'')+
+      (fs.length?'':'<div class="wz-key-note">Encara no hi ha cap convocatòria apuntada. El calendari de subvencions no espera.</div>');
+    fs.slice().sort((a2,b2)=>(a2.deadline||'~').localeCompare(b2.deadline||'~')).forEach(f=>{
+      const sm=fundingStateMeta(f.state),d=daysTo(f.deadline);
+      const c2=el('div','ent-card');c2.style.marginTop='.3rem';
+      if(sm.open&&d!=null&&d<=14)c2.style.borderLeft='3px solid var(--red)';
+      c2.innerHTML='<div class="ent-nm">'+sm.ic+' '+esc(f.name)+'</div><div class="ent-badges" style="margin-top:.2rem">'+
+        '<span class="ent-b">'+esc((FUNDING_KINDS.find(k=>k.id===f.kind)||{}).label||f.kind)+'</span>'+
+        (f.amount?'<span class="ent-b">'+f.amount+' €</span>':'')+
+        '<span class="ent-b'+(sm.open?'':' b-ver')+'">'+esc(sm.label)+'</span>'+
+        (f.deadline?'<span class="ent-b'+(d!=null&&d<=14?' b-unver':'')+'">'+(d!=null&&d<0?'ha passat fa '+(-d)+' d':'venç en '+d+' d')+'</span>':'')+
+        (f.who?'<span class="ent-b">'+esc(f.who)+'</span>':'')+'</div>'+
+        (f.notes?'<div class="ent-desc">'+esc(f.notes)+'</div>':'');
+      const row=el('div');row.style.cssText='display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.4rem';
+      const sel=el('select','coh-sel');
+      sel.innerHTML=FUNDING_STATES.map(st=>'<option value="'+st.id+'"'+(st.id===f.state?' selected':'')+'>'+st.ic+' '+st.label+'</option>').join('');
+      sel.onchange=async()=>{setFundingState(v,f.id,sel.value);await persist(node);paintFund();};
+      row.appendChild(sel);
+      const x=el('button','btn btn-ghost btn-sm','🗑');
+      x.onclick=async()=>{removeFunding(v,f.id);await persist(node);paintFund();};
+      row.appendChild(x);c2.appendChild(row);box.appendChild(c2);
+    });
+  };
+  bg.querySelector('#vdFundAdd').onclick=()=>openFundingForm(node,v,paintFund);
+  paintFund();
+  /* Els tràmits del tipus de projecte: la llista que et demanaran, perquè ningú
+     es trobi el mur el dia abans. No és assessorament jurídic i no ho pretén. */
+  const paintLegal=()=>{
+    const box=bg.querySelector('#vdLegal');if(!box||!box.isConnected)return;
+    const lists=legalChecklist(v);
+    box.innerHTML='<div class="ent-grp-lbl">📋 Tràmits · '+esc(projectTypeMeta(v.projectType||'comunitari').name)+'</div>'+
+      (lists.length>1?'<div class="wz-key-note">Encara no s\'ha decidit la forma jurídica: hi ha les opcions del tipus.</div>':'');
+    lists.forEach(l=>{
+      const c2=el('div','ent-card');c2.style.marginTop='.3rem';
+      c2.innerHTML='<div class="ent-nm">'+esc(l.form)+' · '+l.done+'/'+l.total+'</div>'+
+        '<div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin:.35rem 0;overflow:hidden"><div style="height:100%;width:'+l.pct+'%;background:var(--green)"></div></div>';
+      l.steps.forEach(st=>{
+        const r=el('div','cg-st'+(st.done?' done':''));r.style.cursor='pointer';
+        r.innerHTML='<span class="cg-ck">'+(st.done?'✓':'○')+'</span><span>'+esc(st.label)+'</span>';
+        r.onclick=async()=>{toggleLegalStep(v,st.id);await persist(node);paintLegal();};
+        c2.appendChild(r);
+      });
+      box.appendChild(c2);
+    });
+  };
+  paintLegal();
+  /* Formació: el mòdul que toca a aquesta etapa, i qui de l'equip l'ha fet. Es
+     marca a mà, i per això no bloqueja la graduació —només es veu. */
+  const paintTrain=()=>{
+    const box=bg.querySelector('#vdTrain');if(!box||!box.isConnected)return;
+    const tr=stageTraining(node,v);
+    box.innerHTML='<div class="ent-card"><div class="ent-nm">'+esc(tr.module.title)+'</div>'+
+      '<div class="ent-badges" style="margin-top:.2rem"><span class="ent-b">'+esc(tr.module.level)+'</span>'+
+      '<span class="ent-b">'+tr.module.hours+' h</span>'+
+      '<span class="ent-b">etapa '+esc(STAGE_LABELS[v.stage||'idea']||v.stage)+'</span>'+
+      '<span class="ent-b'+(tr.total&&tr.done===tr.total?' b-ver':'')+'">'+tr.done+'/'+tr.total+' de l\'equip</span></div>'+
+      '<div class="ent-desc" style="margin-top:.3rem">Es marca a mà i <strong>no bloqueja la graduació</strong>: ningú ha de quedar aturat per una casella que ell mateix omple.</div></div>';
+    const wrap=el('div');wrap.style.marginTop='.3rem';
+    tr.rows.forEach(r=>{
+      const b2=el('button','btn btn-ghost btn-sm'+(r.done?' sel':''),(r.done?'✓ ':'○ ')+r.name);
+      b2.style.margin='.15rem .15rem 0 0';
+      b2.onclick=async()=>{markTraining(v,r.memberId,tr.module.id);await persist(node);paintTrain();};
+      wrap.appendChild(b2);
+    });
+    if(!tr.rows.length)wrap.innerHTML='<div class="wz-key-note">Encara no hi ha ningú a la venture: assigna un lead o registra una aportació.</div>';
+    box.appendChild(wrap);
+    const link=el('button','btn btn-ghost btn-sm','🎓 Obre la guia formativa');link.style.marginTop='.4rem';
+    link.onclick=()=>window.open('formacio.html#'+tr.module.id,'_blank','noopener');
+    box.appendChild(link);
+  };
+  paintTrain();
   /* Acompanyament: mentors amb àmbit, i les actes de les sessions. */
   const paintMentors=()=>{
     const box=bg.querySelector('#vdMentors');if(!box||!box.isConnected)return;
@@ -9698,6 +9938,12 @@ function dashboardAttention(){
     const pend=proposalsOf(nd).filter(p=>p.status==='pending');
     if(pend.length)out.push({sev:1,ic:'🗳',t:pend.length+' proposta'+(pend.length===1?'':'es')+' pendent'+(pend.length===1?'':'s'),
       d:nd.name+' · esperen vot per arribar a quòrum',act:()=>openAssemblyModal(nd)});
+    /* Un termini de subvenció que passa no es recupera. Va amb la severitat més
+       alta perquè és l'única cosa d'aquesta llista que caduca sola. */
+    fundingSummary&&fundingAlerts(nd).forEach(x=>out.push({sev:0,ic:'⏰',
+      t:x.f.name+(x.dies<0?' · ha passat fa '+(-x.dies)+' dies':' · venç en '+x.dies+' dies'),
+      d:nd.name+' · '+x.v.name+(x.f.amount?' · '+x.f.amount+' €':'')+(x.dies<0?'. Un termini passat no es recupera.':''),
+      act:()=>openVentureDetail(nd,x.v)}));
     // Préstecs vençuts
     const late=objectsOf(nd).map(dueStatus).filter(s=>s&&/vençut/.test(s.t));
     if(late.length)out.push({sev:0,ic:'📚',t:late.length+' préstec'+(late.length===1?'':'s')+' vençut'+(late.length===1?'':'s'),
@@ -12047,7 +12293,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

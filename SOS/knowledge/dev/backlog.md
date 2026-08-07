@@ -155,9 +155,22 @@ camí crític d'una eina que ha de funcionar sense xarxa.
    el zero-servidor. *(Va aparèixer un tercer desbordament a 360 px: amb la
    sessió activa la barra tornava a sortir. El text de l'estat de sync s'amaga
    de la vista però no dels lectors de pantalla.)*
-10. **MATRIU F5–F8** (finançament i tràmits · formació per etapa · seguiment
-    post-graduació · evidències). F1–F4 ja fan que sigui un servei; aquestes la
-    completen.
+10. **MATRIU F5–F8**. F1–F4 ja fan que sigui un servei; aquestes la completen.
+    - **F5 finançament i tràmits** · **fet (V52)**. Pipeline (`fundingOf`,
+      `addFunding`, `fundingSummary`) que separa **demanat de concedit** —el que
+      has demanat no és teu— i `fundingAlerts` que puja els venciments al tauler
+      amb **severitat màxima**: és l'única cosa que caduca sola, i un termini
+      passat es diu «ha passat fa N dies», no «pendent». Checklist jurídica
+      (`LEGAL_STEPS`, `legalChecklist`) sobre el `juridic` que cada
+      `PROJECT_TYPE` ja portava i que no servia per a res.
+    - **F6 formació lligada a l'etapa** · **fet (V52)**. `STAGE_MODULE` connecta
+      cada etapa amb el seu mòdul (idea→M3, prototip→M4, validació→M6,
+      graduació→M5) i `stageTraining` diu qui de l'equip real l'ha fet. Surt a
+      les comprovacions marcat com a **`soft`: no bloqueja graduar**, perquè es
+      marca a mà i no es pot aturar ningú per una casella que ell mateix omple.
+    - 46 assercions a `test-matriu-f56`.
+    - **Pendents: F7** (seguiment post-graduació: revisions a 3/6/12 mesos i
+      taxa de supervivència) **i F8** (evidències adjuntes als items, amb hash).
 11. **Rendiment amb 500 nodes i 5.000 apunts** + **accessibilitat** ·
     **fet (V50)**. No s'ofega: render 33 ms (el segon, 5 ms), i cap funció que
     recorri tot el SOS passa de 25 ms —`ledgerIndex` 11, `supplyIndex` 4,

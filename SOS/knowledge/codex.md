@@ -688,6 +688,31 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 52 — El mur no és la idea, és la data
+
+El que atura un projecte comunitari no acostuma a ser que l'idea no valgui: és
+la paperassa i el calendari de convocatòries. **Una subvenció es perd per no
+haver mirat una data**, no per no tenir raó. Per això el pipeline de
+finançament té una severitat que no té res més al tauler: és **l'única cosa que
+caduca sola**. Un termini passat no és una alerta, és una pèrdua, i es diu així
+—«ha passat fa 3 dies»— en comptes de continuar dient «pendent».
+
+I una separació que sembla comptable i és ètica: **el que has demanat no és
+teu**. Demanat i concedit són dues columnes diferents, i una convocatòria
+denegada es queda a la banda del demanat. Sumar-ho tot és la manera més ràpida
+de fer un pressupost fals i prendre decisions sobre diners que no existeixen.
+
+Els **tràmits** eren Zero Redundancy pur: cada `PROJECT_TYPE` ja portava la seva
+llista `juridic` i no servia per a res. Ara cada forma té els seus passos reals.
+Qui encara no ha decidit què serà veu les opcions; qui ja ho sap, només la seva.
+
+I la decisió que costa més de prendre bé, a la **formació lligada a l'etapa**:
+el mòdul que toca a cada etapa surt a la llista de comprovacions **però marcat
+com a `soft`, i no bloqueja graduar**. Es marca a mà, sense examen ni servidor
+que ho certifiqui —i **no es pot aturar ningú per una casella que ell mateix
+omple**. Una porta que qualsevol pot obrir sol no és una porta; posar-la seria
+donar-li l'aparença d'un requisit a una cosa que és un suggeriment.
+
 ## Veda 51 — L'app de gestió ensenya estructura; la de la gent ensenya el següent pas
 
 El SOS que hem construït fins ara és l'app d'**administració**: mostra qui, on,
