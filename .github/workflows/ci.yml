@@ -24,6 +24,12 @@ jobs:
       - name: Sintaxi dels HTML autocontinguts
         run: node SOS/tools/check-syntax.js SOS/*.html
 
+      # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
+      # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
+      # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.
+      - name: Guarda de KISS (pes, guies, superfícies)
+        run: node SOS/tools/check-kiss.js
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests

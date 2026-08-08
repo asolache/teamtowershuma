@@ -688,6 +688,37 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 62 — Una eina que només creix acaba sent inservible
+
+El SOS ha crescut **sempre per addició** i no s'hi ha tret mai res. Cada tanda hi
+posava una portada, una pestanya o una entrada de menú, i com que ningú ho
+mesurava, ningú ho veia. Tres coses que es van trobar en mirar-ho de debò:
+
+- **El mapa de Catalunya no tenia cap sortida.** S'hi entrava i s'hi quedava
+  atrapat qui no sabés que el logo també hi porta.
+- **Tres portades es fabricaven el mateix botó de tornada** per separat. No és
+  que cinc portades competeixin: és que no hi havia **una** manera de tornar.
+- **La pestanya de conversa es va afegir sense guia contextual**, incomplint la
+  veda que diu que un context sense guia és un context que s'ha d'endevinar. Es
+  va incomplir la mateixa tanda que es va escriure.
+
+D'aquí surten dues regles:
+
+**Una sola manera de tornar.** Una funció, un text, un comportament
+(`homeBackBtn`). Quan cada pantalla s'inventa la seva sortida, la navegació es
+parteix i qui es perd no sap per què.
+
+**Sostres declarats, no límits tècnics.** `SOS/tools/check-kiss.js` corre a cada
+PR i mesura el pes gzip, que cap pestanya es quedi sense guia, que el hook de
+test no tingui duplicats, i quantes portades, rutes i entrades de menú hi ha.
+**No prohibeix créixer**: obliga que créixer sigui una decisió que algú pren i
+escriu al commit. Aquesta fricció és tota la seva utilitat.
+
+Va a `tools/` i no als tests de Playwright per un motiu que val la pena saber:
+**els tests de Playwright no corren al CI**. El `npm test` del workflow no fa res
+perquè no hi ha `package.json`, i per això el CI sortia verd comprovant només
+sintaxi. Una guarda que ha de mossegar ha d'anar on de debò s'executa.
+
 ## Veda 61 — No es diu «verificat» del que no s'ha verificat
 
 El SOS signa amb `did:sos` i ancorava amb la clau Nostr de l'extensió del

@@ -38,6 +38,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-rele.mjs` | V58 | El relé contra un servidor que parla el protocol: dos navegadors es veuen i es parlen |
 | `test-identitat.mjs` | V59 | El `did` mana sobre el nom: ni fusiona homònims ni parteix ningú |
 | `test-permaweb.mjs` | V60 · V61 | Oferta comuna amb sedàs d'entrada, i pont de claus que diu què no verifica |
+| `test-kiss.mjs` | V62 | Que de cap portada es quedi ningú atrapat, i cap pestanya sense guia |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
 heartbeat, presència i broadcast). Sense ell, del relé només es podria comprovar
@@ -46,6 +47,19 @@ que l'URL es construeix bé —i això no prova res.
 `serve.mjs` és un servidor estàtic mínim per als tests que necessiten `http://`
 (l'atles fa `fetch`, i `file://` el bloqueja). Els que el necessiten se
 l'engeguen ells.
+
+## La guarda de KISS
+
+`SOS/tools/check-kiss.js` no és un test de Playwright: corre al CI a cada PR, en
+menys d'un segon i sense dependències. Mesura pes, guies, duplicats i
+superfícies contra **sostres declarats**.
+
+```bash
+node SOS/tools/check-kiss.js
+```
+
+Per pujar un sostre: canvia el número al fitxer i explica per què al commit.
+Aquesta fricció és tot el que fa, i és tota la seva utilitat.
 
 ## Què no hi és
 
