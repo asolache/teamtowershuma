@@ -688,6 +688,37 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 66 — Simplificar és decidir per on comences, no esborrar el que hi ha
+
+Tothom veia el mateix: fins a 13 pestanyes al node, 32 accions al llançador, 17
+rutes. Una persona que ve a apuntar tres hores al mes n'ha de fer servir sis, i
+les ha de trobar entre totes les altres. La informació hi era; el que no hi
+havia era **una manera de saber quina et toca a tu**.
+
+I les peces per saber-ho ja hi eren, sense connectar: `ROLE_JOURNEYS` sap què fa
+cada rol, `activeRoleId` sap quin ets ara, i cada guia contextual porta la seva
+`lens`. El que faltava era que allò **decidís**, i no només ressaltés.
+
+La temptació era treure funcions. Seria un error i ja el vam evitar a la veda
+63: cadascuna serveix a algú, i esborrar-ne és decidir per aquell algú. El que
+sí que es pot decidir és **per on comences**.
+
+Tres regles, perquè simplificar no acabi sent amagar:
+
+- **El que té contingut no s'amaga mai.** Si hi ha apunts, socis o objectes a
+  dins, la pestanya hi és encara que el teu rol no la necessiti. Amagar feina
+  que algú ja ha fet no és simplificar: és fer-la desaparèixer. El comptador que
+  ja es pintava a cada pestanya és exactament el senyal que calia, i no va caldre
+  calcular res de nou.
+- **La pestanya on ets no desapareix sota els peus.**
+- **El que s'amaga es diu i es desamaga des del mateix lloc.** «▸ 3 més», al
+  costat de les altres. Una pestanya que marxa en silenci és una decisió que
+  l'app t'ha pres a l'esquena, i qui se n'adona deixa de refiar-se de la resta
+  de la pantalla.
+
+I una salvaguarda que val per a tot filtre: **si el filtre deixaria la llista
+buida, no es filtra**. Val més ensenyar-ho tot que ensenyar el no-res.
+
 ## Veda 65 — Un canal que exigeix simultaneïtat és un canal que no s'usa
 
 El relé dona presència en viu, i per això demana que **dues persones hi siguin

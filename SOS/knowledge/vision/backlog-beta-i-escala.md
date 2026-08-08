@@ -222,7 +222,7 @@ El cost és una estimació relativa, no un compromís de calendari.
 |---|---|---|---|---|---|
 | ~~P0~~ | ~~**E1** · triple entrada + cadena per autor~~ | **✅ fet a V64** | — | — | — |
 | ~~P0~~ | ~~**E11** · GitHub com a canal asíncron per tema~~ | **✅ fet a V65** | — | — | — |
-| **P0** | **E12** · la UX la mana el full de ruta del rol | A i B | — | mitjà | 32 accions i 13 pestanyes per a tothom, i cadascú n'ha de fer servir sis |
+| ~~P0~~ | ~~**E12** · la UX la mana el full de ruta del rol~~ | **✅ fet a V66** | — | — | — |
 | **P0** | **E2** · la fusió deixa rastre | A i B | — | baix | El toast diu «N canvis» i N no compta el que s'ha perdut |
 | **P0** | **E7** · camí per dir «això s'ha trencat» | A i B | — | baix | Amb desconeguts no reps queixes: reps abandonaments |
 | **P0** | **E8** · la còpia no depèn d'una persona | A i B | — | mitjà · les peces hi són | Qui perd el telèfon s'endú el node |
@@ -298,8 +298,7 @@ servir, més difícil és perdre'l.
 *El relé no desapareix: segueix sent el que dona la presència en viu. El que
 canvia és que deixa de ser l'únic camí perquè les dades es trobin.*
 
-**E12 · La UX la mana el full de ruta del rol** — *repara l'accés, i és la
-simplificació més gran que queda*
+### ✅ E12 · La UX la mana el full de ruta del rol — *fet a V66*
 Avui tothom veu el mateix: 13 pestanyes, 32 accions al llançador, 17 rutes. Una
 persona que només ve a apuntar tres hores al mes n'ha de fer servir sis, i les
 ha de trobar entre totes les altres.
