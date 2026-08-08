@@ -688,6 +688,45 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 65 — Un canal que exigeix simultaneïtat és un canal que no s'usa
+
+El relé dona presència en viu, i per això demana que **dues persones hi siguin
+alhora**. En un poble això no passa gairebé mai: la gent obre l'app el diumenge
+al vespre, i no totes el mateix diumenge. Fèiem descansar la convergència de la
+xarxa sobre una coincidència que no es produeix.
+
+El repositori ja feia de bus asíncron dues vegades —l'atles i `supply/`— i ningú
+ho havia llegit com el que és: **durable, versionat, amb historial, auditable i
+gratis**. Cadascú hi deixa el seu quan pot; qui arriba després se'l troba.
+
+Això **només és possible gràcies a la veda 64**. Amb apunts idempotents que
+s'uneixen sense conflicte, un directori al qual tothom afegeix convergeix sol.
+Amb la cadena única hauria calgut decidir qui va primer —i tornaríem a necessitar
+algú que ho digués. L'ordre de les dues vedes no és casual: la primera és el que
+fa possible la segona.
+
+I és la peça antifràgil per excel·lència: cada clon, cada fork i cada CDN que el
+serveix és **una còpia més del registre**.
+
+Tres regles que eviten que això sigui una porta oberta:
+
+- **El transport no dona veritat.** En llegir es verifica el sobre **i cada
+  apunt per separat**. Un sobre impecable no fa bons els apunts que porta a
+  dins, i el que no porta firma vàlida es descarta encara que vingui del
+  repositori oficial. És la mateixa regla de la veda 60, pel mateix motiu.
+- **Qui no té la clau no llegeix res.** El contingut va xifrat amb la clau del
+  node. I a fora del sobre **no hi queda ni el nom del node**: només el tema i
+  l'id, que és l'únic que cal per encaminar el fitxer. Deixar-hi el nom seria
+  dir a qualsevol que passi que en aquell poble hi ha un banc de temps i com es
+  diu — i això ja és informació sobre gent.
+- **Publicar dues vegades no fa mal.** La unió és idempotent, i per això es pot
+  reintentar sense pensar-hi. Un canal que castiga el reintent és un canal que
+  la gent deixa a mitges.
+
+I una que és de tracte: **un paquet que no es pot obrir no és un error**. És
+d'un altre node i és el més normal del món. Es compta a part i es diu «xifrat
+amb una clau que no és la teva», no «ha fallat».
+
 ## Veda 64 — Un ordre global vol dir un amo; la triple entrada no en necessita
 
 El ledger tenia **una sola cadena per node**: cada apunt encadenat amb

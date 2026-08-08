@@ -1,8 +1,11 @@
 # Backlog cap a la beta — i el mapa de valor dels següents passos
 
-> Estat de partida mesurat el 2026-08-08 sobre `SOS/index.html` (14.430 línies,
-> 360 KB gzip, 19 suites de test verdes, V63). Tot el que aquí es diu que falla
-> s'ha comprovat executant l'app, no llegint-la.
+> Estat de partida mesurat el 2026-08-08 sobre `SOS/index.html` (V63, 360 KB
+> gzip, 19 suites verdes). Tot el que aquí es diu que falla s'ha comprovat
+> executant l'app, no llegint-la.
+>
+> **§0 descriu el forat tal com era.** Es deixa escrit perquè és el que explica
+> l'ordre de tot el que ve després — no perquè segueixi obert: **V64 el tanca**.
 
 ---
 
@@ -44,11 +47,18 @@ per comprovar quanta feina de la gent es perd.
 
 ---
 
-> **Actualització V64 (2026-08-08).** E1 està **fet**. La sortida no va ser
-> «una cadena o l'altra» sinó **triple entrada**: el que dona, el que rep i el
-> **rebut** que tots dos guarden signat. La cadena única segueix existint —és la
-> dels rebuts— i cada autor encadena el seu. `SOS/tests/probes/sonda-fusio.mjs`
-> és ara `SOS/tests/test-fusio.mjs`, amb les assercions girades.
+> **Actualització (2026-08-08) · V64 i V65 fets.**
+>
+> **V64 — E1.** La sortida no va ser «una cadena o l'altra» sinó **triple
+> entrada**: el que dona, el que rep i el **rebut** que tots dos guarden signat.
+> La cadena única segueix existint —és la dels rebuts— i cada autor encadena el
+> seu. `probes/sonda-fusio.mjs` és ara `test-fusio.mjs`, amb les assercions
+> girades.
+>
+> **V65 — E11.** El repositori passa a ser un **canal asíncron per tema**:
+> paquets xifrats amb la clau del node, signats, verificats apunt per apunt en
+> arribar. Només possible gràcies a V64 —els apunts són idempotents i s'uneixen
+> sense conflicte, així que un directori al qual tothom afegeix convergeix sol.
 
 ---
 
@@ -98,7 +108,7 @@ instrumentació nova:
 
 | Objectiu | Com es mesura | Avui |
 |---|---|---|
-| Cap apunt perdut en sincronitzar | la sonda de fusió, com a test de regressió | **es perden** |
+| Cap apunt perdut en sincronitzar | `test-fusio.mjs`, 14 assercions | ✅ **assolit a V64** |
 | 3 nodes als 90 dies amb activitat setmanal | `activityFeed` · `ventureSilence` | 0 |
 | 5 comarques amb cobertura > 0 | `countryCoverage(rootId)` | 0 |
 | Fons amb valor verificat > 0 | `networkFund().verificat` | tot estimat |
@@ -140,13 +150,13 @@ precisament per això que hi ha fluxos trencats.
 |---|---|---|---|
 | R1 ↔ R1 | T | hores de servei, préstec d'objectes | ✅ |
 | R1 ↔ R1 | I | reciprocitat, confiança de veïnatge | ✅ |
-| R1 → R2 | T | apunts al ledger | **⊘ es perden en sincronitzar** |
-| R2 → R1 | T | saldo, historial signat | **⊘ no fiable mentre E1** |
+| R1 → R2 | T | apunts al ledger | ✅ **reparat a V64** (unió, no LWW) |
+| R2 → R1 | T | saldo, historial signat | ✅ **reparat a V64** |
 | R2 → R1 | I | reconeixement, sentit de pertinença | ✅ (rànquing, missions) |
 | R3 → R2 | T | confirmacions signades | ✅ (V43) |
 | R3 → R1 | I | que el que apuntes val alguna cosa | ✅ |
-| R2 ↔ R7 | T | fusió de dades entre nodes | **⊘ un company alhora, cara a cara** |
-| R2 ↔ R7 | I | coincidències, federació temàtica | ⚠️ depèn del flux anterior |
+| R2 ↔ R7 | T | fusió de dades entre nodes | ✅ **reparat a V65** (canal asíncron) |
+| R2 ↔ R7 | I | coincidències, federació temàtica | ✅ ja no depèn de coincidir en el temps |
 | R4 → R2 | T | espai, contactes | ✅ fora de l'app |
 | R2 → R4 | T | activitat del seu territori | ✅ (`measure`, `consolidate`) |
 | R4 → R2 | I | legitimitat davant del veïnat | ✅ |
@@ -211,7 +221,7 @@ El cost és una estimació relativa, no un compromís de calendari.
 | | Què | Per a quina beta | Depèn de | Cost | Si s'ajorna |
 |---|---|---|---|---|---|
 | ~~P0~~ | ~~**E1** · triple entrada + cadena per autor~~ | **✅ fet a V64** | — | — | — |
-| **P0** | **E11** · GitHub com a canal asíncron per tema | A i B | E1 | mitjà | La xarxa només convergeix si la gent coincideix en el temps |
+| ~~P0~~ | ~~**E11** · GitHub com a canal asíncron per tema~~ | **✅ fet a V65** | — | — | — |
 | **P0** | **E12** · la UX la mana el full de ruta del rol | A i B | — | mitjà | 32 accions i 13 pestanyes per a tothom, i cadascú n'ha de fer servir sis |
 | **P0** | **E2** · la fusió deixa rastre | A i B | — | baix | El toast diu «N canvis» i N no compta el que s'ha perdut |
 | **P0** | **E7** · camí per dir «això s'ha trencat» | A i B | — | baix | Amb desconeguts no reps queixes: reps abandonaments |
@@ -266,8 +276,7 @@ Els ledgers escrits abans de V64 es validen com a globals i segueixen valent.
 
 ### P0 · Sense això no s'obre
 
-**E11 · GitHub com a canal asíncron per tema** — *repara R2↔R7 sense exigir
-coincidència en el temps*
+### ✅ E11 · El canal asíncron — *fet a V65*
 El relé demana que **dues persones hi siguin alhora**. En un poble això no passa
 gairebé mai: la gent obre l'app el diumenge al vespre, no totes el mateix
 diumenge. Un canal que exigeix simultaneïtat és un canal que no s'usarà.
