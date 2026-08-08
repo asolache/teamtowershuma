@@ -38,7 +38,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-rele.mjs` | V58 | El relé contra un servidor que parla el protocol: dos navegadors es veuen i es parlen |
 | `test-identitat.mjs` | V59 | El `did` mana sobre el nom: ni fusiona homònims ni parteix ningú |
 | `test-permaweb.mjs` | V60 · V61 | Oferta comuna amb sedàs d'entrada, i pont de claus que diu què no verifica |
-| `test-kiss.mjs` | V62 | Que de cap portada es quedi ningú atrapat, i cap pestanya sense guia |
+| `test-kiss.mjs` | V62 · V63 | Que de cap portada es quedi ningú atrapat, cap pestanya sense guia, el llançador agrupat i la feina que no és de ningú |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
 heartbeat, presència i broadcast). Sense ell, del relé només es podria comprovar

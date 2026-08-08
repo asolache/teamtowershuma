@@ -688,6 +688,47 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 63 — Una llista plana llarga és un calaix, i el que no és de ningú no es fa
+
+Dues coses que la guarda de KISS va treure a la llum en comptar de debò.
+
+**El llançador tenia 32 accions en una sola columna.** Ningú les havia comptat
+mai —cada tanda n'hi posava una, i com que la llista no protesta, la llista
+creixia. Trenta-dues entrades sense cap ordre no són un menú: són un calaix on
+es busca amb la vista una per una, i on la trenta-dosena no la troba ningú
+perquè ja s'ha desistit a la desena.
+
+La sortida **no era treure'n**. Cadascuna serveix a algú i esborrar-ne seria
+decidir per aquell algú. El que faltava era **contestar la pregunta que es fa
+qui obre el llançador**, que no és «quines accions hi ha» sinó «què hi puc fer
+*ara*». Set grups (jo · comunitat · govern · xarxa · proves · relat · sistema)
+i un filtre per a qui ja sap què busca. La mateixa llista, i es troba.
+
+Dues regles que la guarda comprova i no es poden saltar:
+
+- **Cap acció sense grup.** Una entrada sense `g:` cau fora de tots els blocs i
+  torna a ser el que era: una línia solta enmig d'una llista. La guarda falla si
+  n'hi ha cap, perquè afegir-ne una sense pensar on va és exactament el descuit
+  que ens va portar a 32.
+- **Un filtre que no troba res ho ha de dir.** Un cos buit sembla una app
+  trencada. Diu «cap acció», i qui filtra sap que ha filtrat massa.
+
+**I la feina que no és de ningú.** Les missions només sabien mirar què t'espera
+**a tu**: el que tens pendent, el que has de confirmar, el teu camí. Tot el que
+el SOS ja diagnosticava sobre la **xarxa** —regions sense cap dinàmica, mapes de
+valor amb reciprocitat sota el 50 %, rols aïllats— es calculava, es dibuixava en
+un panell, i **no li tocava a ningú**. Un forat que és de tothom no és de ningú,
+i per tant no es tapa mai.
+
+Ara són missions de veritat (`MISSION_KINDS.xarxa`), amb dues condicions:
+
+- **Cada missió ha de portar a un lloc concret.** «Falta cobertura» és una
+  estadística; «Girona no té cap dinàmica viva, obre-n'hi una» és una missió.
+  Sense `act`, una missió és un retret.
+- **Van al final de la llista.** El que t'espera a tu passa davant del que
+  espera la xarxa —altrament la llista de qui té tres confirmacions pendents
+  s'omple de deures col·lectius i deixa de servir per al que servia.
+
 ## Veda 62 — Una eina que només creix acaba sent inservible
 
 El SOS ha crescut **sempre per addició** i no s'hi ha tret mai res. Cada tanda hi

@@ -24,6 +24,8 @@ const MAX_GZIP_KB = 400;   // el que es descarrega d'un cop, amb dades mòbils d
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;
+const MAX_LAUNCHER = 36;   // la superfície més gran de totes, i la que ningú mirava
+const MIN_LAUNCHER_GROUPS = 5;  // sense grups, una llista llarga és un directori
 
 let fails = 0, warns = 0;
 const ok = m => console.log('  ✓ ' + m);
@@ -75,7 +77,21 @@ const menu = (src.match(/class="tb-mi"/g) || []).length;
 if (menu <= MAX_MENU_ITEMS) ok(`${menu} entrades al menú (sostre ${MAX_MENU_ITEMS})`);
 else bad(`${menu} entrades al menú, sostre ${MAX_MENU_ITEMS}`);
 
-// ── 5 · Informatiu: el que creix i encara no té sostre ───────────────────
+/* El llançador havia arribat a 32 accions en una llista plana i ningú ho havia
+   comptat mai. És la superfície on més fàcil és afegir sense pensar-hi. */
+const launcher = (src.match(/^function openLauncher\(\)\{[\s\S]*?\n  \];/m) || [''])[0];
+const nLaunch = (launcher.match(/\{g:'[a-z]+',ic:/g) || []).length;
+const nUngrouped = (launcher.match(/\{ic:'/g) || []).length;
+if (nLaunch && nLaunch <= MAX_LAUNCHER) ok(`${nLaunch} accions al llançador (sostre ${MAX_LAUNCHER})`);
+else if (nLaunch) bad(`${nLaunch} accions al llançador, sostre ${MAX_LAUNCHER}`);
+else bad('no s\'han pogut comptar les accions del llançador');
+if (!nUngrouped) ok('totes tenen grup');
+else bad(`${nUngrouped} accions del llançador sense grup: en una llista llarga, sense grups no es troba res`);
+const groups = new Set([...launcher.matchAll(/\{g:'([a-z]+)'/g)].map(m => m[1]));
+if (groups.size >= MIN_LAUNCHER_GROUPS) ok(`${groups.size} grups al llançador`);
+else bad(`només ${groups.size} grups per a ${nLaunch} accions (mínim ${MIN_LAUNCHER_GROUPS})`);
+
+// ── 6 · Informatiu: el que creix i encara no té sostre ───────────────────
 const modals = (src.match(/^(async )?function open[A-Z]/gm) || []).length;
 const lines = src.split('\n').length;
 console.log(`  · ${lines.toLocaleString('ca')} línies · ${modals} modals · sense sostre declarat, de moment`);

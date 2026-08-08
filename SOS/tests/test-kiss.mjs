@@ -94,6 +94,62 @@ const hook = await page.evaluate(() => {
 });
 ok(hook.n === hook.unique, hook.n + ' exports, cap repetit');
 
+console.log('\n6 · El llançador s\'ha de poder recórrer amb la vista');
+await page.evaluate(() => window.__SOS.openLauncher());
+await page.waitForSelector('.modal #lchBody .lch-it');
+const lch = await page.evaluate(() => {
+  const body = document.querySelector('.modal #lchBody');
+  return {
+    items: body.querySelectorAll('.lch-it').length,
+    groups: body.querySelectorAll('.ent-grp-lbl').length,
+    hasFilter: !!document.querySelector('.modal #lchQ')
+  };
+});
+ok(lch.items >= 30, lch.items + ' accions al llançador');
+ok(lch.groups >= 5, 'repartides en ' + lch.groups + ' grups, no en una llista plana');
+ok(lch.hasFilter, 'i amb filtre per a qui ja sap què busca');
+
+const filtered = await page.evaluate(async () => {
+  const q = document.querySelector('.modal #lchQ');
+  q.value = 'ancoratge'; q.dispatchEvent(new Event('input'));
+  await new Promise(r => setTimeout(r, 220));
+  const body = document.querySelector('.modal #lchBody');
+  const n = body.querySelectorAll('.lch-it').length;
+  q.value = 'paracaigudes'; q.dispatchEvent(new Event('input'));
+  await new Promise(r => setTimeout(r, 220));
+  return { n, empty: body.querySelectorAll('.lch-it').length, saysNone: /cap acci[óo]/i.test(body.innerText) };
+});
+ok(filtered.n > 0 && filtered.n < lch.items, 'filtrar retalla la llista: ' + filtered.n + ' amb «ancoratge»');
+ok(filtered.empty === 0 && filtered.saysNone, 'i si no hi ha res, ho diu en comptes de deixar-ho en blanc');
+await page.evaluate(() => window.__SOS.closeModal());
+
+console.log('\n7 · La feina que no és de ningú també es veu');
+const net = await page.evaluate(async () => {
+  const S = window.__SOS;
+  // Un país amb dues regions, una de buida: el forat que ningú mirava.
+  const pais = S.newNode('Catalunya', 'pais', null);
+  const viva = S.newNode('Barcelona', 'provincia', pais.id);
+  const buida = S.newNode('Girona', 'provincia', pais.id);
+  const proj = S.newNode('Banc de Temps', 'projecte', viva.id); proj.dynamicType = 'banc_temps';
+  S.seedFromDynamic(proj, S.dynById('banc_temps'));
+  S.state.nodes.push(pais, viva, buida, proj);
+  await S.persist(pais);
+  const nm = S.networkMissions();
+  const all = S.missions();
+  return {
+    n: nm.length,
+    girona: nm.some(m => /Girona/.test(m.title)),
+    actionable: nm.every(m => typeof m.act === 'function' && m.title && m.effect),
+    inList: all.some(m => m.kind === 'xarxa'),
+    last: all.length ? all[all.length - 1].kind : null,
+    kindKnown: !!S.MISSION_KINDS.xarxa
+  };
+});
+ok(net.n > 0 && net.girona, 'la regió sense res surt com a missió, amb nom');
+ok(net.actionable, 'i cada missió de xarxa porta a un lloc concret, no és una estadística');
+ok(net.kindKnown && net.inList, 'apareixen barrejades a la llista de missions');
+ok(net.last === 'xarxa', 'però al final: el que t\'espera a tu passa davant del que espera la xarxa');
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);
