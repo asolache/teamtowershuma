@@ -137,12 +137,79 @@ precisament per això que hi ha fluxos trencats.
 
 ---
 
-## 3 · Backlog
+## 3 · Primer, quina beta
 
-Ordenat perquè cada tanda **desbloqueja** la següent. Cada entrada diu quin flux
-trencat repara — si no en repara cap, no és a la llista.
+La prioritat de tota la resta depèn d'una decisió que encara no s'ha pres, i que
+no és tècnica:
 
-### Tanda 0 · Sense això no hi ha beta
+| | **Beta A · un dispositiu per node** | **Beta B · cada persona amb el seu SOS** |
+|---|---|---|
+| Qui apunta | el nucli que sosté el node | cadascú el que fa |
+| E1 (pèrdua d'apunts) | **no es dispara** si ningú més edita aquell node | **es dispara el primer dia** |
+| Què prova | que l'eina serveix a un banc de temps real | que la tesi P2P del SOS s'aguanta |
+| Es pot començar | en setmanes | quan E1 estigui fet |
+
+**Recomanació: totes dues, en aquest ordre.** Beta A com a pilot curt per saber
+si l'eina ajuda de debò —cosa que encara no sap ningú— mentre es construeix E1;
+Beta B quan E1 estigui tancat. Fer només Beta A seria no provar el SOS: la raó
+de ser del projecte és que cadascú tingui el seu. Esperar a E1 per començar
+seria perdre mesos sense saber si el que estem arreglant li importa a algú.
+
+**Advertiment sobre Beta A:** que E1 «no es dispari» és una **disciplina, no una
+garantia**. L'app no la imposa: hi ha 108 llocs que criden `persist`, i qualsevol
+acció d'un segon posseïdor d'aquell node li puja l'`updatedAt` i pot sobreescriure
+el del nucli. El que sí que s'ha comprovat és que **arrencar l'app no toca cap
+node** —el boot no persisteix res—, així que una còpia only-lectura no fa mal per
+si sola.
+
+---
+
+## 4 · Backlog prioritzat
+
+`P0` sense això no s'obre · `P1` sense això no escala · `P2` aguantar el pes ·
+`P3` arribar més lluny
+
+El cost és una estimació relativa, no un compromís de calendari.
+
+| | Què | Per a quina beta | Depèn de | Cost | Si s'ajorna |
+|---|---|---|---|---|---|
+| **P0** | **E1** · unió de col·leccions append-only | **B** (porta d'entrada) | — | **alt** · toca el nucli | La beta mesura quanta feina de la gent es perd |
+| **P0** | **E2** · la fusió deixa rastre | A i B | — | baix | El toast diu «N canvis» i N no compta el que s'ha perdut |
+| **P0** | **E7** · camí per dir «això s'ha trencat» | A i B | — | baix | Amb desconeguts no reps queixes: reps abandonaments |
+| **P0** | **E8** · la còpia no depèn d'una persona | A i B | — | mitjà · les peces hi són | Qui perd el telèfon s'endú el node |
+| **P1** | **E3** · el relé porta patches signats | B | E1 | mitjà | Convergir exigeix que tothom es vegi amb tothom |
+| **P1** | **E4** · més d'un company alhora | B | E3 | mitjà | Una trobada de tres són tres torns |
+| **P2** | **E5** · sincronitzar només l'àmbit compartit | B a escala | E1, E3 | mitjà | Cada aparellament mou tota la comarca |
+| **P2** | **E10** · mesurar l'escala de comarca | B a escala | E5 | baix | Es promet una escala que no s'ha provat |
+| **P2** | **E9** · pes | A i B | — | variable | 90 % del sostre, i cada canvi es baixa sencer |
+| **P3** | **E6** · segona llengua (ca · es) | Euskadi | — | **alt** i creix cada dia | Euskadi no arrenca; i a 20.000 línies costarà més |
+
+### Les tres decisions que amaga aquesta taula
+
+1. **E1 abans que E3.** Un relé que reparteix patches sobre una fusió que perd
+   dades reparteix la pèrdua més de pressa. L'ordre no és negociable.
+2. **E6 baixa a P3, però el rellotge corre.** Per a una beta a Catalunya el
+   català no és cap barrera, i per això no és P0. Però és l'única entrada de la
+   llista el **cost de la qual creix cada setmana** que no es fa: cada tanda de
+   feina hi afegeix text incrustat. Si Euskadi entra al pla d'aquest any, puja a
+   P1 tota sola.
+3. **E7 i E2 són barates i van primer.** Costen poc i són el que converteix la
+   beta en informació. Sense elles la beta genera anècdotes.
+
+### Ordre de treball suggerit
+
+```
+Setmanes 1-2   E2 · E7 · E8            → Beta A pot començar
+Setmanes 1-6   E1 (en paral·lel)       → cadena per autor
+Setmanes 7-9   E3 · E4                 → Beta B pot començar
+Després        E5 · E10 · E9 · E6      → segons on vagi la beta
+```
+
+---
+
+## 5 · El detall de cada entrada
+
+### P0 · Sense això no s'obre
 
 **E1 · La sincronització no pot perdre res** — *repara R1→R2, R2→R1*
 Fusió per unió de les col·leccions **append-only** dins del node (ledger, socis,
@@ -165,7 +232,20 @@ Ha de dir què ha entrat, què ha xocat i què s'ha descartat. Mentre E1 no hi
 sigui, això és el mínim per no mentir; després, segueix sent el que fa auditable
 una fusió.
 
-### Tanda 1 · Que convergeixi sense que tothom es vegi amb tothom
+**E7 · Un camí per dir «això s'ha trencat»** — *repara R1→R6, crea R10*
+No existeix. El senyal de què falla només arriba si algú et truca. En una beta
+amb gent que no et coneix, això vol dir que **no arribarà**: la gent no es queixa,
+plega. Un botó que reculli context (versió, node, què feia) i el deixi enviar o
+copiar. És dels més barats de la llista i és el que converteix la beta en
+informació en comptes d'anècdotes.
+
+**E8 · La còpia deixa de dependre d'una persona** — *repara R2→R11, crea R11*
+Si qui sosté el node perd el telèfon, la història del node se'n va amb ell.
+`exportBackup` existeix i els envelopes xifrats per membre també (V29): falta el
+**rol** i la rutina que reparteixi la còpia entre diversos membres. És el que
+treu R2 de ser un punt únic de fallada, i val per a totes dues betes.
+
+### P1 · Sense això no escala
 
 **E3 · El relé porta patches signats, no només xat** — *repara R2↔R7, R9*
 El relé ja existeix, ja és opcional i configurat per l'usuari, i el topic ja és
@@ -179,44 +259,35 @@ qual algú depèn i a qui es pot reconèixer.*
 `_pc` i `_dc` són singletons: **una connexió alhora**. Passar a un mapa de
 connexions perquè una trobada de tres persones no siguin tres torns.
 
+### P2 · Aguantar el pes
+
 **E5 · Sincronitzar només l'àmbit compartit** — *repara R2↔R7 a escala*
 `hello` envia `state.nodes` i `state.entities` **sencers**. A escala de comarca,
 això és tota la comarca a cada aparellament, i creix amb el quadrat de la gent.
 Enviar només l'àmbit que les dues bandes comparteixen.
 
-### Tanda 2 · Que ho pugui fer servir gent que no som nosaltres
-
-**E6 · Segona llengua (ca · es)** — *repara l'accés, crea R12*
-`<html lang="ca">` i el text incrustat al codi. Per a Euskadi i per a bona part
-de Catalunya cal una segona llengua. L'euskera després, com vas dit — però la
-**capa** que ho farà possible s'ha de posar ara, perquè fer-la amb 14.430 línies
-ja escrites és car i amb 20.000 ho serà més.
-
-**E7 · Un camí per dir «això s'ha trencat»** — *repara R1→R6, crea R10*
-No existeix. El senyal de què falla només arriba si algú et truca. En una beta
-amb gent que no et coneix, això vol dir que **no arribarà**: la gent no es queixa,
-plega. Un botó que reculli context (versió, node, què feia) i el deixi enviar o
-copiar.
-
-**E8 · La còpia deixa de dependre d'una persona** — *repara R2→R11, crea R11*
-Si qui sosté el node perd el telèfon, la història del node se'n va amb ell.
-`exportBackup` existeix i els envelopes xifrats per membre també (V29): falta el
-**rol** i la rutina que reparteixi la còpia entre diversos membres. És el que
-treu R2 de ser un punt únic de fallada.
-
-### Tanda 3 · Que aguanti el pes
+**E10 · Escala de debò** — `test-escala` prova 500 nodes i 5.000 apunts. Una
+comarca real amb 30 municipis és més gran, i amb E5 encara sense fer, cada
+aparellament ho mou tot. Mesurar el cas de comarca abans de prometre'l.
 
 **E9 · Pes** — 360 KB gzip, **90 % del sostre declarat**. Amb dades mòbils d'un
 poble, i amb un sol fitxer no hi ha caché parcial: cada canvi es baixa sencer.
 Abans d'afegir res gran, decidir si es puja el sostre o si se separa alguna cosa.
 
-**E10 · Escala de debò** — `test-escala` prova 500 nodes i 5.000 apunts. Una
-comarca real amb 30 municipis és més gran, i amb E5 encara sense fer, cada
-aparellament ho mou tot. Mesurar el cas de comarca abans de prometre'l.
+### P3 · Arribar més lluny
+
+**E6 · Segona llengua (ca · es)** — *repara l'accés, crea R12*
+`<html lang="ca">` i el text incrustat al codi. Per a una beta a Catalunya el
+català no és cap barrera, i per això no és P0. Per a Euskadi ho és tot.
+
+És l'única entrada de la llista el **cost de la qual creix cada setmana que no es
+fa**: cada tanda hi afegeix text incrustat. Amb 14.430 línies ja és car; amb
+20.000 ho serà més. Si Euskadi entra al pla d'aquest any, puja a P1 tota sola.
+L'euskera, després, com vas dir — però la **capa** que ho farà possible és això.
 
 ---
 
-## 4 · El que aquest backlog **no** fa
+## 6 · El que aquest backlog **no** fa
 
 - **No toca el relat** (Comando Molekulon, cromos, panteó). Segueix sent la
   reducció més gran disponible en termes de KISS i segueix esperant que diguis
@@ -229,11 +300,20 @@ aparellament ho mou tot. Mesurar el cas de comarca abans de prometre'l.
 
 ---
 
-## 5 · Per on començar demà
+## 7 · Per on començar demà
 
-E1. No perquè sigui el més vistós —no ho és— sinó perquè **tota la reciprocitat
-del mapa penja d'ell**: mentre qui aporta pugui perdre el que ha aportat, cap
-altra millora canvia què li passa a la persona que hi confia.
+**E1 i E7 el mateix dia**, per motius oposats.
 
-I perquè la prova ja està escrita: la sonda que ha demostrat el forat és el test
-de regressió que dirà quan és tapat.
+**E1** perquè **tota la reciprocitat del mapa penja d'ell**: mentre qui aporta
+pugui perdre el que ha aportat, cap altra millora canvia què li passa a la
+persona que hi confia. És el més car i el més avorrit de tot el backlog, i no hi
+ha drecera honesta. La prova ja està escrita: la sonda que ha demostrat el forat
+és el test de regressió que dirà quan és tapat.
+
+**E7** perquè costa una tarda i és l'única cosa de la llista que fa que la
+setmana que ve **sapiguem alguna cosa que avui no sabem**. Tota la resta és
+arreglar el que ja sabem que està malament.
+
+I una que no és feina de codi: **decidir quina beta** (§3). Fins que no estigui
+decidit, E1 sembla urgent o ajornable segons el dia, i això és senyal que la
+pregunta que falta no és tècnica.
