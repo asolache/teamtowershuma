@@ -688,6 +688,88 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 61 — No es diu «verificat» del que no s'ha verificat
+
+El SOS signa amb `did:sos` i ancorava amb la clau Nostr de l'extensió del
+navegador, i **res no deia que fossin la mateixa persona**. Un ancoratge provava
+que *algú* amb una clau Nostr havia publicat aquell hash, no que fos qui el va
+registrar. Per a un registre d'usuaris a la permaweb, aquest era el forat.
+
+El pont és una afirmació **signada dues vegades**: un registre que diu «el did D
+i la clau N són la mateixa persona», firmat pel `did` i publicat sencer com a
+event Nostr firmat per N.
+
+I aquí la part que importa més que la funcionalitat: **la firma Nostr no es pot
+verificar dins del SOS**. És Schnorr sobre secp256k1 i SubtleCrypto no en sap;
+caldria una biblioteca, i el SOS és un sol fitxer. Davant d'això hi ha dues
+sortides i només una és acceptable:
+
+- Dir «pont verificat» i callar. Seria mentida per omissió, i just al lloc on la
+  gent decidirà si es refia d'una identitat.
+- Dir exactament què s'ha mirat: la banda `did:sos` **verificada** amb
+  SubtleCrypto; el **lligam verificat** en les tres coses (que l'event contingui
+  el registre firmat, que la clau declarada sigui la de l'event, que l'id sigui
+  el SHA-256 de la serialització NIP-01); i la firma Nostr **no verificada
+  aquí**, amb el motiu escrit.
+
+I dir també què sí que la prova: **els relés rebutgen els events amb firma
+invàlida**. Si el pont és publicat i acceptat, la clau Nostr hi va signar. Això
+és una prova de debò i s'explica com a tal, sense confondre-la amb una
+comprovació local.
+
+## Veda 60 — Publicar sense descobriment no és publicar
+
+`supplyPublicPack` generava un paquet agregat, comprovava que no filtra res, el
+versionava amb CID… i el deixava **al teu disc**. Ningú el podia trobar. Tota la
+feina difícil feta i el resultat, invisible.
+
+La solució ja existia al mateix repositori i ningú se n'havia adonat: **l'atles**
+és un repositori públic servit per CDN, on s'aporta amb una *pull request* i d'on
+qualsevol baixa amb un `fetch`. Públic, versionat, amb historial, auditable,
+gratis, i amb revisió humana abans de publicar-se. L'oferta comuna fa el mateix
+camí.
+
+Dues regles que no es poden relaxar:
+
+- **El que es llegeix no es fusiona amb el teu.** L'oferta comuna viu a part i es
+  marca com a vinguda de fora. Barrejar-la convertiria el que ha dit un altre en
+  dada teva, i això no es pot desfer un cop la gent hi confia.
+- **Entra pel mateix sedàs que surt.** Una fila que porti noms, correus,
+  telèfons o `did` es descarta sencera **encara que vingui del repositori
+  oficial**. Confiar en l'origen és exactament com es cola una fuita.
+
+I es diu el que és: **això no és permaweb**. Si algú esborra el repositori,
+desapareix. És públic, versionat i amb un CID que prova integritat —molt més que
+tenir-lo al calaix, i menys que Arweave. El mateix fitxer es pot pinnar després;
+ja porta el seu CID.
+
+## Veda 59 — Unir persones pel nom corromp dades en silenci
+
+`joinNode`, `knownPersons`, `personProfile` i el rànquing unien registres pel
+**nom normalitzat**. Dues maneres de fer mal sense que res avisi:
+
+- **Dues persones que es diuen igual** al mateix poble es fusionaven en una:
+  hores, ofertes, saldo i reputació barrejats.
+- **Una persona escrita de dues maneres** —«Àlvaro» en un node, «Alvaro Solache»
+  en un altre— es partia en dues: perfil partit, rànquing partit, i el fons
+  comptant-la dos cops com a dues persones.
+
+El `did` ja hi era des de V39: `claimMember` signa `{nodeId, memberId, did}`. El
+que no es feia era **emparellar per ell**. Tres regles:
+
+- **Un `did` mana sobre el nom.** Dos registres amb el mateix `did` són la
+  mateixa persona encara que s'escriguin diferent.
+- **Dos `did` diferents no s'uneixen mai**, encara que el nom coincideixi. I el
+  nom ambigu es **marca**, en comptes d'amagar que hi ha dues persones al darrere.
+- **Un registre sense `did` s'adopta pel nom**, però només si aquell nom apunta a
+  **un sol** `did`. Si n'apunta a dos, no s'endevina: endevinar aquí seria triar a
+  qui li regalem les hores d'un altre.
+
+I la que ho fa reversible: **res d'això reescriu història signada**. Els apunts
+conserven el seu `memberId` i el seu `who` originals; la identitat **es resol en
+llegir**, no es reescriu. Per això reclamar una fitxa vella la uneix a la persona
+sense tocar cap signatura ni cap cadena de hash.
+
 ## Veda 58 — Un relé que pot ser l'amo de la xarxa no és un relé
 
 Sense servidor, «en línia» només pot voler dir «connectat amb tu ara». Per tenir

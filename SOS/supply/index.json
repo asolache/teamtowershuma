@@ -1,0 +1,8 @@
+{
+  "@context": "https://teamtowers.io/sos/v11",
+  "@type": "sos:SupplyManifest",
+  "name": "Oferta comuna SOS — habilitats i objectes publicats pels territoris",
+  "description": "Agregat públic i col·laboratiu: què s'ofereix i què es busca, per categoria i municipi. Diu ON preguntar, mai A QUI. Es distribueix per CDN i s'enriqueix via Pull Requests, com l'atles.",
+  "updated": "2026-08-08",
+  "packs": []
+}
