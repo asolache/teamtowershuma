@@ -39,6 +39,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-identitat.mjs` | V59 | El `did` mana sobre el nom: ni fusiona homònims ni parteix ningú |
 | `test-permaweb.mjs` | V60 · V61 | Oferta comuna amb sedàs d'entrada, i pont de claus que diu què no verifica |
 | `test-kiss.mjs` | V62 · V63 | Que de cap portada es quedi ningú atrapat, cap pestanya sense guia, el llançador agrupat i la feina que no és de ningú |
+| `test-fusio.mjs` | V64 | Que sincronitzar no destrueixi res: triple entrada, unió, i una cadena per autor |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
 heartbeat, presència i broadcast). Sense ell, del relé només es podria comprovar
@@ -47,20 +48,6 @@ que l'URL es construeix bé —i això no prova res.
 `serve.mjs` és un servidor estàtic mínim per als tests que necessiten `http://`
 (l'atles fa `fetch`, i `file://` el bloqueja). Els que el necessiten se
 l'engeguen ells.
-
-## `probes/` — defectes oberts, no tests
-
-`run.mjs` només recull `test-*.mjs` del seu propi directori, així que el que hi
-ha a `probes/` no fa vermella la suite. Són **demostracions de defectes que
-encara no estan tapats**: es corren a mà i descriuen el que passa avui.
-
-```bash
-node SOS/tests/probes/sonda-fusio.mjs
-```
-
-`sonda-fusio.mjs` demostra que sincronitzar **perd apunts del ledger i socis**
-(LWW de node sencer). És l'E1 del [backlog de beta](../knowledge/vision/backlog-beta-i-escala.md);
-quan estigui fet, passa a `test-fusio.mjs` amb les assercions girades.
 
 ## La guarda de KISS
 

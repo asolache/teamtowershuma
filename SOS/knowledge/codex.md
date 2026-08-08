@@ -688,6 +688,45 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 64 — Un ordre global vol dir un amo; la triple entrada no en necessita
+
+El ledger tenia **una sola cadena per node**: cada apunt encadenat amb
+l'anterior, fos de qui fos. Semblava més fort i era més fràgil, perquè obliga a
+un **ordre global** —i un ordre global entre gent que apunta sense estar
+connectada només se sosté si algú diu qui va primer. Aquell algú és un servidor,
+i un servidor és un amo.
+
+Sense amo, l'única sortida que quedava era que en sincronitzar guanyés un i es
+perdés l'altre. Es va comprovar amb una sonda: **es perdien hores signades**, i
+també socis. Sense avís i sense rastre.
+
+La sortida no és triar quina cadena guanya. És **comptabilitat de triple
+entrada**: el que dona, el que rep, i el **rebut** que tots dos guarden signat.
+El rebut és la tercera entrada i és la que mana. D'aquí surten dues regles:
+
+- **Cada autor encadena el seu.** `prevHash` apunta a l'apunt anterior *del
+  mateix `did`*. Dues persones que apunten alhora fan créixer dues cadenes que
+  no es trepitgen, i la unió de les dues és vàlida **sense reordenar res**.
+- **La unió no destrueix.** Fusionar dos ledgers és quedar-se'ls tots dos. I
+  quan el mateix registre arriba per les dues bandes, es queda **el més ric**
+  —el que porta firma, el que porta més confirmacions—, mai el més nou pel fet
+  de ser més nou. Aquesta última regla és precisament la que ens havia portat a
+  perdre dades.
+
+I la conseqüència que val més que la funcionalitat: això fa el sistema
+**antifràgil**. Amb la cadena única, cada còpia de més era una oportunitat de
+conflicte i créixer feia el registre pitjor. Amb el rebut compartit, cada
+persona que en guarda una còpia és una **prova de més**. Perdre el telèfon deixa
+de ser perdre la feina, perquè qui era a l'altra banda de l'intercanvi també la
+té. Que la xarxa creixi deixa de ser un risc a gestionar i passa a ser el que fa
+que la teva hora sigui indiscutible.
+
+I una que és de tracte, no de codi: **no es diu que una cadena antiga està
+trencada quan només és d'un altre esquema**. `verifyLedger` prova per autor i,
+si no quadra, com a cadena global; els ledgers escrits abans d'això segueixen
+sent vàlids i es diu de quin mode són. Marcar de corrupte el que ningú ha tocat
+és la manera més ràpida de fer que algú deixi de refiar-se del verificador.
+
 ## Veda 63 — Una llista plana llarga és un calaix, i el que no és de ningú no es fa
 
 Dues coses que la guarda de KISS va treure a la llum en comptar de debò.

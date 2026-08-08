@@ -44,6 +44,43 @@ per comprovar quanta feina de la gent es perd.
 
 ---
 
+> **Actualització V64 (2026-08-08).** E1 està **fet**. La sortida no va ser
+> «una cadena o l'altra» sinó **triple entrada**: el que dona, el que rep i el
+> **rebut** que tots dos guarden signat. La cadena única segueix existint —és la
+> dels rebuts— i cada autor encadena el seu. `SOS/tests/probes/sonda-fusio.mjs`
+> és ara `SOS/tests/test-fusio.mjs`, amb les assercions girades.
+
+---
+
+## 0.bis · El valor humà, que és el que decideix les prioritats
+
+Val la pena escriure-ho perquè és el que fa que una llista tècnica tingui un
+ordre i no un altre.
+
+Una hora de feina d'un veí que no té diners però té temps **no la recorda
+ningú**. No surt a cap nòmina, no compta per a cap subvenció, i quan aquella
+persona necessita ajuda, no hi ha res que digui el que ha donat. El SOS existeix
+perquè aquella hora quedi escrita d'una manera que **ningú pugui esborrar ni
+negar** — ni un ajuntament que canvia, ni una associació que plega, ni una
+empresa que tanca el servidor.
+
+Per això la pèrdua d'apunts en sincronitzar no era «un bug». Era el sistema
+fallant exactament allà on prometia el contrari, i **a qui menys ho pot
+permetre**: qui apunta poc, apunta tard i des d'un telèfon vell.
+
+I per això l'**antifragilitat** no és un adorn d'enginyeria. Un sistema fràgil
+falla quan creix: amb la cadena única, cada còpia de més era una oportunitat de
+conflicte, i créixer feia el registre pitjor. Un sistema antifràgil **es fa fort
+quan creix**: amb el rebut compartit, cada persona que en guarda una còpia és
+una prova de més. Que hi hagi més gent no és un risc que cal gestionar — és el
+que fa que la teva hora sigui indiscutible.
+
+**Criteri, doncs, per a tot el que ve:** una entrada d'aquest backlog val la
+pena si fa que **créixer enforteixi el registre**. Si el fa més fràgil, no entra
+per molt bé que soni.
+
+---
+
 ## 1 · Metaskill de la xarxa de la beta
 
 Segons VNA, primer el propòsit; els rols i els fluxos després.
@@ -173,7 +210,9 @@ El cost és una estimació relativa, no un compromís de calendari.
 
 | | Què | Per a quina beta | Depèn de | Cost | Si s'ajorna |
 |---|---|---|---|---|---|
-| **P0** | **E1** · unió de col·leccions append-only | **B** (porta d'entrada) | — | **alt** · toca el nucli | La beta mesura quanta feina de la gent es perd |
+| ~~P0~~ | ~~**E1** · triple entrada + cadena per autor~~ | **✅ fet a V64** | — | — | — |
+| **P0** | **E11** · GitHub com a canal asíncron per tema | A i B | E1 | mitjà | La xarxa només convergeix si la gent coincideix en el temps |
+| **P0** | **E12** · la UX la mana el full de ruta del rol | A i B | — | mitjà | 32 accions i 13 pestanyes per a tothom, i cadascú n'ha de fer servir sis |
 | **P0** | **E2** · la fusió deixa rastre | A i B | — | baix | El toast diu «N canvis» i N no compta el que s'ha perdut |
 | **P0** | **E7** · camí per dir «això s'ha trencat» | A i B | — | baix | Amb desconeguts no reps queixes: reps abandonaments |
 | **P0** | **E8** · la còpia no depèn d'una persona | A i B | — | mitjà · les peces hi són | Qui perd el telèfon s'endú el node |
@@ -209,22 +248,61 @@ Després        E5 · E10 · E9 · E6      → segons on vagi la beta
 
 ## 5 · El detall de cada entrada
 
+### ✅ E1 · Triple entrada i cadena per autor — *fet a V64*
+
+El que dona, el que rep i el **rebut** que tots dos guarden signat. El rebut és
+la tercera entrada i és la que mana; la «cadena única» és la dels rebuts, i
+cada autor encadena els seus (`prevHash` apunta a l'anterior del mateix `did`).
+
+Dues persones que apunten alhora fan créixer dues cadenes que no es trepitgen, i
+**la unió de les dues és vàlida sense reordenar res** — que és exactament el que
+evita necessitar un ordre global, i per tant un servidor.
+
+Fet: `entryAuthor`, `pushLedger` per autor, `verifyLedger` amb mode
+`autor`/`global`, `APPEND_ONLY` + `mergeAppendOnly` amb regla del **més ric**
+(firma per sobre de no-firma, més confirmacions per sobre de menys — **mai el
+més nou pel fet de ser més nou**, que és el que ens havia portat fins aquí).
+Els ledgers escrits abans de V64 es validen com a globals i segueixen valent.
+
 ### P0 · Sense això no s'obre
 
-**E1 · La sincronització no pot perdre res** — *repara R1→R2, R2→R1*
-Fusió per unió de les col·leccions **append-only** dins del node (ledger, socis,
-objectes, ofertes, ventures, evidències, riscos), com ja es fa amb el xat; LWW
-només per als camps escalars (nom, nivell, configuració).
+**E11 · GitHub com a canal asíncron per tema** — *repara R2↔R7 sense exigir
+coincidència en el temps*
+El relé demana que **dues persones hi siguin alhora**. En un poble això no passa
+gairebé mai: la gent obre l'app el diumenge al vespre, no totes el mateix
+diumenge. Un canal que exigeix simultaneïtat és un canal que no s'usarà.
 
-La part difícil no és la unió: és que **el ledger va encadenat per hash**. Dues
-cadenes que han crescut per separat no es poden entrellaçar sense un ordre
-global, i un ordre global vol dir un servidor —exactament el que el SOS no vol
-ser. Recomanació: **una cadena per autor** (`did`), que és el que ja permet la
-identitat de V59. Cadascú encadena el que signa; el node és la unió de cadenes,
-i cada cadena es verifica sola. `verifyChain` passa a ser per autor.
+El repositori ja fa aquest paper dues vegades —l'**atles** i `SOS/supply/`— i
+ningú ho havia llegit com el que és: **un bus asíncron, durable, versionat, amb
+historial, auditable i gratis**. Cadascú hi deixa els seus rebuts signats quan
+pot; qui arriba després, se'ls troba. Ningú ha d'estar connectat alhora.
 
-Cost real: és la peça més cara de tot el backlog i toca el nucli. No hi ha
-drecera honesta.
+Amb els rebuts de V64 això funciona sense res més: **són idempotents i s'uneixen
+sense conflicte**, així que un fitxer per tema al qual tothom afegeix convergeix
+sol. Sense triple entrada això hauria estat impossible; per això E11 depèn d'E1
+i no al revés.
+
+I és la peça **antifràgil** per excel·lència: cada còpia del repositori —cada
+fork, cada clon, cada CDN— és una còpia més del registre. Com més gent el fa
+servir, més difícil és perdre'l.
+
+*El relé no desapareix: segueix sent el que dona la presència en viu. El que
+canvia és que deixa de ser l'únic camí perquè les dades es trobin.*
+
+**E12 · La UX la mana el full de ruta del rol** — *repara l'accés, i és la
+simplificació més gran que queda*
+Avui tothom veu el mateix: 13 pestanyes, 32 accions al llançador, 17 rutes. Una
+persona que només ve a apuntar tres hores al mes n'ha de fer servir sis, i les
+ha de trobar entre totes les altres.
+
+Les peces hi són totes i **no s'han connectat**: `ROLE_JOURNEYS`, `activeRoleId`,
+`journeyProgress`, i cada `CONTEXT_GUIDES` ja porta la seva `lens` per rol. El
+que falta és que el full de ruta del rol **decideixi què es veu**, no només què
+es ressalta.
+
+És KISS de veritat: no és treure funcions —cadascuna serveix a algú— sinó que
+cadascú vegi **el seu següent pas** i la resta quedi a un clic al llançador,
+que per això es va agrupar a V63.
 
 **E2 · La fusió ha de deixar rastre** — *repara R2→R1 (confiança)*
 Avui el toast diu «Sincronitzat · N canvis» i **N no compta el que s'ha perdut**.
