@@ -180,6 +180,96 @@ const alta = await page.evaluate(() => {
 ok(alta.has, '#/alta existeix com a ruta');
 ok(/superhero/i.test(alta.label || ''), 'i porta al formulari d\'alta, no a la portada de gestió');
 
+console.log('\n11 · El relé està apagat de sèrie i no s\'inventa res');
+const rl0 = await page.evaluate(async () => {
+  const S = window.__SOS;
+  await S.loadRelay();
+  const c = S.relayCfg();
+  return {
+    state: S.relayState(), peers: S.relayPeers().length,
+    on: c.on, ready: S.relayReady(),
+    hardcoded: !!(c.url || c.key),
+    sent: S.relaySendChat('qualsevol', { id: 'x', text: 'hola' })
+  };
+});
+ok(rl0.state === 'off' && rl0.on === false, 'de sèrie el relé està apagat');
+ok(!rl0.hardcoded, 'no hi ha cap URL ni cap clau escrites al codi');
+ok(rl0.ready === false, 'i sense configurar no es considera llest');
+ok(rl0.peers === 0, 'no hi ha ningú a la sala perquè no hi ha sala');
+ok(rl0.sent === false, 'enviar amb el relé tancat retorna fals, no peta ni fa veure que ha anat');
+
+console.log('\n12 · L\'URL s\'accepta tal com la dona Supabase');
+const url = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const mk = u => S.relayWsUrl({ url: u, key: 'k1', room: 'r' });
+  return {
+    https: mk('https://abc.supabase.co'),
+    trailing: mk('https://abc.supabase.co/'),
+    bare: mk('abc.supabase.co'),
+    already: mk('wss://abc.supabase.co/realtime/v1/websocket'),
+    empty: mk(''),
+    t1: await S.relayTopic('penedes-2026'),
+    t2: await S.relayTopic('penedes-2026'),
+    t3: await S.relayTopic('un-altre')
+  };
+});
+ok(/^wss:\/\/abc\.supabase\.co\/realtime\/v1\/websocket\?apikey=k1&vsn=1\.0\.0$/.test(url.https),
+  'https es converteix a wss i s\'hi afegeix el camí');
+ok(url.trailing === url.https && url.bare === url.https, 'la barra final i l\'URL pelada donen el mateix');
+ok(url.already === url.https, 'i si ja porta el camí, no es duplica');
+ok(url.empty === '', 'sense URL no es construeix res');
+
+console.log('\n13 · El codi de sala no viatja en clar');
+ok(url.t1 === url.t2, 'el mateix codi dona sempre el mateix canal');
+ok(url.t1 !== url.t3, 'i codis diferents, canals diferents');
+ok(!url.t1.includes('penedes'), 'el canal no conté el codi de sala: viatja el hash');
+ok(/^realtime:sos-/.test(url.t1), 'i té la forma que espera el servidor');
+
+console.log('\n14 · La presència diu la veritat sobre si hi ha relé');
+const pres2 = await page.evaluate(() => {
+  const S = window.__SOS;
+  const p = S.presenceState();
+  return { relay: p.relay, relayOn: p.relayOn, limit: p.limit };
+});
+ok(pres2.relay === 'off' && pres2.relayOn === false, 'l\'estat del relé forma part de la presència');
+ok(/sense rel[ée]/i.test(pres2.limit), 'i amb el relé apagat, el text ho diu');
+
+console.log('\n15 · La configuració del relé avisa del que hi passa');
+await page.evaluate(() => window.__SOS.openRelayModal());
+await page.waitForSelector('.modal #rlRoom');
+const modal = await page.evaluate(() => {
+  const t = document.querySelector('.modal').innerText;
+  return {
+    saysNever: /mai el teu registre/i.test(t),
+    saysHash: /hash/i.test(t),
+    saysOptional: /opcional/i.test(t),
+    saysOurs: /cap servidor nostre/i.test(t),
+    fields: ['#rlUrl', '#rlKey', '#rlRoom'].every(q => !!document.querySelector('.modal ' + q))
+  };
+});
+ok(modal.fields, 'demana URL, clau i sala');
+ok(modal.saysNever, 'diu explícitament que el registre no hi passa');
+ok(modal.saysHash, 'i que el codi de sala viatja com a hash');
+ok(modal.saysOptional && modal.saysOurs, 'i que és opcional i que el servidor no és nostre');
+
+console.log('\n16 · Una clau de servei no s\'accepta');
+const guard = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const set = (q, v) => { document.querySelector('.modal ' + q).value = v; };
+  set('#rlUrl', 'https://abc.supabase.co'); set('#rlRoom', 'sala');
+  set('#rlKey', 'sb_secret_abc123');
+  document.querySelector('.modal #rlOn').click();
+  await new Promise(r => setTimeout(r, 120));
+  const stillOpen = !!document.querySelector('.modal #rlKey');
+  const saved = S.relayCfg();
+  return { stillOpen, savedKey: saved.key, on: saved.on };
+});
+ok(guard.stillOpen, 'el formulari no es tanca: no ha acceptat la clau');
+ok(guard.savedKey !== 'sb_secret_abc123', 'i no la desa');
+ok(guard.on === false, 'el relé no s\'engega amb una clau que dona accés a tot');
+
+await page.evaluate(() => window.__SOS.closeModal());
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

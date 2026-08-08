@@ -688,6 +688,41 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 58 — Un relé que pot ser l'amo de la xarxa no és un relé
+
+Sense servidor, «en línia» només pot voler dir «connectat amb tu ara». Per tenir
+una llista de debò cal que algú relaixi la presència, i el perill evident és que
+aquell algú acabi sent l'amo. Un relé només és acceptable si **està dissenyat
+perquè no pugui ser-ho**:
+
+- **Opcional i apagat de sèrie.** Sense activar-lo, tot funciona com abans. Qui
+  no el vulgui no perd res del que ja tenia.
+- **És el teu, no el nostre.** **No hi ha cap URL ni cap clau escrites al codi.**
+  Posar-hi credencials nostres en un fitxer que se serveix públicament seria
+  dues errades alhora: exposar-les, i convertir-nos en l'intermediari que diem
+  que no volem. Cada comunitat hi posa el seu servidor. Si el nostre cau o canvia
+  de mans, la seva xarxa no.
+- **Hi passa el mínim.** Presència (nom de treball i `did`) i missatges de xat.
+  **Mai el ledger, ni els nodes, ni les fitxes de ningú.** El que no s'envia no
+  es pot filtrar, i això es comprova al test mirant què rep el servidor, no
+  llegint el codi.
+- **La sala no viatja en clar.** El canal és el **hash** del codi de sala. Qui
+  vegi el trànsit no sap a quina comunitat pertany.
+- **El relé no pot crear res.** Un missatge que arriba entra pel mateix camí que
+  un de sincronitzat —unió per id— i si el node no existeix aquí, **es descarta**.
+  Un relé que pogués fer aparèixer nodes seria un relé que escriu al teu SOS.
+- **Caure no pot trencar res.** Amb el relé mort, escriure segueix funcionant i
+  es desa igual; l'estat ho diu en comptes de fer veure que va.
+
+I una que és de codi, no de disseny: s'implementa **a pèl sobre WebSocket**, sense
+cap llibreria. El SOS ha de continuar sent un sol fitxer que funciona obert des
+del disc, i una dependència de CDN ho trencaria just el dia que la CDN no hi
+sigui.
+
+**Com es prova.** Contra un servidor de mentida que parla el protocol de debò
+(`SOS/tests/relay-mock.mjs`), amb dos navegadors a la mateixa sala. Comprovar
+només que l'URL es construeix bé no prova res.
+
 ## Veda 57 — Un xat que no diu de què parla és un grup de WhatsApp més
 
 Una eina de gestió comunitària amb xat general acaba tenint el mateix problema

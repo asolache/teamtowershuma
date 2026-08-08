@@ -35,6 +35,11 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-model-pais.mjs` | V54 | Catalunya i Euskadi com a models editables, i que forkejar-los no els toqui |
 | `test-fons.mjs` | V55 | El fons cooperatiu: verificat vs estimat, cobertura i cabina del país |
 | `test-gent.mjs` | V56 · V57 | Rànquing recíproc, presència honesta i xat ancorat que no perd missatges |
+| `test-rele.mjs` | V58 | El relé contra un servidor que parla el protocol: dos navegadors es veuen i es parlen |
+
+`relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
+heartbeat, presència i broadcast). Sense ell, del relé només es podria comprovar
+que l'URL es construeix bé —i això no prova res.
 
 `serve.mjs` és un servidor estàtic mínim per als tests que necessiten `http://`
 (l'atles fa `fetch`, i `file://` el bloqueja). Els que el necessiten se
