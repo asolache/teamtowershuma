@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fes-te superheroi/na · SOS · Sistema Operatiu Social</title>
+<meta name="description" content="El teu temps, les teves eines i el que saps fer ja valen alguna cosa al teu barri. El SOS els compta, els signa i te'n dona rastre. Sense servidor, sense empresa al mig, sense dades teves a cap núvol. Cinc minuts per començar.">
+<meta property="og:title" content="Fes-te superheroi/na del teu barri">
+<meta property="og:description" content="El que ja fas —arreglar, cuidar, prestar, ensenyar— comptabilitzat i verificable. Cinc minuts.">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:#2a2a35;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--blue:#00b0ff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b0b12,#12121c);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+.wrap{max-width:880px;margin:0 auto;padding:0 1.2rem}
+a{color:var(--indigo)}
+
+/* ── Portada: el dolor primer, l'arquitectura mai ── */
+.hero{padding:3.4rem 1.2rem 2.4rem;text-align:center}
+.hero .kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:'SF Mono',Monaco,monospace}
+.hero h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.7rem auto .9rem;max-width:16ch;background:linear-gradient(90deg,#6366f1,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{font-size:clamp(1rem,2.4vw,1.2rem);color:var(--light);max-width:34rem;margin:0 auto 1.6rem}
+.cta{display:inline-flex;align-items:center;gap:.5rem;background:var(--green);color:#08120c;font-weight:700;font-size:1.02rem;padding:.9rem 1.5rem;border-radius:12px;text-decoration:none;border:0;cursor:pointer}
+.cta:hover{filter:brightness(1.08)}
+.cta.ghost{background:transparent;color:var(--light);border:1px solid var(--border);font-weight:600}
+.ctas{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+.hero .fine{margin-top:1rem;font-size:.8rem;color:var(--muted)}
+
+section{padding:2.4rem 0;border-top:1px solid rgba(255,255,255,.06)}
+h2{font-size:clamp(1.25rem,3.4vw,1.7rem);margin:0 0 .5rem}
+.sub{color:var(--muted);margin:0 0 1.4rem;font-size:.95rem}
+
+/* ── El dolor, en primera persona ── */
+.pains{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.9rem}
+.pain{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem}
+.pain q{display:block;font-size:.98rem;color:var(--text);font-style:italic;line-height:1.5}
+.pain .who{margin-top:.6rem;font-size:.78rem;color:var(--muted)}
+
+/* ── Què hi poses i què en treus ── */
+.deal{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.deal .col{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.3rem}
+.deal .col.get{border-left:3px solid var(--green)}
+.deal .col.give{border-left:3px solid var(--indigo)}
+.deal h3{margin:0 0 .7rem;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo)}
+.deal .col.get h3{color:var(--green)}
+.deal ul{margin:0;padding-left:1.1rem;color:var(--light);font-size:.92rem}
+.deal li{margin:.4rem 0}
+@media(max-width:640px){.deal{grid-template-columns:1fr}}
+
+/* ── Els rols ── */
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.9rem}
+.role{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;border-top:3px solid var(--indigo)}
+.role .ic{font-size:1.6rem;line-height:1}
+.role h3{margin:.4rem 0 .3rem;font-size:1rem}
+.role p{margin:0;font-size:.86rem;color:var(--light)}
+.role .time{margin-top:.6rem;font-size:.76rem;color:var(--muted);font-family:'SF Mono',Monaco,monospace}
+
+/* ── Passos ── */
+.steps{counter-reset:s;display:grid;gap:.7rem}
+.step{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem 1rem 3.2rem;position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:1rem;top:1rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--indigo);color:#fff;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'SF Mono',Monaco,monospace}
+.step h3{margin:0 0 .2rem;font-size:.98rem}
+.step p{margin:0;font-size:.88rem;color:var(--light)}
+
+/* ── El que NO fem ── */
+.nots{background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.22);border-radius:14px;padding:1.4rem 1.5rem}
+.nots ul{margin:.6rem 0 0;padding-left:1.1rem;color:var(--light);font-size:.92rem}
+.nots li{margin:.4rem 0}
+.nots strong{color:var(--green)}
+
+/* ── FAQ ── */
+details{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.6rem}
+details summary{cursor:pointer;font-weight:600;font-size:.94rem}
+details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
+
+footer{padding:2.4rem 1.2rem 3rem;text-align:center;color:var(--muted);font-size:.84rem;border-top:1px solid rgba(255,255,255,.06)}
+footer a{color:var(--light)}
+.foot-cta{margin-bottom:1.4rem}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="kicker">Sistema Operatiu Social</div>
+    <h1>El que ja fas al barri, comptat</h1>
+    <p class="lead">Arreglar la persiana d'algú. Deixar el trepant. Acompanyar al metge. Ensenyar català a qui acaba d'arribar. Tot això <strong>ja val alguna cosa</strong> — el que passa és que no ho compta ningú.</p>
+    <div class="ctas">
+      <a class="cta" href="index.html#/alta">Comença · 5 minuts</a>
+      <a class="cta ghost" href="#com-va">Com funciona</a>
+    </div>
+    <p class="fine">S'obre al teu navegador. No hi ha registre, ni correu, ni contrasenya.</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section>
+  <h2>Segurament et sona alguna d'aquestes</h2>
+  <p class="sub">No som els primers a notar-ho. Som els primers a comptar-ho.</p>
+  <div class="pains">
+    <div class="pain"><q>Porto set anys al barri i conec la meitat de la gent de vista. Si demà em quedo sense feina, no sé a qui trucar.</q><div class="who">Veïna, 41 anys</div></div>
+    <div class="pain"><q>Tinc un traster ple d'eines que faig servir dos cops l'any. I cada cop que necessito una cosa, la compro.</q><div class="who">Veí, 55 anys</div></div>
+    <div class="pain"><q>A l'associació ho fem tot quatre persones. Quan una plega, allò s'acaba.</q><div class="who">Junta d'una entitat</div></div>
+    <div class="pain"><q>He ajudat molt i m'he deixat ajudar poc. Demanar em costa més que fer.</q><div class="who">Voluntària, 63 anys</div></div>
+  </div>
+</section>
+
+<section id="com-va">
+  <h2>El tracte, dit clar</h2>
+  <p class="sub">Demanar-te feina sense dir què en treus seria demanar-te feina. Això és una proposta.</p>
+  <div class="deal">
+    <div class="col give">
+      <h3>Hi poses</h3>
+      <ul>
+        <li>Les <strong>hores</strong> que ja dediques a ajudar</li>
+        <li>Les <strong>eines i objectes</strong> que tens aturats</li>
+        <li>El que <strong>saps fer</strong>, encara que et sembli poca cosa</li>
+        <li>Cinc minuts per apuntar-ho quan passa</li>
+      </ul>
+    </div>
+    <div class="col get">
+      <h3>En treus</h3>
+      <ul>
+        <li><strong>Gent que et coneix</strong> i sap què saps fer</li>
+        <li>Accés al que tenen els altres, sense comprar-ho</li>
+        <li>Un <strong>rastre verificable</strong> del que has aportat — signat, no un «gràcies»</li>
+        <li>Un barri que no depèn de quatre persones</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Tria per on entres</h2>
+  <p class="sub">Ningú comença per dalt. La majoria comença aportant una cosa i ja està.</p>
+  <div class="roles">
+    <div class="role" style="border-top-color:var(--green)">
+      <div class="ic">🦸</div><h3>Superheroi/na</h3>
+      <p>Poses els teus talents, hores i objectes. És l'entrada normal, i n'hi ha prou.</p>
+      <div class="time">≈5 min per començar</div>
+    </div>
+    <div class="role" style="border-top-color:var(--orange)">
+      <div class="ic">👥</div><h3>Coordinador/a</h3>
+      <p>Ajudes que la gent i les entitats s'hi trobin. El rol que fa que això no mori al tercer mes.</p>
+      <div class="time">unes hores al mes</div>
+    </div>
+    <div class="role" style="border-top-color:var(--blue)">
+      <div class="ic">🌐</div><h3>Agent territorial</h3>
+      <p>Fas de pont amb l'ajuntament i el finançament. Portes xifres que es poden defensar.</p>
+      <div class="time">segons el que et proposis</div>
+    </div>
+    <div class="role" style="border-top-color:var(--indigo)">
+      <div class="ic">🏛</div><h3>Guardià/ana</h3>
+      <p>Vetlles perquè les decisions es prenguin, quedin escrites i es puguin defensar.</p>
+      <div class="time">compromís llarg</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Què passa quan cliques</h2>
+  <div class="steps">
+    <div class="step"><h3>Poses el teu nom i el teu poble</h3><p>Res més. No hi ha correu, ni contrasenya, ni verificació per SMS.</p></div>
+    <div class="step"><h3>Tries fins a cinc coses que saps fer</h3><p>D'una llista, o escrivint-les tu. Cuinar per a molta gent també hi compta.</p></div>
+    <div class="step"><h3>Dius quins objectes pots deixar</h3><p>Opcional. Pots deixar-los o donar-los, i és una decisió diferent que el sistema distingeix.</p></div>
+    <div class="step"><h3>Ja hi ets</h3><p>El teu perfil es signa amb una identitat que es genera al teu dispositiu. A partir d'aquí, el que registris queda amb el teu rastre.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="nots">
+    <h2 style="margin-top:0">El que això <em>no</em> fa</h2>
+    <p class="sub" style="margin-bottom:0">Val més dir-ho ara que descobrir-ho després.</p>
+    <ul>
+      <li><strong>No hi ha servidor.</strong> Les teves dades viuen al teu navegador. Si esborres el navegador sense fer còpia, es perden — i per això la còpia de seguretat és de les primeres coses que et proposarà.</li>
+      <li><strong>No venem res, ni tenim res teu.</strong> No hi ha empresa al mig ni compte de ningú. Quan comparteixes amb el teu poble, comparteixes <strong>l'agregat</strong>: «tres persones ofereixen fer reparacions a Torrelles», mai el teu nom ni el teu telèfon.</li>
+      <li><strong>No és una xarxa social.</strong> No hi ha «m'agrada», ni seguidors, ni feed infinit. Hi ha coses que fer i gent que les fa.</li>
+      <li><strong>No et paga.</strong> Una hora val una hora, i el que reps és accés, reconeixement verificable i una xarxa. No un sou.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Preguntes que es fa tothom</h2>
+  <details><summary>Qui hi ha darrere d'això?</summary><p>TeamTowers Humà, des de l'Alt Penedès. El codi és obert i l'app és un sol fitxer que pots descarregar-te i fer servir sense nosaltres. Aquesta és la prova de que no depens de ningú: <a href="index.html">obre'l</a>, desa la pàgina i ja és teu.</p></details>
+  <details><summary>Si no hi ha servidor, com em trobo amb els altres?</summary><p>Connectant dispositius directament entre ells, o compartint el que decideixis publicar al teu territori. És més lent que una app normal i és a posta: cap intermediari vol dir cap intermediari, també quan fa nosa.</p></details>
+  <details><summary>He de saber d'informàtica?</summary><p>No. Has de saber què saps fer i tenir cinc minuts. La part difícil —signatures, comptabilitat, verificació— la fa l'eina sense demanar-te res.</p></details>
+  <details><summary>I si al meu poble no hi ha ningú?</summary><p>Passa sovint, i és el punt de partida normal. Pots crear tu la primera dinàmica —un banc de temps, una biblioteca d'eines— i convidar-hi qui vulguis. La majoria de coses comencen amb tres persones.</p></details>
+  <details><summary>Puc marxar quan vulgui?</summary><p>Sí, i endur-te-ho tot. Hi ha un botó per exportar el teu SOS sencer en un fitxer. No hi ha res que quedi retingut en cap lloc.</p></details>
+</section>
+
+</div>
+
+<footer>
+  <div class="foot-cta"><a class="cta" href="index.html#/alta">Comença · 5 minuts</a></div>
+  <p><a href="index.html">Obre el SOS</a> · <a href="formacio.html">Guia formativa</a> · <a href="blog.html">Blog</a> · <a href="comando.html">Comando Molekulon</a></p>
+  <p style="margin-top:.8rem">TeamTowers Humà · Alt Penedès · el codi és obert i l'app és teva</p>
+</footer>
+
+</body>
+</html>

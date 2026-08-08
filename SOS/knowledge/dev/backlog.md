@@ -82,6 +82,33 @@ l'únic.
 
 ---
 
+**P0b · Gent: rànquing, presència, xat i captació** — fet (V56–V57)
+
+1. ~~**Rànquing de qui mou la xarxa**~~ · **fet (V56)**. Puntua només el que està
+   **signat** —les estimacions de l'oracle no donen reputació a ningú— amb factor
+   de **reciprocitat** (donar i rebre val més que només donar) i decaïment
+   temporal. Cada posició porta el seu **perquè**, construït al mateix lloc que
+   el número.
+2. ~~**Xat ancorat a nodes i fluxos**~~ · **fet (V57)**. La conversa penja d'un
+   node i cada missatge pot citar un flux del mapa, un apunt, una tasca, una
+   iniciativa, un objecte o una oferta. **Fusió per unió**, no LWW: sincronitzar
+   no pot esborrar el que l'altre acabava d'escriure.
+3. ~~**Landing de captació**~~ · **fet**. `SOS/uneix-te.html` — el dolor primer,
+   el tracte (què hi poses / què en treus), els quatre rols, els quatre passos i
+   **què NO fa**. Acaba a `#/alta`, que obre directament el formulari.
+4. ~~**Presència real de tota la xarxa**~~ · **fet (V58)**. Relé **opcional i
+   apagat de sèrie**, sobre WebSocket a pèl (compatible amb Supabase Realtime).
+   **Cap URL ni clau al codi**: cada comunitat hi posa el seu servidor. Hi passen
+   només presència i missatges; mai el ledger ni els nodes. La sala viatja com a
+   hash. Provat amb dos navegadors contra un servidor que parla el protocol
+   (`relay-mock.mjs`).
+5. **Entrega diferida pel relé** · **pendent**. Avui el relé entrega en viu: si
+   qui ha de rebre no hi és, el missatge li arriba al proper sync directe. Per a
+   una bústia de debò caldria emmagatzemar missatges al servidor, i això és una
+   decisió diferent —passaria de relé a dipositari.
+
+---
+
 **P1 · Ara — sense això, el SOS és monousuari**
 
 1. ~~**Sync en viu**~~ · **ja hi era**. En anar a fer-ho es va comprovar que

@@ -688,6 +688,99 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 58 — Un relé que pot ser l'amo de la xarxa no és un relé
+
+Sense servidor, «en línia» només pot voler dir «connectat amb tu ara». Per tenir
+una llista de debò cal que algú relaixi la presència, i el perill evident és que
+aquell algú acabi sent l'amo. Un relé només és acceptable si **està dissenyat
+perquè no pugui ser-ho**:
+
+- **Opcional i apagat de sèrie.** Sense activar-lo, tot funciona com abans. Qui
+  no el vulgui no perd res del que ja tenia.
+- **És el teu, no el nostre.** **No hi ha cap URL ni cap clau escrites al codi.**
+  Posar-hi credencials nostres en un fitxer que se serveix públicament seria
+  dues errades alhora: exposar-les, i convertir-nos en l'intermediari que diem
+  que no volem. Cada comunitat hi posa el seu servidor. Si el nostre cau o canvia
+  de mans, la seva xarxa no.
+- **Hi passa el mínim.** Presència (nom de treball i `did`) i missatges de xat.
+  **Mai el ledger, ni els nodes, ni les fitxes de ningú.** El que no s'envia no
+  es pot filtrar, i això es comprova al test mirant què rep el servidor, no
+  llegint el codi.
+- **La sala no viatja en clar.** El canal és el **hash** del codi de sala. Qui
+  vegi el trànsit no sap a quina comunitat pertany.
+- **El relé no pot crear res.** Un missatge que arriba entra pel mateix camí que
+  un de sincronitzat —unió per id— i si el node no existeix aquí, **es descarta**.
+  Un relé que pogués fer aparèixer nodes seria un relé que escriu al teu SOS.
+- **Caure no pot trencar res.** Amb el relé mort, escriure segueix funcionant i
+  es desa igual; l'estat ho diu en comptes de fer veure que va.
+
+I una que és de codi, no de disseny: s'implementa **a pèl sobre WebSocket**, sense
+cap llibreria. El SOS ha de continuar sent un sol fitxer que funciona obert des
+del disc, i una dependència de CDN ho trencaria just el dia que la CDN no hi
+sigui.
+
+**Com es prova.** Contra un servidor de mentida que parla el protocol de debò
+(`SOS/tests/relay-mock.mjs`), amb dos navegadors a la mateixa sala. Comprovar
+només que l'URL es construeix bé no prova res.
+
+## Veda 57 — Un xat que no diu de què parla és un grup de WhatsApp més
+
+Una eina de gestió comunitària amb xat general acaba tenint el mateix problema
+que el grup de veïns: es parla molt i **no queda rastre de a què es referia**.
+Sis mesos després, «això ho vam decidir al xat» no es pot comprovar.
+
+Per això aquí **la conversa penja d'un node** i cada missatge pot **citar una
+peça concreta**: un flux del mapa de valor, un apunt del registre, una tasca,
+una iniciativa, un objecte, una oferta. La discussió sobre les hores del taller
+viu al costat de les hores del taller.
+
+Tres regles que ho sostenen:
+
+- **Només se cita el que existeix.** Les referències citables es generen del
+  node real (`chatRefsFor`), no d'un camp de text lliure. Una referència
+  inventada seria pitjor que no citar res.
+- **Si el que se citava desapareix, es diu.** El missatge no es toca —el que
+  algú va escriure no s'esborra sol— però la referència es marca com a morta.
+- **El xat es fusiona per unió, no per LWW.** Aquesta és la part que no es pot
+  fer malament: els nodes es sincronitzen amb *last-write-wins* sencer, i amb
+  això dues persones escrivint alhora **es perdrien missatges**. Un xat és una
+  col·lecció només-afegir, així que es fusiona per **id**, a les dues
+  direccions, *abans* de decidir quin node guanya. El que es perd en un xat no
+  es recupera de cap altra banda.
+
+I una de mida: es reté una finestra de missatges. Un xat sense límit fa créixer
+el node per sempre, i el sync l'envia sencer a cada canvi.
+
+## Veda 56 — Un rànquing en una eina de suport mutu es pot girar en contra
+
+Posar un podi on la gent s'ajuda té dues maneres de sortir malament, i totes
+dues s'han de tancar **al càlcul**, no amb un text d'advertència a sota:
+
+- **Es pot inflar sol.** Si compta volum d'apunts, qui es registra hores a si
+  mateix puja igual que qui les ha fet. Només puntua el que porta **signatura**;
+  el que està sense signar es compta a part i es diu, i les **estimacions de
+  l'oracle no puntuen ningú** — una xifra que el sistema s'ha inventat no pot
+  donar reputació a ningú.
+- **Premia acumular en comptes de circular.** Donar molt i no rebre mai no és
+  una xarxa: és una persona cremant-se. El **factor de reciprocitat** baixa la
+  puntuació de qui només dona *i també* de qui només rep, i la deixa sencera a
+  qui fa les dues coses. Modula, no anul·la: aportar quatre vegades més segueix
+  pesant més.
+
+A més, **el que és de fa temps pesa menys** (la meitat cada 180 dies). Sense
+això, el podi se'l queden per sempre els qui hi van ser primer, i deixa de dir
+res sobre qui mou la xarxa *ara*.
+
+I una regla d'interfície que és inseparable del càlcul: **cada posició ha de
+poder dir per què hi és**. El «perquè» es construeix al mateix lloc que el
+número —si surten de llocs diferents, un dia deixaran de dir la mateixa cosa. Un
+número sense desglossament és una autoritat que ningú pot discutir.
+
+**«En línia» és una altra cosa i es diu diferent.** Sense servidor no hi ha
+llista de connectats: només se sap de qui té un canal obert amb tu. Dir «en
+línia» de ningú més seria mentir, així que la resta surt com **última
+activitat**, i la pantalla explica per què no pot dir-ne més.
+
 ## Veda 55 — El fons cooperatiu ha de tenir porta, i no pot mentir
 
 El SOS deia a la seva pròpia documentació que la destinació és un fons
