@@ -48,6 +48,20 @@ que l'URL es construeix bé —i això no prova res.
 (l'atles fa `fetch`, i `file://` el bloqueja). Els que el necessiten se
 l'engeguen ells.
 
+## `probes/` — defectes oberts, no tests
+
+`run.mjs` només recull `test-*.mjs` del seu propi directori, així que el que hi
+ha a `probes/` no fa vermella la suite. Són **demostracions de defectes que
+encara no estan tapats**: es corren a mà i descriuen el que passa avui.
+
+```bash
+node SOS/tests/probes/sonda-fusio.mjs
+```
+
+`sonda-fusio.mjs` demostra que sincronitzar **perd apunts del ledger i socis**
+(LWW de node sencer). És l'E1 del [backlog de beta](../knowledge/vision/backlog-beta-i-escala.md);
+quan estigui fet, passa a `test-fusio.mjs` amb les assercions girades.
+
 ## La guarda de KISS
 
 `SOS/tools/check-kiss.js` no és un test de Playwright: corre al CI a cada PR, en
