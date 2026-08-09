@@ -137,17 +137,36 @@ const senseToken = await page.evaluate(async () => {
 ok(senseToken.mode === 'fitxer' && /^SOS\/registre\/v\//.test(senseToken.path),
   'mode fitxer, cap a ' + senseToken.path);
 
-console.log('\n8 · A la pantalla');
+console.log('\n8 · Ancorar: què porta l\'esdeveniment, i què NO');
+const anc = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const pack = await S.registerPublicPack();
+  const ev = await S.nostrBuildRegisterAnchor(pack, 'pk');
+  const c = JSON.parse(ev.content);
+  let sense;
+  try { await S.anchorRegisterPack(pack); sense = { threw: false }; }
+  catch (e) { sense = { threw: true, code: e.code, msg: e.msg }; }
+  return { ev, c, sense, leaves: pack.leaves.length };
+});
+ok(anc.c.registre && anc.c.root, 'l\'esdeveniment porta el CID i l\'arrel');
+ok(!/leaves|totals/.test(JSON.stringify(anc.ev)),
+  'i cap fulla ni cap total: als relés hi va la petjada, no el registre');
+ok(anc.ev.tags.some(t => t[0] === 'd' && t[1] === 'sos-registre'),
+  'amb `d` fix, així la versió nova substitueix l\'anterior en comptes d\'apilar-se');
+ok(anc.sense.threw && anc.sense.code === 'nosigner',
+  'sense extensió NIP-07 es nega i explica què es perd: ' + String(anc.sense.msg).slice(0, 60) + '…');
+
+console.log('\n9 · A la pantalla');
 const ui = await page.evaluate(async () => {
   const S = window.__SOS;
   S.openRegisterPackModal();
   await new Promise(r => setTimeout(r, 400));
-  const has = ['#rpPub', '#rpProve', '#rpHash', '#rpCopyRoot'].filter(x => !!document.querySelector(x));
+  const has = ['#rpPub', '#rpAnchor', '#rpProve', '#rpHash', '#rpCopyRoot'].filter(x => !!document.querySelector(x));
   const txt = document.querySelector('.modal').textContent;
   S.closeModal();
   return { has: has.length, capEnsenyar: /No cal ensenyar què diu/.test(txt) };
 });
-ok(ui.has === 4, 'hi ha publicar, comprovar, el camp del hash i copiar l\'arrel');
+ok(ui.has === 5, 'hi ha publicar, ancorar, comprovar, el camp del hash i copiar l\'arrel');
 ok(ui.capEnsenyar, 'i es diu que per comprovar-ho no cal ensenyar el contingut de l\'apunt');
 
 await b.close();
