@@ -688,6 +688,78 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 67 — Una xifra inflada i incompleta és pitjor que cap xifra
+
+El toast deia «Sincronitzat · N canvis», i aquell N mentia dues vegades:
+comptava la mateixa fusió diverses vegades —una pel xat, una per cada
+col·lecció, una pel node sencer— i **no comptava el que s'havia sobreescrit**.
+Un número així no és una aproximació: és una invitació a refiar-se'n.
+
+Des de la veda 64 els apunts ja no es perden —s'uneixen—, però la resta del node
+segueix resolent-se per LWW: el mapa de valor, el tauler, el nom. Això no és cap
+defecte a tapar; per a camps que es reescriuen sencers és la decisió correcta.
+El que no és correcte és **no dir-ho**. Si en sincronitzar el teu mapa de valor
+ha estat substituït pel de l'altre, ho has de saber en aquell moment, no
+descobrir-ho un mes després.
+
+D'aquí surt la regla: **el que s'uneix i el que se substitueix no es barregen
+mai al mateix comptador**. Un «+3 a ledger» i un «mapa de valor substituït» són
+notícies de signe contrari, i sumar-les en un sol número les amaga totes dues.
+
+I el corol·lari de tracte: quan alguna cosa s'ha substituït, no n'hi ha prou amb
+un toast. Es diu a la cara i es pot mirar què i on. Sense oferir cap botó de
+desfer que no podríem complir.
+
+## Veda 68 — Qui no es queixa, plega
+
+No hi havia cap camí per dir «això s'ha trencat». El senyal del que falla només
+arribava si algú et trucava, i en una beta amb gent que no et coneix això vol
+dir que **no arriba**. Quan una eina falla dues vegades a algú que no hi té cap
+compromís, aquell algú no obre una incidència: deixa d'apuntar hores i no torna.
+I nosaltres ho llegim com «no els interessava».
+
+Per això una cosa que costa una tarda anava abans que coses molt més grans: és
+la que converteix la beta en **informació** en comptes d'anècdotes.
+
+Dues decisions la fan usable de debò:
+
+- **Els errors ja passats es recullen sols.** Preguntar «i què deia exactament
+  l'error?» és demanar-li a la gent que faci de programador. Un anell dels
+  últims errors, i ja el porta l'informe.
+- **Es veu tot el que s'enviarà, abans d'enviar-ho**, i passa pel mateix sedàs
+  que qualsevol altre paquet que surt d'aquí (`verifyNoLeak`). Una eina que
+  demana confiança i envia el que no ensenya no la mereix. I si qui escriu hi
+  posa un nom sense pensar-hi, s'avisa **abans**, no després.
+
+Context, no contingut: comptadors i identificadors tècnics. El que ajuda a
+reproduir un error és saber que hi havia 40 socis, no com es diuen.
+
+## Veda 69 — Designar no és custodiar
+
+Si qui sosté el node perd el telèfon, la història del node se'n va amb ell. No
+és un cas rebuscat: és el cas normal al cap de dos anys. Una persona plega,
+canvia de mòbil, o simplement se li espatlla — i amb ella marxen les hores que
+ha apuntat tothom.
+
+Les peces hi eren: `exportBackup` i els envelopes xifrats per membre de la veda
+29. El que faltava era el **rol**: algú, a part de qui el sosté, que en tingui
+una còpia.
+
+I no va caldre inventar cap rol nou al sistema de rols. És una
+**responsabilitat dins del node**, i viu com una marca al soci. Un rol global
+diria que aquella persona custodia «en general», i el que custodia és aquest
+node. Quan una responsabilitat és local, fer-la global és perdre informació,
+no guanyar-ne.
+
+La regla que evita que això sigui teatre: **designar no és custodiar**. Una
+persona marcada que encara no ha rebut cap còpia no compta com a còpia, i es diu
+així de clar. Un comptador que digués «2 custodis» amb zero còpies entregades
+seria pitjor que no tenir-ne cap: et faria dormir tranquil.
+
+I restaurar és **unir, no substituir**. Qui restaura una còpia sovint ja té
+coses del node —ha seguit apuntant mentre l'altre no hi era—, i una restauració
+que esborrés allò seria la pèrdua de la veda 64 tornant per la porta del darrere.
+
 ## Veda 66 — Simplificar és decidir per on comences, no esborrar el que hi ha
 
 Tothom veia el mateix: fins a 13 pestanyes al node, 32 accions al llançador, 17

@@ -42,6 +42,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-fusio.mjs` | V64 | Que sincronitzar no destrueixi res: triple entrada, unió, i una cadena per autor |
 | `test-canal.mjs` | V65 | El canal asíncron: que el repositori no doni veritat, i que sense clau no se'n tregui res |
 | `test-rol-ux.mjs` | V66 | Que el rol decideixi per on comences — i sobretot, què NO s'amaga |
+| `test-beta.mjs` | V67 | El rastre de la fusió, el camí per dir que s'ha trencat, i que designar no sigui custodiar |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
 heartbeat, presència i broadcast). Sense ell, del relé només es podria comprovar

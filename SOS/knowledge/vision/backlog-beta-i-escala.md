@@ -138,8 +138,8 @@ precisament per això que hi ha fluxos trencats.
 | R7 | **La resta de la xarxa** | altres nodes, federacions temàtiques | massa crítica, coincidències |
 | R8 | **Administració** | marc, espai, de vegades diners | dades agregades del que passa al territori |
 | R9 | **Qui allotja el pont** *(opcional)* | un relé perquè es vegin en viu | — *(no rep res avui)* |
-| **R10** | **Qui recull el que falla** | ⚠️ **no existeix** | — |
-| **R11** | **Qui custodia la còpia** | ⚠️ **no existeix** | — |
+| R10 | **Qui recull el que falla** | ✅ creat a V67 | senyal real del que es trenca |
+| R11 | **Qui custodia la còpia** | ✅ creat a V67 | que el node no depengui d'un telèfon |
 | **R12** | **Qui sosté la segona llengua** | ⚠️ **no existeix** | — |
 
 ### 2.2 Fluxos
@@ -162,13 +162,13 @@ precisament per això que hi ha fluxos trencats.
 | R4 → R2 | I | legitimitat davant del veïnat | ✅ |
 | R5 → R2 | I | formació, itinerari, acompanyament | ✅ (mentoria, diagnòstic) |
 | R2 → R5 | I | casos reals que validen el model | ⚠️ només si els nodes duren |
-| R1 → R6 | I | **senyal del que s'ha trencat** | **⊘ no hi ha cap camí a l'app** |
+| R1 → R6 | I | **senyal del que s'ha trencat** | ✅ **reparat a V67** |
 | R6 → R1 | T | correccions, versions | ✅ unidireccional |
 | R8 → R2 | T | marc, espai, subvenció | ✅ fora de l'app |
 | R2 → R8 | T | dades agregades del territori | ✅ (`toPublicPack`) |
 | R9 → R2 | T | presència i entrega en viu | ⚠️ **només xat**, no el registre |
 | R2 → R9 | I | — | **⊘ qui allotja no rep res** |
-| R2 → R11 | T | còpia xifrada del node | **⊘ el rol no existeix** |
+| R2 → R11 | T | còpia xifrada del node | ✅ **reparat a V67** (custòdia al node) |
 
 ### 2.3 Salut de la xarxa
 
@@ -223,9 +223,9 @@ El cost és una estimació relativa, no un compromís de calendari.
 | ~~P0~~ | ~~**E1** · triple entrada + cadena per autor~~ | **✅ fet a V64** | — | — | — |
 | ~~P0~~ | ~~**E11** · GitHub com a canal asíncron per tema~~ | **✅ fet a V65** | — | — | — |
 | ~~P0~~ | ~~**E12** · la UX la mana el full de ruta del rol~~ | **✅ fet a V66** | — | — | — |
-| **P0** | **E2** · la fusió deixa rastre | A i B | — | baix | El toast diu «N canvis» i N no compta el que s'ha perdut |
-| **P0** | **E7** · camí per dir «això s'ha trencat» | A i B | — | baix | Amb desconeguts no reps queixes: reps abandonaments |
-| **P0** | **E8** · la còpia no depèn d'una persona | A i B | — | mitjà · les peces hi són | Qui perd el telèfon s'endú el node |
+| ~~P0~~ | ~~**E2** · la fusió deixa rastre~~ | **✅ fet a V67** | — | — | — |
+| ~~P0~~ | ~~**E7** · camí per dir «això s'ha trencat»~~ | **✅ fet a V67** | — | — | — |
+| ~~P0~~ | ~~**E8** · la còpia no depèn d'una persona~~ | **✅ fet a V67** | — | — | — |
 | **P1** | **E3** · el relé porta patches signats | B | E1 | mitjà | Convergir exigeix que tothom es vegi amb tothom |
 | **P1** | **E4** · més d'un company alhora | B | E3 | mitjà | Una trobada de tres són tres torns |
 | **P2** | **E5** · sincronitzar només l'àmbit compartit | B a escala | E1, E3 | mitjà | Cada aparellament mou tota la comarca |
@@ -312,20 +312,20 @@ es ressalta.
 cadascú vegi **el seu següent pas** i la resta quedi a un clic al llançador,
 que per això es va agrupar a V63.
 
-**E2 · La fusió ha de deixar rastre** — *repara R2→R1 (confiança)*
+### ✅ E2 · La fusió deixa rastre — *fet a V67*
 Avui el toast diu «Sincronitzat · N canvis» i **N no compta el que s'ha perdut**.
 Ha de dir què ha entrat, què ha xocat i què s'ha descartat. Mentre E1 no hi
 sigui, això és el mínim per no mentir; després, segueix sent el que fa auditable
 una fusió.
 
-**E7 · Un camí per dir «això s'ha trencat»** — *repara R1→R6, crea R10*
+### ✅ E7 · Un camí per dir «això s'ha trencat» — *fet a V67*
 No existeix. El senyal de què falla només arriba si algú et truca. En una beta
 amb gent que no et coneix, això vol dir que **no arribarà**: la gent no es queixa,
 plega. Un botó que reculli context (versió, node, què feia) i el deixi enviar o
 copiar. És dels més barats de la llista i és el que converteix la beta en
 informació en comptes d'anècdotes.
 
-**E8 · La còpia deixa de dependre d'una persona** — *repara R2→R11, crea R11*
+### ✅ E8 · La còpia deixa de dependre d'una persona — *fet a V67*
 Si qui sosté el node perd el telèfon, la història del node se'n va amb ell.
 `exportBackup` existeix i els envelopes xifrats per membre també (V29): falta el
 **rol** i la rutina que reparteixi la còpia entre diversos membres. És el que
