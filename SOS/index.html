@@ -1729,28 +1729,11 @@ function dbPut(node){return new Promise((res,rej)=>{const r=tx('readwrite').put(
 function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
-/* ═══════════ V69 · La capa de la segona llengua ═══════════
-   `<html lang="ca">` i 2.305 cadenes catalanes incrustades al codi. Per a una
-   beta a Catalunya el català no és cap barrera; per a Euskadi ho és tot.
-
-   És l\'única entrada del backlog el **cost de la qual creix cada setmana que no
-   es fa**: cada tanda de feina hi afegeix text incrustat. Per això es fa ara i
-   no quan calgui.
-
-   La decisió que ho fa possible sense un refactor de 2.305 punts: **la cadena
-   catalana és la clau**. `t(\'Desa\')` torna «Desa» en català i «Guardar» en
-   castellà. D\'aquí surten tres propietats que valen més que l\'estalvi:
-
-   · **Res es pot trencar a mitges.** Una cadena sense traduir surt en català,
-     mai una clau crua com `btn.save` a la cara de ningú. El pitjor cas d\'aquesta
-     capa és exactament el que tenim avui.
-   · **Migrar és incremental.** Cada `t()` que s\'afegeix és una millora
-     independent; no cal convertir-ho tot perquè funcioni res.
-   · **No s\'inventen claus.** Inventar-les és feina, i és feina que es fa
-     malament: acabes amb `msg.error.2` i ningú sap què deia.
-
-   I el que fa que el deute deixi de créixer d\'amagat: es **mesura**
-   (`check-i18n.js`). Un deute que no es veu és el que creix. */
+/* La cadena catalana és la clau: `t('Desa')` torna «Desa» en català i
+   «Guardar» en castellà. El que no està traduït surt en català, mai una clau
+   crua, i per això migrar és incremental i res es trenca a mitges. El deute es
+   mesura a `tools/check-i18n.js`.
+   → codex.md · veda 72, «La cadena original és la clau». */
 const LANGS={ca:{id:'ca',label:'Català',ic:'🏴'},es:{id:'es',label:'Castellà',ic:'🇪🇸'}};
 /* El primer tram: el que una persona nova es troba abans de decidir si es queda
    —portades, pestanyes, rols, accions del llançador i els avisos que surten
@@ -2009,28 +1992,11 @@ async function verifyChain(entries){
 // Helper compost: firma + encadena en una sola operació. Els apunts pre-existents sense firma es marquen com "legacy".
 async function signAndChainEntry(entry,prevHash){entry.prevHash=prevHash||'';await signRecord(entry);entry.hash=await sha256(_payload({...entry,hash:undefined}));return entry;}
 
-/* ═══════════ V64 · La cadena és per autor, i el rebut és compartit ═══════════
-   Hi havia **una sola cadena per node**: cada apunt encadenat amb l'anterior,
-   fos de qui fos. Sembla més fort i és més fràgil, perquè obliga a un ordre
-   global —i un ordre global entre gent que apunta sense estar connectada només
-   se sosté amb un servidor que digui qui va primer. Sense servidor, l'única
-   sortida que quedava era que en sincronitzar guanyés un i es perdés l'altre.
-   Es va comprovar: es perdien hores signades.
-
-   Comptabilitat de **triple entrada**: el que dona, el que rep, i el **rebut**
-   que tots dos guarden signat. El rebut és la tercera entrada i és la que mana.
-   D'aquí surten dues regles:
-
-   - **Cada autor encadena el seu.** `prevHash` apunta a l'apunt anterior *del
-     mateix `did`*. Dues persones que apunten alhora fan créixer dues cadenes
-     que no es trepitgen, i la unió de les dues és vàlida sense reordenar res.
-   - **La unió no destrueix.** Fusionar dos ledgers és quedar-se'ls tots dos.
-
-   I això és el que fa el sistema **antifràgil**: com més gent guarda una còpia
-   d'un rebut, més difícil és perdre'l o falsejar-lo. Amb la cadena única, cada
-   còpia de més era una oportunitat de conflicte; amb la cadena per autor, cada
-   còpia de més és una prova de més. Perdre el telèfon deixa de ser perdre la
-   feina, perquè qui era a l'altra banda de l'intercanvi també la té. */
+/* Triple entrada: el que dona, el que rep i el rebut que tots dos guarden
+   signat. `prevHash` apunta a l'anterior del mateix `did`, així que dues
+   persones que apunten alhora fan dues cadenes que no es trepitgen i la unió
+   és vàlida sense reordenar res.
+   → codex.md · veda 64, «Un ordre global vol dir un amo». */
 const entryAuthor=e=>(e&&e.signer&&e.signer.did)||'';
 // Choke point per a totes les escriptures reals al ledger — signa + encadena + unshift atomicament.
 async function pushLedger(ledgerArr,entry){
@@ -5518,24 +5484,10 @@ async function publishKeyLink({relays,onProgress}={}){
   return{pack,results,ok:results.some(r=>r.status==='ok')};
 }
 
-/* ═══════════ V67 · La còpia deixa de dependre d\'una persona ═══════════
-   Si qui sosté el node perd el telèfon, la història del node se\'n va amb ell.
-   No és un cas rebuscat: és el cas normal al cap de dos anys —una persona
-   plega, canvia de mòbil, o simplement se li espatlla. I amb ella marxen les
-   hores que ha apuntat tothom.
-
-   `exportBackup` ja existia i els envelopes xifrats per membre també (V29). El
-   que faltava era el **rol**: algú, a part de qui el sosté, que en tingui una
-   còpia. Això és el que treu el node de tenir un únic punt de fallada.
-
-   No cal inventar cap rol nou al sistema de rols: és una **responsabilitat
-   dins del node**, i viu com una marca al soci. Un rol global diria que aquella
-   persona custodia «en general», i el que custodia és aquest node.
-
-   La regla que fa que això no sigui teatre: **designar no és custodiar**. Una
-   persona marcada que encara no ha rebut cap còpia no compta com a còpia, i es
-   diu així de clar. Un comptador que digués «2 custodis» amb zero còpies
-   entregades seria pitjor que no tenir-ne cap: et faria dormir tranquil. */
+/* Custodiar és una responsabilitat d'aquest node, no un rol global: viu com
+   una marca al soci. I designar no és custodiar — qui encara no ha rebut cap
+   còpia no compta com a còpia. Restaurar uneix, no substitueix.
+   → codex.md · veda 69, «Designar no és custodiar». */
 const CUSTODY_PACK_TYPE='sos-custody-pack';
 const custodiansOf=node=>membersOf(node).filter(m=>m&&m.custodia);
 async function setCustodian(node,memberId,on){
@@ -5608,46 +5560,19 @@ async function restoreFromCustodyPack(pack){
   return{ok:true,nou:false,afegits};
 }
 
-/* ═══════════ V65 · El canal asíncron: el repositori com a bústia ═══════════
-   El relé demana que **dues persones hi siguin alhora**. En un poble això no
-   passa gairebé mai: la gent obre l'app el diumenge al vespre, i no totes el
-   mateix diumenge. Un canal que exigeix simultaneïtat és un canal que no s'usa.
-
-   El repositori ja feia aquest paper dues vegades —l'atles i `supply/`— i ningú
-   ho havia llegit com el que és: un **bus asíncron, durable, versionat, amb
-   historial i auditable**. Cadascú hi deixa el seu quan pot; qui arriba després
-   se'l troba.
-
-   Això només és possible **gràcies a V64**: els apunts són idempotents i
-   s'uneixen sense conflicte, així que un directori al qual tothom afegeix
-   convergeix sol. Amb la cadena única hauria calgut decidir qui va primer, i
-   això és el que no volem haver de decidir.
-
-   I és la peça antifràgil per excel·lència: cada clon del repositori, cada fork
-   i cada CDN és una còpia més del registre. Com més gent el fa servir, més
-   difícil és perdre'l.
-
-   Tres regles que fan que això no sigui una porta oberta:
-
-   - **El transport no dona veritat.** Un paquet es verifica sencer i **apunt
-     per apunt**; el que no porta firma vàlida es descarta encara que vingui del
-     repositori oficial. És la mateixa regla de V60, i el motiu és el mateix:
-     confiar en l'origen és com es cola una fuita.
-   - **Qui no té la clau no llegeix res.** El contingut va xifrat amb la clau
-     del node (V29). El repositori és una bústia pública, no un taulell.
-   - **Publicar dues vegades no fa mal.** La unió és idempotent; per això es pot
-     reintentar sense pensar-hi. */
+/* El repositori com a bústia asíncrona per tema: cadascú hi deixa el seu quan
+   pot. Només funciona perquè els apunts són idempotents (veda 64), i per això
+   un directori al qual tothom afegeix convergeix sol.
+   → codex.md · veda 65, «Un canal que exigeix simultaneïtat és un canal que no
+   s'usa» — hi són les tres regles: el transport no dona veritat, qui no té la
+   clau no llegeix res, publicar dues vegades no fa mal. */
 const CHANNEL_BASE='canal/';
 const CHANNEL_PACK_TYPE='sos-channel-pack';
 const CHANNEL_SEEN_ID='__channelseen';
 const channelSlug=s=>themeSlug(s||'');
-/* ═══════════ El sobre, un cop i per a tothom ═══════════
-   El canal (V65), la custòdia (V67) i el relé (V68) fan exactament la mateixa
-   feina: agafar el que puc demostrar d'un node, xifrar-ho amb la clau del node
-   i signar-ho; i a l'altra banda, comprovar la firma, desxifrar i **verificar
-   apunt per apunt**. Tres còpies d'això serien tres llocs on la regla de «el
-   transport no dona veritat» es pot afluixar sense que ningú se n'adoni.
-   Val més un sol lloc on sigui difícil equivocar-se. */
+/* El canal, la custòdia i el relé fan el mateix sobre. Escrit tres vegades
+   serien tres llocs on afluixar «el transport no dona veritat», i el tercer és
+   el que s'oblida. → codex.md · veda 71. */
 async function sealPack(node,type,head,body){
   if(!node)throw{msg:'Cal un node'};
   let key=null;try{key=await getMyNodeKey(node);}catch(e){key=null;}
@@ -8479,24 +8404,10 @@ const ROLE_JOURNEYS={
    s'endevina —«ara miro el SOS com a mentora» és una decisió teva— i si no has
    triat res, es fa servir el de més pes. Una lent triada que ja no et
    correspon deixa de valer: no vull mostrar-te el camí d'algú que no ets. */
-/* ═══════════ V67 · Un camí per dir «això s\'ha trencat» ═══════════
-   No n\'hi havia cap. El senyal del que falla només arribava si algú et
-   trucava, i en una beta amb gent que no et coneix això vol dir que **no
-   arriba**: la gent no es queixa, plega. Quan una eina falla dues vegades a
-   algú que no hi té cap compromís, aquell algú no obre una incidència — deixa
-   d\'apuntar hores i no torna. I nosaltres ho llegim com «no els interessava».
-
-   Per això és barat i va abans que coses més grans: és el que converteix la
-   beta en **informació** en comptes d\'anècdotes.
-
-   Dues coses el fan usable de debò:
-
-   · **Els errors ja passats es recullen sols.** Demanar «i què deia exactament
-     l\'error?» és demanar que la gent faci de programador. Un anell dels últims
-     errors, i ja el porta l\'informe.
-   · **Es veu tot el que s\'enviarà, abans d\'enviar-ho.** I passa pel mateix
-     sedàs que qualsevol paquet que surt d\'aquí (`verifyNoLeak`). Una eina que
-     demana confiança i envia el que no ensenya no la mereix. */
+/* Sense un camí per queixar-se, la gent que no et coneix no es queixa: plega.
+   Els errors ja passats es recullen sols i es veu tot el que s'enviarà abans
+   d'enviar-ho, pel mateix sedàs que qualsevol paquet (`verifyNoLeak`). Context,
+   no contingut. → codex.md · veda 68, «Qui no es queixa, plega». */
 const SOS_VERSION='V67';
 const _errRing=[];
 function noteError(kind,msg,extra){
@@ -8599,28 +8510,11 @@ function openIncidentReport(){
   bg.querySelector('#incClose').onclick=closeModal;
   return bg;
 }
-/* ═══════════ V66 · El full de ruta del rol decideix què es veu ═══════════
-   Tothom veia el mateix: fins a 13 pestanyes al node, 32 accions al llançador,
-   17 rutes. Una persona que ve a apuntar tres hores al mes n'ha de fer servir
-   sis, i les ha de trobar entre totes les altres. La informació hi era; el que
-   no hi havia era **una manera de saber quina et toca a tu**.
-
-   Les peces ja hi eren i no s'havien connectat: `ROLE_JOURNEYS` sap què fa
-   cada rol, `activeRoleId` sap quin ets ara, i cada guia contextual ja porta la
-   seva `lens`. El que faltava era que això **decidís**, no només ressaltés.
-
-   Això **no treu cap funció a ningú** —cadascuna serveix a algú, i per això la
-   veda 63 les va agrupar en comptes d'esborrar-ne. El que fa és que cadascú
-   comenci pel seu, i la resta quedi a un clic.
-
-   Tres regles que eviten que simplificar es converteixi en amagar:
-
-   - **Una pestanya amb contingut no s'amaga mai.** Si hi ha apunts, socis o
-     objectes, hi són visibles encara que el teu rol no els necessiti. Amagar
-     feina que algú ja ha fet no és simplificar: és fer-la desaparèixer.
-   - **La pestanya on ets no desapareix sota els peus.**
-   - **El que s'amaga es diu, i es desamaga des del mateix lloc.** Una pestanya
-     que marxa en silenci és una decisió que l'app t'ha pres a l'esquena. */
+/* El rol decideix per on comences, no què existeix. `tdefs` són
+   `[id, etiqueta, comptador]` i el comptador ja diu si hi ha feina a dins: una
+   pestanya amb contingut no s'amaga mai, la pestanya on ets tampoc, i el que
+   s'amaga es diu i es desamaga des del mateix lloc.
+   → codex.md · veda 66, «Simplificar és decidir per on comences». */
 const ROLE_TABS={
   simpatitzant:['map','xat','resum'],
   superheroi:['map','ledger','banctemps','biblioteca','xat'],
@@ -12831,20 +12725,10 @@ async function _rlOnChat(m){
   if(state.activeId===nd.id&&state.tab==='xat')renderWorkspace();
   else toast('💬 '+(m.msg.who||'Algú')+' a '+nd.name);
 }
-/* ═══════════ V68 · El relé porta proves, no només xat ═══════════
-   El relé ja existia, ja és opcional i el configura qui vulgui, i el topic ja
-   és un hash. Però només portava conversa: per fer arribar els **apunts** calia
-   quedar cara a cara amb un QR, d'un en un. Amb N nodes això són N trobades, i
-   és el que impedeix que la xarxa convergeixi sola.
-
-   La regla que fa que això no torni a posar un amo al mig: **el relé
-   transporta, no escriu història**. No té clau. El patch va xifrat amb la clau
-   del node i signat pel `did`, i en arribar es comprova el sobre i **cada apunt
-   per separat** —el mateix `openPack` del canal. Qui allotja el relé veu passar
-   bytes que no pot llegir ni alterar sense que es noti.
-
-   I per això el patch pot anar per un servidor de tercers sense que calgui
-   refiar-se'n gens: és la mateixa premissa de V65, aquí en directe. */
+/* El relé transporta i no té clau: el patch va xifrat amb la clau del node i
+   signat pel `did`, i en arribar es comprova el sobre i cada apunt per separat.
+   Un patch d'un node que no tens es descarta.
+   → codex.md · veda 70, «El relé transporta, no escriu història». */
 const PATCH_TYPE='sos-patch';
 const _rlCarried={enviats:0,rebuts:0,apunts:0,descartats:0};
 function relayContribution(){return Object.assign({},_rlCarried);}
@@ -13286,28 +13170,10 @@ function renderFons(w){
   w.appendChild(body);
 }
 
-/* ═══════════ V70 · La home també és del rol de qui la mira ═══════════
-   V66 va fer que les pestanyes del node les manés el full de ruta del rol. La
-   home es va quedar igual per a tothom: **1.876 px, 6 seccions i 25 botons**,
-   idèntics per a qui ve a apuntar tres hores al mes i per a qui sosté el node.
-
-   Mesurat, el que hi fallava:
-
-   · **Dos botons primaris competint** («Què hi ha a prop» i el pas següent). Dos
-     primaris són cap primari, i el que hauria de manar —el pas següent del teu
-     camí— quedava a la segona fila darrere de sis botons fantasma.
-   · **«Els teus propers passos» eren tres «Prova: …»** quan no hi havia res que
-     reclamés atenció. A un banc de temps amb cinc socis i cap apunt, el proper
-     pas no és «Prova: MATRIU · incubar»: és **registrar les primeres hores**.
-   · **«Què has fet servir · 4/10» era la secció més gran de la pantalla**: un
-     full de deures de deu targetes. El ganxo de completar està bé —enganxa— però
-     no pot ocupar mitja home a algú que ha vingut a apuntar hores.
-   · **«Reclama la teva atenció» ocupava una secció sencera per dir que no hi
-     havia res.**
-
-   Les regles són les mateixes de la veda 66, perquè el problema és el mateix:
-   el que té contingut no s\'amaga, el que s\'amaga es diu i es desamaga des del
-   mateix lloc, i si el filtre deixaria la home buida no es filtra. */
+/* Mateixes regles que la veda 66, aplicades a la portada: una sola acció
+   primària (el pas següent), el proper pas surt del que hi ha i no del que
+   falta per estrenar, i una secció buida no ocupa lloc.
+   → codex.md · vedes 73 i 74. */
 const HOME_SECTIONS={
   simpatitzant:['cami','aprop','moviment'],
   superheroi:['cami','passos','aprop','moviment'],
@@ -14731,19 +14597,11 @@ function mergeAppendOnly(a,b,kind){
   if(kind==='ledger')out.sort((x,y)=>String(y.ts||'').localeCompare(String(x.ts||'')));
   return out;
 }
-/* ═══════════ V67 · Una fusió que no deixa rastre demana fe ═══════════
-   El toast deia «Sincronitzat · N canvis», i aquell N mentia dues vegades:
-   comptava **una mateixa fusió diverses vegades** (una pel xat, una per cada
-   col·lecció, una pel node sencer) i **no comptava el que s'havia
-   sobreescrit**. Un número inflat i incomplet és pitjor que cap número: convida
-   a refiar-se'n.
-
-   Des de V64 els apunts ja no es perden —s'uneixen—, però la resta del node
-   segueix resolent-se per LWW: el mapa de valor, el tauler, el nom. Això no és
-   un defecte a tapar; és una decisió raonable per a camps que es reescriuen. El
-   que no és raonable és **no dir-ho**. Si en sincronitzar el teu mapa de valor
-   ha estat substituït pel de l'altre, ho has de saber en aquell moment, no
-   descobrir-ho un mes després. */
+/* El que s'uneix i el que se substitueix no comparteixen mai comptador: són
+   notícies de signe contrari. Els apunts s'uneixen (veda 64); la resta del node
+   segueix per LWW, i això s'ha de dir en el moment, no descobrir-ho un mes
+   després. → codex.md · veda 67, «Una xifra inflada i incompleta és pitjor que
+   cap xifra». */
 const MERGE_IGNORE=new Set(['updatedAt','chat','id','kind']);
 function newMergeReport(){return{nous:0,esborrats:0,entitats:0,apunts:{},sobreescrits:[],total:0};}
 /* Quins camps ha substituït realment el LWW. Els que s'uneixen no compten: ja
