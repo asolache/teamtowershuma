@@ -230,7 +230,7 @@ El cost és una estimació relativa, no un compromís de calendari.
 | **P1** | **E4** · més d'un company alhora | B | E3 | mitjà | Una trobada de tres són tres torns |
 | **P2** | **E5** · sincronitzar només l'àmbit compartit | B a escala | E1, E3 | mitjà | Cada aparellament mou tota la comarca |
 | **P2** | **E10** · mesurar l'escala de comarca | B a escala | E5 | baix | Es promet una escala que no s'ha provat |
-| **P2** | **E9** · pes | A i B | — | variable | 90 % del sostre, i cada canvi es baixa sencer |
+| ~~P2~~ | ~~**E9** · pes~~ | **✅ resolt a V71** (mesurat, desduplicat i sostre pujat amb motiu) | — | — | — |
 | ~~P3~~ | ~~**E6** · segona llengua (ca · es)~~ | **✅ la capa, feta a V69** | — | — | — |
 
 ### Les tres decisions que amaga aquesta taula
@@ -356,9 +356,24 @@ Enviar només l'àmbit que les dues bandes comparteixen.
 comarca real amb 30 municipis és més gran, i amb E5 encara sense fer, cada
 aparellament ho mou tot. Mesurar el cas de comarca abans de prometre'l.
 
-**E9 · Pes** — 360 KB gzip, **90 % del sostre declarat**. Amb dades mòbils d'un
-poble, i amb un sol fitxer no hi ha caché parcial: cada canvi es baixa sencer.
-Abans d'afegir res gran, decidir si es puja el sostre o si se separa alguna cosa.
+### ✅ E9 · Pes — *resolt a V71, i no com s'esperava*
+
+Deia: «360 KB gzip, 90 % del sostre. Abans d'afegir res gran, decidir si es puja
+el sostre o si se separa alguna cosa.» En arribar al 94 % es va mesurar, i la
+resposta no era on l'esperàvem: **el pes no és a les dades** —cap bloc en passa
+de 5 KB gzip— **sinó als comentaris**: 170 KB en cru, 72 KB gzip, el 20 % del
+fitxer. Les vedes escrites dins del codi.
+
+Fet: desduplicar els 10 blocs on estava **verificat** que la prosa ja era a
+`knowledge/codex.md` (3,45 KB gzip). Els 32 restants no s'han tocat: no s'ha
+comprovat què dupliquen, i el matching automàtic per vocabulari s'equivoca.
+
+Decidit: **pujar el sostre a 450 KB amb el motiu escrit** a `check-kiss.js`.
+Buidar els 32 blocs val 3 punts percentuals a canvi de 32 explicacions, i 16 KB
+en un fitxer que es cacheja no els nota ningú. La premissa d'«amb un sol fitxer
+cada canvi es baixa sencer» és certa, però 16 KB sobre 375 no la mouen.
+
+El sostre havia fet la seva feina: forçar la mesura i la conversa. → veda 75.
 
 ### P3 · Arribar més lluny
 

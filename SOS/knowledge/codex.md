@@ -688,6 +688,38 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 75 — Un sostre no és una veritat: és una conversa ajornada
+
+El pes va arribar al 94 % del sostre de 400 KB i tocava fer alguna cosa. En
+mesurar d'on venia, la resposta no era on l'esperàvem: **no és a les dades** —cap
+bloc en passa de 5 KB gzip— **sinó als comentaris**. 170 KB en cru, 72 KB gzip,
+el 20 % del fitxer. És a dir: aquestes vedes, escrites dins del codi.
+
+Pel camí, dues coses van corregir a la baixa el guany que s'esperava, i totes
+dues valen com a lliçó de mesura:
+
+- **El gzip ja desduplica la prosa.** Vuit quilobytes de text en cru en van
+  donar 3,45 de comprimits. Comptar en cru per prometre un estalvi en comprimit
+  és comptar el que no es paga.
+- **Dos dels «blocs grans» no eren comentaris.** La regex creuava cadenes que
+  contenen `/*` i `*/` a dins. Entraven a l'estimació, i tallar-los hauria
+  trencat l'app. Una mesura que no s'ha comprovat contra el que mesura és una
+  opinió amb decimals.
+
+Amb els números de debò: buidar els 32 blocs restants val **3 punts percentuals
+a canvi de 32 explicacions**. I 16 KB en un fitxer que es cacheja no els nota
+ningú, ni amb dades mòbils d'un poble.
+
+Així que es puja el sostre i s'escriu per què. Això **no és rendir-se davant del
+límit**: és que el límit ha fet exactament la seva feina. No existia per prohibir
+créixer sinó per obligar que créixer fos una decisió presa i escrita, i aquí n'hi
+ha una. El dia que el número no es pugui justificar, el que caldrà canviar serà
+el codi, no el número.
+
+I la que val per a qualsevol guarda que es posi a partir d'ara: **una guarda que
+mai es discuteix no està servint de res, i una que se salta sense escriure per
+què ja no és una guarda**. La fricció és tota la seva utilitat.
+
 ## Veda 73 — Dos primaris són cap primari
 
 La veda 66 va fer que les pestanyes del node les manés el full de ruta del rol.
