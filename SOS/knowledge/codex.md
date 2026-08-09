@@ -688,6 +688,42 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 72 — La cadena original és la clau
+
+`<html lang="ca">` i 2.400 cadenes catalanes incrustades al codi. Per a una beta
+a Catalunya el català no és cap barrera; per a Euskadi ho és tot. I és l'única
+feina pendent el **cost de la qual creix cada setmana que no es fa**: cada tanda
+hi afegeix text incrustat.
+
+El camí habitual —inventar claus (`btn.save`, `msg.error.2`) i substituir-les a
+2.400 llocs— és car, es fa d'una tacada i es fa malament. La decisió que ho
+evita: **la cadena catalana és la clau**. `t('Desa')` torna «Desa» en català i
+«Guardar» en castellà.
+
+D'aquí surten tres propietats que valen molt més que l'estalvi de feina:
+
+- **Res es pot trencar a mitges.** Una cadena sense traduir surt en català, mai
+  una clau crua a la cara de ningú. El pitjor cas d'aquesta capa és exactament
+  el que ja tenim avui — i per això es pot començar sense por.
+- **Migrar és incremental.** Cada `t()` afegit és una millora independent; no
+  cal convertir-ho tot perquè funcioni res.
+- **No s'inventen claus.** Una clau inventada és una decisió que s'oblida: al
+  cap de sis mesos ningú sap què deia `msg.error.2`.
+
+I la part que fa que això no torni a passar: **el deute es mesura**. Un deute
+que no es veu és el que creix, i per això `check-i18n.js` no falla mai per tenir
+poca cobertura —seria mentir sobre l'estat real i bloquejar feina honesta— sinó
+que posa la xifra davant. Només falla pel que sí que és un error: una traducció
+buida, una que tradueix a si mateixa, o una que apunta a text que ja no existeix.
+
+L'últim cas és el traïdor: una traducció òrfena no tradueix res i es queda al
+diccionari fent bonic mentre la cadena de debò surt en català. Sense la guarda,
+això només es descobreix amb algú davant.
+
+**I es diu la cobertura real a qui tria la llengua.** «Disponible en castellà»
+amb 48 textos traduïts seria una decepció programada; dir quants n'hi ha és el
+que fa que triar-ho no ho sigui.
+
 ## Veda 70 — El relé transporta, no escriu història
 
 El relé ja existia, ja era opcional i el configurava qui volia, i el topic ja era

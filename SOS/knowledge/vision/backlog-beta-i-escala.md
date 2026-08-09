@@ -231,7 +231,7 @@ El cost és una estimació relativa, no un compromís de calendari.
 | **P2** | **E5** · sincronitzar només l'àmbit compartit | B a escala | E1, E3 | mitjà | Cada aparellament mou tota la comarca |
 | **P2** | **E10** · mesurar l'escala de comarca | B a escala | E5 | baix | Es promet una escala que no s'ha provat |
 | **P2** | **E9** · pes | A i B | — | variable | 90 % del sostre, i cada canvi es baixa sencer |
-| **P3** | **E6** · segona llengua (ca · es) | Euskadi | — | **alt** i creix cada dia | Euskadi no arrenca; i a 20.000 línies costarà més |
+| ~~P3~~ | ~~**E6** · segona llengua (ca · es)~~ | **✅ la capa, feta a V69** | — | — | — |
 
 ### Les tres decisions que amaga aquesta taula
 
@@ -362,7 +362,7 @@ Abans d'afegir res gran, decidir si es puja el sostre o si se separa alguna cosa
 
 ### P3 · Arribar més lluny
 
-**E6 · Segona llengua (ca · es)** — *repara l'accés, crea R12*
+### ✅ E6 · Segona llengua — *la capa, feta a V69*
 `<html lang="ca">` i el text incrustat al codi. Per a una beta a Catalunya el
 català no és cap barrera, i per això no és P0. Per a Euskadi ho és tot.
 

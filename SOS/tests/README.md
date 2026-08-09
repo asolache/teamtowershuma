@@ -43,6 +43,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-canal.mjs` | V65 | El canal asíncron: que el repositori no doni veritat, i que sense clau no se'n tregui res |
 | `test-rol-ux.mjs` | V66 | Que el rol decideixi per on comences — i sobretot, què NO s'amaga |
 | `test-beta.mjs` | V67 | El rastre de la fusió, el camí per dir que s'ha trencat, i que designar no sigui custodiar |
+| `test-llengua.mjs` | V69 | La capa de segona llengua, i sobretot el pitjor cas: què surt quan no hi ha traducció |
 | `test-patch.mjs` | V68 | El relé porta apunts signats: que no llegeixi, no inventi nodes ni coli apunts sense firma |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
@@ -54,6 +55,11 @@ no prova res.
 `serve.mjs` és un servidor estàtic mínim per als tests que necessiten `http://`
 (l'atles fa `fetch`, i `file://` el bloqueja). Els que el necessiten se
 l'engeguen ells.
+
+## Les guardes del CI
+
+`SOS/tools/check-kiss.js` i `SOS/tools/check-i18n.js` no són tests de Playwright:
+corren a cada PR en menys d'un segon i sense dependències.
 
 ## La guarda de KISS
 
@@ -67,6 +73,17 @@ node SOS/tools/check-kiss.js
 
 Per pujar un sostre: canvia el número al fitxer i explica per què al commit.
 Aquesta fricció és tot el que fa, i és tota la seva utilitat.
+
+## La guarda de la segona llengua
+
+```bash
+node SOS/tools/check-i18n.js
+```
+
+Compta el text català incrustat i les traduccions, i **no falla per cobertura
+baixa**: la fa visible, que és el que evita que el deute creixi d'amagat. Falla
+només pel que sí que és un error —una traducció buida, una que tradueix a si
+mateixa, o una que apunta a text que ja no existeix al codi.
 
 ## Què no hi és
 
