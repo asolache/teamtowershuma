@@ -688,6 +688,44 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 70 — El relé transporta, no escriu història
+
+El relé ja existia, ja era opcional i el configurava qui volia, i el topic ja era
+un hash. Però només portava conversa: per fer arribar els **apunts** calia quedar
+cara a cara amb un QR, d'un en un. Amb N nodes això són N trobades, i és el que
+impedia que la xarxa convergís sola.
+
+Afegir-hi els apunts semblava tornar a posar un servidor al mig. No ho és,
+perquè **el relé no té clau**. El patch va xifrat amb la clau del node i signat
+pel `did`, i en arribar es comprova el sobre **i cada apunt per separat**. Qui
+allotja el relé veu passar bytes que no pot llegir ni alterar sense que es noti,
+i no pot fer aparèixer nodes al SOS de ningú: un patch d'un node que no tens es
+descarta.
+
+Aquesta és la diferència entre un transport i un amo, i es pot escriure com una
+prova: el test corre contra un servidor de debò i **llegeix el que el servidor
+veu**. Si algun dia hi passés res llegible, el test ho diria.
+
+I un detall d'educació amb qui allotja: `persist` es crida a 108 llocs, i una
+sola acció en dispara uns quants de seguits. Enviar un patch a cada crida
+convertiria el relé en una tempesta contra un servidor que sovint és el de casa
+d'algú. S'espera uns segons i se n'envia un de sol amb tot.
+
+## Veda 71 — Tres còpies d'una regla són tres llocs on afluixar-la
+
+El canal (veda 65), la custòdia (veda 69) i el relé (veda 70) fan exactament la
+mateixa feina: agafar el que puc demostrar d'un node, xifrar-ho amb la clau del
+node, signar-ho; i a l'altra banda comprovar la firma, desxifrar i verificar
+apunt per apunt.
+
+Escrit tres vegades, són tres llocs on la regla de «el transport no dona
+veritat» es pot afluixar sense que ningú se n'adoni — i el tercer sempre és el
+que s'oblida. `sealPack` i `openPack` ho fan un sol cop.
+
+Això no és estalviar línies: és que **hi hagi un sol lloc on sigui difícil
+equivocar-se**. Quan una garantia es repeteix, el que es multiplica no és el
+codi, és la superfície on pot fallar.
+
 ## Veda 67 — Una xifra inflada i incompleta és pitjor que cap xifra
 
 El toast deia «Sincronitzat · N canvis», i aquell N mentia dues vegades:

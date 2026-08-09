@@ -167,7 +167,7 @@ precisament per això que hi ha fluxos trencats.
 | R8 → R2 | T | marc, espai, subvenció | ✅ fora de l'app |
 | R2 → R8 | T | dades agregades del territori | ✅ (`toPublicPack`) |
 | R9 → R2 | T | presència i entrega en viu | ⚠️ **només xat**, no el registre |
-| R2 → R9 | I | — | **⊘ qui allotja no rep res** |
+| R2 → R9 | I | el que el seu relé ha portat, visible | ✅ **reparat a V68** (`relayContribution`) |
 | R2 → R11 | T | còpia xifrada del node | ✅ **reparat a V67** (custòdia al node) |
 
 ### 2.3 Salut de la xarxa
@@ -226,7 +226,7 @@ El cost és una estimació relativa, no un compromís de calendari.
 | ~~P0~~ | ~~**E2** · la fusió deixa rastre~~ | **✅ fet a V67** | — | — | — |
 | ~~P0~~ | ~~**E7** · camí per dir «això s'ha trencat»~~ | **✅ fet a V67** | — | — | — |
 | ~~P0~~ | ~~**E8** · la còpia no depèn d'una persona~~ | **✅ fet a V67** | — | — | — |
-| **P1** | **E3** · el relé porta patches signats | B | E1 | mitjà | Convergir exigeix que tothom es vegi amb tothom |
+| ~~P1~~ | ~~**E3** · el relé porta patches signats~~ | **✅ fet a V68** | — | — | — |
 | **P1** | **E4** · més d'un company alhora | B | E3 | mitjà | Una trobada de tres són tres torns |
 | **P2** | **E5** · sincronitzar només l'àmbit compartit | B a escala | E1, E3 | mitjà | Cada aparellament mou tota la comarca |
 | **P2** | **E10** · mesurar l'escala de comarca | B a escala | E5 | baix | Es promet una escala que no s'ha provat |
@@ -333,7 +333,7 @@ treu R2 de ser un punt únic de fallada, i val per a totes dues betes.
 
 ### P1 · Sense això no escala
 
-**E3 · El relé porta patches signats, no només xat** — *repara R2↔R7, R9*
+### ✅ E3 · El relé porta patches signats — *fet a V68*
 El relé ja existeix, ja és opcional i configurat per l'usuari, i el topic ja és
 un hash. Cada patch va **signat pel `did`** i es verifica en rebre'l: el relé
 transporta, no escriu història, perquè no té clau. És el pas que converteix N

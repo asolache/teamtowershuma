@@ -43,10 +43,13 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-canal.mjs` | V65 | El canal asíncron: que el repositori no doni veritat, i que sense clau no se'n tregui res |
 | `test-rol-ux.mjs` | V66 | Que el rol decideixi per on comences — i sobretot, què NO s'amaga |
 | `test-beta.mjs` | V67 | El rastre de la fusió, el camí per dir que s'ha trencat, i que designar no sigui custodiar |
+| `test-patch.mjs` | V68 | El relé porta apunts signats: que no llegeixi, no inventi nodes ni coli apunts sense firma |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
-heartbeat, presència i broadcast). Sense ell, del relé només es podria comprovar
-que l'URL es construeix bé —i això no prova res.
+heartbeat, presència i broadcast). Guarda a `messages` tot el que li arriba, que
+és com es comprova que qui allotja un relé **no pot llegir** el que hi passa.
+Sense ell, del relé només es podria comprovar que l'URL es construeix bé —i això
+no prova res.
 
 `serve.mjs` és un servidor estàtic mínim per als tests que necessiten `http://`
 (l'atles fa `fetch`, i `file://` el bloqueja). Els que el necessiten se
