@@ -688,6 +688,456 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 73 — Dos primaris són cap primari
+
+La veda 66 va fer que les pestanyes del node les manés el full de ruta del rol.
+La home es va quedar igual per a tothom, i mesurada donava això: **1.876 px, 6
+seccions i 25 botons**, idèntics per a qui ve a apuntar tres hores al mes i per
+a qui sosté el node.
+
+El defecte més barat de veure i el més fàcil de repetir: **dos botons primaris
+competint** a la mateixa targeta. Quan tot destaca, no destaca res, i el que
+hauria de manar —el pas següent del teu camí— quedava a la segona fila darrere
+de sis botons fantasma. Ara n'hi ha **un**, va primer, i és sempre el pas
+següent.
+
+I la targeta va passar de set botons a tres. Els quatre que en van sortir **no
+s'han tret d'enlloc**: són al llançador, agrupats des de la veda 63. Repetir una
+acció a la home no és fer-la més accessible; és competir amb el que aquella
+pantalla havia de dir.
+
+## Veda 74 — El proper pas surt del que hi ha, no del que falta per estrenar
+
+Quan no hi havia res que reclamés atenció, «els teus propers passos» eren tres
+«Prova: …» — la llista de capacitats que encara no havies tocat. És un ganxo de
+completista, i el completista no és qui tenim al davant.
+
+A un banc de temps amb cinc socis i cap apunt, el proper pas no és «Prova:
+MATRIU · incubar»: és **registrar les primeres hores**. El buit que es nota és
+el que el SOS ja sap veure —socis sense cap apunt, un node sense ningú— i mirava
+just per sobre.
+
+L'ordre correcte és: el que reclama atenció, després el buit que es nota, i
+només al final provar coses noves. Provar coses noves és l'última prioritat de
+qui ha vingut a fer una feina concreta.
+
+El ganxo de completar no s'ha tret —enganxa, i això és cert—: s'ha plegat a una
+línia amb la barra. Era **la secció més gran de la pantalla**: deu targetes de
+deures a algú que havia vingut a apuntar hores.
+
+I una que val per a qualsevol pantalla: **una secció buida no ocupa lloc**. Un
+títol seguit de «res reclama atenció» és una secció sencera per dir que no n'hi
+ha cap, i empeny cap avall les que sí que en tenen.
+
+## Veda 72 — La cadena original és la clau
+
+`<html lang="ca">` i 2.400 cadenes catalanes incrustades al codi. Per a una beta
+a Catalunya el català no és cap barrera; per a Euskadi ho és tot. I és l'única
+feina pendent el **cost de la qual creix cada setmana que no es fa**: cada tanda
+hi afegeix text incrustat.
+
+El camí habitual —inventar claus (`btn.save`, `msg.error.2`) i substituir-les a
+2.400 llocs— és car, es fa d'una tacada i es fa malament. La decisió que ho
+evita: **la cadena catalana és la clau**. `t('Desa')` torna «Desa» en català i
+«Guardar» en castellà.
+
+D'aquí surten tres propietats que valen molt més que l'estalvi de feina:
+
+- **Res es pot trencar a mitges.** Una cadena sense traduir surt en català, mai
+  una clau crua a la cara de ningú. El pitjor cas d'aquesta capa és exactament
+  el que ja tenim avui — i per això es pot començar sense por.
+- **Migrar és incremental.** Cada `t()` afegit és una millora independent; no
+  cal convertir-ho tot perquè funcioni res.
+- **No s'inventen claus.** Una clau inventada és una decisió que s'oblida: al
+  cap de sis mesos ningú sap què deia `msg.error.2`.
+
+I la part que fa que això no torni a passar: **el deute es mesura**. Un deute
+que no es veu és el que creix, i per això `check-i18n.js` no falla mai per tenir
+poca cobertura —seria mentir sobre l'estat real i bloquejar feina honesta— sinó
+que posa la xifra davant. Només falla pel que sí que és un error: una traducció
+buida, una que tradueix a si mateixa, o una que apunta a text que ja no existeix.
+
+L'últim cas és el traïdor: una traducció òrfena no tradueix res i es queda al
+diccionari fent bonic mentre la cadena de debò surt en català. Sense la guarda,
+això només es descobreix amb algú davant.
+
+**I es diu la cobertura real a qui tria la llengua.** «Disponible en castellà»
+amb 48 textos traduïts seria una decepció programada; dir quants n'hi ha és el
+que fa que triar-ho no ho sigui.
+
+## Veda 70 — El relé transporta, no escriu història
+
+El relé ja existia, ja era opcional i el configurava qui volia, i el topic ja era
+un hash. Però només portava conversa: per fer arribar els **apunts** calia quedar
+cara a cara amb un QR, d'un en un. Amb N nodes això són N trobades, i és el que
+impedia que la xarxa convergís sola.
+
+Afegir-hi els apunts semblava tornar a posar un servidor al mig. No ho és,
+perquè **el relé no té clau**. El patch va xifrat amb la clau del node i signat
+pel `did`, i en arribar es comprova el sobre **i cada apunt per separat**. Qui
+allotja el relé veu passar bytes que no pot llegir ni alterar sense que es noti,
+i no pot fer aparèixer nodes al SOS de ningú: un patch d'un node que no tens es
+descarta.
+
+Aquesta és la diferència entre un transport i un amo, i es pot escriure com una
+prova: el test corre contra un servidor de debò i **llegeix el que el servidor
+veu**. Si algun dia hi passés res llegible, el test ho diria.
+
+I un detall d'educació amb qui allotja: `persist` es crida a 108 llocs, i una
+sola acció en dispara uns quants de seguits. Enviar un patch a cada crida
+convertiria el relé en una tempesta contra un servidor que sovint és el de casa
+d'algú. S'espera uns segons i se n'envia un de sol amb tot.
+
+## Veda 71 — Tres còpies d'una regla són tres llocs on afluixar-la
+
+El canal (veda 65), la custòdia (veda 69) i el relé (veda 70) fan exactament la
+mateixa feina: agafar el que puc demostrar d'un node, xifrar-ho amb la clau del
+node, signar-ho; i a l'altra banda comprovar la firma, desxifrar i verificar
+apunt per apunt.
+
+Escrit tres vegades, són tres llocs on la regla de «el transport no dona
+veritat» es pot afluixar sense que ningú se n'adoni — i el tercer sempre és el
+que s'oblida. `sealPack` i `openPack` ho fan un sol cop.
+
+Això no és estalviar línies: és que **hi hagi un sol lloc on sigui difícil
+equivocar-se**. Quan una garantia es repeteix, el que es multiplica no és el
+codi, és la superfície on pot fallar.
+
+## Veda 67 — Una xifra inflada i incompleta és pitjor que cap xifra
+
+El toast deia «Sincronitzat · N canvis», i aquell N mentia dues vegades:
+comptava la mateixa fusió diverses vegades —una pel xat, una per cada
+col·lecció, una pel node sencer— i **no comptava el que s'havia sobreescrit**.
+Un número així no és una aproximació: és una invitació a refiar-se'n.
+
+Des de la veda 64 els apunts ja no es perden —s'uneixen—, però la resta del node
+segueix resolent-se per LWW: el mapa de valor, el tauler, el nom. Això no és cap
+defecte a tapar; per a camps que es reescriuen sencers és la decisió correcta.
+El que no és correcte és **no dir-ho**. Si en sincronitzar el teu mapa de valor
+ha estat substituït pel de l'altre, ho has de saber en aquell moment, no
+descobrir-ho un mes després.
+
+D'aquí surt la regla: **el que s'uneix i el que se substitueix no es barregen
+mai al mateix comptador**. Un «+3 a ledger» i un «mapa de valor substituït» són
+notícies de signe contrari, i sumar-les en un sol número les amaga totes dues.
+
+I el corol·lari de tracte: quan alguna cosa s'ha substituït, no n'hi ha prou amb
+un toast. Es diu a la cara i es pot mirar què i on. Sense oferir cap botó de
+desfer que no podríem complir.
+
+## Veda 68 — Qui no es queixa, plega
+
+No hi havia cap camí per dir «això s'ha trencat». El senyal del que falla només
+arribava si algú et trucava, i en una beta amb gent que no et coneix això vol
+dir que **no arriba**. Quan una eina falla dues vegades a algú que no hi té cap
+compromís, aquell algú no obre una incidència: deixa d'apuntar hores i no torna.
+I nosaltres ho llegim com «no els interessava».
+
+Per això una cosa que costa una tarda anava abans que coses molt més grans: és
+la que converteix la beta en **informació** en comptes d'anècdotes.
+
+Dues decisions la fan usable de debò:
+
+- **Els errors ja passats es recullen sols.** Preguntar «i què deia exactament
+  l'error?» és demanar-li a la gent que faci de programador. Un anell dels
+  últims errors, i ja el porta l'informe.
+- **Es veu tot el que s'enviarà, abans d'enviar-ho**, i passa pel mateix sedàs
+  que qualsevol altre paquet que surt d'aquí (`verifyNoLeak`). Una eina que
+  demana confiança i envia el que no ensenya no la mereix. I si qui escriu hi
+  posa un nom sense pensar-hi, s'avisa **abans**, no després.
+
+Context, no contingut: comptadors i identificadors tècnics. El que ajuda a
+reproduir un error és saber que hi havia 40 socis, no com es diuen.
+
+## Veda 69 — Designar no és custodiar
+
+Si qui sosté el node perd el telèfon, la història del node se'n va amb ell. No
+és un cas rebuscat: és el cas normal al cap de dos anys. Una persona plega,
+canvia de mòbil, o simplement se li espatlla — i amb ella marxen les hores que
+ha apuntat tothom.
+
+Les peces hi eren: `exportBackup` i els envelopes xifrats per membre de la veda
+29. El que faltava era el **rol**: algú, a part de qui el sosté, que en tingui
+una còpia.
+
+I no va caldre inventar cap rol nou al sistema de rols. És una
+**responsabilitat dins del node**, i viu com una marca al soci. Un rol global
+diria que aquella persona custodia «en general», i el que custodia és aquest
+node. Quan una responsabilitat és local, fer-la global és perdre informació,
+no guanyar-ne.
+
+La regla que evita que això sigui teatre: **designar no és custodiar**. Una
+persona marcada que encara no ha rebut cap còpia no compta com a còpia, i es diu
+així de clar. Un comptador que digués «2 custodis» amb zero còpies entregades
+seria pitjor que no tenir-ne cap: et faria dormir tranquil.
+
+I restaurar és **unir, no substituir**. Qui restaura una còpia sovint ja té
+coses del node —ha seguit apuntant mentre l'altre no hi era—, i una restauració
+que esborrés allò seria la pèrdua de la veda 64 tornant per la porta del darrere.
+
+## Veda 66 — Simplificar és decidir per on comences, no esborrar el que hi ha
+
+Tothom veia el mateix: fins a 13 pestanyes al node, 32 accions al llançador, 17
+rutes. Una persona que ve a apuntar tres hores al mes n'ha de fer servir sis, i
+les ha de trobar entre totes les altres. La informació hi era; el que no hi
+havia era **una manera de saber quina et toca a tu**.
+
+I les peces per saber-ho ja hi eren, sense connectar: `ROLE_JOURNEYS` sap què fa
+cada rol, `activeRoleId` sap quin ets ara, i cada guia contextual porta la seva
+`lens`. El que faltava era que allò **decidís**, i no només ressaltés.
+
+La temptació era treure funcions. Seria un error i ja el vam evitar a la veda
+63: cadascuna serveix a algú, i esborrar-ne és decidir per aquell algú. El que
+sí que es pot decidir és **per on comences**.
+
+Tres regles, perquè simplificar no acabi sent amagar:
+
+- **El que té contingut no s'amaga mai.** Si hi ha apunts, socis o objectes a
+  dins, la pestanya hi és encara que el teu rol no la necessiti. Amagar feina
+  que algú ja ha fet no és simplificar: és fer-la desaparèixer. El comptador que
+  ja es pintava a cada pestanya és exactament el senyal que calia, i no va caldre
+  calcular res de nou.
+- **La pestanya on ets no desapareix sota els peus.**
+- **El que s'amaga es diu i es desamaga des del mateix lloc.** «▸ 3 més», al
+  costat de les altres. Una pestanya que marxa en silenci és una decisió que
+  l'app t'ha pres a l'esquena, i qui se n'adona deixa de refiar-se de la resta
+  de la pantalla.
+
+I una salvaguarda que val per a tot filtre: **si el filtre deixaria la llista
+buida, no es filtra**. Val més ensenyar-ho tot que ensenyar el no-res.
+
+## Veda 65 — Un canal que exigeix simultaneïtat és un canal que no s'usa
+
+El relé dona presència en viu, i per això demana que **dues persones hi siguin
+alhora**. En un poble això no passa gairebé mai: la gent obre l'app el diumenge
+al vespre, i no totes el mateix diumenge. Fèiem descansar la convergència de la
+xarxa sobre una coincidència que no es produeix.
+
+El repositori ja feia de bus asíncron dues vegades —l'atles i `supply/`— i ningú
+ho havia llegit com el que és: **durable, versionat, amb historial, auditable i
+gratis**. Cadascú hi deixa el seu quan pot; qui arriba després se'l troba.
+
+Això **només és possible gràcies a la veda 64**. Amb apunts idempotents que
+s'uneixen sense conflicte, un directori al qual tothom afegeix convergeix sol.
+Amb la cadena única hauria calgut decidir qui va primer —i tornaríem a necessitar
+algú que ho digués. L'ordre de les dues vedes no és casual: la primera és el que
+fa possible la segona.
+
+I és la peça antifràgil per excel·lència: cada clon, cada fork i cada CDN que el
+serveix és **una còpia més del registre**.
+
+Tres regles que eviten que això sigui una porta oberta:
+
+- **El transport no dona veritat.** En llegir es verifica el sobre **i cada
+  apunt per separat**. Un sobre impecable no fa bons els apunts que porta a
+  dins, i el que no porta firma vàlida es descarta encara que vingui del
+  repositori oficial. És la mateixa regla de la veda 60, pel mateix motiu.
+- **Qui no té la clau no llegeix res.** El contingut va xifrat amb la clau del
+  node. I a fora del sobre **no hi queda ni el nom del node**: només el tema i
+  l'id, que és l'únic que cal per encaminar el fitxer. Deixar-hi el nom seria
+  dir a qualsevol que passi que en aquell poble hi ha un banc de temps i com es
+  diu — i això ja és informació sobre gent.
+- **Publicar dues vegades no fa mal.** La unió és idempotent, i per això es pot
+  reintentar sense pensar-hi. Un canal que castiga el reintent és un canal que
+  la gent deixa a mitges.
+
+I una que és de tracte: **un paquet que no es pot obrir no és un error**. És
+d'un altre node i és el més normal del món. Es compta a part i es diu «xifrat
+amb una clau que no és la teva», no «ha fallat».
+
+## Veda 64 — Un ordre global vol dir un amo; la triple entrada no en necessita
+
+El ledger tenia **una sola cadena per node**: cada apunt encadenat amb
+l'anterior, fos de qui fos. Semblava més fort i era més fràgil, perquè obliga a
+un **ordre global** —i un ordre global entre gent que apunta sense estar
+connectada només se sosté si algú diu qui va primer. Aquell algú és un servidor,
+i un servidor és un amo.
+
+Sense amo, l'única sortida que quedava era que en sincronitzar guanyés un i es
+perdés l'altre. Es va comprovar amb una sonda: **es perdien hores signades**, i
+també socis. Sense avís i sense rastre.
+
+La sortida no és triar quina cadena guanya. És **comptabilitat de triple
+entrada**: el que dona, el que rep, i el **rebut** que tots dos guarden signat.
+El rebut és la tercera entrada i és la que mana. D'aquí surten dues regles:
+
+- **Cada autor encadena el seu.** `prevHash` apunta a l'apunt anterior *del
+  mateix `did`*. Dues persones que apunten alhora fan créixer dues cadenes que
+  no es trepitgen, i la unió de les dues és vàlida **sense reordenar res**.
+- **La unió no destrueix.** Fusionar dos ledgers és quedar-se'ls tots dos. I
+  quan el mateix registre arriba per les dues bandes, es queda **el més ric**
+  —el que porta firma, el que porta més confirmacions—, mai el més nou pel fet
+  de ser més nou. Aquesta última regla és precisament la que ens havia portat a
+  perdre dades.
+
+I la conseqüència que val més que la funcionalitat: això fa el sistema
+**antifràgil**. Amb la cadena única, cada còpia de més era una oportunitat de
+conflicte i créixer feia el registre pitjor. Amb el rebut compartit, cada
+persona que en guarda una còpia és una **prova de més**. Perdre el telèfon deixa
+de ser perdre la feina, perquè qui era a l'altra banda de l'intercanvi també la
+té. Que la xarxa creixi deixa de ser un risc a gestionar i passa a ser el que fa
+que la teva hora sigui indiscutible.
+
+I una que és de tracte, no de codi: **no es diu que una cadena antiga està
+trencada quan només és d'un altre esquema**. `verifyLedger` prova per autor i,
+si no quadra, com a cadena global; els ledgers escrits abans d'això segueixen
+sent vàlids i es diu de quin mode són. Marcar de corrupte el que ningú ha tocat
+és la manera més ràpida de fer que algú deixi de refiar-se del verificador.
+
+## Veda 63 — Una llista plana llarga és un calaix, i el que no és de ningú no es fa
+
+Dues coses que la guarda de KISS va treure a la llum en comptar de debò.
+
+**El llançador tenia 32 accions en una sola columna.** Ningú les havia comptat
+mai —cada tanda n'hi posava una, i com que la llista no protesta, la llista
+creixia. Trenta-dues entrades sense cap ordre no són un menú: són un calaix on
+es busca amb la vista una per una, i on la trenta-dosena no la troba ningú
+perquè ja s'ha desistit a la desena.
+
+La sortida **no era treure'n**. Cadascuna serveix a algú i esborrar-ne seria
+decidir per aquell algú. El que faltava era **contestar la pregunta que es fa
+qui obre el llançador**, que no és «quines accions hi ha» sinó «què hi puc fer
+*ara*». Set grups (jo · comunitat · govern · xarxa · proves · relat · sistema)
+i un filtre per a qui ja sap què busca. La mateixa llista, i es troba.
+
+Dues regles que la guarda comprova i no es poden saltar:
+
+- **Cap acció sense grup.** Una entrada sense `g:` cau fora de tots els blocs i
+  torna a ser el que era: una línia solta enmig d'una llista. La guarda falla si
+  n'hi ha cap, perquè afegir-ne una sense pensar on va és exactament el descuit
+  que ens va portar a 32.
+- **Un filtre que no troba res ho ha de dir.** Un cos buit sembla una app
+  trencada. Diu «cap acció», i qui filtra sap que ha filtrat massa.
+
+**I la feina que no és de ningú.** Les missions només sabien mirar què t'espera
+**a tu**: el que tens pendent, el que has de confirmar, el teu camí. Tot el que
+el SOS ja diagnosticava sobre la **xarxa** —regions sense cap dinàmica, mapes de
+valor amb reciprocitat sota el 50 %, rols aïllats— es calculava, es dibuixava en
+un panell, i **no li tocava a ningú**. Un forat que és de tothom no és de ningú,
+i per tant no es tapa mai.
+
+Ara són missions de veritat (`MISSION_KINDS.xarxa`), amb dues condicions:
+
+- **Cada missió ha de portar a un lloc concret.** «Falta cobertura» és una
+  estadística; «Girona no té cap dinàmica viva, obre-n'hi una» és una missió.
+  Sense `act`, una missió és un retret.
+- **Van al final de la llista.** El que t'espera a tu passa davant del que
+  espera la xarxa —altrament la llista de qui té tres confirmacions pendents
+  s'omple de deures col·lectius i deixa de servir per al que servia.
+
+## Veda 62 — Una eina que només creix acaba sent inservible
+
+El SOS ha crescut **sempre per addició** i no s'hi ha tret mai res. Cada tanda hi
+posava una portada, una pestanya o una entrada de menú, i com que ningú ho
+mesurava, ningú ho veia. Tres coses que es van trobar en mirar-ho de debò:
+
+- **El mapa de Catalunya no tenia cap sortida.** S'hi entrava i s'hi quedava
+  atrapat qui no sabés que el logo també hi porta.
+- **Tres portades es fabricaven el mateix botó de tornada** per separat. No és
+  que cinc portades competeixin: és que no hi havia **una** manera de tornar.
+- **La pestanya de conversa es va afegir sense guia contextual**, incomplint la
+  veda que diu que un context sense guia és un context que s'ha d'endevinar. Es
+  va incomplir la mateixa tanda que es va escriure.
+
+D'aquí surten dues regles:
+
+**Una sola manera de tornar.** Una funció, un text, un comportament
+(`homeBackBtn`). Quan cada pantalla s'inventa la seva sortida, la navegació es
+parteix i qui es perd no sap per què.
+
+**Sostres declarats, no límits tècnics.** `SOS/tools/check-kiss.js` corre a cada
+PR i mesura el pes gzip, que cap pestanya es quedi sense guia, que el hook de
+test no tingui duplicats, i quantes portades, rutes i entrades de menú hi ha.
+**No prohibeix créixer**: obliga que créixer sigui una decisió que algú pren i
+escriu al commit. Aquesta fricció és tota la seva utilitat.
+
+Va a `tools/` i no als tests de Playwright per un motiu que val la pena saber:
+**els tests de Playwright no corren al CI**. El `npm test` del workflow no fa res
+perquè no hi ha `package.json`, i per això el CI sortia verd comprovant només
+sintaxi. Una guarda que ha de mossegar ha d'anar on de debò s'executa.
+
+## Veda 61 — No es diu «verificat» del que no s'ha verificat
+
+El SOS signa amb `did:sos` i ancorava amb la clau Nostr de l'extensió del
+navegador, i **res no deia que fossin la mateixa persona**. Un ancoratge provava
+que *algú* amb una clau Nostr havia publicat aquell hash, no que fos qui el va
+registrar. Per a un registre d'usuaris a la permaweb, aquest era el forat.
+
+El pont és una afirmació **signada dues vegades**: un registre que diu «el did D
+i la clau N són la mateixa persona», firmat pel `did` i publicat sencer com a
+event Nostr firmat per N.
+
+I aquí la part que importa més que la funcionalitat: **la firma Nostr no es pot
+verificar dins del SOS**. És Schnorr sobre secp256k1 i SubtleCrypto no en sap;
+caldria una biblioteca, i el SOS és un sol fitxer. Davant d'això hi ha dues
+sortides i només una és acceptable:
+
+- Dir «pont verificat» i callar. Seria mentida per omissió, i just al lloc on la
+  gent decidirà si es refia d'una identitat.
+- Dir exactament què s'ha mirat: la banda `did:sos` **verificada** amb
+  SubtleCrypto; el **lligam verificat** en les tres coses (que l'event contingui
+  el registre firmat, que la clau declarada sigui la de l'event, que l'id sigui
+  el SHA-256 de la serialització NIP-01); i la firma Nostr **no verificada
+  aquí**, amb el motiu escrit.
+
+I dir també què sí que la prova: **els relés rebutgen els events amb firma
+invàlida**. Si el pont és publicat i acceptat, la clau Nostr hi va signar. Això
+és una prova de debò i s'explica com a tal, sense confondre-la amb una
+comprovació local.
+
+## Veda 60 — Publicar sense descobriment no és publicar
+
+`supplyPublicPack` generava un paquet agregat, comprovava que no filtra res, el
+versionava amb CID… i el deixava **al teu disc**. Ningú el podia trobar. Tota la
+feina difícil feta i el resultat, invisible.
+
+La solució ja existia al mateix repositori i ningú se n'havia adonat: **l'atles**
+és un repositori públic servit per CDN, on s'aporta amb una *pull request* i d'on
+qualsevol baixa amb un `fetch`. Públic, versionat, amb historial, auditable,
+gratis, i amb revisió humana abans de publicar-se. L'oferta comuna fa el mateix
+camí.
+
+Dues regles que no es poden relaxar:
+
+- **El que es llegeix no es fusiona amb el teu.** L'oferta comuna viu a part i es
+  marca com a vinguda de fora. Barrejar-la convertiria el que ha dit un altre en
+  dada teva, i això no es pot desfer un cop la gent hi confia.
+- **Entra pel mateix sedàs que surt.** Una fila que porti noms, correus,
+  telèfons o `did` es descarta sencera **encara que vingui del repositori
+  oficial**. Confiar en l'origen és exactament com es cola una fuita.
+
+I es diu el que és: **això no és permaweb**. Si algú esborra el repositori,
+desapareix. És públic, versionat i amb un CID que prova integritat —molt més que
+tenir-lo al calaix, i menys que Arweave. El mateix fitxer es pot pinnar després;
+ja porta el seu CID.
+
+## Veda 59 — Unir persones pel nom corromp dades en silenci
+
+`joinNode`, `knownPersons`, `personProfile` i el rànquing unien registres pel
+**nom normalitzat**. Dues maneres de fer mal sense que res avisi:
+
+- **Dues persones que es diuen igual** al mateix poble es fusionaven en una:
+  hores, ofertes, saldo i reputació barrejats.
+- **Una persona escrita de dues maneres** —«Àlvaro» en un node, «Alvaro Solache»
+  en un altre— es partia en dues: perfil partit, rànquing partit, i el fons
+  comptant-la dos cops com a dues persones.
+
+El `did` ja hi era des de V39: `claimMember` signa `{nodeId, memberId, did}`. El
+que no es feia era **emparellar per ell**. Tres regles:
+
+- **Un `did` mana sobre el nom.** Dos registres amb el mateix `did` són la
+  mateixa persona encara que s'escriguin diferent.
+- **Dos `did` diferents no s'uneixen mai**, encara que el nom coincideixi. I el
+  nom ambigu es **marca**, en comptes d'amagar que hi ha dues persones al darrere.
+- **Un registre sense `did` s'adopta pel nom**, però només si aquell nom apunta a
+  **un sol** `did`. Si n'apunta a dos, no s'endevina: endevinar aquí seria triar a
+  qui li regalem les hores d'un altre.
+
+I la que ho fa reversible: **res d'això reescriu història signada**. Els apunts
+conserven el seu `memberId` i el seu `who` originals; la identitat **es resol en
+llegir**, no es reescriu. Per això reclamar una fitxa vella la uneix a la persona
+sense tocar cap signatura ni cap cadena de hash.
+
 ## Veda 58 — Un relé que pot ser l'amo de la xarxa no és un relé
 
 Sense servidor, «en línia» només pot voler dir «connectat amb tu ara». Per tenir

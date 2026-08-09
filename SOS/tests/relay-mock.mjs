@@ -46,6 +46,7 @@ function decode(buf) {
 
 export function startRelayMock(port = 0) {
   const clients = new Set();                  // {sock, topic, key, meta}
+  const messages = [];   // tot el que arriba al servidor, tal com ho veu ell
   const send = (c, o) => { try { c.sock.write(encode(JSON.stringify(o))); } catch (e) {} };
   const inTopic = t => [...clients].filter(c => c.topic === t);
   const stateOf = t => {
@@ -70,6 +71,7 @@ export function startRelayMock(port = 0) {
       const [msgs, rest] = decode(buf); buf = rest;
       for (const m of msgs) {
         if (m.close) { sock.end(); continue; }
+        messages.push(m.text);   // el que veuria qui allotja el relé
         let j; try { j = JSON.parse(m.text); } catch (e) { continue; }
 
         if (j.event === 'heartbeat') { send(c, { topic: 'phoenix', event: 'phx_reply', ref: j.ref, payload: { status: 'ok', response: {} } }); continue; }
@@ -111,6 +113,6 @@ export function startRelayMock(port = 0) {
   return new Promise(res => server.listen(port, '127.0.0.1', () => {
     const p = server.address().port;
     res({ port: p, host: '127.0.0.1:' + p, url: 'ws://127.0.0.1:' + p,
-      clients, close: () => { clients.forEach(c => { try { c.sock.destroy(); } catch (e) {} }); server.close(); } });
+      clients, messages, close: () => { clients.forEach(c => { try { c.sock.destroy(); } catch (e) {} }); server.close(); } });
   }));
 }

@@ -305,6 +305,22 @@ a{color:var(--blue);text-decoration:none}
 /* La barra de pestanyes és una fila que no pot encongir-se: amb totes les eines
    obertes, a 360 px (molts Androids) sortia de la pantalla i feia desplaçar la
    pàgina sencera en horitzontal. Que llisqui ella, no la pàgina. */
+.inc-det{margin:.5rem 0}
+.inc-det summary{cursor:pointer;opacity:.75;font-size:.92em}
+.inc-pre{max-height:230px;overflow:auto;font-size:.76rem;line-height:1.45;white-space:pre-wrap;background:rgba(127,127,127,.09);padding:.5rem .6rem;border-radius:7px;margin-top:.4rem}
+.dash-cov-det{margin:.5rem 0}
+.dash-cov-det summary{cursor:pointer;display:flex;align-items:center;gap:.6rem;padding:.45rem .1rem;font-size:.93em}
+.dash-cov-det .dcd-bar{flex:1;max-width:220px;height:7px;border-radius:4px;background:rgba(127,127,127,.22);overflow:hidden}
+.dash-cov-det .dcd-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--green))}
+.dash-more{opacity:.66;font-style:italic}
+.dash-more:hover{opacity:1}
+.merge-rep{margin:.5rem 0 .2rem;padding-left:1.1rem;line-height:1.55}
+.merge-rep li{margin-bottom:.2rem}
+.merge-warn{margin-top:.7rem;padding:.6rem .7rem;border-radius:8px;border:1px solid var(--amber,#d99);background:rgba(217,153,64,.09)}
+.merge-warn-t{font-weight:600;margin-bottom:.3rem}
+.merge-warn p{margin:0 0 .3rem;font-size:.92em}
+.tab-more{opacity:.62;font-style:italic}
+.tab-more:hover{opacity:1}
 .tabs{display:flex;gap:.25rem;padding:1.25rem 1.75rem 0;border-bottom:1px solid var(--border);margin-top:1.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{background:transparent;border:none;color:var(--muted);font-size:.9rem;font-weight:600;padding:.6rem 1rem;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:.45rem;flex:0 0 auto;white-space:nowrap}
@@ -1652,12 +1668,30 @@ async function drillComarca(c){
   flashSync();selectNode(com.id);
   if(_ensureCreated)toast('Entrant a '+c.name+(_ensureCreated?' (+'+_ensureCreated+')':''));
 }
+/* ═══════════ UNA SOLA MANERA DE TORNAR ═══════════
+   Veda V62. Hi ha cinc portades i cadascuna s'havia inventat la seva sortida:
+   tres es fabricaven el mateix botó «⚙ Vista de gestió» per separat, i **el mapa
+   no en tenia cap** —qui hi entrava es quedava atrapat si no sabia que el logo
+   també hi porta. No és que competeixin cinc portades: és que no hi havia UNA
+   manera de tornar, i això és el que fa que algú es perdi.
+
+   Una funció, un text, un comportament. Afegir una portada nova sense fer-la
+   servir torna a partir la navegació, i per això la guarda de KISS compta les
+   portades i el sostre és cinc. */
+function homeBackBtn(label){
+  const b=el('button','btn btn-ghost btn-sm',label||'⚙ Vista de gestió');
+  b.title='Torna al tauler de gestió';
+  b.onclick=()=>{state.activeId=null;state.homeView='tauler';render();};
+  return b;
+}
 function renderCatMap(body){
   const wrap=el('div','catmap-wrap');
   const count={},exists=new Set();
   state.nodes.forEach(n=>{if(n.nodeLevel==='comarca')exists.add(n.name);const c=comarcaOf(n);if(c&&(n.nodeLevel==='municipi'||n.nodeLevel==='barri'||n.nodeLevel==='projecte'))count[c]=(count[c]||0)+1;});
   const head=el('div','catmap-head');
   head.innerHTML='<h2>🗺 Mapa de Catalunya</h2><div class="catmap-legend">'+Object.keys(MAP_COL).map(p=>'<span><i style="background:'+MAP_COL[p]+'"></i>'+p+'</span>').join('')+'</div>';
+  // Aquesta pantalla no en tenia cap: s'hi entrava i no se'n sortia.
+  head.appendChild(homeBackBtn());
   wrap.appendChild(head);
   const sub=el('div','catmap-sub');sub.textContent='Els teus territoris i projectes sobre el mapa. Clica una comarca per entrar-hi (es crea si no existeix).';
   wrap.appendChild(sub);
@@ -1695,8 +1729,102 @@ function dbPut(node){return new Promise((res,rej)=>{const r=tx('readwrite').put(
 function dbDelete(id){return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 function dbClear(){return new Promise((res,rej)=>{const r=tx('readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
+/* ═══════════ V69 · La capa de la segona llengua ═══════════
+   `<html lang="ca">` i 2.305 cadenes catalanes incrustades al codi. Per a una
+   beta a Catalunya el català no és cap barrera; per a Euskadi ho és tot.
+
+   És l\'única entrada del backlog el **cost de la qual creix cada setmana que no
+   es fa**: cada tanda de feina hi afegeix text incrustat. Per això es fa ara i
+   no quan calgui.
+
+   La decisió que ho fa possible sense un refactor de 2.305 punts: **la cadena
+   catalana és la clau**. `t(\'Desa\')` torna «Desa» en català i «Guardar» en
+   castellà. D\'aquí surten tres propietats que valen més que l\'estalvi:
+
+   · **Res es pot trencar a mitges.** Una cadena sense traduir surt en català,
+     mai una clau crua com `btn.save` a la cara de ningú. El pitjor cas d\'aquesta
+     capa és exactament el que tenim avui.
+   · **Migrar és incremental.** Cada `t()` que s\'afegeix és una millora
+     independent; no cal convertir-ho tot perquè funcioni res.
+   · **No s\'inventen claus.** Inventar-les és feina, i és feina que es fa
+     malament: acabes amb `msg.error.2` i ningú sap què deia.
+
+   I el que fa que el deute deixi de créixer d\'amagat: es **mesura**
+   (`check-i18n.js`). Un deute que no es veu és el que creix. */
+const LANGS={ca:{id:'ca',label:'Català',ic:'🏴'},es:{id:'es',label:'Castellà',ic:'🇪🇸'}};
+/* El primer tram: el que una persona nova es troba abans de decidir si es queda
+   —portades, pestanyes, rols, accions del llançador i els avisos que surten
+   sols. La resta arriba per trams, i el que encara no hi és surt en català.
+   Millor un castellà parcial i honest que un de sencer inventat. */
+const I18N={es:{
+  // Portades i navegació
+  'Tauler':'Panel','Missions':'Misiones','Fons':'Fondo','Gent':'Gente',
+  '◧ Resum':'◧ Resumen','▤ Tauler':'▤ Panel',
+  '⊞ Comptes':'⊞ Cuentas','💬 Conversa':'💬 Conversación','⬡ Entitats':'⬡ Entidades',
+  '👥 Socis':'👥 Socios','⏳ Ofertes':'⏳ Ofertas',
+  '▦ Cohort':'▦ Cohorte',
+  // Rols
+  'Guardian del territori':'Guardián del territorio',
+  'Superheroi/na':'Superheroína/héroe',
+  'Coordinador/a de comunitat':'Coordinador/a de comunidad',
+  'Agent territorial':'Agente territorial',
+  'Mentor/a d\'iniciatives':'Mentor/a de iniciativas',
+  'Ciutadà/na simpatitzant':'Ciudadano/a simpatizante',
+  // Accions que es repeteixen a tot arreu
+  'Desa':'Guardar','Tanca':'Cerrar','Entesos':'Entendido','Cancel·la':'Cancelar',
+  'Elimina':'Eliminar','Edita':'Editar','Afegeix':'Añadir','Copia':'Copiar','⧉ Copia':'⧉ Copiar',
+  'Torna':'Volver','Continua':'Continuar','Cerca':'Buscar','Descarrega':'Descargar',
+  // Sincronització i el seu rastre (V67)
+  'Sincronitzat':'Sincronizado','Ja estaves al dia':'Ya estabas al día',
+  '⇄ Rastre de la fusió':'⇄ Rastro de la fusión',
+  'El que ha entrat en sincronitzar, i el que s\'ha substituït.':'Lo que ha entrado al sincronizar, y lo que se ha sustituido.',
+  'Cap apunt nou.':'Ningún apunte nuevo.',
+  // Incidències (V67)
+  '⚠ Digues què s\'ha trencat':'⚠ Di qué se ha roto',
+  'Va molt bé encara que no sàpigues explicar-ho. Amb «he clicat aquí i no ha passat res» n\'hi ha prou.':'Sirve igual aunque no sepas explicarlo. Con «he pulsado aquí y no ha pasado nada» basta.',
+  'Què feies i què esperaves que passés?':'¿Qué hacías y qué esperabas que pasara?',
+  'Mira exactament què s\'enviarà':'Mira exactamente qué se enviará',
+  'Obre una incidència':'Abre una incidencia',
+  '⧉ Copia-ho':'⧉ Cópialo',
+  // Custòdia (V67)
+  'Ningú més que tu en té còpia. Si perds aquest dispositiu, es perd el node.':'Nadie más que tú tiene copia. Si pierdes este dispositivo, se pierde el nodo.',
+  'Només una persona en té còpia. Si la perd, es perd el node.':'Solo una persona tiene copia. Si la pierde, se pierde el nodo.',
+  // Guardes que han de ser clares en qualsevol llengua
+  'Aquest node encara no té clau compartida. Sense clau, publicar-lo seria publicar-ho en clar; genera-la o tria explícitament que vagi obert.':'Este nodo aún no tiene clave compartida. Sin clave, publicarlo sería publicarlo en claro; genérala o elige explícitamente que vaya abierto.',
+  'Per custodiar una còpia cal una identitat (did): sense ella no se li pot xifrar res només per a ell.':'Para custodiar una copia hace falta una identidad (did): sin ella no se le puede cifrar nada solo para él.',
+  'Cal un node':'Hace falta un nodo','Aquest soci no hi és':'Este socio no está'
+}};
+function t(str,vars){
+  let out=str;
+  const lang=(typeof state!=='undefined'&&state.lang)||'ca';
+  if(lang!=='ca'&&I18N[lang]&&I18N[lang][str])out=I18N[lang][str];
+  if(vars)Object.keys(vars).forEach(k=>{out=out.split('{'+k+'}').join(vars[k]);});
+  return out;
+}
+async function setLang(id){
+  const l=LANGS[id]?id:'ca';
+  state.lang=l;
+  try{document.documentElement.setAttribute('lang',l);}catch(e){}
+  try{if(l==='ca')await dbDelete('__lang');else await dbPut({id:'__lang',type:'meta',lang:l});}catch(e){}
+  return l;
+}
+async function loadLang(){
+  let l='ca';
+  try{const all=await dbGetAll();const r=all.find(n=>n.id==='__lang');if(r&&LANGS[r.lang])l=r.lang;}catch(e){}
+  state.lang=l;
+  try{document.documentElement.setAttribute('lang',l);}catch(e){}
+  return l;
+}
+/* Quantes de les cadenes que passen per `t()` tenen traducció. És la xifra que
+   fa visible el deute; `check-i18n.js` la calcula sobre el codi sencer. */
+function langCoverage(lang){
+  const d=I18N[lang]||{};
+  const keys=Object.keys(d).filter(k=>d[k]&&d[k]!==k);
+  return{lang,traduides:keys.length,total:Object.keys(d).length};
+}
+
 /* ═══════════════════ ESTAT ═══════════════════ */
-const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler',dossiers:{},lensRole:null,autoPublish:false,models:[],fundScope:null,relay:{url:'',key:'',room:'',on:false}};
+const state={nodes:[],entities:[],activeId:null,tab:'map',expanded:new Set(),tombstones:{},activePersona:null,homeView:'tauler',dossiers:{},lensRole:null,autoPublish:false,models:[],fundScope:null,relay:{url:'',key:'',room:'',on:false},commonSupply:[],commonSupplyAt:null,showAllTabs:false,lastMerge:null,lang:'ca',showAllHome:false};
 // Persona activa (login persistent): un nom que identifica l'usuari a tot el sistema. Es guarda a IndexedDB.
 async function loadActivePersona(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__persona');state.activePersona=r?r.name:null;}catch(e){}return state.activePersona;}
 async function setActivePersona(name){name=(name||'').trim();state.activePersona=name||null;if(name)await dbPut({id:'__persona',type:'meta',name});else await dbDelete('__persona');updatePersonaBadge();}
@@ -1880,10 +2008,53 @@ async function verifyChain(entries){
 }
 // Helper compost: firma + encadena en una sola operació. Els apunts pre-existents sense firma es marquen com "legacy".
 async function signAndChainEntry(entry,prevHash){entry.prevHash=prevHash||'';await signRecord(entry);entry.hash=await sha256(_payload({...entry,hash:undefined}));return entry;}
+
+/* ═══════════ V64 · La cadena és per autor, i el rebut és compartit ═══════════
+   Hi havia **una sola cadena per node**: cada apunt encadenat amb l'anterior,
+   fos de qui fos. Sembla més fort i és més fràgil, perquè obliga a un ordre
+   global —i un ordre global entre gent que apunta sense estar connectada només
+   se sosté amb un servidor que digui qui va primer. Sense servidor, l'única
+   sortida que quedava era que en sincronitzar guanyés un i es perdés l'altre.
+   Es va comprovar: es perdien hores signades.
+
+   Comptabilitat de **triple entrada**: el que dona, el que rep, i el **rebut**
+   que tots dos guarden signat. El rebut és la tercera entrada i és la que mana.
+   D'aquí surten dues regles:
+
+   - **Cada autor encadena el seu.** `prevHash` apunta a l'apunt anterior *del
+     mateix `did`*. Dues persones que apunten alhora fan créixer dues cadenes
+     que no es trepitgen, i la unió de les dues és vàlida sense reordenar res.
+   - **La unió no destrueix.** Fusionar dos ledgers és quedar-se'ls tots dos.
+
+   I això és el que fa el sistema **antifràgil**: com més gent guarda una còpia
+   d'un rebut, més difícil és perdre'l o falsejar-lo. Amb la cadena única, cada
+   còpia de més era una oportunitat de conflicte; amb la cadena per autor, cada
+   còpia de més és una prova de més. Perdre el telèfon deixa de ser perdre la
+   feina, perquè qui era a l'altra banda de l'intercanvi també la té. */
+const entryAuthor=e=>(e&&e.signer&&e.signer.did)||'';
 // Choke point per a totes les escriptures reals al ledger — signa + encadena + unshift atomicament.
-async function pushLedger(ledgerArr,entry){const prev=ledgerArr[0];await signAndChainEntry(entry,prev?(prev.hash||''):'');ledgerArr.unshift(entry);return entry;}
-// Estat d'integritat d'una llista d'apunts (ledger.slice().reverse() per ordre cronològic).
-async function verifyLedger(ledgerArr){const chrono=ledgerArr.slice().reverse();const chain=await verifyChain(chrono);const entries={};await Promise.all(ledgerArr.map(async e=>{entries[e.id]=await verifyRecord(e);}));return{chain,entries};}
+async function pushLedger(ledgerArr,entry){
+  let did='';try{did=(await getIdentity()).did;}catch(e){}
+  const mine=ledgerArr.find(e=>entryAuthor(e)===did);
+  await signAndChainEntry(entry,mine?(mine.hash||''):'');
+  ledgerArr.unshift(entry);return entry;
+}
+/* Estat d'integritat. Es prova primer per autor i, si no quadra, com a cadena
+   global: els ledgers escrits abans de V64 són globals i segueixen sent vàlids.
+   Dir que estan trencats seria mentir sobre dades que ningú ha tocat. */
+async function verifyLedger(ledgerArr){
+  const entries={};await Promise.all(ledgerArr.map(async e=>{entries[e.id]=await verifyRecord(e);}));
+  const byAuthor={};ledgerArr.forEach(e=>{const a=entryAuthor(e);(byAuthor[a]||(byAuthor[a]=[])).push(e);});
+  const chains={};let ok=true,brokenAt='';
+  for(const a in byAuthor){
+    const r=await verifyChain(byAuthor[a].slice().reverse());
+    chains[a]=r;if(!r.ok){ok=false;brokenAt=brokenAt||r.brokenAt;}
+  }
+  if(ok)return{chain:{ok:true,mode:'autor'},chains,entries};
+  const global=await verifyChain(ledgerArr.slice().reverse());
+  if(global.ok)return{chain:{ok:true,mode:'global'},chains,entries};
+  return{chain:{ok:false,mode:'autor',brokenAt},chains,entries};
+}
 // ═══════════ Xifratge AES-GCM per node (Arc L3) ═══════════
 // Clau simètrica compartida entre membres d'una comunitat. toPublicPack no toca; només xifra dades privades locals/al ledger p2p.
 async function generateNodeKey(){return crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);}
@@ -1984,7 +2155,7 @@ function newNode(name,level,parentId){return{id:uid(),name:name.trim(),nodeLevel
   metaskill:{mission:'',vision:'',objectives:''},
   vna:{roles:[],exchanges:[]},kanban:{cards:[]},ledger:[],
   createdAt:now(),updatedAt:now()};}
-async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();syncBroadcast(node,'node');schedulePublish();}
+async function persist(node){node.updatedAt=now();await dbPut(node);flashSync();syncBroadcast(node,'node');schedulePublish();schedulePatch(node);}
 
 /* ═══════════ ENTITATS (directori / atles d'economia social) ═══════════ */
 // Tipus d'entitat per nivell territorial [id, etiqueta, icona]
@@ -2042,17 +2213,31 @@ const membersOf=node=>node.members||(node.members=[]);
    acabar duplicada al mateix node, i cada camí decidia pel seu compte què
    actualitzar. Ara tots passen per aquí: si ja hi és, s'actualitza; si no, s'hi
    afegeix. La identitat és el `personKey`, no l'`id` de la fila. */
-function joinNode(node,{name,kind,role,entityId,phone,email}={}){
+function joinNode(node,{name,kind,role,entityId,phone,email,did}={}){
   const nm=(name||'').trim();if(!nm)return null;
   const key=personKey(nm);
-  let m=membersOf(node).find(x=>personKey(x.name)===key);
+  /* Amb `did` s'emparella per la clau signada i no pel nom: és l'única manera
+     que qui s'escriu diferent en dos nodes segueixi sent una persona, i que dos
+     veïns que es diuen igual no acabin sent-ne una. */
+  let m=did?membersOf(node).find(x=>x.did===did):null;
+  if(!m){
+    const same=membersOf(node).filter(x=>personKey(x.name)===key);
+    // Una fitxa ja reclamada per un altre `did` no és teva, encara que el nom
+    // coincideixi. Es deixa estar i se'n crea una de nova.
+    m=same.find(x=>!x.did||!did||x.did===did)||null;
+    if(m&&m.did&&did&&m.did!==did)m=null;
+  }
   if(m){
+    if(did&&!m.did)m.did=did;
+    // Qui ha signat amb el seu `did` és l'autoritat sobre el seu propi nom.
+    if(did&&m.did===did&&nm&&m.name!==nm)m.name=nm;
     if(role&&!m.role)m.role=role;
     if(entityId&&!m.entityId)m.entityId=entityId;
     if(phone||email){m.contact=m.contact||{};if(phone)m.contact.phone=phone;if(email)m.contact.email=email;}
     m.updatedAt=now();return m;
   }
   m=newMember({name:nm,kind:kind||'persona',role,entityId,phone,email});
+  if(did)m.did=did;
   membersOf(node).push(m);return m;
 }
 const objectsOf=node=>node.objects||(node.objects=[]);
@@ -2099,12 +2284,13 @@ function memberIdsOf(node,member){
 /* Índex de les persones que el SOS ja coneix, de tots els nodes alhora.
    Derivat: la veritat segueixen sent els registres de soci de cada node. */
 function knownPersons(){
-  const by={};
+  const by={},idx=identityIndex();
   state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{
     if(m.mergedInto)return;
-    const key=personKey(m.name);if(!key)return;
+    const key=canonKeyOf(m,idx);if(!key)return;
     const p=by[key]||(by[key]={key,name:m.name,kind:m.kind||'persona',dids:[],nodes:[],
-      contact:{phone:'',email:''},entityId:null,role:null});
+      names:new Set(),contact:{phone:'',email:''},entityId:null,role:null});
+    if(m.name)p.names.add(m.name);
     if(m.did&&p.dids.indexOf(m.did)<0)p.dids.push(m.did);
     p.nodes.push({nodeId:nd.id,nodeName:nd.name,dynamicType:nd.dynamicType,memberId:m.id,did:m.did||null});
     if(m.contact){if(m.contact.phone&&!p.contact.phone)p.contact.phone=m.contact.phone;
@@ -2112,11 +2298,17 @@ function knownPersons(){
     if(m.entityId&&!p.entityId)p.entityId=m.entityId;
     if(m.role&&!p.role)p.role=m.role;
   }));
+  /* Els noms ambigus —el mateix nom amb dos `did` al darrere— es marquen
+     perquè la interfície ho pugui dir. Amagar-ho seria deixar que algú es
+     pensi que està mirant una persona quan n'hi ha dues. */
+  const amb=new Set(idx.ambiguous.map(a=>a.name));
   return Object.values(by).map(p=>Object.assign(p,{
     did:p.dids[0]||null,claimed:p.dids.length>0,
-    /* Dos `did` diferents sota el mateix nom no és un error a amagar: són dues
-       persones que es diuen igual, i cal dir-ho. */
-    conflict:p.dids.length>1,nodeCount:p.nodes.length}))
+    names:[...p.names],
+    /* Un mateix nom escrit de maneres diferents ja no parteix la persona: si hi
+       ha `did`, s'uneixen, i aquí es diu amb quins noms se l'ha escrita. */
+    aka:[...p.names].filter(n=>n!==p.name),
+    conflict:amb.has(personKey(p.name)),nodeCount:p.nodes.length}))
     .sort((a,b)=>b.nodeCount-a.nodeCount||a.name.localeCompare(b.name,'ca'));
 }
 const personsNotIn=nodeId=>knownPersons().filter(p=>!p.nodes.some(x=>x.nodeId===nodeId));
@@ -3087,7 +3279,7 @@ const COMANDO_VILLAINS=[
 // Escala de reputació del Comando dins del SOS: es puja amb evidència, no amb temps.
 const COMANDO_RANKS=[
   {id:'aprenent',label:'Aprenent',one:'Comença: encara sense aportacions signades'},
-  {id:'superheroi',label:'Superheroi/na',one:'Aporta i intercanvia amb rastre verificable'},
+  {id:'superheroi',label:t('Superheroi/na'),one:'Aporta i intercanvia amb rastre verificable'},
   {id:'guardia',label:'Guardià/ana',one:'Sosté el territori: signa decisions i acompanya altres'}
 ];
 const founderOf=godKey=>COMANDO_FOUNDERS.find(f=>f.god===godKey)||null;
@@ -4005,6 +4197,7 @@ function openSupplySearch(prefill){
     </div>
     <div id="spStats" class="wz-key-note"></div>
     <div id="spMatch"></div>
+    <div id="spCommon"></div>
     <div id="spCoord"></div>
     <div id="spList" class="acts" style="margin-top:.5rem"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="spClose">Tanca</button></div>
@@ -4012,6 +4205,38 @@ function openSupplySearch(prefill){
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#spClose').onclick=closeModal;
   const q=bg.querySelector('#spQ'),listBox=bg.querySelector('#spList'),stats=bg.querySelector('#spStats'),matchBox=bg.querySelector('#spMatch'),av=bg.querySelector('#spAvail');
+  const commonBox=bg.querySelector('#spCommon');
+  /* El que ha publicat la resta va a part i marcat. Si es barregés amb el teu,
+     el que ha dit un altre passaria per dada teva —i no hi ha manera de
+     desfer-ho un cop la gent hi confia. */
+  function paintCommon(){
+    const rows=commonSupplyMatches(q.value,{kinds,dirs});
+    const n=(state.commonSupply||[]).length;
+    commonBox.innerHTML='';
+    const head=el('div','ent-grp-lbl','🌐 A la resta de la xarxa'+(rows.length?' · '+rows.length:''));
+    commonBox.appendChild(head);
+    if(!n){
+      const c=el('div','ai-note');
+      c.innerHTML='<span class="ic">🌐</span><span>Encara no has llegit l\'oferta comuna. És el que <strong>altres territoris han publicat</strong>: diu on preguntar, mai a qui.</span>';
+      commonBox.appendChild(c);
+    } else if(!rows.length){
+      commonBox.appendChild(el('div','wz-key-note','Res que hi coincideixi entre les '+n+' files publicades per altres.'));
+    } else rows.slice(0,12).forEach(r=>{
+      const km=kindMeta(r.kind),dm=dirMeta(r.dir);
+      const row=el('div','act-row sp-r');row.dataset.dir=r.dir;
+      row.innerHTML='<div class="act-ic">'+km.ic+'</div><div style="flex:1;min-width:0">'+
+        '<div class="act-t"><span class="sp-dir sp-'+r.dir+'">'+dm.ic+' '+esc(dm.label)+'</span> '+esc(r.label||r.category||'')+'</div>'+
+        '<div class="act-d">'+esc(r.nodeName||'')+(r.place?' · '+esc(r.place):'')+' · '+
+        (r.people||0)+' persona'+((r.people||0)===1?'':'es')+'</div></div>'+
+        '<span class="ent-b b-unver">publicat</span>';
+      commonBox.appendChild(row);
+    });
+    const b2=el('button','btn btn-ghost btn-sm','⭳ Actualitza l\'oferta comuna');
+    b2.style.marginTop='.4rem';
+    b2.onclick=async()=>{b2.disabled=true;await updateCommonSupply();b2.disabled=false;paintCommon();};
+    commonBox.appendChild(b2);
+    if(state.commonSupplyAt)commonBox.appendChild(el('div','wz-key-note','Llegida '+relTime(state.commonSupplyAt)+'. No es barreja amb la teva: és el que han publicat altres.'));
+  }
   const rowFor=x=>{
     const km=kindMeta(x.kind),dm=dirMeta(x.dir);
     const row=el('div','act-row sp-r');row.style.cursor='pointer';
@@ -4109,12 +4334,12 @@ function openSupplySearch(prefill){
     });
     if(res.length>120)listBox.appendChild(el('div','wz-key-note','…i '+(res.length-120)+' més. Afina la cerca.'));
   };
-  let t=null;q.oninput=()=>{clearTimeout(t);t=setTimeout(paint,140);};
+  let t=null;q.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{paint();paintCommon();},140);};
   const toggle=(sel,arr)=>bg.querySelectorAll(sel).forEach(b=>b.onclick=()=>{
     const id=b.dataset.k||b.dataset.d,i=arr.indexOf(id);
     if(i>=0&&arr.length>1){arr.splice(i,1);b.classList.remove('sel');}
     else if(i<0){arr.push(id);b.classList.add('sel');}
-    paint();
+    paint();paintCommon();
   });
   toggle('.sp-k',kinds);toggle('.sp-d',dirs);
   const sortSel=bg.querySelector('#spSort'),dirBtn=bg.querySelector('#spDir');
@@ -4127,7 +4352,7 @@ function openSupplySearch(prefill){
     cb.innerHTML='<div class="ai-note"><span class="ic">📍</span><span>L\'ordre és per <strong>proximitat territorial</strong>, no per quilòmetres: encara no hi ha coordenades. <button class="btn btn-ghost btn-sm" id="spCoordGo">Posa-les</button></span></div>';
     const g=bg.querySelector('#spCoordGo');if(g)g.onclick=()=>{closeModal();openCoords();};
   }
-  paint();setTimeout(()=>q.focus(),80);
+  paint();paintCommon();setTimeout(()=>q.focus(),80);
 }
 // Els botons han de dir la veritat: si ja tens perfil, no el crees, l'edites.
 const hasProfile=()=>!!(state.activePersona&&profileSnapshot(state.activePersona));
@@ -4541,7 +4766,6 @@ function _searchIndex(){
     {k:'action',id:'act_fed',label:'Assemblea federativa',sub:'🌐 acció',action:()=>{const nd=byId(state.activeId);openFederationModal(nd&&isTerritory(nd.nodeLevel)?nd:null);}},
     {k:'action',id:'act_gov',label:'Sabiduria del node actiu',sub:'🏛 acció',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
     {k:'action',id:'act_valu',label:'Valora un recurs amb IA',sub:'💎 acció',action:()=>openValuationAssistant()},
-    {k:'action',id:'act_pr',label:'IA revisa un PR de GitHub',sub:'🤖 acció',action:()=>openPRReviewModal()},
     {k:'action',id:'act_set',label:'Configuració · dades · sync',sub:'⚙ acció',action:()=>openSettingsModal()}
   ];
   return[...nodes,...persons,...ents,...actions];
@@ -5215,6 +5439,322 @@ function nostrPublish(relayUrl,signedEvent,{timeout=6000}={}){
     ws.onclose=()=>{clearTimeout(to);if(!done)finish('closed');};
   });
 }
+/* ═══════════ PONT DE CLAUS · qui ancora és qui registra ═══════════
+   Veda V61. El SOS signa amb `did:sos` i ancora amb la clau Nostr de
+   l'extensió del navegador. **Res no deia que fossin la mateixa persona.** Un
+   ancoratge publicat provava que *algú* amb una clau Nostr havia publicat aquell
+   hash — no que fos qui el va registrar. Per a un registre d'usuaris a la
+   permaweb, aquest era el forat central.
+
+   El pont és una **afirmació signada dues vegades**: un registre que diu «el
+   did D i la clau Nostr N són la mateixa persona», firmat pel `did` i, tot
+   sencer, publicat com a event Nostr firmat per N.
+
+   El que es pot comprovar i el que no, dit sense arrodonir:
+
+   · **La banda `did:sos` es verifica del tot** aquí mateix, amb SubtleCrypto.
+   · **El lligam es verifica del tot**: que l'event contingui exactament el
+     registre firmat, que la clau declarada sigui la de l'event, i que l'id de
+     l'event sigui el SHA-256 de la seva serialització NIP-01.
+   · **La firma Nostr NO es verifica aquí.** És Schnorr sobre secp256k1 i
+     SubtleCrypto no en sap; caldria una biblioteca, i el SOS és un sol fitxer.
+     El que sí que val com a prova és que **els relés rebutgen els events amb
+     firma invàlida**: si el pont és publicat i acceptat, la clau Nostr hi va
+     signar. Es diu així, i no «verificat». */
+const KEY_LINK_TYPE='sos-key-link';
+const _hex=buf=>[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+async function sha256hex(bytes){
+  const h=await crypto.subtle.digest('SHA-256',bytes instanceof Uint8Array?bytes:_te.encode(String(bytes)));
+  return _hex(h);
+}
+// Id d'un event Nostr segons NIP-01: sha256 de [0,pubkey,created_at,kind,tags,content].
+async function nostrEventId(evt){
+  return sha256hex(_te.encode(JSON.stringify([0,evt.pubkey,evt.created_at,evt.kind,evt.tags||[],evt.content||''])));
+}
+async function buildKeyLink(){
+  if(!nostrHasSigner())throw{msg:'Cal una extensió Nostr NIP-07 (Alby, nos2x) per fer el pont'};
+  const id=await getIdentity();
+  const pubkey=await window.nostr.getPublicKey();
+  const link={type:KEY_LINK_TYPE,did:id.did,nostr:pubkey,ts:now(),app:'sos-teamtowers'};
+  await signRecord(link);                       // banda did:sos
+  const evt={kind:30078,created_at:Math.floor(Date.now()/1000),
+    tags:[['d','sos-key-link'],['t','sos'],['t','teamtowers']],
+    content:JSON.stringify(link),pubkey};
+  const signed=await window.nostr.signEvent(evt);   // banda Nostr
+  return{link,event:signed};
+}
+async function verifyKeyLink(pack){
+  const out={ok:false,did:{ok:false},binding:{ok:false},nostr:{verified:false,
+    reason:'La firma Nostr és Schnorr secp256k1: SubtleCrypto no la pot verificar sense biblioteca. Que un relé l\'hagi acceptat sí que ho prova.'}};
+  if(!pack||!pack.link||!pack.event){out.reason='not_key_link';return out;}
+  const l=pack.link,e=pack.event;
+  if(l.type!==KEY_LINK_TYPE){out.reason='not_key_link';return out;}
+  // 1 · La banda did:sos, verificada de debò.
+  try{const v=await verifyRecord(l);out.did={ok:!!v.ok,reason:v.reason||''};}catch(err){out.did={ok:false,reason:'verify_error'};}
+  // 2 · El lligam: el que l'event porta ha de ser exactament el registre firmat.
+  let contentMatch=false;
+  try{contentMatch=_canon(JSON.parse(e.content||'{}'))===_canon(l);}catch(err){}
+  const keyMatch=!!(e.pubkey&&l.nostr&&e.pubkey===l.nostr);
+  let idMatch=false;
+  try{idMatch=(await nostrEventId(e))===e.id;}catch(err){}
+  out.binding={ok:contentMatch&&keyMatch&&idMatch,contentMatch,keyMatch,idMatch};
+  out.did_value=l.did;out.nostr_value=l.nostr;
+  // Ok vol dir: el did ho ha firmat i l'event hi lliga sense fissures. La firma
+  // Nostr queda com a «acceptada pel relé», que és una altra cosa i es diu.
+  out.ok=out.did.ok&&out.binding.ok;
+  return out;
+}
+// Publicar el pont és el que el fa oposable: a partir d'aquí és consultable.
+async function publishKeyLink({relays,onProgress}={}){
+  const pack=await buildKeyLink();
+  const list=relays&&relays.length?relays:await nostrRelays();
+  const results=[];
+  for(const r of list){
+    if(onProgress)onProgress(r,'enviant');
+    const res=await nostrPublish(r,pack.event);
+    results.push(res);
+    if(onProgress)onProgress(r,res.status);
+  }
+  return{pack,results,ok:results.some(r=>r.status==='ok')};
+}
+
+/* ═══════════ V67 · La còpia deixa de dependre d\'una persona ═══════════
+   Si qui sosté el node perd el telèfon, la història del node se\'n va amb ell.
+   No és un cas rebuscat: és el cas normal al cap de dos anys —una persona
+   plega, canvia de mòbil, o simplement se li espatlla. I amb ella marxen les
+   hores que ha apuntat tothom.
+
+   `exportBackup` ja existia i els envelopes xifrats per membre també (V29). El
+   que faltava era el **rol**: algú, a part de qui el sosté, que en tingui una
+   còpia. Això és el que treu el node de tenir un únic punt de fallada.
+
+   No cal inventar cap rol nou al sistema de rols: és una **responsabilitat
+   dins del node**, i viu com una marca al soci. Un rol global diria que aquella
+   persona custodia «en general», i el que custodia és aquest node.
+
+   La regla que fa que això no sigui teatre: **designar no és custodiar**. Una
+   persona marcada que encara no ha rebut cap còpia no compta com a còpia, i es
+   diu així de clar. Un comptador que digués «2 custodis» amb zero còpies
+   entregades seria pitjor que no tenir-ne cap: et faria dormir tranquil. */
+const CUSTODY_PACK_TYPE='sos-custody-pack';
+const custodiansOf=node=>membersOf(node).filter(m=>m&&m.custodia);
+async function setCustodian(node,memberId,on){
+  const m=membersOf(node).find(x=>x&&x.id===memberId);
+  if(!m)throw{msg:t('Aquest soci no hi és')};
+  if(on&&!m.did)throw{code:'nodid',msg:t('Per custodiar una còpia cal una identitat (did): sense ella no se li pot xifrar res només per a ell.')};
+  m.custodia=!!on;if(!on)delete m.custodiaAt;
+  await persist(node);
+  return m;
+}
+/* L\'estat honest de la còpia. `designats` no és `ambCopia`, i el missatge no
+   els barreja mai. */
+function custodyStatus(node){
+  const des=custodiansOf(node);
+  const amb=des.filter(m=>m.custodiaAt);
+  const st={designats:des.length,ambCopia:amb.length,
+    llista:des.map(m=>({id:m.id,name:m.name||'',quan:m.custodiaAt||null})),ok:amb.length>=2};
+  st.msg=amb.length>=2?('La còpia no depèn de ningú en concret: '+amb.length+' persones en tenen una.')
+    :amb.length===1?t('Només una persona en té còpia. Si la perd, es perd el node.')
+    :des.length?('Hi ha '+des.length+(des.length>1?' persones designades':' persona designada')+', però encara no n\'ha rebut cap còpia. Designar no és custodiar.')
+    :t('Ningú més que tu en té còpia. Si perds aquest dispositiu, es perd el node.');
+  return st;
+}
+/* La còpia va xifrada amb la clau del node: qui la custodia ja n\'és membre i
+   ja la té. Qui es trobi el fitxer i no en sigui, no en treu res. */
+async function buildCustodyPack(node){
+  if(!node)throw{msg:'Cal un node'};
+  let key=null;try{key=await getMyNodeKey(node);}catch(e){key=null;}
+  if(!key)throw{code:'nokey',msg:'Aquest node no té clau compartida. Sense clau, la còpia aniria en clar a mans d\'algú altre.'};
+  const body={node:JSON.parse(JSON.stringify(node)),ts:now()};
+  const pack={type:CUSTODY_PACK_TYPE,v:1,nodeId:node.id,ts:now(),
+    apunts:(node.ledger||[]).length,socis:membersOf(node).length,enc:null};
+  pack.enc=await encryptWithKey(key,body);
+  await signRecord(pack);
+  return pack;
+}
+/* Marca que aquella persona **ja té** la còpia. Es crida quan s\'ha entregat de
+   debò, no quan s\'ha designat. */
+async function markCustodyDelivered(node,memberIds){
+  const ids=new Set(memberIds||custodiansOf(node).map(m=>m.id));
+  const t=now();
+  membersOf(node).forEach(m=>{if(m&&ids.has(m.id)&&m.custodia)m.custodiaAt=t;});
+  await persist(node);
+  return custodyStatus(node);
+}
+/* Restaurar és **unir**, no substituir. Si qui restaura ja tenia coses del
+   node, no se li esborren: la còpia porta apunts i el local també, i la regla
+   de V64 val igual aquí. */
+async function restoreFromCustodyPack(pack){
+  if(!pack||pack.type!==CUSTODY_PACK_TYPE)return{ok:false,reason:'no és una còpia de custòdia'};
+  const env=await verifyRecord(pack);
+  if(!env.ok)return{ok:false,reason:'la firma de la còpia no és vàlida ('+env.reason+')'};
+  const local=byId(pack.nodeId);
+  let key=null;try{key=local?await getMyNodeKey(local):null;}catch(e){key=null;}
+  if(!key)return{ok:false,locked:true,reason:'xifrada amb la clau d\'un node que no tens: has de ser-ne membre per restaurar-la'};
+  let body;try{body=JSON.parse(await decryptWithKey(key,pack.enc));}
+  catch(e){return{ok:false,locked:true,reason:'no s\'ha pogut desxifrar amb la teva clau'};}
+  const inc=body&&body.node;
+  if(!inc||!inc.id)return{ok:false,reason:'la còpia no porta cap node'};
+  if(!local){await dbPut(inc);state.nodes.push(inc);return{ok:true,nou:true,afegits:(inc.ledger||[]).length};}
+  let afegits=0;
+  for(const k of APPEND_ONLY){
+    if(!((local[k]&&local[k].length)||(inc[k]&&inc[k].length)))continue;
+    const before=(local[k]||[]).length;
+    local[k]=mergeAppendOnly(local[k],inc[k],k);
+    afegits+=Math.max(0,local[k].length-before);
+  }
+  if(local.chat||inc.chat)local.chat=mergeChat(local.chat,inc.chat);
+  await persist(local);
+  return{ok:true,nou:false,afegits};
+}
+
+/* ═══════════ V65 · El canal asíncron: el repositori com a bústia ═══════════
+   El relé demana que **dues persones hi siguin alhora**. En un poble això no
+   passa gairebé mai: la gent obre l'app el diumenge al vespre, i no totes el
+   mateix diumenge. Un canal que exigeix simultaneïtat és un canal que no s'usa.
+
+   El repositori ja feia aquest paper dues vegades —l'atles i `supply/`— i ningú
+   ho havia llegit com el que és: un **bus asíncron, durable, versionat, amb
+   historial i auditable**. Cadascú hi deixa el seu quan pot; qui arriba després
+   se'l troba.
+
+   Això només és possible **gràcies a V64**: els apunts són idempotents i
+   s'uneixen sense conflicte, així que un directori al qual tothom afegeix
+   convergeix sol. Amb la cadena única hauria calgut decidir qui va primer, i
+   això és el que no volem haver de decidir.
+
+   I és la peça antifràgil per excel·lència: cada clon del repositori, cada fork
+   i cada CDN és una còpia més del registre. Com més gent el fa servir, més
+   difícil és perdre'l.
+
+   Tres regles que fan que això no sigui una porta oberta:
+
+   - **El transport no dona veritat.** Un paquet es verifica sencer i **apunt
+     per apunt**; el que no porta firma vàlida es descarta encara que vingui del
+     repositori oficial. És la mateixa regla de V60, i el motiu és el mateix:
+     confiar en l'origen és com es cola una fuita.
+   - **Qui no té la clau no llegeix res.** El contingut va xifrat amb la clau
+     del node (V29). El repositori és una bústia pública, no un taulell.
+   - **Publicar dues vegades no fa mal.** La unió és idempotent; per això es pot
+     reintentar sense pensar-hi. */
+const CHANNEL_BASE='canal/';
+const CHANNEL_PACK_TYPE='sos-channel-pack';
+const CHANNEL_SEEN_ID='__channelseen';
+const channelSlug=s=>themeSlug(s||'');
+/* ═══════════ El sobre, un cop i per a tothom ═══════════
+   El canal (V65), la custòdia (V67) i el relé (V68) fan exactament la mateixa
+   feina: agafar el que puc demostrar d'un node, xifrar-ho amb la clau del node
+   i signar-ho; i a l'altra banda, comprovar la firma, desxifrar i **verificar
+   apunt per apunt**. Tres còpies d'això serien tres llocs on la regla de «el
+   transport no dona veritat» es pot afluixar sense que ningú se n'adoni.
+   Val més un sol lloc on sigui difícil equivocar-se. */
+async function sealPack(node,type,head,body){
+  if(!node)throw{msg:'Cal un node'};
+  let key=null;try{key=await getMyNodeKey(node);}catch(e){key=null;}
+  if(!key)throw{code:'nokey',msg:t('Aquest node encara no té clau compartida. Sense clau, publicar-lo seria publicar-ho en clar; genera-la o tria explícitament que vagi obert.')};
+  const pack=Object.assign({type,v:1,nodeId:node.id,ts:now()},head||{},{enc:null,body:null});
+  pack.enc=await encryptWithKey(key,body);
+  await signRecord(pack);
+  return pack;
+}
+/* Obrir no és confiar. La firma del sobre només diu qui l'ha tancat; el que hi
+   ha a dins es torna a comprovar un per un. */
+async function openPack(pack,type,node){
+  if(!pack||pack.type!==type)return{ok:false,reason:'no és un paquet del tipus esperat'};
+  const env=await verifyRecord(pack);
+  if(!env.ok)return{ok:false,reason:'la firma del paquet no és vàlida ('+env.reason+')'};
+  let body=pack.body;
+  if(pack.enc){
+    let key=null;try{key=node?await getMyNodeKey(node):null;}catch(e){key=null;}
+    if(!key)return{ok:false,locked:true,reason:'xifrat i no tens la clau d\'aquest node'};
+    try{body=JSON.parse(await decryptWithKey(key,pack.enc));}
+    catch(e){return{ok:false,locked:true,reason:'xifrat amb una clau diferent de la teva'};}
+  }
+  if(!body)return{ok:false,reason:'paquet buit'};
+  const good=[],bad=[];
+  for(const r of (body.receipts||[])){
+    const v=await verifyRecord(r);
+    (v.ok?good:bad).push(r);
+  }
+  return{ok:true,body,receipts:good,rejected:bad.length,author:pack.signer&&pack.signer.did};
+}
+/* Un paquet és el que jo puc demostrar d'aquest node: els apunts que porten
+   firma. Els que no en porten no viatgen —no perquè siguin falsos, sinó perquè
+   a l'altra banda no hi hauria manera de comprovar-los, i llavors el canal
+   estaria movent afirmacions en comptes de proves. */
+const signedReceipts=node=>(node.ledger||[]).filter(e=>e&&e.sig&&e.signer);
+async function buildChannelPack(node,theme,{encrypt=true}={}){
+  if(!node)throw{msg:'Cal un node'};
+  const signed=signedReceipts(node);
+  /* El nom del node va **a dins**, xifrat. A fora només hi queda el que fa
+     falta per encaminar el fitxer: el tema i l'id. Deixar-hi el nom seria dir a
+     qualsevol que passi que en aquell poble hi ha un banc de temps i com es
+     diu, i això ja és informació sobre gent. */
+  const body={node:node.name,receipts:signed,
+    members:(node.members||[]).filter(m=>m&&m.id).map(m=>({id:m.id,did:m.did||null}))};
+  const head={theme:channelSlug(theme||(themesOf(node)[0]||node.name)),count:signed.length};
+  if(!encrypt){
+    const pack=Object.assign({type:CHANNEL_PACK_TYPE,v:1,nodeId:node.id,ts:now()},head,{enc:null,body});
+    await signRecord(pack);return pack;
+  }
+  return sealPack(node,CHANNEL_PACK_TYPE,head,body);
+}
+async function verifyChannelPack(pack,node){
+  const r=await openPack(pack,CHANNEL_PACK_TYPE,node);
+  if(!r.ok)return r.reason==='no és un paquet del tipus esperat'?{ok:false,reason:'no és un paquet de canal'}:r;
+  if(!Array.isArray(r.body.receipts))return{ok:false,reason:'paquet sense apunts'};
+  return{ok:true,receipts:r.receipts,rejected:r.rejected,author:r.author,theme:pack.theme};
+}
+/* Llegir és fusionar: unió idempotent amb el que ja tens. Torna quants n'han
+   entrat de nous, que és l'única xifra que importa a qui ho mira. */
+async function readChannelPack(pack,node){
+  const v=await verifyChannelPack(pack,node);
+  if(!v.ok)return{ok:false,reason:v.reason,locked:!!v.locked,added:0};
+  const before=(node.ledger||[]).length;
+  node.ledger=mergeAppendOnly(node.ledger,v.receipts,'ledger');
+  const added=node.ledger.length-before;
+  if(added)await persist(node);
+  return{ok:true,added,rejected:v.rejected,total:v.receipts.length,author:v.author};
+}
+async function channelIndex(){
+  const idx=await (await fetch(CHANNEL_BASE+'index.json',{cache:'no-store'})).json();
+  return{themes:idx.themes||[],packs:idx.packs||[]};
+}
+/* Baixa tot el que hi ha al canal d'un tema i ho fusiona al node. Els paquets
+   que no es poden obrir no són un error: són d'un altre node i és normal. */
+async function pullChannel(node,theme){
+  const slug=channelSlug(theme);
+  const out={read:0,added:0,locked:0,failed:0,rejected:0};
+  let idx;try{idx=await channelIndex();}catch(e){throw{msg:'No s\'ha pogut llegir l\'índex del canal'};}
+  for(const p of idx.packs){
+    if(slug&&channelSlug(p.theme)!==slug)continue;
+    let pack;try{pack=await (await fetch(CHANNEL_BASE+p.file,{cache:'no-store'})).json();}catch(e){out.failed++;continue;}
+    const r=await readChannelPack(pack,node);
+    if(r.ok){out.read++;out.added+=r.added;out.rejected+=r.rejected||0;}
+    else if(r.locked)out.locked++;else out.failed++;
+  }
+  return out;
+}
+const channelFileName=(pack)=>CHANNEL_BASE+channelSlug(pack.theme)+'/'+String(pack.nodeId||'node').replace(/[^\w-]/g,'')+'.json';
+/* Publicar. Dos camins, i el primer no demana res a ningú:
+   descarregar el fitxer i afegir-lo per pull request, com ja es fa amb l'atles.
+   El segon fa servir el token de GitHub —el que feia temps que hi era i no
+   servia per a res— per deixar-lo directament al repositori. */
+async function publishChannelPack(node,theme,{owner,repo,branch,encrypt=true}={}){
+  const pack=await buildChannelPack(node,theme,{encrypt});
+  const path='SOS/'+channelFileName(pack);
+  if(!owner||!repo)return{pack,path,mode:'fitxer'};
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(pack,null,2))));
+  let sha=null;
+  try{const cur=await (await GH._fetch('/repos/'+owner+'/'+repo+'/contents/'+path+(branch?'?ref='+encodeURIComponent(branch):''))).json();sha=cur.sha||null;}catch(e){}
+  const body={message:'SOS · canal '+pack.theme+' · '+pack.count+' apunts',content};
+  if(branch)body.branch=branch;
+  if(sha)body.sha=sha;
+  const res=await (await GH._fetch('/repos/'+owner+'/'+repo+'/contents/'+path,
+    {method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(body)})).json();
+  return{pack,path,mode:'github',commit:res.commit&&res.commit.sha};
+}
+
 async function nostrPublishAnchor(node,{relays,onProgress}={}){
   const g=govOf(node);const mainHash=g.mainHash||'';
   const pubkey=await window.nostr.getPublicKey();
@@ -5233,13 +5773,40 @@ function openNostrModal(node){
     ${!node?'<div class="ai-note"><span class="ic">⚠</span><span>Selecciona primer un node.</span></div>':`<div class="ent-desc" style="margin-bottom:.4rem">Node: <strong>${esc(node.name)}</strong> · mainHash: <code style="font-size:.7rem">${esc((govOf(node).mainHash||'—').slice(0,32))}${(govOf(node).mainHash||'').length>32?'…':''}</code></div>`}
     <div class="field"><label>Relés (un per línia)</label><textarea id="nsRelays" rows="4" style="width:100%;font-family:var(--mono);font-size:.8rem"></textarea></div>
     <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🔐</span><span>Cal una extensió NIP-07 (Alby, nos2x). Estat: <span id="nsHas">comprovant…</span></span></div>
+    <div class="ent-grp-lbl">🔗 Pont de claus</div>
+    <div class="ai-note"><span class="ic">🔗</span><span>Sense pont, un ancoratge prova que <strong>algú</strong> amb una clau Nostr va publicar aquell hash, <strong>no que fossis tu</strong>. El pont és una afirmació signada dues vegades —pel teu <code>did:sos</code> i per la teva clau Nostr— que diu que les dues claus són la mateixa persona. <span id="nsLinkSt"></span></span></div>
     <div id="nsOut" style="max-height:35vh;overflow-y:auto"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" id="nsRelaysSave">Desa relés</button>${node?'<button class="btn btn-primary" id="nsGo">🛰 Publica anchor</button>':''}<button class="btn btn-ghost" id="nsClose">Tanca</button></div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem"><button class="btn btn-ghost" id="nsRelaysSave">Desa relés</button><button class="btn btn-ghost" id="nsLink">🔗 Publica el pont</button>${node?'<button class="btn btn-primary" id="nsGo">🛰 Publica anchor</button>':''}<button class="btn btn-ghost" id="nsClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#nsClose').onclick=closeModal;
   (async()=>{const list=await nostrRelays();bg.querySelector('#nsRelays').value=list.join('\n');bg.querySelector('#nsHas').textContent=nostrHasSigner()?'✅ NIP-07 disponible':'❌ no disponible';})();
   bg.querySelector('#nsRelaysSave').onclick=async()=>{const list=bg.querySelector('#nsRelays').value.split('\n').map(s=>s.trim()).filter(s=>/^wss?:\/\//.test(s));await setNostrRelays(list);toast('Relés desats · '+list.length);};
+  bg.querySelector('#nsLink').onclick=async()=>{
+    const out=bg.querySelector('#nsOut'),st=bg.querySelector('#nsLinkSt');
+    if(!nostrHasSigner()){toast('Cal una extensió Nostr NIP-07');return;}
+    const list=bg.querySelector('#nsRelays').value.split('\n').map(s=>s.trim()).filter(s=>/^wss?:\/\//.test(s));
+    out.innerHTML='<div class="wz-key-note">Construint i signant el pont…</div>';
+    try{
+      const r=await publishKeyLink({relays:list,onProgress:(relay,status)=>{
+        out.innerHTML+='<div class="wz-key-note">'+esc(relay)+' · '+esc(status)+'</div>';}});
+      const v=await verifyKeyLink(r.pack);
+      /* Es diu exactament què s'ha comprovat i què no. «Verificat» a seques
+         aquí seria fer passar per prova una cosa que no s'ha mirat. */
+      out.innerHTML='<div class="ent-card">'+
+        '<div class="ent-nm">'+(v.ok?'✅ Pont construït':'⚠ Pont incomplet')+'</div>'+
+        '<div class="ent-desc" style="margin-top:.35rem"><code style="font-size:.68rem;word-break:break-all">'+esc(v.did_value||'')+'</code><br>↕<br><code style="font-size:.68rem;word-break:break-all">'+esc(v.nostr_value||'')+'</code></div>'+
+        '<div class="ent-desc" style="margin-top:.45rem">'+
+        (v.did.ok?'✅':'❌')+' Firma <code>did:sos</code> verificada aquí mateix<br>'+
+        (v.binding.ok?'✅':'❌')+' L\'event conté exactament el registre firmat, amb la clau declarada i l\'id correcte<br>'+
+        '◻ Firma Nostr <strong>no verificada aquí</strong> — '+esc(v.nostr.reason)+
+        '</div></div>'+
+        (r.ok?'<div class="ai-note" style="margin-top:.5rem"><span class="ic">🛰</span><span>Un relé l\'ha <strong>acceptat</strong>. Com que els relés rebutgen els events amb firma invàlida, això sí que prova que la teva clau Nostr hi va signar.</span></div>'
+             :'<div class="ai-note" style="margin-top:.5rem"><span class="ic">⚠</span><span>Cap relé l\'ha acceptat. El pont existeix al teu dispositiu però encara no és consultable per ningú.</span></div>');
+      if(st)st.innerHTML=r.ok?'<strong>Publicat.</strong>':'<strong>No publicat.</strong>';
+      downloadText('sos-key-link-'+now().slice(0,10)+'.json',JSON.stringify(r.pack,null,2));
+    }catch(e){out.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc((e&&e.msg)||String(e))+'</span></div>';}
+  };
   const go=bg.querySelector('#nsGo');if(go)go.onclick=async()=>{
     const list=bg.querySelector('#nsRelays').value.split('\n').map(s=>s.trim()).filter(s=>/^wss?:\/\//.test(s));
     const out=bg.querySelector('#nsOut');out.innerHTML='<div class="ai-note"><span class="ic">⏳</span><span>Signant i publicant…</span></div>';
@@ -5337,12 +5904,12 @@ function coreProjectsFor(personName){
 }
 // Rols del SOS · cada rol té un roadmap i suggeriments d'acció adaptats.
 const SOS_ROLES={
-  guardian:{ic:'🏛',label:'Guardian del territori',desc:'Coordina, vetlla la sabiduria, signa decisions',color:'var(--indigo)'},
-  superheroi:{ic:'🦸',label:'Superheroi/na',desc:'Aporta talents i objectes al fons cooperatiu',color:'var(--green)'},
-  coordinador:{ic:'👥',label:'Coordinador/a de comunitat',desc:'Ajuda persones i entitats a integrar-se al SOS',color:'var(--orange)'},
-  agent:{ic:'🌐',label:'Agent territorial',desc:'Connecta institucions públiques amb l\'ecosistema',color:'var(--blue)'},
-  mentor:{ic:'🎓',label:'Mentor/a d\'iniciatives',desc:'Acompanya ventures de la MATRIU amb sessions registrades',color:'var(--amber)'},
-  simpatitzant:{ic:'💫',label:'Ciutadà/na simpatitzant',desc:'Explora, aprèn i decideix quan vols pujar',color:'var(--purple)'}
+  guardian:{ic:'🏛',label:t('Guardian del territori'),desc:'Coordina, vetlla la sabiduria, signa decisions',color:'var(--indigo)'},
+  superheroi:{ic:'🦸',label:t('Superheroi/na'),desc:'Aporta talents i objectes al fons cooperatiu',color:'var(--green)'},
+  coordinador:{ic:'👥',label:t('Coordinador/a de comunitat'),desc:'Ajuda persones i entitats a integrar-se al SOS',color:'var(--orange)'},
+  agent:{ic:'🌐',label:t('Agent territorial'),desc:'Connecta institucions públiques amb l\'ecosistema',color:'var(--blue)'},
+  mentor:{ic:'🎓',label:t('Mentor/a d\'iniciatives'),desc:'Acompanya ventures de la MATRIU amb sessions registrades',color:'var(--amber)'},
+  simpatitzant:{ic:'💫',label:t('Ciutadà/na simpatitzant'),desc:'Explora, aprèn i decideix quan vols pujar',color:'var(--purple)'}
 };
 /* ═══════════ Una persona té diversos rols alhora ═══════════
    `roleOfPerson` retornava **un** rol —el primer que trobava recorrent els
@@ -5491,51 +6058,86 @@ function openPublicDecisionsModal(node){
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
 function openLauncher(){
   const items=[
-    {ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
-    {ic:'🦸',t:'El meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes · si ja el tens, s\'edita',fn:()=>openSuperheroiOnboarding()},
-    {ic:'📇',t:'El meu dossier',d:'CV en local + recursos + arquetip + personatge amb IA',fn:()=>openDossierEditor(state.activePersona||'')},
-    {ic:'🧭',t:'La meva guia pas a pas',d:'Flux de valor i camí complet segons el teu rol al SOS',fn:()=>openGuide()},
-    {ic:'⊞',t:'El meu ledger SOS',d:'Totes les meves aportacions, a tots els nodes, amb la seva firma',fn:()=>openMyLedger(state.activePersona||'')},
-    {ic:'🌐',t:'Registre públic d\'accions signades',d:'Cercable i amb la firma comprovada · exportable i ancorable',fn:()=>openPublicRegister()},
-    {ic:'📍',t:'Coordenades dels territoris',d:'Importa coordenades reals o marca on ets · sense elles no es mostren km',fn:()=>openCoords()},
-    {ic:'🔎',t:'Què hi ha a prop',d:'Habilitats, objectes i demandes de tot el SOS, de més a prop a més lluny',fn:()=>openSupplySearch()},
-    {ic:'🏷',t:'Federacions temàtiques',d:'Vincula\'t a un tema i troba qui treballa el mateix · valor consolidat sense doble comptatge',fn:()=>openFederations()},
-    {ic:'🛰',t:'Els meus ancoratges',d:'Historial del que has segellat · on ho vas publicar i si encara quadra',fn:()=>openAnchors()},
-    {ic:'🔍',t:'Verifica un paquet SOS',d:'Enganxa qualsevol paquet i comprova firma i integritat, sense servidor',fn:()=>openVerifier()},
-    {ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
-    {ic:'🔍',t:'Diagnòstic comunitari',d:'3 min · punt de partida, itinerari i proposta d\'acompanyament',fn:()=>window.open('diagnostic.html','_blank','noopener')},
-    {ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
-    {ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
-    {ic:'📦',t:'Paquet d\'ancoratge',d:'Snapshot signat + CID · pinna a IPFS/Arweave/permaweb',fn:()=>openAnchorPackModal()},
-    {ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>routeTo('comando')},
-    {ic:'🗺',t:'Mapa estratègic fundador',d:'Missió, visió, rols, fluxos, KPIs 2030 · base del model',fn:()=>routeTo('mapa')},
-    {ic:'🏦',t:'Fons cooperatiu',d:'Verificat vs mobilitzat, cobertura i comparació amb el pla',fn:()=>{location.hash='#/fons';}},
-    {ic:'🏅',t:'Gent · qui mou la xarxa',d:'Rànquing recíproc, qui hi és ara i converses obertes',fn:()=>{location.hash='#/gent';}},
-    {ic:'📡',t:'Relé de presència',d:'Opcional · qui hi és ara i entrega en viu, sense el teu registre',fn:()=>routeTo('rele')},
-    {ic:'🦸',t:'Convida gent al SOS',d:'Pàgina de reclutament per enviar a qui vulguis que hi entri',fn:()=>window.open('uneix-te.html','_blank','noopener')},
-    {ic:'🧭',t:'Models de país',d:'Catalunya com a model editable per crear-ne un altre',fn:()=>routeTo('paisos')},
-    {ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>routeTo('multivers')},
-    {ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
-    {ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
-    {ic:'🗳',t:'Assemblea àgil (mòbil-first)',d:'Propostes + vots ràpids optimitzats per tauleta/mòbil',fn:()=>openAssemblyModal()},
-    {ic:'📖',t:'Registre públic de decisions',d:'Historial signat i ancorable a Nostr',fn:()=>openPublicDecisionsModal()},
-    {ic:'🌐',t:'Assemblea federativa',d:'Pes Penrose √població × activitat + Gini',fn:()=>{const nd=byId(state.activeId);openFederationModal(nd&&isTerritory(nd.nodeLevel)?nd:null);}},
-    {ic:'🔮',t:'Impacte hipotètic Catalunya',d:'Simulador psicoeconòmic per municipi',fn:()=>openImpactSimulator()},
-    {ic:'💎',t:'Valora un recurs amb IA',d:'Rang min-esperat-max + font Glass-Box',fn:()=>openValuationAssistant()},
-    {ic:'🤖',t:'IA revisa un PR de GitHub',d:'Diff → dictamen 🟢🟡🔴 + suggeriments',fn:()=>openPRReviewModal()},
-    {ic:'⚙',t:'Configuració · dades · sync',d:'Còpies, sync, atles, GitHub, IA…',fn:()=>openSettingsModal()}
+    {g:'jo',ic:'🆔',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
+    {g:'jo',ic:'🦸',t:'El meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes · si ja el tens, s\'edita',fn:()=>openSuperheroiOnboarding()},
+    {g:'jo',ic:'📇',t:'El meu dossier',d:'CV en local + recursos + arquetip + personatge amb IA',fn:()=>openDossierEditor(state.activePersona||'')},
+    {g:'jo',ic:'🧭',t:'La meva guia pas a pas',d:'Flux de valor i camí complet segons el teu rol al SOS',fn:()=>openGuide()},
+    {g:'jo',ic:'⊞',t:'El meu ledger SOS',d:'Totes les meves aportacions, a tots els nodes, amb la seva firma',fn:()=>openMyLedger(state.activePersona||'')},
+    {g:'xarxa',ic:'🌐',t:'Registre públic d\'accions signades',d:'Cercable i amb la firma comprovada · exportable i ancorable',fn:()=>openPublicRegister()},
+    {g:'comunitat',ic:'📍',t:'Coordenades dels territoris',d:'Importa coordenades reals o marca on ets · sense elles no es mostren km',fn:()=>openCoords()},
+    {g:'comunitat',ic:'🔎',t:'Què hi ha a prop',d:'Habilitats, objectes i demandes de tot el SOS, de més a prop a més lluny',fn:()=>openSupplySearch()},
+    {g:'comunitat',ic:'🏷',t:'Federacions temàtiques',d:'Vincula\'t a un tema i troba qui treballa el mateix · valor consolidat sense doble comptatge',fn:()=>openFederations()},
+    {g:'proves',ic:'🛰',t:'Els meus ancoratges',d:'Historial del que has segellat · on ho vas publicar i si encara quadra',fn:()=>openAnchors()},
+    {g:'proves',ic:'🔍',t:'Verifica un paquet SOS',d:'Enganxa qualsevol paquet i comprova firma i integritat, sense servidor',fn:()=>openVerifier()},
+    {g:'proves',ic:'⚠',t:'Digues què s\'ha trencat',d:'Recull sol versió, on eres i els últims errors · sense noms ni apunts',fn:()=>openIncidentReport()},
+    {g:'jo',ic:'🗣',t:'Llengua',d:'Català o castellà · el que encara no està traduït surt en català',fn:()=>openLangModal()},
+    {g:'jo',ic:'🎓',t:'Prepara la meva mentoria',d:'Itinerari adaptat al teu rol, nivell i evidències · acció-formació',fn:()=>routeTo('mentoria')},
+    {g:'comunitat',ic:'🔍',t:'Diagnòstic comunitari',d:'3 min · punt de partida, itinerari i proposta d\'acompanyament',fn:()=>window.open('diagnostic.html','_blank','noopener')},
+    {g:'comunitat',ic:'🔔',t:'Pings ecosistema',d:'Matching descentralitzat oferta ↔ demanda entre nodes',fn:()=>routeTo('pings')},
+    {g:'proves',ic:'🛰',t:'Ancoratge Nostr',d:'Publica mainHash del node com a prova pública (NIP-33 + NIP-07)',fn:()=>openNostrModal()},
+    {g:'proves',ic:'📦',t:'Paquet d\'ancoratge',d:'Snapshot signat + CID · pinna a IPFS/Arweave/permaweb',fn:()=>openAnchorPackModal()},
+    {g:'relat',ic:'🎬',t:'Comando Molekulon',d:'Cromos de la tribu + protagonistes originals',fn:()=>routeTo('comando')},
+    {g:'xarxa',ic:'🗺',t:'Mapa estratègic fundador',d:'Missió, visió, rols, fluxos, KPIs 2030 · base del model',fn:()=>routeTo('mapa')},
+    {g:'xarxa',ic:'🏦',t:'Fons cooperatiu',d:'Verificat vs mobilitzat, cobertura i comparació amb el pla',fn:()=>{location.hash='#/fons';}},
+    {g:'xarxa',ic:'🏅',t:'Gent · qui mou la xarxa',d:'Rànquing recíproc, qui hi és ara i converses obertes',fn:()=>{location.hash='#/gent';}},
+    {g:'xarxa',ic:'📡',t:'Relé de presència',d:'Opcional · qui hi és ara i entrega en viu, sense el teu registre',fn:()=>routeTo('rele')},
+    {g:'xarxa',ic:'🦸',t:'Convida gent al SOS',d:'Pàgina de reclutament per enviar a qui vulguis que hi entri',fn:()=>window.open('uneix-te.html','_blank','noopener')},
+    {g:'xarxa',ic:'🧭',t:'Models de país',d:'Catalunya com a model editable per crear-ne un altre',fn:()=>routeTo('paisos')},
+    {g:'relat',ic:'🌌',t:'Multivers Molekulon',d:'Totes les narratives del multivers',fn:()=>routeTo('multivers')},
+    {g:'relat',ic:'🎥',t:'Kit narratiu Molekulon',d:'Sinopsi + himne + escena performativa amb IA',fn:()=>openNarrativeKit()},
+    {g:'govern',ic:'🏛',t:'Sabiduria del node actiu',d:'Propostes pendents + votacions signades',fn:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona primer un node');return;}openGovernanceModal(nd);}},
+    {g:'govern',ic:'🗳',t:'Assemblea àgil (mòbil-first)',d:'Propostes + vots ràpids optimitzats per tauleta/mòbil',fn:()=>openAssemblyModal()},
+    {g:'govern',ic:'📖',t:'Registre públic de decisions',d:'Historial signat i ancorable a Nostr',fn:()=>openPublicDecisionsModal()},
+    {g:'govern',ic:'🌐',t:'Assemblea federativa',d:'Pes Penrose √població × activitat + Gini',fn:()=>{const nd=byId(state.activeId);openFederationModal(nd&&isTerritory(nd.nodeLevel)?nd:null);}},
+    {g:'comunitat',ic:'🔮',t:'Impacte hipotètic Catalunya',d:'Simulador psicoeconòmic per municipi',fn:()=>openImpactSimulator()},
+    {g:'comunitat',ic:'💎',t:'Valora un recurs amb IA',d:'Rang min-esperat-max + font Glass-Box',fn:()=>openValuationAssistant()},
+    {g:'sistema',ic:'⚙',t:'Configuració · dades · sync',d:'Còpies, sync, atles, GitHub, IA…',fn:()=>openSettingsModal()}
+  ];
+  /* Trenta-dues accions en una llista plana no són un menú: són un directori
+     que ningú llegeix. Agrupades per **de qui és la cosa** —el que és teu, el
+     de la teva comunitat, el de la xarxa— es poden recórrer amb la vista. I amb
+     un filtre a dalt, qui ja sap què busca no ha de recórrer res. */
+  const GRUPS=[
+    ['jo','👤 El que és teu'],
+    ['comunitat','🤝 La teva comunitat'],
+    ['govern','🏛 Decidir juntes'],
+    ['xarxa','🌐 La xarxa'],
+    ['proves','🔏 Proves i ancoratges'],
+    ['relat','🎬 Relat i captació'],
+    ['sistema','⚙ Sistema']
   ];
   const bg=modal(`
     <h2>☰ Menú d'accions</h2>
-    <p class="m-sub">Totes les accions crítiques del SOS a un clic. Optimitzat per mòbil i escriptori.</p>
-    <div class="ent-grid" id="lchGrid" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr))">
-      ${items.map((x,i)=>'<div class="ent-card lch-it" data-i="'+i+'" style="cursor:pointer"><div class="ent-nm">'+x.ic+' '+esc(x.t)+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(x.d)+'</div></div>').join('')}
-    </div>
+    <p class="m-sub">${items.length} accions, agrupades pel que són. Escriu per filtrar-les.</p>
+    <input id="lchQ" placeholder="Filtra… (p. ex. ancoratge, mentoria, fons)" autocomplete="off">
+    <div id="lchBody" style="max-height:58vh;overflow-y:auto;margin-top:.6rem"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="lchClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#lchClose').onclick=closeModal;
-  bg.querySelectorAll('.lch-it').forEach(el=>el.onclick=()=>{const i=Number(el.dataset.i);closeModal();setTimeout(()=>items[i].fn(),50);});
+  const body=bg.querySelector('#lchBody'),qi=bg.querySelector('#lchQ');
+  const paint=()=>{
+    const t=norm(qi.value||'');
+    const hit=x=>!t||norm(x.t+' '+x.d).indexOf(t)>=0;
+    body.innerHTML='';let shown=0;
+    GRUPS.forEach(([g,lbl])=>{
+      const rows=items.map((x,i)=>({x,i})).filter(o=>o.x.g===g&&hit(o.x));
+      if(!rows.length)return;
+      shown+=rows.length;
+      body.appendChild(el('div','ent-grp-lbl',lbl+' · '+rows.length));
+      const grid=el('div','ent-grid');grid.style.gridTemplateColumns='repeat(auto-fill,minmax(230px,1fr))';
+      rows.forEach(({x,i})=>{
+        const c=el('div','ent-card lch-it');c.dataset.i=i;c.style.cursor='pointer';
+        c.innerHTML='<div class="ent-nm">'+x.ic+' '+esc(x.t)+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(x.d)+'</div>';
+        c.onclick=()=>{closeModal();setTimeout(()=>items[i].fn(),50);};
+        grid.appendChild(c);
+      });
+      body.appendChild(grid);
+    });
+    if(!shown)body.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>Cap acció amb «'+esc(qi.value)+'».</span></div>';
+  };
+  let tq=null;qi.oninput=()=>{clearTimeout(tq);tq=setTimeout(paint,120);};
+  paint();setTimeout(()=>qi.focus(),80);
 }
 // ═══════════ Comando Molekulon · Cromo + Roster + Director filter ═══════════
 // Tot superheroi té el seu cromo. Comando Molekulon és la tribu que els aplega. La pel·lícula surt d'aquí.
@@ -6121,13 +6723,72 @@ function molekulonAffinity(reps){
 // Perfil transversal de persona: una mateixa persona apareix com a soci a diversos nodes
 // (banc de temps, biblioteca, MATRIU). Aquesta funció agrega tot el que aporta i mou l'ecosistema.
 const personKey=name=>norm(name||'');
+/* ═══════════ QUI ÉS QUI · el `did` mana sobre el nom ═══════════
+   Veda V59. `joinNode`, `knownPersons`, `personProfile` i el rànquing unien
+   registres pel **nom normalitzat**. Dues maneres de corrompre dades en silenci:
+
+   · **Dues persones que es diuen igual** al mateix poble es fusionaven en una.
+     Hores, ofertes, saldo i reputació barrejats, sense que res ho digués.
+   · **Una persona que s'escriu diferent** en dos nodes —«Àlvaro» al banc de
+     temps, «Alvaro Solache» a la biblioteca— es partia en dues. Perfil partit,
+     rànquing partit, i el fons comptant-la dos cops com a dues persones.
+
+   El `did` ja hi era: `claimMember` signa `{nodeId, memberId, did}` des de V39.
+   El que no es feia era **emparellar per ell**. Tres regles:
+
+   · **Un `did` mana sobre el nom.** Dos registres amb el mateix `did` són la
+     mateixa persona encara que s'escriguin diferent.
+   · **Dos `did` diferents no s'uneixen mai**, encara que el nom coincideixi.
+   · **Un registre sense `did` s'adopta pel nom**, però només si aquell nom
+     apunta a **un sol** `did`. Si n'apunta a dos, és ambigu i no s'endevina:
+     es queda sol fins que algú el reclami. Endevinar aquí seria triar a qui li
+     regalem les hores d'un altre. */
+function identityIndex(){
+  const byName={};
+  state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{
+    if(m.mergedInto)return;
+    const k=personKey(m.name);if(!k)return;
+    const s=byName[k]||(byName[k]=new Set());
+    if(m.did)s.add(m.did);
+  }));
+  const nameDid={},ambiguous=[];
+  Object.keys(byName).forEach(k=>{
+    const s=byName[k];
+    if(s.size===1)nameDid[k]=[...s][0];
+    else if(s.size>1)ambiguous.push({name:k,dids:[...s]});
+  });
+  return{nameDid,ambiguous};
+}
+// Clau canònica d'un registre de soci: el seu `did` si en té o si el seu nom
+// n'apunta a un de sol; si no, el nom normalitzat.
+function canonKeyOf(member,idx){
+  if(member&&member.did)return 'did:'+member.did;
+  return canonKeyOfName(member&&member.name,idx);
+}
+function canonKeyOfName(name,idx){
+  const k=personKey(name||'');if(!k)return '';
+  const d=(idx||identityIndex()).nameDid[k];
+  return d?'did:'+d:k;
+}
+// Els noms amb què s'ha escrit una mateixa persona. Serveix per dir-ho a la
+// cara en comptes de triar-ne un en silenci.
+function namesOfCanon(canon,idx){
+  const ix=idx||identityIndex(),out=new Set();
+  state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{
+    if(m.mergedInto)return;
+    if(canonKeyOf(m,ix)===canon&&m.name)out.add(m.name);
+  }));
+  return[...out];
+}
 function personProfile(nameOrKey){
+  const idx=identityIndex();
+  const canon=/^did:/.test(nameOrKey||'')?nameOrKey:canonKeyOfName(nameOrKey,idx);
   const key=personKey(nameOrKey);
   const presence=[],offers=[],demands=[],objects=[],borrowed=[],reservations=[],ventures=[],contributions=[],balances=[],slices=[];
   const contacts=new Set(),kinds=new Set();
   state.nodes.forEach(nd=>{
     membersOf(nd).forEach(m=>{
-      if(personKey(m.name)!==key)return;
+      if(canonKeyOf(m,idx)!==canon)return;
       presence.push({nodeId:nd.id,nodeName:nd.name,dynamicType:nd.dynamicType,member:m});
       kinds.add(m.kind);
       if(m.contact){if(m.contact.phone)contacts.add(m.contact.phone);if(m.contact.email)contacts.add(m.contact.email);}
@@ -6953,17 +7614,30 @@ function renderWorkspace(){
   const territory=isTerritory(node.nodeLevel);
   const ru=territory?rollup(node.id):null;
   const tdefs=[];
-  if(territory)tdefs.push(['resum','◧ Resum',ru.projectes]);
-  tdefs.push(['map','◉ Mapa de valor',node.vna.roles.length],['kanban','▤ Tauler',node.kanban.cards.length],['ledger','⊞ Comptes',node.ledger.length],['xat','💬 Conversa',chatOf(node).length]);
-  if(territory)tdefs.push(['entitats','⬡ Entitats',entitiesFor(node.id).length]);
-  if(node.dynamicType==='biblioteca_coses')tdefs.push(['socis','👥 Socis',membersOf(node).length],['biblioteca','📚 Biblioteca',objectsOf(node).length]);
-  else if(node.dynamicType==='banc_temps')tdefs.push(['socis','👥 Socis',membersOf(node).length],['banctemps','⏳ Ofertes',offersOf(node).length]);
-  else if(node.dynamicType==='matriu')tdefs.push(['socis','👥 Socis',membersOf(node).length],['cartera','🌱 Cartera',venturesOf(node).length],['cohort','▦ Cohort',venturesOf(node).length],['ecosistema','🕸 Ecosistema',linksOf(node).length],['equity','🥧 Equity',membersOf(node).length]);
-  if(!tdefs.some(t=>t[0]===state.tab))state.tab=tdefs[0][0];
-  tdefs.forEach(([id,lbl,cnt])=>{
+  if(territory)tdefs.push(['resum',t('◧ Resum'),ru.projectes]);
+  tdefs.push(['map',t('◉ Mapa de valor'),node.vna.roles.length],['kanban',t('▤ Tauler'),node.kanban.cards.length],['ledger',t('⊞ Comptes'),node.ledger.length],['xat',t('💬 Conversa'),chatOf(node).length]);
+  if(territory)tdefs.push(['entitats',t('⬡ Entitats'),entitiesFor(node.id).length]);
+  if(node.dynamicType==='biblioteca_coses')tdefs.push(['socis',t('👥 Socis'),membersOf(node).length],['biblioteca',t('📚 Biblioteca'),objectsOf(node).length]);
+  else if(node.dynamicType==='banc_temps')tdefs.push(['socis',t('👥 Socis'),membersOf(node).length],['banctemps',t('⏳ Ofertes'),offersOf(node).length]);
+  else if(node.dynamicType==='matriu')tdefs.push(['socis',t('👥 Socis'),membersOf(node).length],['cartera',t('🌱 Cartera'),venturesOf(node).length],['cohort',t('▦ Cohort'),venturesOf(node).length],['ecosistema',t('🕸 Ecosistema'),linksOf(node).length],['equity',t('🥧 Equity'),membersOf(node).length]);
+  const vis=visibleTabs(tdefs);
+  if(!vis.some(t=>t[0]===state.tab))state.tab=vis[0][0];
+  vis.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
     b.onclick=()=>{state.tab=id;renderWorkspace();};tabs.appendChild(b);
   });
+  /* El que s'ha amagat es diu, i es desamaga aquí mateix. Una pestanya que
+     desapareix sense dir-ho no és simplicitat: és que l'app t'ha pres una
+     decisió a l'esquena. */
+  const hidden=tdefs.length-vis.length;
+  if(hidden||state.showAllTabs){
+    const t=el('button','tab tab-more',state.showAllTabs?'▾ Només el meu rol':'▸ '+hidden+' més');
+    t.title=state.showAllTabs
+      ?'Torna a ensenyar només el que necessita el teu rol'
+      :'Hi ha '+hidden+' pestanya'+(hidden>1?'es':'')+' que el teu rol no fa servir i que són buides';
+    t.onclick=()=>{setShowAllTabs(!state.showAllTabs);renderWorkspace();};
+    tabs.appendChild(t);
+  }
   w.appendChild(tabs);
   // Guia contextual: cada pestanya explica el seu flux de valor i què toca ara.
   const g=buildContextGuide(node,state.tab);if(g)w.appendChild(g);
@@ -7647,6 +8321,16 @@ const CONTEXT_GUIDES={
       {k:'acc',label:'Alguna tasca tancada comptabilitzada',done:n=>(n.kanban.cards||[]).some(c=>c.col==='done'&&c.accounted)}
     ],
     lens:{mentor:'Si tot s\'acumula a «Fent», el problema no és de ganes: és de mètode.',guardian:'Vigila que no s\'acumuli tot a «Fent»: és el símptoma de sobrecàrrega.',coordinador:'Aquí es reparteix la feina de veritat.',superheroi:'Agafa una tasca i comptabilitza-la quan la tanquis.',agent:'Les tasques tancades són la prova d\'execució davant l\'administració.',simpatitzant:'És el lloc més fàcil per començar a aportar.'}},
+  /* Afegir un context sense la seva guia és exactament el que la veda prohibeix,
+     i és el que va passar quan va entrar la conversa: contexts 13, guies 12. */
+  xat:{ic:'💬',t:'Conversa del node',one:'Parlar d\'una cosa concreta d\'aquest node, no en abstracte.',
+    flow:['Algú pregunta per una peça del node: un flux del mapa, un apunt, una tasca.','La resposta queda al costat d\'allò de què parla, no en un grup a part.','Qui arribi d\'aquí a sis mesos entén per què es va decidir el que es va decidir.'],
+    steps:[
+      {k:'first',label:'Escriu-hi el primer missatge',done:n=>chatOf(n).length>0},
+      {k:'ref',label:'Cita una peça del node en un missatge',done:n=>chatOf(n).some(m=>m&&m.ref)},
+      {k:'two',label:'Que hi hagi més d\'una veu',done:n=>new Set(chatOf(n).map(m=>personKey(m.who||''))).size>1}
+    ],
+    lens:{mentor:'Aquí es veu què encalla de debò, abans que surti a la sessió.',guardian:'El que es decideix aquí no substitueix una proposta signada: si és una decisió, porta-la a Sabiduria.',agent:'Serveix per acordar xifres abans de presentar-les a fora.',coordinador:'Un node que no parla és un node que s\'està apagant.',superheroi:'Pregunta sense por: citar l\'apunt concret estalvia mitja conversa.',simpatitzant:'Llegint-ho entendràs com es prenen les decisions aquí.'}},
   ledger:{ic:'⊞',t:'Comptes',one:'Cada aportació signada. Hores i diner amb rastre verificable.',
     flow:['Qui aporta hores o diner ho registra i ho signa amb la seva identitat.','Els apunts s\'encadenen: modificar-ne un trenca la cadena i es nota.','D\'aquí surten la reputació, el fons cooperatiu i el repartiment just.'],
     steps:[
@@ -7795,6 +8479,178 @@ const ROLE_JOURNEYS={
    s'endevina —«ara miro el SOS com a mentora» és una decisió teva— i si no has
    triat res, es fa servir el de més pes. Una lent triada que ja no et
    correspon deixa de valer: no vull mostrar-te el camí d'algú que no ets. */
+/* ═══════════ V67 · Un camí per dir «això s\'ha trencat» ═══════════
+   No n\'hi havia cap. El senyal del que falla només arribava si algú et
+   trucava, i en una beta amb gent que no et coneix això vol dir que **no
+   arriba**: la gent no es queixa, plega. Quan una eina falla dues vegades a
+   algú que no hi té cap compromís, aquell algú no obre una incidència — deixa
+   d\'apuntar hores i no torna. I nosaltres ho llegim com «no els interessava».
+
+   Per això és barat i va abans que coses més grans: és el que converteix la
+   beta en **informació** en comptes d\'anècdotes.
+
+   Dues coses el fan usable de debò:
+
+   · **Els errors ja passats es recullen sols.** Demanar «i què deia exactament
+     l\'error?» és demanar que la gent faci de programador. Un anell dels últims
+     errors, i ja el porta l\'informe.
+   · **Es veu tot el que s\'enviarà, abans d\'enviar-ho.** I passa pel mateix
+     sedàs que qualsevol paquet que surt d\'aquí (`verifyNoLeak`). Una eina que
+     demana confiança i envia el que no ensenya no la mereix. */
+const SOS_VERSION='V67';
+const _errRing=[];
+function noteError(kind,msg,extra){
+  _errRing.push({t:new Date().toISOString(),kind,msg:String(msg||'').slice(0,300),extra:extra?String(extra).slice(0,200):''});
+  while(_errRing.length>12)_errRing.shift();
+}
+if(typeof window!=='undefined'){
+  window.addEventListener('error',e=>noteError('error',e.message,(e.filename||'')+':'+(e.lineno||'')));
+  window.addEventListener('unhandledrejection',e=>noteError('promise',(e.reason&&(e.reason.message||e.reason.msg))||e.reason));
+}
+/* Context, no contingut. Comptadors i identificadors tècnics; cap nom, cap
+   apunt, cap contacte. El que ajuda a reproduir un error és saber que hi havia
+   40 socis, no com es diuen. */
+function incidentContext(){
+  const n=state.activeId?byId(state.activeId):null;
+  return{
+    versio:SOS_VERSION,
+    quan:new Date().toISOString(),
+    on:{portada:state.homeView,pestanya:state.tab,rol:activeRoleId(),totHi:!!state.showAllTabs},
+    node:n?{tipus:n.dynamicType||n.nodeLevel||'',apunts:(n.ledger||[]).length,socis:membersOf(n).length,
+      objectes:objectsOf(n).length,ofertes:offersOf(n).length}:null,
+    sos:{nodes:state.nodes.length,entitats:state.entities.length,teIdentitat:!!state.activePersona},
+    navegador:(navigator.userAgent||'').slice(0,180),
+    errors:_errRing.slice()
+  };
+}
+function buildIncident(text){
+  const c=incidentContext();
+  c.queFeia=String(text||'').slice(0,1000);
+  return c;
+}
+function incidentMarkdown(inc){
+  const e=inc.errors.length?inc.errors.map(x=>'- `'+x.t+'` '+x.kind+': '+x.msg+(x.extra?' ('+x.extra+')':'')).join('\n'):'- cap error capturat';
+  return['**Què feia**','',inc.queFeia||'(no ho ha escrit)','','**On**','',
+    '- versió: '+inc.versio,'- portada: '+inc.on.portada+' · pestanya: '+inc.on.pestanya,
+    '- rol: '+inc.on.rol,
+    '- node: '+(inc.node?(inc.node.tipus+' · '+inc.node.apunts+' apunts · '+inc.node.socis+' socis'):'cap node obert'),
+    '- al SOS: '+inc.sos.nodes+' nodes, '+inc.sos.entitats+' entitats',
+    '- navegador: '+inc.navegador,'','**Errors recollits**','',e,'',
+    '_Sense noms, apunts ni contactes: només comptadors._'].join('\n');
+}
+/* Triar llengua. Es diu la cobertura real perquè ningú es pensi que el SOS
+   sencer parla castellà: dir-ho és el que fa que triar-ho no sigui una
+   decepció. */
+function openLangModal(){
+  const cov=langCoverage('es');
+  const bg=modal(`
+    <h2>🗣 Llengua</h2>
+    <p class="m-sub">El que encara no està traduït surt en català. No veuràs mai una clau crua.</p>
+    <div id="langList"></div>
+    <p class="m-sub" style="margin-top:.6rem">Al castellà hi ha ${cov.traduides} textos traduïts, i creix per trams. L'euskera vindrà sobre aquesta mateixa capa.</p>
+    <div class="modal-actions"><button class="btn btn-primary" id="lgClose">${t('Tanca')}</button></div>`);
+  const box=bg.querySelector('#langList');
+  Object.keys(LANGS).forEach(id=>{
+    const l=LANGS[id];
+    const b=el('button','btn btn-ghost'+(state.lang===id?' active':''),l.ic+' '+l.label+(state.lang===id?' ✓':''));
+    b.style.marginRight='.4rem';
+    b.onclick=async()=>{await setLang(id);closeModal();render();toast(l.label);};
+    box.appendChild(b);
+  });
+  bg.querySelector('#lgClose').onclick=closeModal;
+  return bg;
+}
+function openIncidentReport(){
+  const bg=modal(`
+    <h2>${t('⚠ Digues què s\'ha trencat')}</h2>
+    <p class="m-sub">${t('Va molt bé encara que no sàpigues explicar-ho. Amb «he clicat aquí i no ha passat res» n\'hi ha prou.')}</p>
+    <textarea id="incWhat" rows="4" placeholder="${t('Què feies i què esperaves que passés?')}"></textarea>
+    <details class="inc-det"><summary>${t('Mira exactament què s\'enviarà')}</summary><pre id="incPre" class="inc-pre"></pre></details>
+    <div id="incLeak"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="incCopy">${t('⧉ Copia-ho')}</button>
+      <button class="btn btn-primary" id="incGh">${t('Obre una incidència')}</button>
+      <button class="btn btn-ghost" id="incClose">${t('Tanca')}</button>
+    </div>`);
+  const ta=bg.querySelector('#incWhat'),pre=bg.querySelector('#incPre'),leak=bg.querySelector('#incLeak');
+  const refresh=()=>{
+    const inc=buildIncident(ta.value);
+    pre.textContent=incidentMarkdown(inc);
+    /* El mateix sedàs que qualsevol altre paquet que surt d\'aquí. Si el que ha
+       escrit la persona porta un nom o un telèfon, s\'avisa abans d\'enviar-ho,
+       no després. */
+    let v={ok:true,leaks:[]};try{v=verifyNoLeak(inc);}catch(e){}
+    leak.innerHTML=v.ok?'':'<div class="merge-warn"><div class="merge-warn-t">⚠ Això sembla que porta dades de persones</div><p>'+esc((v.leaks||[]).slice(0,4).join(' · '))+'</p><p>Treu-ho del text abans d\'enviar-ho.</p></div>';
+    return inc;
+  };
+  ta.oninput=refresh;refresh();
+  bg.querySelector('#incCopy').onclick=async()=>{
+    try{await navigator.clipboard.writeText(incidentMarkdown(refresh()));toast('Copiat · enganxa-ho on vulguis');}
+    catch(e){toast('Copia\'l a mà des del desplegable');}
+  };
+  bg.querySelector('#incGh').onclick=()=>{
+    const md=incidentMarkdown(refresh());
+    const u='https://github.com/asolache/teamtowershuma/issues/new?title='+
+      encodeURIComponent('SOS '+SOS_VERSION+' · '+(ta.value||'alguna cosa s\'ha trencat').slice(0,60))+
+      '&body='+encodeURIComponent(md);
+    if(u.length>7000){navigator.clipboard.writeText(md).catch(()=>{});toast('Massa llarg per a l\'enllaç: s\'ha copiat, enganxa\'l a la incidència');window.open('https://github.com/asolache/teamtowershuma/issues/new','_blank','noopener');}
+    else window.open(u,'_blank','noopener');
+  };
+  bg.querySelector('#incClose').onclick=closeModal;
+  return bg;
+}
+/* ═══════════ V66 · El full de ruta del rol decideix què es veu ═══════════
+   Tothom veia el mateix: fins a 13 pestanyes al node, 32 accions al llançador,
+   17 rutes. Una persona que ve a apuntar tres hores al mes n'ha de fer servir
+   sis, i les ha de trobar entre totes les altres. La informació hi era; el que
+   no hi havia era **una manera de saber quina et toca a tu**.
+
+   Les peces ja hi eren i no s'havien connectat: `ROLE_JOURNEYS` sap què fa
+   cada rol, `activeRoleId` sap quin ets ara, i cada guia contextual ja porta la
+   seva `lens`. El que faltava era que això **decidís**, no només ressaltés.
+
+   Això **no treu cap funció a ningú** —cadascuna serveix a algú, i per això la
+   veda 63 les va agrupar en comptes d'esborrar-ne. El que fa és que cadascú
+   comenci pel seu, i la resta quedi a un clic.
+
+   Tres regles que eviten que simplificar es converteixi en amagar:
+
+   - **Una pestanya amb contingut no s'amaga mai.** Si hi ha apunts, socis o
+     objectes, hi són visibles encara que el teu rol no els necessiti. Amagar
+     feina que algú ja ha fet no és simplificar: és fer-la desaparèixer.
+   - **La pestanya on ets no desapareix sota els peus.**
+   - **El que s'amaga es diu, i es desamaga des del mateix lloc.** Una pestanya
+     que marxa en silenci és una decisió que l'app t'ha pres a l'esquena. */
+const ROLE_TABS={
+  simpatitzant:['map','xat','resum'],
+  superheroi:['map','ledger','banctemps','biblioteca','xat'],
+  coordinador:['resum','socis','kanban','ledger','banctemps','biblioteca','xat'],
+  guardian:['resum','map','kanban','ledger','entitats','xat'],
+  agent:['resum','entitats','ledger','map'],
+  mentor:['cartera','cohort','ecosistema','equity','socis','xat']
+};
+async function setShowAllTabs(on){
+  state.showAllTabs=!!on;
+  try{if(on)await dbPut({id:'__showall',type:'meta',on:true});else await dbDelete('__showall');}catch(e){}
+  return state.showAllTabs;
+}
+async function loadShowAllTabs(){
+  try{const all=await dbGetAll();state.showAllTabs=!!all.find(n=>n.id==='__showall');}catch(e){state.showAllTabs=false;}
+  return state.showAllTabs;
+}
+/* `tdefs` són `[id, etiqueta, comptador]`. El comptador ja el calcula qui les
+   construeix, i és exactament el que necessitem per saber si hi ha feina a
+   dins: no cal mirar res més. */
+function visibleTabs(tdefs,{role,showAll,activeTab}={}){
+  if(!tdefs||!tdefs.length)return tdefs||[];
+  const all=showAll===undefined?state.showAllTabs:showAll;
+  if(all)return tdefs.slice();
+  const r=role||activeRoleId();
+  const mine=ROLE_TABS[r]||[];
+  const act=activeTab===undefined?state.tab:activeTab;
+  const out=tdefs.filter(t=>mine.indexOf(t[0])>=0||Number(t[2])>0||t[0]===act);
+  return out.length?out:tdefs.slice();
+}
 function activeRoleId(){
   const p=state.activePersona;
   if(!p)return 'simpatitzant';
@@ -11557,7 +12413,12 @@ const MISSION_KINDS={
   atencio:{ic:'⚠',urg:2,lbl:'Alguna cosa s\'ha encallat'},
   coincidencia:{ic:'⚡',urg:3,lbl:'Hi ha una parella possible'},
   cami:{ic:'🧭',urg:4,lbl:'El teu següent pas'},
-  repte:{ic:'🎯',urg:5,lbl:'Per pujar de nivell'}
+  repte:{ic:'🎯',urg:5,lbl:'Per pujar de nivell'},
+  /* La feina que no és de ningú en particular. `countryCoverage` ja sabia dir
+     «tres comarques sense cap dinàmica» i no ho veia ningú, així que no ho feia
+     ningú. Va l'última a posta: el que t'espera a tu passa davant del que
+     espera la xarxa. */
+  xarxa:{ic:'🌐',urg:6,lbl:'Ho necessita la xarxa, no ningú en concret'}
 };
 /* Una missió diu tres coses i prou: què has de fer, què passarà quan ho facis, i
    quant costa. Sense la segona, la llista és una llista de deures. */
@@ -11622,7 +12483,47 @@ function missions(){
         ()=>openPersonProfile(me),{mins:10}));}
   }catch(e){}
 
+  // 7 · I la feina que no és de ningú: forats de la xarxa que algú ha de tapar.
+  networkMissions().forEach(m=>add('xarxa',m.title,m.effect,m.act,{mins:m.mins||15}));
+
   return out.sort((a,b)=>a.urg-b.urg||(b.late?1:0)-(a.late?1:0)||a.mins-b.mins);
+}
+/* Els forats de la xarxa, dits com a feina i no com a estadística. Surten del
+   que ja es calculava i ningú mirava: cobertura territorial, mapes sense
+   reciprocitat i nodes sense ningú que en respongui.
+
+   Regla que les fa útils i no soroll: **cada missió ha de portar a un lloc
+   concret**. «Falta cobertura» no és una missió; «Girona no té cap dinàmica,
+   obre-la» sí. */
+function networkMissions(){
+  const out=[];
+  state.nodes.filter(n=>!n.parentId).forEach(root=>{
+    let cov=null;try{cov=countryCoverage(root.id);}catch(e){}
+    if(cov&&cov.buides.length){
+      cov.buides.slice(0,3).forEach(r=>out.push({
+        title:r.node.name+' no té cap dinàmica viva',
+        effect:'Obrir-n\'hi una posa al mapa '+(r.territoris>1?r.territoris-1+' territoris':'la zona')+' que ara no hi compten.',
+        act:()=>selectNode(r.node.id),mins:20}));
+      if(cov.buides.length>3)out.push({
+        title:cov.buides.length+' regions de '+root.name+' encara sense res',
+        effect:'La cobertura és del '+cov.pct+' %. Veure-les totes és el primer pas per repartir-se-les.',
+        act:()=>{state.activeId=null;state.homeView='tauler';selectNode(root.id);},mins:10});
+    }
+  });
+  /* Un mapa sense reciprocitat és una comunitat on uns quants ho sostenen tot.
+     És el diagnòstic que el SOS sap fer i que ningú va a buscar. */
+  state.nodes.filter(n=>n.dynamicType&&(n.vna.roles||[]).length>=3).forEach(n=>{
+    let a=null;try{a=vnaAudit(n);}catch(e){}
+    if(a&&a.recPct<50)out.push({
+      title:'El mapa de '+n.name+' va massa en una direcció',
+      effect:'Reciprocitat del '+a.recPct+' %: hi ha rols que donen i no reben, i això crema gent.',
+      act:()=>openReciprocityFixer(n),mins:15});
+    if(a&&a.isolated&&a.isolated.length)out.push({
+      title:n.name+' té '+a.isolated.length+' rol'+(a.isolated.length===1?'':'s')+' aïllat'+(a.isolated.length===1?'':'s'),
+      effect:'Un rol que no intercanvia amb ningú és algú que no sap per què hi és.',
+      act:()=>openReciprocityFixer(n),mins:10});
+  });
+  return out;
 }
 function renderMissions(w){
   const ms=missions(),me=state.activePersona;
@@ -11633,9 +12534,7 @@ function renderMissions(w){
   const h1=el('h1');h1.textContent=me?('Què et toca, '+me.split(/\s+/)[0]):'Què et toca';title.appendChild(h1);
   top.appendChild(title);
   const acts=el('div','nh-actions');
-  const gest=el('button','btn btn-ghost btn-sm','⚙ Vista de gestió');
-  gest.onclick=()=>{state.homeView='tauler';renderWorkspace();};
-  acts.appendChild(gest);top.appendChild(acts);head.appendChild(top);
+  acts.appendChild(homeBackBtn());top.appendChild(acts);head.appendChild(top);
   w.appendChild(head);
   const body=el('div','tab-body');
   if(!me){
@@ -11725,13 +12624,19 @@ function reciprocityFactor(donat,rebut){
 function activityRanking({scopeId,limit,now:nowMs}={}){
   const ids=scopeId?[...scopeIds([scopeId])]:state.nodes.map(n=>n.id);
   const ref=nowMs||Date.now();
-  const by={},seen=new Set();
+  const by={},seen=new Set(),idx=identityIndex();
+  /* S'agrupa per clau canònica, no pel nom: qui s'escriu diferent en dos nodes
+     és una persona amb una puntuació, i dos veïns que es diuen igual són dues
+     persones amb dues. Abans, totes dues coses sortien malament. */
   const rec=(key,name)=>{
+    if(!key)return null;
     const p=by[key]||(by[key]={key,name,donat:0,rebut:0,confirmacions:0,
-      nodes:new Set(),signats:0,sensSignar:0,ultim:null});
-    if(name&&name.length>(p.name||'').length)p.name=name;
+      nodes:new Set(),signats:0,sensSignar:0,ultim:null,noms:new Set()});
+    if(name){p.noms.add(name);if(name.length>(p.name||'').length)p.name=name;}
     return p;
   };
+  const keyOfName=n=>canonKeyOfName(n,idx);
+  const keyOfMember=m=>m?canonKeyOf(m,idx):'';
   ids.forEach(id=>{
     const nd=byId(id);if(!nd)return;
     const eat=(e,vn)=>{
@@ -11744,19 +12649,24 @@ function activityRanking({scopeId,limit,now:nowMs}={}){
       const w=h*rankDecay(e.ts,ref);
       const author=e.memberId?memberById(nd,resolveMemberId(nd,e.memberId)):null;
       const aName=(author&&author.name)||e.who||'';
-      if(aName){
-        const p=rec(personKey(aName),aName);
+      const aKey=author?keyOfMember(author):keyOfName(aName);
+      if(aKey){
+        const p=rec(aKey,aName);
         p.nodes.add(id);
         if(e.sig){p.signats++;p.donat+=w;}else p.sensSignar++;
         if(!p.ultim||(e.ts||'')>p.ultim)p.ultim=e.ts||null;
       }
       const cp=e.counterpartId?memberById(nd,resolveMemberId(nd,e.counterpartId)):null;
-      if(cp&&cp.name){const p=rec(personKey(cp.name),cp.name);p.nodes.add(id);if(e.sig)p.rebut+=w;
-        if(!p.ultim||(e.ts||'')>p.ultim)p.ultim=e.ts||null;}
+      if(cp&&cp.name){const p=rec(keyOfMember(cp),cp.name);if(p){p.nodes.add(id);if(e.sig)p.rebut+=w;
+        if(!p.ultim||(e.ts||'')>p.ultim)p.ultim=e.ts||null;}}
       /* Confirmar el que ha fet un altre és feina per a la xarxa i no deixa cap
-         apunt a nom teu. Sense comptar-ho, el vistiplau seria feina invisible. */
-      (e.confirmedBy||[]).forEach(c=>{if(!c||!c.name)return;
-        const p=rec(personKey(c.name),c.name);p.confirmacions++;p.nodes.add(id);});
+         apunt a nom teu. Sense comptar-ho, el vistiplau seria feina invisible.
+         El `did` de la confirmació mana sobre el nom, com a tot arreu. */
+      (e.confirmedBy||[]).forEach(c=>{
+        if(!c)return;
+        const k=c.did?'did:'+c.did:keyOfName(c.name);
+        const p=rec(k,c.name);if(!p)return;
+        p.confirmacions++;p.nodes.add(id);});
     };
     (nd.ledger||[]).forEach(e=>eat(e,''));
     venturesOf(nd).forEach(v=>(v.ledger||[]).forEach(e=>eat(e,v.name||v.id)));
@@ -11765,6 +12675,9 @@ function activityRanking({scopeId,limit,now:nowMs}={}){
     const fac=reciprocityFactor(p.donat,p.rebut);
     const base=(p.donat+p.rebut*.5)*RANK_W.hora+p.confirmacions*RANK_W.confirmacio+p.nodes.size*RANK_W.node;
     return{key:p.key,name:p.name,
+      // Els altres noms amb què s'ha escrit, per poder-ho ensenyar en comptes
+      // de triar-ne un en silenci.
+      aka:[...p.noms].filter(n=>n!==p.name),
       punts:Math.round(base*fac*10)/10,
       donat:Math.round(p.donat*10)/10,rebut:Math.round(p.rebut*10)/10,
       reciprocitat:Math.round(fac*100)/100,
@@ -11876,6 +12789,7 @@ async function relayConnect(){
     if(m.event==='presence_state'){_rlPeers={};_rlIngestState(m.payload||{});_rlEmit();}
     if(m.event==='presence_diff'){_rlIngestDiff(m.payload||{});_rlEmit();}
     if(m.event==='broadcast'&&m.payload&&m.payload.event==='xat')_rlOnChat(m.payload.payload||{});
+    if(m.event==='broadcast'&&m.payload&&m.payload.event==='patch')_rlOnPatch(m.payload.payload||{});
   };
   _rl.onclose=()=>{
     clearInterval(_rlHb);_rlHb=null;_rlPeers={};
@@ -11916,6 +12830,66 @@ async function _rlOnChat(m){
   try{await dbPut(nd);}catch(e){}
   if(state.activeId===nd.id&&state.tab==='xat')renderWorkspace();
   else toast('💬 '+(m.msg.who||'Algú')+' a '+nd.name);
+}
+/* ═══════════ V68 · El relé porta proves, no només xat ═══════════
+   El relé ja existia, ja és opcional i el configura qui vulgui, i el topic ja
+   és un hash. Però només portava conversa: per fer arribar els **apunts** calia
+   quedar cara a cara amb un QR, d'un en un. Amb N nodes això són N trobades, i
+   és el que impedeix que la xarxa convergeixi sola.
+
+   La regla que fa que això no torni a posar un amo al mig: **el relé
+   transporta, no escriu història**. No té clau. El patch va xifrat amb la clau
+   del node i signat pel `did`, i en arribar es comprova el sobre i **cada apunt
+   per separat** —el mateix `openPack` del canal. Qui allotja el relé veu passar
+   bytes que no pot llegir ni alterar sense que es noti.
+
+   I per això el patch pot anar per un servidor de tercers sense que calgui
+   refiar-se'n gens: és la mateixa premissa de V65, aquí en directe. */
+const PATCH_TYPE='sos-patch';
+const _rlCarried={enviats:0,rebuts:0,apunts:0,descartats:0};
+function relayContribution(){return Object.assign({},_rlCarried);}
+async function buildPatch(node){
+  const signed=signedReceipts(node);
+  if(!signed.length)return null;
+  return sealPack(node,PATCH_TYPE,{count:signed.length},{receipts:signed});
+}
+/* Rebre un patch. Si el node no el tens, es descarta: el relé no pot fer
+   aparèixer nodes nous al SOS de ningú, igual que ja passava amb el xat. */
+async function _rlOnPatch(p){
+  if(!p||!p.pack)return;
+  const nd=byId(p.pack.nodeId);
+  if(!nd)return;
+  const r=await openPack(p.pack,PATCH_TYPE,nd);
+  if(!r.ok)return;
+  _rlCarried.rebuts++;_rlCarried.descartats+=r.rejected||0;
+  const before=(nd.ledger||[]).length;
+  nd.ledger=mergeAppendOnly(nd.ledger,r.receipts,'ledger');
+  const added=nd.ledger.length-before;
+  if(!added)return;
+  _rlCarried.apunts+=added;
+  await persist(nd);
+  if(state.activeId===nd.id)renderWorkspace();
+  toast('⬢ '+added+' apunt'+(added>1?'s':'')+' de '+nd.name+' pel relé');
+}
+/* `persist` es crida a 108 llocs, i una acció qualsevol en dispara uns quants
+   de seguits. Enviar un patch a cada crida convertiria el relé en una tempesta
+   contra un servidor que sovint és el de casa d'algú. S'espera uns segons i se
+   n'envia un de sol amb tot. */
+const _patchTimers={};
+function schedulePatch(node){
+  if(!node||!node.id||_rlState!=='obert')return;
+  clearTimeout(_patchTimers[node.id]);
+  _patchTimers[node.id]=setTimeout(()=>{delete _patchTimers[node.id];relaySendPatch(node).catch(()=>{});},4000);
+}
+async function relaySendPatch(node){
+  if(_rlState!=='obert'||!_rl||!node)return false;
+  let pack;try{pack=await buildPatch(node);}catch(e){return false;}
+  if(!pack)return false;
+  const topic=await relayTopic(relayCfg().room);
+  _rlSend({topic,event:'broadcast',ref:String(++_rlRef),
+    payload:{type:'broadcast',event:'patch',payload:{pack}}});
+  _rlCarried.enviats++;
+  return true;
 }
 function relaySendChat(nodeId,msg){
   if(_rlState!=='obert'||!_rl)return false;
@@ -12128,9 +13102,7 @@ function renderGent(w){
   const rl=el('button','btn btn-ghost btn-sm','📡 Relé');
   rl.title='Presència i entrega en viu · opcional';
   rl.onclick=()=>routeTo('rele');acts.appendChild(rl);
-  const back=el('button','btn btn-ghost btn-sm','⚙ Vista de gestió');
-  back.onclick=()=>{state.homeView='tauler';renderWorkspace();};
-  acts.appendChild(back);top.appendChild(acts);head.appendChild(top);w.appendChild(head);
+  acts.appendChild(homeBackBtn());top.appendChild(acts);head.appendChild(top);w.appendChild(head);
   const body=el('div','tab-body');
 
   // ── Qui hi és ara. La limitació es diu aquí, no en una nota a peu de pàgina.
@@ -12232,9 +13204,7 @@ function renderFons(w){
     sel.onchange=()=>{state.fundScope=sel.value||null;renderWorkspace();};
     acts.appendChild(sel);
   }
-  const back=el('button','btn btn-ghost btn-sm','⚙ Vista de gestió');
-  back.onclick=()=>{state.homeView='tauler';renderWorkspace();};
-  acts.appendChild(back);top.appendChild(acts);head.appendChild(top);w.appendChild(head);
+  acts.appendChild(homeBackBtn());top.appendChild(acts);head.appendChild(top);w.appendChild(head);
 
   const body=el('div','tab-body');
 
@@ -12316,6 +13286,78 @@ function renderFons(w){
   w.appendChild(body);
 }
 
+/* ═══════════ V70 · La home també és del rol de qui la mira ═══════════
+   V66 va fer que les pestanyes del node les manés el full de ruta del rol. La
+   home es va quedar igual per a tothom: **1.876 px, 6 seccions i 25 botons**,
+   idèntics per a qui ve a apuntar tres hores al mes i per a qui sosté el node.
+
+   Mesurat, el que hi fallava:
+
+   · **Dos botons primaris competint** («Què hi ha a prop» i el pas següent). Dos
+     primaris són cap primari, i el que hauria de manar —el pas següent del teu
+     camí— quedava a la segona fila darrere de sis botons fantasma.
+   · **«Els teus propers passos» eren tres «Prova: …»** quan no hi havia res que
+     reclamés atenció. A un banc de temps amb cinc socis i cap apunt, el proper
+     pas no és «Prova: MATRIU · incubar»: és **registrar les primeres hores**.
+   · **«Què has fet servir · 4/10» era la secció més gran de la pantalla**: un
+     full de deures de deu targetes. El ganxo de completar està bé —enganxa— però
+     no pot ocupar mitja home a algú que ha vingut a apuntar hores.
+   · **«Reclama la teva atenció» ocupava una secció sencera per dir que no hi
+     havia res.**
+
+   Les regles són les mateixes de la veda 66, perquè el problema és el mateix:
+   el que té contingut no s\'amaga, el que s\'amaga es diu i es desamaga des del
+   mateix lloc, i si el filtre deixaria la home buida no es filtra. */
+const HOME_SECTIONS={
+  simpatitzant:['cami','aprop','moviment'],
+  superheroi:['cami','passos','aprop','moviment'],
+  coordinador:['cami','passos','atencio','xarxa','moviment'],
+  guardian:['cami','atencio','xarxa','moviment'],
+  agent:['cami','xarxa','moviment'],
+  mentor:['cami','atencio','xarxa','moviment']
+};
+const HOME_ALL=['cami','passos','atencio','aprop','xarxa','moviment'];
+const HOME_LABEL={cami:'el teu camí',passos:'propers passos',atencio:'el que reclama atenció',
+  aprop:'què hi ha a prop',xarxa:'actuar a la xarxa',moviment:'moviment recent'};
+/* `has` diu quines seccions porten contingut de debò. Una secció buida que el
+   teu rol no reclama no és informació: és soroll amb títol. */
+function homeSections(role,{showAll,has}={}){
+  const all=showAll===undefined?state.showAllHome:showAll;
+  if(all)return HOME_ALL.slice();
+  const mine=HOME_SECTIONS[role||activeRoleId()]||HOME_SECTIONS.superheroi;
+  const h=has||{};
+  const out=HOME_ALL.filter(k=>mine.indexOf(k)>=0&&(h[k]===undefined||h[k]));
+  return out.length?out:['cami','moviment'];
+}
+async function setShowAllHome(on){
+  state.showAllHome=!!on;
+  try{if(on)await dbPut({id:'__homeall',type:'meta',on:true});else await dbDelete('__homeall');}catch(e){}
+  return state.showAllHome;
+}
+async function loadShowAllHome(){
+  try{const all=await dbGetAll();state.showAllHome=!!all.find(n=>n.id==='__homeall');}catch(e){state.showAllHome=false;}
+  return state.showAllHome;
+}
+/* El proper pas ha de sortir del que hi ha, no del que falta per estrenar.
+   Primer el que reclama atenció; després el buit que es nota de debò —socis
+   sense cap apunt, un node sense ningú—; i només al final, provar coses noves. */
+function homeNextSteps(d){
+  const next=[];
+  (d.attention||[]).slice(0,2).forEach(a=>next.push({ic:a.ic,t:a.t,d:a.d,act:a.act}));
+  if(next.length<3){
+    for(const n of state.nodes){
+      if(next.length>=3)break;
+      const socis=membersOf(n).length,apunts=(n.ledger||[]).length;
+      if(socis>=2&&!apunts)next.push({ic:'⏱',t:'Registra les primeres hores a '+n.name,
+        d:'Hi ha '+socis+' persones i cap apunt. El primer és el que fa que això serveixi d\'alguna cosa.',
+        act:()=>openLedgerEntryModal(n,{stay:true})});
+      else if(!socis)next.push({ic:'👥',t:'Dona d\'alta algú a '+n.name,
+        d:'Un node sense ningú no és una xarxa.',act:()=>openMemberForm(n)});
+    }
+  }
+  (d.pending||[]).slice(0,3-next.length).forEach(c=>next.push({ic:c.ic,t:'Prova: '+c.t,d:c.why,act:c.act}));
+  return next.slice(0,3);
+}
 function renderDashboard(w){
   const d=buildDashboard();
   const head=el('div','node-head');
@@ -12354,22 +13396,46 @@ function renderDashboard(w){
     '<div class="ent-desc"><strong>Hi poses:</strong> '+esc(j.gives)+' · <strong>En treus:</strong> '+esc(j.gets)+'</div>'+
     (j.next?'<div class="ent-desc" style="margin-top:.3rem">Següent: <strong>'+esc(j.next.label)+'</strong> — '+esc(j.next.detail)+'</div>':'<div class="ent-desc" style="margin-top:.3rem">Camí complet: el següent pas és acompanyar-ne un altre.</div>');
   const jb=el('div','');jb.style.cssText='display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem';
+  /* El pas següent va PRIMER i és l'únic primari. Abans quedava l'últim,
+     darrere de sis botons fantasma i competint amb un altre primari — i dos
+     primaris són cap primari. */
+  if(j.next&&j.next.act){const gn=el('button','btn btn-primary','👉 '+j.next.ic+' '+j.next.label);gn.id='dashNext';gn.onclick=()=>j.next.act();jb.appendChild(gn);}
   const gAll=el('button','btn btn-ghost btn-sm','🧭 Obre la guia');gAll.id='dashGuide';gAll.onclick=()=>openGuide();jb.appendChild(gAll);
   // El teu ledger, a un clic: és la teva comptabilitat i has de poder-hi entrar sempre.
   const gLed=el('button','btn btn-ghost btn-sm','⊞ El meu ledger SOS');gLed.id='dashLedger';
   gLed.onclick=()=>{if(state.activePersona)openMyLedger(state.activePersona);else openSuperheroiOnboarding();};jb.appendChild(gLed);
-  const gPub=el('button','btn btn-ghost btn-sm','🌐 Registre públic');gPub.id='dashRegister';gPub.onclick=()=>openPublicRegister();jb.appendChild(gPub);
-  // Les federacions són la manera de trobar gent fora del teu territori.
-  const gNear=el('button','btn btn-primary btn-sm','🔎 Què hi ha a prop');gNear.id='dashAprop';gNear.onclick=()=>openSupplySearch();jb.appendChild(gNear);
-  const gFed=el('button','btn btn-ghost btn-sm','🏷 Federacions');gFed.id='dashFederacions';gFed.onclick=()=>openFederations();jb.appendChild(gFed);
-  // Els ancoratges només serveixen si hi pots tornar.
-  const gAnc=el('button','btn btn-ghost btn-sm','🛰 Ancoratges');gAnc.id='dashAncoratges';gAnc.onclick=()=>openAnchors();jb.appendChild(gAnc);
-  if(j.next&&j.next.act){const gn=el('button','btn btn-primary btn-sm',j.next.ic+' '+j.next.label);gn.onclick=()=>j.next.act();jb.appendChild(gn);}
+  /* Els altres quatre no s'han tret d'enlloc: **tots quatre són al llançador**,
+     agrupats des de la veda 63. Tenir-los aquí també volia dir set botons a la
+     targeta que hauria de dir una sola cosa: què et toca ara. Qui els busca els
+     té a un clic, i qui no, no hi ensopega. */
+  const extres=[
+    ['dashRegister','🌐 Registre públic',()=>openPublicRegister()],
+    ['dashAprop','🔎 Què hi ha a prop',()=>openSupplySearch()],
+    ['dashFederacions','🏷 Federacions',()=>openFederations()],
+    ['dashAncoratges','🛰 Ancoratges',()=>openAnchors()]
+  ];
+  if(state.showAllHome)extres.forEach(([id,lbl,fn])=>{
+    const b=el('button','btn btn-ghost btn-sm',lbl);b.id=id;b.onclick=fn;jb.appendChild(b);
+  });
+  else{
+    const gMes=el('button','btn btn-ghost btn-sm','☰ Més accions');gMes.id='dashMore';
+    gMes.title='Registre públic, què hi ha a prop, federacions, ancoratges i la resta';
+    gMes.onclick=()=>openLauncher();jb.appendChild(gMes);
+  }
   jc.appendChild(jb);
   body.appendChild(jc);
 
+  /* Quines seccions toquen. Una secció buida que el teu rol no reclama no és
+     informació: és soroll amb títol. */
+  const steps=homeNextSteps(d);
+  const has={cami:true,passos:steps.length>0,atencio:d.attention.length>0,
+    aprop:true,xarxa:state.nodes.length>0,moviment:true};
+  const secs=homeSections(activeRoleId(),{has});
+  const show=k=>secs.indexOf(k)>=0;
+
   // Propers passos — el que fa que l'app serveixi per a alguna cosa avui
-  if(d.next.length){
+  if(show('passos')&&steps.length){
+    d.next=steps;
     body.appendChild(el('div','ent-grp-lbl','👣 Els teus propers passos'));
     const grid=el('div','dash-next');
     d.next.forEach(n=>{
@@ -12380,9 +13446,11 @@ function renderDashboard(w){
     body.appendChild(grid);
   }
 
-  // Reclama atenció
-  body.appendChild(el('div','ent-grp-lbl','⚠️ Reclama la teva atenció'));
-  if(d.attention.length){
+  /* Si no hi ha res que reclami atenció, no es pinta la secció. Un títol
+     seguit de «res reclama atenció» és una secció sencera per dir que no n'hi
+     ha cap, i les que sí que en tenen queden més avall. */
+  if(show('atencio')&&d.attention.length){
+    body.appendChild(el('div','ent-grp-lbl','⚠️ Reclama la teva atenció'));
     const grid=el('div','dash-att');
     d.attention.slice(0,8).forEach(a=>{
       const c=el('button','dash-item sev-'+a.sev);
@@ -12390,13 +13458,16 @@ function renderDashboard(w){
       c.onclick=a.act;grid.appendChild(c);
     });
     body.appendChild(grid);
-  } else {
-    const okBox=el('div','ai-note');okBox.innerHTML='<span class="ic">✅</span><span>Res reclama atenció ara mateix. Bon moment per encetar alguna cosa nova o per acompanyar algú.</span>';
-    body.appendChild(okBox);
   }
 
-  // Adopció · el motor que fa descobrir el que hi ha
-  body.appendChild(el('div','ent-grp-lbl','🧭 Què has fet servir · '+d.coverage.filter(c=>c.done).length+'/'+d.coverage.length));
+  /* Adopció. El ganxo de completar enganxa i per això no es treu — però era la
+     secció més gran de la pantalla, deu targetes de deures a algú que ha vingut
+     a apuntar hores. Ara és una línia amb la barra, i s'obre qui vulgui. */
+  const fets=d.coverage.filter(c=>c.done).length,tot=d.coverage.length;
+  const covPct=tot?Math.round(fets/tot*100):0;
+  const det=el('details','dash-cov-det');
+  det.innerHTML='<summary><span class="dcd-t">🧭 Has fet servir <strong>'+fets+' de '+tot+'</strong></span>'+
+    '<span class="dcd-bar"><span style="width:'+covPct+'%"></span></span></summary>';
   const cov=el('div','dash-cov');
   d.coverage.forEach(c=>{
     const b=el('button','cov'+(c.done?' done':''));
@@ -12405,9 +13476,11 @@ function renderDashboard(w){
     b.onclick=c.act;b.title=c.done?(c.t+' · ja ho fas servir'):c.why;
     cov.appendChild(b);
   });
-  body.appendChild(cov);
+  det.appendChild(cov);
+  body.appendChild(det);
 
   // Actua a qualsevol punt de la xarxa · sense navegar-hi
+  if(show('xarxa')){
   body.appendChild(el('div','ent-grp-lbl','⚡ Actua a qualsevol punt de la xarxa'));
   const net=el('div','dash-net');
   const q=el('input');q.id='dashNetQ';q.placeholder='Cerca un municipi, barri o projecte…';q.setAttribute('aria-label','Cerca un node de la xarxa per actuar-hi');
@@ -12439,6 +13512,24 @@ function renderDashboard(w){
   };
   q.oninput=paint;paint();
   body.appendChild(net);
+  }
+
+  /* Qui només mira no necessita el buscador de tota la xarxa, però sí una
+     manera de trobar qui necessita el que sap fer: és l'única cosa que
+     converteix mirar en participar. */
+  if(show('aprop')){
+    body.appendChild(el('div','ent-grp-lbl','🔎 Qui necessita el que saps fer'));
+    const ap=el('div','ent-card');
+    let m=[];try{m=matchesForPerson(state.activePersona||'')||[];}catch(e){m=[];}
+    ap.innerHTML='<div class="ent-desc">'+(m.length
+      ?'Hi ha <strong>'+m.length+'</strong> coincidència'+(m.length>1?'s':'')+' entre el que ofereixes i el que algú demana.'
+      :'Encara no hi ha cap coincidència. Com més gent i més ofertes, més fàcil és que en surti alguna.')+'</div>';
+    const ab=el('div','');ab.style.cssText='display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem';
+    const b1=el('button','btn btn-'+(m.length?'primary':'ghost')+' btn-sm','🔔 Mira les coincidències');
+    b1.id='homeMatches';b1.onclick=()=>routeTo('pings');ab.appendChild(b1);
+    const b2=el('button','btn btn-ghost btn-sm','🔎 Què hi ha a prop');b2.onclick=()=>openSupplySearch();ab.appendChild(b2);
+    ap.appendChild(ab);body.appendChild(ap);
+  }
 
   // Moviment recent
   body.appendChild(el('div','ent-grp-lbl','📜 Moviment recent'));
@@ -12457,6 +13548,19 @@ function renderDashboard(w){
     const all=el('button','btn btn-ghost btn-sm','📜 Veure tot el registre');
     all.style.marginTop='.5rem';all.onclick=()=>routeTo('activitat');body.appendChild(all);
   } else body.appendChild(el('div','ent-desc','Encara no hi ha moviment. El primer que registris apareixerà aquí.'));
+
+  /* El que s'amaga es diu, i es desamaga des d'aquí mateix. Una secció que
+     desapareix en silenci és una decisió que l'app t'ha pres a l'esquena. */
+  const amagades=HOME_ALL.filter(k=>secs.indexOf(k)<0&&has[k]);
+  if(amagades.length||state.showAllHome){
+    const more=el('button','btn btn-ghost btn-sm dash-more',
+      state.showAllHome?'▾ Ensenya\'m només el meu rol':'▸ '+amagades.length+' secció'+(amagades.length>1?'ns':'')+' més');
+    more.style.marginTop='.8rem';
+    more.title=state.showAllHome?'Torna a la home del teu rol'
+      :'El teu rol no les reclama: '+amagades.map(k=>HOME_LABEL[k]).join(', ');
+    more.onclick=()=>{setShowAllHome(!state.showAllHome);renderWorkspace();};
+    body.appendChild(more);
+  }
 
   w.appendChild(body);
 }
@@ -12972,6 +14076,87 @@ function importData(){
 /* ═══════════ COMMONS · ATLES (directori públic compartit via Git+CDN) ═══════════
    Només surt la capa "directori": existència, tipus, ubicació i web pública.
    MAI el mapa VNA, el tauler ni la comptabilitat — es queden locals/P2P.        */
+/* ═══════════ OFERTA COMUNA · el paquet ja no es queda al calaix ═══════════
+   Veda V60. `supplyPublicPack` generava un paquet agregat, comprovava que no
+   filtra res, el versionava amb CID i el deixava… al teu disc. Ningú el podia
+   trobar. Publicar sense descobriment no és publicar.
+
+   L'atles ja havia resolt aquest problema i ningú se n'havia adonat: és un
+   **repositori públic servit per CDN**, on s'aporta amb una *pull request* i
+   d'on qualsevol baixa amb un `fetch`. Públic, versionat, amb historial,
+   auditable, gratis, i amb revisió humana abans de publicar-se.
+
+   L'oferta comuna fa el mateix camí. No és permaweb en el sentit d'Arweave —si
+   algú esborra el repositori, desapareix— i es diu així a la cara. Però passa
+   de zero a tenir descobriment de debò, sense pagar, sense extensió de
+   navegador i sense dependre de cap relé.
+
+   Dues regles que no es poden relaxar:
+
+   · **El que es llegeix no es fusiona amb el teu.** L'oferta comuna viu a part
+     i es marca com a vinguda de fora. Barrejar-la amb la teva convertiria el
+     que ha dit un altre en dades teves.
+   · **Entra pel mateix sedàs que surt.** Una fila que porti noms o contactes es
+     descarta en llegir-la, encara que vingui del repositori oficial. Confiar en
+     l'origen és exactament com es cola una fuita. */
+const SUPPLY_BASE='supply/';
+const COMMON_SUPPLY_ID='__commonsupply';
+async function loadCommonSupply(){
+  try{const all=await dbGetAll();const r=all.find(n=>n.id===COMMON_SUPPLY_ID);
+    state.commonSupply=(r&&r.rows)||[];state.commonSupplyAt=(r&&r.at)||null;}
+  catch(e){state.commonSupply=[];}
+  return state.commonSupply;
+}
+async function saveCommonSupply(rows,at){
+  state.commonSupply=rows||[];state.commonSupplyAt=at||now();
+  try{await dbPut({id:COMMON_SUPPLY_ID,type:'meta',rows:state.commonSupply.slice(0,4000),at:state.commonSupplyAt});}catch(e){}
+}
+/* El sedàs d'entrada: només els camps que el paquet públic declara, i cap fila
+   que porti res que sembli una persona. És el mateix criteri que `verifyNoLeak`
+   aplica en sortida, però mirant cap endins. */
+function sanitizeSupplyRow(r,src){
+  if(!r||typeof r!=='object')return null;
+  const out={};
+  PUBLIC_SUPPLY_FIELDS.forEach(f=>{if(r[f]!==undefined&&r[f]!==null)out[f]=r[f];});
+  if(!out.label&&!out.category)return null;
+  if(!out.kind||!out.dir)return null;
+  const txt=JSON.stringify(out);
+  if(/@|\+34|did:|\btel\b|telefon|telèfon|e-?mail/i.test(txt))return null;
+  out.count=Number(out.count)||0;out.people=Number(out.people)||0;
+  out.source=src||'comuna';
+  return out;
+}
+async function updateCommonSupply(silent){
+  if(!silent)toast('Carregant l\'oferta comuna…');
+  let rows=[],packs=0,failed=0;
+  try{
+    const idx=await (await fetch(SUPPLY_BASE+'index.json',{cache:'no-store'})).json();
+    for(const p of (idx.packs||[])){
+      try{
+        const pk=await (await fetch(SUPPLY_BASE+p.file,{cache:'no-store'})).json();
+        (pk.supply||[]).forEach(r=>{const c=sanitizeSupplyRow(r,p.name||p.file);if(c)rows.push(c);});
+        packs++;
+      }catch(e){failed++;}
+    }
+  }catch(e){
+    if(!silent)toast('No s\'ha pogut llegir l\'oferta comuna');
+    return{rows:0,packs:0,failed:1};
+  }
+  await saveCommonSupply(rows);
+  if(!silent)toast(rows.length?('Oferta comuna · '+rows.length+' files de '+packs+' paquet'+(packs===1?'':'s')+(failed?' · '+failed+' han fallat':'')):'Encara no hi ha res publicat');
+  return{rows:rows.length,packs,failed};
+}
+// El que ha publicat la resta de la xarxa, filtrat pel mateix text de la cerca.
+function commonSupplyMatches(q,{kinds,dirs}={}){
+  const t=norm(q||'');
+  return (state.commonSupply||[]).filter(r=>{
+    if(kinds&&kinds.length&&kinds.indexOf(r.kind)<0)return false;
+    if(dirs&&dirs.length&&dirs.indexOf(r.dir)<0)return false;
+    if(!t)return true;
+    return norm((r.label||'')+' '+(r.category||'')+' '+(r.place||'')+' '+(r.nodeName||'')).indexOf(t)>=0;
+  }).sort((a,b)=>(b.count||0)-(a.count||0));
+}
+
 const ATLES_BASE='atles/';
 /* ═══════════ Publicar habilitats i objectes · el gra, primer ═══════════
    L'objectiu és que algú d'un poble premi un botó i el que ha decidit
@@ -13203,7 +14388,7 @@ function openPublishSupply(){
         <button class="btn btn-ghost" id="psClose">Tanca</button>
         <button class="btn btn-ghost" id="psRead">📥 Llegeix un paquet</button>
         <button class="btn btn-ghost" id="psHist">🗂 Versions</button>
-        <button class="btn btn-primary" id="psGo"${(!pack.count||!leak.ok)?' disabled style="opacity:.45"':''}>⬇ Descarrega el paquet</button>
+        <button class="btn btn-primary" id="psGo"${(!pack.count||!leak.ok)?' disabled style="opacity:.45"':''}>⬇ Descarrega i publica</button>
       </div>`;
   };
   const bg=modal(paint());
@@ -13257,6 +14442,22 @@ function openPublishSupply(){
           ?('Paquet descarregat i versionat · '+pack.count+' files')
           :('Paquet descarregat · idèntic a l\'última versió, no se n\'ha creat cap de nova'),4200);
       }).catch(()=>toast('Paquet descarregat · '+pack.count+' files agregades',4000));
+      /* Descarregar-lo no és publicar-lo. Abans això acabava aquí i el fitxer es
+         quedava al calaix: aquesta pantalla diu ara on va perquè algú el trobi. */
+      closeModal();
+      const nx=modal(`
+        <h2>🌐 Ja el tens · ara que el trobin</h2>
+        <p class="m-sub">El paquet és al teu ordinador, versionat i amb el seu CID. Perquè algú d'un altre poble hi arribi, ha d'anar al <strong>comú</strong>.</p>
+        <div class="ai-note"><span class="ic">⬡</span><span>L'oferta comuna és un <strong>repositori públic</strong> servit gratis per CDN, com l'atles: obre una <em>pull request</em> amb el fitxer a <code>SOS/supply/</code> i afegeix-hi l'entrada a <code>index.json</code>. Es revisa i es publica; qualsevol el llegeix des de <strong>🔎 Què hi ha a prop</strong>.</span></div>
+        <div class="wz-key-note"><strong>Això no és permaweb.</strong> Si algú esborra el repositori, desapareix. És públic, versionat i amb historial —molt més que tenir-lo al calaix, i menys que Arweave. Per fer-lo permanent, el mateix fitxer es pot pinnar a IPFS o pujar a Arweave: ja porta el seu CID.</div>
+        <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem">
+          <button class="btn btn-ghost" id="pnClose">Fet</button>
+          <a class="btn btn-ghost" href="https://github.com/asolache/teamtowershuma/tree/main/SOS/supply" target="_blank" rel="noopener" style="text-decoration:none">⬡ Obre la carpeta al repositori</a>
+          <button class="btn btn-primary" id="pnRead">⭳ Llegeix el que ja hi ha</button>
+        </div>`);
+      nx.querySelector('.modal').classList.add('wz-modal');
+      nx.querySelector('#pnClose').onclick=closeModal;
+      nx.querySelector('#pnRead').onclick=async()=>{closeModal();await updateCommonSupply();openSupplySearch();};
     };
   };
   wire();
@@ -13502,9 +14703,72 @@ async function syncAcceptOffer(code,onReady){
   return await _enc(_pc.localDescription);
 }
 async function syncAcceptAnswer(code){await _pc.setRemoteDescription(await _dec(code));}
+/* Les col·leccions que **només creixen** viuen dins del node, i el node es
+   resolia per LWW sencer: la banda amb l'`updatedAt` més antic perdia tot el
+   que hi havia apuntat. El xat ja se'n salvava; aquestes són les altres.
+   Les que no hi són (govern, mapa VNA, configuració) sí que són camps que es
+   reescriuen, i per a aquelles el LWW és el que toca. */
+const APPEND_ONLY=['ledger','members','objects','offers','ventures','pending','risks','blocks','evidence'];
+/* Quan el mateix registre arriba per les dues bandes, es queda **el més ric**:
+   el que porta firma per sobre del que no en porta, i el que porta més
+   confirmacions per sobre del que en porta menys. Mai el més nou pel fet de ser
+   més nou —això és el que ens ha portat fins aquí. */
+function _richerRec(a,b){
+  if(!a)return b;if(!b)return a;
+  if(!a.sig&&b.sig)return b;if(a.sig&&!b.sig)return a;
+  const ga=(a.got||[]).length,gb=(b.got||[]).length;
+  if(gb>ga)return b;if(ga>gb)return a;
+  return String(b.updatedAt||b.ts||'')>String(a.updatedAt||a.ts||'')?b:a;
+}
+function mergeAppendOnly(a,b,kind){
+  const out=[],at={};
+  (a||[]).concat(b||[]).forEach(x=>{
+    if(!x||!x.id)return;
+    if(!(x.id in at)){at[x.id]=out.length;out.push(x);return;}
+    out[at[x.id]]=_richerRec(out[at[x.id]],x);
+  });
+  // El ledger es mostra del més nou al més vell; la resta manté l'ordre d'entrada.
+  if(kind==='ledger')out.sort((x,y)=>String(y.ts||'').localeCompare(String(x.ts||'')));
+  return out;
+}
+/* ═══════════ V67 · Una fusió que no deixa rastre demana fe ═══════════
+   El toast deia «Sincronitzat · N canvis», i aquell N mentia dues vegades:
+   comptava **una mateixa fusió diverses vegades** (una pel xat, una per cada
+   col·lecció, una pel node sencer) i **no comptava el que s'havia
+   sobreescrit**. Un número inflat i incomplet és pitjor que cap número: convida
+   a refiar-se'n.
+
+   Des de V64 els apunts ja no es perden —s'uneixen—, però la resta del node
+   segueix resolent-se per LWW: el mapa de valor, el tauler, el nom. Això no és
+   un defecte a tapar; és una decisió raonable per a camps que es reescriuen. El
+   que no és raonable és **no dir-ho**. Si en sincronitzar el teu mapa de valor
+   ha estat substituït pel de l'altre, ho has de saber en aquell moment, no
+   descobrir-ho un mes després. */
+const MERGE_IGNORE=new Set(['updatedAt','chat','id','kind']);
+function newMergeReport(){return{nous:0,esborrats:0,entitats:0,apunts:{},sobreescrits:[],total:0};}
+/* Quins camps ha substituït realment el LWW. Els que s'uneixen no compten: ja
+   s'han fusionat abans d'arribar aquí i no s'ha perdut res. */
+function overwrittenFields(local,inc){
+  const out=[];
+  for(const k in inc){
+    if(MERGE_IGNORE.has(k)||APPEND_ONLY.indexOf(k)>=0)continue;
+    if(_canon(local[k])!==_canon(inc[k]))out.push(k);
+  }
+  return out;
+}
+function mergeReportText(r){
+  const p=[];
+  if(r.nous)p.push(r.nous+' node'+(r.nous>1?'s':'')+' nou'+(r.nous>1?'s':''));
+  const ap=Object.keys(r.apunts).reduce((a,k)=>a+r.apunts[k],0);
+  if(ap)p.push(ap+' apunt'+(ap>1?'s':''));
+  if(r.entitats)p.push(r.entitats+' entitat'+(r.entitats>1?'s':''));
+  if(r.esborrats)p.push(r.esborrats+' esborrat'+(r.esborrats>1?'s':''));
+  if(r.sobreescrits.length)p.push(r.sobreescrits.length+' node'+(r.sobreescrits.length>1?'s':'')+' sobreescrit'+(r.sobreescrits.length>1?'s':''));
+  return p.length?p.join(' · '):'Ja estaves al dia';
+}
 async function mergeIncoming(msg){
-  let changes=0;const tomb=msg.tombstones||{};
-  for(const id in tomb){const ts=tomb[id];if(!state.tombstones[id]||state.tombstones[id]<ts)state.tombstones[id]=ts;const local=byId(id)||byEnt(id);if(local&&(local.updatedAt||'')<ts){await dbDelete(id);state.nodes=state.nodes.filter(n=>n.id!==id);state.entities=state.entities.filter(n=>n.id!==id);changes++;}}
+  let changes=0;const tomb=msg.tombstones||{};const rep=newMergeReport();
+  for(const id in tomb){const ts=tomb[id];if(!state.tombstones[id]||state.tombstones[id]<ts)state.tombstones[id]=ts;const local=byId(id)||byEnt(id);if(local&&(local.updatedAt||'')<ts){await dbDelete(id);state.nodes=state.nodes.filter(n=>n.id!==id);state.entities=state.entities.filter(n=>n.id!==id);changes++;rep.esborrats++;}}
   for(const n of (msg.nodes||[])){if(!n||!n.id||n.id==='__tombstones')continue;const ts=state.tombstones[n.id];if(ts&&ts>=(n.updatedAt||''))continue;const local=byId(n.id);
     /* El xat és només-afegir i es fusiona per unió ABANS de decidir qui guanya:
        amb LWW sencer, dues persones escrivint alhora es perdrien missatges, i
@@ -13516,15 +14780,64 @@ async function mergeIncoming(msg){
       n.chat=merged;
       if(local.chat==null||local.chat.length!==merged.length){local.chat=merged;await dbPut(local);changes++;}
     }
-    if(!local||(local.updatedAt||'')<(n.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);changes++;}}
+    /* I la resta del que només creix, pel mateix motiu i amb més raó: el que es
+       perd en un xat es pot tornar a escriure, i una hora treballada no. */
+    if(local)for(const k of APPEND_ONLY){
+      if(!((local[k]&&local[k].length)||(n[k]&&n[k].length)))continue;
+      const before=(local[k]||[]).length;
+      const merged=mergeAppendOnly(local[k],n[k],k);
+      n[k]=merged;
+      if(local[k]==null||local[k].length!==merged.length){local[k]=merged;await dbPut(local);changes++;
+        if(merged.length>before)rep.apunts[k]=(rep.apunts[k]||0)+(merged.length-before);}
+    }
+    if(!local||(local.updatedAt||'')<(n.updatedAt||'')){
+      /* Abans de substituir, mirar què es perd. Els camps que s'uneixen ja
+         s'han fusionat més amunt, així que el que quedi aquí és pèrdua real. */
+      if(!local)rep.nous++;
+      else{const camps=overwrittenFields(local,n);if(camps.length)rep.sobreescrits.push({id:n.id,name:local.name||n.name||n.id,camps});}
+      await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);changes++;}}
   for(const e of (msg.entities||[])){if(!e||!e.id)continue;const ts=state.tombstones[e.id];if(ts&&ts>=(e.updatedAt||''))continue;e.kind='entity';const local=byEnt(e.id);
-    if(!local){await dbPut(e);state.entities.push(e);changes++;continue;}
-    const {rec,touched}=mergeEntityInto(local,e);if(touched){await dbPut(rec);state.entities[state.entities.findIndex(x=>x.id===e.id)]=rec;changes++;}}
+    if(!local){await dbPut(e);state.entities.push(e);changes++;rep.entitats++;continue;}
+    const {rec,touched}=mergeEntityInto(local,e);if(touched){await dbPut(rec);state.entities[state.entities.findIndex(x=>x.id===e.id)]=rec;changes++;rep.entitats++;}}
   await saveTombstones();
   if(state.activeId&&!byId(state.activeId))state.activeId=state.nodes[0]?state.nodes[0].id:null;
   render();
   setSyncPill('Sincronitzat','var(--accent-green)');
-  toast(changes?('Sincronitzat · '+changes+' canvi'+(changes>1?'s':'')):'Ja estaves al dia');
+  rep.total=changes;
+  state.lastMerge=rep;
+  /* Si res s'ha sobreescrit, un toast honest n'hi ha prou. Si alguna cosa s'ha
+     substituït, no: es diu a la cara i es pot mirar què. */
+  if(rep.sobreescrits.length)openMergeReport(rep);
+  else toast(mergeReportText(rep));
+  return rep;
+}
+/* El rastre de la fusió. No demana res —ja està fet— i no ofereix cap botó de
+   desfer que no podríem complir: diu **què** ha entrat i **quins camps de quin
+   node** s'han substituït, perquè qui hi vulgui mirar sàpiga on. */
+function mergeReportHTML(rep){
+  const ap=Object.keys(rep.apunts).reduce((a,k)=>a+rep.apunts[k],0);
+  const li=[];
+  if(rep.nous)li.push('<li>'+rep.nous+' node'+(rep.nous>1?'s':'')+' que no tenies</li>');
+  Object.keys(rep.apunts).forEach(k=>li.push('<li><strong>+'+rep.apunts[k]+'</strong> a '+esc(k)+' — s\'uneixen, no se\'n perd cap</li>'));
+  if(rep.entitats)li.push('<li>'+rep.entitats+' entitat'+(rep.entitats>1?'s':'')+' actualitzada'+(rep.entitats>1?'s':'')+'</li>');
+  if(rep.esborrats)li.push('<li>'+rep.esborrats+' esborrat'+(rep.esborrats>1?'s':'')+' que havia fet l\'altre</li>');
+  if(!li.length)li.push('<li class="muted">'+t('Cap apunt nou.')+'</li>');
+  const n=rep.sobreescrits.length;
+  return `
+    <h2>${t('⇄ Rastre de la fusió')}</h2>
+    <p class="m-sub">${t('El que ha entrat en sincronitzar, i el que s\'ha substituït.')}</p>
+    <ul class="merge-rep">${li.join('')}</ul>
+    ${n?`<div class="merge-warn">
+      <div class="merge-warn-t">⚠ ${n} node${n>1?'s':''} amb camps substituïts</div>
+      <p>La versió de l'altre dispositiu era més recent i ha guanyat <strong>en aquests camps</strong>. Els apunts, socis i objectes no: aquests s'uneixen sempre i no se'n perd cap.</p>
+      <ul class="merge-rep">${rep.sobreescrits.map(s=>'<li><strong>'+esc(s.name)+'</strong> — '+esc(s.camps.join(', '))+'</li>').join('')}</ul>
+    </div>`:''}
+    <div class="modal-actions"><button class="btn btn-primary" id="mrClose">${t('Entesos')}</button></div>`;
+}
+function openMergeReport(rep){
+  const bg=modal(mergeReportHTML(rep));
+  bg.querySelector('#mrClose').onclick=closeModal;
+  return bg;
 }
 
 function _copyBtn(getText){const b=el('button','btn btn-ghost btn-sm','⧉ Copia');b.onclick=async()=>{try{await navigator.clipboard.writeText(getText());b.textContent='✓ Copiat';setTimeout(()=>b.textContent='⧉ Copia',1500);}catch(e){toast('Copia manualment');}};return b;}
@@ -13966,7 +15279,7 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hi
 (async function boot(){
   try{await openDB();const all=await dbGetAll();const tomb=all.find(n=>n.id==='__tombstones');state.tombstones=tomb&&tomb.map?tomb.map:{};// Els registres privats (identitat, claus, narratives, dossiers) no són nodes: si
 // entren a state.nodes acaben viatjant pel sync i pel pack públic. Es filtren aquí.
-state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();await loadAllDossiers();await loadLensRole();await loadAutoPublish();await loadModels();await loadRelay();
+state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&n.kind!=='entity');state.entities=all.filter(n=>n.kind==='entity');await loadActivePersona();await loadAllDossiers();await loadLensRole();await loadShowAllTabs();await loadShowAllHome();await loadLang();await loadAutoPublish();await loadModels();await loadRelay();await loadCommonSupply();
   // Si el relé estava engegat, es torna a obrir sol en arrencar.
   if(relayCfg().on&&relayReady())relayConnect();updatePersonaBadge();}catch(e){console.error('DB error',e);}
   // Qui torna aterra al tauler, no a un node triat per ordre de creació. L'arbre
@@ -13980,7 +15293,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,renderMissions,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,openMemberForm,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,openVentureDetail,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,HERO_CHALLENGES,newVenture,actMeta,evaluateChallenges,cromoTier,CROMO_TIERS,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,openComandoView,directorFilter,objectsOf,newObject,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,exchangeHours,pushLedger,newMember,newOffer,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,parseRoute,applyRoute,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,geoFor,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,measure,scopeIds,countryCoverage,buildCountryCockpit,children,byId,persist,venturesOf,offersOf,oracleFmv,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,relTime,openPersonProfile,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,presenceState,postChat}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
