@@ -688,6 +688,47 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 73 — Dos primaris són cap primari
+
+La veda 66 va fer que les pestanyes del node les manés el full de ruta del rol.
+La home es va quedar igual per a tothom, i mesurada donava això: **1.876 px, 6
+seccions i 25 botons**, idèntics per a qui ve a apuntar tres hores al mes i per
+a qui sosté el node.
+
+El defecte més barat de veure i el més fàcil de repetir: **dos botons primaris
+competint** a la mateixa targeta. Quan tot destaca, no destaca res, i el que
+hauria de manar —el pas següent del teu camí— quedava a la segona fila darrere
+de sis botons fantasma. Ara n'hi ha **un**, va primer, i és sempre el pas
+següent.
+
+I la targeta va passar de set botons a tres. Els quatre que en van sortir **no
+s'han tret d'enlloc**: són al llançador, agrupats des de la veda 63. Repetir una
+acció a la home no és fer-la més accessible; és competir amb el que aquella
+pantalla havia de dir.
+
+## Veda 74 — El proper pas surt del que hi ha, no del que falta per estrenar
+
+Quan no hi havia res que reclamés atenció, «els teus propers passos» eren tres
+«Prova: …» — la llista de capacitats que encara no havies tocat. És un ganxo de
+completista, i el completista no és qui tenim al davant.
+
+A un banc de temps amb cinc socis i cap apunt, el proper pas no és «Prova:
+MATRIU · incubar»: és **registrar les primeres hores**. El buit que es nota és
+el que el SOS ja sap veure —socis sense cap apunt, un node sense ningú— i mirava
+just per sobre.
+
+L'ordre correcte és: el que reclama atenció, després el buit que es nota, i
+només al final provar coses noves. Provar coses noves és l'última prioritat de
+qui ha vingut a fer una feina concreta.
+
+El ganxo de completar no s'ha tret —enganxa, i això és cert—: s'ha plegat a una
+línia amb la barra. Era **la secció més gran de la pantalla**: deu targetes de
+deures a algú que havia vingut a apuntar hores.
+
+I una que val per a qualsevol pantalla: **una secció buida no ocupa lloc**. Un
+títol seguit de «res reclama atenció» és una secció sencera per dir que no n'hi
+ha cap, i empeny cap avall les que sí que en tenen.
+
 ## Veda 72 — La cadena original és la clau
 
 `<html lang="ca">` i 2.400 cadenes catalanes incrustades al codi. Per a una beta

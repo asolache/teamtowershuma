@@ -43,8 +43,9 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-canal.mjs` | V65 | El canal asíncron: que el repositori no doni veritat, i que sense clau no se'n tregui res |
 | `test-rol-ux.mjs` | V66 | Que el rol decideixi per on comences — i sobretot, què NO s'amaga |
 | `test-beta.mjs` | V67 | El rastre de la fusió, el camí per dir que s'ha trencat, i que designar no sigui custodiar |
-| `test-llengua.mjs` | V69 | La capa de segona llengua, i sobretot el pitjor cas: què surt quan no hi ha traducció |
 | `test-patch.mjs` | V68 | El relé porta apunts signats: que no llegeixi, no inventi nodes ni coli apunts sense firma |
+| `test-llengua.mjs` | V69 | La capa de segona llengua, i sobretot el pitjor cas: què surt quan no hi ha traducció |
+| `test-home.mjs` | V70 | La home pel rol: què NO desapareix, i que sempre es pugui veure tot |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
 heartbeat, presència i broadcast). Guarda a `messages` tot el que li arriba, que
@@ -58,14 +59,12 @@ l'engeguen ells.
 
 ## Les guardes del CI
 
-`SOS/tools/check-kiss.js` i `SOS/tools/check-i18n.js` no són tests de Playwright:
-corren a cada PR en menys d'un segon i sense dependències.
+`check-kiss.js` i `check-i18n.js` no són tests de Playwright: corren a cada PR en
+menys d'un segon i sense dependències, que és el que fa que mosseguin de debò.
 
-## La guarda de KISS
+### La guarda de KISS
 
-`SOS/tools/check-kiss.js` no és un test de Playwright: corre al CI a cada PR, en
-menys d'un segon i sense dependències. Mesura pes, guies, duplicats i
-superfícies contra **sostres declarats**.
+Mesura pes, guies, duplicats i superfícies contra **sostres declarats**.
 
 ```bash
 node SOS/tools/check-kiss.js
@@ -74,7 +73,7 @@ node SOS/tools/check-kiss.js
 Per pujar un sostre: canvia el número al fitxer i explica per què al commit.
 Aquesta fricció és tot el que fa, i és tota la seva utilitat.
 
-## La guarda de la segona llengua
+### La guarda de la segona llengua
 
 ```bash
 node SOS/tools/check-i18n.js
@@ -88,6 +87,10 @@ mateixa, o una que apunta a text que ja no existeix al codi.
 ## Què no hi és
 
 Els tests anteriors a aquesta branca segueixen fora del repositori. Els que es
-van corregir pel camí —`test-atles*`, `test-dir`, `test-formacio`, `test-home`,
-`test-roles`, `test-navbar`, `test-matriu-main`, `test-collab`— no s'han pogut
-moure aquí perquè no formen part d'aquesta feina; queda com a pendent portar-los.
+van corregir pel camí —`test-atles*`, `test-dir`, `test-formacio`, `test-roles`,
+`test-navbar`, `test-matriu-main`, `test-collab`— no s'han pogut moure aquí
+perquè no formen part d'aquesta feina; queda com a pendent portar-los.
+
+L'antic `test-home` d'aquella tanda **no és** el `test-home.mjs` d'aquí: aquell
+comprovava que la portada pintés, i aquest que la portada sigui del rol de qui la
+mira. Quan es porti l'altre caldrà un nom que els distingeixi.
