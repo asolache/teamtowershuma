@@ -688,6 +688,48 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 76 — Un registre públic de coses privades es publica en hashes
+
+`buildRegisterPack` feia tota la feina difícil —arrel, CID, firma, totals— i el
+paquet es quedava **al teu disc**. El mateix forat que tenia `supply/` abans de
+la veda 60: publicar sense descobriment no és publicar.
+
+Però abans de publicar-lo calia contestar una pregunta que sembla de tecnologia i
+és de gent: **què vol dir «registre públic» quan el que hi ha dins són hores que
+uns veïns es van fer els uns als altres?** Publicar qui va donar hores a qui és
+publicar dades de gent que no ho ha demanat, i el SOS existeix precisament perquè
+aquella gent s'hi pugui refiar.
+
+La sortida: **el que surt són hashes i totals, mai files**. I d'aquí la propietat
+que fa que això valgui la pena:
+
+> verificable per tothom, llegible només per qui té el rebut.
+
+Amb el teu rebut a la mà comproves que el seu hash hi és, i per tant que aquella
+hora ja existia en aquella data. Qui no el té veu una llista de hashes que no li
+diu res de ningú. **La prova d'inclusió és el que converteix un tauler d'anuncis
+en un registre**: un registre on no pots assenyalar el teu apunt no és teu.
+
+I «actualitzable sense amo» té una forma concreta: **versions immutables i un
+punter que es mou**. Cada versió porta el CID de la seva mare, així que qui no es
+refiï del punter recorre la cadena des de qualsevol versió que ja tingués.
+
+Tres decisions d'ordre que semblen detalls i no ho són:
+
+- **El punter s'actualitza després de la versió.** Si falla pel mig queda una
+  versió publicada que el punter encara no anomena —no s'ha perdut res— i mai al
+  revés, que seria un punter assenyalant un fitxer que no existeix.
+- **El que va dins del paquet ha d'entrar abans de signar.** El CID es calcula
+  sobre tot el paquet menys el propi CID; afegir-hi un camp després invalida
+  alhora la firma i el CID, i el paquet deixa de verificar-se sense dir per què.
+  És l'error que va cometre qui ho va escriure, i el va trobar el test.
+- **Una versió que no verifica no prova res**, encara que el hash hi sigui. Si
+  s'acceptés, publicar una versió manipulada seria una manera de «demostrar»
+  qualsevol cosa.
+
+I el sedàs de sortida, com a tot el que surt d'aquí: si algun dia un camp nou
+arrossegués text lliure cap a les fulles, `verifyNoLeak` ho atura **abans**.
+
 ## Veda 75 — Un sostre no és una veritat: és una conversa ajornada
 
 El pes va arribar al 94 % del sostre de 400 KB i tocava fer alguna cosa. En
