@@ -688,6 +688,32 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 79 — Ampliar el que es pot connectar obliga a revisar el que se suma
+
+`linkResource` només oferia **germans** —`children(node.parentId)`— i els fills
+del propi node no hi sortien mai. El cas natural és justament aquell: una MATRIU
+comarcal amb bancs de temps municipals a sota.
+
+Ampliar la llista era mitja hora. **Fer-ho sense mirar res més hauria estat pitjor
+que deixar-ho com estava**, i val la pena entendre per què:
+
+`rollup()` **ja agrega els descendents** cap amunt, i `ecosystemResources`
+**suma** el que aporten els enllaços. Enllaçar un fill hauria comptat el mateix
+dues vegades. I com que el fons distingeix «verificat» d'«estimat», el resultat
+no hauria estat un número una mica alt: hauria estat **un número inflat amb
+aparença de verificat** — el pitjor que li pot passar a un projecte que promet
+exactament el contrari.
+
+La regla, que ja existia per a la consolidació entre nivells i que aquí es torna
+a aplicar: **propi i agregat no se sumen a mà**. Els enllaços es parteixen en
+dos —el que penja de tu, que ja entra per l'agregat, i el que ve de fora, que no
+entra per cap altra banda— i només els segons sumen. I es diu a la pantalla, que
+és el que fa que la xifra sigui defensable davant de qui la miri amb dubtes.
+
+**La lliçó general:** quan s'amplia el que un sistema pot relacionar, s'ha de
+tornar a mirar tot el que aquell sistema **suma**. Les vies noves no porten
+dades noves: porten **les mateixes dades per un camí que abans no existia**.
+
 ## Veda 77 — El SOS no recluta: reconeix
 
 Ve del cànon del Comando, i corregeix com s'havia explicat el projecte fins ara.
