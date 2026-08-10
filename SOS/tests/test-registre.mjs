@@ -156,17 +156,35 @@ ok(anc.ev.tags.some(t => t[0] === 'd' && t[1] === 'sos-registre'),
 ok(anc.sense.threw && anc.sense.code === 'nosigner',
   'sense extensió NIP-07 es nega i explica què es perd: ' + String(anc.sense.msg).slice(0, 60) + '…');
 
-console.log('\n9 · A la pantalla');
+console.log('\n9 · Pinnar: el SOS no puja res, i ho diu');
+const pin = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const pack = await S.registerPublicPack();
+  let sense;
+  try { await S.markPinned(pack, { target: 'arweave', url: '  ' }); sense = { threw: false }; }
+  catch (e) { sense = { threw: true, code: e.code, msg: e.msg }; }
+  const amb = await S.markPinned(pack, { target: 'arweave', url: 'ar://abc123' });
+  const anc = (await S.loadAnchors()).find(a => a.cid === pack.cid);
+  return { sense, amb, guardat: anc && anc.location, targets: S.PIN_TARGETS.map(t => t.id) };
+});
+ok(pin.sense.threw && pin.sense.code === 'nourl',
+  'sense adreça no es desa: «' + String(pin.sense.msg).slice(0, 62) + '…»');
+ok(/Arweave · ar:\/\/abc123/.test(pin.guardat || ''),
+  'amb adreça, queda apuntat a l\'ancoratge: ' + pin.guardat);
+ok(pin.targets.includes('arweave') && pin.targets.includes('ipfs'),
+  'hi ha Arweave i IPFS com a destins');
+
+console.log('\n10 · A la pantalla');
 const ui = await page.evaluate(async () => {
   const S = window.__SOS;
   S.openRegisterPackModal();
   await new Promise(r => setTimeout(r, 400));
-  const has = ['#rpPub', '#rpAnchor', '#rpProve', '#rpHash', '#rpCopyRoot'].filter(x => !!document.querySelector(x));
+  const has = ['#rpPub', '#rpAnchor', '#rpPin', '#rpProve', '#rpHash', '#rpCopyRoot'].filter(x => !!document.querySelector(x));
   const txt = document.querySelector('.modal').textContent;
   S.closeModal();
   return { has: has.length, capEnsenyar: /No cal ensenyar què diu/.test(txt) };
 });
-ok(ui.has === 5, 'hi ha publicar, ancorar, comprovar, el camp del hash i copiar l\'arrel');
+ok(ui.has === 6, 'hi ha publicar, ancorar, fer permanent, comprovar, el camp del hash i copiar l\'arrel');
 ok(ui.capEnsenyar, 'i es diu que per comprovar-ho no cal ensenyar el contingut de l\'apunt');
 
 await b.close();

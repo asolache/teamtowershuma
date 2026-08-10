@@ -61,6 +61,16 @@ al revés, que seria un punter assenyalant un fitxer que no existeix.
   esborrar el passat —l'historial de git és públic i es pot forkejar— però sí
   aturar-se. Amb l'ancoratge es nota; sense, no.
 
+## Fer-lo permanent
+
+El repositori es pot esborrar i els relés no guarden res per sempre. Perquè una
+versió duri de debò, es pinna a Arweave (pagament únic) o a IPFS (mentre algú el
+pinni).
+
+**El SOS no puja res**: dona el fitxer i el CID, diu on portar-lo, i es queda
+l'adreça on has dit que l'has posat. Sense adreça no desa res — un ancoratge del
+qual no saps tornar no és un ancoratge.
+
 ## Estat
 
 Buit a posta, com `supply/` i `canal/`. No hi ha cap versió inventada.

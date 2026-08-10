@@ -688,6 +688,28 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 80 — Val més dir «això no ho faig jo» que un botó que ho sembla
+
+Al registre públic li faltava permanència: el repositori es pot esborrar i els
+relés de Nostr no guarden res per sempre. Això es paga un cop i es fa a fora.
+
+La temptació era un botó que digués «Puja a Arweave» i que en realitat obrís una
+pestanya. Ho hauria fet servir tothom i ningú hauria sabut que **el que ha
+quedat pujat és el que hi hagi pujat ell**, no el SOS.
+
+Per això el botó diu **«fes-lo permanent»** i la pantalla diu, sense endolcir-ho,
+que el SOS no puja res. El projecte porta massa vedes dient «no es diu verificat
+del que no s'ha verificat» com per fallar aquí.
+
+I la peça que de debò fa la feina no és el fitxer ni el CID: és **quedar-se
+l'adreça on has dit que l'has posat**. Un ancoratge del qual no saps tornar no
+és un ancoratge — i per això, **sense adreça no es desa res**. Deixar-ho desar
+buit hauria estat pitjor que no oferir-ho: tindries una llista d'ancoratges que
+et faria creure que estàs cobert.
+
+Es guarda **dins de l'ancoratge que ja existia**, no en una llista nova. Dos
+llocs on mirar el mateix acaben sempre igual: un dels dos menteix.
+
 ## Veda 79 — Ampliar el que es pot connectar obliga a revisar el que se suma
 
 `linkResource` només oferia **germans** —`children(node.parentId)`— i els fills
