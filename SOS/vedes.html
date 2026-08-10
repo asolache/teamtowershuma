@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Els vedes del SOS · les regles que aguanten el sistema</title>
+<meta name="description" content="73 vedes: les regles que el SOS s'ha imposat, amb el motiu escrit al costat. Cadascuna surt d'un error real i es pot enllaçar de forma permanent.">
+<meta property="og:title" content="Els vedes del SOS">
+<meta property="og:description" content="73 regles amb el motiu escrit al costat. Cap surt d'una bona intenció: totes surten d'un error concret.">
+<meta name="robots" content="index,follow">
+<!-- GENERAT per SOS/tools/build-vedes.js des de SOS/knowledge/codex.md.
+     No editis aquest fitxer: edita el codex i torna a generar-lo.
+     La guarda del CI comprova que els dos no divergeixin. -->
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#9a9aa6;--light:#c7c7d1;--border:#2a2a35;--indigo:#818cf8;--green:#00e676;--purple:#e040fb}
+*{box-sizing:border-box}
+/* Sense scroll suau a posta: la pàgina fa 73 vedes, i obrir /vedes#veda-83
+   volia dir més d'un segon d'animació travessant-les totes. Un enllaç permanent
+   ha d'arribar, no fer un viatge. */
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.65;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:1.02rem;-webkit-text-size-adjust:100%}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.2rem}
+a{color:var(--indigo)}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--green);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:1rem;top:1rem;position:fixed;z-index:9;background:var(--green);color:#08120c;padding:.6rem 1rem;border-radius:8px;font-weight:700}
+header.top{padding:3rem 0 1.6rem;border-bottom:1px solid var(--border)}
+.kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:'SF Mono',Monaco,monospace;margin:0}
+h1{font-size:clamp(1.8rem,5.5vw,2.6rem);line-height:1.15;margin:.6rem 0 .8rem}
+.lead{color:var(--light);margin:0 0 1rem;font-size:1.05rem}
+.meta{color:var(--muted);font-size:.85rem;margin:0}
+.tools{position:sticky;top:0;z-index:5;background:rgba(11,11,18,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);padding:.7rem 0;margin-bottom:1.4rem}
+.tools .wrap{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+#q{flex:1 1 14rem;min-width:0;background:var(--card);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;padding:.62rem .8rem;font-size:1rem;font-family:inherit}
+#q::placeholder{color:var(--muted)}
+#count{color:var(--muted);font-size:.85rem;font-family:'SF Mono',Monaco,monospace;white-space:nowrap}
+.pre{color:var(--light);margin:1.6rem 0 2rem;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.pre p{margin:.5rem 0}
+nav.idx{margin:0 0 2.2rem}
+nav.idx h2{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 .7rem;font-weight:600}
+nav.idx ol{list-style:none;padding:0;margin:0;columns:2;column-gap:1.6rem}
+nav.idx li{break-inside:avoid;margin:0 0 .18rem}
+nav.idx a{display:flex;gap:.5rem;align-items:baseline;text-decoration:none;color:var(--light);
+  font-size:.92rem;line-height:1.4;padding:.12rem .3rem;border-radius:6px}
+nav.idx a:hover{background:var(--card);color:#fff}
+nav.idx .n{font-family:'SF Mono',Monaco,monospace;font-size:.8rem;color:var(--green);flex:0 0 1.6rem;text-align:right}
+@media(max-width:640px){nav.idx ol{columns:1}}
+article.veda{border-top:1px solid var(--border);padding:2rem 0 .6rem;scroll-margin-top:5rem}
+article.veda:first-of-type{border-top:0}
+.vh{display:flex;gap:.7rem;align-items:baseline}
+.vn{font-family:'SF Mono',Monaco,monospace;font-size:.85rem;color:var(--green);
+  border:1px solid var(--border);border-radius:7px;padding:.1rem .45rem;flex:0 0 auto}
+article.veda h2{font-size:clamp(1.15rem,3.2vw,1.5rem);line-height:1.3;margin:0}
+.perma{text-decoration:none;color:var(--muted);font-size:.9rem;opacity:0;flex:0 0 auto}
+article.veda:hover .perma,.perma:focus{opacity:1}
+article.veda p{margin:.9rem 0}
+article.veda ul,article.veda ol{padding-left:1.3rem;margin:.9rem 0}
+article.veda li{margin:.45rem 0}
+article.veda h3,article.veda h4{font-size:1rem;margin:1.4rem 0 .3rem;color:var(--light)}
+blockquote{margin:1rem 0;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--purple);color:var(--light);font-style:italic}
+code{font-family:'SF Mono',Monaco,monospace;font-size:.88em;background:rgba(127,127,127,.16);padding:.1em .35em;border-radius:5px}
+strong{color:#fff}
+.ctx{border-top:1px solid var(--border);margin-top:3rem;padding-top:2rem}
+.ctx>h2{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 1rem;font-weight:600}
+details.ctx-i{border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;margin:.5rem 0;background:var(--card)}
+details.ctx-i summary{cursor:pointer;font-weight:600}
+.hidden{display:none}
+.empty{color:var(--muted);padding:2rem 0}
+footer{border-top:1px solid var(--border);margin-top:3rem;padding:1.6rem 0 3rem;color:var(--muted);font-size:.88rem}
+footer a{color:var(--light)}
+@media print{.tools,nav.idx,.skip{display:none}article.veda{page-break-inside:avoid}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<a class="skip" href="#vedes">Salta a les vedes</a>
+<header class="top"><div class="wrap">
+  <p class="kicker">SOS · Sistema Operatiu Social</p>
+  <h1>Els vedes</h1>
+  <p class="lead">Les regles que aquest sistema s'ha imposat, amb <strong>el motiu escrit al costat</strong>. Cap no surt d'una bona intenció: cadascuna surt d'un error concret que ja s'havia comès, i explica què es va trencar.</p>
+  <p class="meta">73 vedes · generades des del <a href="https://github.com/asolache/teamtowershuma/blob/main/SOS/knowledge/codex.md">codex</a>, que és l'original. Cada veda té enllaç permanent: <code>/vedes#veda-83</code>.</p>
+</div></header>
+
+<div class="tools"><div class="wrap">
+  <label class="skip" for="q">Filtra les vedes</label>
+  <input id="q" type="search" placeholder="Filtra per número, títol o contingut…" autocomplete="off">
+  <span id="count" aria-live="polite"></span>
+</div></div>
+
+<main class="wrap" id="vedes">
+  <div class="pre"><p>Els vedes originals del kernel Antigravity segueixen intactes (Zero Redundancy · Frontend-only · Context-First AI · Knowledge Loop · W3C · JSON-LD · Glass-Box · Immutable State · Zero localStorage · Local-First). Aquest fitxer els amplia amb els compromisos que hem afegit en aquesta línia de treball.</p></div>
+  <nav class="idx" aria-label="Índex de vedes"><h2>Totes les regles, en una llista</h2><ol><li><a href="#veda-11"><span class="n">11</span><span class="t">Excel·lència W3C</span></a></li><li><a href="#veda-12"><span class="n">12</span><span class="t">Molekulon transmedia</span></a></li><li><a href="#veda-13"><span class="n">13</span><span class="t">Gamificació d'espècie social</span></a></li><li><a href="#veda-14"><span class="n">14</span><span class="t">Fons local com a organisme d'inversió</span></a></li><li><a href="#veda-15"><span class="n">15</span><span class="t">Codex vedes com a font viva</span></a></li><li><a href="#veda-16"><span class="n">16</span><span class="t">Seny · Rauxa · Castells — el llenguatge local</span></a></li><li><a href="#veda-17"><span class="n">17</span><span class="t">Mitologia origen — Mazinguer, Horacio i el Gran Molekulon</span></a></li><li><a href="#veda-18"><span class="n">18</span><span class="t">Missió de SOS i lloc del Comando Molekulon</span></a></li><li><a href="#veda-19"><span class="n">19</span><span class="t">Panteó de 12 — reconeixement de competències</span></a></li><li><a href="#veda-20"><span class="n">20</span><span class="t">Veda del dossier personal</span></a></li><li><a href="#veda-21"><span class="n">21</span><span class="t">Veda dels mapes de valor i de la guia</span></a></li><li><a href="#veda-22"><span class="n">22</span><span class="t">Veda comptable</span></a></li><li><a href="#veda-23"><span class="n">23</span><span class="t">Veda del reconeixement</span></a></li><li><a href="#veda-24"><span class="n">24</span><span class="t">Veda de la consolidació</span></a></li><li><a href="#veda-25"><span class="n">25</span><span class="t">Veda de la identitat portable</span></a></li><li><a href="#veda-26"><span class="n">26</span><span class="t">Veda de l'ancoratge</span></a></li><li><a href="#veda-27"><span class="n">27</span><span class="t">Veda de la col·laboració</span></a></li><li><a href="#veda-28"><span class="n">28</span><span class="t">Veda de la federació temàtica</span></a></li><li><a href="#veda-29"><span class="n">29</span><span class="t">Veda de l'acompanyament</span></a></li><li><a href="#veda-30"><span class="n">30</span><span class="t">Veda de l'ancoratge que es recorda</span></a></li><li><a href="#veda-31"><span class="n">31</span><span class="t">Veda del perfil que s'edita</span></a></li><li><a href="#veda-32"><span class="n">32</span><span class="t">Veda de la proximitat honesta</span></a></li><li><a href="#veda-33"><span class="n">33</span><span class="t">Veda d'operar, no només mirar</span></a></li><li><a href="#veda-34"><span class="n">34</span><span class="t">Veda de les coordenades</span></a></li><li><a href="#veda-35"><span class="n">35</span><span class="t">Res no interromp el que estàs fent</span></a></li><li><a href="#veda-36"><span class="n">36</span><span class="t">El semàfor no és decoració</span></a></li><li><a href="#veda-37"><span class="n">37</span><span class="t">Comparar no pot ser una opinió</span></a></li><li><a href="#veda-38"><span class="n">38</span><span class="t">Una subvenció no és un model de negoci</span></a></li><li><a href="#veda-39"><span class="n">39</span><span class="t">Una persona és una, encara que estigui a cinc llocs</span></a></li><li><a href="#veda-40"><span class="n">40</span><span class="t">Una demanda no és una mena de cosa</span></a></li><li><a href="#veda-41"><span class="n">41</span><span class="t">Una càrrega parcial no és una càrrega correcta</span></a></li><li><a href="#veda-42"><span class="n">42</span><span class="t">Qui exporta ha de saber què s'emporta</span></a></li><li><a href="#veda-43"><span class="n">43</span><span class="t">Un apunt parla de dues persones; només una l'escrivia</span></a></li><li><a href="#veda-44"><span class="n">44</span><span class="t">Dues llistes raonables poden no parlar-se</span></a></li><li><a href="#veda-45"><span class="n">45</span><span class="t">Donar una cosa i deixar-la no és el mateix</span></a></li><li><a href="#veda-46"><span class="n">46</span><span class="t">Una persona no és un rol</span></a></li><li><a href="#veda-47"><span class="n">47</span><span class="t">Publicar no és publicar-ho tot</span></a></li><li><a href="#veda-48"><span class="n">48</span><span class="t">Una versió és un canvi, no una data</span></a></li><li><a href="#veda-49"><span class="n">49</span><span class="t">Una capacitat que no hi és s'ha de dir, no suplir a qualsevol preu</span></a></li><li><a href="#veda-50"><span class="n">50</span><span class="t">Mesurar abans de patir, i comprovar que la prova comprova</span></a></li><li><a href="#veda-51"><span class="n">51</span><span class="t">L'app de gestió ensenya estructura; la de la gent ensenya el següent pas</span></a></li><li><a href="#veda-52"><span class="n">52</span><span class="t">El mur no és la idea, és la data</span></a></li><li><a href="#veda-53"><span class="n">53</span><span class="t">Graduar no és el final del camí</span></a></li><li><a href="#veda-54"><span class="n">54</span><span class="t">Un cas particular al lloc d'una plantilla</span></a></li><li><a href="#veda-55"><span class="n">55</span><span class="t">El fons cooperatiu ha de tenir porta, i no pot mentir</span></a></li><li><a href="#veda-56"><span class="n">56</span><span class="t">Un rànquing en una eina de suport mutu es pot girar en contra</span></a></li><li><a href="#veda-57"><span class="n">57</span><span class="t">Un xat que no diu de què parla és un grup de WhatsApp més</span></a></li><li><a href="#veda-58"><span class="n">58</span><span class="t">Un relé que pot ser l'amo de la xarxa no és un relé</span></a></li><li><a href="#veda-59"><span class="n">59</span><span class="t">Unir persones pel nom corromp dades en silenci</span></a></li><li><a href="#veda-60"><span class="n">60</span><span class="t">Publicar sense descobriment no és publicar</span></a></li><li><a href="#veda-61"><span class="n">61</span><span class="t">No es diu «verificat» del que no s'ha verificat</span></a></li><li><a href="#veda-62"><span class="n">62</span><span class="t">Una eina que només creix acaba sent inservible</span></a></li><li><a href="#veda-63"><span class="n">63</span><span class="t">Una llista plana llarga és un calaix, i el que no és de ningú no es fa</span></a></li><li><a href="#veda-64"><span class="n">64</span><span class="t">Un ordre global vol dir un amo; la triple entrada no en necessita</span></a></li><li><a href="#veda-65"><span class="n">65</span><span class="t">Un canal que exigeix simultaneïtat és un canal que no s'usa</span></a></li><li><a href="#veda-66"><span class="n">66</span><span class="t">Simplificar és decidir per on comences, no esborrar el que hi ha</span></a></li><li><a href="#veda-67"><span class="n">67</span><span class="t">Una xifra inflada i incompleta és pitjor que cap xifra</span></a></li><li><a href="#veda-68"><span class="n">68</span><span class="t">Qui no es queixa, plega</span></a></li><li><a href="#veda-69"><span class="n">69</span><span class="t">Designar no és custodiar</span></a></li><li><a href="#veda-70"><span class="n">70</span><span class="t">El relé transporta, no escriu història</span></a></li><li><a href="#veda-71"><span class="n">71</span><span class="t">Tres còpies d'una regla són tres llocs on afluixar-la</span></a></li><li><a href="#veda-72"><span class="n">72</span><span class="t">La cadena original és la clau</span></a></li><li><a href="#veda-73"><span class="n">73</span><span class="t">Dos primaris són cap primari</span></a></li><li><a href="#veda-74"><span class="n">74</span><span class="t">El proper pas surt del que hi ha, no del que falta per estrenar</span></a></li><li><a href="#veda-75"><span class="n">75</span><span class="t">Un sostre no és una veritat: és una conversa ajornada</span></a></li><li><a href="#veda-76"><span class="n">76</span><span class="t">Un registre públic de coses privades es publica en hashes</span></a></li><li><a href="#veda-77"><span class="n">77</span><span class="t">El SOS no recluta: reconeix</span></a></li><li><a href="#veda-78"><span class="n">78</span><span class="t">Un enemic endèmic demana pràctica, no èpica</span></a></li><li><a href="#veda-79"><span class="n">79</span><span class="t">Ampliar el que es pot connectar obliga a revisar el que se suma</span></a></li><li><a href="#veda-80"><span class="n">80</span><span class="t">Val més dir «això no ho faig jo» que un botó que ho sembla</span></a></li><li><a href="#veda-81"><span class="n">81</span><span class="t">Un relat que no es pot apagar ha deixat de ser una capa</span></a></li><li><a href="#veda-82"><span class="n">82</span><span class="t">Un certificat que el dona algú val el que valgui aquell algú</span></a></li><li><a href="#veda-83"><span class="n">83</span><span class="t">Un cromo que es pot regalar deixa sense sentit el registre que el sosté</span></a></li></ol></nav>
+  <article class="veda" id="veda-11">
+<div class="vh"><span class="vn">11</span><h2>Excel·lència W3C</h2><a class="perma" href="#veda-11" aria-label="Enllaç permanent a la veda 11">#</a></div>
+<p>Tota funcionalitat nova prova d'anar per una API W3C nadiua abans d'inclore qualsevol dependència. <code>SubtleCrypto</code>, <code>WebRTC</code>, <code>WebSocket</code>, <code>BarcodeDetector</code>, <code>CompressionStream</code>, <code>SVG</code>, <code>IndexedDB</code>, <code>fetch</code>, <code>WebAuthn</code>. Si una capacitat no és W3C encara però hi ha una proposta W3C activa, s'implementa el patró compatible.</p>
+</article>
+<article class="veda" id="veda-12">
+<div class="vh"><span class="vn">12</span><h2>Molekulon transmedia</h2><a class="perma" href="#veda-12" aria-label="Enllaç permanent a la veda 12">#</a></div>
+<p>Molekulon és el projecte narratiu que dóna cara a SOS: pel·lícula, sèrie, còmic, videojoc, música, performativa. La lògica és <strong>&quot;elige tu propia aventura&quot;</strong> — cada superheroi que entra a un molekulon obre una branca de la història. Cada branca real (jugada per una persona real) es reflecteix al ledger del SOS: els fluxos ficcionals i els reals són el mateix substrat.</p>
+</article>
+<article class="veda" id="veda-13">
+<div class="vh"><span class="vn">13</span><h2>Gamificació d'espècie social</h2><a class="perma" href="#veda-13" aria-label="Enllaç permanent a la veda 13">#</a></div>
+<p>L'entrada al joc = <strong>una aportació al fons cooperatiu</strong>. Els espais de creació i ús (biblioteca, banc de temps, MATRIU) són nivells del joc; guanyar = crear valor comptable per a la comunitat. Els Jodes (col·lectius local d'una xarxa) creixen com espècies socials naturals — quantes més interaccions recíproques, més biomassa cooperativa.</p>
+</article>
+<article class="veda" id="veda-14">
+<div class="vh"><span class="vn">14</span><h2>Fons local com a organisme d'inversió</h2><a class="perma" href="#veda-14" aria-label="Enllaç permanent a la veda 14">#</a></div>
+<p>El fons cooperatiu local es dissenya per <strong>convertir-se en la infraestructura d'inversió més potent del territori</strong> — no com a fons capitalista sinó com a organisme cuidador que reinverteix en l'ecosistema humà i natural. Cura + rendiment son la mateixa cosa perquè el sistema paga en valor comptable + reputació + capacitat, no en dividends extractius.</p>
+</article>
+<article class="veda" id="veda-15">
+<div class="vh"><span class="vn">15</span><h2>Codex vedes com a font viva</h2><a class="perma" href="#veda-15" aria-label="Enllaç permanent a la veda 15">#</a></div>
+<p>El codex evoluciona amb l'ús. Cada nova comprensió que la comunitat aprova (via sabiduria signada) s'afegeix aquí. Sense burocràcia — és el resum del que hem après.</p>
+</article>
+<article class="veda" id="veda-16">
+<div class="vh"><span class="vn">16</span><h2>Seny · Rauxa · Castells — el llenguatge local</h2><a class="perma" href="#veda-16" aria-label="Enllaç permanent a la veda 16">#</a></div>
+<p>L'anclatge mitològic dual <strong>Shiva ↔ Shakti</strong> que ja tenim al codex es tradueix directament als dos motors cognitius i culturals de Catalunya: <strong>seny</strong> i <strong>rauxa</strong>. Els fem servir com a llenguatge de mercat i com a marc pedagògic. No són sinònims literals; són <strong>anàlegs funcionals</strong>:</p>
+<ul>
+<li><strong>Shiva ≈ Seny</strong> — estructura, marc, anàlisi, procés, contractes, cadena hash, <code>canWrite</code>, quòrum de sabiduria. És <em>el que sosté</em> quan els reptes es tornen intensos. És la <strong>pinya</strong> del castell: la base tècnica, milimètrica, sense la qual no hi ha altura possible.</li>
+<li><strong>Shakti ≈ Rauxa</strong> — energia creativa, moviment, atreviment, comunitat vibrant, molekulons, kit narratiu, esdeveniments performatius. És <em>el que encén</em> la comunitat quan la matriu de valor està activada. És <strong>la canalla</strong> que apuja el castell, l'alegria de la pinya feta acció.</li>
+</ul>
+<p><strong>Molekulon = la síntesi seny+rauxa en acció</strong>: cèl·lula descentralitzada de 5-12 superheroi que baixa al terreny — cada persona amb el seu rol clar (seny) i tota la colla amb energia i risc compartit (rauxa). És la nostra forma d'entendre la colaboració dinàmica del segle XXI.</p>
+<p>Aquest llenguatge dual (Shiva/Shakti · Seny/Rauxa · Pinya/Canalla) apareix a tot: al blog, a la landing, a la comunicació comercial, als noms de mòdul quan calgui. <strong>Coherència multi-cultural</strong>: qui prové de tradicions vèdiques hi troba Shiva/Shakti; qui prové de Catalunya hi troba seny/rauxa/castells; qui prové d'altres llocs hi troba llenguatge secular (estructura/energia/síntesi).</p>
+</article>
+<article class="veda" id="veda-17">
+<div class="vh"><span class="vn">17</span><h2>Mitologia origen — Mazinguer, Horacio i el Gran Molekulon</h2><a class="perma" href="#veda-17" aria-label="Enllaç permanent a la veda 17">#</a></div>
+<p>Enviats a la Terra pel <strong>Gran Molekulon</strong> (la molècula que governa les galàxies des de l'hiperespai), <strong>Mazinguer i Horacio</strong> tenen una missió aparentment impossible: reclutar un <strong>Comando de 150.000 superherois</strong> capaç de vèncer la <strong>Corporació Món Mort</strong> — l'entitat sistèmica que extreu valor sense retornar-lo, que trenca vincles i deixa les comunitats orfes.</p>
+<p>Sense talents propis aparents (potser el seu superpoder és haver perdut el seu ego), Mazinguer i Horacio adopten l'estratègia dels <strong>Blues Brothers</strong>: <strong>munten una banda de música</strong> que recorre totes les poblacions de Catalunya i del món per identificar, un a un, els 150.000 superherois amagats a plena vista.</p>
+<p><strong>Superherois canònics presentats als còmics 1 i 2</strong>:</p>
+<ul>
+<li><strong>Mazinguer</strong> — líder tècnic sense superpoder aparent</li>
+<li><strong>Horacio</strong> — narrador i estratega sense superpoder aparent</li>
+<li><strong>Guiriguai</strong> — llenguatges impossibles</li>
+<li><strong>Purpleman</strong> — persuasió i visualització</li>
+<li><strong>Afrodita</strong> — cures i xarxa afectiva</li>
+<li><strong>La Anguila</strong> — mobilitat i escapisme</li>
+<li><strong>Barbamuda</strong> — silenci útil i escolta profunda</li>
+<li><strong>Ectoplasman</strong> — presència distribuïda / P2P encarnat</li>
+<li><em>(altres — l'univers segueix expandint-se)</em></li>
+</ul>
+<p><strong>Rols simbòlics dins del sistema</strong>:</p>
+<ul>
+<li>La <strong>banda de música</strong> = onboarding + comunicació + performativa</li>
+<li>Els <strong>150.000</strong> = objectiu del Comando (visible al comptador de la vista Comando)</li>
+<li><strong>Corporació Món Mort</strong> = l'antimodel del SOS: extractiu, opac, centralitzat, no signat, sense circulació de valor</li>
+<li>El <strong>Gran Molekulon</strong> = la font. En el codex tècnic, la font és el codex mateix + la comunitat</li>
+</ul>
+</article>
+<article class="veda" id="veda-18">
+<div class="vh"><span class="vn">18</span><h2>Missió de SOS i lloc del Comando Molekulon</h2><a class="perma" href="#veda-18" aria-label="Enllaç permanent a la veda 18">#</a></div>
+<p><strong>SOS</strong> té una missió sola: <strong>connectar i empoderar comunitats locals</strong>. Cada eina — banc de temps, biblioteca de les coses, MATRIU, Guardians, Sabiduria, Slicing Pie — està al servei d'això.</p>
+<p>El <strong>Comando Molekulon</strong> és <strong>una tribu creativa oberta</strong> — un dels projectes mestres de la MATRIU, no la totalitat del SOS. Qui vulgui pot participar; qui no vulgui, també pot fer SOS sense entrar-hi. Cromo, cançó, còmic i pel·lícula són l'embolcall narratiu que fa desitjable la infraestructura tècnica.</p>
+<p><strong>Superheroi = superpoders + superarmes</strong>:</p>
+<ul>
+<li><strong>Superpoders</strong> = habilitats (skills) que aporta al banc de temps</li>
+<li><strong>Superarmes</strong> = objectes que posa en comú a la biblioteca</li>
+</ul>
+<p>Ambdós apareixen al cromo. Cada cromo té un <strong>nivell</strong> (Aprenent → Bronze → Plata → Or → Llegenda) amb reptes concrets per desbloquejar el següent.</p>
+<p><strong>Transmedia del Comando</strong> (canals):</p>
+<ul>
+<li>Música al <strong>SoundCloud</strong> (<code>/comando-molekulon</code>)</li>
+<li>Vídeos al <strong>YouTube</strong> (<code>@comando-molekulon</code>) — capítols per personatge</li>
+<li>Còmics comprables a <strong>Amazon</strong></li>
+<li><strong>Instagram</strong> (<code>@comando_molekulon</code>)</li>
+</ul>
+<p><strong>Nivell territorial</strong>: quan l'usuari està a país/província/comarca, l'app mostra un panell d'incentiu que empeny cap avall (municipi/barri) — el valor real es crea a peu de carrer.</p>
+</article>
+<article class="veda" id="veda-19">
+<div class="vh"><span class="vn">19</span><h2>Panteó de 12 — reconeixement de competències</h2><a class="perma" href="#veda-19" aria-label="Enllaç permanent a la veda 19">#</a></div>
+<p>Adoptem el model de dotze arquetips de <strong>Pantheon.work</strong> (CC BY, «Exercici individual de reconeixement de competències i habilitats» v1.0) com a graella de competències del SOS i del Comando. Detall a <code>knowledge/references/pantheon-12.md</code>.</p>
+<p>Tres principis que passen a ser veda:</p>
+<ol>
+<li><strong>Les paraules clau són un pack, no una etiqueta.</strong> Ningú «és» informàtic: algú és més o menys referent d'un pack segons quantes de les seves paraules se li poden associar. La reputació al SOS es calcula així i no d'una altra manera.</li>
+<li><strong>Els talents són lliures d'escala.</strong> El mateix talent val per propiciar una conversa entre dues persones i per organitzar un congrés de 3.000. Per això el mateix arquetip serveix a un barri i a una comarca, i <strong>no es fan models diferents per escala</strong>.</li>
+<li><strong>És un inventari col·lectiu i viu, no una avaluació individual.</strong> Cap vista del SOS pot convertir això en una etiqueta fixa a la fitxa d'una persona. És una fotografia que ha d'evolucionar amb l'activitat registrada.</li>
+</ol>
+<p>Regla d'implementació: <strong>l'evidència mana sobre el símbol.</strong> <code>archetypeAffinity</code> pondera primer el que s'ha fet (ledger, ofertes, rols), després el que es declara i, només en últim lloc i com a desempat suau, els signes o qualsevol altre senyal simbòlic. Un sistema que digui a algú qui és a partir de la seva data de naixement per sobre del que ha fet, trairia tot el model.</p>
+<p>Els dotze fundadors del Comando encarnen un arquetip cadascun; els tres supervilans (Max Miedox, Mala Yerbax, Mc Greggor) són <strong>els tres modes de fallida</strong> d'una comunitat: la por que paralitza, el rumor que corroeix i l'extracció que buida. Serveixen alhora de narrativa i de diagnòstic.</p>
+<p>Escala de reputació del Comando: <strong>Aprenent → Superheroi/na → Guardià/ana</strong>, i es puja amb evidència, mai amb antiguitat.</p>
+</article>
+<article class="veda" id="veda-20">
+<div class="vh"><span class="vn">20</span><h2>Veda del dossier personal</h2><a class="perma" href="#veda-20" aria-label="Enllaç permanent a la veda 20">#</a></div>
+<p>El <strong>dossier</strong> (CV, recursos, arquetips declarats, personatge) és <strong>material que la persona aporta sobre ella mateixa</strong>, i mai es barreja amb l'evidència.</p>
+<p>Tres regles fixes:</p>
+<ol>
+<li><strong>Privadesa estructural, no promesa.</strong> Es desa amb <code>type:'dossier'</code>, dins de <code>PRIVATE_DB_TYPES</code>, i queda fora de <code>state.nodes</code>. Com que tot el que surt del navegador surt de <code>state.nodes</code>/<code>state.entities</code>, el CV no pot filtrar-se ni per error. El mateix val per a les narratives.</li>
+<li><strong>La IA proposa, la persona accepta.</strong> Res del que detecti un lector (local o IA) s'afegeix sol al perfil: apareix com a etiqueta acceptable.</li>
+<li><strong>L'ordre de prioritat no es toca.</strong> Evidència &gt; declaració &gt; símbol. <code>evidenceBased</code> només és cert si el guanyador té evidència real, no declaracions.</li>
+</ol>
+<p>Detall a <code>knowledge/vision/dossier-personal.md</code>.</p>
+</article>
+<article class="veda" id="veda-21">
+<div class="vh"><span class="vn">21</span><h2>Veda dels mapes de valor i de la guia</h2><a class="perma" href="#veda-21" aria-label="Enllaç permanent a la veda 21">#</a></div>
+<p><strong>Els mapes neixen sans o no neixen.</strong> La forma canònica d'un preset a <code>DYNAMICS</code> és <code>pairs</code>: cada fila és un vincle amb les <strong>dues direccions</strong> <code>[A, B, tipus A→B, etiqueta A→B, tipus B→A, etiqueta B→A]</code>. Escriure el retorn obliga a pensar-lo. <code>flows</code> queda per a l'excepció unidireccional legítima.</p>
+<p>Llindars que cap preset pot baixar: <strong>reciprocitat 100%</strong>, densitat ≥45%, cap rol aïllat, barreja de tangible i intangible, concentració al rol més connectat ≤40%. Un mapa que neix ambre ensenya a la comunitat que ambre és normal.</p>
+<p><code>vnaAudit(node)</code> és l'únic lloc on es calculen aquests indicadors: la barra de salut, el reforçador i els tests miren exactament el mateix. Diagnosticar sense donar la següent passa és deixar la feina a mitges: per això la salut sempre ofereix <code>openReciprocityFixer</code>.</p>
+<p><strong>Cada context s'explica sol.</strong> Tota pestanya o vista nova ha de portar entrada a <code>CONTEXT_GUIDES</code> amb <code>flow</code> (3 frases del valor que hi circula), <code>steps</code> (comprovats contra el node real, no un temari) i <code>lens</code> (una frase per als 5 rols). Detall a <code>knowledge/vision/guia-i-flux-de-valor.md</code>.</p>
+</article>
+<article class="veda" id="veda-22">
+<div class="vh"><span class="vn">22</span><h2>Veda comptable</h2><a class="perma" href="#veda-22" aria-label="Enllaç permanent a la veda 22">#</a></div>
+<p><strong>Es comptabilitza tot el valor aportat, i el valor és el que defineix el mapa de valor.</strong></p>
+<p>D'aquí en surten quatre regles que no es negocien:</p>
+<ol>
+<li><strong>El mapa de valor és l'esquema comptable</strong>, no un diagrama il·lustratiu. El que compta com a valor en un node és exactament el que els seus fluxos declaren. Canviar el mapa és canviar què es compta.</li>
+<li><strong>Un intangible declarat al mapa és comptabilitzable.</strong> Aquesta és la diferència entre reconèixer el treball invisible i limitar-se a anomenar-lo.</li>
+<li><strong>Cap agrupació sense mapa.</strong> Territorial o temàtica, si una agrupació no té mapa de valor no té comptes, i sense comptes és un filtre de cerca, no una comunitat. Una federació temàtica no necessita cap primitiva nova: és un node amb metaskill, mapa, ledger i governança, lligat per un tema en comptes d'un límit administratiu.</li>
+<li><strong>Els mateixos indicadors a qualsevol escala.</strong> <code>vnaAudit</code> val per a un banc de temps de barri i per a una federació de federacions, perquè la unitat d'anàlisi sempre és el mapa.</li>
+</ol>
+<p>Corol·lari operatiu: qualsevol funcionalitat que reculli aportacions ha de dir <strong>a quin flux del mapa corresponen</strong>. Si no es pot dir, o el mapa està incomplet o la funcionalitat no aporta valor comptable.</p>
+</article>
+<article class="veda" id="veda-23">
+<div class="vh"><span class="vn">23</span><h2>Veda del reconeixement</h2><a class="perma" href="#veda-23" aria-label="Enllaç permanent a la veda 23">#</a></div>
+<p>La veda V22 diu que <strong>es comptabilitza tot el valor aportat</strong>. Durant temps això va ser cert al ledger i fals al reconeixement: <code>reputationOf</code> només mirava les aportacions de la <strong>MATRIU</strong>, així que qui feia 40 h a un banc de temps tenia exactament la mateixa reputació que qui no havia fet res.</p>
+<p>Tres regles:</p>
+<ol>
+<li><strong>Una hora val una hora, vingui d'on vingui.</strong> Les aportacions es compten a tots els nodes i ventures on la persona és membre. Cap dinàmica és de segona.</li>
+<li><strong>El diner també és valor</strong>, però no es barreja d'amagat: es converteix a <strong>hores equivalents</strong> amb la tarifa per defecte de l'oracle (20 €/h) i es veu com a tal al camp <code>effort</code>.</li>
+<li><strong>Canviar què es compta obliga a recalibrar l'escala.</strong> Si no, tothom salta de graó sense haver fet res nou i el reconeixement perd sentit. Els llindars de <code>CROMO_TIERS</code> i el repte de Llegenda es mouen junts, sempre.</li>
+</ol>
+<p>Referència de cada esglaó: Bronze ≈ mitja dotzena d'aportacions reals · Plata ≈ una vintena en més d'una comunitat · Or ≈ una seixantena, referent del territori · Llegenda ≈ centenars, infraestructura humana.</p>
+</article>
+<article class="veda" id="veda-24">
+<div class="vh"><span class="vn">24</span><h2>Veda de la consolidació</h2><a class="perma" href="#veda-24" aria-label="Enllaç permanent a la veda 24">#</a></div>
+<p>Una xarxa que suma xifres ja calculades menteix. Si el Bages diu «49 h» i Manresa, que hi és a dins, diu «37 h», sumar-les dóna 86 h que no ha fet ningú: les 37 ja hi eren.</p>
+<p>Tres regles:</p>
+<ol>
+<li><strong>Cap consolidació es fa sumant consolidacions.</strong> Tota xifra es calcula un sol cop sobre el conjunt d'apunts, deduplicats per identitat (node · venture · apunt). <code>measure(nodeIds)</code> és l'únic lloc del sistema on es compta valor territorial; <code>consolidate</code> i <code>consolidateSet</code> només li donen conjunts.</li>
+<li><strong>Dues columnes que no es toquen: <code>propi</code> i <code>agregat</code>.</strong> El que ha passat en aquest node i el que ha passat a sota mai es barregen en una sola xifra ambigua. El <code>total</code> tampoc és propi+agregat calculat a mà: es torna a mesurar sobre la unió. Coincideixen a l'arbre, però la coincidència és el resultat, no el mètode.</li>
+<li><strong>Les persones no se sumen mai — s'uneixen.</strong> La mateixa persona aporta a diversos nodes; sumar comptadors la clonaria. Sempre <code>Set</code> de <code>personKey</code>.</li>
+</ol>
+<p><strong>Per què és prerequisit de les federacions temàtiques.</strong> Una federació no és una branca de l'arbre: és un conjunt de nodes lligats per un tema, i pot contenir alhora una comarca i un municipi de dins. <code>consolidateSet</code> ho resol declarant el node interior <strong>redundant</strong> (el seu valor ja entra per l'avantpassat) i mesurant una sola vegada sobre l'abast real. Sense això, cada federació que es creï inflaria les xifres de Catalunya.</p>
+</article>
+<article class="veda" id="veda-25">
+<div class="vh"><span class="vn">25</span><h2>Veda de la identitat portable</h2><a class="perma" href="#veda-25" aria-label="Enllaç permanent a la veda 25">#</a></div>
+<p>«La clau privada mai surt del navegador» sonava a virtut i era mitja veritat. També volia dir dues coses que ningú havia dit en veu alta:</p>
+<ul>
+<li>Esborrar les dades del navegador <strong>destruïa</strong> el <code>did:sos</code> per sempre.</li>
+<li>El mateix humà amb dos aparells eren <strong>dues persones diferents</strong> al registre, amb dues reputacions i dues meitats de la seva pròpia història.</li>
+</ul>
+<p>Tres regles:</p>
+<ol>
+<li><strong>La sobirania no és no poder emportar-te la teva clau; és que ningú més pugui.</strong> La còpia és <strong>xifrada amb contrasenya</strong> (PBKDF2 210k · AES-GCM), la custodies tu, i cap servei hi toca. Al fitxer no hi ha res en clar.</li>
+<li><strong>Substituir una identitat és irreversible i es demana explícitament.</strong> <code>importIdentity</code> es nega si el dispositiu ja en té una de pròpia mentre no li passis <code>overwrite</code>.</li>
+<li><strong>Un passkey no és una còpia de seguretat.</strong> És una segona via d'accés. Qui confongui les dues coses perdrà la identitat el dia que perdi l'aparell.</li>
+</ol>
+</article>
+<article class="veda" id="veda-26">
+<div class="vh"><span class="vn">26</span><h2>Veda de l'ancoratge</h2><a class="perma" href="#veda-26" aria-label="Enllaç permanent a la veda 26">#</a></div>
+<p>Ancorar un node no prova el registre. El registre públic travessa <strong>tots</strong> els nodes i totes les ventures; una empremta d'un sol node no diu res de la resta, i el botó «Ancora» del registre obria justament això — i des del tauler, sense node actiu, no obria res.</p>
+<p><code>buildRegisterPack</code> fa una arrel sobre <strong>totes</strong> les accions ordenades, amb una fulla per apunt. Canviar un sol valor mou l'arrel i el CID, i el pack publicat deixa de quadrar. Es verifica <strong>a la mateixa pantalla</strong> on es genera: un ancoratge que digui «signat» sense comprovar-ho no val res (veda V22 aplicada a la permaweb).</p>
+</article>
+<article class="veda" id="veda-27">
+<div class="vh"><span class="vn">27</span><h2>Veda de la col·laboració</h2><a class="perma" href="#veda-27" aria-label="Enllaç permanent a la veda 27">#</a></div>
+<p>Una eina que sincronitza però no diu <strong>amb qui</strong> no és col·laborativa: és una transferència a cegues. I una que exigeix copiar i enganxar un codi de dos quilobytes cada vegada no la farà servir ningú dues vegades.</p>
+<p>Tres regles:</p>
+<ol>
+<li><strong>Compartir no és copiar.</strong> L'aparellament viatja com a <strong>enllaç</strong> (<code>#/sync/&lt;codi&gt;</code>), que s'envia pel canal que sigui i s'obre d'un clic. El codi cru i el QR segueixen sent-hi per quan no hi ha canal.</li>
+<li><strong>Sempre saps amb qui parles.</strong> Cada costat es presenta amb el seu <code>did:sos</code> i el nom amb què treballa, abans que res es fusioni. Obrir el teu SOS sencer a un codi anònim és el que fèiem fins ara i no s'ha de tornar a fer.</li>
+<li><strong>La segona vegada no comença de zero.</strong> Es recorda l'últim company i quan va ser, de manera que tornar a aparellar és reconèixer algú, no saltar a les fosques.</li>
+</ol>
+</article>
+<article class="veda" id="veda-28">
+<div class="vh"><span class="vn">28</span><h2>Veda de la federació temàtica</h2><a class="perma" href="#veda-28" aria-label="Enllaç permanent a la veda 28">#</a></div>
+<p>Una federació <strong>no és una branca de l'arbre territorial</strong>: es forma quan et vincules a un <strong>tema</strong>. El model és <code>del.icio.us</code> — etiquetes una cosa i descobreixes qui més ha etiquetat el mateix. Aquí, en comptes de pàgines, són nodes: bancs de temps, biblioteques, cooperatives, MATRIUs.</p>
+<p>Tres regles:</p>
+<ol>
+<li><strong>El tema és la porta, no el permís.</strong> Etiquetar un node amb un tema ja et posa dins la federació; no hi ha alta, ni aprovació, ni cap llista de socis que mantenir. Sortir-ne és treure l'etiqueta.</li>
+<li><strong>Etiquetar només val la pena si et retorna algú.</strong> Per això la pantalla de temes ensenya, al mateix moment, <strong>qui més treballa els teus temes</strong>. Una etiqueta que no connecta amb ningú és metadada morta.</li>
+<li><strong>Una federació pot contenir una comarca i un municipi de dins.</strong> La veda V24 ho resol: <code>consolidateSet</code> marca el node interior com a <strong>redundant</strong> i el compta una sola vegada. Sense allò, cada tema nou inflava Catalunya — per això la consolidació era el prerequisit i no una millora a part.</li>
+</ol>
+<p>Els temes viuen al node (<code>node.themes</code>), així que <strong>viatgen amb la sincronització</strong> com qualsevol altra dada: no calen ni servidor ni registre central de federacions.</p>
+</article>
+<article class="veda" id="veda-29">
+<div class="vh"><span class="vn">29</span><h2>Veda de l'acompanyament</h2><a class="perma" href="#veda-29" aria-label="Enllaç permanent a la veda 29">#</a></div>
+<p>Una incubadora sense mentoria és un repositori d'estructures. El SOS sabia quines ventures existien i quant valor movien, però no deixava <strong>cap rastre de la feina que les sosté</strong>: qui acompanya qui, què es va acordar, i què passa quan un projecte deixa de moure's.</p>
+<p>Tres regles:</p>
+<ol>
+<li><strong>Acompanyar no és «ajudar en general».</strong> Cada mentor porta el seu <strong>àmbit</strong> (jurídic, econòmic, tècnic, relacional, comunitari). Sense àmbit no se sap què s'està cobrint ni què falta.</li>
+<li><strong>El temps d'acompanyament és valor aportat.</strong> Cada sessió registrada entra al ledger de la venture, <strong>signada i encadenada</strong>, i genera slices com qualsevol altra aportació. Si no fos així, l'acompanyament seria l'única feina de la MATRIU que no comptaria — i és justament la principal (veda V22). Una sessió sense hores segueix sent acta, però no inventa cap apunt.</li>
+<li><strong>El silenci és un símptoma, i s'ha de veure.</strong> Una venture que fa setmanes que no es mou surt marcada a la Cartera i al tauler. Un projecte que mor no avisa; per això ha d'avisar l'eina. Les graduades no s'empaiten: ja no s'acompanyen.</li>
+</ol>
+</article>
+<article class="veda" id="veda-30">
+<div class="vh"><span class="vn">30</span><h2>Veda de l'ancoratge que es recorda</h2><a class="perma" href="#veda-30" aria-label="Enllaç permanent a la veda 30">#</a></div>
+<p>Ancorar era un carreró: generaves el paquet, el descarregaves, el pujaves a Arweave… i el SOS se n'oblidava. Al cap d'un mes no podies dir ni què havies ancorat ni si el registre d'avui encara quadrava amb allò.</p>
+<p><strong>Un ancoratge que no es pot tornar a comprovar no demostra res.</strong> La gràcia de segellar és poder-hi tornar. Tres regles:</p>
+<ol>
+<li><strong>Descarregar un paquet és ancorar-lo</strong>, i queda a l'historial amb la seva arrel, les seves fulles i qui el va signar.</li>
+<li><strong>On s'ha publicat també és dada.</strong> Hi ha un lloc per apuntar la transacció d'Arweave, el CID d'IPFS o l'event de Nostr — perquè si no, l'evidència viu només al cap de qui la va pujar.</li>
+<li><strong>La comprovació es fa contra el registre d'avui</strong>, fulla per fulla: quantes accions segellades hi són encara, quantes han canviat, quantes n'hi ha de noves. I <code>verifyPack</code> accepta qualsevol dels tres paquets sense que qui el rep hagi de saber quin és.</li>
+</ol>
+</article>
+<article class="veda" id="veda-31">
+<div class="vh"><span class="vn">31</span><h2>Veda del perfil que s'edita</h2><a class="perma" href="#veda-31" aria-label="Enllaç permanent a la veda 31">#</a></div>
+<p>Tornar a prémer «Crea el meu perfil» obria un formulari en blanc i, en desar, <strong>tornava a publicar</strong> les mateixes habilitats i els mateixos objectes: dues ofertes de «Cuinar en grup» de la mateixa persona, dos trepants iguals. El que semblava una molèstia d'interfície era una font de dades brutes que embrutava el catàleg de tothom.</p>
+<p>Tres regles:</p>
+<ol>
+<li><strong>Cap formulari d'alta s'obre en blanc si la cosa ja existeix.</strong> Si hi ha perfil, s'obre amb tot omplert i marcat, i el botó diu «Desa els canvis». Els botons de tot el sistema (roadmap, llançador, paleta) diuen «Edita» quan toca dir «Edita».</li>
+<li><strong>Desar reconcilia, no afegeix.</strong> S'afegeix el que és nou, es retira el que s'ha desmarcat i es deixa igual la resta — a <strong>tots</strong> els nodes on la persona és membre, no només a la població actual.</li>
+<li><strong>Reconciliar no pot trencar el que un altre depèn.</strong> Un objecte prestat no es retira mai: esborrar-lo deixaria un préstec orfe. Tampoc es toca res que la persona hagi escrit a mà fora de les llistes.</li>
+</ol>
+</article>
+<article class="veda" id="veda-32">
+<div class="vh"><span class="vn">32</span><h2>Veda de la proximitat honesta</h2><a class="perma" href="#veda-32" aria-label="Enllaç permanent a la veda 32">#</a></div>
+<p>Perquè dos bancs de temps veïns puguin operar junts cal respondre «qui té això, i a quina distància». El catàleg estava tancat dins de cada node.</p>
+<p><strong>No s'inventen quilòmetres.</strong> Posar coordenades a 217 municipis de memòria seria fabricar dades i presentar-les com a exactes. El que sí que és cert és l'arbre territorial: mateixa població &lt; mateixa comarca &lt; mateixa província &lt; a Catalunya. Això ordena bé i no menteix mai, i és el que es mostra: «a la teva comarca», no «a 23 km».</p>
+<p>Si un node porta coordenades reals (<code>lat</code>/<code>lon</code>), llavors sí que es calculen quilòmetres de debò i afinen l'ordre dins del mateix nivell — i un projecte hereta les del seu municipi. Honest per defecte, precís quan hi ha amb què.</p>
+<p><code>supplyIndex</code> i <code>searchSupply</code> són el catàleg únic de tot el SOS: habilitats, objectes i demandes de qualsevol node, ordenats de més a prop a més lluny. És això el que fa que un SOS pugui operar amb un altre sense fusionar-se ni demanar permís a ningú.</p>
+</article>
+<article class="veda" id="veda-33">
+<div class="vh"><span class="vn">33</span><h2>Veda d'operar, no només mirar</h2><a class="perma" href="#veda-33" aria-label="Enllaç permanent a la veda 33">#</a></div>
+<p>Trobar una cosa no serveix de res si després has de navegar fins al node i buscar-la una altra vegada. Un catàleg que només <em>mostra</em> fa que dos bancs de temps veïns es mirin; un que deixa <strong>tancar l'intercanvi</strong> fa que operin.</p>
+<p>Tres regles:</p>
+<ol>
+<li><strong>Cada resultat porta la seva acció</strong>, i és la que li toca: una habilitat es demana en hores, una demanda s'ofereix a cobrir, un objecte lliure es demana en préstec, i un de prestat et posa a la llista d'espera. No un botó genèric.</li>
+<li><strong>Buscar allà és voler-hi participar.</strong> Si operes amb un node del qual no ets soci, l'alta es fa sola. Demanar permís per donar d'alta algú que ja està actuant és burocràcia inventada.</li>
+<li><strong>Operar mai treu res a ningú.</strong> Posar-se a la cua no aixeca el préstec de qui el té, i repetir-ho no et duplica a la llista.</li>
+</ol>
+</article>
+<article class="veda" id="veda-34">
+<div class="vh"><span class="vn">34</span><h2>Veda de les coordenades</h2><a class="perma" href="#veda-34" aria-label="Enllaç permanent a la veda 34">#</a></div>
+<p>Les coordenades reals <strong>no me les invento</strong>: hi ha tres vies i cap és aquesta.</p>
+<ol>
+<li><strong>L'aparell</strong> — l'API de geolocalització diu on ets i ho desa a la teva població. És la més exacta i no depèn de ningú.</li>
+<li><strong>Un fitxer obert</strong> — CSV o JSON <code>municipi,lat,lon</code> de l'ICGC, l'Idescat o OpenStreetMap. S'assigna als nodes que coincideixin de nom; <strong>no en crea cap de nou</strong> i diu quins no ha trobat.</li>
+<li><strong>A mà</strong>, node a node.</li>
+</ol>
+<p>I mentre no n'hi ha, l'eina <strong>ho diu</strong>: l'ordre és per proximitat territorial i no es mostra cap quilòmetre. Es rebutja el que no és coordenada — capçaleres, text, i qualsevol punt fora del planeta.</p>
+</article>
+<article class="veda" id="veda-35">
+<div class="vh"><span class="vn">35</span><h2>Res no interromp el que estàs fent</h2><a class="perma" href="#veda-35" aria-label="Enllaç permanent a la veda 35">#</a></div>
+<p><code>modal()</code> buida <code>#modalRoot</code> sencer. Vol dir que <strong>qualsevol</strong> pantalla que s'obri per iniciativa de l'app destrueix la que tenies oberta, i amb ella tot el que hi havies escrit. El tour d'acollida arribava amb retard i feia exactament això: si mentrestant havies obert el registre d'hores i n'havies omplert la meitat, es perdia.</p>
+<p>La norma: <strong>cap pantalla automàtica s'obre a sobre d'una d'oberta</strong>. Espera i torna-ho a provar; si al cap d'una estona segueixes ocupat, renuncia. Val més un tour que no surt que un formulari perdut.</p>
+</article>
+<article class="veda" id="veda-36">
+<div class="vh"><span class="vn">36</span><h2>El semàfor no és decoració</h2><a class="perma" href="#veda-36" aria-label="Enllaç permanent a la veda 36">#</a></div>
+<p>Cada iniciativa té un color, i el color surt de fets, no d'opinions:</p>
+<ul>
+<li><strong>Vermell</strong> — un risc de probabilitat i impacte alts <strong>sense pla de mitigació</strong>, o un bloqueig que fa 14 dies o més que dura, o silenci greu.</li>
+<li><strong>Ambre</strong> — qualsevol bloqueig obert, silenci d'avís, o qualsevol risc apuntat.</li>
+<li><strong>Verd</strong> — res de tot això. Una graduada sempre és verda: ja no la vigilem.</li>
+</ul>
+<p>Un risc <strong>amb</strong> pla baixa a ambre. Aquesta és la diferència que compta: apuntar un risc no és gestionar-lo, escriure què faràs sí. Un bloqueig demana <strong>qui el desbloqueja</strong> — sense nom no és un bloqueig, és una queixa.</p>
+<p>La cartera de la MATRIU mostra el semàfor <strong>pitjor primer</strong>, i el tauler d'atenció puja els bloquejos encallats per damunt de tota la resta.</p>
+</article>
+<article class="veda" id="veda-37">
+<div class="vh"><span class="vn">37</span><h2>Comparar no pot ser una opinió</h2><a class="perma" href="#veda-37" aria-label="Enllaç permanent a la veda 37">#</a></div>
+<p>Qui coordina una MATRIU no pot obrir dotze pantalles per saber com va la promoció. La vista de cohort posa <strong>una fila per iniciativa amb les mateixes columnes</strong>: etapa, semàfor, preparació, backlog, hores, equity concentrada, salut del mapa, dies sense moure's, mentores i incidències.</p>
+<p>Dues condicions, o la taula menteix:</p>
+<ol>
+<li><strong>Cap xifra és nova.</strong> Tot surt del mateix estat que ja es podia llegir venture a venture. El semàfor de la taula i el de la cartera són el mateix càlcul; si un dia divergissin, la taula seria una segona veritat.</li>
+<li><strong>La salut del mapa és un sol número comparable.</strong> Reciprocitat (45), densitat (25), barreja tangible/intangible (15), cap rol aïllat (10) i que no tot passi pel nucli (5). Un mapa amb menys de dos rols o sense fluxos puntua zero i <strong>ho diu</strong>: «Mapa incomplet», no un 0% que sembli un suspens.</li>
+</ol>
+<p>L'<strong>embut</strong> diu si la MATRIU incuba o acumula: quantes a cada estadi i quin percentatge n'ha sortit. Vint idees i cap graduada no és una cartera, és un calaix.</p>
+<p>I surt en <strong>CSV</strong>, perquè les memòries i les justificacions de subvenció es fan en full de càlcul, no mirant una pantalla.</p>
+</article>
+<article class="veda" id="veda-38">
+<div class="vh"><span class="vn">38</span><h2>Una subvenció no és un model de negoci</h2><a class="perma" href="#veda-38" aria-label="Enllaç permanent a la veda 38">#</a></div>
+<p><code>fundValue</code> diu què s'ha mobilitzat, no si allò se sosté. Graduar una cooperativa que no sap si cobreix costos és enviar-la a tancar en sis mesos amb la gent que hi ha posat la vida a dins.</p>
+<p>Tres decisions perquè el número no menteixi:</p>
+<ol>
+<li><strong>Els ajuts no compten al llindar.</strong> Un ajut que tapa el forat fa que un model insostenible sembli sostenible fins al dia que s'acaba la convocatòria. El llindar es calcula <strong>només amb ingressos propis</strong>; els ajuts surten a part, com el coixí que són. Un projecte que quadra només amb ells és <code>dependent</code>, i se li diu quantes unitats li falten per deixar de ser-ho.</li>
+<li><strong>Hi ha models que cap volum no salva.</strong> Si cada unitat es ven per sota del seu cost variable, vendre'n més accelera la caiguda. Això no és «falta poc»: és <code>impossible</code>, i es diu amb aquesta paraula.</li>
+<li><strong>Sense volum no hi ha diagnòstic.</strong> Dir «cada unitat perd 0 €» quan no hi ha cap unitat és una frase buida que sona a anàlisi. Es diu <code>incomplet</code> i què falta.</li>
+</ol>
+<p>El llindar és <code>costos fixos ÷ marge per unitat</code>. Separar fix de variable no és burocràcia: sense aquesta divisió no hi ha llindar.</p>
+<p>A la <strong>porta de graduació</strong>, els tipus amb ànim de lucre han de tenir el llindar calculat i assolible. A un projecte comunitari no se li demana — però se li mostra igualment, que saber-ho evita ensurts.</p>
+<p>El <strong>runway del fons</strong> és el capital dividit pel que es crema cada mes entre les iniciatives vives. Una graduada ja no crema el fons de ningú. I les que no tenen números es compten a part: el que no es compta no es crema menys.</p>
+</article>
+<article class="veda" id="veda-39">
+<div class="vh"><span class="vn">39</span><h2>Una persona és una, encara que estigui a cinc llocs</h2><a class="perma" href="#veda-39" aria-label="Enllaç permanent a la veda 39">#</a></div>
+<p><code>newMember</code> encunyava un <code>uid()</code> nou cada vegada. La mateixa persona donada d'alta a la MATRIU, al banc de temps i a la biblioteca eren <strong>tres registres sense cap relació</strong>, units només perquè s'escriuen igual. Canvia-li el nom en un lloc i es partia en dues. Les seves hores, la seva equity i la seva reputació anaven partides amb ella.</p>
+<p>Tres capes, de menys a més compromís:</p>
+<ol>
+<li><strong>Triar d'entre qui ja hi és.</strong> <code>knownPersons()</code> és un índex <strong>derivat, mai desat</strong> de tota la gent que el SOS coneix. L'alta té dues portes i la primera és «Ja el coneixem». Triar-hi enllaça en comptes de duplicar.</li>
+<li><strong><code>did</code> a la fitxa.</strong> Qui vol <strong>reclama</strong> la seva fitxa signant <code>{nodeId, memberId, did}</code>. A partir d'aquí el que uneix els registres és la clau, no el nom. Una fitxa reclamada per un altre no es pot prendre: només qui la té la pot deixar anar. La comprovació que ho aguanta tot és <code>signer.did === member.did</code>. Sense ella, qualsevol podria signar una reclamació posant-hi el <code>did</code> d'un altre — i la signatura seria <strong>vàlida</strong>, perquè l'ha feta de debò. Que la signatura sigui vàlida no vol dir que digui la veritat sobre qui és.</li>
+<li><strong>Fusió de duplicats.</strong> I aquí la regla que governa la resta:</li>
+</ol>
+<blockquote><p><strong>La fusió no reescriu mai història signada.</strong></p></blockquote>
+<p>Els apunts del ledger conserven el seu <code>memberId</code> original i es llegeixen per una <strong>taula d'àlies</strong> (<code>node.memberAliases</code>). Reescriure'ls trencaria la seva signatura i la cadena de hash, i la fusió deixaria de ser auditable. El que sí que es repunta és l'<strong>estat mutable</strong> —ofertes, objectes, mentors, leads, reserves—, que no porta la signatura de ningú.</p>
+<p>La línia és aquesta: <strong>el que està signat es resol; el que no, es mou.</strong></p>
+<p>Equity, saldos, reputació i perfil resolen per àlies, així que fusionar reuneix les hores en comptes de perdre-les. La fitxa absorbida queda com a làpida amb <code>mergedInto</code>: no s'esborra res.</p>
+<p>I dos <code>did</code> diferents sota el mateix nom <strong>no es fusionen</strong>: són dues persones que es diuen igual, es marca com a conflicte i es diu.</p>
+</article>
+<article class="veda" id="veda-40">
+<div class="vh"><span class="vn">40</span><h2>Una demanda no és una mena de cosa</h2><a class="perma" href="#veda-40" aria-label="Enllaç permanent a la veda 40">#</a></div>
+<p>El catàleg tenia tres categories paral·leles: habilitat, objecte i <strong>demanda</strong>. I això és un error de fons, no de vocabulari:</p>
+<blockquote><p>Una demanda no és una mena de cosa. És una <strong>direcció</strong> sobre una cosa.</p></blockquote>
+<p>Amb l'esquema vell, buscar «fusteria» eren dues cerques diferents — i partia en dues justament <strong>la coincidència que fa que passi alguna cosa</strong>. Qui la fa i qui la necessita no es veien mai a la mateixa pantalla.</p>
+<p>La forma correcta:</p>
+<ul>
+<li><strong>L'eix és la cosa</strong>: habilitat o objecte. Dos tipus, no tres.</li>
+<li><strong>La direcció és un atribut</strong>: s'ofereix / es busca. Filtrable i ordenable com qualsevol altre camp, i visible a cada fila.</li>
+<li><strong>La clau d'aparellament és la categoria, no el títol.</strong> «Necessito muntar una prestatgeria» i «Faig fusteria» no s'assemblen escrites, però són la mateixa cosa. Sense una clau compartida, la coincidència no existeix.</li>
+</ul>
+<p>D'aquí surt la banda de <strong>coincidències</strong>: les coses que algú ofereix i algú altre busca a prop. És l'única part d'aquesta pantalla que produeix un intercanvi tota sola.</p>
+<p>Dues conseqüències que semblen detalls i no ho són:</p>
+<ol>
+<li><strong>Una llista d'espera és demanda d'objecte declarada</strong>, i fins ara no es veia enlloc. Si tres persones esperen un trepant, qui en té un ha de poder-ho saber sense entrar a la fitxa de l'objecte.</li>
+<li><strong>«Només disponibles» és sobre el que s'ofereix.</strong> Una demanda no està disponible ni deixa d'estar-ho: existeix. I en obrir una coincidència el filtre s'aixeca sol — amagar-ne la meitat faria de la banda una mentida.</li>
+</ol>
+<p>I l'ordre no menteix: els encapçalaments de proximitat només surten quan l'ordre <strong>és</strong> per proximitat. Posar «📍 a la teva població» sobre una llista ordenada per nom seria dir una cosa falsa sobre com està ordenada.</p>
+</article>
+<article class="veda" id="veda-41">
+<div class="vh"><span class="vn">41</span><h2>Una càrrega parcial no és una càrrega correcta</h2><a class="perma" href="#veda-41" aria-label="Enllaç permanent a la veda 41">#</a></div>
+<p><code>updateAtles</code> s'empassava els errors de cada paquet en un <code>catch</code> buit i després deia <strong>«L'atles ja estava al dia»</strong>. Si tres dels cinc paquets no arribaven, l'usuari veia exactament el mateix missatge que si tot hagués anat bé.</p>
+<p>Callar un error de xarxa no el fa desaparèixer: fa que algú es fiï de dades que no hi són. Ara es compten els paquets que fallen i es diu —«Atles incomplet · 3 de 5 paquets no han arribat»— i queda a <code>updateAtles.last</code> per si algú ho vol comprovar.</p>
+<p>I la segona meitat del mateix defecte: la càrrega <strong>automàtica d'arrencada</strong> corria alhora que la manual, i totes dues fusionaven els mateixos paquets des de dos punts diferents. D'aquí que dues càrregues seguides donessin un nombre d'entitats diferent cada vegada (18 · 17 · 20 · 28). Amb un pany d'una sola càrrega en vol: <strong>17 · 17 · 17</strong>.</p>
+<p>La regla general: <strong>tota operació que fusiona estat compartit ha de ser una a la vegada</strong>, i ha de dir la veritat sobre què ha entrat i què no.</p>
+</article>
+<article class="veda" id="veda-42">
+<div class="vh"><span class="vn">42</span><h2>Qui exporta ha de saber què s'emporta</h2><a class="perma" href="#veda-42" aria-label="Enllaç permanent a la veda 42">#</a></div>
+<p>La còpia de la identitat (V25) resolia una pèrdua: esborrar el navegador destruïa el <code>did:sos</code>. Però la identitat sola no és el teu SOS. Si perds el navegador amb els nodes, els socis, el registre d'hores i la biblioteca, el que et queda és una clau sense res a obrir.</p>
+<p><code>exportBackup</code> s'emporta la base de dades sencera. I aquí hi ha la decisió que importa: <strong>la contrasenya en blanc és una opció legítima</strong> —hi ha gent que fa la còpia en un disc que ja té xifrat, o que necessita poder-la obrir sense recordar res— <strong>però un fitxer en clar amb la teva clau privada dins no és una còpia de seguretat qualsevol</strong>. Qui el tingui no només et pot llegir: et pot <strong>signar coses en nom teu</strong>, i les signatures del SOS són el que fa que el registre valgui alguna cosa.</p>
+<p>Per això el botó no diu el mateix en els dos casos. Amb contrasenya: «Descarrega la còpia xifrada». Sense: <strong>«⚠ Descarrega SENSE xifrar»</strong>, i l'avís diu exactament què implica. No es bloqueja, no es fa un sermó: es diu. I hi ha una casella per treure la identitat de la còpia, que és la resposta raonable per a qui vol les dades però no el poder de signar.</p>
+<p>L'altra meitat és la restauració. <strong>Importar és sobreescriure</strong>, i ningú hauria de sobreescriure a cegues: primer es llegeix el paquet i es diu què porta —quants registres, de quin dia, si hi ha identitat a dins— i només llavors s'importa. Substituir-ho tot (esborrar el que hi ha abans d'entrar el nou) és una casella a part, apagada per defecte, amb confirmació.</p>
+<p>I una cosa que semblava un detall: un fitxer malmès sense la llista de registres restaurava <strong>zero</strong> i deia que tot havia anat bé. Un <code>|| []</code> que amagava un fitxer trencat. Ara distingeix «no hi ha registres» de «no hi ha llista de registres», que no és el mateix.</p>
+</article>
+<article class="veda" id="veda-43">
+<div class="vh"><span class="vn">43</span><h2>Un apunt parla de dues persones; només una l'escrivia</h2><a class="perma" href="#veda-43" aria-label="Enllaç permanent a la veda 43">#</a></div>
+<p>Operar des d'un resultat de cerca deixava el moviment <strong>fet</strong>. Registres dues hores i ja està: el saldo de l'altre s'ha mogut, i l'altre no se n'ha assabentat. Dit sense embuts, es podien <strong>escriure hores en nom d'algú altre</strong>. En un grup de deu persones és una anècdota; en un de cent és el motiu pel qual la gent deixa de creure's el registre.</p>
+<p>La temptació és fer que tot demani permís. Seria correcte i inservible: avui la majoria de fitxes no tenen ningú al darrere a qui preguntar —són noms que algú ha donat d'alta— i demanar-los un vistiplau que ningú pot signar és teatre.</p>
+<p>Per això la regla és la mínima que resol el problema: <strong>cal el vistiplau de qui ha reclamat la seva fitxa</strong>. Mentre ningú no l'ha reclamada, el SOS es comporta exactament com abans i no es trenca res. Des del moment que dius «aquesta sóc jo» amb el teu <code>did</code> i una reclamació signada (V39), ningú escriu al teu nom sense que hi diguis la teva. <strong>La firma protegeix el nom de qui l'ha posat</strong>, i reclamar la fitxa passa a tenir una conseqüència pràctica i no només simbòlica.</p>
+<p>Tres conseqüències que no són negociables:</p>
+<ul>
+<li><strong>Una petició pendent no és mitja comptabilitat.</strong> L'apunt <strong>no entra al ledger</strong> fins que hi ha tots els vistiplaus. Res de saldos provisionals: o hi és o no hi és, i mentre no hi és, la pantalla ho diu.</li>
+<li><strong>L'apunt conserva la data del fet, no la de la confirmació.</strong> El que va passar va passar quan va passar; qui ho ha validat queda a dins de l'apunt, amb el seu <code>did</code>.</li>
+<li><strong>Un sol camí</strong> (V22). <code>submitEntry</code> decideix si escriu ara o si envia la petició; qui el crida no ho ha de saber. El préstec d'un objecte passa pel mateix lloc, perquè és el mateix problema: posa una responsabilitat a nom d'algú.</li>
+</ul>
+<p>I una que se sol oblidar: <strong>un <code>did</code> sense reclamació signada no dona dret a res</strong>. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció la podria activar qualsevol contra qualsevol.</p>
+</article>
+<article class="veda" id="veda-44">
+<div class="vh"><span class="vn">44</span><h2>Dues llistes raonables poden no parlar-se</h2><a class="perma" href="#veda-44" aria-label="Enllaç permanent a la veda 44">#</a></div>
+<p>El banc de temps té «petites reparacions de la llar». La biblioteca de les coses té «bricolatge i eines». Cadascuna és correcta al seu lloc i cap de les dues està mal feta. El problema apareix quan es creuen: <strong>qui ofereix reparar i qui busca un trepant no s'han trobat mai</strong>, encara que a la vida vagin sempre plegats — són la mateixa tarda de dissabte.</p>
+<p>La sortida fàcil seria unificar les dues llistes. Seria un error: la categoria d'un objecte i la d'un servei no volen dir el mateix ni serveixen per al mateix, i fondre-les faria pitjors les dues pantalles per arreglar una tercera.</p>
+<p>L'<strong>àmbit</strong> és la capa de sobre. No substitueix cap taxonomia, no en canvia cap fitxa, i <strong>no s'inventa equivalències</strong>: només uneix el que de debò es fa junt. Set àmbits fan de pont de veritat; vuit en tenen una sola banda, i així ha de ser —dir que «tràmits i paperassa» té un objecte equivalent seria fer-ho quadrar a la força, i un pont que va a lloc no es nota.</p>
+<p>Dues regles que eviten que la banda de coincidències menteixi:</p>
+<ul>
+<li><strong>Una coincidència d'àmbit no és una coincidència exacta</strong>, i no es poden presentar iguals. La targeta ho diu amb el nom: «es creuen <em>reparacions</em> i <em>bricolatge</em> — no és la mateixa cosa, és el mateix àmbit». Vendre-ho com a equivalent seria prometre un aparellament que no existeix.</li>
+<li><strong>Un àmbit que no travessa res no es mostra.</strong> Si el que s'ofereix i el que es busca són la mateixa cosa de la mateixa taxonomia, la coincidència exacta ja ho diu i l'àmbit només ocuparia el lloc de la que sí aporta.</li>
+</ul>
+<p>I una conseqüència d'interfície que era un defecte esperant: <strong>un àmbit no es pot escriure a la caixa de cerca</strong>. «Reparar i bricolar» no és el text de cap fitxa, així que clicar-hi i posar-ho al camp de text hauria donat zero resultats. Es filtra pel que és —un xip d'àmbit que es pot treure—, no per un text que ho imita.</p>
+<ul>
+<li>Tot autocontingut a <code>SOS/index.html</code> per defecte.</li>
+<li><code>SOS/prompts/*.md</code> guarda els prompts versionats de cada intent d'IA.</li>
+<li><code>SOS/knowledge/references/*.md</code> guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).</li>
+<li><code>SOS/knowledge/vision/*.md</code> guarda decisions d'arquitectura vives.</li>
+</ul>
+</article>
+<article class="veda" id="veda-45">
+<div class="vh"><span class="vn">45</span><h2>Donar una cosa i deixar-la no és el mateix</h2><a class="perma" href="#veda-45" aria-label="Enllaç permanent a la veda 45">#</a></div>
+<p>Posar un objecte a la biblioteca no valia res al registre: es publicava i prou. Però una biblioteca de les coses <strong>produeix valor real</strong>, i el que no es compta no es pot ni certificar ni retribuir.</p>
+<p>Hi havia dues coses confoses en una:</p>
+<ul>
+<li><strong>Donació</strong> — l'objecte passa al comú. El valor és el bé cedit, <strong>una vegada</strong>.</li>
+<li><strong>Posada a disposició</strong> — segueix sent teu, el prestes. El valor <strong>no és el preu de l'objecte</strong>, perquè no el regales. El que aportes és <strong>el risc i el desgast</strong>, i la revisió o reparació que aquell objecte generarà.</li>
+</ul>
+<p>D'aquí surt la decisió que ho canvia tot: <strong>es valora per préstec, no d'una sola vegada</strong>. Una eina elèctrica prestada quaranta vegades no aporta el mateix que una tenda plantada dues, i una declaració inicial no pot saber quina de les dues serà. Cada retorn genera un apunt petit i signat a favor de qui l'ha posat a disposició, i el valor s'acumula amb <strong>l'ús real</strong>. Es compta al retorn i no en prestar, perquè el desgast encara no s'ha produït quan surt per la porta.</p>
+<p><strong>L'aprenent no és un cost.</strong> A la sessió de reparació hi ha dues aportacions, no una amb un beneficiari: qui ensenya hi posa ofici i transferència de coneixement —l'intangible que a la VNA sosté tota la resta— i <strong>qui aprèn repara de debò</strong>, i aquella reparació és valor lliurat a la comunitat. Els dos generen apunt. Un model <em>fair</em> no és el que reparteix bé al final: és el que <strong>compta bé pel camí</strong>, i que compta el que normalment no es compta.</p>
+<p>I la regla que impedeix que tot això es converteixi en fum: <strong>un valor estimat no pot passar per diner real</strong>. Els objectes tenen el seu propi tipus d'apunt (<code>objecte</code>), amb <code>estimate:true</code> i la font de l'oracle a dins. No sumen amb les hores, no sumen amb el capital, i a l'equity entren com a aportació no dinerària <strong>ja valorada en euros</strong> —passar-los per la tarifa horària els hauria multiplicat per quinze. La pantalla diu sempre quins números són estimació i quins surten del registre signat. Un número inventat que sembli comptabilitat és pitjor que no tenir-lo.</p>
+</article>
+<article class="veda" id="veda-46">
+<div class="vh"><span class="vn">46</span><h2>Una persona no és un rol</h2><a class="perma" href="#veda-46" aria-label="Enllaç permanent a la veda 46">#</a></div>
+<p><code>roleOfPerson</code> retornava <strong>un</strong> rol, i amb aquell rol es decidia la lent de tot el SOS. Hi fallaven dues coses alhora, i la segona és pitjor que la primera.</p>
+<p>La primera és de model: la mateixa persona és <strong>superheroina al seu barri i mentora d'una MATRIU de la comarca</strong> a la vegada. La implicació no és un estat global —<strong>depèn del node i del que hi fa</strong>— i aplanar-la a un sol valor obliga a triar quina de les dues veritats s'esborra.</p>
+<p>La segona és pitjor perquè era invisible: quan la casella no deia res, el rol sortia del <strong>primer node que es trobava recorrent la llista</strong>. Dues persones idèntiques podien acabar amb lents diferents per l'ordre en què s'havien creat els nodes. Un resultat que depèn de l'ordre d'iteració no és un resultat, és un accident.</p>
+<p>Ara el rol es <strong>dedueix de l'evidència que el sistema ja tenia</strong>: qui acompanya ventures és mentora (<code>mentorsOf</code>), qui reclama o custodia un node és guardiana (<code>govOf</code>), qui aporta hores i objectes és superheroina. Cada rol porta <strong>el seu perquè</strong> —«acompanya 2 iniciatives», «3 aportacions · 1 objecte»— perquè un rol que no es pot explicar és una etiqueta.</p>
+<p>Tres coses que això obliga a decidir bé:</p>
+<ul>
+<li><strong>Una casella per defecte no és una declaració.</strong> <code>newMember</code> posa <code>superheroi</code> a tothom, així que comptar-lo com a evidència seria dir que tot el món ha declarat el mateix. Només compta la casella quan hi ha una <strong>altra</strong> cosa; i «superheroi» es dedueix de l'activitat, que és més veritat.</li>
+<li><strong><code>mentor</code> no existia a <code>SOS_ROLES</code></strong> tot i que la MATRIU ja tenia mentors amb àmbit i sessions al registre. Es podia ser mentora sense que el SOS ho digués. Ara hi és, amb recorregut propi.</li>
+<li><strong>La lent es tria, no s'endevina.</strong> «Ara miro el SOS com a mentora» és una decisió teva, amb un selector visible quan tens més d'un rol —i cap selector quan en tens un de sol, que seria soroll. El selector <strong>no</strong> viu dins del bloc que pinta la frase de la lent: un rol sense frase per a aquest context segueix sent un rol teu, i amagar-li el botó el faria desaparèixer del SOS.</li>
+</ul>
+</article>
+<article class="veda" id="veda-47">
+<div class="vh"><span class="vn">47</span><h2>Publicar no és publicar-ho tot</h2><a class="perma" href="#veda-47" aria-label="Enllaç permanent a la veda 47">#</a></div>
+<p>L'objectiu és que algú d'un poble premi un botó i el que ha decidit compartir quedi publicat perquè algú altre ho trobi. La temptació és òbvia: agafar el catàleg i penjar-lo. Però publicar «hi ha algú a Manresa que fa fusteria» <strong>no és</strong> publicar qui és, ni el seu telèfon, ni el seu registre. I publicar és irreversible a la pràctica: un paquet que algú ja ha copiat no es retira.</p>
+<p>Per això la decisió del <strong>gra</strong> va abans que el botó, i és aquesta: <strong>el que surt és agregat</strong>. Categoria + municipi + quants. El paquet et diu <strong>on preguntar, no a qui</strong>. El node és la porta, i un node és una comunitat, no una persona.</p>
+<p>D'aquí surten tres coses que semblaven detalls i no ho són:</p>
+<ul>
+<li><strong>Els títols lliures no surten.</strong> Sonava excessiu fins que es va veure el cas: algú escriu «Trepant d'en Quim Ferrer» o «Fusteria a casa de la Berta», i el nom hauria sortit igualment <strong>sense que ningú ho hagués decidit</strong>. Un camp que qualsevol pot omplir amb el que vulgui no es pot publicar mai.</li>
+<li><strong>Deny by default, i node a node.</strong> No surt res de cap node fins que aquell node ho demana explícitament, i per separat per a habilitats i per a objectes. Un valor per defecte que publica és una fuita amb bona intenció.</li>
+<li><strong>La comprovació és codi, no un test.</strong> <code>verifyNoLeak</code> recorre tots els noms, contactes, <code>did</code>, títols i apunts que hi ha al SOS i els busca dins del JSON que viatjarà; i a més rebutja <strong>qualsevol clau fora de la llista blanca</strong>, encara que el valor sembli innocu. Si falla, <strong>el botó no publica</strong>. Una garantia que només viu a la suite de tests protegeix el desenvolupador, no la persona.</li>
+</ul>
+<p>I la mateixa porta funciona en tots dos sentits: el paquet que <strong>entra</strong> passa pel mateix sedàs que el que surt. Un paquet manipulat amb camps de més no pot afegir res de nou al SOS de qui el llegeix.</p>
+<p>Finalment, la pantalla ensenya <strong>la taula sencera del que sortirà</strong> abans de deixar-te descarregar res. Qui no ho entengui no ha de poder prémer el botó sense haver-ho vist.</p>
+</article>
+<article class="veda" id="veda-48">
+<div class="vh"><span class="vn">48</span><h2>Una versió és un canvi, no una data</h2><a class="perma" href="#veda-48" aria-label="Enllaç permanent a la veda 48">#</a></div>
+<p>Publicar una vegada és fàcil. El problema és el segon dia: has canviat coses, i ni tu ni ningú sap què va sortir l'última vegada ni què ha canviat des de llavors. Sense això, «torna-ho a publicar» és una acció a cegues, i qui la fa no pot respondre la pregunta que importa —*què estic canviant del que la gent ja té?*</p>
+<p>Cada publicació guarda el seu <strong>CID</strong> i el <strong>CID del seu pare</strong>, i d'aquí surten les tres coses que ho fan utilitzable: saber si el que tens ara és diferent del que vas publicar, veure <strong>què</strong> ha canviat, i poder tornar enrere.</p>
+<p>La decisió que ho fa funcionar és petita i fàcil de fer malament: <strong>el CID no inclou la data de generació</strong>. Si la inclogués, construir el paquet dues vegades seguides en donaria dues versions diferents sense haver tocat res, i l'historial passaria a ser un registre del rellotge en comptes d'un registre dels canvis. Per la mateixa raó, publicar contingut idèntic a l'últim <strong>no crea cap versió nova</strong>: repetir el mateix amb una data diferent no és versionar, és fer soroll.</p>
+<p><strong>Tornar enrere no esborra res.</strong> Restaurar publica una versió <em>nova</em> amb el contingut d'una d'antiga, encadenada a sobre de la que hi havia. Esborrar la versió intermèdia seria mentir sobre el que es va publicar —i el que ja s'ha replicat no es desfà igualment.</p>
+<p>I una que val per a qualsevol automatisme: <strong>l'automàtic no es salta la comprovació</strong>. Si <code>verifyNoLeak</code> troba una fuita, el versionat automàtic s'atura. Un automatisme que es salta la revisió perquè «ja anirà bé» és pitjor que no tenir-lo, perquè la fa a la teva esquena.</p>
+<p>Finalment, l'automatisme es diu <strong>amb el que fa i amb el que no</strong>: estampa versions al teu historial, <strong>no puja res a cap servidor</strong>. Anomenar-ho «sincronització» quan el destí depèn de relés de tercers que encara no hi són seria vendre el que no hi ha.</p>
+</article>
+<article class="veda" id="veda-49">
+<div class="vh"><span class="vn">49</span><h2>Una capacitat que no hi és s'ha de dir, no suplir a qualsevol preu</h2><a class="perma" href="#veda-49" aria-label="Enllaç permanent a la veda 49">#</a></div>
+<p>El QR ja es generava, però escanejar-lo obligava a sortir a l'app de càmera del sistema, copiar un text llarguíssim i tornar a entrar. <code>BarcodeDetector</code> —W3C, natiu— ho resol des de dins.</p>
+<p>El problema: <strong>no hi és a tot arreu</strong>. Comprovat en aquest entorn, el Chromium d'escriptori (Linux) no el porta; Android i ChromeOS sí. Hi havia dues sortides fàcils i totes dues dolentes: fer veure que va i deixar l'usuari clicant un botó mort, o encastar un descodificador de tercers de 250 KB al fitxer per cobrir un navegador que <strong>no és el que escaneja</strong>.</p>
+<p>Perquè aquí hi ha el detall que decideix: <strong>el que escaneja és el mòbil</strong>. El d'escriptori és el que <em>ensenya</em> el codi. La capacitat falta exactament on no fa falta, i per tant la resposta correcta no és suplir-la sinó <strong>dir-ho</strong>: la pantalla anomena l'API que li manca, diu on sí que funciona, i deixa sempre a la vista el camí d'enganxar el text, que no depèn de res.</p>
+<p>La mateixa regla val per als <strong>trackers WSS</strong> del codi de sala: es van provar i en aquest entorn no responen. Escriure codi de xarxa que no es pot verificar de cap manera és pitjor que no escriure'l —queda com si estigués fet, i el dia que falli ningú sabrà si va funcionar mai. Es queda al tram bloquejat, amb la prova anotada, i el que sí que funciona (enganxar, enllaç, QR) segueix sent el camí.</p>
+<p>Dues coses més que un escàner ha de fer bé i és fàcil oblidar: <strong>apagar la càmera</strong> quan es tanca el modal per qualsevol via —també per fora—, i demanar <strong>només</strong> el format que vol (<code>formats:['qr_code']</code>) en comptes de tots.</p>
+</article>
+<article class="veda" id="veda-50">
+<div class="vh"><span class="vn">50</span><h2>Mesurar abans de patir, i comprovar que la prova comprova</h2><a class="perma" href="#veda-50" aria-label="Enllaç permanent a la veda 50">#</a></div>
+<p>500 nodes i 5.000 apunts —l'ordre de magnitud d'una comarca al cap de dos anys— per veure si el SOS s'ofega. <strong>No s'ofega</strong>: el render triga 33 ms, el segon 5 ms, i cap funció que recorri tot el SOS passa de 25 ms. Val la pena haver-ho mesurat precisament perquè el resultat és aquest: ara ja no cal optimitzar res «per si de cas», i qualsevol regressió futura es veurà contra un número i no contra una impressió.</p>
+<p>La única cara és <code>verifyNoLeak</code> (211 ms), i és cara <strong>a posta</strong>: compara cada nom, contacte i títol del SOS sencer contra el JSON que sortirà. Es paga un cop per publicació i és el preu de no filtrar dades de ningú.</p>
+<p>Dos defectes reals que només apareixen a escala i en pantalla petita, tots dos a <strong>360 px</strong> —l'amplada de molts Androids, i per això <code>test-mobilenav</code> a 375 px no els veia mai:</p>
+<ul>
+<li><strong>La barra de pestanyes</strong> era una fila que no podia encongir-se: amb totes les eines obertes sortia de la pantalla i feia desplaçar la pàgina sencera. Ara llisca ella, no la pàgina.</li>
+<li><strong>La barra superior</strong> sumava 361 px. Un píxel. Prou perquè tota la pàgina es pogués moure en horitzontal.</li>
+</ul>
+<p>I la lliçó que val més que les dues: <strong>una prova que passa per no haver-hi res no prova res</strong>. Les comprovacions d'accessibilitat corrien sobre la pantalla d'entrada buida i deien «0 camps sense etiqueta» perquè no hi havia cap camp. Ara carreguen dades i obren un formulari de debò —37 botons, 7 camps— i el test comprova <strong>primer que hi ha alguna cosa a comprovar</strong>. Un verd buit és pitjor que un vermell: el vermell almenys demana atenció.</p>
+<p>De la mateixa manera, «aquest element surt de la pantalla» no és un defecte si el seu contenidor <strong>llisca a posta</strong>. La comprovació ha de ser sobre la pàgina, no sobre el fill.</p>
+</article>
+<article class="veda" id="veda-51">
+<div class="vh"><span class="vn">51</span><h2>L'app de gestió ensenya estructura; la de la gent ensenya el següent pas</h2><a class="perma" href="#veda-51" aria-label="Enllaç permanent a la veda 51">#</a></div>
+<p>El SOS que hem construït fins ara és l'app d'<strong>administració</strong>: mostra qui, on, quant i per què, i està feta per a qui coordina. Qui participa no necessita estructura —necessita <strong>el següent pas</strong>. Barrejar les dues coses és el que fa que una eina comunitària només l'acabin fent servir tres persones.</p>
+<p>Per això les missions <strong>no són un panell més dins del tauler</strong>: són una portada pròpia, sense arbre, sense pestanyes i sense res per configurar. Una llista, i cada cosa amb un sol botó gros. La pantalla ho diu de si mateixa: «aquesta pantalla no et deixa configurar res, només fer».</p>
+<p>Res d'això inventa dades. Totes les missions surten del que el sistema ja sabia —<code>pendingInbox</code>, <code>dashboardAttention</code>, <code>supplyMatches</code>, <code>dueStatus</code>, <code>journeyProgress</code>, els reptes del tier. El que canvia és <strong>què és el centre de la pantalla</strong>, i això és precisament el disseny.</p>
+<p>Tres decisions que fan que sigui una llista de missions i no una llista de deures:</p>
+<ul>
+<li><strong>Cada missió diu què passarà si la fas.</strong> «Fins que no responguis, no compta per a ningú.» «Qui l'espera el podrà fer servir.» Sense aquesta frase, una llista de coses per fer és una llista de retrets.</li>
+<li><strong>L'ordre és per qui espera, no per importància abstracta.</strong> Primer el que té algú altre aturat, després el que et frena a tu, i al final el que et fa créixer. <strong>Fer esperar una persona és més urgent que qualsevol progrés propi.</strong></li>
+<li><strong>Mai és buida per a qui té perfil.</strong> Algú acabat d'arribar no té ningú esperant-lo, però tampoc es queda davant d'una pantalla muda: el seu recorregut i els seus reptes ja són missions. Una portada que de vegades no diu res no pot ser la portada.</li>
+</ul>
+<p>I la que decideix l'arquitectura: <strong>un sol fitxer, una capa de portada</strong>. No un segon <code>index.html</code>. Mantenir el zero-servidor i el fitxer únic era la condició, i el cost mesurat és una funció i un bloc de CSS —res comparat amb duplicar l'app.</p>
+</article>
+<article class="veda" id="veda-52">
+<div class="vh"><span class="vn">52</span><h2>El mur no és la idea, és la data</h2><a class="perma" href="#veda-52" aria-label="Enllaç permanent a la veda 52">#</a></div>
+<p>El que atura un projecte comunitari no acostuma a ser que l'idea no valgui: és la paperassa i el calendari de convocatòries. <strong>Una subvenció es perd per no haver mirat una data</strong>, no per no tenir raó. Per això el pipeline de finançament té una severitat que no té res més al tauler: és <strong>l'única cosa que caduca sola</strong>. Un termini passat no és una alerta, és una pèrdua, i es diu així —«ha passat fa 3 dies»— en comptes de continuar dient «pendent».</p>
+<p>I una separació que sembla comptable i és ètica: <strong>el que has demanat no és teu</strong>. Demanat i concedit són dues columnes diferents, i una convocatòria denegada es queda a la banda del demanat. Sumar-ho tot és la manera més ràpida de fer un pressupost fals i prendre decisions sobre diners que no existeixen.</p>
+<p>Els <strong>tràmits</strong> eren Zero Redundancy pur: cada <code>PROJECT_TYPE</code> ja portava la seva llista <code>juridic</code> i no servia per a res. Ara cada forma té els seus passos reals. Qui encara no ha decidit què serà veu les opcions; qui ja ho sap, només la seva.</p>
+<p>I la decisió que costa més de prendre bé, a la <strong>formació lligada a l'etapa</strong>: el mòdul que toca a cada etapa surt a la llista de comprovacions <strong>però marcat com a <code>soft</code>, i no bloqueja graduar</strong>. Es marca a mà, sense examen ni servidor que ho certifiqui —i <strong>no es pot aturar ningú per una casella que ell mateix omple</strong>. Una porta que qualsevol pot obrir sol no és una porta; posar-la seria donar-li l'aparença d'un requisit a una cosa que és un suggeriment.</p>
+</article>
+<article class="veda" id="veda-53">
+<div class="vh"><span class="vn">53</span><h2>Graduar no és el final del camí</h2><a class="perma" href="#veda-53" aria-label="Enllaç permanent a la veda 53">#</a></div>
+<p><code>graduatedNodeId</code> existia des del primer dia i <strong>no el llegia ningú</strong>. La venture sortia de la cartera i el que passés després no es tornava a mirar mai. Una incubadora que no sap què va passar amb el que va graduar no pot millorar el seu mètode: només pot repetir-lo.</p>
+<p>Les revisions són a <strong>3, 6 i 12 mesos</strong>, i la resposta <strong>la posa una persona</strong>. No es dedueix del registre a posta: un projecte pot tenir el ledger quiet i estar ben viu, i pot tenir moviment i estar mort. Automatitzar aquesta pregunta seria donar-li precisió a una cosa que no en té.</p>
+<p>Tres decisions sobre com es compta, que és on això es fa honest o es fa propaganda:</p>
+<ul>
+<li><strong>Sense revisions, la taxa és desconeguda, no zero.</strong> <code>null</code> i no <code>0</code>: no saber-ho no és el mateix que saber que han mort totes.</li>
+<li><strong>La taxa es calcula només sobre les revisades.</strong> Comptar una graduada de fa dues setmanes com a supervivent és inflar el número amb temps que encara no ha passat.</li>
+<li><strong>Una fita superada per una revisió posterior deixa de vèncer.</strong> Si has revisat als 12 mesos, demanar-te la dels 3 és demanar-te que t'inventis un record.</li>
+</ul>
+<p>I a les <strong>evidències</strong>, la mateixa lògica que a la formació: un checklist marcat és una promesa i un checklist amb proves és un expedient, però la cobertura de proves <strong>no és una porta</strong>. Demanar-la per graduar convidaria a adjuntar qualsevol cosa per passar-la, i llavors l'expedient deixaria de valer justament per al que serveix. De cada prova se'n guarda el <strong>hash</strong>, així es pot ancorar sense publicar-ne el contingut; i <strong>el fitxer no entra al node</strong> —viatjaria pel sync i pel pack públic— sinó a un registre local propi, amb el tipus <code>evidence</code> dins de <code>PRIVATE_DB_TYPES</code>. Al backlog només hi queda el hash i el nom.</p>
+</article>
+<article class="veda" id="veda-54">
+<div class="vh"><span class="vn">54</span><h2>Un cas particular al lloc d'una plantilla</h2><a class="perma" href="#veda-54" aria-label="Enllaç permanent a la veda 54">#</a></div>
+<p>Catalunya no era un cas d'ús del SOS: estava <strong>soldada en sis llocs del fitxer</strong>. Els nivells (<code>província</code>, <code>comarca</code>, <code>municipi</code>, <code>barri</code>), els rols institucionals del mapa de valor de qualsevol país (<code>Generalitat</code>, <code>Diputacions</code>, <code>Consells comarcals</code>), els tipus d'entitat, el catàleg territorial, els resolutors de cadena amb <code>pais:'Catalunya'</code> escrit a mà, i una funció d'esquelet d'un sol país.</p>
+<p>Res d'això era un error de programació —tot funcionava. Era un error de model: hi havia un cas particular al lloc on hi ha d'haver una plantilla. La prova és què passava en clicar «nou país»: sortia un node buit, l'autocompletar oferia una sola opció (Catalunya), i el mapa de valor d'Euskadi naixia amb un rol anomenat «Generalitat».</p>
+<p>La separació que ho resol:</p>
+<ul>
+<li><strong>Els ids dels nivells no canvien mai.</strong> Hi pengen les classes CSS, els mapes de valor per nivell i els tipus d'entitat. Renombrar-los trencaria tots els SOS que ja existeixen.</li>
+<li><strong>Les etiquetes i el nombre de nivells són dades.</strong> Un model pot dir-li «herrialdea» a <code>provincia</code> i tenir-ne tres en comptes de cinc. Retallar un nivell del mig el salta de debò: el fill surt de l'ordre de la llista.</li>
+<li><strong><code>null</code> vol dir «el de sempre».</strong> Un model que no declara geografia, institucions ni tipus d'entitat es comporta exactament com abans del canvi. Per això Catalunya és un model amb tres nulls i cap SOS existent nota res.</li>
+<li><strong>La referència no es toca.</strong> Catalunya és de només lectura; forkejar-la en fa una còpia amb id nou i geografia pròpia materialitzada. Un cas de referència que es pot espatllar sense voler deixa de ser una referència.</li>
+<li><strong>Eliminar un model no esborra cap territori.</strong> Els països que el feien servir tornen als noms de nivell per defecte. Un catàleg no pot ser propietari de la cosa catalogada.</li>
+</ul>
+<p>Un cas d'ús que no es pot obrir, editar ni copiar no és un cas d'ús: és documentació.</p>
+<p><strong>El segon cas és el que ho demostra.</strong> Un model sol no prova res —el codi segueix podent tenir supòsits d'un sol país amagats. Euskadi els destapa tots alhora: el nivell intermedi <strong>no és una província</strong> sinó un Territori Històric amb Diputació Foral i Juntes Generals; el de sota són comarques a Bizkaia i Gipuzkoa però <strong>quadrilles</strong> a Araba; i el mapa de valor va <strong>al revés</strong> que el català, perquè amb el Concert Econòmic són les Diputacions les que recapten i aporten al Govern Basc. Un mapa que ho dibuixés a l'inrevés seria fals encara que quedés més simètric.</p>
+<p>D'aquí surten dues regles més:</p>
+<ul>
+<li><strong>Un model porta els seus intercanvis, no només els noms dels rols.</strong> Copiar només els rols i sembrar-hi els fluxos de casa donaria un mapa que parla d'institucions basques amb les relacions catalanes.</li>
+<li><strong>Editar els rols no pot trencar el mapa.</strong> En canviar-los, els fluxos que apunten a un rol que ja no hi és <strong>es descarten</strong>, i la resta es queden. Un nivell que no s'ha tocat no es desa, per no deixar-lo amb una llista de noms i cap intercanvi.</li>
+</ul>
+<p>I una de dades, no de codi: els topònims <strong>no es tradueixen</strong>. Els noms van com són oficialment —bilingües quan ho són— i el que és parcial es diu que és parcial. La llista de municipis d'Euskadi porta els de més població de cada comarca perquè l'autocompletar sigui útil; posar-ne 251 de memòria seria inventar-ne uns quants.</p>
+</article>
+<article class="veda" id="veda-55">
+<div class="vh"><span class="vn">55</span><h2>El fons cooperatiu ha de tenir porta, i no pot mentir</h2><a class="perma" href="#veda-55" aria-label="Enllaç permanent a la veda 55">#</a></div>
+<p>El SOS deia a la seva pròpia documentació que la destinació és un fons cooperatiu, i li posava xifra i any. A l'app, el fons era <strong>una funció dins d'una pestanya d'un node MATRIU</strong>: tres clics des de la portada, i només si aquell node existia. Un territori amb tres bancs de temps i dues biblioteques movent hores cada setmana tenia un fons de <strong>zero</strong>, perquè <code>fundValue</code> només sabia comptar el que penjava d'una incubadora.</p>
+<p>El múscul d'un territori no és la seva MATRIU: és tot el que hi ha a sota. El fons es mesura sobre l'àmbit sencer (<code>scopeIds</code> + el mateix desduplicat que fa servir <code>measure</code>, perquè dues xifres del mateix fons són pitjor que cap).</p>
+<p>Tres regles que la pantalla no pot trencar:</p>
+<ul>
+<li><strong>Verificat i estimat no se sumen mai.</strong> El que encapçala és el que està signat i encadenat. La conversió d'hores a euros és de l'oracle, va a sota, amb rang i amb la font escrita al costat de cada partida.</li>
+<li><strong>Les hores es diuen en hores.</strong> Presentar «verificat» com un sol número en euros obligaria a valorar-les, i llavors ja no seria verificat. Són dues xifres bessones, no una de sola.</li>
+<li><strong>La comparació amb el pla no interpola.</strong> Si l'any en curs no és una fita declarada, s'agafa la següent i <strong>es diu que és la següent</strong>. Inventar una xifra intermèdia seria posar-hi un compromís que ningú ha pres.</li>
+</ul>
+<p>I la cobertura al costat del fons, perquè no són la mateixa pregunta: el fons diu quant s'ha mogut; la cobertura diu <strong>on encara no s'ha mogut res</strong>. Sense la segona, la primera només és una notícia. Una llista de regions buides no és un retret: és l'única llista que diu on val la pena trucar.</p>
+</article>
+<article class="veda" id="veda-56">
+<div class="vh"><span class="vn">56</span><h2>Un rànquing en una eina de suport mutu es pot girar en contra</h2><a class="perma" href="#veda-56" aria-label="Enllaç permanent a la veda 56">#</a></div>
+<p>Posar un podi on la gent s'ajuda té dues maneres de sortir malament, i totes dues s'han de tancar <strong>al càlcul</strong>, no amb un text d'advertència a sota:</p>
+<ul>
+<li><strong>Es pot inflar sol.</strong> Si compta volum d'apunts, qui es registra hores a si mateix puja igual que qui les ha fet. Només puntua el que porta <strong>signatura</strong>; el que està sense signar es compta a part i es diu, i les <strong>estimacions de l'oracle no puntuen ningú</strong> — una xifra que el sistema s'ha inventat no pot donar reputació a ningú.</li>
+<li><strong>Premia acumular en comptes de circular.</strong> Donar molt i no rebre mai no és una xarxa: és una persona cremant-se. El <strong>factor de reciprocitat</strong> baixa la puntuació de qui només dona <em>i també</em> de qui només rep, i la deixa sencera a qui fa les dues coses. Modula, no anul·la: aportar quatre vegades més segueix pesant més.</li>
+</ul>
+<p>A més, <strong>el que és de fa temps pesa menys</strong> (la meitat cada 180 dies). Sense això, el podi se'l queden per sempre els qui hi van ser primer, i deixa de dir res sobre qui mou la xarxa <em>ara</em>.</p>
+<p>I una regla d'interfície que és inseparable del càlcul: <strong>cada posició ha de poder dir per què hi és</strong>. El «perquè» es construeix al mateix lloc que el número —si surten de llocs diferents, un dia deixaran de dir la mateixa cosa. Un número sense desglossament és una autoritat que ningú pot discutir.</p>
+<p><strong>«En línia» és una altra cosa i es diu diferent.</strong> Sense servidor no hi ha llista de connectats: només se sap de qui té un canal obert amb tu. Dir «en línia» de ningú més seria mentir, així que la resta surt com <strong>última activitat</strong>, i la pantalla explica per què no pot dir-ne més.</p>
+</article>
+<article class="veda" id="veda-57">
+<div class="vh"><span class="vn">57</span><h2>Un xat que no diu de què parla és un grup de WhatsApp més</h2><a class="perma" href="#veda-57" aria-label="Enllaç permanent a la veda 57">#</a></div>
+<p>Una eina de gestió comunitària amb xat general acaba tenint el mateix problema que el grup de veïns: es parla molt i <strong>no queda rastre de a què es referia</strong>. Sis mesos després, «això ho vam decidir al xat» no es pot comprovar.</p>
+<p>Per això aquí <strong>la conversa penja d'un node</strong> i cada missatge pot <strong>citar una peça concreta</strong>: un flux del mapa de valor, un apunt del registre, una tasca, una iniciativa, un objecte, una oferta. La discussió sobre les hores del taller viu al costat de les hores del taller.</p>
+<p>Tres regles que ho sostenen:</p>
+<ul>
+<li><strong>Només se cita el que existeix.</strong> Les referències citables es generen del node real (<code>chatRefsFor</code>), no d'un camp de text lliure. Una referència inventada seria pitjor que no citar res.</li>
+<li><strong>Si el que se citava desapareix, es diu.</strong> El missatge no es toca —el que algú va escriure no s'esborra sol— però la referència es marca com a morta.</li>
+<li><strong>El xat es fusiona per unió, no per LWW.</strong> Aquesta és la part que no es pot fer malament: els nodes es sincronitzen amb <em>last-write-wins</em> sencer, i amb això dues persones escrivint alhora <strong>es perdrien missatges</strong>. Un xat és una col·lecció només-afegir, així que es fusiona per <strong>id</strong>, a les dues direccions, <em>abans</em> de decidir quin node guanya. El que es perd en un xat no es recupera de cap altra banda.</li>
+</ul>
+<p>I una de mida: es reté una finestra de missatges. Un xat sense límit fa créixer el node per sempre, i el sync l'envia sencer a cada canvi.</p>
+</article>
+<article class="veda" id="veda-58">
+<div class="vh"><span class="vn">58</span><h2>Un relé que pot ser l'amo de la xarxa no és un relé</h2><a class="perma" href="#veda-58" aria-label="Enllaç permanent a la veda 58">#</a></div>
+<p>Sense servidor, «en línia» només pot voler dir «connectat amb tu ara». Per tenir una llista de debò cal que algú relaixi la presència, i el perill evident és que aquell algú acabi sent l'amo. Un relé només és acceptable si <strong>està dissenyat perquè no pugui ser-ho</strong>:</p>
+<ul>
+<li><strong>Opcional i apagat de sèrie.</strong> Sense activar-lo, tot funciona com abans. Qui no el vulgui no perd res del que ja tenia.</li>
+<li><strong>És el teu, no el nostre.</strong> <strong>No hi ha cap URL ni cap clau escrites al codi.</strong> Posar-hi credencials nostres en un fitxer que se serveix públicament seria dues errades alhora: exposar-les, i convertir-nos en l'intermediari que diem que no volem. Cada comunitat hi posa el seu servidor. Si el nostre cau o canvia de mans, la seva xarxa no.</li>
+<li><strong>Hi passa el mínim.</strong> Presència (nom de treball i <code>did</code>) i missatges de xat. <strong>Mai el ledger, ni els nodes, ni les fitxes de ningú.</strong> El que no s'envia no es pot filtrar, i això es comprova al test mirant què rep el servidor, no llegint el codi.</li>
+<li><strong>La sala no viatja en clar.</strong> El canal és el <strong>hash</strong> del codi de sala. Qui vegi el trànsit no sap a quina comunitat pertany.</li>
+<li><strong>El relé no pot crear res.</strong> Un missatge que arriba entra pel mateix camí que un de sincronitzat —unió per id— i si el node no existeix aquí, <strong>es descarta</strong>. Un relé que pogués fer aparèixer nodes seria un relé que escriu al teu SOS.</li>
+<li><strong>Caure no pot trencar res.</strong> Amb el relé mort, escriure segueix funcionant i es desa igual; l'estat ho diu en comptes de fer veure que va.</li>
+</ul>
+<p>I una que és de codi, no de disseny: s'implementa <strong>a pèl sobre WebSocket</strong>, sense cap llibreria. El SOS ha de continuar sent un sol fitxer que funciona obert des del disc, i una dependència de CDN ho trencaria just el dia que la CDN no hi sigui.</p>
+<p><strong>Com es prova.</strong> Contra un servidor de mentida que parla el protocol de debò (<code>SOS/tests/relay-mock.mjs</code>), amb dos navegadors a la mateixa sala. Comprovar només que l'URL es construeix bé no prova res.</p>
+</article>
+<article class="veda" id="veda-59">
+<div class="vh"><span class="vn">59</span><h2>Unir persones pel nom corromp dades en silenci</h2><a class="perma" href="#veda-59" aria-label="Enllaç permanent a la veda 59">#</a></div>
+<p><code>joinNode</code>, <code>knownPersons</code>, <code>personProfile</code> i el rànquing unien registres pel <strong>nom normalitzat</strong>. Dues maneres de fer mal sense que res avisi:</p>
+<ul>
+<li><strong>Dues persones que es diuen igual</strong> al mateix poble es fusionaven en una: hores, ofertes, saldo i reputació barrejats.</li>
+<li><strong>Una persona escrita de dues maneres</strong> —«Àlvaro» en un node, «Alvaro Solache» en un altre— es partia en dues: perfil partit, rànquing partit, i el fons comptant-la dos cops com a dues persones.</li>
+</ul>
+<p>El <code>did</code> ja hi era des de V39: <code>claimMember</code> signa <code>{nodeId, memberId, did}</code>. El que no es feia era <strong>emparellar per ell</strong>. Tres regles:</p>
+<ul>
+<li><strong>Un <code>did</code> mana sobre el nom.</strong> Dos registres amb el mateix <code>did</code> són la mateixa persona encara que s'escriguin diferent.</li>
+<li><strong>Dos <code>did</code> diferents no s'uneixen mai</strong>, encara que el nom coincideixi. I el nom ambigu es <strong>marca</strong>, en comptes d'amagar que hi ha dues persones al darrere.</li>
+<li><strong>Un registre sense <code>did</code> s'adopta pel nom</strong>, però només si aquell nom apunta a <strong>un sol</strong> <code>did</code>. Si n'apunta a dos, no s'endevina: endevinar aquí seria triar a qui li regalem les hores d'un altre.</li>
+</ul>
+<p>I la que ho fa reversible: <strong>res d'això reescriu història signada</strong>. Els apunts conserven el seu <code>memberId</code> i el seu <code>who</code> originals; la identitat <strong>es resol en llegir</strong>, no es reescriu. Per això reclamar una fitxa vella la uneix a la persona sense tocar cap signatura ni cap cadena de hash.</p>
+</article>
+<article class="veda" id="veda-60">
+<div class="vh"><span class="vn">60</span><h2>Publicar sense descobriment no és publicar</h2><a class="perma" href="#veda-60" aria-label="Enllaç permanent a la veda 60">#</a></div>
+<p><code>supplyPublicPack</code> generava un paquet agregat, comprovava que no filtra res, el versionava amb CID… i el deixava <strong>al teu disc</strong>. Ningú el podia trobar. Tota la feina difícil feta i el resultat, invisible.</p>
+<p>La solució ja existia al mateix repositori i ningú se n'havia adonat: <strong>l'atles</strong> és un repositori públic servit per CDN, on s'aporta amb una <em>pull request</em> i d'on qualsevol baixa amb un <code>fetch</code>. Públic, versionat, amb historial, auditable, gratis, i amb revisió humana abans de publicar-se. L'oferta comuna fa el mateix camí.</p>
+<p>Dues regles que no es poden relaxar:</p>
+<ul>
+<li><strong>El que es llegeix no es fusiona amb el teu.</strong> L'oferta comuna viu a part i es marca com a vinguda de fora. Barrejar-la convertiria el que ha dit un altre en dada teva, i això no es pot desfer un cop la gent hi confia.</li>
+<li><strong>Entra pel mateix sedàs que surt.</strong> Una fila que porti noms, correus, telèfons o <code>did</code> es descarta sencera <strong>encara que vingui del repositori oficial</strong>. Confiar en l'origen és exactament com es cola una fuita.</li>
+</ul>
+<p>I es diu el que és: <strong>això no és permaweb</strong>. Si algú esborra el repositori, desapareix. És públic, versionat i amb un CID que prova integritat —molt més que tenir-lo al calaix, i menys que Arweave. El mateix fitxer es pot pinnar després; ja porta el seu CID.</p>
+</article>
+<article class="veda" id="veda-61">
+<div class="vh"><span class="vn">61</span><h2>No es diu «verificat» del que no s'ha verificat</h2><a class="perma" href="#veda-61" aria-label="Enllaç permanent a la veda 61">#</a></div>
+<p>El SOS signa amb <code>did:sos</code> i ancorava amb la clau Nostr de l'extensió del navegador, i <strong>res no deia que fossin la mateixa persona</strong>. Un ancoratge provava que <em>algú</em> amb una clau Nostr havia publicat aquell hash, no que fos qui el va registrar. Per a un registre d'usuaris a la permaweb, aquest era el forat.</p>
+<p>El pont és una afirmació <strong>signada dues vegades</strong>: un registre que diu «el did D i la clau N són la mateixa persona», firmat pel <code>did</code> i publicat sencer com a event Nostr firmat per N.</p>
+<p>I aquí la part que importa més que la funcionalitat: <strong>la firma Nostr no es pot verificar dins del SOS</strong>. És Schnorr sobre secp256k1 i SubtleCrypto no en sap; caldria una biblioteca, i el SOS és un sol fitxer. Davant d'això hi ha dues sortides i només una és acceptable:</p>
+<ul>
+<li>Dir «pont verificat» i callar. Seria mentida per omissió, i just al lloc on la gent decidirà si es refia d'una identitat.</li>
+<li>Dir exactament què s'ha mirat: la banda <code>did:sos</code> <strong>verificada</strong> amb SubtleCrypto; el <strong>lligam verificat</strong> en les tres coses (que l'event contingui el registre firmat, que la clau declarada sigui la de l'event, que l'id sigui el SHA-256 de la serialització NIP-01); i la firma Nostr <strong>no verificada aquí</strong>, amb el motiu escrit.</li>
+</ul>
+<p>I dir també què sí que la prova: <strong>els relés rebutgen els events amb firma invàlida</strong>. Si el pont és publicat i acceptat, la clau Nostr hi va signar. Això és una prova de debò i s'explica com a tal, sense confondre-la amb una comprovació local.</p>
+</article>
+<article class="veda" id="veda-62">
+<div class="vh"><span class="vn">62</span><h2>Una eina que només creix acaba sent inservible</h2><a class="perma" href="#veda-62" aria-label="Enllaç permanent a la veda 62">#</a></div>
+<p>El SOS ha crescut <strong>sempre per addició</strong> i no s'hi ha tret mai res. Cada tanda hi posava una portada, una pestanya o una entrada de menú, i com que ningú ho mesurava, ningú ho veia. Tres coses que es van trobar en mirar-ho de debò:</p>
+<ul>
+<li><strong>El mapa de Catalunya no tenia cap sortida.</strong> S'hi entrava i s'hi quedava atrapat qui no sabés que el logo també hi porta.</li>
+<li><strong>Tres portades es fabricaven el mateix botó de tornada</strong> per separat. No és que cinc portades competeixin: és que no hi havia <strong>una</strong> manera de tornar.</li>
+<li><strong>La pestanya de conversa es va afegir sense guia contextual</strong>, incomplint la veda que diu que un context sense guia és un context que s'ha d'endevinar. Es va incomplir la mateixa tanda que es va escriure.</li>
+</ul>
+<p>D'aquí surten dues regles:</p>
+<p><strong>Una sola manera de tornar.</strong> Una funció, un text, un comportament (<code>homeBackBtn</code>). Quan cada pantalla s'inventa la seva sortida, la navegació es parteix i qui es perd no sap per què.</p>
+<p><strong>Sostres declarats, no límits tècnics.</strong> <code>SOS/tools/check-kiss.js</code> corre a cada PR i mesura el pes gzip, que cap pestanya es quedi sense guia, que el hook de test no tingui duplicats, i quantes portades, rutes i entrades de menú hi ha. <strong>No prohibeix créixer</strong>: obliga que créixer sigui una decisió que algú pren i escriu al commit. Aquesta fricció és tota la seva utilitat.</p>
+<p>Va a <code>tools/</code> i no als tests de Playwright per un motiu que val la pena saber: <strong>els tests de Playwright no corren al CI</strong>. El <code>npm test</code> del workflow no fa res perquè no hi ha <code>package.json</code>, i per això el CI sortia verd comprovant només sintaxi. Una guarda que ha de mossegar ha d'anar on de debò s'executa.</p>
+</article>
+<article class="veda" id="veda-63">
+<div class="vh"><span class="vn">63</span><h2>Una llista plana llarga és un calaix, i el que no és de ningú no es fa</h2><a class="perma" href="#veda-63" aria-label="Enllaç permanent a la veda 63">#</a></div>
+<p>Dues coses que la guarda de KISS va treure a la llum en comptar de debò.</p>
+<p><strong>El llançador tenia 32 accions en una sola columna.</strong> Ningú les havia comptat mai —cada tanda n'hi posava una, i com que la llista no protesta, la llista creixia. Trenta-dues entrades sense cap ordre no són un menú: són un calaix on es busca amb la vista una per una, i on la trenta-dosena no la troba ningú perquè ja s'ha desistit a la desena.</p>
+<p>La sortida <strong>no era treure'n</strong>. Cadascuna serveix a algú i esborrar-ne seria decidir per aquell algú. El que faltava era <strong>contestar la pregunta que es fa qui obre el llançador</strong>, que no és «quines accions hi ha» sinó «què hi puc fer <em>ara</em>». Set grups (jo · comunitat · govern · xarxa · proves · relat · sistema) i un filtre per a qui ja sap què busca. La mateixa llista, i es troba.</p>
+<p>Dues regles que la guarda comprova i no es poden saltar:</p>
+<ul>
+<li><strong>Cap acció sense grup.</strong> Una entrada sense <code>g:</code> cau fora de tots els blocs i torna a ser el que era: una línia solta enmig d'una llista. La guarda falla si n'hi ha cap, perquè afegir-ne una sense pensar on va és exactament el descuit que ens va portar a 32.</li>
+<li><strong>Un filtre que no troba res ho ha de dir.</strong> Un cos buit sembla una app trencada. Diu «cap acció», i qui filtra sap que ha filtrat massa.</li>
+</ul>
+<p><strong>I la feina que no és de ningú.</strong> Les missions només sabien mirar què t'espera <strong>a tu</strong>: el que tens pendent, el que has de confirmar, el teu camí. Tot el que el SOS ja diagnosticava sobre la <strong>xarxa</strong> —regions sense cap dinàmica, mapes de valor amb reciprocitat sota el 50 %, rols aïllats— es calculava, es dibuixava en un panell, i <strong>no li tocava a ningú</strong>. Un forat que és de tothom no és de ningú, i per tant no es tapa mai.</p>
+<p>Ara són missions de veritat (<code>MISSION_KINDS.xarxa</code>), amb dues condicions:</p>
+<ul>
+<li><strong>Cada missió ha de portar a un lloc concret.</strong> «Falta cobertura» és una estadística; «Girona no té cap dinàmica viva, obre-n'hi una» és una missió. Sense <code>act</code>, una missió és un retret.</li>
+<li><strong>Van al final de la llista.</strong> El que t'espera a tu passa davant del que espera la xarxa —altrament la llista de qui té tres confirmacions pendents s'omple de deures col·lectius i deixa de servir per al que servia.</li>
+</ul>
+</article>
+<article class="veda" id="veda-64">
+<div class="vh"><span class="vn">64</span><h2>Un ordre global vol dir un amo; la triple entrada no en necessita</h2><a class="perma" href="#veda-64" aria-label="Enllaç permanent a la veda 64">#</a></div>
+<p>El ledger tenia <strong>una sola cadena per node</strong>: cada apunt encadenat amb l'anterior, fos de qui fos. Semblava més fort i era més fràgil, perquè obliga a un <strong>ordre global</strong> —i un ordre global entre gent que apunta sense estar connectada només se sosté si algú diu qui va primer. Aquell algú és un servidor, i un servidor és un amo.</p>
+<p>Sense amo, l'única sortida que quedava era que en sincronitzar guanyés un i es perdés l'altre. Es va comprovar amb una sonda: <strong>es perdien hores signades</strong>, i també socis. Sense avís i sense rastre.</p>
+<p>La sortida no és triar quina cadena guanya. És <strong>comptabilitat de triple entrada</strong>: el que dona, el que rep, i el <strong>rebut</strong> que tots dos guarden signat. El rebut és la tercera entrada i és la que mana. D'aquí surten dues regles:</p>
+<ul>
+<li><strong>Cada autor encadena el seu.</strong> <code>prevHash</code> apunta a l'apunt anterior <em>del mateix <code>did</code></em>. Dues persones que apunten alhora fan créixer dues cadenes que no es trepitgen, i la unió de les dues és vàlida <strong>sense reordenar res</strong>.</li>
+<li><strong>La unió no destrueix.</strong> Fusionar dos ledgers és quedar-se'ls tots dos. I quan el mateix registre arriba per les dues bandes, es queda <strong>el més ric</strong> —el que porta firma, el que porta més confirmacions—, mai el més nou pel fet de ser més nou. Aquesta última regla és precisament la que ens havia portat a perdre dades.</li>
+</ul>
+<p>I la conseqüència que val més que la funcionalitat: això fa el sistema <strong>antifràgil</strong>. Amb la cadena única, cada còpia de més era una oportunitat de conflicte i créixer feia el registre pitjor. Amb el rebut compartit, cada persona que en guarda una còpia és una <strong>prova de més</strong>. Perdre el telèfon deixa de ser perdre la feina, perquè qui era a l'altra banda de l'intercanvi també la té. Que la xarxa creixi deixa de ser un risc a gestionar i passa a ser el que fa que la teva hora sigui indiscutible.</p>
+<p>I una que és de tracte, no de codi: <strong>no es diu que una cadena antiga està trencada quan només és d'un altre esquema</strong>. <code>verifyLedger</code> prova per autor i, si no quadra, com a cadena global; els ledgers escrits abans d'això segueixen sent vàlids i es diu de quin mode són. Marcar de corrupte el que ningú ha tocat és la manera més ràpida de fer que algú deixi de refiar-se del verificador.</p>
+</article>
+<article class="veda" id="veda-65">
+<div class="vh"><span class="vn">65</span><h2>Un canal que exigeix simultaneïtat és un canal que no s'usa</h2><a class="perma" href="#veda-65" aria-label="Enllaç permanent a la veda 65">#</a></div>
+<p>El relé dona presència en viu, i per això demana que <strong>dues persones hi siguin alhora</strong>. En un poble això no passa gairebé mai: la gent obre l'app el diumenge al vespre, i no totes el mateix diumenge. Fèiem descansar la convergència de la xarxa sobre una coincidència que no es produeix.</p>
+<p>El repositori ja feia de bus asíncron dues vegades —l'atles i <code>supply/</code>— i ningú ho havia llegit com el que és: <strong>durable, versionat, amb historial, auditable i gratis</strong>. Cadascú hi deixa el seu quan pot; qui arriba després se'l troba.</p>
+<p>Això <strong>només és possible gràcies a la veda 64</strong>. Amb apunts idempotents que s'uneixen sense conflicte, un directori al qual tothom afegeix convergeix sol. Amb la cadena única hauria calgut decidir qui va primer —i tornaríem a necessitar algú que ho digués. L'ordre de les dues vedes no és casual: la primera és el que fa possible la segona.</p>
+<p>I és la peça antifràgil per excel·lència: cada clon, cada fork i cada CDN que el serveix és <strong>una còpia més del registre</strong>.</p>
+<p>Tres regles que eviten que això sigui una porta oberta:</p>
+<ul>
+<li><strong>El transport no dona veritat.</strong> En llegir es verifica el sobre <strong>i cada apunt per separat</strong>. Un sobre impecable no fa bons els apunts que porta a dins, i el que no porta firma vàlida es descarta encara que vingui del repositori oficial. És la mateixa regla de la veda 60, pel mateix motiu.</li>
+<li><strong>Qui no té la clau no llegeix res.</strong> El contingut va xifrat amb la clau del node. I a fora del sobre <strong>no hi queda ni el nom del node</strong>: només el tema i l'id, que és l'únic que cal per encaminar el fitxer. Deixar-hi el nom seria dir a qualsevol que passi que en aquell poble hi ha un banc de temps i com es diu — i això ja és informació sobre gent.</li>
+<li><strong>Publicar dues vegades no fa mal.</strong> La unió és idempotent, i per això es pot reintentar sense pensar-hi. Un canal que castiga el reintent és un canal que la gent deixa a mitges.</li>
+</ul>
+<p>I una que és de tracte: <strong>un paquet que no es pot obrir no és un error</strong>. És d'un altre node i és el més normal del món. Es compta a part i es diu «xifrat amb una clau que no és la teva», no «ha fallat».</p>
+</article>
+<article class="veda" id="veda-66">
+<div class="vh"><span class="vn">66</span><h2>Simplificar és decidir per on comences, no esborrar el que hi ha</h2><a class="perma" href="#veda-66" aria-label="Enllaç permanent a la veda 66">#</a></div>
+<p>Tothom veia el mateix: fins a 13 pestanyes al node, 32 accions al llançador, 17 rutes. Una persona que ve a apuntar tres hores al mes n'ha de fer servir sis, i les ha de trobar entre totes les altres. La informació hi era; el que no hi havia era <strong>una manera de saber quina et toca a tu</strong>.</p>
+<p>I les peces per saber-ho ja hi eren, sense connectar: <code>ROLE_JOURNEYS</code> sap què fa cada rol, <code>activeRoleId</code> sap quin ets ara, i cada guia contextual porta la seva <code>lens</code>. El que faltava era que allò <strong>decidís</strong>, i no només ressaltés.</p>
+<p>La temptació era treure funcions. Seria un error i ja el vam evitar a la veda 63: cadascuna serveix a algú, i esborrar-ne és decidir per aquell algú. El que sí que es pot decidir és <strong>per on comences</strong>.</p>
+<p>Tres regles, perquè simplificar no acabi sent amagar:</p>
+<ul>
+<li><strong>El que té contingut no s'amaga mai.</strong> Si hi ha apunts, socis o objectes a dins, la pestanya hi és encara que el teu rol no la necessiti. Amagar feina que algú ja ha fet no és simplificar: és fer-la desaparèixer. El comptador que ja es pintava a cada pestanya és exactament el senyal que calia, i no va caldre calcular res de nou.</li>
+<li><strong>La pestanya on ets no desapareix sota els peus.</strong></li>
+<li><strong>El que s'amaga es diu i es desamaga des del mateix lloc.</strong> «▸ 3 més», al costat de les altres. Una pestanya que marxa en silenci és una decisió que l'app t'ha pres a l'esquena, i qui se n'adona deixa de refiar-se de la resta de la pantalla.</li>
+</ul>
+<p>I una salvaguarda que val per a tot filtre: <strong>si el filtre deixaria la llista buida, no es filtra</strong>. Val més ensenyar-ho tot que ensenyar el no-res.</p>
+</article>
+<article class="veda" id="veda-67">
+<div class="vh"><span class="vn">67</span><h2>Una xifra inflada i incompleta és pitjor que cap xifra</h2><a class="perma" href="#veda-67" aria-label="Enllaç permanent a la veda 67">#</a></div>
+<p>El toast deia «Sincronitzat · N canvis», i aquell N mentia dues vegades: comptava la mateixa fusió diverses vegades —una pel xat, una per cada col·lecció, una pel node sencer— i <strong>no comptava el que s'havia sobreescrit</strong>. Un número així no és una aproximació: és una invitació a refiar-se'n.</p>
+<p>Des de la veda 64 els apunts ja no es perden —s'uneixen—, però la resta del node segueix resolent-se per LWW: el mapa de valor, el tauler, el nom. Això no és cap defecte a tapar; per a camps que es reescriuen sencers és la decisió correcta. El que no és correcte és <strong>no dir-ho</strong>. Si en sincronitzar el teu mapa de valor ha estat substituït pel de l'altre, ho has de saber en aquell moment, no descobrir-ho un mes després.</p>
+<p>D'aquí surt la regla: <strong>el que s'uneix i el que se substitueix no es barregen mai al mateix comptador</strong>. Un «+3 a ledger» i un «mapa de valor substituït» són notícies de signe contrari, i sumar-les en un sol número les amaga totes dues.</p>
+<p>I el corol·lari de tracte: quan alguna cosa s'ha substituït, no n'hi ha prou amb un toast. Es diu a la cara i es pot mirar què i on. Sense oferir cap botó de desfer que no podríem complir.</p>
+</article>
+<article class="veda" id="veda-68">
+<div class="vh"><span class="vn">68</span><h2>Qui no es queixa, plega</h2><a class="perma" href="#veda-68" aria-label="Enllaç permanent a la veda 68">#</a></div>
+<p>No hi havia cap camí per dir «això s'ha trencat». El senyal del que falla només arribava si algú et trucava, i en una beta amb gent que no et coneix això vol dir que <strong>no arriba</strong>. Quan una eina falla dues vegades a algú que no hi té cap compromís, aquell algú no obre una incidència: deixa d'apuntar hores i no torna. I nosaltres ho llegim com «no els interessava».</p>
+<p>Per això una cosa que costa una tarda anava abans que coses molt més grans: és la que converteix la beta en <strong>informació</strong> en comptes d'anècdotes.</p>
+<p>Dues decisions la fan usable de debò:</p>
+<ul>
+<li><strong>Els errors ja passats es recullen sols.</strong> Preguntar «i què deia exactament l'error?» és demanar-li a la gent que faci de programador. Un anell dels últims errors, i ja el porta l'informe.</li>
+<li><strong>Es veu tot el que s'enviarà, abans d'enviar-ho</strong>, i passa pel mateix sedàs que qualsevol altre paquet que surt d'aquí (<code>verifyNoLeak</code>). Una eina que demana confiança i envia el que no ensenya no la mereix. I si qui escriu hi posa un nom sense pensar-hi, s'avisa <strong>abans</strong>, no després.</li>
+</ul>
+<p>Context, no contingut: comptadors i identificadors tècnics. El que ajuda a reproduir un error és saber que hi havia 40 socis, no com es diuen.</p>
+</article>
+<article class="veda" id="veda-69">
+<div class="vh"><span class="vn">69</span><h2>Designar no és custodiar</h2><a class="perma" href="#veda-69" aria-label="Enllaç permanent a la veda 69">#</a></div>
+<p>Si qui sosté el node perd el telèfon, la història del node se'n va amb ell. No és un cas rebuscat: és el cas normal al cap de dos anys. Una persona plega, canvia de mòbil, o simplement se li espatlla — i amb ella marxen les hores que ha apuntat tothom.</p>
+<p>Les peces hi eren: <code>exportBackup</code> i els envelopes xifrats per membre de la veda</p>
+<ol>
+<li>El que faltava era el <strong>rol</strong>: algú, a part de qui el sosté, que en tingui</li>
+</ol>
+<p>una còpia.</p>
+<p>I no va caldre inventar cap rol nou al sistema de rols. És una <strong>responsabilitat dins del node</strong>, i viu com una marca al soci. Un rol global diria que aquella persona custodia «en general», i el que custodia és aquest node. Quan una responsabilitat és local, fer-la global és perdre informació, no guanyar-ne.</p>
+<p>La regla que evita que això sigui teatre: <strong>designar no és custodiar</strong>. Una persona marcada que encara no ha rebut cap còpia no compta com a còpia, i es diu així de clar. Un comptador que digués «2 custodis» amb zero còpies entregades seria pitjor que no tenir-ne cap: et faria dormir tranquil.</p>
+<p>I restaurar és <strong>unir, no substituir</strong>. Qui restaura una còpia sovint ja té coses del node —ha seguit apuntant mentre l'altre no hi era—, i una restauració que esborrés allò seria la pèrdua de la veda 64 tornant per la porta del darrere.</p>
+</article>
+<article class="veda" id="veda-70">
+<div class="vh"><span class="vn">70</span><h2>El relé transporta, no escriu història</h2><a class="perma" href="#veda-70" aria-label="Enllaç permanent a la veda 70">#</a></div>
+<p>El relé ja existia, ja era opcional i el configurava qui volia, i el topic ja era un hash. Però només portava conversa: per fer arribar els <strong>apunts</strong> calia quedar cara a cara amb un QR, d'un en un. Amb N nodes això són N trobades, i és el que impedia que la xarxa convergís sola.</p>
+<p>Afegir-hi els apunts semblava tornar a posar un servidor al mig. No ho és, perquè <strong>el relé no té clau</strong>. El patch va xifrat amb la clau del node i signat pel <code>did</code>, i en arribar es comprova el sobre <strong>i cada apunt per separat</strong>. Qui allotja el relé veu passar bytes que no pot llegir ni alterar sense que es noti, i no pot fer aparèixer nodes al SOS de ningú: un patch d'un node que no tens es descarta.</p>
+<p>Aquesta és la diferència entre un transport i un amo, i es pot escriure com una prova: el test corre contra un servidor de debò i <strong>llegeix el que el servidor veu</strong>. Si algun dia hi passés res llegible, el test ho diria.</p>
+<p>I un detall d'educació amb qui allotja: <code>persist</code> es crida a 108 llocs, i una sola acció en dispara uns quants de seguits. Enviar un patch a cada crida convertiria el relé en una tempesta contra un servidor que sovint és el de casa d'algú. S'espera uns segons i se n'envia un de sol amb tot.</p>
+</article>
+<article class="veda" id="veda-71">
+<div class="vh"><span class="vn">71</span><h2>Tres còpies d'una regla són tres llocs on afluixar-la</h2><a class="perma" href="#veda-71" aria-label="Enllaç permanent a la veda 71">#</a></div>
+<p>El canal (veda 65), la custòdia (veda 69) i el relé (veda 70) fan exactament la mateixa feina: agafar el que puc demostrar d'un node, xifrar-ho amb la clau del node, signar-ho; i a l'altra banda comprovar la firma, desxifrar i verificar apunt per apunt.</p>
+<p>Escrit tres vegades, són tres llocs on la regla de «el transport no dona veritat» es pot afluixar sense que ningú se n'adoni — i el tercer sempre és el que s'oblida. <code>sealPack</code> i <code>openPack</code> ho fan un sol cop.</p>
+<p>Això no és estalviar línies: és que <strong>hi hagi un sol lloc on sigui difícil equivocar-se</strong>. Quan una garantia es repeteix, el que es multiplica no és el codi, és la superfície on pot fallar.</p>
+</article>
+<article class="veda" id="veda-72">
+<div class="vh"><span class="vn">72</span><h2>La cadena original és la clau</h2><a class="perma" href="#veda-72" aria-label="Enllaç permanent a la veda 72">#</a></div>
+<p><code>&lt;html lang=&quot;ca&quot;&gt;</code> i 2.400 cadenes catalanes incrustades al codi. Per a una beta a Catalunya el català no és cap barrera; per a Euskadi ho és tot. I és l'única feina pendent el <strong>cost de la qual creix cada setmana que no es fa</strong>: cada tanda hi afegeix text incrustat.</p>
+<p>El camí habitual —inventar claus (<code>btn.save</code>, <code>msg.error.2</code>) i substituir-les a 2.400 llocs— és car, es fa d'una tacada i es fa malament. La decisió que ho evita: <strong>la cadena catalana és la clau</strong>. <code>t('Desa')</code> torna «Desa» en català i «Guardar» en castellà.</p>
+<p>D'aquí surten tres propietats que valen molt més que l'estalvi de feina:</p>
+<ul>
+<li><strong>Res es pot trencar a mitges.</strong> Una cadena sense traduir surt en català, mai una clau crua a la cara de ningú. El pitjor cas d'aquesta capa és exactament el que ja tenim avui — i per això es pot començar sense por.</li>
+<li><strong>Migrar és incremental.</strong> Cada <code>t()</code> afegit és una millora independent; no cal convertir-ho tot perquè funcioni res.</li>
+<li><strong>No s'inventen claus.</strong> Una clau inventada és una decisió que s'oblida: al cap de sis mesos ningú sap què deia <code>msg.error.2</code>.</li>
+</ul>
+<p>I la part que fa que això no torni a passar: <strong>el deute es mesura</strong>. Un deute que no es veu és el que creix, i per això <code>check-i18n.js</code> no falla mai per tenir poca cobertura —seria mentir sobre l'estat real i bloquejar feina honesta— sinó que posa la xifra davant. Només falla pel que sí que és un error: una traducció buida, una que tradueix a si mateixa, o una que apunta a text que ja no existeix.</p>
+<p>L'últim cas és el traïdor: una traducció òrfena no tradueix res i es queda al diccionari fent bonic mentre la cadena de debò surt en català. Sense la guarda, això només es descobreix amb algú davant.</p>
+<p><strong>I es diu la cobertura real a qui tria la llengua.</strong> «Disponible en castellà» amb 48 textos traduïts seria una decepció programada; dir quants n'hi ha és el que fa que triar-ho no ho sigui.</p>
+</article>
+<article class="veda" id="veda-73">
+<div class="vh"><span class="vn">73</span><h2>Dos primaris són cap primari</h2><a class="perma" href="#veda-73" aria-label="Enllaç permanent a la veda 73">#</a></div>
+<p>La veda 66 va fer que les pestanyes del node les manés el full de ruta del rol. La home es va quedar igual per a tothom, i mesurada donava això: <strong>1.876 px, 6 seccions i 25 botons</strong>, idèntics per a qui ve a apuntar tres hores al mes i per a qui sosté el node.</p>
+<p>El defecte més barat de veure i el més fàcil de repetir: <strong>dos botons primaris competint</strong> a la mateixa targeta. Quan tot destaca, no destaca res, i el que hauria de manar —el pas següent del teu camí— quedava a la segona fila darrere de sis botons fantasma. Ara n'hi ha <strong>un</strong>, va primer, i és sempre el pas següent.</p>
+<p>I la targeta va passar de set botons a tres. Els quatre que en van sortir <strong>no s'han tret d'enlloc</strong>: són al llançador, agrupats des de la veda 63. Repetir una acció a la home no és fer-la més accessible; és competir amb el que aquella pantalla havia de dir.</p>
+</article>
+<article class="veda" id="veda-74">
+<div class="vh"><span class="vn">74</span><h2>El proper pas surt del que hi ha, no del que falta per estrenar</h2><a class="perma" href="#veda-74" aria-label="Enllaç permanent a la veda 74">#</a></div>
+<p>Quan no hi havia res que reclamés atenció, «els teus propers passos» eren tres «Prova: …» — la llista de capacitats que encara no havies tocat. És un ganxo de completista, i el completista no és qui tenim al davant.</p>
+<p>A un banc de temps amb cinc socis i cap apunt, el proper pas no és «Prova: MATRIU · incubar»: és <strong>registrar les primeres hores</strong>. El buit que es nota és el que el SOS ja sap veure —socis sense cap apunt, un node sense ningú— i mirava just per sobre.</p>
+<p>L'ordre correcte és: el que reclama atenció, després el buit que es nota, i només al final provar coses noves. Provar coses noves és l'última prioritat de qui ha vingut a fer una feina concreta.</p>
+<p>El ganxo de completar no s'ha tret —enganxa, i això és cert—: s'ha plegat a una línia amb la barra. Era <strong>la secció més gran de la pantalla</strong>: deu targetes de deures a algú que havia vingut a apuntar hores.</p>
+<p>I una que val per a qualsevol pantalla: <strong>una secció buida no ocupa lloc</strong>. Un títol seguit de «res reclama atenció» és una secció sencera per dir que no n'hi ha cap, i empeny cap avall les que sí que en tenen.</p>
+</article>
+<article class="veda" id="veda-75">
+<div class="vh"><span class="vn">75</span><h2>Un sostre no és una veritat: és una conversa ajornada</h2><a class="perma" href="#veda-75" aria-label="Enllaç permanent a la veda 75">#</a></div>
+<p>El pes va arribar al 94 % del sostre de 400 KB i tocava fer alguna cosa. En mesurar d'on venia, la resposta no era on l'esperàvem: <strong>no és a les dades</strong> —cap bloc en passa de 5 KB gzip— <strong>sinó als comentaris</strong>. 170 KB en cru, 72 KB gzip, el 20 % del fitxer. És a dir: aquestes vedes, escrites dins del codi.</p>
+<p>Pel camí, dues coses van corregir a la baixa el guany que s'esperava, i totes dues valen com a lliçó de mesura:</p>
+<ul>
+<li><strong>El gzip ja desduplica la prosa.</strong> Vuit quilobytes de text en cru en van donar 3,45 de comprimits. Comptar en cru per prometre un estalvi en comprimit és comptar el que no es paga.</li>
+<li><strong>Dos dels «blocs grans» no eren comentaris.</strong> La regex creuava cadenes que contenen <code>/*</code> i <code>*/</code> a dins. Entraven a l'estimació, i tallar-los hauria trencat l'app. Una mesura que no s'ha comprovat contra el que mesura és una opinió amb decimals.</li>
+</ul>
+<p>Amb els números de debò: buidar els 32 blocs restants val <strong>3 punts percentuals a canvi de 32 explicacions</strong>. I 16 KB en un fitxer que es cacheja no els nota ningú, ni amb dades mòbils d'un poble.</p>
+<p>Així que es puja el sostre i s'escriu per què. Això <strong>no és rendir-se davant del límit</strong>: és que el límit ha fet exactament la seva feina. No existia per prohibir créixer sinó per obligar que créixer fos una decisió presa i escrita, i aquí n'hi ha una. El dia que el número no es pugui justificar, el que caldrà canviar serà el codi, no el número.</p>
+<p>I la que val per a qualsevol guarda que es posi a partir d'ara: <strong>una guarda que mai es discuteix no està servint de res, i una que se salta sense escriure per què ja no és una guarda</strong>. La fricció és tota la seva utilitat.</p>
+</article>
+<article class="veda" id="veda-76">
+<div class="vh"><span class="vn">76</span><h2>Un registre públic de coses privades es publica en hashes</h2><a class="perma" href="#veda-76" aria-label="Enllaç permanent a la veda 76">#</a></div>
+<p><code>buildRegisterPack</code> feia tota la feina difícil —arrel, CID, firma, totals— i el paquet es quedava <strong>al teu disc</strong>. El mateix forat que tenia <code>supply/</code> abans de la veda 60: publicar sense descobriment no és publicar.</p>
+<p>Però abans de publicar-lo calia contestar una pregunta que sembla de tecnologia i és de gent: <strong>què vol dir «registre públic» quan el que hi ha dins són hores que uns veïns es van fer els uns als altres?</strong> Publicar qui va donar hores a qui és publicar dades de gent que no ho ha demanat, i el SOS existeix precisament perquè aquella gent s'hi pugui refiar.</p>
+<p>La sortida: <strong>el que surt són hashes i totals, mai files</strong>. I d'aquí la propietat que fa que això valgui la pena:</p>
+<blockquote><p>verificable per tothom, llegible només per qui té el rebut.</p></blockquote>
+<p>Amb el teu rebut a la mà comproves que el seu hash hi és, i per tant que aquella hora ja existia en aquella data. Qui no el té veu una llista de hashes que no li diu res de ningú. <strong>La prova d'inclusió és el que converteix un tauler d'anuncis en un registre</strong>: un registre on no pots assenyalar el teu apunt no és teu.</p>
+<p>I «actualitzable sense amo» té una forma concreta: <strong>versions immutables i un punter que es mou</strong>. Cada versió porta el CID de la seva mare, així que qui no es refiï del punter recorre la cadena des de qualsevol versió que ja tingués.</p>
+<p>Tres decisions d'ordre que semblen detalls i no ho són:</p>
+<ul>
+<li><strong>El punter s'actualitza després de la versió.</strong> Si falla pel mig queda una versió publicada que el punter encara no anomena —no s'ha perdut res— i mai al revés, que seria un punter assenyalant un fitxer que no existeix.</li>
+<li><strong>El que va dins del paquet ha d'entrar abans de signar.</strong> El CID es calcula sobre tot el paquet menys el propi CID; afegir-hi un camp després invalida alhora la firma i el CID, i el paquet deixa de verificar-se sense dir per què. És l'error que va cometre qui ho va escriure, i el va trobar el test.</li>
+<li><strong>Una versió que no verifica no prova res</strong>, encara que el hash hi sigui. Si s'acceptés, publicar una versió manipulada seria una manera de «demostrar» qualsevol cosa.</li>
+</ul>
+<p>I el sedàs de sortida, com a tot el que surt d'aquí: si algun dia un camp nou arrossegués text lliure cap a les fulles, <code>verifyNoLeak</code> ho atura <strong>abans</strong>.</p>
+</article>
+<article class="veda" id="veda-77">
+<div class="vh"><span class="vn">77</span><h2>El SOS no recluta: reconeix</h2><a class="perma" href="#veda-77" aria-label="Enllaç permanent a la veda 77">#</a></div>
+<p>Ve del cànon del Comando, i corregeix com s'havia explicat el projecte fins ara.</p>
+<blockquote><p>Els 150.000 <strong>ja han estat enviats</strong> a la Terra pel Gran Molekulón. Els iniciadors són els qui <strong>els busquen</strong>, amb la banda, per anar arreu i trobar-los.</p></blockquote>
+<p>Ho explicàvem al revés. Si els 150.000 s'han de reclutar, l'app és una eina de captació, l'èxit és convèncer i qui no s'apunta no compta. Si <strong>ja hi són</strong>, l'app és una eina de <strong>reconeixement</strong>, l'èxit és fer visible, i qui no s'ha apuntat <strong>ja hi era</strong> — només no l'hem trobat encara.</p>
+<p>I la versió bona descriu millor el que el codi fa de debò: <strong>el SOS no crea valor, fa visible el que ja existeix.</strong> Una hora que un veí ja va donar. Un saber que algú ja té. Una biblioteca que ja és al menjador d'algú. <code>findMatches</code> no fabrica coincidències: en troba de latents.</p>
+<p>D'aquí surt una regla de llenguatge que val per a tota la interfície: <strong>no es diu «apunta't» quan el que fem és trobar-te.</strong> El primer demana que canviïs; el segon reconeix el que ja fas.</p>
+</article>
+<article class="veda" id="veda-78">
+<div class="vh"><span class="vn">78</span><h2>Un enemic endèmic demana pràctica, no èpica</h2><a class="perma" href="#veda-78" aria-label="Enllaç permanent a la veda 78">#</a></div>
+<p>També del cànon: <strong>Mundo Muerto és una corporació que funciona com un virus a la ment de les persones.</strong> És endèmic —la part perversa de la ment humana—, sempre hi és, i <strong>no es derrota: es controla</strong>, amb tècniques de purificació.</p>
+<p>Un enemic que es derrota demana una èpica amb final. Un enemic que sempre hi és demana una <strong>pràctica que es fa cada dia</strong>. I això explica el projecte millor que cap argument tècnic:</p>
+<ul>
+<li>El SOS no promet guanyar. Promet una pràctica setmanal: apuntar el que has donat, confirmar el que has rebut, i que quedi escrit de manera que ningú ho pugui negar.</li>
+<li><strong>Cada veda d'aquest codex és una tècnica de purificació</strong> contra una forma concreta de Mundo Muerto. I la forma que pren més sovint aquí dins no és una empresa de fora: és <strong>la temptació d'inflar el número</strong>.</li>
+</ul>
+<p>Per això les guardes no es poden treure mai, i per això el guió ja ho havia escrit sense que ningú ho llegís així:</p>
+<blockquote><p>«També us mantindrà el nivell d'alarma, l'estat d'alerta… Us mantindrà a ratlla. Perquè no baixeu la guàrdia.»</p></blockquote>
+<p><strong>L'enemic és el que et manté en forma.</strong> Una guarda que no molesta mai ja no està guardant res.</p>
+</article>
+<article class="veda" id="veda-79">
+<div class="vh"><span class="vn">79</span><h2>Ampliar el que es pot connectar obliga a revisar el que se suma</h2><a class="perma" href="#veda-79" aria-label="Enllaç permanent a la veda 79">#</a></div>
+<p><code>linkResource</code> només oferia <strong>germans</strong> —<code>children(node.parentId)</code>— i els fills del propi node no hi sortien mai. El cas natural és justament aquell: una MATRIU comarcal amb bancs de temps municipals a sota.</p>
+<p>Ampliar la llista era mitja hora. <strong>Fer-ho sense mirar res més hauria estat pitjor que deixar-ho com estava</strong>, i val la pena entendre per què:</p>
+<p><code>rollup()</code> <strong>ja agrega els descendents</strong> cap amunt, i <code>ecosystemResources</code> <strong>suma</strong> el que aporten els enllaços. Enllaçar un fill hauria comptat el mateix dues vegades. I com que el fons distingeix «verificat» d'«estimat», el resultat no hauria estat un número una mica alt: hauria estat <strong>un número inflat amb aparença de verificat</strong> — el pitjor que li pot passar a un projecte que promet exactament el contrari.</p>
+<p>La regla, que ja existia per a la consolidació entre nivells i que aquí es torna a aplicar: <strong>propi i agregat no se sumen a mà</strong>. Els enllaços es parteixen en dos —el que penja de tu, que ja entra per l'agregat, i el que ve de fora, que no entra per cap altra banda— i només els segons sumen. I es diu a la pantalla, que és el que fa que la xifra sigui defensable davant de qui la miri amb dubtes.</p>
+<p><strong>La lliçó general:</strong> quan s'amplia el que un sistema pot relacionar, s'ha de tornar a mirar tot el que aquell sistema <strong>suma</strong>. Les vies noves no porten dades noves: porten <strong>les mateixes dades per un camí que abans no existia</strong>.</p>
+</article>
+<article class="veda" id="veda-80">
+<div class="vh"><span class="vn">80</span><h2>Val més dir «això no ho faig jo» que un botó que ho sembla</h2><a class="perma" href="#veda-80" aria-label="Enllaç permanent a la veda 80">#</a></div>
+<p>Al registre públic li faltava permanència: el repositori es pot esborrar i els relés de Nostr no guarden res per sempre. Això es paga un cop i es fa a fora.</p>
+<p>La temptació era un botó que digués «Puja a Arweave» i que en realitat obrís una pestanya. Ho hauria fet servir tothom i ningú hauria sabut que <strong>el que ha quedat pujat és el que hi hagi pujat ell</strong>, no el SOS.</p>
+<p>Per això el botó diu <strong>«fes-lo permanent»</strong> i la pantalla diu, sense endolcir-ho, que el SOS no puja res. El projecte porta massa vedes dient «no es diu verificat del que no s'ha verificat» com per fallar aquí.</p>
+<p>I la peça que de debò fa la feina no és el fitxer ni el CID: és <strong>quedar-se l'adreça on has dit que l'has posat</strong>. Un ancoratge del qual no saps tornar no és un ancoratge — i per això, <strong>sense adreça no es desa res</strong>. Deixar-ho desar buit hauria estat pitjor que no oferir-ho: tindries una llista d'ancoratges que et faria creure que estàs cobert.</p>
+<p>Es guarda <strong>dins de l'ancoratge que ja existia</strong>, no en una llista nova. Dos llocs on mirar el mateix acaben sempre igual: un dels dos menteix.</p>
+</article>
+<article class="veda" id="veda-81">
+<div class="vh"><span class="vn">81</span><h2>Un relat que no es pot apagar ha deixat de ser una capa</h2><a class="perma" href="#veda-81" aria-label="Enllaç permanent a la veda 81">#</a></div>
+<p>Cada pantalla del SOS té ara el seu superheroi del Comando. <strong>Zero funcions noves</strong>: els personatges ja hi eren i les pantalles també; només calia dir quin va amb quina.</p>
+<p>El risc d'afegir relat a una eina és que el relat es posi al davant. Dues regles l'eviten, i totes dues es poden comprovar:</p>
+<ul>
+<li><strong>El personatge explica la pantalla, no la substitueix.</strong> La línia va a sota i és una frase. La prova no és una intenció: el test <strong>compara la guia amb la lent encesa i apagada</strong> i comprova que sense el personatge la guia segueix dient exactament el mateix. Si algun dia apagar-ho trenqués res, voldria dir que el relat ha deixat de ser una capa — i el test ho diria.</li>
+<li><strong>El relat es guanya.</strong> No surt fins que hi ha una aportació registrada. Qui acaba d'arribar té feina a fer; qui ja ha aportat, s'ha guanyat la broma. Posar la mitologia davant de la primera hora de ningú és la manera més segura de fer fugir precisament qui més falta.</li>
+</ul>
+</article>
+<article class="veda" id="veda-82">
+<div class="vh"><span class="vn">82</span><h2>Un certificat que el dona algú val el que valgui aquell algú</h2><a class="perma" href="#veda-82" aria-label="Enllaç permanent a la veda 82">#</a></div>
+<p>El Programa Pioneres ofereix un certificat després de tres setmanes de feina. La temptació era un diploma d'assistència, que és el que fa tothom i no costa res de defensar perquè no afirma res.</p>
+<p>El que s'ofereix, en canvi, s'aguanta sol:</p>
+<ul>
+<li><strong>No certifica que hagis vingut: certifica el que has fet</strong>, i es construeix des del teu registre signat.</li>
+<li><strong>No el dona qui l'acompanya.</strong> El registre és de la persona i porta la seva firma; qui acompanya <strong>confirma el que ha vist</strong>, i aquella confirmació també queda signada. Qualsevol ho pot comprovar sense preguntar a cap dels dos —que és exactament la triple entrada de la veda 64 aplicada a una altra cosa.</li>
+<li><strong>I el rol no es tria en un formulari: es dedueix del que has fet</strong> (veda 46). Sense això, el programa seria un curset amb diploma i el rol una casella.</li>
+</ul>
+<p>I es diu el que no és: <strong>no té reconeixement oficial</strong>. Dir-ho no li treu valor; li'n dona, perquè el que sí que és —verificable— és més del que pot dir la majoria de certificats que sí que són oficials.</p>
+</article>
+<article class="veda" id="veda-83">
+<div class="vh"><span class="vn">83</span><h2>Un cromo que es pot regalar deixa sense sentit el registre que el sosté</h2><a class="perma" href="#veda-83" aria-label="Enllaç permanent a la veda 83">#</a></div>
+<p>«Tengo cromos repes… que te lo cambio», canta el Comando Ska. La frase amaga la mecànica més útil que té un àlbum, i que és exactament la que aquesta app no sabia provocar: <strong>un repetit no serveix per a res tot sol</strong>. T'obliga a sortir a buscar qui té el que et falta, i a tenir alguna cosa per oferir-li. No és un rànquing —és reciprocitat, que és el que el SOS mesura i el que més li costa que passi.</p>
+<p>Portar-ho al codi obligava a decidir tres coses, i les tres es podien equivocar d'una manera que hauria semblat innòcua:</p>
+<p><strong>D'on surt un cromo.</strong> La temptació era reaprofitar els «superpoders» de <code>reputationOf</code>, que ja hi eren. Però aquells es calculen sobre les <strong>ofertes publicades</strong>: són una declaració, i publicar-ne deu no costa res. Un cromo surt d'una aportació al ledger <strong>signada o encadenada</strong> —el mateix llistó amb què la reputació separa els apunts firmats dels legacy. Si aquí el llistó fos un altre, la mateixa persona tindria dues veritats sobre el mateix apunt. El que has fet i ningú ha verificat no desapareix: es compta a part i es diu on falta, perquè saber què has de firmar és una acció; que s'esfumi, no.</p>
+<p><strong>Què fa el botó de bescanvi.</strong> No mou cap cromo. Et diu amb qui val la pena parlar, i prou. <strong>El que es bescanvia és l'hora</strong>; el cromo apareix sol quan registreu l'intercanvi. Aquí hi ha la línia que no es pot creuar mai: el dia que un cromo es pugui aconseguir sense aportar —regalat, comprat, transferit— el registre deixa de voler dir res i tota la resta cau amb ell. Per això <code>cromoTransfer</code> <strong>no existeix</strong>, i el test comprova que no existeixi: una funció que no s'ha escrit és més difícil de cridar per error que una de protegida.</p>
+<p><strong>Què és la imatge.</strong> El cartell compartible porta escrit a dins «una imatge no prova res; el registre signat, sí». Sembla autosabotatge i és el contrari: el cartell viatja sol per llocs on ningú tindrà context, i sense aquesta línia estaríem fabricant credencials de mentida amb la nostra pròpia cara. El que prova és <code>proveInclusion</code>, no un PNG.</p>
+<p>I un afinat del sedàs que valia la pena fer bé. <code>verifyNoLeak</code> cridava pel nom que hi ha al cartell —correctament: està escrit per no deixar sortir noms de persona. Però <strong>hi ha un cas on un nom no és una fuita: el teu, al teu cromo, que hi poses tu</strong>. La sortida barata era no passar el cartell pel sedàs. La bona és excusar-lo <strong>nom a nom i explícitament</strong> (<code>verifyNoLeak(pack,{allow:[…]})</code>): el d'una altra persona no s'excusa mai, els contactes tampoc, i sense l'excusa el sedàs segueix cridant. Un test ho comprova en totes dues direccions, perquè apagar un sedàs i afinar-lo s'assemblen molt fins que algú se'n fia.</p>
+</article>
+  <p class="empty hidden" id="empty">Cap veda amb aquest text. Prova amb una paraula més curta.</p>
+
+  <section class="ctx">
+    <h2>Context: el que no és una veda però la sosté</h2>
+    <details class="ctx-i"><summary>Nous vedes</summary>
+
+</details>
+<details class="ctx-i"><summary>Ancoratges mitològics (opcionals per l'usuari)</summary>
+<p>Els arquetips vèdics són <strong>presets funcionals</strong>, no obligació religiosa. Un projecte pot triar qualsevol sistema simbòlic (celta, andí, secular, propi) — el sistema tècnic no distingeix:</p>
+<ul>
+<li><strong>Brahman</strong> — veu de la missió/visió (metaskill)</li>
+<li><strong>Brahmà</strong> — disseny d'iniciatives</li>
+<li><strong>Vishnu</strong> — coordinació/operació</li>
+<li><strong>Shiva</strong> — auditoria/renovació/transformació</li>
+<li><strong>Devi/Shakti</strong> — execució creativa</li>
+<li><strong>Ganesha</strong> — facilitació/desbloqueig</li>
+<li><strong>Saraswati</strong> — formació (LMS)</li>
+<li><strong>Lakshmi</strong> — gestió del fons</li>
+</ul>
+<p><strong>Shiva</strong> (Tapas · transformació) i <strong>Shakti</strong> (Kriya · creació) són els dos vectors polars de cada superheroi. Un sense l'altre col·lapsa; junts són la gràcia.</p>
+</details>
+<details class="ctx-i"><summary>Backlog infraestructura crítica pendent (no oblidar)</summary>
+<p>Ordenat per crítica → nice-to-have. Es revisa a cada onada d'ampliació:</p>
+<ol>
+<li><strong>Sync live per pings offer/demand</strong> — quan un banc de temps registra una demanda que casa amb una oferta d'un altre node aparellat, notifica en directe. Descentralitzat pur (WebRTC + hash de skill matching).</li>
+<li><strong>Guardian request UI visible</strong> — flux per demanar rol de steward + validació pel creator/owner amb un clic. Model ja hi és (proposeChange type steward_add); només falta el flux.</li>
+<li><strong>Sign records via WebAuthn</strong> — passar de did:key a signatures amb passkey per als registres reals (no només vinculació). Requereix conservar did:sos com a identitat i afegir un <code>signer.type='webauthn'</code> alternatiu.</li>
+<li><strong>Ancoratge Nostr P1</strong> — publicació signada de mainHash a relés públics. Test smoke amb <code>wss://relay.damus.io</code> quan l'entorn ho permeti.</li>
+<li><strong>Snapshot Arweave P2 / IPFS+OTS P3</strong> — notarització permanent opt-in del mainHash.</li>
+<li><strong>AI review PRs deep integration</strong> — mode subscripció (workflow GitHub Actions crida al SOS via webhook local o GitHub App). Actualment un-shot.</li>
+<li><strong>Xifratge AES-GCM per node distribuït entre múltiples membres</strong> — clau vinculada al <code>did:sos</code> de cada membre autoritzat. Base ja hi és; falta el flux de repartiment.</li>
+<li><strong>Onboarding tour primer arrencament</strong> — 3-4 pantalles guiades explicant SOS + Comando + Guardians.</li>
+<li><strong>Cerca global (⌘K)</strong> — cercar nodes, socis, superherois, entitats des de qualsevol lloc.</li>
+<li><strong>Wallets W2/W3</strong> — Nostr NIP-07, EIP-712 (adapters per contracte).</li>
+</ol>
+</details>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <p>Aquesta pàgina es genera des de <a href="https://github.com/asolache/teamtowershuma/blob/main/SOS/knowledge/codex.md"><code>SOS/knowledge/codex.md</code></a>. Si hi ha diferència entre les dues, mana el codex —i la guarda del CI no deixa que passi.</p>
+  <p><a href="/SOS/">Obre el SOS</a> · <a href="/SOS/uneix-te.html">Què és i com s'hi entra</a> · <a href="/">TeamTowers</a></p>
+</div></footer>
+<script>
+(function(){
+  var q=document.getElementById('q'),cnt=document.getElementById('count');
+  var arts=[].slice.call(document.querySelectorAll('article.veda'));
+  var chips=[].slice.call(document.querySelectorAll('nav.idx li'));
+  var empty=document.getElementById('empty');
+  var norm=function(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');};
+  arts.forEach(function(a){a.dataset.hay=norm(a.textContent);});
+  function run(){
+    var t=norm(q.value.trim()),n=0;
+    arts.forEach(function(a,i){
+      var hit=!t||a.dataset.hay.indexOf(t)>=0;
+      a.classList.toggle('hidden',!hit);
+      if(chips[i])chips[i].classList.toggle('hidden',!hit);
+      if(hit)n++;
+    });
+    empty.classList.toggle('hidden',n>0);
+    cnt.textContent=n+' de '+arts.length;
+  }
+  q.addEventListener('input',run);
+  /* El filtre viu a l'URL: així una cerca es pot enviar tal com es veu. */
+  var m=location.search.match(/[?&]q=([^&]*)/);
+  if(m){q.value=decodeURIComponent(m[1].replace(/\+/g,' '));}
+  run();
+})();
+</script>
+</body>
+</html>

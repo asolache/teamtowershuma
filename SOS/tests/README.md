@@ -49,6 +49,8 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-sortir.mjs` | V73 | Que se't pugui trobar: cada estat diu el motiu i el següent pas |
 | `test-enllac.mjs` | V74 | Connectar el que penja de tu **sense doble comptatge** |
 | `test-comando.mjs` | V77 | Que el relat sigui una capa: que es guanyi, i que apagar-lo no tregui res |
+| `test-cromo.mjs` | V78 | Que un cromo **només** surti d'aportar, que el repetit no serveixi sol, i que bescanviar no en mogui cap |
+| `test-vedes.mjs` | — | Que la pàgina dels vedes no perdi cap veda del codex pel camí, i que s'hi arribi per l'URL |
 | `test-registre.mjs` | V72 | El registre públic: que surtin hashes i mai files, i que puguis demostrar que hi ets |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
@@ -87,6 +89,18 @@ Compta el text català incrustat i les traduccions, i **no falla per cobertura
 baixa**: la fa visible, que és el que evita que el deute creixi d'amagat. Falla
 només pel que sí que és un error —una traducció buida, una que tradueix a si
 mateixa, o una que apunta a text que ja no existeix al codi.
+
+### La guarda de la pàgina dels vedes
+
+```bash
+node SOS/tools/build-vedes.js           # regenera SOS/vedes.html des del codex
+node SOS/tools/build-vedes.js --check   # falla si s'ha quedat enrere
+```
+
+`SOS/vedes.html` **no s'edita**: es genera des de `SOS/knowledge/codex.md`, que
+és l'original. Es guarda al repositori perquè el lloc és estàtic i sense passos
+de construcció; el preu és que pot quedar-se enrere, i això és exactament el que
+la guarda impedeix.
 
 ## Què no hi és
 

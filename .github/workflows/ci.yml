@@ -37,6 +37,13 @@ jobs:
       - name: Guarda de la segona llengua
         run: node SOS/tools/check-i18n.js
 
+      # SOS/vedes.html es genera des de SOS/knowledge/codex.md i es guarda al
+      # repositori perquè el lloc és estàtic i sense passos de construcció. El
+      # preu és que pot quedar-se enrere: aquesta guarda ho impedeix. Si falla,
+      # corre `node SOS/tools/build-vedes.js` i torna a fer commit.
+      - name: La pàgina dels vedes correspon al codex
+        run: node SOS/tools/build-vedes.js --check
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests
