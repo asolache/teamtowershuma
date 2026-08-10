@@ -4840,7 +4840,18 @@ function openOnboardingTour(retry){
     if((retry||0)<10)setTimeout(()=>openOnboardingTour((retry||0)+1),1500);
     return false;
   }
+  /* ═══════════ V76 · La frase que ja estava escrita ═══════════
+     El SOS no sabia dir de si mateix el que la pel·lícula del Comando diu a la
+     primera línia. La posem davant de tot: **abans de demanar res**, i sense
+     obligar ningú a saber què és el Comando per entendre-la.
+
+     I canvia el verb. Fins ara el primer pas es demanava com si la persona
+     hagués de convertir-se en alguna cosa. Els 150.000 **ja han estat enviats**
+     (veda 77): no es recluta, es reconeix. «Ja ho ets» diu el mateix que
+     «apunta't» i no demana el mateix. */
   const steps=[
+    {ic:'✦',t:'Cada persona és un univers',
+     b:'Cada vegada que neix un ésser humà es crea un nou univers. De vegades molts d\'aquests éssers s\'uneixen en una <strong>aventura comuna</strong>. Això és el que aquí en diem un node — i no cal que et diguis res de res per formar-ne part: <strong>ja hi eres</strong>.'},
     {ic:'🏚',t:'El problema que ja coneixes',
      b:'«Sempre tirem els mateixos quatre.» «Tenim mil coses i no sabem qui té què.» «Vam decidir-ho fa dos anys i ningú se\'n recorda.» El SOS no és una xarxa social: és la comptabilitat del que una comunitat es dona a si mateixa.',cta:null},
     {ic:'⇄',t:'Com funciona · el bucle',
@@ -4848,7 +4859,7 @@ function openOnboardingTour(retry){
     {ic:'🧭',t:'Qui ets tu aquí dins',role:true,
      b:'Cada rol té el seu camí i el seu flux de valor: què hi poses i què en treus. Tria el que t\'encaixi ara; es pot canviar en qualsevol moment.',cta:null},
     {ic:'🦸',t:'El primer pas concret',
-     b:'Crea el teu perfil: nom, població, el que saps fer i el que poses en comú. Cinc minuts. A partir d\'aquí el sistema ja et pot connectar amb algú.',
+     b:'Nom, població, el que saps fer i el que poses en comú. Cinc minuts. <strong>No estàs donant-te d\'alta de res: estàs deixant que et puguin trobar.</strong> A partir d\'aquí el sistema ja pot casar el que saps fer amb qui ho necessita.',
      cta:{label:'✦ Crea el meu perfil',fn:async()=>{await markOnboardingDone();closeModal();openSuperheroiOnboarding({role:_tourRole});}}},
     {ic:'🧭',t:'Mai estaràs perdut/da',
      b:'A cada pantalla hi ha una guia que diu quin valor hi circula, què et toca fer ara i què hi fa el teu rol. I la guia completa del teu camí és sempre a un clic.',

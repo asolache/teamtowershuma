@@ -10,6 +10,10 @@ import { dirname, join } from 'node:path';
 const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', 'index.html');
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
+/* La veda 77 en forma d'asserció: no es demana convertir-se en res, es diu que
+   et puguin trobar. */
+const perfilDemanaAlta = t => /donar-te d'alta|dona't d'alta|registra't/i.test(t || '');
+const resum = t => String(t || '').replace(/\s+/g, ' ').match(/No estàs[^.]*\./)?.[0] || String(t || '').slice(0, 60);
 
 const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] },
   process.env.SOS_CHROMIUM ? { executablePath: process.env.SOS_CHROMIUM } : {}));
@@ -125,6 +129,31 @@ ok(home.desapareix, 'i quan ja et poden trobar, l\'avís desapareix en comptes d
    secundari. Afegir un avís important NO pot ser afegir un segon primari. */
 ok(home.primarisInvisible === 1 && home.primarisVisible === 1,
   'una sola acció primària als dos estats (' + home.primarisInvisible + ' / ' + home.primarisVisible + ')');
+
+console.log('\n9 · L\'entrada: la frase que ja estava escrita, i el verb');
+const tour = await page.evaluate(async () => {
+  const S = window.__SOS;
+  S.closeModal();
+  S.openOnboardingTour();
+  await new Promise(r => setTimeout(r, 150));
+  const primer = document.querySelector('.modal').textContent;
+  /* Avança fins al pas del perfil per llegir com es demana. */
+  let perfil = '';
+  for (let i = 0; i < 6; i++) {
+    const next = [...document.querySelectorAll('.modal button')].find(b => /Següent|Segueix/i.test(b.textContent));
+    if (!next) break;
+    next.click(); await new Promise(r => setTimeout(r, 90));
+    const t = document.querySelector('.modal');
+    if (t && /primer pas concret/i.test(t.textContent)) { perfil = t.textContent; break; }
+  }
+  S.closeModal();
+  return { primer, perfil };
+});
+ok(/un nou univers/i.test(tour.primer) && /aventura comuna/i.test(tour.primer),
+  'el primer que es veu és que cada persona és un univers, abans de demanar res');
+ok(/ja hi eres/i.test(tour.primer),
+  'i que ja hi eres: no s\'hi entra, s\'hi reconeix');
+ok(!perfilDemanaAlta(tour.perfil), 'el perfil no es demana com una alta: «' + resum(tour.perfil) + '»');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
