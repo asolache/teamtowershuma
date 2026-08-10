@@ -2,3 +2,9 @@
 /v9/* /v9/index.html    200
 /v8/* /v8/index.html    200
 /v7/* /v7/index.html    200
+
+# Els vedes del SOS tenen URL curta perquè s'enllacen des de fora: una regla es
+# cita com a /vedes#veda-83, i això ha de seguir funcionant encara que un dia el
+# fitxer canviï de lloc.
+/vedes /SOS/vedes.html    200
+/vedes/* /SOS/vedes.html    200
