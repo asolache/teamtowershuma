@@ -688,6 +688,46 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 81 — Un relat que no es pot apagar ha deixat de ser una capa
+
+Cada pantalla del SOS té ara el seu superheroi del Comando. **Zero funcions
+noves**: els personatges ja hi eren i les pantalles també; només calia dir quin
+va amb quina.
+
+El risc d'afegir relat a una eina és que el relat es posi al davant. Dues regles
+l'eviten, i totes dues es poden comprovar:
+
+- **El personatge explica la pantalla, no la substitueix.** La línia va a sota i
+  és una frase. La prova no és una intenció: el test **compara la guia amb la
+  lent encesa i apagada** i comprova que sense el personatge la guia segueix
+  dient exactament el mateix. Si algun dia apagar-ho trenqués res, voldria dir
+  que el relat ha deixat de ser una capa — i el test ho diria.
+- **El relat es guanya.** No surt fins que hi ha una aportació registrada. Qui
+  acaba d'arribar té feina a fer; qui ja ha aportat, s'ha guanyat la broma.
+  Posar la mitologia davant de la primera hora de ningú és la manera més segura
+  de fer fugir precisament qui més falta.
+
+## Veda 82 — Un certificat que el dona algú val el que valgui aquell algú
+
+El Programa Pioneres ofereix un certificat després de tres setmanes de feina. La
+temptació era un diploma d'assistència, que és el que fa tothom i no costa res
+de defensar perquè no afirma res.
+
+El que s'ofereix, en canvi, s'aguanta sol:
+
+- **No certifica que hagis vingut: certifica el que has fet**, i es construeix
+  des del teu registre signat.
+- **No el dona qui l'acompanya.** El registre és de la persona i porta la seva
+  firma; qui acompanya **confirma el que ha vist**, i aquella confirmació també
+  queda signada. Qualsevol ho pot comprovar sense preguntar a cap dels dos —que
+  és exactament la triple entrada de la veda 64 aplicada a una altra cosa.
+- **I el rol no es tria en un formulari: es dedueix del que has fet** (veda 46).
+  Sense això, el programa seria un curset amb diploma i el rol una casella.
+
+I es diu el que no és: **no té reconeixement oficial**. Dir-ho no li treu valor;
+li'n dona, perquè el que sí que és —verificable— és més del que pot dir la
+majoria de certificats que sí que són oficials.
+
 ## Veda 80 — Val més dir «això no ho faig jo» que un botó que ho sembla
 
 Al registre públic li faltava permanència: el repositori es pot esborrar i els
