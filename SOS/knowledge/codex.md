@@ -688,6 +688,54 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 77 — El SOS no recluta: reconeix
+
+Ve del cànon del Comando, i corregeix com s'havia explicat el projecte fins ara.
+
+> Els 150.000 **ja han estat enviats** a la Terra pel Gran Molekulón. Els
+> iniciadors són els qui **els busquen**, amb la banda, per anar arreu i
+> trobar-los.
+
+Ho explicàvem al revés. Si els 150.000 s'han de reclutar, l'app és una eina de
+captació, l'èxit és convèncer i qui no s'apunta no compta. Si **ja hi són**,
+l'app és una eina de **reconeixement**, l'èxit és fer visible, i qui no s'ha
+apuntat **ja hi era** — només no l'hem trobat encara.
+
+I la versió bona descriu millor el que el codi fa de debò: **el SOS no crea
+valor, fa visible el que ja existeix.** Una hora que un veí ja va donar. Un
+saber que algú ja té. Una biblioteca que ja és al menjador d'algú. `findMatches`
+no fabrica coincidències: en troba de latents.
+
+D'aquí surt una regla de llenguatge que val per a tota la interfície: **no es diu
+«apunta't» quan el que fem és trobar-te.** El primer demana que canviïs; el segon
+reconeix el que ja fas.
+
+## Veda 78 — Un enemic endèmic demana pràctica, no èpica
+
+També del cànon: **Mundo Muerto és una corporació que funciona com un virus a la
+ment de les persones.** És endèmic —la part perversa de la ment humana—, sempre
+hi és, i **no es derrota: es controla**, amb tècniques de purificació.
+
+Un enemic que es derrota demana una èpica amb final. Un enemic que sempre hi és
+demana una **pràctica que es fa cada dia**. I això explica el projecte millor que
+cap argument tècnic:
+
+- El SOS no promet guanyar. Promet una pràctica setmanal: apuntar el que has
+  donat, confirmar el que has rebut, i que quedi escrit de manera que ningú ho
+  pugui negar.
+- **Cada veda d'aquest codex és una tècnica de purificació** contra una forma
+  concreta de Mundo Muerto. I la forma que pren més sovint aquí dins no és una
+  empresa de fora: és **la temptació d'inflar el número**.
+
+Per això les guardes no es poden treure mai, i per això el guió ja ho havia
+escrit sense que ningú ho llegís així:
+
+> «També us mantindrà el nivell d'alarma, l'estat d'alerta… Us mantindrà a
+> ratlla. Perquè no baixeu la guàrdia.»
+
+**L'enemic és el que et manté en forma.** Una guarda que no molesta mai ja no
+està guardant res.
+
 ## Veda 76 — Un registre públic de coses privades es publica en hashes
 
 `buildRegisterPack` feia tota la feina difícil —arrel, CID, firma, totals— i el
