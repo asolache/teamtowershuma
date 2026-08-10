@@ -688,6 +688,216 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 81 — Un relat que no es pot apagar ha deixat de ser una capa
+
+Cada pantalla del SOS té ara el seu superheroi del Comando. **Zero funcions
+noves**: els personatges ja hi eren i les pantalles també; només calia dir quin
+va amb quina.
+
+El risc d'afegir relat a una eina és que el relat es posi al davant. Dues regles
+l'eviten, i totes dues es poden comprovar:
+
+- **El personatge explica la pantalla, no la substitueix.** La línia va a sota i
+  és una frase. La prova no és una intenció: el test **compara la guia amb la
+  lent encesa i apagada** i comprova que sense el personatge la guia segueix
+  dient exactament el mateix. Si algun dia apagar-ho trenqués res, voldria dir
+  que el relat ha deixat de ser una capa — i el test ho diria.
+- **El relat es guanya.** No surt fins que hi ha una aportació registrada. Qui
+  acaba d'arribar té feina a fer; qui ja ha aportat, s'ha guanyat la broma.
+  Posar la mitologia davant de la primera hora de ningú és la manera més segura
+  de fer fugir precisament qui més falta.
+
+## Veda 82 — Un certificat que el dona algú val el que valgui aquell algú
+
+El Programa Pioneres ofereix un certificat després de tres setmanes de feina. La
+temptació era un diploma d'assistència, que és el que fa tothom i no costa res
+de defensar perquè no afirma res.
+
+El que s'ofereix, en canvi, s'aguanta sol:
+
+- **No certifica que hagis vingut: certifica el que has fet**, i es construeix
+  des del teu registre signat.
+- **No el dona qui l'acompanya.** El registre és de la persona i porta la seva
+  firma; qui acompanya **confirma el que ha vist**, i aquella confirmació també
+  queda signada. Qualsevol ho pot comprovar sense preguntar a cap dels dos —que
+  és exactament la triple entrada de la veda 64 aplicada a una altra cosa.
+- **I el rol no es tria en un formulari: es dedueix del que has fet** (veda 46).
+  Sense això, el programa seria un curset amb diploma i el rol una casella.
+
+I es diu el que no és: **no té reconeixement oficial**. Dir-ho no li treu valor;
+li'n dona, perquè el que sí que és —verificable— és més del que pot dir la
+majoria de certificats que sí que són oficials.
+
+## Veda 80 — Val més dir «això no ho faig jo» que un botó que ho sembla
+
+Al registre públic li faltava permanència: el repositori es pot esborrar i els
+relés de Nostr no guarden res per sempre. Això es paga un cop i es fa a fora.
+
+La temptació era un botó que digués «Puja a Arweave» i que en realitat obrís una
+pestanya. Ho hauria fet servir tothom i ningú hauria sabut que **el que ha
+quedat pujat és el que hi hagi pujat ell**, no el SOS.
+
+Per això el botó diu **«fes-lo permanent»** i la pantalla diu, sense endolcir-ho,
+que el SOS no puja res. El projecte porta massa vedes dient «no es diu verificat
+del que no s'ha verificat» com per fallar aquí.
+
+I la peça que de debò fa la feina no és el fitxer ni el CID: és **quedar-se
+l'adreça on has dit que l'has posat**. Un ancoratge del qual no saps tornar no
+és un ancoratge — i per això, **sense adreça no es desa res**. Deixar-ho desar
+buit hauria estat pitjor que no oferir-ho: tindries una llista d'ancoratges que
+et faria creure que estàs cobert.
+
+Es guarda **dins de l'ancoratge que ja existia**, no en una llista nova. Dos
+llocs on mirar el mateix acaben sempre igual: un dels dos menteix.
+
+## Veda 79 — Ampliar el que es pot connectar obliga a revisar el que se suma
+
+`linkResource` només oferia **germans** —`children(node.parentId)`— i els fills
+del propi node no hi sortien mai. El cas natural és justament aquell: una MATRIU
+comarcal amb bancs de temps municipals a sota.
+
+Ampliar la llista era mitja hora. **Fer-ho sense mirar res més hauria estat pitjor
+que deixar-ho com estava**, i val la pena entendre per què:
+
+`rollup()` **ja agrega els descendents** cap amunt, i `ecosystemResources`
+**suma** el que aporten els enllaços. Enllaçar un fill hauria comptat el mateix
+dues vegades. I com que el fons distingeix «verificat» d'«estimat», el resultat
+no hauria estat un número una mica alt: hauria estat **un número inflat amb
+aparença de verificat** — el pitjor que li pot passar a un projecte que promet
+exactament el contrari.
+
+La regla, que ja existia per a la consolidació entre nivells i que aquí es torna
+a aplicar: **propi i agregat no se sumen a mà**. Els enllaços es parteixen en
+dos —el que penja de tu, que ja entra per l'agregat, i el que ve de fora, que no
+entra per cap altra banda— i només els segons sumen. I es diu a la pantalla, que
+és el que fa que la xifra sigui defensable davant de qui la miri amb dubtes.
+
+**La lliçó general:** quan s'amplia el que un sistema pot relacionar, s'ha de
+tornar a mirar tot el que aquell sistema **suma**. Les vies noves no porten
+dades noves: porten **les mateixes dades per un camí que abans no existia**.
+
+## Veda 77 — El SOS no recluta: reconeix
+
+Ve del cànon del Comando, i corregeix com s'havia explicat el projecte fins ara.
+
+> Els 150.000 **ja han estat enviats** a la Terra pel Gran Molekulón. Els
+> iniciadors són els qui **els busquen**, amb la banda, per anar arreu i
+> trobar-los.
+
+Ho explicàvem al revés. Si els 150.000 s'han de reclutar, l'app és una eina de
+captació, l'èxit és convèncer i qui no s'apunta no compta. Si **ja hi són**,
+l'app és una eina de **reconeixement**, l'èxit és fer visible, i qui no s'ha
+apuntat **ja hi era** — només no l'hem trobat encara.
+
+I la versió bona descriu millor el que el codi fa de debò: **el SOS no crea
+valor, fa visible el que ja existeix.** Una hora que un veí ja va donar. Un
+saber que algú ja té. Una biblioteca que ja és al menjador d'algú. `findMatches`
+no fabrica coincidències: en troba de latents.
+
+D'aquí surt una regla de llenguatge que val per a tota la interfície: **no es diu
+«apunta't» quan el que fem és trobar-te.** El primer demana que canviïs; el segon
+reconeix el que ja fas.
+
+## Veda 78 — Un enemic endèmic demana pràctica, no èpica
+
+També del cànon: **Mundo Muerto és una corporació que funciona com un virus a la
+ment de les persones.** És endèmic —la part perversa de la ment humana—, sempre
+hi és, i **no es derrota: es controla**, amb tècniques de purificació.
+
+Un enemic que es derrota demana una èpica amb final. Un enemic que sempre hi és
+demana una **pràctica que es fa cada dia**. I això explica el projecte millor que
+cap argument tècnic:
+
+- El SOS no promet guanyar. Promet una pràctica setmanal: apuntar el que has
+  donat, confirmar el que has rebut, i que quedi escrit de manera que ningú ho
+  pugui negar.
+- **Cada veda d'aquest codex és una tècnica de purificació** contra una forma
+  concreta de Mundo Muerto. I la forma que pren més sovint aquí dins no és una
+  empresa de fora: és **la temptació d'inflar el número**.
+
+Per això les guardes no es poden treure mai, i per això el guió ja ho havia
+escrit sense que ningú ho llegís així:
+
+> «També us mantindrà el nivell d'alarma, l'estat d'alerta… Us mantindrà a
+> ratlla. Perquè no baixeu la guàrdia.»
+
+**L'enemic és el que et manté en forma.** Una guarda que no molesta mai ja no
+està guardant res.
+
+## Veda 76 — Un registre públic de coses privades es publica en hashes
+
+`buildRegisterPack` feia tota la feina difícil —arrel, CID, firma, totals— i el
+paquet es quedava **al teu disc**. El mateix forat que tenia `supply/` abans de
+la veda 60: publicar sense descobriment no és publicar.
+
+Però abans de publicar-lo calia contestar una pregunta que sembla de tecnologia i
+és de gent: **què vol dir «registre públic» quan el que hi ha dins són hores que
+uns veïns es van fer els uns als altres?** Publicar qui va donar hores a qui és
+publicar dades de gent que no ho ha demanat, i el SOS existeix precisament perquè
+aquella gent s'hi pugui refiar.
+
+La sortida: **el que surt són hashes i totals, mai files**. I d'aquí la propietat
+que fa que això valgui la pena:
+
+> verificable per tothom, llegible només per qui té el rebut.
+
+Amb el teu rebut a la mà comproves que el seu hash hi és, i per tant que aquella
+hora ja existia en aquella data. Qui no el té veu una llista de hashes que no li
+diu res de ningú. **La prova d'inclusió és el que converteix un tauler d'anuncis
+en un registre**: un registre on no pots assenyalar el teu apunt no és teu.
+
+I «actualitzable sense amo» té una forma concreta: **versions immutables i un
+punter que es mou**. Cada versió porta el CID de la seva mare, així que qui no es
+refiï del punter recorre la cadena des de qualsevol versió que ja tingués.
+
+Tres decisions d'ordre que semblen detalls i no ho són:
+
+- **El punter s'actualitza després de la versió.** Si falla pel mig queda una
+  versió publicada que el punter encara no anomena —no s'ha perdut res— i mai al
+  revés, que seria un punter assenyalant un fitxer que no existeix.
+- **El que va dins del paquet ha d'entrar abans de signar.** El CID es calcula
+  sobre tot el paquet menys el propi CID; afegir-hi un camp després invalida
+  alhora la firma i el CID, i el paquet deixa de verificar-se sense dir per què.
+  És l'error que va cometre qui ho va escriure, i el va trobar el test.
+- **Una versió que no verifica no prova res**, encara que el hash hi sigui. Si
+  s'acceptés, publicar una versió manipulada seria una manera de «demostrar»
+  qualsevol cosa.
+
+I el sedàs de sortida, com a tot el que surt d'aquí: si algun dia un camp nou
+arrossegués text lliure cap a les fulles, `verifyNoLeak` ho atura **abans**.
+
+## Veda 75 — Un sostre no és una veritat: és una conversa ajornada
+
+El pes va arribar al 94 % del sostre de 400 KB i tocava fer alguna cosa. En
+mesurar d'on venia, la resposta no era on l'esperàvem: **no és a les dades** —cap
+bloc en passa de 5 KB gzip— **sinó als comentaris**. 170 KB en cru, 72 KB gzip,
+el 20 % del fitxer. És a dir: aquestes vedes, escrites dins del codi.
+
+Pel camí, dues coses van corregir a la baixa el guany que s'esperava, i totes
+dues valen com a lliçó de mesura:
+
+- **El gzip ja desduplica la prosa.** Vuit quilobytes de text en cru en van
+  donar 3,45 de comprimits. Comptar en cru per prometre un estalvi en comprimit
+  és comptar el que no es paga.
+- **Dos dels «blocs grans» no eren comentaris.** La regex creuava cadenes que
+  contenen `/*` i `*/` a dins. Entraven a l'estimació, i tallar-los hauria
+  trencat l'app. Una mesura que no s'ha comprovat contra el que mesura és una
+  opinió amb decimals.
+
+Amb els números de debò: buidar els 32 blocs restants val **3 punts percentuals
+a canvi de 32 explicacions**. I 16 KB en un fitxer que es cacheja no els nota
+ningú, ni amb dades mòbils d'un poble.
+
+Així que es puja el sostre i s'escriu per què. Això **no és rendir-se davant del
+límit**: és que el límit ha fet exactament la seva feina. No existia per prohibir
+créixer sinó per obligar que créixer fos una decisió presa i escrita, i aquí n'hi
+ha una. El dia que el número no es pugui justificar, el que caldrà canviar serà
+el codi, no el número.
+
+I la que val per a qualsevol guarda que es posi a partir d'ara: **una guarda que
+mai es discuteix no està servint de res, i una que se salta sense escriure per
+què ja no és una guarda**. La fricció és tota la seva utilitat.
+
 ## Veda 73 — Dos primaris són cap primari
 
 La veda 66 va fer que les pestanyes del node les manés el full de ruta del rol.

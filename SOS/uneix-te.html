@@ -89,6 +89,7 @@ footer a{color:var(--light)}
       <a class="cta ghost" href="#com-va">Com funciona</a>
     </div>
     <p class="fine">S'obre al teu navegador. No hi ha registre, ni correu, ni contrasenya.</p>
+    <p class="fine" style="margin-top:.5rem"><strong>Programa Pioneres:</strong> tres setmanes de feina real i un certificat del rol que hagis exercit. <a href="#pioneres" style="color:inherit;text-decoration:underline">Com va</a> ·  places limitades.</p>
   </div>
 </div>
 
@@ -157,6 +158,71 @@ footer a{color:var(--light)}
   </div>
 </section>
 
+<section id="pioneres">
+  <h2>Programa Pioneres</h2>
+  <p class="sub">Tres setmanes de feina real i un certificat del rol que hagis fet. Places limitades: acompanyar bé a molta gent alhora no es pot.</p>
+
+  <div class="deal">
+    <div class="col give">
+      <h3>Hi poses</h3>
+      <ul>
+        <li><strong>Tres setmanes</strong>, unes poques hores cada una</li>
+        <li>Feina de veritat al teu barri o poble — <strong>no exercicis</strong></li>
+        <li>Registrar el que facis, que és el que després es pot certificar</li>
+      </ul>
+    </div>
+    <div class="col get">
+      <h3>En treus</h3>
+      <ul>
+        <li>Un <strong>certificat del rol</strong> que hagis exercit de debò</li>
+        <li>Acompanyament directe durant les tres setmanes</li>
+        <li>Un node del teu territori engegat i funcionant</li>
+        <li>Ser de les primeres persones que ho han fet, amb el que això vol dir</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:1.6rem">Què és aquest certificat, i què no és</h3>
+  <p>Val més dir-ho abans que et fa il·lusió.</p>
+  <ul class="nots">
+    <li><strong>No és un diploma d'assistència.</strong> No certifica que hagis vingut: certifica <strong>el que has fet</strong>, i es construeix des del teu registre signat.</li>
+    <li><strong>No te'l dono jo.</strong> El teu registre és teu i porta la teva firma; jo confirmo el que he vist, i aquesta confirmació també queda signada. Qualsevol pot comprovar-ho sense preguntar-nos res a cap dels dos.</li>
+    <li><strong>No té reconeixement oficial.</strong> No és un títol homologat i no serveix per a cap oposició. El que sí que fa és ser <strong>verificable</strong>, que és més del que es pot dir de la majoria de certificats.</li>
+    <li><strong>Si no fas la feina, no hi ha certificat.</strong> No perquè sigui exigent, sinó perquè no hi hauria res a certificar: surt del que has registrat.</li>
+  </ul>
+
+  <h3 style="margin-top:1.6rem">De quin rol</h3>
+  <p>Del que hagis exercit. El rol no es tria en un formulari: <strong>es dedueix del que has fet</strong>, i és el mateix criteri que fa servir el SOS per dins.</p>
+  <div class="roles">
+    <div class="role" style="border-top-color:var(--green)">
+      <div class="ic">🦸</div><h3>Superheroi/na</h3>
+      <p>Has aportat hores, objectes o sabers, i n'hi ha rastre signat.</p>
+      <div class="time">l'entrada normal</div>
+    </div>
+    <div class="role" style="border-top-color:var(--orange)">
+      <div class="ic">👥</div><h3>Coordinador/a</h3>
+      <p>Has donat d'alta gent, has fet que un ping acabés en intercanvi, has registrat decisions.</p>
+      <div class="time">el més demanat</div>
+    </div>
+    <div class="role" style="border-top-color:var(--blue)">
+      <div class="ic">🌐</div><h3>Agent territorial</h3>
+      <p>Has censat entitats i has portat xifres que es poden defensar davant d'un ajuntament.</p>
+      <div class="time">amb institucions al mig</div>
+    </div>
+    <div class="role" style="border-top-color:var(--indigo)">
+      <div class="ic">🏛</div><h3>Guardià/ana</h3>
+      <p>Has vetllat que les decisions quedessin escrites i defensables.</p>
+      <div class="time">compromís llarg</div>
+    </div>
+  </div>
+
+  <div class="ctas" style="margin-top:1.4rem">
+    <a class="cta" id="ctaPionera" href="#pioneres">Vull ser pionera</a>
+    <a class="cta ghost" href="index.html#/alta">Abans vull provar l'app</a>
+  </div>
+  <p class="fine">Escriu-me dient <strong>on vius</strong> i <strong>què t'agradaria fer</strong>. Amb dues línies n'hi ha prou; ja et diré si encaixa o no, i si no encaixa t'ho diré igual de clar.</p>
+</section>
+
 <section>
   <h2>Què passa quan cliques</h2>
   <div class="steps">
@@ -197,5 +263,13 @@ footer a{color:var(--light)}
   <p style="margin-top:.8rem">TeamTowers Humà · Alt Penedès · el codi és obert i l'app és teva</p>
 </footer>
 
+<script>
+/* Correu ofuscat, com a l'arrel: no viatja en clar dins de l'HTML. */
+(function(){
+  var u='asolache',d='mac'+'.'+'com';
+  var a=document.getElementById('ctaPionera');
+  if(a)a.href='mailto:'+u+'@'+d+'?subject='+encodeURIComponent('Programa Pioneres — on visc i què m\'agradaria fer');
+})();
+</script>
 </body>
 </html>

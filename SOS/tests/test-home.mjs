@@ -100,7 +100,7 @@ const ui = await page.evaluate(async () => {
   await S.setShowAllHome(false);
   return { primaris, teMore: !!more, seccions, seccions2, teCov: !!cov, covObert };
 });
-ok(ui.primaris === 1, 'una sola acció primària a la targeta del camí, no dues (' + ui.primaris + ')');
+ok(ui.primaris === 1, 'una sola acció primària a tota la home, no dues (' + ui.primaris + ')');
 ok(ui.teCov && ui.covObert === false, 'la graella d\'adopció hi és, però plegada');
 ok(ui.teMore, 'es diu que hi ha seccions amagades');
 ok(ui.seccions2 > ui.seccions, 'i en clicar-ho apareixen: ' + ui.seccions + ' → ' + ui.seccions2);
