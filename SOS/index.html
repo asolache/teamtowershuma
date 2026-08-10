@@ -308,6 +308,10 @@ a{color:var(--blue);text-decoration:none}
 .inc-det{margin:.5rem 0}
 .inc-det summary{cursor:pointer;opacity:.75;font-size:.92em}
 .inc-pre{max-height:230px;overflow:auto;font-size:.76rem;line-height:1.45;white-space:pre-wrap;background:rgba(127,127,127,.09);padding:.5rem .6rem;border-radius:7px;margin-top:.4rem}
+.cr-canvas{text-align:center;margin:.5rem 0}
+.cr-canvas canvas{max-width:100%;width:260px;height:auto;border-radius:12px}
+.ent-b.cr-miss{opacity:.42;text-decoration:line-through}
+.ent-card.cr-rec{border-left:3px solid var(--green)}
 .dash-cov-det{margin:.5rem 0}
 .dash-cov-det summary{cursor:pointer;display:flex;align-items:center;gap:.6rem;padding:.45rem .1rem;font-size:.93em}
 .dash-cov-det .dcd-bar{flex:1;max-width:220px;height:7px;border-radius:4px;background:rgba(127,127,127,.22);overflow:hidden}
@@ -8684,7 +8688,10 @@ const ROLE_JOURNEYS={
    Els errors ja passats es recullen sols i es veu tot el que s'enviarà abans
    d'enviar-ho, pel mateix sedàs que qualsevol paquet (`verifyNoLeak`). Context,
    no contingut. → codex.md · veda 68, «Qui no es queixa, plega». */
-const SOS_VERSION='V67';
+/* La versió que surt a les incidències. Es va quedar a V67 mentre el codi
+   arribava a V78, i una incidència que menteix sobre quina versió l'ha generat
+   és pitjor que no dir-ne cap: envia a mirar el codi equivocat. */
+const SOS_VERSION='V78';
 const _errRing=[];
 function noteError(kind,msg,extra){
   _errRing.push({t:new Date().toISOString(),kind,msg:String(msg||'').slice(0,300),extra:extra?String(extra).slice(0,200):''});
@@ -8883,7 +8890,10 @@ const HERO_SCREENS={
   xat:{hero:'Ectoplasman',ic:'👻',line:'Apareix, desapareix i torna. Un node que marxa no trenca la xarxa.'},
   entitats:{hero:'GuiriGuay',ic:'🎻',line:'«They call me raro.» Parlar amb qui no és dels teus és una feina, i té qui la fa.'},
   map:{hero:'Horacio Motomachi',ic:'🪈',line:'«Horacio, ¿qué quieres ver?» Dibuixar què hi circula és la feina de qui explica la història.'},
-  biblioteca:{hero:'Purpleman',ic:'🟣',line:'«El secreto está en unir todas las fuerzas.» El que fas servir dos cops l\'any pot servir a deu persones.'}
+  biblioteca:{hero:'Purpleman',ic:'🟣',line:'«El secreto está en unir todas las fuerzas.» El que fas servir dos cops l\'any pot servir a deu persones.'},
+  /* No és una pestanya, és el cromo (V78). Hi va Afrodita perquè el bescanvi de
+     repetits és teixir un vincle on no n\'hi havia, que és literalment el seu poder. */
+  cromo:{hero:'Afrodita',ic:'🎹',line:'Teixir vincles on n\'hi ha absència. Un cromo repetit no val res fins que et fa parlar amb algú.'}
 };
 /* El relat es guanya: no surt fins que hi ha alguna aportació registrada. */
 function comandoUnlocked(){
@@ -8901,6 +8911,217 @@ async function setComandoLens(on){
 async function loadComandoLens(){
   try{const all=await dbGetAll();state.comandoLens=!all.find(n=>n.id==='__nocomando');}catch(e){state.comandoLens=true;}
   return state.comandoLens;
+}
+/* ═══════════ V78 · Sprint 2 · El cromo és teu i és de veritat ═══════════
+   «Tengo cromos repes… que te lo cambio», diu el Comando Ska. La frase amaga la
+   mecànica més útil que té un àlbum de cromos, i que és exactament la que al SOS
+   costa de provocar: **un repetit no serveix per a res tot sol**. T'obliga a
+   sortir a buscar qui té el que et falta —i a tenir alguna cosa per oferir-li.
+   Això no és un rànquing: és reciprocitat, que és el que aquesta app mesura.
+
+   Tres decisions que aguanten tot el sprint:
+
+   · **La col·lecció surt de l'evidència, no del que dius que saps fer.** Els
+     «superpoders» de `reputationOf` es calculen sobre les OFERTES publicades:
+     són una declaració. Un cromo no. Aquí només compta una aportació al ledger
+     **amb signatura o encadenada** —el mateix llistó que fa servir la reputació
+     per dir «firmats» i «validacions». El que has fet i ningú ha verificat es
+     compta a part i es diu, perquè saber què et falta per verificar és una
+     acció; que desaparegui, no.
+   · **El cromo no es bescanvia.** El botó de bescanvi no mou cap cromo d'una
+     persona a una altra: et diu amb qui val la pena parlar. El que es bescanvia
+     és l'hora. El dia que el cromo es pugui aconseguir sense aportar —regalat,
+     comprat, transferit— deixa de voler dir res i tota la resta cau amb ell.
+   · **Una imatge no prova res.** El cromo compartible és un cartell, i ho porta
+     escrit a sota. El que prova és el registre signat (`proveInclusion`). Si no
+     ho diguéssim, estaríem fabricant credencials de mentida amb la nostra cara.
+
+   I les tres condicions de tot el multivers: funciona sense saber qui és el
+   Comando (la col·lecció són categories de servei, no personatges), no surt fins
+   que has aportat, i s'apaga amb la mateixa lent de la veda 77. */
+const CROMO_DECK=Object.keys(SKILL_POLARITY).filter(c=>c!=='altres');
+/* Una aportació compta com a cromo si algú la pot comprovar: signada, o
+   encadenada al ledger. És el mateix criteri que `reputationOf` fa servir per
+   separar «firmats» de «legacy» —si aquí fos un altre, la mateixa persona
+   tindria dues veritats sobre el mateix apunt. */
+const cromoVerified=e=>!!(e&&(e.sig||e.hash));
+function cromoCollection(nameOrKey){
+  const p=personProfile(nameOrKey);
+  const ver={},pend={};let verificades=0,sensVerificar=0;
+  p.contributions.forEach(c=>{
+    const e=c.entry,cat=e&&e.category;
+    if(!cat||CROMO_DECK.indexOf(cat)<0)return;
+    if(cromoVerified(e)){ver[cat]=(ver[cat]||0)+1;verificades++;}
+    else{pend[cat]=(pend[cat]||0)+1;sensVerificar++;}
+  });
+  const tens=CROMO_DECK.filter(c=>ver[c]>0).map(c=>({cat:c,count:ver[c],repes:ver[c]-1}))
+    .sort((a,b)=>b.count-a.count);
+  const repes=tens.filter(x=>x.repes>0);
+  /* Un forat amb aportacions pendents de verificar no és el mateix forat que un
+     de buit: al primer ja hi has estat, i el següent pas és firmar-ho. */
+  const faltes=CROMO_DECK.filter(c=>!ver[c]).map(c=>({cat:c,pendents:pend[c]||0}));
+  return{name:p.name,key:p.key,deck:CROMO_DECK.length,tens,repes,faltes,
+    verificades,sensVerificar,completa:faltes.length===0};
+}
+/* Qui té el que et falta, i a qui li falta el que et sobra.
+   Cost: una passada de perfil per persona, com ja fa `comandoRoster`. Es
+   memoritza dins de la crida perquè cada persona es calculi un sol cop. */
+function cromoSwaps(nameOrKey,opts){
+  const o=opts||{},idx=identityIndex();
+  const canonOf=x=>/^did:/.test(x||'')?x:canonKeyOfName(x,idx);
+  const jo=canonOf(nameOrKey),meu=cromoCollection(nameOrKey);
+  const emFalta=new Set(meu.faltes.map(f=>f.cat));
+  const meusRepes=meu.repes.map(r=>r.cat);
+  const memo={},seen=new Set(),out=[];
+  state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{
+    const canon=canonOf(m.name);
+    if(canon===jo||seen.has(canon))return;seen.add(canon);
+    const seu=memo[canon]||(memo[canon]=cromoCollection(m.name));
+    const seusForats=new Set(seu.faltes.map(f=>f.cat));
+    const etDona=seu.repes.filter(r=>emFalta.has(r.cat)).map(r=>r.cat);
+    const liDones=meusRepes.filter(c=>seusForats.has(c));
+    if(!etDona.length&&!liDones.length)return;
+    out.push({name:seu.name,key:seu.key,etDona,liDones,
+      reciproc:!!(etDona.length&&liDones.length)});
+  }));
+  /* Els recíprocs davant, sempre. Una llista encapçalada per gent a qui només
+     pots demanar coses és un rànquing disfressat de comunitat. */
+  out.sort((a,b)=>(Number(b.reciproc)-Number(a.reciproc))||
+    ((b.etDona.length+b.liDones.length)-(a.etDona.length+a.liDones.length)));
+  return o.limit?out.slice(0,o.limit):out;
+}
+/* El que va a la imatge, i res més. Llista blanca explícita: així afegir un camp
+   al cromo és una decisió, no un descuit. No hi entren mai noms de node,
+   contactes, objectes ni ubicació —el cartell surt del dispositiu i ja no torna. */
+const CROMO_CARD_FIELDS=['nom','tier','aportacions','comunitats','hores','superpoders','cromos','deck'];
+function cromoCardData(nameOrKey,opts){
+  const o=opts||{},c=superheroCromo(nameOrKey),col=cromoCollection(nameOrKey);
+  /* Els superpoders del cartell surten de la col·lecció verificada, no de
+     `reputationOf`: allà es compten les ofertes publicades, que són el que dius
+     que saps fer. Al cromo hi va el que has fet. */
+  return{
+    nom:(o.alies&&(c.alias||c.initials))||c.name,
+    tier:c.tier.label,
+    aportacions:c.signed,
+    comunitats:c.communities,
+    hores:c.hours,
+    superpoders:col.tens.slice(0,3).map(x=>x.cat),
+    cromos:col.tens.length,
+    deck:col.deck
+  };
+}
+/* Els degradats dels tiers viuen com a CSS (`CROMO_TIERS[].bg`) i el canvas no
+   en sap res: se'n treuen els dos hex i prou. Així el color del cartell i el de
+   la pantalla no poden divergir. */
+function _tierColors(tier){
+  const m=String((tier&&tier.bg)||'').match(/#[0-9a-f]{6}/gi)||['#2a2a35','#16161c'];
+  return[m[0],m[1]||m[0]];
+}
+function cromoImage(nameOrKey,opts){
+  const o=opts||{},d=cromoCardData(nameOrKey,o),c=superheroCromo(nameOrKey);
+  const W=600,H=840,cv=o.canvas||document.createElement('canvas');
+  cv.width=W;cv.height=H;
+  const x=cv.getContext('2d'),cols=_tierColors(c.tier);
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,cols[0]);g.addColorStop(1,cols[1]);
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.strokeStyle=c.tier.color;x.lineWidth=8;x.strokeRect(6,6,W-12,H-12);
+  x.textAlign='center';
+  x.beginPath();x.arc(W/2,168,72,0,Math.PI*2);x.fillStyle=c.color;x.fill();
+  x.fillStyle='#fff';x.font='600 58px system-ui,sans-serif';x.textBaseline='middle';
+  x.fillText(c.initials,W/2,172);
+  x.textBaseline='alphabetic';
+  x.fillStyle='#fff';x.font='700 40px system-ui,sans-serif';x.fillText(d.nom,W/2,300);
+  x.fillStyle=c.tier.color;x.font='600 24px system-ui,sans-serif';
+  x.fillText(d.tier.toUpperCase(),W/2,340);
+  x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=2;
+  x.beginPath();x.moveTo(70,372);x.lineTo(W-70,372);x.stroke();
+  const stats=[[d.aportacions,'aportacions signades'],[d.comunitats,'comunitats'],[d.hores+'h','aportades']];
+  stats.forEach((s,i)=>{
+    const cx=100+i*200;
+    x.fillStyle='#fff';x.font='700 40px system-ui,sans-serif';x.fillText(String(s[0]),cx,436);
+    x.fillStyle='rgba(255,255,255,.6)';x.font='400 16px system-ui,sans-serif';x.fillText(s[1],cx,462);
+  });
+  if(d.superpoders.length){
+    x.fillStyle='rgba(255,255,255,.6)';x.font='400 16px system-ui,sans-serif';
+    x.fillText('el que ha fet més vegades',W/2,530);
+    x.fillStyle='#fff';x.font='600 26px system-ui,sans-serif';
+    x.fillText(d.superpoders.join(' · '),W/2,566);
+  }
+  const bw=W-160,bx=80,by=636;
+  x.fillStyle='rgba(255,255,255,.12)';x.fillRect(bx,by,bw,14);
+  x.fillStyle=c.tier.color;x.fillRect(bx,by,Math.round(bw*d.cromos/Math.max(1,d.deck)),14);
+  x.fillStyle='rgba(255,255,255,.75)';x.font='400 18px system-ui,sans-serif';
+  x.fillText(d.cromos+' de '+d.deck+' cromos de la col·lecció',W/2,690);
+  x.fillStyle='rgba(255,255,255,.5)';x.font='400 15px system-ui,sans-serif';
+  /* Aquesta línia va DINS de la imatge a posta. El cartell viatja sol per xarxes
+     on ningú tindrà el context; si la fem servir per presumir sense dir què és,
+     hem fabricat una credencial falsa amb la nostra pròpia cara. */
+  x.fillText('Una imatge no prova res. El registre signat, sí.',W/2,760);
+  x.fillStyle='rgba(255,255,255,.35)';x.font='400 14px system-ui,sans-serif';
+  x.fillText('SOS · Sistema Operatiu Social',W/2,790);
+  return cv;
+}
+function downloadCromo(nameOrKey,opts){
+  const cv=cromoImage(nameOrKey,opts),nom=cromoCardData(nameOrKey,opts).nom;
+  const a=document.createElement('a');
+  a.href=cv.toDataURL('image/png');
+  a.download='cromo-'+String(nom).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png';
+  document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),100);
+  return a.download;
+}
+function openCromoModal(nameOrKey){
+  const nom=nameOrKey||state.activePersona;
+  const col=cromoCollection(nom),sw=cromoSwaps(nom,{limit:6});
+  const buit=col.verificades===0;
+  const chip=(cat,cls,extra)=>'<span class="ent-b '+cls+'">'+esc(cat)+(extra||'')+'</span>';
+  const bg=modal(`
+    <h2>🃏 El teu cromo</h2>
+    <p class="m-sub">Surt del que has aportat i algú pot comprovar. <strong>No es pot aconseguir de cap altra manera</strong> —ni regalat, ni bescanviat.</p>
+    ${heroFor('cromo')?'<p class="m-sub cr-hero">🎺 «Tengo cromos repes… que te lo cambio.» El repetit no és el premi: és l\'excusa per anar a trobar algú.</p>':''}
+    ${buit?`<div class="ai-note"><span class="ic">🌱</span><span>Encara no en tens cap. Un cromo apareix quan registres una aportació amb categoria i queda <strong>signada</strong>.${col.sensVerificar?' En tens '+col.sensVerificar+' de registrades que encara no compten perquè ningú les ha verificat.':''}</span></div>`:'<div id="crCanvas" class="cr-canvas"></div>'}
+    ${buit?'':`<details class="inc-det"><summary>Mira exactament què va a la imatge</summary><pre id="crPre" class="inc-pre"></pre></details>
+    <div id="crLeak"></div>`}
+    <div class="ent-grp-lbl">📇 La col·lecció · ${col.tens.length} de ${col.deck}</div>
+    <div class="ent-badges">${col.tens.map(x=>chip(x.cat,x.repes?'b-ver':'',' ×'+x.count)).join('')||'<span class="ent-desc">buida</span>'}</div>
+    ${col.repes.length?`<p class="m-sub" style="margin-top:.5rem"><strong>Tens ${col.repes.length} repetit${col.repes.length===1?'':'s'}.</strong> Un repetit no et serveix de res tot sol: serveix per tenir alguna cosa a oferir a qui té el que et falta.</p>`:''}
+    ${col.faltes.length?`<div class="ent-grp-lbl">🕳 Et falten · ${col.faltes.length}</div>
+    <div class="ent-badges">${col.faltes.map(f=>chip(f.cat,'cr-miss',f.pendents?' · '+f.pendents+' per verificar':'')).join('')}</div>`:'<p class="m-sub" style="margin-top:.5rem">Col·lecció completa.</p>'}
+    <div class="ent-grp-lbl">🔁 Amb qui pots bescanviar</div>
+    ${sw.length?`<div class="ent-grid">${sw.map(s=>`<div class="ent-card${s.reciproc?' cr-rec':''}" data-sw="${esc(s.name)}" style="cursor:pointer">
+      <div class="ent-nm">${s.reciproc?'⇄':'→'} ${esc(s.name)}</div>
+      ${s.etDona.length?'<div class="ent-desc">et pot ensenyar: <strong>'+esc(s.etDona.join(', '))+'</strong></div>':''}
+      ${s.liDones.length?'<div class="ent-desc">li pots ensenyar: <strong>'+esc(s.liDones.join(', '))+'</strong></div>':''}
+      ${s.reciproc?'<div class="ent-badges"><span class="ent-b b-ver">recíproc</span></div>':'<div class="ent-badges"><span class="ent-b">només en una direcció</span></div>'}
+    </div>`).join('')}</div>
+    <p class="m-sub" style="margin-top:.5rem">El botó no mou cap cromo: <strong>el que es bescanvia és l'hora.</strong> Quan feu l'intercanvi i el registreu, el cromo surt tot sol.</p>`
+    :'<p class="m-sub">Encara ningú de la xarxa té el que et falta, o encara no tens res que li falti a ningú. Registra una aportació més i torna-hi.</p>'}
+    <div class="modal-actions">
+      ${buit?'':'<button class="btn btn-ghost" id="crAlies">Amb àlies</button><button class="btn btn-primary" id="crDown">⬇ Baixa la imatge</button>'}
+      <button class="btn btn-${buit?'primary':'ghost'}" id="crClose">${t('Tanca')}</button>
+    </div>`);
+  if(!buit){
+    const box=bg.querySelector('#crCanvas');
+    let alies=false;
+    const paint=()=>{
+      box.innerHTML='';box.appendChild(cromoImage(nom,{alies}));
+      const d=cromoCardData(nom,{alies});
+      bg.querySelector('#crPre').textContent=CROMO_CARD_FIELDS.map(k=>k+': '+
+        (Array.isArray(d[k])?(d[k].join(', ')||'—'):d[k])).join('\n');
+      /* El mateix sedàs que qualsevol altre paquet que surt d'aquí. El teu nom
+         hi va a posta —és el teu cartell— i per això s'excusa nom a nom; el de
+         ningú més, ni cap contacte, hi té res a fer. */
+      let v={ok:true,leaks:[]};try{v=verifyNoLeak(d,{allow:[col.name,d.nom]});}catch(e){}
+      bg.querySelector('#crLeak').innerHTML=v.ok?'':
+        '<div class="merge-warn"><div class="merge-warn-t">⚠ El cartell porta dades de persones</div><p>'+
+        esc((v.leaks||[]).slice(0,4).join(' · '))+'</p><p>No el baixis fins que no surti d\'aquí.</p></div>';
+    };
+    paint();
+    bg.querySelector('#crAlies').onclick=e=>{alies=!alies;e.target.textContent=alies?'Amb el nom':'Amb àlies';paint();};
+    bg.querySelector('#crDown').onclick=()=>{toast(downloadCromo(nom,{alies}));};
+  }
+  bg.querySelectorAll('[data-sw]').forEach(el2=>el2.onclick=()=>{closeModal();openPersonProfile(el2.dataset.sw);});
+  bg.querySelector('#crClose').onclick=closeModal;
+  return bg;
 }
 function buildContextGuide(node,tab){
   const c=contextGuide(node,tab);if(!c)return null;
@@ -11212,7 +11433,8 @@ function openPersonProfile(nameOrKey){
       h+='<div class="ent-card"><div class="ent-nm">Dossier al '+comp.pct+'%'+(god&&!cr.character?' · afinitat '+god.ic+' '+esc(god.name):'')+'</div>'+
         '<div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;margin:.4rem 0;overflow:hidden"><div style="height:100%;width:'+comp.pct+'%;background:linear-gradient(90deg,var(--purple),var(--indigo))"></div></div>'+
         (comp.next?'<div class="ent-desc">Següent: <strong>'+esc(comp.next.label)+'</strong> — '+esc(comp.next.unlocks)+'</div>':'<div class="ent-desc">Dossier complet.</div>')+'</div>'+
-        '<button class="btn btn-ghost btn-sm" id="ppDossier" style="margin-top:.5rem">📇 Obre el meu dossier</button>';
+        '<button class="btn btn-ghost btn-sm" id="ppDossier" style="margin-top:.5rem">📇 Obre el meu dossier</button>'+
+        '<button class="btn btn-ghost btn-sm" id="ppCromo" style="margin-top:.5rem;margin-left:.4rem">🃏 El cromo i la col·lecció</button>';
       return h;
     })()}
     <div class="ent-grp-lbl">📜 La seva història · tot el que ha passat, en ordre</div>
@@ -11255,6 +11477,7 @@ function openPersonProfile(nameOrKey){
   bg.querySelector('#ppClose').onclick=closeModal;
   bg.querySelector('#ppMentoria').onclick=()=>{closeModal();openMentoringPlan(p.name);};
   const dsBtn=bg.querySelector('#ppDossier');if(dsBtn)dsBtn.onclick=()=>{closeModal();openDossierEditor(p.name);};
+  const crBtn=bg.querySelector('#ppCromo');if(crBtn)crBtn.onclick=()=>{closeModal();openCromoModal(p.name);};
   const ldBtn=bg.querySelector('#ppLedger');if(ldBtn)ldBtn.onclick=()=>{closeModal();openMyLedger(p.name);};
   // La història es carrega a part perquè necessita IndexedDB (narratives). Si
   // falla, es diu — no es deixa un «carregant» etern com passava al Comando.
@@ -14520,11 +14743,16 @@ function supplyPublicPack(){
    el que viatjarà, i es busca el que de debò pot fer mal —noms de persones,
    contactes, dids, ids de fitxa, títols lliures— no una idea abstracta de
    «privadesa». Si això falla, no es publica. */
-function verifyNoLeak(pack){
+function verifyNoLeak(pack,opts){
   const txt=JSON.stringify(pack||{});
   const hay=norm(txt);
   const bad=[];
-  const hit=(what,needle)=>{if(needle&&String(needle).length>2&&hay.includes(norm(needle)))bad.push(what+': '+needle);};
+  /* Hi ha un sol cas on un nom no és una fuita: quan algú publica una cosa seva
+     sobre ell mateix i hi posa el seu nom a posta (el cromo, V78). S'ha de
+     passar explícitament i nom a nom; per defecte el sedàs segueix cridant per
+     tothom, contactes inclosos —que no s'excusen mai. */
+  const allow=new Set(((opts&&opts.allow)||[]).filter(Boolean).map(norm));
+  const hit=(what,needle)=>{if(needle&&String(needle).length>2&&!allow.has(norm(needle))&&hay.includes(norm(needle)))bad.push(what+': '+needle);};
   state.nodes.forEach(nd=>{
     membersOf(nd).forEach(m=>{
       hit('nom de persona',m.name);
@@ -15580,7 +15808,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

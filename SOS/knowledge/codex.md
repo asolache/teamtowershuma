@@ -688,6 +688,50 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 83 — Un cromo que es pot regalar deixa sense sentit el registre que el sosté
+
+«Tengo cromos repes… que te lo cambio», canta el Comando Ska. La frase amaga la
+mecànica més útil que té un àlbum, i que és exactament la que aquesta app no
+sabia provocar: **un repetit no serveix per a res tot sol**. T'obliga a sortir a
+buscar qui té el que et falta, i a tenir alguna cosa per oferir-li. No és un
+rànquing —és reciprocitat, que és el que el SOS mesura i el que més li costa que
+passi.
+
+Portar-ho al codi obligava a decidir tres coses, i les tres es podien equivocar
+d'una manera que hauria semblat innòcua:
+
+**D'on surt un cromo.** La temptació era reaprofitar els «superpoders» de
+`reputationOf`, que ja hi eren. Però aquells es calculen sobre les **ofertes
+publicades**: són una declaració, i publicar-ne deu no costa res. Un cromo surt
+d'una aportació al ledger **signada o encadenada** —el mateix llistó amb què la
+reputació separa els apunts firmats dels legacy. Si aquí el llistó fos un altre,
+la mateixa persona tindria dues veritats sobre el mateix apunt. El que has fet i
+ningú ha verificat no desapareix: es compta a part i es diu on falta, perquè
+saber què has de firmar és una acció; que s'esfumi, no.
+
+**Què fa el botó de bescanvi.** No mou cap cromo. Et diu amb qui val la pena
+parlar, i prou. **El que es bescanvia és l'hora**; el cromo apareix sol quan
+registreu l'intercanvi. Aquí hi ha la línia que no es pot creuar mai: el dia que
+un cromo es pugui aconseguir sense aportar —regalat, comprat, transferit— el
+registre deixa de voler dir res i tota la resta cau amb ell. Per això `cromoTransfer`
+**no existeix**, i el test comprova que no existeixi: una funció que no s'ha
+escrit és més difícil de cridar per error que una de protegida.
+
+**Què és la imatge.** El cartell compartible porta escrit a dins «una imatge no
+prova res; el registre signat, sí». Sembla autosabotatge i és el contrari: el
+cartell viatja sol per llocs on ningú tindrà context, i sense aquesta línia
+estaríem fabricant credencials de mentida amb la nostra pròpia cara. El que prova
+és `proveInclusion`, no un PNG.
+
+I un afinat del sedàs que valia la pena fer bé. `verifyNoLeak` cridava pel nom
+que hi ha al cartell —correctament: està escrit per no deixar sortir noms de
+persona. Però **hi ha un cas on un nom no és una fuita: el teu, al teu cromo, que
+hi poses tu**. La sortida barata era no passar el cartell pel sedàs. La bona és
+excusar-lo **nom a nom i explícitament** (`verifyNoLeak(pack,{allow:[…]})`): el
+d'una altra persona no s'excusa mai, els contactes tampoc, i sense l'excusa el
+sedàs segueix cridant. Un test ho comprova en totes dues direccions, perquè
+apagar un sedàs i afinar-lo s'assemblen molt fins que algú se'n fia.
+
 ## Veda 81 — Un relat que no es pot apagar ha deixat de ser una capa
 
 Cada pantalla del SOS té ara el seu superheroi del Comando. **Zero funcions

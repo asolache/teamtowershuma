@@ -49,6 +49,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-sortir.mjs` | V73 | Que se't pugui trobar: cada estat diu el motiu i el següent pas |
 | `test-enllac.mjs` | V74 | Connectar el que penja de tu **sense doble comptatge** |
 | `test-comando.mjs` | V77 | Que el relat sigui una capa: que es guanyi, i que apagar-lo no tregui res |
+| `test-cromo.mjs` | V78 | Que un cromo **només** surti d'aportar, que el repetit no serveixi sol, i que bescanviar no en mogui cap |
 | `test-registre.mjs` | V72 | El registre públic: que surtin hashes i mai files, i que puguis demostrar que hi ets |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
