@@ -52,6 +52,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-cromo.mjs` | V78 | Que un cromo **només** surti d'aportar, que el repetit no serveixi sol, i que bescanviar no en mogui cap |
 | `test-certificat.mjs` | V79 · veda 84 | Intents de fer mentir un certificat: canviar-se el rol, inflar l'evidència, tornar a signar-ho tot, enganxar una confirmació falsa |
 | `test-bomba.mjs` | V81 · veda 87 | Que d'un node aturat en surtin jugades amb botó, que no se n'inventi cap, i que qui s'ha despenjat no ho vegi qualsevol |
+| `test-coop.mjs` | V85 · veda 92 | Que no aparegui crèdit sense pagar: quatre intents de confirmar sense rebut vàlid, i que el client no cobri mai |
 | `test-projecte.mjs` | V84 · veda 91 | Que el nom del projecte sigui teu, que la plantilla només digui de quina mena és, i que es pugui reanomenar |
 | `test-aportacions.mjs` | V83 · veda 90 | Apunts al registre que l'equity no comptava: el forat, l'atribució de lectura, i que no es reescrigui res signat |
 | `test-ambit.mjs` | V82 · veda 88 | Que la salutació deixi de portar el bastiment, i que estalviar **no perdi res** |

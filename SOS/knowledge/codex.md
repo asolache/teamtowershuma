@@ -688,6 +688,49 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 92 — El navegador no pot confirmar un cobrament, i cap configuració ho canvia
+
+SOS Coop necessita poder carregar crèdit, i carregar crèdit vol dir cobrar. És la
+primera vegada que aquest projecte toca diner de debò, i porta una frontera dura
+que val la pena escriure abans que la pressió de la demo la faci semblar
+negociable.
+
+**Confirmar un cobrament vol dir comprovar la firma del banc, i comprovar-la vol
+dir tenir la clau del comerç.** Una clau de comerç dins d'un HTML que qualsevol
+es descarrega no és una clau: és un regal. Per tant el SOS **inicia** pagaments i
+**no en confirma cap**, i això no és un estat provisional que es resolgui
+configurant bé: `potCobrar` és una constant `false`, no un càlcul. Amb Redsys
+configurat del tot segueix sent `false`, i el test ho comprova.
+
+D'aquí surt tota la resta:
+
+- **Mentre no hi ha rebut verificat, el crèdit no existeix.** Ni es mostra com a
+  saldo, ni es pot gastar. El pendent es diu a part i no se suma mai. Un saldo
+  que inclou diner que potser no ha arribat és la manera més ràpida de deixar
+  algú a deure sense saber-ho.
+- **Confirmar demana un rebut que verifiqui contra una clau que no és la
+  nostra**, i que a més quadri de comanda i d'import. Els quatre camins per
+  fer-lo colar —sense rebut, sense firma, d'una altra comanda, per un altre
+  import— són quatre assercions.
+- **Cap botó fa veure que cobra.** La veda 80 ja ho deia per a qualsevol funció;
+  amb diner pel mig és pitjor, perquè la persona es queda esperant una cosa que
+  no passarà. La pantalla diu què falta per cobrar de debò.
+- **El SOS no demana mai una targeta.** Cap camp, cap número. El test comprova
+  que al moneder no hi ha **cap** camp d'entrada, que és una manera de dir-ho que
+  no depèn de recordar-ho.
+- **Un sol llibre.** El que es gasta surt del ledger del node, no d'una
+  comptabilitat pròpia del moneder. Dos llibres acaben dient xifres diferents, i
+  llavors cap dels dos mana.
+- **El repartiment es veu abans de pagar**, no a la factura. I si els
+  percentatges no sumen 100, no s'inventa el que falta: es diu, i no es deixa
+  desar.
+
+I una decisió que **no** s'ha pres i queda escrita a la pantalla: si la unitat
+són euros, una unitat interna o aportació al capital social. Canvia què és
+legalment, i no és cosa del codi decidir-ho per omissió. Fins llavors la unitat
+és un paràmetre i la pantalla diu que encara no està decidit —que és més honest
+que triar-ho en silenci i que algú s'ho trobi decidit.
+
 ## Veda 91 — Una plantilla diu de quina mena és una cosa, no com es diu
 
 A la MATRIU, clicar una targeta del catàleg creava el projecte a l'instant i li
