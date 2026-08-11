@@ -52,6 +52,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-cromo.mjs` | V78 | Que un cromo **només** surti d'aportar, que el repetit no serveixi sol, i que bescanviar no en mogui cap |
 | `test-certificat.mjs` | V79 · veda 84 | Intents de fer mentir un certificat: canviar-se el rol, inflar l'evidència, tornar a signar-ho tot, enganxar una confirmació falsa |
 | `test-bomba.mjs` | V81 · veda 87 | Que d'un node aturat en surtin jugades amb botó, que no se n'inventi cap, i que qui s'ha despenjat no ho vegi qualsevol |
+| `test-aportacions.mjs` | V83 · veda 90 | Apunts al registre que l'equity no comptava: el forat, l'atribució de lectura, i que no es reescrigui res signat |
 | `test-ambit.mjs` | V82 · veda 88 | Que la salutació deixi de portar el bastiment, i que estalviar **no perdi res** |
 | `test-comarca.mjs` | V82 · E10 | L'escala de comarca amb números i sostres declarats — i què no mesura |
 | `test-trobada.mjs` | V80 · veda 86 | Tres SOS de debò per WebRTC: dues sessions alhora, i que el que crea un arribi al tercer **sense fer voltes** |
