@@ -688,6 +688,36 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 91 — Una plantilla diu de quina mena és una cosa, no com es diu
+
+A la MATRIU, clicar una targeta del catàleg creava el projecte a l'instant i li
+posava **el nom de la plantilla**. Cinc comunitats energètiques a cinc pobles es
+deien totes «Energia», i la persona que l'havia engegat no reconeixia enlloc la
+cosa que havia fet.
+
+El nom d'un projecte és la primera cosa que la gent hi reconeix, i **no pot
+sortir d'un catàleg**. Una plantilla serveix per dir *de quina mena* és allò
+—i per portar-hi el mapa de valor i el tauler—, no per batejar-ho.
+
+Tres conseqüències, i la segona és la que no es veu venir:
+
+- **La targeta tria, no crea.** Perquè hi hagi un nom, hi ha d'haver un moment
+  abans de crear. És un clic més, i és el clic que converteix una tria de
+  catàleg en un projecte que és d'algú.
+- **Si el nom desapareix del nom, ha d'aparèixer en algun altre lloc.** Abans, la
+  mena del projecte es veia de franc perquè *era* el nom. Dir-li «Comunitat
+  Energètica de Vilafranca» l'hauria amagada. Per això la mena passa a ser una
+  etiqueta visible a la cartera i a la fitxa: no s'hi ha guanyat informació
+  canviant el nom, s'ha de moure a un altre lloc.
+- **Qui ja en tenia, els ha de poder reanomenar.** Un canvi que només val per als
+  projectes nous deixa la gent que ja hi era amb el problema sencer. La fitxa
+  té ara camp de nom; el tipus no s'hi toca, perquè és el que sosté el mapa de
+  valor i el que s'haurà graduat.
+
+I un detall petit que val la pena: el suggeriment de nom deia «Energia de MATRIU
+de l'Alt Penedès». **Un suggeriment mal escrit convida a acceptar-lo tal com
+està**, i el que es queda escrit és culpa nostra, no de qui va clicar.
+
 ## Veda 90 — Dues pantalles que diuen coses contràries sobre la mateixa dada: la pitjor manera de tenir raó
 
 Report d'ús real: una MATRIU amb **quatre aportacions al registre** i la pantalla
