@@ -688,6 +688,43 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 87 — Detectar sense oferir res és fer de termòmetre
+
+El SOS sabia dir que una iniciativa feia seixanta dies que no es movia, i el que
+oferia en clicar-hi era **obrir la fitxa de la iniciativa aturada**: tornar a
+ensenyar el problema. Dir la temperatura no és baixar-la, i un tauler que t'avisa
+cada dia del mateix sense donar-te res a fer s'aprèn a ignorar molt de pressa.
+El senyal no es perd de cop: es gasta.
+
+La Bomba Disco no afegeix cap detecció. Afegeix les **tres jugades** que ja es
+podien treure del que el SOS sap, i que ningú havia tret:
+
+- **Qui hi era i ja no hi és** — gent que havia aportat i fa temps que no. Es
+  mira per persona, no pel node: un node pot estar viu i tenir gent despenjant-se
+  a dins, i aquest és justament el cas que no es veu fins que ja no hi ha ningú.
+- **La coincidència que ningú ha fet servir** — una oferta i una demanda que
+  casen i on no ha passat mai res entre les dues persones. Quan l'intercanvi es
+  registra, deixa de sortir: el que ja s'ha fet no es torna a proposar.
+- **El veí que té el que aquí falta** — un node del costat que ofereix la
+  categoria que aquí es demana i no es cobreix. El veïnatge surt dels temes
+  compartits, que és la federació que la gent ja ha declarat, no d'una
+  proximitat que ens inventem nosaltres.
+
+I tres regles que decideixen com es fa:
+
+- **Quan no hi ha jugades, no se n'inventa cap.** Es diu el motiu, i el motiu és
+  el valor: «encara no hi ha ningú», «no hi ha res ofert», «no hi ha cap
+  moviment fàcil pendent». Saber que un node està aturat i que no hi ha res
+  barat a fer és una informació diferent de no saber res —i un tauler que sempre
+  té alguna cosa a dir acaba dient qualsevol cosa.
+- **Cada jugada és una acció, no un consell.** «Reforça la teva comunitat» no és
+  una jugada. Obrir el formulari on es registra l'intercanvi, sí. Cap targeta
+  sense botó.
+- **Qui ha deixat d'aparèixer només ho veu qui sosté el node.** Una llista de qui
+  s'ha despenjat és informació delicada sobre persones concretes, no una
+  estadística. Qui no pot escriure al node no la veu, i se li diu per què en
+  comptes de deixar-li un forat sense explicació.
+
 ## Veda 86 — Passar de un a molts no és canviar el singleton: és decidir qui parla amb qui
 
 `_pc` i `_dc` eren singletons i cada aparellament tancava l'anterior: una trobada
