@@ -688,6 +688,150 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 87 — Detectar sense oferir res és fer de termòmetre
+
+El SOS sabia dir que una iniciativa feia seixanta dies que no es movia, i el que
+oferia en clicar-hi era **obrir la fitxa de la iniciativa aturada**: tornar a
+ensenyar el problema. Dir la temperatura no és baixar-la, i un tauler que t'avisa
+cada dia del mateix sense donar-te res a fer s'aprèn a ignorar molt de pressa.
+El senyal no es perd de cop: es gasta.
+
+La Bomba Disco no afegeix cap detecció. Afegeix les **tres jugades** que ja es
+podien treure del que el SOS sap, i que ningú havia tret:
+
+- **Qui hi era i ja no hi és** — gent que havia aportat i fa temps que no. Es
+  mira per persona, no pel node: un node pot estar viu i tenir gent despenjant-se
+  a dins, i aquest és justament el cas que no es veu fins que ja no hi ha ningú.
+- **La coincidència que ningú ha fet servir** — una oferta i una demanda que
+  casen i on no ha passat mai res entre les dues persones. Quan l'intercanvi es
+  registra, deixa de sortir: el que ja s'ha fet no es torna a proposar.
+- **El veí que té el que aquí falta** — un node del costat que ofereix la
+  categoria que aquí es demana i no es cobreix. El veïnatge surt dels temes
+  compartits, que és la federació que la gent ja ha declarat, no d'una
+  proximitat que ens inventem nosaltres.
+
+I tres regles que decideixen com es fa:
+
+- **Quan no hi ha jugades, no se n'inventa cap.** Es diu el motiu, i el motiu és
+  el valor: «encara no hi ha ningú», «no hi ha res ofert», «no hi ha cap
+  moviment fàcil pendent». Saber que un node està aturat i que no hi ha res
+  barat a fer és una informació diferent de no saber res —i un tauler que sempre
+  té alguna cosa a dir acaba dient qualsevol cosa.
+- **Cada jugada és una acció, no un consell.** «Reforça la teva comunitat» no és
+  una jugada. Obrir el formulari on es registra l'intercanvi, sí. Cap targeta
+  sense botó.
+- **Qui ha deixat d'aparèixer només ho veu qui sosté el node.** Una llista de qui
+  s'ha despenjat és informació delicada sobre persones concretes, no una
+  estadística. Qui no pot escriure al node no la veu, i se li diu per què en
+  comptes de deixar-li un forat sense explicació.
+
+## Veda 86 — Passar de un a molts no és canviar el singleton: és decidir qui parla amb qui
+
+`_pc` i `_dc` eren singletons i cada aparellament tancava l'anterior: una trobada
+de tres persones eren tres torns. La feina òbvia era canviar-los per un mapa de
+sessions. La feina de debò era una altra, i s'hauria pogut no fer sense que es
+notés al codi.
+
+Amb A↔B i A↔C oberts, **un canvi de la B no arriba mai a la C**. Tres persones
+connectades segueixen sent dues converses separades: s'hauria refet la
+infraestructura sencera i el problema del backlog —«una trobada de tres són tres
+torns»— seguiria intacte, amb el mapa de sessions com a coartada. Per això l'A
+**reenvia** el que rep als altres canals oberts.
+
+Reenviar obre dos forats que s'han de tapar **alhora**, i tapar-ne només un és
+pitjor que no reenviar:
+
+- **El bucle.** A reenvia a C, C a B, B a A, i així per sempre. Cada patch porta
+  un `mid` únic i cada SOS recorda els últims que ha vist: el que torna es
+  descarta. I un comptador de salts que baixa, perquè un `mid` perdut per
+  qualsevol motiu no pugui fer voltes eternes. La memòria dels vistos té sostre:
+  una trobada llarga no pot créixer sense fi.
+- **La confiança.** L'A reenvia registres que no ha escrit ell. Pot fer-ho
+  perquè el que viatja va **signat i és append-only** (veda 64): la C comprova
+  l'origen sense haver de fiar-se de l'A. És el mateix que fa el relé de la V68
+  —un intermediari que transporta no és un intermediari que mana—, i és el que
+  permet que el reenviament no sigui una porta del darrere.
+
+I una conseqüència que no era al backlog i surt sola: **si se'n poden tenir
+diverses, se n'ha de poder acabar una**. «Desconnecta» tancava tot el que hi
+hagués, que amb una sessió era correcte i amb tres és fer fora tothom per treure
+una persona. També obliga la pantalla a ensenyar-les **totes**: amagar amb qui
+estàs compartint el teu SOS és l'última cosa que es pot amagar aquí.
+
+El test són tres SOS de debò parlant per WebRTC, sense mocks. Un company que
+desapareix sense avisar no s'hi prova, i és a posta: un canal mort només es
+descobreix quan venç el temps de la connexió, i esperar-ho mesuraria WebRTC en
+comptes del codi.
+
+## Veda 84 — Un certificat on el rol és un camp de text és criptografia certificant una mentida
+
+La landing del Programa Pioneres promet «un certificat del rol que hagis
+exercit» des de fa setmanes, i al codi no hi havia res que n'emetés cap. Un
+compromís amb gent que s'hi pot inscriure avui va davant de qualsevol backlog.
+
+La veda 82 ja deia que un certificat que el dona algú val el que valgui aquell
+algú. Portar-ho al codi obliga a una cosa que sembla un detall i és tota la
+peça: **el rol no s'hi pot escriure**.
+
+Si `rol` fos un camp del paquet, qualsevol podria posar-hi «coordinadora», signar
+amb la seva pròpia clau —que és legítimament seva— i el certificat verificaria
+perfectament. Firma impecable certificant una cosa que no ha passat. La firma
+diu *qui ho ha escrit*, no *si és cert*; confondre les dues coses és l'error que
+converteix una eina de verificació en una màquina de fabricar credencials.
+
+Per això el rol **es recalcula en verificar**, des de l'evidència que porta el
+mateix paquet, amb la mateixa funció que el va deduir en emetre'l (`certRole`).
+El test fa la trampa bona —canviar el rol *i* tornar a signar-ho tot
+correctament— i comprova que la firma torni a ser vàlida **i el certificat no**.
+
+La resta surt d'aquí:
+
+- **Ningú l'atorga.** L'autoritat és la clau de la persona. El mentor no hi surt
+  com a emissor perquè no ho és; la seva confirmació és un registre a part,
+  signat per ell, sobre el hash del certificat. Un certificat sense cap
+  confirmació **és vàlid**; una confirmació falsa es marca com a falsa i **no
+  tomba el certificat**, perquè qui menteix és el testimoni, no la persona.
+- **Els números es poden inflar; els hashes, no.** L'evidència porta el hash de
+  cada apunt. Qui tingui el registre els compta un a un; qui no el tingui, sap
+  quants n'hi ha sense saber de què parlaven.
+- **El text lliure no hi entra mai.** Un apunt pot dir «he acompanyat la Maria al
+  metge». Al certificat hi va la categoria, les hores i el hash. I passa pel
+  sedàs de sortida amb el nom de qui el signa excusat —veda 83— i el de ningú
+  més.
+- **Un període més curt que el programa es diu, no es castiga.** El registre
+  cobreix els dies que cobreix; el certificat ho escriu a dins i s'emet igual. El
+  període és un fet, no un examen.
+
+I un defecte que va sortir al primer intent i val la pena deixar escrit: les
+confirmacions **no poden entrar al que es firma**, perquè arriben després. Però
+firmar i verificar amb dues idees diferents de què és «el cos» és el mateix
+defecte de sempre amb una altra cara —va fallar de seguida, i hauria tornat el
+dia que algú tornés a emetre un certificat que ja en tenia. Ara hi ha una sola
+funció que diu què es firma (`certBody`), i les dues bandes la criden.
+
+## Veda 85 — Un número que puja sense que hagi passat res és una mètrica de vanitat
+
+`COMANDO_TARGET = 150.000` ja sortia a la pantalla del Comando amb un comptador i
+una barra de progrés. Comptava `comandoRoster().length` —**tota fitxa de soci de
+qualsevol node**— i ho etiquetava «superherois validats».
+
+Una fitxa no és ningú: la crea qualsevol escrivint un nom en un formulari. El
+comptador pujava amb altes, no amb feina, i ho feia al lloc més visible d'una
+eina que existeix precisament per distingir el que s'ha fet del que s'ha dit.
+No era un error de càlcul: era la contradicció del projecte, en gran, a la
+portada del seu propi relat.
+
+Ara compta persones amb **almenys una aportació signada**. Dues coses més, que
+són la meitat de la correcció:
+
+- **Les fitxes segueixen sortint al costat.** Amagar-les seria l'error simètric:
+  la diferència entre les dues xifres és informació —diu quanta gent hi ha
+  apuntada que encara no ha registrat res, que és exactament el que caldria
+  mirar.
+- **El 150.000 no s'explica.** Hi surt, puja i ningú diu per què és aquest
+  número. Una promesa que no es cobra fins al final només funciona si no
+  s'espatlla abans explicant-la.
+
 ## Veda 83 — Un cromo que es pot regalar deixa sense sentit el registre que el sosté
 
 «Tengo cromos repes… que te lo cambio», canta el Comando Ska. La frase amaga la

@@ -113,6 +113,35 @@ ok(/no canvia res del que l'app fa/.test(ui.txt),
 ok(/és una frase, no una portada/i.test(ui.txt),
   'i què és: una frase, no una portada');
 
+console.log('\n7 · El comptador dels 150.000 compta gent, no altes');
+/* Sprint 5 del multivers, i la seva única regla dura: si compta altes, és una
+   mètrica de vanitat. Una fitxa la crea qualsevol escrivint un nom. */
+const comptador = await page.evaluate(async (id) => {
+  const S = window.__SOS;
+  const n = S.byId(id);
+  /* La Marta aporta i ho firma: ella sí que compta. */
+  await S.pushLedger(n.ledger, { id: 'h2', ts: '2026-06-02T09:00:00Z', type: 'temps',
+    value: 2, memberId: S.membersOf(n)[0].id, category: 'cuina' });
+  /* Dues persones més apuntades i sense fer res: no han de moure el número. */
+  S.membersOf(n).push(S.newMember({ name: 'Ningú Un' }), S.newMember({ name: 'Ningú Dos' }));
+  await S.persist(n);
+  const roster = S.comandoRoster();
+  S.openComandoView();
+  await new Promise(r => setTimeout(r, 250));
+  const txt = document.querySelector('.modal').textContent.replace(/\s+/g, ' ');
+  S.closeModal();
+  return { fitxes: roster.length, ambFirma: roster.filter(c => (c.signed || 0) > 0).length, txt };
+}, seed.id);
+ok(comptador.fitxes > comptador.ambFirma,
+  comptador.fitxes + ' fitxes i només ' + comptador.ambFirma + ' amb aportació signada');
+ok(new RegExp('(^|[^0-9])' + comptador.ambFirma + '([^0-9]|$)').test(comptador.txt) &&
+   /reconegudes · amb aportació signada/.test(comptador.txt),
+  'el número gran és el de les reconegudes, no el de les fitxes');
+ok(/encara sense cap aportació signada/.test(comptador.txt),
+  'i les que no compten es diuen, en comptes d\'amagar-se');
+ok(/150.000/.test(comptador.txt) && !/per què són 150/i.test(comptador.txt),
+  'el 150.000 hi surt i no s\'explica: és una promesa que es cobra el dia del final');
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);
