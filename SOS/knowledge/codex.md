@@ -688,6 +688,45 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 90 — Dues pantalles que diuen coses contràries sobre la mateixa dada: la pitjor manera de tenir raó
+
+Report d'ús real: una MATRIU amb **quatre aportacions al registre** i la pantalla
+d'equity dient **«Encara no hi ha aportacions»**. Cap de les dues frases era
+falsa, i justament per això el defecte era pitjor que un error: qui ho llegeix
+conclou que l'app s'equivoca —o, molt pitjor, que ha perdut la seva feina.
+
+La causa: **dos formularis escriuen al mateix ledger i només un posava
+`memberId`**. `openContributionModal` demana el soci; `openLedgerEntryModal` —el
+del tauler i el del kanban— demanava «Qui ho ha aportat» com a **caixa de text**.
+`computeEquityCore` salta tot apunt sense `memberId`, així que el nom escrit a mà
+no arribava mai a la tarta. Dues persones a l'app: el soci amb el seu id, i el
+nom escrit en una casella. No s'havien conegut mai.
+
+Arreglat als **tres** llocs, perquè qualsevol d'ells tot sol hauria deixat el
+problema a mitges:
+
+- **L'origen.** El formulari tria un soci de la llista. Es pot seguir escrivint
+  un nom per a qui no ho és —hi ha aportacions de gent que no és sòcia— però ara
+  és una tria visible, amb la conseqüència escrita al costat, en comptes d'un
+  descuit.
+- **El que ja està escrit.** Aquí hi ha la restricció que mana: **els apunts van
+  signats i encadenats**. Afegir-los el `memberId` que els falta trencaria la
+  firma i l'app diria que el registre s'ha manipulat —arreglar la comptabilitat
+  destruint-ne la prova. Així que s'atribueixen **en llegir**, pel nom, i **només
+  quan un sol soci del node el porta**. No toca cap fitxa, no fusiona ningú i no
+  es desa enlloc: és llegir una casella que ja hi era. Amb dos socis homònims no
+  s'endevina (veda 59), i es diu.
+- **La pantalla.** Si hi ha apunts i no compten, es diu **quants** i **per què**,
+  amb el motiu concret —no hi ha socis / el nom no és de cap soci. I quan compten
+  pel nom, també es diu: una slice atribuïda per una casella de text no és el
+  mateix que una registrada a nom del soci, i barrejar-les sense dir-ho seria fer
+  passar una per l'altra.
+
+La regla general, que val més que aquest cas: **quan dues pantalles poden dir
+coses contràries sobre la mateixa dada, la que ensenya el zero és la que ha
+d'explicar-se.** Un buit que contradiu un número que l'usuari ja ha vist no és
+un buit: és una acusació contra la seva feina.
+
 ## Veda 89 — Una paraula que vol dir dues coses al mateix text no en vol dir cap
 
 El blog feia servir *Shiva* i *Shakti* per a dues coses alhora, i totes dues
