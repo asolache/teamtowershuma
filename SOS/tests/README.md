@@ -50,6 +50,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-enllac.mjs` | V74 | Connectar el que penja de tu **sense doble comptatge** |
 | `test-comando.mjs` | V77 | Que el relat sigui una capa: que es guanyi, i que apagar-lo no tregui res |
 | `test-cromo.mjs` | V78 | Que un cromo **només** surti d'aportar, que el repetit no serveixi sol, i que bescanviar no en mogui cap |
+| `test-certificat.mjs` | V79 · veda 84 | Intents de fer mentir un certificat: canviar-se el rol, inflar l'evidència, tornar a signar-ho tot, enganxar una confirmació falsa |
 | `test-vedes.mjs` | — | Que la pàgina dels vedes no perdi cap veda del codex pel camí, i que s'hi arribi per l'URL |
 | `test-registre.mjs` | V72 | El registre públic: que surtin hashes i mai files, i que puguis demostrar que hi ets |
 

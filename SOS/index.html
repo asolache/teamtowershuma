@@ -5318,6 +5318,16 @@ async function verifyPack(obj){
   if(!obj||typeof obj!=='object')return{ok:false,kind:'',reason:'not_json'};
   if(obj.type==='sos-register-pack'){const v=await verifyRegisterPack(obj);return{...v,kind:obj.type,pack:obj};}
   if(obj.type==='sos-anchor-pack'){const v=await verifyAnchorPack(obj);return{...v,kind:obj.type,pack:obj};}
+  /* El certificat entra pel verificador de sempre i no per una porta pròpia:
+     qui el rep no ha de saber què és abans de poder-lo comprovar. Fa servir
+     `@type` perquè és un paquet signat, com els altres d'aquesta família. */
+  if(obj['@type']===CERT_TYPE){
+    const v=await verifyCertificate(obj);
+    return{ok:v.ok,kind:CERT_TYPE,pack:obj,reason:v.reason,cert:v,
+      note:v.ok?('Certificat vàlid: '+((obj.rol||{}).label||'')+
+        (v.confirmacions.length?' · '+v.confirmacions.filter(c=>c.ok).length+' confirmació(ns) verificada(es)':' · sense confirmacions de tercers, i segueix sent vàlid'))
+      :null};
+  }
   if(obj.type===IDENTITY_BACKUP_TYPE)
     return{ok:!!(obj.ct&&obj.salt&&obj.did),kind:obj.type,pack:obj,
       reason:obj.ct?'encrypted':'incomplete',
@@ -6746,7 +6756,7 @@ function openComandoView(){
     <div id="cmPantheon" class="cm-panth"></div>
     <div class="cm-act vill"><span class="cm-act-n">Acte III</span><span class="cm-act-t">Els tres modes de fallida</span><span class="cm-act-s">com mor una comunitat</span></div>
     <div id="cmVillains" class="cm-vill"></div>
-    <div class="cm-act"><span class="cm-act-n">Acte IV</span><span class="cm-act-t" id="cmRosterLbl">Cromos de la tribu</span><span class="cm-act-s">superherois validats a l'ecosistema</span></div>
+    <div class="cm-act"><span class="cm-act-n">Acte IV</span><span class="cm-act-t" id="cmRosterLbl">Cromos de la tribu</span><span class="cm-act-s">qui ha registrat alguna cosa a l'ecosistema</span></div>
     <div id="cmRoster" class="ent-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
     <div class="cm-act"><span class="cm-act-n">Crèdits</span><span class="cm-act-t">Últimes històries</span><span class="cm-act-s">filtrades pel director</span></div>
     <div id="cmStories"><div class="ent-desc">Reconstruint els crèdits…</div></div>
@@ -6755,9 +6765,21 @@ function openComandoView(){
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#cmClose').onclick=closeModal;
   const roster=comandoRoster();
-  const cur=roster.length,pct=Math.min(100,cur/COMANDO_TARGET*100);
-  bg.querySelector('#cmStats').innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n">'+cur.toLocaleString('ca')+'</div><div class="l">superherois validats</div></div><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+COMANDO_TARGET.toLocaleString('ca')+'</div><div class="l">visió Comando</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+pct.toFixed(3)+'%</div><div class="l">de la tribu</div></div></div>'+
-    '<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;margin:.5rem 0 1rem;overflow:hidden"><div style="height:100%;width:'+Math.max(0.5,pct)+'%;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);border-radius:5px"></div></div>';
+  /* V79 · El comptador dels 150.000 comptava `roster.length`: **tota fitxa de
+     soci de qualsevol node**, i ho etiquetava «superherois validats». Això és
+     comptar altes, i una alta no és ningú: la pot crear qualsevol escrivint un
+     nom. Un número que puja sense que hagi passat res és una mètrica de vanitat,
+     i en una eina que existeix per distingir el que s'ha fet del que s'ha dit,
+     és la contradicció al lloc més visible.
+     Ara compta persones amb **almenys una aportació signada**. Les fitxes
+     segueixen sortint al costat, perquè amagar-les seria l'error simètric: la
+     diferència entre les dues xifres és informació —diu quanta gent hi ha
+     apuntada que encara no ha registrat res. */
+  const rec=roster.filter(c=>(c.signed||0)>0).length;
+  const pct=Math.min(100,rec/COMANDO_TARGET*100);
+  bg.querySelector('#cmStats').innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n">'+rec.toLocaleString('ca')+'</div><div class="l">reconegudes · amb aportació signada</div></div><div class="bib-tile"><div class="n" style="color:var(--muted)">'+roster.length.toLocaleString('ca')+'</div><div class="l">fitxes a la xarxa</div></div><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+COMANDO_TARGET.toLocaleString('ca')+'</div><div class="l">visió Comando</div></div><div class="bib-tile"><div class="n" style="color:var(--green)">'+pct.toFixed(3)+'%</div><div class="l">de la tribu</div></div></div>'+
+    '<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;margin:.5rem 0 1rem;overflow:hidden"><div style="height:100%;width:'+Math.max(0.5,pct)+'%;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);border-radius:5px"></div></div>'+
+    (roster.length>rec?'<p class="m-sub" style="margin:-.4rem 0 .8rem">'+(roster.length-rec)+' fitxa'+(roster.length-rec===1?'':'es')+' encara sense cap aportació signada. No compten, i està bé que no comptin.</p>':'');
   const rosterBox=bg.querySelector('#cmRoster'),labelBox=bg.querySelector('#cmRosterLbl');
   // Vista pel·lícula: cromos cinematogràfics (Shakti/Shiva, tier, XP, superpoders resum)
   const renderFilm=()=>roster.length?roster.slice(0,60).map(c=>{
@@ -9124,6 +9146,253 @@ function openCromoModal(nameOrKey){
   bg.querySelector('#crClose').onclick=closeModal;
   return bg;
 }
+/* ═══════════ V79 · El certificat del rol ═══════════
+   La landing del Programa Pioneres promet «un certificat del rol que hagis
+   exercit» des de fa setmanes i al codi no hi havia res que n'emetés cap. Un
+   compromís amb gent que s'hi pot inscriure avui val més que qualsevol altra
+   cosa del backlog, i per això va primer.
+
+   La veda 82 diu que un certificat que el dona algú val el que valgui aquell
+   algú. Portat al codi, això obliga a quatre coses que no són decoratives:
+
+   · **Ningú l'atorga: el signa qui l'ha guanyat.** L'autoritat del paquet és la
+     clau de la persona (`signRecord`). El mentor no hi surt com a emissor
+     enlloc, perquè no ho és.
+   · **El rol no s'hi escriu: s'hi dedueix, i es torna a deduir en verificar.**
+     Si el rol fos un camp de text, qualsevol podria signar-se «coordinadora»
+     amb evidència de res i la firma seria vàlida igualment —criptografia
+     correcta certificant una mentida. `certRole()` calcula el rol des de
+     l'evidència que porta el paquet, i `verifyCertificate` el recalcula i
+     falla si no coincideix. És la diferència entre un certificat i un PDF.
+   · **La confirmació de qui acompanya és un registre a part**, signat per ell i
+     enganxat a sobre. El certificat val sense ella; el que ella afegeix és un
+     testimoni, i es veu de qui és. Si desaparegués, no cauria res.
+   · **El paquet diu què no és.** Ni diploma d'assistència ni títol homologat.
+     Ho porta a dins perquè viatja sol, com el cartell del cromo (veda 83).
+
+   I una regla que fa de frontera: **el text lliure del registre no hi entra**.
+   Un apunt pot dir «he acompanyat la Maria al metge»; el certificat porta la
+   categoria, les hores i el hash —mai la frase—, i passa pel mateix sedàs que
+   tot el que surt d'aquí, amb el nom de qui el signa excusat i el de ningú més. */
+const CERT_TYPE='sos-certificat-rol';
+const CERT_NO_ES=[
+  'No és un diploma d\'assistència: certifica el que s\'ha fet, no que s\'hi hagi anat.',
+  'No té reconeixement oficial ni homologació. El que té és que es pot comprovar.',
+  'No l\'atorga ningú: el signa la persona des del seu propi registre.',
+  'Les confirmacions de tercers són testimonis signats a part, no la font del rol.'
+];
+/* Llindars del rol certificable. Són una **restricció** de `rolesOfPersonIn` al
+   que un paquet pot arribar a portar: allà es mira l'estat sencer del SOS, i
+   aquí només l'evidència de dins del certificat. Han de coincidir, i hi ha una
+   asserció al test que ho comprova per als casos sembrats —si algun dia
+   divergeixen, val més que salti allà que no pas davant d'una persona. */
+function certRole(ev){
+  const e=ev||{};
+  if(e.nodesGuardats>0)return{id:'guardian',why:'Sosté '+e.nodesGuardats+' node'+(e.nodesGuardats===1?'':'s')+': l\'ha reclamat o n\'és guardiana'};
+  if(e.iniciativesAcompanyades>0)return{id:'mentor',why:'Acompanya '+e.iniciativesAcompanyades+' iniciativa'+(e.iniciativesAcompanyades===1?'':'es')+' amb sessions registrades'};
+  if(e.signades>0)return{id:'superheroi',why:[e.signades+' aportacions signades',e.hores?e.hores+' h':'',e.objectes?e.objectes+' objectes':''].filter(Boolean).join(' · ')};
+  return{id:'simpatitzant',why:'Hi és, encara sense aportació verificada'};
+}
+/* L'evidència que el certificat pot portar: comptadors i hashes, mai frases.
+   El hash de cada apunt permet a qui té el registre comprovar-ne un a un; a qui
+   no el té, li diu quants n'hi ha sense ensenyar-li de què parlaven. */
+function certEvidence(nameOrKey,opts){
+  const o=opts||{},p=personProfile(nameOrKey),col=cromoCollection(nameOrKey);
+  const des=o.des?String(o.des):'',fins=o.fins?String(o.fins):'';
+  const dins=ts=>(!des||String(ts||'')>=des)&&(!fins||String(ts||'')<=fins);
+  const apunts=p.contributions.filter(c=>cromoVerified(c.entry)&&dins(c.entry.ts));
+  let hores=0;apunts.forEach(c=>{if(c.entry.type==='temps')hores+=Number(c.entry.value)||0;});
+  const dates=apunts.map(c=>String(c.entry.ts||'')).filter(Boolean).sort();
+  let guardats=0,acompanyades=0;
+  state.nodes.forEach(nd=>{
+    (rolesOfPersonIn(nd,p.name)||[]).forEach(r=>{
+      if(r.role==='guardian')guardats++;
+      if(r.role==='mentor')acompanyades++;
+    });
+  });
+  return{
+    signades:apunts.length,
+    hores:Math.round(hores*10)/10,
+    objectes:p.totals.objectesPropis,
+    comunitats:p.presence.length,
+    categories:col.tens.map(x=>x.cat),
+    nodesGuardats:guardats,
+    iniciativesAcompanyades:acompanyades,
+    primer:dates[0]||'',ultim:dates[dates.length-1]||'',
+    /* Els hashes, no els apunts. Amb el registre a la mà es comproven un a un;
+       sense ell, diuen quants n'hi ha i res més. */
+    hashes:apunts.map(c=>c.entry.hash||'').filter(Boolean)
+  };
+}
+const DIA=86400000;
+function certDays(ev){
+  if(!ev||!ev.primer||!ev.ultim)return 0;
+  const a=Date.parse(ev.primer),b=Date.parse(ev.ultim);
+  return (isNaN(a)||isNaN(b))?0:Math.round((b-a)/DIA)+1;
+}
+/* Què es firma d'un certificat: tot menys les confirmacions.
+   Elles s'enganxen setmanes més tard i per gent que no és qui l'ha emès, així
+   que **no poden entrar al que es firma**: si hi entressin, la primera
+   confirmació invalidaria el certificat que confirma. No és el descuit de la
+   V72 —allà el `parent` va entrar tard i va tombar firma i CID alhora—: aquí
+   quedar-se fora és la feina del camp.
+
+   Que hi hagi UNA funció que digui què es firma no és estètica. Firmar i
+   verificar amb dues idees diferents del cos era exactament el defecte que va
+   sortir la primera vegada, i el que hauria tornat el dia que algú tornés a
+   emetre un certificat que ja tenia confirmacions. */
+function certBody(pack){const{confirmacions,...cos}=pack||{};return cos;}
+async function signCertificate(pack){
+  const cos=certBody(pack);
+  await signRecord(cos);
+  pack.signer=cos.signer;pack.sig=cos.sig;pack.sigTs=cos.sigTs;
+  if(!pack.confirmacions)pack.confirmacions=[];
+  return pack;
+}
+async function buildCertificate(nameOrKey,opts){
+  const o=opts||{},p=personProfile(nameOrKey);
+  const ev=certEvidence(nameOrKey,o),rol=certRole(ev),meta=SOS_ROLES[rol.id]||{};
+  const dies=certDays(ev);
+  const pack={
+    '@type':CERT_TYPE,v:1,app:'sos-teamtowers',
+    persona:{nom:p.name},
+    programa:o.programa||null,
+    periode:{des:ev.primer,fins:ev.ultim,dies},
+    rol:{id:rol.id,label:meta.label||rol.id,why:rol.why},
+    evidencia:ev,
+    /* Es diu, no es corregeix. El Programa Pioneres parla de tres setmanes, i un
+       certificat que cobreix menys ho ha de dir en comptes de negar-se a
+       existir: el període és un fet, no un examen. Qui el llegeix decideix. */
+    nota:dies&&dies<21?'El registre d\'aquest certificat cobreix '+dies+' dies, menys de les tres setmanes del programa.':'',
+    noEs:CERT_NO_ES.slice(),
+    ts:now()
+  };
+  await signCertificate(pack);
+  return pack;
+}
+/* Verificar un certificat és tres preguntes, i totes tres han de sortir bé:
+   la firma és de qui diu ser · el rol es torna a deduir igual des de l'evidència
+   · les confirmacions són de qui diuen ser. Es responen per separat perquè un
+   certificat sense confirmacions **és vàlid**, i un amb una confirmació falsa
+   no ho és. */
+async function verifyCertificate(pack){
+  if(!pack||pack['@type']!==CERT_TYPE)return{ok:false,reason:'no és un certificat del SOS'};
+  /* El mateix cos que va firmar `signCertificate`, calculat per la mateixa
+     funció. Les confirmacions es comproven a part, cadascuna contra el seu
+     propi signant. */
+  const firma=await verifyRecord(certBody(pack));
+  const confirmacions=pack.confirmacions;
+  const recalc=certRole(pack.evidencia||{});
+  const rolOk=recalc.id===((pack.rol||{}).id||'');
+  const confs=[];
+  for(const c of (confirmacions||[])){
+    const v=await verifyRecord(c);
+    confs.push({qui:(c.signer||{}).did||'',nom:c.nom||'',text:c.text||'',ok:v.ok,reason:v.reason});
+  }
+  return{
+    ok:firma.ok&&rolOk,
+    firma:firma.ok,firmaReason:firma.reason,
+    rolOk,rolDeclarat:(pack.rol||{}).id||'',rolRecalculat:recalc.id,
+    confirmacions:confs,
+    reason:!firma.ok?'firma '+firma.reason
+      :!rolOk?'el rol que hi diu no és el que surt de l\'evidència'
+      :'vàlid'
+  };
+}
+/* La confirmació de qui acompanya: un registre propi, signat per ell, sobre el
+   hash del certificat. No el fa més vàlid —el fa testimoniat. */
+async function confirmCertificate(pack,text){
+  const conf={sobre:await sha256(_te.encode(JSON.stringify(certBody(pack)))),
+    text:(text||'').trim(),ts:now()};
+  await signRecord(conf);
+  (pack.confirmacions||(pack.confirmacions=[])).push(conf);
+  return conf;
+}
+function certificateText(pack){
+  const e=pack.evidencia||{},r=pack.rol||{};
+  const pl=(n,u,p)=>n+' '+(Number(n)===1?u:p);
+  /* Les línies opcionals es marquen amb `null`, no amb ''. Filtrar les cadenes
+     buides s'emportava també les separacions volgudes i deixava el certificat
+     fet un totxo: la primera versió no tenia ni una línia en blanc. */
+  return['CERTIFICAT DE ROL · SOS','',
+    r.label||r.id,'','Persona: '+((pack.persona||{}).nom||''),
+    pack.programa?'Programa: '+pack.programa:null,
+    'Període: '+(e.primer||'?').slice(0,10)+' → '+(e.ultim||'?').slice(0,10)+
+      (pack.periode&&pack.periode.dies?' ('+pl(pack.periode.dies,'dia','dies')+')':''),
+    '','Per què aquest rol: '+(r.why||''),
+    '','Evidència','· '+pl(e.signades,'aportació verificada','aportacions verificades'),
+    '· '+pl(e.hores,'hora registrada','hores registrades'),
+    '· '+pl(e.comunitats,'comunitat','comunitats'),
+    e.categories&&e.categories.length?'· categories: '+e.categories.join(', '):null,
+    pack.nota?'':null,pack.nota||null,
+    '','Què NO és',...(pack.noEs||[]).map(s=>'· '+s),
+    '','Signat per: '+((pack.signer||{}).did||'—'),
+    (pack.confirmacions||[]).length?'Confirmat per: '+pack.confirmacions.map(c=>(c.signer||{}).did||'?').join(', '):'Sense confirmacions de tercers',
+    '','Comprova\'l: obre el SOS → Verifica un paquet, i deixa-hi aquest fitxer.'
+  ].filter(l=>l!==null).join('\n');
+}
+function openCertificate(nameOrKey){
+  const nom=nameOrKey||state.activePersona;
+  const ev=certEvidence(nom),rol=certRole(ev),meta=SOS_ROLES[rol.id]||{};
+  const dies=certDays(ev),buit=ev.signades===0&&!ev.nodesGuardats&&!ev.iniciativesAcompanyades;
+  let pack=null;
+  const bg=modal(`
+    <h2>🎖 Certificat del rol</h2>
+    <p class="m-sub">Del rol que has exercit, no del que triïs. <strong>Es dedueix del que has registrat</strong>, i qui el rebi el pot comprovar sense preguntar-nos res.</p>
+    ${buit?`<div class="ai-note"><span class="ic">🌱</span><span>Encara no hi ha res a certificar. Un certificat surt d'aportacions <strong>verificades</strong>: registra'n una i firma-la, i aquesta pantalla canvia.</span></div>`
+    :`<div class="ent-card" style="border-left:3px solid ${meta.color||'var(--indigo)'}">
+      <div class="ent-nm">${meta.ic||'🎖'} ${esc(meta.label||rol.id)}</div>
+      <div class="ent-desc">${esc(rol.why)}</div>
+      <div class="ent-badges">
+        <span class="ent-b b-ver">${ev.signades} aportaci${ev.signades===1?'ó verificada':'ons verificades'}</span>
+        <span class="ent-b">${ev.hores} h</span>
+        <span class="ent-b">${ev.comunitats} comunitat${ev.comunitats===1?'':'s'}</span>
+        ${dies?'<span class="ent-b">'+dies+(dies===1?' dia':' dies')+'</span>':''}
+      </div>
+    </div>
+    ${dies&&dies<21?'<div class="merge-warn"><div class="merge-warn-t">El període és més curt que el programa</div><p>El registre cobreix '+dies+' dies i el Programa Pioneres en són vint-i-un. El certificat es pot emetre igual: ho dirà a dins, en comptes de fer veure que no passa.</p></div>':''}
+    <details class="inc-det"><summary>Mira exactament què hi anirà</summary><pre id="cePre" class="inc-pre"></pre></details>
+    <div id="ceLeak"></div>`}
+    <div class="ent-grp-lbl">El que aquest certificat no és</div>
+    <ul class="ent-desc" style="padding-left:1.1rem;margin:.2rem 0">${CERT_NO_ES.map(s=>'<li>'+esc(s)+'</li>').join('')}</ul>
+    <div class="modal-actions">
+      ${buit?'':'<button class="btn btn-ghost" id="ceTxt">⬇ En text</button><button class="btn btn-primary" id="ceJson">⬇ Emet i signa</button>'}
+      <button class="btn btn-${buit?'primary':'ghost'}" id="ceClose">${t('Tanca')}</button>
+    </div>`);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#ceClose').onclick=closeModal;
+  if(!buit){
+    const prep=async()=>{
+      if(!pack)pack=await buildCertificate(nom,{programa:'Programa Pioneres'});
+      return pack;
+    };
+    (async()=>{
+      const p=await prep();
+      const pre=bg.querySelector('#cePre');if(!pre||!pre.isConnected)return;
+      pre.textContent=certificateText(p);
+      /* El sedàs de sempre. El nom de qui el signa hi va a posta (veda 83); el
+         de ningú més, ni cap frase del registre, hi té res a fer. */
+      let v={ok:true,leaks:[]};try{v=verifyNoLeak(p,{allow:[(p.persona||{}).nom]});}catch(e){}
+      const box=bg.querySelector('#ceLeak');
+      if(box)box.innerHTML=v.ok?'':'<div class="merge-warn"><div class="merge-warn-t">⚠ El certificat porta dades d\'altres persones</div><p>'+
+        esc((v.leaks||[]).slice(0,4).join(' · '))+'</p><p>No l\'emetis fins que no surti d\'aquí.</p></div>';
+    })();
+    bg.querySelector('#ceTxt').onclick=async()=>{
+      const p=await prep();
+      downloadText('certificat-'+String((p.persona||{}).nom||'sos').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.txt',certificateText(p));
+      toast('Descarregat');
+    };
+    bg.querySelector('#ceJson').onclick=async()=>{
+      const p=await prep();
+      const v=await verifyCertificate(p);
+      if(!v.ok){toast('No s\'ha pogut emetre: '+v.reason);return;}
+      downloadText('certificat-'+String((p.persona||{}).nom||'sos').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.json',
+        JSON.stringify(p,null,2),'application/json');
+      toast('Emès i signat · qualsevol el pot verificar');
+    };
+  }
+  return bg;
+}
 function buildContextGuide(node,tab){
   const c=contextGuide(node,tab);if(!c)return null;
   const open=_guideOpen[tab]!==undefined?_guideOpen[tab]:!!c.next;
@@ -11435,7 +11704,8 @@ function openPersonProfile(nameOrKey){
         '<div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;margin:.4rem 0;overflow:hidden"><div style="height:100%;width:'+comp.pct+'%;background:linear-gradient(90deg,var(--purple),var(--indigo))"></div></div>'+
         (comp.next?'<div class="ent-desc">Següent: <strong>'+esc(comp.next.label)+'</strong> — '+esc(comp.next.unlocks)+'</div>':'<div class="ent-desc">Dossier complet.</div>')+'</div>'+
         '<button class="btn btn-ghost btn-sm" id="ppDossier" style="margin-top:.5rem">📇 Obre el meu dossier</button>'+
-        '<button class="btn btn-ghost btn-sm" id="ppCromo" style="margin-top:.5rem;margin-left:.4rem">🃏 El cromo i la col·lecció</button>';
+        '<button class="btn btn-ghost btn-sm" id="ppCromo" style="margin-top:.5rem;margin-left:.4rem">🃏 El cromo i la col·lecció</button>'+
+        '<button class="btn btn-ghost btn-sm" id="ppCert" style="margin-top:.5rem;margin-left:.4rem">🎖 Certificat del rol</button>';
       return h;
     })()}
     <div class="ent-grp-lbl">📜 La seva història · tot el que ha passat, en ordre</div>
@@ -11479,6 +11749,7 @@ function openPersonProfile(nameOrKey){
   bg.querySelector('#ppMentoria').onclick=()=>{closeModal();openMentoringPlan(p.name);};
   const dsBtn=bg.querySelector('#ppDossier');if(dsBtn)dsBtn.onclick=()=>{closeModal();openDossierEditor(p.name);};
   const crBtn=bg.querySelector('#ppCromo');if(crBtn)crBtn.onclick=()=>{closeModal();openCromoModal(p.name);};
+  const ceBtn=bg.querySelector('#ppCert');if(ceBtn)ceBtn.onclick=()=>{closeModal();openCertificate(p.name);};
   const ldBtn=bg.querySelector('#ppLedger');if(ldBtn)ldBtn.onclick=()=>{closeModal();openMyLedger(p.name);};
   // La història es carrega a part perquè necessita IndexedDB (narratives). Si
   // falla, es diu — no es deixa un «carregant» etern com passava al Comando.
@@ -15814,7 +16085,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
