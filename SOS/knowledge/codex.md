@@ -688,6 +688,39 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 93 — Una app que s'explica bé i no deixa operar només serveix per aprendre-la
+
+El lateral era un explorador de territoris: bo per entendre l'estructura, inútil
+per fer-hi res. I tot el que et fa falta cada dia —què t'espera, què tens
+publicat, què et queda al moneder— vivia darrere d'un modal diferent.
+
+El defecte no era que faltés informació. `dashboardAttention`, `pendingInbox`,
+`communityStatus` i `walletBalance` ja existien i cadascun calculava bé la seva
+part. El que faltava era **un lloc on la teva operació es veiés sencera**, i per
+això l'app només servia per aprendre-la.
+
+La distinció que dona sentit al taulell, i que abans no es veia enlloc: **tenir
+una oferta no és que se't pugui trobar.** Són dues coses i s'han de comptar per
+separat —«0/1», i escrit amb lletres: *encara no et troben*. Un número sol
+hauria deixat la persona convençuda que ja ho tenia fet.
+
+D'aquí surten dues coses més:
+
+- **Publicar en un pas.** Existia, però repartit: crear l'oferta en una pantalla,
+  obrir l'abast de publicació en una altra, entendre a qui arriba en una tercera.
+  Qui només vol dir «sé arreglar bicicletes» no ha de saber res d'això. Ara és un
+  formulari de quatre camps que fa **les dues coses alhora** —crear i publicar—,
+  perquè el pas que ningú feia era el segon.
+- **El cost de publicar és zero mentre la caixa no pugui cobrar.** Es pot
+  configurar un preu, i si n'hi ha i tens saldo, es descompta com un apunt més.
+  Però mentre no hi hagi manera de carregar crèdit (veda 92), **el preu no barra
+  el pas**: cobrar per travessar una porta que encara no té pany és posar-hi un
+  peatge, no un preu. Es diu, i es deixa passar.
+
+I una cosa que va sortir provant-ho: `renderOps` penjava de `renderTree`, i per
+tant el taulell desapareixia quan no hi havia arbre. **El que et diu què fer no
+pot dependre de tenir ja alguna cosa feta.**
+
 ## Veda 92 — El navegador no pot confirmar un cobrament, i cap configuració ho canvia
 
 SOS Coop necessita poder carregar crèdit, i carregar crèdit vol dir cobrar. És la
