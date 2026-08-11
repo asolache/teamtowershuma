@@ -688,6 +688,78 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 89 — Una paraula que vol dir dues coses al mateix text no en vol dir cap
+
+El blog feia servir *Shiva* i *Shakti* per a dues coses alhora, i totes dues
+estaven ben explicades per separat:
+
+- **L'estructura i l'energia d'una organització.** Shiva era el marc, el procés,
+  la pinya; Shakti l'empenta, el moviment, la canalla. La veda 16 ja deia que
+  això, aquí, es diu **seny** i **rauxa**.
+- **El balanç d'una persona.** Shakti era crear, cuidar i ensenyar; Shiva
+  transformar, auditar i reparar. Surt de la categoria del que cadascú fa de
+  debò (`SKILL_POLARITY`).
+
+Són dos eixos diferents. Llegits seguits, el segon diu que qui repara bicicletes
+és «menys Shiva» que qui coordina un ateneu, cosa que no vol dir res —i pitjor,
+convida a llegir un judici sobre persones on només hi ha una categoria de servei.
+
+La sortida fàcil era canviar les paraules per «seny» i «rauxa» als dos llocs, que
+és el que semblava demanar-se. Hauria mogut el problema, no resolt: tindríem la
+mateixa col·lisió amb vocabulari d'aquí. El primer eix es diu ara **pel seu nom
+d'aquí** (seny i rauxa, que és exactament el que descriuen); el segon, **pel que
+mesura**: obrir i sembrar contra tallar i renovar.
+
+Tres decisions que van amb això:
+
+- **Els camps de dades segueixen dient-se `shakti` i `shiva`.** Són a SOS ja
+  desats i renombrar-los els trencaria. El que canvia és la pantalla, i al costat
+  del càlcul hi ha escrit per què les dues coses no coincideixen.
+- **Shiva es queda al panteó**, que és una altra cosa: allà és una deïtat d'un
+  conjunt d'arquetips vèdics que la persona **tria**, al costat del celta, l'andí
+  i el secular. Treure'l d'allà hauria estat confondre un nom mal fet servir amb
+  un nom.
+- **L'esmena s'escriu al blog, no s'esborra.** L'entrada diu que aquests vectors
+  s'havien anomenat així i per què ja no. Reescriure el passat perquè sembli que
+  sempre ho vam tenir clar és barat i costa la confiança de qui hi era.
+
+## Veda 88 — El que pesa d'una xarxa no és el que la gent hi ha fet: és el bastiment
+
+`hello` enviava `state.nodes` i `state.entities` sencers a cada aparellament. La
+intuïció deia que el problema seria la quantitat de feina registrada. La mesura
+diu una altra cosa: a una comarca de debò —27 municipis, 81 barris, 6 projectes
+vius amb 150 persones i 720 apunts signats— **la salutació eren 492 KB, i 109
+dels 115 nodes no portaven cap contingut humà**. L'esquelet geogràfic, amb el
+mapa buit, el kanban buit i el ledger buit.
+
+Amb un company era car. Amb la veda 86 —tres alhora— es multiplica, i cada
+reconnexió el torna a pagar sencer.
+
+La correcció és en dos trossos, i cap dels dos canvia què s'acaba compartint:
+
+- **Primer l'índex, després el cos.** La salutació porta id, data i si el node té
+  contingut; l'altre costat demana només el que li falta o té més antic. Dos SOS
+  ja sincronitzats no s'envien res. Mesurat: **492 KB → 6,7 KB**.
+- **L'esquelet viatja com a esquelet.** Un node sense gent, apunts, ofertes,
+  objectes ni mapa no envia els seus camps buits: es reconstrueixen a l'altra
+  banda amb els mateixos valors per defecte de `newNode`. 293 → 180 bytes, un
+  38 % —menys del que semblava a ull, perquè les dues dates ISO són un terç del
+  que queda. Ho escric perquè la primera versió d'aquest comentari deia «a ~110
+  bytes» sense haver-ho mesurat: **una estimació escrita dins del codi es
+  llegeix igual que una mesura.**
+
+I la guarda sense la qual tot això seria un desastre silenciós: **un esquelet no
+pot sobreescriure mai un node amb contingut**. Els camps que s'uneixen ja estaven
+protegits per la veda 64, però `vna`, `kanban` i `metaskill` no: un node buit amb
+`updatedAt` més nou —cosa que passa amb només tocar-lo— hauria esborrat un mapa
+de valor sencer. Que el remitent el consideri buit no vol dir que aquí ho sigui.
+
+Hi ha una tercera cosa que **no** s'ha fet, i val la pena dir-la: dues persones
+que munten cadascuna el seu esquelet de Catalunya tenen **id diferents per al
+mateix poble**, perquè `ensureNode` els genera per dispositiu. Sincronitzar-los
+duplica el poble. Això ja passava abans i segueix passant; arreglar-ho és una
+altra feina, i callar-ho hauria estat vendre aquesta com més completa del que és.
+
 ## Veda 87 — Detectar sense oferir res és fer de termòmetre
 
 El SOS sabia dir que una iniciativa feia seixanta dies que no es movia, i el que
