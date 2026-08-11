@@ -688,6 +688,44 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 86 — Passar de un a molts no és canviar el singleton: és decidir qui parla amb qui
+
+`_pc` i `_dc` eren singletons i cada aparellament tancava l'anterior: una trobada
+de tres persones eren tres torns. La feina òbvia era canviar-los per un mapa de
+sessions. La feina de debò era una altra, i s'hauria pogut no fer sense que es
+notés al codi.
+
+Amb A↔B i A↔C oberts, **un canvi de la B no arriba mai a la C**. Tres persones
+connectades segueixen sent dues converses separades: s'hauria refet la
+infraestructura sencera i el problema del backlog —«una trobada de tres són tres
+torns»— seguiria intacte, amb el mapa de sessions com a coartada. Per això l'A
+**reenvia** el que rep als altres canals oberts.
+
+Reenviar obre dos forats que s'han de tapar **alhora**, i tapar-ne només un és
+pitjor que no reenviar:
+
+- **El bucle.** A reenvia a C, C a B, B a A, i així per sempre. Cada patch porta
+  un `mid` únic i cada SOS recorda els últims que ha vist: el que torna es
+  descarta. I un comptador de salts que baixa, perquè un `mid` perdut per
+  qualsevol motiu no pugui fer voltes eternes. La memòria dels vistos té sostre:
+  una trobada llarga no pot créixer sense fi.
+- **La confiança.** L'A reenvia registres que no ha escrit ell. Pot fer-ho
+  perquè el que viatja va **signat i és append-only** (veda 64): la C comprova
+  l'origen sense haver de fiar-se de l'A. És el mateix que fa el relé de la V68
+  —un intermediari que transporta no és un intermediari que mana—, i és el que
+  permet que el reenviament no sigui una porta del darrere.
+
+I una conseqüència que no era al backlog i surt sola: **si se'n poden tenir
+diverses, se n'ha de poder acabar una**. «Desconnecta» tancava tot el que hi
+hagués, que amb una sessió era correcte i amb tres és fer fora tothom per treure
+una persona. També obliga la pantalla a ensenyar-les **totes**: amagar amb qui
+estàs compartint el teu SOS és l'última cosa que es pot amagar aquí.
+
+El test són tres SOS de debò parlant per WebRTC, sense mocks. Un company que
+desapareix sense avisar no s'hi prova, i és a posta: un canal mort només es
+descobreix quan venç el temps de la connexió, i esperar-ho mesuraria WebRTC en
+comptes del codi.
+
 ## Veda 84 — Un certificat on el rol és un camp de text és criptografia certificant una mentida
 
 La landing del Programa Pioneres promet «un certificat del rol que hagis

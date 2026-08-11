@@ -227,7 +227,7 @@ El cost és una estimació relativa, no un compromís de calendari.
 | ~~P0~~ | ~~**E7** · camí per dir «això s'ha trencat»~~ | **✅ fet a V67** | — | — | — |
 | ~~P0~~ | ~~**E8** · la còpia no depèn d'una persona~~ | **✅ fet a V67** | — | — | — |
 | ~~P1~~ | ~~**E3** · el relé porta patches signats~~ | **✅ fet a V68** | — | — | — |
-| **P1** | **E4** · més d'un company alhora | B | E3 | mitjà | Una trobada de tres són tres torns |
+| ~~P1~~ | ~~**E4** · més d'un company alhora~~ | **✅ fet a V80** (mapa de sessions + reenviament sense bucles) | — | — | — |
 | **P2** | **E5** · sincronitzar només l'àmbit compartit | B a escala | E1, E3 | mitjà | Cada aparellament mou tota la comarca |
 | **P2** | **E10** · mesurar l'escala de comarca | B a escala | E5 | baix | Es promet una escala que no s'ha provat |
 | ~~P2~~ | ~~**E9** · pes~~ | **✅ resolt a V71** (mesurat, desduplicat i sostre pujat amb motiu) | — | — | — |
@@ -341,9 +341,20 @@ aparellaments cara a cara en una xarxa que convergeix sola.
 *I dona a R9 el que avui no rep: el seu relé passa a ser infraestructura de la
 qual algú depèn i a qui es pot reconèixer.*
 
-**E4 · Més d'un company alhora** — *repara R2↔R7*
-`_pc` i `_dc` són singletons: **una connexió alhora**. Passar a un mapa de
-connexions perquè una trobada de tres persones no siguin tres torns.
+### ✅ E4 · Més d'un company alhora — *fet a V80*
+
+Deia: «`_pc` i `_dc` són singletons: una connexió alhora. Passar a un mapa de
+connexions perquè una trobada de tres persones no siguin tres torns.»
+
+El mapa de sessions era la meitat fàcil. La que faltava al diagnòstic: amb A↔B i
+A↔C oberts, **un canvi de la B no arriba mai a la C**, i tres persones
+connectades segueixen sent dues converses. Ara l'A reenvia el que rep als altres
+canals, amb `mid` i comptador de salts contra els bucles; pot fer-ho perquè el
+que viatja va signat (V64) i la C no s'ha de fiar de l'A. Veda 86.
+
+També hi va sortir el que el backlog no deia: «desconnecta» tancava-ho tot, que
+amb tres sessions és fer fora tothom per treure una persona. `syncDisconnect(id)`
+n'acaba una, i la pantalla les ensenya totes.
 
 ### P2 · Aguantar el pes
 

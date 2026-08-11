@@ -13641,7 +13641,9 @@ async function setRelayOn(on){
 
 function presenceState(){
   const online=[];
-  if(_liveConnected&&_peer)online.push({name:_peer.name||'Sense nom',did:_peer.did||'',via:'canal obert'});
+  /* Tots els canals oberts, no només l'últim: des de la V80 se'n pot tenir més
+     d'un, i ensenyar-ne un de sol seria dir que els altres no hi són. */
+  syncPeers().forEach(p=>online.push({name:p.name||'Sense nom',did:p.did||'',via:'canal obert'}));
   const me=state.activePersona;
   if(me)online.push({name:me,did:null,via:'aquest dispositiu',self:true});
   /* Els del relé s'hi afegeixen sense duplicar qui ja hi és pel canal directe:
@@ -15419,7 +15421,43 @@ function toast(msg,ms){const t=$('#toast');t.textContent=msg;t.classList.add('sh
 
 /* ═══════════════════ SYNC P2P (WebRTC · local-first, sense servidor) ═══════════════════ */
 const RTC_CFG={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
-let _pc=null,_dc=null;
+/* ═══ V80 · E4 · Més d'un company alhora ═══
+   `_pc` i `_dc` eren singletons, i cada `syncCreateOffer` tancava el que hi
+   hagués obert. Vol dir que una trobada de tres persones eren tres torns, i que
+   qui volia veure dues persones alhora no podia. Ara hi ha un **mapa de
+   sessions**: cadascuna amb la seva connexió, el seu canal i el seu company.
+
+   El que no és evident, i és la meitat de la feina: amb A↔B i A↔C oberts, un
+   canvi de la B arriba a l'A i **no arriba mai a la C**. Sense reenviament,
+   tres persones connectades segueixen sent dues converses separades —s'hauria
+   canviat el codi sense arreglar el problema. Per això l'A **reenvia** el que
+   rep als altres canals oberts.
+
+   Reenviar obre dos forats que s'han de tapar alhora:
+   · **El bucle.** A reenvia a C, C a B, B a A, per sempre. Cada patch porta un
+     `mid` únic i cada SOS recorda els que ja ha vist: el que torna es descarta.
+     I un `hops` que baixa, perquè un `mid` perdut no pugui fer voltes eternes.
+   · **La confiança.** L'A reenvia registres que no ha escrit ell. Pot fer-ho
+     perquè el que viatja va **signat i és append-only** (V64): la C verifica
+     l'origen sense haver de fiar-se de l'A, exactament com fa el relé de la
+     V68. Un intermediari que transporta no és un intermediari que mana. */
+const _sessions=new Map();
+let _sid=0;
+/* Els `mid` vistos, amb sostre: una trobada llarga no pot fer créixer memòria
+   sense fi, i recordar els últims 400 ja cobreix qualsevol volta d'un missatge. */
+const _seenMids=[],_seenSet=new Set();
+const SEEN_MAX=400;
+function _markSeen(mid){
+  if(!mid||_seenSet.has(mid))return false;
+  _seenSet.add(mid);_seenMids.push(mid);
+  while(_seenMids.length>SEEN_MAX)_seenSet.delete(_seenMids.shift());
+  return true;
+}
+const _openSessions=()=>[..._sessions.values()].filter(s=>s.dc&&s.dc.readyState==='open');
+function syncSessions(){
+  return [..._sessions.values()].map(s=>({id:s.id,
+    estat:s.dc?s.dc.readyState:'pendent',peer:s.peer||null}));
+}
 async function saveTombstones(){await dbPut({id:'__tombstones',type:'meta',map:state.tombstones});}
 // Compressió W3C (CompressionStream) per fer els codis d'aparellament molt més curts
 function _b64enc(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(s);}
@@ -15447,17 +15485,64 @@ function unpackSDP(o){
 async function _enc(desc){try{return 'Z2'+await gz(JSON.stringify(packSDP(desc)));}catch(e){try{return 'Z1'+await gz(JSON.stringify({type:desc.type,sdp:desc.sdp}));}catch(e2){return btoa(unescape(encodeURIComponent(JSON.stringify(desc))));}}}
 async function _dec(code){code=(code||'').trim();if(code.startsWith('Z2'))return unpackSDP(JSON.parse(await ungz(code.slice(2))));if(code.startsWith('Z1'))return JSON.parse(await ungz(code.slice(2)));return JSON.parse(decodeURIComponent(escape(atob(code))));}
 function _waitIce(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const chk=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',chk);res();}};pc.addEventListener('icegatheringstatechange',chk);setTimeout(res,2600);});}
-function _closePc(){try{if(_dc)_dc.close();}catch(e){}try{if(_pc)_pc.close();}catch(e){}_dc=null;_pc=null;}
+function _closeSession(s){
+  if(!s)return;
+  try{if(s.dc)s.dc.close();}catch(e){}
+  try{if(s.pc)s.pc.close();}catch(e){}
+  _sessions.delete(s.id);
+}
+/* Tanca-ho tot. Segueix existint amb el nom de sempre perquè «desconnecta» vol
+   dir desconnecta de tothom, no de l'últim. */
+function _closePc(){[..._sessions.values()].forEach(_closeSession);_sessions.clear();}
+/* Si se'n poden tenir diverses, se n'ha de poder acabar una. Sense això, l'única
+   manera de treure algú d'una trobada seria fer fora tothom i tornar a començar
+   —i qui marxa sense avisar triga a notar-se, perquè un canal WebRTC mort només
+   es descobreix quan venç el temps de la connexió. */
+function syncDisconnect(sid){
+  if(!sid){_closePc();return 0;}
+  const s=_sessions.get(sid);if(!s)return 0;
+  _closeSession(s);
+  const queden=_openSessions();
+  _liveConnected=queden.length>0;
+  if(!_liveConnected){_syncLock=false;_peer=null;setSyncPill('Local','var(--green)');}
+  document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:_liveConnected?'open':'closed',sessions:queden.length}}));
+  return 1;
+}
 let _liveConnected=false;
-function _chanOpen(){return _dc&&_dc.readyState==='open';}
-// Emet un canvi en viu pel canal obert (delta). No fa res si no hi ha connexió.
-function syncBroadcast(rec,kind){if(!_chanOpen())return;try{_dc.send(JSON.stringify({type:'patch',kind,rec:rec||null,tombstones:state.tombstones}));}catch(e){}}
+function _chanOpen(){return _openSessions().length>0;}
+/* Emet un canvi en viu a **tots** els canals oberts. `except` és la sessió per
+   on ha arribat: no es torna enrere pel mateix cable. */
+function syncBroadcast(rec,kind,opts){
+  const o=opts||{},open=_openSessions();
+  if(!open.length)return 0;
+  const msg={type:'patch',kind,rec:rec||null,tombstones:state.tombstones,
+    mid:o.mid||uid(),hops:o.hops===undefined?4:o.hops};
+  _markSeen(msg.mid);
+  let n=0;
+  open.forEach(s=>{
+    if(o.except&&s.id===o.except)return;
+    try{s.dc.send(JSON.stringify(msg));n++;}catch(e){}
+  });
+  return n;
+}
 /* ═══ Amb QUI sincronitzo ═══
    Sincronitzar a cegues no és col·laborar: si no saps qui hi ha a l'altre
    costat, has d'obrir el teu SOS sencer a un codi enganxat. Cada costat es
    presenta amb el seu `did:sos` i el nom amb què treballa, i es recorda l'últim
    company perquè la propera vegada ja sàpigues amb qui tornes a parlar. */
+/* `_peer` era «l'altre». Amb diverses sessions ja no n'hi ha un, i el codi de
+   pantalla que en depenia hauria d'ensenyar-los tots; es manté com **l'últim
+   que s'ha presentat** perquè la pastilla i el modal segueixin dient alguna
+   cosa certa, i `syncPeers()` és el que dona la llista sencera. */
 let _peer=null;
+function syncPeers(){
+  const out=[],vist=new Set();
+  _openSessions().forEach(s=>{
+    if(!s.peer||vist.has(s.peer.did||s.id))return;
+    vist.add(s.peer.did||s.id);out.push(s.peer);
+  });
+  return out;
+}
 const _peerLabel=()=>_peer?(_peer.name||'Sense nom')+' · '+String(_peer.did||'').slice(-12):'';
 async function _selfCard(){
   try{const id=await getIdentity();return{did:id.did,name:state.activePersona||'',app:'sos-teamtowers'};}
@@ -15465,39 +15550,72 @@ async function _selfCard(){
 }
 async function lastPeer(){try{const all=await dbGetAll();const r=all.find(n=>n.id==='__lastpeer');return r&&r.peer?r:null;}catch(e){return null;}}
 async function rememberPeer(peer){try{await dbPut({id:'__lastpeer',type:'meta',peer,ts:now()});}catch(e){}}
-function _wireChannel(dc,onReady){
+function _wireChannel(dc,onReady,sess){
+  const s=sess||{id:'sol'};
+  s.dc=dc;
   const greet=async()=>{try{dc.send(JSON.stringify({type:'hello',me:await _selfCard(),nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}catch(e){}};
   const notePeer=async msg=>{
     if(!msg.me)return;
-    _peer=msg.me;await rememberPeer(msg.me);
+    s.peer=msg.me;_peer=msg.me;await rememberPeer(msg.me);
     document.dispatchEvent(new CustomEvent('sos:peer',{detail:_peer}));
-    toast('🤝 Connectat amb '+(_peer.name||'un altre SOS'));
+    const n=_openSessions().length;
+    toast('🤝 Connectat amb '+(_peer.name||'un altre SOS')+(n>1?' · '+n+' alhora':''));
   };
-  dc.onopen=()=>{_liveConnected=true;_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');greet();if(onReady)onReady();document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'open'}}));};
+  dc.onopen=()=>{_liveConnected=true;_syncLock=true;setSyncPill('Sincronitzant','var(--accent-blue)');greet();if(onReady)onReady();document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'open',sessions:_openSessions().length}}));};
   dc.onmessage=async ev=>{let msg;try{msg=JSON.parse(ev.data);}catch(e){return;}
     if(msg.type==='hello'||msg.type==='data'){
       await notePeer(msg);
       mergeIncoming(msg);
       if(msg.type==='hello'){try{dc.send(JSON.stringify({type:'data',me:await _selfCard(),nodes:state.nodes,entities:state.entities,tombstones:state.tombstones}));}catch(e){}}
     }
-    else if(msg.type==='patch'){mergeIncoming({nodes:msg.kind==='node'?[msg.rec]:[],entities:msg.kind==='entity'?[msg.rec]:[],tombstones:msg.tombstones});}
+    else if(msg.type==='patch'){
+      /* El que ja s'ha vist no es torna a processar ni a reenviar. Sense això,
+         tres SOS connectats en triangle es passen el mateix apunt per sempre. */
+      if(!_markSeen(msg.mid))return;
+      mergeIncoming({nodes:msg.kind==='node'?[msg.rec]:[],entities:msg.kind==='entity'?[msg.rec]:[],tombstones:msg.tombstones});
+      /* I es reenvia a la resta, que és el que converteix dues converses en una
+         trobada. El `mid` es manté —és el mateix canvi, no un de nou— i els
+         salts baixen: si un `mid` es perdés, el comptador l'atura igual. */
+      const hops=Number(msg.hops||0);
+      if(hops>0)syncBroadcast(msg.rec,msg.kind,{mid:msg.mid,hops:hops-1,except:s.id});
+    }
   };
-  dc.onclose=()=>{_liveConnected=false;_syncLock=false;_peer=null;setSyncPill('Local','var(--green)');document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:'closed'}}));};
+  dc.onclose=()=>{
+    _sessions.delete(s.id);
+    const queden=_openSessions();
+    _liveConnected=queden.length>0;
+    if(!_liveConnected){_syncLock=false;_peer=null;setSyncPill('Local','var(--green)');}
+    document.dispatchEvent(new CustomEvent('sos:sync',{detail:{state:_liveConnected?'open':'closed',sessions:queden.length}}));
+  };
 }
+function _newSession(){
+  const s={id:'s'+(++_sid),pc:new RTCPeerConnection(RTC_CFG),dc:null,peer:null};
+  _sessions.set(s.id,s);return s;
+}
+/* Qui ofereix pot tenir diverses ofertes en marxa alhora; `_awaiting` és la
+   sessió que espera resposta, i és la que `syncAcceptAnswer` tanca. Es manté
+   l'API d'abans (un codi de text, una resposta) perquè el flux de la pantalla
+   no canvia: el que canvia és que ara no es tanca el que ja hi havia. */
+let _awaiting=null;
 async function syncCreateOffer(onReady){
-  _closePc();_pc=new RTCPeerConnection(RTC_CFG);
-  _dc=_pc.createDataChannel('sos');_wireChannel(_dc,onReady);
-  const o=await _pc.createOffer();await _pc.setLocalDescription(o);await _waitIce(_pc);
-  return await _enc(_pc.localDescription);
+  const s=_newSession();_awaiting=s;
+  _wireChannel(s.pc.createDataChannel('sos'),onReady,s);
+  const o=await s.pc.createOffer();await s.pc.setLocalDescription(o);await _waitIce(s.pc);
+  return await _enc(s.pc.localDescription);
 }
 async function syncAcceptOffer(code,onReady){
-  _closePc();_pc=new RTCPeerConnection(RTC_CFG);
-  _pc.ondatachannel=e=>{_dc=e.channel;_wireChannel(_dc,onReady);};
-  await _pc.setRemoteDescription(await _dec(code));
-  const a=await _pc.createAnswer();await _pc.setLocalDescription(a);await _waitIce(_pc);
-  return await _enc(_pc.localDescription);
+  const s=_newSession();
+  s.pc.ondatachannel=e=>{_wireChannel(e.channel,onReady,s);};
+  await s.pc.setRemoteDescription(await _dec(code));
+  const a=await s.pc.createAnswer();await s.pc.setLocalDescription(a);await _waitIce(s.pc);
+  return await _enc(s.pc.localDescription);
 }
-async function syncAcceptAnswer(code){await _pc.setRemoteDescription(await _dec(code));}
+async function syncAcceptAnswer(code){
+  const s=_awaiting||[..._sessions.values()].pop();
+  if(!s)throw{msg:'No hi ha cap oferta esperant resposta'};
+  await s.pc.setRemoteDescription(await _dec(code));
+  _awaiting=null;
+}
 /* Les col·leccions que **només creixen** viuen dins del node, i el node es
    resolia per LWW sencer: la banda amb l'`updatedAt` més antic perdia tot el
    que hi havia apuntat. El xat ja se'n salvava; aquestes són les altres.
@@ -15853,9 +15971,19 @@ function openSyncConnected(){
      panell, així que s'escolta la presentació i es repinta. */
   const paintPeer=()=>{
     const box=bg.querySelector('#scPeer');if(!box||!box.isConnected)return;
-    box.innerHTML=_peer
-      ?'<div class="ent-card" style="border-left:3px solid var(--green)"><div class="ent-nm">🤝 '+esc(_peer.name||'SOS sense nom')+'</div><div class="ent-desc" style="font-family:var(--mono);font-size:.7rem;word-break:break-all;margin-top:.2rem">'+esc(_peer.did||'sense identitat')+'</div></div>'
+    /* Totes les sessions obertes, cadascuna amb el seu botó per acabar-la.
+       Ensenyar-ne una de sola quan n'hi ha dues seria amagar amb qui estàs
+       compartint el teu SOS, que és l'última cosa que es pot amagar aquí. */
+    const ss=syncSessions().filter(s=>s.estat==='open');
+    box.innerHTML=ss.length
+      ?ss.map(s=>'<div class="ent-card" style="border-left:3px solid var(--green)"><div class="ent-nm">🤝 '+
+        esc((s.peer&&s.peer.name)||'SOS sense nom')+'</div><div class="ent-desc" style="font-family:var(--mono);font-size:.7rem;word-break:break-all;margin-top:.2rem">'+
+        esc((s.peer&&s.peer.did)||'esperant que es presenti')+'</div>'+
+        '<button class="btn btn-ghost btn-sm" data-tanca="'+esc(s.id)+'" style="margin-top:.4rem">Acaba aquesta</button></div>').join('')
       :'<div class="ai-note"><span class="ic">…</span><span>Esperant que l\'altre costat es presenti.</span></div>';
+    box.querySelectorAll('[data-tanca]').forEach(btn=>btn.onclick=()=>{
+      syncDisconnect(btn.dataset.tanca);paintPeer();toast('Sessió acabada');
+    });
   };
   paintPeer();
   const onPeer=()=>paintPeer();
@@ -16085,7 +16213,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
