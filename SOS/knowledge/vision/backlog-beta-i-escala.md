@@ -228,8 +228,8 @@ El cost és una estimació relativa, no un compromís de calendari.
 | ~~P0~~ | ~~**E8** · la còpia no depèn d'una persona~~ | **✅ fet a V67** | — | — | — |
 | ~~P1~~ | ~~**E3** · el relé porta patches signats~~ | **✅ fet a V68** | — | — | — |
 | ~~P1~~ | ~~**E4** · més d'un company alhora~~ | **✅ fet a V80** (mapa de sessions + reenviament sense bucles) | — | — | — |
-| **P2** | **E5** · sincronitzar només l'àmbit compartit | B a escala | E1, E3 | mitjà | Cada aparellament mou tota la comarca |
-| **P2** | **E10** · mesurar l'escala de comarca | B a escala | E5 | baix | Es promet una escala que no s'ha provat |
+| ~~P2~~ | ~~**E5** · sincronitzar només l'àmbit compartit~~ | **✅ fet a V82** (índex primer · 492 KB → 6,7 KB) | — | — | — |
+| ~~P2~~ | ~~**E10** · mesurar l'escala de comarca~~ | **✅ fet a V82** (`test-comarca.mjs`, amb sostres) | — | — | — |
 | ~~P2~~ | ~~**E9** · pes~~ | **✅ resolt a V71** (mesurat, desduplicat i sostre pujat amb motiu) | — | — | — |
 | ~~P3~~ | ~~**E6** · segona llengua (ca · es)~~ | **✅ la capa, feta a V69** | — | — | — |
 
@@ -358,14 +358,28 @@ n'acaba una, i la pantalla les ensenya totes.
 
 ### P2 · Aguantar el pes
 
-**E5 · Sincronitzar només l'àmbit compartit** — *repara R2↔R7 a escala*
-`hello` envia `state.nodes` i `state.entities` **sencers**. A escala de comarca,
-això és tota la comarca a cada aparellament, i creix amb el quadrat de la gent.
-Enviar només l'àmbit que les dues bandes comparteixen.
+### ✅ E5 · Sincronitzar només el que porta informació — *fet a V82*
 
-**E10 · Escala de debò** — `test-escala` prova 500 nodes i 5.000 apunts. Una
-comarca real amb 30 municipis és més gran, i amb E5 encara sense fer, cada
-aparellament ho mou tot. Mesurar el cas de comarca abans de prometre'l.
+Deia «enviar només l'àmbit que les dues bandes comparteixen». La mesura va
+canviar el plantejament: el problema no era l'àmbit, era **el bastiment**. A una
+comarca de debò, 109 dels 115 nodes no porten cap contingut humà i la salutació
+eren 492 KB. Ara va índex primer i cos després —**492 KB → 6,7 KB**— i
+l'esquelet viatja com a esquelet. Veda 88.
+
+El que no s'ha fet i cal no oblidar: dues persones que munten cadascuna el seu
+esquelet tenen **id diferents per al mateix poble**, i sincronitzar-los el
+duplica. Ja passava abans; és una altra feina.
+
+### ✅ E10 · L'escala de comarca, mesurada — *fet a V82*
+
+`test-comarca.mjs` munta la forma que tenen les comarques de debò —molts nodes
+geogràfics buits, pocs projectes vius, la gent concentrada— i posa números amb
+**sostres declarats**: salutació 6,7 KB (sostre 40), fusió de zero 66 ms (sostre
+4.000), portada 47 ms i mapa 44 ms (sostre 2.500).
+
+Diu també el que **no** mesura, escrit com a asserció perquè el verd no es llegeixi
+com una promesa més gran: això és UNA comarca. Deu comarques federades segueixen
+sense provar-se.
 
 ### ✅ E9 · Pes — *resolt a V71, i no com s'esperava*
 
