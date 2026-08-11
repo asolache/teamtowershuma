@@ -447,6 +447,8 @@ a{color:var(--blue);text-decoration:none}
 /* dynamics gallery */
 .dyn-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;max-height:52vh;overflow-y:auto;margin:-.2rem -.3rem;padding:.2rem .3rem}
 .dyn-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.85rem;cursor:pointer;transition:border-color .12s,transform .12s;display:flex;flex-direction:column;gap:.3rem}
+/* Triar una plantilla ja no crea res: s'ha de veure quina està triada. */
+.dyn-card.sel{border-color:var(--accent-green);box-shadow:inset 0 0 0 1px var(--accent-green)}
 .dyn-card:hover{border-color:var(--indigo);transform:translateY(-2px)}
 .dyn-ic{font-size:1.5rem;line-height:1}
 .dyn-nm{font-size:.92rem;font-weight:700}
@@ -11690,7 +11692,13 @@ function renderMatriuVentures(body,node){
       const a=actMeta(v.activityId),c=el('div','ent-card');c.style.cursor='pointer';
       const lead=v.leadMemberId?memberById(node,v.leadMemberId):null,nAl=allocationsOf(v).length,nAp=ventureLedger(v).length,nCo=cooperationsOf(node).filter(x=>x.fromId===v.id||x.toId===v.id).length;
       const sps=sprintsOf(v),spDone=sps.filter(s=>s.status==='done').length,rd=ventureReadiness(node,v);
-      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges"><span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(sps.length?'<span class="ent-b">📋 '+spDone+'/'+sps.length+' sprints</span>':'')+'<span class="ent-b '+(rd.graduateReady?'b-ver':(rd.score>=60?'b-form':''))+'">🎓 '+rd.score+'%</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(nCo?'<span class="ent-b b-ver">🔄 '+nCo+' coop</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
+      /* El nom ja no diu de quina mena és el projecte —abans el nom ERA la
+         plantilla—, així que el tipus passa a ser una etiqueta visible. Sense
+         això, dir-li «Comunitat Energètica de Vilafranca» hauria amagat el que
+         abans es veia de franc. */
+      c.innerHTML='<div class="ent-nm">'+a.icon+' '+esc(v.name)+'</div><div class="ent-badges">'+
+        (a.name&&a.name!==v.name?'<span class="ent-b">'+esc(a.name)+'</span>':'')+
+        '<span class="ent-b">'+v.vna.roles.length+' rols</span><span class="ent-b">'+v.vna.exchanges.length+' fluxos</span>'+(sps.length?'<span class="ent-b">📋 '+spDone+'/'+sps.length+' sprints</span>':'')+'<span class="ent-b '+(rd.graduateReady?'b-ver':(rd.score>=60?'b-form':''))+'">🎓 '+rd.score+'%</span>'+(lead?'<span class="ent-b b-ver">👤 '+esc(lead.name)+'</span>':'')+(nAl?'<span class="ent-b">🔗 '+nAl+' recursos</span>':'')+(nAp?'<span class="ent-b">🥧 '+nAp+' aport.</span>':'')+(nCo?'<span class="ent-b b-ver">🔄 '+nCo+' coop</span>':'')+(v.graduatedNodeId?'<span class="ent-b b-ver">graduada</span>':'')+'</div>';
       c.onclick=()=>openVentureDetail(node,v);
       const act=el('div');act.style.marginTop='.5rem';act.style.display='flex';act.style.gap='.3rem';act.style.flexWrap='wrap';
       if(v.stage!=='graduacio'){
@@ -11800,20 +11808,71 @@ function openActivityGallery(node){
   const critCards=CRITICAL_ACTIVITIES.map(a=>'<div class="dyn-card" data-act="'+a.id+'"><span class="dyn-ic">'+a.icon+'</span><span class="dyn-nm">'+esc(a.name)+'</span><span class="dyn-one">'+esc(a.one)+'</span></div>').join('');
   const protoCards=PROTOTYPE_MAPS.map(p=>'<div class="dyn-card" data-proto="'+p.id+'"><span class="dyn-ic">'+p.icon+'</span><span class="dyn-nm">'+esc(p.name)+'</span><span class="dyn-one">'+esc(p.one)+'</span><span class="dyn-one" style="opacity:.65;font-style:italic">Tipus habituals: '+p.projectTypes.map(t=>projectTypeMeta(t).icon).join(' ')+'</span></div>').join('');
   const typeOpts=PROJECT_TYPES.map(t=>'<option value="'+t.id+'">'+t.icon+' '+esc(t.name)+' — '+esc(t.one)+'</option>').join('');
-  const bg=modal('<h2>Nova venture · MATRIU</h2>'+
-    '<p class="m-sub">Escull d\'on partir: <strong>activitat crítica</strong> del territori (10 predefinides), <strong>prototip de mapa de valor</strong> (per servei/procés/producte, cobreix el 80% dels casos), o <strong>demanda</strong> que la IA planificarà.</p>'+
+  const bg=modal('<h2>Nou projecte · MATRIU</h2>'+
+    '<p class="m-sub">Posa-li <strong>el nom que tindrà</strong> i tria <strong>de quina mena és</strong>: <strong>activitat crítica</strong> del territori (10 predefinides), <strong>prototip de mapa de valor</strong> (per servei/procés/producte, cobreix el 80% dels casos), o <strong>demanda</strong> que la IA planificarà.</p>'+
     '<div class="ag-tabs"><button class="ag-tab sel" data-t="crit">🎯 Activitats crítiques</button><button class="ag-tab" data-t="proto">📐 Prototips de mapa de valor</button><button class="ag-tab" data-t="ai">🤖 Demana a la IA</button></div>'+
-    '<div class="field" style="margin-top:.6rem"><label>Tipus de projecte</label><select id="agType">'+typeOpts+'</select></div>'+
+    '<div class="field" style="margin-top:.6rem"><label>Nom del projecte</label>'+
+      '<input id="agName" maxlength="60" placeholder="p.ex. Comunitat Energètica de Vilafranca" autocomplete="off">'+
+      '<div class="ent-desc" style="margin-top:.3rem">El nom és teu. Si el deixes en blanc, es queda el de la plantilla.</div></div>'+
+    '<div class="field"><label>Forma jurídica i de repartiment</label><select id="agType">'+typeOpts+'</select></div>'+
+    '<div class="ent-grp-lbl">De quina mena és</div>'+
+    '<div id="agSel" class="ent-card" style="margin-bottom:.5rem"></div>'+
     '<div id="agCrit" class="ag-pane"><p class="m-sub" style="font-size:.82rem">Plantilles del territori (dinamització, ocupació, habitatge, energia, alimentació, cures, cultura…). Cada activitat inclou rols, fluxos i pla d\'acció.</p><div class="dyn-grid">'+critCards+'</div></div>'+
     '<div id="agProto" class="ag-pane" style="display:none"><p class="m-sub" style="font-size:.82rem">Mapes genèrics reutilitzables per <strong>servei</strong>, <strong>procés</strong> o <strong>producte</strong>. Personalitzables al 100% després.</p><div class="dyn-grid">'+protoCards+'</div></div>'+
     '<div id="agAi" class="ag-pane" style="display:none"><p class="m-sub" style="font-size:.82rem">Descriu la <strong>demanda comunitària</strong>. La IA (o el fallback heurístic sense clau) proposarà un mapa de valor amb rols i fluxos, editable després.</p><textarea id="agDemand" style="width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.5rem;font:inherit" placeholder="Ex: cal un servei de reparació de bicicletes de barri accessible per a joves i gent gran, obert els caps de setmana"></textarea><button class="btn btn-primary btn-sm" id="agAiGo" style="margin-top:.5rem">🤖 Planifica els fluxos de valor</button><div id="agAiRes" style="margin-top:.6rem"></div></div>'+
-    '<div class="modal-actions"><button class="btn btn-ghost" id="agCancel">Cancel·la</button></div>');
+    '<div class="modal-actions"><button class="btn btn-ghost" id="agCancel">Cancel·la</button>'+
+      '<button class="btn btn-primary" id="agCreate" disabled>Crea el projecte</button></div>');
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#agCancel').onclick=closeModal;
   bg.querySelectorAll('.ag-tab').forEach(tab=>tab.onclick=()=>{const t=tab.dataset.t;bg.querySelectorAll('.ag-tab').forEach(x=>x.classList.toggle('sel',x===tab));bg.querySelector('#agCrit').style.display=t==='crit'?'':'none';bg.querySelector('#agProto').style.display=t==='proto'?'':'none';bg.querySelector('#agAi').style.display=t==='ai'?'':'none';});
   const getType=()=>bg.querySelector('#agType').value;
-  bg.querySelectorAll('#agCrit .dyn-card').forEach(c=>c.onclick=async()=>{const v=newVenture(node,actMeta(c.dataset.act));v.projectType=getType();v.equity={...projectTypeMeta(getType()).equity};venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada — '+projectTypeMeta(getType()).name);});
-  bg.querySelectorAll('#agProto .dyn-card').forEach(c=>c.onclick=async()=>{const v=newVentureFromPrototype(node,prototypeMapMeta(c.dataset.proto),{type:getType()});venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture des de prototip — '+v.name);});
+  /* ═══ V84 · El projecte és teu; la plantilla només diu de quina mena és ═══
+     Clicar una targeta creava la venture a l'instant i li posava **el nom de la
+     plantilla**: cinc projectes d'energia a cinc pobles es deien tots «Energia».
+     El nom d'un projecte és la primera cosa que la gent hi reconeix, i no pot
+     sortir d'un catàleg.
+
+     Ara la targeta **tria**, no crea: la plantilla passa a ser el tipus —què és
+     això— i el nom el poses tu. Si el deixes en blanc queda el de la plantilla,
+     com abans, perquè no volem que ningú es quedi encallat davant d'un camp de
+     text; però el camp hi és, amb el que has triat davant. */
+  const nameInput=bg.querySelector('#agName');
+  let triat=null;
+  const crear=bg.querySelector('#agCreate');
+  const pintaTria=()=>{
+    const t=triat?(triat.kind==='crit'?actMeta(triat.id):prototypeMapMeta(triat.id)):null;
+    bg.querySelector('#agSel').innerHTML=t
+      ?'<span class="ent-b b-ver">'+(t.icon||'◦')+' '+esc(t.name)+'</span> <span class="ent-desc">'+esc(t.one||'')+'</span>'
+      :'<span class="ent-desc">Encara no has triat de quina mena és. Tria una targeta de sota.</span>';
+    crear.disabled=!triat;
+    /* Separador neutre i no «de X»: el node sovint ja es diu «MATRIU de l'Alt
+       Penedès», i encadenar-hi un altre «de» sortia «Energia de MATRIU de
+       l'Alt Penedès». Un suggeriment mal escrit convida a acceptar-lo tal com
+       està. */
+    if(t&&!nameInput.value.trim())nameInput.placeholder=t.name+' · '+node.name;
+  };
+  const triaCard=(c,kind)=>{
+    triat={kind,id:kind==='crit'?c.dataset.act:c.dataset.proto};
+    bg.querySelectorAll('.dyn-card').forEach(x=>x.classList.toggle('sel',x===c));
+    pintaTria();
+    /* El nom és el següent que toca: portar-hi el cursor estalvia explicar-ho. */
+    if(!nameInput.value.trim())nameInput.focus();
+  };
+  bg.querySelectorAll('#agCrit .dyn-card').forEach(c=>c.onclick=()=>triaCard(c,'crit'));
+  bg.querySelectorAll('#agProto .dyn-card').forEach(c=>c.onclick=()=>triaCard(c,'proto'));
+  pintaTria();
+  crear.onclick=async()=>{
+    if(!triat){toast('Tria de quina mena és');return;}
+    const nom=nameInput.value.trim();
+    const v=triat.kind==='crit'
+      ?Object.assign(newVenture(node,actMeta(triat.id)),nom?{name:nom}:{})
+      :newVentureFromPrototype(node,prototypeMapMeta(triat.id),{type:getType(),name:nom});
+    if(triat.kind==='crit'){v.projectType=getType();v.equity={...projectTypeMeta(getType()).equity};}
+    venturesOf(node).push(v);await persist(node);
+    closeModal();state.tab='cartera';renderWorkspace();
+    toast('Projecte creat · '+v.name);
+  };
+  nameInput.onkeydown=e=>{if(e.key==='Enter'&&triat){e.preventDefault();crear.click();}};
   bg.querySelector('#agAiGo').onclick=async()=>{
     const demand=bg.querySelector('#agDemand').value.trim();if(!demand){toast('Descriu la demanda comunitària');return;}
     const btn=bg.querySelector('#agAiGo');btn.disabled=true;btn.textContent='🤖 Planificant…';
@@ -11827,7 +11886,8 @@ function openActivityGallery(node){
         '<button class="btn btn-primary btn-sm" id="agAiUse" style="margin-top:.6rem">✓ Crea la venture amb aquest pla</button>';
       bg.querySelector('#agAiUse').onclick=async()=>{
         const proto={id:'ai_'+Date.now(),name:demand.slice(0,60),icon:'🤖',one:demand,roles:plan.roles.map(r=>typeof r==='string'?r:r.name),flows:plan.flows,kanban:plan.kanban||['Definir MVP','Primer prototip','Test amb 3 persones','Iterar','Consolidar']};
-        const v=newVentureFromPrototype(node,proto,{type:getType(),name:demand.slice(0,60)});
+        /* Si has escrit un nom, mana el teu; si no, el resum de la demanda. */
+        const v=newVentureFromPrototype(node,proto,{type:getType(),name:nameInput.value.trim()||demand.slice(0,60)});
         venturesOf(node).push(v);await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture creada des de plan IA');
       };
     }catch(e){bg.querySelector('#agAiRes').innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.message||'desconegut')+'</span></div>';}
@@ -12245,6 +12305,13 @@ function openVentureDetail(node,v){
   const bg=modal(`
     <h2>${a.icon} ${esc(v.name)}</h2>
     <p class="m-sub">Assigna qui lidera i quins recursos de l'ecosistema mobilitza aquesta venture.</p>
+    <!-- Reanomenar hi faltava, i és el que necessita qui té projectes creats
+         abans de la V84: es deien tots com la plantilla i no hi havia manera de
+         canviar-ho. La mena del projecte es queda fixa a sota, perquè és el que
+         sosté el mapa de valor i el que s'ha graduat. -->
+    <div class="field"><label>Nom del projecte</label>
+      <div class="wz-key"><input id="vdName" maxlength="60" value="${esc(v.name)}" autocomplete="off"><button class="btn btn-ghost btn-sm" id="vdRename">Desa</button></div>
+      <div class="ent-desc" style="margin-top:.3rem">De quina mena és: <strong>${a.icon} ${esc(a.name)}</strong>${a.one?' · '+esc(a.one):''}</div></div>
     <div class="field"><label>Soci que lidera</label><select id="vdLead"><option value="">— sense assignar —</option>${ms.map(m=>'<option value="'+m.id+'"'+(v.leadMemberId===m.id?' selected':'')+'>'+esc(m.name)+'</option>').join('')}</select>${ms.length?'':'<div class="ent-desc" style="margin-top:.3rem">Dona d\'alta socis a la MATRIU per poder assignar un lead.</div>'}</div>
     <div class="ent-grp-lbl">🔗 Recursos mobilitzats</div>
     <div class="ent-grid" id="vdAllocs">${allocRows()}</div>
@@ -12615,7 +12682,20 @@ function openVentureDetail(node,v){
   (function renderCoops(){const coops=cooperationsOf(node).filter(c=>c.fromId===v.id||c.toId===v.id);coopBox.innerHTML='';if(!coops.length){coopBox.appendChild(el('div','ent-desc','Cap intercooperació encara. Les ventures poden cedir hores, objectes, talent o capital entre elles.'));return;}const grid=el('div','ent-grid');coops.slice(0,20).forEach(c=>{const dir=c.fromId===v.id?'→ dóna a':'← rep de',other=c.fromId===v.id?c.toName:c.fromName;const card=el('div','ent-card');const kmap={hores:'⏱',objecte:'📦',talent:'👤',moneda:'€'};card.innerHTML='<div class="ent-nm">'+kmap[c.kind]+' '+c.qty+' '+c.kind+'</div><div class="ent-badges"><span class="ent-b">'+esc(dir)+'</span><span class="ent-b b-ver">'+esc(other)+'</span>'+(c.sig?'<span class="ent-b b-ver">🔏 firmat</span>':'')+'</div>'+(c.note?'<div class="ent-desc">'+esc(c.note)+'</div>':'');grid.appendChild(card);});coopBox.appendChild(grid);})();
   bg.querySelector('#vdCoop').onclick=()=>{const others=venturesOf(node).filter(x=>x.id!==v.id);if(!others.length){toast('Cal una altra venture per cooperar');return;}closeModal();openCooperationModal(node,v);};
   bg.querySelector('#vdClose').onclick=closeModal;
-  bg.querySelector('#vdSave').onclick=async()=>{v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture actualitzada');};
+  bg.querySelector('#vdRename').onclick=async()=>{
+    const nou=bg.querySelector('#vdName').value.trim();
+    if(!nou){toast('El nom no pot quedar buit');return;}
+    if(nou===v.name){toast('Ja es diu així');return;}
+    v.name=nou;await persist(node);
+    bg.querySelector('h2').innerHTML=a.icon+' '+esc(nou);
+    toast('Reanomenat · '+nou);
+  };
+  bg.querySelector('#vdSave').onclick=async()=>{
+    /* Desar també desa el nom: qui l'ha escrit i clica «Desa» a baix espera que
+       es desi, i obligar-lo a clicar dos llocs seria una trampa. */
+    const nou=bg.querySelector('#vdName').value.trim();
+    if(nou)v.name=nou;
+    v.leadMemberId=bg.querySelector('#vdLead').value||null;await persist(node);closeModal();state.tab='cartera';renderWorkspace();toast('Venture actualitzada');};
 }
 function openCooperationModal(node,fromV){
   const others=venturesOf(node).filter(x=>x.id!==fromV.id);
