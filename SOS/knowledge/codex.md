@@ -688,6 +688,38 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 94 — Una porta que existeix i no es pot obrir compta com si no hi fos
+
+Publicar una oferta ja es podia fer d'una tirada, i tot i així gairebé ningú hi
+arribava. No era un problema de funcionalitat sinó de **les tres maneres en què
+una acció es pot fer inaccessible sense deixar de funcionar**, i les tres hi eren
+alhora:
+
+- **Viure en un sol lloc.** L'acció només estava al lateral. Qui feia servir el
+  menú d'accions o la cerca global no la trobava mai, per molt que la fes servir
+  cada dia. Una acció central ha de tenir més d'una entrada; no per redundància
+  sinó perquè **no hi ha un únic camí pel qual la gent hi va**.
+- **Ser un `div` amb `onclick`.** Les files del taulell es podien clicar i prou.
+  Sense `role`, sense `tabindex` i sense Enter, qui navega amb teclat o amb lector
+  de pantalla llegia el número —«ofertes: 1»— i no arribava mai a l'acció. La
+  informació hi era; la porta, no. Una fila que fa una cosa **és un botó**, i s'ha
+  d'escriure com un botó encara que es pinti com una fila.
+- **Acabar en un cul-de-sac.** Qui encara no era a cap banc de temps rebia
+  «entra a un node o crea'n un, i torna aquí»: una pantalla que t'explica el que
+  et falta i et deixa amb el problema a les mans. És exactament el que prohibeix
+  la veda 62, i costava d'endevinar perquè per a qui ja hi era, la pantalla
+  funcionava perfectament.
+
+La sortida del tercer cas és la que dona la regla: **crear el que falta és part
+de l'acció, no un requisit previ**. Obrir el banc de temps al municipi, entrar-hi
+com a soci i publicar l'oferta és la mateixa feina que ja fa l'alta de perfil;
+l'única cosa que faltava era poder-la fer des d'aquí. Un formulari, un botó, i el
+mateix resultat tant si el lloc existia com si no.
+
+I la seva germana, que és la que evita substituir un cul-de-sac per un altre:
+quan encara no se sap **qui** publica, no es diu «no pots». Es diu què falta —
+saber qui ets— i s'hi porta amb el botó al costat.
+
 ## Veda 93 — Una app que s'explica bé i no deixa operar només serveix per aprendre-la
 
 El lateral era un explorador de territoris: bo per entendre l'estructura, inútil

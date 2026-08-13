@@ -152,6 +152,118 @@ ok(conviu.ops && conviu.arbre, 'hi ha taulell i hi ha arbre');
 ok(/^opsPanel,/.test(conviu.ordre),
   'i el taulell va davant de tot, capçalera inclosa: ' + conviu.ordre);
 
+console.log('\n══ Que publicar sigui accessible: sense culs-de-sac, i amb teclat ══');
+
+console.log('\n9 · Les files del taulell són operables amb teclat');
+/* Eren `div` amb `onclick`: qui navega amb tabulador o amb lector de pantalla
+   veia el número i no arribava mai a l'acció. Publicar era una d'aquestes. */
+const tecla = await page.evaluate(() => {
+  const files = [...document.querySelectorAll('#opsPanel .ops-row')];
+  const clicables = files.filter(f => f.style.cursor === 'pointer');
+  return {
+    total: files.length, clicables: clicables.length,
+    ambRol: clicables.filter(f => f.getAttribute('role') === 'button').length,
+    tabulables: clicables.filter(f => f.getAttribute('tabindex') === '0').length,
+    etiquetades: clicables.filter(f => (f.getAttribute('aria-label') || '').length > 3).length
+  };
+});
+ok(tecla.clicables > 0 && tecla.ambRol === tecla.clicables && tecla.tabulables === tecla.clicables,
+  'les ' + tecla.clicables + ' files que fan alguna cosa tenen role=button i tabindex=0');
+ok(tecla.etiquetades === tecla.clicables,
+  'i totes diuen què fan a qui no veu la icona');
+
+const enter = await page.evaluate(async () => {
+  const fila = [...document.querySelectorAll('#opsPanel .ops-row')]
+    .find(f => /trobar/.test(f.textContent));
+  fila.focus();
+  const focusat = document.activeElement === fila;
+  fila.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  await new Promise(r => setTimeout(r, 150));
+  const obert = !!document.querySelector('.modal');
+  window.__SOS.closeModal();
+  return { focusat, obert };
+});
+ok(enter.focusat, 'la fila agafa el focus');
+ok(enter.obert, 'i Enter obre el mateix que el clic: ja no cal ratolí');
+
+console.log('\n10 · Sense banc de temps NO és un cul-de-sac: se n’obre un aquí mateix');
+/* Abans deia «entra a un node o crea\'n un, i torna aquí» i et deixava allà.
+   És exactament el que la veda 62 prohibeix. */
+const nou = await page.evaluate(async () => {
+  const S = window.__SOS;
+  await S.setActivePersona('Pau Ferrer');
+  S.render();
+  const llocs = S.publishPlaces('Pau Ferrer').length;
+  S.openPublishHub();
+  await new Promise(r => setTimeout(r, 150));
+  const m = document.querySelector('.modal');
+  return {
+    llocs, txt: m.textContent.replace(/\s+/g, ' '),
+    teMuni: !!m.querySelector('#phMuni'), teGo: !!m.querySelector('#phGo'),
+    botons: [...m.querySelectorAll('.modal-actions button')].map(x => x.textContent.trim())
+  };
+});
+ok(nou.llocs === 0, 'en Pau no és a cap banc de temps');
+ok(nou.teMuni && nou.teGo, 'i tot i així el formulari hi és, amb el botó de publicar');
+ok(!/torna aquí/.test(nou.txt), 'ja no hi ha cap «torna aquí»: ' + nou.botons.join(' · '));
+
+const fet = await page.evaluate(async () => {
+  const S = window.__SOS, m = document.querySelector('.modal');
+  m.querySelector('#phMuni').value = 'Vilafranca del Penedès';
+  m.querySelector('#phTitle').value = 'Faig pa';
+  m.querySelector('#phGo').click();
+  await new Promise(r => setTimeout(r, 600));
+  const bt = S.publishPlaces('Pau Ferrer');
+  const n = bt[0];
+  return {
+    llocs: bt.length, nom: n ? n.name : '',
+    esSoci: n ? S.membersOf(n).some(x => S.personKey(x.name) === S.personKey('Pau Ferrer')) : false,
+    teOferta: n ? S.offersOf(n).some(o => o.title === 'Faig pa') : false,
+    publica: n ? S.publishesAnything(n) : false,
+    sotaMunicipi: n ? (S.byId(n.parentId) || {}).nodeLevel : '',
+    obert: !!document.querySelector('.modal')
+  };
+});
+ok(fet.llocs === 1 && fet.esSoci, 'd\'una tirada surt «' + fet.nom + '» i ell n\'és soci');
+ok(fet.sotaMunicipi === 'municipi', 'penjat del municipi de debò, no de l\'arrel');
+ok(fet.teOferta && fet.publica, 'amb l\'oferta creada i el node ja publicant');
+ok(!fet.obert, 'i el modal es tanca sol');
+
+console.log('\n11 · I s’hi arriba des de fora del lateral');
+const arreu = await page.evaluate(async () => {
+  const S = window.__SOS;
+  S.openLauncher();
+  await new Promise(r => setTimeout(r, 150));
+  const alMenu = /Publica una oferta/.test(document.querySelector('.modal').textContent);
+  S.closeModal();
+  /* I la paleta de cerca (⌘K), que és per on hi arriba qui ja sap què vol. */
+  S.openSearchPalette();
+  await new Promise(r => setTimeout(r, 100));
+  const inp = document.querySelector('#spQ');
+  inp.value = 'publica una oferta'; inp.dispatchEvent(new Event('input'));
+  await new Promise(r => setTimeout(r, 100));
+  const cerca = /Publica una oferta/.test(document.querySelector('#spResults').textContent);
+  S.closeModal();
+  return { alMenu, cerca };
+});
+ok(arreu.alMenu, 'el menú d\'accions el porta: publicar ja no viu només al lateral');
+ok(arreu.cerca, 'i la cerca global també el troba');
+
+console.log('\n12 · Sense ningú actiu, diu què falta i hi porta');
+const senseJo = await page.evaluate(async () => {
+  const S = window.__SOS;
+  await S.setActivePersona('');
+  S.openPublishHub();
+  await new Promise(r => setTimeout(r, 150));
+  const m = document.querySelector('.modal');
+  const txt = m.textContent.replace(/\s+/g, ' ');
+  const btns = [...m.querySelectorAll('.modal-actions button')].map(x => x.textContent.trim());
+  S.closeModal();
+  return { txt, btns };
+});
+ok(/qui ho publica/.test(senseJo.txt) && senseJo.btns.some(x => /perfil/i.test(x)),
+  'diu que falta saber qui publica, i hi ha el botó: ' + senseJo.btns.join(' · '));
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);
