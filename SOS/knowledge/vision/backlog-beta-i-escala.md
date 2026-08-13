@@ -400,7 +400,66 @@ cada canvi es baixa sencer» és certa, però 16 KB sobre 375 no la mouen.
 
 El sostre havia fet la seva feina: forçar la mesura i la conversa. → veda 75.
 
+### P1 · E13 · D'on es baixa el que ha publicat la xarxa
+
+Avui la lectura del que altres han publicat ja funciona —`updateCommonSupply`
+sobre `supply/index.json`, `pullChannel` sobre `canal/index.json`— però surt
+**d'un sol origen**, i publicar-hi demana un token de GitHub o una PR. Aquesta és
+la centralització de debò; el transport, no.
+
+Decidit que el camí de lectura **es queda a HTTPS estàtic** i no passa a IPFS ni
+a WebTorrent: zero instal·lació, funciona amb dades mòbils i darrere d'un proxy,
+i el CDN el cacheja. El que fa acceptable que ho allotgi algú no és el transport
+sinó que el contingut és **agregat i signat** i passa pel sedàs
+(`sanitizeSupplyRow`, `readSupplyPack`, `verifyNoLeak`). El P2P de debò (WebRTC,
+V80/V82) ja cobreix la sincronització en viu entre qui es coneix; fer-lo servir
+també per «baixar el que ha publicat la xarxa» faria que la xarxa fos invisible
+quan ningú està connectat, que és el contrari d'accessible.
+
+Tres passos, en aquest ordre:
+
+1. **Llista d'orígens en comptes d'una constant.** `SUPPLY_BASE` i `CHANNEL_BASE`
+   passen a ser una llista que es prova en ordre (el lloc propi, un mirall a
+   GitHub Pages, `raw.githubusercontent`, i una passarel·la IPFS l'última). Mateix
+   codi, mateixos paquets, N llocs. Qui vulgui sobirania hi afegeix el seu.
+2. **Índex a Nostr, contingut per HTTPS.** Un event reemplaçable (NIP-33, que ja
+   hi és a mig fer via `nostrPublish`) per node amb `{tema, url, hash, ts}`. Relés
+   n'hi ha molts, són gratis i el navegador hi parla nativament per WSS.
+   Descobriment descentralitzat, integritat per hash i firma. És el que fa que
+   això sobrevisqui que un lloc desaparegui sense demanar a ningú que engegui cap
+   dimoni.
+3. **Publicar al teu propi origen**, sense token ni repositori de ningú. La
+   federació passa a ser una llista d'orígens.
+
+Arweave i IPFS es queden on són: permanència i prova (`PIN_TARGETS`), no la
+lectura de cada dia.
+
+**Qui ho paga**: decidit que de moment ho paga la casa, i per això primer es va
+fer la caixa amb sostre (V87 · veda 95). El consum dels orígens ha de passar per
+`daoSpend`, que és l'única porta que hi ha. **Falta**: connectar el cost real de
+cada origen amb la despesa —avui `daoSpend` sap dir que no, però ningú el crida
+encara des del camí de publicació.
+
 ### P3 · Arribar més lluny
+
+### E14 · Cada mòdul formatiu, amb contingut didàctic i referències
+
+`FORMACIO_MODULES` diu **què** és cada mòdul i per quina etapa serveix, i prou.
+Qui l'obre no hi troba res per llegir ni cap lloc on continuar, i un itinerari que
+només anomena els seus passos és un índex, no una formació.
+
+Per cada mòdul: dues o tres idees desenvolupades, un exercici que es pugui fer
+amb el que el SOS ja té a dins, i **enllaços a la font** —Verna Allee, Ostrom,
+Boal, Mondragón i la resta de `knowledge/references/`, que ja hi són i no es
+llegeixen des d'enlloc. Els enllaços externs, dits com a externs.
+
+Dues coses a vigilar quan es faci:
+
+- **El pes.** Som al 92 % del sostre de 450 KB. Contingut didàctic per a tots els
+  mòduls no hi cap com a text incrustat: o va a `knowledge/` i es carrega quan
+  s'obre, o es puja el sostre amb el motiu escrit (veda 75).
+- **La segona llengua.** Cada línia nova incrustada fa E6 més car. Si això entra,
+  entra ja pensat per traduir-se.
 
 ### ✅ E6 · Segona llengua — *la capa, feta a V69*
 `<html lang="ca">` i el text incrustat al codi. Per a una beta a Catalunya el

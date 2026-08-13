@@ -688,6 +688,53 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 95 — Un camp buit llegit com «sense límit» és com es buiden les caixes
+
+La veda 92 diu que el navegador no pot confirmar un cobrament. Aquesta és la
+porta contrària, i és la que fa mal de debò: **què impedeix que el que s'ha
+carregat se'n vagi**. Que algú de la casa pagui els orígens no és un model de
+finançament, és un favor que dura fins que la factura sorprèn.
+
+El defecte que això evita és de configuració, no de codi, i és el més car que hi
+ha: un sostre que no s'ha posat val `0`, i `0` es llegeix com «cap límit». Aquí
+**zero vol dir zero**: sense sostre no surt res. És incòmode el primer dia —cal
+posar un número abans de poder gastar— i és exactament el que ha de passar, perquè
+l'alternativa és que la primera despesa la faci un valor per omissió que ningú ha
+decidit.
+
+Tres regles més, i les tres són l'única cosa que separa un sostre d'un registre:
+
+- **El límit es comprova abans de gastar.** `canSpend` decideix i `daoSpend` no
+  escriu res si diu que no. Un sostre que avisa quan ja s'ha passat és un
+  historial de danys.
+- **Pujar un sostre és una decisió, no editar un camp.** Es firma, i queda escrit
+  qui la pren, quan, i què hi havia abans. Si canviar el límit fos tan barat com
+  gastar, el límit no protegiria de res —qui topa amb ell l'apuja i segueix.
+- **Tres límits que no es substitueixen.** El sostre mensual marca el ritme, el
+  diari evita que un error buidi el mes en una tarda, i la caixa marca el total.
+  El primer que digui que no, mana. I l'aturada per damunt de tots: quan està
+  aturada no surt res, ni tan sols el que hi cabria.
+
+I una que és de govern abans que de codi: **la caixa té un operador amb nom** —la
+cooperativa de segon grau o la Fundació SOS MATRIU— i mentre no n'hi hagi cap, no
+en surt res. Un «nosaltres» difús operant una caixa és la manera educada de dir
+que no en respon ningú.
+
+**El que hi ha a la caixa no és el que es pot gastar.** Aquesta era la trampa que
+tenia la primera versió d'això, i és la que fa fallida a les cooperatives de
+debò: el crèdit que una sòcia ha carregat i encara no ha gastat **és seu**, i
+gastar-lo per pagar servidors és gastar diner que es deu. Per això la caixa té
+tres xifres i no una: el que hi ha, el que es deu, i el que és lliure. Els
+sostres es comproven contra el lliure. La conseqüència pràctica és que **sostenir
+les operacions necessita una aportació al fons** (`newFunding`) i no serveix
+esperar que les càrregues de les sòcies ho paguin: entren pel mateix camí i amb
+el mateix rebut, però no són la mateixa cosa i no es poden sumar.
+
+Conseqüència de fusió que no és òbvia: `carregues` i `daoDecisions` passen a
+`APPEND_ONLY`, i una càrrega confirmada porta `updatedAt`. Sense això,
+sincronitzar dos dispositius podia **despagar** una càrrega ja cobrada, perquè
+guanyava l'última versió escrita i no la més rica.
+
 ## Veda 94 — Una porta que existeix i no es pot obrir compta com si no hi fos
 
 Publicar una oferta ja es podia fer d'una tirada, i tot i així gairebé ningú hi
