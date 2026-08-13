@@ -688,6 +688,161 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 95 — Un camp buit llegit com «sense límit» és com es buiden les caixes
+
+La veda 92 diu que el navegador no pot confirmar un cobrament. Aquesta és la
+porta contrària, i és la que fa mal de debò: **què impedeix que el que s'ha
+carregat se'n vagi**. Que algú de la casa pagui els orígens no és un model de
+finançament, és un favor que dura fins que la factura sorprèn.
+
+El defecte que això evita és de configuració, no de codi, i és el més car que hi
+ha: un sostre que no s'ha posat val `0`, i `0` es llegeix com «cap límit». Aquí
+**zero vol dir zero**: sense sostre no surt res. És incòmode el primer dia —cal
+posar un número abans de poder gastar— i és exactament el que ha de passar, perquè
+l'alternativa és que la primera despesa la faci un valor per omissió que ningú ha
+decidit.
+
+Tres regles més, i les tres són l'única cosa que separa un sostre d'un registre:
+
+- **El límit es comprova abans de gastar.** `canSpend` decideix i `daoSpend` no
+  escriu res si diu que no. Un sostre que avisa quan ja s'ha passat és un
+  historial de danys.
+- **Pujar un sostre és una decisió, no editar un camp.** Es firma, i queda escrit
+  qui la pren, quan, i què hi havia abans. Si canviar el límit fos tan barat com
+  gastar, el límit no protegiria de res —qui topa amb ell l'apuja i segueix.
+- **Tres límits que no es substitueixen.** El sostre mensual marca el ritme, el
+  diari evita que un error buidi el mes en una tarda, i la caixa marca el total.
+  El primer que digui que no, mana. I l'aturada per damunt de tots: quan està
+  aturada no surt res, ni tan sols el que hi cabria.
+
+I una que és de govern abans que de codi: **la caixa té un operador amb nom** —la
+cooperativa de segon grau o la Fundació SOS MATRIU— i mentre no n'hi hagi cap, no
+en surt res. Un «nosaltres» difús operant una caixa és la manera educada de dir
+que no en respon ningú.
+
+**El que hi ha a la caixa no és el que es pot gastar.** Aquesta era la trampa que
+tenia la primera versió d'això, i és la que fa fallida a les cooperatives de
+debò: el crèdit que una sòcia ha carregat i encara no ha gastat **és seu**, i
+gastar-lo per pagar servidors és gastar diner que es deu. Per això la caixa té
+tres xifres i no una: el que hi ha, el que es deu, i el que és lliure. Els
+sostres es comproven contra el lliure. La conseqüència pràctica és que **sostenir
+les operacions necessita una aportació al fons** (`newFunding`) i no serveix
+esperar que les càrregues de les sòcies ho paguin: entren pel mateix camí i amb
+el mateix rebut, però no són la mateixa cosa i no es poden sumar.
+
+Conseqüència de fusió que no és òbvia: `carregues` i `daoDecisions` passen a
+`APPEND_ONLY`, i una càrrega confirmada porta `updatedAt`. Sense això,
+sincronitzar dos dispositius podia **despagar** una càrrega ja cobrada, perquè
+guanyava l'última versió escrita i no la més rica.
+
+## Veda 94 — Una porta que existeix i no es pot obrir compta com si no hi fos
+
+Publicar una oferta ja es podia fer d'una tirada, i tot i així gairebé ningú hi
+arribava. No era un problema de funcionalitat sinó de **les tres maneres en què
+una acció es pot fer inaccessible sense deixar de funcionar**, i les tres hi eren
+alhora:
+
+- **Viure en un sol lloc.** L'acció només estava al lateral. Qui feia servir el
+  menú d'accions o la cerca global no la trobava mai, per molt que la fes servir
+  cada dia. Una acció central ha de tenir més d'una entrada; no per redundància
+  sinó perquè **no hi ha un únic camí pel qual la gent hi va**.
+- **Ser un `div` amb `onclick`.** Les files del taulell es podien clicar i prou.
+  Sense `role`, sense `tabindex` i sense Enter, qui navega amb teclat o amb lector
+  de pantalla llegia el número —«ofertes: 1»— i no arribava mai a l'acció. La
+  informació hi era; la porta, no. Una fila que fa una cosa **és un botó**, i s'ha
+  d'escriure com un botó encara que es pinti com una fila.
+- **Acabar en un cul-de-sac.** Qui encara no era a cap banc de temps rebia
+  «entra a un node o crea'n un, i torna aquí»: una pantalla que t'explica el que
+  et falta i et deixa amb el problema a les mans. És exactament el que prohibeix
+  la veda 62, i costava d'endevinar perquè per a qui ja hi era, la pantalla
+  funcionava perfectament.
+
+La sortida del tercer cas és la que dona la regla: **crear el que falta és part
+de l'acció, no un requisit previ**. Obrir el banc de temps al municipi, entrar-hi
+com a soci i publicar l'oferta és la mateixa feina que ja fa l'alta de perfil;
+l'única cosa que faltava era poder-la fer des d'aquí. Un formulari, un botó, i el
+mateix resultat tant si el lloc existia com si no.
+
+I la seva germana, que és la que evita substituir un cul-de-sac per un altre:
+quan encara no se sap **qui** publica, no es diu «no pots». Es diu què falta —
+saber qui ets— i s'hi porta amb el botó al costat.
+
+## Veda 93 — Una app que s'explica bé i no deixa operar només serveix per aprendre-la
+
+El lateral era un explorador de territoris: bo per entendre l'estructura, inútil
+per fer-hi res. I tot el que et fa falta cada dia —què t'espera, què tens
+publicat, què et queda al moneder— vivia darrere d'un modal diferent.
+
+El defecte no era que faltés informació. `dashboardAttention`, `pendingInbox`,
+`communityStatus` i `walletBalance` ja existien i cadascun calculava bé la seva
+part. El que faltava era **un lloc on la teva operació es veiés sencera**, i per
+això l'app només servia per aprendre-la.
+
+La distinció que dona sentit al taulell, i que abans no es veia enlloc: **tenir
+una oferta no és que se't pugui trobar.** Són dues coses i s'han de comptar per
+separat —«0/1», i escrit amb lletres: *encara no et troben*. Un número sol
+hauria deixat la persona convençuda que ja ho tenia fet.
+
+D'aquí surten dues coses més:
+
+- **Publicar en un pas.** Existia, però repartit: crear l'oferta en una pantalla,
+  obrir l'abast de publicació en una altra, entendre a qui arriba en una tercera.
+  Qui només vol dir «sé arreglar bicicletes» no ha de saber res d'això. Ara és un
+  formulari de quatre camps que fa **les dues coses alhora** —crear i publicar—,
+  perquè el pas que ningú feia era el segon.
+- **El cost de publicar és zero mentre la caixa no pugui cobrar.** Es pot
+  configurar un preu, i si n'hi ha i tens saldo, es descompta com un apunt més.
+  Però mentre no hi hagi manera de carregar crèdit (veda 92), **el preu no barra
+  el pas**: cobrar per travessar una porta que encara no té pany és posar-hi un
+  peatge, no un preu. Es diu, i es deixa passar.
+
+I una cosa que va sortir provant-ho: `renderOps` penjava de `renderTree`, i per
+tant el taulell desapareixia quan no hi havia arbre. **El que et diu què fer no
+pot dependre de tenir ja alguna cosa feta.**
+
+## Veda 92 — El navegador no pot confirmar un cobrament, i cap configuració ho canvia
+
+SOS Coop necessita poder carregar crèdit, i carregar crèdit vol dir cobrar. És la
+primera vegada que aquest projecte toca diner de debò, i porta una frontera dura
+que val la pena escriure abans que la pressió de la demo la faci semblar
+negociable.
+
+**Confirmar un cobrament vol dir comprovar la firma del banc, i comprovar-la vol
+dir tenir la clau del comerç.** Una clau de comerç dins d'un HTML que qualsevol
+es descarrega no és una clau: és un regal. Per tant el SOS **inicia** pagaments i
+**no en confirma cap**, i això no és un estat provisional que es resolgui
+configurant bé: `potCobrar` és una constant `false`, no un càlcul. Amb Redsys
+configurat del tot segueix sent `false`, i el test ho comprova.
+
+D'aquí surt tota la resta:
+
+- **Mentre no hi ha rebut verificat, el crèdit no existeix.** Ni es mostra com a
+  saldo, ni es pot gastar. El pendent es diu a part i no se suma mai. Un saldo
+  que inclou diner que potser no ha arribat és la manera més ràpida de deixar
+  algú a deure sense saber-ho.
+- **Confirmar demana un rebut que verifiqui contra una clau que no és la
+  nostra**, i que a més quadri de comanda i d'import. Els quatre camins per
+  fer-lo colar —sense rebut, sense firma, d'una altra comanda, per un altre
+  import— són quatre assercions.
+- **Cap botó fa veure que cobra.** La veda 80 ja ho deia per a qualsevol funció;
+  amb diner pel mig és pitjor, perquè la persona es queda esperant una cosa que
+  no passarà. La pantalla diu què falta per cobrar de debò.
+- **El SOS no demana mai una targeta.** Cap camp, cap número. El test comprova
+  que al moneder no hi ha **cap** camp d'entrada, que és una manera de dir-ho que
+  no depèn de recordar-ho.
+- **Un sol llibre.** El que es gasta surt del ledger del node, no d'una
+  comptabilitat pròpia del moneder. Dos llibres acaben dient xifres diferents, i
+  llavors cap dels dos mana.
+- **El repartiment es veu abans de pagar**, no a la factura. I si els
+  percentatges no sumen 100, no s'inventa el que falta: es diu, i no es deixa
+  desar.
+
+I una decisió que **no** s'ha pres i queda escrita a la pantalla: si la unitat
+són euros, una unitat interna o aportació al capital social. Canvia què és
+legalment, i no és cosa del codi decidir-ho per omissió. Fins llavors la unitat
+és un paràmetre i la pantalla diu que encara no està decidit —que és més honest
+que triar-ho en silenci i que algú s'ho trobi decidit.
+
 ## Veda 91 — Una plantilla diu de quina mena és una cosa, no com es diu
 
 A la MATRIU, clicar una targeta del catàleg creava el projecte a l'instant i li

@@ -263,6 +263,17 @@ a{color:var(--blue);text-decoration:none}
 
 .shell{flex:1;display:grid;grid-template-columns:280px 1fr;min-height:0}
 .tree{background:var(--bg-panel);border-right:1px solid var(--border);overflow-y:auto;padding:1rem .75rem}
+.ops{border-bottom:1px solid var(--border);padding-bottom:.7rem;margin-bottom:.7rem}
+.ops-head{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:.25rem .5rem .5rem}
+.ops-row{display:flex;align-items:center;gap:.5rem;padding:.32rem .5rem;border-radius:7px;font-size:.85rem}
+.ops-row:hover{background:var(--bg-dark)}
+.ops-row:focus-visible{outline:2px solid var(--indigo);outline-offset:1px;background:var(--bg-dark)}
+.ops-ic{flex:0 0 1.1rem;text-align:center}
+.ops-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--light)}
+.ops-n{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.ops-row.urgent .ops-n{color:var(--orange)}
+.ops-row.avis .ops-t{color:var(--orange)}
+.ops-empty{padding:.3rem .5rem .6rem;font-size:.8rem;color:var(--muted)}
 .tree-head{display:flex;align-items:center;justify-content:space-between;padding:.25rem .5rem .75rem;font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .tree-node{display:flex;align-items:center;gap:.4rem;padding:.5rem .55rem;border-radius:7px;cursor:pointer;transition:background .12s;font-size:.88rem;position:relative}
 .tree-node:hover{background:var(--bg-hover)}
@@ -923,6 +934,7 @@ a{color:var(--blue);text-decoration:none}
   </div>
   <div class="shell">
     <aside class="tree">
+      <div id="opsPanel" class="ops"></div>
       <div class="tree-head"><span>Territoris</span><span style="display:flex;gap:.3rem"><button class="btn-icon" id="btnLocate" title="Ubica un projecte (extrapola la jerarquia)" style="width:26px;height:26px;font-size:.9rem">📍</button><button class="btn-icon" id="btnNewRoot" title="Nou país / territori arrel" style="width:26px;height:26px;font-size:.9rem">+</button></span></div>
       <div id="treeList"></div>
     </aside>
@@ -4824,6 +4836,7 @@ function _searchIndex(){
     {k:'action',id:'act_ident',label:'La meva identitat digital',sub:'🆔 acció · did · carteres · rols',action:()=>openIdentityDashboard()},
     {k:'action',id:'act_vistiplau',label:'Esperen el meu vistiplau',sub:'⏳ acció · el que algú vol registrar al meu nom',action:()=>openPendingInbox()},
     {k:'action',id:'act_publica',label:'Publica habilitats i objectes',sub:'🌐 acció · agregat i sense noms, perquè et trobin',action:()=>openPublishSupply()},
+    {k:'action',id:'act_publica_hub',label:'Publica una oferta o una demanda',sub:'📣 acció · en una línia, i queda publicat',action:()=>openPublishHub()},
     {k:'action',id:'act_missions',label:'Les meves missions',sub:'🎯 acció · què et toca fer ara, i què passarà',action:()=>{state.activeId=null;state.homeView='missions';render();}},
     {k:'action',id:'act_comando',label:'Comando Molekulon',sub:'🎬 acció',action:()=>openComandoView()},
     {k:'action',id:'act_prj_comando',label:'Comando del projecte actiu',sub:'🏰 acció · equip gestor colla castellera',action:()=>{const nd=byId(state.activeId);if(!nd){toast('Selecciona un node primer');return;}openProjectComando(nd);}},
@@ -6332,6 +6345,7 @@ function openLauncher(){
     {g:'jo',ic:'⊞',t:'El meu ledger SOS',d:'Totes les meves aportacions, a tots els nodes, amb la seva firma',fn:()=>openMyLedger(state.activePersona||'')},
     {g:'xarxa',ic:'🌐',t:'Registre públic d\'accions signades',d:'Cercable i amb la firma comprovada · exportable i ancorable',fn:()=>openPublicRegister()},
     {g:'comunitat',ic:'📍',t:'Coordenades dels territoris',d:'Importa coordenades reals o marca on ets · sense elles no es mostren km',fn:()=>openCoords()},
+    {g:'comunitat',ic:'📣',t:'Publica una oferta o una demanda',d:'Digues-ho en una línia i queda publicat · si no tens banc de temps, se n\'obre un',fn:()=>openPublishHub()},
     {g:'comunitat',ic:'🔎',t:'Què hi ha a prop',d:'Habilitats, objectes i demandes de tot el SOS, de més a prop a més lluny',fn:()=>openSupplySearch()},
     {g:'comunitat',ic:'🏷',t:'Federacions temàtiques',d:'Vincula\'t a un tema i troba qui treballa el mateix · valor consolidat sense doble comptatge',fn:()=>openFederations()},
     {g:'proves',ic:'🛰',t:'Els meus ancoratges',d:'Historial del que has segellat · on ho vas publicar i si encara quadra',fn:()=>openAnchors()},
@@ -7801,7 +7815,10 @@ function render(){
   const has=state.nodes.length>0;
   $('#onboarding').style.display=has?'none':'flex';
   $('#app').style.display=has?'flex':'none';
-  if(has){renderTree();renderCrumbs();renderWorkspace();}
+  /* `renderOps` es crida des d'aquí i no des de `renderTree`: el taulell no ha
+     de dependre que hi hagi arbre per pintar-se. (Amb zero nodes no es veu res
+     de tot això: mana la pantalla d'entrada, i està bé que mani.) */
+  if(has){renderOps();renderTree();renderCrumbs();renderWorkspace();}
   try{updatePendingBadge();}catch(e){}
 }
 
@@ -7817,6 +7834,234 @@ function renderCrumbs(){
   });
 }
 
+/* ═══════════ V86 · El lateral passa a ser un taulell d'operacions ═══════════
+   El lateral era un explorador de territoris: útil per entendre l'estructura,
+   inútil per operar. Qui obre el SOS cada dia no vol navegar un arbre; vol saber
+   **què l'espera, què té publicat i què li queda al moneder** —i publicar una
+   oferta sense travessar tres pantalles.
+
+   Res d'això és càlcul nou: `dashboardAttention`, `pendingInbox`,
+   `communityStatus` i `walletBalance` ja existien i cadascun vivia darrere d'un
+   modal diferent. El defecte no era que faltés informació: era que **no hi havia
+   cap lloc on la teva operació es veiés sencera**, i per tant l'app només servia
+   per aprendre-la, no per fer-la.
+
+   L'arbre es queda a sota. No es tracta de tapar el que hi havia sinó de posar
+   davant el que es fa servir cada dia. */
+function opsState(){
+  const jo=state.activePersona;
+  const meus=state.nodes.filter(n=>membersOf(n).some(m=>personKey(m.name)===personKey(jo||'')));
+  let pend=[];try{pend=pendingInbox();}catch(e){}
+  let aten=[];try{aten=dashboardAttention();}catch(e){}
+  let cs=null;try{cs=communityStatus();}catch(e){}
+  /* Ofertes i demandes meves, i quantes se'n veuen de fora. La diferència entre
+     «tinc» i «es veu» és tota la qüestió d'aquesta pantalla. */
+  let ofertes=0,publicades=0;
+  meus.forEach(n=>{
+    const meu=membersOf(n).filter(m=>personKey(m.name)===personKey(jo||'')).map(m=>m.id);
+    const mines=offersOf(n).filter(o=>meu.indexOf(o.memberId)>=0);
+    ofertes+=mines.length;
+    if(publishesAnything(n))publicades+=mines.length;
+  });
+  /* El moneder del primer node meu que en tingui: si no n'hi ha cap, no
+     s'inventa un zero que sembli un saldo. */
+  let moneder=null;
+  for(const n of meus){
+    if(!n.coop)continue;
+    const m=membersOf(n).find(x=>personKey(x.name)===personKey(jo||''));
+    if(m){moneder={node:n,w:walletBalance(n,m.id)};break;}
+  }
+  return{jo,nodes:meus.length,pendents:pend.length,atencions:aten.length,
+    ofertes,publicades,visible:cs?cs.visible:false,estat:cs,moneder,aten:aten.slice(0,3)};
+}
+function renderOps(){
+  const box=$('#opsPanel');if(!box)return;
+  const o=opsState();
+  box.innerHTML='';
+  if(!o.jo){
+    box.innerHTML='<div class="ops-head">Les meves operacions</div>'+
+      '<div class="ops-empty">Encara no hi ha ningú actiu. Tria o crea el teu perfil i aquí hi tindràs el que t\'espera.</div>';
+    const b=el('button','btn btn-primary btn-sm','Crea el meu perfil');
+    b.style.width='100%';b.onclick=()=>openSuperheroiOnboarding();
+    box.appendChild(b);return;
+  }
+  box.innerHTML='<div class="ops-head">'+esc(o.jo)+'</div>';
+  /* Una fila que fa una cosa és un botó, encara que sigui un `div`: sense
+     `role`, sense `tabindex` i sense Enter, qui navega amb teclat o amb lector
+     de pantalla veu el número i no arriba mai a l'acció. Publicar era
+     precisament una d'aquestes files. */
+  const row=(ic,txt,n,cls,act)=>{
+    const d=el('div','ops-row'+(cls?' '+cls:''));
+    d.innerHTML='<span class="ops-ic" aria-hidden="true">'+ic+'</span><span class="ops-t">'+txt+'</span>'+
+      (n!==null&&n!==undefined?'<span class="ops-n">'+n+'</span>':'');
+    if(act){
+      d.style.cursor='pointer';d.onclick=act;
+      d.setAttribute('role','button');d.setAttribute('tabindex','0');
+      d.setAttribute('aria-label',txt+(n!==null&&n!==undefined?' · '+n:''));
+      d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}};
+    }
+    box.appendChild(d);return d;
+  };
+  if(o.pendents)row('✋','Esperen el teu vistiplau',o.pendents,'urgent',()=>openPendingInbox());
+  if(o.atencions)row('◎','Reclamen atenció',o.atencions,'',()=>{state.activeId=null;state.homeView='tauler';render();});
+  /* La distinció que dona sentit a tot això: tenir una oferta no és que es vegi. */
+  row('📣','Ofertes i demandes',o.ofertes,'',()=>{if(o.nodes){const n=state.nodes.find(x=>membersOf(x).some(m=>personKey(m.name)===personKey(o.jo)));if(n){selectNode(n.id);state.tab='banctemps';renderWorkspace();}}});
+  row(o.visible?'🌍':'🔒',o.visible?'Se’t pot trobar':'Encara no et troben',
+    o.publicades+'/'+o.ofertes,o.visible?'':'avis',()=>openPublishHub());
+  if(o.moneder){
+    const w=o.moneder.w;
+    row(w.unit.simbol,'Moneder',w.saldo,'',()=>openCoopWallet(o.moneder.node,
+      (membersOf(o.moneder.node).find(m=>personKey(m.name)===personKey(o.jo))||{}).id));
+  }
+  const pub=el('button','btn btn-primary btn-sm','📣 Publica una oferta');
+  pub.style.width='100%';pub.style.marginTop='.5rem';
+  pub.onclick=()=>openPublishHub();
+  box.appendChild(pub);
+}
+/* ═══ Publicar en un pas ═══
+   Publicar existia però estava repartit: crear l'oferta a una pantalla, obrir
+   l'abast de publicació a una altra, i entendre a qui arriba a una tercera. Qui
+   només vol dir «sé arreglar bicicletes» no ha de saber res d'això.
+
+   El cost en crèdit és **opcional i per defecte zero**, i això no és timidesa:
+   mentre la caixa no pugui cobrar (veda 92), cobrar per publicar seria posar una
+   barrera de peatge davant d'una porta que encara no té pany. Si algun dia es
+   configura, es diu abans i es descompta amb un apunt com qualsevol altre. */
+function publishCost(node){
+  const c=node&&node.coop?coopCfg(node):null;
+  return{cost:Number((c&&c.publicaCost)||0),unit:c?c.unit:COOP_UNIT_DEFAULT};
+}
+function canPublish(node,memberId){
+  const{cost,unit}=publishCost(node);
+  if(cost<=0)return{ok:true,cost:0,unit,motiu:'Publicar no costa res.'};
+  const w=walletBalance(node,memberId);
+  if(w.saldo>=cost)return{ok:true,cost,unit,saldo:w.saldo};
+  return{ok:false,cost,unit,saldo:w.saldo,
+    motiu:'Publicar costa '+cost+' '+unit.simbol+' i en tens '+w.saldo+'. '+
+      (tpvStatus(node).potCobrar?'':'I encara no hi ha manera de carregar-ne: mentre no n\'hi hagi, això no et pot barrar el pas —parla amb qui sosté el node.')};
+}
+async function publishWithCredit(node,memberId,offer){
+  const chk=canPublish(node,memberId);
+  if(!chk.ok&&tpvStatus(node).potCobrar)throw{msg:chk.motiu};
+  offersOf(node).push(offer);
+  if(chk.cost>0&&chk.ok){
+    await pushLedger(node.ledger||(node.ledger=[]),{id:uid(),ts:now(),type:'credit',
+      value:-chk.cost,memberId,what:'Publicació d\'una oferta'});
+  }
+  await setPublishScope(node,{skills:true,objects:publishScopeOf(node).objects});
+  await persist(node);
+  return{offer,cobrat:chk.cost>0&&chk.ok?chk.cost:0};
+}
+function publishPlaces(jo){
+  return state.nodes.filter(n=>n.dynamicType==='banc_temps'&&membersOf(n).some(m=>personKey(m.name)===personKey(jo||'')));
+}
+/* D'on surt la població quan encara no hi ha cap banc de temps: primer el que la
+   persona va escriure al seu perfil, i si no, el municipi del primer node on ja
+   consta. No s'inventa cap valor: si no en surt cap, el camp es demana buit. */
+function publishHomeName(jo){
+  let snap=null;try{snap=profileSnapshot(jo||'');}catch(e){}
+  if(snap&&snap.municipi)return snap.municipi;
+  for(const n of state.nodes){
+    if(!membersOf(n).some(m=>personKey(m.name)===personKey(jo||'')))continue;
+    let p=n;while(p){if(p.nodeLevel==='municipi'||p.nodeLevel==='barri')return p.name;p=p.parentId?byId(p.parentId):null;}
+  }
+  return '';
+}
+/* Obre el lloc on viurà l'oferta si encara no existeix. Fins ara aquí hi havia
+   un cul-de-sac —«entra a un node o crea'n un, i torna aquí»— que és exactament
+   el que la veda 62 prohibeix: una pantalla que et diu que no pots i et deixa
+   allà. Crear el banc de temps és la mateixa feina que ja fa l'alta de perfil;
+   l'única cosa que faltava era poder-la fer des d'aquí. */
+async function ensurePublishPlace(jo,muniName){
+  muniName=(muniName||'').trim();
+  if(!muniName)throw{msg:'Digues de quina població: el banc de temps viu en un lloc.'};
+  const chain=resolveChainFromMunicipi(muniName)||{pais:geoRootName(null),provincia:null,comarca:null,municipi:muniName};
+  const pais=await ensureNode(chain.pais,'pais',null);
+  let prov=null;if(chain.provincia)prov=await ensureNode(chain.provincia,'provincia',pais.id);
+  let com=null;if(chain.comarca)com=await ensureNode(chain.comarca,'comarca',prov?prov.id:pais.id);
+  const muni=await ensureNode(muniName,'municipi',com?com.id:(prov?prov.id:pais.id));
+  let bt=children(muni.id).find(k=>k.dynamicType==='banc_temps');
+  if(!bt){
+    bt=newNode('Banc de temps de '+muni.name,'projecte',muni.id);
+    bt.dynamicType='banc_temps';seedFromDynamic(bt,dynById('banc_temps'));
+    state.nodes.push(bt);
+  }
+  let m=membersOf(bt).find(x=>personKey(x.name)===personKey(jo||''));
+  if(!m){m=newMember({name:jo});membersOf(bt).push(m);}
+  [pais.id,prov&&prov.id,com&&com.id,muni.id].forEach(id=>{if(id)state.expanded.add(id);});
+  await persist(bt);
+  return{node:bt,memberId:m.id};
+}
+function openPublishHub(){
+  const jo=state.activePersona;
+  /* Sense ningú actiu no és que no es pugui publicar: és que encara no se sap
+     qui publica. Es diu, i s'hi va des d'aquí mateix. */
+  if(!jo){
+    const bg0=modal(`
+      <h2>📣 Publica el que saps fer o el que necessites</h2>
+      <p class="m-sub">Falta una cosa abans: <strong>saber qui ho publica</strong>. Es fa en un minut i després tornes aquí.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="phClose">${t('Tanca')}</button>
+        <button class="btn btn-primary" id="phHero">Crea el meu perfil</button>
+      </div>`);
+    bg0.querySelector('.modal').classList.add('wz-modal');
+    bg0.querySelector('#phClose').onclick=closeModal;
+    bg0.querySelector('#phHero').onclick=()=>{closeModal();openSuperheroiOnboarding();};
+    return bg0;
+  }
+  const meus=publishPlaces(jo);
+  const nou=!meus.length;
+  const bg=modal(`
+    <h2>📣 Publica el que saps fer o el que necessites</h2>
+    <p class="m-sub">Perquè algú et trobi cal <strong>dir-ho</strong> i <strong>deixar que se’n vegi l’agregat</strong>. Aquí es fa d’una tirada.</p>
+    ${nou?`
+    <div class="field"><label>On ets</label><input id="phMuni" maxlength="60" placeholder="p.ex. Torrelles de Foix" value="${esc(publishHomeName(jo))}">
+      <div class="ent-desc" style="margin-top:.3rem">Encara no ets a cap banc de temps: se n’obrirà un en aquesta població i hi entraràs, tot en el mateix pas.</div></div>`
+    :`<div class="field"><label>On</label><select id="phNode">${meus.map(n=>'<option value="'+n.id+'">'+esc(n.name)+'</option>').join('')}</select></div>`}
+    <div class="field"><label>Què</label><div style="display:flex;gap:.5rem">
+      <button type="button" class="btn btn-ghost btn-sm ph-k sel" data-k="oferta" style="flex:1">Ofereixo</button>
+      <button type="button" class="btn btn-ghost btn-sm ph-k" data-k="demanda" style="flex:1">Necessito</button></div></div>
+    <div class="field"><label>Categoria</label><select id="phCat">${TIMEBANK_CATS.map(([id,l])=>'<option value="'+id+'">'+l+'</option>').join('')}</select></div>
+    <div class="field"><label>En una línia</label><input id="phTitle" maxlength="60" placeholder="p.ex. Arreglo bicicletes"></div>
+    <div id="phCost"></div>
+    <div class="ai-note"><span class="ic">🌍</span><span>Quan es publica, de fora se’n veu <strong>l’agregat</strong>: «algú ofereix aquesta categoria en aquest lloc». Mai el teu nom ni el teu contacte.</span></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="phClose">${t('Tanca')}</button>
+      <button class="btn btn-primary" id="phGo">Publica</button>
+    </div>`);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#phClose').onclick=closeModal;
+  let kind='oferta';
+  bg.querySelectorAll('.ph-k').forEach(b=>b.onclick=()=>{kind=b.dataset.k;bg.querySelectorAll('.ph-k').forEach(x=>x.classList.toggle('sel',x===b));});
+  const pintaCost=()=>{
+    /* Encara no hi ha node: el cost es llegeix del que hi ha per defecte, que
+       és zero, i no s'anticipa un preu que ningú ha configurat. */
+    const n=nou?null:byId(bg.querySelector('#phNode').value);
+    const chk=n?canPublish(n,(membersOf(n).find(x=>personKey(x.name)===personKey(jo))||{}).id)
+               :{cost:0,ok:true,unit:COOP_UNIT_DEFAULT};
+    bg.querySelector('#phCost').innerHTML=chk.cost>0
+      ?'<div class="'+(chk.ok?'ent-desc':'merge-warn')+'">'+(chk.ok
+        ?'Publicar costa <strong>'+chk.cost+' '+esc(chk.unit.simbol)+'</strong> · en tens '+chk.saldo
+        :'<div class="merge-warn-t">Sense saldo</div><p>'+esc(chk.motiu)+'</p>')+'</div>'
+      :'<div class="ent-desc">Publicar no costa res.</div>';
+  };
+  if(!nou)bg.querySelector('#phNode').onchange=pintaCost;
+  pintaCost();
+  bg.querySelector('#phGo').onclick=async()=>{
+    const title=bg.querySelector('#phTitle').value.trim();
+    if(!title){toast('Digues-ho en una línia');return;}
+    try{
+      let n,m;
+      if(nou){const r=await ensurePublishPlace(jo,bg.querySelector('#phMuni').value);n=r.node;m=r.memberId;}
+      else{n=byId(bg.querySelector('#phNode').value);m=(membersOf(n).find(x=>personKey(x.name)===personKey(jo))||{}).id;}
+      const off=newOffer({kind,category:bg.querySelector('#phCat').value,memberId:m,title});
+      const r=await publishWithCredit(n,m,off);
+      closeModal();render();
+      toast(r.cobrat?('Publicat · '+r.cobrat+' '+publishCost(n).unit.simbol):'Publicat · ja et poden trobar');
+    }catch(e){toast(e.msg||'No s\'ha pogut publicar');}
+  };
+  return bg;
+}
 function renderTree(){
   const t=$('#treeList');t.innerHTML='';
   const roots=children(null);
@@ -9200,6 +9445,416 @@ function openCromoModal(nameOrKey){
   }
   bg.querySelectorAll('[data-sw]').forEach(el2=>el2.onclick=()=>{closeModal();openPersonProfile(el2.dataset.sw);});
   bg.querySelector('#crClose').onclick=closeModal;
+  return bg;
+}
+/* ═══════════ V85 · SOS Coop · el moneder i la caixa ═══════════
+   SOS Coop és la cooperativa de segon grau que sosté les operacions de la xarxa
+   i en distribueix el valor. Perquè això funcioni cal poder **carregar crèdit**,
+   i carregar crèdit vol dir cobrar. Aquí és on aquest projecte ha de decidir
+   què és i què no és, perquè fins ara **no hi havia diner de debò enlloc**.
+
+   La frontera, i és dura: **el navegador no pot confirmar un cobrament.**
+   Confirmar-lo vol dir comprovar una firma del banc, i comprovar-la vol dir
+   tenir la clau del comerç. Una clau de comerç dins d'un HTML que qualsevol
+   descarrega no és una clau: és un regal. Per tant, i sense excepcions:
+
+   · El SOS **inicia** un pagament (construeix la comanda i la redirecció).
+   · El SOS **no el confirma mai**. El confirma un servidor amb la clau, o ningú.
+   · Mentre no hi ha confirmació verificada, **el crèdit no existeix**. Ni es
+     mostra com a saldo, ni es pot gastar, ni s'arrodoneix la veritat dient
+     «pendent» en un lloc i comptant-lo en un altre.
+
+   Això vol dir que aquesta versió porta el moneder sencer i la caixa fins on el
+   client pot arribar, i **cap botó fa veure que cobra**. Un botó que sembla que
+   cobra i no cobra és pitjor que no tenir-ne (veda 80), i amb diner pel mig és
+   molt pitjor: la persona es queda esperant una cosa que no passarà.
+
+   I una segona frontera, de dades: **el SOS no toca mai una targeta**. Cap camp,
+   cap número, cap CVV. Es redirigeix a la passarel·la i s'espera. No és una
+   decisió d'arquitectura, és el mínim per no cometre una imprudència. */
+const COOP_UNIT_DEFAULT={id:'credit',nom:'crèdit SOS',simbol:'⊙',
+  /* La unitat és un paràmetre a posta. Que això sigui euros, una unitat interna
+     o aportació al capital social **canvia què és legalment**, i no és una
+     decisió que hagi de prendre el codi per omissió. Fins que es decideixi, la
+     pantalla ho diu tal com és. */
+  esDiner:false,
+  nota:'Unitat interna de la xarxa. Encara no s\'ha decidit si serà euros, unitat pròpia o aportació al capital social: fins llavors, no compreu res que no pugueu perdre.'};
+const coopCfg=node=>node.coop||(node.coop={unit:{...COOP_UNIT_DEFAULT},tpv:{provider:'cap'},
+  /* Repartiment del que entra. Són percentatges i han de sumar 100: si no,
+     algú es queda un tros que ningú ha decidit. */
+  split:{operacio:80,node:15,federacio:5}});
+/* Les passarel·les que es coneixen. Cap va activa per defecte, i **cap pot
+   confirmar des del client**: aquest camp no és configurable perquè no és una
+   opinió, és com funciona la criptografia d'un cobrament. */
+const TPV_PROVIDERS={
+  cap:{id:'cap',nom:'Cap passarel·la',confirmaAlClient:false,
+    cal:[],diu:'No hi ha cap passarel·la configurada. Es poden preparar comandes, però ningú pot pagar-les.'},
+  redsys:{id:'redsys',nom:'Redsys (banc espanyol)',confirmaAlClient:false,
+    cal:['codi de comerç','terminal','clau secreta al servidor','URL de notificació'],
+    diu:'La redirecció es pot construir aquí. La firma HMAC i la confirmació han d\'anar a un servidor: la clau del comerç no pot sortir en un HTML públic.'},
+  stripe:{id:'stripe',nom:'Stripe Checkout',confirmaAlClient:false,
+    cal:['clau publicable','servidor que crea la sessió','webhook de confirmació'],
+    diu:'Checkout allotjat: el SOS no veu mai la targeta. Crear la sessió i rebre el webhook necessiten servidor.'},
+  propi:{id:'propi',nom:'API pròpia',confirmaAlClient:false,
+    cal:['URL per crear la comanda','URL del rebut signat','clau pública per verificar-lo'],
+    diu:'Si l\'API torna un rebut **signat** amb una clau pública que el SOS pugui comprovar, la confirmació es verifica aquí sense fiar-se de ningú.'}
+};
+function tpvStatus(node){
+  const c=coopCfg(node),p=TPV_PROVIDERS[(c.tpv||{}).provider]||TPV_PROVIDERS.cap;
+  const falta=(p.cal||[]).filter(k=>!((c.tpv||{}).te||[]).includes(k));
+  return{provider:p,configurat:p.id!=='cap'&&!falta.length,falta,
+    potCobrar:false,/* mai des d'aquí, i per això és una constant i no un càlcul */
+    diu:p.diu};
+}
+/* El repartiment, dit abans de pagar i no després. Qui posa diner té dret a
+   saber on va abans de posar-lo; ensenyar-ho a la factura és ensenyar-ho tard. */
+function coopSplit(amount,node){
+  const s=coopCfg(node).split,total=(s.operacio||0)+(s.node||0)+(s.federacio||0);
+  const a=Number(amount)||0;
+  /* Si els percentatges no sumen 100 no s'inventa el que falta: es diu. */
+  const parts=['operacio','node','federacio'].map(k=>({k,pct:s[k]||0,
+    import:total?Math.round(a*(s[k]||0)/total*100)/100:0}));
+  return{parts,quadra:total===100,total,
+    avis:total===100?'':'Els percentatges sumen '+total+' i no 100: reparteix proporcionalment fins que es corregeixi.'};
+}
+const CARREGA_TYPE='sos-carrega';
+const carregesOf=node=>node.carregues||(node.carregues=[]);
+/* Una comanda de càrrega. Neix **pendent** i no és crèdit. Es firma perquè es
+   pugui demostrar qui la va demanar i per quant, no perquè valgui res. */
+async function newTopUp(node,{memberId,amount,concept}={}){
+  const a=Number(amount)||0;
+  if(a<=0)throw{msg:'La quantitat ha de ser més gran que zero'};
+  if(!memberId)throw{msg:'Cal dir de qui és la càrrega'};
+  const c=coopCfg(node);
+  const ord={'@type':CARREGA_TYPE,id:uid(),memberId,
+    import:a,unit:c.unit.id,concept:(concept||'Càrrega de crèdit').trim(),
+    split:coopSplit(a,node).parts,estat:'pendent',ts:now()};
+  await signRecord(ord);
+  carregesOf(node).unshift(ord);await persist(node);
+  return ord;
+}
+/* Una aportació al fons NO és una càrrega de ningú. Passa pel mateix camí i el
+   mateix rebut —no hi ha una segona porta més fàcil per fer entrar diner— però
+   **no és crèdit de cap sòcia**: és diner que la casa posa per sostenir les
+   operacions, i per tant és l'únic que la DAO pot gastar sense gastar-se el que
+   deu. La distinció importa perquè barrejar-les faria que el sostre protegís una
+   xifra que no és real. */
+async function newFunding(node,{amount,concept,de}={}){
+  const a=Number(amount)||0;
+  if(a<=0)throw{msg:'La quantitat ha de ser més gran que zero'};
+  const c=coopCfg(node);
+  const ord={'@type':CARREGA_TYPE,id:uid(),memberId:null,fons:true,
+    de:(de||state.activePersona||'').trim(),
+    import:a,unit:c.unit.id,concept:(concept||'Aportació al fons d\'operacions').trim(),
+    estat:'pendent',ts:now()};
+  await signRecord(ord);
+  carregesOf(node).unshift(ord);await persist(node);
+  return ord;
+}
+/* Confirmar. L'única manera que això torni `true` és amb un rebut que verifiqui
+   contra una clau pública que no és la nostra. No hi ha cap camí que digui
+   «confia-hi»: si el rebut no verifica, la càrrega es queda pendent. */
+async function confirmTopUp(node,orderId,receipt){
+  const ord=carregesOf(node).find(o=>o.id===orderId);
+  if(!ord)throw{msg:'Aquesta càrrega no existeix'};
+  if(ord.estat==='confirmada')return{ok:true,ja:true};
+  if(!receipt||!receipt.sig||!receipt.signer)
+    return{ok:false,motiu:'Sense rebut signat no es confirma res. El SOS no pot comprovar un cobrament tot sol.'};
+  const v=await verifyRecord(receipt);
+  if(!v.ok)return{ok:false,motiu:'El rebut no verifica ('+v.reason+')'};
+  if(String(receipt.order||'')!==String(ord.id))
+    return{ok:false,motiu:'El rebut és d\'una altra comanda'};
+  if(Number(receipt.import)!==Number(ord.import))
+    return{ok:false,motiu:'El rebut diu '+receipt.import+' i la comanda '+ord.import};
+  ord.estat='confirmada';ord.rebut=receipt;ord.confirmatTs=now();
+  /* `updatedAt` no és decoració: quan la mateixa comanda arriba per dues bandes
+     —una de confirmada i una encara pendent— és el que fa que guanyi la
+     confirmada. Sense això, fusionar podria «despagar» una càrrega cobrada. */
+  ord.updatedAt=ord.confirmatTs;
+  await persist(node);
+  return{ok:true};
+}
+/* El saldo compta **només** el que s'ha confirmat. El que està pendent es diu a
+   part, i mai se suma: un saldo que inclou diner que potser no ha arribat és la
+   manera més ràpida de deixar algú a deure sense saber-ho. */
+function walletBalance(node,memberId){
+  const cs=carregesOf(node).filter(o=>o.memberId===memberId);
+  const conf=cs.filter(o=>o.estat==='confirmada').reduce((a,o)=>a+(Number(o.import)||0),0);
+  const pend=cs.filter(o=>o.estat==='pendent').reduce((a,o)=>a+(Number(o.import)||0),0);
+  /* El consum surt del registre de sempre: apunts de tipus `credit` en negatiu.
+     No hi ha un segon llibre —un moneder amb comptabilitat pròpia acabaria
+     dient una xifra diferent de la del node, i llavors quina mana? */
+  const gastat=(node.ledger||[]).filter(e=>e.type==='credit'&&e.memberId===memberId)
+    .reduce((a,e)=>a+(Number(e.value)||0),0);
+  return{confirmat:Math.round(conf*100)/100,pendent:Math.round(pend*100)/100,
+    gastat:Math.round(Math.abs(gastat)*100)/100,
+    saldo:Math.round((conf-Math.abs(gastat))*100)/100,unit:coopCfg(node).unit};
+}
+function openCoopWallet(node,memberId){
+  const c=coopCfg(node),st=tpvStatus(node),m=memberId?memberById(node,memberId):null;
+  const w=m?walletBalance(node,m.id):null;
+  const u=c.unit;
+  const bg=modal(`
+    <h2>${u.simbol} SOS Coop · moneder</h2>
+    <p class="m-sub">Crèdit per a les operacions de la xarxa. <strong>${esc(u.nota)}</strong></p>
+    ${w?`<div class="bib-stats">
+      <div class="bib-tile"><div class="n">${w.saldo}</div><div class="l">saldo · ${esc(u.simbol)}</div></div>
+      <div class="bib-tile"><div class="n" style="color:var(--muted)">${w.pendent}</div><div class="l">pendent, no compta</div></div>
+      <div class="bib-tile"><div class="n" style="color:var(--indigo)">${w.gastat}</div><div class="l">gastat</div></div>
+    </div>`:'<div class="ai-note"><span class="ic">👤</span><span>Tria un soci per veure\'n el moneder.</span></div>'}
+    <div class="ent-grp-lbl">Com es reparteix el que entra</div>
+    <div id="cwSplit"></div>
+    <div class="ent-grp-lbl">La caixa</div>
+    <div class="merge-warn"><div class="merge-warn-t">${st.configurat?'⚠ Preparat, però el cobrament no es tanca aquí':'⚠ Encara no es pot cobrar'}</div>
+      <p>${esc(st.diu)}</p>
+      ${st.falta.length?'<p>Falta: <strong>'+esc(st.falta.join(' · '))+'</strong></p>':''}
+      <p><strong>El SOS no confirma mai un cobrament</strong>, i no ho farà encara que es configuri: comprovar la firma del banc demana la clau del comerç, i aquesta clau no pot viure en un fitxer que qualsevol es descarrega. Fins que un servidor no torni un rebut signat, el crèdit no existeix.</p>
+      <p>I el SOS <strong>no demana mai una targeta</strong>. Cap camp, cap número. Es va a la passarel·la i es torna.</p></div>
+    <div class="ent-grp-lbl">Qui l’opera i quant en pot sortir</div>
+    <div id="cwDao"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cwDaoBtn">🏛 La caixa de la DAO</button>
+      <button class="btn btn-ghost" id="cwCfg">⚙ Configura la caixa</button>
+      <button class="btn btn-primary" id="cwClose">${t('Tanca')}</button>
+    </div>`);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const sp=coopSplit(100,node);
+  bg.querySelector('#cwSplit').innerHTML=
+    '<div class="ent-badges">'+sp.parts.map(p=>'<span class="ent-b">'+esc(p.k)+' '+p.pct+'%</span>').join('')+'</div>'+
+    (sp.quadra?'<div class="ent-desc">De cada 100 '+esc(u.simbol)+', això és on va. Es veu abans de pagar, no a la factura.</div>'
+      :'<div class="ent-desc" style="color:var(--orange)">'+esc(sp.avis)+'</div>');
+  /* El sostre es diu al costat del saldo, no en una altra pantalla: qui mira el
+     moneder ha de veure d'un cop què hi ha **i** què en pot sortir. */
+  const b=daoBudget(node);
+  bg.querySelector('#cwDao').innerHTML=
+    '<div class="ent-badges"><span class="ent-b">'+b.operador.ic+' '+esc(b.operador.nom)+'</span>'+
+    '<span class="ent-b">sostre mes '+b.sostreMes+' '+esc(u.simbol)+'</span>'+
+    (b.sostreDia>0?'<span class="ent-b">dia '+b.sostreDia+'</span>':'')+
+    (b.aturada?'<span class="ent-b b-unver">aturada</span>':'')+'</div>'+
+    '<div class="ent-desc">'+esc(canSpend(node,1).ok
+      ?'Aquest mes queden '+b.restaMes+' '+u.simbol+' de sostre, i '+b.lliure+' de lliures a la caixa.'
+      :canSpend(node,1).motiu)+'</div>';
+  bg.querySelector('#cwClose').onclick=closeModal;
+  bg.querySelector('#cwCfg').onclick=()=>{closeModal();openCoopConfig(node);};
+  bg.querySelector('#cwDaoBtn').onclick=()=>{closeModal();openDaoCaixa(node);};
+  return bg;
+}
+function openCoopConfig(node){
+  const c=coopCfg(node);
+  const bg=modal(`
+    <h2>⚙ SOS Coop · la caixa i el repartiment</h2>
+    <p class="m-sub">El que es decideix aquí es veu a tothom qui hi posi diner.</p>
+    <div class="field"><label>Com es diu la unitat</label><input id="ccNom" maxlength="40" value="${esc(c.unit.nom)}"></div>
+    <div class="field"><label>Passarel·la</label><select id="ccProv">${Object.values(TPV_PROVIDERS).map(p=>'<option value="'+p.id+'"'+(c.tpv.provider===p.id?' selected':'')+'>'+esc(p.nom)+'</option>').join('')}</select>
+      <div class="ent-desc" id="ccDiu" style="margin-top:.3rem"></div></div>
+    <div class="ent-grp-lbl">Repartiment (ha de sumar 100)</div>
+    <div class="wz-key">
+      <input id="ccOp" type="number" min="0" max="100" value="${c.split.operacio}" title="operació">
+      <input id="ccNd" type="number" min="0" max="100" value="${c.split.node}" title="node">
+      <input id="ccFe" type="number" min="0" max="100" value="${c.split.federacio}" title="federació">
+    </div>
+    <div class="ent-desc">operació · node · federació</div>
+    <div id="ccSum" class="ent-desc" style="margin-top:.3rem"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="ccCancel">${t('Cancel·la')}</button><button class="btn btn-primary" id="ccSave">Desa</button></div>`);
+  const diu=()=>{bg.querySelector('#ccDiu').textContent=(TPV_PROVIDERS[bg.querySelector('#ccProv').value]||{}).diu||'';};
+  const suma=()=>{
+    const n=['#ccOp','#ccNd','#ccFe'].map(s=>Number(bg.querySelector(s).value)||0).reduce((a,b)=>a+b,0);
+    const el2=bg.querySelector('#ccSum');
+    el2.textContent=n===100?'Suma 100 ✓':'Suma '+n+' — ha de sumar 100';
+    el2.style.color=n===100?'var(--green)':'var(--orange)';
+    bg.querySelector('#ccSave').disabled=n!==100;
+  };
+  bg.querySelector('#ccProv').onchange=diu;
+  ['#ccOp','#ccNd','#ccFe'].forEach(s=>bg.querySelector(s).oninput=suma);
+  diu();suma();
+  bg.querySelector('#ccCancel').onclick=closeModal;
+  bg.querySelector('#ccSave').onclick=async()=>{
+    c.unit.nom=bg.querySelector('#ccNom').value.trim()||c.unit.nom;
+    c.tpv.provider=bg.querySelector('#ccProv').value;
+    c.split={operacio:Number(bg.querySelector('#ccOp').value)||0,
+      node:Number(bg.querySelector('#ccNd').value)||0,
+      federacio:Number(bg.querySelector('#ccFe').value)||0};
+    await persist(node);closeModal();toast('Caixa desada');
+  };
+  return bg;
+}
+/* ═══════════ V87 · La caixa de la DAO ═══════════
+   Fins ara la caixa sabia **entrar** diner (V85) i no sabia gastar-lo. El primer
+   consum real de la xarxa —mantenir els orígens des d'on es baixa el que s'ha
+   publicat— el paga algú de la seva butxaca, i per això la pregunta no és «com
+   es paga» sinó **com es garanteix que no se'n vagi de mare**.
+
+   Tres decisions, i la primera és la que fa que això sigui un sostre i no un
+   avís:
+
+   · **Zero és zero, mai «sense límit».** El sostre per omissió és 0 i vol dir
+     que no surt res. És el defecte de configuració més car que hi ha: un camp
+     buit interpretat com a il·limitat és com es buiden les caixes.
+   · **El límit es comprova abans de gastar, no després.** `canSpend` decideix i
+     `daoSpend` no escriu res si diu que no. Un sostre que avisa quan ja s'ha
+     passat és un registre, no un límit.
+   · **Pujar un sostre és una decisió, no editar un camp.** Queda escrita,
+     firmada, amb qui la pren i amb què hi havia abans. Si canviar el límit fos
+     tan barat com gastar, el límit no protegiria de res.
+
+   I qui l'opera: la DAO és **una figura amb nom** —la cooperativa de segon grau
+   o la Fundació SOS MATRIU— i no un «nosaltres» difús. Mentre no n'hi hagi cap,
+   es diu que no n'hi ha; no s'assumeix que ja mana algú. */
+const DAO_OPERATORS=[
+  {id:'cap',nom:'Encara ningú',ic:'○',
+    diu:'La caixa no té operador. Es pot carregar i mirar, però ningú té mandat per gastar-hi: fins que no se’n designi un, el sostre es queda a zero.'},
+  {id:'cooperativa',nom:'SOS Coop · cooperativa de segon grau',ic:'⬢',
+    diu:'La cooperativa que distribueix valor donant suport a les operacions de la xarxa. Opera la caixa i respon davant de les sòcies.'},
+  {id:'fundacio',nom:'Fundació SOS MATRIU',ic:'🏛',
+    diu:'La figura fundacional. Opera la caixa quan el que es finança és impuls i no operació: el que no té retorn i s’ha de sostenir igualment.'}
+];
+const daoOperator=id=>DAO_OPERATORS.find(o=>o.id===id)||DAO_OPERATORS[0];
+const DAO_DECISION='sos-dao-decisio';
+const daoDecisionsOf=node=>node.daoDecisions||(node.daoDecisions=[]);
+const daoCfg=node=>node.dao||(node.dao={operador:'cap',sostreMes:0,sostreDia:0,aturada:false,motiu:''});
+/* Què hi ha i què se n'ha anat. Les despeses de la DAO són apunts del registre
+   de sempre marcats amb `dao:true` i **sense `memberId`**: així no es barregen
+   mai amb el que gasta una persona, i `walletBalance` no en compta cap. */
+function daoBudget(node,at){
+  const c=daoCfg(node),u=coopCfg(node).unit;
+  const ara=at?new Date(at):new Date();
+  const mes=ara.toISOString().slice(0,7),dia=ara.toISOString().slice(0,10);
+  const r2=x=>Math.round(x*100)/100;
+  const conf=carregesOf(node).filter(o=>o.estat==='confirmada');
+  const imp=l=>l.reduce((a,o)=>a+(Number(o.import)||0),0);
+  const deMembres=imp(conf.filter(o=>!o.fons)),aportat=imp(conf.filter(o=>o.fons));
+  const suma=l=>l.reduce((a,e)=>a+Math.abs(Number(e.value)||0),0);
+  const led=(node.ledger||[]).filter(e=>e.type==='credit'&&(Number(e.value)||0)<0);
+  const desp=led.filter(e=>e.dao);
+  /* El que les sòcies han gastat de debò deixa de ser-los degut i passa a ser
+     ingrés de la casa. La resta segueix sent seu. */
+  const gastatMembres=suma(led.filter(e=>!e.dao&&e.memberId));
+  const gastat=suma(desp);
+  const gastatMes=suma(desp.filter(e=>String(e.ts||'').slice(0,7)===mes));
+  const gastatDia=suma(desp.filter(e=>String(e.ts||'').slice(0,10)===dia));
+  /* La xifra que mana. La caixa és el que hi ha; **lliure** és el que és nostre.
+     Gastar la diferència seria gastar-se el crèdit que les sòcies encara no han
+     fet servir: cap sostre no protegeix de comptar això com a disponible. */
+  const compromes=Math.max(0,deMembres-gastatMembres);
+  const caixa=deMembres+aportat-gastat;
+  const sostreMes=Number(c.sostreMes)||0,sostreDia=Number(c.sostreDia)||0;
+  return{carregat:r2(deMembres+aportat),deMembres:r2(deMembres),aportat:r2(aportat),
+    gastat:r2(gastat),gastatMembres:r2(gastatMembres),
+    caixa:r2(caixa),compromes:r2(compromes),lliure:r2(caixa-compromes),
+    gastatMes:r2(gastatMes),gastatDia:r2(gastatDia),sostreMes,sostreDia,
+    restaMes:r2(Math.max(0,sostreMes-gastatMes)),
+    restaDia:sostreDia>0?r2(Math.max(0,sostreDia-gastatDia)):null,
+    aturada:!!c.aturada,motiu:c.motiu||'',operador:daoOperator(c.operador),
+    despeses:desp.length,unit:u};
+}
+/* La porta. Diu que no amb el motiu, i el motiu és el que es pinta: «no es pot»
+   sense dir per què obliga a endevinar, i qui endevina acaba pujant el sostre. */
+function canSpend(node,amount,at){
+  const a=Number(amount)||0,b=daoBudget(node,at),s=b.unit.simbol;
+  if(a<=0)return{ok:false,limit:'import',motiu:'Una despesa ha de ser més gran que zero.'};
+  if(b.aturada)return{ok:false,limit:'aturada',
+    motiu:'La caixa està aturada'+(b.motiu?' ('+b.motiu+')':'')+'. Mentre ho estigui no surt res, ni tan sols dins del sostre.'};
+  if(b.operador.id==='cap')return{ok:false,limit:'operador',
+    motiu:'La caixa no té operador. Designa qui l’opera —la cooperativa o la fundació— abans que en surti res.'};
+  /* Zero vol dir zero. Aquesta línia és tota la veda 96. */
+  if(b.sostreMes<=0)return{ok:false,limit:'mes',
+    motiu:'No hi ha sostre mensual posat, i sense sostre no surt res. Zero vol dir zero, no «sense límit».'};
+  if(a>b.restaMes)return{ok:false,limit:'mes',
+    motiu:'Aquest mes el sostre és '+b.sostreMes+' '+s+' i ja se n’han gastat '+b.gastatMes+': queden '+b.restaMes+' i en demanes '+a+'.'};
+  if(b.sostreDia>0&&a>b.restaDia)return{ok:false,limit:'dia',
+    motiu:'El sostre diari és '+b.sostreDia+' '+s+' i avui queden '+b.restaDia+': en demanes '+a+'. Demà torna a obrir-se.'};
+  if(a>b.lliure)return{ok:false,limit:'lliure',
+    motiu:'A la caixa hi ha '+b.caixa+' '+s+', però '+b.compromes+' són crèdit que les sòcies encara no han gastat i no és nostre: en queden '+b.lliure+' de lliures i en demanes '+a+'. El sostre limita el ritme; el que és lliure limita el total.'};
+  return{ok:true,import:a,resta:{mes:b.restaMes-a,dia:b.restaDia===null?null:b.restaDia-a,lliure:b.lliure-a},unit:b.unit};
+}
+async function daoSpend(node,{amount,what,at}={}){
+  const chk=canSpend(node,amount,at);
+  if(!chk.ok)return{ok:false,motiu:chk.motiu,limit:chk.limit};
+  await pushLedger(node.ledger||(node.ledger=[]),{id:uid(),ts:at||now(),type:'credit',
+    value:-Math.abs(Number(amount)||0),dao:true,operador:daoCfg(node).operador,
+    what:(what||'Despesa d’operació').trim()});
+  await persist(node);
+  return{ok:true,budget:daoBudget(node,at)};
+}
+/* Canviar el sostre, l'operador o l'aturada. Es firma i es guarda sencer —què hi
+   havia i què hi passa a haver— perquè la pregunta que es fa sempre després
+   («qui va pujar això, i quan?») tingui resposta sense haver de recordar-la. */
+async function daoDecide(node,canvi,{qui,motiu}={}){
+  const c=daoCfg(node);
+  const camps=['operador','sostreMes','sostreDia','aturada'];
+  const net=o=>({operador:o.operador||'cap',sostreMes:Number(o.sostreMes)||0,
+    sostreDia:Number(o.sostreDia)||0,aturada:!!o.aturada});
+  const abans=net(c),despres=net(Object.assign({},abans,canvi||{}));
+  if(camps.every(k=>abans[k]===despres[k]))return{ok:false,motiu:'Això ja és així: no hi ha res a decidir.'};
+  if(despres.sostreMes<0||despres.sostreDia<0)return{ok:false,motiu:'Un sostre negatiu no vol dir res.'};
+  if(!DAO_OPERATORS.some(o=>o.id===despres.operador))return{ok:false,motiu:'Aquest operador no existeix.'};
+  const dec={'@type':DAO_DECISION,id:uid(),ts:now(),abans,despres,
+    qui:qui||state.activePersona||'',motiu:(motiu||'').trim()};
+  await signRecord(dec);
+  daoDecisionsOf(node).unshift(dec);
+  Object.assign(c,despres,{motiu:despres.aturada?(motiu||c.motiu||''):''});
+  await persist(node);
+  return{ok:true,decisio:dec,budget:daoBudget(node)};
+}
+function openDaoCaixa(node){
+  const b=daoBudget(node),c=daoCfg(node),s=b.unit.simbol;
+  const dec=daoDecisionsOf(node).slice(0,6);
+  const bg=modal(`
+    <h2>🏛 La caixa de la DAO</h2>
+    <p class="m-sub">Qui l’opera, quant hi ha, i <strong>quant pot sortir-ne</strong>. El sostre no és un avís: és el límit.</p>
+    <div class="ent-grp-lbl">Qui l’opera</div>
+    <div class="field"><select id="dcOp">${DAO_OPERATORS.map(o=>'<option value="'+o.id+'"'+(c.operador===o.id?' selected':'')+'>'+o.ic+' '+esc(o.nom)+'</option>').join('')}</select>
+      <div class="ent-desc" id="dcDiu" style="margin-top:.3rem"></div></div>
+    <div class="ent-grp-lbl">La caixa</div>
+    <div class="bib-stats">
+      <div class="bib-tile"><div class="n">${b.caixa}</div><div class="l">a la caixa · ${esc(s)}</div></div>
+      <div class="bib-tile"><div class="n" style="color:var(--muted)">${b.compromes}</div><div class="l">crèdit de sòcies · no és nostre</div></div>
+      <div class="bib-tile"><div class="n" style="color:var(--green)">${b.lliure}</div><div class="l">lliure per gastar</div></div>
+    </div>
+    <div class="ent-desc">Aportat al fons <strong>${b.aportat} ${esc(s)}</strong> · carregat per sòcies <strong>${b.deMembres}</strong> · gastat per la DAO <strong>${b.gastat}</strong>.
+      El que les sòcies encara no han gastat es deu, i per això no compta com a disponible.</div>
+    <div class="ent-grp-lbl">Sostres (0 vol dir que no surt res)</div>
+    <div class="wz-key">
+      <input id="dcMes" type="number" min="0" step="1" value="${b.sostreMes}" title="al mes">
+      <input id="dcDia" type="number" min="0" step="1" value="${b.sostreDia}" title="al dia">
+    </div>
+    <div class="ent-desc">al mes · al dia (0 al dia = sense límit diari, però el mensual sempre mana)</div>
+    <div class="ent-desc" style="margin-top:.3rem">Aquest mes se n’han gastat <strong>${b.gastatMes}</strong>, avui <strong>${b.gastatDia}</strong>.</div>
+    <div class="field" style="margin-top:.5rem"><label><input type="checkbox" id="dcStop"${c.aturada?' checked':''}> Atura la caixa ara mateix</label>
+      <input id="dcMotiu" maxlength="80" placeholder="Per què s’atura (queda escrit)" value="${esc(c.motiu||'')}" style="margin-top:.35rem"></div>
+    <div id="dcProva" class="ent-desc"></div>
+    ${dec.length?'<div class="ent-grp-lbl">Últimes decisions</div>'+dec.map(d=>'<div class="ent-desc">'+esc(String(d.ts).slice(0,16))+' · '+esc(d.qui||'algú')+' · sostre '+d.abans.sostreMes+'→'+d.despres.sostreMes+' · '+esc(daoOperator(d.despres.operador).nom)+(d.sig?' · firmada':'')+'</div>').join(''):''}
+    <div class="ai-note"><span class="ic">🔏</span><span>Canviar un sostre o l’operador <strong>es firma i queda escrit</strong>: qui, quan, i què hi havia abans. Gastar és barat; canviar el límit, no.</span></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="dcCancel">${t('Cancel·la')}</button><button class="btn btn-primary" id="dcSave">Decideix</button></div>`);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  const diu=()=>{bg.querySelector('#dcDiu').textContent=daoOperator(bg.querySelector('#dcOp').value).diu;};
+  /* Ensenyar què passaria amb aquests números abans de desar-los: el sostre es
+     jutja pel que deixa passar, no pel número. */
+  const prova=()=>{
+    const fals={...node,dao:{...c,operador:bg.querySelector('#dcOp').value,
+      sostreMes:Number(bg.querySelector('#dcMes').value)||0,
+      sostreDia:Number(bg.querySelector('#dcDia').value)||0,
+      aturada:bg.querySelector('#dcStop').checked}};
+    const r=canSpend(fals,1);
+    bg.querySelector('#dcProva').textContent=r.ok
+      ?'Amb això, una despesa d’1 '+s+' passaria.'
+      :'Amb això, una despesa d’1 '+s+' no passaria: '+r.motiu;
+    bg.querySelector('#dcProva').style.color=r.ok?'var(--green)':'var(--orange)';
+  };
+  bg.querySelector('#dcOp').onchange=()=>{diu();prova();};
+  ['#dcMes','#dcDia'].forEach(x=>bg.querySelector(x).oninput=prova);
+  bg.querySelector('#dcStop').onchange=prova;
+  diu();prova();
+  bg.querySelector('#dcCancel').onclick=closeModal;
+  bg.querySelector('#dcSave').onclick=async()=>{
+    const r=await daoDecide(node,{operador:bg.querySelector('#dcOp').value,
+      sostreMes:Number(bg.querySelector('#dcMes').value)||0,
+      sostreDia:Number(bg.querySelector('#dcDia').value)||0,
+      aturada:bg.querySelector('#dcStop').checked},
+      {motiu:bg.querySelector('#dcMotiu').value});
+    if(!r.ok){toast(r.motiu);return;}
+    closeModal();render();toast('Decisió firmada i escrita');
+  };
   return bg;
 }
 /* ═══════════ V81 · La Bomba Disco ═══════════
@@ -12767,7 +13422,12 @@ function renderEquity(body,node){
   const bar=el('div','ent-bar');
   const add=el('button','btn btn-primary btn-sm','+ Registra aportació');add.onclick=()=>{if(!ms.length){toast('Dona d\'alta un soci primer');state.tab='socis';renderWorkspace();return;}openContributionModal(node);};
   const cfgb=el('button','btn btn-ghost btn-sm','⚙ Paràmetres');cfgb.onclick=()=>openEquityConfig(node);
-  bar.append(add,cfgb);
+  /* El moneder entra per aquí i no per una pestanya nova: el diner d'aquest node
+     ja viu a l'equity, i obrir una superfície global per a una cosa que és d'un
+     node seria eixamplar l'app per no haver de pensar on va (veda 62). */
+  const wal=el('button','btn btn-ghost btn-sm',coopCfg(node).unit.simbol+' Moneder SOS Coop');
+  wal.onclick=()=>openCoopWallet(node,(membersOf(node)[0]||{}).id);
+  bar.append(add,cfgb,wal);
   if(!ms.length){const seed=el('button','btn btn-ghost btn-sm','✨ Carrega exemple');seed.onclick=()=>seedDemo(node);bar.appendChild(seed);}
   body.appendChild(bar);
   const note=el('div','ai-note');note.style.marginTop='.9rem';note.innerHTML='<span class="ic">🥧</span><span><strong>Slicing Pie</strong>: la tarta reparteix el valor per aportacions reals. Temps a preu FMV ('+cfg.fmv+' €/h) ×'+cfg.nonCash+'; diner ×'+cfg.cash+'. Es recalcula sola.</span>';body.appendChild(note);
@@ -16078,7 +16738,11 @@ async function syncAcceptAnswer(code){
    que hi havia apuntat. El xat ja se'n salvava; aquestes són les altres.
    Les que no hi són (govern, mapa VNA, configuració) sí que són camps que es
    reescriuen, i per a aquelles el LWW és el que toca. */
-const APPEND_ONLY=['ledger','members','objects','offers','ventures','pending','risks','blocks','evidence'];
+/* `carregues` i `daoDecisions` hi són pel mateix motiu que la resta: una càrrega
+   cobrada i una decisió sobre la caixa **no es poden perdre en una fusió**. Amb
+   l'últim-que-escriu manant, sincronitzar dos dispositius podia esborrar un
+   pagament que ja havia entrat. */
+const APPEND_ONLY=['ledger','members','objects','offers','ventures','pending','risks','blocks','evidence','carregues','daoDecisions'];
 /* Quan el mateix registre arriba per les dues bandes, es queda **el més ric**:
    el que porta firma per sobre del que no en porta, i el que porta més
    confirmacions per sobre del que en porta menys. Mai el més nou pel fet de ser
@@ -16676,7 +17340,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
