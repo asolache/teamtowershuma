@@ -418,10 +418,12 @@ quan ningú està connectat, que és el contrari d'accessible.
 
 Tres passos, en aquest ordre:
 
-1. **Llista d'orígens en comptes d'una constant.** `SUPPLY_BASE` i `CHANNEL_BASE`
-   passen a ser una llista que es prova en ordre (el lloc propi, un mirall a
-   GitHub Pages, `raw.githubusercontent`, i una passarel·la IPFS l'última). Mateix
-   codi, mateixos paquets, N llocs. Qui vulgui sobirania hi afegeix el seu.
+1. ✅ **Llista d'orígens en comptes d'una constant** — *fet, veda 96*.
+   `fetchFromOrigins` prova els orígens en ordre i mana el primer que respon;
+   `updateCommonSupply` i `channelIndex` hi passen. El de casa sempre hi és i no
+   es pot treure. Es diu qui ha servit i de quan és; amb tots caiguts es diu que
+   no responen i **no** «no hi ha res publicat». L'índex i els seus paquets, del
+   mateix origen. Pantalla a `openOrigins` amb un botó de provar-los.
 2. **Índex a Nostr, contingut per HTTPS.** Un event reemplaçable (NIP-33, que ja
    hi és a mig fer via `nostrPublish`) per node amb `{tema, url, hash, ts}`. Relés
    n'hi ha molts, són gratis i el navegador hi parla nativament per WSS.

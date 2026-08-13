@@ -688,6 +688,45 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 96 — Un origen que cau en silenci es confon amb una xarxa buida
+
+Llegir el que altres han publicat ja funcionava, però sortia **d'un sol lloc
+escrit dins del codi**. Mentre aquell lloc respon no es nota res; el dia que no
+respon, la xarxa deixa d'existir per a tothom alhora i ningú té manera d'apuntar
+a un altre costat. Ara els orígens són una llista que es prova en ordre, i el
+primer és sempre aquest mateix lloc i **no es pot treure** —treure'l deixaria algú
+sense cap manera de llegir res.
+
+La decisió de fons, que va costar més de prendre que d'escriure: **el camí de
+lectura es queda a HTTPS estàtic**, no a IPFS ni a WebTorrent. Zero instal·lació,
+va amb dades mòbils i darrere d'un proxy, i el cacheja qualsevol CDN. El que fa
+acceptable que ho allotgi algú no és el transport sinó que el contingut és
+**agregat i signat** i passa pel sedàs d'entrada. El P2P de debò —WebRTC, V80 i
+V82— ja cobreix el que ha de cobrir: la sincronització en viu entre qui es coneix.
+Fer-lo servir també per «baixar el que ha publicat la xarxa» faria que la xarxa
+fos invisible quan ningú està connectat, que és el contrari d'accessible.
+
+I el que dona nom a la veda, que és una qüestió de què es diu i no de què es fa:
+quan cap origen respon, **no es diu «encara no hi ha res publicat»**. És la
+mentida més fàcil d'aquesta pantalla i la que fa que ningú sàpiga mai si la xarxa
+és buida o si el seu origen és mort. Es diu quants s'han provat i amb quin error
+va fallar cadascun. Del que sí que arriba es diu **qui ho ha servit** —sense això,
+«per què no hi surt tal cosa» no té resposta possible— i **de quan és**; i si
+l'índex no porta data, es diu que no en porta, perquè un mirall que s'ha quedat
+enrere i no ho confessa et fa llegir el passat creient que és el present.
+
+Dues regles més que eviten construir una cosa que no existeix enlloc:
+
+- **L'índex i els seus paquets, del mateix origen.** Barrejar l'índex d'un amb
+  els fitxers d'un altre fa una quimera.
+- **El primer que respon mana; no es fusionen.** Són miralls, és a dir còpies:
+  sumar-ne dos comptaria dues vegades el mateix.
+
+Afegir un origen **no és fiar-se'n**, i la pantalla ho diu: el que en vingui passa
+pel mateix sedàs que tota la resta. Per això la llista blanca de camps i el filtre
+de text són dues xarxes diferents i totes dues calen —la primera atura un camp que
+ningú ha declarat, la segona atura el correu que s'amaga dins d'un camp legítim.
+
 ## Veda 95 — Un camp buit llegit com «sense límit» és com es buiden les caixes
 
 La veda 92 diu que el navegador no pot confirmar un cobrament. Aquesta és la
