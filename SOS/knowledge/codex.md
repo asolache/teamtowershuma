@@ -688,6 +688,38 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 97 — Trobar una cosa no és fiar-se'n, i la pantalla ho ha de dir
+
+La llista d'orígens (veda 96) resol que un lloc caigui, però no que en
+desaparegui un **i ningú sàpiga on és el següent**: la llista viu al teu
+navegador, i qui entra de nou no en té cap. Repartir el descobriment sense
+repartir el contingut és la peça que fa que això sobrevisqui que un lloc
+desaparegui, i la divisió és **l'anunci per Nostr, els fitxers per HTTPS**.
+
+Els relés Nostr són molts, gratis, i el navegador hi parla nativament: serveixen
+per dir «sóc aquí». Un relé **no** és un magatzem de fitxers, i fer-l'hi servir
+seria fer-lo caure —que és la temptació òbvia i l'error que hauria fet inútil
+tota la peça.
+
+Ara la frontera, que és la mateixa de la veda 61 aplicada a un cas nou: **la
+firma Nostr no es verifica al navegador**. És Schnorr sobre secp256k1 i
+SubtleCrypto no en sap; caldria una biblioteca i el SOS és un sol fitxer. Que un
+anunci arribi d'un relé prova que **un relé l'ha acceptat**, no qui l'ha escrit.
+Dues conseqüències que no són negociables:
+
+- **Trobar no és afegir.** Els orígens descoberts són *propostes*, i les afegeix
+  la persona. Afegir-los sols voldria dir que qualsevol que publiqui a un relé
+  públic decideix d'on llegeixes. Aquesta és tota la veda: la comoditat d'un pas
+  menys costaria el control de la font.
+- **El hash anunciat detecta un mirall que no quadra, no un atac.** Comparar el
+  que un origen serveix ara amb el que va anunciar veu que una còpia s'ha quedat
+  enrere o s'ha tocat. No diu qui l'ha tocat, i la pantalla ho diu amb aquestes
+  paraules en comptes de deixar-ho entendre.
+
+I el mateix criteri que a mà: una proposta que no sigui `https` cau, i un anunci
+que no es pot llegir no atura la cerca —només no compta. Quan no n'apareix cap es
+diu que **ningú n'ha publicat cap**, que no és el mateix que dir que no n'hi ha.
+
 ## Veda 96 — Un origen que cau en silenci es confon amb una xarxa buida
 
 Llegir el que altres han publicat ja funcionava, però sortia **d'un sol lloc

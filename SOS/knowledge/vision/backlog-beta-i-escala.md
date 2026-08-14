@@ -424,12 +424,13 @@ Tres passos, en aquest ordre:
    es pot treure. Es diu qui ha servit i de quan és; amb tots caiguts es diu que
    no responen i **no** «no hi ha res publicat». L'índex i els seus paquets, del
    mateix origen. Pantalla a `openOrigins` amb un botó de provar-los.
-2. **Índex a Nostr, contingut per HTTPS.** Un event reemplaçable (NIP-33, que ja
-   hi és a mig fer via `nostrPublish`) per node amb `{tema, url, hash, ts}`. Relés
-   n'hi ha molts, són gratis i el navegador hi parla nativament per WSS.
-   Descobriment descentralitzat, integritat per hash i firma. És el que fa que
-   això sobrevisqui que un lloc desaparegui sense demanar a ningú que engegui cap
-   dimoni.
+2. ✅ **Índex a Nostr, contingut per HTTPS** — *fet, veda 97*. Event NIP-33
+   reemplaçable amb d-tag `sos-origen` i `{base, nota, hash, packs}`.
+   `nostrQuery` (el client de lectura, que faltava: només hi havia el de
+   publicar) parla REQ/EOSE; `discoverOrigins` dedupa entre relés quedant-se
+   l'anunci més nou; `checkAnnounced` compara el que un origen serveix amb el
+   que va anunciar. **Trobar no és afegir**: són propostes i les afegeix la
+   persona, perquè la firma Nostr no es verifica al navegador.
 3. **Publicar al teu propi origen**, sense token ni repositori de ningú. La
    federació passa a ser una llista d'orígens.
 
