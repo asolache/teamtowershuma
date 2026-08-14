@@ -688,6 +688,48 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 102 — El que es declara i el que es demostra no es poden pintar igual
+
+L'ikigai eren quatre cercles i la manera òbvia de fer-los era un formulari de
+quatre camps. Hauria estat un test de personalitat: quatre caselles que la
+persona omple imaginant-se, i una pantalla bonica que no sap res.
+
+Tres dels quatre **ja els sabia el sistema**. «Se't dona bé» surt dels cromos
+verificats, que surten d'aportacions signades. «Fa falta» surt de les demandes
+obertes d'altres persones, ordenades per proximitat. «Et valoren per» surt del
+que t'han confirmat i del moneder. Cap dels tres s'ha de preguntar.
+
+El quart —**què t'agrada**— no es pot deduir de res, i aquí és on hi ha la
+regla: **un quadrant declarat presentat com a evidenciat converteix una intenció
+en un fet**. Es distingeixen a la pantalla sense haver-hi de passar el ratolí: la
+vora del que està demostrat és sòlida i verda, la del que has dit tu és
+discontínua, i cadascun porta escrit d'on surt —«de l'evidència» o «ho dius tu».
+Declarar que cuines no t'omple el quadrant de cuinera: això només ho fa el
+ledger.
+
+Dues conseqüències que en surten:
+
+- **Un quadrant buit és un fet, no un fracàs.** No s'omple amb ànims. I la
+  redacció importa: «encara no hi ha cap aportació verificada» no vol dir el
+  mateix que «no se't dona bé res» —diu que **encara no consta**, que és tot el
+  que el sistema pot saber.
+- **El centre és una intersecció, no una metàfora.** Quan el que se't dona bé es
+  creua amb el que fa falta a prop, es diu quants creuaments hi ha; quan no n'hi
+  ha cap, es diu això, i no es fabrica una suggerència perquè el cercle del mig
+  quedi ple.
+
+### I una precisió que no es pot inventar
+
+`proximity()` torna `km:null` quan els nodes no tenen coordenades: el que se sap
+és la **jerarquia territorial** —mateix municipi, mateixa comarca— i això **no és
+una distància**. Dir «a 3 km» quan només saps que sou de la mateixa comarca és
+inventar-se una precisió que ningú ha mesurat. Les lents de les missions ordenen
+per rang i diuen «al barri del costat», no un número.
+
+I la que ve de la veda 51: canviar de lent —urgència, proximitat, afinitat—
+**reordena, mai filtra**. Cap missió desapareix perquè hagis triat mirar-les
+d'una altra manera, i qui t'espera segueix sortint primer passi el que passi.
+
 ## Veda 101 — Una eina de navegació posada de marc obliga tothom a navegar
 
 L'app va néixer com un explorador de territoris: una columna fixa de 280 px amb
