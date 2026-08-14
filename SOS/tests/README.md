@@ -84,6 +84,11 @@ l'engeguen ells.
 `check-kiss.js` i `check-i18n.js` no són tests de Playwright: corren a cada PR en
 menys d'un segon i sense dependències, que és el que fa que mosseguin de debò.
 
+**Les guardes són CommonJS (`require`), no ESM.** El repositori no declara
+`"type":"module"`, així que un fitxer `.js` amb `import` funciona amb el Node més
+nou —que endevina que és un mòdul— i peta al CI amb Node 18. `node SOS/tests/run.mjs`
+**no passa les guardes**: si en toques una, passa-la a mà abans de pujar.
+
 ### La guarda de KISS
 
 Mesura pes, guies, duplicats i superfícies contra **sostres declarats**.

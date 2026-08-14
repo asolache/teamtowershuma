@@ -20,11 +20,13 @@
  *
  * Ús:  node SOS/tools/check-formacio.js
  */
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+/* `require` i no `import`, com la resta de guardes: el fitxer és `.js`, el
+ * repositori no declara `"type":"module"`, i només el Node modern endevina que
+ * això és un mòdul. Amb `import` passava aquí i petava al CI amb Node 18. */
+const { readFileSync } = require('node:fs');
+const { join } = require('node:path');
 
-const here = dirname(fileURLToPath(import.meta.url));
+const here = __dirname;
 const app = readFileSync(join(here, '..', 'index.html'), 'utf8');
 const page = readFileSync(join(here, '..', 'formacio.html'), 'utf8');
 
