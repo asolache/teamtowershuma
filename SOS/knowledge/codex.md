@@ -688,6 +688,37 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 99 — El primer que veu tothom és l'últim que mira ningú
+
+Revisant l'ajut d'inici van sortir tres defectes, i els tres tenien la mateixa
+causa: **és la pantalla per on tothom passa una vegada i on ningú torna**. Es
+prova el dia que s'escriu i després es queda sola per sempre, mentre la resta de
+l'app té tests que la vigilen.
+
+El pitjor era visible i portava temps allà: el text dels passos porta èmfasi
+escrit a mà, i es pintava amb `esc()`. Resultat: la primera frase que llegeix
+qualsevol que obre el SOS deia literalment «s'uneixen en una `<strong>`aventura
+comuna`</strong>`». No hi ha manera més ràpida de dir «això no està acabat».
+
+La solució no és treure l'escapament —el dia que algú hi posi una variable, això
+seria una porta oberta— sinó **escapar-ho tot i tornar a obrir només les dues
+etiquetes que aquest text fa servir**. Una llista blanca, com a tot arreu.
+
+Els altres dos són de forma, i tots dos són casos de la veda 62:
+
+- **L'últim pas no tenia manera de dir «ja està»** que no fos «Salta la
+  introducció». Quan has arribat al final no queda res a saltar, i oferir-ho és
+  demanar a algú que renegui del que acaba de fer.
+- **Un cop vista, la introducció era irrecuperable.** S'obria a l'arrencada i
+  només el primer cop. Explicar-se una sola vegada —i justament en el moment en
+  què encara no saps si t'interessa— és no explicar-se. Ara es torna a obrir des
+  de la guia, que és on va qui es perd, i des de la cerca.
+
+I la que ja hi era i s'ha de conservar: **una presentació no interromp una feina
+començada**. Si hi ha res obert, el tour espera. `modal()` buida l'arrel, i un
+tour que arriba tard es menja el formulari que estiguessis omplint amb el que hi
+hagis escrit a dins.
+
 ## Veda 98 — Un índex que es manté a mà es desincronitza el segon dia
 
 Publicar ja se sabia fer: el fitxer del paquet sortia bé. El que no se sabia fer
