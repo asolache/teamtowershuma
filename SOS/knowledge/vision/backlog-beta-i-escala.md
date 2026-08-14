@@ -418,18 +418,29 @@ quan ningú està connectat, que és el contrari d'accessible.
 
 Tres passos, en aquest ordre:
 
-1. **Llista d'orígens en comptes d'una constant.** `SUPPLY_BASE` i `CHANNEL_BASE`
-   passen a ser una llista que es prova en ordre (el lloc propi, un mirall a
-   GitHub Pages, `raw.githubusercontent`, i una passarel·la IPFS l'última). Mateix
-   codi, mateixos paquets, N llocs. Qui vulgui sobirania hi afegeix el seu.
-2. **Índex a Nostr, contingut per HTTPS.** Un event reemplaçable (NIP-33, que ja
-   hi és a mig fer via `nostrPublish`) per node amb `{tema, url, hash, ts}`. Relés
-   n'hi ha molts, són gratis i el navegador hi parla nativament per WSS.
-   Descobriment descentralitzat, integritat per hash i firma. És el que fa que
-   això sobrevisqui que un lloc desaparegui sense demanar a ningú que engegui cap
-   dimoni.
-3. **Publicar al teu propi origen**, sense token ni repositori de ningú. La
-   federació passa a ser una llista d'orígens.
+1. ✅ **Llista d'orígens en comptes d'una constant** — *fet, veda 96*.
+   `fetchFromOrigins` prova els orígens en ordre i mana el primer que respon;
+   `updateCommonSupply` i `channelIndex` hi passen. El de casa sempre hi és i no
+   es pot treure. Es diu qui ha servit i de quan és; amb tots caiguts es diu que
+   no responen i **no** «no hi ha res publicat». L'índex i els seus paquets, del
+   mateix origen. Pantalla a `openOrigins` amb un botó de provar-los.
+2. ✅ **Índex a Nostr, contingut per HTTPS** — *fet, veda 97*. Event NIP-33
+   reemplaçable amb d-tag `sos-origen` i `{base, nota, hash, packs}`.
+   `nostrQuery` (el client de lectura, que faltava: només hi havia el de
+   publicar) parla REQ/EOSE; `discoverOrigins` dedupa entre relés quedant-se
+   l'anunci més nou; `checkAnnounced` compara el que un origen serveix amb el
+   que va anunciar. **Trobar no és afegir**: són propostes i les afegeix la
+   persona, perquè la firma Nostr no es verifica al navegador.
+3. ✅ **Publicar al teu propi origen** — *fet, veda 98*. `buildOriginBundle`
+   genera l'índex i el paquet, i `originBundleCheck` comprova que quadrin en
+   totes dues direccions abans de baixar-los. El hash que s'anuncia és el de
+   l'índex que es publica, perquè si no `checkAnnounced` cridaria al llop amb el
+   teu propi origen ben publicat.
+
+   **Queda del canal**: `canal/index.json` té exactament el mateix problema que
+   tenia `supply/` —es manté a mà— però els seus paquets són per node i xifrats,
+   i generar-lo demana les claus de cada node. No és el mateix problema amb una
+   altra cara: és un de més gros, i val la pena fer-lo a part.
 
 Arweave i IPFS es queden on són: permanència i prova (`PIN_TARGETS`), no la
 lectura de cada dia.

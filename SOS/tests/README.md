@@ -54,6 +54,9 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-bomba.mjs` | V81 · veda 87 | Que d'un node aturat en surtin jugades amb botó, que no se n'inventi cap, i que qui s'ha despenjat no ho vegi qualsevol |
 | `test-taulell.mjs` | V86 · vedes 93 i 94 | Que el lateral digui l'operació sencera, la distinció que hi mancava —tenir una oferta no és que et trobin— i les tres maneres de tancar una porta sense apagar-la: viure en un sol lloc, no anar amb teclat, i acabar en un cul-de-sac |
 | `test-coop.mjs` | V85 · veda 92 | Que no aparegui crèdit sense pagar: quatre intents de confirmar sense rebut vàlid, i que el client no cobri mai |
+| `test-origen-propi.mjs` | E13.3 · veda 98 | Publicar sense token ni repositori de ningú: que l'índex es generi i quadri amb els fitxers en totes dues direccions, i que el hash que s'anuncia sigui el de l'índex que es publica |
+| `test-nostr-origens.mjs` | E13.2 · veda 97 | L'anunci per Nostr i els fitxers per HTTPS: que el client parli REQ/EOSE de debò, que **trobar no sigui afegir**, i que el hash anunciat es presenti com el que és —detecta un mirall que no quadra, no un atac |
+| `test-origens.mjs` | E13.1 · veda 96 | D'on es baixa: que el primer que respon mani, que es digui **qui** ha servit i **de quan** és, i sobretot que amb tots els orígens caiguts no es digui «no hi ha res publicat» |
 | `test-dao.mjs` | V87 · veda 95 | La porta contrària: que el que s'ha carregat no se'n vagi. Que un sostre sense posar **no** vulgui dir «sense límit», que el límit es comprovi abans de gastar, i que pujar-lo sigui una decisió firmada |
 | `test-projecte.mjs` | V84 · veda 91 | Que el nom del projecte sigui teu, que la plantilla només digui de quina mena és, i que es pugui reanomenar |
 | `test-aportacions.mjs` | V83 · veda 90 | Apunts al registre que l'equity no comptava: el forat, l'atribució de lectura, i que no es reescrigui res signat |

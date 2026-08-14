@@ -160,10 +160,12 @@ const pull = await page.evaluate(async (s) => {
     'canal/banc-de-temps/bo.json': pack
   };
   const orig = window.fetch;
+  /* El `fetch` de debò **no rebutja** amb un 404: resol amb `ok:false`. El
+     simulacre ha de fer el mateix, o prova un món que no existeix. */
   window.fetch = async (u) => {
     const k = String(u).split('?')[0];
-    if (files[k]) return { json: async () => files[k] };
-    throw new Error('404');
+    if (files[k]) return { ok: true, status: 200, json: async () => files[k] };
+    return { ok: false, status: 404, json: async () => { throw new Error('no és JSON'); } };
   };
   try { return { r: await S.pullChannel(meu, 'banc de temps'), n: meu.ledger.length }; }
   finally { window.fetch = orig; }

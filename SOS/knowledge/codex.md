@@ -688,6 +688,114 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 98 — Un índex que es manté a mà es desincronitza el segon dia
+
+Publicar ja se sabia fer: el fitxer del paquet sortia bé. El que no se sabia fer
+era **l'índex que hi apunta**, que es mantenia a mà —i un índex escrit a mà
+acaba anomenant un fitxer que no hi és, o deixant-ne un que ningú anomena. El
+primer cas el lector el compta com a «paquet fallat» sense saber per què; el
+segon és un fitxer que no llegirà mai ningú. Ara es genera, i abans de baixar-lo
+es comprova en totes dues direccions.
+
+Amb això queda tret l'últim lligam: **publicar no demana ni token ni el
+repositori de ningú**. Un origen és una carpeta amb dos fitxers estàtics.
+
+I la propietat que sembla un detall i és el que fa que la peça anterior serveixi:
+**el hash que s'anuncia ha de ser el de l'índex que es publica**. Si no ho fos, el
+`checkAnnounced` de la veda 97 diria «no quadra» del teu propi origen ben
+publicat. Una comprovació que crida al llop amb les teves dades correctes
+s'aprèn a ignorar, i llavors ja no hi és per al cas de debò. Una alarma que es
+desactiva sola per soroll és pitjor que no tenir-ne.
+
+### El que va destapar
+
+Aquesta peça va ser la primera a passar el sedàs de sortida **abans de
+descarregar**, i va caçar una fuita que hi era de feia temps: quan una oferta té
+una categoria que no és de la llista —o no en té cap— `supplyThing` i
+`thingLabel` cauen al **títol lliure**, i el títol sortia de casa com a
+`category` i com a `label` del paquet agregat. «Necessito ajuda amb la hipoteca»
+convertit en categoria pública.
+
+A dins, aquell recurs està bé: és el que la persona va escriure i l'ha de veure.
+A fora no, i el motiu és el de la veda 47: **el paquet és agregat, i una etiqueta
+lliure torna a identificar el cas concret que l'agregació havia d'amagar**. El
+que no és de la llista surt com «altres».
+
+La lliçó que val més que l'arreglada: la comprovació existia i era correcta —
+`verifyNoLeak` ho detectava perfectament— però **cap camí de publicació la
+cridava**. Una guarda que no és a la porta per on es passa no guarda res.
+
+## Veda 97 — Trobar una cosa no és fiar-se'n, i la pantalla ho ha de dir
+
+La llista d'orígens (veda 96) resol que un lloc caigui, però no que en
+desaparegui un **i ningú sàpiga on és el següent**: la llista viu al teu
+navegador, i qui entra de nou no en té cap. Repartir el descobriment sense
+repartir el contingut és la peça que fa que això sobrevisqui que un lloc
+desaparegui, i la divisió és **l'anunci per Nostr, els fitxers per HTTPS**.
+
+Els relés Nostr són molts, gratis, i el navegador hi parla nativament: serveixen
+per dir «sóc aquí». Un relé **no** és un magatzem de fitxers, i fer-l'hi servir
+seria fer-lo caure —que és la temptació òbvia i l'error que hauria fet inútil
+tota la peça.
+
+Ara la frontera, que és la mateixa de la veda 61 aplicada a un cas nou: **la
+firma Nostr no es verifica al navegador**. És Schnorr sobre secp256k1 i
+SubtleCrypto no en sap; caldria una biblioteca i el SOS és un sol fitxer. Que un
+anunci arribi d'un relé prova que **un relé l'ha acceptat**, no qui l'ha escrit.
+Dues conseqüències que no són negociables:
+
+- **Trobar no és afegir.** Els orígens descoberts són *propostes*, i les afegeix
+  la persona. Afegir-los sols voldria dir que qualsevol que publiqui a un relé
+  públic decideix d'on llegeixes. Aquesta és tota la veda: la comoditat d'un pas
+  menys costaria el control de la font.
+- **El hash anunciat detecta un mirall que no quadra, no un atac.** Comparar el
+  que un origen serveix ara amb el que va anunciar veu que una còpia s'ha quedat
+  enrere o s'ha tocat. No diu qui l'ha tocat, i la pantalla ho diu amb aquestes
+  paraules en comptes de deixar-ho entendre.
+
+I el mateix criteri que a mà: una proposta que no sigui `https` cau, i un anunci
+que no es pot llegir no atura la cerca —només no compta. Quan no n'apareix cap es
+diu que **ningú n'ha publicat cap**, que no és el mateix que dir que no n'hi ha.
+
+## Veda 96 — Un origen que cau en silenci es confon amb una xarxa buida
+
+Llegir el que altres han publicat ja funcionava, però sortia **d'un sol lloc
+escrit dins del codi**. Mentre aquell lloc respon no es nota res; el dia que no
+respon, la xarxa deixa d'existir per a tothom alhora i ningú té manera d'apuntar
+a un altre costat. Ara els orígens són una llista que es prova en ordre, i el
+primer és sempre aquest mateix lloc i **no es pot treure** —treure'l deixaria algú
+sense cap manera de llegir res.
+
+La decisió de fons, que va costar més de prendre que d'escriure: **el camí de
+lectura es queda a HTTPS estàtic**, no a IPFS ni a WebTorrent. Zero instal·lació,
+va amb dades mòbils i darrere d'un proxy, i el cacheja qualsevol CDN. El que fa
+acceptable que ho allotgi algú no és el transport sinó que el contingut és
+**agregat i signat** i passa pel sedàs d'entrada. El P2P de debò —WebRTC, V80 i
+V82— ja cobreix el que ha de cobrir: la sincronització en viu entre qui es coneix.
+Fer-lo servir també per «baixar el que ha publicat la xarxa» faria que la xarxa
+fos invisible quan ningú està connectat, que és el contrari d'accessible.
+
+I el que dona nom a la veda, que és una qüestió de què es diu i no de què es fa:
+quan cap origen respon, **no es diu «encara no hi ha res publicat»**. És la
+mentida més fàcil d'aquesta pantalla i la que fa que ningú sàpiga mai si la xarxa
+és buida o si el seu origen és mort. Es diu quants s'han provat i amb quin error
+va fallar cadascun. Del que sí que arriba es diu **qui ho ha servit** —sense això,
+«per què no hi surt tal cosa» no té resposta possible— i **de quan és**; i si
+l'índex no porta data, es diu que no en porta, perquè un mirall que s'ha quedat
+enrere i no ho confessa et fa llegir el passat creient que és el present.
+
+Dues regles més que eviten construir una cosa que no existeix enlloc:
+
+- **L'índex i els seus paquets, del mateix origen.** Barrejar l'índex d'un amb
+  els fitxers d'un altre fa una quimera.
+- **El primer que respon mana; no es fusionen.** Són miralls, és a dir còpies:
+  sumar-ne dos comptaria dues vegades el mateix.
+
+Afegir un origen **no és fiar-se'n**, i la pantalla ho diu: el que en vingui passa
+pel mateix sedàs que tota la resta. Per això la llista blanca de camps i el filtre
+de text són dues xarxes diferents i totes dues calen —la primera atura un camp que
+ningú ha declarat, la segona atura el correu que s'amaga dins d'un camp legítim.
+
 ## Veda 95 — Un camp buit llegit com «sense límit» és com es buiden les caixes
 
 La veda 92 diu que el navegador no pot confirmar un cobrament. Aquesta és la
