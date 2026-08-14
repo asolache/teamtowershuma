@@ -250,6 +250,27 @@ const SETUP = `
     r.count + ' files · ' + r.people + ' persona identificada');
   ok('emptyPackIsClean', r.emptyLeak, 'un paquet buit no filtra res');
   ok('noErrors7', errs.length === 0, errs.join(' | '));
+
+  /* Regressió: una categoria que no és de la llista —o que no n'hi ha— feia que
+     `supplyThing` i `thingLabel` caiguessin al títol lliure, i el títol sortia
+     de casa com a `category` i com a `label` del paquet agregat. */
+  const lliure = await p.evaluate(async () => {
+    const S = window.__SOS;
+    const n = S.newNode('Fuita', 'projecte', null);
+    n.dynamicType = 'banc_temps'; S.seedFromDynamic(n, S.dynById('banc_temps'));
+    const m = S.newMember({ name: 'Ona Prat' }); S.membersOf(n).push(m);
+    S.offersOf(n).push(S.newOffer({ kind: 'demanda', category: 'inventada', memberId: m.id, title: 'Necessito ajuda amb la hipoteca' }));
+    S.offersOf(n).push(S.newOffer({ kind: 'oferta', category: '', memberId: m.id, title: 'Faig classes de violí' }));
+    S.state.nodes.push(n); await S.setPublishScope(n, { skills: true, objects: false });
+    await S.persist(n);
+    const pack = S.supplyPublicPack();
+    const meves = pack.supply.filter(x => x.nodeId === n.id);
+    return { json: JSON.stringify(meves), v: S.verifyNoLeak(pack),
+      cats: meves.map(x => x.category), labels: meves.map(x => x.label) };
+  });
+  ok('freeTitleNeverBecomesACategory',
+    !/hipoteca|viol/i.test(lliure.json) && lliure.v.ok,
+    'categoria desconeguda o buida → ' + lliure.cats.join(',') + ' / ' + lliure.labels.join(','));
   await ctx.close();
 }
 

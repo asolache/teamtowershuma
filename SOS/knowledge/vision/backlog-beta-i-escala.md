@@ -431,8 +431,16 @@ Tres passos, en aquest ordre:
    l'anunci més nou; `checkAnnounced` compara el que un origen serveix amb el
    que va anunciar. **Trobar no és afegir**: són propostes i les afegeix la
    persona, perquè la firma Nostr no es verifica al navegador.
-3. **Publicar al teu propi origen**, sense token ni repositori de ningú. La
-   federació passa a ser una llista d'orígens.
+3. ✅ **Publicar al teu propi origen** — *fet, veda 98*. `buildOriginBundle`
+   genera l'índex i el paquet, i `originBundleCheck` comprova que quadrin en
+   totes dues direccions abans de baixar-los. El hash que s'anuncia és el de
+   l'índex que es publica, perquè si no `checkAnnounced` cridaria al llop amb el
+   teu propi origen ben publicat.
+
+   **Queda del canal**: `canal/index.json` té exactament el mateix problema que
+   tenia `supply/` —es manté a mà— però els seus paquets són per node i xifrats,
+   i generar-lo demana les claus de cada node. No és el mateix problema amb una
+   altra cara: és un de més gros, i val la pena fer-lo a part.
 
 Arweave i IPFS es queden on són: permanència i prova (`PIN_TARGETS`), no la
 lectura de cada dia.

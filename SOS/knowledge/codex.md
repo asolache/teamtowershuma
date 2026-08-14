@@ -688,6 +688,43 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 98 — Un índex que es manté a mà es desincronitza el segon dia
+
+Publicar ja se sabia fer: el fitxer del paquet sortia bé. El que no se sabia fer
+era **l'índex que hi apunta**, que es mantenia a mà —i un índex escrit a mà
+acaba anomenant un fitxer que no hi és, o deixant-ne un que ningú anomena. El
+primer cas el lector el compta com a «paquet fallat» sense saber per què; el
+segon és un fitxer que no llegirà mai ningú. Ara es genera, i abans de baixar-lo
+es comprova en totes dues direccions.
+
+Amb això queda tret l'últim lligam: **publicar no demana ni token ni el
+repositori de ningú**. Un origen és una carpeta amb dos fitxers estàtics.
+
+I la propietat que sembla un detall i és el que fa que la peça anterior serveixi:
+**el hash que s'anuncia ha de ser el de l'índex que es publica**. Si no ho fos, el
+`checkAnnounced` de la veda 97 diria «no quadra» del teu propi origen ben
+publicat. Una comprovació que crida al llop amb les teves dades correctes
+s'aprèn a ignorar, i llavors ja no hi és per al cas de debò. Una alarma que es
+desactiva sola per soroll és pitjor que no tenir-ne.
+
+### El que va destapar
+
+Aquesta peça va ser la primera a passar el sedàs de sortida **abans de
+descarregar**, i va caçar una fuita que hi era de feia temps: quan una oferta té
+una categoria que no és de la llista —o no en té cap— `supplyThing` i
+`thingLabel` cauen al **títol lliure**, i el títol sortia de casa com a
+`category` i com a `label` del paquet agregat. «Necessito ajuda amb la hipoteca»
+convertit en categoria pública.
+
+A dins, aquell recurs està bé: és el que la persona va escriure i l'ha de veure.
+A fora no, i el motiu és el de la veda 47: **el paquet és agregat, i una etiqueta
+lliure torna a identificar el cas concret que l'agregació havia d'amagar**. El
+que no és de la llista surt com «altres».
+
+La lliçó que val més que l'arreglada: la comprovació existia i era correcta —
+`verifyNoLeak` ho detectava perfectament— però **cap camí de publicació la
+cridava**. Una guarda que no és a la porta per on es passa no guarda res.
+
 ## Veda 97 — Trobar una cosa no és fiar-se'n, i la pantalla ho ha de dir
 
 La llista d'orígens (veda 96) resol que un lloc caigui, però no que en
