@@ -688,6 +688,31 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 103 — Un rànquing necessita gent per ser segur
+
+`activityRanking({scopeId})` sabia limitar-se a un subarbre des del primer dia i
+ningú hi podia arribar. Té sentit que s'hi pugui: veure't a la xarxa sencera diu
+poc —al costat de 500 persones, ser el 340è no vol dir res— i al teu banc de
+temps sí. «Fill o pare» tampoc és una preferència d'interfície: al node veus qui
+mou el que fas tu, i al que el conté veus si el teu node aporta o només rep.
+
+El que no és obvi és que **reduir l'àmbit empitjora el problema que la veda 56 ja
+avisava**, en comptes de deixar-lo igual. Un rànquing en una eina de suport mutu
+es pot girar en contra, i com més petit és el grup, més. Entre 500 persones,
+l'última posició no la mira ningú. Entre cinc, **l'últim lloc assenyala algú
+concret** —i sovint qui aporta menys és qui té menys temps o menys salut, no qui
+té menys ganes.
+
+D'aquí la regla: **per sota de cinc persones no hi ha ordre.** Es veu què ha
+aportat cadascú, sense número, sense podi i sense cua. I es diu a la pantalla,
+perquè una regla que actua sense dir-se sembla un error de l'app: qui no entén
+per què no hi ha números pensa que s'ha trencat alguna cosa.
+
+La distinció que sosté la decisió: **no ordenar no és amagar**. Les aportacions
+segueixen sortint totes; el que desapareix és la comparació, que és l'única part
+que pot fer mal. Si haguéssim tret les files, hauríem tapat feina de gent real
+per protegir-la, que és una manera cara de no protegir ningú.
+
 ## Veda 102 — El que es declara i el que es demostra no es poden pintar igual
 
 L'ikigai eren quatre cercles i la manera òbvia de fer-los era un formulari de
