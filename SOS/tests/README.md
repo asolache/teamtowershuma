@@ -54,6 +54,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-bomba.mjs` | V81 · veda 87 | Que d'un node aturat en surtin jugades amb botó, que no se n'inventi cap, i que qui s'ha despenjat no ho vegi qualsevol |
 | `test-taulell.mjs` | V86 · vedes 93 i 94 | Que el lateral digui l'operació sencera, la distinció que hi mancava —tenir una oferta no és que et trobin— i les tres maneres de tancar una porta sense apagar-la: viure en un sol lloc, no anar amb teclat, i acabar en un cul-de-sac |
 | `test-coop.mjs` | V85 · veda 92 | Que no aparegui crèdit sense pagar: quatre intents de confirmar sense rebut vàlid, i que el client no cobri mai |
+| `test-ikigai.mjs` | veda 102 | Que el que es declara i el que es demostra no es puguin confondre, que un quadrant buit digui «encara no consta» i no «no en saps», i que el rang de proximitat no es presenti com una distància |
 | `test-marc.mjs` | veda 101 | El marc nou: el tauler mana i l'arbre és un calaix. Sobretot que amagar-lo **no deixi cap node inaccessible**, i que el mode flux plegui explicacions i mai accions |
 | `test-formacio.mjs` | E14 · veda 100 | Que el Bloc B arribi a la persona: 16 mòduls modelats i no 8, cada rol amb camí, i els itineraris de mentoria oferint-los sols |
 | `test-inici.mjs` | veda 99 | La primera pantalla que veu tothom: que l'èmfasi no surti com a etiquetes literals, que de l'últim pas se'n pugui sortir dient «ja està», i que la introducció es pugui tornar a veure |
