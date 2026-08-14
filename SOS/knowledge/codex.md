@@ -688,6 +688,83 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 101 — Una eina de navegació posada de marc obliga tothom a navegar
+
+L'app va néixer com un explorador de territoris: una columna fixa de 280 px amb
+l'arbre, i tota la resta a dins. L'arbre **no estava mal fet** —fa bé el que fa—
+però estava mal col·locat: posat de marc, convertia «anar a un lloc» en el pas
+previ obligatori de qualsevol feina, també per a qui cada dia fa la mateixa cosa
+al mateix lloc.
+
+El canvi és de jerarquia, no de funció: el tauler passa a ser l'app i l'arbre
+passa a ser una eina que s'obre quan vols navegar. La condició que fa que això
+sigui legítim i no una amputació és la veda 62: **treure l'arbre del marc no pot
+deixar cap node inaccessible**. Ja no ho deixa —la cerca global hi arriba— i
+això és exactament el que ha de comprovar el test, no que el calaix s'obri bé.
+
+Dues coses que aquesta fase ha ensenyat i que no s'endevinaven des del disseny:
+
+- **«Obert» ha de voler dir coses diferents segons l'amplada.** A pantalla ampla,
+  obert vol dir que empeny el contingut; si es limita a tapar-lo, clavar-lo obert
+  no serveix de res i la preferència que es desa és mentida. A pantalla estreta no
+  hi cap: se superposa, i **es tanca sol en triar** —l'havies obert per anar a un
+  lloc i ja hi has anat. Tancar-lo llavors no és desar cap preferència.
+- **Plegar una explicació no és amagar-la; plegar una acció, sí.** El mode flux fa
+  que les guies no s'obrin soles, i el resum es queda sencer: el «et toca: X»
+  segueix llegint-se sense desplegar res. La regla és que el mode toca la *prosa*
+  i no toca mai cap botó.
+
+### El bug que va sortir provant això
+
+El `toggle` d'un `<details>` és **asíncron**. Obrir-lo nosaltres també el dispara,
+i s'apuntava a la memòria per pestanya com si l'hagués obert la persona. La
+conseqüència era doble i cap de les dues es veia: la memòria «recorda què vas fer
+tu» no distingia res —cada obertura automàtica hi entrava— i el mode flux no
+hauria plegat res mai, perquè sempre hi hauria hagut una «decisió» apuntada al
+davant. Ara només es desa quan l'estat que arriba difereix del que hem posat.
+
+I la seva germana: **canviar un mode ha d'esborrar el que el contradiu**. Si
+activar el mode flux no netejava el que s'havia obert a mà, el botó semblava no
+fer res fins que anessis plegant pestanya per pestanya.
+
+## Veda 100 — Dues fonts que no es contradiuen igual es poden desincronitzar
+
+Anava a ampliar els mòduls formatius perquè el backlog deia que «`FORMACIO_MODULES`
+diu què és cada mòdul i prou; qui l'obre no hi troba res per llegir». Era fals, i
+val la pena dir per què m'ho vaig creure: **ho havia escrit jo mateix mirant només
+un dels dos costats**.
+
+`formacio.html` tenia el temari sencer —objectius, skills, aptituds, eines,
+metodologia i exercici per mòdul— i l'app ja hi enllaçava amb l'àncora correcta.
+L'arquitectura era bona i deliberada: la pàgina és la **font única de la docència**
+i `FORMACIO_MODULES` només n'és **l'esquelet referenciable**. Escriure contingut
+nou hauria estat duplicar-lo, que és el pitjor que se li pot fer a una cosa que ja
+està bé.
+
+El problema real era un altre i no s'assemblava gens: **la pàgina tenia 16 mòduls
+i l'app en modelava 8**. Els vuit del Bloc B —facilitació, comunicació, conflictes
+i cures, finançament, formes jurídiques, mesura d'impacte, RGPD i formació de
+formadors— existien sencers i **cap itinerari de rol els citava mai**. Justament la
+meitat que ensenya a sostenir una comunitat, que és el que de debò fa caure els
+projectes; la meitat de l'eina, no.
+
+Ningú se n'assabenta perquè **els dos costats funcionen**. La pàgina es llegeix bé.
+L'app no dona cap error. No hi ha res trencat: només hi ha una cosa que no existeix
+en un dels dos llocs, i el silenci és exactament igual que si hi fos. Aquesta és la
+forma que pren aquest error sempre: no una contradicció —que es veuria— sinó una
+absència.
+
+La regla que en surt: **quan una cosa viu partida en dues fonts a posta, la
+correspondència entre elles ha de ser una guarda, no una intenció**. `check-formacio.js`
+falla per dues coses, i totes dues deixen algú a mig camí:
+
+- **Un mòdul de l'app sense àncora a la pàgina**: l'enllaç no va enlloc.
+- **Un mòdul de la pàgina que l'app no modela**: ningú l'hi enviarà mai.
+
+I una que la guarda també ha de fer, perquè si no és una guarda cega: si el lector
+no entén tants mòduls com n'hi ha escrits, **ha de dir que no els ha entesos** en
+comptes de comptar-ne menys i concloure que tot quadra.
+
 ## Veda 99 — El primer que veu tothom és l'últim que mira ningú
 
 Revisant l'ajut d'inici van sortir tres defectes, i els tres tenien la mateixa

@@ -453,24 +453,33 @@ encara des del camí de publicació.
 
 ### P3 · Arribar més lluny
 
-### E14 · Cada mòdul formatiu, amb contingut didàctic i referències
+### ✅ E14 · Els mòduls formatius — *fet, veda 100, i no era el que deia aquí*
 
-`FORMACIO_MODULES` diu **què** és cada mòdul i per quina etapa serveix, i prou.
-Qui l'obre no hi troba res per llegir ni cap lloc on continuar, i un itinerari que
-només anomena els seus passos és un índex, no una formació.
+**Aquesta entrada estava mal escrita i val la pena deixar-ho dit.** Deia que
+`FORMACIO_MODULES` «diu què és cada mòdul i prou; qui l'obre no hi troba res per
+llegir». Fals: `formacio.html` tenia el temari sencer —objectius, skills,
+aptituds, eines, metodologia i exercici per mòdul— i l'app ja hi enllaçava amb
+l'àncora correcta. L'arquitectura era bona i deliberada: la pàgina és la **font
+única de la docència** i `FORMACIO_MODULES` només n'és **l'esquelet
+referenciable**. Escriure contingut nou hauria estat duplicar-lo.
 
-Per cada mòdul: dues o tres idees desenvolupades, un exercici que es pugui fer
-amb el que el SOS ja té a dins, i **enllaços a la font** —Verna Allee, Ostrom,
-Boal, Mondragón i la resta de `knowledge/references/`, que ja hi són i no es
-llegeixen des d'enlloc. Els enllaços externs, dits com a externs.
+El problema real era un altre: **la pàgina tenia 16 mòduls i l'app en modelava 8**.
+Els vuit del Bloc B —facilitació, comunicació, conflictes i cures, finançament,
+formes jurídiques, mesura d'impacte, RGPD i formació de formadors— existien
+sencers i cap itinerari de rol els citava mai. La meitat que ensenya a sostenir
+una comunitat.
 
-Dues coses a vigilar quan es faci:
+Fet: modelats els vuit amb el seu nivell i els seus rols, de manera que els plans
+de mentoria els ofereixen sols; `moduleUrl()` per no repartir la construcció de
+l'enllaç; i `check-formacio.js` al CI, que és el que hauria caçat això —falla si
+un mòdul de l'app no té àncora, o si un mòdul de la pàgina no el modela ningú.
 
-- **El pes.** Som al 92 % del sostre de 450 KB. Contingut didàctic per a tots els
-  mòduls no hi cap com a text incrustat: o va a `knowledge/` i es carrega quan
-  s'obre, o es puja el sostre amb el motiu escrit (veda 75).
-- **La segona llengua.** Cada línia nova incrustada fa E6 més car. Si això entra,
-  entra ja pensat per traduir-se.
+**El pes deixa de ser un problema** justament perquè no s'hi ha incrustat text:
+la docència es queda on ja era.
+
+Queda obert, i ara sí ben dit: `knowledge/references/` només té dos fitxers
+(`vna-verna-allee.md`, `pantheon-12.md`) mentre el temari i el codex en citen més
+—Ostrom, Boal, Mondragón, Penrose. La docència els anomena i no s'hi pot anar.
 
 ### ✅ E6 · Segona llengua — *la capa, feta a V69*
 `<html lang="ca">` i el text incrustat al codi. Per a una beta a Catalunya el

@@ -44,6 +44,13 @@ jobs:
       - name: La pàgina dels vedes correspon al codex
         run: node SOS/tools/build-vedes.js --check
 
+      # `formacio.html` és la font única de la docència i FORMACIO_MODULES només
+      # n'és l'esquelet referenciable. Que siguin dues coses està bé; que es
+      # desincronitzin en silenci, no —la pàgina va arribar a tenir 16 mòduls
+      # amb l'app modelant-ne 8, i els vuit del Bloc B eren invisibles.
+      - name: L'esquelet de la formació correspon a la docència
+        run: node SOS/tools/check-formacio.js
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests
