@@ -36,8 +36,27 @@ const src = readFileSync(APP, 'utf8');
    El sostre no era una veritat: era una xifra posada a ull perquè créixer fos
    una decisió i no un descuit. Ha funcionat exactament així —ha forçat la
    mesura i la conversa—, i el resultat de la conversa és que el text val més
-   que els 50 KB. Es puja el número, no es baixa el criteri. */
-const MAX_GZIP_KB = 450;   // el que es descarrega d'un cop, amb dades mòbils d'un poble
+   que els 50 KB. Es puja el número, no es baixa el criteri.
+
+   ── Segona pujada · 450 → 490 ──────────────────────────────────────────────
+   En arribar al 97 % es va tornar a mesurar, i aquest cop es va buscar de debò
+   què es podia treure abans de tocar el número:
+
+   · **Codi mort: no n'hi ha.** El primer anàlisi en va donar tres funcions
+     (7,3 + 3,4 + 0,5 KB) i era un error de l'anàlisi: comptava com a «dins
+     d'ella mateixa» qualsevol crida entre una funció i la següent. Verificades
+     una per una, les tres estan cridades.
+   · **Comentaris duplicats al codex: gairebé cap.** De 82 blocs grans, només 3
+     tenen més del 60 % de solapament (1,5 KB gzip). 29 se solapen parcialment
+     —diuen coses relacionades, no iguals— i **50 existeixen només aquí**
+     (33,9 KB). Esborrar-los no seria aprimar: seria perdre'ls.
+   · **El relat** són 29,9 KB gzip (6,9 %) i treure'l és una decisió de producte
+     que segueix esperant saber si encara enganxa gent. No es fa per pes.
+
+   Conclusió: el fitxer pesa perquè fa molt i s'explica, no perquè arrossegui
+   pes mort. La comprovació segueix servint per al mateix —obligar a mesurar
+   abans de créixer— i aquesta és la segona vegada que ho ha aconseguit. */
+const MAX_GZIP_KB = 490;   // el que es descarrega d'un cop, amb dades mòbils d'un poble
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;
