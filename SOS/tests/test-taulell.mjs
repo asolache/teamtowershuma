@@ -142,15 +142,23 @@ const cobra = await page.evaluate(async (s) => {
 ok(cobra.abans === 20 && cobra.cobrat === 5 && cobra.despres === 15,
   'de ' + cobra.abans + ' a ' + cobra.despres + ': el cost surt del moneder com un apunt més');
 
-console.log('\n8 · El taulell hi és sense tapar l’arbre de territoris');
-const conviu = await page.evaluate(() => ({
-  ops: !!document.querySelector('#opsPanel .ops-row'),
-  arbre: !!document.querySelector('#treeList .tree-node'),
-  ordre: [...document.querySelectorAll('.tree > div')].map(d => d.id || d.className).join(',')
-}));
-ok(conviu.ops && conviu.arbre, 'hi ha taulell i hi ha arbre');
-ok(/^opsPanel,/.test(conviu.ordre),
-  'i el taulell va davant de tot, capçalera inclosa: ' + conviu.ordre);
+console.log('\n8 · El taulell viu al tauler, no al lateral');
+/* Aquesta comprovació afirmava que el taulell anava davant de tot **dins de
+   l'arbre** (`.tree > div` començant per `opsPanel`). Es reescriu perquè el
+   disseny ha canviat —el marc ha deixat de ser l'arbre i ha passat a ser el
+   tauler—, no perquè l'asserció fos incorrecta: descrivia bé el layout d'abans.
+   El contracte que es manté és el que importava: el taulell s'ha de veure sense
+   fer cap clic. */
+const conviu = await page.evaluate(() => {
+  const S = window.__SOS;
+  S.state.activeId = null; S.state.homeView = 'tauler'; S.render();
+  return { ops: !!document.querySelector('#workspace #opsPanel .ops-row'),
+    dinsArbre: !!document.querySelector('#treePanel #opsPanel'),
+    arbre: !!document.querySelector('#treeList .tree-node') };
+});
+ok(conviu.ops && conviu.arbre, 'hi ha taulell al tauler i hi ha arbre al calaix');
+ok(!conviu.dinsArbre,
+  'i el taulell ja no viu dins de l\'arbre: no cal navegar per veure què t\'espera');
 
 console.log('\n══ Que publicar sigui accessible: sense culs-de-sac, i amb teclat ══');
 
