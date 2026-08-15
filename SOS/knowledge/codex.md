@@ -688,6 +688,45 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 108 — El que legitima publicar un nom és qui prem el botó
+
+El SOS publica **agregat i sense noms** (veda 47) i això no era timidesa: quan un
+node publica la seva oferta, publica dades de persones que mai van decidir res.
+El directori de `/SOS/online` sí que porta nom i municipi, i la diferència no és
+tècnica —**és de consentiment**. Qui hi surt és qui ho ha escrit i ho ha firmat.
+
+Per això les dues coses viuen en llocs separats i no es barregen mai. Barrejar-les
+seria fer passar el consentiment d'una persona pel de tot un node.
+
+De construir-lo en surten tres regles:
+
+**La firma mana, no el permís.** La taula és oberta a escriure —qualsevol pot
+inserir-hi una fila— i això no és un descuit: tancar l'escriptura tornaria a posar
+el control a mans de qui allotja. El que defensa el directori és que una fitxa
+falsificada **no verifica i no es pinta**. Es confia en el que es pot comprovar,
+no en qui guarda.
+
+I dins d'això, el detall que ho aguanta tot: **verificar la firma no és prou**.
+Qui vulgui suplantar pot firmar de debò amb una clau seva, perfectament vàlida, i
+posar-hi el `did` d'un altre a tot arreu. La firma quadra. El que ho tomba és
+comprovar que **el `did` sigui el hash d'aquella clau**. Sense aquesta segona
+comprovació, la primera només serveix per sentir-se segur.
+
+**Un motiu equivocat porta a arreglar el que no és.** Comprovar el `did` abans que
+la firma feia que una fitxa sense firmar es rebutgés dient «el did no és el de qui
+firma». Rebutjava bé i mentia sobre per què. L'ordre de les comprovacions és part
+del missatge.
+
+**Retirar-se ha de ser una publicació, no un esborrat.** No hi ha `delete`: donar-se
+de baixa és publicar una fitxa amb `retirada: true`, firmada. Així només se'n pot
+donar de baixa un mateix —si l'esborrat fos possible, qualsevol podria fer-lo—, i
+en queda rastre del que va passar i quan.
+
+Una cosa que sí que queda oberta i s'escriu perquè no se'ns oblidi: una taula
+oberta a escriure **es pot inundar**. Les restriccions de mida i forma aturen
+l'accident i el bot ximple, no algú decidit. Quan calgui, el següent pas és un
+límit per IP, no tancar l'escriptura.
+
 ## Veda 107 — Un mètode que només s'entén de dins no és un mètode: és un gremi
 
 La portada explicava el que fem amb el vocabulari amb què ho pensem: «Value
