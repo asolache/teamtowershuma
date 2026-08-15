@@ -100,9 +100,14 @@ else bad(`${dups.size} exports duplicats al hook: ${[...dups].slice(0, 8).join('
 
 // ── 4 · Superfícies de nivell superior ───────────────────────────────────
 const homeViews = [...new Set([...src.matchAll(/state\.homeView===['"]([a-z]+)['"]/g)].map(m => m[1]))];
-// «tauler» és la portada per defecte i no es compara mai amb ===, així que se suma.
-const nHome = homeViews.length + 1;
-if (nHome <= MAX_HOME_VIEWS) ok(`${nHome} portades (sostre ${MAX_HOME_VIEWS}): ${['tauler', ...homeViews].join(', ')}`);
+/* «tauler» és la portada per omissió i pot no aparèixer en cap comparació, així
+   que s'afegeix al conjunt. Abans se sumava 1 a cegues, donant per fet que mai
+   es compararia explícitament —i el dia que va passar, la va comptar dues
+   vegades i va acusar l'app d'una portada que no existia. Un conjunt no es pot
+   equivocar així; una suma, sí. */
+const totes = [...new Set([...homeViews, 'tauler'])];
+const nHome = totes.length;
+if (nHome <= MAX_HOME_VIEWS) ok(`${nHome} portades (sostre ${MAX_HOME_VIEWS}): ${totes.join(', ')}`);
 else bad(`${nHome} portades competint entre elles, sostre ${MAX_HOME_VIEWS}. Cinc portades és cap portada.`);
 
 const routes = ((src.match(/^const MODAL_ROUTES=\{[\s\S]*?\n\};/m) || [''])[0].match(/:\{open:/g) || []).length;

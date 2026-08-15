@@ -688,6 +688,42 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 104 — Quan una cosa deixa de ser omnipresent, ha de quedar-ne un rastre
+
+El taulell d'operacions vivia al lateral i **es veia des de qualsevol pantalla**.
+Passar-lo al tauler (veda 101) va guanyar un marc i va perdre exactament això:
+mirant un node, el que t'esperava no era enlloc. I com que la ruta desada és la
+de l'últim node que miraves, qui torna a l'app hi aterra i **no veu mai el
+tauler**. Vist des de fora: «el tauler surt buit».
+
+Era un defecte meu i el va trobar qui fa servir l'app, no els tests. Els meus
+provaven que el taulell fos al tauler —hi era— i cap provava què passa quan **no
+hi ets**.
+
+La correcció que NO es fa: tornar-lo a posar també al lateral. Tenir la mateixa
+cosa a dos llocs és pitjor que no tenir-la —cada còpia és una que es pot quedar
+enrere, i llavors quina mana? El que queda és **un rastre que hi porta**: un botó
+permanent amb el compte del que t'espera, que s'encén quan hi ha alguna cosa i
+s'amaga quan ja ets al tauler, perquè un botó cap a on ja ets és soroll.
+
+D'aquí la regla general: **moure una cosa de lloc no és gratuït encara que la
+cosa segueixi existint**. Si abans es veia sempre i ara no, la pregunta que s'ha
+de contestar no és «on és» sinó «com sap algú que hi és».
+
+### I el progrés, que existia i no es veia
+
+`levelOfPerson` calculava els nivells des del primer dia i **no sortien enlloc del
+tauler**: la persona pujava de N1 a N2 sense assabentar-se'n. El que fa que això
+sigui útil en comptes de decoratiu és una sola cosa: **es diu exactament què
+falta, amb el número**. «Et falten 12 h i dues comunitats» és un pas. «Segueix
+així» no ho és. I quan el que falta no es pot dir amb un número —liderar una
+iniciativa— es diu amb paraules i no s'inventa una barra de progrés.
+
+El que no fa, i és deliberat: **no compara amb ningú**. Un nivell és contra tu
+mateix. Comparar ja ho fa el rànquing, amb les seves proteccions (veda 103), i
+barrejar les dues coses convertiria el progrés personal en una classificació
+encoberta.
+
 ## Veda 103 — Un rànquing necessita gent per ser segur
 
 `activityRanking({scopeId})` sabia limitar-se a un subarbre des del primer dia i
