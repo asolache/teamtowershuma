@@ -22,7 +22,14 @@ jobs:
       # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
       # que atura la construcció.
       - name: Sintaxi dels HTML autocontinguts
-        run: node SOS/tools/check-syntax.js SOS/*.html
+        run: node SOS/tools/check-syntax.js SOS/*.html index.html
+
+      # La portada de l'arrel és per on entra tothom i no la comprovava res.
+      # Hi mana el diccionari sobre l'HTML: una clau que hi és en català i no
+      # en castellà no peta —deixa aquella frase en català per a qui llegeix en
+      # castellà, i no ho veu ningú. Igual amb una clau escrita dues vegades.
+      - name: Guarda de la portada (i18n de l'arrel)
+        run: node SOS/tools/check-landing.js
 
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.

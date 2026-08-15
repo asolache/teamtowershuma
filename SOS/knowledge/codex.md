@@ -688,6 +688,43 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 107 — Un mètode que només s'entén de dins no és un mètode: és un gremi
+
+La portada explicava el que fem amb el vocabulari amb què ho pensem: «Value
+Network Analysis», «local-first», «Slicing Pie», «tauler àgils», «capacitat
+instal·lada», «Social Operating System». Cap d'aquestes paraules és falsa. Totes
+són il·legibles per a qui les ha de llegir —una regidora, un tècnic de promoció
+econòmica, la junta d'un ateneu—, i el titular en deia «comunitats antifràgils,
+comptables i verificables», que són tres adjectius abstractes seguits.
+
+La regla que en surt, i que val per a tota pantalla d'aquesta casa:
+
+**Primer el que és, després com es diu.** La descripció plana encapçala; el nom
+tècnic va una sola vegada, entre parèntesis, i només allà on afegeix crèdit a qui
+sí que el reconeixerà. «El mapa de qui es passa què amb qui» primer; «el mètode
+que en diuen VNA» després. Al revés, la persona ha d'aprendre el nom abans de
+saber per a què serveix, i abandona pel camí.
+
+I el corol·lari, que és el que fa que no torni: **si una paraula cal, s'explica a
+la mateixa pàgina i abans de fer-la servir.** El glossari va davant de la secció
+que la introdueix, no al peu —un glossari que arriba després del text que
+l'exigia arriba quan ja s'ha decidit que allò no s'entén.
+
+Tres coses més que la revisió va deixar escrites:
+
+- **La guia d'estil ja ho deia i no ho comprovava ningú.** L'estructura d'una
+  pàgina de venda hi és des del principi —dolor, promesa, com, prova, oferta,
+  crida, objeccions— i en faltaven dos blocs sencers: el **com** i les
+  **objeccions**. El preu és que les cinc preguntes que decideixen si algú truca
+  es quedaven per a la primera reunió, que és tard.
+- **Una cita inventada, retolada com a inventada, resta.** Al lloc de més
+  conversió hi havia una frase entre cometes amb el peu «el que un tècnic *pot*
+  dir». Dir el que no tenim —«aquest servei és nou i encara no en tenim
+  testimonis»— genera més confiança que una prova que reconeix ser hipotètica.
+- **El que no fem s'escriu.** No garantim participació, no gestionem el projecte
+  per ningú i no dinamitzem res sense tres persones que ho sostinguin. Això no
+  espanta clients: filtra els que haurien acabat malament.
+
 ## Veda 106 — Un test que deixa un camp buit no passa mai per la branca que el llegeix
 
 El taulell petava per a qui hagués declarat arquetips: `(ARCHETYPES||[]).find(...)`
