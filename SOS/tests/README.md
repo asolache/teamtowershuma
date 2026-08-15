@@ -131,6 +131,20 @@ Bloc B sencer era invisible. Falla si un mòdul de l'app no té àncora a la pà
 o si un mòdul de la pàgina no el modela ningú. Els dos casos deixen algú a mig
 camí sense que res doni error.
 
+### La guarda de la portada
+
+```bash
+node SOS/tools/check-landing.js
+```
+
+`index.html` de l'arrel és per on entra tothom i fins ara no la mirava res: el CI
+només comprovava `SOS/`. Té a més una trampa pròpia —**el diccionari mana sobre
+l'HTML**, perquè `applyLang()` reescriu tot element amb `data-i18n` en carregar—,
+i això fa que tres avaries passin sense soroll: una clau només en català (qui
+llegeix en castellà es queda amb aquella frase en català), una clau escrita dues
+vegades (la segona guanya i la primera no s'aplica mai) i una clau que ja no
+apunta a cap element. Quan es va escriure hi havia les tres.
+
 ### La guarda de la pàgina dels vedes
 
 ```bash
