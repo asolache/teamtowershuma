@@ -492,6 +492,45 @@ L'euskera, després, com vas dir — però la **capa** que ho farà possible és
 
 ---
 
+## E15 · Memòries de subvenció generades des del diagnòstic
+
+**Per què.** El client no compra «desenvolupament comunitari»: compra una cosa que
+pugui justificar. La portada ja diu que el servei és finançable amb fons que ja
+existeixen —Diputació de Barcelona, Ateneus Cooperatius, Leader/GAL, Next
+Generation— però qui ho ha de demanar es troba sol davant d'un formulari de trenta
+pàgines. **El que frena la venda no és el preu: és la feina de demanar-ho.**
+
+El SOS ja té el material per omplir-lo. El diagnòstic sap on és el territori i què
+li falta; el mapa de valor sap qui sosté què; els mòduls formatius saben quines
+hores i quines competències s'imparteixen; la MATRIU sap en quina etapa és cada
+projecte. Avui tot això surt per pantalla i cap memòria en surt.
+
+**Què cal fer, per ordre:**
+
+1. **Modelar els tipus de convocatòria.** Cadascuna demana el seu esquelet —objecte,
+   justificació de la necessitat, metodologia, indicadors, pressupost, calendari,
+   sostenibilitat un cop acabi l'ajut. Estandarditzar-los és el gruix de la feina, i
+   és feina de camp: cal llegir convocatòries reals, no imaginar-les.
+2. **Definir el mapa de valor de cada servei nostre**, un per cas d'ús. Sense això,
+   la memòria pot descriure què fem però no **per què encaixa** amb el que la
+   convocatòria vol finançar, que és el que puntua.
+3. **Generar l'esborrany** creuant diagnòstic + mapa + catàleg de serveis.
+4. **Prioritzar territori.** Diputacions i municipis prioritaris de Catalunya:
+   quines convocatòries hi ha obertes, per a qui, i amb quins terminis. Un
+   generador que no sap si la convocatòria és viva serveix per a poc.
+
+**La regla que ha de governar-ho, i que ve de la casa:** un esborrany és un
+esborrany. Cap xifra inventada, cap indicador que no surti de dades reals del
+territori, i cada afirmació ha de dir d'on surt —igual que la IA del mapa, que no
+deixa entrar res sense que una persona ho hagi comprovat. Una memòria que sembla
+sòlida i no ho és, es detecta a la justificació, i llavors el problema és del
+client.
+
+**Prioritat**: alta comercialment, però va després d'E1. No té sentit generar
+memòries d'un sistema on qui aporta encara pot perdre el que ha aportat.
+
+---
+
 ## 6 · El que aquest backlog **no** fa
 
 - **No toca el relat** (Comando Molekulon, cromos, panteó). Segueix sent la
