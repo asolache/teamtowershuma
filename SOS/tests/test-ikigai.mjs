@@ -60,18 +60,63 @@ ok(falta.n === 2, 'però «fa falta» ja té les ' + falta.n + ' demandes d\'en 
 console.log('\n══ El que importa: declarat i demostrat no es poden confondre ══');
 
 console.log('\n2 · Un quadrant declarat mai es marca com a evidenciat');
+/* Aquí es declaren arquetips DE DEBÒ, i no una llista buida. La primera versió
+   d'aquest test posava `declared: []` i per això no va veure que la línia que
+   els llegeix petava: una prova que deixa un camp buit no passa mai per la
+   branca que el llegeix. Veda 106. */
 const frontera = await page.evaluate(async () => {
   const S = window.__SOS;
   /* La Marta declara que li agrada cuinar. Això no la fa cuinera verificada. */
-  await S.saveDossier('Marta Vidal', { name: 'Marta Vidal', skillsFree: ['Cuinar', 'Fer pa'], declared: [] });
+  await S.saveDossier('Marta Vidal', { name: 'Marta Vidal', skillsFree: ['Cuinar', 'Fer pa'],
+    declared: ['zeus', 'hestia'] });
   const k = S.ikigaiQuadrants('Marta Vidal');
   const a = k.quadrants.find(q => q.id === 'agrada'), b2 = k.quadrants.find(q => q.id === 'bo');
-  return { agradaN: a.items.length, agradaEv: a.evidenciat, boN: b2.items.length, boEv: b2.evidenciat };
+  return { agradaN: a.items.length, agradaEv: a.evidenciat, noms: a.items.map(x => x.t),
+    boN: b2.items.length, boEv: b2.evidenciat };
 });
-ok(frontera.agradaN === 2 && !frontera.agradaEv,
-  'declara 2 coses i el quadrant segueix marcat com a NO evidenciat');
+ok(frontera.agradaN === 4 && !frontera.agradaEv,
+  'declara 2 arquetips i 2 habilitats, i el quadrant segueix marcat com a NO evidenciat');
+ok(frontera.noms[0] === 'Zeus' && frontera.noms[1] === 'Hèstia',
+  'i els arquetips surten pel seu nom, no per la clau: ' + frontera.noms.join(' · '));
 ok(frontera.boN === 0 && frontera.boEv,
   'i «se\'t dona bé» segueix buit: declarar no omple el que s\'ha de demostrar');
+
+console.log('\n2b · I amb arquetips declarats, el taulell es pinta');
+/* La regressió reportada: la taula d'arquetips és un OBJECTE indexat per clau,
+   i es llegia com si fos una llista. Petava per a tothom qui n'hagués declarat
+   cap —és a dir, exactament per a qui ha fet la feina de fer-se el perfil— i el
+   tauler sencer queia amb la pantalla d'error de la veda 105. */
+const pinta = await page.evaluate(() => {
+  const S = window.__SOS;
+  S.state.activeId = null; S.state.homeView = 'tauler'; S.render();
+  const w = document.querySelector('#workspace');
+  return { error: !!w.querySelector('.merge-warn-t'), iki: !!w.querySelector('#ikigai'),
+    txt: (w.innerText || '').replace(/\s+/g, ' ') };
+});
+ok(pinta.iki && !pinta.error, 'el tauler es pinta sencer, sense la pantalla d\'error');
+ok(/Zeus/.test(pinta.txt), 'i l\'arquetip declarat es veu a la pantalla');
+
+console.log('\n2c · Un arquetip d\'un altre set simbòlic no desapareix');
+/* Qui va declarar amb el panteó i mira l'app amb el set vèdic ha de seguir
+   veient el que va triar; i el que no és de cap set es mostra tal com es va
+   escriure, que és més cert que un buit. */
+const sets = await page.evaluate(async () => {
+  const S = window.__SOS;
+  await S.saveDossier('Marta Vidal', { name: 'Marta Vidal', skillsFree: [],
+    declared: ['brigit', 'Vishnu', 'inventat_meu'] });
+  const a = S.ikigaiQuadrants('Marta Vidal').quadrants.find(q => q.id === 'agrada');
+  const noms = a.items.map(x => x.t);
+  await S.saveDossier('Marta Vidal', { name: 'Marta Vidal', skillsFree: ['Cuinar', 'Fer pa'],
+    declared: ['zeus', 'hestia'] });
+  return { noms, byKey: !!S.archetypeByKey('zeus'), byName: !!S.archetypeByKey('Hèstia'),
+    cap: S.archetypeByKey('inventat_meu'), nul: S.archetypeByKey(null) };
+});
+ok(sets.noms[0] === 'Brígit' && sets.noms[1] === 'Vishnu',
+  'es resol per clau i per nom, en qualsevol set: ' + sets.noms.slice(0, 2).join(' · '));
+ok(sets.noms[2] === 'inventat_meu',
+  'i el que no és de cap set es mostra tal com es va escriure, no es perd');
+ok(sets.byKey && sets.byName && sets.cap === null && sets.nul === null,
+  'i el resolutor torna null quan no ho sap, en comptes de petar');
 
 console.log('\n3 · Amb una aportació verificada, sí que s\'omple');
 const evid = await page.evaluate(async (s) => {
