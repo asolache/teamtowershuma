@@ -688,6 +688,40 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 106 — Un test que deixa un camp buit no passa mai per la branca que el llegeix
+
+El taulell petava per a qui hagués declarat arquetips: `(ARCHETYPES||[]).find(...)`
+sobre una taula que és un **objecte indexat per clau**, no una llista. El `||[]`
+feia bona cara —semblava una precaució— i era el contrari: amagava que allò mai
+havia estat un array. Les taules d'arquetips no tenen ni camp `id`; la clau *és*
+la identitat, i buscar-hi `x.id===a` no hauria trobat res ni sent una llista.
+
+El que val la pena no és l'errata, és **per què va passar el test**. La prova
+guardava `declared: []` i comprovava la frontera entre declarat i evidenciat amb
+les habilitats escrites a mà. Amb la llista buida, el `forEach` no s'executa mai i
+la línia que peta **no s'arriba a llegir**. El test verd no deia «això funciona»:
+deia «això no s'ha provat». La regla que en surt:
+
+**Un camp posat a buit en una prova no és un cas límit provat: és una branca no
+executada.** Si un test toca un camp de llista, n'ha de tenir una versió amb
+elements a dins, i no només perquè el buit també importa.
+
+I dues conseqüències més, que són les que fan que això no torni:
+
+- **Un `||[]` sobre alguna cosa que no és una llista és pitjor que res.** No
+  protegeix de res i fa que qui llegeixi el codi doni per fet un tipus fals. La
+  guarda que ho troba no és una asserció, és una lectura: cap constant declarada
+  com a objecte pot rebre un mètode d'array.
+- **Un arquetip declarat amb un set simbòlic no pot desaparèixer llegit amb un
+  altre.** Es resol per clau i, si no, per nom visible, a tots els sets; i el que
+  no és de cap set **es mostra tal com la persona el va escriure**. Ensenyar el
+  que algú va triar val més que un buit net.
+
+El que sí que va funcionar: la veda 105. La pantalla no es va quedar muda —va dir
+què havia fallat i on, i d'aquí va sortir un informe d'incidència amb el navegador,
+el rol i la pestanya. La xarxa de seguretat va fer exactament la seva feina, que és
+convertir una caiguda en una frase.
+
 ## Veda 105 — Una pantalla que peta a mig pintar es queda muda, i el silenci menteix
 
 Restaurar una còpia deixava el tauler en blanc. Dues causes, i la segona val més

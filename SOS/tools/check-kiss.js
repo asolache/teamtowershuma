@@ -98,6 +98,23 @@ names.forEach(n => { if (seen.has(n)) dups.add(n); seen.add(n); });
 if (!dups.size) ok(`hook de test amb ${names.length} exports, cap duplicat`);
 else bad(`${dups.size} exports duplicats al hook: ${[...dups].slice(0, 8).join(', ')}${dups.size > 8 ? '…' : ''}`);
 
+// ── 3b · Cap taula llegida com si fos una llista ─────────────────────────
+/* `(ARCHETYPES||[]).find(...)` sobre un objecte indexat per clau va tombar el
+   taulell sencer de qui hagués declarat arquetips. El `||[]` semblava una
+   precaució i era el contrari: amagava que allò mai havia estat un array.
+   Això no és una asserció de comportament sinó una lectura del codi, i per això
+   va aquí i no als tests: cap constant declarada com a objecte pot rebre un
+   mètode d'array. Veda 106. */
+const ARRAY_M = 'find|filter|forEach|map|slice|some|every|reduce|sort|join|indexOf|push|concat|flatMap';
+const objConsts = [...src.matchAll(/^const\s+([A-Za-z_$][\w$]*)\s*=\s*\{/gm)].map(m => m[1]);
+const abusos = objConsts.flatMap(n => {
+  const re = new RegExp('\\b' + n + '\\s*(?:\\|\\|\\s*\\[\\]\\s*\\))?\\s*\\.(?:' + ARRAY_M + ')\\s*\\(', 'g');
+  return [...src.matchAll(re)].map(m => n + ' · línia ' + src.slice(0, m.index).split('\n').length);
+});
+if (!objConsts.length) bad('no s\'ha trobat cap constant objecte: aquesta guarda no pot llegir res');
+else if (!abusos.length) ok(`${objConsts.length} taules declarades, cap llegida com a llista`);
+else bad(`taules llegides com si fossin llistes: ${abusos.join(' · ')} — el «||[]» no protegeix, amaga el tipus`);
+
 // ── 4 · Superfícies de nivell superior ───────────────────────────────────
 /* Es llegeix la LLISTA DECLARADA, no el patró `state.homeView==='x'` pel codi.
    Comptar llegint els `if` lligava aquesta guarda a com estigués escrit el

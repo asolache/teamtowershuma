@@ -57,7 +57,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-restaura.mjs` | veda 105 | Restaurar una còpia sense quedar-se en blanc: el cicle sencer, una còpia d'una versió anterior amb camps que llavors no existien, i el pitjor cas —què veu la persona quan una vista peta |
 | `test-tauler.mjs` | veda 104 | La regressió de moure el taulell: que des d'un node se sàpiga que t'espera, **sense duplicar el panell**, i que el progrés digui què falta amb el número sense comparar amb ningú |
 | `test-ranquing.mjs` | veda 103 · V56 | El rànquing per node, fill o pare: que per sota de 5 persones no hi hagi ordre i es digui per què, i que no ordenar no sigui amagar |
-| `test-ikigai.mjs` | veda 102 | Que el que es declara i el que es demostra no es puguin confondre, que un quadrant buit digui «encara no consta» i no «no en saps», i que el rang de proximitat no es presenti com una distància |
+| `test-ikigai.mjs` | vedes 102 i 106 | Que el que es declara i el que es demostra no es puguin confondre, que un quadrant buit digui «encara no consta» i no «no en saps», i que el rang de proximitat no es presenti com una distància. I amb **arquetips declarats de debò** —posar-hi la llista buida no executava la línia que petava |
 | `test-marc.mjs` | veda 101 | El marc nou: el tauler mana i l'arbre és un calaix. Sobretot que amagar-lo **no deixi cap node inaccessible**, i que el mode flux plegui explicacions i mai accions |
 | `test-formacio.mjs` | E14 · veda 100 | Que el Bloc B arribi a la persona: 16 mòduls modelats i no 8, cada rol amb camí, i els itineraris de mentoria oferint-los sols |
 | `test-inici.mjs` | veda 99 | La primera pantalla que veu tothom: que l'èmfasi no surti com a etiquetes literals, que de l'últim pas se'n pugui sortir dient «ja està», i que la introducció es pugui tornar a veure |
@@ -95,7 +95,10 @@ nou —que endevina que és un mòdul— i peta al CI amb Node 18. `node SOS/tes
 
 ### La guarda de KISS
 
-Mesura pes, guies, duplicats i superfícies contra **sostres declarats**.
+Mesura pes, guies, duplicats i superfícies contra **sostres declarats**, i llegeix
+el codi buscant una cosa que cap test veurà: **una constant declarada com a objecte
+que rebi un mètode d'array**. `(ARCHETYPES||[]).find(...)` va tombar el taulell de
+qui hagués declarat arquetips, i el `||[]` no protegia —amagava el tipus.
 
 ```bash
 node SOS/tools/check-kiss.js
