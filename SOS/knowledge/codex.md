@@ -688,6 +688,54 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 105 — Una pantalla que peta a mig pintar es queda muda, i el silenci menteix
+
+Restaurar una còpia deixava el tauler en blanc. Dues causes, i la segona val més
+que la primera.
+
+**La causa directa**: una còpia antiga porta nodes sense els camps que s'han anat
+afegint —`vna`, `kanban`, `ledger` a `null`— i el codi que els llegeix dona per
+fet que hi són. Es normalitzen **en llegir-los, no en desar-los**: el fitxer de la
+còpia és el que és i no s'ha de tocar; qui ha de ser tolerant és qui el llegeix. I
+es normalitzen **buits**: assegurar la forma no és inventar contingut.
+
+**La causa de fons, que és la que estabilitza**: `renderWorkspace` buida la
+pantalla i **després** pinta. Si el pintat peta, queda un blanc sense una sola
+paraula. I vist des de fora, tres coses molt diferents s'assemblen exactament:
+
+- l'app s'ha trencat,
+- he perdut les dades,
+- no hi ha res a ensenyar.
+
+Només una és certa, i el silenci deixa que la persona es cregui la pitjor. Per
+això ara una vista que peta pinta l'error: **què** ha fallat, **on**, i el que sí
+que se sap del cert —que això és un error dibuixant i que el que hi ha desat
+segueix sencer— amb tres sortides que funcionen de debò: tornar al tauler, fer
+una còpia ara mateix, i dir què s'ha trencat.
+
+Dues coses que això ensenya i que no s'endevinaven:
+
+- **La protecció ha d'anar al voltant de tot el pintat, no del tros que sospites.**
+  El primer intent la va posar al voltant de les vistes, i la petada passava
+  construint la barra de pestanyes —abans d'arribar a cap vista. Un `try` mal
+  col·locat dona la mateixa falsa seguretat que no tenir-ne cap.
+- **Pintar l'error no és lleig; el lleig és el blanc.** La temptació d'amagar les
+  fallades perquè «queda millor» és la que fa que la gent no sàpiga mai si pot
+  confiar en el que veu.
+
+### I una guarda que va deixar de comptar bé, dues vegades
+
+La guarda de KISS comptava les portades llegint `state.homeView==='x'` pel codi.
+Això la lligava a **com estigués escrit el `switch`**, i va fallar dues vegades
+seguides: primer va comptar «tauler» dues vegades (hi sumava 1 a cegues donant
+per fet que la portada per omissió mai es compararia explícitament), i després va
+perdre de vista «mapa» el dia que en va sortir una variable local.
+
+Les dues xifres eren falses, però **no són igual de greus**: comptar de més fa
+soroll i es corregeix; **comptar de menys deixa de protegir sense dir-ho**. Ara
+llegeix una llista declarada —`HOME_VIEWS`— i, si no la troba, **crida en comptes
+d'aprovar**: una guarda que no troba el que mesura mai ha de dir que tot va bé.
+
 ## Veda 104 — Quan una cosa deixa de ser omnipresent, ha de quedar-ne un rastre
 
 El taulell d'operacions vivia al lateral i **es veia des de qualsevol pantalla**.
