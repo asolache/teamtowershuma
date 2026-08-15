@@ -99,16 +99,24 @@ if (!dups.size) ok(`hook de test amb ${names.length} exports, cap duplicat`);
 else bad(`${dups.size} exports duplicats al hook: ${[...dups].slice(0, 8).join(', ')}${dups.size > 8 ? '…' : ''}`);
 
 // ── 4 · Superfícies de nivell superior ───────────────────────────────────
-const homeViews = [...new Set([...src.matchAll(/state\.homeView===['"]([a-z]+)['"]/g)].map(m => m[1]))];
-/* «tauler» és la portada per omissió i pot no aparèixer en cap comparació, així
-   que s'afegeix al conjunt. Abans se sumava 1 a cegues, donant per fet que mai
-   es compararia explícitament —i el dia que va passar, la va comptar dues
-   vegades i va acusar l'app d'una portada que no existia. Un conjunt no es pot
-   equivocar així; una suma, sí. */
-const totes = [...new Set([...homeViews, 'tauler'])];
-const nHome = totes.length;
-if (nHome <= MAX_HOME_VIEWS) ok(`${nHome} portades (sostre ${MAX_HOME_VIEWS}): ${totes.join(', ')}`);
-else bad(`${nHome} portades competint entre elles, sostre ${MAX_HOME_VIEWS}. Cinc portades és cap portada.`);
+/* Es llegeix la LLISTA DECLARADA, no el patró `state.homeView==='x'` pel codi.
+   Comptar llegint els `if` lligava aquesta guarda a com estigués escrit el
+   `switch`: primer va comptar «tauler» dues vegades (se sumava 1 a cegues), i
+   després va perdre de vista «mapa» el dia que en va sortir una variable local.
+   Les dues vegades la guarda deia una xifra que no era la de l'app —i la segona
+   comptava de menys, que és la pitjor de les dues: deixa de protegir sense
+   dir-ho. Una llista declarada no es pot llegir malament. */
+const decl = src.match(/const HOME_VIEWS=\[([^\]]*)\]/);
+if (!decl) {
+  /* Sense la llista no es diu «0 portades»: es diu que no s'ha pogut comptar.
+     Una guarda que no troba el que mesura ha de cridar, no aprovar. */
+  bad('no es troba HOME_VIEWS: aquesta guarda no pot comptar les portades');
+} else {
+  const totes = [...new Set(decl[1].split(',').map(x => x.replace(/['"\s]/g, '')).filter(Boolean))];
+  const nHome = totes.length;
+  if (nHome <= MAX_HOME_VIEWS) ok(`${nHome} portades (sostre ${MAX_HOME_VIEWS}): ${totes.join(', ')}`);
+  else bad(`${nHome} portades competint entre elles, sostre ${MAX_HOME_VIEWS}. Cinc portades és cap portada.`);
+}
 
 const routes = ((src.match(/^const MODAL_ROUTES=\{[\s\S]*?\n\};/m) || [''])[0].match(/:\{open:/g) || []).length;
 if (routes <= MAX_MODAL_ROUTES) ok(`${routes} rutes modals (sostre ${MAX_MODAL_ROUTES})`);
