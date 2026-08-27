@@ -146,6 +146,20 @@ llegeix en castellà es queda amb aquella frase en català), una clau escrita du
 vegades (la segona guanya i la primera no s'aplica mai) i una clau que ja no
 apunta a cap element. Quan es va escriure hi havia les tres.
 
+### La guarda del relat
+
+```bash
+node SOS/tools/check-comando.js
+```
+
+El Comando es va escriure en llocs i moments diferents, i el mateix personatge
+va arribar a tenir **quatre grafies** repartides per l'app. Això no peta mai:
+només fa que qui llegeixi dues pantalles cregui que hi ha dos personatges.
+`CANONICAL_HEROES` és l'única llista d'on surten els noms; qualsevol altra que
+n'anomeni un hi ha de coincidir, o marcar-lo amb `previ:true` si encara no surt
+als còmics publicats. També comprova el comptador escrit a mà de `comando.html`,
+que deia vuit herois quan ja n'hi havia nou.
+
 ### La guarda de la pàgina dels vedes
 
 ```bash

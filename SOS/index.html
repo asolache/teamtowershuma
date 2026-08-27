@@ -3417,21 +3417,25 @@ const PANTHEON12={
     shadow:'Sostenir sense ser vista'}
 };
 /* Els 12 fundadors del Comando associats al panteó.
-   PROVISIONAL: mapatge raonat a partir del que sabem de cada personatge. Es
-   revisarà a mesura que arribin els perfils complets dels còmics. */
+   Els noms surten de `CANONICAL_HEROES` i no s'escriuen a mà: hi va haver un
+   temps amb quatre grafies del mateix personatge repartides per l'app.
+   **Barbamuda, Reciclator i Supergerminador no surten als còmics 1 i 2.** Hi
+   són perquè el panteó en demana dotze i el mapatge és raonat, no llegit. Es
+   marquen amb `previ:true` per no fer-los passar per canònics, i es revisaran
+   quan surtin els còmics on apareguin. Veda 109. */
 const COMANDO_FOUNDERS=[
   {hero:'Mazinguer',god:'zeus',why:'Lidera sense imposar-se: l\'ego perdut és el seu poder'},
   {hero:'Horacio',god:'apollo',why:'Narrador i estratega · converteix l\'experiència en relat'},
-  {hero:'Guiriguay',god:'hermes',why:'Llenguatges impossibles · parla amb qualsevol tribu'},
+  {hero:'Guiri-Guay',god:'hermes',why:'Llenguatges impossibles · parla amb qualsevol tribu'},
   {hero:'Purpleman',god:'dionis',why:'Transforma l\'ambient · celebració i obertura'},
-  {hero:'Medusa',god:'atenea',why:'Mirada que atura · estratègia defensiva'},
-  {hero:'Barbamuda',god:'hestia',why:'Escolta profunda · sosté els espais de conversa'},
-  {hero:'Aviador',god:'posido',why:'Explora territori nou i el connecta'},
-  {hero:'Afrodita',god:'afrodita',why:'Teixeix vincle on n\'hi ha absència'},
-  {hero:'Ectoplasman',god:'hefest',why:'P2P encarnat · l\'eina distribuïda'},
-  {hero:'Pigmentona',god:'hera',why:'Marca allò que compromet · fa visible el pacte'},
-  {hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
-  {hero:'Supergerminador',god:'demeter',why:'Germina i replica · pol·linització del valor'}
+  {hero:'La Medusa Andaluza',god:'atenea',why:'Mirada que atura · estratègia defensiva'},
+  {previ:true,hero:'Barbamuda',god:'hestia',why:'Escolta profunda · sosté els espais de conversa'},
+  {hero:'El Aviador',god:'posido',why:'Explora territori nou i el connecta'},
+  {hero:'Afrodito',god:'afrodita',why:'Teixeix vincle on n\'hi ha absència'},
+  {hero:'Electroplasman',god:'hefest',why:'P2P encarnat · l\'eina distribuïda'},
+  {hero:'Pigmentón',god:'hera',why:'Marca allò que compromet · fa visible el pacte'},
+  {previ:true,hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
+  {previ:true,hero:'Supergerminador',god:'demeter',why:'Germina i replica · pol·linització del valor'}
 ];
 const COMANDO_ALLIES=[{name:'Formiga Atòmica',role:'Aliada'}];
 const COMANDO_VILLAINS=[
@@ -6572,16 +6576,36 @@ const MOLEKULON_LINKS={
 };
 // Superherois canònics del còmic origen (V17). El Gran Molekulon envia Mazinguer i Horacio a la Terra
 // per muntar una banda que trobi els 150.000 abans que la Corporació Món Mort ho engoleixi tot.
+/* Els nou que surten als còmics 1 i 2, amb el poder que hi tenen de debò.
+   ─────────────────────────────────────────────────────────────────────────
+   Aquesta llista deia una altra cosa: «Purpleman · persuasió i visualització»
+   quan al còmic el que fa és travessar núvols tòxics i convertir les males
+   olors en flors; «Afrodita · teixir vincles» quan és Afrodito, el cor funk que
+   vivia amagat sota un abric de cuir. Tampoc hi eren el Aviador, Pigmentón ni
+   la Medusa, i sí que hi havia «La Anguila», que no surt a cap dels dos còmics.
+
+   El relat és opcional a l'app (V77: es pot apagar i no es perd res), però
+   **mentre hi sigui ha de dir el que passa a l'obra**. Un relat que s'inventa
+   el seu propi contingut deixa de ser una capa i passa a ser soroll.
+
+   `power` és una frase, no una fitxa: el que fa el personatge, dit de manera
+   que es pugui llegir en una targeta. Veda 109. */
 const CANONICAL_HEROES=[
-  {name:'Mazinguer',role:'Líder tècnic',power:'Sense superpoder aparent · l\'ego perdut és el seu poder'},
-  {name:'Horacio',role:'Narrador i estratega',power:'Explicar la història que uneix tot'},
-  {name:'Guiriguai',role:'Diplomat impossible',power:'Llenguatges impossibles · parla amb qualsevol tribu'},
-  {name:'Purpleman',role:'Persuasor',power:'Persuasió i visualització · fa veure el que no es veu'},
-  {name:'Afrodita',role:'Cures i xarxa afectiva',power:'Teixir vincles on n\'hi ha absència'},
-  {name:'La Anguila',role:'Mobilitat i escapisme',power:'Trencar cercles viciosos i moure la comunitat'},
-  {name:'Barbamuda',role:'Escolta profunda',power:'Silenci útil · sentir el que la comunitat no diu'},
-  {name:'Ectoplasman',role:'P2P encarnat',power:'Presència distribuïda · aixafar la centralització'}
+  {name:'Mazinguer',role:'Líder estratega i DJ',power:'Coneix el pla i guia la banda. Sense superpoder aparent: l\'ego perdut és el seu poder'},
+  {name:'Horacio',role:'El savi que rep el mandat',power:'Coprotagonista de l\'encàrrec original. Converteix l\'experiència en relat'},
+  {name:'Guiri-Guay',role:'Cuidador i sanador',power:'Reclutat a Gringolandia. Ritmes ska i country per curar ferides i moure neurones'},
+  {name:'Purpleman',role:'Filtre i resolutor',power:'Travessa núvols tòxics. El seu raig eliminador torna les males olors amor i flors'},
+  {name:'Afrodito',role:'Motor passional',power:'El cor funk. Vivia amagat sota l\'abric de cuir fins que la Bomba Disco el va detonar'},
+  {name:'El Aviador',role:'Suport tàctic',power:'Salvador aeri amb baix volador. Recull l\'equip quan s\'ha perdut'},
+  {name:'Pigmentón',role:'Mestre del color',power:'Capaç de pintar forats negres amb les seves bombolles i el seu Güengüentón'},
+  {name:'La Medusa Andaluza',role:'Node de connectivitat',power:'El cromosoma X de la banda. Posa cables, connexió i llum a tot l\'equip'},
+  {name:'Electroplasman',role:'Impulsor de recursos',power:'Un fantasma amb viola que injecta liquiditat al sistema nerviós: la gasolina per enlairar-se'}
 ];
+/* Els noms de dalt són els que manen. Qualsevol altra llista que anomeni un
+   heroi ha de fer servir aquests, i `tools/check-comando.js` ho comprova: hi
+   havia quatre llistes amb quatre grafies del mateix personatge (Guiriguay,
+   Guiriguai, GuiriGuay) i ningú ho havia mirat mai. */
+const HERO_NAMES=CANONICAL_HEROES.map(h=>h.name);
 /* Escala recalibrada quan la reputació va passar a comptar TOT el valor aportat.
    Amb els llindars antics (50/200/500/1200), pensats per a un món on només
    comptaven les hores de la MATRIU, qualsevol persona activa a un banc de temps
@@ -9466,22 +9490,25 @@ let _guideOpen={};
    · **El relat es guanya, no s\'imposa.** No surt fins que has registrat alguna
      cosa. Qui acaba d\'arribar té feina a fer; qui ja ha aportat, ha comprat el
      dret a la broma. I es pot apagar, com tot des de la veda 66. */
+/* Els noms surten de `CANONICAL_HEROES`. `previ:true` marca els que NO surten
+   als còmics 1 i 2 —vénen de cançons i material posterior— perquè no es facin
+   passar per canònics mentre no ho siguin. Veda 109. */
 const HERO_SCREENS={
   ledger:{hero:'Mazinguer',ic:'⬢',line:'«Mazinguer Peta ya estaba recogiendo todos los DATOS.» Qui arriba primer i es posa a registrar, no a fer espectacle.'},
-  pings:{hero:'Medusa Andalusa',ic:'🪼',line:'«Tengo un lío de cables, te echo uno pa\' que conectes.» El valor surt de creuar el que no s\'assembla.'},
-  cartera:{hero:'Fraktalman',ic:'🔺',line:'«Es uno y son mil millones… convierte el caos en orden.» El que funciona en un lloc té la mateixa forma en un altre.'},
+  pings:{hero:'La Medusa Andaluza',ic:'🪼',line:'«Tengo un lío de cables, te echo uno pa\' que conectes.» El valor surt de creuar el que no s\'assembla.'},
+  cartera:{previ:true,hero:'Fraktalman',ic:'🔺',line:'«Es uno y son mil millones… convierte el caos en orden.» El que funciona en un lloc té la mateixa forma en un altre.'},
   mapa:{hero:'Pigmentón',ic:'🎨',line:'«Coloreando el mundo con su famoso ungüentón.» El que no es veu al mapa, per al territori no existeix.'},
-  xat:{hero:'Ectoplasman',ic:'👻',line:'Apareix, desapareix i torna. Un node que marxa no trenca la xarxa.'},
-  entitats:{hero:'GuiriGuay',ic:'🎻',line:'«They call me raro.» Parlar amb qui no és dels teus és una feina, i té qui la fa.'},
-  map:{hero:'Horacio Motomachi',ic:'🪈',line:'«Horacio, ¿qué quieres ver?» Dibuixar què hi circula és la feina de qui explica la història.'},
+  xat:{hero:'Electroplasman',ic:'👻',line:'Apareix, desapareix i torna. Un node que marxa no trenca la xarxa.'},
+  entitats:{hero:'Guiri-Guay',ic:'🎻',line:'«They call me raro.» Parlar amb qui no és dels teus és una feina, i té qui la fa.'},
+  map:{hero:'Horacio',ic:'🪈',line:'«Horacio, ¿qué quieres ver?» Dibuixar què hi circula és la feina de qui explica la història.'},
   biblioteca:{hero:'Purpleman',ic:'🟣',line:'«El secreto está en unir todas las fuerzas.» El que fas servir dos cops l\'any pot servir a deu persones.'},
-  /* No és una pestanya, és el cromo (V78). Hi va Afrodita perquè el bescanvi de
+  /* No és una pestanya, és el cromo (V78). Hi va Afrodito perquè el bescanvi de
      repetits és teixir un vincle on no n\'hi havia, que és literalment el seu poder. */
-  cromo:{hero:'Afrodita',ic:'🎹',line:'Teixir vincles on n\'hi ha absència. Un cromo repetit no val res fins que et fa parlar amb algú.'},
+  cromo:{hero:'Afrodito',ic:'🎹',line:'Teixir vincles on n\'hi ha absència. Un cromo repetit no val res fins que et fa parlar amb algú.'},
   /* Tampoc és una pestanya: són les jugades per desencallar un node (V81). La
      Anguila hi va perquè el seu poder és trencar cercles viciosos, que és
      literalment el que fa una comunitat que s\'ha aturat. */
-  bomba:{hero:'La Anguila',ic:'🥁',line:'«Tú lanzas la bomba y la peña baila.» Trencar el cercle viciós d\'un grup que s\'ha aturat.'}
+  bomba:{previ:true,hero:'La Anguila',ic:'🥁',line:'«Tú lanzas la bomba y la peña baila.» Trencar el cercle viciós d\'un grup que s\'ha aturat.'}
 };
 /* El relat es guanya: no surt fins que hi ha alguna aportació registrada. */
 function comandoUnlocked(){

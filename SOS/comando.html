@@ -35,9 +35,38 @@ img{max-width:100%}
 .counter .l{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.15rem}
 
 section{padding:3.5rem 1.5rem;max-width:1100px;margin:0 auto}
+/* La barra és enganxosa: sense això, saltar a #historia deixa el títol just
+   a sota i sembla que t'hagis passat de llarg. */
+section[id]{scroll-margin-top:80px}
 section h2{font-size:clamp(1.5rem,3vw,2.2rem);margin:0 0 .6rem;line-height:1.15}
 section .lead{color:var(--light);font-size:1.05rem;max-width:700px;margin:0 auto 2rem}
 section.center{text-align:center}
+
+/* ── Els actes · la història dels còmics ──────────────────────────────────
+   Dues columnes: el que passa a la vinyeta i el que vol dir a una organització.
+   Van de costat i no una a sota de l'altra perquè la gràcia és **veure-les
+   alhora**: la metàfora sola és un conte i la lectura sola és una consultora
+   més. La d'aquesta casa és que són la mateixa cosa. */
+.acte{border-top:1px solid rgba(255,255,255,.08);padding-top:2.2rem;margin-top:2.5rem}
+.acte-n{font-family:'SF Mono',Monaco,monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--purple)}
+.acte h3{font-size:clamp(1.25rem,2.6vw,1.7rem);margin:.4rem 0 .8rem;line-height:1.2}
+.acte>p{color:var(--light);max-width:70ch;margin:0 0 1.4rem}
+.escenes{display:grid;gap:1rem;margin-top:1.5rem}
+.escena{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
+.escena>div{background:#0b0b12;padding:1.2rem}
+.escena .vinyeta{background:linear-gradient(135deg,rgba(224,64,251,.09),rgba(99,102,241,.05))}
+.escena h4{margin:0 0 .5rem;font-size:.98rem}
+.escena p{margin:0;color:var(--light);font-size:.88rem;line-height:1.6}
+.escena .et{font-family:'SF Mono',Monaco,monospace;font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:.5rem;display:block}
+.escena .vinyeta .et{color:var(--purple)}
+.escena .lectura .et{color:var(--green)}
+.escena .lectura strong{color:var(--text)}
+.cita{border-left:2px solid var(--purple);padding-left:.9rem;margin:.8rem 0 0;
+  font-style:italic;color:var(--light);font-size:.86rem}
+@media(max-width:720px){.escena{grid-template-columns:1fr}}
+
 
 /* Canonical heroes grid */
 .heroes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;margin-top:2rem}
@@ -116,29 +145,181 @@ nav.top .links a:hover{color:var(--text)}
 <p class="sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, <strong>Mazinguer i Horacio</strong> han de reclutar-nos abans que la <strong>Corporació Món Mort</strong> engoleixi les comunitats. Cada aportació teva a un banc de temps, cada objecte que comparteixes, cada intercanvi signat és una llavor de la pel·lícula.</p>
 <div class="ctas">
 <a class="cta cta-primary" href="index.html">✦ Crea el meu cromo</a>
-<a class="cta cta-ghost" href="blog.html">📖 L'origen</a>
+<a class="cta cta-ghost" href="#historia">📖 La història</a>
 </div>
 <div class="counter">
 <div class="item"><div class="n">150.000</div><div class="l">objectiu Comando</div></div>
-<div class="item"><div class="n">8</div><div class="l">herois canònics</div></div>
+<div class="item"><div class="n">9</div><div class="l">herois canònics</div></div>
 <div class="item"><div class="n">27+6</div><div class="l">pobles Alt Penedès + Garraf</div></div>
 </div>
 </div>
 </div>
 
+<!-- LA HISTÒRIA · CÒMICS 1 I 2 -->
+<!-- Aquesta secció surt del que passa als còmics, no d'un resum de màrqueting
+     escrit a posteriori. La columna de la dreta no és una moralina enganxada:
+     és la raó per la qual aquest relat existeix dins d'una eina de gestió
+     comunitària. Si es pogués esborrar sense perdre res, sobraria. -->
+<section id="historia">
+  <div class="center"><h2>La història, fins on va</h2>
+  <p class="lead">Dos còmics publicats. El que hi passa i el que vol dir quan ho mires
+  com el que és: un equip que es forma, es descontrola i acaba picant pedra per a algú altre.</p></div>
+
+  <div class="acte">
+    <div class="acte-n">Acte I · Còmic 1</div>
+    <h3>El mandat i el reclutament</h3>
+    <p>El Gran Molekulon mira la Terra —el soroll, les guerres, la crisi— i decideix que
+    el que cal canviar és la banda sonora. Dona autoritat a dos deixebles, <strong>Mazinguer i
+    Horacio</strong>, per baixar-hi i reclutar els <strong>150.000 superherois que ja hi han nascut</strong>.
+    No cal fabricar-los: ja hi són, escampats, fent coses més petites del que saben fer.</p>
+
+    <div class="escenes">
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>Els espermatozoides guanyadors</h4>
+          <p>El Molekulon els explica que són «fills de l'amor»: supervivents d'una cursa entre
+          200.000.000 de candidats que van travessar tenebres i obstacles per fer el miracle de
+          ser-hi. Néixer ja va ser la primera gesta.</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>El talent no es fabrica, es troba</h4>
+          <p>Que en un equip hi hagi la persona exacta per a una cosa exacta és
+          <strong>estadísticament improbable</strong>, i quan passa gairebé mai se sap.
+          El talent ja hi és —«els 150.000 ja són a la Terra»—; el problema de les
+          organitzacions és que <strong>no tenen manera de veure'l</strong>.</p></div>
+      </div>
+
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>Purpleman surt dels gasos tòxics</h4>
+          <p>Apareix d'entre tenebres, nebuloses i gasos tòxics. Amb el seu «raig eliminador»
+          destrueix les males olors i les converteix en un lloc que «fa olor de flor i d'amor».</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>Algú s'ha d'encarregar de l'aire</h4>
+          <p>La toxicitat d'un ambient ofega la creativitat abans que cap altra cosa, i
+          <strong>no es dissol sola</strong>. Hi ha d'haver algú amb aquest paper: qui recull
+          el conflicte i el torna energia. Si no té nom, no el fa ningú.</p></div>
+      </div>
+
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>Afrodito i l'abric de cuir</h4>
+          <p>Viu amagat al Bar Andrés sota un abric de cuir pesat, protegint-se del Món Mort.
+          Fins que sona <strong>la Bomba Disco</strong> i el detona: una reorganització
+          morfològica i fisiològica li trenca la cuirassa i li deixa sortir el funk que era.</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>El cinisme defensiu és una cuirassa, no un caràcter</h4>
+          <p>L'abric de cuir és el que avui se'n diu despenjar-se en silenci: gent que ha
+          <strong>après a no posar-hi res</strong> perquè les estructures on han estat els van
+          ensenyar que no servia. No és que no en tinguin, és que està tapat — i el que ho
+          destapa no és una xerrada, és un fet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acte">
+    <div class="acte-n">Acte II · Còmic 2</div>
+    <h3>La gira, el descontrol i la caiguda</h3>
+    <p>A bord de l'<em>Omni Turd 6300</em>, la banda discuteix la missió mentre travessa
+    l'hiperespai. Tenen un baixó d'energia i han de parar a buscar menjar; per fi arriben a
+    la <strong>República del Molekulon de Matadeón</strong>, una utopia basada en el gaudi
+    absolut. Res d'això acaba bé.</p>
+
+    <div class="escenes">
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>El bajón espacial</h4>
+          <p>La nau perd altura. Un dels personatges baixa per una escala-piano a demanar
+          «papeo». Ningú s'ha quedat sense ganes: s'han quedat sense combustible.</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>L'esgotament arriba abans que el col·lapse</h4>
+          <p>El baixó no és el final, és <strong>l'avís</strong>. Un equip que perd altura
+          encara vola, i és exactament el moment en què es pot fer alguna cosa. Quan ja ha
+          caigut, la conversa és una altra.</p></div>
+      </div>
+
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>El col·lapse de Matadeón</h4>
+          <p>Una Constitució que exigeix llaminadures per a tothom, aniversari cada dia i
+          vacances eternes. La Constitució crema, els personatges vomiten, el caos multicolor
+          se'n du la República.</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>El benestar sense estructura es desmunta sol</h4>
+          <p>Confondre cultura d'equip amb el futbolí i les garrofes surt car: <strong>un grup
+          sense regles clares d'intercanvi de valor col·lapsa pel seu propi pes</strong>. No
+          és que la festa sigui dolenta; és que sense mapa ningú sap qui sosté què quan es fa
+          fosc.</p></div>
+      </div>
+
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>El paper higiènic de Mr. McGragor</h4>
+          <p>Enmig del caos apareix el capitalista amb un àbac i una pissarra. Els ofereix un
+          paper higiènic «molt més suau». Val diners, i ells no saben què és això. Acaben
+          picant pedra darrere un filat d'espines per pagar-lo.</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>Primer et creen la necessitat, després te la cobren</h4>
+          <p>És el nus de tot plegat: les jerarquies tracten les persones com a
+          <strong>matèria primera</strong> i no com a nodes que aporten. Se'ls ven una
+          necessitat que no tenien i se'ls compra el temps —la vida— per pagar-la. Tot el que
+          fa aquesta eina va contra aquesta vinyeta.</p></div>
+      </div>
+
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>El forat de cuc</h4>
+          <p>Encadenats i empesos per un fuet cap a una espiral en blanc i negre, la Maldita
+          Realitat, perquè «assentin el cap».</p>
+          <p class="cita">«I play music &amp; paint pictures! I don't need reality!»<br>
+          — «La realidad no tiene estilo ni talento.»</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>Qui imagina i qui executa es veuen com un destorb</h4>
+          <p>Als equips passa cada dia: qui té les idees se sent encadenat per qui les ha de
+          fer, i qui les ha de fer veu les idees com una nosa. <strong>La sortida no és
+          anul·lar-ne cap dels dos.</strong> En un castell fa falta la força a la pinya i la
+          lleugeresa a dalt — i cap dels dos aguanta res sol.</p></div>
+      </div>
+
+      <div class="escena">
+        <div class="vinyeta"><span class="et">A la vinyeta</span>
+          <h4>El páramo i la llavor</h4>
+          <p>Passen els anys al gris. Resisteixen <strong>cantant els seus propis noms</strong>,
+          recordant qui són. Sota els peus, sense que ho vegi ningú, creixen plantes
+          psicodèliques, flors alienígenes i música.</p></div>
+        <div class="lectura"><span class="et">El que vol dir</span>
+          <h4>El talent adormit no és talent perdut</h4>
+          <p>Encara que l'estructura imposi l'uniforme, el que la gent és <strong>segueix
+          viu a sota</strong> i espera. Aquí és on aquesta eina entra: no ve a crear res que
+          no hi fos, ve a donar-li un lloc on comptar.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acte">
+    <div class="acte-n">Acte III · En construcció</div>
+    <h3>El que encara no s'ha publicat</h3>
+    <p>El Comando no se'n surt sol, i aquí és on la història deixa de ser només un còmic:
+    continua en obert, amb les decisions de qui hi entra. <strong>El final està escrit i
+    encara no es diu.</strong> El que sí que es pot dir és el mecanisme: cada persona que es
+    dona d'alta i aporta de debò és un node més de la xarxa, i la xarxa és el que fa la
+    força. Els comptadors d'aquesta pàgina són reals.</p>
+  </div>
+</section>
+
 <!-- CANONICAL HEROES -->
 <section class="center">
 <h2>🌟 Els herois canònics</h2>
-<p class="lead">Còmics 1 i 2. El nucli inicial del Comando. Els que estan buscant els altres 149.992.</p>
+<p class="lead">Els nou que surten als còmics 1 i 2. El nucli inicial: els que estan buscant els altres 149.991.</p>
 <div class="heroes" style="text-align:left">
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(210,65%,45%)">M</div><div><div class="hcard-nm">Mazinguer</div><div class="hcard-role">Líder tècnic</div></div></div><div class="hcard-power">Sense superpoder aparent · l'ego perdut és el seu poder</div></div>
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(30,65%,45%)">H</div><div><div class="hcard-nm">Horacio</div><div class="hcard-role">Narrador i estratega</div></div></div><div class="hcard-power">Explicar la història que uneix tot</div></div>
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(120,65%,45%)">G</div><div><div class="hcard-nm">Guiriguai</div><div class="hcard-role">Diplomat impossible</div></div></div><div class="hcard-power">Llenguatges impossibles · parla amb qualsevol tribu</div></div>
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(280,65%,45%)">P</div><div><div class="hcard-nm">Purpleman</div><div class="hcard-role">Persuasor</div></div></div><div class="hcard-power">Persuasió i visualització · fa veure el que no es veu</div></div>
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(330,65%,45%)">A</div><div><div class="hcard-nm">Afrodita</div><div class="hcard-role">Cures i xarxa afectiva</div></div></div><div class="hcard-power">Teixir vincles on n'hi ha absència</div></div>
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(180,65%,45%)">LA</div><div><div class="hcard-nm">La Anguila</div><div class="hcard-role">Mobilitat i escapisme</div></div></div><div class="hcard-power">Trencar cercles viciosos i moure la comunitat</div></div>
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(60,65%,45%)">B</div><div><div class="hcard-nm">Barbamuda</div><div class="hcard-role">Escolta profunda</div></div></div><div class="hcard-power">Silenci útil · sentir el que la comunitat no diu</div></div>
-<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(240,65%,45%)">E</div><div><div class="hcard-nm">Ectoplasman</div><div class="hcard-role">P2P encarnat</div></div></div><div class="hcard-power">Presència distribuïda · aixafar la centralització</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(210,65%,45%)">M</div><div><div class="hcard-nm">Mazinguer</div><div class="hcard-role">Líder estratega i DJ</div></div></div><div class="hcard-power">Coneix el pla i guia la banda. Sense superpoder aparent: l'ego perdut és el seu poder.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(30,65%,45%)">H</div><div><div class="hcard-nm">Horacio</div><div class="hcard-role">El savi que rep el mandat</div></div></div><div class="hcard-power">Coprotagonista del encàrrec original. Converteix l'experiència en relat.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(120,65%,45%)">GG</div><div><div class="hcard-nm">Guiri-Guay</div><div class="hcard-role">Cuidador i sanador</div></div></div><div class="hcard-power">Reclutat a Gringolandia. Ritmes ska i country per curar ferides i moure neurones.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(280,65%,45%)">P</div><div><div class="hcard-nm">Purpleman</div><div class="hcard-role">Filtre i resolutor</div></div></div><div class="hcard-power">Travessa núvols tòxics. El seu raig eliminador destrueix les males olors i les torna amor i flors.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(330,65%,45%)">A</div><div><div class="hcard-nm">Afrodito</div><div class="hcard-role">Motor passional</div></div></div><div class="hcard-power">El cor funk. Vivia amagat sota l'abric de cuir al Bar Andrés fins que la Bomba Disco el va detonar.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(195,65%,45%)">AV</div><div><div class="hcard-nm">El Aviador</div><div class="hcard-role">Suport tàctic</div></div></div><div class="hcard-power">Salvador aeri amb baix volador. Recull l'equip quan s'ha perdut.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(15,75%,50%)">PG</div><div><div class="hcard-nm">Pigmentón</div><div class="hcard-role">Mestre del color</div></div></div><div class="hcard-power">Capaç de pintar forats negres amb les seves bombolles i el seu Güengüentón.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(180,65%,45%)">MA</div><div><div class="hcard-nm">La Medusa Andaluza</div><div class="hcard-role">Node de connectivitat</div></div></div><div class="hcard-power">El cromosoma X de la banda. Posa cables, connexió i llum a tot l'equip.</div></div>
+<div class="hcard"><div class="hcard-head"><div class="hcard-avatar" style="background:hsl(240,65%,45%)">E</div><div><div class="hcard-nm">Electroplasman</div><div class="hcard-role">Impulsor de recursos</div></div></div><div class="hcard-power">Un fantasma amb viola que injecta liquiditat al sistema nerviós de la banda: la gasolina per enlairar-se.</div></div>
 </div>
 </section>
 

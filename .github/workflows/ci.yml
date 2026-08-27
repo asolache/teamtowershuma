@@ -31,6 +31,13 @@ jobs:
       - name: Guarda de la portada (i18n de l'arrel)
         run: node SOS/tools/check-landing.js
 
+      # El Comando es va escriure en llocs i moments diferents i cap d'ells
+      # sabia dels altres: el mateix personatge tenia quatre grafies repartides
+      # per l'app. Això no peta mai —només fa que qui llegeixi dues pantalles
+      # cregui que hi ha dos personatges.
+      - name: Guarda del relat (un sol roster d'herois)
+        run: node SOS/tools/check-comando.js
+
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
       # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.

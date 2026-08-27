@@ -688,6 +688,40 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 109 — Un relat que s'inventa el seu propi contingut deixa de ser una capa
+
+El Comando és opcional (V77: s'apaga i no es perd res). Precisament per això
+ningú el mirava, i havia anat derivant: el mateix personatge tenia **quatre
+grafies** repartides per l'app —`Guiriguay`, `Guiriguai`, `GuiriGuay`—, la
+pàgina pública ensenyava vuit herois amb poders que no són els del còmic
+(«Purpleman · persuasió i visualització» quan el que fa és travessar núvols
+tòxics i tornar les males olors flors), i n'hi havia un, «La Anguila», que no
+surt a cap dels dos còmics publicats.
+
+Res d'això peta mai. Simplement, qui llegeix una pantalla i després una altra
+creu que hi ha dos personatges, i el relat deixa de sostenir-se sol.
+
+**Que una cosa sigui opcional no vol dir que pugui ser falsa.** Mentre hi sigui,
+ha de dir el que passa a l'obra. Un relat inventat a trossos no és una capa
+narrativa: és soroll amb pretensions.
+
+D'aquí surten dues regles:
+
+- **Una sola llista mana.** `CANONICAL_HEROES` és d'on surten els noms, i
+  qualsevol altra llista que n'anomeni un hi ha de coincidir. Ho comprova
+  `tools/check-comando.js`, que també mira el comptador escrit a mà de la pàgina
+  —deia vuit quan ja n'hi havia nou.
+- **El que encara no és canònic es marca, no s'amaga.** Cinc personatges no
+  surten als còmics 1 i 2: tres perquè el panteó en demana dotze i el mapatge és
+  raonat, i dos que vénen de cançons i material posterior. Porten `previ:true`.
+  Tenir-los està bé; fer-los passar per llegits, no.
+
+I una tercera que és de producte i val la pena escriure: **la metàfora sola és
+un conte i la lectura sola és una consultora més**. A la pàgina van de costat,
+en dues columnes, perquè es llegeixin alhora. El paper higiènic de McGragor no
+és un acudit: és literalment el model contra el qual està feta aquesta eina —et
+creen la necessitat, te la cobren, i el teu temps passa a ser matèria primera.
+
 ## Veda 108 — El que legitima publicar un nom és qui prem el botó
 
 El SOS publica **agregat i sense noms** (veda 47) i això no era timidesa: quan un
