@@ -4,8 +4,8 @@
    El Comando es va escriure en llocs diferents i en moments diferents, i cap
    d'ells sabia dels altres. El dia que es va anar a comprovar, el mateix
    personatge tenia **quatre grafies** repartides per l'aplicació —`Guiriguay`,
-   `Guiriguai`, `GuiriGuay`, `Guiri-Guay`— i n'hi havia un, «La Anguila», que
-   no surt a cap dels dos còmics publicats.
+   `Guiriguai`, `GuiriGuay`, `Guiri-Guay`— i a la pàgina pública en faltaven
+   quatre que sí que surten als còmics.
 
    Això no peta mai. Simplement, qui llegeix una pantalla i després una altra
    creu que hi ha dos personatges, i el relat deixa de sostenir-se sol.
@@ -13,9 +13,13 @@
    La regla que aquesta guarda imposa és una de sola: **`CANONICAL_HEROES` és
    l'única llista d'on surten els noms.** Qui vulgui anomenar un heroi ha de fer
    servir un dels d'allà, o marcar-lo explícitament amb `previ:true` —n'hi ha
-   cinc que no surten als còmics 1 i 2: tres fundadors, perquè el panteó en
-   demana dotze, i dos que vénen de cançons i material posterior. Tenir-los està
-   bé mentre es digui que encara no són canònics.
+   quatre que no surten als còmics 1 i 2: tres fundadors, perquè el panteó en
+   demana dotze, i un que ve de material posterior. Tenir-los està bé mentre es
+   digui que encara no són canònics.
+
+   Aquesta guarda comprova que les llistes coincideixin entre elles. Que
+   coincideixin amb el còmic **no ho pot comprovar cap programa**: això ho diu
+   qui l'ha escrit, i quan ho diu, es corregeix aquí.
 
    node SOS/tools/check-comando.js */
 const { readFileSync } = require('node:fs');

@@ -6599,7 +6599,8 @@ const CANONICAL_HEROES=[
   {name:'El Aviador',role:'Suport tàctic',power:'Salvador aeri amb baix volador. Recull l\'equip quan s\'ha perdut'},
   {name:'Pigmentón',role:'Mestre del color',power:'Capaç de pintar forats negres amb les seves bombolles i el seu Güengüentón'},
   {name:'La Medusa Andaluza',role:'Node de connectivitat',power:'El cromosoma X de la banda. Posa cables, connexió i llum a tot l\'equip'},
-  {name:'Electroplasman',role:'Impulsor de recursos',power:'Un fantasma amb viola que injecta liquiditat al sistema nerviós: la gasolina per enlairar-se'}
+  {name:'Electroplasman',role:'Impulsor de recursos',power:'Un fantasma amb viola que injecta liquiditat al sistema nerviós: la gasolina per enlairar-se'},
+  {name:'La Anguila',role:'Bateria',power:'Recollida al còmic 1. S\'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l\'escletxa'}
 ];
 /* Els noms de dalt són els que manen. Qualsevol altra llista que anomeni un
    heroi ha de fer servir aquests, i `tools/check-comando.js` ho comprova: hi
@@ -9505,10 +9506,10 @@ const HERO_SCREENS={
   /* No és una pestanya, és el cromo (V78). Hi va Afrodito perquè el bescanvi de
      repetits és teixir un vincle on no n\'hi havia, que és literalment el seu poder. */
   cromo:{hero:'Afrodito',ic:'🎹',line:'Teixir vincles on n\'hi ha absència. Un cromo repetit no val res fins que et fa parlar amb algú.'},
-  /* Tampoc és una pestanya: són les jugades per desencallar un node (V81). La
-     Anguila hi va perquè el seu poder és trencar cercles viciosos, que és
-     literalment el que fa una comunitat que s\'ha aturat. */
-  bomba:{previ:true,hero:'La Anguila',ic:'🥁',line:'«Tú lanzas la bomba y la peña baila.» Trencar el cercle viciós d\'un grup que s\'ha aturat.'}
+  /* Tampoc és una pestanya: són les jugades per desencallar un node (V81). Hi va
+     La Anguila, la bateria, perquè el seu poder és escapolir-se de qualsevol
+     lloc — que és exactament el que li cal a una comunitat que s'ha encallat. */
+  bomba:{hero:'La Anguila',ic:'🥁',line:'«Tú lanzas la bomba y la peña baila.» Trencar el cercle viciós d\'un grup que s\'ha aturat.'}
 };
 /* El relat es guanya: no surt fins que hi ha alguna aportació registrada. */
 function comandoUnlocked(){

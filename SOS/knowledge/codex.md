@@ -692,11 +692,11 @@ la podria activar qualsevol contra qualsevol.
 
 El Comando és opcional (V77: s'apaga i no es perd res). Precisament per això
 ningú el mirava, i havia anat derivant: el mateix personatge tenia **quatre
-grafies** repartides per l'app —`Guiriguay`, `Guiriguai`, `GuiriGuay`—, la
+grafies** repartides per l'app —`Guiriguay`, `Guiriguai`, `GuiriGuay`— i la
 pàgina pública ensenyava vuit herois amb poders que no són els del còmic
 («Purpleman · persuasió i visualització» quan el que fa és travessar núvols
-tòxics i tornar les males olors flors), i n'hi havia un, «La Anguila», que no
-surt a cap dels dos còmics publicats.
+tòxics i tornar les males olors flors), mentre en faltaven quatre que sí que hi
+surten: El Aviador, Pigmentón, La Medusa Andaluza i La Anguila.
 
 Res d'això peta mai. Simplement, qui llegeix una pantalla i després una altra
 creu que hi ha dos personatges, i el relat deixa de sostenir-se sol.
@@ -711,10 +711,17 @@ D'aquí surten dues regles:
   qualsevol altra llista que n'anomeni un hi ha de coincidir. Ho comprova
   `tools/check-comando.js`, que també mira el comptador escrit a mà de la pàgina
   —deia vuit quan ja n'hi havia nou.
-- **El que encara no és canònic es marca, no s'amaga.** Cinc personatges no
+- **El que encara no és canònic es marca, no s'amaga.** Quatre personatges no
   surten als còmics 1 i 2: tres perquè el panteó en demana dotze i el mapatge és
-  raonat, i dos que vénen de cançons i material posterior. Porten `previ:true`.
-  Tenir-los està bé; fer-los passar per llegits, no.
+  raonat, i un que ve de material posterior. Porten `previ:true`. Tenir-los està
+  bé; fer-los passar per llegits, no.
+
+  I el revers, que és el que va passar de debò: **també cal que la marca es
+  tregui.** La Anguila estava marcada com a no-canònica i sí que surt al còmic
+  1 —és la bateria, i el seu poder és escapolir-se de qualsevol lloc. La llista
+  no la va corregir cap guarda: la va corregir qui va escriure l'obra. Una
+  guarda comprova que les llistes coincideixin entre elles; **que coincideixin
+  amb el còmic només ho pot dir l'autor**.
 
 I una tercera que és de producte i val la pena escriure: **la metàfora sola és
 un conte i la lectura sola és una consultora més**. A la pàgina van de costat,
