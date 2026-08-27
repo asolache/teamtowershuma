@@ -77,7 +77,29 @@ else {
     previs.map(x => x.nom).join(', '));
 }
 
-// ── 3 · La pàgina pública diu els mateixos noms ──────────────────────────
+// ── 3 · Cada personatge diu què fa i què vol dir ─────────────────────────
+/* Un heroi sense `power` no diu res; un sense `vna` és decoració, i llavors el
+   relat deixa de ser un pont amb la resta de l'eina i passa a ser un fullet.
+   La `lletra` no és obligatòria —de dos personatges encara no en tenim—, però
+   la que hi ha ha d'anar entre cometes baixes i **en castellà**: és una cita
+   del còmic, i traduir-la la convertiria en un resum. */
+const fitxes = [...bloc.matchAll(/\{name:'((?:[^'\\]|\\.)*)'[\s\S]*?\}(?=,\n  \{name:|\n\];)/g)]
+  .map(m => ({ nom: m[1].replace(/\\'/g, "'"), txt: m[0] }));
+const sensePower = fitxes.filter(f => !/\bpower:'/.test(f.txt)).map(f => f.nom);
+const senseVna = fitxes.filter(f => !/\bvna:'/.test(f.txt)).map(f => f.nom);
+const senseArma = fitxes.filter(f => !/\barma:'/.test(f.txt)).map(f => f.nom);
+if (!sensePower.length && !senseVna.length) ok(`els ${fitxes.length} porten poder i equivalència a un equip`);
+else {
+  if (sensePower.length) bad(`sense poder: ${sensePower.join(', ')}`);
+  if (senseVna.length) bad(`sense equivalència a un equip: ${senseVna.join(', ')} — sense això el relat és decoració`);
+}
+if (senseArma.length) console.log(`  · ${senseArma.length} sense superarma declarada: ${senseArma.join(', ')}`);
+const lletres = fitxes.filter(f => /\blletra:'/.test(f.txt));
+const malCitades = lletres.filter(f => !/lletra:'«/.test(f.txt)).map(f => f.nom);
+if (!malCitades.length) ok(`${lletres.length} versos citats literalment`);
+else bad(`lletra que no va entre cometes baixes: ${malCitades.join(', ')} — una cita que es reescriu deixa de ser-ho`);
+
+// ── 4 · La pàgina pública diu els mateixos noms ──────────────────────────
 /* La pàgina és HTML a mà i no llegeix la constant, així que pot quedar-se
    enrere sense que res avisi. Va passar: deia vuit herois amb poders que no
    eren els del còmic mentre l'app ja en deia uns altres. */

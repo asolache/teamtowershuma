@@ -6580,34 +6580,95 @@ const MOLEKULON_LINKS={
    Aquesta llista deia una altra cosa: «Purpleman · persuasió i visualització»
    quan al còmic el que fa és travessar núvols tòxics i convertir les males
    olors en flors; «Afrodita · teixir vincles» quan és Afrodito, el cor funk que
-   vivia amagat sota un abric de cuir. Tampoc hi eren el Aviador, Pigmentón ni
-   la Medusa, i sí que hi havia «La Anguila», que no surt a cap dels dos còmics.
+   vivia amagat sota un abric de cuir. Tampoc hi eren El Aviador, Pigmentón ni
+   la Medusa, i El Anguila hi sortia com «La Anguila» i marcat com si no fos
+   canònic, quan és la bateria i surt al còmic 1.
 
    El relat és opcional a l'app (V77: es pot apagar i no es perd res), però
    **mentre hi sigui ha de dir el que passa a l'obra**. Un relat que s'inventa
    el seu propi contingut deixa de ser una capa i passa a ser soroll.
 
-   `power` és una frase, no una fitxa: el que fa el personatge, dit de manera
-   que es pugui llegir en una targeta. `on` diu **on està documentat** —còmic,
-   vídeo, tema—, que no és el mateix que ser canònic: Reciclator surt en vídeo i
-   Fraktalman té tema propi, i tots dos són tan reals com els del còmic. El
-   camp existeix perquè al principi es va confondre «no surt al còmic 1 o 2» amb
-   «encara no confirmat», i per aquesta confusió quatre personatges de veritat
-   van estar marcats com a provisionals. Veda 109. */
+   Cada personatge porta cinc coses, i cap és decorativa:
+
+   · `power` — què fa. Una frase que càpiga a una targeta.
+   · `arma` — la **superarma**. No és un detall de fan: l'app demana «superpoders
+     i superarmes» a tothom qui es dona d'alta, i aquí és d'on surt la idea.
+   · `lletra` — el vers del còmic o de la cançó, **literal i en castellà**. És
+     l'única part que no es pot reescriure: si es tradueix o es poleix, deixa de
+     ser una cita i passa a ser un resum.
+   · `on` — on està documentat: còmic, vídeo, tema. **No és el mateix que ser
+     canònic.** Es va confondre una cosa amb l'altra i per això quatre
+     personatges de veritat van estar marcats com a provisionals.
+   · `vna` — què vol dir aquest personatge en una organització. És el pont amb
+     la resta de l'eina, i el motiu pel qual aquest relat viu dins d'un programa
+     de gestió comunitària i no en un fullet a part.
+
+   Veda 109. */
 const CANONICAL_HEROES=[
-  {name:'Mazinguer',role:'Líder estratega i DJ',power:'Coneix el pla i guia la banda. Sense superpoder aparent: l\'ego perdut és el seu poder'},
-  {name:'Horacio',role:'El savi que rep el mandat',power:'Coprotagonista de l\'encàrrec original. Converteix l\'experiència en relat'},
-  {name:'Guiri-Guay',role:'Cuidador i sanador',power:'Reclutat a Gringolandia. Ritmes ska i country per curar ferides i moure neurones'},
-  {name:'Purpleman',role:'Filtre i resolutor',power:'Travessa núvols tòxics. El seu raig eliminador torna les males olors amor i flors'},
-  {name:'Afrodito',role:'Motor passional',power:'El cor funk. Vivia amagat sota l\'abric de cuir fins que la Bomba Disco el va detonar'},
-  {name:'El Aviador',role:'Suport tàctic',power:'Salvador aeri amb baix volador. Recull l\'equip quan s\'ha perdut'},
-  {name:'Pigmentón',role:'Mestre del color',power:'Capaç de pintar forats negres amb les seves bombolles i el seu Güengüentón'},
-  {name:'La Medusa Andaluza',role:'Node de connectivitat',power:'El cromosoma X de la banda. Posa cables, connexió i llum a tot l\'equip'},
-  {name:'Electroplasman',role:'Impulsor de recursos',power:'Un fantasma amb viola que injecta liquiditat al sistema nerviós: la gasolina per enlairar-se'},
-  {name:'La Anguila',role:'Bateria',on:'Còmic 1',power:'S\'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l\'escletxa'},
-  {name:'Barbamuda',role:'Segona baixista',on:'Còmic',power:'Fa supertratges i ensenya des del silenci. No explica: deixa que ho vegis'},
-  {name:'Reciclator',role:'Fabricant de superarmes',on:'Vídeo',power:'Construeix les superarmes de la banda a partir del que els altres han llençat'},
-  {name:'Fraktalman',role:'Ordre a partir del caos',on:'Té tema propi',power:'«Es uno y son mil millones.» Converteix el caos en ordre sense aplanar-lo'}
+  {name:'Mazinguer',role:'Líder estratega i DJ',on:'Còmic 1',
+   power:'Coneix el pla i guia la banda. Sense superpoder aparent: l\'ego perdut és el seu poder',
+   arma:'La Bomba Disco i els plats de DJ',
+   lletra:'«Mazinguer: aunque no lo parecía siempre sabía lo que hay que hacer.»',
+   vna:'Qui munta la plataforma i atrau els primers nodes. El cap de colla'},
+  {name:'Horacio',role:'El savi que rep el mandat',on:'Còmic 1',
+   power:'Coprotagonista de l\'encàrrec original. Converteix l\'experiència en relat',
+   arma:'La Bomba Disco i els plats de DJ',
+   lletra:'«Horacio: muy sabio, buena onda y tener un palacio.»',
+   vna:'La visió de conjunt: qui sap explicar cap on va tot plegat'},
+  {name:'Guiri-Guay',role:'Cuidador i sanador',on:'Còmic 1',
+   power:'Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup',
+   arma:'Guitarra acústica country',
+   lletra:'«Con mi guitarra curo heridas, bailando se mueven las neuronas.»',
+   vna:'Qui té cura de l\'equip: sosté la moral i cura les friccions abans que es podreixin'},
+  {name:'Purpleman',role:'Transmutador',on:'Còmic 1',
+   power:'Entra a les tenebres i els gasos tòxics i els torna benestar immediat',
+   arma:'El Rayo Eliminador',
+   lletra:'«Elimino a los malos olores con mi rayo eliminador y huele todo a flor y amor.»',
+   vna:'Qui absorbeix la toxicitat de l\'ambient i la torna clima. Si no té nom, no ho fa ningú'},
+  {name:'Afrodito',role:'Motor passional',on:'Còmic 1',
+   power:'Holometabolisme: la seva identitat musical li trenca l\'armadura que el mantenia alienat',
+   arma:'El ritme Soul Train',
+   lletra:'«Sexy motherfunky mito. Piensa con el corazón.»',
+   vna:'El talent amagat. Passió en cru que només necessita un lloc segur per treure\'s la cuirassa'},
+  {name:'El Aviador',role:'Suport tàctic',on:'Còmic 1',
+   power:'Orientació i rescat in extremis: apareix del cel quan l\'equip s\'ha perdut',
+   arma:'El Bajo Volador',
+   lletra:'«No tiene mojo, no tiene duende, no tiene don, pero tiene un bajo volador.»',
+   vna:'L\'executor hiperespecialitzat. Ni el més carismàtic ni el líder: el que desencalla projectes'},
+  {name:'Pigmentón',role:'Mapador i dissenyador',on:'Còmic 1',
+   power:'Assigna identitats. Capaç d\'il·luminar fins i tot els forats negres',
+   arma:'El Güengüentón i el pinzell creador',
+   lletra:'«De colores pintó el maestro Pigmentón el mundo para que todo pueda tener el color que le corresponda.»',
+   vna:'Qui dibuixa la xarxa i dona a cadascú el color que li toca perquè pugui operar'},
+  {name:'La Medusa Andaluza',role:'Connectora · el hub',on:'Còmic 1',
+   power:'Sincronització i fusió cultural. És qui dona llum interconnectant tot el grup',
+   arma:'Cables connectors i una ampolla de Jack Daniel\'s',
+   lletra:'«En mi cabeza se cruzan los cables ¿Te echo uno tío? Pa\' que conectes con mi són.»',
+   vna:'El node central que creua informació entre parts que no es parlaven'},
+  {name:'Electroplasman',role:'Impulsor de recursos',on:'Còmic 1',
+   power:'Injecta liquiditat al sistema nerviós central del comando i a les naus que no enlairaven',
+   arma:'La viola · violí electrònic',
+   lletra:'«Parecía muy tranquilo pero era un volcán. Toca Shostakovich como el gasgas.»',
+   vna:'Qui porta el capital —diners o energia— que fa passar un projecte de aturat a enlairat'},
+  {name:'El Anguila',role:'Bateria',on:'Còmic 1',
+   power:'S\'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l\'escletxa',
+   arma:'La bateria i la percussió',
+   lletra:'«El Anguila: con un buen groove y una birra se espabila.»',
+   vna:'Qui marca el ritme operatiu. La pinya no aguanta sense un compàs'},
+  {name:'Barbamuda',role:'Segona baixista',on:'Còmic',
+   power:'Fa supertratges i ensenya des del silenci. No explica: deixa que ho vegis',
+   arma:'El baix i el silenci tàctic',
+   lletra:'«Barbamuda: que habla solo cuando debe y todo se la suda.»',
+   vna:'L\'estabilitat estructural. Qui no es mou quan tot es mou és el que evita la caiguda'},
+  {name:'Reciclator',role:'Fabricant de superarmes',on:'Vídeo',
+   power:'Construeix les superarmes de la banda a partir del que els altres han llençat',
+   arma:'El taller: el que ja existeix i ningú volia',
+   vna:'Qui fa que no calgui comprar res nou perquè ja hi és, en un altre lloc i amb una altra forma'},
+  {name:'Fraktalman',role:'Ordre a partir del caos',on:'Té tema propi',
+   power:'Converteix el caos en ordre sense aplanar-lo',
+   arma:'La forma que es repeteix a totes les escales',
+   lletra:'«Es uno y son mil millones… convierte el caos en orden.»',
+   vna:'El que funciona en un lloc té la mateixa forma en un altre. Replicar sense uniformar'}
 ];
 /* Els noms de dalt són els que manen. Qualsevol altra llista que anomeni un
    heroi ha de fer servir aquests, i `tools/check-comando.js` ho comprova: hi
@@ -9515,9 +9576,9 @@ const HERO_SCREENS={
      repetits és teixir un vincle on no n\'hi havia, que és literalment el seu poder. */
   cromo:{hero:'Afrodito',ic:'🎹',line:'Teixir vincles on n\'hi ha absència. Un cromo repetit no val res fins que et fa parlar amb algú.'},
   /* Tampoc és una pestanya: són les jugades per desencallar un node (V81). Hi va
-     La Anguila, la bateria, perquè el seu poder és escapolir-se de qualsevol
+     El Anguila, la bateria, perquè el seu poder és escapolir-se de qualsevol
      lloc — que és exactament el que li cal a una comunitat que s'ha encallat. */
-  bomba:{hero:'La Anguila',ic:'🥁',line:'«Tú lanzas la bomba y la peña baila.» Trencar el cercle viciós d\'un grup que s\'ha aturat.'}
+  bomba:{hero:'El Anguila',ic:'🥁',line:'«Tú lanzas la bomba y la peña baila.» Trencar el cercle viciós d\'un grup que s\'ha aturat.'}
 };
 /* El relat es guanya: no surt fins que hi ha alguna aportació registrada. */
 function comandoUnlocked(){

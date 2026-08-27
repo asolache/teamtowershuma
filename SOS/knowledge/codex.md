@@ -730,6 +730,27 @@ programa. Cap de les meves comprovacions va detectar res aquí —les quatre
 llistes coincidien perfectament a equivocar-se—; ho va corregir qui ha escrit
 l'obra. **La consistència es pot automatitzar; la veritat no.**
 
+### El que fa que aquest relat visqui dins d'un programa de gestió
+
+Cada personatge porta cinc coses i cap és decorativa: què fa (`power`), la seva
+**superarma** (`arma`), el vers literal (`lletra`), on està documentat (`on`) i
+—la que ho lliga tot— **què vol dir aquest personatge en un equip** (`vna`).
+
+Aquesta última és la raó de ser de tot plegat. La Medusa Andaluza no és una
+musa simpàtica: és el node que creua informació entre parts que no es parlaven.
+El Aviador «no tiene mojo, no tiene duende, no tiene don» i és el tècnic que
+desencalla el projecte. Purpleman absorbeix la toxicitat de l'ambient, i si
+aquest paper no té nom no el fa ningú.
+
+**Un heroi sense `vna` és decoració**, i la guarda el rebutja: aleshores el
+relat deixa de ser un pont amb la resta de l'eina i passa a ser un fullet
+enganxat al costat.
+
+I una regla petita amb conseqüències: **la `lletra` va literal i en castellà**,
+entre cometes baixes. La guarda comprova les cometes perquè són el senyal que
+allò és una cita. Traduir un vers o polir-lo el converteix en un resum, i llavors
+ja no és l'obra: és el que nosaltres hem entès de l'obra.
+
 I una tercera que és de producte i val la pena escriure: **la metàfora sola és
 un conte i la lectura sola és una consultora més**. A la pàgina van de costat,
 en dues columnes, perquè es llegeixin alhora. El paper higiènic de McGragor no
