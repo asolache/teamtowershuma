@@ -751,6 +751,22 @@ entre cometes baixes. La guarda comprova les cometes perquè són el senyal que
 allò és una cita. Traduir un vers o polir-lo el converteix en un resum, i llavors
 ja no és l'obra: és el que nosaltres hem entès de l'obra.
 
+### Comparar conjunts no és comparar llistes
+
+Un últim error, comès per aquesta mateixa guarda i que val la pena deixar
+escrit. En regenerar les fitxes de la pàgina, les velles no es van esborrar i va
+quedar cada heroi pintat **dues vegades**: 26 fitxes per a 13 personatges. La
+guarda ho va aprovar.
+
+El motiu és que comprovava dues coses —quins noms sobren i quins falten— i cap
+de les dues falla amb un duplicat: tots els noms repetits eren noms bons. Havia
+convertit dues llistes en dos conjunts abans de comparar-les, i **un conjunt no
+sap comptar**.
+
+La comprovació que faltava són dues línies: que no hi hagi repetits, i que el
+nombre de fitxes sigui el nombre de personatges. Va tardar exactament una tanda
+a fer falta.
+
 I una tercera que és de producte i val la pena escriure: **la metàfora sola és
 un conte i la lectura sola és una consultora més**. A la pàgina van de costat,
 en dues columnes, perquè es llegeixin alhora. El paper higiènic de McGragor no

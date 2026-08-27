@@ -3419,9 +3419,9 @@ const PANTHEON12={
 /* Els 12 fundadors del Comando associats al panteó.
    Els noms surten de `CANONICAL_HEROES` i no s'escriuen a mà: hi va haver un
    temps amb quatre grafies del mateix personatge repartides per l'app.
-   **Supergerminador és l'únic que l'autor encara no ha confirmat.** Hi és
-   perquè el panteó en demana dotze i el mapatge és raonat, no llegit; porta
-   `previ:true` per no fer-lo passar per confirmat. Veda 109. */
+   **Ja no en queda cap sense confirmar.** El camp `previ:true` es manté per al
+   dia que aparegui un personatge nou abans que l'autor n'hagi dit el poder: és
+   el lloc honest on posar-lo mentrestant, no una etiqueta morta. Veda 109. */
 const COMANDO_FOUNDERS=[
   {hero:'Mazinguer',god:'zeus',why:'Lidera sense imposar-se: l\'ego perdut és el seu poder'},
   {hero:'Horacio',god:'apollo',why:'Narrador i estratega · converteix l\'experiència en relat'},
@@ -3434,7 +3434,7 @@ const COMANDO_FOUNDERS=[
   {hero:'Electroplasman',god:'hefest',why:'P2P encarnat · l\'eina distribuïda'},
   {hero:'Pigmentón',god:'hera',why:'Marca allò que compromet · fa visible el pacte'},
   {hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
-  {previ:true,hero:'Supergerminador',god:'demeter',why:'Germina i replica · pol·linització del valor'}
+  {hero:'Supergerminador',god:'demeter',why:'Germina i replica · pol·linització del valor'}
 ];
 const COMANDO_ALLIES=[{name:'Formiga Atòmica',role:'Aliada'}];
 const COMANDO_VILLAINS=[
@@ -6664,6 +6664,10 @@ const CANONICAL_HEROES=[
    power:'Construeix les superarmes de la banda a partir del que els altres han llençat',
    arma:'El taller: el que ja existeix i ningú volia',
    vna:'Qui fa que no calgui comprar res nou perquè ja hi és, en un altre lloc i amb una altra forma'},
+  {name:'Supergerminador',role:'Mestre del germinat',on:'Vídeo i web pròpia',
+   power:'Ensenya a germinar per menjar superaliments. I canta amb la seva rialla',
+   arma:'Les llavors, i la pròpia rialla',
+   vna:'Qui ensenya el mètode en comptes de fer la feina: el que ensenya es replica sol i no cal tornar-lo a comprar'},
   {name:'Fraktalman',role:'Ordre a partir del caos',on:'Té tema propi',
    power:'Converteix el caos en ordre sense aplanar-lo',
    arma:'La forma que es repeteix a totes les escales',

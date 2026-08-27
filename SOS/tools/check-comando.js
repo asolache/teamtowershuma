@@ -108,7 +108,16 @@ if (!aPagina.length) bad('no s\'han trobat les fitxes d\'heroi a comando.html');
 else {
   const sobren = aPagina.filter(n => !roster.includes(n));
   const falten = roster.filter(n => !aPagina.includes(n));
-  if (!sobren.length && !falten.length) ok(`comando.html ensenya els mateixos ${aPagina.length} herois`);
+  /* Repetits. Aquesta comprovació hi és perquè va faltar: en regenerar les
+     fitxes, les velles es van quedar i la pàgina en va tenir 26 en comptes de
+     14. Mirant només «quins noms sobren» i «quins falten» no en sobrava cap ni
+     en faltava cap —tots els duplicats eren noms bons—, i la guarda va aprovar
+     una pàgina amb cada heroi pintat dues vegades. Comparar conjunts no és
+     comparar llistes. */
+  const vistosP = new Set(), dupsP = new Set();
+  aPagina.forEach(n => { if (vistosP.has(n)) dupsP.add(n); vistosP.add(n); });
+  if (dupsP.size) bad(`comando.html pinta ${pl(dupsP.size, 'heroi', 'herois')} dues vegades: ${[...dupsP].slice(0, 5).join(', ')}`);
+  if (!sobren.length && !falten.length && !dupsP.size) ok(`comando.html ensenya els mateixos ${aPagina.length} herois`);
   else {
     if (sobren.length) bad(`comando.html ensenya ${pl(sobren.length, 'heroi', 'herois')} que no són al roster: ${sobren.join(', ')}`);
     if (falten.length) bad(`comando.html no ensenya ${pl(falten.length, 'heroi', 'herois')} del roster: ${falten.join(', ')}`);
@@ -116,7 +125,8 @@ else {
   /* El comptador de la portada es va escriure a mà i deia 8 quan n'hi havia 9. */
   const comptador = PAG.match(/<div class="n">(\d+)<\/div><div class="l">herois canònics/);
   if (!comptador) bad('no es troba el comptador d\'herois canònics a comando.html');
-  else if (Number(comptador[1]) === roster.length) ok(`i el comptador diu ${comptador[1]}, que és el que n'hi ha`);
+  else if (Number(comptador[1]) === roster.length && aPagina.length === roster.length) ok(`i el comptador diu ${comptador[1]}, que és el que n'hi ha`);
+  else if (aPagina.length !== roster.length) bad(`la pàgina pinta ${aPagina.length} fitxes i el roster en té ${roster.length}`);
   else bad(`el comptador diu ${comptador[1]} herois canònics i n'hi ha ${roster.length}`);
 }
 
