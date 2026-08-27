@@ -688,6 +688,130 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 109 — Un relat que s'inventa el seu propi contingut deixa de ser una capa
+
+El Comando és opcional (V77: s'apaga i no es perd res). Precisament per això
+ningú el mirava, i havia anat derivant: el mateix personatge tenia **quatre
+grafies** repartides per l'app —`Guiriguay`, `Guiriguai`, `GuiriGuay`— i la
+pàgina pública ensenyava vuit herois amb poders que no són els del còmic
+(«Purpleman · persuasió i visualització» quan el que fa és travessar núvols
+tòxics i tornar les males olors flors), mentre en faltaven quatre que sí que hi
+surten: El Aviador, Pigmentón, La Medusa Andaluza i La Anguila.
+
+Res d'això peta mai. Simplement, qui llegeix una pantalla i després una altra
+creu que hi ha dos personatges, i el relat deixa de sostenir-se sol.
+
+**Que una cosa sigui opcional no vol dir que pugui ser falsa.** Mentre hi sigui,
+ha de dir el que passa a l'obra. Un relat inventat a trossos no és una capa
+narrativa: és soroll amb pretensions.
+
+D'aquí surten dues regles:
+
+- **Una sola llista mana.** `CANONICAL_HEROES` és d'on surten els noms, i
+  qualsevol altra llista que n'anomeni un hi ha de coincidir. Ho comprova
+  `tools/check-comando.js`, que també mira el comptador escrit a mà de la pàgina
+  —deia vuit quan ja n'hi havia nou.
+- **El que encara no està confirmat es marca, no s'amaga.** Porta `previ:true`.
+  Tenir-lo està bé; fer-lo passar per llegit, no.
+
+I aquí hi va la part que va costar dues correccions seguides de l'autor, perquè
+la primera versió d'aquesta veda tenia la idea equivocada.
+
+**«No surt al còmic 1 o 2» no vol dir «no confirmat».** Es van marcar com a
+provisionals quatre personatges de veritat: La Anguila —que sí que surt al
+còmic 1, és la bateria i s'escapoleix de qualsevol lloc—, Barbamuda, Reciclator,
+que viu en un vídeo, i Fraktalman, que té tema propi. Un personatge que viu en
+una cançó o en un vídeo **és igual de real que un del còmic**: el que canvia és
+on està documentat, i això és un altre camp (`on`), no un dubte.
+
+I el que es queda escrit per damunt de tot: una guarda comprova que les llistes
+**coincideixin entre elles**. Si el que diuen és cert no ho pot comprovar cap
+programa. Cap de les meves comprovacions va detectar res aquí —les quatre
+llistes coincidien perfectament a equivocar-se—; ho va corregir qui ha escrit
+l'obra. **La consistència es pot automatitzar; la veritat no.**
+
+### El que fa que aquest relat visqui dins d'un programa de gestió
+
+Cada personatge porta cinc coses i cap és decorativa: què fa (`power`), la seva
+**superarma** (`arma`), el vers literal (`lletra`), on està documentat (`on`) i
+—la que ho lliga tot— **què vol dir aquest personatge en un equip** (`vna`).
+
+Aquesta última és la raó de ser de tot plegat. La Medusa Andaluza no és una
+musa simpàtica: és el node que creua informació entre parts que no es parlaven.
+El Aviador «no tiene mojo, no tiene duende, no tiene don» i és el tècnic que
+desencalla el projecte. Purpleman absorbeix la toxicitat de l'ambient, i si
+aquest paper no té nom no el fa ningú.
+
+**Un heroi sense `vna` és decoració**, i la guarda el rebutja: aleshores el
+relat deixa de ser un pont amb la resta de l'eina i passa a ser un fullet
+enganxat al costat.
+
+I una regla petita amb conseqüències: **la `lletra` va literal i en castellà**,
+entre cometes baixes. La guarda comprova les cometes perquè són el senyal que
+allò és una cita. Traduir un vers o polir-lo el converteix en un resum, i llavors
+ja no és l'obra: és el que nosaltres hem entès de l'obra.
+
+### Comparar conjunts no és comparar llistes
+
+Un últim error, comès per aquesta mateixa guarda i que val la pena deixar
+escrit. En regenerar les fitxes de la pàgina, les velles no es van esborrar i va
+quedar cada heroi pintat **dues vegades**: 26 fitxes per a 13 personatges. La
+guarda ho va aprovar.
+
+El motiu és que comprovava dues coses —quins noms sobren i quins falten— i cap
+de les dues falla amb un duplicat: tots els noms repetits eren noms bons. Havia
+convertit dues llistes en dos conjunts abans de comparar-les, i **un conjunt no
+sap comptar**.
+
+La comprovació que faltava són dues línies: que no hi hagi repetits, i que el
+nombre de fitxes sigui el nombre de personatges. Va tardar exactament una tanda
+a fer falta.
+
+I una tercera que és de producte i val la pena escriure: **la metàfora sola és
+un conte i la lectura sola és una consultora més**. A la pàgina van de costat,
+en dues columnes, perquè es llegeixin alhora. El paper higiènic de McGragor no
+és un acudit: és literalment el model contra el qual està feta aquesta eina —et
+creen la necessitat, te la cobren, i el teu temps passa a ser matèria primera.
+
+## Veda 108 — El que legitima publicar un nom és qui prem el botó
+
+El SOS publica **agregat i sense noms** (veda 47) i això no era timidesa: quan un
+node publica la seva oferta, publica dades de persones que mai van decidir res.
+El directori de `/SOS/online` sí que porta nom i municipi, i la diferència no és
+tècnica —**és de consentiment**. Qui hi surt és qui ho ha escrit i ho ha firmat.
+
+Per això les dues coses viuen en llocs separats i no es barregen mai. Barrejar-les
+seria fer passar el consentiment d'una persona pel de tot un node.
+
+De construir-lo en surten tres regles:
+
+**La firma mana, no el permís.** La taula és oberta a escriure —qualsevol pot
+inserir-hi una fila— i això no és un descuit: tancar l'escriptura tornaria a posar
+el control a mans de qui allotja. El que defensa el directori és que una fitxa
+falsificada **no verifica i no es pinta**. Es confia en el que es pot comprovar,
+no en qui guarda.
+
+I dins d'això, el detall que ho aguanta tot: **verificar la firma no és prou**.
+Qui vulgui suplantar pot firmar de debò amb una clau seva, perfectament vàlida, i
+posar-hi el `did` d'un altre a tot arreu. La firma quadra. El que ho tomba és
+comprovar que **el `did` sigui el hash d'aquella clau**. Sense aquesta segona
+comprovació, la primera només serveix per sentir-se segur.
+
+**Un motiu equivocat porta a arreglar el que no és.** Comprovar el `did` abans que
+la firma feia que una fitxa sense firmar es rebutgés dient «el did no és el de qui
+firma». Rebutjava bé i mentia sobre per què. L'ordre de les comprovacions és part
+del missatge.
+
+**Retirar-se ha de ser una publicació, no un esborrat.** No hi ha `delete`: donar-se
+de baixa és publicar una fitxa amb `retirada: true`, firmada. Així només se'n pot
+donar de baixa un mateix —si l'esborrat fos possible, qualsevol podria fer-lo—, i
+en queda rastre del que va passar i quan.
+
+Una cosa que sí que queda oberta i s'escriu perquè no se'ns oblidi: una taula
+oberta a escriure **es pot inundar**. Les restriccions de mida i forma aturen
+l'accident i el bot ximple, no algú decidit. Quan calgui, el següent pas és un
+límit per IP, no tancar l'escriptura.
+
 ## Veda 107 — Un mètode que només s'entén de dins no és un mètode: és un gremi
 
 La portada explicava el que fem amb el vocabulari amb què ho pensem: «Value

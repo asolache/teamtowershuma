@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SOS Online · qui hi ha, què ofereix i què busca</title>
+<meta name="description" content="Directori obert de persones i entitats: què saben fer, què necessiten i on són. Et dones d'alta en un minut, sense compte ni correu, i cada fitxa va firmada per qui la publica.">
+<meta property="og:title" content="SOS Online · qui hi ha, què ofereix i què busca">
+<meta property="og:description" content="Dona't d'alta amb el que saps fer i el que necessites. Sense compte, sense correu, i amb el contacte xifrat.">
+<meta property="og:type" content="website">
+<style>
+:root{
+  --bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;
+  --light:#c7c7d1;--border:#2a2a35;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--blue:#00b0ff;--red:#ff5252;
+  --mono:'SF Mono',SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.65;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow-x:hidden}
+a{color:var(--indigo)}
+.wrap{max-width:940px;margin:0 auto;padding:0 1.1rem}
+h1,h2,h3{line-height:1.2;margin:0}
+
+/* ── Capçalera ─────────────────────────────────────────────────────────── */
+.top{border-bottom:1px solid var(--border);background:rgba(11,11,18,.96);position:sticky;top:0;z-index:20;
+  backdrop-filter:blur(10px)}
+.top .wrap{display:flex;align-items:center;gap:1rem;min-height:60px;flex-wrap:wrap}
+.brand{font-weight:700;text-decoration:none;color:var(--text);font-size:1.05rem;white-space:nowrap}
+.brand span{color:var(--indigo)}
+.top nav{margin-left:auto;display:flex;gap:.5rem;flex-wrap:wrap}
+.hero{padding:2.4rem 0 1.4rem}
+.kicker{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(1.6rem,5vw,2.5rem);margin:.6rem 0 .7rem;max-width:20ch}
+.hero p{color:var(--light);max-width:62ch;margin:0 0 1rem}
+
+/* ── Botons ────────────────────────────────────────────────────────────── */
+button,.btn{font:inherit;cursor:pointer;border-radius:8px;min-height:44px;padding:.6rem 1.1rem;
+  touch-action:manipulation;border:1px solid var(--border);background:var(--card);color:var(--text);
+  transition:border-color .15s,background .15s}
+button:hover,.btn:hover{border-color:var(--indigo)}
+button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--indigo);outline-offset:2px}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.btn-primary:hover{background:#4f52d8}
+.btn-sm{min-height:36px;padding:.35rem .7rem;font-size:.82rem}
+button[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ── Cercador ──────────────────────────────────────────────────────────── */
+.cercador{position:sticky;top:60px;z-index:15;background:var(--bg);padding:.9rem 0;border-bottom:1px solid var(--border)}
+.cerca-camp{display:flex;gap:.5rem;flex-wrap:wrap}
+.cerca-camp input[type=search]{flex:1;min-width:200px;min-height:44px;padding:.6rem .9rem;border-radius:8px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text);font:inherit}
+.filtres{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.xip{font-family:var(--mono);font-size:.7rem;letter-spacing:.04em;padding:.34rem .6rem;border-radius:20px;
+  border:1px solid var(--border);background:transparent;color:var(--light);min-height:32px}
+.xip[aria-pressed=true]{border-color:var(--indigo);color:var(--indigo);background:rgba(99,102,241,.1)}
+.compte{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.6rem}
+
+/* ── Fitxes ────────────────────────────────────────────────────────────── */
+.fitxes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem;margin:1.2rem 0 2rem}
+.fitxa{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.1rem;
+  display:flex;flex-direction:column;gap:.55rem}
+.fitxa h3{font-size:1.05rem}
+.fitxa .lloc{font-family:var(--mono);font-size:.7rem;color:var(--blue);letter-spacing:.05em}
+.linia{display:flex;gap:.45rem;align-items:flex-start;font-size:.87rem;color:var(--light)}
+.linia .dir{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;padding:.16rem .4rem;border-radius:3px;
+  flex-shrink:0;margin-top:.15rem}
+.dir-ofereix{background:rgba(0,230,118,.13);color:var(--green)}
+.dir-busca{background:rgba(255,145,0,.13);color:var(--orange)}
+.fitxa footer{margin-top:auto;padding-top:.6rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.firma{font-family:var(--mono);font-size:.64rem;color:var(--green);display:flex;align-items:center;gap:.3rem}
+.firma.jo{color:var(--purple)}
+
+/* ── Avisos ────────────────────────────────────────────────────────────── */
+.avis{border:1px solid var(--border);border-left:3px solid var(--orange);background:var(--panel);
+  border-radius:0 10px 10px 0;padding:1rem 1.1rem;margin:1.2rem 0;font-size:.9rem;color:var(--light)}
+.avis.greu{border-left-color:var(--red)}
+.avis.bo{border-left-color:var(--green)}
+.avis h3{font-size:.95rem;margin-bottom:.35rem}
+.avis code{font-family:var(--mono);font-size:.8rem;background:var(--card);padding:.1rem .35rem;border-radius:3px}
+.buit{text-align:center;color:var(--muted);padding:3rem 1rem}
+
+/* ── Formulari ─────────────────────────────────────────────────────────── */
+dialog{border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);
+  max-width:620px;width:calc(100vw - 2rem);padding:0}
+dialog::backdrop{background:rgba(0,0,0,.72)}
+.dlg-cap{padding:1.1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem}
+.dlg-cap h2{font-size:1.1rem;flex:1}
+.dlg-cos{padding:1.2rem;max-height:70vh;overflow-y:auto}
+.dlg-peu{padding:1rem 1.2rem;border-top:1px solid var(--border);display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap}
+label{display:block;font-size:.8rem;color:var(--muted);margin:.9rem 0 .3rem}
+label:first-child{margin-top:0}
+input[type=text],select,textarea{width:100%;min-height:44px;padding:.55rem .8rem;border-radius:8px;
+  border:1px solid var(--border);background:var(--card);color:var(--text);font:inherit}
+textarea{min-height:70px;resize:vertical}
+.parell{display:flex;gap:.5rem;align-items:flex-end}
+.parell select{max-width:44%}
+.llista{list-style:none;padding:0;margin:.6rem 0 0;display:flex;flex-direction:column;gap:.35rem}
+.llista li{display:flex;align-items:center;gap:.5rem;background:var(--card);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .5rem .4rem .7rem;font-size:.87rem}
+.llista li span{flex:1}
+.mini{font-size:.78rem;color:var(--muted);margin-top:.4rem}
+
+/* La previsualització: el que sortirà, tal com sortirà. */
+.previ{border:1px solid var(--green);border-radius:10px;background:rgba(0,230,118,.05);padding:1rem;margin-top:.4rem}
+.previ .previ-t{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green);margin-bottom:.6rem}
+.previ dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.3rem .8rem;font-size:.85rem}
+.previ dt{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.previ dd{margin:0;color:var(--text)}
+.no-surt{margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.no-surt b{color:var(--light)}
+
+/* ── Xat ───────────────────────────────────────────────────────────────── */
+.xat-fils{display:flex;flex-direction:column;gap:.5rem;min-height:180px;max-height:44vh;overflow-y:auto;
+  padding:.3rem;background:var(--bg);border:1px solid var(--border);border-radius:10px}
+.msg{max-width:82%;padding:.5rem .75rem;border-radius:12px;font-size:.88rem;background:var(--card);
+  border:1px solid var(--border);word-break:break-word}
+.msg.meu{align-self:flex-end;background:rgba(99,102,241,.16);border-color:rgba(99,102,241,.4)}
+.msg .qui{font-family:var(--mono);font-size:.6rem;color:var(--muted);display:block;margin-bottom:.15rem}
+.xat-camp{display:flex;gap:.5rem;margin-top:.7rem}
+.xat-camp input{flex:1}
+footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);font-size:.82rem;margin-top:2rem}
+@media(max-width:600px){.cercador{top:0;position:static}.top{position:static}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">Team<span>Towers</span> · SOS</a>
+    <nav>
+      <a class="btn btn-sm" href="/SOS/" target="_blank" rel="noopener">L'eina</a>
+      <button class="btn-primary btn-sm" id="btnAlta" type="button">Dona't d'alta</button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker">Directori obert</div>
+    <h1>Qui hi ha, què sap fer i què necessita</h1>
+    <p>Cadascú s'hi apunta sol i escriu el que vol oferir i el que li fa falta. No hi ha compte,
+       ni correu, ni contrasenya: la teva fitxa la firma el teu navegador i només tu la pots canviar.
+       Per parlar amb algú s'obre una <strong>sala xifrada</strong> — sense donar-li el teu telèfon.</p>
+  </div>
+</section>
+
+<div id="estat" class="wrap"></div>
+
+<section class="cercador">
+  <div class="wrap">
+    <div class="cerca-camp">
+      <input type="search" id="q" placeholder="Busca: cuina, transport, Torrelles, un nom…"
+             aria-label="Busca per activitat, municipi o nom" autocomplete="off">
+      <button type="button" id="btnNeteja" class="btn">Neteja</button>
+    </div>
+    <div class="filtres" role="group" aria-label="Filtres">
+      <button class="xip" type="button" data-dir="" aria-pressed="true">Tot</button>
+      <button class="xip" type="button" data-dir="ofereix" aria-pressed="false">Només ofertes</button>
+      <button class="xip" type="button" data-dir="busca" aria-pressed="false">Només demandes</button>
+      <button class="xip" type="button" data-meu="1" aria-pressed="false">La meva fitxa</button>
+    </div>
+    <div class="compte" id="compte" aria-live="polite"></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="fitxes" id="fitxes"></div>
+</main>
+
+<footer class="peu">
+  <div class="wrap">
+    <p><strong>Què veu qui allotja això.</strong> Les fitxes són públiques a propòsit: per això es
+    poden buscar. El que no passa per cap servidor és la teva clau —es queda al navegador— ni el
+    contingut de les converses, que van xifrades d'extrem a extrem.</p>
+    <p><a href="/vedes" target="_blank" rel="noopener">Les regles que s'ha imposat el SOS</a> ·
+       <a href="/SOS/" target="_blank" rel="noopener">L'eina completa</a> ·
+       <a href="/">TeamTowers Humà</a></p>
+  </div>
+</footer>
+
+<!-- ═══════════ Alta ═══════════ -->
+<dialog id="dlgAlta">
+  <form method="dialog" id="formAlta">
+    <div class="dlg-cap"><h2 id="altaTitol">La teva fitxa</h2></div>
+    <div class="dlg-cos">
+      <label for="fNom">Com vols que et trobin</label>
+      <input type="text" id="fNom" maxlength="60" placeholder="Marta Vidal, o Ca la Marta" required>
+      <p class="mini">Pot ser el teu nom, un àlies o el nom de l'entitat. El que escriguis aquí és el que veurà tothom.</p>
+
+      <label for="fMuni">Municipi</label>
+      <input type="text" id="fMuni" maxlength="60" placeholder="Torrelles de Foix" required>
+      <p class="mini">Només el municipi. No demanem l'adreça, i no la posis al text.</p>
+
+      <label for="fCat">Què ofereixes</label>
+      <div class="parell">
+        <select id="fCat" aria-label="Categoria del que ofereixes"></select>
+        <input type="text" id="fTxt" maxlength="80" placeholder="Cuino per a colles">
+        <button type="button" class="btn" id="btnAfegirO" aria-label="Afegeix el que ofereixes">Afegeix</button>
+      </div>
+      <ul class="llista" id="llistaO"></ul>
+
+      <label for="fCatB">Què busques</label>
+      <div class="parell">
+        <select id="fCatB" aria-label="Categoria del que busques"></select>
+        <input type="text" id="fTxtB" maxlength="80" placeholder="Algú que em porti caixes">
+        <button type="button" class="btn" id="btnAfegirB" aria-label="Afegeix el que busques">Afegeix</button>
+      </div>
+      <ul class="llista" id="llistaB"></ul>
+
+      <!-- Veda 47: el que surt de casa s'ensenya sencer abans de sortir. Aquí
+           no és un paquet agregat sinó una fitxa amb nom, i per això aquesta
+           pantalla importa encara més. -->
+      <div class="previ" id="previ" aria-live="polite"></div>
+    </div>
+    <div class="dlg-peu">
+      <button type="button" class="btn" id="btnRetira" hidden>Retira'm del directori</button>
+      <button type="button" class="btn" id="btnTanca">Cancel·la</button>
+      <button type="button" class="btn-primary" id="btnPublica">Publica la fitxa</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ═══════════ Xat ═══════════ -->
+<dialog id="dlgXat">
+  <div class="dlg-cap"><h2 id="xatTitol">Conversa</h2></div>
+  <div class="dlg-cos">
+    <div id="xatAvis"></div>
+    <div class="xat-fils" id="xatFils"></div>
+    <div class="xat-camp">
+      <input type="text" id="xatTxt" maxlength="500" placeholder="Escriu…" aria-label="Missatge">
+      <button type="button" class="btn-primary" id="xatEnvia">Envia</button>
+    </div>
+  </div>
+  <div class="dlg-peu"><button type="button" class="btn" id="xatTanca">Tanca</button></div>
+</dialog>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SOS Online · el directori que la gent omple ella mateixa
+   ══════════════════════════════════════════════════════════════════════════
+
+   La resta del SOS publica **agregat i sense noms** (`supplyPublicPack`, veda
+   47) perquè allà un node publica dades de tercers que mai van dir que sí.
+   Aquí la persona escriu la seva pròpia fitxa i la firma: per això sí que hi
+   pot haver nom i municipi. La diferència no és tècnica, és de consentiment, i
+   per això les dues coses viuen en llocs separats i no es barregen mai.
+
+   Tres regles que aguanten tot el fitxer:
+
+   1 · **La firma mana, no el permís.** La taula és oberta a escriure. Qui
+       vulgui inserir una fitxa a nom d'un altre pot fer-ho; el que no pot és
+       firmar-la. En llegir, es verifica cada fitxa i la que no quadra **no es
+       pinta**. Es confia en el que es pot comprovar, no en qui allotja.
+   2 · **El que surt s'ensenya abans de sortir.** El formulari no publica res
+       que la persona no hagi vist tal com quedarà.
+   3 · **Aquesta pàgina no demana mai un correu ni un telèfon**, ni els guarda
+       encara que algú els escrigui a mà. El contacte va per una sala xifrada.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Configuració ───────────────────────────────────────────────────────────
+   On viu el directori. Es deixa buit al repositori a propòsit: així el fitxer
+   es pot publicar sense credencials i la pàgina diu què li falta en comptes de
+   semblar trencada. La clau `anon` de Supabase és publicable per disseny —el
+   que protegeix les dades és la política RLS de `SOS/sql/001_online_fitxes.sql`,
+   no amagar-la. */
+const SUPA_URL = '';
+const SUPA_KEY = '';
+const TAULA    = 'online_fitxes';
+const configurat = () => !!(SUPA_URL && SUPA_KEY);
+
+/* ── Les categories, les mateixes que l'aplicació ────────────────────────────
+   Si aquí se n'inventessin d'altres, el que es publiqui des del directori no
+   creuaria mai amb el que es publica des d'un banc de temps, i serien dues
+   xarxes que no es veuen. Còpia literal de `TIMEBANK_CATS`. */
+const CATS=[
+  ['acompanyament','Acompanyament i companyia','🤝'],['transport','Transport','🚗'],
+  ['reparacions','Petites reparacions de la llar','🔧'],['informatica','Informàtica i mòbil','💻'],
+  ['idiomes','Idiomes i classes de reforç','📚'],['infants','Cura d\'infants (cangur)','🍼'],
+  ['gentgran','Cura de gent gran','👵'],['cuina','Cuina','🍲'],['jardineria','Jardineria i hort','🌱'],
+  ['costura','Costura i arranjaments','🧵'],['tramits','Tràmits i paperassa','📄'],
+  ['estetica','Perruqueria i estètica','✂️'],['animals','Cura d\'animals','🐕'],
+  ['mudances','Mudances i càrregues','📦'],['altres','Altres','◦']
+];
+const CAT=(()=>{const m={};CATS.forEach(([id,label,ic])=>m[id]={id,label,ic});return m;})();
+const catMeta=id=>CAT[id]||CAT.altres;
+
+/* ── Utilitats ───────────────────────────────────────────────────────────── */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now=()=>new Date().toISOString();
+const _te=new TextEncoder();
+const _b64u=b=>{let s='';const u=new Uint8Array(b);for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');};
+const _unb64u=str=>{const pad='='.repeat((4-(str.length%4))%4),s=(str+pad).replace(/-/g,'+').replace(/_/g,'/'),bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;};
+const _hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+async function sha256(bytes){return _b64u(await crypto.subtle.digest('SHA-256',bytes instanceof Uint8Array?bytes:_te.encode(String(bytes))));}
+async function sha256hex(bytes){return _hex(await crypto.subtle.digest('SHA-256',bytes instanceof Uint8Array?bytes:_te.encode(String(bytes))));}
+
+/* ── Identitat · exactament la mateixa que l'aplicació ───────────────────────
+   Mateix origen vol dir mateixa IndexedDB: qui ja fa servir el SOS entra aquí
+   amb el `did` que ja tenia, i el que publiqui des d'aquí el reconeixerà l'app.
+   Si es divergís ni que fos un caràcter, serien dues persones diferents per al
+   sistema. Per això això és una còpia literal i no una versió «simplificada».
+   → SOS/index.html · getIdentity / signRecord / verifyRecord */
+const DB_NAME='SOS_MVP',DB_VER=1,STORE='nodes';
+let _db=null;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);
+  r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE)){
+    const s=db.createObjectStore(STORE,{keyPath:'id'});s.createIndex('parentId','parentId',{unique:false});}};
+  r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=e=>rej(e.target.error);});}
+function dbGet(id){return new Promise(res=>{try{const r=_db.transaction(STORE,'readonly').objectStore(STORE).get(id);
+  r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null);}catch(e){res(null);}});}
+function dbPut(rec){return new Promise(res=>{try{const r=_db.transaction(STORE,'readwrite').objectStore(STORE).put(rec);
+  r.onsuccess=()=>res(true);r.onerror=()=>res(false);}catch(e){res(false);}});}
+
+const _signParams=alg=>alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',hash:'SHA-256'};
+const _importPub=(alg,jwk)=>crypto.subtle.importKey('jwk',jwk,alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['verify']);
+/* Canonicalització estable: mateixes claus, mateix ordre, mateixos bytes. Els
+   camps que un tercer pot tocar sense invalidar res queden fora del que es
+   firma. Còpia literal de `_canon`; si divergís, cap firma d'aquí serviria a
+   l'app ni al revés. */
+function _canon(v){if(v===null||typeof v!=='object')return JSON.stringify(v);
+  if(Array.isArray(v))return '['+v.map(_canon).join(',')+']';
+  const k=Object.keys(v).filter(x=>x!=='sig'&&x!=='signer'&&x!=='sigTs'&&x!=='hash'&&v[x]!==undefined).sort();
+  return '{'+k.map(x=>JSON.stringify(x)+':'+_canon(v[x])).join(',')+'}';}
+const _payload=o=>_te.encode(_canon(o));
+async function _makeKeypair(){
+  try{return{alg:'Ed25519',pair:await crypto.subtle.generateKey({name:'Ed25519'},true,['sign','verify'])};}
+  catch(e){return{alg:'ECDSA-P256',pair:await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify'])};}
+}
+const _makeEx=()=>crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);
+const _importExPriv=jwk=>crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);
+const _importExPub=jwk=>crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,[]);
+async function _didFromJwk(alg,jwk){return 'did:sos:'+alg.toLowerCase()+':'+(await sha256(_te.encode(JSON.stringify(jwk)))).slice(0,32);}
+
+let _identity=null;
+async function getIdentity(){
+  if(_identity)return _identity;
+  const rec=await dbGet('__identity');
+  if(rec&&rec.privJwk&&rec.pubJwk&&rec.alg){
+    const priv=await crypto.subtle.importKey('jwk',rec.privJwk,
+      rec.alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['sign']);
+    let ex=null;
+    if(rec.exPrivJwk&&rec.exPubJwk)ex={pubJwk:rec.exPubJwk,privKey:await _importExPriv(rec.exPrivJwk)};
+    else{const p=await _makeEx();ex={pubJwk:await crypto.subtle.exportKey('jwk',p.publicKey),privKey:p.privateKey};
+      await dbPut(Object.assign({},rec,{exPubJwk:ex.pubJwk,exPrivJwk:await crypto.subtle.exportKey('jwk',p.privateKey)}));}
+    _identity={did:rec.did,alg:rec.alg,pubJwk:rec.pubJwk,privKey:priv,exchange:ex};
+    return _identity;
+  }
+  const{alg,pair}=await _makeKeypair();
+  const pubJwk=await crypto.subtle.exportKey('jwk',pair.publicKey);
+  const privJwk=await crypto.subtle.exportKey('jwk',pair.privateKey);
+  const did=await _didFromJwk(alg,pubJwk);
+  const exPair=await _makeEx();
+  const exPubJwk=await crypto.subtle.exportKey('jwk',exPair.publicKey);
+  const exPrivJwk=await crypto.subtle.exportKey('jwk',exPair.privateKey);
+  await dbPut({id:'__identity',type:'meta',did,alg,pubJwk,privJwk,exPubJwk,exPrivJwk,createdAt:now()});
+  _identity={did,alg,pubJwk,privKey:pair.privateKey,exchange:{pubJwk:exPubJwk,privKey:exPair.privateKey}};
+  return _identity;
+}
+async function signRecord(rec){
+  const id=await getIdentity();
+  const sig=await crypto.subtle.sign(_signParams(id.alg),id.privKey,_payload(rec));
+  rec.signer={did:id.did,alg:id.alg,pubJwk:id.pubJwk};
+  rec.sig=_b64u(sig);rec.sigTs=now();
+  return rec;
+}
+async function verifyRecord(rec){
+  if(!rec||!rec.sig||!rec.signer||!rec.signer.pubJwk||!rec.signer.alg)return{ok:false,reason:'sense firma'};
+  try{
+    const pub=await _importPub(rec.signer.alg,rec.signer.pubJwk);
+    const good=await crypto.subtle.verify(_signParams(rec.signer.alg),pub,_unb64u(rec.sig),_payload(rec));
+    return{ok:good,reason:good?'valida':'firma que no quadra'};
+  }catch(e){return{ok:false,reason:'error: '+(e.message||e)};}
+}
+
+/* El pas que fa que la firma serveixi de debò. Verificar només que la firma
+   quadra amb la clau que ve a dins no prova res: qui falsifica pot portar la
+   SEVA clau i firmar-hi el que vulgui. El que ho lliga és que el `did` sigui el
+   hash d'aquella clau —i el `did` és el que identifica la persona a tot arreu.
+   Sense aquesta comprovació, suplantar seria trivial. */
+async function fitxaValida(f){
+  if(!f||typeof f!=='object')return{ok:false,reason:'buida'};
+  /* L'ordre de les comprovacions és el que fa que el motiu sigui cert. Mirar
+     primer si el did quadra amb qui firma donava «el did no és el de qui
+     firma» per a una fitxa que directament no anava firmada: dues avaries
+     diferents amb el mateix nom. Un motiu equivocat porta a arreglar el que no
+     és. */
+  if(!f.sig||!f.signer||!f.signer.pubJwk||!f.signer.alg)return{ok:false,reason:'sense firma'};
+  if(!f.did||f.signer.did!==f.did)return{ok:false,reason:'el did no és el de qui firma'};
+  const esperat=await _didFromJwk(f.signer.alg||'',f.signer.pubJwk||{});
+  if(esperat!==f.did)return{ok:false,reason:'el did no surt d\'aquesta clau'};
+  return await verifyRecord(f);
+}
+
+/* ── La fitxa ────────────────────────────────────────────────────────────── */
+const FITXA_TIPUS='sos-online-fitxa';
+/* Els únics camps que viatgen. Escriure la llista i publicar només el que hi és
+   evita el descuit de sempre: afegir un camp al formulari per provar i que
+   acabi sortint de casa sense que ningú ho decideixi. */
+const CAMPS=['@type','v','did','nom','municipi','ofereix','busca','exPub','retirada','at'];
+function bastirFitxa({nom,municipi,ofereix,busca,retirada,did,exPub}){
+  const neteja=l=>(l||[]).slice(0,12).map(x=>({
+    cat:CAT[x.cat]?x.cat:'altres',
+    txt:String(x.txt||'').trim().slice(0,80)
+  })).filter(x=>x.txt);
+  const f={'@type':FITXA_TIPUS,v:1,did,
+    nom:String(nom||'').trim().slice(0,60),
+    municipi:String(municipi||'').trim().slice(0,60),
+    ofereix:neteja(ofereix),busca:neteja(busca),
+    exPub:exPub||null,at:now()};
+  if(retirada)f.retirada=true;
+  const fora={};CAMPS.forEach(k=>{if(f[k]!==undefined)fora[k]=f[k];});
+  return fora;
+}
+
+/* ── Llegir i escriure el directori ──────────────────────────────────────── */
+async function supaGet(){
+  const url=SUPA_URL.replace(/\/+$/,'')+'/rest/v1/'+TAULA+'?select=did,fitxa,creat&order=creat.desc&limit=2000';
+  const r=await fetch(url,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}});
+  if(!r.ok)throw new Error('El directori no respon ('+r.status+')');
+  return await r.json();
+}
+async function supaPut(fitxa){
+  const url=SUPA_URL.replace(/\/+$/,'')+'/rest/v1/'+TAULA;
+  const r=await fetch(url,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,
+    'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({did:fitxa.did,fitxa})});
+  if(!r.ok)throw new Error('No s\'ha pogut publicar ('+r.status+'): '+(await r.text()).slice(0,140));
+  return true;
+}
+
+/* El sedàs d'entrada. De tot el que hi ha a la taula en surt, per cada `did`,
+   **la fitxa vàlida més nova**. Una de falsificada no guanya per ser més nova:
+   cau abans, en no verificar. I una retirada guanya com qualsevol altra —per
+   això retirar-se funciona encara que la fila vella hi segueixi. */
+async function tamisar(files){
+  const per={},descartades=[];
+  for(const row of files||[]){
+    const f=row&&row.fitxa;
+    if(!f||f['@type']!==FITXA_TIPUS){descartades.push('no és una fitxa');continue;}
+    if(row.did&&f.did!==row.did){descartades.push('el did de la fila no és el de la fitxa');continue;}
+    const v=await fitxaValida(f);
+    if(!v.ok){descartades.push(v.reason);continue;}
+    const prev=per[f.did];
+    if(prev&&String(prev.at||'')>=String(f.at||''))continue;
+    per[f.did]=f;
+  }
+  const vives=Object.values(per).filter(f=>!f.retirada);
+  vives.sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));
+  return{fitxes:vives,descartades,retirades:Object.values(per).filter(f=>f.retirada).length};
+}
+
+/* ── Estat ───────────────────────────────────────────────────────────────── */
+const S={fitxes:[],descartades:[],jo:null,meva:null,q:'',dir:'',nomesMeu:false,
+  esborrany:{ofereix:[],busca:[]}};
+
+/* ── El cercador ─────────────────────────────────────────────────────────────
+   Busca alhora pel nom, pel municipi, per la categoria i pel text lliure. Un
+   cercador que només mirés una d'aquestes obligaria a endevinar per quina
+   paraula està desada la cosa, que és el problema que venia a resoldre. */
+function textCercable(f){
+  return [f.nom,f.municipi,
+    ...(f.ofereix||[]).map(x=>x.txt+' '+catMeta(x.cat).label),
+    ...(f.busca||[]).map(x=>x.txt+' '+catMeta(x.cat).label)
+  ].join(' ').toLowerCase();
+}
+function filtrar(){
+  const q=S.q.trim().toLowerCase();
+  return S.fitxes.filter(f=>{
+    if(S.nomesMeu&&(!S.jo||f.did!==S.jo.did))return false;
+    if(S.dir==='ofereix'&&!(f.ofereix||[]).length)return false;
+    if(S.dir==='busca'&&!(f.busca||[]).length)return false;
+    if(!q)return true;
+    return q.split(/\s+/).every(t=>textCercable(f).includes(t));
+  });
+}
+
+/* ── Pintar ──────────────────────────────────────────────────────────────── */
+function pintaEstat(){
+  const box=$('#estat');
+  if(!configurat()){
+    /* Sense credencials la pàgina no fa veure que funciona: diu exactament què
+       li falta i on es posa. Una pantalla buida s'assembla massa a «no hi ha
+       ningú apuntat», que seria mentida. */
+    box.innerHTML='<div class="avis greu"><h3>El directori encara no està connectat</h3>'+
+      '<p>Aquesta pàgina funciona, però no té on desar les fitxes. Falta omplir '+
+      '<code>SUPA_URL</code> i <code>SUPA_KEY</code> a dalt de tot del fitxer, i aplicar '+
+      '<code>SOS/sql/001_online_fitxes.sql</code> al projecte.</p>'+
+      '<p>Mentrestant pots escriure la teva fitxa i veure exactament què es publicaria.</p></div>';
+    return;
+  }
+  if(S.descartades.length){
+    box.innerHTML='<div class="avis"><h3>'+S.descartades.length+' fitxa'+(S.descartades.length>1?'s':'')+
+      ' descartada'+(S.descartades.length>1?'s':'')+'</h3><p>No es pinten perquè la firma no quadra. '+
+      'Això no és un error teu: vol dir que algú ha escrit al directori sense la clau de qui deia ser, '+
+      'i el sedàs ho ha aturat.</p></div>';
+  }else box.innerHTML='';
+}
+function pintaCompte(n){
+  const t=S.fitxes.length;
+  $('#compte').textContent=!configurat()?'':
+    (n===t?t+(t===1?' fitxa':' fitxes'):n+' de '+t)+
+    (S.descartades.length?' · '+S.descartades.length+' descartades per firma':'');
+}
+function liniaHTML(x,dir){
+  const m=catMeta(x.cat);
+  return '<div class="linia"><span class="dir dir-'+dir+'">'+(dir==='ofereix'?'OFEREIX':'BUSCA')+'</span>'+
+    '<span>'+m.ic+' '+esc(x.txt)+'</span></div>';
+}
+function pintaFitxes(){
+  const cont=$('#fitxes'),llista=filtrar();
+  pintaCompte(llista.length);
+  if(!llista.length){
+    cont.innerHTML='<div class="buit">'+(
+      !configurat()?'Quan el directori estigui connectat, aquí sortirà qui s\'hi hagi apuntat.'
+      :S.q?'Ningú amb «'+esc(S.q)+'». Prova amb una paraula més curta.'
+      :'Encara no hi ha ningú apuntat. Pots ser la primera persona.')+'</div>';
+    return;
+  }
+  cont.innerHTML=llista.map(f=>{
+    const meva=S.jo&&f.did===S.jo.did;
+    return '<article class="fitxa">'+
+      '<h3>'+esc(f.nom)+'</h3>'+
+      '<div class="lloc">📍 '+esc(f.municipi)+'</div>'+
+      (f.ofereix||[]).map(x=>liniaHTML(x,'ofereix')).join('')+
+      (f.busca||[]).map(x=>liniaHTML(x,'busca')).join('')+
+      '<footer>'+
+        '<span class="firma'+(meva?' jo':'')+'">✓ '+(meva?'la teva fitxa':'firma comprovada')+'</span>'+
+        (meva?'<button type="button" class="btn btn-sm" data-edita="1">Edita</button>'
+             :'<button type="button" class="btn btn-sm" data-xat="'+esc(f.did)+'">💬 Parla-hi</button>')+
+      '</footer></article>';
+  }).join('');
+}
+
+/* ── Formulari d'alta ────────────────────────────────────────────────────── */
+function omplirCats(){
+  const opts=CATS.map(([id,label,ic])=>'<option value="'+id+'">'+ic+' '+esc(label)+'</option>').join('');
+  $('#fCat').innerHTML=opts;$('#fCatB').innerHTML=opts;
+}
+function pintaLlistes(){
+  const fer=(sel,key)=>{
+    $(sel).innerHTML=S.esborrany[key].map((x,i)=>
+      '<li><span>'+catMeta(x.cat).ic+' '+esc(x.txt)+'</span>'+
+      '<button type="button" class="btn btn-sm" data-treu="'+key+':'+i+'" aria-label="Treu">×</button></li>').join('');
+  };
+  fer('#llistaO','ofereix');fer('#llistaB','busca');
+  pintaPrevi();
+}
+/* La previsualització no és decorativa: és el contracte. El que hi surt és el
+   que s'enviarà, camp per camp, i el bloc de sota diu el que NO s'envia —que
+   és el que la gent de debò es pregunta. */
+function pintaPrevi(){
+  const nom=$('#fNom').value.trim(),muni=$('#fMuni').value.trim();
+  const o=S.esborrany.ofereix,b=S.esborrany.busca;
+  const files=[];
+  files.push(['Nom',nom||'—']);
+  files.push(['Municipi',muni||'—']);
+  if(o.length)files.push(['Ofereix',o.map(x=>catMeta(x.cat).ic+' '+x.txt).join(' · ')]);
+  if(b.length)files.push(['Busca',b.map(x=>catMeta(x.cat).ic+' '+x.txt).join(' · ')]);
+  files.push(['Firma',S.jo?S.jo.did.slice(0,26)+'…':'—']);
+  $('#previ').innerHTML='<div class="previ-t">Això és exactament el que es publicarà</div>'+
+    '<dl>'+files.map(([k,v])=>'<dt>'+k+'</dt><dd>'+esc(v)+'</dd>').join('')+'</dl>'+
+    '<div class="no-surt"><b>No se\'n publica res més.</b> Ni correu, ni telèfon, ni adreça, '+
+    'ni on ets ara. Si algú et vol dir alguna cosa, s\'obre una sala xifrada i tu decideixes '+
+    'què li expliques.</div>';
+}
+function obreAlta(){
+  if(S.meva){
+    $('#altaTitol').textContent='Edita la teva fitxa';
+    $('#fNom').value=S.meva.nom;$('#fMuni').value=S.meva.municipi;
+    S.esborrany={ofereix:(S.meva.ofereix||[]).slice(),busca:(S.meva.busca||[]).slice()};
+    $('#btnRetira').hidden=false;
+  }else{
+    $('#altaTitol').textContent='La teva fitxa';
+    $('#btnRetira').hidden=true;
+  }
+  pintaLlistes();
+  $('#dlgAlta').showModal();
+}
+async function publica({retirada}={}){
+  const nom=$('#fNom').value.trim(),muni=$('#fMuni').value.trim();
+  if(!retirada&&(!nom||!muni)){alert('Falta el nom o el municipi.');return;}
+  if(!retirada&&!S.esborrany.ofereix.length&&!S.esborrany.busca.length){
+    alert('Posa almenys una cosa que ofereixis o que busquis: si no, ningú et podrà trobar per res.');return;}
+  const id=await getIdentity();
+  const f=bastirFitxa({nom,municipi:muni,ofereix:S.esborrany.ofereix,busca:S.esborrany.busca,
+    retirada:!!retirada,did:id.did,exPub:id.exchange&&id.exchange.pubJwk});
+  await signRecord(f);
+  if(!configurat()){
+    alert('La fitxa s\'ha firmat correctament, però el directori encara no està connectat i no s\'ha pogut publicar.');
+    return;
+  }
+  const btn=$('#btnPublica');btn.disabled=true;btn.textContent='Publicant…';
+  try{
+    await supaPut(f);
+    $('#dlgAlta').close();
+    await carrega();
+  }catch(e){
+    alert(e.message||'No s\'ha pogut publicar.');
+  }finally{btn.disabled=false;btn.textContent='Publica la fitxa';}
+}
+
+/* ── El xat ──────────────────────────────────────────────────────────────────
+   Dues persones que no s'han vist mai necessiten una sala i una clau, i cap de
+   les dues coses pot venir de qui allotja el servei.
+
+   · La **sala** surt dels dos `did` ordenats i passats per hash. Les dues bandes
+     la calculen soles i sempre els dona la mateixa.
+   · La **clau** surt d'un ECDH entre la teva clau d'intercanvi i la seva, que ja
+     viatja dins de la fitxa firmada. El servidor veu passar text xifrat i prou:
+     no té cap de les dues claus privades i no pot desxifrar-ho.
+
+   El que això NO fa, i s'ha de dir: no hi ha entrega garantida ni històric. Si
+   la persona no és connectada, no li arriba. Per a una primera presa de
+   contacte —«que sí, que et porto les caixes dissabte»— serveix; per a una
+   conversa llarga, el lloc és l'aplicació. */
+let _xat=null;
+async function salaEntre(didA,didB){
+  return (await sha256hex([didA,didB].sort().join('|'))).slice(0,32);
+}
+async function clauEntre(exPubMeva,exPubSeva){
+  const pub=await _importExPub(exPubSeva);
+  const id=await getIdentity();
+  return await crypto.subtle.deriveKey({name:'ECDH',public:pub},id.exchange.privKey,
+    {name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function xifra(clau,txt){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const c=await crypto.subtle.encrypt({name:'AES-GCM',iv},clau,_te.encode(txt));
+  return _b64u(iv)+'.'+_b64u(c);
+}
+async function desxifra(clau,blob){
+  const[a,b]=String(blob||'').split('.');
+  if(!a||!b)throw new Error('format');
+  const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:_unb64u(a)},clau,_unb64u(b));
+  return new TextDecoder().decode(p);
+}
+function xatMsg(txt,meu,qui){
+  const d=document.createElement('div');
+  d.className='msg'+(meu?' meu':'');
+  d.innerHTML='<span class="qui">'+esc(qui)+'</span>'+esc(txt);
+  $('#xatFils').appendChild(d);
+  $('#xatFils').scrollTop=$('#xatFils').scrollHeight;
+}
+async function obreXat(did){
+  const f=S.fitxes.find(x=>x.did===did);
+  if(!f)return;
+  $('#xatTitol').textContent='Conversa amb '+f.nom;
+  $('#xatFils').innerHTML='';
+  const avis=$('#xatAvis');
+  if(!f.exPub){
+    avis.innerHTML='<div class="avis greu"><h3>Aquesta fitxa no porta clau de xifrat</h3>'+
+      '<p>Es va publicar amb una versió anterior. No s\'obre la conversa: enviar-hi text en clar '+
+      'seria contradir el que aquesta pàgina promet.</p></div>';
+    $('#xatTxt').disabled=true;$('#xatEnvia').disabled=true;
+    $('#dlgXat').showModal();return;
+  }
+  $('#xatTxt').disabled=false;$('#xatEnvia').disabled=false;
+  const id=await getIdentity();
+  const sala=await salaEntre(id.did,f.did);
+  const clau=await clauEntre(id.exchange.pubJwk,f.exPub);
+  _xat={did:f.did,nom:f.nom,sala,clau};
+  avis.innerHTML='<div class="avis bo"><h3>Sala xifrada d\'extrem a extrem</h3>'+
+    '<p>Només vosaltres dos podeu llegir el que us digueu. <strong>No queda desat enlloc</strong>: '+
+    'si tanques la finestra, la conversa desapareix, i si l\'altra persona no és connectada ara mateix, '+
+    'no li arribarà.</p></div>';
+  $('#dlgXat').showModal();
+  $('#xatTxt').focus();
+}
+
+/* ── Càrrega ─────────────────────────────────────────────────────────────── */
+async function carrega(){
+  if(!configurat()){pintaEstat();pintaFitxes();return;}
+  try{
+    const files=await supaGet();
+    const r=await tamisar(files);
+    S.fitxes=r.fitxes;S.descartades=r.descartades;
+    S.meva=S.jo?(S.fitxes.find(f=>f.did===S.jo.did)||null):null;
+    $('#btnAlta').textContent=S.meva?'Edita la teva fitxa':'Dona\'t d\'alta';
+  }catch(e){
+    S.fitxes=[];S.descartades=[];
+    $('#estat').innerHTML='<div class="avis greu"><h3>No s\'ha pogut llegir el directori</h3>'+
+      '<p>'+esc(e.message||'')+'</p><p>El que tinguis desat al navegador no s\'ha tocat.</p></div>';
+    pintaFitxes();return;
+  }
+  pintaEstat();pintaFitxes();
+}
+
+/* ── Enganxar-ho tot ─────────────────────────────────────────────────────── */
+async function init(){
+  omplirCats();
+  await openDB();
+  S.jo=await getIdentity();
+  await carrega();
+
+  $('#btnAlta').addEventListener('click',obreAlta);
+  $('#btnTanca').addEventListener('click',()=>$('#dlgAlta').close());
+  $('#btnPublica').addEventListener('click',()=>publica());
+  $('#btnRetira').addEventListener('click',async()=>{
+    if(!confirm('La teva fitxa deixarà de sortir al directori. Ho pots desfer publicant-ne una de nova. Continuem?'))return;
+    await publica({retirada:true});
+  });
+  ['#fNom','#fMuni'].forEach(s=>$(s).addEventListener('input',pintaPrevi));
+
+  const afegir=(key,selCat,selTxt)=>{
+    const txt=$(selTxt).value.trim();
+    if(!txt)return;
+    S.esborrany[key].push({cat:$(selCat).value,txt});
+    $(selTxt).value='';pintaLlistes();
+  };
+  $('#btnAfegirO').addEventListener('click',()=>afegir('ofereix','#fCat','#fTxt'));
+  $('#btnAfegirB').addEventListener('click',()=>afegir('busca','#fCatB','#fTxtB'));
+  /* Enter afegeix. Sense això, la gent escriu una cosa, prem Enter, i el
+     formulari s'envia amb el camp buit i la línia perduda. */
+  $('#fTxt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();afegir('ofereix','#fCat','#fTxt');}});
+  $('#fTxtB').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();afegir('busca','#fCatB','#fTxtB');}});
+  $('#llistaO').addEventListener('click',treu);$('#llistaB').addEventListener('click',treu);
+  function treu(e){
+    const b=e.target.closest('[data-treu]');if(!b)return;
+    const[k,i]=b.dataset.treu.split(':');
+    S.esborrany[k].splice(Number(i),1);pintaLlistes();
+  }
+
+  $('#q').addEventListener('input',e=>{S.q=e.target.value;pintaFitxes();});
+  $('#btnNeteja').addEventListener('click',()=>{S.q='';$('#q').value='';S.dir='';S.nomesMeu=false;
+    $$('.xip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.dir===''&&!x.dataset.meu?'true':'false'));
+    pintaFitxes();});
+  $$('.xip').forEach(x=>x.addEventListener('click',()=>{
+    if(x.dataset.meu){S.nomesMeu=!S.nomesMeu;x.setAttribute('aria-pressed',S.nomesMeu?'true':'false');}
+    else{S.dir=x.dataset.dir;
+      $$('.xip[data-dir]').forEach(y=>y.setAttribute('aria-pressed',y===x?'true':'false'));}
+    pintaFitxes();
+  }));
+
+  $('#fitxes').addEventListener('click',e=>{
+    const x=e.target.closest('[data-xat]');if(x)return obreXat(x.dataset.xat);
+    if(e.target.closest('[data-edita]'))return obreAlta();
+  });
+  $('#xatTanca').addEventListener('click',()=>{$('#dlgXat').close();_xat=null;});
+  $('#xatEnvia').addEventListener('click',enviaXat);
+  $('#xatTxt').addEventListener('keydown',e=>{if(e.key==='Enter')enviaXat();});
+
+  async function enviaXat(){
+    const t=$('#xatTxt').value.trim();
+    if(!t||!_xat)return;
+    /* Es xifra encara que encara no hi hagi transport: així el dia que
+       s'endolli el relé no hi ha cap camí que enviï text en clar. */
+    const blob=await xifra(_xat.clau,t);
+    xatMsg(t,true,'tu');
+    $('#xatTxt').value='';
+    if(!window.__SOS_ONLINE_RELAY){
+      xatMsg('Encara no hi ha relé endollat, així que això no ha sortit del teu navegador. '+
+        'El missatge s\'ha xifrat correctament ('+blob.length+' caràcters) i el codi ja és a punt.',
+        false,'el sistema');
+    }
+  }
+}
+
+/* Hook de proves. Mateix criteri que a l'aplicació: els tests parlen amb el
+   codi de debò, no amb una còpia. */
+window.__ONLINE={S,CATS,CAT,catMeta,FITXA_TIPUS,CAMPS,bastirFitxa,fitxaValida,verifyRecord,signRecord,
+  getIdentity,tamisar,filtrar,textCercable,salaEntre,clauEntre,xifra,desxifra,configurat,
+  pintaFitxes,pintaPrevi,carrega,obreAlta,publica,_canon,_didFromJwk,sha256,sha256hex};
+
+init();
+</script>
+</body>
+</html>

@@ -54,6 +54,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-bomba.mjs` | V81 · veda 87 | Que d'un node aturat en surtin jugades amb botó, que no se n'inventi cap, i que qui s'ha despenjat no ho vegi qualsevol |
 | `test-taulell.mjs` | V86 · vedes 93 i 94 | Que el lateral digui l'operació sencera, la distinció que hi mancava —tenir una oferta no és que et trobin— i les tres maneres de tancar una porta sense apagar-la: viure en un sol lloc, no anar amb teclat, i acabar en un cul-de-sac |
 | `test-coop.mjs` | V85 · veda 92 | Que no aparegui crèdit sense pagar: quatre intents de confirmar sense rebut vàlid, i que el client no cobri mai |
+| `test-online.mjs` | veda 108 | El directori públic: quatre maneres d'intentar colar una fitxa a nom d'un altre —inclosa la difícil, firma **vàlida** amb clau pròpia i `did` alié—, que el que es publica sigui exactament el que s'ha ensenyat, i que retirar-se funcioni encara que no s'esborri cap fila |
 | `test-restaura.mjs` | veda 105 | Restaurar una còpia sense quedar-se en blanc: el cicle sencer, una còpia d'una versió anterior amb camps que llavors no existien, i el pitjor cas —què veu la persona quan una vista peta |
 | `test-tauler.mjs` | veda 104 | La regressió de moure el taulell: que des d'un node se sàpiga que t'espera, **sense duplicar el panell**, i que el progrés digui què falta amb el número sense comparar amb ningú |
 | `test-ranquing.mjs` | veda 103 · V56 | El rànquing per node, fill o pare: que per sota de 5 persones no hi hagi ordre i es digui per què, i que no ordenar no sigui amagar |
@@ -144,6 +145,20 @@ i això fa que tres avaries passin sense soroll: una clau només en català (qui
 llegeix en castellà es queda amb aquella frase en català), una clau escrita dues
 vegades (la segona guanya i la primera no s'aplica mai) i una clau que ja no
 apunta a cap element. Quan es va escriure hi havia les tres.
+
+### La guarda del relat
+
+```bash
+node SOS/tools/check-comando.js
+```
+
+El Comando es va escriure en llocs i moments diferents, i el mateix personatge
+va arribar a tenir **quatre grafies** repartides per l'app. Això no peta mai:
+només fa que qui llegeixi dues pantalles cregui que hi ha dos personatges.
+`CANONICAL_HEROES` és l'única llista d'on surten els noms; qualsevol altra que
+n'anomeni un hi ha de coincidir, o marcar-lo amb `previ:true` si encara no surt
+als còmics publicats. També comprova el comptador escrit a mà de `comando.html`,
+que deia vuit herois quan ja n'hi havia nou.
 
 ### La guarda de la pàgina dels vedes
 
