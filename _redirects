@@ -9,8 +9,35 @@
 /vedes /SOS/vedes.html    200
 /vedes/* /SOS/vedes.html    200
 
-# El directori públic. S'enllaça de viva veu i en paper —«entra a sos/online»—,
-# així que la forma curta i sense extensió és la que ha de funcionar sempre.
+# Les pàgines del SOS s'enllacen de viva veu i en paper —«entra a sos/comando»—,
+# i qui ho escriu ho escriu en minúscules i sense extensió. Netlify serveix els
+# camins tal com són: /SOS/comando.html existeix i /sos/comando no, i qui hi
+# arriba veu un 404 sense saber que s'ha equivocat de majúscules. Es declaren
+# les tres formes de cadascuna perquè la que la gent escriu sempre funcioni.
 /SOS/online /SOS/online.html    200
 /sos/online /SOS/online.html    200
 /online /SOS/online.html    200
+
+/SOS/comando /SOS/comando.html    200
+/sos/comando /SOS/comando.html    200
+/comando /SOS/comando.html    200
+
+/SOS/blog /SOS/blog.html    200
+/sos/blog /SOS/blog.html    200
+/blog /SOS/blog.html    200
+
+/SOS/formacio /SOS/formacio.html    200
+/sos/formacio /SOS/formacio.html    200
+/formacio /SOS/formacio.html    200
+
+/SOS/diagnostic /SOS/diagnostic.html    200
+/sos/diagnostic /SOS/diagnostic.html    200
+/diagnostic /SOS/diagnostic.html    200
+
+/SOS/uneix-te /SOS/uneix-te.html    200
+/sos/uneix-te /SOS/uneix-te.html    200
+/uneix-te /SOS/uneix-te.html    200
+
+# L'aplicació mateixa, en minúscules.
+/sos /SOS/    200
+/sos/ /SOS/    200
