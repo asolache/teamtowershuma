@@ -711,17 +711,24 @@ D'aquí surten dues regles:
   qualsevol altra llista que n'anomeni un hi ha de coincidir. Ho comprova
   `tools/check-comando.js`, que també mira el comptador escrit a mà de la pàgina
   —deia vuit quan ja n'hi havia nou.
-- **El que encara no és canònic es marca, no s'amaga.** Quatre personatges no
-  surten als còmics 1 i 2: tres perquè el panteó en demana dotze i el mapatge és
-  raonat, i un que ve de material posterior. Porten `previ:true`. Tenir-los està
-  bé; fer-los passar per llegits, no.
+- **El que encara no està confirmat es marca, no s'amaga.** Porta `previ:true`.
+  Tenir-lo està bé; fer-lo passar per llegit, no.
 
-  I el revers, que és el que va passar de debò: **també cal que la marca es
-  tregui.** La Anguila estava marcada com a no-canònica i sí que surt al còmic
-  1 —és la bateria, i el seu poder és escapolir-se de qualsevol lloc. La llista
-  no la va corregir cap guarda: la va corregir qui va escriure l'obra. Una
-  guarda comprova que les llistes coincideixin entre elles; **que coincideixin
-  amb el còmic només ho pot dir l'autor**.
+I aquí hi va la part que va costar dues correccions seguides de l'autor, perquè
+la primera versió d'aquesta veda tenia la idea equivocada.
+
+**«No surt al còmic 1 o 2» no vol dir «no confirmat».** Es van marcar com a
+provisionals quatre personatges de veritat: La Anguila —que sí que surt al
+còmic 1, és la bateria i s'escapoleix de qualsevol lloc—, Barbamuda, Reciclator,
+que viu en un vídeo, i Fraktalman, que té tema propi. Un personatge que viu en
+una cançó o en un vídeo **és igual de real que un del còmic**: el que canvia és
+on està documentat, i això és un altre camp (`on`), no un dubte.
+
+I el que es queda escrit per damunt de tot: una guarda comprova que les llistes
+**coincideixin entre elles**. Si el que diuen és cert no ho pot comprovar cap
+programa. Cap de les meves comprovacions va detectar res aquí —les quatre
+llistes coincidien perfectament a equivocar-se—; ho va corregir qui ha escrit
+l'obra. **La consistència es pot automatitzar; la veritat no.**
 
 I una tercera que és de producte i val la pena escriure: **la metàfora sola és
 un conte i la lectura sola és una consultora més**. A la pàgina van de costat,

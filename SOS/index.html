@@ -3419,22 +3419,21 @@ const PANTHEON12={
 /* Els 12 fundadors del Comando associats al panteó.
    Els noms surten de `CANONICAL_HEROES` i no s'escriuen a mà: hi va haver un
    temps amb quatre grafies del mateix personatge repartides per l'app.
-   **Barbamuda, Reciclator i Supergerminador no surten als còmics 1 i 2.** Hi
-   són perquè el panteó en demana dotze i el mapatge és raonat, no llegit. Es
-   marquen amb `previ:true` per no fer-los passar per canònics, i es revisaran
-   quan surtin els còmics on apareguin. Veda 109. */
+   **Supergerminador és l'únic que l'autor encara no ha confirmat.** Hi és
+   perquè el panteó en demana dotze i el mapatge és raonat, no llegit; porta
+   `previ:true` per no fer-lo passar per confirmat. Veda 109. */
 const COMANDO_FOUNDERS=[
   {hero:'Mazinguer',god:'zeus',why:'Lidera sense imposar-se: l\'ego perdut és el seu poder'},
   {hero:'Horacio',god:'apollo',why:'Narrador i estratega · converteix l\'experiència en relat'},
   {hero:'Guiri-Guay',god:'hermes',why:'Llenguatges impossibles · parla amb qualsevol tribu'},
   {hero:'Purpleman',god:'dionis',why:'Transforma l\'ambient · celebració i obertura'},
   {hero:'La Medusa Andaluza',god:'atenea',why:'Mirada que atura · estratègia defensiva'},
-  {previ:true,hero:'Barbamuda',god:'hestia',why:'Escolta profunda · sosté els espais de conversa'},
+  {hero:'Barbamuda',god:'hestia',why:'Escolta profunda · sosté els espais de conversa'},
   {hero:'El Aviador',god:'posido',why:'Explora territori nou i el connecta'},
   {hero:'Afrodito',god:'afrodita',why:'Teixeix vincle on n\'hi ha absència'},
   {hero:'Electroplasman',god:'hefest',why:'P2P encarnat · l\'eina distribuïda'},
   {hero:'Pigmentón',god:'hera',why:'Marca allò que compromet · fa visible el pacte'},
-  {previ:true,hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
+  {hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
   {previ:true,hero:'Supergerminador',god:'demeter',why:'Germina i replica · pol·linització del valor'}
 ];
 const COMANDO_ALLIES=[{name:'Formiga Atòmica',role:'Aliada'}];
@@ -6576,7 +6575,7 @@ const MOLEKULON_LINKS={
 };
 // Superherois canònics del còmic origen (V17). El Gran Molekulon envia Mazinguer i Horacio a la Terra
 // per muntar una banda que trobi els 150.000 abans que la Corporació Món Mort ho engoleixi tot.
-/* Els nou que surten als còmics 1 i 2, amb el poder que hi tenen de debò.
+/* El nucli del Comando, amb el poder que hi té cadascú de debò.
    ─────────────────────────────────────────────────────────────────────────
    Aquesta llista deia una altra cosa: «Purpleman · persuasió i visualització»
    quan al còmic el que fa és travessar núvols tòxics i convertir les males
@@ -6589,7 +6588,12 @@ const MOLEKULON_LINKS={
    el seu propi contingut deixa de ser una capa i passa a ser soroll.
 
    `power` és una frase, no una fitxa: el que fa el personatge, dit de manera
-   que es pugui llegir en una targeta. Veda 109. */
+   que es pugui llegir en una targeta. `on` diu **on està documentat** —còmic,
+   vídeo, tema—, que no és el mateix que ser canònic: Reciclator surt en vídeo i
+   Fraktalman té tema propi, i tots dos són tan reals com els del còmic. El
+   camp existeix perquè al principi es va confondre «no surt al còmic 1 o 2» amb
+   «encara no confirmat», i per aquesta confusió quatre personatges de veritat
+   van estar marcats com a provisionals. Veda 109. */
 const CANONICAL_HEROES=[
   {name:'Mazinguer',role:'Líder estratega i DJ',power:'Coneix el pla i guia la banda. Sense superpoder aparent: l\'ego perdut és el seu poder'},
   {name:'Horacio',role:'El savi que rep el mandat',power:'Coprotagonista de l\'encàrrec original. Converteix l\'experiència en relat'},
@@ -6600,7 +6604,10 @@ const CANONICAL_HEROES=[
   {name:'Pigmentón',role:'Mestre del color',power:'Capaç de pintar forats negres amb les seves bombolles i el seu Güengüentón'},
   {name:'La Medusa Andaluza',role:'Node de connectivitat',power:'El cromosoma X de la banda. Posa cables, connexió i llum a tot l\'equip'},
   {name:'Electroplasman',role:'Impulsor de recursos',power:'Un fantasma amb viola que injecta liquiditat al sistema nerviós: la gasolina per enlairar-se'},
-  {name:'La Anguila',role:'Bateria',power:'Recollida al còmic 1. S\'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l\'escletxa'}
+  {name:'La Anguila',role:'Bateria',on:'Còmic 1',power:'S\'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l\'escletxa'},
+  {name:'Barbamuda',role:'Segona baixista',on:'Còmic',power:'Fa supertratges i ensenya des del silenci. No explica: deixa que ho vegis'},
+  {name:'Reciclator',role:'Fabricant de superarmes',on:'Vídeo',power:'Construeix les superarmes de la banda a partir del que els altres han llençat'},
+  {name:'Fraktalman',role:'Ordre a partir del caos',on:'Té tema propi',power:'«Es uno y son mil millones.» Converteix el caos en ordre sense aplanar-lo'}
 ];
 /* Els noms de dalt són els que manen. Qualsevol altra llista que anomeni un
    heroi ha de fer servir aquests, i `tools/check-comando.js` ho comprova: hi
@@ -9491,13 +9498,14 @@ let _guideOpen={};
    · **El relat es guanya, no s\'imposa.** No surt fins que has registrat alguna
      cosa. Qui acaba d\'arribar té feina a fer; qui ja ha aportat, ha comprat el
      dret a la broma. I es pot apagar, com tot des de la veda 66. */
-/* Els noms surten de `CANONICAL_HEROES`. `previ:true` marca els que NO surten
-   als còmics 1 i 2 —vénen de cançons i material posterior— perquè no es facin
-   passar per canònics mentre no ho siguin. Veda 109. */
+/* Els noms surten de `CANONICAL_HEROES`. `previ:true` marca els que l'autor
+   encara no ha confirmat, no els que surten en un altre suport: un personatge
+   que viu en un vídeo o en una cançó és igual de real que un del còmic.
+   Veda 109. */
 const HERO_SCREENS={
   ledger:{hero:'Mazinguer',ic:'⬢',line:'«Mazinguer Peta ya estaba recogiendo todos los DATOS.» Qui arriba primer i es posa a registrar, no a fer espectacle.'},
   pings:{hero:'La Medusa Andaluza',ic:'🪼',line:'«Tengo un lío de cables, te echo uno pa\' que conectes.» El valor surt de creuar el que no s\'assembla.'},
-  cartera:{previ:true,hero:'Fraktalman',ic:'🔺',line:'«Es uno y son mil millones… convierte el caos en orden.» El que funciona en un lloc té la mateixa forma en un altre.'},
+  cartera:{hero:'Fraktalman',ic:'🔺',line:'«Es uno y son mil millones… convierte el caos en orden.» El que funciona en un lloc té la mateixa forma en un altre.'},
   mapa:{hero:'Pigmentón',ic:'🎨',line:'«Coloreando el mundo con su famoso ungüentón.» El que no es veu al mapa, per al territori no existeix.'},
   xat:{hero:'Electroplasman',ic:'👻',line:'Apareix, desapareix i torna. Un node que marxa no trenca la xarxa.'},
   entitats:{hero:'Guiri-Guay',ic:'🎻',line:'«They call me raro.» Parlar amb qui no és dels teus és una feina, i té qui la fa.'},

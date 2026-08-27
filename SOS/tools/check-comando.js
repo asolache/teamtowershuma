@@ -12,14 +12,15 @@
 
    La regla que aquesta guarda imposa és una de sola: **`CANONICAL_HEROES` és
    l'única llista d'on surten els noms.** Qui vulgui anomenar un heroi ha de fer
-   servir un dels d'allà, o marcar-lo explícitament amb `previ:true` —n'hi ha
-   quatre que no surten als còmics 1 i 2: tres fundadors, perquè el panteó en
-   demana dotze, i un que ve de material posterior. Tenir-los està bé mentre es
-   digui que encara no són canònics.
+   servir un dels d'allà, o marcar-lo amb `previ:true` si l'autor encara no l'ha
+   confirmat. **`previ` no vol dir «no surt al còmic»**: Reciclator viu en un
+   vídeo i Fraktalman té tema propi, i tots dos són tan reals com els del còmic.
+   Confondre les dues coses va tenir quatre personatges de veritat marcats com a
+   provisionals.
 
-   Aquesta guarda comprova que les llistes coincideixin entre elles. Que
-   coincideixin amb el còmic **no ho pot comprovar cap programa**: això ho diu
-   qui l'ha escrit, i quan ho diu, es corregeix aquí.
+   Aquesta guarda comprova que les llistes coincideixin entre elles. Si el que
+   diuen és cert **no ho pot comprovar cap programa**: això ho diu qui ha escrit
+   l'obra, i quan ho diu, es corregeix aquí.
 
    node SOS/tools/check-comando.js */
 const { readFileSync } = require('node:fs');
@@ -72,7 +73,7 @@ else {
   else bad(`${pl(forans.length, 'heroi', 'herois')} que no són al roster: ` +
     forans.map(x => `${x.nom} (${x.on})`).join(', ') +
     ' — o s\'afegeixen a CANONICAL_HEROES o es marquen amb `previ:true`');
-  if (previs.length) console.log(`  · ${previs.length} marcats com a previs (no surten als còmics 1 i 2): ` +
+  if (previs.length) console.log(`  · ${pl(previs.length, 'marcat', 'marcats')} com a previ (l'autor encara no ho ha confirmat): ` +
     previs.map(x => x.nom).join(', '));
 }
 

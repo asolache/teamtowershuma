@@ -22,9 +22,15 @@ const srv = createServer((req, res) => {
   try {
     const p = join(ROOT, url === '/' ? 'index.html' : url.replace(/^\//, ''));
     if (!p.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
+    /* Es llegeix ABANS d'escriure la capçalera. Fer-ho al revés funcionava
+       mentre tot existís i tombava el procés sencer el dia que el navegador
+       demanava una cosa que no hi era —un favicon— perquè el `catch` provava
+       d'enviar un 404 amb les capçaleres ja enviades. El servidor de proves
+       s'ha d'assemblar a un de real també quan la resposta és un error. */
+    const cos = readFileSync(p);
     const ext = p.slice(p.lastIndexOf('.'));
     res.writeHead(200, { 'content-type': MIME[ext] || 'application/octet-stream' });
-    res.end(readFileSync(p));
+    res.end(cos);
   } catch (e) { res.writeHead(404); res.end('no'); }
 });
 await new Promise(r => srv.listen(0, '127.0.0.1', r));
