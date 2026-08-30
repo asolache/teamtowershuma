@@ -2,9 +2,9 @@ name: CI - Continuous Integration
 
 on:
   pull_request:
-    branches: [ main, feature/kb-v0.5-update ]
+    branches: [ main ]
   push:
-    branches: [ main, feature/kb-v0.5-update ]
+    branches: [ main, 'ship/**', 'show/**', 'ask/**', 'feature/**', 'fix/**', 'docs/**' ]
 
 jobs:
   test:
