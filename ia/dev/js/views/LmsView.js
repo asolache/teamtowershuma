@@ -310,17 +310,7 @@ export default class LmsView {
             inpResearchEngine: document.getElementById('inpResearchEngine'),
             agGrid:            document.getElementById('agGrid'),
             btnCompileAll:     document.getElementById('btnCompileAll'),
-            scoutModal:        document.getElementById('scoutModal'),
-            btnCloseScout:     document.getElementById('btnCloseScout'),
-            btnRunScout:       document.getElementById('btnRunScout'),
-            inpScoutDomain:    document.getElementById('inpScoutDomain'),
-            inpScoutContext:   document.getElementById('inpScoutContext'),
-            scoutResults:      document.getElementById('scoutResults'),
         };
-
-        // Scout eventos
-        this.dom.btnCloseScout?.addEventListener('click', () => this.dom.scoutModal?.classList.remove('active'));
-        this.dom.btnRunScout?.addEventListener('click', () => this._runSkillScout());
 
         // Filtros Antigravity
         document.querySelectorAll('.ag-filter-btn').forEach(btn => {
@@ -592,48 +582,6 @@ Devuelve SOLO JSON:
         } finally {
             this.dom.btnRunResearch.innerText = '🚀 Iniciar Minado Neuronal';
             this.dom.btnRunResearch.disabled  = false;
-        }
-    }
-
-    // ── Skills Scout ─────────────────────────────────────────────
-    async _runSkillScout() {
-        const domain  = this.dom.inpScoutDomain?.value.trim();
-        const context = this.dom.inpScoutContext?.value.trim();
-        if (!domain) return alert('Introduce un dominio.');
-
-        this.dom.btnRunScout.innerText = '⏳ Explorando…';
-        this.dom.btnRunScout.disabled  = true;
-
-        try {
-            const suggestions = await Orchestrator.scoutExternalSkills({ domain, context, maxSuggestions: 5 });
-            const priorityColor = { high:'#ff5252', medium:'#ff9100', low:'#6366f1' };
-
-            this.dom.scoutResults.style.display = 'block';
-            this.dom.scoutResults.innerHTML = !suggestions.length
-                ? '<div style="color:#555;font-size:0.82rem;">Sin sugerencias encontradas.</div>'
-                : `<div style="font-size:0.72rem;color:#888;margin-bottom:10px;font-weight:bold;">
-                    ${suggestions.length} skills candidatas · guardadas en KB para revisión
-                   </div>
-                   ${suggestions.map(s => `
-                   <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.05);
-                        border-radius:9px;padding:10px 12px;margin-bottom:6px;">
-                       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px;">
-                           <div style="font-weight:900;color:white;font-size:0.82rem;">${s.title}</div>
-                           <span style="font-size:0.6rem;padding:2px 6px;border-radius:4px;font-weight:bold;
-                               color:${priorityColor[s.priority]||'#888'};background:rgba(255,255,255,0.04);">
-                               ${s.priority||'medium'}
-                           </span>
-                       </div>
-                       <div style="font-size:0.72rem;color:#666;">${s.description}</div>
-                       ${s.gaps ? `<div style="font-size:0.67rem;color:#444;font-style:italic;margin-top:3px;">Gap: ${s.gaps}</div>` : ''}
-                   </div>`).join('')}`;
-
-            window.dispatchEvent(new CustomEvent('refresh-lms-data'));
-        } catch (err) {
-            alert('Error Scout: ' + err.message);
-        } finally {
-            this.dom.btnRunScout.innerText = '🕵️ Explorar Skills Externas';
-            this.dom.btnRunScout.disabled  = false;
         }
     }
 }
