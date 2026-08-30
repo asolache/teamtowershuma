@@ -92,13 +92,53 @@ scp index.html usuario@tudominio.com:/var/www/html/
 
 ```
 teamtowershuma/
-├── index.html          # Landing page principal (bilingüe ES/CA)
-├── README.md           # Este archivo
-└── assets/             # Recursos externos (no incluidos en repo)
-    ├── logo.png        # Logo TeamTowers
-    ├── alvaro.jpg      # Foto fundador
-    └── video.mp4       # Video background (enlazado desde GitHub)
+├── index.html                  # Landing page principal (bilingüe ES/CA)
+├── app.html                    # App principal VNA (Value Network Analysis)
+├── app_coops.html              # App para cooperativas
+├── mapas.html                  # Mapas de valor
+├── finances.html               # Gestión financiera
+├── tokenomics.html             # Tokenomics
+├── tokenomics_config.html      # Configurador de tokenomics
+├── *.html                      # Resto de páginas de la plataforma
+├── js/
+│   ├── backup-manager.js       # Gestión de copias de seguridad en localStorage
+│   └── github-sync.js          # Sincronización de backups con GitHub API
+├── data/
+│   └── seeds/
+│       └── stakeholders-example.json  # Datos de ejemplo
+├── knowledge-base/
+│   ├── stakeholders.html       # Dashboard de stakeholders
+│   └── modules/
+│       └── stakeholders.js     # Módulo de stakeholders
+├── v2/                         # Versión 2 (en desarrollo)
+└── README.md                   # Este archivo
 ```
+
+## 💾 Almacenamiento Local de Datos
+
+Los datos de la aplicación se guardan en **tres lugares**:
+
+### 1. `localStorage` del navegador
+
+Los datos del proyecto se guardan automáticamente en el `localStorage` del navegador (no en archivos de disco). Cada módulo usa su propia clave:
+
+| Módulo | Clave localStorage |
+|--------|--------------------|
+| VNA (`app.html`) | `vnaData` |
+| Mapas de valor (`mapas.html`) | `valueMapData` |
+| Tokenomics (`tokenomics.html`) | `tokenomicsData` |
+| Idioma preferido | `preferredLanguage` |
+| BackupManager (personalizable) | clave configurada al instanciar |
+
+> **¿Cómo acceder?** Abre las DevTools del navegador → pestaña *Application* → *Local Storage* → selecciona la URL de la app.
+
+### 2. Carpeta de Descargas del navegador
+
+Cuando exportas datos desde la app (botones *Exportar JSON*, *Exportar CSV*, *Exportar PNG*, *Descargar contrato*), el archivo se descarga en la **carpeta de Descargas** predeterminada de tu sistema operativo.
+
+### 3. Backups en GitHub
+
+El módulo `github-sync.js` sube copias de seguridad al repositorio en la ruta `data/backups/` vía la API de GitHub.
 
 ## 🔒 Privacidad y Anti-Bots
 
