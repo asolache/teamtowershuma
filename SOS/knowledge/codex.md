@@ -67,25 +67,41 @@ Ambdós apareixen al cromo. Cada cromo té un **nivell** (Aprenent → Bronze �
 
 ## V17 · Mitologia origen — Mazinguer, Horacio i el Gran Molekulon
 
-Enviats a la Terra pel **Gran Molekulon** (la molècula que governa les galàxies des de l'hiperespai), **Mazinguer i Horacio** tenen una missió aparentment impossible: reclutar un **Comando de 150.000 superherois** capaç de vèncer la **Corporació Món Mort** — l'entitat sistèmica que extreu valor sense retornar-lo, que trenca vincles i deixa les comunitats orfes.
+Enviats a la Terra pel **Gran Molekulon** (la molècula que governa les galàxies des de l'hiperespai), **Mazinguer i Horacio** tenen una missió aparentment impossible: reclutar un **Comando de 150.000 superherois** capaç de vèncer el **Mundo Muerto** — la corporació que funciona com un virus: extreu valor sense retornar-lo, trenca vincles i deixa les comunitats orfes.
 
 Sense talents propis aparents (potser el seu superpoder és haver perdut el seu ego), Mazinguer i Horacio adopten l'estratègia dels **Blues Brothers**: **munten una banda de música** que recorre totes les poblacions de Catalunya i del món per identificar, un a un, els 150.000 superherois amagats a plena vista.
 
-**Superherois canònics presentats als còmics 1 i 2**:
-- **Mazinguer** — líder tècnic sense superpoder aparent
-- **Horacio** — narrador i estratega sense superpoder aparent
-- **Guiriguai** — llenguatges impossibles
-- **Purpleman** — persuasió i visualització
-- **Afrodita** — cures i xarxa afectiva
-- **La Anguila** — mobilitat i escapisme
-- **Barbamuda** — silenci útil i escolta profunda
-- **Ectoplasman** — presència distribuïda / P2P encarnat
-- *(altres — l'univers segueix expandint-se)*
+**Superherois canònics**. La llista que mana és `CANONICAL_HEROES`, a
+`SOS/index.html`; això d'aquí n'és el resum llegible i ha de coincidir-hi. Cada
+un porta on està documentat, el seu poder al còmic i què vol dir en una
+organització (la columna que fa que aquest relat visqui dins d'un programa de
+gestió comunitària i no en un fullet a part).
+
+| Heroi | On | Poder | Què vol dir en un equip |
+|---|---|---|---|
+| **Mazinguer** | Còmic 1 | Coneix el pla i guia la banda; l'ego perdut és el seu poder | Qui munta la plataforma i atrau els primers nodes |
+| **Horacio** | Còmic 1 | Rep l'encàrrec i converteix l'experiència en relat | La visió de conjunt: qui sap explicar cap on va tot |
+| **Guiri-Guay** | Còmic 1 | Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup | Qui té cura de l'equip i cura les friccions abans que es podreixin |
+| **Purpleman** | Còmic 1 | Entra als gasos tòxics i els torna benestar; les males olors, flors | Qui absorbeix la toxicitat de l'ambient i la torna clima |
+| **Afrodita** | Còmic 1 | Holometabolisme: la música li trenca l'armadura que el mantenia alienat | El talent amagat que només necessita un lloc segur |
+| **El Aviador** | Còmic 1 | Orientació i rescat in extremis: apareix quan l'equip s'ha perdut | L'executor hiperespecialitzat que desencalla projectes |
+| **Pigmentón** | Còmic 1 | Assigna identitats; il·lumina fins i tot els forats negres | Qui dibuixa la xarxa i dona a cadascú el color que li toca |
+| **La Medusa Andaluza** | Còmic 1 | Sincronització i fusió cultural: dona llum interconnectant el grup | El node central que creua informació entre parts que no es parlaven |
+| **Electroplasman** | Còmic 1 | Injecta liquiditat al sistema nerviós del comando i a les naus que no enlairaven | Qui porta el capital que fa passar un projecte d'aturat a enlairat |
+| **El Anguila** | Còmic 1 | S'escapoleix de qualsevol lloc: on el grup s'encalla, hi troba l'escletxa | Qui marca el ritme operatiu; la pinya no aguanta sense compàs |
+| **Barbamuda** | Còmic | Fa supertratges i ensenya des del silenci: no explica, deixa que ho vegis | L'estabilitat estructural: qui no es mou quan tot es mou |
+| **Reciclator** | Vídeo | Construeix les superarmes de la banda amb el que els altres han llençat | Qui fa que no calgui comprar res nou perquè ja hi és |
+| **Supergerminador** | Vídeo i web pròpia | Ensenya a germinar per menjar superaliments; canta amb la seva rialla | Qui ensenya el mètode en comptes de fer la feina |
+| **Fraktalman** | Té tema propi | Converteix el caos en ordre sense aplanar-lo | El que funciona aquí té la mateixa forma allà: replicar sense uniformar |
+
+Aquesta taula va estar mesos dient una altra cosa —vuit noms, tres mal escrits i
+poders que no són els del còmic— tot i que la veda 109 ja obligava a una sola
+llista. La veda mirava les pàgines i no es mirava el codex. Veda 112.
 
 **Rols simbòlics dins del sistema**:
 - La **banda de música** = onboarding + comunicació + performativa
 - Els **150.000** = objectiu del Comando (visible al comptador de la vista Comando)
-- **Corporació Món Mort** = l'antimodel del SOS: extractiu, opac, centralitzat, no signat, sense circulació de valor
+- **Mundo Muerto** = l'antimodel del SOS: extractiu, opac, centralitzat, no signat, sense circulació de valor
 - El **Gran Molekulon** = la font. En el codex tècnic, la font és el codex mateix + la comunitat
 
 ## Backlog infraestructura crítica pendent (no oblidar)
@@ -688,6 +704,48 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 112 — La guarda que mira les pàgines i no es mira el codex deixa fora la font
+
+La veda 109 va posar la regla —una sola llista mana— i una guarda que l'aplica a
+les pàgines: `comando.html`, `blog.html`, `uneix-te.html`, `online.html`,
+`crm.html` i, després, `joc.html`. Va donar verd durant mesos.
+
+Mentrestant, **la llista del codex mateix seguia sent la vella**: vuit herois
+quan ja n'hi ha catorze, `Guiriguai` i `Ectoplasman` amb la grafia antiga, i
+poders que no són els del còmic —«Purpleman · persuasió i visualització»— que
+són exactament els que la veda 109 cita com a error. La guarda no ho va veure
+mai perquè el codex no era a la llista de fitxers a escombrar.
+
+És el mateix error de la 109 un pis més amunt: **el document que declara que hi
+ha una font única no s'havia sotmès a la seva pròpia regla**. I fa més mal aquí
+que en una pàgina, perquè el codex és el que llegeix qui vol saber què és cert.
+
+Dues coses, doncs:
+
+- **El codex, `vedes.html` i `index.html` entren a l'escombrada.** Si un nom
+  vell hi apareix, falla igual que a qualsevol pàgina. L'app hi entra pel mateix
+  motiu que el codex: era la font i per això no se la mirava ningú. Hi vivien
+  encara **«Corporació Món Mort» a la missió del mòdul Comando i a la sinopsi de
+  la vista** —dos textos que llegeix tothom— i **«Local-first» i «Zero servidor»
+  a la descripció de Google, al peu de l'onboarding i al registre**, que és
+  exactament el que prohibeix la veda 107.
+- **Anomenar no és utilitzar.** Els noms antics que la veda 109 cita com a
+  exemple van entre cometes simples o baixes, i la guarda els buida abans de
+  mirar: explicar un error no és cometre'l, i una guarda que no ho sap distingir
+  prohibeix parlar del passat. Pel mateix motiu **els comentaris de codi queden
+  fora**: un comentari és el gremi parlant amb ell mateix, i el problema de la
+  107 és el mot a la cara de qui no és del gremi.
+- **La taula del codex diu on està documentat cadascú.** Còmic, vídeo o tema
+  propi: el camp `on`. Que un personatge visqui en un vídeo no el fa menys real
+  (veda 109), però barrejar-ho tampoc.
+
+I la correcció que ho va destapar: **Afrodita**, no «Afrodito». La va fer
+l'autor, com les quatre anteriors. Les meves llistes tornaven a coincidir totes
+a equivocar-se, i cap guarda pot dir el contrari: la consistència es pot
+automatitzar, la veritat no (veda 109). El que sí que es pot automatitzar és
+que, un cop l'autor ho diu, **no torni**: el nom vell passa a la llista negra el
+mateix dia.
+
 ## Veda 111 — Plantar a la plaça i obrir al node han de ser el mateix acte
 
 La segona pantalla del joc és una plaça on, amb el dit gros, plantes projectes i
@@ -709,7 +767,7 @@ Del mateix ordre, la resta de la capa:
 
 - **Els minijocs paguen en la moneda del model.** Aparellar dona hores,
   encertar el ritme porta gent, repartir la càrrega forma algú o fa avançar el
-  Món Mort. Cap dona «punts»: si en donessin, hi hauria una segona economia i
+  Mundo Muerto. Cap dona «punts»: si en donessin, hi hauria una segona economia i
   el joc ensenyaria a optimitzar-la.
 - **Els que ataquen tenen el poder que tenen al còmic.** La por paralitza, el
   rumor s'escampa per la seva filera, l'extracció et roba hores i la biblioteca
@@ -775,7 +833,7 @@ grafies** repartides per l'app —`Guiriguay`, `Guiriguai`, `GuiriGuay`— i la
 pàgina pública ensenyava vuit herois amb poders que no són els del còmic
 («Purpleman · persuasió i visualització» quan el que fa és travessar núvols
 tòxics i tornar les males olors flors), mentre en faltaven quatre que sí que hi
-surten: El Aviador, Pigmentón, La Medusa Andaluza i La Anguila.
+surten: El Aviador, Pigmentón, La Medusa Andaluza i El Anguila.
 
 Res d'això peta mai. Simplement, qui llegeix una pantalla i després una altra
 creu que hi ha dos personatges, i el relat deixa de sostenir-se sol.
@@ -797,7 +855,7 @@ I aquí hi va la part que va costar dues correccions seguides de l'autor, perqu�
 la primera versió d'aquesta veda tenia la idea equivocada.
 
 **«No surt al còmic 1 o 2» no vol dir «no confirmat».** Es van marcar com a
-provisionals quatre personatges de veritat: La Anguila —que sí que surt al
+provisionals quatre personatges de veritat: El Anguila —que sí que surt al
 còmic 1, és la bateria i s'escapoleix de qualsevol lloc—, Barbamuda, Reciclator,
 que viu en un vídeo, i Fraktalman, que té tema propi. Un personatge que viu en
 una cançó o en un vídeo **és igual de real que un del còmic**: el que canvia és

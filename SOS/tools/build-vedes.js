@@ -45,10 +45,19 @@ function inline(s) {
 
 function assertKnown(lines) {
   lines.forEach((l, i) => {
-    if (/^\|/.test(l)) throw new Error('línia ' + (i + 1) + ': taula al codex, i el generador no en sap pintar');
     if (/^```/.test(l)) throw new Error('línia ' + (i + 1) + ': bloc de codi al codex, i el generador no en sap pintar');
   });
 }
+
+/* Taules. El codex no en tenia cap i el generador s'aturava en trobar-ne una,
+   que és el que toca fer davant d'una cosa que no saps pintar. Ara la llista
+   canònica dels catorze herois n'és una —nom, on està documentat, poder i què
+   vol dir en un equip són quatre columnes i no una frase—, així que se n'hi
+   ensenya en comptes de desfer la taula. Només la forma que el codex fa servir:
+   capçalera, separador i files, sense alineacions. */
+const esFilaTaula = l => /^\s*\|.*\|\s*$/.test(l);
+const esSeparador = l => /^\s*\|(\s*:?-+:?\s*\|)+\s*$/.test(l);
+const cellules = l => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
 
 /* Les llistes del codex tenen continuacions indentades: la línia següent, si va
    sagnada, pertany al mateix punt. Fondre-les abans de pintar és el que evita
@@ -66,15 +75,34 @@ function foldContinuations(lines) {
 function mdToHtml(md) {
   const lines = foldContinuations(md.split('\n'));
   const out = [];
-  let list = null, para = [], quote = [];
+  let list = null, para = [], quote = [], taula = null;
   const flushPara = () => { if (para.length) { out.push('<p>' + inline(para.join(' ')) + '</p>'); para = []; } };
   const flushQuote = () => { if (quote.length) { out.push('<blockquote><p>' + inline(quote.join(' ')) + '</p></blockquote>'); quote = []; } };
   const flushList = () => { if (list) { out.push('</' + list + '>'); list = null; } };
-  const flushAll = () => { flushPara(); flushQuote(); flushList(); };
+  /* La taula va dins d'un embolcall que fa scroll horitzontal ell sol: en un
+     mòbil, quatre columnes no hi caben i el que no pot passar és que la pàgina
+     sencera es mogui de costat. */
+  const flushTaula = () => {
+    if (!taula) return;
+    const [cap, ...files] = taula;
+    out.push('<div class="taula"><table><thead><tr>' +
+      cap.map(c => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>' +
+      files.map(f => '<tr>' + f.map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>').join('') +
+      '</tbody></table></div>');
+    taula = null;
+  };
+  const flushAll = () => { flushPara(); flushQuote(); flushList(); flushTaula(); };
 
   lines.forEach(raw => {
     const l = raw.replace(/\s+$/, '');
     if (!l.trim()) { flushAll(); return; }
+    if (esFilaTaula(l)) {
+      if (esSeparador(l)) return;            // el guionet de sota la capçalera no es pinta
+      if (!taula) { flushPara(); flushQuote(); flushList(); taula = []; }
+      taula.push(cellules(l));
+      return;
+    }
+    flushTaula();
     const h = l.match(/^(#{3,6})\s+(.*)$/);
     if (h) { flushAll(); const n = Math.min(6, h[1].length + 1); out.push('<h' + n + '>' + inline(h[2]) + '</h' + n + '>'); return; }
     const q = l.match(/^>\s?(.*)$/);
@@ -183,6 +211,12 @@ article.veda h3,article.veda h4{font-size:1rem;margin:1.4rem 0 .3rem;color:var(-
 blockquote{margin:1rem 0;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--purple);color:var(--light);font-style:italic}
 code{font-family:'SF Mono',Monaco,monospace;font-size:.88em;background:rgba(127,127,127,.16);padding:.1em .35em;border-radius:5px}
 strong{color:#fff}
+/* La taula fa scroll dins del seu embolcall i no arrossega la pàgina. */
+.taula{overflow-x:auto;margin:1rem 0;-webkit-overflow-scrolling:touch}
+.taula table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
+.taula th,.taula td{text-align:left;vertical-align:top;padding:.5rem .7rem;border-bottom:1px solid var(--border)}
+.taula th{color:var(--light);font-weight:600;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;
+  border-bottom:1px solid var(--purple);white-space:nowrap}
 .ctx{border-top:1px solid var(--border);margin-top:3rem;padding-top:2rem}
 .ctx>h2{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 1rem;font-weight:600}
 details.ctx-i{border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;margin:.5rem 0;background:var(--card)}

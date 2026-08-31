@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SOS · Social Operating System · TeamTowers Humà</title>
-<meta name="description" content="Sistema operatiu social per a xarxes de valor comunitàries. Local-first, al teu navegador. Cada territori — país, comarca, municipi, barri — amb el seu mapa de valor, tauler i comptabilitat.">
+<meta name="description" content="Sistema operatiu social per a xarxes de valor comunitàries. S'obre al navegador i el que s'hi escriu es queda al teu ordinador. Cada territori — país, comarca, municipi, barri — amb el seu mapa de valor, tauler i comptabilitat.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -962,7 +962,7 @@ a{color:var(--blue);text-decoration:none}
       <button class="ob-link" id="obContact">✉ Parla amb l'Álvaro</button>
     </div>
     <p class="ob-contact">Tens un repte comunitari al teu territori? Escriu directament a <a href="#" id="obEmailLink" data-subject="Repte comunitari — vull explorar el SOS">l'Álvaro Solache</a> i ho valorem junts. Sense compromís.</p>
-    <div class="ob-foot">Local-first · W3C · Zero servidor · Força · Equilibri · Valor · Seny</div>
+    <div class="ob-foot">Al teu ordinador · Estàndards W3C · Sense servidor nostre · Força · Equilibri · Valor · Seny</div>
   </div>
 </section>
 
@@ -3430,7 +3430,7 @@ const COMANDO_FOUNDERS=[
   {hero:'La Medusa Andaluza',god:'atenea',why:'Mirada que atura · estratègia defensiva'},
   {hero:'Barbamuda',god:'hestia',why:'Escolta profunda · sosté els espais de conversa'},
   {hero:'El Aviador',god:'posido',why:'Explora territori nou i el connecta'},
-  {hero:'Afrodito',god:'afrodita',why:'Teixeix vincle on n\'hi ha absència'},
+  {hero:'Afrodita',god:'afrodita',why:'Teixeix vincle on n\'hi ha absència'},
   {hero:'Electroplasman',god:'hefest',why:'P2P encarnat · l\'eina distribuïda'},
   {hero:'Pigmentón',god:'hera',why:'Marca allò que compromet · fa visible el pacte'},
   {hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
@@ -6244,7 +6244,7 @@ function openNostrModal(node){
 // a tot arreu com a ancoratge de la xarxa. La resta són projectes territorials.
 const CORE_PROJECTS=[
   {id:'core-sos',key:'sos',name:'SOS · Sistema Operatiu Social',ic:'⬢',mission:'Infraestructura sobirana per a comunitats antifràgils',url:'formacio.html',color:'var(--indigo)'},
-  {id:'core-comando',key:'comando',name:'Comando Molekulon',ic:'🎬',mission:'Xarxa transmedia de 150.000 superherois per vèncer la Corporació Món Mort',url:'comando.html',color:'var(--purple)'},
+  {id:'core-comando',key:'comando',name:'Comando Molekulon',ic:'🎬',mission:'Xarxa transmedia de 150.000 superherois per vèncer el Mundo Muerto',url:'comando.html',color:'var(--purple)'},
   {id:'core-fundador',key:'fundador',name:'Fundació · projecte estratègic regió',ic:'🗺',mission:'Mapa de valor estratègic i comptabilitat del projecte fundador (TeamTowers · Alt Penedès · Garraf · Catalunya)',url:'#',color:'var(--green)',onclick:'openFounderMap'}
 ];
 // Mapa de valor estratègic del projecte fundador: rols, intercanvis, KPIs, comptabilitat.
@@ -6574,14 +6574,15 @@ const MOLEKULON_LINKS={
   instagram:'https://instagram.com/comando_molekulon'
 };
 // Superherois canònics del còmic origen (V17). El Gran Molekulon envia Mazinguer i Horacio a la Terra
-// per muntar una banda que trobi els 150.000 abans que la Corporació Món Mort ho engoleixi tot.
+// per muntar una banda que trobi els 150.000 abans que el Mundo Muerto ho engoleixi tot.
 /* El nucli del Comando, amb el poder que hi té cadascú de debò.
    ─────────────────────────────────────────────────────────────────────────
    Aquesta llista deia una altra cosa: «Purpleman · persuasió i visualització»
    quan al còmic el que fa és travessar núvols tòxics i convertir les males
-   olors en flors; «Afrodita · teixir vincles» quan és Afrodito, el cor funk que
-   vivia amagat sota un abric de cuir. Tampoc hi eren El Aviador, Pigmentón ni
-   la Medusa, i El Anguila hi sortia com «La Anguila» i marcat com si no fos
+   olors en flors; d'Afrodita deia «cures i xarxa afectiva», que és el que fa la
+   deessa grega del panteó de 12 —una altra llista— i no el cor funk que vivia
+   amagat sota un abric de cuir. Tampoc hi eren El Aviador, Pigmentón ni la
+   Medusa, i El Anguila hi sortia com «La Anguila» i marcat com si no fos
    canònic, quan és la bateria i surt al còmic 1.
 
    El relat és opcional a l'app (V77: es pot apagar i no es perd res), però
@@ -6625,7 +6626,7 @@ const CANONICAL_HEROES=[
    arma:'El Rayo Eliminador',
    lletra:'«Elimino a los malos olores con mi rayo eliminador y huele todo a flor y amor.»',
    vna:'Qui absorbeix la toxicitat de l\'ambient i la torna clima. Si no té nom, no ho fa ningú'},
-  {name:'Afrodito',role:'Motor passional',on:'Còmic 1',
+  {name:'Afrodita',role:'Motor passional',on:'Còmic 1',
    power:'Holometabolisme: la seva identitat musical li trenca l\'armadura que el mantenia alienat',
    arma:'El ritme Soul Train',
    lletra:'«Sexy motherfunky mito. Piensa con el corazón.»',
@@ -7065,7 +7066,7 @@ function openComandoView(){
       <div class="cm-hero-kicker">El Gran Molekulon presenta</div>
       <h2 class="cm-hero-t">COMANDO<br><span>MOLEKULON</span></h2>
       <div class="cm-hero-tag">150.000 superherois. Un territori. L'última oportunitat.</div>
-      <div class="cm-hero-syn">Mazinguer i Horacio són enviats a la Terra per reclutar-los abans que la <strong>Corporació Món Mort</strong> engoleixi les comunitats. <strong>Cada acció real que registres al SOS és una llavor d'aquesta pel·lícula.</strong></div>
+      <div class="cm-hero-syn">Mazinguer i Horacio són enviats a la Terra per reclutar-los abans que el <strong>Mundo Muerto</strong> engoleixi les comunitats. <strong>Cada acció real que registres al SOS és una llavor d'aquesta pel·lícula.</strong></div>
       <div class="cm-hero-billing">Una tribu creativa oberta · projecte mestre de la MATRIU</div>
     </div>
     <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎵</span><span>Transmedia · escolta <a href="${MOLEKULON_LINKS.soundcloud}" target="_blank" rel="noopener" style="color:var(--indigo)">SoundCloud</a> · mira <a href="${MOLEKULON_LINKS.youtube}" target="_blank" rel="noopener" style="color:var(--red)">YouTube</a> · compra el còmic a <a href="${MOLEKULON_LINKS.amazon}" target="_blank" rel="noopener" style="color:var(--orange)">Amazon</a> · segueix a <a href="${MOLEKULON_LINKS.instagram}" target="_blank" rel="noopener" style="color:var(--purple)">Instagram</a></span></div>
@@ -9576,9 +9577,9 @@ const HERO_SCREENS={
   entitats:{hero:'Guiri-Guay',ic:'🎻',line:'«They call me raro.» Parlar amb qui no és dels teus és una feina, i té qui la fa.'},
   map:{hero:'Horacio',ic:'🪈',line:'«Horacio, ¿qué quieres ver?» Dibuixar què hi circula és la feina de qui explica la història.'},
   biblioteca:{hero:'Purpleman',ic:'🟣',line:'«El secreto está en unir todas las fuerzas.» El que fas servir dos cops l\'any pot servir a deu persones.'},
-  /* No és una pestanya, és el cromo (V78). Hi va Afrodito perquè el bescanvi de
+  /* No és una pestanya, és el cromo (V78). Hi va Afrodita perquè el bescanvi de
      repetits és teixir un vincle on no n\'hi havia, que és literalment el seu poder. */
-  cromo:{hero:'Afrodito',ic:'🎹',line:'Teixir vincles on n\'hi ha absència. Un cromo repetit no val res fins que et fa parlar amb algú.'},
+  cromo:{hero:'Afrodita',ic:'🎹',line:'Teixir vincles on n\'hi ha absència. Un cromo repetit no val res fins que et fa parlar amb algú.'},
   /* Tampoc és una pestanya: són les jugades per desencallar un node (V81). Hi va
      El Anguila, la bateria, perquè el seu poder és escapolir-se de qualsevol
      lloc — que és exactament el que li cal a una comunitat que s'ha encallat. */
@@ -14258,7 +14259,7 @@ function openPublicRegister(){
   let onlySigned=true;
   const bg=modal(`
     <h2>🌐 Registre públic d'accions signades</h2>
-    <p class="m-sub">Totes les accions comptabilitzades a l'ecosistema, cercables i amb la firma comprovada de debò contra la clau pública de qui la va fer. <strong>Local-first</strong>: aquest registre és el que veus tu al teu navegador; per fer-lo verificable des de fora, ancora'l.</p>
+    <p class="m-sub">Totes les accions comptabilitzades a l'ecosistema, cercables i amb la firma comprovada de debò contra la clau pública de qui la va fer. <strong>Es queda a casa teva</strong>: aquest registre és el que veus tu al teu navegador; per fer-lo verificable des de fora, ancora'l.</p>
     <div id="prStats"></div>
     <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem">
       <button type="button" class="btn btn-ghost btn-sm pr-f sel" data-f="signed">🔏 Només signades</button>
