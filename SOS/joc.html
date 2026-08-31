@@ -279,7 +279,7 @@ const ROLS={
   fabrica:{nom:'Fabrica',heroi:'Reciclator',ic:'🔧'},
   ensenya:{nom:'Ensenya',heroi:'Supergerminador',ic:'🌱'},
   finança:{nom:'Finança',heroi:'Electroplasman',ic:'🎻'},
-  encén:{nom:'Encén',heroi:'Afrodito',ic:'🎹'},
+  encén:{nom:'Encén',heroi:'Afrodita',ic:'🎹'},
   ritme:{nom:'Ritme',heroi:'El Anguila',ic:'🥁'},
   replica:{nom:'Replica',heroi:'Fraktalman',ic:'🔺'}
 };
@@ -777,13 +777,13 @@ function mjAparella(){
   $('#dlCos').addEventListener('click',clic);
 }
 
-/* 2 · La Bomba Disco · trencar la cuirassa d'Afrodito.
+/* 2 · La Bomba Disco · trencar la cuirassa d'Afrodita.
       Toca quan el disc passa per la zona. Qui apareix ve amb un rol nou. */
 function mjDisco(){
   const c=S.sel;
   let x=0,dir=1,encerts=0,intents=0,acabat=false,anim=null;
   const dibuixa=()=>{
-    $('#dlCos').innerHTML='<p>L\'Afrodito vivia amagat sota un abric de cuir. El que el va treure '+
+    $('#dlCos').innerHTML='<p>L\'Afrodita vivia sota un abric de cuir, amagant-se. El que el va treure '+
       'no va ser una xerrada: va ser <strong>la Bomba Disco</strong>.</p>'+
       '<div class="mj-est"><span>'+encerts+' de 3</span><span>'+intents+' intents</span></div>'+
       '<div class="disco" id="disco"><div class="zona"></div><div class="puck" id="puck">🪩</div></div>'+

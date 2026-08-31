@@ -27,6 +27,7 @@ const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 
 const ARREL = join(__dirname, '..', '..');
+const llegeix = p => { try { return readFileSync(p, 'utf8'); } catch (e) { return null; } };
 const APP = readFileSync(join(ARREL, 'SOS', 'index.html'), 'utf8');
 const PAG = readFileSync(join(ARREL, 'SOS', 'comando.html'), 'utf8');
 /* Les altres pàgines que anomenen herois. No han de dir-los TOTS —el blog en
@@ -153,12 +154,52 @@ else {
    negra explícita, no una heurística: el que va passar és que uns noms es van
    canviar en un lloc i van quedar vius en un altre, i això només es detecta
    sabent quins eren. Quan un nom canviï, s'afegeix aquí el vell. */
-const VELLS = ['Afrodita', 'Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
+const VELLS = ['Afrodito', 'Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
   'Pigmentona', 'La Anguila', 'Medusa Andalusa', 'Horacio Motomachi',
-  'Corporació Món Mort', 'Corporacio Mon Mort',
+  'Corporació Món Mort', 'Corporacio Mon Mort', 'Món Mort', 'Mon Mort',
   /* No són noms, però són el mateix problema: text que es va corregir al cos
      i va quedar viu allà on no mira ningú. */
   'Zero servidor', 'Local-first', 'local-first'];
+
+/* El codex i la pàgina de vedes també. La veda 109 va posar la regla —una sola
+   llista mana— i la guarda mirava les pàgines i no el document que declara la
+   regla: el codex va seguir mesos amb vuit herois, `Guiriguai` i `Ectoplasman`.
+   Veda 112.
+
+   Amb una excepció necessària: les vedes **anomenen** els noms vells per
+   explicar què va fallar, i anomenar no és utilitzar. Els exemples van entre
+   cometes —`Guiriguai`, «La Anguila»— i aquí es buiden abans de mirar. Una
+   guarda que no sap distingir-ho acaba prohibint parlar del passat. */
+/* Els comentaris de codi fora. Es buiden, no s'esborren, perquè les línies no
+   ballin si un dia es vol dir on és el problema. */
+const senseComentaris = t => t
+  .replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
+  .replace(/^[ \t]*\/\/.*$/gm, '');
+const senseCites = t => t
+  .replace(/`[^`\n]*`/g, '``')
+  /* A `vedes.html` les cometes simples del codex ja són `<code>`: si només es
+     miressin els accents greus, la pàgina generada acusaria d'error viu els
+     mateixos exemples que el codex té permès citar, i les dues comprovacions
+     dirien coses diferents del mateix text. */
+  .replace(/<code>[\s\S]*?<\/code>/g, '<code></code>')
+  .replace(/«[^»\n]*»/g, '«»')
+  .replace(/“[^”\n]*”/g, '“”');
+const DOCS = [
+  { f: 'knowledge/codex.md', txt: llegeix(join(ARREL, 'SOS', 'knowledge', 'codex.md')) },
+  { f: 'vedes.html', txt: llegeix(join(ARREL, 'SOS', 'vedes.html')) },
+  /* I l'app. És d'on surt el roster, i precisament per això no se la mirava
+     ningú: el nom vell del vilà va sobreviure mesos a la missió del mòdul
+     Comando i a la sinopsi de la vista —dos textos que llegeix tothom— mentre
+     totes les guardes donaven verd.
+
+     Dels comentaris de codi no. Un comentari és el gremi parlant amb ell
+     mateix i allà «local-first» vol dir el que vol dir; el problema de la veda
+     107 és el mateix mot **a la cara de qui no és del gremi**. I les vedes
+     escrites com a comentari citen els noms vells per explicar-los: acusar-les
+     seria prohibir explicar què va fallar. */
+  { f: 'index.html', txt: senseComentaris(APP) }
+];
+
 let restes = 0;
 ALTRES.forEach(({ f, txt }) => {
   if (txt === null) return;   // la pàgina pot no existir: no és feina d'aquesta guarda
@@ -166,6 +207,19 @@ ALTRES.forEach(({ f, txt }) => {
   if (trobats.length) { restes++; bad(`${f} encara diu: ${trobats.join(', ')}`); }
 });
 if (!restes) ok(`${ALTRES.filter(x => x.txt !== null).length} pàgines més, cap amb noms vells`);
+
+let restesDoc = 0;
+DOCS.forEach(({ f, txt }) => {
+  if (txt === null) return;
+  const net = senseCites(txt);
+  const trobats = VELLS.filter(v => net.includes(v));
+  if (trobats.length) {
+    restesDoc++;
+    bad(`${f} fa servir noms vells fora de cometes: ${trobats.join(', ')} — ` +
+      'si és un exemple del que va fallar, va entre cometes; si no, és un error viu');
+  }
+});
+if (!restesDoc) ok(`${DOCS.filter(x => x.txt !== null).length} documents de coneixement, cap amb noms vells en ús`);
 
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} al relat.` : '\n✅ El relat quadra.');
 process.exit(fails ? 1 : 0);
