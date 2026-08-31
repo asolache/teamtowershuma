@@ -688,6 +688,44 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 111 — Plantar a la plaça i obrir al node han de ser el mateix acte
+
+La segona pantalla del joc és una plaça on, amb el dit gros, plantes projectes i
+els defenses de la por, del rumor i de l'extracció. És el tros que enganxa. I
+per això és el tros on és més fàcil trair-ho tot.
+
+La temptació era òbvia: fer la plaça com un joc de torretes i deixar el SOS a la
+pantalla del mapa, «a sota». Hauria funcionat com a joc i no hauria explicat
+res. Un minijoc que dona punts al costat d'un model que dona hores són dues
+coses; i quan són dues coses, la que la gent recorda és la que es toca.
+
+D'aquí la regla: **plantar a la plaça és obrir una dinàmica al node.**
+`planta()` posa la peça a la quadrícula **i** fa `n.dins.push(d)`, i el que
+comprova `potEngegar()` abans de deixar-t'ho fer és el mateix que decideix una
+partida sencera: capacitat, càrrega i tensió. No hi ha un recompte de la plaça i
+un altre del node. N'hi ha un.
+
+Del mateix ordre, la resta de la capa:
+
+- **Els minijocs paguen en la moneda del model.** Aparellar dona hores,
+  encertar el ritme porta gent, repartir la càrrega forma algú o fa avançar el
+  Món Mort. Cap dona «punts»: si en donessin, hi hauria una segona economia i
+  el joc ensenyaria a optimitzar-la.
+- **Els que ataquen tenen el poder que tenen al còmic.** La por paralitza, el
+  rumor s'escampa per la seva filera, l'extracció et roba hores i la biblioteca
+  la frena. L'antídot de cada un és el que ho és de debò.
+- **Els nivells i els rols són els del SOS**, i els mòduls enllacen la formació
+  de veritat. El joc no té un arbre d'habilitats propi.
+
+I una que sembla cosmètica i no ho és: **la plaça es juga dreta i amb una mà**,
+i tot el que la capçalera es menja el perd la plaça. El títol es va quedar dues
+vegades en «El joc del…» i el subtítol tallat a mitja paraula —«Practi»—, que
+en una pantalla petita no es llegeix com una decisió de disseny sinó com una
+pàgina trencada. Es va arreglar repartint la capçalera en dues files i mesurant
+a 320, 360, 390 i 430 px amb el nom de comarca posat. Ho comprova la secció 20
+de `tests/test-joc.mjs`, perquè aquesta mena de coses tornen sempre: el proper
+nom llarg que hi entri les tornaria a trencar sense que ho vegi ningú.
+
 ## Veda 110 — Si el joc guanya amb una jugada que a la vida no funciona, ensenya el contrari
 
 El joc del Comando existeix per una raó concreta: **explicar el SOS costa i
