@@ -33,7 +33,14 @@ const PAG = readFileSync(join(ARREL, 'SOS', 'comando.html'), 'utf8');
    pot parlar de tres—, però els que diguin han de ser del roster. El post de
    l'origen va estar mesos dient «Afrodita», «Ectoplasman» i «Corporació Món
    Mort» mentre l'app ja en deia uns altres, i no ho mirava res. */
-const ALTRES = ['blog.html', 'uneix-te.html', 'online.html'].map(f => ({
+/* `comando.html` hi és a la llista tot i tenir la seva pròpia comprovació més
+   avall: aquella mira les FITXES d'heroi i no toca el `<head>`. La descripció
+   i la targeta de compartir van quedar dient «Corporació Món Mort» i «Zero
+   servidor» mesos després d'haver-ho corregit al cos, i és justament el text
+   que surt a Google i a WhatsApp — el que més gent llegeix i el que ningú
+   mira. Una comprovació que només mira el que es veu a la pàgina deixa fora
+   el que la representa a fora. */
+const ALTRES = ['comando.html', 'blog.html', 'uneix-te.html', 'online.html', 'crm.html'].map(f => ({
   f, txt: (() => { try { return readFileSync(join(ARREL, 'SOS', f), 'utf8'); } catch (e) { return null; } })()
 }));
 
@@ -144,7 +151,10 @@ else {
    sabent quins eren. Quan un nom canviï, s'afegeix aquí el vell. */
 const VELLS = ['Afrodita', 'Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
   'Pigmentona', 'La Anguila', 'Medusa Andalusa', 'Horacio Motomachi',
-  'Corporació Món Mort', 'Corporacio Mon Mort'];
+  'Corporació Món Mort', 'Corporacio Mon Mort',
+  /* No són noms, però són el mateix problema: text que es va corregir al cos
+     i va quedar viu allà on no mira ningú. */
+  'Zero servidor', 'Local-first', 'local-first'];
 let restes = 0;
 ALTRES.forEach(({ f, txt }) => {
   if (txt === null) return;   // la pàgina pot no existir: no és feina d'aquesta guarda
