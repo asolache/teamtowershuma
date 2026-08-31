@@ -688,6 +688,47 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 110 — Si el joc guanya amb una jugada que a la vida no funciona, ensenya el contrari
+
+El joc del Comando existeix per una raó concreta: **explicar el SOS costa i
+jugar-hi no**. Però un joc que decora el producte és pitjor que no tenir-ne,
+perquè el que la gent recorda són les seves regles, no el text del costat.
+
+D'aquí la regla dura: **les regles del joc són les regles de veritat**.
+
+- **L'única manera de perdre és la cremada.** No hi ha enemic que ataqui. Un
+  node cau quan la càrrega que hi has obert passa la gent que la pot sostenir,
+  que és exactament com cauen els projectes de debò. Si el joc es pogués perdre
+  per una altra cosa, ensenyaria que el perill és una altra cosa.
+- **Formar algú compta el doble.** Una persona formada val per dues perquè sap
+  fer-ho i sap ensenyar-ho. És la traducció del quart pas del mètode —formar
+  gent i marxar— a una xifra que decideix partides. El consell guanyador del
+  joc és el mateix que el de la feina, i és igual d'avorrit: forma gent abans
+  d'obrir res més.
+- **El coneixement no es compra: s'obre ensenyant.** No hi ha botó. Cada tram
+  s'obre sol quan hi ha prou gent formada, perquè en aquesta casa el
+  coneixement viu a la gent i no a un servidor. És el que el Molekulon passa a
+  Mazinguer i Horacio, i el que ells passen a qui juga.
+- **McGragor no ataca: ofereix.** «No cal que ho aprengueu, ja ho fem
+  nosaltres.» Acceptar-ho **ha de ser jugable i ha de sortir a compte avui**:
+  dona estalvi immediat i desforma tot el poble. Si l'oferta fos òbviament
+  dolenta no seria la trampa del còmic 2, seria un espantall.
+- **Molekulàndia no és conquerir el mapa.** És l'estat líquid: nodes lligats
+  que s'aguanten entre ells, cap tensionat, i amb la trobada feta. Guanyar
+  ocupant les 42 comarques ensenyaria expansió; guanyar així ensenya
+  interdependència. I la trobada presencial hi és perquè Molekulàndia és
+  descentralitzada quan és xarxa i **és un lloc** quan els molekulandesos es
+  troben.
+
+I una que va sortir provant-ho: **la prova esperava que formar una persona ho
+arreglés del tot**, i el joc deixa el node «just» al límit. El joc tenia raó i
+la prova no. Dir que formar algú ho resol del tot seria vendre el mètode més
+barat del que és.
+
+Corol·lari per al dia que el SOS canviï: si una regla d'aquí deixa de ser certa
+a l'eina, **s'ha de canviar al joc també**. Un joc que ensenya una cosa que
+l'eina no fa, ensenya una mentida — i la recorda més gent que el text.
+
 ## Veda 109 — Un relat que s'inventa el seu propi contingut deixa de ser una capa
 
 El Comando és opcional (V77: s'apaga i no es perd res). Precisament per això
