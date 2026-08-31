@@ -2,169 +2,214 @@
 <html lang="ca">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>El joc del Comando · activa Catalunya</title>
-<meta name="description" content="El Molekulon passa el coneixement a Mazinguer i Horacio, i ells te'l passen a tu. Activa comarques, troba gent, engega dinàmiques i mira què les crema. La manera més ràpida d'entendre com funciona el SOS.">
-<meta property="og:title" content="El joc del Comando · activa Catalunya">
-<meta property="og:description" content="Un poble no cau per falta de ganes: cau quan penja de massa poca gent. Juga-hi i ho veuràs en cinc minuts.">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>El joc del Comando · planta, defensa i activa Catalunya</title>
+<meta name="description" content="Entra a una comarca, planta projectes a la plaça i defensa-la de Max Miedox, Mala Yerbax i Mc Greggor. Amb el polze. El Comando és la cara fantàstica del SOS, i el joc n'ensenya les regles de veritat.">
+<meta property="og:title" content="El joc del Comando · planta, defensa i activa Catalunya">
+<meta property="og:description" content="Un poble no cau per falta de ganes: cau quan penja de massa poca gent. Juga-hi amb el polze i ho veuràs en cinc minuts.">
 <meta property="og:type" content="website">
 <style>
 :root{
   --bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
   --border:#2a2a35;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;
-  --blue:#00b0ff;--red:#ff5252;--mono:'SF Mono',SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  --blue:#00b0ff;--red:#ff5252;--amber:#ffc107;
+  --mono:'SF Mono',SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  --polze:96px;              /* alçada de la barra del polze */
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;overflow-x:hidden;
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.45;overscroll-behavior:none;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
 a{color:var(--indigo)}
 h1,h2,h3,h4{line-height:1.2;margin:0}
-button{font:inherit;cursor:pointer;border-radius:8px;min-height:38px;padding:.45rem .8rem;
-  border:1px solid var(--border);background:var(--card);color:var(--text);touch-action:manipulation;
-  transition:border-color .15s,background .15s}
-button:hover:not(:disabled){border-color:var(--indigo)}
-button:disabled{opacity:.38;cursor:not-allowed}
+button{font:inherit;cursor:pointer;border-radius:10px;padding:.5rem .8rem;border:1px solid var(--border);
+  background:var(--card);color:var(--text);touch-action:manipulation;transition:border-color .12s,background .12s}
+button:disabled{opacity:.35;cursor:not-allowed}
 button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
-.b-pri:hover:not(:disabled){background:#4f52d8}
-.wrap{max-width:1180px;margin:0 auto;padding:0 1rem}
 
-/* ── Barra de dalt · els comptadors ─────────────────────────────────────── */
-.top{position:sticky;top:0;z-index:30;background:rgba(11,11,18,.97);backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--border)}
-.top .wrap{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;min-height:56px;padding-top:.5rem;padding-bottom:.5rem}
-.marca{font-weight:700;white-space:nowrap}
-.marca span{color:var(--indigo)}
-.mets{display:flex;gap:.9rem;flex-wrap:wrap;margin-left:auto;align-items:center}
-.met{text-align:center;min-width:56px}
-.met .n{font-family:var(--mono);font-size:1.05rem;font-weight:700}
-.met .l{font-size:.58rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.met.psico .n{color:var(--green)} .met.econo .n{color:var(--blue)}
-.met.mort .n{color:var(--red)} .met.acc .n{color:var(--orange)}
+/* ── L'aplicació ocupa la pantalla i prou. Res de scroll de pàgina: el joc no
+      pot fer que se't mogui el terra mentre hi jugues. ────────────────────── */
+.app{display:flex;flex-direction:column;height:100dvh;max-width:640px;margin:0 auto;
+  background:var(--bg);position:relative;overflow:hidden}
+@media(min-width:660px){.app{border-left:1px solid var(--border);border-right:1px solid var(--border)}}
 
-/* ── El tauler ──────────────────────────────────────────────────────────── */
-.joc{display:grid;grid-template-columns:1fr 340px;gap:1rem;padding:1rem 0 2rem;align-items:start}
-@media(max-width:900px){.joc{grid-template-columns:1fr}}
-.mapa{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1rem}
-.mapa-nota{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin:0 0 .8rem;line-height:1.6}
-.prov{margin-bottom:.9rem}
-.prov-t{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:.35rem}
-.caselles{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:.35rem}
-.cas{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.45rem .5rem;
-  text-align:left;min-height:52px;font-size:.7rem;line-height:1.25;display:flex;flex-direction:column;
-  justify-content:space-between;gap:.2rem}
-.cas .nm{font-weight:600;color:var(--muted)}
-.cas .st{font-family:var(--mono);font-size:.58rem;color:var(--muted)}
-.cas.pot{border-color:rgba(99,102,241,.45)}
-.cas.pot .nm{color:var(--light)}
-.cas.on{background:rgba(0,230,118,.07);border-color:rgba(0,230,118,.45)}
+/* ── Capçalera prima: els comptadors que has de veure sempre ────────────── */
+/* Dues files, sempre. En una sola fila el títol i els quatre comptadors no hi
+   caben a 320px: el títol quedava en 74px i es llegia «El joc del…», i a més la
+   capçalera sortia de la pantalla. Repartit en dues files cap sencer a 320px i
+   no depèn de com de llarg sigui el nom d'una comarca o d'un nivell. */
+.hud{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .5rem;padding:.4rem .7rem;
+  border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0}
+.hud .tit{font-weight:700;font-size:.86rem;flex:1 1 auto;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;line-height:1.15}
+/* El subtítol també s'ha de tallar amb punts suspensius. Sense això queia a
+   mitja paraula —«Practi»— i semblava un error de la pàgina. */
+.hud .tit small{display:block;font-family:var(--mono);font-size:.55rem;color:var(--muted);font-weight:400;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Segona fila sencera: els comptadors es llegeixen d'un cop d'ull. Número i
+   etiqueta van de costat i no un sobre l'altre: la capçalera es queda en dues
+   línies baixes i la plaça no perd alçada. */
+.pips{order:9;flex:1 0 100%;display:flex;gap:.85rem;align-items:baseline}
+.pip{display:flex;align-items:baseline;gap:.2rem}
+.pip .n{font-family:var(--mono);font-size:.82rem;font-weight:700;line-height:1.1}
+.pip .l{font-size:.5rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pip.h .n{color:var(--amber)} .pip.v .n{color:var(--green)} .pip.m .n{color:var(--red)}
+.b-tor{padding:.4rem .6rem;font-size:.78rem}
+
+/* ── El cos: canvia de pantalla ──────────────────────────────────────────── */
+.cos{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.pant{display:none;padding:.7rem} .pant.on{display:block}
+
+/* ── Pantalla MAPA ───────────────────────────────────────────────────────── */
+.nota{font-family:var(--mono);font-size:.6rem;color:var(--muted);line-height:1.6;margin:0 0 .7rem}
+.prov-t{font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:.7rem 0 .3rem}
+.caselles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:.35rem}
+.cas{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.45rem .5rem;
+  text-align:left;min-height:56px;display:flex;flex-direction:column;justify-content:space-between;gap:.15rem}
+.cas .nm{font-size:.68rem;font-weight:600;color:var(--muted);line-height:1.2}
+.cas .st{font-family:var(--mono);font-size:.55rem;color:var(--muted)}
+.cas.pot{border-color:rgba(99,102,241,.4)} .cas.pot .nm{color:var(--light)}
+.cas.on{background:rgba(0,230,118,.07);border-color:rgba(0,230,118,.4)}
 .cas.on .nm{color:var(--text)} .cas.on .st{color:var(--green)}
-.cas.risc{background:rgba(255,145,0,.09);border-color:rgba(255,145,0,.5)}
-.cas.risc .st{color:var(--orange)}
-.cas.morta{background:rgba(255,82,82,.07);border-color:rgba(255,82,82,.4)}
+.cas.risc{background:rgba(255,145,0,.09);border-color:rgba(255,145,0,.5)} .cas.risc .st{color:var(--orange)}
+.cas.morta{background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.45)}
 .cas.morta .nm,.cas.morta .st{color:var(--red)}
-.cas.liq{background:rgba(224,64,251,.1);border-color:var(--purple)}
-.cas.liq .st{color:var(--purple)}
-.cas.sel{outline:2px solid var(--indigo);outline-offset:1px}
+.cas.liq{background:rgba(224,64,251,.11);border-color:var(--purple)} .cas.liq .st{color:var(--purple)}
 
-/* ── El panell lateral ──────────────────────────────────────────────────── */
-.costat{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1rem;
-  position:sticky;top:70px;max-height:calc(100dvh - 84px);overflow-y:auto}
-@media(max-width:900px){.costat{position:static;max-height:none}}
-.costat h3{font-size:1rem;margin-bottom:.15rem}
-.costat .sots{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-bottom:.8rem}
-.barra{height:6px;border-radius:3px;background:var(--card);overflow:hidden;margin:.3rem 0 .1rem}
+/* ── Pantalla COMARCA · la plaça ─────────────────────────────────────────── */
+.placa{position:relative;background:linear-gradient(90deg,rgba(0,230,118,.06),rgba(255,82,82,.07));
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;touch-action:manipulation}
+.fila{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid rgba(255,255,255,.04)}
+.fila:last-child{border-bottom:0}
+.cel{aspect-ratio:1;border-right:1px solid rgba(255,255,255,.04);display:flex;align-items:center;
+  justify-content:center;font-size:1.4rem;background:transparent;border-radius:0;padding:0;min-height:0}
+.cel:last-child{border-right:0}
+.cel.buida:active{background:rgba(99,102,241,.14)}
+.cel.te{background:rgba(0,230,118,.07)}
+.cel.te.parat{background:rgba(255,145,0,.14)}
+.cel .hp{position:absolute;bottom:2px;left:6%;width:88%;height:3px;border-radius:2px;background:rgba(255,255,255,.1)}
+.cel .hp i{display:block;height:100%;background:var(--green);border-radius:2px}
+.cel-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.vilans{position:absolute;inset:0;pointer-events:none}
+.vil{position:absolute;font-size:1.35rem;transform:translate(-50%,-50%);transition:left .25s linear;
+  filter:drop-shadow(0 0 4px rgba(0,0,0,.7))}
+.vil small{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--mono);
+  font-size:.42rem;color:var(--red);white-space:nowrap}
+.onada{display:flex;align-items:center;gap:.5rem;margin:.6rem 0 .4rem;font-family:var(--mono);font-size:.62rem;color:var(--muted)}
+.onada .bar{flex:1;height:4px;background:var(--card);border-radius:2px;overflow:hidden}
+.onada .bar i{display:block;height:100%;background:var(--red);width:0;transition:width .3s}
+
+.fitxa{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.7rem .8rem;margin-bottom:.6rem}
+.fitxa .lin{display:flex;justify-content:space-between;gap:.6rem;font-size:.76rem;color:var(--muted);margin-bottom:.25rem}
+.barra{height:6px;border-radius:3px;background:var(--card);overflow:hidden}
 .barra i{display:block;height:100%;background:var(--green);transition:width .3s}
 .barra.alta i{background:var(--orange)} .barra.critica i{background:var(--red)}
-.etq{font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between;gap:.5rem}
-.gent{display:flex;flex-wrap:wrap;gap:.25rem;margin:.5rem 0}
-.pers{font-size:.64rem;padding:.18rem .4rem;border-radius:4px;background:var(--card);
-  border:1px solid var(--border);white-space:nowrap}
+.equip{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.5rem}
+.pers{font-size:.6rem;padding:.16rem .38rem;border-radius:5px;background:var(--card);border:1px solid var(--border)}
 .pers.form{border-color:rgba(0,230,118,.5);color:var(--green)}
-.blocs{margin-top:.9rem}
-.bloc{border-top:1px solid var(--border);padding-top:.7rem;margin-top:.7rem}
-.bloc h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
-  font-family:var(--mono);font-weight:400;margin-bottom:.45rem}
-.din{display:flex;align-items:flex-start;gap:.5rem;padding:.4rem 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.04)}
-.din:last-child{border-bottom:0}
-.din .txt{flex:1}
-.din .nom{font-weight:600}
-.din .cal{font-size:.66rem;color:var(--muted);display:block}
-.din.va .nom{color:var(--green)}
-.accions{display:flex;flex-direction:column;gap:.4rem;margin-top:.8rem}
-.accions button{width:100%;text-align:left}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin:.6rem 0}
+.mini{padding:.6rem .4rem;font-size:.66rem;line-height:1.25;text-align:center;min-height:58px}
+.mini b{display:block;font-size:.8rem;margin-bottom:.1rem}
 
-/* ── El diari ───────────────────────────────────────────────────────────── */
-.diari{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem}
-.diari h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);font-weight:400;margin-bottom:.5rem}
-.linies{max-height:150px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:.3rem}
-.li{font-size:.78rem;color:var(--light);padding-left:.7rem;border-left:2px solid var(--border);line-height:1.45}
+/* ── La barra del polze · tot el que es toca sovint viu aquí baix ───────── */
+.polze{flex-shrink:0;border-top:1px solid var(--border);background:var(--panel);
+  padding:.5rem .6rem calc(.5rem + env(safe-area-inset-bottom));min-height:var(--polze)}
+.tira{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.2rem;scrollbar-width:none}
+.tira::-webkit-scrollbar{display:none}
+.sem{flex:0 0 auto;width:74px;min-height:66px;padding:.4rem .3rem;border-radius:12px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:.1rem;font-size:.55rem;
+  line-height:1.15;text-align:center;color:var(--light)}
+.sem .ic{font-size:1.3rem}
+.sem .cost{font-family:var(--mono);font-size:.55rem;color:var(--amber)}
+.sem.sel{border-color:var(--indigo);background:rgba(99,102,241,.16)}
+.sem.no{opacity:.32}
+.accions{display:flex;gap:.4rem;margin-top:.45rem}
+.accions button{flex:1;min-height:44px;font-size:.78rem;padding:.4rem .3rem}
+
+/* ── Diari ───────────────────────────────────────────────────────────────── */
+.diari{margin-top:.7rem;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.6rem .7rem}
+.diari h4{font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;margin-bottom:.4rem}
+.linies{max-height:120px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:.28rem}
+.li{font-size:.72rem;color:var(--light);padding-left:.6rem;border-left:2px solid var(--border);line-height:1.4}
 .li.bo{border-color:var(--green)} .li.mal{border-color:var(--red)}
 .li.avis{border-color:var(--orange)} .li.lliq{border-color:var(--purple)}
 .li b{color:var(--text)}
 
-/* ── Modals ─────────────────────────────────────────────────────────────── */
-dialog{border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);
-  max-width:640px;width:calc(100vw - 2rem);padding:0}
-dialog::backdrop{background:rgba(0,0,0,.75)}
-.dl-cap{padding:1.1rem 1.2rem .6rem}
-.dl-cap h2{font-size:1.15rem}
-.dl-cap .kick{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}
-.dl-cos{padding:0 1.2rem 1rem;max-height:66vh;overflow-y:auto;font-size:.92rem;color:var(--light)}
-.dl-cos p{margin:0 0 .8rem} .dl-cos strong{color:var(--text)}
-.dl-cos em{color:var(--muted);font-style:italic}
-.dl-peu{padding:.9rem 1.2rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap}
-.tria{display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem}
-.tria button{text-align:left;padding:.7rem .9rem}
-.tria b{display:block}
-.tria span{font-size:.76rem;color:var(--muted)}
-.peu{border-top:1px solid var(--border);padding:1.6rem 0;color:var(--muted);font-size:.8rem}
+/* ── Modals ──────────────────────────────────────────────────────────────── */
+dialog{border:1px solid var(--border);border-radius:16px;background:var(--panel);color:var(--text);
+  max-width:520px;width:calc(100vw - 1.6rem);padding:0;margin:auto}
+dialog::backdrop{background:rgba(0,0,0,.8)}
+.dl-cap{padding:1rem 1.1rem .5rem}
+.dl-cap .kick{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}
+.dl-cap h2{font-size:1.05rem;margin-top:.15rem}
+.dl-cos{padding:0 1.1rem .9rem;max-height:60vh;overflow-y:auto;font-size:.86rem;color:var(--light)}
+.dl-cos p{margin:0 0 .7rem} .dl-cos strong{color:var(--text)} .dl-cos em{color:var(--muted);font-style:italic}
+.dl-cos ul{margin:0 0 .7rem;padding-left:1.1rem} .dl-cos li{margin-bottom:.25rem}
+.dl-peu{padding:.8rem 1.1rem calc(.8rem + env(safe-area-inset-bottom));border-top:1px solid var(--border);
+  display:flex;gap:.45rem;flex-wrap:wrap}
+.dl-peu button{flex:1;min-height:46px;min-width:120px}
+
+/* ── Minijocs ────────────────────────────────────────────────────────────── */
+.mj{display:grid;gap:.45rem}
+.mj-parell{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+.mj-b{min-height:52px;font-size:.76rem;text-align:left;padding:.5rem .6rem;line-height:1.25}
+.mj-b.sel{border-color:var(--indigo);background:rgba(99,102,241,.16)}
+.mj-b.ok{border-color:var(--green);background:rgba(0,230,118,.12);opacity:.55}
+.mj-b.mal{border-color:var(--red)}
+.mj-est{font-family:var(--mono);font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between}
+.disco{height:120px;position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.disco .zona{position:absolute;left:50%;top:0;bottom:0;width:56px;transform:translateX(-50%);
+  background:rgba(0,230,118,.12);border-left:1px solid var(--green);border-right:1px solid var(--green)}
+.disco .puck{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:1.6rem}
+.carr{display:grid;gap:.35rem}
+.carr-p{display:flex;align-items:center;gap:.5rem;background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:.45rem .6rem;font-size:.74rem}
+.carr-p .nm{flex:1}
+.carr-p .num{font-family:var(--mono);font-size:.8rem}
+.carr-p.ple{border-color:var(--red)} .carr-p.ple .num{color:var(--red)}
+.carr-p.ok{border-color:var(--green)} .carr-p.ok .num{color:var(--green)}
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="wrap">
-    <span class="marca">El joc del <span>Comando</span></span>
-    <div class="mets">
-      <div class="met acc"><div class="n" id="mAcc">3</div><div class="l">accions</div></div>
-      <div class="met"><div class="n" id="mTorn">1</div><div class="l">tardor</div></div>
-      <div class="met"><div class="n" id="mNodes">0</div><div class="l">comarques</div></div>
-      <div class="met psico"><div class="n" id="mPsico">0</div><div class="l">vincle</div></div>
-      <div class="met econo"><div class="n" id="mEcono">0</div><div class="l">estalvi</div></div>
-      <div class="met mort"><div class="n" id="mMort">0</div><div class="l">món mort</div></div>
-      <button class="b-pri" id="btnTorn">Passa el torn →</button>
-      <button id="btnAjuda" aria-label="Com es juga">?</button>
+<div class="app">
+  <header class="hud">
+    <button id="btnEnrere" hidden aria-label="Torna al mapa">←</button>
+    <div class="tit" id="hudTit">El joc del Comando<small id="hudSub">Catalunya · tardor 1</small></div>
+    <div class="pips">
+      <div class="pip"><div class="n" id="pAcc">3</div><div class="l">acc</div></div>
+      <div class="pip h"><div class="n" id="pHores">0</div><div class="l">hores</div></div>
+      <div class="pip v"><div class="n" id="pPsico">0</div><div class="l">vincle</div></div>
+      <div class="pip m"><div class="n" id="pMort">0</div><div class="l">mort</div></div>
     </div>
-  </div>
-</header>
+    <button class="b-pri b-tor" id="btnTorn">Torn →</button>
+    <button id="btnAjuda" aria-label="Com es juga">?</button>
+  </header>
 
-<main class="wrap">
-  <div class="diari">
-    <h4>Diari</h4>
-    <div class="linies" id="diari"></div>
-  </div>
-
-  <div class="joc">
-    <section class="mapa">
-      <p class="mapa-nota">Les 42 comarques, agrupades per província. <strong>No és un mapa geogràfic</strong>:
-      és l'estructura. Dibuixar-hi fronteres inventades faria semblar exacte el que no ho és.</p>
+  <div class="cos">
+    <!-- ══ MAPA ══ -->
+    <section class="pant on" id="pMapa">
+      <p class="nota">Les 42 comarques, per província. <strong>No és un mapa geogràfic</strong>: és
+      l'estructura. Toca'n una per entrar-hi.</p>
       <div id="mapa"></div>
+      <div class="diari"><h4>Diari</h4><div class="linies" id="diari"></div></div>
     </section>
-    <aside class="costat" id="costat"></aside>
-  </div>
-</main>
 
-<footer class="peu">
-  <div class="wrap">
-    <p>El joc és una simplificació, i les xifres no són prediccions: serveixen per ensenyar
-    <strong>com es comporta</strong> un projecte comunitari, no per estimar-ne cap.</p>
-    <p><a href="comando.html">El Comando</a> · <a href="uneix-te.html">Apunta't de debò</a> ·
-       <a href="index.html">Obre el SOS</a> · <a href="/vedes">Els vedes</a></p>
+    <!-- ══ COMARCA ══ -->
+    <section class="pant" id="pComarca">
+      <div class="fitxa" id="fitxa"></div>
+      <div class="onada"><span id="onTxt">Plaça tranquil·la</span><span class="bar"><i id="onBar"></i></span></div>
+      <div class="placa" id="placa"><div class="vilans" id="vilans"></div></div>
+      <div class="minis" id="minis"></div>
+      <div class="diari"><h4>Diari</h4><div class="linies" id="diari2"></div></div>
+    </section>
   </div>
-</footer>
+
+  <footer class="polze" id="polze"></footer>
+</div>
 
 <dialog id="dlg">
   <div class="dl-cap"><div class="kick" id="dlKick"></div><h2 id="dlTit"></h2></div>
@@ -174,32 +219,38 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 
 <script>
 /* ══════════════════════════════════════════════════════════════════════════
-   El joc del Comando
+   El joc del Comando · dues capes, un sol model
    ══════════════════════════════════════════════════════════════════════════
 
-   Un joc que decora el producte no serveix de res. Aquest ha d'ensenyar el SOS,
-   i per això **les regles del joc són les regles de veritat**:
+   **El Comando és la cara fantàstica del SOS**, i per això el joc no pot
+   ensenyar res que l'eina no faci. Tot el que passa aquí té el seu equivalent:
 
-   · Un poble no cau per falta de ganes. Cau quan **penja de massa poca gent**.
-     La derrota d'aquest joc és la cremada, i és l'única manera de perdre.
-   · El coneixement no es compra: **s'ensenya**. Cada persona formada pot formar
-     algú altre. És l'únic recurs que creix sol, i creix lent.
-   · McGragor no ataca: **ofereix**. Sempre és una drecera que va bé ara i que
-     et deixa depenent després. Acceptar-la és jugable, i té conseqüències.
-   · Molekulàndia no és conquerir les 42 comarques. És l'estat en què els nodes
-     **es sostenen entre ells** —líquid— i s'han trobat en persona.
+   · Les dinàmiques que plantes són les del catàleg del SOS.
+   · Els rols que demanen són els arquetips del roster.
+   · Els tres que ataquen són els tres supervilans del còmic, amb el seu poder:
+     Max Miedox la por, Mala Yerbax el rumor, Mc Greggor l'extracció.
+   · Els nivells són `SOS_LEVELS` —Explorador, Practicant, Gestor/a, Mentor/a—
+     i cada pujada cita els mòduls de formació de veritat, amb el seu enllaç.
+   · L'única manera de perdre és la cremada: **un node que penja de massa poca
+     gent**. Ni al mapa ni a la plaça hi ha cap altra derrota.
 
-   Si algun dia una regla d'aquí deixa de ser certa al SOS, s'ha de canviar aquí
-   també: un joc que ensenya una cosa que l'eina no fa, ensenya una mentida.
+   Dues capes:
+   · **Mapa** — on activar comarques, formar gent i lligar-les. És l'estratègia.
+   · **Plaça** — dins d'una comarca: plantes projectes i els defenses. És el que
+     es toca amb el polze, i el que passa aquí alimenta el model de dalt.
+
+   Si un dia una regla d'aquí deixa de ser certa al SOS, s'ha de canviar aquí:
+   un joc que ensenya una cosa que l'eina no fa, ensenya una mentida. Veda 110.
    ══════════════════════════════════════════════════════════════════════════ */
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tria=a=>a[Math.floor(Math.random()*a.length)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
-/* ── Les comarques · dades reals ──────────────────────────────────────────
-   Còpia de `CAT_GEO.comarca` de l'app: 42 comarques amb la seva província.
-   S'hi copia i no s'hi inventa perquè el jugador ha de poder buscar la seva. */
+/* ── Dades reals ──────────────────────────────────────────────────────────
+   Còpia de `CAT_GEO.comarca`: 42 comarques amb la seva província. El jugador
+   ha de poder buscar la seva, i per això no se n'inventa cap. */
 const COMARQUES=[
   ['Alt Penedès','Barcelona'],['Anoia','Barcelona'],['Bages','Barcelona'],['Baix Llobregat','Barcelona'],
   ['Barcelonès','Barcelona'],['Berguedà','Barcelona'],['Garraf','Barcelona'],['Maresme','Barcelona'],
@@ -214,108 +265,125 @@ const COMARQUES=[
   ['Tarragonès','Tarragona'],['Terra Alta','Tarragona']
 ];
 const PROVS=['Barcelona','Girona','Lleida','Tarragona'];
-/* Es comença a l'Alt Penedès perquè és d'on és la casa. */
 const INICI='Alt Penedès';
 
-/* ── Els rols · el roster del Comando, fet mecànica ───────────────────────
-   Cada arquetip és una manera de sostenir un grup, i les dinàmiques en
-   demanen de concrets. Això no és decoració: és el que fa que el roster
-   serveixi per a alguna cosa dins del joc. Els noms i els poders venen de
-   `CANONICAL_HEROES`. */
+/* Els rols: el roster del Comando fet mecànica. Cada arquetip és una manera de
+   sostenir un grup, i les dinàmiques en demanen de concrets. */
 const ROLS={
-  connecta:{nom:'Connecta',heroi:'La Medusa Andaluza',ic:'🪼',diu:'Creua informació entre gent que no es parlava'},
-  cuida:   {nom:'Cuida',   heroi:'Guiri-Guay',        ic:'🎻',diu:'Cura les friccions abans que es podreixin'},
-  neteja:  {nom:'Neteja',  heroi:'Purpleman',         ic:'🟣',diu:'Absorbeix la toxicitat i la torna clima'},
-  desencalla:{nom:'Desencalla',heroi:'El Aviador',    ic:'✈️',diu:'Apareix quan tothom s\'ha rendit i ho arregla'},
-  ordena:  {nom:'Ordena',  heroi:'Pigmentón',         ic:'🎨',diu:'Dona a cadascú el color que li toca'},
-  sosté:   {nom:'Sosté',   heroi:'Barbamuda',         ic:'🎸',diu:'No es mou quan tot es mou'},
-  fabrica: {nom:'Fabrica', heroi:'Reciclator',        ic:'🔧',diu:'Fa eines amb el que els altres han llençat'},
-  ensenya: {nom:'Ensenya', heroi:'Supergerminador',   ic:'🌱',diu:'Prefereix ensenyar-ho a fer-ho'},
-  finança: {nom:'Finança', heroi:'Electroplasman',    ic:'🎻',diu:'Porta el que fa passar d\'aturat a enlairat'},
-  encén:   {nom:'Encén',   heroi:'Afrodito',          ic:'🎹',diu:'Trenca cuirasses. Sense ell no ve ningú'},
-  ritme:   {nom:'Ritme',   heroi:'El Anguila',        ic:'🥁',diu:'Marca el compàs i troba l\'escletxa'},
-  replica: {nom:'Replica', heroi:'Fraktalman',        ic:'🔺',diu:'El que va bé aquí té la mateixa forma allà'}
+  connecta:{nom:'Connecta',heroi:'La Medusa Andaluza',ic:'🪼'},
+  cuida:{nom:'Cuida',heroi:'Guiri-Guay',ic:'🎻'},
+  neteja:{nom:'Neteja',heroi:'Purpleman',ic:'🟣'},
+  desencalla:{nom:'Desencalla',heroi:'El Aviador',ic:'✈️'},
+  ordena:{nom:'Ordena',heroi:'Pigmentón',ic:'🎨'},
+  sosté:{nom:'Sosté',heroi:'Barbamuda',ic:'🎸'},
+  fabrica:{nom:'Fabrica',heroi:'Reciclator',ic:'🔧'},
+  ensenya:{nom:'Ensenya',heroi:'Supergerminador',ic:'🌱'},
+  finança:{nom:'Finança',heroi:'Electroplasman',ic:'🎻'},
+  encén:{nom:'Encén',heroi:'Afrodito',ic:'🎹'},
+  ritme:{nom:'Ritme',heroi:'El Anguila',ic:'🥁'},
+  replica:{nom:'Replica',heroi:'Fraktalman',ic:'🔺'}
 };
 const ROL_IDS=Object.keys(ROLS);
 
-/* ── Les dinàmiques · les del catàleg de debò ─────────────────────────────
-   `cal` són els rols que han de ser al node. `carrega` és el pes que posa
-   sobre la gent que la sosté: aquesta xifra és tot el joc. */
+/* Les dinàmiques del catàleg del SOS. `cal` són els rols que han de ser al
+   node; `carrega` és el pes que posen sobre la gent —la xifra que ho decideix
+   tot al mapa. A la plaça, cadascuna té a més una manera de defensar. */
 const DINS={
-  banctemps:{nom:'Banc de temps',ic:'⏳',cal:['connecta','cuida'],carrega:3,psico:3,econo:2,
-    diu:'Hores per hores. Una hora val una hora'},
-  biblioteca:{nom:'Biblioteca de les coses',ic:'🧰',cal:['fabrica','ordena'],carrega:2,psico:1,econo:3,
-    diu:'El que fas servir dos cops l\'any pot servir a deu persones'},
-  cures:{nom:'Suport mutu i cures',ic:'🤝',cal:['cuida','sosté'],carrega:4,psico:5,econo:1,
-    diu:'Contra la soledat, que és el que més mata'},
-  consum:{nom:'Grup de consum',ic:'🥬',cal:['ensenya','connecta'],carrega:3,psico:2,econo:3,
-    diu:'Directe a pagès, sense ningú al mig'},
-  energia:{nom:'Comunitat energètica',ic:'⚡',cal:['finança','ordena'],carrega:5,psico:1,econo:5,
-    diu:'Produir la llum aquí, i repartir-la'},
-  compra:{nom:'Compra col·lectiva',ic:'🛒',cal:['desencalla','ordena'],carrega:2,psico:1,econo:3,
-    diu:'Junts es negocia el que sol no es negocia'},
-  coop:{nom:'Cooperativa de treball',ic:'🛠️',cal:['finança','sosté','desencalla'],carrega:6,psico:3,econo:6,
-    diu:'Qui hi treballa decideix. Una persona, un vot'},
-  festa:{nom:'Trobada i festa major',ic:'🎉',cal:['encén','ritme'],carrega:1,psico:4,econo:0,
-    diu:'Sense això no ve ningú a la resta'}
+  banctemps:{nom:'Banc de temps',ic:'⏳',cal:['connecta','cuida'],carrega:3,psico:3,econo:2,cost:0,
+    fa:'genera',diu:'Genera hores. Sense això no pots plantar res més'},
+  cures:{nom:'Cures',ic:'🤝',cal:['cuida','sosté'],carrega:4,psico:5,econo:1,cost:35,
+    fa:'mur',vida:600,diu:'Aguanta. Contra la por, algú que no es mou'},
+  festa:{nom:'Festa major',ic:'🎉',cal:['encén','ritme'],carrega:1,psico:4,econo:0,cost:30,
+    fa:'neteja',diu:'Neteja el rumor de tota la fila'},
+  biblioteca:{nom:'Biblioteca de les coses',ic:'🧰',cal:['fabrica','ordena'],carrega:2,psico:1,econo:3,cost:25,
+    fa:'alenteix',diu:'Alenteix qui ve a extreure'},
+  consum:{nom:'Grup de consum',ic:'🥬',cal:['ensenya','connecta'],carrega:3,psico:2,econo:3,cost:40,
+    fa:'tira',dany:12,diu:'Empeny cap enfora, constant'},
+  energia:{nom:'Comunitat energètica',ic:'⚡',cal:['finança','ordena'],carrega:5,psico:1,econo:5,cost:70,
+    fa:'tira',dany:26,diu:'Fort i car. La llum feta aquí'},
+  compra:{nom:'Compra col·lectiva',ic:'🛒',cal:['desencalla','ordena'],carrega:2,psico:1,econo:3,cost:20,
+    fa:'tira',dany:7,diu:'Barat. Junts es negocia'},
+  coop:{nom:'Cooperativa',ic:'🛠️',cal:['finança','sosté','desencalla'],carrega:6,psico:3,econo:6,cost:95,
+    fa:'tira',dany:40,diu:'Qui hi treballa decideix'}
 };
 const DIN_IDS=Object.keys(DINS);
 
-/* ── El coneixement · el que el Molekulon passa ───────────────────────────
-   No es compra ni es troba: s'obté ensenyant. Cada tram s'obre quan hi ha
-   prou gent formada, perquè el coneixement d'aquesta casa **viu a la gent**,
-   no en un servidor. */
+/* Els tres supervilans del còmic, amb el poder que hi tenen. No són genèrics:
+   cadascun ataca una cosa diferent i es para d'una manera diferent. */
+const VILANS={
+  por:{nom:'Max Miedox',ic:'😨',vida:170,vel:.30,dany:1.1,
+    diu:'La por que paralitza abans de començar. Para un projecte en tocar-lo'},
+  rumor:{nom:'Mala Yerbax',ic:'🗣️',vida:80,vel:.62,dany:.8,
+    diu:'El rumor que corroeix la confiança. Va de pressa i s\'escampa'},
+  extraccio:{nom:'Mc Greggor',ic:'💼',vida:260,vel:.20,dany:1.4,roba:2,
+    diu:'L\'extracció que buida el territori. Et pren les hores mentre camina'}
+};
+
+/* Els nivells del SOS. Còpia de `SOS_LEVELS`, i cada pujada obre un rol de
+   `SOS_ROLES` i cita els mòduls de formació de veritat. */
+const NIVELLS=[
+  {id:'N0',nom:'Explorador/a',rol:'simpatitzant',rolNom:'Ciutadà/na simpatitzant',
+   one:'Has entrat, tens perfil i entens per a què serveix el SOS.',
+   cal:{},moduls:[['m1','Fonaments SOS i codex Antigravity']]},
+  {id:'N1',nom:'Practicant',rol:'superheroi',rolNom:'Superheroi/na',
+   one:'Operes una dinàmica real: aportes, intercanvies, registres.',
+   cal:{dins:2},moduls:[['m4','Recursos comunitaris · banc de temps i biblioteca'],
+     ['m7','Comando Molekulon i reputació'],['m10','Comunicació i captació de persones']]},
+  {id:'N2',nom:'Gestor/a SOS',rol:'coordinador',rolNom:'Coordinador/a de comunitat',
+   one:'Sostens un node sencer: mapa, governança, comptabilitat i incubació.',
+   cal:{dins:4,formades:4,comarques:2},
+   moduls:[['m5','Governança i Guardians'],['m6','MATRIU, Slicing Pie i intercooperació'],
+     ['m11','Conflictes, cures i relleu'],['m12','Finançament i subvencions a Catalunya']]},
+  {id:'N3',nom:'Mentor/a',rol:'mentor',rolNom:'Mentor/a d\'iniciatives',
+   one:'Formes altres gestors i certifiques la seva pràctica.',
+   cal:{formades:10,comarques:4,onades:6},
+   moduls:[['m16','Formació de formadors · l\'ofici de mentorar'],
+     ['m14','Mesura d\'impacte i justificació']]}
+];
+
+/* El coneixement que el Molekulon passa. No es compra: s'obté ensenyant. */
 const SABERS=[
-  {id:'mapa',cal:2,nom:'El mapa de valor',diu:'Veure qui sosté què. A partir d\'ara les caselles avisen abans de cremar-se.'},
-  {id:'registre',cal:5,nom:'El registre signat',diu:'El que s\'aporta queda amb el rastre de qui ho ha fet. El vincle puja més de pressa.'},
-  {id:'relleu',cal:9,nom:'El relleu',diu:'Formar surt més barat: qui ensenya ja no gasta acció.'},
-  {id:'pont',cal:14,nom:'El pont entre pobles',diu:'Es poden lligar comarques. Un node lligat aguanta més càrrega.'},
-  {id:'liquid',cal:20,nom:'L\'estat líquid',diu:'Molekulàndia és possible: els nodes deixen de dependre de tu.'}
+  {id:'mapa',cal:2,nom:'El mapa de valor',diu:'Les caselles avisen abans de cremar-se.'},
+  {id:'registre',cal:5,nom:'El registre signat',diu:'El vincle puja més de pressa.'},
+  {id:'relleu',cal:9,nom:'El relleu',diu:'Formar ja no gasta acció si algú del poble ho sap.'},
+  {id:'pont',cal:14,nom:'El pont entre pobles',diu:'Es poden lligar comarques i repartir la càrrega.'},
+  {id:'liquid',cal:20,nom:'L\'estat líquid',diu:'Molekulàndia és possible.'}
 ];
 
 const NOMS=['Marta','Pau','Neus','Jordi','Aina','Quim','Rosa','Biel','Carme','Ferran','Laia','Toni',
   'Núria','Xavi','Mercè','Guiu','Anna','Roc','Pilar','Enric','Júlia','Manel','Sílvia','Oriol',
-  'Fatima','Youssef','Elena','Dani','Rocío','Ibrahim','Lin','Andreu'];
+  'Fàtima','Youssef','Elena','Dani','Rocío','Ibrahim','Lin','Andreu'];
 const COGN=['Vidal','Ferrer','Puig','Roca','Serra','Bosch','Mas','Soler','Riera','Camps','Grau','Font'];
 const nouNom=()=>tria(NOMS)+' '+tria(COGN);
 
-/* ── L'estat ──────────────────────────────────────────────────────────────── */
+const FILES=4, COLS=5;
+
+/* ── Estat ────────────────────────────────────────────────────────────────── */
 const S={
   torn:1,accions:3,psico:0,econo:0,mort:0,
-  nodes:{},          // comarca → {gent:[], dins:[], trobada:bool, cremades:int}
-  sabers:[],
-  ponts:[],
-  sel:INICI,
-  molekulandia:false,
-  acabat:null,
-  diari:[]
+  nodes:{},sabers:[],ponts:[],
+  sel:INICI,pantalla:'mapa',
+  nivell:'N0',rols:['simpatitzant'],onadesGuanyades:0,
+  molekulandia:false,acabat:null,diari:[],
+  llavor:null              // la partida a la plaça, si n'hi ha
 };
 const node=c=>S.nodes[c];
 const actives=()=>Object.keys(S.nodes);
 const formades=()=>actives().reduce((n,c)=>n+node(c).gent.filter(p=>p.formada).length,0);
-const totGent=()=>actives().reduce((n,c)=>n+node(c).gent.length,0);
 const sap=id=>S.sabers.includes(id);
+const totDins=()=>actives().reduce((n,c)=>n+node(c).dins.length,0);
 
-/* ── El nucli del joc ──────────────────────────────────────────────────────
-   `capacitat` i `carrega` són les dues xifres que ho decideixen tot.
-
-   La capacitat NO és el nombre de persones: és el nombre de persones que de
-   debò poden sostenir alguna cosa. Una persona formada compta per dues perquè
-   sap fer-ho i sap ensenyar-ho. Aquesta és la traducció exacta de per què el
-   quart pas del mètode és formar gent i marxar. */
+/* ── El model estratègic · no es toca ─────────────────────────────────────
+   La capacitat NO és el nombre de persones: és quantes en poden sostenir. Una
+   persona formada compta per dues perquè sap fer-ho i sap ensenyar-ho — la
+   traducció del quart pas del mètode a una xifra que decideix partides. */
 function capacitat(c){
   const n=node(c);if(!n)return 0;
   const base=n.gent.reduce((t,p)=>t+(p.formada?2:1),0);
-  /* Un node lligat a d'altres aguanta més: la càrrega es reparteix entre
-     pobles. És literalment per a què serveix una xarxa. */
   const lligams=S.ponts.filter(p=>p[0]===c||p[1]===c).length;
   return base+lligams;
 }
-function carrega(c){
-  const n=node(c);if(!n)return 0;
-  return n.dins.reduce((t,d)=>t+DINS[d].carrega,0);
-}
-/* 0 tranquil · 1 anar amb compte · 2 es crema */
+const carrega=c=>{const n=node(c);return n?n.dins.reduce((t,d)=>t+DINS[d].carrega,0):0;};
 function tensio(c){
   const cap=capacitat(c),car=carrega(c);
   if(!car)return 0;
@@ -327,136 +395,261 @@ function potEngegar(c,d){
   const n=node(c);if(!n||n.dins.includes(d))return false;
   return DINS[d].cal.every(r=>n.gent.some(p=>p.rol===r));
 }
-
 function log(txt,mena){S.diari.push({txt,mena:mena||''});if(S.diari.length>60)S.diari.shift();}
 
 function activa(c,quiet){
   if(S.nodes[c])return;
-  /* Una comarca nova arriba amb dues persones i prou. Que comenci amb un
-     equip fet seria explicar-ho al revés. */
   S.nodes[c]={gent:[{nom:nouNom(),rol:tria(ROL_IDS),formada:false},
                     {nom:nouNom(),rol:tria(ROL_IDS),formada:false}],
-              dins:[],trobada:false,cremades:0};
-  if(!quiet)log('S\'activa <b>'+esc(c)+'</b>. Hi ha dues persones i moltes ganes.','bo');
+              dins:[],trobada:false,cremades:0,hores:60,placa:novaPlaca(),onada:0,protegida:false};
+  if(!quiet)log('S\'activa <b>'+esc(c)+'</b>. Dues persones i moltes ganes.','bo');
 }
-
 function troba(c){
-  const n=node(c);
-  const p={nom:nouNom(),rol:tria(ROL_IDS),formada:false};
+  const n=node(c),p={nom:nouNom(),rol:tria(ROL_IDS),formada:false};
   n.gent.push(p);
   log(esc(p.nom)+' s\'apunta a <b>'+esc(c)+'</b> · '+ROLS[p.rol].ic+' '+ROLS[p.rol].nom,'');
   return p;
 }
-
 function forma(c){
-  const n=node(c);
-  const cand=n.gent.filter(p=>!p.formada);
+  const n=node(c),cand=n.gent.filter(p=>!p.formada);
   if(!cand.length)return null;
   const p=tria(cand);p.formada=true;
   log(esc(p.nom)+' ja ho sap portar sol. <b>'+esc(c)+'</b> depèn menys de ningú.','bo');
-  obreSabers();
+  obreSabers();pujaNivell();
   return p;
 }
-
-/* El coneixement s'obre sol quan hi ha prou gent formada. No hi ha botó de
-   comprar-lo: aquesta és la idea sencera. */
 function obreSabers(){
   const f=formades();
   SABERS.forEach(s=>{
     if(!sap(s.id)&&f>=s.cal){
       S.sabers.push(s.id);
-      modal('Coneixement','El Molekulon en sap una altra',
-        '<p>Amb <strong>'+f+' persones formades</strong>, el Comando ja pot fer una cosa que abans no sabia fer.</p>'+
-        '<p><strong>'+esc(s.nom)+'.</strong> '+esc(s.diu)+'</p>'+
-        '<p><em>El coneixement no s\'ha comprat ni s\'ha trobat: l\'ha obert la gent que sap fer-ho. '+
-        'És l\'única manera com es mou.</em></p>',[['Entesos',null]]);
       log('Coneixement nou: <b>'+esc(s.nom)+'</b>','lliq');
+      modal('Coneixement','El Molekulon en sap una altra',
+        '<p>Amb <strong>'+f+' persones formades</strong>, el Comando ja pot fer una cosa que abans no sabia.</p>'+
+        '<p><strong>'+esc(s.nom)+'.</strong> '+esc(s.diu)+'</p>'+
+        '<p><em>No s\'ha comprat ni s\'ha trobat: l\'ha obert la gent que sap fer-ho.</em></p>',[['Entesos',null]]);
     }
   });
 }
 
-/* ── El torn ──────────────────────────────────────────────────────────────── */
+/* ── Els nivells del SOS ──────────────────────────────────────────────────
+   Es guanyen fent, no acumulant punts, i cada pujada diu **quins mòduls de la
+   formació** corresponen a aquell nivell, amb l'enllaç a la pàgina de debò.
+   Aquesta és la costura amb el programa: el joc no inventa cap itinerari. */
+function compleix(cal){
+  if(cal.dins&&totDins()<cal.dins)return false;
+  if(cal.formades&&formades()<cal.formades)return false;
+  if(cal.comarques&&actives().length<cal.comarques)return false;
+  if(cal.onades&&S.onadesGuanyades<cal.onades)return false;
+  return true;
+}
+function pujaNivell(){
+  const i=NIVELLS.findIndex(n=>n.id===S.nivell);
+  const seg=NIVELLS[i+1];
+  if(!seg||!compleix(seg.cal))return;
+  S.nivell=seg.id;
+  if(!S.rols.includes(seg.rol))S.rols.push(seg.rol);
+  log('Puges a <b>'+esc(seg.nom)+'</b>','lliq');
+  modal('Nivell '+seg.id,seg.nom,
+    '<p>'+esc(seg.one)+'</p>'+
+    '<p>Al SOS de debò això és un rol: <strong>'+esc(seg.rolNom)+'</strong>.</p>'+
+    '<p>I té la seva formació. Aquests són els mòduls que li toquen:</p><ul>'+
+    seg.moduls.map(([id,t])=>'<li><a href="formacio.html#'+id+'" target="_blank" rel="noopener">'+esc(t)+'</a></li>').join('')+
+    '</ul><p><em>No és un premi del joc: és el temari que hi ha escrit a la guia formativa.</em></p>',
+    [['Segueixo',null],['Obre la formació',()=>window.open('formacio.html','_blank','noopener')]]);
+}
+
+/* ── La plaça ─────────────────────────────────────────────────────────────
+   Cinc columnes i quatre files. Els vilans entren per la dreta i caminen cap a
+   l'esquerra; si arriben, s'emporten una cosa. Es planta tocant una casella. */
+function novaPlaca(){
+  return {cel:Array.from({length:FILES},()=>Array(COLS).fill(null)),vilans:[],
+    onada:0,dins:0,restants:0,corrent:false,t:0};
+}
+function cellsPlantades(c){
+  const p=node(c).placa;let n=0;
+  p.cel.forEach(f=>f.forEach(x=>{if(x)n++;}));
+  return n;
+}
+const HORES_TIC=6;   // el que dona un banc de temps per tic
+
+function planta(c,f,co,d){
+  const n=node(c),p=n.placa;
+  if(p.cel[f][co])return {ok:false,per:'Aquí ja hi ha alguna cosa'};
+  if(!potEngegar(c,d)&&!n.dins.includes(d)){
+    const falten=DINS[d].cal.filter(r=>!n.gent.some(x=>x.rol===r)).map(r=>ROLS[r].nom);
+    return {ok:false,per:'Falta qui '+falten.join(' i qui ')};
+  }
+  if(n.hores<DINS[d].cost)return {ok:false,per:'Falten hores. Planta un banc de temps'};
+  n.hores-=DINS[d].cost;
+  p.cel[f][co]={d,vida:DINS[d].vida||260,max:DINS[d].vida||260,parat:0,tic:0};
+  /* Plantar-la a la plaça **és** obrir-la al node: la mateixa dinàmica, la
+     mateixa càrrega. Si fossin dues coses separades, la plaça seria un
+     videojoc al costat i no el SOS. */
+  if(!n.dins.includes(d)){
+    n.dins.push(d);
+    log('<b>'+esc(c)+'</b> obre «'+esc(DINS[d].nom)+'»','bo');
+    if(tensio(c)===2)log('Compte: <b>'+esc(c)+'</b> ja va per sobre del que pot sostenir.','avis');
+    pujaNivell();
+  }
+  return {ok:true};
+}
+
+function comencaOnada(c){
+  const n=node(c),p=n.placa;
+  if(p.corrent)return;
+  p.onada++;p.corrent=true;p.t=0;
+  const q=3+p.onada*2;
+  p.restants=q;p.cua=[];
+  for(let i=0;i<q;i++){
+    const mena=p.onada<2?'por':p.onada<4?tria(['por','rumor']):tria(['por','rumor','extraccio']);
+    p.cua.push({mena,quan:i*(1400-Math.min(700,p.onada*90))});
+  }
+  log('<b>'+esc(c)+'</b> · onada '+p.onada+': '+q+' que venen','avis');
+  pinta();
+}
+
+/* El motor. Un sol interval per a tot: més d'un rellotge és més d'una veritat. */
+let _rellotge=null;
+function tic(){
+  const c=S.sel,n=node(c);
+  if(!n||S.pantalla!=='comarca')return;
+  const p=n.placa;
+  if(!p.corrent){pintaPlaca();return;}
+  p.t+=120;
+
+  // Entren els que toquen
+  p.cua=(p.cua||[]).filter(x=>{
+    if(x.quan<=p.t){p.vilans.push({mena:x.mena,f:Math.floor(Math.random()*FILES),x:COLS,
+      vida:VILANS[x.mena].vida,max:VILANS[x.mena].vida});return false;}
+    return true;
+  });
+
+  // Els projectes fan la seva
+  p.cel.forEach((fila,f)=>fila.forEach((cel,co)=>{
+    if(!cel)return;
+    if(cel.parat>0){cel.parat-=120;return;}
+    const D=DINS[cel.d];cel.tic+=120;
+    if(D.fa==='genera'&&cel.tic>=1800){cel.tic=0;n.hores+=HORES_TIC;}
+    if(D.fa==='tira'&&cel.tic>=900){
+      cel.tic=0;
+      const obj=p.vilans.filter(v=>v.f===f&&v.x>co).sort((a,b)=>a.x-b.x)[0];
+      if(obj)obj.vida-=D.dany;
+    }
+    if(D.fa==='neteja'&&cel.tic>=3000){
+      cel.tic=0;
+      /* La festa no mata ningú: dissol el rumor. És el que fa una festa major
+         de debò en un poble on la gent ha deixat de parlar-se. */
+      p.vilans.filter(v=>v.f===f&&v.mena==='rumor').forEach(v=>{v.vida=0;});
+    }
+  }));
+
+  // Els vilans caminen, ataquen i arriben
+  p.vilans.forEach(v=>{
+    const V=VILANS[v.mena];
+    const co=Math.floor(v.x);
+    const davant=co>=0&&co<COLS?p.cel[v.f][clamp(co,0,COLS-1)]:null;
+    if(davant&&v.x<=co+.4){
+      davant.vida-=V.dany*(davant.d==='cures'?.5:1);   // les cures aguanten més
+      if(v.mena==='por')davant.parat=900;              // la por paralitza
+      if(V.roba&&n.hores>0)n.hores=Math.max(0,n.hores-V.roba);
+      if(davant.vida<=0){
+        p.cel[v.f][co]=null;
+        log('<b>'+esc(c)+'</b>: «'+esc(DINS[davant.d].nom)+'» cau a la plaça.','mal');
+      }
+    }else{
+      /* La biblioteca alenteix qui ve a extreure: compartir el que ja hi ha
+         és exactament el que treu ganes de venir a buidar-ho. */
+      const alenteix=p.cel[v.f].some(x=>x&&x.d==='biblioteca')&&v.mena==='extraccio';
+      v.x-=V.vel*(alenteix?.45:1)*.12;
+    }
+    if(v.x<-.3){
+      v.arribat=true;
+      S.mort+=2;
+      if(n.gent.length>1){const fora=n.gent.pop();log('<b>'+esc(c)+'</b>: '+esc(VILANS[v.mena].nom)+' arriba. '+esc(fora.nom)+' plega.','mal');}
+      else log('<b>'+esc(c)+'</b>: '+esc(VILANS[v.mena].nom)+' travessa la plaça.','mal');
+    }
+  });
+  p.vilans=p.vilans.filter(v=>v.vida>0&&!v.arribat);
+
+  if(!p.cua.length&&!p.vilans.length){
+    p.corrent=false;
+    S.onadesGuanyades++;
+    n.hores+=25;S.psico+=3;
+    log('<b>'+esc(c)+'</b> aguanta l\'onada '+p.onada+'.','bo');
+    if(p.onada>=3&&!n.protegida){
+      n.protegida=true;
+      troba(c);
+      modal('Comarca protegida',c,
+        '<p>Tres onades aguantades. <strong>'+esc(c)+'</strong> ja no cau sola.</p>'+
+        '<p>S\'hi ha apuntat gent nova: quan un poble aguanta, se sap.</p>'+
+        '<p><em>Això no la fa invencible al mapa. Allà segueix valent la mateixa regla: '+
+        'si obres més del que pots sostenir, es crema igual.</em></p>',[['Va',null]]);
+    }
+    pujaNivell();
+  }
+  pinta();
+}
+function engegaRellotge(){if(_rellotge)return;_rellotge=setInterval(tic,120);}
+function paraRellotge(){if(_rellotge){clearInterval(_rellotge);_rellotge=null;}}
+
+/* ── El torn · el que passa al mapa ───────────────────────────────────────── */
 function passaTorn(){
   if(S.acabat)return;
   S.torn++;
-
-  // 1 · El que produeixen les dinàmiques
   let dp=0,de=0;
   actives().forEach(c=>{
     const t=tensio(c);
-    node(c).dins.forEach(d=>{
-      /* Un node tensionat produeix menys: la gent hi és però va cremada. */
-      const f=t===2?0.4:t===1?0.75:1;
-      dp+=DINS[d].psico*f; de+=DINS[d].econo*f;
-    });
+    node(c).dins.forEach(d=>{const f=t===2?0.4:t===1?0.75:1;dp+=DINS[d].psico*f;de+=DINS[d].econo*f;});
   });
-  if(sap('registre')){dp*=1.25;}
-  S.psico+=Math.round(dp); S.econo+=Math.round(de);
+  if(sap('registre'))dp*=1.25;
+  S.psico+=Math.round(dp);S.econo+=Math.round(de);
 
-  // 2 · La cremada. L'única manera de perdre alguna cosa en aquest joc.
+  // La cremada. L'única manera de perdre.
   actives().forEach(c=>{
     const n=node(c);
     if(tensio(c)!==2||!n.dins.length)return;
     const mor=n.dins[n.dins.length-1];
     n.dins=n.dins.filter(d=>d!==mor);
     n.cremades++;
-    /* Es crema una dinàmica I marxa una persona. Això és el que passa: qui
-       s'ha cremat sostenint una cosa no es queda a sostenir-ne una altra. */
+    n.placa.cel.forEach((f,fi)=>f.forEach((x,co)=>{if(x&&x.d===mor)n.placa.cel[fi][co]=null;}));
     const fora=n.gent.length>1?n.gent.pop():null;
     S.mort+=3;
-    log('<b>'+esc(c)+'</b>: es crema «'+esc(DINS[mor].nom)+'». '+
-        (fora?esc(fora.nom)+' plega.':'')+' Penjava de massa poca gent.','mal');
+    log('<b>'+esc(c)+'</b>: es crema «'+esc(DINS[mor].nom)+'». '+(fora?esc(fora.nom)+' plega.':'')+
+        ' Penjava de massa poca gent.','mal');
   });
 
-  // 3 · El Mundo Muerto avança on no hi ha res
   const buides=COMARQUES.length-actives().length;
   S.mort+=Math.max(0,Math.round(buides/14));
   if(S.mort>0&&S.torn%3===0)S.mort=Math.max(0,S.mort-Math.round(S.psico/40));
-
-  // 4 · McGragor ofereix, cada cinc torns
   if(S.torn%5===0&&!S.acabat)ofereixMcGragor();
-
-  // 5 · Molekulàndia
   comprovaLiquid();
-
   S.accions=3+(sap('relleu')?1:0);
   if(S.mort>=40)fi(false);
   pinta();
 }
 
-/* ── McGragor · no ataca, ofereix ─────────────────────────────────────────
-   La trampa del còmic 2 feta mecànica: una drecera que va bé ara i et deixa
-   depenent després. S'ha de poder acceptar —si no, no és una decisió— i ha de
-   tenir un cost que arribi més tard, quan ja te n'has oblidat. */
+/* McGragor no ataca: ofereix. La trampa del còmic 2, i ha de sortir a compte
+   avui — si fos òbviament dolenta seria un espantall, no una decisió. */
 function ofereixMcGragor(){
   const c=tria(actives());
   modal('Mr. McGragor','Una oferta que sembla bona',
     '<p>Un senyor amb un àbac es planta a <strong>'+esc(c)+'</strong>. Diu que ell us pot posar '+
     'el projecte en marxa demà mateix: hi posa els diners, la gent i el paper.</p>'+
     '<p>«No cal que ho aprengueu. Ja ho fem nosaltres.»</p>',
-    [['Acceptar · +12 estalvi ara',()=>{
-        S.econo+=12; S.mort+=8;
-        const n=node(c); n.gent.forEach(p=>p.formada=false);
+    [['Acceptar · +12 estalvi',()=>{
+        S.econo+=12;S.mort+=8;node(c).gent.forEach(p=>p.formada=false);
         log('<b>'+esc(c)+'</b> accepta McGragor. Estalvi immediat — i ningú del poble sap ja com va.','mal');
         pinta();
       }],
-     ['Dir que no · sense res',()=>{
-        S.psico+=4;
-        log('<b>'+esc(c)+'</b> li diu que no. Costa més i és seu.','bo');
-        pinta();
-      }]],
-    'Acceptar-ho no és perdre. És exactament el que passa a molts pobles: surt a compte avui.');
+     ['Dir que no',()=>{S.psico+=4;log('<b>'+esc(c)+'</b> li diu que no. Costa més i és seu.','bo');pinta();}]],
+    'Acceptar-ho no és perdre. És el que passa a molts pobles: surt a compte avui.');
 }
 
-/* ── Molekulàndia · l'estat líquid ────────────────────────────────────────
-   No és conquerir el mapa. És l'estat en què els nodes es sostenen entre ells
-   i s'han trobat en persona. Per això demana tres coses alhora: estar lligats,
-   no anar cremats, i haver-se vist la cara. */
 function clusterLiquid(){
   if(!sap('liquid'))return [];
   const bons=actives().filter(c=>node(c).trobada&&tensio(c)===0&&node(c).dins.length>=2);
-  const dins=new Set(bons);
-  const vist=new Set(),grups=[];
+  const dins=new Set(bons),vist=new Set(),grups=[];
   bons.forEach(c=>{
     if(vist.has(c))return;
     const cua=[c],g=[];vist.add(c);
@@ -473,54 +666,35 @@ function clusterLiquid(){
 }
 function comprovaLiquid(){
   const g=clusterLiquid().sort((a,b)=>b.length-a.length)[0]||[];
-  if(g.length>=5&&!S.molekulandia){
-    S.molekulandia=true;
-    fi(true,g);
-  }
+  if(g.length>=5&&!S.molekulandia){S.molekulandia=true;fi(true,g);}
 }
-
 function fi(guanya,g){
   if(S.acabat)return;
-  S.acabat=guanya?'guanya':'perd';
+  S.acabat=guanya?'guanya':'perd';paraRellotge();
   if(guanya){
     modal('Molekulàndia','L\'estat líquid',
       '<p><strong>'+g.length+' comarques</strong> s\'aguanten entre elles. Cap depèn de tu, i cap depèn '+
       'de dues persones cansades.</p>'+
-      '<p>Això és Molekulàndia: <strong>l\'estat líquid que es configura com a xarxa descentralitzada</strong>. '+
+      '<p>Molekulàndia és <strong>l\'estat líquid que es configura com a xarxa descentralitzada</strong>. '+
       'No té capital ni fronteres, i no cau si en treus un tros — perquè no penja de cap tros.</p>'+
-      '<p>I quan els molekulandesos es troben en persona, Molekulàndia <strong>també és un lloc</strong>: '+
-      'l\'espai que fan ells en trobar-se. Per això al joc calia haver fet la trobada.</p>'+
-      '<p><em>'+S.psico+' de vincle · '+S.econo+' d\'estalvi · '+formades()+' persones que ho saben portar soles.</em></p>',
+      '<p>I quan els molekulandesos es troben en persona, també <strong>és un lloc</strong>: l\'espai que '+
+      'fan ells en trobar-se. Per això calia haver fet la trobada.</p>'+
+      '<p><em>Nivell '+S.nivell+' · '+S.psico+' de vincle · '+formades()+' persones que ho saben portar soles.</em></p>',
       [['Tornar-hi',()=>reinicia()],['Fer-ho de debò',()=>location.href='uneix-te.html']]);
-    log('<b>Molekulàndia.</b> '+g.length+' comarques que es sostenen entre elles.','lliq');
   }else{
     modal('El Mundo Muerto','S\'ha apagat',
       '<p>El gris ho ha cobert. No ha guanyat cap batalla: ha esperat que els pobles es cremessin sols.</p>'+
-      '<p><strong>El que ha fallat no són les ganes.</strong> Mira les comarques que has perdut: totes '+
-      'tenien més dinàmiques obertes que gent per sostenir-les.</p>'+
+      '<p><strong>El que ha fallat no són les ganes.</strong> Les comarques que has perdut tenien més '+
+      'projectes oberts que gent per sostenir-los.</p>'+
       '<p><em>Formar algú abans d\'obrir res més és avorrit, i és tot el joc.</em></p>',
       [['Tornar-hi',()=>reinicia()]]);
-    log('<b>El Mundo Muerto ho ha cobert.</b>','mal');
   }
 }
 
 /* ── Accions ──────────────────────────────────────────────────────────────── */
-function gasta(n){S.accions-=(n||1);}
-function pot(n){return !S.acabat&&S.accions>=(n||1);}
-
-const ACCIONS={
-  activa:{ct:1,diu:'Activa una comarca nova'},
-  troba:{ct:1,diu:'Troba una persona'},
-  forma:{ct:1,diu:'Forma algú perquè ho sàpiga portar'},
-  engega:{ct:1,diu:'Engega una dinàmica'},
-  trobada:{ct:1,diu:'Fes una trobada presencial'},
-  pont:{ct:1,diu:'Lliga aquesta comarca amb una altra'}
-};
-
-function fesActiva(c){
-  if(!pot())return;
-  gasta();activa(c);S.sel=c;pinta();
-}
+const pot=n=>!S.acabat&&S.accions>=(n||1);
+const gasta=n=>{S.accions-=(n||1);};
+function fesActiva(c){if(!pot())return;gasta();activa(c);S.sel=c;pujaNivell();pinta();}
 function fesTroba(c){if(!pot())return;gasta();troba(c);pinta();}
 function fesForma(c){
   const lliure=sap('relleu')&&node(c).gent.some(p=>p.formada);
@@ -534,7 +708,7 @@ function fesEngega(c,d){
   gasta();node(c).dins.push(d);
   log('<b>'+esc(c)+'</b> engega «'+esc(DINS[d].nom)+'»','bo');
   if(tensio(c)===2)log('Compte: <b>'+esc(c)+'</b> ja va per sobre del que pot sostenir.','avis');
-  pinta();
+  pujaNivell();pinta();
 }
 function fesTrobada(c){
   if(!pot())return;
@@ -546,124 +720,298 @@ function fesPont(c){
   if(!pot()||!sap('pont'))return;
   const altres=actives().filter(x=>x!==c&&!S.ponts.some(p=>(p[0]===c&&p[1]===x)||(p[0]===x&&p[1]===c)));
   if(!altres.length)return;
-  modal('Pont','Lliga '+c+' amb…','<p>Un node lligat reparteix la càrrega amb l\'altre: tots dos aguanten més.</p>',
-    altres.slice(0,8).map(x=>[x,()=>{
-      gasta();S.ponts.push([c,x]);
-      log('Pont entre <b>'+esc(c)+'</b> i <b>'+esc(x)+'</b>','lliq');
-      pinta();
-    }]));
+  modal('Pont','Lliga '+c+' amb…','<p>Un node lligat reparteix la càrrega amb l\'altre.</p>',
+    altres.slice(0,6).map(x=>[x,()=>{gasta();S.ponts.push([c,x]);
+      log('Pont entre <b>'+esc(c)+'</b> i <b>'+esc(x)+'</b>','lliq');pinta();}]));
+}
+
+/* ══ MINIJOCS ══════════════════════════════════════════════════════════════
+   Tres, i cadascun ensenya una cosa que el SOS fa de debò. Cap dona punts per
+   punts: tots tres alimenten el model —hores, gent, o una persona formada. */
+
+/* 1 · Aparella · el que fa un banc de temps, fet joc.
+      Qui ofereix i qui busca no es troben sols: algú els ha de creuar. */
+const OFERTES=[['🍲','Cuino per a colles'],['🚗','Porto amb el cotxe'],['🔧','Arreglo persianes'],
+  ['💻','Configuro ordinadors'],['📚','Faig repàs'],['🌱','Sé podar'],['🧵','Cuso i arreglo'],['👵','Acompanyo']];
+const DEMANDES=[['🍲','Cal menjar per a 40'],['🚗','He d\'anar al metge'],['🔧','La persiana no baixa'],
+  ['💻','El mòbil no va'],['📚','El nen suspèn mates'],['🌱','La vinya està feta un desastre'],
+  ['🧵','Cal pujar uns pantalons'],['👵','La iaia està sola']];
+function mjAparella(){
+  const c=S.sel,n=node(c);
+  const idx=[0,1,2,3,4,5,6,7].sort(()=>Math.random()-.5).slice(0,4);
+  const esq=idx.map(i=>({i,t:OFERTES[i]})).sort(()=>Math.random()-.5);
+  const dre=idx.map(i=>({i,t:DEMANDES[i]})).sort(()=>Math.random()-.5);
+  let sel=null,fets=0,errors=0;
+  const dibuixa=()=>{
+    $('#dlCos').innerHTML='<p>Qui ofereix i qui busca <strong>no es troben sols</strong>. Creua\'ls.</p>'+
+      '<div class="mj-est"><span>'+fets+' de 4</span><span>'+errors+' errades</span></div>'+
+      '<div class="mj-parell" style="margin-top:.5rem"><div class="mj">'+
+      esq.map(o=>'<button class="mj-b'+(o.fet?' ok':'')+(sel&&sel.i===o.i?' sel':'')+'" data-o="'+o.i+'"'+
+        (o.fet?' disabled':'')+'>'+o.t[0]+' '+esc(o.t[1])+'</button>').join('')+
+      '</div><div class="mj">'+
+      dre.map(d=>'<button class="mj-b'+(d.fet?' ok':'')+'" data-d="'+d.i+'"'+(d.fet?' disabled':'')+'>'+
+        d.t[0]+' '+esc(d.t[1])+'</button>').join('')+'</div></div>';
+  };
+  const clic=e=>{
+    const o=e.target.closest('[data-o]'),d=e.target.closest('[data-d]');
+    if(o){sel={i:Number(o.dataset.o)};return dibuixa();}
+    if(!d||!sel)return;
+    const i=Number(d.dataset.d);
+    if(i===sel.i){
+      esq.find(x=>x.i===i).fet=true;dre.find(x=>x.i===i).fet=true;fets++;sel=null;
+      if(fets===4){
+        $('#dlCos').removeEventListener('click',clic);
+        const guany=20+ (4-errors)*8;
+        n.hores+=guany;S.psico+=2;
+        log('<b>'+esc(c)+'</b>: quatre creuaments fets. +'+guany+' hores','bo');
+        return modal('Aparellat','Quatre parelles',
+          '<p>Has creuat quatre coses que ja hi eren. <strong>+'+guany+' hores.</strong></p>'+
+          '<p><em>Això és literalment el que fa el SOS quan diu «coincidència»: no inventa res, '+
+          'ensenya el que ja encaixava i no es veia.</em></p>',[['Va',()=>pinta()]]);
+      }
+    }else{errors++;sel=null;}
+    dibuixa();
+  };
+  modal('Miniojoc','Aparella el que ja hi és','',[['Deixar-ho',()=>pinta()]]);
+  dibuixa();
+  $('#dlCos').addEventListener('click',clic);
+}
+
+/* 2 · La Bomba Disco · trencar la cuirassa d'Afrodito.
+      Toca quan el disc passa per la zona. Qui apareix ve amb un rol nou. */
+function mjDisco(){
+  const c=S.sel;
+  let x=0,dir=1,encerts=0,intents=0,acabat=false,anim=null;
+  const dibuixa=()=>{
+    $('#dlCos').innerHTML='<p>L\'Afrodito vivia amagat sota un abric de cuir. El que el va treure '+
+      'no va ser una xerrada: va ser <strong>la Bomba Disco</strong>.</p>'+
+      '<div class="mj-est"><span>'+encerts+' de 3</span><span>'+intents+' intents</span></div>'+
+      '<div class="disco" id="disco"><div class="zona"></div><div class="puck" id="puck">🪩</div></div>'+
+      '<p style="font-size:.76rem;margin-top:.5rem">Toca quan el disc sigui a la franja verda.</p>';
+  };
+  const mou=()=>{
+    x+=dir*2.4;
+    if(x>100){x=100;dir=-1;} if(x<0){x=0;dir=1;}
+    const p=$('#puck');if(p)p.style.left=x+'%';
+  };
+  const toca=()=>{
+    if(acabat)return;
+    intents++;
+    if(x>40&&x<60){
+      encerts++;
+      if(encerts>=3){
+        acabat=true;clearInterval(anim);
+        const p=troba(c);p.formada=false;
+        S.psico+=3;
+        return modal('Bomba Disco','Ha sortit de sota l\'abric',
+          '<p><strong>'+esc(p.nom)+'</strong> s\'apunta · '+ROLS[p.rol].ic+' '+esc(ROLS[p.rol].nom)+'.</p>'+
+          '<p><em>No li faltava talent: li sobrava cuirassa. El que la treu no és convèncer ningú, '+
+          'és fer que passi alguna cosa on val la pena sortir.</em></p>',[['Va',()=>pinta()]]);
+      }
+    }
+    dibuixa();
+  };
+  modal('Miniojoc','La Bomba Disco','',[['Deixar-ho',()=>{clearInterval(anim);pinta();}]]);
+  dibuixa();
+  anim=setInterval(mou,30);
+  $('#dlCos').addEventListener('click',e=>{if(e.target.closest('.disco'))toca();});
+  $('#dlg').addEventListener('close',()=>clearInterval(anim),{once:true});
+}
+
+/* 3 · Reparteix la càrrega · la regla de la cremada, com a trencaclosques.
+      Repartir el que hi ha entre qui hi ha. Si algú passa de dos, es crema. */
+function mjCarrega(){
+  const c=S.sel,n=node(c);
+  const gent=n.gent.slice(0,5).map(p=>({nom:p.nom.split(' ')[0],rol:p.rol,pes:0}));
+  if(gent.length<2)return modal('Encara no','Falta gent',
+    '<p>Amb una sola persona no hi ha res a repartir. Això també és una lliçó.</p>',[['Va',null]]);
+  const feines=n.dins.length?n.dins.slice(0,6):['banctemps','biblioteca','cures'];
+  let i=0;
+  const dibuixa=()=>{
+    const fet=i>=feines.length;
+    const cremat=gent.some(g=>g.pes>2);
+    $('#dlCos').innerHTML='<p>Reparteix les feines. <strong>Ningú pot portar-ne més de dues</strong> — '+
+      'la tercera és la que crema.</p>'+
+      (fet?'':'<p style="color:var(--amber)">Ara toca: <strong>'+esc(DINS[feines[i]].nom)+'</strong>. A qui?</p>')+
+      '<div class="carr">'+gent.map((g,j)=>'<button class="carr-p '+(g.pes>2?'ple':g.pes?'ok':'')+'" data-g="'+j+'"'+
+        (fet?' disabled':'')+'><span>'+ROLS[g.rol].ic+'</span><span class="nm">'+esc(g.nom)+'</span>'+
+        '<span class="num">'+g.pes+'</span></button>').join('')+'</div>'+
+      (fet?('<p style="margin-top:.7rem">'+(cremat?
+        '<strong style="color:var(--red)">Algú en porta tres.</strong> Això és exactament el que passa '+
+        'als pobles: no cau el projecte, cau la persona.':
+        '<strong style="color:var(--green)">Ningú va sobrecarregat.</strong>')+'</p>'):'');
+  };
+  const clic=e=>{
+    const b=e.target.closest('[data-g]');if(!b||i>=feines.length)return;
+    gent[Number(b.dataset.g)].pes++;i++;
+    dibuixa();
+    if(i>=feines.length){
+      const cremat=gent.some(g=>g.pes>2);
+      $('#dlCos').removeEventListener('click',clic);
+      setTimeout(()=>{
+        if(cremat){S.mort+=2;log('<b>'+esc(c)+'</b>: el repartiment deixa algú amb tres feines.','avis');}
+        else{const p=forma(c);n.hores+=15;
+          log('<b>'+esc(c)+'</b>: repartiment net. '+(p?esc(p.nom)+' es forma.':'')+' +15 hores','bo');}
+        modal('Repartit',cremat?'Algú n\'ha quedat amb tres':'Ningú va sobrecarregat',
+          cremat?'<p>El Mundo Muerto avança una mica. No perquè hagi atacat: perquè algú s\'ha cremat.</p>'+
+                 '<p><strong>No cau el projecte: cau la persona.</strong> I quan cau, s\'emporta el projecte '+
+                 'amb ella. Per això la regla és aquesta i no una altra.</p>'
+                :'<p>Repartir bé <strong>forma gent</strong>: qui porta una cosa sola l\'aprèn a portar.</p>',
+          [['Va',()=>pinta()]]);
+      },600);
+    }
+  };
+  modal('Miniojoc','Reparteix la càrrega','',[['Deixar-ho',()=>pinta()]]);
+  dibuixa();
+  $('#dlCos').addEventListener('click',clic);
 }
 
 /* ── Pintar ───────────────────────────────────────────────────────────────── */
+let semSel=null;
 function pinta(){
-  $('#mAcc').textContent=S.accions;
-  $('#mTorn').textContent=S.torn;
-  $('#mNodes').textContent=actives().length;
-  $('#mPsico').textContent=S.psico;
-  $('#mEcono').textContent=S.econo;
-  $('#mMort').textContent=S.mort;
+  const n=node(S.sel);
+  $('#pAcc').textContent=S.accions;
+  $('#pHores').textContent=n?n.hores:0;
+  $('#pPsico').textContent=S.psico;
+  $('#pMort').textContent=S.mort;
   $('#btnTorn').disabled=!!S.acabat;
-  pintaMapa();pintaCostat();pintaDiari();
+  $('#btnEnrere').hidden=S.pantalla!=='comarca';
+  $('#pMapa').classList.toggle('on',S.pantalla==='mapa');
+  $('#pComarca').classList.toggle('on',S.pantalla==='comarca');
+  const niv=NIVELLS.find(x=>x.id===S.nivell);
+  if(S.pantalla==='mapa'){
+    $('#hudTit').innerHTML='El joc del Comando<small>'+esc(niv.nom)+' · T'+S.torn+' · '+actives().length+' comarca'+(actives().length===1?'':'s')+'</small>';
+    pintaMapa();
+  }else{
+    $('#hudTit').innerHTML=esc(S.sel)+'<small>'+esc(niv.nom)+' · '+(n?n.gent.length:0)+'p</small>';
+    pintaComarca();
+  }
+  pintaPolze();
+  const d=S.diari.slice(-12).map(l=>'<div class="li '+l.mena+'">'+l.txt+'</div>').join('');
+  $('#diari').innerHTML=d;$('#diari2').innerHTML=d;
 }
 function classeCas(c){
   if(!S.nodes[c])return 'pot';
   const g=clusterLiquid().find(x=>x.includes(c));
   if(g&&g.length>=5)return 'on liq';
   const t=tensio(c);
-  if(t===2)return 'on morta';
-  if(t===1)return 'on risc';
-  return 'on';
+  return t===2?'on morta':t===1?'on risc':'on';
 }
 function pintaMapa(){
   $('#mapa').innerHTML=PROVS.map(pr=>{
     const cs=COMARQUES.filter(x=>x[1]===pr);
-    return '<div class="prov"><div class="prov-t">'+esc(pr)+'</div><div class="caselles">'+
+    return '<div class="prov-t">'+esc(pr)+'</div><div class="caselles">'+
       cs.map(([c])=>{
         const n=S.nodes[c];
         const st=n?(n.gent.length+'p · '+carrega(c)+'/'+capacitat(c)):'—';
-        return '<button class="cas '+classeCas(c)+(S.sel===c?' sel':'')+'" data-c="'+esc(c)+'">'+
+        return '<button class="cas '+classeCas(c)+'" data-c="'+esc(c)+'">'+
           '<span class="nm">'+esc(c)+'</span><span class="st">'+esc(st)+'</span></button>';
-      }).join('')+'</div></div>';
+      }).join('')+'</div>';
   }).join('');
 }
-function pintaCostat(){
-  const c=S.sel,n=S.nodes[c],box=$('#costat');
-  if(!n){
-    box.innerHTML='<h3>'+esc(c)+'</h3><div class="sots">Encara no hi ha ningú</div>'+
-      '<p style="font-size:.85rem;color:var(--light)">Activar-la vol dir que hi ha dues persones amb ganes. '+
-      'Res més. La resta l\'has de fer tu.</p>'+
-      '<div class="accions"><button class="b-pri" data-a="activa"'+(pot()?'':' disabled')+
-      '>Activa '+esc(c)+' · 1 acció</button></div>';
-    return;
-  }
+function pintaComarca(){
+  const c=S.sel,n=node(c);
+  if(!n){S.pantalla='mapa';return;}
   const cap=capacitat(c),car=carrega(c),t=tensio(c);
   const pct=cap?Math.min(100,Math.round(car/cap*100)):0;
-  const avis=t===2?'Es crema aquest torn':t===1?'Va just':'Aguanta';
-  box.innerHTML='<h3>'+esc(c)+'</h3>'+
-    '<div class="sots">'+n.gent.length+' persones · '+n.gent.filter(p=>p.formada).length+' formades'+
-      (n.trobada?' · s\'han vist':'')+'</div>'+
+  $('#fitxa').innerHTML=
+    '<div class="lin"><span>càrrega '+car+' / '+cap+'</span><span>'+
+      (t===2?'Es crema':t===1?'Va just':'Aguanta')+(n.protegida?' · protegida':'')+'</span></div>'+
     '<div class="barra '+(t===2?'critica':t===1?'alta':'')+'"><i style="width:'+pct+'%"></i></div>'+
-    '<div class="etq"><span>càrrega '+car+' / '+cap+'</span><span>'+avis+'</span></div>'+
-    (sap('mapa')&&t===1?'<div class="etq" style="margin-top:.4rem;color:var(--orange)">El mapa avisa: forma algú abans d\'obrir res més.</div>':'')+
-    '<div class="gent">'+n.gent.map(p=>'<span class="pers'+(p.formada?' form':'')+'" title="'+
-      esc(ROLS[p.rol].heroi+' · '+ROLS[p.rol].diu)+'">'+ROLS[p.rol].ic+' '+esc(p.nom.split(' ')[0])+
-      ' <span style="color:var(--muted)">'+esc(ROLS[p.rol].nom)+'</span></span>').join('')+'</div>'+
-    '<div class="blocs"><div class="bloc"><h4>Dinàmiques</h4>'+
-      DIN_IDS.map(d=>{
-        const va=n.dins.includes(d),ok=potEngegar(c,d);
-        const falten=DINS[d].cal.filter(r=>!n.gent.some(p=>p.rol===r)).map(r=>ROLS[r].nom);
-        return '<div class="din'+(va?' va':'')+'"><span>'+DINS[d].ic+'</span><span class="txt">'+
-          '<span class="nom">'+esc(DINS[d].nom)+'</span>'+
-          '<span class="cal">'+(va?('càrrega '+DINS[d].carrega+' · '+esc(DINS[d].diu)):
-            falten.length?('falta: '+esc(falten.join(', '))):('càrrega '+DINS[d].carrega))+'</span></span>'+
-          (va?'':'<button data-d="'+d+'"'+(ok&&pot()?'':' disabled')+'>Engega</button>')+'</div>';
-      }).join('')+'</div></div>'+
-    '<div class="accions">'+
-      '<button data-a="troba"'+(pot()?'':' disabled')+'>Troba una persona · 1</button>'+
-      '<button data-a="forma"'+((sap('relleu')&&n.gent.some(p=>p.formada))||pot()?'':' disabled')+'>Forma algú · '+
-        (sap('relleu')&&n.gent.some(p=>p.formada)?'gratis':'1')+'</button>'+
-      (n.trobada?'':'<button data-a="trobada"'+(pot()?'':' disabled')+'>Trobada presencial · 1</button>')+
-      (sap('pont')?'<button data-a="pont"'+(pot()?'':' disabled')+'>Lliga amb una altra · 1</button>':'')+
-    '</div>';
+    '<div class="equip">'+n.gent.map(p=>'<span class="pers'+(p.formada?' form':'')+'">'+ROLS[p.rol].ic+' '+
+      esc(p.nom.split(' ')[0])+'</span>').join('')+'</div>';
+  const p=n.placa;
+  $('#onTxt').textContent=p.corrent?('Onada '+p.onada+' · '+(p.vilans.length+(p.cua||[]).length)+' venen')
+    :(p.onada?('Onada '+p.onada+' aguantada'):'Plaça tranquil·la');
+  $('#onBar').style.width=p.corrent?Math.min(100,(p.vilans.length+(p.cua||[]).length)*12)+'%':'0%';
+  pintaPlaca();
+  $('#minis').innerHTML=
+    '<button class="mini" data-mj="aparella"><b>🔀</b>Aparella</button>'+
+    '<button class="mini" data-mj="disco"><b>🪩</b>Bomba Disco</button>'+
+    '<button class="mini" data-mj="carrega"><b>⚖️</b>Reparteix</button>';
 }
-function pintaDiari(){
-  $('#diari').innerHTML=S.diari.slice(-14).map(l=>'<div class="li '+l.mena+'">'+l.txt+'</div>').join('');
+function pintaPlaca(){
+  const n=node(S.sel);if(!n)return;
+  const p=n.placa;
+  const files=p.cel.map((fila,f)=>'<div class="fila">'+fila.map((cel,co)=>{
+    const D=cel?DINS[cel.d]:null;
+    const vida=cel?Math.max(0,Math.round(cel.vida/cel.max*100)):0;
+    return '<button class="cel cel-wrap '+(cel?('te'+(cel.parat>0?' parat':'')):'buida')+'" data-f="'+f+'" data-co="'+co+'">'+
+      (cel?(D.ic+'<span class="hp"><i style="width:'+vida+'%"></i></span>'):'')+'</button>';
+  }).join('')+'</div>').join('');
+  const vil=p.vilans.map(v=>{
+    const V=VILANS[v.mena];
+    const left=clamp((v.x+.5)/COLS*100,-6,106);
+    const top=(v.f+.5)/FILES*100;
+    return '<span class="vil" style="left:'+left+'%;top:'+top+'%">'+V.ic+
+      '<small>'+Math.max(0,Math.round(v.vida))+'</small></span>';
+  }).join('');
+  $('#placa').innerHTML=files+'<div class="vilans">'+vil+'</div>';
+}
+function pintaPolze(){
+  const box=$('#polze');
+  if(S.pantalla==='mapa'){
+    const c=S.sel,hi=!!S.nodes[c];
+    box.innerHTML='<div class="tira">'+
+      '<div class="sem" style="width:auto;padding:.4rem .7rem"><span class="ic">📍</span>'+esc(c)+'</div></div>'+
+      '<div class="accions">'+
+      (hi?'<button class="b-pri" data-a="entra">Entra a la plaça</button>'
+         :'<button class="b-pri" data-a="activa"'+(pot()?'':' disabled')+'>Activa · 1 acció</button>')+
+      '<button data-a="troba"'+(hi&&pot()?'':' disabled')+'>Troba gent · 1</button>'+
+      '<button data-a="forma"'+(hi&&(pot()||sap('relleu'))?'':' disabled')+'>Forma · 1</button>'+
+      '</div>';
+    return;
+  }
+  const n=node(S.sel);
+  box.innerHTML='<div class="tira">'+DIN_IDS.map(d=>{
+    const D=DINS[d],ok=potEngegar(S.sel,d)||n.dins.includes(d);
+    const prou=n.hores>=D.cost;
+    return '<button class="sem'+(semSel===d?' sel':'')+((ok&&prou)?'':' no')+'" data-sem="'+d+'">'+
+      '<span class="ic">'+D.ic+'</span><span>'+esc(D.nom)+'</span>'+
+      '<span class="cost">'+(D.cost?D.cost+' h':'gratis')+'</span></button>';
+  }).join('')+'</div>'+
+  '<div class="accions">'+
+    '<button class="b-pri" data-a="onada"'+(n.placa.corrent?' disabled':'')+'>'+
+      (n.placa.corrent?'Onada en marxa':'Comença l\'onada '+(n.placa.onada+1))+'</button>'+
+    '<button data-a="trobada"'+(n.trobada||!pot()?' disabled':'')+'>'+(n.trobada?'Ja us heu vist':'Trobada · 1')+'</button>'+
+    (sap('pont')?'<button data-a="pont"'+(pot()?'':' disabled')+'>Lliga · 1</button>':'')+
+  '</div>';
 }
 
 /* ── Modal ────────────────────────────────────────────────────────────────── */
 function modal(kick,tit,cos,opcions,nota){
-  $('#dlKick').textContent=kick;
-  $('#dlTit').textContent=tit;
-  $('#dlCos').innerHTML=cos+(nota?'<p style="font-size:.8rem;color:var(--muted);border-top:1px solid var(--border);padding-top:.7rem">'+esc(nota)+'</p>':'');
+  $('#dlKick').textContent=kick;$('#dlTit').textContent=tit;
+  $('#dlCos').innerHTML=cos+(nota?'<p style="font-size:.76rem;color:var(--muted);border-top:1px solid var(--border);padding-top:.6rem">'+esc(nota)+'</p>':'');
   $('#dlPeu').innerHTML='';
   (opcions||[['Tanca',null]]).forEach(([txt,fn],i)=>{
     const b=document.createElement('button');
-    b.textContent=txt; if(i===0)b.className='b-pri';
+    b.textContent=txt;if(i===0)b.className='b-pri';
     b.onclick=()=>{$('#dlg').close();if(fn)fn();};
     $('#dlPeu').appendChild(b);
   });
-  $('#dlg').showModal();
+  if(!$('#dlg').open)$('#dlg').showModal();
 }
-
 function ajuda(){
-  modal('Com es juga','Tres regles i prou',
-    '<p><strong>1 · El coneixement el porta el Molekulon, i es passa ensenyant.</strong> Mazinguer i Horacio '+
-    'no van rebre una eina: van rebre un saber. Aquí passa igual — cada tram s\'obre sol quan hi ha prou '+
-    'gent formada, i no es pot comprar.</p>'+
-    '<p><strong>2 · Un poble es crema quan penja de massa poca gent.</strong> Cada dinàmica posa càrrega. '+
-    'Cada persona n\'aguanta; una persona <em>formada</em> n\'aguanta el doble, perquè sap fer-ho i sap '+
-    'ensenyar-ho. Si la càrrega passa la capacitat, allò cau i algú plega. És l\'única manera de perdre.</p>'+
-    '<p><strong>3 · Molekulàndia no és conquerir el mapa.</strong> És l\'estat líquid: cinc comarques '+
-    'lligades que s\'aguanten entre elles, cap tensionada, i totes amb la trobada feta. '+
-    'Descentralitzada quan és xarxa; un lloc de veritat quan els molekulandesos es troben.</p>'+
-    '<p><em>Consell que sembla avorrit i és tot el joc: forma gent abans d\'obrir res més.</em></p>',
-    [['Va',null]]);
+  modal('Com es juga','Amb el polze, i tres regles',
+    '<p><strong>El mapa</strong> és on actives comarques i formes gent. <strong>La plaça</strong> és el que '+
+    'hi ha dins: hi plantes projectes i els defenses dels tres que venen del còmic — '+
+    'Max Miedox la por, Mala Yerbax el rumor, Mc Greggor l\'extracció.</p>'+
+    '<p><strong>1 · El coneixement es passa ensenyant.</strong> El Molekulon el va donar a Mazinguer i '+
+    'Horacio; aquí s\'obre sol quan hi ha prou gent formada. No es compra.</p>'+
+    '<p><strong>2 · Un poble es crema quan penja de massa poca gent.</strong> Cada projecte posa càrrega; '+
+    'cada persona n\'aguanta, i una de <em>formada</em> n\'aguanta el doble. És l\'única manera de perdre.</p>'+
+    '<p><strong>3 · Molekulàndia no és conquerir el mapa.</strong> És l\'estat líquid: comarques lligades '+
+    'que s\'aguanten entre elles, cap tensionada, i amb la trobada feta.</p>'+
+    '<p>Vas pujant de nivell —Explorador, Practicant, Gestor/a, Mentor/a— i cada nivell et diu '+
+    '<strong>quins mòduls de la formació de debò</strong> li toquen.</p>',
+    [['Va',null],['Apunta\'t de debò',()=>window.open('uneix-te.html','_blank','noopener')]]);
 }
 
 function reinicia(){
-  S.torn=1;S.accions=3;S.psico=0;S.econo=0;S.mort=0;
-  S.nodes={};S.sabers=[];S.ponts=[];S.molekulandia=false;S.acabat=null;S.diari=[];
-  S.sel=INICI;
+  paraRellotge();
+  Object.assign(S,{torn:1,accions:3,psico:0,econo:0,mort:0,nodes:{},sabers:[],ponts:[],
+    sel:INICI,pantalla:'mapa',nivell:'N0',rols:['simpatitzant'],onadesGuanyades:0,
+    molekulandia:false,acabat:null,diari:[]});
   activa(INICI,true);
   log('El Molekulon passa el coneixement a Mazinguer i Horacio. Comencen a <b>'+esc(INICI)+'</b>.','lliq');
   pinta();
@@ -672,33 +1020,55 @@ function reinicia(){
 /* ── Enganxar-ho ──────────────────────────────────────────────────────────── */
 $('#mapa').addEventListener('click',e=>{
   const b=e.target.closest('[data-c]');if(!b)return;
-  S.sel=b.dataset.c;pinta();
+  const c=b.dataset.c;
+  /* Tocar una comarca activa hi entra directament: amb el polze, dos passos
+     per fer una cosa òbvia són un pas de més. */
+  S.sel=c;
+  if(S.nodes[c]){S.pantalla='comarca';engegaRellotge();}
+  pinta();
 });
-$('#costat').addEventListener('click',e=>{
-  const d=e.target.closest('[data-d]');
-  if(d)return fesEngega(S.sel,d.dataset.d);
+$('#placa').addEventListener('click',e=>{
+  const cel=e.target.closest('[data-f]');if(!cel||!semSel)return;
+  const r=planta(S.sel,Number(cel.dataset.f),Number(cel.dataset.co),semSel);
+  if(!r.ok)log(r.per,'avis');
+  pinta();
+});
+$('#minis').addEventListener('click',e=>{
+  const b=e.target.closest('[data-mj]');if(!b)return;
+  if(b.dataset.mj==='aparella')mjAparella();
+  else if(b.dataset.mj==='disco')mjDisco();
+  else mjCarrega();
+});
+$('#polze').addEventListener('click',e=>{
+  const sem=e.target.closest('[data-sem]');
+  if(sem){semSel=semSel===sem.dataset.sem?null:sem.dataset.sem;return pinta();}
   const a=e.target.closest('[data-a]');if(!a)return;
   const c=S.sel;
-  if(a.dataset.a==='activa')fesActiva(c);
-  else if(a.dataset.a==='troba')fesTroba(c);
-  else if(a.dataset.a==='forma')fesForma(c);
-  else if(a.dataset.a==='trobada')fesTrobada(c);
-  else if(a.dataset.a==='pont')fesPont(c);
+  const q=a.dataset.a;
+  if(q==='activa')fesActiva(c);
+  else if(q==='entra'){S.pantalla='comarca';engegaRellotge();pinta();}
+  else if(q==='troba')fesTroba(c);
+  else if(q==='forma')fesForma(c);
+  else if(q==='trobada')fesTrobada(c);
+  else if(q==='pont')fesPont(c);
+  else if(q==='onada')comencaOnada(c);
 });
+$('#btnEnrere').addEventListener('click',()=>{S.pantalla='mapa';paraRellotge();semSel=null;pinta();});
 $('#btnTorn').addEventListener('click',passaTorn);
 $('#btnAjuda').addEventListener('click',ajuda);
 
 /* Hook de proves: els tests parlen amb el joc de debò, no amb una còpia. */
-window.__JOC={S,COMARQUES,ROLS,DINS,SABERS,capacitat,carrega,tensio,potEngegar,activa,troba,forma,
-  passaTorn,fesEngega,fesForma,fesTrobada,fesPont,clusterLiquid,comprovaLiquid,obreSabers,
-  actives,formades,sap,pinta,reinicia,node};
+window.__JOC={S,COMARQUES,ROLS,DINS,SABERS,VILANS,NIVELLS,FILES,COLS,
+  capacitat,carrega,tensio,potEngegar,activa,troba,forma,passaTorn,fesActiva,fesEngega,fesForma,
+  fesTrobada,fesPont,clusterLiquid,comprovaLiquid,obreSabers,actives,formades,sap,pinta,reinicia,node,
+  planta,comencaOnada,tic,pujaNivell,compleix,totDins,novaPlaca,cellsPlantades,
+  mjAparella,mjDisco,mjCarrega,entra:c=>{S.sel=c;S.pantalla='comarca';pinta();},
+  selSem:d=>{semSel=d;}};
 
 reinicia();
-/* La primera vegada s'explica sol. Un joc que demana llegir instruccions abans
-   de veure res, no el juga ningú. */
 setTimeout(()=>{
-  try{ if(!localStorage.getItem('joc_vist')){localStorage.setItem('joc_vist','1');ajuda();} }
-  catch(e){ /* navegador sense emmagatzematge: no passa res, es juga igual */ }
+  try{ if(!localStorage.getItem('joc_vist2')){localStorage.setItem('joc_vist2','1');ajuda();} }
+  catch(e){ /* sense emmagatzematge: es juga igual */ }
 },400);
 </script>
 </body>

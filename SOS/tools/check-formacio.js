@@ -67,6 +67,18 @@ if (!invisibles.length) ok(`${ancores.size} mòduls a la pàgina, tots modelats 
 else no(`${invisibles.length} mòdul(s) existeixen a formacio.html i l'app no els modela: ` +
   invisibles.join(', ') + ' — cap itinerari de rol els oferirà mai');
 
+/* El joc també cita mòduls. Cada nivell del joc ensenya quins mòduls de la
+   formació de veritat li toquen i hi enllaça; si un d'aquests id no existeix,
+   qui hi clica cau a la pàgina i no hi passa res —el navegador no es queixa
+   d'una àncora morta. És el mateix error que la resta d'aquesta guarda, però
+   des del joc, i el joc és per on entrarà molta gent. */
+const joc = readFileSync(join(here, '..', 'joc.html'), 'utf8');
+const delJoc = [...new Set([...joc.matchAll(/\[\s*'(m\d+)'\s*,/g)].map(m => m[1]))];
+const mortes = delJoc.filter(id => !ancores.has(id));
+if (!delJoc.length) no('el joc no cita cap mòdul de formació — els nivells han de portar a la docència');
+else if (!mortes.length) ok(`${delJoc.length} mòduls citats pel joc, tots amb àncora a formacio.html`);
+else no(`el joc enllaça mòduls que no existeixen: ${mortes.join(', ')} — el clic no va enlloc`);
+
 /* Cada rol ha de tenir camí. Un rol sense cap mòdul és algú a qui la formació no
    li parla, i això no ho diu cap error: simplement no li surt res. */
 const rolesApp = [...new Set(mods.flatMap(m => m.roles))].sort();

@@ -39,8 +39,12 @@ const PAG = readFileSync(join(ARREL, 'SOS', 'comando.html'), 'utf8');
    servidor» mesos després d'haver-ho corregit al cos, i és justament el text
    que surt a Google i a WhatsApp — el que més gent llegeix i el que ningú
    mira. Una comprovació que només mira el que es veu a la pàgina deixa fora
-   el que la representa a fora. */
-const ALTRES = ['comando.html', 'blog.html', 'uneix-te.html', 'online.html', 'crm.html'].map(f => ({
+   el que la representa a fora.
+
+   `joc.html` hi és perquè el joc reparteix els herois en rols jugables, i un
+   nom mal escrit allà és el mateix personatge convertit en dos —el que ja va
+   passar amb les quatre grafies de Guiri-Guay. */
+const ALTRES = ['comando.html', 'blog.html', 'uneix-te.html', 'online.html', 'crm.html', 'joc.html'].map(f => ({
   f, txt: (() => { try { return readFileSync(join(ARREL, 'SOS', f), 'utf8'); } catch (e) { return null; } })()
 }));
 
