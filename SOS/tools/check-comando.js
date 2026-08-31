@@ -29,6 +29,13 @@ const { join } = require('node:path');
 const ARREL = join(__dirname, '..', '..');
 const APP = readFileSync(join(ARREL, 'SOS', 'index.html'), 'utf8');
 const PAG = readFileSync(join(ARREL, 'SOS', 'comando.html'), 'utf8');
+/* Les altres pàgines que anomenen herois. No han de dir-los TOTS —el blog en
+   pot parlar de tres—, però els que diguin han de ser del roster. El post de
+   l'origen va estar mesos dient «Afrodita», «Ectoplasman» i «Corporació Món
+   Mort» mentre l'app ja en deia uns altres, i no ho mirava res. */
+const ALTRES = ['blog.html', 'uneix-te.html', 'online.html'].map(f => ({
+  f, txt: (() => { try { return readFileSync(join(ARREL, 'SOS', f), 'utf8'); } catch (e) { return null; } })()
+}));
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m);
@@ -129,6 +136,22 @@ else {
   else if (aPagina.length !== roster.length) bad(`la pàgina pinta ${aPagina.length} fitxes i el roster en té ${roster.length}`);
   else bad(`el comptador diu ${comptador[1]} herois canònics i n'hi ha ${roster.length}`);
 }
+
+// ── 5 · Les altres pàgines no diuen noms vells ───────────────────────────
+/* Es busquen les grafies antigues i els noms que ja no existeixen. Una llista
+   negra explícita, no una heurística: el que va passar és que uns noms es van
+   canviar en un lloc i van quedar vius en un altre, i això només es detecta
+   sabent quins eren. Quan un nom canviï, s'afegeix aquí el vell. */
+const VELLS = ['Afrodita', 'Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
+  'Pigmentona', 'La Anguila', 'Medusa Andalusa', 'Horacio Motomachi',
+  'Corporació Món Mort', 'Corporacio Mon Mort'];
+let restes = 0;
+ALTRES.forEach(({ f, txt }) => {
+  if (txt === null) return;   // la pàgina pot no existir: no és feina d'aquesta guarda
+  const trobats = VELLS.filter(v => txt.includes(v));
+  if (trobats.length) { restes++; bad(`${f} encara diu: ${trobats.join(', ')}`); }
+});
+if (!restes) ok(`${ALTRES.filter(x => x.txt !== null).length} pàgines més, cap amb noms vells`);
 
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} al relat.` : '\n✅ El relat quadra.');
 process.exit(fails ? 1 : 0);

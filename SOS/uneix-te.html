@@ -35,6 +35,30 @@ h2{font-size:clamp(1.25rem,3.4vw,1.7rem);margin:0 0 .5rem}
 .pain q{display:block;font-size:.98rem;color:var(--text);font-style:italic;line-height:1.5}
 .pain .who{margin-top:.6rem;font-size:.78rem;color:var(--muted)}
 
+/* ── El reconeixement · qui ets tu de la colla ──────────────────────────
+   Aquesta secció existeix per un motiu concret: la pàgina ho explicava tot
+   bé —el dolor, el tracte, el certificat— i no donava cap raó per sentir-s'hi
+   dins. La gent no s'apunta a una comptabilitat: s'apunta quan es reconeix.
+   Per això les targetes comencen per «Si ets qui…» i no pel nom del
+   personatge. El nom arriba després, com una resposta. */
+.parem{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--purple);
+  border-radius:0 14px 14px 0;padding:1.3rem 1.4rem;margin-bottom:1.6rem}
+.parem p{margin:0 0 .7rem;color:var(--light)}
+.parem p:last-child{margin-bottom:0}
+.parem strong{color:var(--text)}
+.quins{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.9rem}
+.qui{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem}
+.qui .si{display:block;font-size:.96rem;color:var(--text);line-height:1.5}
+.qui .es{margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--border);
+  font-size:.83rem;color:var(--purple);font-weight:600}
+.qui .arma{font-family:'SF Mono',Monaco,monospace;font-size:.68rem;color:var(--muted);
+  display:block;margin-top:.2rem;font-weight:400}
+.tanca{margin-top:1.5rem;background:var(--panel);border:1px solid var(--border);
+  border-radius:14px;padding:1.3rem 1.4rem}
+.tanca p{margin:0 0 .7rem;color:var(--light)}
+.tanca p:last-child{margin-bottom:0}
+.tanca em{color:var(--text);font-style:italic}
+
 /* ── Què hi poses i què en treus ── */
 .deal{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .deal .col{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.3rem}
@@ -86,7 +110,7 @@ footer a{color:var(--light)}
     <p class="lead">Arreglar la persiana d'algú. Deixar el trepant. Acompanyar al metge. Ensenyar català a qui acaba d'arribar. Tot això <strong>ja val alguna cosa</strong> — el que passa és que no ho compta ningú.</p>
     <div class="ctas">
       <a class="cta" href="index.html#/alta">Comença · 5 minuts</a>
-      <a class="cta ghost" href="#com-va">Com funciona</a>
+      <a class="cta ghost" href="#comando">Qui ets tu de la colla</a>
     </div>
     <p class="fine">S'obre al teu navegador. No hi ha registre, ni correu, ni contrasenya.</p>
     <p class="fine" style="margin-top:.5rem"><strong>Programa Pioneres:</strong> tres setmanes de feina real i un certificat del rol que hagis exercit. <a href="#pioneres" style="color:inherit;text-decoration:underline">Com va</a> ·  places limitades.</p>
@@ -103,6 +127,51 @@ footer a{color:var(--light)}
     <div class="pain"><q>Tinc un traster ple d'eines que faig servir dos cops l'any. I cada cop que necessito una cosa, la compro.</q><div class="who">Veí, 55 anys</div></div>
     <div class="pain"><q>A l'associació ho fem tot quatre persones. Quan una plega, allò s'acaba.</q><div class="who">Junta d'una entitat</div></div>
     <div class="pain"><q>He ajudat molt i m'he deixat ajudar poc. Demanar em costa més que fer.</q><div class="who">Voluntària, 63 anys</div></div>
+  </div>
+</section>
+
+<section id="comando">
+  <h2>Això ja té nom, i és una història</h2>
+  <p class="sub">Fa anys que la dibuixem en còmics. Va del mateix.</p>
+
+  <div class="parem">
+    <p>Al segon còmic, el Comando Molekulon acaba <strong>picant pedra en un páramo gris</strong>
+    per pagar un deute que no havien contret. Els havien venut una necessitat que no tenien.</p>
+    <p>Hi passen els anys. I resisteixen fent una sola cosa: <strong>cantar els seus propis
+    noms</strong>, per no oblidar qui són. Sota els peus, sense que ho vegi ningú, hi van
+    creixent plantes.</p>
+    <p>Els <strong>catorze</strong> del Comando no són els protagonistes. Són els que van
+    a buscar els altres <strong>149.986</strong>, que ja hi són, escampats, fent coses
+    més petites del que saben fer.</p>
+  </div>
+
+  <h3 style="font-size:1.05rem;margin:0 0 .3rem">Segurament ja ets un d'ells</h3>
+  <p class="sub">Cada personatge és una manera de sostenir un grup. Mira si te'n reconeixes alguna.</p>
+  <div class="quins">
+    <div class="qui"><span class="si">Ets qui acaba fent de pont entre els que no es parlen. Coneixes tothom i sempre acabes presentant-los.</span>
+      <div class="es">La Medusa Andaluza<span class="arma">Superarma: cables connectors</span></div></div>
+    <div class="qui"><span class="si">Ets qui aguanta el mal ambient perquè no esclati, i el torna una cosa que es pot parlar.</span>
+      <div class="es">Purpleman<span class="arma">Superarma: el Rayo Eliminador</span></div></div>
+    <div class="qui"><span class="si">Ets qui apareix quan tothom s'ha rendit i ho desencalla. No et fa cas ningú fins llavors.</span>
+      <div class="es">El Aviador<span class="arma">Superarma: el Bajo Volador</span></div></div>
+    <div class="qui"><span class="si">Ets qui ho arregla amb el que hi ha. Del que els altres llencen, en fas una eina.</span>
+      <div class="es">Reciclator<span class="arma">Superarma: el taller</span></div></div>
+    <div class="qui"><span class="si">Ets qui no parla gaire, i quan parla tothom calla. Ensenyes deixant que t'ho vegin fer.</span>
+      <div class="es">Barbamuda<span class="arma">Superarma: el silenci tàctic</span></div></div>
+    <div class="qui"><span class="si">Ets qui prefereix ensenyar-ho a fer-ho. Marxes i allò segueix funcionant.</span>
+      <div class="es">Supergerminador<span class="arma">Superarma: les llavors i la seva rialla</span></div></div>
+  </div>
+
+  <div class="tanca">
+    <p><strong>I si fa temps que has deixat de posar-hi res</strong>, també hi ha personatge.
+    L'Afrodito vivia amagat sota un abric de cuir al Bar Andrés, protegint-se d'un món que
+    l'havia convençut que no valia la pena. No li faltava talent: li sobrava cuirassa.</p>
+    <p>Aquí no et demanem que te la treguis. Et demanem que apuntis una cosa que ja fas —i
+    que a partir d'ara <em>consti</em>.</p>
+    <div class="ctas" style="justify-content:flex-start;margin-top:1.1rem">
+      <a class="cta" href="index.html#/alta">Apunta la primera cosa · 5 minuts</a>
+      <a class="cta ghost" href="comando.html#historia">Llegeix la història sencera</a>
+    </div>
   </div>
 </section>
 
