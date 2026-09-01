@@ -79,6 +79,16 @@ if (!delJoc.length) no('el joc no cita cap mòdul de formació — els nivells h
 else if (!mortes.length) ok(`${delJoc.length} mòduls citats pel joc, tots amb àncora a formacio.html`);
 else no(`el joc enllaça mòduls que no existeixen: ${mortes.join(', ')} — el clic no va enlloc`);
 
+/* I el programa d'escola. La guia metodològica diu al professorat on és la
+   formació de cada sessió; si un enllaç és mort, el mestre es queda sense el
+   material justament al lloc on li dèiem que el trobaria. */
+const escola = readFileSync(join(here, '..', 'escola.html'), 'utf8');
+const deEscola = [...new Set([...escola.matchAll(/formacio\.html#(m\d+)/g)].map(m => m[1]))];
+const mortesE = deEscola.filter(id => !ancores.has(id));
+if (!deEscola.length) no('escola.html no enllaça cap mòdul — la guia del professorat ha de portar a la formació');
+else if (!mortesE.length) ok(`${deEscola.length} mòduls citats pel programa d'escola, tots amb àncora`);
+else no(`escola.html enllaça mòduls que no existeixen: ${mortesE.join(', ')}`);
+
 /* Cada rol ha de tenir camí. Un rol sense cap mòdul és algú a qui la formació no
    li parla, i això no ho diu cap error: simplement no li surt res. */
 const rolesApp = [...new Set(mods.flatMap(m => m.roles))].sort();

@@ -704,6 +704,61 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 114 — Un programa per a criatures no pot ensenyar el contrari del que fem
+
+La Fàbrica de Superherois porta el Comando a l'aula, de 6 a 13 anys, en dues
+accions: a la primera cada infant **fabrica** el seu cromo; a la segona **se'n
+guanya** els superpoders. La temptació era fer-ho al revés i més fàcil: un
+generador de cromos bonic, tothom content, i prou.
+
+Un programa que s'acaba amb el dibuix és una manualitat amb el nostre logotip a
+sobre, i això és pitjor que no tenir-ne cap: ven el mètode en un lloc on el
+mètode no hi és.
+
+**La regla dura és la del cromo dels adults, sense rebaixa.** El cromo (V78) no
+es pot aconseguir de cap altra manera que aportant, ni regalat ni bescanviat. A
+l'aula, doncs: el color del vestit, els cabells, l'emblema i el nom d'heroi els
+tria qui el fa i ningú els discuteix —són identitat, no s'ha guanyat res. Una
+**estrella** només apareix quan una altra persona confirma que l'has ajudada. Ni
+el mestre la pot posar, ni es bescanvia, ni la dona el bon comportament. Si a
+l'aula ho féssim d'una altra manera —una estrella per esforç, repartida per qui
+mana— ensenyaríem exactament el contrari del que aquesta casa fa als pobles.
+
+D'aquí surten tres coses més, i totes són decisions:
+
+- **Els superpoders són categories del banc de temps i les superarmes són tipus
+  de la biblioteca de les coses.** No és decoració: és el que fa que el mapa de
+  recursos d'una classe assagi el mapa d'un poble. Si un dia hi hagués un poder
+  inventat, el programa deixaria de ser el SOS i no ho diria ningú, així que ho
+  comprova `tools/check-escola.js` contra les llistes de l'app.
+- **Ningú es pot posar una estrella a si mateix.** Sembla obvi i és la meitat del
+  disseny: qui confirma és qui ha rebut, i el botó és seu.
+- **Un poder que no té ningú també surt al mapa.** És la pregunta de la sessió 3
+  —«i si l'única persona que sap fer això falta un dia?»— que és literalment la
+  pregunta que fem als ajuntaments.
+
+### I la part que no és negociable: són menors
+
+- **No hi ha camp per al nom real.** Ni a la Fàbrica ni a la taula de la classe.
+  El que evita que el nom d'una criatura viatgi no és una casella que es pugui
+  desmarcar: és **que el camp no existeixi**. Hi va el nom d'heroi, que és el que
+  es projecta a la paret.
+- **La taula de la classe viu al navegador d'aquell dispositiu** i enlloc més.
+  Sense servidor, sense compte, sense còpia nostra, i amb un botó per esborrar-ho
+  tot al final de curs.
+- **A la IA hi va una llista tancada de camps** (`CAMPS_IA`), i la guarda falla si
+  la funció que la construeix produeix un camp que la llista no declara —avui no
+  sortiria, i el dia que algú l'afegís a la llista sortiria sense que ho hagués
+  mirat ningú. La IA és, a més, l'única part opcional de tot el programa: sense
+  clau, les vuit sessions funcionen igual.
+
+L'avaluació tanca la mateixa idea dient **què no es mira**: no es mira qui té més
+estrelles. Un rànquing d'estrelles converteix ajudar en competir, i llavors
+s'ajuda per l'estrella. El que es mira és quants poders diferents hi ha a la
+classe, quanta gent ha **rebut** ajuda —demanar és la meitat difícil— i si la
+càrrega es reparteix o cau sobre tres, que és el mateix que mesurem als projectes
+de debò.
+
 ## Veda 113 — Si la metàfora que ho explica tot és al nom de la casa, no pot sortir a la vuitena pantalla
 
 La primera pantalla de `teamtowershuma.com` ensenyava un graf de nodes: sis
