@@ -748,11 +748,18 @@ totes les durades dels setze plans es van refer perquè fossin múltiples
 d'aquest compàs. Un tall que cau entremig sona a presentació amb música al
 darrere; el mateix tall al compàs sona muntat, i és l'única diferència.
 
-El desplaçament tampoc és arbitrari. Mesurada l'energia del tema segon a segon
-hi ha tres buits clars, i la peça comença al segon 55 perquè així **la caiguda
-del castell cau dins d'un buit**, els tres vilans hi passen a través, i **el gir
-—quan s'encenen els que ja hi eren— entra just quan torna la música**. La pinya
-va sobre el tram més fort i el rètol final es queda al segon buit.
+El desplaçament tampoc és arbitrari, i és **un temps fort**: el segon 55,054.
+Mesurada l'energia del tema segon a segon hi ha tres buits clars, i amb aquesta
+entrada **la caiguda del castell cau dins del primer**, els tres vilans hi
+passen a través, i **el gir —quan s'encenen els que ja hi eren— entra just quan
+torna la música**. La pinya va sobre el tram més fort i el rètol final es queda
+al segon buit. El tall de 30 s entra pel segon 87,98, que és la finestra de 33
+segons amb més energia i sense cap buit de tot el tema: és la que ha d'aguantar
+sola en una xarxa.
+
+Els dos punts d'entrada també es proven. Un desplaçament a ull desfaria tota la
+feina de posar els talls al compàs, i no ho notaria cap prova que només mirés
+les durades.
 
 Dues regles que en surten:
 
@@ -763,8 +770,10 @@ Dues regles que en surten:
   opcional, i es comprova bloquejant la petició i mirant que tot vagi —no
   esborrant-la.
 
-Al repositori hi ha **només els 93 segons que la peça fa servir**, retallats per
-fotograma MP3 sense recodificar; el tema sencer fa 3:55 i és de l'autor.
+Al repositori hi ha **el tema sencer** (3:55), i la peça hi entra pel punt que
+li toca. La primera versió en portava només els 93 segons que fa servir,
+retallats per fotograma; puja sencer per decisió de l'autor, i així es pot
+escoltar des de la pàgina i des del Comando.
 
 I una que s'ha de deixar escrita perquè és un error meu del mateix tipus que la
 veda 109, però al revés: **«Horacio Motomachi» era a la llista negra de noms
