@@ -65,9 +65,9 @@ Ambdós apareixen al cromo. Cada cromo té un **nivell** (Aprenent → Bronze �
 
 **Nivell territorial**: quan l'usuari està a país/província/comarca, l'app mostra un panell d'incentiu que empeny cap avall (municipi/barri) — el valor real es crea a peu de carrer.
 
-## V17 · Mitologia origen — Mazinguer, Horacio i el Gran Molekulon
+## V17 · Mitologia origen — Mazinguer, Horacio Motomachi i el Gran Molekulon
 
-Enviats a la Terra pel **Gran Molekulon** (la molècula que governa les galàxies des de l'hiperespai), **Mazinguer i Horacio** tenen una missió aparentment impossible: reclutar un **Comando de 150.000 superherois** capaç de vèncer el **Mundo Muerto** — la corporació que funciona com un virus: extreu valor sense retornar-lo, trenca vincles i deixa les comunitats orfes.
+Enviats a la Terra pel **Gran Molekulon** (la molècula que governa les galàxies des de l'hiperespai), **Mazinguer i Horacio Motomachi** tenen una missió aparentment impossible: reclutar un **Comando de 150.000 superherois** capaç de vèncer el **Mundo Muerto** — la corporació que funciona com un virus: extreu valor sense retornar-lo, trenca vincles i deixa les comunitats orfes.
 
 Sense talents propis aparents (potser el seu superpoder és haver perdut el seu ego), Mazinguer i Horacio adopten l'estratègia dels **Blues Brothers**: **munten una banda de música** que recorre totes les poblacions de Catalunya i del món per identificar, un a un, els 150.000 superherois amagats a plena vista.
 
@@ -80,10 +80,10 @@ gestió comunitària i no en un fullet a part).
 | Heroi | On | Poder | Què vol dir en un equip |
 |---|---|---|---|
 | **Mazinguer** | Còmic 1 | Coneix el pla i guia la banda; l'ego perdut és el seu poder | Qui munta la plataforma i atrau els primers nodes |
-| **Horacio** | Còmic 1 | Rep l'encàrrec i converteix l'experiència en relat | La visió de conjunt: qui sap explicar cap on va tot |
+| **Horacio Motomachi** | Còmic 1 | Rep l'encàrrec i converteix l'experiència en relat | La visió de conjunt: qui sap explicar cap on va tot |
 | **Guiri-Guay** | Còmic 1 | Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup | Qui té cura de l'equip i cura les friccions abans que es podreixin |
 | **Purpleman** | Còmic 1 | Entra als gasos tòxics i els torna benestar; les males olors, flors | Qui absorbeix la toxicitat de l'ambient i la torna clima |
-| **Afrodita** | Còmic 1 | Holometabolisme: la música li trenca l'armadura que el mantenia alienat | El talent amagat que només necessita un lloc segur |
+| **Afrodito** | Còmic 1 | Holometabolisme: la música li trenca l'armadura que el mantenia alienat | El talent amagat que només necessita un lloc segur |
 | **El Aviador** | Còmic 1 | Orientació i rescat in extremis: apareix quan l'equip s'ha perdut | L'executor hiperespecialitzat que desencalla projectes |
 | **Pigmentón** | Còmic 1 | Assigna identitats; il·lumina fins i tot els forats negres | Qui dibuixa la xarxa i dona a cadascú el color que li toca |
 | **La Medusa Andaluza** | Còmic 1 | Sincronització i fusió cultural: dona llum interconnectant el grup | El node central que creua informació entre parts que no es parlaven |
@@ -824,7 +824,13 @@ veda 109, però al revés: **«Horacio Motomachi» era a la llista negra de noms
 vells** i no hi havia estat mai a cap pàgina —la hi vaig posar jo per si de cas.
 El dia que va arribar el tema que porta aquest títol, la guarda va prohibir una
 cosa certa. Una llista negra inventada fa exactament el contrari del que ha de
-fer. Si el nom del roster ha de ser «Horacio» o el llarg, ho diu l'autor.
+fer.
+
+L'autor ho va resoldre després: **el nom del roster és «Horacio Motomachi»**, el
+llarg. O sigui que el que jo havia marcat com a error era el nom bo, i el que
+tenia per bo era la forma curta. Una llista negra només pot contenir el que
+algú ha vist escrit malament; el que hi poso «per si de cas» és una endevinalla,
+i les endevinalles al CI acaben prohibint la veritat.
 
 ## Veda 114 — Un programa per a criatures no pot ensenyar el contrari del que fem
 
@@ -956,12 +962,22 @@ Dues coses, doncs:
   propi: el camp `on`. Que un personatge visqui en un vídeo no el fa menys real
   (veda 109), però barrejar-ho tampoc.
 
-I la correcció que ho va destapar: **Afrodita**, no «Afrodito». La va fer
-l'autor, com les quatre anteriors. Les meves llistes tornaven a coincidir totes
-a equivocar-se, i cap guarda pot dir el contrari: la consistència es pot
-automatitzar, la veritat no (veda 109). El que sí que es pot automatitzar és
-que, un cop l'autor ho diu, **no torni**: el nom vell passa a la llista negra el
-mateix dia.
+I la correcció que ho va destapar va anar i va tornar, que és el que la fa
+valer la pena escriure. El roster deia **Afrodito**; l'autor va demanar
+**Afrodita** i es va canviar a tot arreu i el nom vell va anar a la llista
+negra; després l'autor va tornar a **Afrodito**, i s'ha desfet.
+
+No és un anar i venir inútil. La passa intermèdia va deixar l'heroi i la deessa
+grega del panteó de 12 **amb el mateix nom**, i el codi els tenia com a dues
+llistes diferents. La «-o» final no és una grafia: és el que impedeix
+confondre'ls. I la conseqüència pràctica: **«Afrodita» no pot anar a la llista
+negra general**, perquè a l'app la deessa hi és amb tot el dret. Va a una llista
+a part, que només s'aplica a les pàgines públiques, on la deessa no hi pinta res.
+
+El que queda per damunt de tot és el de sempre: cap guarda pot dir si un nom és
+el bo. La consistència es pot automatitzar, la veritat no (veda 109). El que sí
+que es pot automatitzar és que, un cop l'autor ho diu, **no torni** —i que si un
+dia ho torna a canviar, canviar-ho sigui una línia i no una recerca.
 
 ## Veda 111 — Plantar a la plaça i obrir al node han de ser el mateix acte
 
