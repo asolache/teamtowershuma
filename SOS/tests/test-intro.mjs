@@ -13,8 +13,13 @@
    · **La pinya creix i el castell aguanta.** L'S4 cau amb quatre i l'S14
      aguanta amb catorze. Si el final caigués, el vídeo diria el contrari del
      que fa la casa (veda 110).
-   · **La música no hi és i no fa falta.** Sense el fitxer d'àudio la peça ha
-     de funcionar sencera: la música és l'única part opcional.
+   · **Els talls cauen al compàs.** El tema va a 80,2 ppm i cada pla dura un
+     nombre rodó de mitjos compassos. Si un cau entremig, la peça sona a
+     presentació amb música de fons i no a peça muntada.
+   · **Mana el rellotge del tema.** Amb dos rellotges corrent sols, al minut ja
+     no van junts i el primer que es perd és justament el tall al compàs.
+   · **I sense el fitxer, la peça funciona igual**: la música és l'única part
+     opcional, i es comprova bloquejant la petició, no esborrant res.
 
    Veda 115. */
 import { chromium } from 'playwright';
@@ -50,7 +55,7 @@ console.log('\n1 · Un sol tall per a les dues vistes');
   });
   ok(r.n === 16, `setze plans (${r.n})`);
   ok(!r.dupIds.length, 'cap identificador de pla repetit');
-  ok(r.total === 92000, `noranta-dos segons comptats (${r.total / 1000} s)`);
+  ok(r.total === 89796, `vuitanta-nou segons i escaig comptats (${r.total / 1000} s)`);
   ok(!r.sensRet.length, 'tots els plans porten rètol en català i castellà' +
     (r.sensRet.length ? ': falta a ' + r.sensRet.join(', ') : ''));
   ok(r.sensCam === 0, 'i tots diuen quina càmera fan, que és el que llegeix qui ho munti');
@@ -149,23 +154,78 @@ console.log('\n5 · El tall de 30 s és un subconjunt, no una altra peça');
   await ctx.close();
 }
 
-console.log('\n6 · Sense música, la peça funciona sencera');
+console.log('\n6 · Els talls cauen al compàs del tema');
 {
-  const { ctx, p, errs } = await nova();
-  const r = await p.evaluate(() => ({ so: window.__INTRO.SO,
-    referencia: !!document.body.innerHTML.match(/comando-intro/) }));
-  await p.waitForTimeout(500);
-  const avis = await p.evaluate(() => document.querySelector('#avisSo').textContent);
-  ok(/media\//.test(r.so), 'el camí del tema està declarat: ' + r.so);
-  ok(/[Ee]ncara sense música/.test(avis), 'i com que el fitxer no hi és, es diu clar: «' + avis.slice(0, 34) + '…»');
-  const juga = await p.evaluate(() => { window.__INTRO.juga(); const v = window.__INTRO.S.va;
-    window.__INTRO.atura(); return v; });
-  ok(juga, 'i es reprodueix igualment: la música és l\'única part opcional');
-  ok(errs.length === 0, 'un fitxer d\'àudio que falta no trenca la pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  const { ctx, p } = await nova();
+  await p.waitForTimeout(1200);
+  const r = await p.evaluate(() => {
+    const I = window.__INTRO, s = I.so();
+    /* 80,2 pulsacions per minut · un compàs de 4 cada 2,993 s. Cada pla ha de
+       durar un nombre rodó de mitjos compassos: si un cau entremig, la peça
+       sona a presentació amb música de fons i no a peça muntada. */
+    const COMPAS = 2993;
+    const fora = I.PLANS.filter(x => Math.abs((x.dur / COMPAS) * 2 - Math.round((x.dur / COMPAS) * 2)) > 0.01);
+    const curts = I.PLANS.filter(x => x.curt)
+      .filter(x => Math.abs((x.curt / COMPAS) * 2 - Math.round((x.curt / COMPAS) * 2)) > 0.01);
+    return { fora: fora.map(x => x.id), curts: curts.map(x => x.id), teSo: I.teSo(),
+      dur: s && s.duration, total: I.total(), tall: I.SO_TALL, so: I.SO };
+  });
+  ok(!r.fora.length, 'els setze plans duren un nombre rodó de mitjos compassos' +
+    (r.fora.length ? ' — se n\'escapen: ' + r.fora.join(', ') : ''));
+  ok(!r.curts.length, 'i els del tall curt també');
+  ok(r.teSo, 'el tema carrega: ' + r.so);
+  ok(r.dur > r.total / 1000, `el retall (${r.dur.toFixed(1)} s) cobreix la peça sencera (${r.total / 1000} s)`);
+  ok(r.tall + 33 <= r.dur, `i el desplaçament del tall curt (${r.tall} s) hi cap sense sortir-se'n`);
   await ctx.close();
 }
 
-console.log('\n7 · Es pot fer servir amb el teclat i amb el dit');
+console.log('\n7 · Mana el rellotge del tema, no el del navegador');
+{
+  const { ctx, p } = await nova();
+  await p.waitForTimeout(1200);
+  await p.evaluate(() => window.__INTRO.juga());
+  await p.waitForTimeout(2200);
+  const r = await p.evaluate(() => {
+    const I = window.__INTRO, s = I.so();
+    const d = { t: I.S.t, a: s.currentTime * 1000 - I.soOffset() * 1000, vol: s.volume, pausa: s.paused };
+    I.atura();
+    return d;
+  });
+  ok(!r.pausa, 'el tema sona amb la peça');
+  ok(Math.abs(r.t - r.a) < 120,
+    `i el temps de la peça i el del tema van junts (${Math.round(r.t)} ms contra ${Math.round(r.a)} ms)`);
+  ok(r.vol > 0.5, 'amb el volum ja pujat després de l\'entrada');
+  const q = await p.evaluate(() => window.__INTRO.so().paused);
+  ok(q, 'i en aturar la peça, s\'atura');
+  await ctx.close();
+}
+
+console.log('\n8 · Sense el fitxer, la peça funciona igual');
+{
+  /* La música és l'única part opcional, i això s'ha de poder comprovar sense
+     esborrar-la: es bloqueja la petició i es mira que la peça vagi igual. */
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  await p.route('**/comando-horacio.mp3', r => r.abort());
+  await p.goto(APP);
+  await p.waitForFunction(() => window.__INTRO);
+  await p.waitForTimeout(900);
+  const avis = await p.evaluate(() => document.querySelector('#avisSo').textContent);
+  const r = await p.evaluate(() => {
+    const I = window.__INTRO;
+    I.ves(3, 0); I.anima(.8);
+    I.juga(); const va = I.S.va; I.atura();
+    return { va, teSo: I.teSo(), pla: I.S.i };
+  });
+  ok(!r.teSo, 'sense el fitxer, la pàgina sap que no en té');
+  ok(/sense música/i.test(avis), 'i ho diu: «' + avis.slice(0, 40) + '…»');
+  ok(r.va && r.pla === 3, 'la peça es reprodueix i es navega igual');
+  ok(errs.length === 0, 'un àudio que no carrega no trenca res' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n9 · Es pot fer servir amb el teclat i amb el dit');
 {
   const { ctx, p } = await nova();
   await p.evaluate(() => window.__INTRO.ves(0, 0));
@@ -192,7 +252,7 @@ console.log('\n7 · Es pot fer servir amb el teclat i amb el dit');
   await ctx.close();
 }
 
-console.log('\n8 · Cap al mòbil i cap al portàtil');
+console.log('\n10 · Cap al mòbil i cap al portàtil');
 for (const [w, h] of [[390, 844], [1280, 900]]) {
   const { ctx, p, errs } = await nova(w, h);
   const r = await p.evaluate(() => {

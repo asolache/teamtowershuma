@@ -177,7 +177,13 @@ if (!repFails) ok(`${repTotal} mencions d'heroi a les pàgines que en reparteixe
    canviar en un lloc i van quedar vius en un altre, i això només es detecta
    sabent quins eren. Quan un nom canviï, s'afegeix aquí el vell. */
 const VELLS = ['Afrodito', 'Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
-  'Pigmentona', 'La Anguila', 'Medusa Andalusa', 'Horacio Motomachi',
+  'Pigmentona', 'La Anguila', 'Medusa Andalusa',
+  /* «Horacio Motomachi» va sortir d'aquesta llista el dia que va arribar el
+     tema que porta aquest títol. No hi era per cap error trobat: la vaig posar
+     jo per si de cas, i no ha existit mai a cap pàgina. Una llista negra
+     inventada prohibeix coses certes, que és el contrari del que ha de fer.
+     Queda per resoldre si el nom del roster és «Horacio» o el llarg; això ho
+     diu l'autor, no la guarda (veda 109). */
   'Corporació Món Mort', 'Corporacio Mon Mort', 'Món Mort', 'Mon Mort',
   /* No són noms, però són el mateix problema: text que es va corregir al cos
      i va quedar viu allà on no mira ningú. */

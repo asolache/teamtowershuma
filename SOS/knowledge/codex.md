@@ -740,10 +740,38 @@ una escala de figura iguals a tots els plans— en comptes de compondre cada pla
 pel seu compte: si cada pla es composa sol, canviar de pla sembla canviar de
 pel·lícula.
 
-**El so encara no hi és, i la peça no en depèn.** El tema del Comando anirà a
-`SOS/media/comando-intro.m4a` i sona sol quan hi sigui; mentrestant la pàgina ho
-diu clar i es veu sencera muda, que és com es mira a les xarxes. Una peça que
-només funciona amb música no es pot ensenyar en una reunió.
+### El tema, i què vol dir muntar-hi a sobre
+
+Amb «Horacio Motomachi» a la mà, la integració no és posar-lo de fons. El tema
+va a **80,2 pulsacions per minut**, o sigui **un compàs cada 2,993 segons**, i
+totes les durades dels setze plans es van refer perquè fossin múltiples
+d'aquest compàs. Un tall que cau entremig sona a presentació amb música al
+darrere; el mateix tall al compàs sona muntat, i és l'única diferència.
+
+El desplaçament tampoc és arbitrari. Mesurada l'energia del tema segon a segon
+hi ha tres buits clars, i la peça comença al segon 55 perquè així **la caiguda
+del castell cau dins d'un buit**, els tres vilans hi passen a través, i **el gir
+—quan s'encenen els que ja hi eren— entra just quan torna la música**. La pinya
+va sobre el tram més fort i el rètol final es queda al segon buit.
+
+Dues regles que en surten:
+
+- **Mana el rellotge del tema, no el del navegador.** Amb dos rellotges corrent
+  sols, al minut ja no van junts, i el primer que es perd és justament el tall
+  al compàs. Quan hi ha àudio, `S.t` surt de `currentTime`.
+- **Sense el fitxer, la peça funciona igual.** La música és l'única part
+  opcional, i es comprova bloquejant la petició i mirant que tot vagi —no
+  esborrant-la.
+
+Al repositori hi ha **només els 93 segons que la peça fa servir**, retallats per
+fotograma MP3 sense recodificar; el tema sencer fa 3:55 i és de l'autor.
+
+I una que s'ha de deixar escrita perquè és un error meu del mateix tipus que la
+veda 109, però al revés: **«Horacio Motomachi» era a la llista negra de noms
+vells** i no hi havia estat mai a cap pàgina —la hi vaig posar jo per si de cas.
+El dia que va arribar el tema que porta aquest títol, la guarda va prohibir una
+cosa certa. Una llista negra inventada fa exactament el contrari del que ha de
+fer. Si el nom del roster ha de ser «Horacio» o el llarg, ho diu l'autor.
 
 ## Veda 114 — Un programa per a criatures no pot ensenyar el contrari del que fem
 
