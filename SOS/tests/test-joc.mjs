@@ -34,6 +34,12 @@ const nova = async (w = 390, h = 844) => {
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto(APP);
   await p.waitForFunction(() => window.__JOC && window.__JOC.S.sel);
+  /* Una plaça acabada de començar només té oberta la primera dinàmica: el
+     desbloqueig és progressiu i cada onada aguantada n'obre una altra. La
+     majoria de proves parlen d'altres regles i han de poder plantar el que els
+     toca provar, i criden `obreTot()`. La prova del desbloqueig, no. */
+  await p.evaluate(() => { window.obreTot = () => window.__JOC.actives()
+    .forEach(x => { window.__JOC.node(x).placa.aguantades = window.__JOC.DESBLOQUEIG.length; }); });
   await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
   return { ctx, p, errs };
 };
@@ -132,6 +138,11 @@ console.log('\n5 · Plantar a la plaça és obrir al node');
   const { ctx, p, errs } = await nova();
   const r = await p.evaluate(() => {
     const J = window.__JOC, c = 'Alt Penedès', n = J.node(c);
+    window.obreTot();
+    /* Sense caselles d'aportació: es sembren a l'atzar i el seu bonus canvia les
+       hores i el cost de la plantada següent. Aquesta prova parla dels rols i de
+       les hores, i amb elles passava o fallava segons on haguessin caigut. */
+    n.placa.valor = [];
     n.gent = [{ nom: 'A', rol: 'connecta', formada: false }, { nom: 'B', rol: 'cuida', formada: false }];
     n.dins = []; n.hores = 200;
     const out = {};
@@ -178,6 +189,7 @@ console.log('\n7 · Una onada de debò: la por para el projecte i el rumor s\'es
   const { ctx, p, errs } = await nova();
   const r = await p.evaluate(async () => {
     const J = window.__JOC, c = 'Alt Penedès', n = J.node(c);
+    window.obreTot();
     J.entra(c);
     n.gent = [{ nom: 'A', rol: 'cuida', formada: true }, { nom: 'B', rol: 'sosté', formada: true },
               { nom: 'C', rol: 'ensenya', formada: true }, { nom: 'D', rol: 'connecta', formada: true }];
@@ -202,7 +214,9 @@ console.log('\n8 · Cada projecte defensa a la seva manera');
   const { ctx, p, errs } = await nova();
   const r = await p.evaluate(() => {
     const J = window.__JOC, c = 'Alt Penedès', n = J.node(c);
+    window.obreTot();
     J.entra(c);
+    n.placa.valor = [];        // el bonus d'una casella canviaria les xifres
     n.gent = [{ nom: 'A', rol: 'encén', formada: true }, { nom: 'B', rol: 'ritme', formada: true },
               { nom: 'C', rol: 'connecta', formada: true }, { nom: 'D', rol: 'cuida', formada: true }];
     n.hores = 400;
@@ -215,21 +229,29 @@ console.log('\n8 · Cada projecte defensa a la seva manera');
     J.tic();
     const viusFila0 = n.placa.vilans.filter(v => v.f === 0).length;
     const viusFila1 = n.placa.vilans.filter(v => v.f === 1).length;
-    // El banc de temps genera hores
+    /* El banc de temps no ingressa res: **deixa caure** una fitxa d'hores i
+       algú l'ha de recollir. La que ningú agafa, es perd. */
     J.planta(c, 2, 0, 'banctemps');
+    n.placa.caigudes = [];
     n.placa.cel[2][0].tic = 5000;
     const horesAbans = n.hores;
     J.tic();
-    return { viusFila0, viusFila1, genera: n.hores > horesAbans };
+    const fitxes = n.placa.caigudes.length, sensToTocar = n.hores;
+    const guany = J.recull(n.placa.caigudes[0] && n.placa.caigudes[0].id);
+    return { viusFila0, viusFila1, fitxes, horesAbans,
+      queda: sensToTocar === horesAbans, guany, hores: n.hores };
   });
   ok(r.viusFila0 === 0, 'la festa dissol el rumor de la seva fila');
   ok(r.viusFila1 === 1, 'i no toca el de la fila del costat: neteja on és, no pertot');
-  ok(r.genera, 'i el banc de temps genera hores: sense ell no es pot plantar res més');
+  ok(r.fitxes === 1, 'el banc de temps deixa caure una fitxa d\'hores');
+  ok(r.queda, 'i mentre no la toques NO tens les hores: no ingressa sol');
+  ok(r.guany > 0 && r.hores === r.horesAbans + r.guany,
+    'recollir-la amb el dit és el que les dona (+' + r.guany + ')');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 
-console.log('\n9 · Si arriben al final, s\'emporten algú');
+console.log('\n9 · El primer cop surt el veïnat; el segon, s\'emporten algú');
 {
   const { ctx, p, errs } = await nova();
   const r = await p.evaluate(() => {
@@ -237,14 +259,24 @@ console.log('\n9 · Si arriben al final, s\'emporten algú');
     J.entra(c);
     n.gent.push({ nom: 'X', rol: 'cuida', formada: false });
     const gentAbans = n.gent.length, mortAbans = J.S.mort;
+    /* Primera arribada per la fila 0: la salvada de la fila encara hi és. */
     n.placa.vilans = [{ mena: 'rumor', f: 0, x: -0.4, vida: 80, max: 80 }];
     n.placa.corrent = true; n.placa.cua = [];
     J.tic();
-    return { gentAbans, gent: n.gent.length, mort: J.S.mort > mortAbans,
+    const un = { gent: n.gent.length, mort: J.S.mort, salva: n.placa.salva[0],
+      fora: n.placa.vilans.length };
+    /* Segona arribada per la mateixa fila: el poble ja ha sortit un cop. */
+    n.placa.vilans = [{ mena: 'rumor', f: 0, x: -0.4, vida: 80, max: 80 }];
+    n.placa.corrent = true; n.placa.cua = [];
+    J.tic();
+    return { gentAbans, mortAbans, un, gent: n.gent.length, mort: J.S.mort,
       fora: n.placa.vilans.length, diari: J.S.diari.map(l => l.txt).join(' ') };
   });
-  ok(r.gent === r.gentAbans - 1, 'travessar la plaça costa una persona');
-  ok(r.mort && r.fora === 0, 'el Mundo Muerto avança i el vilà desapareix');
+  ok(r.un.gent === r.gentAbans && r.un.mort === r.mortAbans,
+    'la primera vegada surt el veïnat i no costa ningú: un error pot ser gratuït un cop');
+  ok(r.un.salva === false, 'i la fila es gasta: la segona vegada el poble ja està cansat');
+  ok(r.gent === r.gentAbans - 1, 'la segona arribada per la mateixa fila sí que costa una persona');
+  ok(r.mort > r.mortAbans && r.fora === 0, 'el Mundo Muerto avança i el vilà desapareix');
   ok(/plega/.test(r.diari), 'i el diari ho diu amb el nom de qui plega');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
@@ -471,6 +503,7 @@ console.log('\n19 · Una partida sencera no peta');
   const r = await p.evaluate(async () => {
     const J = window.__JOC;
     for (let t = 0; t < 30; t++) {
+      window.obreTot();          // el fuzz prova el model, no el desbloqueig
       const cs = J.actives();
       const c = cs[Math.floor(Math.random() * cs.length)];
       const r = Math.random();
@@ -564,7 +597,7 @@ console.log('\n21 · La introducció ensenya el joc, no un resum del joc');
           && J.tensio(c) === J.tensioDe(n, J.capacitat(c) - J.capacitatDe(n));
       })() };
   });
-  ok(r.passos === 7, `set passos a la introducció (${r.passos})`);
+  ok(r.passos === 8, `vuit passos a la introducció (${r.passos})`);
   ok(r.inici.t === 0, 'comença en verd: el primer que veu qui entra no és un error seu');
   ok(r.casos.every(c => c.pintat === c.cap && c.pintatCar === c.car),
     'el que pinta el laboratori és el que diuen capacitatDe i carregaDe, a cada pas');
@@ -614,6 +647,164 @@ console.log('\n23 · La introducció no s\'inventa el contingut del joc');
   ok(r.tot.includes('Comences amb ' + r.accions),
     'el nombre d\'accions surt de l\'estat, no d\'una frase escrita a mà');
   ok(/formació/.test(r.tot), 'i el darrer pas porta a la formació de veritat');
+  await ctx.close();
+}
+
+console.log('\n══ El repte és la velocitat, no la dificultat de cada pas ══');
+
+console.log('\n24 · Les hores no arriben soles: cauen, i la que no reculls es perd');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const J = window.__JOC, c = 'Alt Penedès', n = J.node(c);
+    J.entra(c);
+    const p2 = n.placa;
+    /* Una fitxa caduca: si ningú la toca, no dona res. Al banc de temps de
+       debò passa igual —una hora oferta que no agafa ningú es perd. */
+    p2.caigudes = []; J.deixaFitxa(p2, 1, 1, 30);
+    const horesAbans = n.hores;
+    p2.caigudes[0].viu = 100;   // menys d'un tic de vida: al següent ja no hi és
+    J.tic();
+    const caducada = { fitxes: p2.caigudes.length, hores: n.hores };
+    /* I una que sí que es recull. */
+    J.deixaFitxa(p2, 2, 2, 30);
+    const id = p2.caigudes[0].id;
+    const guany = J.recull(id);
+    const tornar = J.recull(id);   // no es pot recollir dues vegades
+    /* La caiguda ambient hi és perquè qui encara no té banc de temps tingui
+       sortida: sense això, un poble sense cap projecte queda encallat. */
+    p2.caigudes = []; p2.cai = 0;
+    for (let i = 0; i < 80; i++) J.tic();
+    return { horesAbans, caducada, guany, tornar, ambient: p2.caigudes.length > 0,
+      hores: n.hores };
+  });
+  ok(r.caducada.fitxes === 0 && r.caducada.hores === r.horesAbans,
+    'la fitxa que no es toca desapareix i no dona res');
+  ok(r.guany === 30, 'i la que es toca dona les hores que porta (' + r.guany + ')');
+  ok(r.tornar === 0, 'una fitxa no es pot recollir dues vegades');
+  ok(r.ambient, 'sempre acaba caient alguna cosa: sense banc de temps encara hi ha sortida');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n25 · L\'onada ve sola, i no fer-la esperar es paga');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const J = window.__JOC, c = 'Alt Penedès', n = J.node(c);
+    J.entra(c);
+    const p2 = n.placa;
+    const esperaInici = p2.espera, onadaInici = p2.onada;
+    /* Sense tocar cap botó, el compte enrere s'acaba i l'onada arrenca. */
+    for (let i = 0; i < Math.ceil(J.ESPERA_PRIMERA / 120) + 2; i++) J.tic();
+    const sola = { onada: p2.onada, corrent: p2.corrent };
+    /* I la barra baixa mentre s'espera: el número és el que fa córrer. */
+    p2.corrent = false; p2.vilans = []; p2.cua = []; p2.espera = 6000;
+    const abansHores = n.hores;
+    const guany = J.avancaOnada(c);
+    return { esperaInici, onadaInici, sola, guany, hores: n.hores, abansHores,
+      onadaFinal: p2.onada };
+  });
+  ok(r.esperaInici > 0 && r.onadaInici === 0, 'la plaça comença amb un compte enrere, no aturada');
+  ok(r.sola.onada === 1 && r.sola.corrent,
+    'i l\'onada arrenca sense prémer res: el temps corre encara que tu no facis res');
+  ok(r.guany > 0 && r.hores === r.abansHores + r.guany,
+    'avançar-la paga les hores que no has gastat esperant (+' + r.guany + ')');
+  ok(r.onadaFinal === 2, 'i l\'onada següent comença de debò');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n26 · Cada pas és fàcil: una dinàmica, i una més per onada');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const J = window.__JOC, c = 'Alt Penedès', n = J.node(c);
+    J.entra(c);
+    /* El primer moviment ha de ser sempre possible: els dos primers que
+       apareixen són els rols que demana la dinàmica que ja tens oberta. */
+    const primera = J.DESBLOQUEIG[0];
+    const primerMoviment = !J.motiuNo(c, primera);
+    const obertes = J.desbloquejades(n).length;
+    const tancada = J.planta(c, 0, 0, J.DESBLOQUEIG[3]);
+    n.hores = 500;
+    const posa = J.planta(c, 0, 0, primera);
+    /* Acabada de plantar, no es pot repetir: s'està recarregant. */
+    const recarrega = J.planta(c, 1, 1, primera);
+    n.placa.rec[primera] = 0;
+    /* I es pot treure el que has posat: un pas fàcil ha de ser reversible. */
+    const treu = J.llevaPlanta(c, 0, 0);
+    const tancaAlNode = !n.dins.includes(primera);
+    /* Que l'onada ARRENQUI no obre res: la dinàmica nova ha d'arribar quan
+       l'has guanyada, no quan te la venen a sobre. */
+    J.comencaOnada(c);
+    const durant = J.desbloquejades(n).length;
+    n.placa.aguantades = 1;
+    return { primerMoviment, obertes, tancada, posa, recarrega, treu, tancaAlNode, durant,
+      despres: J.desbloquejades(n).length, total: J.DESBLOQUEIG.length,
+      totes: J.DESBLOQUEIG.slice().sort().join() === Object.keys(J.DINS).sort().join() };
+  });
+  ok(r.primerMoviment, 'el primer moviment sempre és possible: els dos que hi ha porten els rols que cal');
+  ok(r.obertes === 1, 'es comença amb UNA dinàmica oberta, no amb vuit targetes apagades');
+  ok(!r.tancada.ok && /encara no/.test(r.tancada.per),
+    'una que encara no saps portar es refusa i diu per què: «' + r.tancada.per + '»');
+  ok(r.posa.ok && !r.recarrega.ok && /recarreg/.test(r.recarrega.per),
+    'i acabada de plantar s\'està recarregant: el límit és el temps, no el saldo');
+  ok(r.treu && r.tancaAlNode, 'treure-la de la plaça la tanca també al node: una sola comptabilitat');
+  ok(r.durant === 1, 'començar una onada no obre res: la nova arriba per haver-la aguantada');
+  ok(r.despres === 2, 'cada onada aguantada n\'obre una altra');
+  ok(r.totes && r.total === 8, 'i l\'ordre les conté totes, sense inventar-ne ni perdre\'n cap');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n27 · Les caselles de bonus són aportacions a projectes del SOS');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const J = window.__JOC, c = 'Alt Penedès', n = J.node(c);
+    J.entra(c); window.obreTot();
+    const p2 = n.placa;
+    const quantes = p2.valor.length;
+    const dinsCatàleg = p2.valor.every(v => !!J.valorPer(v.proj));
+    /* Plantar-hi és aportar-hi: queda registrat al node i el bonus és el que
+       aquell projecte dona de debò. */
+    n.hores = 900;
+    p2.valor = [{ proj: 'banc_temps', f: 3, co: 0 }];
+    const horesAbans = n.hores - 0;
+    const posa = J.planta(c, 3, 0, 'banctemps');
+    const apo = (n.aportacions || []).slice();
+    const marcaConsumida = p2.valor.length === 0;
+    /* Segona plantada al mateix lloc: la casella ja no hi és, no torna a pagar. */
+    J.llevaPlanta(c, 3, 0);
+    J.planta(c, 3, 0, 'banctemps');
+    const apoDespres = (n.aportacions || []).length;
+    /* Cada bonus declarat ha de fer alguna cosa. */
+    const fan = J.VALOR.map(v => {
+      const foto = () => JSON.stringify([n.hores, n.gent.length, p2.gratis, p2.veure, p2.salva,
+        n.gent.filter(x => x.formada).length]);
+      const abans = foto();
+      p2.cel[0][0] = { d: 'banctemps', vida: 100, max: 100, parat: 0, tic: 0 };
+      p2.salva = [false, false, false, false];
+      J.aplicaBonus(c, v.proj, 0, 0);
+      const cel = p2.cel[0][0];
+      const despres = foto();
+      return { proj: v.proj, canvia: despres !== abans || cel.max > 100 || !!cel.doble };
+    });
+    return { quantes, dinsCatàleg, posa, apo, marcaConsumida, apoDespres,
+      fan, total: J.VALOR.length, compta: J.aportacions() >= apoDespres,
+      calN2: !!J.NIVELLS.find(x => x.id === 'N2').cal.aportacions };
+  });
+  ok(r.quantes === 3 && r.dinsCatàleg, 'cada plaça neix amb tres caselles, i totes són del catàleg');
+  ok(r.posa.ok && r.posa.valor === 'banc_temps' && r.apo.length === 1,
+    'plantar-hi registra una aportació al node, amb el nom del projecte');
+  ok(r.marcaConsumida && r.apoDespres === 1,
+    'i la casella es consumeix: no és una font infinita de bonus');
+  ok(r.fan.every(x => x.canvia), 'cada bonus declarat fa alguna cosa: ' +
+    r.fan.filter(x => !x.canvia).map(x => x.proj).join(', '));
+  ok(r.total === 8 && r.compta, 'les vuit aportacions compten a l\'escala del país');
+  ok(r.calN2, 'i el nivell de Gestor/a en demana: és el criteri de la porta 2 de la MATRIU');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 

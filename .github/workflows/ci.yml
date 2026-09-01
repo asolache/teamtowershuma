@@ -50,6 +50,13 @@ jobs:
       - name: Guarda del mapa de valor
         run: node SOS/tools/check-vna.js
 
+      # Les caselles de bonus de la plaça porten el nom d'un projecte del SOS i
+      # plantar-hi hi registra una aportació. Si a l'app se'n canvia el nom, la
+      # casella segueix dient-lo i sona igual de real: el joc anomenaria un
+      # projecte que ja no existeix i no petaria res.
+      - name: Guarda del joc (caselles d'aportació)
+        run: node SOS/tools/check-joc.js
+
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
       # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.

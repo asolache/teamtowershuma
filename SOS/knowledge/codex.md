@@ -704,6 +704,64 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 118 — Si el repte és la velocitat, res es pot cobrar sol
+
+El joc tenia el model bo i cap ritme. Les hores del banc de temps se sumaven
+soles cada 1800 ms, l'onada no arrencava fins que premies un botó, i les vuit
+dinàmiques sortien de cop a la barra amb sis d'apagades. Cada pas era fàcil i cap
+tenia pressa: es podia deixar la pantalla oberta i tornar-hi.
+
+L'encàrrec era el disseny de *Plants vs Zombies* —passos fàcils, repte de
+velocitat—, i el que el fa funcionar no és la dificultat de cap decisió: és que
+**el recurs s'ha de recollir amb el dit**. Ara el banc de temps no ingressa res:
+deixa caure una fitxa que viu nou segons, i la que no agafa ningú es perd. Resulta
+que això també és cert al SOS —una hora oferta que no recull ningú caduca—, i és
+la classe de regla que només es descobreix quan busques ritme i no lliçó.
+
+De la mateixa peça, i cadascuna amb la seva raó:
+
+- **L'onada ve sola.** Entre onada i onada hi ha un compte enrere visible. El
+  botó ja no és «comença»: és «⏩ Ja!», i paga les hores que no gastes esperant.
+  Un botó que atura el temps regala la pressa; un que la premia, la crea.
+- **Una dinàmica oberta, i una més per cada onada aguantada.** Vuit targetes el
+  primer minut, sis apagades, no són sis opcions: són una pantalla que no es pot
+  llegir. I es compten les **aguantades**, no les començades: comptant les que
+  arrenquen, la targeta nova apareixia just quan et venien a sobre.
+- **El primer moviment sempre és possible.** Els dos que apareixen en activar una
+  comarca ja no tenen rols a l'atzar: porten els que demana la dinàmica que ja
+  tens oberta. Un poble podia néixer sense poder fer res.
+- **La primera arribada la para el veïnat.** Una vegada per fila i per plaça. Un
+  error pot ser gratuït un cop i el segon no, que és com va: la primera vegada
+  que un poble veu allò arribar, surt al carrer; la segona ja està cansat.
+- **Es pot treure el que has plantat.** Si posar-ho on no tocava fos definitiu,
+  deixaries de provar —i tot el disseny va de provar.
+
+I la part que lliga el joc amb l'eina: **les caselles d'aportació**. Tres per
+plaça, cadascuna amb el nom d'un projecte del SOS copiat literalment de
+`DYNAMICS` —MATRIU, Biblioteca de les Coses, Banc de Temps—, i plantar-hi registra
+una **aportació** al node. No és una xifra de joc: és el criteri de la porta 2 de
+la MATRIU, «≥1 aportació al ledger», i per això compta per pujar a Gestor/a.
+
+Aquí la veda 109 torna amb una cara pitjor de l'habitual. Dues llistes que
+divergeixen en silenci ja és car; **una casella que diu «MATRIU · Incubadora»
+quan a l'app aquell projecte s'ha rebatejat segueix sonant igual de real**. No
+peta, no es veu, i el joc anomena una cosa que no existeix. `SOS/tools/check-joc.js`
+compara les vuit caselles amb `DYNAMICS` paraula per paraula, i de passada
+comprova el que no es nota fins a jugar-hi: que l'ordre de desbloqueig les
+contingui totes, que comenci per una que no costa hores —si comencés per una de
+pagament la partida naixeria bloquejada— i que cap bonus estigui promès sense
+branca que el faci.
+
+Dues coses més que va ensenyar el tauler:
+
+- **Una capa que es refà vuit cops per segon no es pot tocar.** La fitxa d'hores
+  viu en una capa pròpia que només es reconstrueix quan canvia quina fitxa hi ha;
+  «se'n va» és una classe sobre el botó que ja hi és. Amb la reconstrucció
+  sencera, el dit arribava a un element que ja no existia.
+- **Dinou caselles il·luminades no assenyalen res.** El primer to del ressaltat
+  era tan fort que el tauler sencer semblava seleccionat i les tres caselles
+  d'aportació desapareixien entre elles.
+
 ## Veda 117 — Una regla que decideix la partida no s'explica: es deixa provar
 
 El joc obria amb un modal de tres regles escrites. Es llegia en deu segons, es

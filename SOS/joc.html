@@ -50,11 +50,14 @@ button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 /* Segona fila sencera: els comptadors es llegeixen d'un cop d'ull. Número i
    etiqueta van de costat i no un sobre l'altre: la capçalera es queda en dues
    línies baixes i la plaça no perd alçada. */
-.pips{order:9;flex:1 0 100%;display:flex;gap:.85rem;align-items:baseline}
+/* Cinc comptadors, no quatre. A 320px hi caben amb aquest buit i no amb el de
+   .85rem que hi havia quan n'eren quatre: mesurat, no estimat. */
+.pips{order:9;flex:1 0 100%;display:flex;gap:.55rem;align-items:baseline}
 .pip{display:flex;align-items:baseline;gap:.2rem}
 .pip .n{font-family:var(--mono);font-size:.82rem;font-weight:700;line-height:1.1}
 .pip .l{font-size:.5rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .pip.h .n{color:var(--amber)} .pip.v .n{color:var(--green)} .pip.m .n{color:var(--red)}
+.pip.a .n{color:var(--blue)}
 .b-tor{padding:.4rem .6rem;font-size:.78rem}
 
 /* ── La introducció ─────────────────────────────────────────────────────── */
@@ -137,7 +140,43 @@ button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .cel .hp{position:absolute;bottom:2px;left:6%;width:88%;height:3px;border-radius:2px;background:rgba(255,255,255,.1)}
 .cel .hp i{display:block;height:100%;background:var(--green);border-radius:2px}
 .cel-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+/* Amb un llavor triat, on es pot plantar es veu. Abans es tocava i no passava
+   res, i el motiu sortia al diari —que és a 400px d'on mires. */
+/* Suau: s'il·luminen dinou caselles alhora i, pintades fortes, el tauler sencer
+   sembla seleccionat i les d'aportació desapareixen entre elles. */
+.cel.pot{background:rgba(99,102,241,.08);box-shadow:inset 0 0 0 1px rgba(99,102,241,.3)}
+.cel.apaga{opacity:.3}
+/* La casella d'aportació: un projecte real del SOS esperant que hi posis alguna
+   cosa. Ha de cridar l'ull sense tapar el que hi ha a sobre. */
+.cel .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;opacity:.5;animation:bri 1.9s ease-in-out infinite;pointer-events:none}
+/* Guanya sobre `.pot`: la casella d'aportació ha de ser el que crida l'ull
+   quan tens un llavor triat, perquè és la decisió que val la pena. */
+.cel.val-cas,.cel.val-cas.pot{background:rgba(0,176,255,.16);
+  box-shadow:inset 0 0 0 2px rgba(0,176,255,.6)}
+@keyframes bri{0%,100%{opacity:.34}50%{opacity:.85}}
+@media(prefers-reduced-motion:reduce){.cel .val{animation:none;opacity:.6}}
 .vilans{position:absolute;inset:0;pointer-events:none}
+/* Les hores cauen i es recullen amb el dit. La capa no intercepta res; només
+   les fitxes, perquè tocar-ne una reculli en comptes de plantar. */
+.caigudes{position:absolute;inset:0;pointer-events:none;z-index:3}
+.cai{position:absolute;transform:translate(-50%,-50%);font-size:1.25rem;padding:.15rem;
+  background:rgba(255,193,7,.16);border:1px solid rgba(255,193,7,.6);border-radius:50%;
+  pointer-events:auto;cursor:pointer;line-height:1;animation:puja .4s ease-out}
+.cai.fuig{opacity:.4}
+@keyframes puja{from{transform:translate(-50%,-30%) scale(.5)}to{transform:translate(-50%,-50%) scale(1)}}
+/* La primera vegada la gent surt al carrer: una salvada per fila i per plaça. */
+/* Prim i mig transparent: és el marge del carrer, no una casella més. Amb la
+   mida de la resta semblava una cosa plantada a la primera columna. */
+.marges{position:absolute;left:0;top:0;bottom:0;width:13px;pointer-events:none;z-index:2;
+  background:linear-gradient(90deg,rgba(0,230,118,.10),transparent)}
+.marges span{position:absolute;left:0;transform:translateY(-50%);font-size:.56rem;opacity:.55}
+.marges span.gastat{opacity:.14;filter:grayscale(1)}
+/* L'avís surt on mires, no al diari. */
+.flot{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:5;max-width:92%;
+  background:rgba(11,11,18,.94);border:1px solid var(--orange);color:var(--light);
+  border-radius:9px;padding:.32rem .6rem;font-size:.72rem;pointer-events:none;text-align:center}
+.flot.bo{border-color:var(--green)} .flot.lliq{border-color:var(--purple)}
 .vil{position:absolute;font-size:1.35rem;transform:translate(-50%,-50%);transition:left .25s linear;
   filter:drop-shadow(0 0 4px rgba(0,0,0,.7))}
 .vil small{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--mono);
@@ -166,10 +205,21 @@ button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .sem{flex:0 0 auto;width:74px;min-height:66px;padding:.4rem .3rem;border-radius:12px;display:flex;
   flex-direction:column;align-items:center;justify-content:center;gap:.1rem;font-size:.55rem;
   line-height:1.15;text-align:center;color:var(--light)}
+.sem{position:relative;overflow:hidden}
 .sem .ic{font-size:1.3rem}
 .sem .cost{font-family:var(--mono);font-size:.55rem;color:var(--amber)}
 .sem.sel{border-color:var(--indigo);background:rgba(99,102,241,.16)}
 .sem.no{opacity:.32}
+/* El sobre que es recarrega: la targeta s'omple de baix a dalt i mentre s'omple
+   no es pot plantar. És el que fa que la partida vagi de temps i no de saldo. */
+.sem .rec{position:absolute;left:0;right:0;bottom:0;background:rgba(11,11,18,.72);
+  pointer-events:none;border-top:1px solid rgba(255,255,255,.14)}
+/* La pala viu FORA de la tira que llisca. Dins, amb nou targetes, quedava
+   sempre a l'altra punta: l'eina de desfer no pot ser la més difícil d'arribar-hi. */
+.eines{display:flex;gap:.4rem;align-items:stretch}
+.eines .tira{flex:1;min-width:0}
+.sem.pala{flex:0 0 auto;width:58px;color:var(--orange)}
+.sem.pala.sel{border-color:var(--orange);background:rgba(255,145,0,.16)}
 .accions{display:flex;gap:.4rem;margin-top:.45rem}
 .accions button{flex:1;min-height:44px;font-size:.78rem;padding:.4rem .3rem}
 
@@ -228,6 +278,7 @@ dialog::backdrop{background:rgba(0,0,0,.8)}
       <div class="pip"><div class="n" id="pAcc">3</div><div class="l">acc</div></div>
       <div class="pip h"><div class="n" id="pHores">0</div><div class="l">hores</div></div>
       <div class="pip v"><div class="n" id="pPsico">0</div><div class="l">vincle</div></div>
+      <div class="pip a"><div class="n" id="pApo">0</div><div class="l">apo</div></div>
       <div class="pip m"><div class="n" id="pMort">0</div><div class="l">mort</div></div>
     </div>
     <button class="b-pri b-tor" id="btnTorn">Torn →</button>
@@ -265,7 +316,17 @@ dialog::backdrop{background:rgba(0,0,0,.8)}
     <section class="pant" id="pComarca">
       <div class="fitxa" id="fitxa"></div>
       <div class="onada"><span id="onTxt">Plaça tranquil·la</span><span class="bar"><i id="onBar"></i></span></div>
-      <div class="placa" id="placa"><div class="vilans" id="vilans"></div></div>
+      <!-- Cada capa es pinta pel seu compte. Si es reconstruïssin totes a cada
+           tic, la fitxa d'hores es tornaria a dibuixar 8 cops per segon i no hi
+           hauria manera de tocar-la: el dit hauria d'encertar un element que ja
+           no existeix. -->
+      <div class="placa" id="placa">
+        <div id="reixa"></div>
+        <div class="vilans" id="vilans"></div>
+        <div class="marges" id="marges"></div>
+        <div class="caigudes" id="caigudes"></div>
+        <div id="flot"></div>
+      </div>
       <div class="minis" id="minis"></div>
       <div class="diari"><h4>Diari</h4><div class="linies" id="diari2"></div></div>
     </section>
@@ -371,6 +432,52 @@ const DINS={
 };
 const DIN_IDS=Object.keys(DINS);
 
+/* Quant triga a poder-se tornar a plantar. No és una xifra de joc: és la
+   `carrega`, la mateixa que decideix si un poble es crema. El que pesa més
+   sobre la gent, triga més a poder-se repetir. Això és el que fa que la
+   partida vagi de temps i no de saldo —el repte és la velocitat. */
+const recDe=d=>1200+DINS[d].carrega*900;
+
+/* L'ordre en què s'obren. Es comença amb una de sola i cada onada aguantada
+   n'obre una: vuit targetes fredes el primer minut no són vuit opcions, són
+   una pantalla que no es pot llegir. La primera ha de ser la de cost 0 o la
+   partida naixeria bloquejada. */
+const DESBLOQUEIG=['banctemps','festa','biblioteca','cures','compra','consum','energia','coop'];
+/* Compta les onades **aguantades**, no les començades: si comptés les que
+   arrenquen, la dinàmica nova apareixeria just quan et venen a sobre i no
+   quan l'has guanyada, que és quan es diu que l'has apresa. */
+const desbloquejades=n=>DESBLOQUEIG.slice(0,Math.min(DESBLOQUEIG.length,1+(n?n.placa.aguantades:0)));
+
+/* ── Les caselles d'aportació ─────────────────────────────────────────────
+   Algunes caselles de la plaça són **un projecte real del SOS esperant que hi
+   posis alguna cosa**. `proj`, `nom` i `ic` són còpia literal de `DYNAMICS` de
+   `SOS/index.html`: si allà es canvia un nom, aquí queda una mentida, i per
+   això hi ha `SOS/tools/check-joc.js` que compara les dues llistes.
+
+   Plantar-hi registra una **aportació** al node. Al SOS de debò l'aportació és
+   el que has posat al ledger d'un projecte, i és el criteri de la porta 2 de la
+   MATRIU: «≥1 aportació al ledger». Aquí compta per pujar a Gestor/a. El bonus
+   de cada casella és el que aquell projecte dona de veritat, no un premi. */
+const VALOR=[
+  {proj:'banc_temps',nom:'Banc de Temps',ic:'⏳',bonus:'hores',
+   diu:'Has posat hores al banc de temps del poble. Te\'n tornen de seguida: així funciona.'},
+  {proj:'biblioteca_coses',nom:'Biblioteca de les Coses',ic:'🧰',bonus:'aguanta',
+   diu:'Hi has deixat una eina. El que plantes aquí té el doble de vida perquè no comença de zero.'},
+  {proj:'matriu',nom:'MATRIU · Incubadora',ic:'🌱',bonus:'forma',
+   diu:'Has portat el cas a la incubadora. Algú del poble en surt sabent-ho portar sol.'},
+  {proj:'mapeig_vna',nom:'Mapeig de Xarxa de Valor',ic:'🕸️',bonus:'veure',
+   diu:'Has mapat la xarxa. Ara es veu per quina fila entra el que ve, abans que entri.'},
+  {proj:'comunitat_energetica',nom:'Comunitat Energètica',ic:'⚡',bonus:'doble',
+   diu:'Hi has posat teulada. El que plantes aquí va al doble de ritme.'},
+  {proj:'suport_mutu',nom:'Suport Mutu / Cures Veïnals',ic:'🤝',bonus:'salva',
+   diu:'Has entrat a la xarxa de cures. La fila torna a tenir qui surti al carrer.'},
+  {proj:'compra_collectiva',nom:'Compra Col·lectiva / Estalvi',ic:'🛒',bonus:'gratis',
+   diu:'Has entrat a la compra conjunta. La pròxima plantada no et costa hores.'},
+  {proj:'cens_entitats',nom:'Sprint de Cens d\'Entitats',ic:'🗂️',bonus:'gent',
+   diu:'Has censat el teixit del poble. Apareix gent que ja hi era i no sabies.'}
+];
+const valorPer=p=>VALOR.find(v=>v.proj===p);
+
 /* Els tres supervilans del còmic, amb el poder que hi tenen. No són genèrics:
    cadascun ataca una cosa diferent i es para d'una manera diferent. */
 const VILANS={
@@ -394,7 +501,10 @@ const NIVELLS=[
      ['m7','Comando Molekulon i reputació'],['m10','Comunicació i captació de persones']]},
   {id:'N2',nom:'Gestor/a SOS',rol:'coordinador',rolNom:'Coordinador/a de comunitat',
    one:'Sostens un node sencer: mapa, governança, comptabilitat i incubació.',
-   cal:{dins:4,formades:4,comarques:2},
+   /* `aportacions` no és una xifra del joc: és el criteri de la porta 2 de la
+      MATRIU —«≥1 aportació al ledger»—, que és el que separa un projecte
+      planificat d'un on algú ja hi ha posat hores. Veure la guia de la MATRIU. */
+   cal:{dins:4,formades:4,comarques:2,aportacions:2},
    moduls:[['m5','Governança i Guardians'],['m6','MATRIU, Slicing Pie i intercooperació'],
      ['m11','Conflictes, cures i relleu'],['m12','Finançament i subvencions a Catalunya']]},
   {id:'N3',nom:'Mentor/a',rol:'mentor',rolNom:'Mentor/a d\'iniciatives',
@@ -466,14 +576,31 @@ function potEngegar(c,d){
   return DINS[d].cal.every(r=>n.gent.some(p=>p.rol===r));
 }
 function log(txt,mena){S.diari.push({txt,mena:mena||''});if(S.diari.length>60)S.diari.shift();}
+/* El diari és per repassar; el que passa ara s'ha de dir on mires. Un avís al
+   diari mentre tens el dit a la plaça és un avís que no llegeix ningú. */
+let _flot=null;
+function flota(txt,mena,ms){
+  S.flot={txt,mena:mena||''};
+  const box=$('#flot');
+  if(box){box.className='flot '+(mena||'');box.textContent=txt;}
+  clearTimeout(_flot);
+  _flot=setTimeout(()=>{S.flot=null;const b=$('#flot');if(b){b.className='';b.textContent='';}},ms||2600);
+}
 
 function activa(c,quiet){
   if(S.nodes[c])return;
-  S.nodes[c]={gent:[{nom:nouNom(),rol:tria(ROL_IDS),formada:false},
-                    {nom:nouNom(),rol:tria(ROL_IDS),formada:false}],
-              dins:[],trobada:false,cremades:0,hores:60,placa:novaPlaca(),onada:0,protegida:false};
+  /* Els dos primers no són a l'atzar: són **els que demana el banc de temps**,
+     qui connecta i qui cuida. Amb rols a la sort, un poble podia néixer sense
+     poder fer res —el primer moviment ha de ser sempre possible, i a més és
+     com comencen de debò: primer apareix qui truca a la gent i qui s'hi posa. */
+  S.nodes[c]={gent:DINS.banctemps.cal.map(r=>({nom:nouNom(),rol:r,formada:false})),
+              dins:[],trobada:false,cremades:0,hores:60,placa:novaPlaca(),onada:0,protegida:false,
+              aportacions:[]};
   if(!quiet)log('S\'activa <b>'+esc(c)+'</b>. Dues persones i moltes ganes.','bo');
 }
+/* Les aportacions de tot el país. Al SOS és el que has posat al ledger d'un
+   projecte, i és el que la porta 2 de la MATRIU demana per avançar d'etapa. */
+const aportacions=()=>actives().reduce((t,c)=>t+(node(c).aportacions||[]).length,0);
 function troba(c){
   const n=node(c),p={nom:nouNom(),rol:tria(ROL_IDS),formada:false};
   n.gent.push(p);
@@ -511,6 +638,7 @@ function compleix(cal){
   if(cal.formades&&formades()<cal.formades)return false;
   if(cal.comarques&&actives().length<cal.comarques)return false;
   if(cal.onades&&S.onadesGuanyades<cal.onades)return false;
+  if(cal.aportacions&&aportacions()<cal.aportacions)return false;
   return true;
 }
 function pujaNivell(){
@@ -532,27 +660,77 @@ function pujaNivell(){
 /* ── La plaça ─────────────────────────────────────────────────────────────
    Cinc columnes i quatre files. Els vilans entren per la dreta i caminen cap a
    l'esquerra; si arriben, s'emporten una cosa. Es planta tocant una casella. */
+const VALOR_CASELLES=3;
 function novaPlaca(){
+  /* Tres caselles d'aportació per plaça, a llocs diferents i mai a la columna
+     de l'entrada: una casella que et fa córrer a plantar-hi just on entren els
+     vilans no és una decisió, és una trampa. */
+  const llocs=[];
+  for(let f=0;f<FILES;f++)for(let co=0;co<COLS-1;co++)llocs.push([f,co]);
+  llocs.sort(()=>Math.random()-.5);
+  const valor=VALOR.map(v=>v.proj).sort(()=>Math.random()-.5).slice(0,VALOR_CASELLES)
+    .map((proj,i)=>({proj,f:llocs[i][0],co:llocs[i][1]}));
   return {cel:Array.from({length:FILES},()=>Array(COLS).fill(null)),vilans:[],
-    onada:0,dins:0,restants:0,corrent:false,t:0};
+    onada:0,dins:0,restants:0,corrent:false,t:0,
+    valor,rec:{},caigudes:[],cai:0,gratis:0,espera:ESPERA_PRIMERA,aguantades:0,
+    /* Una salvada per fila: la primera vegada que allò arriba al final del
+       carrer, els veïns surten. La segona ja estan cansats. */
+    salva:Array(FILES).fill(true)};
 }
 function cellsPlantades(c){
   const p=node(c).placa;let n=0;
   p.cel.forEach(f=>f.forEach(x=>{if(x)n++;}));
   return n;
 }
-const HORES_TIC=6;   // el que dona un banc de temps per tic
+const TIC=120;
+const HORES_FITXA=10;      // el que deixa caure un banc de temps
+const HORES_AMBIENT=8;     // el que apareix sol, més a poc a poc
+const FITXA_VIU=9000;      // una hora que ningú recull, caduca
+const ESPERA_PRIMERA=9000, ESPERA_ENTRE=11000;
+let _idFitxa=0;
 
+/* Les hores ja no se sumen soles: **cauen i s'han de recollir amb el dit**.
+   Un banc de temps no ingressa res al teu compte mentre mires; algú ofereix una
+   estona i algú l'ha d'agafar. La que no agafa ningú, es perd. Això és el que
+   converteix la plaça en una cosa de velocitat i no d'esperar. */
+function deixaFitxa(p,f,co,val){
+  p.caigudes.push({id:++_idFitxa,f,co,val,viu:FITXA_VIU});
+}
+function recull(id){
+  const n=node(S.sel);if(!n)return 0;
+  const p=n.placa,i=p.caigudes.findIndex(x=>x.id===id);
+  if(i<0)return 0;
+  const val=p.caigudes[i].val;
+  p.caigudes.splice(i,1);
+  n.hores+=val;
+  return val;
+}
+
+/* Per què no es pot plantar això, ara. Ho fa servir `planta()` per refusar i la
+   pintura per il·luminar les caselles on sí que es pot: si fossin dues llistes
+   de condicions, un dia el tauler diria verd on el model diu que no. */
+function motiuNo(c,d){
+  const n=node(c),p=n.placa;
+  if(!desbloquejades(n).includes(d))return DINS[d].nom+': encara no. Aguanta una onada més';
+  if(p.rec[d]>0)return DINS[d].nom+' s\'està recarregant';
+  if(!potEngegar(c,d)&&!n.dins.includes(d)){
+    const falten=DINS[d].cal.filter(r=>!n.gent.some(x=>x.rol===r)).map(r=>ROLS[r].nom);
+    return 'Falta qui '+falten.join(' i qui ');
+  }
+  if(n.hores<(p.gratis>0?0:DINS[d].cost))return 'Falten hores. Recull-ne de la plaça';
+  return null;
+}
 function planta(c,f,co,d){
   const n=node(c),p=n.placa;
   if(p.cel[f][co])return {ok:false,per:'Aquí ja hi ha alguna cosa'};
-  if(!potEngegar(c,d)&&!n.dins.includes(d)){
-    const falten=DINS[d].cal.filter(r=>!n.gent.some(x=>x.rol===r)).map(r=>ROLS[r].nom);
-    return {ok:false,per:'Falta qui '+falten.join(' i qui ')};
-  }
-  if(n.hores<DINS[d].cost)return {ok:false,per:'Falten hores. Planta un banc de temps'};
-  n.hores-=DINS[d].cost;
-  p.cel[f][co]={d,vida:DINS[d].vida||260,max:DINS[d].vida||260,parat:0,tic:0};
+  const no=motiuNo(c,d);
+  if(no)return {ok:false,per:no};
+  const cost=p.gratis>0?0:DINS[d].cost;
+  n.hores-=cost;
+  if(p.gratis>0&&DINS[d].cost)p.gratis--;
+  p.rec[d]=recDe(d);
+  const cel={d,vida:DINS[d].vida||260,max:DINS[d].vida||260,parat:0,tic:0};
+  p.cel[f][co]=cel;
   /* Plantar-la a la plaça **és** obrir-la al node: la mateixa dinàmica, la
      mateixa càrrega. Si fossin dues coses separades, la plaça seria un
      videojoc al costat i no el SOS. */
@@ -562,51 +740,123 @@ function planta(c,f,co,d){
     if(tensio(c)===2)log('Compte: <b>'+esc(c)+'</b> ja va per sobre del que pot sostenir.','avis');
     pujaNivell();
   }
-  return {ok:true};
+  const v=p.valor.find(x=>x.f===f&&x.co===co);
+  if(v){p.valor=p.valor.filter(x=>x!==v);aplicaBonus(c,v.proj,f,co);}
+  return {ok:true,valor:v?v.proj:null};
+}
+
+/* Treure el que has plantat. Un pas fàcil ha de ser reversible: si posar una
+   cosa on no tocava fos definitiu, deixaries de provar. No torna les hores
+   —ja s'han gastat—, i si era l'última còpia tanca la dinàmica al node, perquè
+   la plaça i el node són la mateixa comptabilitat. */
+function llevaPlanta(c,f,co){
+  const n=node(c),p=n.placa,cel=p.cel[f][co];
+  if(!cel)return false;
+  p.cel[f][co]=null;
+  const queda=p.cel.some(fila=>fila.some(x=>x&&x.d===cel.d));
+  if(!queda&&n.dins.includes(cel.d)){
+    n.dins=n.dins.filter(x=>x!==cel.d);
+    log('<b>'+esc(c)+'</b> tanca «'+esc(DINS[cel.d].nom)+'». La càrrega baixa.','');
+  }
+  return true;
+}
+
+/* El bonus de cada casella és **el que aquell projecte del SOS dona de debò**.
+   Si un dia fos un premi qualsevol, la casella ensenyaria una mentida amb el
+   nom d'un projecte que existeix, que és pitjor que no tenir-la. Veda 110. */
+function aplicaBonus(c,proj,f,co){
+  const n=node(c),p=n.placa,V=valorPer(proj);
+  if(!V)return null;
+  const cel=p.cel[f][co];
+  if(V.bonus==='hores')n.hores+=25;
+  if(V.bonus==='aguanta'&&cel){cel.max*=2;cel.vida=cel.max;}
+  if(V.bonus==='forma')forma(c);
+  if(V.bonus==='veure')p.veure=true;
+  if(V.bonus==='doble'&&cel)cel.doble=true;
+  if(V.bonus==='salva')p.salva[f]=true;
+  if(V.bonus==='gratis')p.gratis++;
+  if(V.bonus==='gent')troba(c);
+  n.aportacions.push({proj,torn:S.torn});
+  S.psico+=2;
+  log('Aportació a <b>'+esc(V.nom)+'</b> des de '+esc(c)+'.','lliq');
+  flota(V.ic+' '+V.nom+' · '+V.diu,'lliq',3400);
+  pujaNivell();
+  return V;
 }
 
 function comencaOnada(c){
   const n=node(c),p=n.placa;
   if(p.corrent)return;
-  p.onada++;p.corrent=true;p.t=0;
+  p.onada++;p.corrent=true;p.t=0;p.espera=0;
   const q=3+p.onada*2;
   p.restants=q;p.cua=[];
   for(let i=0;i<q;i++){
     const mena=p.onada<2?'por':p.onada<4?tria(['por','rumor']):tria(['por','rumor','extraccio']);
-    p.cua.push({mena,quan:i*(1400-Math.min(700,p.onada*90))});
+    /* La fila es decideix ara i no en entrar: així el mapa de xarxa de valor
+       pot ensenyar per on vindran, que és el que fa un mapa. */
+    p.cua.push({mena,f:Math.floor(Math.random()*FILES),quan:i*(1400-Math.min(700,p.onada*90))});
   }
   log('<b>'+esc(c)+'</b> · onada '+p.onada+': '+q+' que venen','avis');
+  flota('Onada '+p.onada+' · '+q+' que venen','',2000);
   pinta();
+}
+/* Anar-hi abans d'hora. No és impaciència: si estàs a punt, els minuts que no
+   gastes esperant són hores que et quedes. El repte és la velocitat. */
+function avancaOnada(c){
+  const n=node(c),p=n.placa;
+  if(p.corrent)return 0;
+  const guany=Math.round(Math.max(0,p.espera)/1000)*2;
+  if(guany){n.hores+=guany;flota('+'+guany+' hores per no fer-te esperar','bo',2200);}
+  comencaOnada(c);
+  return guany;
 }
 
 /* El motor. Un sol interval per a tot: més d'un rellotge és més d'una veritat. */
 let _rellotge=null;
+const ritme=(cel,ms)=>cel.doble?ms/2:ms;
 function tic(){
   const c=S.sel,n=node(c);
   if(!n||S.pantalla!=='comarca')return;
   const p=n.placa;
-  if(!p.corrent){pintaPlaca();return;}
-  p.t+=120;
+  p.t+=TIC;
+
+  /* Les recàrregues i les fitxes corren sempre, també entre onades: el temps
+     entre una onada i la següent és per recollir i plantar, no per esperar. */
+  DIN_IDS.forEach(d=>{if(p.rec[d]>0)p.rec[d]=Math.max(0,p.rec[d]-TIC);});
+  let perdudes=0;
+  p.caigudes.forEach(x=>{x.viu-=TIC;if(x.viu<=0)perdudes++;});
+  if(perdudes)p.caigudes=p.caigudes.filter(x=>x.viu>0);
+
+  /* Una caiguda ambient, lenta. Sense això, qui encara no té banc de temps es
+     queda sense hores i sense sortida —i al poble sempre hi ha algú que ofereix
+     una estona. El gruix, però, ha de venir del banc: per això va a la meitat. */
+  p.cai+=TIC;
+  if(p.cai>=8000){
+    p.cai=0;
+    deixaFitxa(p,Math.floor(Math.random()*FILES),Math.floor(Math.random()*COLS),HORES_AMBIENT);
+  }
 
   // Entren els que toquen
-  p.cua=(p.cua||[]).filter(x=>{
-    if(x.quan<=p.t){p.vilans.push({mena:x.mena,f:Math.floor(Math.random()*FILES),x:COLS,
+  if(p.corrent)p.cua=(p.cua||[]).filter(x=>{
+    if(x.quan<=p.t){p.vilans.push({mena:x.mena,f:x.f,x:COLS,
       vida:VILANS[x.mena].vida,max:VILANS[x.mena].vida});return false;}
     return true;
   });
 
-  // Els projectes fan la seva
+  // Els projectes fan la seva, hi hagi onada o no
   p.cel.forEach((fila,f)=>fila.forEach((cel,co)=>{
     if(!cel)return;
-    if(cel.parat>0){cel.parat-=120;return;}
-    const D=DINS[cel.d];cel.tic+=120;
-    if(D.fa==='genera'&&cel.tic>=1800){cel.tic=0;n.hores+=HORES_TIC;}
-    if(D.fa==='tira'&&cel.tic>=900){
+    if(cel.parat>0){cel.parat-=TIC;return;}
+    const D=DINS[cel.d];cel.tic+=TIC;
+    /* El banc de temps ja no ingressa: **deixa caure** una fitxa d'hores i
+       algú l'ha de recollir. Una hora oferta que ningú agafa, es perd. */
+    if(D.fa==='genera'&&cel.tic>=ritme(cel,3000)){cel.tic=0;deixaFitxa(p,f,co,HORES_FITXA);}
+    if(D.fa==='tira'&&cel.tic>=ritme(cel,900)){
       cel.tic=0;
       const obj=p.vilans.filter(v=>v.f===f&&v.x>co).sort((a,b)=>a.x-b.x)[0];
       if(obj)obj.vida-=D.dany;
     }
-    if(D.fa==='neteja'&&cel.tic>=3000){
+    if(D.fa==='neteja'&&cel.tic>=ritme(cel,3000)){
       cel.tic=0;
       /* La festa no mata ningú: dissol el rumor. És el que fa una festa major
          de debò en un poble on la gent ha deixat de parlar-se. */
@@ -635,18 +885,30 @@ function tic(){
     }
     if(v.x<-.3){
       v.arribat=true;
-      S.mort+=2;
-      if(n.gent.length>1){const fora=n.gent.pop();log('<b>'+esc(c)+'</b>: '+esc(VILANS[v.mena].nom)+' arriba. '+esc(fora.nom)+' plega.','mal');}
-      else log('<b>'+esc(c)+'</b>: '+esc(VILANS[v.mena].nom)+' travessa la plaça.','mal');
+      /* La primera vegada que allò arriba al final del carrer, **surt gent**.
+         Una vegada per fila i per plaça: un error pot ser gratuït un cop, i el
+         segon ja no —un poble cansat no torna a sortir el mateix dia. */
+      if(p.salva[v.f]){
+        p.salva[v.f]=false;S.psico+=1;
+        log('<b>'+esc(c)+'</b>: '+esc(VILANS[v.mena].nom)+' arriba i el veïnat surt al carrer.','avis');
+        flota('🫂 El veïnat atura '+VILANS[v.mena].nom+'. La fila ja no en té una altra.','bo',2800);
+      }else{
+        S.mort+=2;
+        if(n.gent.length>1){const fora=n.gent.pop();log('<b>'+esc(c)+'</b>: '+esc(VILANS[v.mena].nom)+' arriba. '+esc(fora.nom)+' plega.','mal');}
+        else log('<b>'+esc(c)+'</b>: '+esc(VILANS[v.mena].nom)+' travessa la plaça.','mal');
+      }
     }
   });
   p.vilans=p.vilans.filter(v=>v.vida>0&&!v.arribat);
 
-  if(!p.cua.length&&!p.vilans.length){
-    p.corrent=false;
+  if(p.corrent&&!p.cua.length&&!p.vilans.length){
+    p.corrent=false;p.veure=false;p.espera=ESPERA_ENTRE;p.aguantades++;
     S.onadesGuanyades++;
     n.hores+=25;S.psico+=3;
     log('<b>'+esc(c)+'</b> aguanta l\'onada '+p.onada+'.','bo');
+    const noves=desbloquejades(n);
+    const nova=noves[noves.length-1];
+    if(noves.length>1&&nova)flota('Nova dinàmica: '+DINS[nova].ic+' '+DINS[nova].nom,'bo',3200);
     if(p.onada>=3&&!n.protegida){
       n.protegida=true;
       troba(c);
@@ -657,10 +919,15 @@ function tic(){
         'si obres més del que pots sostenir, es crema igual.</em></p>',[['Va',null]]);
     }
     pujaNivell();
+  }else if(!p.corrent&&!S.acabat){
+    /* L'onada ja no espera que premis res. Això és el canvi que fa que la
+       plaça vagi de velocitat: el temps corre igual si tu no fas res. */
+    p.espera-=TIC;
+    if(p.espera<=0)comencaOnada(c);
   }
   pinta();
 }
-function engegaRellotge(){if(_rellotge)return;_rellotge=setInterval(tic,120);}
+function engegaRellotge(){if(_rellotge)return;_rellotge=setInterval(tic,TIC);}
 function paraRellotge(){if(_rellotge){clearInterval(_rellotge);_rellotge=null;}}
 
 /* ── El torn · el que passa al mapa ───────────────────────────────────────── */
@@ -775,6 +1042,10 @@ function fesForma(c){
 }
 function fesEngega(c,d){
   if(!pot()||!potEngegar(c,d))return;
+  /* La mateixa porta que a la plaça: una dinàmica que encara no saps portar no
+     s'obre pel fet de ser al mapa. Si el mapa la deixés obrir i la plaça no,
+     hi hauria dues regles per a la mateixa cosa. */
+  if(!desbloquejades(node(c)).includes(d))return;
   gasta();node(c).dins.push(d);
   log('<b>'+esc(c)+'</b> engega «'+esc(DINS[d].nom)+'»','bo');
   if(tensio(c)===2)log('Compte: <b>'+esc(c)+'</b> ja va per sobre del que pot sostenir.','avis');
@@ -943,6 +1214,7 @@ function pinta(){
   $('#pAcc').textContent=S.accions;
   $('#pHores').textContent=n?n.hores:0;
   $('#pPsico').textContent=S.psico;
+  $('#pApo').textContent=aportacions();
   $('#pMort').textContent=S.mort;
   $('#btnTorn').disabled=!!S.acabat;
   $('#btnEnrere').hidden=S.pantalla!=='comarca';
@@ -991,38 +1263,85 @@ function pintaComarca(){
     '<div class="equip">'+n.gent.map(p=>'<span class="pers'+(p.formada?' form':'')+'">'+ROLS[p.rol].ic+' '+
       esc(p.nom.split(' ')[0])+'</span>').join('')+'</div>';
   const p=n.placa;
-  $('#onTxt').textContent=p.corrent?('Onada '+p.onada+' · '+(p.vilans.length+(p.cua||[]).length)+' venen')
-    :(p.onada?('Onada '+p.onada+' aguantada'):'Plaça tranquil·la');
-  $('#onBar').style.width=p.corrent?Math.min(100,(p.vilans.length+(p.cua||[]).length)*12)+'%':'0%';
+  /* Entre onades hi ha un compte enrere, no una espera indefinida. Saber quant
+     et queda és el que fa que corris: sense el número, la pressa no existeix. */
+  if(p.corrent){
+    $('#onTxt').textContent='Onada '+p.onada+' · '+(p.vilans.length+(p.cua||[]).length)+' venen';
+    $('#onBar').style.width=Math.min(100,(p.vilans.length+(p.cua||[]).length)*12)+'%';
+  }else{
+    $('#onTxt').textContent='Onada '+(p.onada+1)+' en '+Math.max(0,Math.ceil(p.espera/1000))+' s';
+    $('#onBar').style.width=Math.round(100-clamp(p.espera,0,ESPERA_ENTRE)/ESPERA_ENTRE*100)+'%';
+  }
   pintaPlaca();
   $('#minis').innerHTML=
     '<button class="mini" data-mj="aparella"><b>🔀</b>Aparella</button>'+
     '<button class="mini" data-mj="disco"><b>🪩</b>Bomba Disco</button>'+
     '<button class="mini" data-mj="carrega"><b>⚖️</b>Reparteix</button>';
 }
+const PALA='__pala';
+let _caiClau='';
 function pintaPlaca(){
   const n=node(S.sel);if(!n)return;
   const p=n.placa;
+  /* Amb un llavor triat, el tauler diu on es pot posar. El motiu de per què no
+     surt de `motiuNo`, la mateixa funció que fa servir `planta()`. */
+  const bloq=(semSel&&semSel!==PALA)?motiuNo(S.sel,semSel):null;
   const files=p.cel.map((fila,f)=>'<div class="fila">'+fila.map((cel,co)=>{
     const D=cel?DINS[cel.d]:null;
     const vida=cel?Math.max(0,Math.round(cel.vida/cel.max*100)):0;
-    return '<button class="cel cel-wrap '+(cel?('te'+(cel.parat>0?' parat':'')):'buida')+'" data-f="'+f+'" data-co="'+co+'">'+
+    const V=p.valor.find(x=>x.f===f&&x.co===co);
+    let cl=cel?('te'+(cel.parat>0?' parat':'')):'buida';
+    if(V&&!cel)cl+=' val-cas';
+    if(semSel===PALA)cl+=cel?' pot':' apaga';
+    else if(semSel)cl+=(!cel&&!bloq)?' pot':' apaga';
+    return '<button class="cel cel-wrap '+cl+'" data-f="'+f+'" data-co="'+co+'">'+
+      (V&&!cel?'<span class="val">'+valorPer(V.proj).ic+'</span>':'')+
       (cel?(D.ic+'<span class="hp"><i style="width:'+vida+'%"></i></span>'):'')+'</button>';
   }).join('')+'</div>').join('');
-  const vil=p.vilans.map(v=>{
+  $('#reixa').innerHTML=files;
+  /* Amb el mapa de xarxa de valor fet, es veu per quina fila entra el que ve
+     abans que entri. Un mapa serveix per això i no per res més. */
+  /* Dins del tauler i no a 104%: `.placa` retalla el que en surt, i l'avís del
+     mapa de valor no es veuria enlloc —un bonus que no es nota és cap bonus. */
+  const cua=p.veure?(p.cua||[]).slice(0,3).map((x,i)=>
+    '<span class="vil" style="left:'+(95-i*4)+'%;top:'+((x.f+.5)/FILES*100)+
+    '%;opacity:'+(.42-i*.1)+';font-size:.9rem">'+VILANS[x.mena].ic+'</span>').join(''):'';
+  $('#vilans').innerHTML=p.vilans.map(v=>{
     const V=VILANS[v.mena];
     const left=clamp((v.x+.5)/COLS*100,-6,106);
     const top=(v.f+.5)/FILES*100;
     return '<span class="vil" style="left:'+left+'%;top:'+top+'%">'+V.ic+
       '<small>'+Math.max(0,Math.round(v.vida))+'</small></span>';
-  }).join('');
-  $('#placa').innerHTML=files+'<div class="vilans">'+vil+'</div>';
+  }).join('')+cua;
+  $('#marges').innerHTML=p.salva.map((viu,f)=>
+    '<span class="'+(viu?'':'gastat')+'" style="top:'+((f+.5)/FILES*100)+'%">🫂</span>').join('');
+  /* La capa de fitxes només es torna a dibuixar quan canvia el que hi ha. Si es
+     refés a cada tic, el dit tocaria un element que ja no existeix. */
+  const clau=p.caigudes.map(x=>x.id).join(',');
+  if(clau!==_caiClau){
+    _caiClau=clau;
+    $('#caigudes').innerHTML=p.caigudes.map(x=>
+      '<button class="cai" data-cai="'+x.id+'" '+
+      'style="left:'+((x.co+.5)/COLS*100)+'%;top:'+((x.f+.5)/FILES*100)+'%" '+
+      'aria-label="Recull '+x.val+' hores">⏳</button>').join('');
+  }
+  /* «Se'n va» és una classe sobre el botó que ja hi és, no un botó nou: si es
+     refés per avisar que caduca, el canvi arribaria just quan hi tens el dit. */
+  $('#caigudes').querySelectorAll('[data-cai]').forEach(el=>{
+    const x=p.caigudes.find(y=>y.id===Number(el.dataset.cai));
+    el.classList.toggle('fuig',!!x&&x.viu<2400);
+  });
 }
+/* La barra es refà 8 cops per segon si no es vigila, i llavors la tira torna a
+   l'inici cada vegada que l'arrossegues i el botó se't mou sota el dit. Es
+   compara l'HTML abans d'escriure'l, i l'ompliment de recàrrega —que sí que
+   canvia a cada tic— es posa a part, sobre els nodes que ja hi són. */
+let _polzeHTML='';
 function pintaPolze(){
   const box=$('#polze');
   if(S.pantalla==='mapa'){
     const c=S.sel,hi=!!S.nodes[c];
-    box.innerHTML='<div class="tira">'+
+    const h='<div class="tira">'+
       '<div class="sem" style="width:auto;padding:.4rem .7rem"><span class="ic">📍</span>'+esc(c)+'</div></div>'+
       '<div class="accions">'+
       (hi?'<button class="b-pri" data-a="entra">Entra a la plaça</button>'
@@ -1030,22 +1349,33 @@ function pintaPolze(){
       '<button data-a="troba"'+(hi&&pot()?'':' disabled')+'>Troba gent · 1</button>'+
       '<button data-a="forma"'+(hi&&(pot()||sap('relleu'))?'':' disabled')+'>Forma · 1</button>'+
       '</div>';
+    if(h!==_polzeHTML){_polzeHTML=h;box.innerHTML=h;}
     return;
   }
-  const n=node(S.sel);
-  box.innerHTML='<div class="tira">'+DIN_IDS.map(d=>{
-    const D=DINS[d],ok=potEngegar(S.sel,d)||n.dins.includes(d);
-    const prou=n.hores>=D.cost;
-    return '<button class="sem'+(semSel===d?' sel':'')+((ok&&prou)?'':' no')+'" data-sem="'+d+'">'+
+  const n=node(S.sel),p=n.placa;
+  /* Només les que ja saps portar. Vuit targetes el primer minut, sis d'elles
+     apagades, no són sis opcions: són una pantalla que no es pot llegir. */
+  const h='<div class="eines"><div class="tira">'+desbloquejades(n).map(d=>{
+    const D=DINS[d],no=motiuNo(S.sel,d);
+    return '<button class="sem'+(semSel===d?' sel':'')+(no?' no':'')+'" data-sem="'+d+'">'+
       '<span class="ic">'+D.ic+'</span><span>'+esc(D.nom)+'</span>'+
-      '<span class="cost">'+(D.cost?D.cost+' h':'gratis')+'</span></button>';
+      '<span class="cost">'+((p.gratis>0||!D.cost)?'gratis':D.cost+' h')+'</span>'+
+      '<span class="rec" data-rec="'+d+'"></span></button>';
   }).join('')+'</div>'+
+  '<button class="sem pala'+(semSel===PALA?' sel':'')+'" data-sem="'+PALA+'">'+
+    '<span class="ic">🧹</span><span>Treure</span></button>'+
+  '</div>'+
   '<div class="accions">'+
-    '<button class="b-pri" data-a="onada"'+(n.placa.corrent?' disabled':'')+'>'+
-      (n.placa.corrent?'Onada en marxa':'Comença l\'onada '+(n.placa.onada+1))+'</button>'+
+    '<button class="b-pri" data-a="onada"'+(p.corrent?' disabled':'')+'>'+
+      (p.corrent?'Onada en marxa':'⏩ Ja! · onada '+(p.onada+1))+'</button>'+
     '<button data-a="trobada"'+(n.trobada||!pot()?' disabled':'')+'>'+(n.trobada?'Ja us heu vist':'Trobada · 1')+'</button>'+
     (sap('pont')?'<button data-a="pont"'+(pot()?'':' disabled')+'>Lliga · 1</button>':'')+
   '</div>';
+  if(h!==_polzeHTML){_polzeHTML=h;box.innerHTML=h;}
+  box.querySelectorAll('[data-rec]').forEach(el=>{
+    const d=el.dataset.rec,r=p.rec[d]>0?Math.round(p.rec[d]/recDe(d)*100):0;
+    el.style.height=r+'%';el.style.display=r?'block':'none';
+  });
 }
 
 /* ── Modal ────────────────────────────────────────────────────────────────── */
@@ -1124,22 +1454,23 @@ function labAcciona(q){
 }
 
 const INTRO=[
- {n:'1 de 7 · on ets',t:'Dues pantalles i prou',cos:()=>
+ {n:'1 de 8 · on ets',t:'Dues pantalles i prou',cos:()=>
   '<div class="in-dues">'+
    '<div><div class="t">🗺 El mapa</div><div class="d">Les 42 comarques. Aquí n\'actives, hi formes gent i les lligues entre elles.</div></div>'+
    '<div><div class="t">🏘 La plaça</div><div class="d">El que hi ha dins d\'una comarca. Aquí hi plantes projectes amb el dit i els defenses.</div></div>'+
   '</div>'+
   '<p>Toca una comarca del mapa per baixar a la seva plaça, i la fletxa de dalt a l\'esquerra per tornar-hi.</p>'},
 
- {n:'2 de 7 · què mires',t:'Els quatre comptadors de dalt',cos:()=>
+ {n:'2 de 8 · què mires',t:'Els cinc comptadors de dalt',cos:()=>
   '<ul class="in-llista">'+
    '<li><span class="ic">🔢</span><span><b>acc</b>Accions que et queden aquest torn. Comences amb '+S.accions+'.</span></li>'+
    '<li><span class="ic">⏳</span><span><b>hores</b>El que gastes per plantar. Les genera el banc de temps, no surten del no-res.</span></li>'+
    '<li><span class="ic">💚</span><span><b>vincle</b>L\'impacte psicosocial. És el que compta quan es fa el recompte.</span></li>'+
+   '<li><span class="ic">🧩</span><span><b>apo</b>Aportacions a projectes del SOS. Al SOS de debò és el que has posat al ledger, i és el que et fa Gestor/a.</span></li>'+
    '<li><span class="ic">💀</span><span><b>mort</b>El Mundo Muerto. Puja sol si deixes anar les coses.</span></li>'+
   '</ul>'},
 
- {n:'3 de 7 · la regla',t:'Toca-ho: és el que decideix la partida',cos:()=>
+ {n:'3 de 8 · la regla',t:'Toca-ho: és el que decideix la partida',cos:()=>
   '<p>Cada projecte que obres posa <b>càrrega</b>. Cada persona n\'aguanta una part —i una de '+
   '<b>formada n\'aguanta el doble</b>, perquè sap fer-ho i sap ensenyar-ho.</p>'+
   LAB_HTML+
@@ -1152,7 +1483,7 @@ const INTRO=[
     });
   }},
 
- {n:'4 de 7 · la plaça',t:'Plantar amb el dit és obrir al node',cos:()=>
+ {n:'4 de 8 · la plaça',t:'Plantar amb el dit és obrir al node',cos:()=>
   '<p>A la plaça tries un projecte de la barra de baix i toques on el vols. Aquell mateix gest '+
   '<b>obre la dinàmica al node</b>: no hi ha una comptabilitat de la plaça i una altra del mapa, '+
   'n\'hi ha una.</p>'+
@@ -1162,9 +1493,25 @@ const INTRO=[
        esc(D.diu)+'</span></li>';}).join('')+
   '</ul>'+
   '<p>Per obrir-ne un cal tenir al node <b>els rols que demana</b>. Si no els tens, primer has de '+
-  'formar gent — el coneixement no es compra.</p>'},
+  'formar gent — el coneixement no es compra.</p>'+
+  '<p>Al principi només en tens <b>una</b>: cada onada aguantada n\'obre una altra. I amb <b>🧹</b> '+
+  'treus el que has plantat, que posar-ho on no tocava no pot ser definitiu.</p>'},
 
- {n:'5 de 7 · qui ve',t:'Els tres del còmic, amb el seu poder',cos:()=>
+ {n:'5 de 8 · el ritme',t:'Les hores es recullen, i l\'onada no espera',cos:()=>
+  '<ul class="in-llista">'+
+   '<li><span class="ic">⏳</span><span><b>Les hores cauen i es recullen</b>El banc de temps no t\'ingressa res: '+
+   'deixa caure una fitxa i l\'has de tocar. La que no agafa ningú, es perd —com al poble.</span></li>'+
+   '<li><span class="ic">⏱</span><span><b>L\'onada ve sola</b>Entre onada i onada hi ha un compte enrere. '+
+   'El botó <b>⏩ Ja!</b> l\'escurça i et paga la pressa amb hores.</span></li>'+
+   '<li><span class="ic">🧩</span><span><b>Les caselles blaves</b>Són projectes del SOS de debò. Plantar-hi és '+
+   '<b>aportar-hi</b>, i cadascuna torna el que aquell projecte dona: '+
+   VALOR.slice(0,3).map(v=>v.ic+' '+esc(v.nom)).join(' · ')+'…</span></li>'+
+   '<li><span class="ic">🫂</span><span><b>La primera arribada és gratis</b>El primer cop que un travessa una '+
+   'fila, surt el veïnat i l\'atura. Una vegada per fila: la segona ja estan cansats.</span></li>'+
+  '</ul>'+
+  '<p>Cada pas és fàcil. El que costa és <b>arribar-hi a temps</b>.</p>'},
+
+ {n:'6 de 8 · qui ve',t:'Els tres del còmic, amb el seu poder',cos:()=>
   '<ul class="in-llista">'+
    Object.keys(VILANS).map(k=>{const V=VILANS[k];
      return '<li><span class="ic">'+V.ic+'</span><span><b>'+esc(V.nom)+'</b>'+esc(V.diu)+'</span></li>';}).join('')+
@@ -1172,13 +1519,13 @@ const INTRO=[
   '<p>Cadascun té el seu antídot i és el que ho és de debò: contra la por, algú que no es mou; '+
   'contra el rumor, la festa; contra l\'extracció, la biblioteca.</p>'},
 
- {n:'6 de 7 · com es guanya',t:'Molekulàndia no és conquerir el mapa',cos:()=>
+ {n:'7 de 8 · com es guanya',t:'Molekulàndia no és conquerir el mapa',cos:()=>
   '<p>No guanyes ocupant les 42 comarques. Guanyes quan hi ha <b>comarques lligades que s\'aguanten '+
   'entre elles, cap tensionada, i amb la trobada feta</b>.</p>'+
   '<p>Ocupar el mapa ensenyaria expansió. Això ensenya interdependència, que és el que fem de debò '+
   'als pobles.</p>'},
 
- {n:'7 de 7 · el teu nivell',t:'I cada nivell porta a la formació de veritat',cos:()=>
+ {n:'8 de 8 · el teu nivell',t:'I cada nivell porta a la formació de veritat',cos:()=>
   '<ul class="in-llista">'+
    NIVELLS.map(N=>'<li><span class="ic">'+N.id+'</span><span><b>'+esc(N.nom)+'</b>'+esc(N.one)+
      ' · '+N.moduls.length+(N.moduls.length===1?' mòdul':' mòduls')+'</span></li>').join('')+
@@ -1212,6 +1559,11 @@ const ajuda=()=>obreIntro(0);
 
 function reinicia(){
   paraRellotge();
+  /* Les capes que es pinten «només si han canviat» han d'oblidar el que
+     recorden: si no, una partida nova ensenyaria les fitxes de l'anterior. */
+  _caiClau='';_polzeHTML='';semSel=null;
+  clearTimeout(_flot);S.flot=null;
+  ['#caigudes','#flot','#marges'].forEach(s=>{const e=$(s);if(e){e.innerHTML='';e.className=s==='#caigudes'?'caigudes':(s==='#marges'?'marges':'');}});
   Object.assign(S,{torn:1,accions:3,psico:0,econo:0,mort:0,nodes:{},sabers:[],ponts:[],
     sel:INICI,pantalla:'mapa',nivell:'N0',rols:['simpatitzant'],onadesGuanyades:0,
     molekulandia:false,acabat:null,diari:[]});
@@ -1231,9 +1583,24 @@ $('#mapa').addEventListener('click',e=>{
   pinta();
 });
 $('#placa').addEventListener('click',e=>{
-  const cel=e.target.closest('[data-f]');if(!cel||!semSel)return;
-  const r=planta(S.sel,Number(cel.dataset.f),Number(cel.dataset.co),semSel);
-  if(!r.ok)log(r.per,'avis');
+  /* Primer les fitxes: estan a sobre i recollir-les no ha de plantar res. */
+  const fit=e.target.closest('[data-cai]');
+  if(fit){
+    const v=recull(Number(fit.dataset.cai));
+    if(v)flota('+'+v+' hores','bo',1200);
+    pinta();return;
+  }
+  const cel=e.target.closest('[data-f]');if(!cel)return;
+  const f=Number(cel.dataset.f),co=Number(cel.dataset.co);
+  if(semSel===PALA){
+    if(llevaPlanta(S.sel,f,co))flota('Tret. Torna-hi on toqui.','',1600);
+    pinta();return;
+  }
+  if(!semSel){flota('Tria una dinàmica de la barra de baix','',1800);return;}
+  const r=planta(S.sel,f,co,semSel);
+  /* El motiu surt on tens el dit, no al diari: un avís a 400px de la mirada
+     no és un avís, és una nota per a després. */
+  if(!r.ok){log(r.per,'avis');flota(r.per,'',2400);}
   pinta();
 });
 $('#minis').addEventListener('click',e=>{
@@ -1254,7 +1621,7 @@ $('#polze').addEventListener('click',e=>{
   else if(q==='forma')fesForma(c);
   else if(q==='trobada')fesTrobada(c);
   else if(q==='pont')fesPont(c);
-  else if(q==='onada')comencaOnada(c);
+  else if(q==='onada')avancaOnada(c);
 });
 $('#btnEnrere').addEventListener('click',()=>{S.pantalla='mapa';paraRellotge();semSel=null;pinta();});
 $('#btnTorn').addEventListener('click',passaTorn);
@@ -1268,7 +1635,10 @@ window.__JOC={S,COMARQUES,ROLS,DINS,SABERS,VILANS,NIVELLS,FILES,COLS,
   mjAparella,mjDisco,mjCarrega,entra:c=>{S.sel=c;S.pantalla='comarca';pinta();},
   selSem:d=>{semSel=d;},
   INTRO,LAB,labPinta,labAcciona,obreIntro,tancaIntro,pas:()=>inPas,
-  capacitatDe,carregaDe,tensioDe};
+  capacitatDe,carregaDe,tensioDe,
+  VALOR,valorPer,DESBLOQUEIG,desbloquejades,recDe,motiuNo,aportacions,
+  deixaFitxa,recull,aplicaBonus,llevaPlanta,avancaOnada,PALA,
+  HORES_FITXA,ESPERA_PRIMERA,ESPERA_ENTRE};
 
 $('#inAvant').addEventListener('click',()=>{
   if(inPas<INTRO.length-1){inPas++;pintaIntro();}else tancaIntro();
@@ -1280,7 +1650,11 @@ reinicia();
 /* La primera vegada s'obre sola. Qui ja hi ha estat entra directe i la té al
    botó «?»: obligar-la cada cop seria un peatge, i no tenir-la enlloc deixaria
    la partida sense explicar. */
-try{ if(!localStorage.getItem('joc_intro'))setTimeout(()=>obreIntro(0),400); }
+/* La condició es torna a mirar en disparar-se, no només en programar-la: si
+   entremig algú ja l'ha tancada, obrir-la seria tornar-li a posar al davant una
+   cosa que acaba de treure. */
+try{ if(!localStorage.getItem('joc_intro'))
+  setTimeout(()=>{try{if(!localStorage.getItem('joc_intro'))obreIntro(0);}catch(e){obreIntro(0);}},400); }
 catch(e){ /* sense emmagatzematge: no s'obre sola i el botó segueix */ }
 </script>
 </body>
