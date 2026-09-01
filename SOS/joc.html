@@ -57,6 +57,51 @@ button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .pip.h .n{color:var(--amber)} .pip.v .n{color:var(--green)} .pip.m .n{color:var(--red)}
 .b-tor{padding:.4rem .6rem;font-size:.78rem}
 
+/* ── La introducció ─────────────────────────────────────────────────────── */
+.intro{position:absolute;inset:0;z-index:60;background:rgba(11,11,18,.97);display:flex;
+  align-items:center;justify-content:center;padding:1rem}
+.intro[hidden]{display:none}
+.in-card{width:100%;max-width:560px;max-height:100%;overflow-y:auto;background:var(--panel);
+  border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.2rem 1rem}
+.in-cap{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+.in-n{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.in-x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:.78rem;
+  cursor:pointer;padding:.2rem .3rem;font-family:inherit}
+.in-x:hover{color:var(--text)}
+.in-card h2{margin:0 0 .5rem;font-size:1.22rem;line-height:1.2}
+.in-cos{color:var(--light);font-size:.92rem;line-height:1.6}
+.in-cos p{margin:0 0 .7rem}
+.in-cos p:last-child{margin-bottom:0}
+.in-cos b,.in-cos strong{color:var(--text)}
+.in-peu{display:flex;align-items:center;gap:.6rem;margin-top:1rem;padding-top:.8rem;
+  border-top:1px solid var(--border)}
+.in-punts{display:flex;gap:4px;flex:1;justify-content:center}
+.in-punts i{width:6px;height:6px;border-radius:50%;background:var(--card);display:block;transition:all .2s}
+.in-punts i.on{width:18px;border-radius:3px}
+.in-punts i.on{background:var(--verd)}
+.in-punts i.fet{background:#3a3a52}
+/* La caixa que es pot tocar: el pas de la regla es prova, no es llegeix. */
+.in-lab{border:1px solid var(--border);border-radius:12px;padding:.85rem;background:var(--card);margin:.6rem 0}
+.in-xifres{display:flex;gap:1.1rem;flex-wrap:wrap;margin-bottom:.6rem}
+.in-xifres div{text-align:center;min-width:56px}
+.in-xifres .n{font-family:var(--mono);font-size:1.35rem;font-weight:700;line-height:1}
+.in-xifres .l{font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:.15rem}
+.in-barra{height:8px;border-radius:4px;background:#22222f;overflow:hidden;margin:.5rem 0 .4rem}
+.in-barra i{display:block;height:100%;transition:width .25s ease,background .25s ease}
+.in-est{font-size:.84rem;font-weight:600}
+.in-bots{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.in-bots button{font-size:.78rem;padding:.42rem .6rem}
+.in-llista{margin:.4rem 0 0;padding:0;list-style:none}
+.in-llista li{display:flex;gap:.6rem;align-items:flex-start;padding:.4rem 0;
+  border-bottom:1px solid var(--border);font-size:.87rem}
+.in-llista li:last-child{border-bottom:0}
+.in-llista .ic{font-size:1.1rem;flex-shrink:0}
+.in-llista b{display:block}
+.in-dues{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:.6rem 0}
+.in-dues>div{border:1px solid var(--border);border-radius:10px;padding:.7rem;background:var(--card)}
+.in-dues .t{font-weight:700;font-size:.9rem;margin-bottom:.25rem}
+.in-dues .d{font-size:.8rem;color:var(--muted);line-height:1.5}
+
 /* ── El cos: canvia de pantalla ──────────────────────────────────────────── */
 .cos{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .pant{display:none;padding:.7rem} .pant.on{display:block}
@@ -188,6 +233,24 @@ dialog::backdrop{background:rgba(0,0,0,.8)}
     <button class="b-pri b-tor" id="btnTorn">Torn →</button>
     <button id="btnAjuda" aria-label="Com es juga">?</button>
   </header>
+
+  <!-- ══ INTRODUCCIÓ ══ ─────────────────────────────────────────────────
+       Set passos, i el tercer no explica la regla: la deixa provar. Veda 117. -->
+  <div class="intro" id="intro" hidden>
+    <div class="in-card">
+      <div class="in-cap">
+        <span class="in-n" id="inN"></span>
+        <button class="in-x" id="inSalta" type="button">Salta</button>
+      </div>
+      <h2 id="inT"></h2>
+      <div class="in-cos" id="inCos"></div>
+      <div class="in-peu">
+        <button id="inEnrere" type="button">←</button>
+        <div class="in-punts" id="inPunts"></div>
+        <button class="b-pri" id="inAvant" type="button">Següent</button>
+      </div>
+    </div>
+  </div>
 
   <div class="cos">
     <!-- ══ MAPA ══ -->
@@ -377,20 +440,27 @@ const totDins=()=>actives().reduce((n,c)=>n+node(c).dins.length,0);
    La capacitat NO és el nombre de persones: és quantes en poden sostenir. Una
    persona formada compta per dues perquè sap fer-ho i sap ensenyar-ho — la
    traducció del quart pas del mètode a una xifra que decideix partides. */
-function capacitat(c){
-  const n=node(c);if(!n)return 0;
-  const base=n.gent.reduce((t,p)=>t+(p.formada?2:1),0);
-  const lligams=S.ponts.filter(p=>p[0]===c||p[1]===c).length;
-  return base+lligams;
+/* Les tres funcions treballen sobre un node solt, i les versions per nom
+   només hi porten el node de la partida. Ho necessita la introducció, que
+   ensenya la regla amb un node de mentida i **crida aquestes mateixes
+   funcions**: si en tingués una còpia, el dia que el model canviés el tutorial
+   seguiria ensenyant les regles velles i ho hauria de notar algú. Veda 117. */
+function capacitatDe(n,lligams){
+  if(!n)return 0;
+  return n.gent.reduce((t,p)=>t+(p.formada?2:1),0)+(lligams||0);
 }
-const carrega=c=>{const n=node(c);return n?n.dins.reduce((t,d)=>t+DINS[d].carrega,0):0;};
-function tensio(c){
-  const cap=capacitat(c),car=carrega(c);
+const carregaDe=n=>n?n.dins.reduce((t,d)=>t+DINS[d].carrega,0):0;
+function tensioDe(n,lligams){
+  const cap=capacitatDe(n,lligams),car=carregaDe(n);
   if(!car)return 0;
   if(car>cap)return 2;
   if(car>cap*0.75)return 1;
   return 0;
 }
+const lligamsDe=c=>S.ponts.filter(p=>p[0]===c||p[1]===c).length;
+const capacitat=c=>capacitatDe(node(c),lligamsDe(c));
+const carrega=c=>carregaDe(node(c));
+const tensio=c=>tensioDe(node(c),lligamsDe(c));
 function potEngegar(c,d){
   const n=node(c);if(!n||n.dins.includes(d))return false;
   return DINS[d].cal.every(r=>n.gent.some(p=>p.rol===r));
@@ -991,21 +1061,154 @@ function modal(kick,tit,cos,opcions,nota){
   });
   if(!$('#dlg').open)$('#dlg').showModal();
 }
-function ajuda(){
-  modal('Com es juga','Amb el polze, i tres regles',
-    '<p><strong>El mapa</strong> és on actives comarques i formes gent. <strong>La plaça</strong> és el que '+
-    'hi ha dins: hi plantes projectes i els defenses dels tres que venen del còmic — '+
-    'Max Miedox la por, Mala Yerbax el rumor, Mc Greggor l\'extracció.</p>'+
-    '<p><strong>1 · El coneixement es passa ensenyant.</strong> El Molekulon el va donar a Mazinguer i '+
-    'Horacio; aquí s\'obre sol quan hi ha prou gent formada. No es compra.</p>'+
-    '<p><strong>2 · Un poble es crema quan penja de massa poca gent.</strong> Cada projecte posa càrrega; '+
-    'cada persona n\'aguanta, i una de <em>formada</em> n\'aguanta el doble. És l\'única manera de perdre.</p>'+
-    '<p><strong>3 · Molekulàndia no és conquerir el mapa.</strong> És l\'estat líquid: comarques lligades '+
-    'que s\'aguanten entre elles, cap tensionada, i amb la trobada feta.</p>'+
-    '<p>Vas pujant de nivell —Explorador, Practicant, Gestor/a, Mentor/a— i cada nivell et diu '+
-    '<strong>quins mòduls de la formació de debò</strong> li toquen.</p>',
-    [['Va',null],['Apunta\'t de debò',()=>window.open('uneix-te.html','_blank','noopener')]]);
+/* ═══ LA INTRODUCCIÓ ═══════════════════════════════════════════════════════
+   Abans això era un mur de text en un modal: tres regles escrites, cap
+   provada. Qui el llegia el tancava i entrava sense saber què decidia la
+   partida —i el que decideix la partida és una sola cosa, la càrrega contra la
+   capacitat, que en una frase no es veu i tocant-la s'entén de seguida.
+
+   Set passos. El tercer no explica la regla: **la deixa provar**, i les xifres
+   que ensenya surten de `capacitatDe`, `carregaDe` i `tensioDe` —les mateixes
+   que decideixen la partida de debò. Si el model canviés, el tutorial canviaria
+   amb ell; amb una còpia, seguiria ensenyant les regles velles.
+
+   Veda 117. */
+/* El laboratori comença **en verd**, i s'ha de poder recórrer verd → just →
+   es crema amb tres tocs. Si comencés cremat, el primer que veuria qui entra
+   seria un error seu, i l'ordre dels projectes és fix perquè la pujada de
+   càrrega sigui gradual i no un salt. */
+const LAB_GENT=5, LAB_ORDRE=['banctemps','festa','biblioteca','cures','consum'];
+const labInici=()=>({gent:Array.from({length:LAB_GENT},()=>({rol:'connecta',formada:false})),
+  dins:['banctemps']});
+const LAB=labInici();
+function labPinta(){
+  const cap=capacitatDe(LAB),car=carregaDe(LAB),t=tensioDe(LAB);
+  const c=['var(--green)','var(--amber)','var(--red)'][t];
+  const est=['Va sobrat','Va just','Es crema'][t];
+  const box=$('#inLab');
+  if(!box)return;
+  box.querySelector('#labCap').textContent=cap;
+  box.querySelector('#labCar').textContent=car;
+  box.querySelector('#labPer').textContent=LAB.gent.length;
+  box.querySelector('#labForm').textContent=LAB.gent.filter(p=>p.formada).length;
+  const b=box.querySelector('#labBar');
+  b.style.width=Math.min(100,cap?car*100/cap:0)+'%';
+  b.style.background=c;
+  const e=box.querySelector('#labEst');
+  e.textContent=est+' · càrrega '+car+' de capacitat '+cap;
+  e.style.color=c;
 }
+const LAB_HTML=
+  '<div class="in-lab" id="inLab">'+
+    '<div class="in-xifres">'+
+      '<div><div class="n" id="labPer">5</div><div class="l">persones</div></div>'+
+      '<div><div class="n" id="labForm">0</div><div class="l">formades</div></div>'+
+      '<div><div class="n" style="color:var(--green)" id="labCap">5</div><div class="l">capacitat</div></div>'+
+      '<div><div class="n" style="color:var(--amber)" id="labCar">3</div><div class="l">càrrega</div></div>'+
+    '</div>'+
+    '<div class="in-barra"><i id="labBar"></i></div>'+
+    '<div class="in-est" id="labEst"></div>'+
+    '<div class="in-bots">'+
+      '<button type="button" data-lab="gent">+ una persona</button>'+
+      '<button type="button" data-lab="forma">forma\'n una</button>'+
+      '<button type="button" data-lab="dins">+ un projecte</button>'+
+      '<button type="button" data-lab="reset">↺</button>'+
+    '</div>'+
+  '</div>';
+function labAcciona(q){
+  if(q==='gent')LAB.gent.push({rol:'connecta',formada:false});
+  if(q==='forma'){const p=LAB.gent.find(x=>!x.formada);if(p)p.formada=true;}
+  if(q==='dins'){const lliure=LAB_ORDRE.find(d=>!LAB.dins.includes(d));if(lliure)LAB.dins.push(lliure);}
+  if(q==='reset'){const i=labInici();LAB.gent=i.gent;LAB.dins=i.dins;}
+  labPinta();
+}
+
+const INTRO=[
+ {n:'1 de 7 · on ets',t:'Dues pantalles i prou',cos:()=>
+  '<div class="in-dues">'+
+   '<div><div class="t">🗺 El mapa</div><div class="d">Les 42 comarques. Aquí n\'actives, hi formes gent i les lligues entre elles.</div></div>'+
+   '<div><div class="t">🏘 La plaça</div><div class="d">El que hi ha dins d\'una comarca. Aquí hi plantes projectes amb el dit i els defenses.</div></div>'+
+  '</div>'+
+  '<p>Toca una comarca del mapa per baixar a la seva plaça, i la fletxa de dalt a l\'esquerra per tornar-hi.</p>'},
+
+ {n:'2 de 7 · què mires',t:'Els quatre comptadors de dalt',cos:()=>
+  '<ul class="in-llista">'+
+   '<li><span class="ic">🔢</span><span><b>acc</b>Accions que et queden aquest torn. Comences amb '+S.accions+'.</span></li>'+
+   '<li><span class="ic">⏳</span><span><b>hores</b>El que gastes per plantar. Les genera el banc de temps, no surten del no-res.</span></li>'+
+   '<li><span class="ic">💚</span><span><b>vincle</b>L\'impacte psicosocial. És el que compta quan es fa el recompte.</span></li>'+
+   '<li><span class="ic">💀</span><span><b>mort</b>El Mundo Muerto. Puja sol si deixes anar les coses.</span></li>'+
+  '</ul>'},
+
+ {n:'3 de 7 · la regla',t:'Toca-ho: és el que decideix la partida',cos:()=>
+  '<p>Cada projecte que obres posa <b>càrrega</b>. Cada persona n\'aguanta una part —i una de '+
+  '<b>formada n\'aguanta el doble</b>, perquè sap fer-ho i sap ensenyar-ho.</p>'+
+  LAB_HTML+
+  '<p>Quan la càrrega passa la capacitat, <b>el poble es crema</b>. És l\'única manera de perdre: '+
+  'aquí no hi ha cap enemic que et mati. Prova-ho i ho veuràs de seguida.</p>',
+  munta:()=>{
+    labPinta();
+    $('#inLab').querySelectorAll('[data-lab]').forEach(b=>{
+      b.onclick=()=>labAcciona(b.dataset.lab);
+    });
+  }},
+
+ {n:'4 de 7 · la plaça',t:'Plantar amb el dit és obrir al node',cos:()=>
+  '<p>A la plaça tries un projecte de la barra de baix i toques on el vols. Aquell mateix gest '+
+  '<b>obre la dinàmica al node</b>: no hi ha una comptabilitat de la plaça i una altra del mapa, '+
+  'n\'hi ha una.</p>'+
+  '<ul class="in-llista">'+
+   Object.keys(DINS).slice(0,4).map(d=>{const D=DINS[d];
+     return '<li><span class="ic">'+D.ic+'</span><span><b>'+esc(D.nom)+' · càrrega '+D.carrega+'</b>'+
+       esc(D.diu)+'</span></li>';}).join('')+
+  '</ul>'+
+  '<p>Per obrir-ne un cal tenir al node <b>els rols que demana</b>. Si no els tens, primer has de '+
+  'formar gent — el coneixement no es compra.</p>'},
+
+ {n:'5 de 7 · qui ve',t:'Els tres del còmic, amb el seu poder',cos:()=>
+  '<ul class="in-llista">'+
+   Object.keys(VILANS).map(k=>{const V=VILANS[k];
+     return '<li><span class="ic">'+V.ic+'</span><span><b>'+esc(V.nom)+'</b>'+esc(V.diu)+'</span></li>';}).join('')+
+  '</ul>'+
+  '<p>Cadascun té el seu antídot i és el que ho és de debò: contra la por, algú que no es mou; '+
+  'contra el rumor, la festa; contra l\'extracció, la biblioteca.</p>'},
+
+ {n:'6 de 7 · com es guanya',t:'Molekulàndia no és conquerir el mapa',cos:()=>
+  '<p>No guanyes ocupant les 42 comarques. Guanyes quan hi ha <b>comarques lligades que s\'aguanten '+
+  'entre elles, cap tensionada, i amb la trobada feta</b>.</p>'+
+  '<p>Ocupar el mapa ensenyaria expansió. Això ensenya interdependència, que és el que fem de debò '+
+  'als pobles.</p>'},
+
+ {n:'7 de 7 · el teu nivell',t:'I cada nivell porta a la formació de veritat',cos:()=>
+  '<ul class="in-llista">'+
+   NIVELLS.map(N=>'<li><span class="ic">'+N.id+'</span><span><b>'+esc(N.nom)+'</b>'+esc(N.one)+
+     ' · '+N.moduls.length+(N.moduls.length===1?' mòdul':' mòduls')+'</span></li>').join('')+
+  '</ul>'+
+  '<p>Els mòduls són els de la <a href="formacio.html" target="_blank" rel="noopener">formació</a>, '+
+  'no uns d\'inventats per al joc.</p>'}
+];
+
+let inPas=0;
+function pintaIntro(){
+  const P=INTRO[inPas];
+  $('#inN').textContent=P.n;
+  $('#inT').textContent=P.t;
+  $('#inCos').innerHTML=P.cos();
+  $('#inPunts').innerHTML=INTRO.map((x,i)=>
+    '<i class="'+(i===inPas?'on':(i<inPas?'fet':''))+'"></i>').join('');
+  $('#inEnrere').disabled=inPas===0;
+  $('#inAvant').textContent=inPas===INTRO.length-1?'Comença':'Següent';
+  if(P.munta)P.munta();
+}
+function obreIntro(i){
+  inPas=Math.max(0,Math.min(INTRO.length-1,i||0));
+  $('#intro').hidden=false;
+  pintaIntro();
+}
+function tancaIntro(){
+  $('#intro').hidden=true;
+  try{localStorage.setItem('joc_intro','1');}catch(e){/* sense memòria: es juga igual */}
+}
+const ajuda=()=>obreIntro(0);
 
 function reinicia(){
   paraRellotge();
@@ -1063,13 +1266,22 @@ window.__JOC={S,COMARQUES,ROLS,DINS,SABERS,VILANS,NIVELLS,FILES,COLS,
   fesTrobada,fesPont,clusterLiquid,comprovaLiquid,obreSabers,actives,formades,sap,pinta,reinicia,node,
   planta,comencaOnada,tic,pujaNivell,compleix,totDins,novaPlaca,cellsPlantades,
   mjAparella,mjDisco,mjCarrega,entra:c=>{S.sel=c;S.pantalla='comarca';pinta();},
-  selSem:d=>{semSel=d;}};
+  selSem:d=>{semSel=d;},
+  INTRO,LAB,labPinta,labAcciona,obreIntro,tancaIntro,pas:()=>inPas,
+  capacitatDe,carregaDe,tensioDe};
+
+$('#inAvant').addEventListener('click',()=>{
+  if(inPas<INTRO.length-1){inPas++;pintaIntro();}else tancaIntro();
+});
+$('#inEnrere').addEventListener('click',()=>{if(inPas>0){inPas--;pintaIntro();}});
+$('#inSalta').addEventListener('click',tancaIntro);
 
 reinicia();
-setTimeout(()=>{
-  try{ if(!localStorage.getItem('joc_vist2')){localStorage.setItem('joc_vist2','1');ajuda();} }
-  catch(e){ /* sense emmagatzematge: es juga igual */ }
-},400);
+/* La primera vegada s'obre sola. Qui ja hi ha estat entra directe i la té al
+   botó «?»: obligar-la cada cop seria un peatge, i no tenir-la enlloc deixaria
+   la partida sense explicar. */
+try{ if(!localStorage.getItem('joc_intro'))setTimeout(()=>obreIntro(0),400); }
+catch(e){ /* sense emmagatzematge: no s'obre sola i el botó segueix */ }
 </script>
 </body>
 </html>

@@ -529,6 +529,94 @@ for (const [w, h] of [[320, 568], [360, 740], [390, 844], [430, 932]]) {
   await ctx.close();
 }
 
+/* La introducció explicava tres regles escrites i cap de provada, i el que
+   decideix la partida —la càrrega contra la capacitat— en una frase no es veu.
+   Ara el tercer pas la deixa tocar, i el que ha d'aguantar és que **les xifres
+   que ensenya surtin del model de debò**: si en tingués una còpia, el dia que
+   el model canviés el tutorial seguiria ensenyant les regles velles i no ho
+   notaria ningú. Veda 117. */
+console.log('\n21 · La introducció ensenya el joc, no un resum del joc');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const J = window.__JOC;
+    /* Les xifres del laboratori han de coincidir amb el que diuen les funcions
+       que decideixen la partida, per a qualsevol estat. */
+    const casos = [];
+    /* Cal obrir el pas del laboratori: el que es compara és el que hi ha
+       PINTAT contra el que diu el model, i sense el pas muntat no hi ha res
+       pintat —la prova passaria sense mirar res. */
+    J.obreIntro(2);
+    J.labAcciona('reset');
+    for (const q of ['dins', 'dins', 'forma', 'gent', 'dins']) {
+      J.labAcciona(q);
+      casos.push({ q, cap: J.capacitatDe(J.LAB), car: J.carregaDe(J.LAB), t: J.tensioDe(J.LAB),
+        pintat: document.getElementById('labCap') && +document.getElementById('labCap').textContent,
+        pintatCar: document.getElementById('labCar') && +document.getElementById('labCar').textContent });
+    }
+    J.labAcciona('reset');
+    return { passos: J.INTRO.length, casos,
+      inici: { cap: J.capacitatDe(J.LAB), car: J.carregaDe(J.LAB), t: J.tensioDe(J.LAB) },
+      /* I que les tres funcions per nom donin el mateix que les de node solt. */
+      mateix: (() => {
+        const c = J.actives()[0], n = J.node(c);
+        return J.capacitat(c) >= J.capacitatDe(n) && J.carrega(c) === J.carregaDe(n)
+          && J.tensio(c) === J.tensioDe(n, J.capacitat(c) - J.capacitatDe(n));
+      })() };
+  });
+  ok(r.passos === 7, `set passos a la introducció (${r.passos})`);
+  ok(r.inici.t === 0, 'comença en verd: el primer que veu qui entra no és un error seu');
+  ok(r.casos.every(c => c.pintat === c.cap && c.pintatCar === c.car),
+    'el que pinta el laboratori és el que diuen capacitatDe i carregaDe, a cada pas');
+  ok(r.casos.some(c => c.t === 2), 'i es pot arribar a cremar tocant botons: la regla es prova, no es llegeix');
+  const recupera = r.casos.findIndex(c => c.q === 'forma');
+  ok(recupera > 0 && r.casos[recupera].cap > r.casos[recupera - 1].cap + 0,
+    'formar una persona puja la capacitat — el doble, que és el quart pas del mètode');
+  ok(r.mateix, 'i les funcions per nom i les de node solt donen el mateix: no hi ha dos models');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n22 · S\'obre sola el primer cop, i després és al botó');
+{
+  const { ctx, p } = await nova();
+  await p.waitForTimeout(700);
+  const primer = await p.evaluate(() => !document.getElementById('intro').hidden);
+  await p.evaluate(() => window.__JOC.tancaIntro());
+  const tancada = await p.evaluate(() => document.getElementById('intro').hidden);
+  await p.click('#btnAjuda');
+  const r = await p.evaluate(() => ({
+    oberta: !document.getElementById('intro').hidden,
+    pas: window.__JOC.pas(),
+    titol: document.getElementById('inT').textContent
+  }));
+  ok(primer, 'la primera vegada s\'obre sola');
+  ok(tancada, 'i es pot tancar');
+  ok(r.oberta && r.pas === 0, 'el botó «?» la torna a obrir pel principi');
+  ok(!!r.titol, 'amb títol: «' + r.titol + '»');
+  await ctx.close();
+}
+
+console.log('\n23 · La introducció no s\'inventa el contingut del joc');
+{
+  const { ctx, p } = await nova();
+  const r = await p.evaluate(() => {
+    const J = window.__JOC, out = [];
+    for (let i = 0; i < J.INTRO.length; i++) { J.obreIntro(i); out.push(document.getElementById('inCos').textContent); }
+    const tot = out.join(' ');
+    return { tot, vilans: Object.keys(J.VILANS).map(k => J.VILANS[k].nom),
+      nivells: J.NIVELLS.map(n => n.nom), accions: J.S.accions };
+  });
+  ok(r.vilans.every(v => r.tot.includes(v)),
+    'els tres vilans surten amb el nom que tenen al joc: ' + r.vilans.join(', '));
+  ok(r.nivells.every(n => r.tot.includes(n)),
+    'i els quatre nivells amb el seu: ' + r.nivells.join(', '));
+  ok(r.tot.includes('Comences amb ' + r.accions),
+    'el nombre d\'accions surt de l\'estat, no d\'una frase escrita a mà');
+  ok(/formació/.test(r.tot), 'i el darrer pas porta a la formació de veritat');
+  await ctx.close();
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

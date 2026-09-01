@@ -704,6 +704,40 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 117 — Una regla que decideix la partida no s'explica: es deixa provar
+
+El joc obria amb un modal de tres regles escrites. Es llegia en deu segons, es
+tancava, i qui entrava no sabia què decidia la partida —perquè el que la decideix
+és una sola cosa, **la càrrega contra la capacitat**, i en una frase no es veu.
+Tocant-la s'entén al segon toc.
+
+Ara la introducció són set passos i el tercer és un laboratori: quatre xifres,
+una barra i tres botons —«+ una persona», «forma'n una», «+ un projecte»—. Es va
+de verd a cremat en tres tocs i es torna a apagar el foc formant algú. Això no és
+una animació que ho representi: **crida `capacitatDe`, `carregaDe` i `tensioDe`,
+les mateixes funcions que decideixen la partida de debò**.
+
+Aquesta és la part que val la pena deixar escrita. Perquè el laboratori pogués
+fer-ho, es van partir les tres funcions en dues meitats: la que treballa sobre un
+node solt i la que hi porta el node de la partida. La temptació era l'altra —una
+còpia petita dins de la introducció, quatre línies i llest— i el cost hauria
+arribat mesos després, el dia que el model canviés i **el tutorial seguís
+ensenyant les regles velles sense que ho notés ningú**. És la veda 109 aplicada a
+un altre parell de llistes: dos models del mateix diuen dues coses diferents, i
+el que la gent recorda és el que ha tocat.
+
+De la mateixa peça:
+
+- **El laboratori comença en verd.** Si comencés cremat, el primer que veuria qui
+  entra seria un error seu. I l'ordre dels projectes és fix perquè la pujada de
+  càrrega sigui gradual: amb l'ordre del catàleg, el primer toc et passava de
+  sobrat a cremat i no es veia el pas del mig.
+- **Cap xifra escrita a mà.** Les accions inicials surten de l'estat, els vilans
+  de `VILANS`, els nivells de `NIVELLS` amb el compte real de mòduls. La prova
+  ho comprova buscant aquests noms al text que es pinta.
+- **S'obre sola una vegada i després viu al botó «?».** Obligar-la cada cop és un
+  peatge; no tenir-la enlloc deixa la partida sense explicar.
+
 ## Veda 116 — Un graf bonic no és una anàlisi, i cinc portes iguals no són cap porta
 
 Dues coses d'aquesta tanda i la mateixa idea a sota: **ensenyar una cosa no és
