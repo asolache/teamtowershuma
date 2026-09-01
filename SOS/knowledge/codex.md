@@ -704,6 +704,46 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 113 — Si la metàfora que ho explica tot és al nom de la casa, no pot sortir a la vuitena pantalla
+
+La primera pantalla de `teamtowershuma.com` ensenyava un graf de nodes: sis
+cercles etiquetats AJUNTAMENT, ENTITATS, VEÏNS…, línies contínues i puntejades,
+una llegenda «Tangible / Intangible» i, al mig, **la paraula VNA**. Bonic i
+inútil: el que diu és que tot està connectat, que no és cap notícia, i ho diu
+amb una sigla que fora d'aquesta casa no vol dir res —el gergó que la veda 107
+prohibeix precisament a la cara de qui acaba d'arribar.
+
+Mentrestant, la metàfora que sí que ho explica ja hi era **dues vegades**: al
+nom de la casa —*TeamTowers Humà*— i a una secció sencera amb el diagrama d'una
+colla castellera. **A la vuitena pantalla.** Qui no arribava tan avall no la
+veia mai, i la majoria no hi arriba.
+
+D'aquí la regla: **la metàfora va a dalt de tot, i ha de fer una feina.** No
+il·lustrar: demostrar. Ara hi ha dos castells amb **el mateix tronc** i dues
+bases —quatre persones i catorze—, i un sol botó: *en marxa una*. El mateix clic
+en treu una de cada costat. L'un cau i l'altre no. Aquesta és la tesi sencera del
+negoci, sense un adjectiu i sense haver de llegir res.
+
+Tres coses que ho fan honest i no un truc:
+
+- **El mateix clic als dos costats.** Si a l'esquerra hi caigués un llamp i a la
+  dreta no, no s'estaria comparant res. La diferència ha de ser només quanta
+  base tenia cadascun.
+- **El dibuix i el número diuen el mateix.** L'etiqueta diu 4 i n'hi ha 4
+  pintats; diu 14 i n'hi ha 14. Ho compta `tests/test-portada.mjs` des del DOM,
+  no d'una constant: una xifra escrita a mà al costat d'un dibuix acaba mentint
+  sempre, i és el mateix error que el comptador d'herois de la veda 109.
+- **Es veu sense fer scroll.** Una demostració per sota del plec no demostra
+  res. Es mesura a 1280, 1440 i 390 px, i el botó de diagnòstic hi ha de cabre
+  també.
+
+I una que va sortir mesurant: la barra de dalt necessita 1340 px per cabre en
+una fila i les reixes de contingut no, però anaven **al mateix media query**. A
+qualsevol portàtil de 1280 el hero es partia en una sola columna, la imatge queia
+a la segona pantalla i la primera es feia el doble de llarga. Dos problemes
+diferents no poden compartir llindar: quan es toca l'un, es trenca l'altre sense
+que ho vegi ningú.
+
 ## Veda 112 — La guarda que mira les pàgines i no es mira el codex deixa fora la font
 
 La veda 109 va posar la regla —una sola llista mana— i una guarda que l'aplica a

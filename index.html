@@ -85,7 +85,7 @@
         .nav-cta { background:transparent!important; border:1px solid var(--accent-indigo)!important; color:var(--accent-indigo)!important; padding:.5rem 1.2rem; border-radius:2px; transition:all .2s!important; }
         .nav-cta:hover { background:var(--accent-indigo)!important; color:var(--white)!important; }
         /* Dolor en veu de qui el pateix · guia d'estil §3 */
-        .hero-pains { list-style:none; padding:0; margin:0 0 1.6rem; display:flex; flex-direction:column; gap:.4rem; max-width:460px; }
+        .hero-pains { list-style:none; padding:0; margin:0 0 1.4rem; display:flex; flex-direction:column; gap:.3rem; max-width:460px; }
         .hero-pains li { font-size:.92rem; color:var(--light); padding-left:1.1rem; position:relative; line-height:1.5; }
         .hero-pains li::before { content:'—'; position:absolute; left:0; color:var(--accent-orange); }
         .hero-note { font-size:.8rem; color:var(--muted); margin:.8rem 0 0; }
@@ -124,16 +124,55 @@
         .btn-ghost:hover { border-color:var(--accent-indigo); color:var(--accent-blue); }
 
         /* HERO */
-        .hero { min-height:100vh; display:flex; align-items:center; padding:8rem 0 6rem; }
-        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
+        .hero { min-height:100vh; display:flex; align-items:center; padding:7rem 0 4rem; }
+        /* Tres blocs i no dos, perquè al mòbil la imatge ha d'anar entremig.
+           Amb dues columnes, en una sola columna la imatge queda l'última i el
+           que explica el negoci d'un cop d'ull cau a la segona pantalla. */
+        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 6rem; align-items:center;
+            grid-template-areas:'cap vis' 'cos vis'; }
+        .hero-cap { grid-area:cap; } .hero-cos { grid-area:cos; } .hero-visual { grid-area:vis; }
         .hero-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.5rem; display:flex; align-items:center; gap:.75rem; }
         .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--accent-indigo); }
-        .hero h1 { font-family:var(--sans); font-size:clamp(2.6rem,4.5vw,4.6rem); font-weight:700; line-height:1.08; letter-spacing:-.02em; margin-bottom:2rem; }
+        .hero h1 { font-family:var(--sans); font-size:clamp(2.05rem,3.4vw,3.6rem); font-weight:700; line-height:1.1; letter-spacing:-.02em; margin-bottom:1.5rem; }
         .hero h1 em { font-style:normal; color:var(--accent-blue); }
-        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.8; margin-bottom:2.5rem; max-width:540px; }
+        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.75; margin-bottom:1.6rem; max-width:540px; }
         .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
-        .hero-visual { position:relative; height:500px; }
-        .vna-diagram { width:100%; height:100%; }
+        .hero-visual { position:relative; }
+
+        /* ── Els dos castells ─────────────────────────────────────────────────
+           La metàfora que explica el negoci era al nom de la casa i apareixia a
+           la vuitena pantalla, mentre a dalt de tot hi havia un graf de nodes
+           abstracte amb la paraula «VNA» al mig. Aquí es veu la tesi sencera
+           sense llegir res: el mateix projecte, dues bases. En treus una persona
+           i l'un cau i l'altre no. Veda 113. */
+        .castells { width:100%; display:block; }
+        .ct-torre { transition:transform .8s cubic-bezier(.55,-.2,.7,1.3), opacity .8s ease;
+            transform-box:view-box; transform-origin:83px 288px; }
+        .ct-cau .ct-torre { transform:rotate(26deg) translate(10px,22px); opacity:.3; }
+        .ct-p { transition:opacity .45s ease; }
+        .ct-fora { opacity:.1; }
+        .ct-et { font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+        .ct-est { font-family:var(--mono); font-size:12.5px; font-weight:700; }
+        .ct-amaga { display:none; }
+        .ct-peu { display:flex; flex-direction:column; align-items:flex-start; gap:.75rem; margin-top:.4rem; }
+        .ct-btn { font-family:var(--mono); font-size:.78rem; letter-spacing:.04em; cursor:pointer;
+            background:var(--bg-elevated); color:var(--white); border:1px solid var(--border);
+            border-radius:8px; padding:.6rem 1rem; transition:border-color .15s, background .15s; }
+        .ct-btn:hover { border-color:var(--accent-indigo); background:var(--indigo-dim); }
+        .ct-llegenda { font-size:.86rem; color:var(--muted); line-height:1.65; max-width:460px; }
+        .ct-llegenda strong { color:var(--light); font-weight:600; }
+        /* Qui ha demanat menys moviment veu el mateix, quiet. */
+        @media (prefers-reduced-motion: reduce) {
+            .ct-torre, .ct-p { transition:none; }
+        }
+
+        /* ── El que fem, en tres paraules i una línia de diners ─────────────── */
+        .hero-xips { display:flex; flex-wrap:wrap; gap:.5rem; margin:0 0 1.2rem; padding:0; list-style:none; }
+        .hero-xips li { font-family:var(--mono); font-size:.74rem; letter-spacing:.03em; color:var(--light);
+            border:1px solid var(--border); border-radius:999px; padding:.42rem .8rem; background:var(--bg-panel); }
+        .hero-finan { font-size:.88rem; color:var(--light); line-height:1.6; margin:0 0 1.6rem;
+            border-left:2px solid var(--accent-green); padding:.15rem 0 .15rem .9rem; max-width:480px; }
+        .hero-finan strong { color:var(--accent-green); font-weight:600; }
 
         /* SECTION HEADERS */
         .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
@@ -334,11 +373,18 @@
            i el nav només plegava per sota de 900: entre mig, l'últim quedava
            tallat fora de pantalla i ningú ho havia mesurat. Amb «Com funciona»
            el contingut passa a 1400px, així que el llindar ha de pujar. */
-        @media (max-width:1340px) {
-            .hero-grid,.enfoc-grid,.fentpinya-grid,.sos-grid,.aprenentatge-grid { grid-template-columns:1fr; gap:3rem; }
-            .hero-visual { height:320px; }
+        /* La barra de dalt necessita 1340px per cabre en una fila; les reixes de
+           contingut, no. Anaven juntes en un sol media query i això deixava el
+           hero en una sola columna a qualsevol portàtil de 1280px: la imatge
+           queia per sota del plec i la primera pantalla es feia el doble de
+           llarga. Són dos problemes diferents i ara tenen dos llindars. */
+        @media (max-width:1080px) {
+            .enfoc-grid,.fentpinya-grid,.sos-grid,.aprenentatge-grid { grid-template-columns:1fr; gap:3rem; }
+            .hero-grid { grid-template-columns:1fr; gap:2.2rem; grid-template-areas:'cap' 'vis' 'cos'; }
             .triada-grid { grid-template-columns:1fr; }
             .tangible-intangible { grid-template-columns:1fr; }
+        }
+        @media (max-width:1340px) {
             /* La llista deixa de ser una fila i passa a ser un panell desplegable.
                Abans es feia display:none sense cap alternativa, i des del mòbil
                no s'arribava a cap secció ni a cap pàgina del SOS. */
@@ -413,6 +459,9 @@
         @media (max-width:600px) {
             .glos-item, .pas { padding:1.35rem; }
             .faq-item summary { font-size:.95rem; }
+            /* El nom de la casa i el selector d'idioma quedaven enganxats: cinc
+               píxels entre «Humà» i «CA» es llegeixen com un error d'impressió. */
+            .nav-logo { font-size:1.1rem; }
         }
     </style>
 </head>
@@ -448,10 +497,18 @@
 <section class="hero">
     <div class="container">
         <div class="hero-grid">
-            <div>
+            <div class="hero-cap">
                 <div class="hero-eyebrow fade-up" data-i18n="hero.eyebrow">Per a ajuntaments, consells comarcals i entitats</div>
                 <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Projectes veïnals que aguanten <em>quan marxen els de sempre</em></h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Ajudem el teu ajuntament, consell comarcal o entitat a engegar bancs de temps, biblioteques de les coses o comunitats energètiques <strong>que no visquin al cap de dues persones</strong>. Hi posem mètode, sessions de cohesió i una eina gratuïta. <strong>Es finança amb subvencions que ja existeixen: sense càrrega per al pressupost municipal.</strong></p>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Engeguem bancs de temps, biblioteques de les coses i comunitats energètiques <strong>que no visquin al cap de dues persones</strong>.</p>
+            </div>
+            <div class="hero-cos">
+                <ul class="hero-xips fade-up" style="animation-delay:.22s">
+                    <li data-i18n="hero.xip1">Mètode</li>
+                    <li data-i18n="hero.xip2">Sessions de cohesió</li>
+                    <li data-i18n="hero.xip3">Eina gratuïta</li>
+                </ul>
+                <p class="hero-finan fade-up" style="animation-delay:.24s" data-i18n-html="hero.finan"><strong>Es finança amb subvencions que ja existeixen.</strong> Sense càrrega per al pressupost municipal.</p>
                 <ul class="hero-pains fade-up" style="animation-delay:.25s">
                     <li data-i18n="hero.pain1">«Sempre tirem els mateixos quatre.»</li>
                     <li data-i18n="hero.pain2">«Ningú sap què fem ni quant val.»</li>
@@ -464,46 +521,88 @@
                 <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Te'n vas amb el diagnòstic fet, l'enviïs o no. Sense registre ni compte.</p>
             </div>
             <div class="hero-visual fade-up" style="animation-delay:.4s">
-                <svg class="vna-diagram" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="240" cy="240" r="220" stroke="rgba(99,102,241,0.06)" stroke-width="1"/>
-                    <circle cx="240" cy="240" r="160" stroke="rgba(99,102,241,0.04)" stroke-width="1"/>
-                    <circle cx="240" cy="240" r="90" stroke="rgba(99,102,241,0.08)" stroke-width="1" stroke-dasharray="4 8"/>
-                    <line x1="240" y1="60" x2="380" y2="180" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="380" y1="180" x2="380" y2="320" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="380" y1="320" x2="240" y2="420" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="240" y1="420" x2="100" y2="320" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="100" y1="320" x2="100" y2="180" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="100" y1="180" x2="240" y2="60" stroke="#00e676" stroke-width="1.5" stroke-opacity=".6"/>
-                    <line x1="240" y1="60" x2="380" y2="320" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
-                    <line x1="380" y1="180" x2="240" y2="420" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
-                    <line x1="380" y1="320" x2="100" y2="180" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".5"/>
-                    <line x1="240" y1="420" x2="240" y2="60" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".4"/>
-                    <line x1="100" y1="320" x2="380" y2="180" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".4"/>
-                    <line x1="100" y1="180" x2="380" y2="320" stroke="#6366f1" stroke-width="1" stroke-dasharray="5 6" stroke-opacity=".3"/>
-                    <circle cx="240" cy="240" r="28" fill="rgba(99,102,241,0.08)" stroke="#6366f1" stroke-width="1.5"/>
-                    <circle cx="240" cy="240" r="6" fill="#6366f1"/>
-                    <text x="240" y="248" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6366f1" opacity=".7" letter-spacing="1">VNA</text>
-                    <circle cx="240" cy="60" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(99,102,241,.4)" stroke-width="1.5"/>
-                    <text x="240" y="64" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#6366f1" opacity=".8">AJUNTAMENT</text>
-                    <circle cx="380" cy="180" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(0,230,118,.4)" stroke-width="1.5"/>
-                    <text x="380" y="184" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#00e676" opacity=".8">ENTITATS</text>
-                    <circle cx="380" cy="320" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(99,102,241,.4)" stroke-width="1.5"/>
-                    <text x="380" y="324" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#6366f1" opacity=".8">VEÏNS</text>
-                    <circle cx="240" cy="420" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(0,230,118,.4)" stroke-width="1.5"/>
-                    <text x="240" y="424" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#00e676" opacity=".8">COOPERATIVES</text>
-                    <circle cx="100" cy="320" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(99,102,241,.4)" stroke-width="1.5"/>
-                    <text x="100" y="324" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#6366f1" opacity=".8">COMERÇOS</text>
-                    <circle cx="100" cy="180" r="22" fill="rgba(17,17,24,.9)" stroke="rgba(0,230,118,.4)" stroke-width="1.5"/>
-                    <text x="100" y="184" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#00e676" opacity=".8">VOLUNTARIAT</text>
-                    <circle r="3" fill="#00e676" opacity=".8"><animateMotion dur="4s" repeatCount="indefinite" path="M240,60 L380,180"/></circle>
-                    <circle r="2.5" fill="#6366f1" opacity=".7"><animateMotion dur="5s" repeatCount="indefinite" begin="1s" path="M380,320 L100,180"/></circle>
-                    <circle r="2" fill="#00e676" opacity=".6"><animateMotion dur="6s" repeatCount="indefinite" begin="2s" path="M100,320 L380,180"/></circle>
-                    <circle r="2.5" fill="#6366f1" opacity=".5"><animateMotion dur="4.5s" repeatCount="indefinite" begin=".5s" path="M240,420 L240,60"/></circle>
-                    <line x1="30" y1="450" x2="55" y2="450" stroke="#00e676" stroke-width="1.5"/>
-                    <text x="60" y="454" font-family="JetBrains Mono" font-size="9" fill="#00e676" opacity=".7">Tangible</text>
-                    <line x1="130" y1="450" x2="155" y2="450" stroke="#6366f1" stroke-width="1" stroke-dasharray="4 5"/>
-                    <text x="160" y="454" font-family="JetBrains Mono" font-size="9" fill="#6366f1" opacity=".7">Intangible</text>
+                <!-- Dos castells, el mateix de dalt i dues bases. La tesi del negoci sense
+                     haver de llegir res: en marxa una persona i l'un cau i l'altre no. -->
+                <svg class="castells" viewBox="0 118 480 262" role="img" aria-labelledby="ctTit ctDesc" xmlns="http://www.w3.org/2000/svg">
+                  <title id="ctTit" data-i18n="ct.a11y.t">Dos castells amb la mateixa torre i bases diferents</title>
+                  <desc id="ctDesc" data-i18n="ct.a11y.d">A l'esquerra, una torre sostinguda per quatre persones. A la dreta, la mateixa torre sostinguda per catorze. Quan en marxa una, la primera cau i la segona aguanta.</desc>
+                  <defs>
+                    <g id="ctFig"><circle cy="-11" r="6"/><rect x="-5.5" y="-4.5" width="11" height="16" rx="5"/></g>
+                  </defs>
+                  <!-- És el mateix castell a banda i banda: el que canvia és qui l'aguanta. -->
+                  <g stroke="rgba(255,255,255,.16)" fill="none" stroke-width="1">
+                    <path d="M83 158 V150 H349 V158"/><path d="M216 150 V142"/>
+                  </g>
+                  <text x="216" y="136" text-anchor="middle" class="ct-et" fill="#82828d" data-i18n="ct.mateix">El mateix projecte</text>
+                  <line x1="216" y1="170" x2="216" y2="318" stroke="rgba(255,255,255,.07)" stroke-dasharray="3 7"/>
+                  <line x1="40" y1="316" x2="126" y2="316" stroke="rgba(255,145,0,.4)" stroke-width="1.5"/>
+                  <line x1="258" y1="316" x2="440" y2="316" stroke="rgba(0,230,118,.5)" stroke-width="1.5"/>
+                  <!-- Esquerra · quatre que tiren -->
+                  <g id="ctEsq" fill="#ff9100" color="#ff9100">
+                    <g class="ct-torre">
+                      <line x1="62" y1="285" x2="104" y2="285" stroke="currentColor" stroke-width="1.2" opacity=".35"/>
+                      <use href="#ctFig" x="72" y="272" class="ct-p"/>
+                      <use href="#ctFig" x="94" y="272" class="ct-p"/>
+                      <line x1="62" y1="253" x2="104" y2="253" stroke="currentColor" stroke-width="1.2" opacity=".35"/>
+                      <use href="#ctFig" x="72" y="240" class="ct-p"/>
+                      <use href="#ctFig" x="94" y="240" class="ct-p"/>
+                      <line x1="62" y1="221" x2="104" y2="221" stroke="currentColor" stroke-width="1.2" opacity=".35"/>
+                      <use href="#ctFig" x="72" y="208" class="ct-p"/>
+                      <use href="#ctFig" x="94" y="208" class="ct-p"/>
+                      <use href="#ctFig" x="83" y="178" class="ct-p"/>
+                      <line x1="87" y1="164" x2="93" y2="153" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                    </g>
+                    <use href="#ctFig" x="47" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="71" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="95" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="119" y="300" class="ct-p" id="ctPeE"/>
+                  </g>
+                  <text x="83" y="338" text-anchor="middle" class="ct-et" fill="#ff9100" data-i18n="ct.esq">Els de sempre</text>
+                  <text x="83" y="362" text-anchor="middle" class="ct-est" fill="#82828d" id="ctEstEsq" data-i18n="ct.esq.ok">4 sostenint</text>
+                  <text x="83" y="362" text-anchor="middle" class="ct-est ct-amaga" fill="#ff9100" id="ctEstEsqKo" data-i18n="ct.esq.ko">Cau</text>
+                  <!-- Dreta · fent pinya -->
+                  <g id="ctDre" fill="#00e676" color="#00e676">
+                    <g class="ct-torre">
+                      <line x1="328" y1="285" x2="370" y2="285" stroke="currentColor" stroke-width="1.2" opacity=".35"/>
+                      <use href="#ctFig" x="338" y="272" class="ct-p"/>
+                      <use href="#ctFig" x="360" y="272" class="ct-p"/>
+                      <line x1="328" y1="253" x2="370" y2="253" stroke="currentColor" stroke-width="1.2" opacity=".35"/>
+                      <use href="#ctFig" x="338" y="240" class="ct-p"/>
+                      <use href="#ctFig" x="360" y="240" class="ct-p"/>
+                      <line x1="328" y1="221" x2="370" y2="221" stroke="currentColor" stroke-width="1.2" opacity=".35"/>
+                      <use href="#ctFig" x="338" y="208" class="ct-p"/>
+                      <use href="#ctFig" x="360" y="208" class="ct-p"/>
+                      <use href="#ctFig" x="349" y="178" class="ct-p"/>
+                      <line x1="353" y1="164" x2="359" y2="153" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                    </g>
+                    <g opacity=".4">
+                      <use href="#ctFig" x="289" y="289" class="ct-p"/>
+                      <use href="#ctFig" x="313" y="289" class="ct-p"/>
+                      <use href="#ctFig" x="337" y="289" class="ct-p"/>
+                      <use href="#ctFig" x="361" y="289" class="ct-p"/>
+                      <use href="#ctFig" x="385" y="289" class="ct-p"/>
+                      <use href="#ctFig" x="409" y="289" class="ct-p"/>
+                    </g>
+                    <use href="#ctFig" x="265" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="289" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="313" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="337" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="361" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="385" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="409" y="300" class="ct-p"/>
+                    <use href="#ctFig" x="433" y="300" class="ct-p" id="ctPeD"/>
+                  </g>
+                  <text x="349" y="338" text-anchor="middle" class="ct-et" fill="#00e676" data-i18n="ct.dre">Fent pinya</text>
+                  <text x="349" y="362" text-anchor="middle" class="ct-est" fill="#82828d" id="ctEstDre" data-i18n="ct.dre.ok">14 sostenint</text>
+                  <text x="349" y="362" text-anchor="middle" class="ct-est ct-amaga" fill="#00e676" id="ctEstDreOk" data-i18n="ct.dre.ko">Aguanta</text>
                 </svg>
+                <div class="ct-peu">
+                  <button class="ct-btn" id="ctBtn" type="button">
+                    <span id="ctBtnA" data-i18n="ct.btn">En marxa una →</span>
+                    <span id="ctBtnB" hidden data-i18n="ct.btn2">↺ Torna-la a posar</span>
+                  </button>
+                  <p class="ct-llegenda" data-i18n-html="ct.peu">Un castell no l'aguanta qui hi puja: <strong>l'aguanta la pinya</strong>. La nostra feina és eixamplar la base d'un projecte fins que marxar-ne un no el tombi.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -1200,7 +1299,15 @@ ca: {
   'ben.note':'<span>→</span> Evidència qualitativa i xifres orientatives; l\'estalvi real depèn de cada projecte. Ens basem en la literatura d\'acció comunitària i en experiències pròpies com el Banc de Temps de León (2009) i Comunitats.org.',
   'hero.eyebrow':'Per a ajuntaments, consells comarcals i entitats',
   'hero.h1':'Projectes veïnals que aguanten <em>quan marxen els de sempre</em>',
-  'hero.desc':'Ajudem el teu ajuntament, consell comarcal o entitat a engegar bancs de temps, biblioteques de les coses o comunitats energètiques <strong>que no visquin al cap de dues persones</strong>. Hi posem mètode, sessions de cohesió i una eina gratuïta. <strong>Es finança amb subvencions que ja existeixen: sense càrrega per al pressupost municipal.</strong>',
+  'hero.desc':'Engeguem bancs de temps, biblioteques de les coses i comunitats energètiques <strong>que no visquin al cap de dues persones</strong>.',
+  'hero.xip1':'Mètode','hero.xip2':'Sessions de cohesió','hero.xip3':'Eina gratuïta',
+  'hero.finan':'<strong>Es finança amb subvencions que ja existeixen.</strong> Sense càrrega per al pressupost municipal.',
+  'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
+  'ct.a11y.d':'A l\'esquerra, una torre sostinguda per quatre persones. A la dreta, la mateixa torre sostinguda per catorze. Quan en marxa una, la primera cau i la segona aguanta.',
+  'ct.mateix':'El mateix projecte','ct.esq':'Els de sempre','ct.dre':'Fent pinya',
+  'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
+  'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
+  'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
   'hero.cta1':'Diagnostica el teu territori · 3 min','hero.cta2':'Veure el SOS en viu →','hero.pain1':'«Sempre tirem els mateixos quatre.»','hero.pain2':'«Ningú sap què fem ni quant val.»','hero.pain3':'«Quan marxa el tècnic, el projecte mor.»','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El repte',
   'enfoc.h3':'Moltes ganes. <em>Poca estructura.</em>',
@@ -1394,7 +1501,15 @@ es: {
   'ben.note':'<span>→</span> Evidencia cualitativa y cifras orientativas; el ahorro real depende de cada proyecto. Nos basamos en la literatura de acción comunitaria y en experiencias propias como el Banco de Tiempo de León (2009) y Comunitats.org.',
   'hero.eyebrow':'Para ayuntamientos, consejos comarcales y entidades',
   'hero.h1':'Proyectos vecinales que aguantan <em>cuando se van los de siempre</em>',
-  'hero.desc':'Ayudamos a tu ayuntamiento, consejo comarcal o entidad a poner en marcha bancos de tiempo, bibliotecas de las cosas o comunidades energéticas <strong>que no vivan en la cabeza de dos personas</strong>. Ponemos método, sesiones de cohesión y una herramienta gratuita. <strong>Se financia con subvenciones que ya existen: sin carga para el presupuesto municipal.</strong>',
+  'hero.desc':'Ponemos en marcha bancos de tiempo, bibliotecas de las cosas y comunidades energéticas <strong>que no vivan en la cabeza de dos personas</strong>.',
+  'hero.xip1':'Método','hero.xip2':'Sesiones de cohesión','hero.xip3':'Herramienta gratuita',
+  'hero.finan':'<strong>Se financia con subvenciones que ya existen.</strong> Sin carga para el presupuesto municipal.',
+  'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
+  'ct.a11y.d':'A la izquierda, una torre sostenida por cuatro personas. A la derecha, la misma torre sostenida por catorce. Cuando se va una, la primera cae y la segunda aguanta.',
+  'ct.mateix':'El mismo proyecto','ct.esq':'Los de siempre','ct.dre':'Haciendo piña',
+  'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
+  'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
+  'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
   'hero.cta1':'Diagnostica tu territorio · 3 min','hero.cta2':'Ver el SOS en vivo →','hero.pain1':'«Siempre tiramos los mismos cuatro.»','hero.pain2':'«Nadie sabe qué hacemos ni cuánto vale.»','hero.pain3':'«Cuando se va el técnico, el proyecto muere.»','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El reto',
   'enfoc.h3':'Muchas ganas. <em>Poca estructura.</em>',
@@ -1618,6 +1733,31 @@ document.querySelectorAll('.lang-btn').forEach(function(btn) {
 });
 
 applyLang(currentLang);
+
+// ── Els dos castells ─────────────────────────────────────────────────────────
+// Un sol botó i cap estat amagat: o hi són totes o en falta una. Ho fa el mateix
+// clic als dos costats perquè la comparació sigui honesta —la diferència no és
+// el que li passa a cadascun, és quanta base tenia. Veda 113.
+(function () {
+    var btn = document.getElementById('ctBtn');
+    if (!btn) return;
+    var esq = document.getElementById('ctEsq');
+    var peE = document.getElementById('ctPeE'), peD = document.getElementById('ctPeD');
+    var falta = false;
+    var mostra = function (el, si) { if (el) el.classList.toggle('ct-amaga', !si); };
+    btn.addEventListener('click', function () {
+        falta = !falta;
+        peE.classList.toggle('ct-fora', falta);
+        peD.classList.toggle('ct-fora', falta);
+        esq.classList.toggle('ct-cau', falta);
+        mostra(document.getElementById('ctEstEsq'), !falta);
+        mostra(document.getElementById('ctEstEsqKo'), falta);
+        mostra(document.getElementById('ctEstDre'), !falta);
+        mostra(document.getElementById('ctEstDreOk'), falta);
+        document.getElementById('ctBtnA').hidden = falta;
+        document.getElementById('ctBtnB').hidden = !falta;
+    });
+})();
 
 // ── Correu ofuscat ────────────────────────────────────────────────────────────
 // Muntat en temps d'execució perquè no viatgi en clar dins de l'HTML.
