@@ -22,6 +22,10 @@
 /sos/comando /SOS/comando.html    200
 /comando /SOS/comando.html    200
 
+/SOS/vna /SOS/vna.html    200
+/sos/vna /SOS/vna.html    200
+/vna /SOS/vna.html    200
+
 /SOS/intro /SOS/intro.html    200
 /sos/intro /SOS/intro.html    200
 /intro /SOS/intro.html    200

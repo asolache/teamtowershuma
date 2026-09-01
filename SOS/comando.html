@@ -35,6 +35,24 @@ img{max-width:100%}
 .counter .l{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.15rem}
 
 section{padding:3.5rem 1.5rem;max-width:1100px;margin:0 auto}
+
+/* ── Les portes d'entrada ──────────────────────────────────────────────── */
+.portes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-top:1.8rem}
+.porta{display:block;text-decoration:none;color:inherit;background:var(--card);
+  border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.3rem 1.4rem;
+  transition:border-color .15s,transform .15s}
+.porta:hover{border-color:var(--indigo);transform:translateY(-2px)}
+.porta.destacada{grid-column:1/-1;background:linear-gradient(135deg,rgba(99,102,241,.16),rgba(0,230,118,.09));
+  border-color:rgba(99,102,241,.4)}
+.porta .p-ic{font-size:1.6rem;line-height:1}
+.porta.destacada .p-ic{font-size:2.2rem}
+.porta .p-t{font-size:1.15rem;font-weight:700;margin:.5rem 0 .1rem}
+.porta.destacada .p-t{font-size:1.5rem}
+.porta .p-q{font-family:'SF Mono',Monaco,monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--green);margin-bottom:.5rem}
+.porta .p-d{font-size:.9rem;color:var(--light);line-height:1.6;margin:0}
+.porta .p-d strong{color:var(--text)}
+@media(min-width:900px){.porta.destacada .p-d{max-width:62ch}}
 /* La barra és enganxosa: sense això, saltar a #historia deixa el títol just
    a sota i sembla que t'hagis passat de llarg. */
 section[id]{scroll-margin-top:80px}
@@ -150,6 +168,7 @@ nav.top .links a:hover{color:var(--text)}
 <a href="../index.html">Landing</a>
 <a href="intro.html">La intro</a>
 <a href="joc.html">El joc</a>
+<a href="vna.html">Mapa de valor</a>
 <a href="escola.html">Escoles</a>
 <a href="online.html">Directori</a>
 <a href="blog.html">Blog</a>
@@ -164,10 +183,8 @@ nav.top .links a:hover{color:var(--text)}
 <h1>150.000 superherois per canviar la història</h1>
 <p class="sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, <strong>Mazinguer i Horacio</strong> ens han de reclutar abans que el <strong>Mundo Muerto</strong> ho apagui tot i <strong>Mr. McGragor</strong> ens torni a posar a picar pedra. Cada aportació teva a un banc de temps, cada objecte que comparteixes, cada intercanvi signat és una llavor.</p>
 <div class="ctas">
-<a class="cta cta-primary" href="index.html">✦ Crea el meu cromo</a>
-<a class="cta cta-ghost" href="joc.html">🎮 Juga-hi · 5 minuts</a><a class="cta cta-ghost" href="escola.html">🏫 A l'aula · 6 a 13 anys</a>
-<a class="cta cta-ghost" href="online.html">🔎 Qui hi ha, a prop teu</a>
-<a class="cta cta-ghost" href="#historia">📖 La història</a>
+<a class="cta cta-primary" href="intro.html">▶ Mira-ho en 90 segons</a>
+<a class="cta cta-ghost" href="index.html">✦ Crea el meu cromo</a>
 </div>
 <div class="counter">
 <div class="item"><div class="n">150.000</div><div class="l">objectiu Comando</div></div>
@@ -176,6 +193,65 @@ nav.top .links a:hover{color:var(--text)}
 </div>
 </div>
 </div>
+
+<!-- PER ON ENTRES ─────────────────────────────────────────────────────────
+     Aquesta pàgina tenia cinc crides al capdamunt i cap explicava què passava
+     en clicar-les. Cinc portes iguals és cap porta: es tria la que sona
+     millor, i la meitat de la gent que hi entra no busca el que hi trobarà.
+     Ara cada porta diu **què és, quant dura i què te'n treuràs**, i van en
+     l'ordre en què tenen sentit. Veda 116. -->
+<section id="entrades">
+<h2>Per on entres</h2>
+<p class="lead">Cinc portes, i cadascuna diu quant dura. No cal fer-les totes ni per aquest ordre;
+si només en fas una, fes la primera.</p>
+<div class="portes">
+  <a class="porta destacada" href="intro.html">
+    <div class="p-ic">▶</div>
+    <div class="p-t">La intro</div>
+    <div class="p-q">90 segons</div>
+    <div class="p-d">La mateixa pel·lícula muntada dues vegades: la vista de la gent i la del Comando.
+    Prem el botó de vista <strong>mentre corre</strong> i entendràs de què va tot això.</div>
+  </a>
+  <a class="porta" href="joc.html">
+    <div class="p-ic">🎮</div>
+    <div class="p-t">El joc</div>
+    <div class="p-q">5 minuts</div>
+    <div class="p-d">Actives comarques, hi plantes projectes amb el dit i els defenses dels tres
+    vilans. Les regles del joc són les del SOS: si guanyes, has entès el mètode.</div>
+  </a>
+  <a class="porta" href="vna.html">
+    <div class="p-ic">🕸️</div>
+    <div class="p-t">El mapa de valor</div>
+    <div class="p-q">8 passos</div>
+    <div class="p-d">Què és això de mirar qui dona què a qui, explicat amb una colla castellera.
+    És el que fem amb un ajuntament, sense la paraula «metodologia».</div>
+  </a>
+  <a class="porta" href="index.html">
+    <div class="p-ic">✦</div>
+    <div class="p-t">El teu cromo</div>
+    <div class="p-q">1 minut</div>
+    <div class="p-d">S'obre el SOS al navegador, et fa una clau que no surt del teu aparell i hi
+    poses què saps fer i què pots deixar. <strong>Les estrelles es guanyen després</strong>, quan
+    algú confirma que l'has ajudat.</div>
+  </a>
+  <a class="porta" href="escola.html">
+    <div class="p-ic">🏫</div>
+    <div class="p-t">A l'aula</div>
+    <div class="p-q">8 sessions</div>
+    <div class="p-d">El mateix, de 6 a 13 anys: la Fàbrica de Superherois, amb guia per al
+    professorat i el mapa de recursos de la classe.</div>
+  </a>
+  <a class="porta" href="online.html">
+    <div class="p-ic">🔎</div>
+    <div class="p-t">Qui hi ha a prop</div>
+    <div class="p-q">obert</div>
+    <div class="p-d">El directori públic: qui s'hi ha donat d'alta, amb el que hi ha escrit i res
+    més. Cada fitxa va firmada i el navegador ho comprova en llegir-la.</div>
+  </a>
+</div>
+<p style="text-align:center;margin-top:1.6rem"><a href="#historia" style="color:var(--muted)">
+o baixa i llegeix la història dels còmics ↓</a></p>
+</section>
 
 <!-- LA HISTÒRIA · CÒMICS 1 I 2 -->
 <!-- Aquesta secció surt del que passa als còmics, no d'un resum de màrqueting
@@ -506,8 +582,8 @@ nav.top .links a:hover{color:var(--text)}
 <p class="lead">El Comando no viu només al paper: n'hi ha que tenen tema propi, com Fraktalman, i n'hi ha que viuen en vídeo, com Reciclator i el Supergerminador. La comunitat, aquí.</p>
 <div class="transmedia">
 <a class="tm" href="media/comando-horacio.mp3"><div class="ic">🎧</div><div class="n">«Horacio Motomachi»</div><div class="d">El tema d'Horacio, sencer · sona també a <a href="intro.html">la intro</a></div></a>
-<a class="tm" href="https://soundcloud.com/comando-molekulon" target="_blank" rel="noopener"><div class="ic">🎵</div><div class="n">SoundCloud</div><div class="d">Música del Comando</div></a>
-<a class="tm" href="https://youtube.com/@comando-molekulon" target="_blank" rel="noopener"><div class="ic">🎥</div><div class="n">YouTube</div><div class="d">Capítols de personatges</div></a>
+<a class="tm" href="https://on.soundcloud.com/lWyXGGtlhQ8HsMbJ5U" target="_blank" rel="noopener"><div class="ic">🎵</div><div class="n">SoundCloud</div><div class="d">Música del Comando</div></a>
+<a class="tm" href="https://youtube.com/@comandomolekulon" target="_blank" rel="noopener"><div class="ic">🎥</div><div class="n">YouTube</div><div class="d">Capítols de personatges</div></a>
 <a class="tm" href="https://amazon.es/s?k=comando+molekulon+comic" target="_blank" rel="noopener"><div class="ic">📚</div><div class="n">Amazon</div><div class="d">Còmics 1 i 2</div></a>
 <a class="tm" href="https://instagram.com/comando_molekulon" target="_blank" rel="noopener"><div class="ic">📷</div><div class="n">Instagram</div><div class="d">Backstage + roster</div></a>
 </div>
@@ -517,11 +593,11 @@ nav.top .links a:hover{color:var(--text)}
 <div class="final">
 <h2>Uneix-te ara</h2>
 <p>El Comando arriba a la teva població quan tu arribes. Cada superheroi és una llavor local. Sense descarregar res, sense crear cap compte, en un minut.</p>
-<div class="ctas"><a class="cta cta-primary" href="index.html">✦ Crea el meu cromo</a><a class="cta cta-ghost" href="blog.html">📖 Llegeix més històries</a></div>
+<div class="ctas"><a class="cta cta-primary" href="index.html">✦ Crea el meu cromo</a><a class="cta cta-ghost" href="intro.html">▶ La intro · 90 s</a><a class="cta cta-ghost" href="blog.html">📖 Llegeix més històries</a></div>
 </div>
 
 <footer>
-Comando Molekulon · un projecte mestre de <a href="../index.html">TeamTowers Humà</a> · Alt Penedès i Garraf · <a href="online.html">Directori</a> · <a href="blog.html">Blog</a> · <a href="index.html">Obre SOS</a>
+Comando Molekulon · un projecte mestre de <a href="../index.html">TeamTowers Humà</a> · Alt Penedès i Garraf · <a href="intro.html">La intro</a> · <a href="vna.html">Mapa de valor</a> · <a href="escola.html">Escoles</a> · <a href="online.html">Directori</a> · <a href="blog.html">Blog</a> · <a href="index.html">Obre SOS</a>
 </footer>
 
 </body>

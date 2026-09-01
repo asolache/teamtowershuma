@@ -44,6 +44,12 @@ jobs:
       - name: Guarda del programa d'escola
         run: node SOS/tools/check-escola.js
 
+      # La colla castellera surt a dos llocs: la portada i el mapa de valor.
+      # Són dues còpies deliberades, i per això mateix poden divergir en
+      # silenci — que és exactament el que va passar amb els herois.
+      - name: Guarda del mapa de valor
+        run: node SOS/tools/check-vna.js
+
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
       # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.

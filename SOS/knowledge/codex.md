@@ -704,6 +704,50 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 116 — Un graf bonic no és una anàlisi, i cinc portes iguals no són cap porta
+
+Dues coses d'aquesta tanda i la mateixa idea a sota: **ensenyar una cosa no és
+explicar-la**.
+
+### El mapa de valor
+
+La portada tenia des de feia temps la colla castellera amb els dotze rols i el
+que aporta cadascun, tangible i intangible. Bonic, i mut: un diagrama amb
+etiquetes no diu què se'n fa. `SOS/vna.html` ho fa en vuit passos —els cossos es
+tornen rols, apareix el que es veu, després el que no, es compten, i es fan les
+tres preguntes de Verna Allee— i acaba on ha d'acabar: **el mateix graf amb els
+noms d'un poble**.
+
+Tres regles que el separen d'un pòster:
+
+- **Qui només dona es calcula, no s'assenyala.** El pas de l'anàlisi d'intercanvi
+  marca els rols amb fletxes de sortida i cap d'entrada llegint el graf. Una
+  llista escrita a mà seguiria assenyalant els d'abans el dia que les fletxes
+  canviïn, i ningú ho notaria. La prova ho comprova afegint un lliurament i
+  mirant que el resultat canviï.
+- **Treure un node té un cost comptat.** «Traieu els Músics» només ensenya alguna
+  cosa si el número de lliuraments perduts surt del graf.
+- **Cap fletxa inventada.** Cadascuna porta escrit de quina frase de quina fitxa
+  surt. Que els Músics enviïn als Baixos no és una idea meva: ho diu la seva
+  fitxa —«la melodia assenyala la fase exacta de l'Enxaneta als Baixos».
+
+I la còpia: els dotze rols viuen a la portada **i** a la pàgina del mapa, perquè
+cada pàgina ha de funcionar sola. Dues còpies deliberades divergeixen en silenci
+—és el que va costar la veda 109— així que `tools/check-vna.js` les compara
+paraula per paraula.
+
+### Cinc portes iguals
+
+`/sos/comando` tenia cinc crides a l'acció al capdamunt, totes amb la mateixa
+forma i cap dient què passava en clicar-les. **Cinc portes iguals és cap porta**:
+es tria la que sona millor, i la meitat de la gent no troba el que buscava.
+
+Ara el hero en té dues i just a sota hi ha una secció on cada porta diu **què és,
+quant dura i què te'n treuràs**, en l'ordre en què tenen sentit —la intro de 90
+segons destacada, i després el joc, el mapa de valor, el cromo, l'aula i el
+directori. La durada hi és perquè és la primera pregunta que es fa qui hi
+arriba, i no la responia cap.
+
 ## Veda 115 — Dos vídeos són dues promeses; un vídeo amb dues pells n'és una
 
 La intro del Comando i el SOS podia ser dues peces: una de seriosa per a
