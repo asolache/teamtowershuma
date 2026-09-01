@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>El páramo i la pinya · la intro del Comando i el SOS</title>
+<meta name="description" content="Noranta segons amb dues vistes: la de la gent i els pobles, i la del Comando Molekulon. El mateix tall, els mateixos rètols, i un botó per canviar de pell sense aturar-ho.">
+<meta property="og:title" content="El páramo i la pinya">
+<meta property="og:description" content="Una sola pel·lícula muntada dues vegades. Canvia de vista a mitja reproducció i veuràs que és la mateixa cosa.">
+<meta property="og:type" content="video.other">
+<style>
+:root{
+  --nit:#07070d;--pla:#12121c;--card:#191926;--text:#f4f4f7;--clar:#c5c5d0;--apagat:#7e7e8c;
+  --vora:rgba(255,255,255,.1);--normal:#00b0ff;--comando:#e040fb;--retol:#ffd700;
+  --verd:#00e676;--taronja:#ff9100;
+  --mono:'SF Mono',Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--nit);color:var(--text);line-height:1.5;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+a{color:var(--normal)}
+
+nav.top{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:.65rem 1.1rem;
+  border-bottom:1px solid var(--vora);background:rgba(7,7,13,.94)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text);font-size:.95rem}
+nav.top .brand span{color:var(--comando)}
+nav.top .links{display:flex;gap:.9rem;margin-left:auto;font-size:.82rem;flex-wrap:wrap}
+nav.top .links a{color:var(--clar);text-decoration:none}
+
+.sala{max-width:1180px;margin:0 auto;padding:1.2rem 1.1rem 3rem}
+
+/* ── L'escenari ─────────────────────────────────────────────────────────── */
+.escenari{position:relative;border:1px solid var(--vora);border-radius:14px;overflow:hidden;
+  background:#000;aspect-ratio:16/9}
+#cine{display:block;width:100%;height:100%}
+/* Les dues pells viuen a l'hora i es fonen. Aquest encreuament és tot el
+   truc: el pla no es torna a muntar, només canvia de pell. */
+.pell{transition:opacity .45s ease}
+.escenari.vn .pell-c{opacity:0}
+.escenari.vc .pell-n{opacity:0}
+@media(prefers-reduced-motion:reduce){.pell{transition:none}}
+
+.retol{position:absolute;left:0;right:0;bottom:0;padding:1.1rem 1.4rem 1.3rem;
+  background:linear-gradient(transparent,rgba(0,0,0,.82) 45%);pointer-events:none}
+.retol .t{font-size:clamp(.95rem,2.3vw,1.5rem);font-weight:700;color:var(--retol);
+  text-shadow:0 2px 12px rgba(0,0,0,.9);max-width:38ch;line-height:1.28}
+.retol .t.fi{color:var(--text)}
+.marca{position:absolute;top:.8rem;left:1rem;display:flex;gap:.6rem;align-items:center;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:rgba(255,255,255,.42);
+  text-transform:uppercase;pointer-events:none}
+.marca .v{color:var(--normal)}
+.escenari.vc .marca .v{color:var(--comando)}
+.gran{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  border:0;background:transparent;cursor:pointer}
+.gran span{width:74px;height:74px;border-radius:50%;background:rgba(0,0,0,.55);
+  border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;color:#fff;backdrop-filter:blur(4px)}
+.gran[hidden]{display:none}
+
+/* ── Els comandaments ──────────────────────────────────────────────────── */
+.mandos{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.8rem}
+button{font-family:inherit;cursor:pointer;background:var(--card);color:var(--text);
+  border:1px solid var(--vora);border-radius:8px;padding:.5rem .8rem;font-size:.85rem}
+button:hover{border-color:rgba(255,255,255,.28)}
+button:focus-visible{outline:2px solid var(--retol);outline-offset:2px}
+.b-vista[aria-pressed=true]{border-color:var(--comando);background:rgba(224,64,251,.15)}
+.b-tall[aria-pressed=true]{border-color:var(--verd);background:rgba(0,230,118,.13)}
+.b-llen{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em}
+.temps{font-family:var(--mono);font-size:.78rem;color:var(--apagat);margin-left:auto;
+  font-variant-numeric:tabular-nums}
+
+.barra{display:flex;gap:2px;margin-top:.6rem;height:16px}
+.barra .seg{flex:1;background:var(--card);border:0;border-radius:2px;padding:0;position:relative;
+  overflow:hidden;min-width:0}
+.barra .seg:hover{background:#23233a}
+.barra .seg i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);
+  background:var(--comando);display:block}
+.escenari-vn~.barra .seg i{background:var(--normal)}
+.barra .seg.cut{box-shadow:inset 0 -3px 0 var(--verd)}
+.barra .seg .n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.52rem;color:rgba(255,255,255,.5)}
+
+.ajuda{font-family:var(--mono);font-size:.68rem;color:var(--apagat);margin-top:.6rem;line-height:1.7}
+.ajuda kbd{background:var(--card);border:1px solid var(--vora);border-radius:4px;padding:.05rem .3rem}
+
+.avis{margin-top:1.4rem;border-left:3px solid var(--taronja);padding:.4rem 0 .4rem .9rem;
+  color:var(--clar);font-size:.86rem;max-width:70ch}
+.peu{margin-top:2rem;border-top:1px solid var(--vora);padding-top:1.4rem;color:var(--apagat);
+  font-size:.84rem;line-height:1.7}
+.peu a{color:var(--clar)}
+.peu strong{color:var(--clar);font-weight:600}
+</style>
+</head>
+<body>
+
+<nav class="top">
+<a class="brand" href="../index.html">TeamTowers <span>Humà</span></a>
+<div class="links">
+<a href="comando.html">El Comando</a>
+<a href="joc.html">El joc</a>
+<a href="escola.html">Escoles</a>
+<a href="index.html">Obre SOS →</a>
+</div>
+</nav>
+
+<div class="sala">
+
+<div class="escenari vn" id="escenari">
+  <svg id="cine" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-label="La intro del Comando Molekulon i el SOS"></svg>
+  <div class="marca"><span id="mPla">S1</span><span class="v" id="mVista">Vista normal</span></div>
+  <div class="retol"><div class="t" id="mRetol"></div></div>
+  <button class="gran" id="btGran" type="button" aria-label="Reprodueix"><span id="btGranIc">▶</span></button>
+</div>
+
+<div class="mandos">
+  <button id="btPlay" type="button">▶ Reprodueix</button>
+  <button class="b-vista" id="btVista" type="button" aria-pressed="false">Vista Comando</button>
+  <button class="b-tall" id="btTall" type="button" aria-pressed="false">Tall de 30 s</button>
+  <button class="b-llen" id="btLlengua" type="button">CA</button>
+  <button id="btTorna" type="button" aria-label="Torna a començar">↺</button>
+  <span class="temps" id="mTemps">0:00 / 1:32</span>
+</div>
+
+<div class="barra" id="barra"></div>
+
+<p class="ajuda">
+<kbd>espai</kbd> reprodueix · <kbd>V</kbd> canvia de vista · <kbd>←</kbd> <kbd>→</kbd> pla anterior i següent · <kbd>R</kbd> torna a començar
+</p>
+
+<div class="avis" id="avisSo"></div>
+
+<div class="peu">
+<p><strong>Una sola pel·lícula muntada dues vegades.</strong> Els setze plans, la durada i els rètols
+són idèntics a les dues vistes i cauen al mateix fotograma: per això pots canviar de pell a mitja
+reproducció i no es nota el salt. El Comando no és una altra història — és aquesta, vista d'una altra
+manera.</p>
+<p>Els personatges, poders i superarmes que hi surten són els del
+<a href="comando.html">roster canònic</a>. No n'hi ha cap d'inventat.</p>
+</div>
+
+</div>
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════════════════════
+   El páramo i la pinya · la intro, en vectors
+   ───────────────────────────────────────────────────────────────────────────
+   És **una sola pel·lícula muntada dues vegades**. Cada pla es dibuixa un cop i
+   es pinta amb dues pells: la vista normal i la del Comando. Mateixa geometria,
+   mateixes posicions, mateix rètol al mateix fotograma —l'única cosa que canvia
+   és el color, el fons i quatre elements de mobiliari.
+
+   Això no és una decisió tècnica per estalviar feina: **és la tesi**. Si les
+   dues vistes fossin dos vídeos, serien dues promeses del mateix servei, i qui
+   veiés les dues no sabria quina és la bona. Compartint el tall, el Comando es
+   llegeix com el que és: la cara fantàstica del SOS.
+
+   Tres coses que en surten i que no es poden relaxar:
+
+   · **Només es munta el pla actual.** En canviar de pla es desmunta l'anterior.
+     El DOM queda petit i el canvi de pell és una fosa entre dos grups que ja
+     hi són, no una reconstrucció.
+   · **Les dues pells s'animen alhora.** Si només s'animés la visible, canviar
+     de vista a mitja reproducció ensenyaria l'altra congelada.
+   · **La música no hi és encara i la pàgina no en depèn.** Quan arribi el tema
+     del Comando es posa a `media/comando-intro.m4a` i això el troba sol.
+
+   Veda 115. */
+
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const cine=$('#cine'), escenari=$('#escenari');
+
+/* Dibuixar un element SVG amb atributs, sense repetir setAttribute pertot. */
+function e(tag,at,fills){
+  const n=document.createElementNS(NS,tag);
+  for(const k in at||{})n.setAttribute(k,at[k]);
+  (fills||[]).forEach(c=>n.appendChild(c));
+  return n;
+}
+const g=(at,fills)=>e('g',at,fills);
+const txt=(s,at)=>{const n=e('text',at);n.textContent=s;return n;};
+
+/* ── Les dues pells ────────────────────────────────────────────────────────
+   La normal és freda i documental; la del Comando és càlida i de còmic. Els
+   noms dels colors són els mateixos a totes dues perquè els plans no hagin de
+   saber a quina pell els estan pintant. */
+const PELLS={
+  n:{fons:'#0b131b',cel:'#132433',terra:'#182a38',gent:'#8fbfe0',pell:'#d9a271',
+     accent:'#00b0ff',apagat:'#3a5063',clar:'#dbe9f5',mal:'#ff9100',bo:'#00e676',
+     traç:'rgba(255,255,255,.13)',halo:0},
+  c:{fons:'#150a1c',cel:'#2a0f38',terra:'#31123f',gent:'#e040fb',pell:'#f0c3a0',
+     accent:'#ffd700',apagat:'#54265f',clar:'#ffe9ff',mal:'#ff5252',bo:'#00e676',
+     traç:'rgba(255,255,255,.16)',halo:1}
+};
+
+/* ── Peces que es repeteixen ──────────────────────────────────────────────
+   Una figura, un castell, una cadira, un cromo. Es dibuixen igual a les dues
+   pells i només canvien de color: és el que fa que els dos muntatges siguin el
+   mateix pla i no dos dibuixos que s'hi assemblen. */
+function figura(x,y,s,P,op){
+  const c=g({transform:'translate('+x+' '+y+') scale('+s+')',opacity:op==null?1:op});
+  c.appendChild(e('rect',{x:-13,y:-4,width:26,height:40,rx:12,fill:P.gent}));
+  c.appendChild(e('rect',{x:-19,y:2,width:7,height:26,rx:3.5,fill:P.gent}));
+  c.appendChild(e('rect',{x:12,y:2,width:7,height:26,rx:3.5,fill:P.gent}));
+  c.appendChild(e('rect',{x:-11,y:33,width:8,height:24,rx:4,fill:P.gent}));
+  c.appendChild(e('rect',{x:3,y:33,width:8,height:24,rx:4,fill:P.gent}));
+  c.appendChild(e('circle',{cx:0,cy:-18,r:13,fill:P.pell}));
+  return c;
+}
+/* El castell: una pinya de `np` persones i sempre el mateix tronc a sobre. El
+   nombre de la pinya és l'únic que canvia entre el principi i el final de la
+   pel·lícula, i és tot l'argument. */
+function castell(cx,terra,np,P,s){
+  s=s||1;
+  const c=g({transform:'translate('+cx+' '+terra+') scale('+s+')'});
+  const tronc=g({class:'tronc'});
+  [0,-1,-2].forEach((k,i)=>{
+    const y=-46-i*46;
+    tronc.appendChild(e('line',{x1:-32,y1:y+20,x2:32,y2:y+20,stroke:P.gent,'stroke-width':3,opacity:.45}));
+    tronc.appendChild(figura(-17,y,.62,P));
+    tronc.appendChild(figura(17,y,.62,P));
+  });
+  tronc.appendChild(figura(0,-186,.62,P));
+  tronc.appendChild(e('line',{x1:6,y1:-200,x2:16,y2:-218,stroke:P.gent,'stroke-width':5,'stroke-linecap':'round'}));
+  c.appendChild(tronc);
+  const pinya=g({class:'pinya'});
+  for(let i=0;i<np;i++){
+    const ample=Math.max(1,np-1), dx=(i-ample/2)*34;
+    pinya.appendChild(figura(dx,0,.66,P));
+  }
+  c.appendChild(pinya);
+  return c;
+}
+function cadira(x,y,P,ocupada,s){
+  const c=g({transform:'translate('+x+' '+y+') scale('+(s||1)+')'});
+  c.appendChild(e('rect',{x:-16,y:0,width:32,height:6,rx:2,fill:P.apagat}));
+  c.appendChild(e('rect',{x:-16,y:-26,width:5,height:28,rx:2,fill:P.apagat}));
+  c.appendChild(e('rect',{x:-13,y:6,width:4,height:16,fill:P.apagat}));
+  c.appendChild(e('rect',{x:9,y:6,width:4,height:16,fill:P.apagat}));
+  if(ocupada)c.appendChild(figura(2,-30,.52,P));
+  return c;
+}
+function cromo(x,y,nom,ic,P,linia){
+  const c=g({transform:'translate('+x+' '+y+')'});
+  c.appendChild(e('rect',{x:-78,y:-104,width:156,height:208,rx:12,fill:P.cel,
+    stroke:P.accent,'stroke-width':2}));
+  c.appendChild(figura(0,-30,.92,P));
+  c.appendChild(txt(ic,{x:0,y:44,'text-anchor':'middle','font-size':30}));
+  c.appendChild(txt(nom,{x:0,y:74,'text-anchor':'middle','font-size':16,'font-weight':700,fill:P.clar}));
+  if(linia)c.appendChild(txt(linia,{x:0,y:94,'text-anchor':'middle','font-size':12,fill:P.gent}));
+  return c;
+}
+/* Els punts del mapa. No és Catalunya calcada: és una constel·lació de 42
+   nodes, que és el que es reconeix des d'un mòbil i el que el pla necessita. */
+const NODES=(()=>{
+  const r=[],rnd=(a=>()=>((a=a*16807%2147483647)/2147483647))(97);
+  for(let i=0;i<42;i++)r.push({x:560+rnd()*480,y:230+rnd()*400});
+  return r;
+})();
+
+/* Interpolació i corbes d'entrada. `f` sempre és 0..1 dins del pla. */
+const lerp=(a,b,f)=>a+(b-a)*f;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+/* Un tros del pla: converteix el progrés global en el progrés d'un tram. */
+const tram=(f,a,b)=>clamp((f-a)/(b-a),0,1);
+const suau=f=>f<.5?2*f*f:1-Math.pow(-2*f+2,2)/2;
+
+/* ═══ ELS SETZE PLANS ══════════════════════════════════════════════════════
+   Cada pla retorna el node i una funció d'animació. La funció rep el progrés
+   0..1 i **no ha de saber quina pell està pintant**: si ho hagués de saber,
+   les dues vistes deixarien de ser el mateix pla. */
+/* Escenografia comuna. Tot passa entre aquestes dues línies, i les xifres són
+   les mateixes a tots els plans: si cada pla es compongués pel seu compte,
+   canviar de pla semblaria canviar de pel·lícula. */
+const TERRA=700, ESC_FIG=1.9, ESC_CAST=2.05;
+const fons=(P,c)=>{
+  c.appendChild(e('rect',{x:0,y:0,width:1600,height:900,fill:P.fons}));
+  /* Una claror alta i una línia d'horitzó. Sense això el terç de dalt del pla
+     és un rectangle pla i el pla sembla inacabat, no buit a posta. */
+  c.appendChild(e('ellipse',{cx:800,cy:60,rx:1000,ry:420,fill:P.cel,opacity:.55}));
+  c.appendChild(e('rect',{x:0,y:TERRA,width:1600,height:900-TERRA,fill:P.terra}));
+  c.appendChild(e('line',{x1:0,y1:TERRA,x2:1600,y2:TERRA,stroke:P.traç,'stroke-width':2}));
+};
+
+const PLANS=[
+{id:'S1',dur:5000,curt:4000,cut:true,cam:'Zenital',
+ ret:'«Sempre tirem els mateixos quatre.»',
+ retEs:'«Siempre tiramos de los mismos cuatro.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   if(pell==='n')c.appendChild(e('rect',{x:520,y:70,width:560,height:22,rx:6,fill:P.accent,opacity:.45}));
+   else{
+     c.appendChild(e('circle',{cx:800,cy:190,r:190,fill:P.cel}));
+     for(let i=0;i<44;i++)c.appendChild(e('circle',{cx:30+i*36,cy:780+((i*53)%90),r:3,fill:P.apagat}));
+   }
+   const sala=g({});
+   /* Vint cadires buides i quatre ocupades, i les quatre ocupades són a les
+      mateixes coordenades a totes dues pells: a la del Comando, les que
+      aguanten el castell. */
+   const ocup=[620,740,860,980];
+   [[TERRA,1.55,7],[TERRA-125,1.3,6],[TERRA-225,1.1,6]].forEach(([y,sc,n],f)=>{
+     for(let i=0;i<n;i++){
+       const x=800+(i-(n-1)/2)*(215*sc/1.55);
+       if(f===0&&Math.abs(x-800)<230)continue;
+       sala.appendChild(cadira(x,y,P,false,sc));
+     }
+   });
+   if(pell==='n')ocup.forEach(x=>sala.appendChild(cadira(x,TERRA,P,true,1.55)));
+   else sala.appendChild(castell(800,TERRA,4,P,ESC_CAST));
+   c.appendChild(sala);
+   return{node:c,anim(f){
+     sala.setAttribute('transform','translate(800 520) scale('+lerp(1,1.07,suau(f))+') translate(-800 -520)');
+   }};
+ }},
+
+{id:'S2',dur:5000,cam:'Detall',
+ ret:'«Faig coses i no consta enlloc.»',
+ retEs:'«Hago cosas y no consta en ninguna parte.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   c.appendChild(e('line',{x1:760,y1:0,x2:760,y2:150,stroke:P.traç,'stroke-width':4}));
+   c.appendChild(e('circle',{cx:760,cy:200,r:230,fill:P.accent,opacity:.07}));
+   c.appendChild(e('circle',{cx:760,cy:180,r:30,fill:P.accent}));
+   if(pell==='c')c.appendChild(txt('BAR ANDRÉS',{x:1300,y:250,'text-anchor':'middle','font-size':46,
+     'font-weight':800,fill:P.accent,opacity:.7,'letter-spacing':5}));
+   if(pell==='c')c.appendChild(e('path',{d:'M470 470 L470 730 L700 730 L700 470 Z',fill:P.apagat,opacity:.9}));
+   c.appendChild(figura(600,470,2.4,P));
+   c.appendChild(e('rect',{x:420,y:TERRA-30,width:760,height:30,rx:5,fill:P.cel}));
+   const llibreta=e('rect',{x:820,y:610,width:210,height:52,rx:5,fill:P.clar});
+   const llapis=e('rect',{x:880,y:570,width:8,height:44,rx:4,fill:P.mal});
+   c.appendChild(llibreta);c.appendChild(llapis);
+   return{node:c,anim(f){
+     llapis.setAttribute('x',880+Math.sin(f*26)*62);
+     /* Es tanca i cau al calaix: el gest sencer del pla. */
+     const t=tram(f,.66,1);
+     llibreta.setAttribute('transform','translate(0 '+t*180+') rotate('+t*20+' 925 636)');
+     llibreta.setAttribute('opacity',1-t*.85);
+     llapis.setAttribute('opacity',1-tram(f,.6,.75));
+   }};
+ }},
+
+{id:'S3',dur:5000,cam:'Fix',
+ ret:'«Ningú sap què fem ni quant val.»',
+ retEs:'«Nadie sabe qué hacemos ni cuánto vale.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   const base=g({});
+   if(pell==='n')[620,740,860,980].forEach(x=>base.appendChild(cadira(x,TERRA,P,true,1.55)));
+   else base.appendChild(castell(800,TERRA,4,P,ESC_CAST));
+   c.appendChild(base);
+   const pesos=[];
+   for(let i=0;i<9;i++){
+     const x=580+(i%4)*160+((i/4|0)*44),w=pell==='n'?128:104;
+     const n=pell==='n'
+       ? e('rect',{x:x-w/2,y:0,width:w,height:74,rx:6,fill:P.mal,opacity:.85})
+       : e('rect',{x:x-w/2,y:0,width:w,height:74,rx:10,fill:P.apagat,stroke:P.mal,'stroke-width':4});
+     pesos.push({n,d:i*.085});c.appendChild(n);
+   }
+   return{node:c,anim(f){
+     pesos.forEach((p,i)=>{
+       const t=suau(tram(f,p.d,p.d+.3));
+       p.n.setAttribute('y',lerp(-180,300-(i/4|0)*82,t));
+       p.n.setAttribute('opacity',t*.9);
+     });
+     base.setAttribute('transform','translate(0 '+tram(f,.5,1)*16+')');
+   }};
+ }},
+
+{id:'S4',dur:5000,curt:4000,cut:true,cam:'Contrapicat',
+ ret:'«Quan marxa el tècnic, el projecte mor.»',
+ retEs:'«Cuando se va la técnica, el proyecto muere.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   const pantalla=e('rect',{x:1150,y:150,width:390,height:240,rx:10,fill:P.accent,opacity:.45});
+   if(pell==='n')c.appendChild(pantalla);
+   const cast=castell(800,TERRA,4,P,ESC_CAST);
+   const cadires=g({});
+   [620,740,860,980].forEach(x=>cadires.appendChild(cadira(x,TERRA,P,true,1.55)));
+   c.appendChild(pell==='n'?cadires:cast);
+   const marxa=figura(1000,TERRA-30,1.4,P);
+   c.appendChild(marxa);
+   const tronc=cast.querySelector('.tronc');
+   return{node:c,anim(f){
+     /* Primer se'n va una. Després cau. El mateix ordre a les dues pells. */
+     const surt=tram(f,.1,.45);
+     marxa.setAttribute('transform','translate('+lerp(1000,1620,suau(surt))+' '+(TERRA-30)+') scale(1.4)');
+     marxa.setAttribute('opacity',1-surt*.75);
+     const cau=suau(tram(f,.5,1));
+     if(tronc){
+       tronc.setAttribute('transform','rotate('+cau*38+' 0 -30) translate(0 '+cau*30+')');
+       tronc.setAttribute('opacity',1-cau*.55);
+     }
+     cadires.setAttribute('opacity',1-cau*.6);
+     pantalla.setAttribute('opacity',lerp(.45,.03,cau));
+   }};
+ }},
+
+{id:'S5',dur:5000,cam:'Pla general',
+ ret:'«La por: no es comença perquè potser surt malament.»',
+ retEs:'«El miedo: no se empieza porque quizá salga mal.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   const gent=[];
+   for(let i=0;i<6;i++){
+     const x=380+i*190,n=figura(x,TERRA-40,ESC_FIG,P);
+     c.appendChild(n);gent.push({n,x});
+   }
+   /* El rellotge diu que passa el temps i no s'aixeca cap mà. */
+   const agulla=e('line',{x1:1400,y1:220,x2:1400,y2:120,stroke:P.mal,'stroke-width':9,'stroke-linecap':'round'});
+   c.appendChild(e('circle',{cx:1400,cy:220,r:110,fill:'none',stroke:P.traç,'stroke-width':7}));
+   c.appendChild(agulla);
+   const vila=g({opacity:0,transform:'translate(170 '+TERRA+')'});
+   vila.appendChild(e('path',{d:'M0 0 L-110 -470 L110 -470 Z',fill:P.mal,opacity:.92}));
+   vila.appendChild(e('circle',{cx:-34,cy:-400,r:18,fill:'#fff'}));
+   vila.appendChild(e('circle',{cx:34,cy:-400,r:18,fill:'#fff'}));
+   if(pell==='c'){
+     c.appendChild(vila);
+     c.appendChild(txt('MAX MIEDOX',{x:170,y:770,'text-anchor':'middle','font-size':26,
+       'font-weight':800,fill:P.mal,'letter-spacing':2,opacity:.9}));
+   }
+   return{node:c,anim(f){
+     agulla.setAttribute('transform','rotate('+f*300+' 1400 220)');
+     vila.setAttribute('opacity',tram(f,.15,.4));
+     /* Tot es queda quiet a mitja respiració: el poder del personatge és
+        exactament aquest, i el pla el fa en comptes de dir-lo. */
+     const viu=1-tram(f,.35,.55);
+     gent.forEach((o,i)=>o.n.setAttribute('transform',
+       'translate('+o.x+' '+(TERRA-40+Math.sin(f*14+i)*10*viu)+') scale('+ESC_FIG+')'));
+   }};
+ }},
+
+{id:'S6',dur:5000,cam:'Encadenats',
+ ret:'«El rumor: la confiança es corca sense que ningú ho digui.»',
+ retEs:'«El rumor: la confianza se pudre sin que nadie lo diga.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   const xs=[];
+   for(let i=0;i<6;i++){const x=250+i*220;c.appendChild(figura(x,TERRA-40,ESC_FIG,P));xs.push(x);}
+   const rastre=e('path',{d:'',fill:'none',stroke:P.mal,'stroke-width':6,opacity:.35,'stroke-dasharray':'12 14'});
+   const bola=e('circle',{cx:250,cy:420,r:22,fill:P.mal});
+   c.appendChild(rastre);c.appendChild(bola);
+   if(pell==='c')c.appendChild(txt('MALA YERBAX',{x:800,y:840,'text-anchor':'middle','font-size':26,
+     'font-weight':800,fill:P.mal,'letter-spacing':2,opacity:.9}));
+   return{node:c,anim(f){
+     const p=f*(xs.length-1),i=Math.min(xs.length-2,p|0),k=p-i;
+     const x=lerp(xs[i],xs[i+1],k);
+     bola.setAttribute('cx',x);
+     bola.setAttribute('cy',420-Math.sin(k*Math.PI)*110);
+     /* Creix mentre passa de mà en mà: el missatge es deforma pel camí. */
+     bola.setAttribute('r',22+f*34);
+     rastre.setAttribute('d','M250 420 L'+x+' 420');
+   }};
+ }},
+
+{id:'S7',dur:4000,cam:'Travelling',
+ ret:'«L\'extracció: te\'l fan, el pagues, i el dia que marxen no en queda res.»',
+ retEs:'«La extracción: te lo hacen, lo pagas, y el día que se van no queda nada.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   for(let i=0;i<4;i++)c.appendChild(figura(300+i*170,TERRA-40,1.6,P));
+   const venedor=figura(1200,TERRA-40,ESC_FIG,P);
+   /* La caixa amb pany: el projecte que et fan i no pots obrir. */
+   const caixa=g({transform:'translate(900 480)'});
+   caixa.appendChild(e('rect',{x:-92,y:-74,width:184,height:148,rx:12,fill:P.cel,stroke:P.accent,'stroke-width':4}));
+   caixa.appendChild(e('rect',{x:-20,y:-14,width:40,height:48,rx:8,fill:P.mal}));
+   c.appendChild(caixa);c.appendChild(venedor);
+   const monedes=[];
+   for(let i=0;i<5;i++){const m=e('circle',{cx:820,cy:600,r:20,fill:P.accent,opacity:0});monedes.push(m);c.appendChild(m);}
+   if(pell==='c'){
+     c.appendChild(e('rect',{x:900,y:120,width:620,height:130,rx:16,fill:P.clar,opacity:.95}));
+     c.appendChild(txt('«Ja ho fem nosaltres.»',{x:1210,y:203,'text-anchor':'middle','font-size':42,
+       'font-weight':700,fill:'#160a1c'}));
+     c.appendChild(txt('MC GREGGOR',{x:1200,y:830,'text-anchor':'middle','font-size':26,
+       'font-weight':800,fill:P.mal,'letter-spacing':2,opacity:.9}));
+   }
+   return{node:c,anim(f){
+     monedes.forEach((m,i)=>{
+       const t=suau(tram(f,.15+i*.09,.55+i*.09));
+       m.setAttribute('cx',lerp(820,1200,t));m.setAttribute('cy',600-Math.sin(t*Math.PI)*190);
+       m.setAttribute('opacity',t<.02||t>.98?0:.95);
+     });
+     const fuig=suau(tram(f,.65,1));
+     venedor.setAttribute('transform','translate('+lerp(1200,1720,fuig)+' '+(TERRA-40)+') scale('+ESC_FIG+')');
+     caixa.setAttribute('opacity',1-fuig*.45);
+   }};
+ }},
+
+{id:'S8',dur:6000,curt:4000,cut:true,cam:'Recula',
+ ret:'«El talent ja hi era. El que faltava era saber-ho.»',
+ retEs:'«El talento ya estaba. Lo que faltaba era saberlo.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   const sala=g({}),llums=[];
+   /* No arriba ningú de fora: s'encenen els que ja hi eren. Per això totes les
+      figures existeixen des del fotograma zero, apagades. */
+   [[TERRA-20,1.6,7],[TERRA-160,1.32,8],[TERRA-290,1.08,9]].forEach(([y,sc,n],fila)=>{
+     for(let i=0;i<n;i++){
+       const x=800+(i-(n-1)/2)*(210*sc/1.6);
+       const enceses=(fila===0&&i>1&&i<6);
+       const nd=figura(x,y,sc,P,enceses?1:.12);
+       sala.appendChild(nd);
+       if(!enceses)llums.push({n:nd,d:((i*7+fila*3)%10)/10});
+     }
+   });
+   c.appendChild(sala);
+   return{node:c,anim(f){
+     const z=suau(f);
+     sala.setAttribute('transform','translate(800 560) scale('+lerp(1.4,.95,z)+') translate(-800 -560)');
+     llums.forEach(l=>l.n.setAttribute('opacity',lerp(.12,1,tram(f,.2+l.d*.5,.45+l.d*.5))));
+   }};
+ }},
+
+{id:'S9',dur:8000,curt:6000,cut:true,cam:'Sis retrats',
+ ret:'«Cadascú és una manera de sostenir un grup.»',
+ retEs:'«Cada cual es una manera de sostener un grupo.»',
+ fes(P,pell){
+   const c=g({});
+   c.appendChild(e('rect',{x:0,y:0,width:1600,height:900,fill:P.fons}));
+   /* Els sis són del roster canònic, i la línia de la vista normal és el que
+      volen dir dins d'un equip: els dos costats de la mateixa fitxa. */
+   const SIS=[
+     {n:'La Medusa Andaluza',ic:'🪼',v:'Qui creua el que no es parlava'},
+     {n:'Reciclator',ic:'🔧',v:'Qui arregla el que es trenca'},
+     {n:'El Aviador',ic:'✈️',v:'Qui desencalla projectes'},
+     {n:'Guiri-Guay',ic:'🎻',v:'Qui cura les friccions'},
+     {n:'Electroplasman',ic:'🎻',v:'Qui porta els recursos'},
+     {n:'Supergerminador',ic:'🌱',v:'Qui ensenya el mètode'}
+   ];
+   const cs=[];
+   SIS.forEach((h,i)=>{
+     const x=270+(i%3)*530, y=270+((i/3)|0)*350;
+     const card=pell==='c'?cromo(x,y,h.n,h.ic,P,''):cromo(x,y,h.v,'',P,'');
+     card.setAttribute('opacity',0);
+     cs.push({n:card,x,y});c.appendChild(card);
+   });
+   return{node:c,anim(f){
+     cs.forEach((o,i)=>{
+       const t=suau(tram(f,i*.13,i*.13+.3));
+       o.n.setAttribute('opacity',t);
+       o.n.setAttribute('transform','translate(0 '+(1-t)*44+')');
+     });
+   }};
+ }},
+
+{id:'S10',dur:8000,cam:'Muntatge',
+ ret:'«Els 150.000 ja hi són. Només no s\'havien trobat.»',
+ retEs:'«Los 150.000 ya están. Solo que no se habían encontrado.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   const furgo=g({transform:'translate(-400 '+(TERRA-40)+')'});
+   furgo.appendChild(e('rect',{x:-170,y:-118,width:340,height:120,rx:14,fill:P.gent}));
+   furgo.appendChild(e('rect',{x:-170,y:-118,width:120,height:60,rx:10,fill:P.cel}));
+   furgo.appendChild(e('circle',{cx:-100,cy:16,r:32,fill:P.apagat}));
+   furgo.appendChild(e('circle',{cx:100,cy:16,r:32,fill:P.apagat}));
+   c.appendChild(furgo);
+   c.appendChild(figura(900,TERRA-40,ESC_FIG,P));
+   c.appendChild(figura(1080,TERRA-40,ESC_FIG,P));
+   const bola=g({opacity:0,transform:'translate(800 280)'});
+   bola.appendChild(e('circle',{cx:0,cy:0,r:86,fill:P.accent,opacity:.9}));
+   for(let i=0;i<12;i++){
+     const a=i/12*Math.PI*2;
+     bola.appendChild(e('line',{x1:Math.cos(a)*100,y1:Math.sin(a)*100,x2:Math.cos(a)*250,y2:Math.sin(a)*250,
+       stroke:P.accent,'stroke-width':6,opacity:.4}));
+   }
+   c.appendChild(bola);
+   return{node:c,anim(f){
+     furgo.setAttribute('transform','translate('+lerp(-400,380,suau(tram(f,0,.45)))+' '+(TERRA-40)+')');
+     const b=tram(f,.45,.8);
+     bola.setAttribute('opacity',b);
+     bola.setAttribute('transform','translate(800 280) rotate('+f*180+') scale('+lerp(.5,1,suau(b))+')');
+   }};
+ }},
+
+{id:'S11',dur:6000,cam:'Detall mans',
+ ret:'«1 · Apuntes el que ja fas.»',
+ retEs:'«1 · Apuntas lo que ya haces.»',
+ fes(P,pell){
+   const c=g({});
+   c.appendChild(e('rect',{x:0,y:0,width:1600,height:900,fill:P.fons}));
+   const mobil=g({transform:'translate(880 420)'});
+   mobil.appendChild(e('rect',{x:-190,y:-350,width:380,height:700,rx:34,fill:P.cel,stroke:P.traç,'stroke-width':4}));
+   c.appendChild(mobil);
+   const linies=[];
+   for(let i=0;i<3;i++){
+     const l=e('rect',{x:-150,y:-240+i*84,width:0,height:30,rx:6,fill:P.accent,opacity:.85});
+     mobil.appendChild(l);linies.push(l);
+   }
+   const dit=e('circle',{cx:880,cy:960,r:40,fill:P.pell});
+   c.appendChild(dit);
+   if(pell==='c'){
+     const mol=g({transform:'translate(320 320)'});
+     [[0,0],[-78,50],[78,50],[0,-86]].forEach(d=>
+       mol.appendChild(e('circle',{cx:d[0],cy:d[1],r:28,fill:P.accent})));
+     mol.appendChild(e('circle',{cx:0,cy:0,r:112,fill:'none',stroke:P.accent,'stroke-width':4,opacity:.5}));
+     c.appendChild(mol);
+     c.appendChild(txt('EL MOLEKULON',{x:320,y:500,'text-anchor':'middle','font-size':24,
+       'font-weight':800,fill:P.accent,'letter-spacing':2,opacity:.85}));
+   }
+   return{node:c,anim(f){
+     dit.setAttribute('cy',lerp(960,660,suau(tram(f,.05,.3))));
+     linies.forEach((l,i)=>l.setAttribute('width',suau(tram(f,.25+i*.18,.5+i*.18))*300));
+   }};
+ }},
+
+{id:'S12',dur:5000,curt:4000,cut:true,cam:'Contraplà',
+ ret:'«2 · Ho confirma qui ho ha rebut. No tu.»',
+ retEs:'«2 · Lo confirma quien lo ha recibido. No tú.»',
+ fes(P,pell){
+   const c=g({});
+   c.appendChild(e('rect',{x:0,y:0,width:1600,height:900,fill:P.fons}));
+   /* Dos mòbils i dues mans. El pla és el dit de l'ALTRA persona: sense aquest
+      contraplà, el mètode seria un altre. */
+   const meu=g({transform:'translate(430 400)'});
+   meu.appendChild(e('rect',{x:-170,y:-320,width:340,height:640,rx:30,fill:P.cel,stroke:P.traç,'stroke-width':4}));
+   const estrella=txt('★',{x:0,y:60,'text-anchor':'middle','font-size':190,fill:P.accent,opacity:0});
+   meu.appendChild(estrella);
+   c.appendChild(meu);
+   const seu=g({transform:'translate(1170 400)'});
+   seu.appendChild(e('rect',{x:-170,y:-320,width:340,height:640,rx:30,fill:P.cel,stroke:P.traç,'stroke-width':4}));
+   const boto=e('rect',{x:-128,y:-50,width:256,height:104,rx:18,fill:P.bo,opacity:.9});
+   seu.appendChild(boto);
+   seu.appendChild(txt('sí, m\'ha ajudat',{x:0,y:12,'text-anchor':'middle','font-size':28,'font-weight':700,fill:'#07070d'}));
+   c.appendChild(seu);
+   const dit=e('circle',{cx:1170,cy:960,r:40,fill:P.pell});
+   c.appendChild(dit);
+   return{node:c,anim(f){
+     const prem=suau(tram(f,.1,.42));
+     dit.setAttribute('cy',lerp(960,500,prem));
+     boto.setAttribute('opacity',lerp(.9,.5,tram(f,.4,.5)));
+     const es=suau(tram(f,.5,.85));
+     estrella.setAttribute('opacity',es);
+     estrella.setAttribute('transform','translate(0 '+(1-es)*70+') scale('+lerp(.4,1,es)+')');
+   }};
+ }},
+
+{id:'S13',dur:7000,cam:'Mapa',
+ ret:'«3 · I llavors es veu de qui penja tot.»',
+ retEs:'«3 · Y entonces se ve de quién cuelga todo.»',
+ fes(P,pell){
+   const c=g({});
+   c.appendChild(e('rect',{x:0,y:0,width:1600,height:900,fill:P.fons}));
+   const linies=g({opacity:.55}),punts=[];
+   c.appendChild(linies);
+   NODES.forEach(n=>{
+     const p=e('circle',{cx:n.x,cy:n.y,r:13,fill:P.gent,opacity:.12});
+     punts.push(p);
+   });
+   /* El node en vermell és el que ho aguanta tot sol. És el que la pel·lícula
+      ha de deixar veure: no la xarxa bonica, sinó la dependència. */
+   const ls=[],teix=[];
+   for(let i=0;i<10;i++){
+     const a=NODES[7],b=NODES[(i*4+3)%42];
+     const l=e('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:P.mal,'stroke-width':3,opacity:0});
+     linies.appendChild(l);ls.push(l);
+   }
+   for(let i=0;i<26;i++){
+     const a=NODES[i%42],b=NODES[(i*7+5)%42];
+     const l=e('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:P.accent,'stroke-width':3,opacity:0});
+     linies.appendChild(l);teix.push(l);
+   }
+   punts.forEach(p=>c.appendChild(p));
+   const sol=punts[7];
+   if(pell==='c')c.appendChild(txt('MOLEKULÀNDIA',{x:800,y:860,'text-anchor':'middle','font-size':34,
+     'font-weight':800,fill:P.accent,'letter-spacing':8,opacity:.85}));
+   return{node:c,anim(f){
+     punts.forEach((p,i)=>p.setAttribute('opacity',lerp(.12,.95,tram(f,i*.014,i*.014+.2))));
+     ls.forEach(l=>l.setAttribute('opacity',tram(f,.35,.55)*(1-tram(f,.7,.9))));
+     const alerta=f>.35&&f<.85;
+     sol.setAttribute('fill',alerta?P.mal:P.gent);
+     sol.setAttribute('r',alerta?24:13);
+     teix.forEach((l,i)=>l.setAttribute('opacity',tram(f,.6+i*.008,.8+i*.008)*.7));
+   }};
+ }},
+
+{id:'S14',dur:7000,curt:5000,cut:true,cam:'Repeteix S4',
+ ret:'«Un castell no l\'aguanta qui hi puja: l\'aguanta la pinya.»',
+ retEs:'«Un castell no lo aguanta quien se sube: lo aguanta la piña.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   /* El mateix castell de l'S4 amb catorze a la base en comptes de quatre. És
+      l'únic que canvia entre el principi i el final, i és tot l'argument. */
+   const cast=castell(800,TERRA,14,P,ESC_CAST);
+   c.appendChild(cast);
+   const pinya=cast.querySelector('.pinya'),tronc=cast.querySelector('.tronc');
+   const marxa=figura(1310,TERRA-30,1.4,P);
+   c.appendChild(marxa);
+   return{node:c,anim(f){
+     const surt=tram(f,.15,.5);
+     marxa.setAttribute('transform','translate('+lerp(1310,1720,suau(surt))+' '+(TERRA-30)+') scale(1.4)');
+     marxa.setAttribute('opacity',1-surt*.8);
+     /* Un tremolor i para. Aguanta: si aquí caigués, el vídeo mentiria. */
+     const tr=tram(f,.5,.72),q=Math.sin(tr*Math.PI*5)*(1-tr)*2.4;
+     if(tronc)tronc.setAttribute('transform','rotate('+q+' 0 -30)');
+     if(pinya)pinya.setAttribute('transform','translate(0 '+Math.abs(q)*.6+')');
+   }};
+ }},
+
+{id:'S15',dur:5000,cam:'Dos plans',
+ ret:'«El quart pas del mètode: formar gent i marxar.»',
+ retEs:'«El cuarto paso del método: formar gente e irse.»',
+ fes(P,pell){
+   const c=g({});fons(P,c);
+   const queda=g({});
+   for(let i=0;i<6;i++)queda.appendChild(figura(430+i*170,TERRA-40,ESC_FIG,P));
+   c.appendChild(queda);
+   const va=figura(1400,TERRA-40,ESC_FIG,P);
+   c.appendChild(va);
+   /* La llibreta de l'S2, ara oberta i amb la firma d'algú altre: tanca el que
+      el segon pla havia obert. */
+   const llib=g({transform:'translate(230 250)',opacity:0});
+   llib.appendChild(e('rect',{x:-130,y:-90,width:260,height:180,rx:8,fill:P.clar}));
+   const st=txt('★',{x:0,y:34,'text-anchor':'middle','font-size':96,fill:P.bo});
+   llib.appendChild(st);
+   c.appendChild(llib);
+   return{node:c,anim(f){
+     const fuig=suau(tram(f,.15,.7));
+     va.setAttribute('transform','translate('+lerp(1400,1760,fuig)+' '+(TERRA-40)+') scale('+ESC_FIG+')');
+     va.setAttribute('opacity',1-fuig*.9);
+     llib.setAttribute('opacity',tram(f,.4,.75));
+   }};
+ }},
+
+{id:'S16',dur:6000,curt:4000,cut:true,cam:'Rètol final',
+ ret:'',retEs:'',
+ fes(P,pell){
+   const c=g({});
+   c.appendChild(e('rect',{x:0,y:0,width:1600,height:900,fill:'#000'}));
+   const t1=pell==='n'?'Projectes veïnals que aguanten':'Segurament';
+   const t2=pell==='n'?'quan marxen els de sempre.':'ja ets un d\'ells.';
+   const url=pell==='n'?'teamtowershuma.com · diagnòstic de 3 minuts':'teamtowershuma.com/sos/comando';
+   const a=txt(t1,{x:800,y:390,'text-anchor':'middle','font-size':66,'font-weight':800,fill:'#fff',opacity:0});
+   const b=txt(t2,{x:800,y:474,'text-anchor':'middle','font-size':66,'font-weight':800,
+     fill:pell==='n'?P.accent:P.gent,opacity:0});
+   const u=txt(url,{x:800,y:600,'text-anchor':'middle','font-size':28,fill:'#8b8b98',opacity:0});
+   c.appendChild(a);c.appendChild(b);c.appendChild(u);
+   return{node:c,anim(f){
+     a.setAttribute('opacity',tram(f,.05,.25));
+     b.setAttribute('opacity',tram(f,.2,.4));
+     u.setAttribute('opacity',tram(f,.45,.65));
+   }};
+ }}
+];
+
+/* ═══ EL REPRODUCTOR ═══════════════════════════════════════════════════════ */
+const redueix=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const S={i:-1,t:0,va:false,vista:'n',tall:false,llengua:'ca',ultim:0,anims:null};
+
+const llista=()=>S.tall?PLANS.filter(p=>p.cut):PLANS;
+const durada=p=>S.tall&&p.curt?p.curt:p.dur;
+const total=()=>llista().reduce((a,p)=>a+durada(p),0);
+const mmss=ms=>{const s=Math.max(0,Math.round(ms/1000));return (s/60|0)+':'+String(s%60).padStart(2,'0');};
+
+/* Munta un pla: les dues pells alhora, i les dues s'animen. Si només s'animés
+   la visible, canviar de vista a mitja reproducció ensenyaria l'altra
+   congelada —i el que ven aquesta pel·lícula és justament que són la mateixa. */
+function munta(i){
+  const p=llista()[i];
+  if(!p)return;
+  cine.textContent='';
+  const A=[];
+  ['n','c'].forEach(k=>{
+    const r=p.fes(PELLS[k],k);
+    const cap=g({class:'pell pell-'+k});
+    cap.appendChild(r.node);
+    cine.appendChild(cap);
+    A.push(r.anim);
+  });
+  S.anims=A;
+  S.i=i;
+  $('#mPla').textContent=p.id;
+  $('#mRetol').textContent=S.llengua==='ca'?p.ret:p.retEs;
+  $('#mRetol').classList.toggle('fi',!p.ret);
+  pintaBarra();
+}
+function anima(f){if(S.anims)S.anims.forEach(a=>a(f));}
+
+function ves(i,dins){
+  const L=llista();
+  i=clamp(i,0,L.length-1);
+  munta(i);
+  S.t=L.slice(0,i).reduce((a,p)=>a+durada(p),0)+(dins||0);
+  anima(redueix?1:(dins||0)/durada(L[i]));
+  actualitza();
+}
+function actualitza(){
+  const L=llista();
+  $('#mTemps').textContent=mmss(S.t)+' / '+mmss(total());
+  const inici=L.slice(0,S.i).reduce((a,p)=>a+durada(p),0);
+  const f=L[S.i]?clamp((S.t-inici)/durada(L[S.i]),0,1):0;
+  const seg=$('#barra').children[S.i];
+  if(seg&&seg.firstChild)seg.firstChild.style.transform='scaleX('+f+')';
+}
+
+function tic(ms){
+  if(!S.va)return;
+  const dt=Math.min(64,ms-S.ultim);S.ultim=ms;
+  S.t+=dt;
+  const L=llista();
+  let acc=0,i=0;
+  while(i<L.length-1&&S.t>=acc+durada(L[i])){acc+=durada(L[i]);i++;}
+  if(S.t>=total()){atura();S.t=total();actualitza();$('#btGran').hidden=false;$('#btGranIc').textContent='↺';return;}
+  if(i!==S.i)munta(i);
+  anima(clamp((S.t-acc)/durada(L[i]),0,1));
+  actualitza();
+  requestAnimationFrame(tic);
+}
+function juga(){
+  if(S.t>=total())S.t=0;
+  S.va=true;S.ultim=performance.now();
+  $('#btPlay').textContent='❚❚ Pausa';$('#btGran').hidden=true;
+  if(so&&hiHaSo){so.currentTime=S.t/1000;so.play().catch(()=>{});}
+  requestAnimationFrame(tic);
+}
+function atura(){
+  S.va=false;$('#btPlay').textContent='▶ Reprodueix';
+  $('#btGran').hidden=false;$('#btGranIc').textContent='▶';
+  if(so&&hiHaSo)so.pause();
+}
+
+function pintaBarra(){
+  const b=$('#barra');
+  if(b.children.length===llista().length&&b.dataset.tall===String(S.tall)){actualitza();return;}
+  b.textContent='';b.dataset.tall=String(S.tall);
+  llista().forEach((p,i)=>{
+    const s=document.createElement('button');
+    s.className='seg'+(p.cut?' cut':'');
+    s.type='button';s.title=p.id+' · '+p.cam;
+    s.setAttribute('aria-label','Ves al pla '+p.id);
+    s.style.flexGrow=String(durada(p));
+    s.innerHTML='<i></i><span class="n">'+p.id+'</span>';
+    s.onclick=()=>{ves(i,0);if(!S.va&&!redueix)juga();};
+    b.appendChild(s);
+  });
+}
+
+/* ── El so ────────────────────────────────────────────────────────────────
+   El tema del Comando encara no el tenim. Es deixa el camí fet i la pàgina no
+   en depèn gens: si el fitxer no hi és, el vídeo va igual i ho diu. Quan
+   arribi, es posa a `media/comando-intro.m4a` i això el troba sol. */
+const SO='media/comando-intro.m4a';
+let so=null,hiHaSo=false;
+(function(){
+  so=new Audio();
+  so.preload='auto';so.src=SO;
+  so.addEventListener('canplay',()=>{
+    hiHaSo=true;
+    $('#avisSo').innerHTML='Amb el tema del Comando. Els talls cauen als accents.';
+  });
+  so.addEventListener('error',()=>{
+    hiHaSo=false;
+    $('#avisSo').innerHTML='<strong>Encara sense música.</strong> El tema del Comando va a '+
+      '<code>SOS/media/comando-intro.m4a</code> i sona sol quan hi sigui. El vídeo està acabat i '+
+      'es veu sencer mut, que és com es mira a les xarxes.';
+  });
+})();
+
+/* ── Comandaments ─────────────────────────────────────────────────────────── */
+function vista(v){
+  S.vista=v;
+  escenari.classList.toggle('vn',v==='n');
+  escenari.classList.toggle('vc',v==='c');
+  $('#mVista').textContent=v==='n'?'Vista normal':'Vista Comando';
+  const b=$('#btVista');
+  b.setAttribute('aria-pressed',String(v==='c'));
+  b.textContent=v==='c'?'Vista normal':'Vista Comando';
+}
+$('#btVista').onclick=()=>vista(S.vista==='n'?'c':'n');
+$('#btPlay').onclick=()=>S.va?atura():juga();
+$('#btGran').onclick=()=>S.va?atura():juga();
+$('#btTorna').onclick=()=>{ves(0,0);};
+$('#btTall').onclick=()=>{
+  S.tall=!S.tall;
+  $('#btTall').setAttribute('aria-pressed',String(S.tall));
+  $('#btTall').textContent=S.tall?'Complet · 1:32':'Tall de 30 s';
+  pintaBarra();ves(0,0);
+};
+$('#btLlengua').onclick=()=>{
+  S.llengua=S.llengua==='ca'?'es':'ca';
+  $('#btLlengua').textContent=S.llengua.toUpperCase();
+  const p=llista()[S.i];
+  if(p)$('#mRetol').textContent=S.llengua==='ca'?p.ret:p.retEs;
+};
+document.addEventListener('keydown',ev=>{
+  if(/^(INPUT|TEXTAREA)$/.test(ev.target.tagName))return;
+  const k=ev.key.toLowerCase();
+  if(k===' '||k==='spacebar'){ev.preventDefault();S.va?atura():juga();}
+  else if(k==='v')vista(S.vista==='n'?'c':'n');
+  else if(k==='r')ves(0,0);
+  else if(k==='arrowleft'){ev.preventDefault();ves(S.i-1,0);}
+  else if(k==='arrowright'){ev.preventDefault();ves(S.i+1,0);}
+});
+
+pintaBarra();
+vista('n');
+ves(0,0);
+/* Qui ha demanat menys moviment veu el mateix, pla a pla i amb el seu ritme:
+   no s'engega sol i cada pla es mostra acabat. */
+if(!redueix)$('#btGran').hidden=false;
+
+window.__INTRO={PLANS,PELLS,S,llista,durada,total,ves,juga,atura,vista,munta,anima,
+  figura,castell,cromo,NODES,SO,mmss};
+</script>
+</body>
+</html>
