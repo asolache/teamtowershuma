@@ -45,7 +45,7 @@ const PAG = readFileSync(join(ARREL, 'SOS', 'comando.html'), 'utf8');
    `joc.html` hi és perquè el joc reparteix els herois en rols jugables, i un
    nom mal escrit allà és el mateix personatge convertit en dos —el que ja va
    passar amb les quatre grafies de Guiri-Guay. */
-const ALTRES = ['comando.html', 'blog.html', 'uneix-te.html', 'online.html', 'crm.html', 'joc.html'].map(f => ({
+const ALTRES = ['comando.html', 'blog.html', 'uneix-te.html', 'online.html', 'crm.html', 'joc.html', 'escola.html'].map(f => ({
   f, txt: (() => { try { return readFileSync(join(ARREL, 'SOS', f), 'utf8'); } catch (e) { return null; } })()
 }));
 

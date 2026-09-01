@@ -22,6 +22,10 @@
 /sos/comando /SOS/comando.html    200
 /comando /SOS/comando.html    200
 
+/SOS/escola /SOS/escola.html    200
+/sos/escola /SOS/escola.html    200
+/escola /SOS/escola.html    200
+
 /SOS/joc /SOS/joc.html    200
 /sos/joc /SOS/joc.html    200
 /joc /SOS/joc.html    200

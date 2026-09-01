@@ -38,6 +38,12 @@ jobs:
       - name: Guarda del relat (un sol roster d'herois)
         run: node SOS/tools/check-comando.js
 
+      # El programa d'escola diu que és el SOS a mida d'aula. Si un superpoder
+      # deixa de ser una categoria del banc de temps, o apareix un camp on
+      # escriure el nom d'un infant, deixa de ser cert i no ho diu ningú.
+      - name: Guarda del programa d'escola
+        run: node SOS/tools/check-escola.js
+
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
       # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.

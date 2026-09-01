@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fàbrica de Superherois · el Comando a l'aula · 6 a 13 anys</title>
+<meta name="description" content="Programa de dues accions per a escoles: a la Fàbrica cada infant dissenya el seu cromo, i a l'Escola es guanya els superpoders ajudant algú de debò. Amb guia metodològica per al professorat i el mapa de recursos de la classe.">
+<meta property="og:title" content="Fàbrica de Superherois · el Comando a l'aula">
+<meta property="og:description" content="El cromo es dissenya. Els superpoders es guanyen. Dues accions, de 6 a 13 anys, amb guia per al professorat.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img,canvas{max-width:100%}
+a{color:var(--blue)}
+
+nav.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.7rem 1.2rem;background:rgba(11,11,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text)}
+nav.top .brand span{color:var(--indigo)}
+nav.top .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto;font-size:.85rem}
+nav.top .links a{color:var(--light);text-decoration:none}
+nav.top .links a:hover{color:var(--text)}
+
+.hero{position:relative;padding:4.5rem 1.5rem 3rem;text-align:center;overflow:hidden;
+  background:radial-gradient(ellipse at top,rgba(0,230,118,.18),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(224,64,251,.14),transparent 55%),var(--bg)}
+.hero-inner{max-width:880px;margin:0 auto;position:relative}
+.tag{display:inline-block;background:rgba(0,230,118,.14);color:var(--green);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5.6vw,3.4rem);margin:0 0 .9rem;line-height:1.06;font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#00e676,#6366f1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.2vw,1.25rem);color:var(--light);max-width:680px;margin:0 auto 1.4rem}
+.hero .sub strong{color:var(--text)}
+.ctas{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+.cta{padding:.85rem 1.4rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:.98rem;
+  display:inline-flex;align-items:center;gap:.4rem;border:1px solid transparent}
+.cta-primary{background:linear-gradient(90deg,#00e676,#6366f1);color:#0b0b12}
+.cta-ghost{background:rgba(255,255,255,.06);color:var(--text);border-color:var(--border)}
+
+section{padding:3.2rem 1.5rem;max-width:1080px;margin:0 auto}
+section[id]{scroll-margin-top:76px}
+section h2{font-size:clamp(1.4rem,3vw,2.1rem);margin:0 0 .5rem;line-height:1.15}
+section .lead{color:var(--light);font-size:1.03rem;max-width:72ch;margin:0 0 1.8rem}
+h3{font-size:1.1rem;margin:1.6rem 0 .5rem}
+.et{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ── Les dues accions ───────────────────────────────────────────────────── */
+.accions{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:800px){.accions{grid-template-columns:1fr}}
+.acc{border:1px solid var(--border);border-radius:14px;padding:1.4rem;background:var(--panel)}
+.acc.a1{border-color:rgba(255,145,0,.35);background:linear-gradient(160deg,rgba(255,145,0,.09),var(--panel))}
+.acc.a2{border-color:rgba(0,230,118,.35);background:linear-gradient(160deg,rgba(0,230,118,.09),var(--panel))}
+.acc .n{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase}
+.acc.a1 .n{color:var(--orange)} .acc.a2 .n{color:var(--green)}
+.acc h3{margin:.35rem 0 .5rem;font-size:1.25rem}
+.acc p{margin:0 0 .7rem;color:var(--light);font-size:.93rem}
+.acc ul{margin:.4rem 0 0;padding-left:1.1rem;color:var(--light);font-size:.9rem}
+.acc li{margin:.3rem 0}
+
+/* ── La regla ───────────────────────────────────────────────────────────── */
+.regla{border:1px solid rgba(255,215,0,.3);background:linear-gradient(140deg,rgba(255,215,0,.08),var(--panel));
+  border-radius:14px;padding:1.5rem;margin:1.5rem 0}
+.regla p{margin:0 0 .7rem;color:var(--light)}
+.regla p:last-child{margin-bottom:0}
+.regla strong{color:var(--gold)}
+
+/* ── La fàbrica ─────────────────────────────────────────────────────────── */
+.fab{display:grid;grid-template-columns:1fr 340px;gap:1.6rem;align-items:start}
+@media(max-width:900px){.fab{grid-template-columns:1fr}}
+.camps{display:grid;gap:.9rem}
+.camp{border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;background:var(--panel)}
+.camp>label,.camp>.lb{display:block;font-size:.78rem;color:var(--muted);margin-bottom:.45rem;font-weight:600;
+  letter-spacing:.03em;text-transform:uppercase}
+.camp .ajuda{font-size:.76rem;color:var(--muted);margin:.45rem 0 0;line-height:1.5}
+input[type=text],select{width:100%;padding:.6rem .7rem;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:.95rem;font-family:inherit}
+input[type=text]:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
+.mostra{display:flex;flex-wrap:wrap;gap:.4rem}
+.mostra button{cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);
+  border-radius:8px;padding:.4rem .6rem;font-size:.85rem;font-family:inherit;line-height:1.2}
+.mostra button[aria-pressed=true]{border-color:var(--indigo);background:rgba(99,102,241,.22)}
+.color{width:34px;height:34px;border-radius:8px;border:2px solid transparent;cursor:pointer;padding:0}
+.color[aria-pressed=true]{border-color:#fff;box-shadow:0 0 0 2px rgba(0,0,0,.6) inset}
+.pell{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.pell[aria-pressed=true]{border-color:#fff}
+.cromo-wrap{position:sticky;top:76px}
+#cvCromo{width:100%;border-radius:14px;border:1px solid var(--border);display:block;background:var(--card)}
+.accions-cromo{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.btn{cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:9px;
+  padding:.6rem .9rem;font-size:.88rem;font-family:inherit;font-weight:600}
+.btn:hover{border-color:var(--indigo)}
+.btn-pri{background:linear-gradient(90deg,#00e676,#6366f1);color:#0b0b12;border-color:transparent}
+.btn-sm{padding:.4rem .65rem;font-size:.8rem;font-weight:500}
+
+/* ── IA ─────────────────────────────────────────────────────────────────── */
+.ia{border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:1.1rem;background:rgba(99,102,241,.06);margin-top:1.2rem}
+.ia h4{margin:0 0 .4rem;font-size:1rem}
+.ia p{margin:0 0 .7rem;color:var(--light);font-size:.88rem}
+.ia-out{margin-top:.9rem;font-size:.9rem;color:var(--light)}
+.ia-out h5{margin:.9rem 0 .3rem;font-size:.85rem;color:var(--text)}
+.ia-out ul{margin:.2rem 0;padding-left:1.1rem}
+.avis{border-left:3px solid var(--orange);padding:.1rem 0 .1rem .8rem;color:var(--light);font-size:.85rem;margin:.8rem 0}
+
+/* ── El mapa de la classe ───────────────────────────────────────────────── */
+.taula{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+@media(max-width:860px){.taula{grid-template-columns:1fr}}
+.grup{border:1px solid var(--border);border-radius:12px;padding:1rem;background:var(--panel)}
+.grup h4{margin:0 0 .6rem;font-size:.95rem}
+.fila{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.fila:last-child{border-bottom:0}
+.fila .qui{font-weight:600}
+.fila .est{color:var(--gold);letter-spacing:.08em}
+.buit{color:var(--muted);font-size:.87rem;font-style:italic}
+.pastilla{display:inline-block;font-size:.74rem;padding:.15rem .5rem;border-radius:999px;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.form-linia{display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end;margin-top:.8rem}
+.form-linia>div{flex:1;min-width:130px}
+.form-linia label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:.25rem}
+
+/* ── Guia metodològica ──────────────────────────────────────────────────── */
+.sessio{border:1px solid var(--border);border-radius:12px;margin:.8rem 0;background:var(--panel);overflow:hidden}
+.sessio>summary{cursor:pointer;padding:1rem 1.1rem;font-weight:600;list-style:none;display:flex;
+  align-items:center;gap:.6rem;flex-wrap:wrap}
+.sessio>summary::-webkit-details-marker{display:none}
+.sessio>summary::before{content:'+';font-family:var(--mono);color:var(--indigo);font-weight:700}
+.sessio[open]>summary::before{content:'−'}
+.sessio .cos{padding:0 1.1rem 1.1rem;color:var(--light);font-size:.92rem}
+.sessio .cos ol,.sessio .cos ul{padding-left:1.2rem;margin:.5rem 0}
+.sessio .cos li{margin:.35rem 0}
+.dur{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-left:auto}
+.diu{border-left:3px solid var(--indigo);padding:.3rem 0 .3rem .8rem;margin:.7rem 0;color:var(--text);font-style:italic}
+
+.edats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-top:1rem}
+.edat{border:1px solid var(--border);border-radius:12px;padding:1rem;background:var(--panel)}
+.edat .n{font-family:var(--mono);font-size:.75rem;color:var(--green);letter-spacing:.08em}
+.edat h4{margin:.3rem 0 .5rem;font-size:1rem}
+.edat p{margin:0;color:var(--light);font-size:.88rem}
+
+table.mapa{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.8rem}
+table.mapa th,table.mapa td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);vertical-align:top}
+table.mapa th{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.taula-scroll{overflow-x:auto}
+
+.mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.8rem;margin-top:1rem}
+.mod{border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;background:var(--panel);text-decoration:none;color:inherit;display:block}
+.mod:hover{border-color:var(--indigo)}
+.mod .c{font-family:var(--mono);font-size:.68rem;color:var(--indigo);letter-spacing:.08em}
+.mod .t{font-weight:600;margin:.25rem 0 .3rem;font-size:.95rem}
+.mod .d{font-size:.83rem;color:var(--muted);line-height:1.5}
+
+footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.85rem}
+.toast{position:fixed;left:50%;bottom:1.5rem;transform:translateX(-50%);background:var(--card);
+  border:1px solid var(--border);border-radius:10px;padding:.7rem 1.1rem;font-size:.88rem;z-index:90;
+  box-shadow:0 8px 30px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+
+<nav class="top">
+<a class="brand" href="../index.html">TeamTowers <span>Humà</span></a>
+<div class="links">
+<a href="comando.html">El Comando</a>
+<a href="joc.html">El joc</a>
+<a href="formacio.html">Formació</a>
+<a href="index.html">Obre SOS →</a>
+</div>
+</nav>
+
+<div class="hero">
+<div class="hero-inner">
+<div class="tag">Programa d'escola · 6 a 13 anys</div>
+<h1>La Fàbrica de Superherois<br><em>i l'Escola de Superpoders</em></h1>
+<p class="sub">Dues accions. A la primera, cada infant <strong>dissenya el seu cromo</strong>. A la segona,
+<strong>se'n guanya els superpoders</strong> ajudant algú de debò —i és aquest algú qui ho diu, no el mestre.
+És el Comando Molekulon a l'aula, i per sota és el SOS: mapa de recursos, intercanvis i confirmació.</p>
+<div class="ctas">
+<a class="cta cta-primary" href="#fabrica">✦ Fes un cromo ara</a>
+<a class="cta cta-ghost" href="#guia">📘 Guia per al professorat</a>
+</div>
+</div>
+</div>
+
+<!-- ══ LES DUES ACCIONS ══ -->
+<section id="programa">
+<span class="et">El programa</span>
+<h2>Dues accions, i la segona és la que compta</h2>
+<p class="lead">Un programa de superherois que s'acaba amb el dibuix és una manualitat. El que el converteix
+en una altra cosa és que després passi alguna cosa a la classe que abans no passava.</p>
+
+<div class="accions">
+  <div class="acc a1">
+    <div class="n">Acció 1</div>
+    <h3>🏭 La Fàbrica</h3>
+    <p>Cada infant fabrica el seu cromo: com és, com va vestit, què diu que sap fer i què pot deixar.</p>
+    <ul>
+      <li>Dues sessions d'una hora.</li>
+      <li>Se'n surt amb <strong>un cromo imprès</strong> i cap estrella.</li>
+      <li>El que es tria aquí és la <strong>identitat</strong>: no s'ha guanyat res encara.</li>
+    </ul>
+  </div>
+  <div class="acc a2">
+    <div class="n">Acció 2</div>
+    <h3>🏫 L'Escola</h3>
+    <p>Els superpoders es desenvolupen: es fa el mapa del que hi ha a la classe, es demana, s'ajuda i es confirma.</p>
+    <ul>
+      <li>Sis sessions repartides pel trimestre.</li>
+      <li>Cada ajuda confirmada per qui l'ha rebuda posa <strong>una estrella</strong> al cromo.</li>
+      <li>Se'n surt amb el <strong>mapa de recursos de la classe</strong> fet pels infants.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="regla">
+<p><strong>La regla que ho sosté tot: el cromo es dissenya, els superpoders es guanyen.</strong></p>
+<p>El color del vestit, els cabells, l'emblema i el nom d'heroi els tria qui el fa, i ningú els discuteix:
+són seus. Les estrelles, no. Una estrella només apareix quan <strong>una altra persona diu que l'has
+ajudada</strong>. Ni el mestre la pot posar, ni es pot bescanviar, ni es pot comprar amb bon comportament.</p>
+<p>Això no és una norma del joc: és exactament com funciona el cromo dels adults al SOS, on una aportació
+val quan qui l'ha rebuda la signa. Si a l'aula ho féssim d'una altra manera, ensenyaríem que el
+reconeixement el reparteix qui mana.</p>
+</div>
+</section>
+
+<!-- ══ ACCIÓ 1 · LA FÀBRICA ══ -->
+<section id="fabrica">
+<span class="et">Acció 1</span>
+<h2>🏭 La Fàbrica de Superherois</h2>
+<p class="lead">Tria com és el teu heroi i què saps fer. Es dibuixa sol mentre tries. Quan estigui,
+te'l descarregues i l'imprimeixes: aquest cromo és el teu, i encara no té cap estrella.</p>
+
+<div class="fab">
+  <div class="camps">
+    <div class="camp">
+      <label for="fNom">Nom d'heroi</label>
+      <input type="text" id="fNom" maxlength="22" placeholder="Capitana Tramuntana" autocomplete="off">
+      <p class="ajuda">Un nom inventat, <strong>no el teu nom real</strong>. El cromo es penja a la paret i
+      es projecta: el que hi ha d'anar és el nom d'heroi.</p>
+    </div>
+
+    <div class="camp">
+      <span class="lb">Els dos colors del vestit</span>
+      <div style="display:flex;gap:1.2rem;flex-wrap:wrap">
+        <div><div class="ajuda" style="margin:0 0 .35rem">Principal</div><div class="mostra" id="fCol1"></div></div>
+        <div><div class="ajuda" style="margin:0 0 .35rem">Segon color</div><div class="mostra" id="fCol2"></div></div>
+      </div>
+    </div>
+
+    <div class="camp">
+      <span class="lb">Com ets</span>
+      <div class="ajuda" style="margin:0 0 .35rem">Pell</div>
+      <div class="mostra" id="fPell"></div>
+      <div class="ajuda" style="margin:.7rem 0 .35rem">Cabell</div>
+      <div class="mostra" id="fCabell"></div>
+      <div class="ajuda" style="margin:.7rem 0 .35rem">Color del cabell</div>
+      <div class="mostra" id="fColCab"></div>
+      <div class="ajuda" style="margin:.7rem 0 .35rem">Ulls</div>
+      <div class="mostra" id="fUlls"></div>
+    </div>
+
+    <div class="camp">
+      <span class="lb">La roba</span>
+      <div class="mostra" id="fRoba"></div>
+      <div class="ajuda" style="margin:.7rem 0 .35rem">Emblema al pit</div>
+      <div class="mostra" id="fEmblema"></div>
+    </div>
+
+    <div class="camp">
+      <label for="fPoder">Superpoder · què saps fer per algú</label>
+      <select id="fPoder"></select>
+      <p class="ajuda">Aquí encara només <em>ho dius</em>. A l'Acció 2 es veurà.</p>
+    </div>
+
+    <div class="camp">
+      <label for="fArma">Superarma · què pots deixar</label>
+      <select id="fArma"></select>
+      <p class="ajuda">Una cosa de casa o de l'escola que pots deixar a algú i recuperar. Una superarma
+      que no es deixa mai no és una superarma: és una joguina.</p>
+    </div>
+
+    <div class="ia">
+      <h4>🔮 Versió avançada amb IA</h4>
+      <p>Demana una versió més treballada del cromo: noms alternatius, l'origen de l'heroi, una estrofa
+      i dues missions concretes per a aquesta setmana. Necessita una clau d'Anthropic pròpia de l'escola.</p>
+      <div class="avis"><strong>El que s'envia és només el cromo</strong> —nom d'heroi, colors, poder i
+      arma— i mai cap nom real, cap curs ni cap escola. No hi ha camp per posar-hi el nom real: no és una
+      casella que es pugui desmarcar per error.</div>
+      <div class="form-linia">
+        <div style="flex:2"><label for="iaKey">Clau d'Anthropic (es desa en aquest navegador)</label>
+        <input type="text" id="iaKey" placeholder="sk-ant-…" autocomplete="off"></div>
+        <div style="flex:0 0 auto"><button class="btn" id="iaGo" type="button">Genera</button></div>
+      </div>
+      <div class="ia-out" id="iaOut"></div>
+    </div>
+  </div>
+
+  <div class="cromo-wrap">
+    <canvas id="cvCromo" width="600" height="840" aria-label="El cromo que estàs fent"></canvas>
+    <div class="accions-cromo">
+      <button class="btn btn-pri" id="btBaixa" type="button">⬇ Baixa'l</button>
+      <button class="btn" id="btAtzar" type="button">🎲 Sorpresa</button>
+      <button class="btn" id="btTaula" type="button">➕ A la classe</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══ ACCIÓ 2 · L'ESCOLA ══ -->
+<section id="escola">
+<span class="et">Acció 2</span>
+<h2>🏫 L'Escola de Superpoders</h2>
+<p class="lead">Quan tota la classe té cromo, es veu una cosa que abans no es veia: <strong>tot el que hi ha
+dins d'una aula</strong>. Aquest és el mapa de recursos, i és la mateixa feina que fem amb un ajuntament,
+amb menys paperassa.</p>
+
+<div class="taula">
+  <div class="grup">
+    <h4>🦸 Qui hi ha i què sap fer</h4>
+    <div id="tCromos"><p class="buit">Encara no hi ha cap cromo. Fes-ne un a la Fàbrica i prem «A la classe».</p></div>
+    <div class="form-linia">
+      <div><label for="tHeroi">Nom d'heroi</label><input type="text" id="tHeroi" maxlength="22" autocomplete="off"></div>
+      <div><label for="tPoder">Superpoder</label><select id="tPoder"></select></div>
+      <div><label for="tArma">Superarma</label><select id="tArma"></select></div>
+      <div style="flex:0 0 auto"><button class="btn btn-sm" id="tAfegeix" type="button">Afegeix</button></div>
+    </div>
+  </div>
+
+  <div class="grup">
+    <h4>🔁 Intercanvis</h4>
+    <p class="ajuda" style="margin:0 0 .6rem;font-size:.85rem;color:var(--muted)">Qui ha ajudat qui. L'estrella
+    la posa <strong>qui ha rebut l'ajuda</strong> quan prem «Sí, m'ha ajudat».</p>
+    <div id="tInter"><p class="buit">Cap intercanvi encara.</p></div>
+    <div class="form-linia">
+      <div><label for="iQui">Ha ajudat</label><select id="iQui"></select></div>
+      <div><label for="iA">A</label><select id="iA"></select></div>
+      <div style="flex:2"><label for="iQue">En què</label><input type="text" id="iQue" maxlength="60" autocomplete="off"></div>
+      <div style="flex:0 0 auto"><button class="btn btn-sm" id="iAfegeix" type="button">Apunta</button></div>
+    </div>
+  </div>
+</div>
+
+<h3>El mapa de recursos de la classe</h3>
+<p style="color:var(--light);max-width:72ch">Agrupat per superpoder i per superarma. És el que es projecta a
+la paret: en un cop d'ull es veu qui pot ajudar en què, i què hi ha per deixar. Quan un superpoder no el
+té ningú, també es veu —i això és una notícia, no un forat.</p>
+<div class="taula" style="margin-top:1rem">
+  <div class="grup"><h4>Superpoders de la classe</h4><div id="tMapaP"><p class="buit">Encara res.</p></div></div>
+  <div class="grup"><h4>Superarmes disponibles</h4><div id="tMapaA"><p class="buit">Encara res.</p></div></div>
+</div>
+
+<div class="avis" style="margin-top:1.4rem"><strong>Això no surt d'aquest ordinador.</strong> La taula de la
+classe es desa al navegador d'aquest dispositiu i no viatja enlloc: ni a un servidor nostre, ni a la IA.
+Per això hi van noms d'heroi i no noms d'infants. Al final de curs, <button class="btn btn-sm" id="tEsborra" type="button">esborra-ho tot</button>.</div>
+</section>
+
+<!-- ══ GUIA METODOLÒGICA ══ -->
+<section id="guia">
+<span class="et">Per al professorat</span>
+<h2>📘 Guia metodològica</h2>
+<p class="lead">Vuit sessions d'una hora repartides en un trimestre: dues de Fàbrica i sis d'Escola. Es pot
+fer amb ordinadors o només amb paper —el cromo es pot dibuixar a mà i la taula de la classe pot ser una
+cartolina. El que no es pot canviar és qui posa les estrelles.</p>
+
+<h3>Acció 1 · La Fàbrica</h3>
+
+<details class="sessio">
+<summary>Sessió 1 · Qui són i què fan <span class="dur">60 min</span></summary>
+<div class="cos">
+  <ol>
+    <li><strong>10 min · La pregunta.</strong> «Qui ha ajudat algú aquesta setmana?» Es recullen a la
+    pissarra sense valorar-les. Surten coses petites: explicar un exercici, deixar un boli, acompanyar algú
+    al pati. Aquesta llista és el material de tot el programa.</li>
+    <li><strong>15 min · El Comando.</strong> Es presenten tres o quatre personatges del
+    <a href="comando.html">Comando Molekulon</a> amb el seu poder. La idea que ha de quedar: cada poder és
+    una manera de sostenir un grup, i n'hi ha de silenciosos.</li>
+    <li><strong>25 min · Fabricar.</strong> Cadascú fa el seu cromo. Nom d'heroi, colors, poder, arma.</li>
+    <li><strong>10 min · La ronda.</strong> Cadascú ensenya el cromo i diu només el poder. Ningú comenta.</li>
+  </ol>
+  <p class="diu">«Aquest cromo encara no té cap estrella. Les estrelles no les poso jo: les posa qui
+  ajudeu.»</p>
+  <p><strong>Material:</strong> un ordinador o tauleta per parella, o cartolines A5 i colors.</p>
+  <p><strong>Ull:</strong> algú voldrà posar-hi el seu nom real. Es reconduce sense drama —el nom d'heroi
+  és el que es penja a la paret i el que es projecta.</p>
+</div>
+</details>
+
+<details class="sessio">
+<summary>Sessió 2 · La superarma i la promesa <span class="dur">60 min</span></summary>
+<div class="cos">
+  <ol>
+    <li><strong>15 min · Què vol dir deixar.</strong> Es parla de la diferència entre regalar i deixar. Una
+    superarma es deixa i torna. Qui no vol deixar res, no en posa: també és una resposta honesta.</li>
+    <li><strong>20 min · Acabar el cromo</strong> i imprimir-lo.</li>
+    <li><strong>15 min · La paret.</strong> Es pengen tots els cromos junts. Es compta quants poders
+    diferents hi ha a la classe.</li>
+    <li><strong>10 min · El pacte.</strong> Cadascú diu en veu alta una cosa que farà per algú aquesta
+    setmana. S'apunta. No es revisa fins a la sessió següent.</li>
+  </ol>
+  <p class="diu">«Miren quants poders diferents hi ha en aquesta sala. Fins avui no ho sabíem.»</p>
+</div>
+</details>
+
+<h3>Acció 2 · L'Escola</h3>
+
+<details class="sessio">
+<summary>Sessió 3 · El mapa de la classe <span class="dur">60 min</span></summary>
+<div class="cos">
+  <ol>
+    <li><strong>20 min · Muntar el mapa.</strong> Es passen tots els cromos a la taula de la classe i es
+    projecta el mapa agrupat per poder i per arma.</li>
+    <li><strong>20 min · Llegir-lo.</strong> Tres preguntes: quin poder tenim molt repetit, quin en tenim
+    un de sol, i quin no en tenim cap. Es parla de què vol dir dependre d'una sola persona.</li>
+    <li><strong>20 min · La primera demanda.</strong> Cadascú escriu una cosa que necessita. Es busca al
+    mapa qui la podria cobrir.</li>
+  </ol>
+  <p class="diu">«Si l'única persona que sap fer això falta un dia, què passa?» És la mateixa pregunta que
+  fem als ajuntaments, i és per això que existeix aquesta casa.</p>
+</div>
+</details>
+
+<details class="sessio">
+<summary>Sessions 4, 5 i 6 · Demanar, ajudar, confirmar <span class="dur">3 × 60 min</span></summary>
+<div class="cos">
+  <p>Les tres funcionen igual i es fan separades per una o dues setmanes: entremig és quan passen les coses.</p>
+  <ol>
+    <li><strong>15 min · Les confirmacions.</strong> S'obre la taula i qui ha rebut ajuda prem el botó. Cada
+    confirmació és una estrella. <strong>Es fa en veu alta i davant de tothom</strong>: la confirmació és
+    l'acte pedagògic, no l'estrella.</li>
+    <li><strong>25 min · Emparellar.</strong> Es llegeixen les demandes obertes i es busca al mapa qui les
+    pot cobrir. S'acorda què farà cadascú i per a quan.</li>
+    <li><strong>20 min · El que no ha anat.</strong> Es parla del que s'ha promès i no s'ha fet, sense
+    càstig i sense nom si cal. Que un compromís no es compleixi és informació: normalment vol dir que era
+    massa gros o que la persona ja en sostenia tres.</li>
+  </ol>
+  <p><strong>Ull:</strong> si sempre ajuden les mateixes tres persones, ja tens el problema que el
+  programa vol ensenyar. Es fa visible al mapa i es parla. No es reparteix per decret.</p>
+</div>
+</details>
+
+<details class="sessio">
+<summary>Sessió 7 · La superarma en marxa <span class="dur">60 min</span></summary>
+<div class="cos">
+  <ol>
+    <li><strong>15 min · Inventari.</strong> Què s'ha deixat de debò aquest trimestre i què ha tornat.</li>
+    <li><strong>25 min · La biblioteca de les coses.</strong> Es munta una caixa real a l'aula amb les
+    superarmes que es poden deixar, amb una fitxa: què és, de qui és, qui la té ara.</li>
+    <li><strong>20 min · Fora de l'aula.</strong> Es busca una cosa que la classe pugui deixar a una altra
+    classe, o a l'escola. Aquí el programa surt de la porta.</li>
+  </ol>
+</div>
+</details>
+
+<details class="sessio">
+<summary>Sessió 8 · Els cromos amb estrelles <span class="dur">60 min</span></summary>
+<div class="cos">
+  <ol>
+    <li><strong>20 min · Reimprimir.</strong> Cada cromo es torna a fer amb les estrelles guanyades. Es
+    comparen amb els del primer dia.</li>
+    <li><strong>20 min · Qui n'ha guanyat cap.</strong> Es mira amb calma, sense assenyalar. Sovint no és
+    que no hagin ajudat: és que ningú ho ha confirmat. Es repassa: ajudar sense que consti és igual de
+    valuós i menys visible, i això també passa als pobles.</li>
+    <li><strong>20 min · El relleu.</strong> Cada infant ensenya el seu poder a una altra persona de la
+    classe. Un poder que només té una persona és una fragilitat; un poder ensenyat es queda a l'aula.</li>
+  </ol>
+  <p class="diu">«Un superpoder que només té una persona s'acaba el dia que aquesta persona no hi és.»
+  És el quart pas del mètode: formar gent i marxar.</p>
+</div>
+</details>
+
+<h3>Adaptació per edats</h3>
+<div class="edats">
+  <div class="edat">
+    <div class="n">6 – 8 ANYS</div>
+    <h4>Tot amb dibuix i en veu alta</h4>
+    <p>El cromo es dibuixa a mà i el generador el fa servir el mestre a la pissarra digital. Un sol
+    superpoder i una sola superarma. La confirmació es fa amb un gomet enganxat pel company, no amb el
+    botó. Les sessions es parteixen en trams de 20 minuts.</p>
+  </div>
+  <div class="edat">
+    <div class="n">9 – 10 ANYS</div>
+    <h4>Ells fabriquen, ells confirmen</h4>
+    <p>Cadascú fa el seu cromo a l'ordinador. Es pot introduir la idea de demanda: escriure què necessites
+    és més difícil que dir què saps fer, i és la meitat que costa. El mapa es llegeix en grup.</p>
+  </div>
+  <div class="edat">
+    <div class="n">11 – 13 ANYS</div>
+    <h4>La classe es gestiona sola</h4>
+    <p>Dues persones fan de guardians de la taula cada setmana i van rotant. S'hi pot afegir el compte
+    d'hores i la pregunta difícil: què passa quan algú dona molt i no rep mai. Aquí ja es pot obrir el
+    <a href="joc.html">joc del Comando</a> i el <a href="index.html">SOS</a> de debò.</p>
+  </div>
+</div>
+
+<h3>Avaluació · què es mira i què no</h3>
+<div class="taula-scroll">
+<table class="mapa">
+<thead><tr><th>Es mira</th><th>No es mira</th><th>Per què</th></tr></thead>
+<tbody>
+<tr><td>Quants poders diferents hi ha a la classe al final</td><td>Qui té més estrelles</td><td>Un rànquing d'estrelles converteix ajudar en competir, i llavors s'ajuda per l'estrella</td></tr>
+<tr><td>Quantes persones han rebut ajuda</td><td>Quantes n'han donat</td><td>Una classe on tothom dona i ningú demana no funciona: demanar és la meitat difícil</td></tr>
+<tr><td>Si la càrrega es reparteix o cau sobre tres</td><td>El volum total d'intercanvis</td><td>És exactament el que mesurem als projectes de debò</td></tr>
+<tr><td>Quants poders s'han ensenyat a algú altre</td><td>La qualitat del dibuix</td><td>El cromo és identitat, no una nota de plàstica</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Quan es tuerce</h3>
+<ul style="color:var(--light);max-width:72ch">
+<li><strong>Ningú demana res.</strong> És el cas normal les dues primeres setmanes. Es comença pel mestre
+demanant una cosa de veritat a la classe.</li>
+<li><strong>Es fan estrelles entre amics.</strong> Passa. Es demana que la confirmació digui <em>què</em>
+va fer i <em>quan</em>: una confirmació que no es pot explicar es retira sense drama.</li>
+<li><strong>Algú es queda sense cap estrella.</strong> No és un fracàs de l'infant, és un forat del mapa.
+Se li busca una demanda que encaixi amb el seu poder abans de la sessió següent.</li>
+<li><strong>Un infant no vol posar-hi res.</strong> Es respecta. Pot fer de guardià de la taula, que és
+una feina i surt al mapa.</li>
+</ul>
+</section>
+
+<!-- ══ DADES ══ -->
+<section id="dades">
+<span class="et">Menors</span>
+<h2>🔒 Dades dels infants</h2>
+<p class="lead">Un programa d'escola que demana dades d'infants a canvi de fer-los il·lusió és una altra
+cosa. Aquestes són les regles, i estan al codi, no en un compromís.</p>
+<ul style="color:var(--light);max-width:72ch">
+<li><strong>No hi ha camp per al nom real.</strong> Ni a la Fàbrica ni a la taula de la classe. El que hi
+va és el nom d'heroi.</li>
+<li><strong>La taula de la classe no surt del navegador.</strong> Es desa en aquest dispositiu i prou. No
+hi ha servidor, ni compte, ni còpia nostra.</li>
+<li><strong>A la IA hi va el cromo i res més.</strong> El que s'envia és una llista tancada de camps
+—nom d'heroi, colors, poder, arma— escrita al codi. No és una casella que es pugui deixar marcada.</li>
+<li><strong>La clau d'IA és de l'escola.</strong> Es desa en aquest navegador i es pot esborrar. Sense clau,
+tot el programa funciona igual: la IA és l'única part opcional.</li>
+<li><strong>Els cromos impresos són dels infants.</strong> Si es publiquen enlloc, ho decideix l'escola amb
+les famílies, i el que hi surt segueix sent el nom d'heroi.</li>
+</ul>
+<p style="color:var(--light);max-width:72ch;margin-top:1rem">La formació que hi ha darrere d'aquest apartat
+és el <a href="formacio.html#m15">mòdul 15 · Dades, privadesa i RGPD</a>.</p>
+</section>
+
+<!-- ══ FORMACIÓ ══ -->
+<section id="formacio">
+<span class="et">Formació del professorat</span>
+<h2>🎓 D'on surt tot això</h2>
+<p class="lead">El programa d'escola no és una cosa a part: és el SOS explicat a mida d'una aula. Aquests
+són els mòduls de la formació on hi ha el que fa servir cada sessió.</p>
+<div class="mods">
+<a class="mod" href="formacio.html#m7"><div class="c">MÒDUL 7</div><div class="t">Comando Molekulon · Reputació</div><div class="d">D'on surten els personatges, i per què la reputació es guanya i no es reparteix. És l'Acció 1 sencera.</div></a>
+<a class="mod" href="formacio.html#m4"><div class="c">MÒDUL 4</div><div class="t">Banc de temps i Biblioteca de les coses</div><div class="d">Els intercanvis i les superarmes. La caixa de l'aula és una biblioteca de les coses de mida petita.</div></a>
+<a class="mod" href="formacio.html#m3"><div class="c">MÒDUL 3</div><div class="t">Value Network Analysis</div><div class="d">Com es llegeix un mapa de recursos: qui dona què a qui, i què passa quan tot passa per una persona.</div></a>
+<a class="mod" href="formacio.html#m9"><div class="c">MÒDUL 9</div><div class="t">Facilitació i dinamització de grups</div><div class="d">Com es condueixen les sessions: la ronda, el silenci, i qui parla quan no parla ningú.</div></a>
+<a class="mod" href="formacio.html#m11"><div class="c">MÒDUL 11</div><div class="t">Conflictes, cures i relleu</div><div class="d">Per a l'apartat «quan es tuerce», i per a la sessió 8: ensenyar el teu poder a algú altre.</div></a>
+<a class="mod" href="formacio.html#m15"><div class="c">MÒDUL 15</div><div class="t">Dades, privadesa i RGPD</div><div class="d">Per què no hi ha camp per al nom real, i què cal tenir parlat amb les famílies abans de començar.</div></a>
+</div>
+<p style="color:var(--light);margin-top:1.4rem">Qui vulgui portar el programa a més d'una aula, el camí
+segueix pel <a href="formacio.html#m16">mòdul 16 · Formació de formadors</a>: el mestre que ha fet un cop
+el programa pot formar el següent, que és el que fa que això no depengui de nosaltres.</p>
+</section>
+
+<footer>
+Fàbrica de Superherois · un programa de <a href="../index.html">TeamTowers Humà</a> ·
+<a href="comando.html">El Comando</a> · <a href="joc.html">El joc</a> ·
+<a href="formacio.html">Formació</a> · <a href="index.html">Obre SOS</a>
+</footer>
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════════════════════
+   La Fàbrica de Superherois · el programa d'escola
+   ───────────────────────────────────────────────────────────────────────────
+   Dues accions i una sola regla dura: **el cromo es dissenya i els superpoders
+   es guanyen**. El que es tria a la Fàbrica és identitat i no s'ha guanyat res;
+   una estrella només apareix quan una altra persona confirma que l'has ajudada.
+   És la mateixa regla del cromo dels adults (V78: no es pot aconseguir de cap
+   altra manera, ni regalat ni bescanviat), i si a l'aula la relaxéssim
+   ensenyaríem que el reconeixement el reparteix qui mana.
+
+   Tres coses més que són decisions i no detalls:
+
+   · **No hi ha camp per al nom real.** Ni aquí ni a la taula de la classe. El
+     que evita que un nom d'infant viatgi no és una casella per desmarcar: és
+     que el camp no existeixi.
+   · **La taula de la classe viu al navegador** i enlloc més.
+   · **A la IA hi va una llista tancada de camps** (`CAMPS_IA`). El que no és
+     a la llista no surt, encara que algú l'afegeixi a l'estat més endavant.
+
+   Veda 114. */
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;
+  document.body.appendChild(d);setTimeout(()=>d.remove(),2600);}
+
+/* ── El que es pot triar ───────────────────────────────────────────────────
+   Cada superpoder porta la categoria del SOS a la qual correspon (`cat`), i
+   cada superarma el tipus d'objecte de la biblioteca de les coses (`typ`). No
+   és decoració: és el que fa que això sigui el SOS a mida d'aula i no un joc
+   de superherois amb el logotip a sobre. Si un dia el catàleg del SOS canvia,
+   aquí també. */
+const PODERS=[
+  {id:'explicar',lbl:'Ho explico fins que s\'entén',cat:'idiomes',ic:'💬'},
+  {id:'companyia',lbl:'No deixo ningú sol',cat:'acompanyament',ic:'🤝'},
+  {id:'arreglar',lbl:'Arreglo el que s\'ha trencat',cat:'reparacions',ic:'🔧'},
+  {id:'cuinar',lbl:'Cuino per a molta gent',cat:'cuina',ic:'🍲'},
+  {id:'plantes',lbl:'Faig créixer les plantes',cat:'jardineria',ic:'🌱'},
+  {id:'pantalles',lbl:'Entenc les pantalles',cat:'informatica',ic:'💻'},
+  {id:'festa',lbl:'Munto la festa',cat:'festes',ic:'🎉'},
+  {id:'calma',lbl:'Calmo una baralla',cat:'salut',ic:'🕊️'},
+  {id:'inventar',lbl:'Invento coses amb el que sobra',cat:'bricolatge',ic:'💡'},
+  {id:'cosir',lbl:'Cuso i arreglo roba',cat:'costura',ic:'🧵'},
+  {id:'ordre',lbl:'Deixo les coses on toca',cat:'neteja',ic:'🧹'},
+  {id:'petits',lbl:'Cuido els més petits',cat:'infants',ic:'🧸'}
+];
+const ARMES=[
+  {id:'eines',lbl:'La caixa d\'eines',typ:'bricolatge',ic:'🧰'},
+  {id:'pilota',lbl:'La pilota',typ:'esport',ic:'⚽'},
+  {id:'bici',lbl:'La bicicleta',typ:'esport',ic:'🚲'},
+  {id:'dibuix',lbl:'El material de dibuix',typ:'festes',ic:'🎨'},
+  {id:'altaveu',lbl:'L\'altaveu',typ:'festes',ic:'🔊'},
+  {id:'paella',lbl:'La paella gran',typ:'cuina',ic:'🍳'},
+  {id:'llavors',lbl:'La regadora i les llavors',typ:'jardineria',ic:'🌻'},
+  {id:'ordinador',lbl:'L\'ordinador vell',typ:'electronica',ic:'💻'},
+  {id:'joguines',lbl:'Les joguines dels petits',typ:'infancia',ic:'🧸'},
+  {id:'farmaciola',lbl:'La farmaciola',typ:'salut',ic:'🩹'}
+];
+const COLORS=['#e53935','#fb8c00','#fdd835','#43a047','#00acc1','#1e88e5','#5e35b1','#d81b60','#f5f5f7','#26262f'];
+const PELLS=['#f8d5c2','#f0c3a0','#d9a271','#b87d4f','#8d5524','#5c3a21'];
+const CABELLS=[{id:'curt',lbl:'Curt'},{id:'llarg',lbl:'Llarg'},{id:'arrissat',lbl:'Arrissat'},
+  {id:'trenes',lbl:'Trenes'},{id:'monyo',lbl:'Monyo'},{id:'rapat',lbl:'Rapat'}];
+const COLS_CAB=['#2b2b2b','#5d4037','#a1662f','#e0b34a','#c62828','#7e57c2','#26c6da','#eeeeee'];
+const ULLS=['#3e2723','#5d4037','#2e7d32','#1565c0','#6a1b9a','#00838f'];
+const ROBES=[{id:'capa',lbl:'Amb capa'},{id:'caputxa',lbl:'Amb caputxa'},{id:'armilla',lbl:'Amb armilla'},{id:'res',lbl:'Sense res'}];
+const EMBLEMES=['⚡','★','🌀','🔥','🌿','🎵','🛡️','🐝','🌊','🦅','♾️','❤️'];
+
+/* ── L'estat del cromo ──────────────────────────────────────────────────── */
+const C={nom:'',col1:COLORS[5],col2:COLORS[3],pell:PELLS[1],cabell:'curt',colCab:COLS_CAB[1],
+  ulls:ULLS[0],roba:'capa',emblema:EMBLEMES[0],poder:PODERS[0].id,arma:ARMES[0].id,estrelles:0};
+
+const poderDe=id=>PODERS.find(p=>p.id===id)||PODERS[0];
+const armaDe=id=>ARMES.find(a=>a.id===id)||ARMES[0];
+
+/* ── El dibuix ─────────────────────────────────────────────────────────────
+   Es pinta al canvas i no en SVG perquè el que ha de sortir de tot això és un
+   fitxer que es pugui imprimir i penjar a la paret. Un cromo que només existeix
+   dins de la pestanya no serveix per a una aula. */
+function pinta(){
+  const cv=$('#cvCromo'),W=600,H=840,x=cv.getContext('2d');
+  const p=poderDe(C.poder),a=armaDe(C.arma);
+  const g=x.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,C.col1);g.addColorStop(1,'#12121a');
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.fillStyle='rgba(0,0,0,.28)';x.fillRect(0,0,W,H);
+  x.strokeStyle=C.col2;x.lineWidth=10;x.strokeRect(7,7,W-14,H-14);
+  x.textAlign='center';
+
+  /* La figura. Capa primer, que va al darrere. */
+  const cx=300,cy=250;
+  if(C.roba==='capa'){
+    x.fillStyle=C.col2;x.beginPath();
+    x.moveTo(cx-46,cy+18);x.lineTo(cx-104,cy+236);x.lineTo(cx+104,cy+236);x.lineTo(cx+46,cy+18);
+    x.closePath();x.fill();
+  }
+  /* Cames i braços. */
+  x.fillStyle=C.col1;
+  x.fillRect(cx-40,cy+150,30,86);x.fillRect(cx+10,cy+150,30,86);
+  x.fillRect(cx-76,cy+38,26,104);x.fillRect(cx+50,cy+38,26,104);
+  x.fillStyle=C.pell;
+  x.beginPath();x.arc(cx-63,cy+150,15,0,7);x.fill();
+  x.beginPath();x.arc(cx+63,cy+150,15,0,7);x.fill();
+  /* Cos. */
+  x.fillStyle=C.col1;
+  x.beginPath();x.roundRect?x.roundRect(cx-52,cy+18,104,140,16):x.rect(cx-52,cy+18,104,140);x.fill();
+  if(C.roba==='armilla'){x.fillStyle=C.col2;x.fillRect(cx-52,cy+18,26,140);x.fillRect(cx+26,cy+18,26,140);}
+  /* Cinturó. */
+  x.fillStyle=C.col2;x.fillRect(cx-54,cy+118,108,18);
+  /* Emblema. */
+  x.font='46px system-ui,sans-serif';x.textBaseline='middle';
+  x.fillText(C.emblema,cx,cy+72);
+  /* Cap. */
+  x.fillStyle=C.pell;x.beginPath();x.arc(cx,cy-40,54,0,7);x.fill();
+  pintaCabell(x,cx,cy-40);
+  if(C.roba==='caputxa'){
+    x.fillStyle=C.col2;x.beginPath();x.arc(cx,cy-40,60,Math.PI,0);x.fill();
+    x.fillRect(cx-60,cy-42,120,10);
+  }
+  /* Ulls i boca. */
+  x.fillStyle=C.ulls;
+  x.beginPath();x.arc(cx-19,cy-44,8,0,7);x.fill();
+  x.beginPath();x.arc(cx+19,cy-44,8,0,7);x.fill();
+  x.strokeStyle='rgba(0,0,0,.55)';x.lineWidth=3;
+  x.beginPath();x.arc(cx,cy-22,16,.25,Math.PI-.25);x.stroke();
+
+  /* El text. */
+  x.textBaseline='alphabetic';
+  x.fillStyle='#fff';
+  encabeix(x,C.nom||'El teu nom d\'heroi',cx,560,460,40,24,'700');
+  x.strokeStyle='rgba(255,255,255,.2)';x.lineWidth=2;
+  x.beginPath();x.moveTo(70,586);x.lineTo(W-70,586);x.stroke();
+
+  x.fillStyle='rgba(255,255,255,.55)';x.font='400 16px system-ui,sans-serif';
+  x.fillText('SUPERPODER',cx,620);
+  x.fillStyle='#fff';
+  encabeix(x,p.ic+'  '+p.lbl,cx,652,470,25,17,'600');
+
+  x.fillStyle='rgba(255,255,255,.55)';x.font='400 16px system-ui,sans-serif';
+  x.fillText('SUPERARMA',cx,700);
+  x.fillStyle='#fff';
+  encabeix(x,a.ic+'  '+a.lbl,cx,732,470,25,17,'600');
+
+  /* Les estrelles i, si no n'hi ha cap, per què. Aquesta línia va DINS de la
+     imatge a posta: el cromo viatja sol i ha de dir sempre què s'ha guanyat i
+     què s'ha triat. */
+  if(C.estrelles>0){
+    x.fillStyle='#ffd700';x.font='30px system-ui,sans-serif';
+    x.fillText('★'.repeat(Math.min(10,C.estrelles)),cx,782);
+    x.fillStyle='rgba(255,255,255,.5)';x.font='400 15px system-ui,sans-serif';
+    x.fillText(C.estrelles+(C.estrelles===1?' ajuda confirmada':' ajudes confirmades'),cx,806);
+  }else{
+    x.fillStyle='rgba(255,255,255,.5)';x.font='400 16px system-ui,sans-serif';
+    x.fillText('Encara cap estrella. Les posa qui ajudis.',cx,790);
+  }
+  return cv;
+}
+function pintaCabell(x,cx,cy){
+  x.fillStyle=C.colCab;
+  if(C.cabell==='rapat'){x.beginPath();x.arc(cx,cy,54,Math.PI*1.08,Math.PI*1.92);x.fill();return;}
+  if(C.cabell==='curt'){x.beginPath();x.arc(cx,cy-6,55,Math.PI,0);x.fill();return;}
+  if(C.cabell==='llarg'){
+    x.beginPath();x.arc(cx,cy-6,55,Math.PI,0);x.fill();
+    x.fillRect(cx-58,cy-8,20,96);x.fillRect(cx+38,cy-8,20,96);return;
+  }
+  if(C.cabell==='arrissat'){
+    [[-38,-30],[0,-46],[38,-30],[-52,-4],[52,-4]].forEach(d=>{
+      x.beginPath();x.arc(cx+d[0],cy+d[1],24,0,7);x.fill();});
+    return;
+  }
+  if(C.cabell==='trenes'){
+    x.beginPath();x.arc(cx,cy-6,55,Math.PI,0);x.fill();
+    x.fillRect(cx-62,cy-4,18,74);x.fillRect(cx+44,cy-4,18,74);
+    x.beginPath();x.arc(cx-53,cy+74,13,0,7);x.fill();
+    x.beginPath();x.arc(cx+53,cy+74,13,0,7);x.fill();return;
+  }
+  /* monyo */
+  x.beginPath();x.arc(cx,cy-6,55,Math.PI,0);x.fill();
+  x.beginPath();x.arc(cx,cy-62,24,0,7);x.fill();
+}
+/* Un nom llarg no pot sortir de la targeta. Primer s'encongeix la lletra i
+   només es retalla si ni així hi cap: «Capitana Tramu…» és el nom d'una altra
+   heroïna, i el nom que ha triat una criatura de vuit anys no és el lloc on
+   estalviar píxels. */
+function encabeix(x,txt,cx,y,ample,gran,petit,pes){
+  let m=gran,s=String(txt);
+  do{x.font=pes+' '+m+'px system-ui,sans-serif';if(x.measureText(s).width<=ample)break;m-=1;}while(m>petit);
+  if(x.measureText(s).width>ample)s=retalla(x,s,ample);
+  x.fillText(s,cx,y);
+  return{mida:m,text:s};
+}
+function retalla(x,txt,ample){
+  let s=String(txt);
+  if(x.measureText(s).width<=ample)return s;
+  while(s.length>1&&x.measureText(s+'…').width>ample)s=s.slice(0,-1);
+  return s+'…';
+}
+
+/* ── Els controls ─────────────────────────────────────────────────────────
+   Es generen des de les llistes de dalt: així no pot passar que la pantalla
+   ofereixi una opció que el dibuix no sap pintar. */
+function tria(cont,opcions,val,posa,fn){
+  const c=$(cont);c.innerHTML='';
+  opcions.forEach(o=>{
+    const b=document.createElement('button');
+    b.type='button';posa(b,o);
+    b.setAttribute('aria-pressed',String(val()===o.v));
+    b.onclick=()=>{fn(o.v);dibuixaControls();pinta();};
+    c.appendChild(b);
+  });
+}
+function dibuixaControls(){
+  const col=(id,get,set)=>tria(id,COLORS.map(v=>({v})),get,(b,o)=>{
+    b.className='color';b.style.background=o.v;b.setAttribute('aria-label','Color '+o.v);},set);
+  col('#fCol1',()=>C.col1,v=>C.col1=v);
+  col('#fCol2',()=>C.col2,v=>C.col2=v);
+  tria('#fPell',PELLS.map(v=>({v})),()=>C.pell,(b,o)=>{
+    b.className='pell';b.style.background=o.v;b.setAttribute('aria-label','To de pell');},v=>C.pell=v);
+  tria('#fCabell',CABELLS.map(o=>({v:o.id,lbl:o.lbl})),()=>C.cabell,(b,o)=>{b.textContent=o.lbl;},v=>C.cabell=v);
+  tria('#fColCab',COLS_CAB.map(v=>({v})),()=>C.colCab,(b,o)=>{
+    b.className='color';b.style.background=o.v;b.setAttribute('aria-label','Color de cabell');},v=>C.colCab=v);
+  tria('#fUlls',ULLS.map(v=>({v})),()=>C.ulls,(b,o)=>{
+    b.className='color';b.style.background=o.v;b.setAttribute('aria-label','Color d\'ulls');},v=>C.ulls=v);
+  tria('#fRoba',ROBES.map(o=>({v:o.id,lbl:o.lbl})),()=>C.roba,(b,o)=>{b.textContent=o.lbl;},v=>C.roba=v);
+  tria('#fEmblema',EMBLEMES.map(v=>({v})),()=>C.emblema,(b,o)=>{b.textContent=o.v;},v=>C.emblema=v);
+}
+function omplePicks(){
+  [['#fPoder',PODERS,'poder'],['#tPoder',PODERS,null]].forEach(([sel,list])=>{
+    $(sel).innerHTML=list.map(p=>'<option value="'+p.id+'">'+esc(p.ic+' '+p.lbl)+'</option>').join('');
+  });
+  [['#fArma',ARMES],['#tArma',ARMES]].forEach(([sel,list])=>{
+    $(sel).innerHTML=list.map(a=>'<option value="'+a.id+'">'+esc(a.ic+' '+a.lbl)+'</option>').join('');
+  });
+}
+
+/* ── La taula de la classe ─────────────────────────────────────────────────
+   Viu al navegador d'aquest dispositiu i enlloc més. Hi van noms d'heroi
+   perquè es projecta a la paret. */
+const CLAU='sos_escola_classe';
+let CLASSE={cromos:[],inter:[]};
+function carrega(){
+  try{const j=JSON.parse(localStorage.getItem(CLAU)||'null');
+    if(j&&Array.isArray(j.cromos))CLASSE={cromos:j.cromos,inter:Array.isArray(j.inter)?j.inter:[]};
+  }catch(e){/* un navegador que no en deixa: el programa funciona igual, sense memòria */}
+}
+function desa(){try{localStorage.setItem(CLAU,JSON.stringify(CLASSE));}catch(e){}}
+const estrelles=heroi=>CLASSE.inter.filter(i=>i.qui===heroi&&i.ok).length;
+
+function afegeixCromo(heroi,poder,arma){
+  heroi=String(heroi||'').trim().slice(0,22);
+  if(!heroi)return{err:'Cal un nom d\'heroi'};
+  if(CLASSE.cromos.some(c=>c.heroi.toLowerCase()===heroi.toLowerCase()))return{err:'Ja hi ha aquest heroi'};
+  CLASSE.cromos.push({heroi,poder:poderDe(poder).id,arma:armaDe(arma).id});
+  desa();return{ok:true};
+}
+function afegeixInter(qui,aqui,que){
+  if(!qui||!aqui)return{err:'Falta qui'};
+  if(qui===aqui)return{err:'Ajudar-se un mateix no compta: l\'estrella la posa una altra persona'};
+  CLASSE.inter.push({qui,aqui,que:String(que||'').trim().slice(0,60),ok:false});
+  desa();return{ok:true};
+}
+/* La confirmació és de qui ha rebut l'ajuda. Que el botó el premi la mateixa
+   persona que l'ha demanada és, precisament, el punt. */
+function confirma(i){if(CLASSE.inter[i]){CLASSE.inter[i].ok=true;desa();}}
+function buida(){CLASSE={cromos:[],inter:[]};desa();}
+
+function pintaClasse(){
+  const cs=CLASSE.cromos;
+  $('#tCromos').innerHTML=cs.length?cs.map(c=>{
+    const p=poderDe(c.poder),a=armaDe(c.arma),e=estrelles(c.heroi);
+    return '<div class="fila"><span class="qui">'+esc(c.heroi)+'</span>'+
+      '<span class="pastilla">'+esc(p.ic+' '+p.lbl)+'</span>'+
+      '<span class="pastilla">'+esc(a.ic)+'</span>'+
+      '<span class="est" style="margin-left:auto">'+(e?'★'.repeat(Math.min(10,e)):'—')+'</span></div>';
+  }).join(''):'<p class="buit">Encara no hi ha cap cromo. Fes-ne un a la Fàbrica i prem «A la classe».</p>';
+
+  $('#tInter').innerHTML=CLASSE.inter.length?CLASSE.inter.map((i,n)=>
+    '<div class="fila"><span><span class="qui">'+esc(i.qui)+'</span> → '+esc(i.aqui)+
+    (i.que?' <span style="color:var(--muted)">· '+esc(i.que)+'</span>':'')+'</span>'+
+    '<span style="margin-left:auto">'+(i.ok?'<span class="est">★ confirmat</span>':
+      '<button class="btn btn-sm" data-conf="'+n+'" type="button">Sí, m\'ha ajudat</button>')+
+    '</span></div>').join(''):'<p class="buit">Cap intercanvi encara.</p>';
+  $('#tInter').querySelectorAll('[data-conf]').forEach(b=>{
+    b.onclick=()=>{confirma(+b.dataset.conf);pintaClasse();toast('Estrella posada');};
+  });
+
+  const perGrup=(llista,clau,meta)=>{
+    const m={};cs.forEach(c=>{(m[c[clau]]=m[c[clau]]||[]).push(c.heroi);});
+    const files=llista.map(o=>({o,gent:m[o.id]||[]})).filter(f=>f.gent.length);
+    if(!files.length)return '<p class="buit">Encara res.</p>';
+    return files.map(f=>'<div class="fila"><span>'+esc(f.o.ic+' '+f.o.lbl)+'</span>'+
+      '<span style="margin-left:auto;color:var(--light)">'+esc(f.gent.join(', '))+'</span></div>').join('')+
+      buitsHTML(llista,m);
+  };
+  $('#tMapaP').innerHTML=perGrup(PODERS,'poder');
+  $('#tMapaA').innerHTML=perGrup(ARMES,'arma');
+
+  const ops=cs.map(c=>'<option value="'+esc(c.heroi)+'">'+esc(c.heroi)+'</option>').join('');
+  $('#iQui').innerHTML=ops;$('#iA').innerHTML=ops;
+}
+/* Un poder que no té ningú també és informació —és la pregunta de la sessió 3—,
+   però no ha d'ocupar tant com els que sí que hi són. */
+function buitsHTML(llista,m){
+  const buits=llista.filter(o=>!(m[o.id]||[]).length);
+  if(!buits.length||!Object.keys(m).length)return '';
+  return '<p class="buit" style="margin-top:.6rem">Ningú encara: '+
+    esc(buits.map(o=>o.lbl).join(' · '))+'</p>';
+}
+
+/* ── La IA · versió avançada del cromo ────────────────────────────────────
+   Llista tancada. El que no és aquí no surt d'aquest navegador, i el nom real
+   no hi pot ser perquè no existeix enlloc del programa. */
+const CAMPS_IA=['heroi','poder','arma','emblema','color1','color2'];
+function carregaIA(){
+  return{heroi:C.nom||'Heroi sense nom',poder:poderDe(C.poder).lbl,arma:armaDe(C.arma).lbl,
+    emblema:C.emblema,color1:C.col1,color2:C.col2};
+}
+function payloadIA(){
+  const brut=carregaIA(),net={};
+  CAMPS_IA.forEach(k=>{if(brut[k]!==undefined)net[k]=brut[k];});
+  return net;
+}
+const IA_CLAU='sos_escola_aikey';
+function clau(){try{return localStorage.getItem(IA_CLAU)||'';}catch(e){return '';}}
+function desaClau(k){try{k?localStorage.setItem(IA_CLAU,k):localStorage.removeItem(IA_CLAU);}catch(e){}}
+
+const IA_EINA={name:'cromo_avancat',description:'Retorna la versió treballada del cromo.',
+  input_schema:{type:'object',properties:{
+    noms:{type:'array',items:{type:'string'}},
+    origen:{type:'string'},
+    estrofa:{type:'string'},
+    missions:{type:'array',items:{type:'string'}}
+  },required:['noms','origen','estrofa','missions']}};
+const IA_SISTEMA='Ets qui escriu els personatges del Comando Molekulon per a un programa d\'escola '+
+  'de 6 a 13 anys. Escrius en català, curt, concret i sense floritures. Regles dures: (1) el superpoder '+
+  'sempre és una cosa que es fa PER A UNA ALTRA PERSONA, mai una habilitat per lluir-se; (2) les missions '+
+  'han de ser fetibles en una setmana dins d\'una escola i han de necessitar que algú altre les rebi; '+
+  '(3) no inventis dades de cap infant real ni suposis res sobre qui hi ha darrere del cromo; (4) res de '+
+  'violència ni de vèncer ningú: aquí els superherois sostenen, no guanyen. Respon només cridant l\'eina.';
+
+async function iaGenera(){
+  const out=$('#iaOut');
+  const k=$('#iaKey').value.trim()||clau();
+  if(!k){out.innerHTML='<div class="avis">Cal una clau d\'Anthropic. La resta del programa funciona igual sense.</div>';return;}
+  desaClau(k);$('#iaKey').value='';$('#iaKey').placeholder='•••• clau desada';
+  out.innerHTML='<p style="color:var(--muted)">Pensant…</p>';
+  const d=payloadIA();
+  const msg='Cromo:\n'+CAMPS_IA.map(c=>'· '+c+': '+d[c]).join('\n');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-8',max_tokens:1200,system:IA_SISTEMA,
+        tools:[IA_EINA],tool_choice:{type:'tool',name:IA_EINA.name},messages:[{role:'user',content:msg}]})});
+    if(!res.ok){let m='';try{const j=await res.json();m=(j.error&&j.error.message)||'';}catch(e){}
+      out.innerHTML='<div class="avis">'+esc(m||('Error '+res.status))+'</div>';return;}
+    const j=await res.json();
+    const tu=(j.content||[]).find(c=>c.type==='tool_use');
+    if(!tu||!tu.input){out.innerHTML='<div class="avis">Resposta inesperada</div>';return;}
+    pintaIA(tu.input);
+  }catch(e){out.innerHTML='<div class="avis">Sense connexió amb l\'API</div>';}
+}
+function pintaIA(r){
+  const l=a=>(Array.isArray(a)?a:[]).map(s=>'<li>'+esc(s)+'</li>').join('');
+  $('#iaOut').innerHTML=
+    '<h5>Altres noms</h5><ul>'+l(r.noms)+'</ul>'+
+    '<h5>D\'on ve</h5><p>'+esc(r.origen||'')+'</p>'+
+    '<h5>La seva estrofa</h5><p style="font-style:italic">«'+esc(r.estrofa||'')+'»</p>'+
+    '<h5>Dues missions per aquesta setmana</h5><ul>'+l(r.missions)+'</ul>'+
+    '<p style="color:var(--muted);font-size:.82rem;margin-top:.8rem">Això no posa cap estrella. '+
+    'Les estrelles surten de la sessió, no d\'aquí.</p>';
+}
+
+/* ── Engegar ──────────────────────────────────────────────────────────────── */
+function atzar(){
+  const r=a=>a[Math.floor(Math.random()*a.length)];
+  C.col1=r(COLORS);C.col2=r(COLORS.filter(c=>c!==C.col1));C.pell=r(PELLS);
+  C.cabell=r(CABELLS).id;C.colCab=r(COLS_CAB);C.ulls=r(ULLS);C.roba=r(ROBES).id;
+  C.emblema=r(EMBLEMES);C.poder=r(PODERS).id;C.arma=r(ARMES).id;
+  $('#fPoder').value=C.poder;$('#fArma').value=C.arma;
+  dibuixaControls();pinta();
+}
+function baixa(){
+  const cv=pinta(),a=document.createElement('a');
+  a.href=cv.toDataURL('image/png');
+  a.download='cromo-'+(C.nom||'heroi').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png';
+  document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),120);
+  return a.download;
+}
+
+omplePicks();
+dibuixaControls();
+carrega();
+pinta();
+pintaClasse();
+
+$('#fNom').oninput=e=>{C.nom=e.target.value;pinta();};
+$('#fPoder').onchange=e=>{C.poder=e.target.value;pinta();};
+$('#fArma').onchange=e=>{C.arma=e.target.value;pinta();};
+$('#btAtzar').onclick=atzar;
+$('#btBaixa').onclick=()=>{baixa();toast('Cromo baixat');};
+$('#btTaula').onclick=()=>{
+  const r=afegeixCromo(C.nom,C.poder,C.arma);
+  if(r.err){toast(r.err);return;}
+  pintaClasse();toast('A la taula de la classe');
+  document.getElementById('escola').scrollIntoView({behavior:'smooth'});
+};
+$('#tAfegeix').onclick=()=>{
+  const r=afegeixCromo($('#tHeroi').value,$('#tPoder').value,$('#tArma').value);
+  if(r.err){toast(r.err);return;}
+  $('#tHeroi').value='';pintaClasse();
+};
+$('#iAfegeix').onclick=()=>{
+  const r=afegeixInter($('#iQui').value,$('#iA').value,$('#iQue').value);
+  if(r.err){toast(r.err);return;}
+  $('#iQue').value='';pintaClasse();
+};
+$('#tEsborra').onclick=()=>{buida();pintaClasse();toast('Taula esborrada');};
+$('#iaGo').onclick=iaGenera;
+if(clau())$('#iaKey').placeholder='•••• clau desada';
+
+/* Hook per a les proves. */
+window.__ESCOLA={C,PODERS,ARMES,COLORS,PELLS,CABELLS,COLS_CAB,ULLS,ROBES,EMBLEMES,
+  CAMPS_IA,payloadIA,carregaIA,IA_SISTEMA,IA_EINA,
+  CLASSE:()=>CLASSE,afegeixCromo,afegeixInter,confirma,buida,estrelles,
+  pinta,pintaClasse,baixa,atzar,poderDe,armaDe,retalla,encabeix};
+</script>
+</body>
+</html>
