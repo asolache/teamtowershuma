@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Qui dona què a qui · el mapa de valor, explicat amb un castell</title>
+<meta name="description" content="Vuit passos per entendre l'anàlisi de xarxes de valor de Verna Allee amb una colla castellera: els rols, el que es factura, el que no es factura i sense el qual cau, i les tres preguntes que fan que serveixi de res.">
+<meta property="og:title" content="Qui dona què a qui">
+<meta property="og:description" content="Un castell no és una metàfora bonica del treball en equip: és el mateix graf que el d'un poble. Vuit passos, i els dotze rols un per un.">
+<meta property="og:type" content="website">
+<style>
+:root{
+  --nit:#07070d;--pla:#12121c;--card:#191926;--text:#f4f4f7;--clar:#c5c5d0;--apagat:#7e7e8c;
+  --vora:rgba(255,255,255,.1);--tang:#00b0ff;--intang:#e040fb;--or:#ffd700;--verd:#00e676;
+  --taronja:#ff9100;--mono:'SF Mono',Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--nit);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+a{color:var(--tang)}
+
+nav.top{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:.65rem 1.1rem;
+  border-bottom:1px solid var(--vora);background:rgba(7,7,13,.94)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text);font-size:.95rem}
+nav.top .brand span{color:var(--intang)}
+nav.top .links{display:flex;gap:.9rem;margin-left:auto;font-size:.82rem;flex-wrap:wrap}
+nav.top .links a{color:var(--clar);text-decoration:none}
+
+.sala{max-width:1180px;margin:0 auto;padding:1.4rem 1.1rem 3rem}
+h1{font-size:clamp(1.6rem,3.6vw,2.4rem);margin:0 0 .3rem;line-height:1.12}
+.sub{color:var(--clar);max-width:74ch;margin:0 0 1.2rem}
+.sub strong{color:var(--text)}
+
+.escena{position:relative;border:1px solid var(--vora);border-radius:14px;overflow:hidden;
+  background:#0a0a12;aspect-ratio:16/9}
+#llenc{display:block;width:100%;height:100%}
+.pas-txt{position:absolute;left:0;right:0;bottom:0;padding:1rem 1.3rem 1.15rem;
+  background:linear-gradient(transparent,rgba(0,0,0,.88) 40%);pointer-events:none}
+.pas-txt .n{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--apagat)}
+.pas-txt .t{font-size:clamp(.95rem,2vw,1.3rem);font-weight:700;margin-top:.15rem;line-height:1.25}
+.pas-txt .d{font-size:clamp(.8rem,1.5vw,.95rem);color:var(--clar);margin-top:.3rem;max-width:64ch;
+  line-height:1.5}
+
+.mandos{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.8rem}
+button{font-family:inherit;cursor:pointer;background:var(--card);color:var(--text);
+  border:1px solid var(--vora);border-radius:8px;padding:.5rem .85rem;font-size:.87rem}
+button:hover{border-color:rgba(255,255,255,.28)}
+button:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+button[disabled]{opacity:.35;cursor:default}
+.b-pri{background:linear-gradient(90deg,#00b0ff,#e040fb);color:#07070d;border-color:transparent;font-weight:700}
+.passos{display:flex;gap:3px;margin-top:.6rem}
+.passos button{flex:1;height:6px;padding:0;border-radius:3px;background:var(--card);border:0;min-width:0}
+.passos button[aria-current=true]{background:var(--or)}
+.passos button.fet{background:#3a3a52}
+
+/* ── La fitxa del rol ─────────────────────────────────────────────────────
+   El que hi surt és, paraula per paraula, el que ja diu la portada. Si un dia
+   divergissin, la mateixa colla estaria explicada de dues maneres. */
+.fitxa{margin-top:1rem;border:1px solid var(--vora);border-radius:12px;background:var(--pla);
+  padding:1rem 1.15rem;min-height:118px}
+.fitxa h3{margin:0 0 .5rem;font-size:1.05rem}
+.fitxa .l{display:flex;gap:.6rem;align-items:flex-start;margin:.4rem 0;font-size:.9rem;color:var(--clar)}
+.fitxa .l b{flex-shrink:0;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:.15rem .45rem;border-radius:5px;margin-top:.15rem}
+.fitxa .l.t b{background:rgba(0,176,255,.16);color:var(--tang)}
+.fitxa .l.i b{background:rgba(224,64,251,.16);color:var(--intang)}
+.fitxa .buit{color:var(--apagat);font-size:.9rem}
+
+.compt{display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:1rem;font-size:.85rem;color:var(--apagat)}
+.compt b{font-family:var(--mono);font-size:1.15rem;display:block;color:var(--text)}
+.compt .t b{color:var(--tang)} .compt .i b{color:var(--intang)}
+
+.peu{margin-top:2rem;border-top:1px solid var(--vora);padding-top:1.4rem;color:var(--apagat);
+  font-size:.85rem;line-height:1.7;max-width:76ch}
+.peu strong{color:var(--clar);font-weight:600}
+.peu a{color:var(--clar)}
+.ctas{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem}
+.cta{padding:.7rem 1.1rem;border-radius:9px;text-decoration:none;font-weight:600;font-size:.9rem;
+  border:1px solid var(--vora);color:var(--text);background:var(--card)}
+.cta.pri{background:linear-gradient(90deg,#00b0ff,#00e676);color:#07070d;border-color:transparent}
+.ajuda{font-family:var(--mono);font-size:.68rem;color:var(--apagat);margin-top:.55rem}
+.ajuda kbd{background:var(--card);border:1px solid var(--vora);border-radius:4px;padding:.05rem .3rem}
+</style>
+</head>
+<body>
+
+<nav class="top">
+<a class="brand" href="../index.html">TeamTowers <span>Humà</span></a>
+<div class="links">
+<a href="intro.html">La intro</a>
+<a href="comando.html">El Comando</a>
+<a href="joc.html">El joc</a>
+<a href="index.html">Obre SOS →</a>
+</div>
+</nav>
+
+<div class="sala">
+<h1>Qui dona què a qui</h1>
+<p class="sub">El mapa de valor d'un poble s'explica malament amb un diagrama. S'explica bé amb
+<strong>una colla castellera</strong>, perquè és exactament el mateix graf: uns rols, unes coses que es
+veuen i unes altres que no es veuen i sense les quals cau. Vuit passos.</p>
+
+<div class="escena">
+  <svg id="llenc" viewBox="0 0 1600 900" aria-label="El mapa de valor d'una colla castellera"></svg>
+  <div class="pas-txt">
+    <div class="n" id="pN"></div>
+    <div class="t" id="pT"></div>
+    <div class="d" id="pD"></div>
+  </div>
+</div>
+
+<div class="mandos">
+  <button id="btEnrere" type="button">← Enrere</button>
+  <button class="b-pri" id="btAvant" type="button">Següent →</button>
+  <span style="flex:1"></span>
+  <span class="ajuda" style="margin:0">Toca un rol per veure què dona</span>
+</div>
+<div class="passos" id="passos" role="tablist" aria-label="Passos"></div>
+<p class="ajuda"><kbd>←</kbd> <kbd>→</kbd> per moure't entre passos</p>
+
+<div class="fitxa" id="fitxa"></div>
+
+<div class="compt" id="compt"></div>
+
+<div class="peu">
+<p><strong>D'on surt això.</strong> És l'anàlisi de xarxes de valor de <strong>Verna Allee</strong>:
+en comptes de dibuixar qui mana sobre qui, es dibuixa <strong>qui lliura què a qui</strong>, i es compta
+tant el que es factura com el que no. Els dotze rols i el que aporta cadascun són els mateixos que hi
+ha a la <a href="../index.html#fentpinya">portada</a>, paraula per paraula.</p>
+<p>La lectura de poble del pas 8 és <strong>una lectura, no una equivalència</strong>: serveix per
+començar a mirar, i el mapa de debò el fa la gent del lloc a les sessions.</p>
+<div class="ctas">
+<a class="cta pri" href="diagnostic.html">Fes el mapa del teu territori · 3 min</a>
+<a class="cta" href="intro.html">Mira la intro · 90 s</a>
+<a class="cta" href="index.html">Obre el SOS</a>
+</div>
+</div>
+</div>
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════════════════════
+   Qui dona què a qui · el VNA amb un castell
+   ───────────────────────────────────────────────────────────────────────────
+   La portada ja té la colla castellera amb el que aporta cada rol, tangible i
+   intangible. El que faltava és **què s'hi fa amb això**: un diagrama bonic no
+   és una anàlisi. Aquesta peça la fa, en vuit passos, i acaba on ha d'acabar
+   —el mateix graf, amb els noms d'un poble.
+
+   Tres decisions que no són d'estil:
+
+   · **Els dotze rols són els de la portada, paraula per paraula.** Si es
+     reescrivissin aquí, la mateixa colla estaria explicada de dues maneres i
+     tornaríem a l'error de la veda 109. Ho comprova `tools/check-vna.js`.
+   · **Les fletxes es llegeixen de les descripcions**, no se n'inventa cap. Que
+     els Músics enviïn als Baixos no és una idea meva: ho diu la seva fitxa
+     —«la melodia assenyala la fase exacta de l'Enxaneta als Baixos».
+   · **Els números es compten, no es proclamen.** El pas 5 diu quants
+     lliuraments hi ha de cada mena perquè el graf els té, no perquè quedi bé.
+
+   Veda 116. */
+
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const llenc=$('#llenc');
+function e(t,a,f){const n=document.createElementNS(NS,t);for(const k in a||{})n.setAttribute(k,a[k]);
+  (f||[]).forEach(c=>n.appendChild(c));return n;}
+const g=(a,f)=>e('g',a,f);
+const txt=(s,a)=>{const n=e('text',a);n.textContent=s;return n;};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ── Els dotze rols ───────────────────────────────────────────────────────
+   Còpia literal de `COLLA_CA` de la portada. La còpia és deliberada —aquesta
+   pàgina ha de funcionar sola— i per això hi ha una guarda que la compara.
+   `x` i `y` són on van al castell; `poble` és la lectura del pas 8. */
+const ROLS=[
+ {id:'enxaneta',x:800,y:95,lab:'dreta',curt:'Enxaneta',
+  title:'Enxaneta — L\'Àpex',
+  t:'Tangible: aixeca el braç (l\'aleta) — valida la càrrega estructuralment',
+  i:'Intangible: catarsi col·lectiva — allibera la tensió de tota la xarxa simultàniament',
+  poble:'El resultat que es veu'},
+ {id:'acotxador',x:800,y:185,lab:'dreta',curt:'Acotxador',
+  title:'Acotxador — Pont de Seguretat',
+  t:'Tangible: ofereix la superfície dorsal per al pas final de l\'Enxaneta',
+  i:'Intangible: empatia en alçada — el contacte visual redueix l\'ansietat vertiginosa',
+  poble:'Qui acompanya els últims metres'},
+ {id:'dosos',x:800,y:275,lab:'dreta',curt:'Dosos',
+  title:'Dosos — Base de la Corona',
+  t:'Tangible: ofereixen la plataforma física final per a l\'Acotxador',
+  i:'Intangible: ancora emocional — últim contacte humà abans del cim',
+  poble:'L\'equip que sosté el projecte concret'},
+ {id:'tercos',x:800,y:365,lab:'dreta',curt:'Terços',
+  title:'Terços — 3r Pis',
+  t:'Tangible: ancorats pel folre en castells complexos',
+  i:'Intangible: enfocament cognitiu — cada esglaó estreny l\'atenció al pur equilibri',
+  poble:'Qui executa el dia a dia'},
+ {id:'segons',x:800,y:455,lab:'dreta',curt:'Segons',
+  title:'Segons — 2n Pis',
+  t:'Tangible: distribueixen el pes geomètricament; ofereixen plataforma d\'espatlles',
+  i:'Intangible: confiança biomecànica cap amunt — si els segons tremolen, el pànic es propaga',
+  poble:'La coordinació del projecte'},
+ {id:'mans',x:800,y:550,lab:'dreta',curt:'Mans',
+  title:'Mans — Estabilitzadors de Maluc',
+  t:'Tangible: empenyen cap amunt i estabilitzen els pisos superiors',
+  i:'Intangible: calma distribuïda — si les Mans són fermes, la confiança puja',
+  poble:'El personal tècnic que empeny des de sota'},
+ {id:'baixos',x:800,y:650,lab:'sota',curt:'Baixos',
+  title:'Baixos — Àncora de Terra',
+  t:'Tangible: transmet tota la compressió estructural al terra',
+  i:'Intangible: seguretat psicològica per a cada nivell superior — la certesa que la base aguanta',
+  poble:'El veïnat que ja hi era'},
+ {id:'crosses',x:615,y:650,lab:'sota',curt:'Crosses',
+  title:'Crosses — Suport Axil·lar',
+  t:'Tangible: evita que els Baixos s\'enfonsin sota càrrega axial',
+  i:'Intangible: micro-ajustos a través del tacte — sense paraules, només senyals de pressió',
+  poble:'Les entitats que aguanten el veïnat'},
+ {id:'contraforts',x:985,y:650,lab:'sota',curt:'Contraforts',
+  title:'Contraforts — Pressió Posterior',
+  t:'Tangible: absorbeix la pressió posterior per mantenir l\'alineació',
+  i:'Intangible: confiança cega — no poden veure la torre, només sentir-la',
+  poble:'Qui empeny sense veure\'n el resultat'},
+ {id:'laterals',x:420,y:560,lab:'sota',curt:'Laterals',
+  title:'Laterals — Guardes Laterals',
+  t:'Tangible: eviten l\'oscil·lació lateral de tota l\'estructura',
+  i:'Intangible: lectura de risc en temps real — senten micro-oscil·lacions abans que siguin visibles',
+  poble:'Qui detecta el problema abans que es vegi'},
+ {id:'cap',x:1310,y:430,lab:'sota',curt:'Cap de colla',
+  title:'Cap de Colla — Director',
+  t:'Tangible: ordres operacionals precises, senyals de temps',
+  i:'Intangible: visió macroscòpica + autoritat distribuïda en castells complexos',
+  poble:'Qui decideix i marca el calendari'},
+ {id:'musics',x:1310,y:620,lab:'sota',curt:'Músics',
+  title:'Músics — Rellotge de Xarxa',
+  t:'Tangible: telemetria acústica — la melodia assenyala la fase exacta de l\'Enxaneta als Baixos',
+  i:'Intangible: estat de flux grupal — el ritme sincronitza respiració, enfocament i motivació',
+  poble:'La comunicació que marca el ritme'}
+];
+const rol=id=>ROLS.find(r=>r.id===id);
+
+/* ── Els lliuraments ──────────────────────────────────────────────────────
+   Cadascun surt d'una frase de la fitxa d'algú: no n'hi ha cap d'inventat, i
+   el comentari de la dreta diu de quina. `k` és 't' (es veu i es podria
+   facturar) o 'i' (no es factura i sense això cau). */
+const FLUXOS=[
+ ['crosses','baixos','t','no s\'enfonsin sota càrrega'],
+ ['contraforts','baixos','t','absorbeix la pressió posterior'],
+ ['laterals','segons','t','eviten l\'oscil·lació lateral'],
+ ['mans','segons','t','empenyen cap amunt'],
+ ['baixos','terra','t','tota la compressió al terra'],
+ ['segons','tercos','t','plataforma d\'espatlles'],
+ ['tercos','dosos','t','ancoratge del pis'],
+ ['dosos','acotxador','t','la plataforma final'],
+ ['acotxador','enxaneta','t','la superfície per al pas final'],
+ ['cap','baixos','t','ordres i senyals de temps'],
+ ['musics','baixos','t','la melodia diu on és l\'Enxaneta'],
+ ['enxaneta','cap','t','l\'aleta valida la càrrega'],
+
+ ['baixos','segons','i','la certesa que la base aguanta'],
+ ['crosses','baixos','i','micro-ajustos pel tacte, sense paraules'],
+ ['contraforts','baixos','i','confiança cega: no la veuen, la senten'],
+ ['mans','segons','i','calma distribuïda'],
+ ['laterals','cap','i','lectura de risc abans que es vegi'],
+ ['segons','tercos','i','confiança cap amunt'],
+ ['tercos','dosos','i','enfocament: l\'atenció s\'estreny'],
+ ['dosos','acotxador','i','àncora emocional'],
+ ['acotxador','enxaneta','i','empatia en alçada'],
+ ['enxaneta','baixos','i','catarsi col·lectiva'],
+ ['cap','segons','i','visió del conjunt'],
+ ['musics','mans','i','el ritme sincronitza respiració i motivació']
+];
+const TERRA={id:'terra',x:800,y:720,curt:'El terra'};
+const punt=id=>id==='terra'?TERRA:rol(id);
+
+/* ── Els vuit passos ─────────────────────────────────────────────────────── */
+const PASSOS=[
+ {n:'Pas 1 · el que es veu',t:'Això és una colla castellera.',
+  d:'Dotze feines diferents i una torre. Mirat així, sembla que el que hi ha és força i equilibri.',
+  mode:'gent'},
+ {n:'Pas 2 · rols, no persones',t:'No hi ha dotze persones: hi ha dotze rols.',
+  d:'Una xarxa de valor no és l\'organigrama de qui mana sobre qui. És un mapa de rols, i una mateixa persona en pot fer dos. Aquest canvi de mirada és tot el mètode.',
+  mode:'nodes'},
+ {n:'Pas 3 · el tangible',t:'El que es veu i es podria facturar.',
+  d:'Pes, empenta, ordres, senyals. Si haguessis de fer una factura d\'un castell, hi posaries això —i encara no hauries explicat per què s\'aguanta.',
+  mode:'nodes',flux:'t'},
+ {n:'Pas 4 · l\'intangible',t:'El que no es factura i sense el qual cau.',
+  d:'Confiança, calma, lectura del risc, atenció, catarsi. No hi ha cap columna al pressupost per a això, i és el que decideix si el castell puja o es desmunta.',
+  mode:'nodes',flux:'i'},
+ {n:'Pas 5 · comptar',t:'Els dos mapes alhora, i els números.',
+  d:'Cada rol dona coses de les dues menes. Comptar només el tangible no és simplificar: és veure mitja xarxa i decidir sobre l\'altra meitat a cegues.',
+  mode:'nodes',flux:'tots',compta:true},
+ {n:'Pas 6 · qui només dona',t:'Primera pregunta: hi ha algú que dona i no rep?',
+  d:'És l\'anàlisi d\'intercanvi. Un rol amb totes les fletxes sortint i cap entrant no és generós: és el que es cremarà primer, i quan marxi no ho haurà vist venir ningú.',
+  mode:'nodes',flux:'tots',mira:'unidireccional'},
+ {n:'Pas 7 · treure\'n un',t:'Segona pregunta: què passa si aquest rol no hi és?',
+  d:'És l\'anàlisi de creació de valor. Treu els Músics —que no toquen ningú, no aguanten res i semblen decoració— i mira quantes fletxes es perden.',
+  mode:'nodes',flux:'tots',mira:'treu'},
+ {n:'Pas 8 · el mateix graf',t:'I ara canvia els noms.',
+  d:'El mateix mapa, amb els rols d\'un poble. Això és el que fem a les sessions: dibuixar-lo amb la gent del lloc, comptar les dues menes de lliurament i fer-hi les tres preguntes.',
+  mode:'poble',flux:'tots'}
+];
+
+const S={i:0,sel:null};
+
+/* ── Dibuixar ─────────────────────────────────────────────────────────────── */
+function fletxa(f,tt,k,mig,apagat){
+  const a=punt(f),b=punt(tt);
+  if(!a||!b)return null;
+  const col=k==='t'?'#00b0ff':'#e040fb';
+  /* Corba lleu perquè les dues menes entre els mateixos dos rols no se solapin:
+     si es solapessin, el pas 5 semblaria tenir la meitat de lliuraments. */
+  const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;
+  const c=(k==='t'?1:-1)*Math.min(70,d*.18);
+  const mx=(a.x+b.x)/2-dy/d*c, my=(a.y+b.y)/2+dx/d*c;
+  const l=e('path',{d:'M'+a.x+' '+a.y+' Q'+mx+' '+my+' '+b.x+' '+b.y,fill:'none',
+    stroke:col,'stroke-width':k==='t'?3:2.4,opacity:apagat?.09:(k==='t'?.62:.5),
+    'marker-end':'url(#p'+k+')'});
+  if(k==='i')l.setAttribute('stroke-dasharray','7 8');
+  return l;
+}
+function pinta(){
+  const P=PASSOS[S.i];
+  llenc.textContent='';
+  const defs=e('defs');
+  [['t','#00b0ff'],['i','#e040fb']].forEach(([k,c])=>{
+    const m=e('marker',{id:'p'+k,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:5.5,markerHeight:5.5,
+      orient:'auto-start-reverse'});
+    m.appendChild(e('path',{d:'M0 0 L10 5 L0 10 z',fill:c}));
+    defs.appendChild(m);
+  });
+  llenc.appendChild(defs);
+  llenc.appendChild(e('rect',{x:0,y:0,width:1600,height:900,fill:'#0a0a12'}));
+  llenc.appendChild(e('line',{x1:60,y1:720,x2:1540,y2:720,stroke:'rgba(255,255,255,.16)','stroke-width':2}));
+
+  const fora=P.mira==='treu'?'musics':null;
+  /* Les fletxes primer, perquè els rols hi quedin a sobre. */
+  if(P.flux){
+    const cap=g({});
+    FLUXOS.forEach(([f,tt,k,per])=>{
+      if(P.flux!=='tots'&&P.flux!==k)return;
+      const mort=fora&&(f===fora||tt===fora);
+      const sel=S.sel&&(f===S.sel||tt===S.sel);
+      const n=fletxa(f,tt,k,per,mort||(S.sel&&!sel));
+      if(n){if(mort)n.setAttribute('stroke','#ff5252');cap.appendChild(n);}
+    });
+    llenc.appendChild(cap);
+  }
+
+  ROLS.forEach(r=>{
+    const mort=fora===r.id;
+    const sel=S.sel===r.id;
+    const nom=P.mode==='poble'?r.poble:r.curt;
+    const nd=g({class:'nd',transform:'translate('+r.x+' '+r.y+')',style:'cursor:pointer'});
+    nd.setAttribute('tabindex','0');
+    nd.setAttribute('role','button');
+    nd.setAttribute('aria-label',r.title);
+    if(P.mode==='gent'){
+      /* Al primer pas encara són cossos: la conversió a nodes ha de ser un
+         canvi que es vegi passar, no un diagrama que ja hi era. */
+      nd.appendChild(e('circle',{cx:0,cy:-30,r:14,fill:'#d9a271'}));
+      nd.appendChild(e('rect',{x:-14,y:-16,width:28,height:40,rx:12,fill:'#8fbfe0'}));
+      nd.appendChild(e('rect',{x:-11,y:22,width:8,height:24,rx:4,fill:'#8fbfe0'}));
+      nd.appendChild(e('rect',{x:3,y:22,width:8,height:24,rx:4,fill:'#8fbfe0'}));
+    }else{
+      nd.appendChild(e('circle',{cx:0,cy:0,r:sel?36:30,
+        fill:mort?'rgba(255,82,82,.12)':(sel?'rgba(255,215,0,.16)':'#16162a'),
+        stroke:mort?'#ff5252':(sel?'#ffd700':'rgba(255,255,255,.28)'),
+        'stroke-width':sel?3:2,opacity:mort?.5:1}));
+      /* Els del tronc porten l'etiqueta al costat i els de terra a sota. Amb
+         tots a sota, el nom d'un pis queia damunt del pis següent i el mapa es
+         llegia pitjor que el castell que explica. */
+      const dreta=r.lab==='dreta';
+      nd.appendChild(txt(nom,{x:dreta?46:0,y:dreta?7:48,
+        'text-anchor':dreta?'start':'middle','font-size':P.mode==='poble'?16:19,
+        'font-weight':600,fill:mort?'#7e7e8c':'#f4f4f7'}));
+      if(P.mode==='poble')nd.appendChild(txt(r.curt,{x:dreta?46:0,y:dreta?28:68,
+        'text-anchor':dreta?'start':'middle','font-size':13,fill:'#7e7e8c'}));
+    }
+    nd.addEventListener('click',()=>tria(r.id));
+    nd.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();tria(r.id);}});
+    llenc.appendChild(nd);
+  });
+
+  if(P.mira==='unidireccional'){
+    /* Es calcula, no s'assenyala a mà: si un dia les fletxes canvien, el que
+       es marca aquí canvia sol. */
+    solsDonen().forEach(id=>{
+      const r=rol(id);
+      llenc.appendChild(e('circle',{cx:r.x,cy:r.y,r:46,fill:'none',stroke:'#ff9100',
+        'stroke-width':3,'stroke-dasharray':'6 8'}));
+      llenc.appendChild(txt('només dona',{x:r.x,y:r.y-52,'text-anchor':'middle','font-size':16,
+        'font-weight':700,fill:'#ff9100'}));
+    });
+  }
+  if(fora){
+    const perdudes=FLUXOS.filter(([f,tt])=>f===fora||tt===fora).length;
+    llenc.appendChild(txt(perdudes+' lliuraments perduts',{x:1310,y:700,'text-anchor':'middle',
+      'font-size':22,'font-weight':700,fill:'#ff5252'}));
+  }
+  llenc.appendChild(txt(P.mode==='poble'?'Un poble':'Una colla',
+    {x:80,y:70,'font-size':17,fill:'#7e7e8c','letter-spacing':2}));
+  /* La llegenda va dins del dibuix i no al costat: el pla viatja sol en una
+     captura, i una llegenda que es queda fora deixa el dibuix mut. */
+  if(P.flux){
+    const L=g({transform:'translate(80 110)'});
+    if(P.flux==='t'||P.flux==='tots'){
+      L.appendChild(e('line',{x1:0,y1:0,x2:44,y2:0,stroke:'#00b0ff','stroke-width':3}));
+      L.appendChild(txt('el que es veu',{x:54,y:5,'font-size':15,fill:'#c5c5d0'}));
+    }
+    if(P.flux==='i'||P.flux==='tots'){
+      const dy=P.flux==='tots'?30:0;
+      L.appendChild(e('line',{x1:0,y1:dy,x2:44,y2:dy,stroke:'#e040fb','stroke-width':2.4,
+        'stroke-dasharray':'7 8'}));
+      L.appendChild(txt('el que no es factura',{x:54,y:dy+5,'font-size':15,fill:'#c5c5d0'}));
+    }
+    llenc.appendChild(L);
+  }
+
+  $('#pN').textContent=P.n;$('#pT').textContent=P.t;$('#pD').textContent=P.d;
+  $('#btEnrere').disabled=S.i===0;
+  $('#btAvant').disabled=S.i===PASSOS.length-1;
+  $('#btAvant').textContent=S.i===PASSOS.length-1?'Ja està':'Següent →';
+  pintaPassos();pintaFitxa();pintaCompt();
+}
+/* Rols amb lliuraments sortints i cap d'entrant. */
+function solsDonen(){
+  const dona={},rep={};
+  FLUXOS.forEach(([f,t])=>{dona[f]=(dona[f]||0)+1;rep[t]=(rep[t]||0)+1;});
+  return ROLS.filter(r=>dona[r.id]&&!rep[r.id]).map(r=>r.id);
+}
+function pintaPassos(){
+  const c=$('#passos');
+  if(c.children.length!==PASSOS.length){
+    c.textContent='';
+    PASSOS.forEach((p,i)=>{
+      const b=document.createElement('button');
+      b.type='button';b.setAttribute('role','tab');
+      b.setAttribute('aria-label',p.n);
+      b.onclick=()=>{S.i=i;pinta();};
+      c.appendChild(b);
+    });
+  }
+  [...c.children].forEach((b,i)=>{
+    b.setAttribute('aria-current',String(i===S.i));
+    b.classList.toggle('fet',i<S.i);
+  });
+}
+function pintaFitxa(){
+  const f=$('#fitxa');
+  const r=S.sel&&rol(S.sel);
+  if(!r){f.innerHTML='<p class="buit">Toca qualsevol rol del dibuix i aquí hi surt què dona: '+
+    'el que es veu i el que no. És el text de la portada, sense retocar.</p>';return;}
+  const dona=FLUXOS.filter(x=>x[0]===r.id),rep=FLUXOS.filter(x=>x[1]===r.id);
+  f.innerHTML='<h3>'+esc(r.title)+'</h3>'+
+    '<div class="l t"><b>Tangible</b><span>'+esc(r.t.replace(/^Tangible:\s*/,''))+'</span></div>'+
+    '<div class="l i"><b>Intangible</b><span>'+esc(r.i.replace(/^Intangible:\s*/,''))+'</span></div>'+
+    '<div class="l"><b>Al poble</b><span>'+esc(r.poble)+' · dona '+dona.length+
+    (dona.length===1?' lliurament':' lliuraments')+' i en rep '+rep.length+'</span></div>';
+}
+function pintaCompt(){
+  if(!PASSOS[S.i].compta){$('#compt').innerHTML='';return;}
+  const t=FLUXOS.filter(x=>x[2]==='t').length,i=FLUXOS.filter(x=>x[2]==='i').length;
+  $('#compt').innerHTML=
+    '<div><b>'+ROLS.length+'</b>rols</div>'+
+    '<div class="t"><b>'+t+'</b>lliuraments que es veuen</div>'+
+    '<div class="i"><b>'+i+'</b>lliuraments que no</div>'+
+    '<div><b>'+Math.round(i*100/(t+i))+'%</b>de la xarxa no surt a cap factura</div>';
+}
+function tria(id){S.sel=S.sel===id?null:id;pinta();}
+
+$('#btAvant').onclick=()=>{if(S.i<PASSOS.length-1){S.i++;S.sel=null;pinta();}};
+$('#btEnrere').onclick=()=>{if(S.i>0){S.i--;S.sel=null;pinta();}};
+document.addEventListener('keydown',ev=>{
+  if(/^(INPUT|TEXTAREA)$/.test(ev.target.tagName))return;
+  if(ev.key==='ArrowRight'){ev.preventDefault();$('#btAvant').click();}
+  if(ev.key==='ArrowLeft'){ev.preventDefault();$('#btEnrere').click();}
+});
+pinta();
+
+window.__VNA={ROLS,FLUXOS,PASSOS,S,pinta,tria,solsDonen,rol};
+</script>
+</body>
+</html>
