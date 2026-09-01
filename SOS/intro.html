@@ -136,8 +136,9 @@ reproducció i no es nota el salt. El Comando no és una altra història — és
 manera.</p>
 <p>Els personatges, poders i superarmes que hi surten són els del
 <a href="comando.html">roster canònic</a>. No n'hi ha cap d'inventat.</p>
-<p>Música: <strong>«Horacio Motomachi»</strong>, del Comando Molekulon. Al repositori hi ha els
-93 segons que la peça fa servir; el tema sencer fa 3:55.</p>
+<p>Música: <strong>«Horacio Motomachi»</strong>, del Comando Molekulon —
+<a href="media/comando-horacio.mp3">el tema sencer, 3:55</a>. La peça hi entra pel segon 55, que és
+on el muntatge i el tema es troben.</p>
 </div>
 
 </div>
@@ -848,23 +849,25 @@ function pintaBarra(){
    manieta: si els talls cauen entremig, la peça sona a presentació amb música
    de fons en comptes de sonar muntada.
 
-   El tros que hi ha al repositori són els 93 segons que la peça fa servir,
-   retallats per fotograma MP3 —el tema sencer fa 3:55 i és de l'autor. Comença
-   al segon 55 de la cançó, i això no és arbitrari: amb aquest desplaçament la
-   **caiguda del castell** (S4) cau dins d'un buit del tema, els **tres vilans**
-   passen per aquest buit, i **el gir** (S8, quan s'encenen els que ja hi eren)
-   entra just quan torna la música. La pinya de l'S14 va sobre el tram més fort
-   i el rètol final es queda al segon buit, amb el tema tornant al últim segon.
+   Hi ha **el tema sencer** (3:55) i la peça hi entra pel segon 55,054, que és
+   un temps fort. El punt d'entrada no és arbitrari: mesurada l'energia del tema
+   segon a segon hi ha tres buits, i amb aquest desplaçament la **caiguda del
+   castell** (S4) cau dins del primer, els **tres vilans** hi passen a través, i
+   **el gir** (S8, quan s'encenen els que ja hi eren) entra just quan torna la
+   música. La pinya de l'S14 va sobre el tram més fort i el rètol final es queda
+   al segon buit, amb el tema tornant a l'últim segon.
 
-   El tall de 30 s té el seu propi desplaçament perquè també vagi muntat: se'n
-   va al tram alt del mig, que és el que aguanta sol en una xarxa.
+   El tall de 30 s entra pel segon 87,98 perquè també vagi muntat: és la
+   finestra de 33 segons amb més energia i sense cap buit de tot el tema, que és
+   el que ha d'aguantar sol en una xarxa.
 
    I la regla que no canvia: **si el fitxer no hi és, la peça funciona igual i
    ho diu**. La música és l'única part opcional. */
 const SO='media/comando-horacio.mp3';
-const SO_TALL=28.0;   /* segons dins del retall, per al tall curt */
+const SO_INICI=55.054;  /* temps fort on entra la peça sencera */
+const SO_TALL=87.98;    /* i on entra el tall curt */
 let so=null,hiHaSo=false;
-const soOffset=()=>S.tall?SO_TALL:0;
+const soOffset=()=>S.tall?SO_TALL:SO_INICI;
 (function(){
   so=new Audio();
   so.preload='auto';so.src=SO;
@@ -873,7 +876,7 @@ const soOffset=()=>S.tall?SO_TALL:0;
     hiHaSo=true;
     $('#avisSo').innerHTML='Sona <strong>«Horacio Motomachi»</strong>, del Comando Molekulon. '+
       'A 80,2 ppm: cada tall cau en un compàs, i la caiguda del castell, el gir i el rètol final '+
-      'van als buits del tema.';
+      'van als buits del tema. La peça hi entra pel segon 55.';
   });
   so.addEventListener('error',()=>{
     if(hiHaSo)return;
@@ -927,7 +930,7 @@ ves(0,0);
 if(!redueix)$('#btGran').hidden=false;
 
 window.__INTRO={PLANS,PELLS,S,llista,durada,total,ves,juga,atura,vista,munta,anima,
-  so:()=>so,teSo:()=>hiHaSo,SO_TALL,soOffset,
+  so:()=>so,teSo:()=>hiHaSo,SO_INICI,SO_TALL,soOffset,
   figura,castell,cromo,NODES,SO,mmss};
 </script>
 </body>

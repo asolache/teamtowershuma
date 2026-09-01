@@ -167,15 +167,23 @@ console.log('\n6 · Els talls cauen al compàs del tema');
     const fora = I.PLANS.filter(x => Math.abs((x.dur / COMPAS) * 2 - Math.round((x.dur / COMPAS) * 2)) > 0.01);
     const curts = I.PLANS.filter(x => x.curt)
       .filter(x => Math.abs((x.curt / COMPAS) * 2 - Math.round((x.curt / COMPAS) * 2)) > 0.01);
+    /* Els dos punts d'entrada han de ser temps forts: 1,180 s i cada 2,993 s.
+       Un desplaçament a ull desfaria tota la feina de posar els talls al
+       compàs, i no ho notaria cap prova que només mirés les durades. */
+    const fase = t => Math.abs(((t - 1.180) / (COMPAS / 1000)) % 1);
+    const fora_temps = [I.SO_INICI, I.SO_TALL].filter(t => { const f = fase(t); return f > 0.02 && f < 0.98; });
     return { fora: fora.map(x => x.id), curts: curts.map(x => x.id), teSo: I.teSo(),
-      dur: s && s.duration, total: I.total(), tall: I.SO_TALL, so: I.SO };
+      dur: s && s.duration, total: I.total(), inici: I.SO_INICI, tall: I.SO_TALL,
+      so: I.SO, fora_temps };
   });
   ok(!r.fora.length, 'els setze plans duren un nombre rodó de mitjos compassos' +
     (r.fora.length ? ' — se n\'escapen: ' + r.fora.join(', ') : ''));
   ok(!r.curts.length, 'i els del tall curt també');
   ok(r.teSo, 'el tema carrega: ' + r.so);
-  ok(r.dur > r.total / 1000, `el retall (${r.dur.toFixed(1)} s) cobreix la peça sencera (${r.total / 1000} s)`);
-  ok(r.tall + 33 <= r.dur, `i el desplaçament del tall curt (${r.tall} s) hi cap sense sortir-se'n`);
+  ok(r.dur > 200, `hi ha el tema sencer (${r.dur.toFixed(1)} s), no un retall`);
+  ok(!r.fora_temps.length, `els dos punts d'entrada són temps forts (${r.inici} s i ${r.tall} s)`);
+  ok(r.inici + r.total / 1000 <= r.dur, 'la peça sencera hi cap des del seu punt d\'entrada');
+  ok(r.tall + 33 <= r.dur, `i el tall curt també (entra al ${r.tall} s)`);
   await ctx.close();
 }
 
