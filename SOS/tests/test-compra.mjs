@@ -265,9 +265,114 @@ console.log('\n9 · Les dues dinàmiques del catàleg, i la pàgina que es pinta
   ok(r.dins.every(n => r.txt.includes(n)),
     'les dues dinàmiques surten pel seu nom: ' + r.dins.join(' i '));
   ok(r.txt.includes(r.data), `i els preus diuen quan es van revisar: ${r.data}`);
-  ok(r.tabs === 5 && r.pans.length === 5, 'cinc pantalles, cinc pestanyes');
+  ok(r.tabs === 6 && r.pans.length === 6, 'sis pantalles, sis pestanyes');
   ok(r.files > 30, `la taula de la cistella es pinta sencera (${r.files} files)`);
   ok(r.ample, 'i a 390px la pàgina no desborda de costat');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n10 · Connecta amb els dos tipus de projecte, amb el seu mapa de valor');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA;
+    const ids = C.DINAMIQUES.map(d => d.id);
+    const teMapa = ids.every(i => !!C.MAPA[i]);
+    const camps = ids.every(i => ['mission', 'vision', 'objectives', 'gov', 'roles', 'pairs', 'kanban']
+      .every(k => !!C.MAPA[i][k] && C.MAPA[i][k].length));
+    /* Cada parella ha de donar lliurament als DOS sentits: un intercanvi amb
+       una sola direcció no és un intercanvi, és una extracció. */
+    const reciproc = ids.every(i => {
+      const ll = C.lliuraments(i);
+      return ll.length === C.MAPA[i].pairs.length * 2 &&
+        C.MAPA[i].pairs.every(([a, b]) =>
+          ll.some(x => x.de === a && x.a === b) && ll.some(x => x.de === b && x.a === a));
+    });
+    const menes = ids.flatMap(i => C.lliuraments(i).map(x => x.mena));
+    /* El que la pàgina diu produir ha de ser un lliurament del mapa. */
+    const totsLl = new Set(ids.flatMap(i => C.lliuraments(i).map(x => x.que)));
+    const faReals = Object.keys(C.FA).every(k => totsLl.has(k));
+    const rolsReals = Object.keys(C.OMPLE).every(r => ids.some(i => C.MAPA[i].roles.includes(r)));
+    return { teMapa, camps, reciproc, faReals, rolsReals,
+      ll: ids.reduce((t, i) => t + C.lliuraments(i).length, 0),
+      fets: ids.reduce((t, i) => t + C.analisi(i).fets.length, 0),
+      tangibles: menes.filter(m => m === 'tangible').length,
+      intangibles: menes.filter(m => m === 'intangible').length,
+      rols: ids.reduce((t, i) => t + C.MAPA[i].roles.length, 0) };
+  });
+  ok(r.teMapa && r.camps,
+    'les dues dinàmiques porten missió, visió, objectius, rols, intercanvis, passos i governança');
+  ok(r.reciproc, `els ${r.ll} lliuraments van als dos sentits: cap intercanvi és d'una sola direcció`);
+  ok(r.tangibles > 0 && r.intangibles > 0,
+    `i hi ha les dues menes de valor: ${r.tangibles} que es veuen i ${r.intangibles} que no`);
+  ok(r.fets > 0 && r.fets < r.ll,
+    `la pàgina produeix ${r.fets} dels ${r.ll} lliuraments — ni cap ni tots: la resta la fa la gent`);
+  ok(r.faReals, 'i tot el que diu produir és un lliurament que existeix al mapa');
+  ok(r.rolsReals, `els rols que diu omplir són rols del mapa (${r.rols} en total)`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n11 · El mapa diu qui l\'omple, qui posa més del que rep i qui falta');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA, din = 'consum_agroecologic';
+    const a0 = C.analisi(din);
+    const soci = a0.rols.find(x => x.rol === 'Unitats familiars');
+    const buit = a0.rols.find(x => !x.ple);
+    /* Posar-hi nom ha de fer viure els fluxos que hi toquen: el mapa es fa
+       del grup, no es queda de mostra. */
+    C.posaRol(din, buit.rol, 'La Nau del carrer Major');
+    const a1 = C.analisi(din);
+    const ara = a1.rols.find(x => x.rol === buit.rol);
+    C.posaRol(din, buit.rol, '');
+    const a2 = C.analisi(din);
+    return { sociApp: soci.qui.app, sociTxt: soci.qui.txt,
+      buit: buit.rol, buitsAbans: a0.buits.length, buitsDespres: a1.buits.length,
+      viusAbans: a0.vius.length, viusDespres: a1.vius.length, total: a0.ll.length,
+      omplert: ara.ple, tornaBuit: a2.buits.length === a0.buits.length,
+      exposats: a0.rols.filter(x => x.exposat).map(x => x.rol),
+      intangibles: a0.rols.filter(x => x.totIntangible).map(x => x.rol),
+      saldos: a0.rols.map(x => x.rol + ':' + x.saldoT) };
+  });
+  ok(r.sociApp && /llars/.test(r.sociTxt),
+    `els rols que omple la pàgina ho diuen amb la xifra de debò: «${r.sociTxt}»`);
+  ok(r.buitsAbans > 0, `i els que no, es diuen buits (${r.buitsAbans}) en comptes de fer com si res`);
+  ok(r.omplert && r.buitsDespres === r.buitsAbans - 1,
+    `posar nom a «${r.buit}» l'omple: el mapa es fa del grup`);
+  ok(r.viusDespres > r.viusAbans,
+    `i fa viure fluxos que abans no ho estaven (${r.viusAbans} → ${r.viusDespres} de ${r.total})`);
+  ok(r.tornaBuit, 'esborrar el nom el torna a deixar buit: no s\'inventa ningú');
+  ok(r.exposats.length > 0,
+    `assenyala qui posa més del que es veu que no rep: ${r.exposats.join(', ')} — és qui es crema`);
+  ok(r.intangibles.length > 0,
+    `i qui es mou només amb el que no es veu: ${r.intangibles.join(', ')}`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n12 · I el mapa es pinta, amb el graf i les taules');
+{
+  const { ctx, p, errs } = await nova(390, 844);
+  await p.click('#tabs button[data-p=mapa]');
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA;
+    const txt = document.getElementById('pMapa').textContent;
+    return { grafs: document.querySelectorAll('#mapes .graf').length,
+      seccions: document.querySelectorAll('#mapes section').length,
+      inputs: document.querySelectorAll('#mapes [data-rol]').length,
+      mission: C.MAPA.consum_agroecologic.mission,
+      pas: C.MAPA.compra_collectiva.kanban[0],
+      lliurament: C.MAPA.consum_agroecologic.pairs[0][3],
+      txt, ample: document.documentElement.scrollWidth <= window.innerWidth + 1 };
+  });
+  ok(r.seccions === 2 && r.grafs === 2, 'una secció i un graf per dinàmica');
+  ok(r.txt.includes(r.mission) && r.txt.includes(r.pas) && r.txt.includes(r.lliurament),
+    'i s\'hi llegeix la missió, els passos i els lliuraments, no només un dibuix');
+  ok(r.inputs > 0, `amb ${r.inputs} rols on el grup pot posar qui ho fa`);
+  ok(r.ample, 'i a 390px tampoc desborda');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }

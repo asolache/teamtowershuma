@@ -23,8 +23,13 @@
  *      taula sense que peti el CI.
  *   4. Cada productor té mínim, quilòmetres i ritme vàlid, i el fa servir
  *      almenys un producte: un productor que ningú compra és decoració.
- *   5. Els preus porten data de revisió i es pinta a la pàgina.
- *   6. No hi ha cap camp que demani targeta, número o IBAN, ni cap text que
+ *   5. **El mapa de valor és el del catàleg, paraula per paraula**: missió,
+ *      visió, objectius, governança, rols, passos i cada intercanvi. I els rols
+ *      que la pàgina diu omplir, i els lliuraments que diu produir, existeixen
+ *      al mapa — presumir d'un flux que no hi és converteix la costura en
+ *      decoració.
+ *   6. Els preus porten data de revisió i es pinta a la pàgina.
+ *   7. No hi ha cap camp que demani targeta, número o IBAN, ni cap text que
  *      digui que s'ha cobrat res. Vedes 96 i 97.
  *
  * Veda 119.
@@ -128,14 +133,132 @@ else {
     sols.map(p => p.id).join(', ') + ' — un productor que ningú compra és decoració');
 }
 
-/* ── 5 · La data dels preus ─────────────────────────────────────────────── */
+/* ── 5 · El mapa de valor és el del catàleg, paraula per paraula ────────── */
+/* Aquesta és la part que fa que la pàgina sigui l'eina d'un tipus de projecte
+   del SOS i no una calculadora amb un nom a sobre. Si el mapa divergeix, la
+   pàgina segueix ensenyant rols i intercanvis que sonen bé i que l'app ja no
+   diu — i ningú se n'assabenta fins que algú compara les dues pantalles. */
+const blocDe = id => {
+  const i = APP.indexOf(`{id:'${id}',name:`);
+  if (i < 0) return '';
+  const j = APP.indexOf('\n {id:\'', i + 10);
+  return APP.slice(i, j < 0 ? i + 6000 : j);
+};
+const cadenes = s => [...s.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map(m => m[1]);
+const parelles = blob => [...blob.matchAll(/\[((?:'(?:[^'\\]|\\.)*',?\s*){6})\]/g)]
+  .map(m => cadenes(m[1]).join(' | '));
+const camp = (blob, k) => {
+  const m = blob.match(new RegExp(k + ":'((?:[^'\\\\]|\\\\.)*)'"));
+  return m ? m[1] : null;
+};
+const llistaCamp = (blob, k) => {
+  /* Sense el `,?` opcional no llegia el `kanban` de compra.html, que és l'últim
+     camp de l'objecte i no porta coma darrere. La guarda deia «no s'han pogut
+     llegir» i semblava un problema de les dades. I sense el `|$`, el `kanban`
+     de la primera dinàmica tampoc: el tall del bloc cau just al salt de línia
+     que hi ha darrere, i el camp es quedava sense final. */
+  const m = blob.match(new RegExp(k + ':\\[([\\s\\S]*?)\\],?\\s*(?:\\n|$)'));
+  return m ? cadenes(m[1]) : null;
+};
+/* Només el tros dels intercanvis. Sense acotar-lo, el lector de parelles també
+   s'empassava el `kanban` —que té sis cadenes, igual que una parella— i deia
+   que hi havia un intercanvi de més. */
+const blocPairs = blob => {
+  const i = blob.indexOf('pairs:[');
+  if (i < 0) return '';
+  const j = blob.indexOf(']],', i);
+  return blob.slice(i, j < 0 ? blob.length : j + 3);
+};
+
+const blocMapa = (PAG.match(/const MAPA=\{[\s\S]*?\n\};/) || [''])[0];
+const idsMapa = [...blocMapa.matchAll(/^\s{2}(\w+):\{$/gm)].map(m => m[1]);
+if (!idsMapa.length) {
+  bad('no es troba MAPA a compra.html: la pàgina anomena dues dinàmiques i no en porta el mapa');
+} else if (idsMapa.length !== dins.length || idsMapa.some(i => !dins.some(d => d.id === i))) {
+  bad(`el mapa i les dinàmiques anomenades no són els mateixos: ` +
+    `mapa [${idsMapa.join(', ')}] · anomenades [${dins.map(d => d.id).join(', ')}]`);
+} else ok(`hi ha el mapa de valor de les ${idsMapa.length} dinàmiques`);
+
+let totLl = 0, totRols = 0;
+idsMapa.forEach(id => {
+  const src = APP.indexOf(`{id:'${id}',name:`) < 0 ? '' : blocDe(id);
+  if (!src) { bad(`${id} no existeix a DYNAMICS: la pàgina porta el mapa d'una dinàmica inventada`); return; }
+  const i = blocMapa.indexOf(`  ${id}:{`);
+  const j = blocMapa.indexOf('\n  },', i);
+  const meu = blocMapa.slice(i, j < 0 ? blocMapa.length : j);
+
+  /* Missió, visió, objectius i governança: literals. */
+  const escalars = ['mission', 'vision', 'objectives', 'gov'];
+  const malament = escalars.filter(k => {
+    const v = camp(meu, k);
+    return !v || !src.includes(`${k}:'${v}'`);
+  });
+  if (!malament.length) ok(`${id}: missió, visió, objectius i governança són els del catàleg`);
+  else bad(`${id}: ${malament.join(', ')} no coincideix amb DYNAMICS — la pàgina diu una cosa ` +
+    'que a l\'app ja no hi és');
+
+  /* Rols i passos: les mateixes llistes i en el mateix ordre. */
+  [['roles', 'rols'], ['kanban', 'passos']].forEach(([k, lbl]) => {
+    const meus = llistaCamp(meu, k), seus = llistaCamp(src, k);
+    if (meus && seus && meus.join('|') === seus.join('|'))
+      ok(`${id}: els ${meus.length} ${lbl} són els mateixos, i en el mateix ordre`);
+    else bad(`${id}: els ${lbl} no coincideixen amb DYNAMICS` +
+      (meus && seus ? ` (aquí ${meus.length}, a l'app ${seus.length})` : ' (no s\'han pogut llegir)'));
+    if (k === 'roles' && meus) totRols += meus.length;
+  });
+
+  /* I els intercanvis, un per un: és on hi ha el valor i és el que més fàcil
+     divergeix, perquè són sis cadenes per línia i cap peta si canvia. */
+  const meves = parelles(blocPairs(meu));
+  const seves = parelles(blocPairs(src));
+  const perdudes = meves.filter(p => !seves.includes(p));
+  if (meves.length && meves.length === seves.length && !perdudes.length)
+    ok(`${id}: els ${meves.length} intercanvis són literalment els del catàleg`);
+  else bad(`${id}: els intercanvis no quadren — aquí ${meves.length}, a l'app ${seves.length}` +
+    (perdudes.length ? `, i ${pl(perdudes.length, 'no hi és', 'no hi són')}: ` +
+      perdudes.slice(0, 2).map(p => '«' + p.split(' | ').slice(0, 2).join('→') + '»').join(', ') : ''));
+  totLl += meves.length * 2;
+});
+
+/* Els rols que la pàgina diu que omple, i els fluxos que diu que produeix, han
+   d'existir al mapa. Presumir de fer un flux que no hi és és pitjor que no
+   dir-ho: converteix la costura en decoració. */
+const rolsMapa = new Set(idsMapa.flatMap(id => {
+  const i = blocMapa.indexOf(`  ${id}:{`), j = blocMapa.indexOf('\n  },', i);
+  return llistaCamp(blocMapa.slice(i, j < 0 ? blocMapa.length : j), 'roles') || [];
+}));
+const lliuraments = new Set(idsMapa.flatMap(id => {
+  const i = blocMapa.indexOf(`  ${id}:{`), j = blocMapa.indexOf('\n  },', i);
+  const b = blocMapa.slice(i, j < 0 ? blocMapa.length : j);
+  return parelles(blocPairs(b)).flatMap(p => {
+    const c = p.split(' | '); return [c[3], c[5]];
+  });
+}));
+const ompleKeys = [...(PAG.match(/const OMPLE=\{[\s\S]*?\n\};/) || [''])[0]
+  .matchAll(/'((?:[^'\\]|\\.)*)':'(socis|productors)'/g)].map(m => m[1]);
+const faKeys = [...(PAG.match(/const FA=\{[\s\S]*?\n\};/) || [''])[0]
+  .matchAll(/^\s{2}'((?:[^'\\]|\\.)*)':/gm)].map(m => m[1]);
+
+const rolsFantasma = ompleKeys.filter(r => !rolsMapa.has(r));
+if (ompleKeys.length && !rolsFantasma.length)
+  ok(`els ${ompleKeys.length} rols que omple la pàgina existeixen al mapa`);
+else bad(`${pl(rolsFantasma.length, 'rol que la pàgina diu omplir no és', 'rols que la pàgina diu omplir no són')} ` +
+  `al mapa: ${rolsFantasma.join(', ') || '—'}`);
+
+const fluxFantasma = faKeys.filter(f => !lliuraments.has(f));
+if (faKeys.length && !fluxFantasma.length)
+  ok(`i els ${faKeys.length} lliuraments que diu produir són lliuraments del mapa (de ${totLl})`);
+else bad(`${pl(fluxFantasma.length, 'lliurament que la pàgina presumeix de fer no existeix', 'lliuraments que la pàgina presumeix de fer no existeixen')} ` +
+  `al mapa: ${fluxFantasma.slice(0, 3).map(f => '«' + f + '»').join(', ') || '—'}`);
+
+/* ── 6 · La data dels preus ─────────────────────────────────────────────── */
 const data = (PAG.match(/const PREUS_REVISIO='([^']+)'/) || [])[1];
 const pintada = (PAG.match(/PREUS_REVISIO/g) || []).length > 1;
 if (data && pintada) ok(`els preus porten data de revisió i es pinta: «${data}»`);
 else bad('els preus no porten data visible: una taula de preus sense data menteix ' +
   'en silenci al cap d\'un any i no ho nota ningú');
 
-/* ── 6 · Aquí no es cobra ───────────────────────────────────────────────── */
+/* ── 7 · Aquí no es cobra ───────────────────────────────────────────────── */
 const camps = PAG.match(/<input[^>]*>/g) || [];
 const perillosos = camps.filter(c => /targeta|tarjeta|\biban\b|\bcvv\b|caducitat|swift/i.test(c));
 if (!perillosos.length) ok('cap camp demana targeta, IBAN ni res que s\'hi assembli');

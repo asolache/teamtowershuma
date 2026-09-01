@@ -773,6 +773,38 @@ I les vedes 96 i 97 seguides al peu de la lletra en una pàgina que va de diners
 confirmat. La guarda mira tots els `<input>` de la pàgina, que és una manera de
 dir-ho que no depèn de recordar-ho.
 
+### Anomenar una dinàmica no és ser-ne l'eina
+
+La primera versió deia que era l'eina de dues dinàmiques del catàleg i el que
+feia era **anomenar-les en un paràgraf**. Preguntat directament si es connectava
+amb els tipus de projecte, la resposta honesta era «a mitges», i el que faltava
+era el mapa de valor: sense els rols i els intercanvis, una pàgina amb el nom
+d'una dinàmica a sobre és una calculadora amb una etiqueta.
+
+Ara hi és sencer —missió, visió, objectius, governança, rols, passos i cada
+intercanvi— copiat literalment de `DYNAMICS`, i la guarda ho compara camp a
+camp. Tres coses que va ensenyar posar-l'hi:
+
+- **Els intercanvis són recíprocs i s'han de desplegar.** El format del catàleg
+  és `[A, B, mena del que dona A, què dona A, mena del que dona B, què dona B]`:
+  cada parella són **dos lliuraments**. Comptar parelles amagava justament el que
+  es vol veure —què posa cadascú i què se n'emporta— i vint-i-vuit lliuraments
+  es convertien en catorze línies mudes.
+- **La pàgina ha de dir quins fluxos fa ella i quins no.** En fa 8 de 28. Dir-ne
+  cinc de cinc rols quan en cobreix dos seria la mentida més fàcil d'explicar i
+  la més cara de descobrir; la guarda comprova que cada rol que diu omplir i cada
+  lliurament que diu produir existeixin de debò al mapa.
+- **L'anàlisi ha de sortir del graf, no d'una llista escrita.** Comptant tangibles
+  donats contra rebuts apareix sol qui posa més del que es veu que no rep: al
+  grup de consum és el **punt de repartiment** —el local que deixa l'espai i en
+  rep «vida i clientela»—, que és exactament qui es crema als grups de debò. I
+  la **comunitat** es mou només amb valor invisible, que és el primer que
+  s'oblida quan es fan comptes.
+
+Els rols que la pàgina no omple es queden buits i amb un camp per posar-hi nom:
+en posar-ne un, els fluxos que hi toquen passen a viure. **El mapa no es queda
+de mostra: es fa del grup.**
+
 ## Veda 118 — Si el repte és la velocitat, res es pot cobrar sol
 
 El joc tenia el model bo i cap ritme. Les hores del banc de temps se sumaven

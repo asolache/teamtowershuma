@@ -110,6 +110,15 @@ button.b:hover{border-color:var(--indigo)}
 .capa .d{font-size:.76rem;color:var(--light);margin-top:.35rem;line-height:1.45}
 .capa.bo .n{color:var(--green)} .capa.blau .n{color:var(--blue)} .capa.taronja .n{color:var(--orange)}
 
+h4.sub{margin:1.1rem 0 .4rem;font-size:.9rem;color:var(--text)}
+.graf{width:100%;max-width:460px;display:block;margin:.6rem auto .3rem}
+/* Esprémer cinc columnes en 390px no les fa caber: les parteix per la meitat.
+   Millor que la taula llisqui i cada columna es llegeixi sencera. */
+table.t-rols{min-width:580px}
+.graf text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+ol.passos{margin:.3rem 0 .6rem;padding-left:1.3rem;font-size:.86rem;color:var(--light)}
+ol.passos li{margin-bottom:.2rem}
+
 .metode{font-size:.9rem;color:var(--light)}
 .metode h4{margin:1rem 0 .3rem;font-size:.95rem;color:var(--text)}
 .metode ul{margin:.2rem 0 .6rem;padding-left:1.1rem}
@@ -159,7 +168,8 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
   <button data-p="socis">2 · Els socis</button>
   <button data-p="comanda">3 · La comanda</button>
   <button data-p="estalvi">4 · L'estalvi</button>
-  <button data-p="metode">5 · Com es fa</button>
+  <button data-p="mapa">5 · El mapa de valor</button>
+  <button data-p="metode">6 · Com es fa</button>
 </div>
 
 <!-- ══ 1 · LA CISTELLA ═══════════════════════════════════════════════════ -->
@@ -265,7 +275,24 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
   </section>
 </div>
 
-<!-- ══ 5 · COM ES FA ═════════════════════════════════════════════════════ -->
+<!-- ══ 5 · EL MAPA DE VALOR ══════════════════════════════════════════════ -->
+<div class="pan" id="pMapa">
+  <section class="box">
+    <h3>Aquesta pàgina és l'eina de dues dinàmiques del catàleg</h3>
+    <p class="lead">No és una calculadora amb un nom a sobre: és <strong>l'eina de dos tipus de
+    projecte que ja existeixen al SOS</strong>, amb els seus actors i els seus fluxos. El mapa de
+    valor que ve a continuació és <strong>còpia literal del catàleg</strong> —missió, visió,
+    objectius, rols, intercanvis, passos i governança—, i una guarda ho comprova paraula per
+    paraula: si al SOS es canvia, aquí no pot quedar l'antic sonant igual de cert.</p>
+    <p class="mut">El format dels intercanvis és el de Verna Allee i és <strong>recíproc</strong>:
+    cada enllaç porta lliurament als dos sentits. Un intercanvi amb una sola direcció no és un
+    intercanvi, és una extracció — i per això es mira flux a flux i no parella a parella.</p>
+    <p class="nota" id="mapaResum"></p>
+  </section>
+  <div id="mapes"></div>
+</div>
+
+<!-- ══ 6 · COM ES FA ═════════════════════════════════════════════════════ -->
 <div class="pan" id="pMetode">
   <section class="box metode">
     <h3>El mètode de compra</h3>
@@ -371,6 +398,74 @@ const DINAMIQUES=[
   {id:'compra_collectiva',nom:'Compra Col·lectiva / Estalvi',ic:'🛒'}
 ];
 
+/* ── El mapa de valor de cada dinàmica ────────────────────────────────────
+   Missió, visió, objectius, rols, intercanvis, passos i governança: **còpia
+   literal** de `DYNAMICS` de `SOS/index.html`, i la guarda ho compara paraula
+   per paraula. Sense això, aquesta pàgina seria una calculadora amb el nom
+   d'una dinàmica a sobre; amb això, és l'eina d'una dinàmica que ja existeix
+   al SOS, amb els seus actors i els seus fluxos.
+
+   El format de `pairs` és el de Verna Allee i és recíproc: `[A, B, mena del
+   que dona A, què dona A, mena del que dona B, què dona B]`. Cada enllaç té
+   lliurament als dos sentits, perquè un intercanvi amb una sola direcció no és
+   un intercanvi: és una extracció. */
+const MAPA={
+  consum_agroecologic:{
+    mission:'Accedir a aliments sans i de proximitat a preu just, sostenint la pagesia local.',
+    vision:'De la terra al plat sense intermediaris: menjar sa, pagesia digna i un grup que menja i decideix junt.',
+    objectives:'12 unitats familiars · 3 productors/es · cistella setmanal estable · preu just pactat i avaluat.',
+    gov:'Rotació de tasques (comandes, repartiment, caixa) · preu just pactat · assemblea mensual.',
+    roles:['Unitats familiars','Productors/es locals','Coordinació','Punt de repartiment','Comunitat'],
+    pairs:[
+     ['Unitats familiars','Productors/es locals','tangible','comandes i pagament just','tangible','cistelles'],
+     ['Productors/es locals','Coordinació','tangible','disponibilitat i preus','tangible','comanda agregada i pagament únic'],
+     ['Coordinació','Unitats familiars','intangible','logística i confiança','tangible','rotació de tasques'],
+     ['Punt de repartiment','Unitats familiars','tangible','lloc i horari','intangible','vida i clientela al local'],
+     ['Punt de repartiment','Coordinació','tangible','emmagatzematge','tangible','neteja i ordre'],
+     ['Unitats familiars','Comunitat','intangible','cultura alimentària','intangible','noves famílies'],
+     ['Productors/es locals','Comunitat','intangible','traçabilitat i cara visible','intangible','mercat estable i defensa de la pagesia'],
+     ['Coordinació','Comunitat','intangible','obertura del grup','intangible','relleu de tasques']],
+    kanban:['Formar el grup','Contactar productors/es','Logística de repartiment','Sistema de comandes','Primera cistella','Avaluació']
+  },
+  compra_collectiva:{
+    mission:'Unir la demanda del veïnat per aconseguir millors preus i condicions (energia, materials, assegurances).',
+    vision:'Junts negociem millor: el poder de compra del veïnat retorna en estalvi i condicions justes.',
+    objectives:'10+ participants · una compra tancada · estalvi mesurat per llar · comissions transparents.',
+    gov:'Transparència de comissions · rotació de la negociació · decisió per consentiment.',
+    roles:['Participants','Coordinació','Proveïdor/a','Comunitat'],
+    pairs:[
+     ['Participants','Coordinació','tangible','demanda agregada','intangible','transparència i confiança'],
+     ['Coordinació','Proveïdor/a','tangible','contracte col·lectiu','tangible','oferta i condicions'],
+     ['Proveïdor/a','Participants','tangible','estalvi i servei','tangible','volum garantit'],
+     ['Participants','Comunitat','intangible','exemple i noves compres','intangible','més massa crítica'],
+     ['Coordinació','Comunitat','intangible','obertura del procés','intangible','relleu de la negociació'],
+     ['Proveïdor/a','Comunitat','tangible','condicions per al barri','intangible','reputació local']],
+    kanban:['Identificar la necessitat comuna','Agregar la demanda','Comparar ofertes','Negociar','Contractar','Repartir l\'estalvi']
+  }
+};
+
+/* Quins rols del mapa els omple **aquesta pàgina amb dades de debò**, i quins
+   els ha de posar el grup. Dir que la pàgina fa cinc rols quan en fa dos seria
+   la mentida més fàcil d'explicar i la més cara de descobrir. */
+const OMPLE={
+  'Unitats familiars':'socis','Participants':'socis',
+  'Productors/es locals':'productors','Proveïdor/a':'productors'
+};
+
+/* I quins lliuraments del mapa surten d'aquí. Això és el que converteix el
+   mapa en una costura de debò i no en un pòster: cada flux marcat té una
+   pantalla que el produeix, amb número. */
+const FA={
+  'comandes i pagament just':'La cistella de cada llar i el seu total (pantalla 2).',
+  'comanda agregada i pagament únic':'La comanda per productor, en formats sencers (pantalla 3).',
+  'disponibilitat i preus':'La taula de preus, formats i mínims de cada productor (pantalla 1).',
+  'demanda agregada':'La suma de les cistelles de totes les llars (pantalla 3).',
+  'estalvi i servei':'L\'estalvi separat per causes (pantalla 4).',
+  'transparència i confiança':'El repartiment del descompte, dit i triat pel grup (pantalla 4).',
+  'oferta i condicions':'Els trams de volum i el mínim de comanda de cada productor (pantalla 3).',
+  'volum garantit':'El subtotal encarregat a cada productor (pantalla 3).'
+};
+
 /* Els productors. `minim` és el mínim de comanda en euros per sota del qual no
    mouen la furgoneta —el problema setmanal de debò d'un grup de consum— i
    `cada` és el ritme al qual es demana: el fresc setmanal, el sec mensual.
@@ -457,7 +552,7 @@ const CLAU='sos_compra_grup';
 const LLARS_DEFECTE=[['Llar Roca',3],['Llar Ferrer',2],['Llar Puig',4],['Llar Mas',1],
   ['Llar Serra',2],['Llar Camps',3],['Llar Bosch',2],['Llar Grau',4],['Llar Riera',2],
   ['Llar Soler',3],['Llar Font',2],['Llar Vidal',2]];
-let G={socis:[],preus:{},repartiment:'prop',llarBase:2};
+let G={socis:[],preus:{},repartiment:'prop',llarBase:2,rols:{}};
 let _id=0;
 
 /* La cistella per defecte, escalada per les persones de la llar. Ve
@@ -497,7 +592,7 @@ function carrega(){
     const j=JSON.parse(localStorage.getItem(CLAU)||'null');
     if(j&&Array.isArray(j.socis)&&j.socis.length){
       G={socis:j.socis,preus:j.preus||{},repartiment:j.repartiment==='igual'?'igual':'prop',
-         llarBase:Number(j.llarBase)||2};
+         llarBase:Number(j.llarBase)||2,rols:j.rols||{}};
       _id=G.socis.length;
       return true;
     }
@@ -505,7 +600,9 @@ function carrega(){
   return false;
 }
 function grupPerDefecte(){
-  G={socis:[],preus:{},repartiment:'prop',llarBase:2};_id=0;
+  /* Els noms que el grup ha posat als rols del mapa NO es perden en tornar al
+     grup d'exemple: són seus i no formen part de l'exemple. */
+  G={socis:[],preus:{},repartiment:'prop',llarBase:2,rols:G.rols||{}};_id=0;
   LLARS_DEFECTE.forEach(([n,l])=>nouSoci(n,l));
 }
 
@@ -603,6 +700,152 @@ function perSoci(){
     f.net=f.estructural+f.volum;
   });
   return {files,total:e};
+}
+
+/* ── El mapa de valor · qui omple cada rol i què es mou de debò ─────────── */
+/* Qui omple un rol: o una dada d'aquesta pàgina, o un nom que hi posa el grup,
+   o ningú. Dir que la pàgina cobreix cinc rols quan en cobreix dos seria la
+   mentida més fàcil d'explicar i la més cara de descobrir. */
+function quiOmple(din,rol){
+  const de=OMPLE[rol];
+  if(de==='socis')return {de,txt:G.socis.length+(G.socis.length===1?' llar':' llars'),app:true};
+  if(de==='productors'){const n=Object.keys(PRODUCTORS).length;return {de,txt:n+' productors',app:true};}
+  return {de:null,txt:(G.rols[din]||{})[rol]||'',app:false};
+}
+const rolPle=(din,rol)=>{const q=quiOmple(din,rol);return q.app||!!q.txt;};
+function posaRol(din,rol,nom){
+  G.rols[din]=G.rols[din]||{};
+  const v=String(nom||'').trim().slice(0,40);
+  if(v)G.rols[din][rol]=v; else delete G.rols[din][rol];
+  desa();return v;
+}
+/* Cada parella dona **dos lliuraments**, un per sentit. Comptar parelles
+   amagaria justament el que es vol veure: què posa cadascú i què se n'emporta. */
+function lliuraments(din){
+  return MAPA[din].pairs.flatMap(([a,b,ka,qa,kb,qb])=>[
+    {de:a,a:b,mena:ka,que:qa},{de:b,a:a,mena:kb,que:qb}]);
+}
+function analisi(din){
+  const M=MAPA[din],ll=lliuraments(din);
+  const rols=M.roles.map(r=>{
+    const dona=ll.filter(x=>x.de===r),rep=ll.filter(x=>x.a===r);
+    const donaT=dona.filter(x=>x.mena==='tangible').length;
+    const repT=rep.filter(x=>x.mena==='tangible').length;
+    return {rol:r,dona,rep,donaT,repT,saldoT:donaT-repT,
+      ple:rolPle(din,r),qui:quiOmple(din,r),
+      /* Posa coses que es veuen i en rep menys de les que es veuen. No és un
+         veredicte: és la pregunta de Verna Allee sobre si allò se sosté. Al
+         grup de consum, qui hi cau és sovint el local que deixa l'espai. */
+      exposat:donaT>repT,
+      /* I qui es mou només amb el que no es veu: no és un defecte, però és el
+         primer que s'oblida quan es fan comptes. */
+      totIntangible:donaT===0&&repT===0};
+  });
+  return {rols,ll,
+    vius:ll.filter(x=>rolPle(din,x.de)&&rolPle(din,x.a)),
+    fets:ll.filter(x=>FA[x.que]),
+    buits:rols.filter(r=>!r.ple).map(r=>r.rol),
+    tangibles:ll.filter(x=>x.mena==='tangible').length};
+}
+
+/* El graf és petit a posta. Un graf bonic no és una anàlisi (veda 116): aquí
+   ensenya la forma —qui toca amb qui— i el que val la pena llegir és la taula
+   de sota, que diu què es mou i en quin sentit. */
+function grafSVG(din){
+  /* El llenç és més ample que alt a posta: les etiquetes surten cap enfora i
+     «Productors/es locals» es tallava per la dreta a la mida d'un mòbil. */
+  const M=MAPA[din],n=M.roles.length,cx=200,cy=140,r=92;
+  const pos={};
+  M.roles.forEach((rol,i)=>{
+    const a=(-90+i*360/n)*Math.PI/180;
+    pos[rol]={x:cx+r*Math.cos(a),y:cy+r*Math.sin(a),c:Math.cos(a),s:Math.sin(a)};
+  });
+  const linies=M.pairs.map(([a,b,ka,,kb])=>{
+    const p=pos[a],q=pos[b];
+    const totT=ka==='tangible'&&kb==='tangible';
+    const capT=ka!=='tangible'&&kb!=='tangible';
+    const col=totT?'var(--green)':capT?'var(--purple)':'var(--blue)';
+    return '<line x1="'+p.x.toFixed(1)+'" y1="'+p.y.toFixed(1)+'" x2="'+q.x.toFixed(1)+
+      '" y2="'+q.y.toFixed(1)+'" stroke="'+col+'" stroke-width="1.4" opacity=".65"'+
+      (capT?' stroke-dasharray="4 3"':'')+'></line>';
+  }).join('');
+  const nodes=M.roles.map(rol=>{
+    const p=pos[rol],ple=rolPle(din,rol);
+    const anc=p.c>0.3?'start':p.c<-0.3?'end':'middle';
+    const dx=p.c>0.3?12:p.c<-0.3?-12:0, dy=p.s>0.3?16:p.s<-0.3?-9:4;
+    const mots=rol.split(' ');
+    const l1=mots.length>2?mots.slice(0,2).join(' '):rol;
+    const l2=mots.length>2?mots.slice(2).join(' '):'';
+    return '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="6" fill="'+
+      (ple?'var(--green)':'var(--card)')+'" stroke="'+(ple?'var(--green)':'var(--muted)')+
+      '" stroke-width="1.5"></circle>'+
+      '<text x="'+(p.x+dx).toFixed(1)+'" y="'+(p.y+dy).toFixed(1)+'" text-anchor="'+anc+
+      '" font-size="10" fill="'+(ple?'var(--text)':'var(--muted)')+'">'+esc(l1)+
+      (l2?'<tspan x="'+(p.x+dx).toFixed(1)+'" dy="11">'+esc(l2)+'</tspan>':'')+'</text>';
+  }).join('');
+  return '<svg viewBox="0 0 420 285" class="graf" role="img" aria-label="Mapa de valor de '+
+    esc(DINAMIQUES.find(d=>d.id===din).nom)+'">'+linies+nodes+'</svg>';
+}
+
+function pintaMapa(){
+  const tot=DINAMIQUES.reduce((t,d)=>{const a=analisi(d.id);
+    return {ll:t.ll+a.ll.length,fets:t.fets+a.fets.length,buits:t.buits+a.buits.length};},
+    {ll:0,fets:0,buits:0});
+  $('#mapaResum').innerHTML='Entre les dues dinàmiques hi ha <strong>'+tot.ll+
+    ' lliuraments</strong>. D\'aquests, <strong>'+tot.fets+' els produeix aquesta pàgina</strong> '+
+    'amb dades i número; la resta els fa la gent, i cap eina els pot substituir. '+
+    (tot.buits?'Hi ha <strong>'+tot.buits+' rols sense ningú</strong>: posa-hi nom i el mapa serà el vostre.'
+      :'I tots els rols tenen algú.');
+
+  $('#mapes').innerHTML=DINAMIQUES.map(d=>{
+    const M=MAPA[d.id],A=analisi(d.id);
+    let h='<section class="box"><h3>'+d.ic+' '+esc(d.nom)+'</h3>'+
+      '<p class="lead">'+esc(M.mission)+'</p>'+
+      '<p class="mut"><strong>Visió:</strong> '+esc(M.vision)+'<br>'+
+      '<strong>Objectius:</strong> '+esc(M.objectives)+'</p>'+
+      grafSVG(d.id)+
+      '<p class="mut">Verd, el que es mou als dos sentits i es veu. Blau, un sentit que es veu i '+
+      'un que no. Puntejat lila, el que no es veu per cap dels dos costats — i que sol ser el que '+
+      'sosté el projecte.</p>';
+
+    h+='<h4 class="sub">Qui és qui</h4>'+
+      '<div class="taula"><table class="t-rols"><thead><tr><th>Rol</th><th>Qui l\'omple</th>'+
+      '<th class="n">Dona</th><th class="n">Rep</th><th>Què s\'ha de mirar</th></tr></thead><tbody>'+
+      A.rols.map(r=>{
+        const q=r.qui;
+        return '<tr'+(r.ple?'':' class="no80"')+'><td>'+esc(r.rol)+'</td>'+
+          '<td>'+(q.app
+            ? '<span class="xip si">d\'aquesta pàgina</span> '+esc(q.txt)
+            : '<input data-rol="'+esc(r.rol)+'" data-din="'+d.id+'" value="'+esc(q.txt)+
+              '" placeholder="qui ho fa al vostre grup" style="width:100%;max-width:220px">')+'</td>'+
+          '<td class="n">'+r.dona.length+' <span class="mut">('+r.donaT+' T)</span></td>'+
+          '<td class="n">'+r.rep.length+' <span class="mut">('+r.repT+' T)</span></td>'+
+          '<td class="mut">'+(r.exposat
+            ? 'Posa '+r.donaT+' coses que es veuen i en rep '+r.repT+'. <strong>És qui es crema si el grup s\'oblida de retornar-li res.</strong>'
+            : r.totIntangible
+              ? 'Tot el que mou és invisible. No és un defecte: és el primer que s\'oblida quan es fan comptes.'
+              : 'Equilibrat en el que es veu.')+'</td></tr>';
+      }).join('')+'</tbody></table></div>';
+
+    h+='<h4 class="sub">Què es mou, lliurament a lliurament</h4>'+
+      '<div class="taula"><table><thead><tr><th>De</th><th>A</th><th>Què</th>'+
+      '<th>Mena</th><th>Ho fa aquesta pàgina?</th></tr></thead><tbody>'+
+      A.ll.map(x=>'<tr><td>'+esc(x.de)+'</td><td>'+esc(x.a)+'</td><td>'+esc(x.que)+'</td>'+
+        '<td class="mut">'+(x.mena==='tangible'?'es veu':'no es veu')+'</td>'+
+        '<td class="mut">'+(FA[x.que]?'<span class="xip si">sí</span> '+esc(FA[x.que])
+          :'ho fa la gent')+'</td></tr>').join('')+
+      '</tbody></table></div>'+
+      '<p class="nota'+(A.vius.length===A.ll.length?' bo':' avis')+'">'+
+      A.vius.length+' de '+A.ll.length+' lliuraments tenen algú als dos extrems'+
+      (A.buits.length?'. Falten: <strong>'+A.buits.map(esc).join(', ')+'</strong>.'
+        :'. El mapa està sencer.')+
+      ' I <strong>'+A.fets.length+'</strong> els produeix aquesta pàgina amb número.</p>';
+
+    h+='<h4 class="sub">Per on es comença</h4><ol class="passos">'+
+      M.kanban.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ol>'+
+      '<p class="nota"><strong>Governança:</strong> '+esc(M.gov)+'</p>';
+    return h+'</section>';
+  }).join('');
 }
 
 /* ── Pintar ─────────────────────────────────────────────────────────────── */
@@ -782,7 +1025,7 @@ function pintaEstalvi(){
     '</tbody>';
 }
 
-function pinta(){pintaCistella();pintaSocis();pintaComanda();pintaEstalvi();}
+function pinta(){pintaCistella();pintaSocis();pintaComanda();pintaEstalvi();pintaMapa();}
 
 /* ── Enganxar-ho ────────────────────────────────────────────────────────── */
 $('#tabs').addEventListener('click',e=>{
@@ -831,6 +1074,11 @@ $('#tSoci').addEventListener('change',e=>{
   s.cistella[i.dataset.sq]=Math.max(0,Number(i.value)||0);
   desa();pinta();
 });
+$('#mapes').addEventListener('change',e=>{
+  const i=e.target.closest('[data-rol]');if(!i)return;
+  posaRol(i.dataset.din,i.dataset.rol,i.value);
+  pintaMapa();
+});
 $$('input[name=rep]').forEach(r=>r.addEventListener('change',()=>{
   G.repartiment=$('input[name=rep]:checked').value;desa();pintaEstalvi();
 }));
@@ -845,7 +1093,8 @@ window.__COMPRA={G,PRODUCTES,PRODUCTORS,DINAMIQUES,TRAMS,FONTS,UNITATS,CICLES,
   PREUS_REVISIO,LLARS_DEFECTE,perId,compta,cistellaPerDefecte,despesa,cistellaGrup,
   personesTotals,desequilibri,perQueNo,tramDe,tramSeguent,comandaDe,valLaPena,
   estalvi,perSoci,nouSoci,treuSoci,posaPreu,preuGrup,preuBotiga,grupPerDefecte,
-  desa,carrega,pinta,sel:id=>{sociSel=id;pinta();},CLAU};
+  desa,carrega,pinta,sel:id=>{sociSel=id;pinta();},CLAU,
+  MAPA,OMPLE,FA,quiOmple,rolPle,posaRol,lliuraments,analisi};
 </script>
 </body>
 </html>
