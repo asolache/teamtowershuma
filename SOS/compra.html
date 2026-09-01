@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La Compra · comunitat de compres amb cistella de proximitat</title>
+<meta name="description" content="Miniapp per a grups de consum i compres col·lectives: cistella per defecte amb el 80% de la despesa en aliments de proximitat, bàsics i sans, socis amb llista pròpia, comanda agregada per productor i estimació d'estalvi separada per causes.">
+<meta property="og:title" content="La Compra · comunitat de compres amb cistella de proximitat">
+<meta property="og:description" content="El 80% de la despesa en aliments de proximitat, bàsics i sans. Amb la comanda agregada, els mínims de cada pagès i l'estalvi dit per la seva causa.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+nav.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.7rem 1.2rem;background:rgba(11,11,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text)}
+nav.top .brand span{color:var(--green)}
+nav.top .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto;font-size:.85rem}
+nav.top .links a{color:var(--light);text-decoration:none}
+nav.top .links a:hover{color:var(--text)}
+
+.hero{padding:3.4rem 1.5rem 2.2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(0,230,118,.16),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(0,176,255,.12),transparent 55%),var(--bg)}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:rgba(0,230,118,.14);color:var(--green);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#00e676,#00b0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:700px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:860px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--orange);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+/* Pestanyes */
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+
+/* El mesurador del 80% */
+.met{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem}
+.met .big{font-family:var(--mono);font-size:2rem;font-weight:700;line-height:1}
+.met .big.ok{color:var(--green)} .met .big.no{color:var(--orange)}
+.bar{height:12px;border-radius:6px;background:var(--card);overflow:hidden;position:relative;margin:.4rem 0 .3rem}
+.bar i{display:block;height:100%;background:var(--green);transition:width .25s}
+.bar i.no{background:var(--orange)}
+.bar u{position:absolute;top:-3px;bottom:-3px;left:80%;width:2px;background:var(--light);opacity:.75}
+
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th,td{text-align:left;padding:.36rem .4rem;border-bottom:1px solid var(--border);vertical-align:middle}
+th{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-family:var(--mono);white-space:nowrap}
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+tr.no80 td:first-child{border-left:2px solid var(--orange);padding-left:.35rem}
+
+input,select,button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .55rem}
+input[type=number]{width:78px;text-align:right;font-family:var(--mono)}
+input:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
+button.b{cursor:pointer}
+button.b:hover{border-color:var(--indigo)}
+.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+
+.xips{display:flex;gap:.35rem;flex-wrap:wrap;margin:.3rem 0 .6rem}
+.xip{font-size:.66rem;padding:.16rem .45rem;border-radius:5px;border:1px solid var(--border);color:var(--muted)}
+.xip.si{border-color:rgba(0,230,118,.5);color:var(--green)}
+
+.socis{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem}
+.soci{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.7rem .8rem}
+.soci.sel{border-color:var(--indigo)}
+.soci .nm{font-weight:700;font-size:.92rem}
+.soci .xf{font-family:var(--mono);font-size:.78rem;color:var(--light);margin-top:.25rem}
+.soci .ac{display:flex;gap:.35rem;margin-top:.5rem}
+.soci .ac button{font-size:.72rem;padding:.25rem .5rem}
+
+.prodbox{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.8rem .9rem;margin-bottom:.7rem}
+.prodbox.curt{border-color:rgba(255,82,82,.5)}
+.prodbox .cap{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.prodbox .cap b{font-size:.95rem}
+.prodbox .est{margin-left:auto;font-family:var(--mono);font-size:.8rem}
+.prodbox .diu{font-size:.8rem;color:var(--light);margin:.35rem 0 .5rem}
+.nota{font-size:.78rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.5rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+
+.capes{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem;margin:.6rem 0}
+.capa{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.75rem .85rem}
+.capa .n{font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1.1}
+.capa .l{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:.1rem}
+.capa .d{font-size:.76rem;color:var(--light);margin-top:.35rem;line-height:1.45}
+.capa.bo .n{color:var(--green)} .capa.blau .n{color:var(--blue)} .capa.taronja .n{color:var(--orange)}
+
+.metode{font-size:.9rem;color:var(--light)}
+.metode h4{margin:1rem 0 .3rem;font-size:.95rem;color:var(--text)}
+.metode ul{margin:.2rem 0 .6rem;padding-left:1.1rem}
+.metode li{margin-bottom:.3rem}
+.metode strong{color:var(--text)}
+
+footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:center;color:var(--muted);font-size:.8rem}
+@media(max-width:520px){
+  .hero{padding:2.4rem 1rem 1.6rem}
+  .wrap{padding:0 .8rem 3rem}
+  section.box{padding:.9rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="links">
+    <a href="index.html">Obre SOS</a>
+    <a href="formacio.html">Formació</a>
+    <a href="escola.html">Escoles</a>
+    <a href="vna.html">Mapa de valor</a>
+    <a href="comando.html">Comando</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tag">🛒 Grup de consum · compra col·lectiva</div>
+    <h1>Comprar junts, <em>i saber per què surt més barat</em></h1>
+    <p class="sub">Una cistella per defecte on <strong>el 80% de la despesa</strong> és menjar de
+    proximitat, bàsic i sa. Cada soci té la seva llista, el grup té una comanda, i l'estalvi
+    surt dit <strong>per la seva causa</strong>: fora intermediari, a granel, de temporada, per volum.</p>
+    <div class="avis">
+      <strong>Aquí no es cobra res.</strong> Aquesta pàgina planifica i estima: no confirma cap pagament,
+      no demana cap targeta i no mou ni un euro. Els diners es mouen fora, entre el grup i qui ven.
+      I tot el que hi escriguis <strong>viu al navegador d'aquest dispositiu</strong> i enlloc més.
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="cistella" class="on">1 · La cistella</button>
+  <button data-p="socis">2 · Els socis</button>
+  <button data-p="comanda">3 · La comanda</button>
+  <button data-p="estalvi">4 · L'estalvi</button>
+  <button data-p="metode">5 · Com es fa</button>
+</div>
+
+<!-- ══ 1 · LA CISTELLA ═══════════════════════════════════════════════════ -->
+<div class="pan on" id="pCistella">
+  <section class="box">
+    <h3>La regla del 80%, mesurada i no promesa</h3>
+    <p class="lead">Un producte compta si compleix <strong>les tres coses</strong>: és de
+    proximitat, és bàsic i és sa. I es mesura en <strong>euros de despesa</strong>, no en nombre
+    d'articles — comptar articles deixa passar una cistella amb vint espècies locals i el gruix
+    dels diners en processats.</p>
+    <div class="met">
+      <span class="big" id="m80">—</span>
+      <span id="m80t" class="mut"></span>
+    </div>
+    <div class="bar"><i id="m80b"></i><u></u></div>
+    <p class="mut" id="m80d"></p>
+    <div class="fila">
+      <label>Persones a la llar
+        <select id="selLlar"></select></label>
+      <button class="b" id="btnDefecte">Torna a la cistella per defecte</button>
+    </div>
+  </section>
+
+  <section class="box">
+    <h3>Què hi ha a la cistella</h3>
+    <p class="lead">Quantitats <strong>per persona i setmana</strong>. Canvia-les i mira què li
+    passa al 80%. Les línies amb marca taronja són les que no compten per a la regla —i cadascuna
+    per un motiu diferent, que és el que val la pena mirar.</p>
+    <div class="taula"><table id="tCistella"></table></div>
+  </section>
+
+  <section class="box">
+    <h3>Els preus</h3>
+    <p class="lead" id="preusLead"></p>
+    <p class="mut">La referència de botiga és <strong>el mateix producte a un supermercat</strong>,
+    no la marca blanca més barata. Comparat amb la marca blanca la diferència es menja, i el que
+    queda és la qualitat i saber d'on ve. Edita'ls amb els del teu territori: es desen aquí.</p>
+    <div class="taula"><table id="tPreus"></table></div>
+  </section>
+</div>
+
+<!-- ══ 2 · ELS SOCIS ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pSocis">
+  <section class="box">
+    <h3>Els socis</h3>
+    <p class="lead">Cada llar té la seva cistella, que arrenca de la que hi ha per defecte i
+    s'escala amb les persones que hi viuen. El total del grup és la suma, i és el que dona el
+    volum: <strong>ningú negocia sol.</strong></p>
+    <div class="fila">
+      <input id="inNom" placeholder="Nom de la llar" maxlength="24">
+      <label>persones <input id="inLlar" type="number" min="1" max="12" value="2"></label>
+      <button class="b b-pri" id="btnSoci">Dona d'alta</button>
+    </div>
+    <p class="mut" id="socisAvis"></p>
+    <div class="socis" id="socis"></div>
+  </section>
+
+  <section class="box" id="boxSoci" hidden>
+    <h3 id="sociTit"></h3>
+    <p class="lead" id="sociLead"></p>
+    <div class="met"><span class="big" id="s80">—</span><span id="s80t" class="mut"></span></div>
+    <div class="bar"><i id="s80b"></i><u></u></div>
+    <p class="mut" id="s80d"></p>
+    <div class="taula"><table id="tSoci"></table></div>
+  </section>
+</div>
+
+<!-- ══ 3 · LA COMANDA ════════════════════════════════════════════════════ -->
+<div class="pan" id="pComanda">
+  <section class="box">
+    <h3>La comanda, productor per productor</h3>
+    <p class="lead">Cada pagès té el seu <strong>mínim de comanda</strong> i el seu <strong>ritme</strong>:
+    el fresc va setmanal, el sec va mensual. Agrupar en el temps també és agregar volum — un grup
+    que demana llenties cada setmana no arriba a cap mínim; el mateix grup demanant-les cada mes,
+    sí.</p>
+    <p class="mut">Les quantitats s'arrodoneixen <strong>cap amunt a formats sencers</strong>: un sac
+    de 5 kg no es parteix. El que sobra no és diner cremat, i més avall es diu què és.</p>
+    <div id="comanda"></div>
+  </section>
+</div>
+
+<!-- ══ 4 · L'ESTALVI ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pEstalvi">
+  <section class="box">
+    <h3>D'on surt l'estalvi</h3>
+    <p class="lead">Separat per causes, perquè un percentatge sol no es pot comprovar ni discutir.
+    Tot és <strong>al mes</strong> i per al grup sencer.</p>
+    <div class="capes" id="capes"></div>
+    <p class="nota bo" id="netTxt"></p>
+    <p class="nota avis" id="mecTxt"></p>
+  </section>
+
+  <section class="box">
+    <h3>Qui s'estalvia què</h3>
+    <p class="lead">L'estalvi estructural és de cadascú: surt del que ha demanat. El
+    <strong>descompte de volum és del grup</strong>, i com es reparteix és una decisió de
+    governança, no una fórmula. Per això és un interruptor.</p>
+    <div class="fila">
+      <label><input type="radio" name="rep" value="prop" checked> Proporcional a la despesa</label>
+      <label><input type="radio" name="rep" value="igual"> A parts iguals entre llars</label>
+    </div>
+    <div class="taula"><table id="tSocisEstalvi"></table></div>
+  </section>
+</div>
+
+<!-- ══ 5 · COM ES FA ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pMetode">
+  <section class="box metode">
+    <h3>El mètode de compra</h3>
+    <p class="lead">El que sap qui compra per a molta gent, i que no surt als fullets.</p>
+
+    <h4>1 · El gruix de l'estalvi no és el volum</h4>
+    <p>És on tothom mira primer i on menys n'hi ha. En aquest grup, el descompte per volum és
+    <strong id="mPctVol">—</strong> de l'estalvi total; la resta ve de <strong>treure
+    l'intermediari, comprar a granel i comprar de temporada</strong>. El volum s'ha de negociar,
+    però no és el que et paga el mes.</p>
+
+    <h4>2 · Perseguir un tram pot ser una pèrdua</h4>
+    <p>Comprar 200 € de més per guanyar un 4% sobre 600 € és guanyar 24 i gastar-ne 200. La
+    comanda ho diu tram per tram: <em>surt a compte</em> o <em>no surt a compte</em>. Un tram només
+    és bo si compres el que ja necessitaves.</p>
+
+    <h4>3 · El format mana més que el preu</h4>
+    <p>El preu per quilo d'un sac de 25 kg és imbatible i és irrellevant si sou quatre llars. La
+    pregunta no és «quant costa» sinó <strong>«quin és el tros més petit que em venen»</strong>.
+    Quan el format és més gran que el que necessiteu, teniu tres sortides i cap és màgica:
+    més llars, menys freqüència, o una regla per repartir l'excedent.</p>
+
+    <h4>4 · El mínim de comanda és el que trenca els grups</h4>
+    <p>No és el preu: és no arribar-hi. Un pagès que ha de moure la furgoneta per 90 € deixa de
+    venir, i el grup es desfà sense que ningú hagi discutit de res. Per això la comanda ensenya
+    <strong>quant falta i què el desencalla</strong>: una llar més, o passar de setmanal a quinzenal.</p>
+
+    <h4>5 · La comparació ha de ser honesta o no serveix</h4>
+    <p>Comparar verdura de l'horta amb la marca blanca més barata és fer trampa a favor teu i és
+    la manera més ràpida de perdre la confiança del grup el dia que algú ho comprovi. La
+    referència d'aquesta pàgina és <strong>el mateix producte, qualitat comparable</strong>.</p>
+
+    <h4>6 · Els preus caduquen</h4>
+    <p>Una taula de preus sense data menteix en silenci al cap d'un any. Aquesta porta la seva, i
+    tots els preus són editables: <strong>reviseu-los cada temporada</strong>, que és quan canvien
+    de debò.</p>
+
+    <h4>Què no cobreix aquesta cistella</h4>
+    <p>No hi ha peix, ni carn més enllà del pollastre i un guisat, ni preparats, ni begudes fora
+    d'una cervesa. És una cistella de <strong>rebost i fresc per cuinar a casa</strong>: si la
+    vostra compra no s'assembla a això, canvieu les quantitats abans de mirar cap xifra.</p>
+
+    <h4>D'on ve això al SOS</h4>
+    <p>Aquesta pàgina és l'eina de dues dinàmiques del catàleg: <strong>Grup de Consum
+    Agroecològic</strong> 🥬, que és comprar directe a pagès sense intermediaris, i <strong>Compra
+    Col·lectiva / Estalvi</strong> 🛒, que és agregar demanda per aconseguir millors condicions.
+    El temari que li toca és el mòdul
+    <a href="formacio.html#m4" target="_blank" rel="noopener">m4 · Recursos comunitaris</a>.</p>
+  </section>
+</div>
+
+</main>
+
+<footer>
+  La Compra · una eina del <a href="index.html">SOS</a> de <a href="../index.html">TeamTowers Humà</a> ·
+  <a href="formacio.html">Formació</a> · <a href="escola.html">Escoles</a> ·
+  <a href="vna.html">Mapa de valor</a> · <a href="joc.html">El joc</a>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   La Compra · comunitat de compres
+   ══════════════════════════════════════════════════════════════════════════
+
+   Eina de dues dinàmiques del catàleg del SOS: `consum_agroecologic` i
+   `compra_collectiva`. Els seus noms i icones són **còpia literal** de
+   `DYNAMICS` de `SOS/index.html`, i `SOS/tools/check-compra.js` els compara:
+   si allà se'n canvia el nom, aquí queda una frase que sona igual de certa i
+   ja no ho és. Veda 109.
+
+   Tres coses que decideixen si això val alguna cosa:
+
+   · **El 80% es calcula, no s'escriu.** És despesa en euros de productes que
+     compleixen les tres condicions, dividit per la despesa total. La guarda
+     refà el càlcul amb les dades del fitxer, així que la frase de la pàgina no
+     pot allunyar-se de la taula.
+   · **L'estalvi es diu per la seva causa.** `font` de cada producte: directe,
+     granel, temporada o format. Un preu més baix sense causa és una promesa.
+   · **El sobrant de format NO és una pèrdua.** És estoc pagat per avançat (sec)
+     o excedent a repartir (fresc). Comptar-lo com a diner cremat feia que
+     comprar junts sortís a compte negatiu, que és fals.
+
+   I el que no fa: **no cobra, no confirma cap pagament i no demana cap
+   targeta**. Vedes 96 i 97. Aquí es planifica i s'estima.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';
+const num=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
+const pc=n=>Math.round(n*10)/10;
+
+/* Quan es van revisar els preus. Sense data, una taula de preus menteix en
+   silenci al cap d'un any i ningú se n'assabenta fins que algú fa el ridícul
+   davant d'un pagès. */
+const PREUS_REVISIO='setembre de 2026';
+const PREUS_AMBIT='Catalunya · Alt Penedès, Garraf i comarques veïnes';
+
+/* Les dues dinàmiques del catàleg del SOS que aquesta pàgina serveix.
+   Còpia literal de DYNAMICS: id, nom i icona. */
+const DINAMIQUES=[
+  {id:'consum_agroecologic',nom:'Grup de Consum Agroecològic',ic:'🥬'},
+  {id:'compra_collectiva',nom:'Compra Col·lectiva / Estalvi',ic:'🛒'}
+];
+
+/* Els productors. `minim` és el mínim de comanda en euros per sota del qual no
+   mouen la furgoneta —el problema setmanal de debò d'un grup de consum— i
+   `cada` és el ritme al qual es demana: el fresc setmanal, el sec mensual.
+   Agrupar en el temps també és agregar volum. */
+const PRODUCTORS={
+  horta: {nom:'Horta del Penedès',ic:'🥬',km:12, minim:120,cada:'setmana', fresc:1,
+    diu:'Verdura de temporada, collida i repartida la mateixa setmana.'},
+  granja:{nom:'Granja i formatgeria',ic:'🐔',km:28, minim:150,cada:'setmana', fresc:1,
+    diu:'Ous, llet, iogurt i aviram. Cadena de fred curta: no admet acumular comanda.'},
+  fruita:{nom:'Fruiters de Ponent i Girona',ic:'🍎',km:95, minim:180,cada:'quinzena',fresc:1,
+    diu:'Fruita de pinyol i de llavor. Aguanta quinze dies, i per això s\'agrupa.'},
+  secans:{nom:'Cooperativa de secans',ic:'🌾',km:52, minim:250,cada:'mes',     fresc:0,
+    diu:'Llegum, cereal i farina. Sec: es demana un cop al mes i s\'arriba al mínim.'},
+  moli:  {nom:'Molí i rebost',ic:'🫒',km:110,minim:200,cada:'mes',     fresc:0,
+    diu:'Oli, conserva, mel i sal. Format gran i molta vida: el candidat perfecte a comprar junts.'},
+  just:  {nom:'Distribuïdora de comerç just',ic:'📦',km:40, minim:300,cada:'mes',     fresc:0,
+    diu:'El que no és d\'aquí. Hi és perquè es consumeix, i es compra amb criteri.'}
+};
+const CICLES={setmana:{setmanes:1,almes:4.33,lbl:'cada setmana'},
+  quinzena:{setmanes:2,almes:2.165,lbl:'cada quinze dies'},
+  mes:{setmanes:4.33,almes:1,lbl:'cada mes'}};
+
+/* D'on surt que sigui més barat. Un preu més baix sense causa declarada és una
+   promesa; amb causa, és una decisió que es pot discutir amb el proveïdor. */
+const FONTS={
+  directe:{lbl:'fora intermediari',diu:'El marge que es queda la cadena no hi és: es compra a qui ho fa.'},
+  granel: {lbl:'a granel',diu:'Sense envàs petit ni format de lineal. La mateixa cosa, sense el que l\'embolica.'},
+  temporada:{lbl:'de temporada',diu:'Es compra quan n\'hi ha. Fora de temporada el mateix producte val el doble.'},
+  format: {lbl:'format gran',diu:'Caixa sencera en comptes d\'unitat. Baixa el preu i puja el que has de col·locar.'}
+};
+const UNITATS=['kg','litre','unitat','dotzena'];
+
+/* La taula. `base` és la quantitat per persona i setmana de la cistella per
+   defecte; `prox`+`basic`+`sa` són les tres condicions de la regla del 80%. */
+const PRODUCTES=[
+  {id:'llenties',nom:'Llenties',ic:'🫘',cat:'Llegum',unit:'kg',prox:1,basic:1,sa:1,botiga:3.20,grup:2.35,format:5,prod:'secans',font:'granel',base:0.15},
+  {id:'cigrons',nom:'Cigrons',ic:'🫘',cat:'Llegum',unit:'kg',prox:1,basic:1,sa:1,botiga:3.40,grup:2.50,format:5,prod:'secans',font:'granel',base:0.15},
+  {id:'mongeta',nom:'Mongeta seca',ic:'🫘',cat:'Llegum',unit:'kg',prox:1,basic:1,sa:1,botiga:5.20,grup:3.90,format:5,prod:'secans',font:'granel',base:0.08},
+  {id:'arros',nom:'Arròs del Delta',ic:'🌾',cat:'Cereal',unit:'kg',prox:1,basic:1,sa:1,botiga:2.30,grup:1.75,format:5,prod:'secans',font:'directe',base:0.25},
+  {id:'pasta',nom:'Pasta seca',ic:'🍝',cat:'Cereal',unit:'kg',prox:1,basic:1,sa:1,botiga:2.40,grup:1.80,format:6,prod:'secans',font:'format',base:0.25},
+  {id:'farina',nom:'Farina integral',ic:'🌾',cat:'Cereal',unit:'kg',prox:1,basic:1,sa:1,botiga:1.90,grup:1.35,format:10,prod:'secans',font:'granel',base:0.20},
+  {id:'civada',nom:'Civada en flocs',ic:'🥣',cat:'Cereal',unit:'kg',prox:1,basic:1,sa:1,botiga:2.60,grup:1.85,format:5,prod:'secans',font:'granel',base:0.15},
+  {id:'patata',nom:'Patata',ic:'🥔',cat:'Verdura',unit:'kg',prox:1,basic:1,sa:1,botiga:1.40,grup:0.95,format:10,prod:'horta',font:'directe',base:0.80},
+  {id:'ceba',nom:'Ceba',ic:'🧅',cat:'Verdura',unit:'kg',prox:1,basic:1,sa:1,botiga:1.30,grup:0.85,format:10,prod:'horta',font:'directe',base:0.40},
+  {id:'pastanaga',nom:'Pastanaga',ic:'🥕',cat:'Verdura',unit:'kg',prox:1,basic:1,sa:1,botiga:1.50,grup:1.05,format:5,prod:'horta',font:'directe',base:0.30},
+  {id:'tomaquet',nom:'Tomàquet',ic:'🍅',cat:'Verdura',unit:'kg',prox:1,basic:1,sa:1,botiga:2.80,grup:2.00,format:5,prod:'horta',font:'temporada',base:0.50},
+  {id:'carbasso',nom:'Carbassó',ic:'🥒',cat:'Verdura',unit:'kg',prox:1,basic:1,sa:1,botiga:2.20,grup:1.55,format:5,prod:'horta',font:'temporada',base:0.40},
+  {id:'col',nom:'Col',ic:'🥬',cat:'Verdura',unit:'kg',prox:1,basic:1,sa:1,botiga:1.80,grup:1.25,format:6,prod:'horta',font:'temporada',base:0.30},
+  {id:'bledes',nom:'Bledes',ic:'🥬',cat:'Verdura',unit:'kg',prox:1,basic:1,sa:1,botiga:3.20,grup:2.30,format:3,prod:'horta',font:'temporada',base:0.25},
+  {id:'enciam',nom:'Enciam',ic:'🥗',cat:'Verdura',unit:'unitat',prox:1,basic:1,sa:1,botiga:1.30,grup:0.90,format:12,prod:'horta',font:'directe',base:0.50},
+  {id:'poma',nom:'Poma',ic:'🍎',cat:'Fruita',unit:'kg',prox:1,basic:1,sa:1,botiga:2.20,grup:1.55,format:10,prod:'fruita',font:'directe',base:0.70},
+  {id:'taronja',nom:'Taronja',ic:'🍊',cat:'Fruita',unit:'kg',prox:1,basic:1,sa:1,botiga:1.90,grup:1.30,format:15,prod:'fruita',font:'temporada',base:0.80},
+  {id:'pera',nom:'Pera',ic:'🍐',cat:'Fruita',unit:'kg',prox:1,basic:1,sa:1,botiga:2.30,grup:1.65,format:10,prod:'fruita',font:'directe',base:0.40},
+  {id:'ous',nom:'Ous de pagès',ic:'🥚',cat:'Ou i làctic',unit:'dotzena',prox:1,basic:1,sa:1,botiga:3.60,grup:2.80,format:6,prod:'granja',font:'directe',base:0.50},
+  {id:'llet',nom:'Llet fresca',ic:'🥛',cat:'Ou i làctic',unit:'litre',prox:1,basic:1,sa:1,botiga:1.25,grup:0.95,format:12,prod:'granja',font:'directe',base:1.50},
+  {id:'iogurt',nom:'Iogurt natural',ic:'🥣',cat:'Ou i làctic',unit:'kg',prox:1,basic:1,sa:1,botiga:3.20,grup:2.40,format:6,prod:'granja',font:'granel',base:0.35},
+  {id:'formatge',nom:'Formatge fresc',ic:'🧀',cat:'Ou i làctic',unit:'kg',prox:1,basic:1,sa:1,botiga:9.00,grup:7.20,format:3,prod:'granja',font:'directe',base:0.15},
+  {id:'pollastre',nom:'Pollastre de corral',ic:'🍗',cat:'Proteïna',unit:'kg',prox:1,basic:1,sa:1,botiga:6.50,grup:5.10,format:5,prod:'granja',font:'directe',base:0.35},
+  {id:'oli',nom:'Oli d\'oliva verge extra',ic:'🫒',cat:'Oli i conserva',unit:'litre',prox:1,basic:1,sa:1,botiga:9.50,grup:7.60,format:5,prod:'moli',font:'directe',base:0.25},
+  {id:'conserva',nom:'Tomàquet en conserva',ic:'🥫',cat:'Oli i conserva',unit:'kg',prox:1,basic:1,sa:1,botiga:2.20,grup:1.70,format:6,prod:'moli',font:'format',base:0.20},
+  {id:'mel',nom:'Mel',ic:'🍯',cat:'Oli i conserva',unit:'kg',prox:1,basic:1,sa:1,botiga:12.00,grup:9.00,format:1,prod:'moli',font:'directe',base:0.05},
+  {id:'sal',nom:'Sal marina',ic:'🧂',cat:'Rebost',unit:'kg',prox:1,basic:1,sa:1,botiga:0.80,grup:0.55,format:10,prod:'moli',font:'granel',base:0.03},
+  {id:'cafe',nom:'Cafè de comerç just',ic:'☕',cat:'Rebost',unit:'kg',prox:0,basic:1,sa:1,botiga:12.00,grup:9.50,format:5,prod:'just',font:'directe',base:0.06},
+  {id:'platan',nom:'Plàtan',ic:'🍌',cat:'Fruita',unit:'kg',prox:0,basic:1,sa:1,botiga:2.10,grup:1.80,format:18,prod:'just',font:'format',base:0.30},
+  {id:'vedella',nom:'Vedella per guisar',ic:'🥩',cat:'Proteïna',unit:'kg',prox:1,basic:0,sa:0,botiga:12.00,grup:9.60,format:5,prod:'granja',font:'directe',base:0.10},
+  {id:'galetes',nom:'Galetes',ic:'🍪',cat:'Rebost',unit:'kg',prox:0,basic:0,sa:0,botiga:5.50,grup:4.60,format:4,prod:'just',font:'format',base:0.10},
+  {id:'cervesa',nom:'Cervesa artesana local',ic:'🍺',cat:'Rebost',unit:'litre',prox:1,basic:0,sa:0,botiga:3.50,grup:2.60,format:12,prod:'just',font:'format',base:0.15},
+  {id:'xocolata',nom:'Xocolata negra',ic:'🍫',cat:'Rebost',unit:'kg',prox:0,basic:0,sa:0,botiga:14.00,grup:11.20,format:3,prod:'just',font:'format',base:0.04}
+];
+const perId=id=>PRODUCTES.find(p=>p.id===id);
+/* Els tres atributs alhora. Aquesta és la regla, i és una sola funció perquè
+   no n'hi pugui haver dues versions. */
+const compta=p=>!!(p.prox&&p.basic&&p.sa);
+
+/* Els trams. Van sobre el subtotal encarregat a UN productor, no sobre el
+   total del grup: qui fa el descompte és qui ven, i cadascú té la seva
+   comanda. Són el que s'ha de negociar, no el que et donaran. */
+const TRAMS=[{des:0,dte:0},{des:300,dte:4},{des:600,dte:7},{des:1200,dte:10}];
+const tramDe=x=>TRAMS.reduce((d,t)=>x>=t.des?t.dte:d,0);
+const tramSeguent=x=>TRAMS.find(t=>x<t.des)||null;
+
+/* ── Estat · viu al navegador d'aquest dispositiu i enlloc més ──────────── */
+const CLAU='sos_compra_grup';
+const LLARS_DEFECTE=[['Llar Roca',3],['Llar Ferrer',2],['Llar Puig',4],['Llar Mas',1],
+  ['Llar Serra',2],['Llar Camps',3],['Llar Bosch',2],['Llar Grau',4],['Llar Riera',2],
+  ['Llar Soler',3],['Llar Font',2],['Llar Vidal',2]];
+let G={socis:[],preus:{},repartiment:'prop',llarBase:2};
+let _id=0;
+
+/* La cistella per defecte, escalada per les persones de la llar. Ve
+   preseleccionada: qui entra ha de veure una compra sencera i creïble, no una
+   graella buida on decidir trenta coses abans de saber si això li serveix. */
+function cistellaPerDefecte(llar){
+  const c={};
+  PRODUCTES.forEach(p=>{c[p.id]=Math.round(p.base*llar*100)/100;});
+  return c;
+}
+function nouSoci(nom,llar){
+  llar=Math.max(1,Math.min(12,Number(llar)||1));
+  nom=String(nom||'').trim().slice(0,24);
+  if(!nom)return {err:'Cal un nom per a la llar'};
+  if(G.socis.some(s=>s.nom.toLowerCase()===nom.toLowerCase()))return {err:'Ja hi ha una llar amb aquest nom'};
+  const s={id:'s'+(++_id),nom,llar,cistella:cistellaPerDefecte(llar)};
+  G.socis.push(s);desa();
+  return {ok:true,soci:s};
+}
+function treuSoci(id){const n=G.socis.length;G.socis=G.socis.filter(s=>s.id!==id);desa();return G.socis.length<n;}
+
+/* Els preus es poden editar i el que s'edita mana. `preus[id]` només existeix
+   si algú l'ha tocat: així, si demà es revisa la taula del fitxer, els grups
+   que no han tocat res es beneficien de la revisió i els que sí, mantenen el
+   seu preu del seu territori. */
+const preuGrup=id=>{const o=G.preus[id];return (o&&Number(o.grup))||perId(id).grup;};
+const preuBotiga=id=>{const o=G.preus[id];return (o&&Number(o.botiga))||perId(id).botiga;};
+function posaPreu(id,quin,valor){
+  const v=Math.round(Math.max(0,Number(valor)||0)*100)/100;
+  if(!perId(id)||!v)return false;
+  G.preus[id]=G.preus[id]||{};G.preus[id][quin]=v;desa();return true;
+}
+
+function desa(){try{localStorage.setItem(CLAU,JSON.stringify(G));}catch(e){/* sense memòria: funciona igual */}}
+function carrega(){
+  try{
+    const j=JSON.parse(localStorage.getItem(CLAU)||'null');
+    if(j&&Array.isArray(j.socis)&&j.socis.length){
+      G={socis:j.socis,preus:j.preus||{},repartiment:j.repartiment==='igual'?'igual':'prop',
+         llarBase:Number(j.llarBase)||2};
+      _id=G.socis.length;
+      return true;
+    }
+  }catch(e){/* dades trencades: es comença de nou, que és millor que petar */}
+  return false;
+}
+function grupPerDefecte(){
+  G={socis:[],preus:{},repartiment:'prop',llarBase:2};_id=0;
+  LLARS_DEFECTE.forEach(([n,l])=>nouSoci(n,l));
+}
+
+/* ── La regla del 80% ───────────────────────────────────────────────────── */
+function despesa(cistella){
+  let tot=0,bo=0;
+  PRODUCTES.forEach(p=>{
+    const q=Number(cistella[p.id])||0;
+    if(!q)return;
+    const e=q*preuGrup(p.id);
+    tot+=e;if(compta(p))bo+=e;
+  });
+  return {tot,bo,pct:tot?bo*100/tot:0};
+}
+const cistellaGrup=()=>{
+  const c={};
+  G.socis.forEach(s=>PRODUCTES.forEach(p=>{c[p.id]=(c[p.id]||0)+(Number(s.cistella[p.id])||0);}));
+  return c;
+};
+const personesTotals=()=>G.socis.reduce((n,s)=>n+s.llar,0);
+/* Què desequilibra una cistella: el que més pesa d'entre el que no compta. */
+function desequilibri(cistella){
+  return PRODUCTES.filter(p=>!compta(p)&&(Number(cistella[p.id])||0)>0)
+    .map(p=>({p,e:(Number(cistella[p.id])||0)*preuGrup(p.id)}))
+    .sort((a,b)=>b.e-a.e);
+}
+const perQueNo=p=>[!p.prox&&'no és de proximitat',!p.basic&&'no és bàsic',!p.sa&&'no és sa']
+  .filter(Boolean).join(' i ');
+
+/* ── La comanda d'un productor ──────────────────────────────────────────── */
+function comandaDe(pid){
+  const pr=PRODUCTORS[pid],ci=CICLES[pr.cada],c=cistellaGrup(),pers=personesTotals();
+  const linies=[];let demanat=0,encarregat=0,botiga=0,sobrant=0;
+  PRODUCTES.filter(p=>p.prod===pid).forEach(p=>{
+    /* La cistella és per persona i setmana; la comanda és per cicle. */
+    const cal=(Number(c[p.id])||0)*ci.setmanes;
+    if(cal<=0)return;
+    const caixes=Math.ceil(cal/p.format),compra=caixes*p.format;
+    const g=preuGrup(p.id),b=preuBotiga(p.id);
+    demanat+=cal*g;encarregat+=compra*g;botiga+=cal*b;sobrant+=(compra-cal)*g;
+    linies.push({p,cal:Math.round(cal*100)/100,caixes,compra,eurCal:cal*g,eurCompra:compra*g,
+      sobra:Math.round((compra-cal)*100)/100});
+  });
+  const dte=tramDe(encarregat),volum=encarregat*dte/100;
+  const seg=tramSeguent(encarregat);
+  const falta=Math.max(0,pr.minim-encarregat);
+  return {pid,pr,cicle:ci,linies:linies.sort((a,b)=>b.eurCompra-a.eurCompra),
+    demanat,encarregat,botiga,sobrant,dte,volum,falta,pers,
+    seguent:seg?{des:seg.des,dte:seg.dte,extra:seg.des-encarregat,
+      guany:seg.des*seg.dte/100-volum}:null};
+}
+/* Val la pena empènyer fins al tram següent? Només si el que has de comprar de
+   més és menys que el que guanyes —i comprant el que ja necessitaves. */
+const valLaPena=s=>!!s&&s.guany>s.extra;
+
+/* ── L'estalvi, al mes i separat per causes ─────────────────────────────── */
+function estalvi(){
+  const r={botiga:0,grup:0,estructural:0,volum:0,avancat:0,excedent:0,perProd:[]};
+  Object.keys(PRODUCTORS).forEach(pid=>{
+    const c=comandaDe(pid),k=c.cicle.almes;
+    if(!c.linies.length)return;
+    r.botiga+=c.botiga*k;r.grup+=c.demanat*k;
+    r.estructural+=(c.botiga-c.demanat)*k;r.volum+=c.volum*k;
+    /* El sobrant de format no és diner cremat: al sec és rebost pagat per
+       avançat, al fresc és menjar de més que s'ha de repartir. Per això no es
+       resta de l'estalvi —restar-lo feia que comprar junts sortís negatiu. */
+    if(c.pr.fresc)r.excedent+=c.sobrant*k; else r.avancat+=c.sobrant*k;
+    r.perProd.push({pid,mes:c.demanat*k,estructural:(c.botiga-c.demanat)*k,volum:c.volum*k});
+  });
+  r.net=r.estructural+r.volum;
+  r.pct=r.botiga?r.net*100/r.botiga:0;
+  r.pctVolum=r.net?r.volum*100/r.net:0;
+  return r;
+}
+/* Quant es queda cada llar. L'estructural és seu perquè surt del que ha
+   demanat; el volum és del grup i es reparteix segons la regla que hagin
+   acordat, que és una decisió i no una fórmula. */
+function perSoci(){
+  const e=estalvi();
+  const files=G.socis.map(s=>{
+    let botiga=0,grup=0;
+    PRODUCTES.forEach(p=>{
+      const q=Number(s.cistella[p.id])||0;if(!q)return;
+      botiga+=q*preuBotiga(p.id);grup+=q*preuGrup(p.id);
+    });
+    /* Les cistelles són per setmana; la comparació és al mes. */
+    const k=4.33;
+    return {s,botiga:botiga*k,grup:grup*k,estructural:(botiga-grup)*k,
+      pct80:despesa(s.cistella).pct};
+  });
+  const totGrup=files.reduce((t,f)=>t+f.grup,0);
+  files.forEach(f=>{
+    f.volum=G.repartiment==='igual'?e.volum/(files.length||1)
+      :(totGrup?e.volum*f.grup/totGrup:0);
+    f.net=f.estructural+f.volum;
+  });
+  return {files,total:e};
+}
+
+/* ── Pintar ─────────────────────────────────────────────────────────────── */
+function mesurador(pct,elN,elT,elB,elD,cistella){
+  const ok=pct>=80;
+  const n=$(elN);n.textContent=pc(pct)+'%';n.className='big '+(ok?'ok':'no');
+  $(elT).textContent=ok?'de la despesa és de proximitat, bàsic i sa'
+    :'— per sota del 80%: la cistella s\'ha desequilibrat';
+  const b=$(elB);b.style.width=Math.min(100,pct)+'%';b.className=ok?'':'no';
+  const des=desequilibri(cistella).slice(0,3);
+  $(elD).innerHTML=des.length
+    ? 'El que no compta, de més a menys: '+des.map(d=>
+        esc(d.p.nom)+' ('+eur(d.e)+' — '+esc(perQueNo(d.p))+')').join(' · ')
+    : 'Tot el que hi ha compleix les tres condicions.';
+}
+
+function pintaCistella(){
+  const base=cistellaPerDefecte(G.llarBase);
+  mesurador(despesa(base).pct,'#m80','#m80t','#m80b','#m80d',base);
+  const d=despesa(base);
+  let botiga=0;PRODUCTES.forEach(p=>{botiga+=(base[p.id]||0)*preuBotiga(p.id);});
+  $('#preusLead').innerHTML='Preus de referència de <strong>'+esc(PREUS_AMBIT)+
+    '</strong>, revisats el <strong>'+esc(PREUS_REVISIO)+'</strong>. Amb aquesta cistella, '+
+    'una llar de '+G.llarBase+' '+(G.llarBase===1?'persona':'persones')+' gasta <strong>'+
+    eur(d.tot)+' la setmana</strong> a preu de grup, contra '+eur(botiga)+' a la botiga.';
+
+  const cats=[...new Set(PRODUCTES.map(p=>p.cat))];
+  let h='<thead><tr><th>Producte</th><th>Per què és més barat</th>'+
+    '<th class="n">Botiga</th><th class="n">Grup</th><th class="n">Quantitat</th>'+
+    '<th class="n">Setmana</th></tr></thead><tbody>';
+  cats.forEach(cat=>{
+    h+='<tr><td colspan="6" class="mut" style="padding-top:.6rem">'+esc(cat)+'</td></tr>';
+    PRODUCTES.filter(p=>p.cat===cat).forEach(p=>{
+      const q=base[p.id]||0,e=q*preuGrup(p.id);
+      h+='<tr'+(compta(p)?'':' class="no80"')+'>'+
+        '<td>'+p.ic+' '+esc(p.nom)+'<br><span class="mut">'+
+          (compta(p)?'proximitat · bàsic · sa':esc(perQueNo(p)))+'</span></td>'+
+        '<td class="mut">'+esc(FONTS[p.font].lbl)+'<br>format de '+p.format+' '+esc(p.unit)+'</td>'+
+        '<td class="n">'+num(preuBotiga(p.id))+'</td>'+
+        '<td class="n">'+num(preuGrup(p.id))+'</td>'+
+        '<td class="n"><input type="number" min="0" step="0.01" data-q="'+p.id+'" value="'+q+'"> '+
+          '<span class="mut">'+esc(p.unit)+'</span></td>'+
+        '<td class="n">'+num(e)+'</td></tr>';
+    });
+  });
+  $('#tCistella').innerHTML=h+'</tbody>';
+
+  let hp='<thead><tr><th>Producte</th><th class="n">Botiga €/'+'unitat</th>'+
+    '<th class="n">Grup €/unitat</th><th class="n">Diferència</th><th>Causa</th></tr></thead><tbody>';
+  PRODUCTES.forEach(p=>{
+    const b=preuBotiga(p.id),g=preuGrup(p.id);
+    hp+='<tr><td>'+p.ic+' '+esc(p.nom)+' <span class="mut">/'+esc(p.unit)+'</span></td>'+
+      '<td class="n"><input type="number" min="0" step="0.05" data-pb="'+p.id+'" value="'+b+'"></td>'+
+      '<td class="n"><input type="number" min="0" step="0.05" data-pg="'+p.id+'" value="'+g+'"></td>'+
+      '<td class="n" style="color:'+(b>g?'var(--green)':'var(--red)')+'">'+
+        pc((b-g)*100/b)+'%</td>'+
+      '<td class="mut">'+esc(FONTS[p.font].diu)+'</td></tr>';
+  });
+  $('#tPreus').innerHTML=hp+'</tbody>';
+}
+
+let sociSel=null;
+function pintaSocis(){
+  const pers=personesTotals();
+  $('#socisAvis').textContent=G.socis.length
+    ? G.socis.length+' llars · '+pers+' persones. Toca una llar per veure i editar la seva cistella.'
+    : 'Encara no hi ha cap llar. Dona\'n d\'alta una, o torna al grup d\'exemple.';
+  $('#socis').innerHTML=G.socis.map(s=>{
+    const d=despesa(s.cistella);
+    return '<div class="soci'+(sociSel===s.id?' sel':'')+'" data-s="'+s.id+'">'+
+      '<div class="nm">'+esc(s.nom)+'</div>'+
+      '<div class="mut">'+s.llar+' '+(s.llar===1?'persona':'persones')+'</div>'+
+      '<div class="xf">'+eur(d.tot)+' / setmana · <span style="color:'+
+        (d.pct>=80?'var(--green)':'var(--orange)')+'">'+pc(d.pct)+'%</span></div>'+
+      '<div class="ac"><button class="b" data-veu="'+s.id+'">Veure</button>'+
+      '<button class="b" data-fora="'+s.id+'">Treure</button></div></div>';
+  }).join('');
+
+  const s=G.socis.find(x=>x.id===sociSel);
+  $('#boxSoci').hidden=!s;
+  if(!s)return;
+  const d=despesa(s.cistella);
+  $('#sociTit').textContent=s.nom;
+  $('#sociLead').innerHTML='Cistella de '+s.llar+' '+(s.llar===1?'persona':'persones')+
+    ' · <strong>'+eur(d.tot)+' la setmana</strong> a preu de grup.';
+  mesurador(d.pct,'#s80','#s80t','#s80b','#s80d',s.cistella);
+  let h='<thead><tr><th>Producte</th><th class="n">Quantitat</th><th class="n">€/setmana</th></tr></thead><tbody>';
+  PRODUCTES.forEach(p=>{
+    const q=Number(s.cistella[p.id])||0;
+    h+='<tr'+(compta(p)?'':' class="no80"')+'><td>'+p.ic+' '+esc(p.nom)+'</td>'+
+      '<td class="n"><input type="number" min="0" step="0.01" data-sq="'+p.id+'" value="'+q+'"> '+
+      '<span class="mut">'+esc(p.unit)+'</span></td>'+
+      '<td class="n">'+num(q*preuGrup(p.id))+'</td></tr>';
+  });
+  $('#tSoci').innerHTML=h+'</tbody>';
+}
+
+function pintaComanda(){
+  if(!G.socis.length){$('#comanda').innerHTML='<p class="nota avis">Sense llars no hi ha comanda.</p>';return;}
+  $('#comanda').innerHTML=Object.keys(PRODUCTORS).map(pid=>{
+    const c=comandaDe(pid);
+    if(!c.linies.length)return '';
+    const curt=c.falta>0;
+    let h='<div class="prodbox'+(curt?' curt':'')+'">'+
+      '<div class="cap"><b>'+c.pr.ic+' '+esc(c.pr.nom)+'</b>'+
+      '<span class="mut">'+c.pr.km+' km · '+esc(c.cicle.lbl)+' · mínim '+eur(c.pr.minim)+'</span>'+
+      '<span class="est">'+eur(c.encarregat)+'</span></div>'+
+      '<div class="diu">'+esc(c.pr.diu)+'</div>';
+    if(curt)h+='<p class="nota mal"><strong>Per sota del mínim: falten '+eur(c.falta)+'.</strong> '+
+      'No és el preu el que trenca els grups, és no arribar-hi. Les sortides són una llar més, '+
+      'o passar '+esc(c.cicle.lbl)+' a un ritme més espaiat.</p>';
+    else h+='<p class="nota bo">Arriba al mínim, amb '+eur(c.encarregat-c.pr.minim)+' de marge.</p>';
+
+    h+='<p class="nota'+(c.dte?' bo':'')+'">Tram de volum: <strong>'+c.dte+'%</strong>'+
+      (c.dte?' = '+eur(c.volum):' — encara cap')+'.';
+    if(c.seguent)h+=' El següent és el '+c.seguent.dte+'% a partir de '+eur(c.seguent.des)+
+      ': cal encarregar <strong>'+eur(c.seguent.extra)+' més</strong> per guanyar-ne '+
+      eur(c.seguent.guany)+' → <strong style="color:'+(valLaPena(c.seguent)?'var(--green)':'var(--orange)')+'">'+
+      (valLaPena(c.seguent)?'surt a compte':'no surt a compte')+'</strong>'+
+      (valLaPena(c.seguent)?'.':', si és comprar el que no necessiteu.');
+    h+='</p>';
+
+    h+='<div class="taula"><table><thead><tr><th>Producte</th><th class="n">Cal</th>'+
+      '<th class="n">Formats</th><th class="n">S\'encarrega</th><th class="n">Sobra</th>'+
+      '<th class="n">€</th></tr></thead><tbody>'+
+      c.linies.map(l=>'<tr><td>'+l.p.ic+' '+esc(l.p.nom)+'</td>'+
+        '<td class="n">'+num(l.cal)+' '+esc(l.p.unit)+'</td>'+
+        '<td class="n">'+l.caixes+' × '+l.p.format+'</td>'+
+        '<td class="n">'+num(l.compra)+'</td>'+
+        '<td class="n"'+(l.sobra>0?' style="color:var(--orange)"':'')+'>'+num(l.sobra)+'</td>'+
+        '<td class="n">'+num(l.eurCompra)+'</td></tr>').join('')+
+      '</tbody></table></div>';
+    h+='<p class="nota avis">Sobrant de format: <strong>'+eur(c.sobrant)+'</strong> — '+
+      (c.pr.fresc
+        ? 'és fresc, o es reparteix amb una regla acordada o es fa malbé. No és diner cremat mentre algú se l\'endugui.'
+        : 'és sec: queda al rebost comú per al cicle vinent. No és una pèrdua, és <strong>diner pagat per avançat</strong>.')+
+      '</p>';
+    return h+'</div>';
+  }).join('');
+}
+
+function pintaEstalvi(){
+  const e=estalvi(),pers=personesTotals()||1;
+  $('#capes').innerHTML=
+    '<div class="capa"><div class="n">'+eur(e.botiga)+'</div><div class="l">a la botiga, al mes</div>'+
+      '<div class="d">El mateix que demaneu, al preu de referència de supermercat.</div></div>'+
+    '<div class="capa"><div class="n">'+eur(e.grup)+'</div><div class="l">preu de grup</div>'+
+      '<div class="d">El que costa el mateix comprat com a grup.</div></div>'+
+    '<div class="capa bo"><div class="n">'+eur(e.estructural)+'</div><div class="l">estalvi estructural</div>'+
+      '<div class="d">Fora intermediari, a granel, de temporada. És el gruix, i no depèn de negociar res.</div></div>'+
+    '<div class="capa blau"><div class="n">'+eur(e.volum)+'</div><div class="l">descompte de volum</div>'+
+      '<div class="d">El tram que arriba cada comanda. És el que s\'ha de negociar — i el que menys pesa.</div></div>';
+  $('#netTxt').innerHTML='<strong>Estalvi net: '+eur(e.net)+' al mes</strong> — un '+pc(e.pct)+
+    '% sobre la botiga, '+eur(e.net/pers)+' per persona i mes. D\'aquests, el descompte per volum '+
+    'només n\'és el <strong>'+pc(e.pctVolum)+'%</strong>: el gruix ve de com es compra, no de quant.';
+  $('#mecTxt').innerHTML='El que demana el mecanisme: <strong>'+eur(e.avancat)+
+    '</strong> al mes de rebost pagat per avançat i <strong>'+eur(e.excedent)+
+    '</strong> de fresc que arriba de més i s\'ha de repartir. Cap de les dues coses és una pèrdua, '+
+    'però totes dues s\'han de gestionar: la primera és caixa, la segona és una regla de repartiment.';
+  $('#mPctVol').textContent=pc(e.pctVolum)+'%';
+
+  const r=perSoci();
+  $('#tSocisEstalvi').innerHTML='<thead><tr><th>Llar</th><th class="n">Botiga/mes</th>'+
+    '<th class="n">Grup/mes</th><th class="n">Estructural</th><th class="n">Volum</th>'+
+    '<th class="n">Net</th><th class="n">80%</th></tr></thead><tbody>'+
+    r.files.map(f=>'<tr><td>'+esc(f.s.nom)+' <span class="mut">'+f.s.llar+'p</span></td>'+
+      '<td class="n">'+num(f.botiga)+'</td><td class="n">'+num(f.grup)+'</td>'+
+      '<td class="n">'+num(f.estructural)+'</td><td class="n">'+num(f.volum)+'</td>'+
+      '<td class="n" style="color:var(--green)">'+num(f.net)+'</td>'+
+      '<td class="n" style="color:'+(f.pct80>=80?'var(--green)':'var(--orange)')+'">'+pc(f.pct80)+'</td></tr>').join('')+
+    '<tr><td><strong>Total</strong></td>'+
+    '<td class="n"><strong>'+num(r.files.reduce((t,f)=>t+f.botiga,0))+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.files.reduce((t,f)=>t+f.grup,0))+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.files.reduce((t,f)=>t+f.estructural,0))+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.files.reduce((t,f)=>t+f.volum,0))+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.files.reduce((t,f)=>t+f.net,0))+'</strong></td><td></td></tr>'+
+    '</tbody>';
+}
+
+function pinta(){pintaCistella();pintaSocis();pintaComanda();pintaEstalvi();}
+
+/* ── Enganxar-ho ────────────────────────────────────────────────────────── */
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-p]');if(!b)return;
+  $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $$('.pan').forEach(p=>p.classList.toggle('on',p.id==='p'+b.dataset.p[0].toUpperCase()+b.dataset.p.slice(1)));
+});
+/* La cistella per defecte és una plantilla: canviar-la canvia la base de tothom
+   qui encara no l'hagi tocada. Per no fer desaparèixer feina de ningú, aquí
+   només es toca la mida de la llar de mostra i els preus. */
+$('#selLlar').innerHTML=[1,2,3,4,5,6].map(n=>'<option value="'+n+'">'+n+'</option>').join('');
+$('#selLlar').value=G.llarBase;
+$('#selLlar').addEventListener('change',e=>{G.llarBase=Number(e.target.value)||2;desa();pintaCistella();});
+$('#btnDefecte').addEventListener('click',()=>{grupPerDefecte();sociSel=null;$('#selLlar').value=G.llarBase;pinta();});
+
+$('#tCistella').addEventListener('change',e=>{
+  const i=e.target.closest('[data-q]');if(!i)return;
+  /* Editar la cistella de mostra és editar-la per a totes les llars que encara
+     tenen la de defecte: és una plantilla, i s'aplica escalada. */
+  const id=i.dataset.q,v=Math.max(0,Number(i.value)||0);
+  const p=perId(id);if(!p)return;
+  p.base=Math.round(v/Math.max(1,G.llarBase)*1000)/1000;
+  G.socis.forEach(s=>{s.cistella[id]=Math.round(p.base*s.llar*100)/100;});
+  desa();pinta();
+});
+$('#tPreus').addEventListener('change',e=>{
+  const b=e.target.closest('[data-pb]'),g=e.target.closest('[data-pg]');
+  if(b)posaPreu(b.dataset.pb,'botiga',b.value);
+  if(g)posaPreu(g.dataset.pg,'grup',g.value);
+  if(b||g)pinta();
+});
+$('#btnSoci').addEventListener('click',()=>{
+  const r=nouSoci($('#inNom').value,$('#inLlar').value);
+  if(r.err){$('#socisAvis').textContent=r.err;return;}
+  $('#inNom').value='';sociSel=r.soci.id;pinta();
+});
+$('#socis').addEventListener('click',e=>{
+  const v=e.target.closest('[data-veu]'),f=e.target.closest('[data-fora]'),c=e.target.closest('[data-s]');
+  if(f){if(sociSel===f.dataset.fora)sociSel=null;treuSoci(f.dataset.fora);return pinta();}
+  if(v){sociSel=v.dataset.veu;return pinta();}
+  if(c){sociSel=c.dataset.s;pinta();}
+});
+$('#tSoci').addEventListener('change',e=>{
+  const i=e.target.closest('[data-sq]');if(!i)return;
+  const s=G.socis.find(x=>x.id===sociSel);if(!s)return;
+  s.cistella[i.dataset.sq]=Math.max(0,Number(i.value)||0);
+  desa();pinta();
+});
+$$('input[name=rep]').forEach(r=>r.addEventListener('change',()=>{
+  G.repartiment=$('input[name=rep]:checked').value;desa();pintaEstalvi();
+}));
+
+if(!carrega())grupPerDefecte();
+$('#selLlar').value=G.llarBase;
+$('input[name=rep][value='+G.repartiment+']').checked=true;
+pinta();
+
+/* Hook de proves: les proves parlen amb la pàgina de debò, no amb una còpia. */
+window.__COMPRA={G,PRODUCTES,PRODUCTORS,DINAMIQUES,TRAMS,FONTS,UNITATS,CICLES,
+  PREUS_REVISIO,LLARS_DEFECTE,perId,compta,cistellaPerDefecte,despesa,cistellaGrup,
+  personesTotals,desequilibri,perQueNo,tramDe,tramSeguent,comandaDe,valLaPena,
+  estalvi,perSoci,nouSoci,treuSoci,posaPreu,preuGrup,preuBotiga,grupPerDefecte,
+  desa,carrega,pinta,sel:id=>{sociSel=id;pinta();},CLAU};
+</script>
+</body>
+</html>

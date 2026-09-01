@@ -38,6 +38,10 @@
 /sos/joc /SOS/joc.html    200
 /joc /SOS/joc.html    200
 
+/SOS/compra /SOS/compra.html    200
+/sos/compra /SOS/compra.html    200
+/compra /SOS/compra.html    200
+
 /SOS/blog /SOS/blog.html    200
 /sos/blog /SOS/blog.html    200
 /blog /SOS/blog.html    200

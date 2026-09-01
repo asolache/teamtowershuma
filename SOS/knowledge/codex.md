@@ -704,6 +704,75 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 119 — Un estalvi sense causa és una promesa, i el sobrant no és una pèrdua
+
+`SOS/compra.html` és l'eina de dues dinàmiques que fins ara només existien com a
+text al catàleg: **Grup de Consum Agroecològic** i **Compra Col·lectiva /
+Estalvi**. Cistella per defecte amb el 80% de la despesa en menjar de proximitat,
+bàsic i sa; socis amb la seva llista; comanda agregada per productor; i estimació
+d'estalvi.
+
+Aquesta pàgina és diferent de les altres en una cosa: **dona xifres de diners que
+algú farà servir per parlar amb un pagès**. Una afirmació que la pàgina fa i les
+dades no sostenen no és un error de format, és fer quedar malament un grup davant
+de qui li ven. Tot el que segueix surt d'aquí.
+
+### El model es va calcular abans d'escriure la pàgina, i va sortir malament
+
+El primer càlcul deia que **comprar junts sortia a compte negatiu**: −63 € al
+mes, un −3,2%. L'error era comptable i era meu: estava comparant «comprar a la
+botiga exactament el que et cal» contra «comprar sacs sencers», i a més restava
+el sobrant de format com si fos diner cremat.
+
+El sobrant de format **no és una pèrdua**. En sec és rebost pagat per avançat —
+te'l menjaràs el mes que ve—; en fresc és menjar de més que s'ha de repartir.
+Cap de les dues coses és diner que desaparegui, i totes dues s'han de gestionar:
+la primera és caixa, la segona és una regla de repartiment. Comptades bé, les
+mateixes dades donen +1.012 € al mes i un 26,2%.
+
+Si això s'hagués escrit directe a la pàgina, hauria quedat una eina que diu que
+comprar junts és pitjor, o —pitjor encara— algú l'hauria «arreglada» pujant els
+preus de botiga fins que la xifra fes goig. **El prototip de trenta línies abans
+del fitxer de mil és el que ho va evitar.**
+
+### El que va aparèixer en fer-ho bé
+
+- **El descompte per volum és el 4,5% de l'estalvi.** És on tothom mira primer i
+  on menys n'hi ha. El gruix ve de treure l'intermediari, comprar a granel i
+  comprar de temporada — coses que no es negocien, es decideixen. Una eina que
+  posés «−X% per volum» de titular ensenyaria a negociar el tros petit.
+- **Perseguir un tram pot ser una pèrdua.** Comprar 200 € de més per guanyar un
+  4% sobre 600 és guanyar 24 i gastar-ne 200. La pàgina ho diu tram per tram:
+  *surt a compte* o *no surt a compte*.
+- **Agrupar en el temps també és agregar volum.** Un grup que demana llenties
+  cada setmana no arriba a cap mínim; el mateix grup demanant-les cada mes, sí.
+  Per això cada productor té ritme, i el sec va mensual.
+- **El que trenca els grups no és el preu: és el mínim de comanda.** Un pagès
+  que ha de moure la furgoneta per 90 € deixa de venir i el grup es desfà sense
+  que ningú hagi discutit de res. La comanda ensenya quant falta.
+- **Cada preu porta la causa de ser més barat** —directe, granel, temporada,
+  format—. Un preu més baix sense causa declarada és una promesa; amb causa, és
+  una decisió que es pot discutir amb qui ven.
+
+### Tres regles que la guarda aplica
+
+- **El 80% es mesura en euros, no en articles.** Comptant articles, una cistella
+  amb vint espècies locals i el gruix dels diners en processats passaria la
+  regla. I la guarda **refà el càlcul amb les dades del fitxer**: si algú afegeix
+  un producte que la trenca, ho diu el CI i no la pàgina d'un grup.
+- **Una taula de preus sense data menteix en silenci al cap d'un any.** Porta la
+  seva, tots són editables, i la guarda comprova que la data existeixi i es
+  pinti.
+- **La comparació ha de ser honesta o no serveix.** La referència de botiga és el
+  mateix producte a qualitat comparable, no la marca blanca més barata. Fer
+  trampa aquí és la manera més ràpida de perdre la confiança del grup el dia que
+  algú ho comprovi, i està escrit a la pàgina perquè no es pugui oblidar.
+
+I les vedes 96 i 97 seguides al peu de la lletra en una pàgina que va de diners:
+**aquí no es cobra res**. Cap camp de targeta, cap cobrament, cap pagament
+confirmat. La guarda mira tots els `<input>` de la pàgina, que és una manera de
+dir-ho que no depèn de recordar-ho.
+
 ## Veda 118 — Si el repte és la velocitat, res es pot cobrar sol
 
 El joc tenia el model bo i cap ritme. Les hores del banc de temps se sumaven

@@ -57,6 +57,13 @@ jobs:
       - name: Guarda del joc (caselles d'aportació)
         run: node SOS/tools/check-joc.js
 
+      # La Compra dona xifres de diners que algú farà servir per parlar amb un
+      # pagès. Una afirmació que la pàgina fa i les dades no sostenen —el 80%
+      # de proximitat, un «estalvi» que no ho és— no és un error de format: és
+      # fer quedar malament un grup davant de qui li ven.
+      - name: Guarda de La Compra (preus i regla del 80%)
+        run: node SOS/tools/check-compra.js
+
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
       # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.
