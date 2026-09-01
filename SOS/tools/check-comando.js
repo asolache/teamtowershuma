@@ -45,7 +45,7 @@ const PAG = readFileSync(join(ARREL, 'SOS', 'comando.html'), 'utf8');
    `joc.html` hi és perquè el joc reparteix els herois en rols jugables, i un
    nom mal escrit allà és el mateix personatge convertit en dos —el que ja va
    passar amb les quatre grafies de Guiri-Guay. */
-const ALTRES = ['comando.html', 'blog.html', 'uneix-te.html', 'online.html', 'crm.html', 'joc.html', 'escola.html'].map(f => ({
+const ALTRES = ['comando.html', 'blog.html', 'uneix-te.html', 'online.html', 'crm.html', 'joc.html', 'escola.html', 'intro.html'].map(f => ({
   f, txt: (() => { try { return readFileSync(join(ARREL, 'SOS', f), 'utf8'); } catch (e) { return null; } })()
 }));
 
@@ -148,6 +148,28 @@ else {
   else if (aPagina.length !== roster.length) bad(`la pàgina pinta ${aPagina.length} fitxes i el roster en té ${roster.length}`);
   else bad(`el comptador diu ${comptador[1]} herois canònics i n'hi ha ${roster.length}`);
 }
+
+// ── 4b · Les pàgines que reparteixen herois no se'n poden inventar ───────
+/* El joc dona un heroi a cada rol, el programa d'escola també, i la intro en
+   posa sis a la pantalla. Cadascuna és una llista nova, i una llista nova és
+   exactament per on va tornar a entrar l'error de la veda 109 —quatre llistes
+   que coincidien a equivocar-se. Aquí es comprova que els noms que reparteixen
+   siguin del roster i prou. */
+const REPARTEIXEN = [
+  { f: 'joc.html', re: /heroi:'((?:[^'\\]|\\.)*)'/g },
+  { f: 'intro.html', re: /\{n:'((?:[^'\\]|\\.)*)',ic:/g }
+];
+let repFails = 0, repTotal = 0;
+REPARTEIXEN.forEach(({ f, re }) => {
+  const txt = llegeix(join(ARREL, 'SOS', f));
+  if (txt === null) return;
+  const noms = [...new Set([...txt.matchAll(re)].map(m => m[1].replace(/\\'/g, "'")))];
+  if (!noms.length) { repFails++; bad(`${f} no reparteix cap heroi — o ha canviat el format i aquesta comprovació s'ha quedat cega`); return; }
+  repTotal += noms.length;
+  const forans = noms.filter(n => !roster.includes(n));
+  if (forans.length) { repFails++; bad(`${f} reparteix herois que no són al roster: ${forans.join(', ')}`); }
+});
+if (!repFails) ok(`${repTotal} mencions d'heroi a les pàgines que en reparteixen, totes del roster`);
 
 // ── 5 · Les altres pàgines no diuen noms vells ───────────────────────────
 /* Es busquen les grafies antigues i els noms que ja no existeixen. Una llista

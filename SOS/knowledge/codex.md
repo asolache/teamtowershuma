@@ -704,6 +704,47 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 115 — Dos vídeos són dues promeses; un vídeo amb dues pells n'és una
+
+La intro del Comando i el SOS podia ser dues peces: una de seriosa per a
+l'administració i una de divertida per a les xarxes. És el que fa tothom, i és
+el que hauria trencat la idea sencera: **qui veiés les dues no sabria quina és
+la bona**, i el Comando passaria a ser el disfraç d'una altra cosa.
+
+`SOS/intro.html` és **una sola pel·lícula muntada dues vegades**. Setze plans,
+les mateixes durades, els mateixos rètols al mateix fotograma, i dues pells: la
+vista de la gent i els pobles, i la del Comando. Es pot canviar de pell **a
+mitja reproducció** i no es nota el salt —i aquest botó no és un truc de
+programació, és l'argument fet a mà: si les dues vistes comparteixen el tall, el
+Comando es llegeix com el que és, la cara fantàstica del SOS.
+
+D'aquí surten tres regles que no es poden relaxar:
+
+- **Només es munta el pla actual, però amb les dues pells alhora.** Si només
+  s'animés la visible, canviar de vista ensenyaria l'altra congelada, i el salt
+  delataria que són dos dibuixos i no un pla. Ho comprova `test-intro.mjs`
+  mirant que la crida d'animació mogui les dues.
+- **La geometria és compartida i només canvia el color i el mobiliari.** Les
+  quatre persones que aguanten són a les mateixes coordenades a la sala de plens
+  i al páramo. El dia que una pell tingui una posició pròpia, ja seran dos
+  vídeos encara que comparteixin fitxer.
+- **El final ha d'aguantar.** L'S4 cau amb quatre a la pinya i l'S14 aguanta amb
+  catorze. Si el final caigués o si aguantés sense haver canviat res, la peça
+  ensenyaria el contrari del que fa la casa (veda 110), i ho recordaria més gent
+  que el text del costat.
+
+I una que va sortir mirant-ho: **la primera versió tenia l'acció al terç de
+baix** i dos terços de rectangle pla a sobre. No era buit a posta, era un pla
+inacabat. Es va arreglar posant una escenografia comuna —una línia de terra i
+una escala de figura iguals a tots els plans— en comptes de compondre cada pla
+pel seu compte: si cada pla es composa sol, canviar de pla sembla canviar de
+pel·lícula.
+
+**El so encara no hi és, i la peça no en depèn.** El tema del Comando anirà a
+`SOS/media/comando-intro.m4a` i sona sol quan hi sigui; mentrestant la pàgina ho
+diu clar i es veu sencera muda, que és com es mira a les xarxes. Una peça que
+només funciona amb música no es pot ensenyar en una reunió.
+
 ## Veda 114 — Un programa per a criatures no pot ensenyar el contrari del que fem
 
 La Fàbrica de Superherois porta el Comando a l'aula, de 6 a 13 anys, en dues
