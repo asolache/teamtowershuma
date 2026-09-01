@@ -32,8 +32,8 @@ const APP = readFileSync(join(ARREL, 'SOS', 'index.html'), 'utf8');
 const PAG = readFileSync(join(ARREL, 'SOS', 'comando.html'), 'utf8');
 /* Les altres pàgines que anomenen herois. No han de dir-los TOTS —el blog en
    pot parlar de tres—, però els que diguin han de ser del roster. El post de
-   l'origen va estar mesos dient «Afrodita», «Ectoplasman» i «Corporació Món
-   Mort» mentre l'app ja en deia uns altres, i no ho mirava res. */
+   l'origen va estar mesos dient «Ectoplasman» i «Corporació Món Mort» mentre
+   l'app ja en deia uns altres, i no ho mirava res. */
 /* `comando.html` hi és a la llista tot i tenir la seva pròpia comprovació més
    avall: aquella mira les FITXES d'heroi i no toca el `<head>`. La descripció
    i la targeta de compartir van quedar dient «Corporació Món Mort» i «Zero
@@ -176,7 +176,7 @@ if (!repFails) ok(`${repTotal} mencions d'heroi a les pàgines que en reparteixe
    negra explícita, no una heurística: el que va passar és que uns noms es van
    canviar en un lloc i van quedar vius en un altre, i això només es detecta
    sabent quins eren. Quan un nom canviï, s'afegeix aquí el vell. */
-const VELLS = ['Afrodito', 'Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
+const VELLS = ['Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
   'Pigmentona', 'La Anguila', 'Medusa Andalusa',
   /* «Horacio Motomachi» va sortir d'aquesta llista el dia que va arribar el
      tema que porta aquest títol. No hi era per cap error trobat: la vaig posar
@@ -228,10 +228,18 @@ const DOCS = [
   { f: 'index.html', txt: senseComentaris(APP) }
 ];
 
+/* «Afrodita» només és un nom vell a les pàgines públiques, i no a l'app.
+   L'heroi és **Afrodito** i la deessa grega del panteó de 12 és **Afrodita**:
+   són dos noms de dues llistes diferents que es diferencien per una lletra.
+   Posar «Afrodita» a la llista de dalt faria fallar `index.html`, que la té
+   com a arquetip amb tot el dret —i una guarda que prohibeix una cosa certa
+   fa el contrari del que ha de fer (veda 115). Per això va en una llista a
+   part, que només s'aplica allà on la deessa no hi pinta res. */
+const VELLS_PAGINES = VELLS.concat(['Afrodita']);
 let restes = 0;
 ALTRES.forEach(({ f, txt }) => {
   if (txt === null) return;   // la pàgina pot no existir: no és feina d'aquesta guarda
-  const trobats = VELLS.filter(v => txt.includes(v));
+  const trobats = VELLS_PAGINES.filter(v => txt.includes(v));
   if (trobats.length) { restes++; bad(`${f} encara diu: ${trobats.join(', ')}`); }
 });
 if (!restes) ok(`${ALTRES.filter(x => x.txt !== null).length} pàgines més, cap amb noms vells`);
