@@ -377,6 +377,100 @@ console.log('\n12 · I el mapa es pinta, amb el graf i les taules');
   await ctx.close();
 }
 
+console.log('\n13 · El perfil: proposa un rol, no l\'assigna');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA, din = 'consum_agroecologic';
+    C.desaPerfil([]);
+    const buit = C.encaixos(din)[0];
+    /* Amb perfil buit, cap rol pot puntuar: proposar-ne un seria inventar. */
+    const capPunt = C.encaixos(din).every(x => x.punts === 0);
+    C.desaPerfil(['espai', 'temps']);
+    const ll = C.encaixos(din);
+    const top = ll[0];
+    /* El primer ha de ser un que cobreixi tot el que demana, si n'hi ha cap. */
+    const plens = ll.filter(x => !x.falten.length);
+    return { capPunt, top: top.rol, punts: top.punts, falten: top.falten.length,
+      per: top.per, cal: top.cal, te: top.te,
+      ordenat: ll.every((x, i) => i === 0 || ll[i - 1].punts >= x.punts),
+      primerPle: plens.length ? plens[0].rol === top.rol : true,
+      /* i el motiu ha de ser un lliurament que aquell rol fa de debò */
+      citaReal: C.lliuraments(din).some(l => l.de === top.rol && l.que === top.per) };
+  });
+  ok(r.capPunt, 'sense perfil, cap rol puntua: proposar-ne un seria inventar');
+  ok(r.top && r.falten === 0 && r.primerPle,
+    `amb espai i temps proposa «${r.top}» (${r.punts}), que és el que cobreix del tot`);
+  ok(r.ordenat, 'i la llista va de més a menys encaix, no per l\'ordre del mapa');
+  ok(r.citaReal, `el motiu és un lliurament que aquell rol fa de debò: «${r.per}»`);
+  ok(r.cal.length > 0 && r.te.length > 0, 'i diu què demana i què hi poses tu');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n14 · Agafar un rol l\'omple al mapa i fa viure els seus fluxos');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA, din = 'consum_agroecologic';
+    C.desaPerfil(['espai', 'temps']);
+    const a0 = C.analisi(din), rol = C.encaixos(din)[0].rol;
+    C.agafaRol(din, rol);
+    const a1 = C.analisi(din);
+    const meu = C.elMeu(din);
+    /* Agafar-ne un altre allibera el primer: no es poden tenir dos rols alhora
+       fent veure que hi ha dues persones. */
+    const altre = C.MAPA[din].roles.find(x => x !== rol && !C.OMPLE[x]);
+    C.agafaRol(din, altre);
+    const dos = C.MAPA[din].roles.filter(x => (C.G.rols[din] || {})[x] === C.MEU).length;
+    C.agafaRol(din, altre);   // tornar-lo a prémer el deixa
+    return { rol, meu, dos, deixat: C.elMeu(din),
+      viusAbans: a0.vius.length, viusDespres: a1.vius.length,
+      buitsAbans: a0.buits.length, buitsDespres: a1.buits.length };
+  });
+  ok(r.meu === r.rol, `agafar «${r.rol}» l'omple al mapa`);
+  ok(r.buitsDespres === r.buitsAbans - 1 && r.viusDespres > r.viusAbans,
+    `i els seus fluxos passen a viure (${r.viusAbans} → ${r.viusDespres})`);
+  ok(r.dos === 1, 'agafar-ne un altre allibera el primer: no es fan dues persones d\'una');
+  ok(r.deixat === null, 'i tornar a prémer el deixa: no és una condemna');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n15 · El perfil es declara un cop i val a tots els mapes');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA;
+    C.desaPerfil(['ordre', 'numeros', 'contactes']);
+    return { clau: C.PERFIL_CLAU, cru: localStorage.getItem(C.PERFIL_CLAU),
+      aports: C.APORTS.length,
+      /* El que es demana són capacitats i prou: cap camp d'identitat. */
+      camps: C.APORTS.map(a => a.id),
+      pesos: C.PES };
+  });
+  /* La mateixa clau, llegida des de l'altra pàgina amb mapa. */
+  await p.goto(APP.replace('compra.html', 'vna.html'));
+  await p.waitForFunction(() => window.__VNA);
+  const v = await p.evaluate(() => {
+    const V = window.__VNA;
+    return { clau: V.PERFIL_CLAU, perfil: V.llegeixPerfil(),
+      aports: V.APORTS.map(a => a.id), pesos: V.PES,
+      top: V.encaixos()[0].curt, punts: V.encaixos()[0].punts };
+  });
+  ok(v.clau === r.clau, `les dues pàgines desen el perfil a la mateixa clau: «${r.clau}»`);
+  ok(v.perfil.join() === 'ordre,numeros,contactes',
+    'i el perfil declarat a La Compra ja el porta posat el mapa de la colla');
+  ok(v.aports.join() === r.camps.join() && v.aports.length === 10,
+    `el mateix vocabulari de ${v.aports.length} capacitats a totes dues`);
+  ok(JSON.stringify(v.pesos) === JSON.stringify(r.pesos), 'i els mateixos pesos de puntuació');
+  ok(!r.camps.some(c => /nom|correu|edat|dni|telefon/i.test(c)),
+    'cap capacitat és una dada d\'identitat: es demana què pots posar, no qui ets');
+  ok(!!v.top, `i la colla li proposa «${v.top}» (${v.punts})`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

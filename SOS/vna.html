@@ -57,6 +57,28 @@ button[disabled]{opacity:.35;cursor:default}
 /* ── La fitxa del rol ─────────────────────────────────────────────────────
    El que hi surt és, paraula per paraula, el que ja diu la portada. Si un dia
    divergissin, la mateixa colla estaria explicada de dues maneres. */
+/* El perfil: deu caselles i cap camp de text. El que es demana són capacitats,
+   no identitat —ni nom, ni correu, ni edat. */
+.aports{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.45rem;margin:.6rem 0}
+.ap{font:inherit;text-align:left;cursor:pointer;background:var(--card);color:var(--clar);
+  border:1px solid var(--vora);border-radius:11px;padding:.55rem .65rem;display:block}
+.ap:hover{border-color:var(--tang)}
+.ap.on{border-color:var(--verd);background:rgba(0,230,118,.10);color:var(--text)}
+.ap .ic{font-size:1.1rem;margin-right:.35rem}
+.ap .lb{font-weight:700;font-size:.85rem}
+.ap .dd{display:block;font-size:.74rem;color:var(--apagat);margin-top:.2rem;line-height:1.4}
+.ap.on .dd{color:var(--clar)}
+.encaixos{display:grid;gap:.5rem;margin:.6rem 0}
+.enc{background:var(--card);border:1px solid var(--vora);border-radius:11px;padding:.65rem .75rem}
+.enc.top{border-color:var(--verd)}
+.enc .cap{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.enc .cap b{font-size:.95rem}
+.enc .pt{margin-left:auto;font-family:var(--mono);font-size:.85rem;color:var(--verd)}
+.enc .pt.fluix{color:var(--apagat)}
+.enc .dd{font-size:.79rem;color:var(--clar);margin-top:.3rem;line-height:1.5}
+.enc .dd em{color:var(--apagat);font-style:italic}
+.enc .ac{margin-top:.45rem}
+.enc .ac button{font-size:.76rem;padding:.3rem .6rem}
 .fitxa{margin-top:1rem;border:1px solid var(--vora);border-radius:12px;background:var(--pla);
   padding:1rem 1.15rem;min-height:118px}
 .fitxa h3{margin:0 0 .5rem;font-size:1.05rem}
@@ -99,7 +121,8 @@ button[disabled]{opacity:.35;cursor:default}
 <h1>Qui dona què a qui</h1>
 <p class="sub">El mapa de valor d'un poble s'explica malament amb un diagrama. S'explica bé amb
 <strong>una colla castellera</strong>, perquè és exactament el mateix graf: uns rols, unes coses que es
-veuen i unes altres que no es veuen i sense les quals cau. Vuit passos.</p>
+veuen i unes altres que no es veuen i sense les quals cau. Vuit passos, i un novè per
+posar-t'hi tu.</p>
 
 <div class="escena">
   <svg id="llenc" viewBox="0 0 1600 900" aria-label="El mapa de valor d'una colla castellera"></svg>
@@ -122,6 +145,16 @@ veuen i unes altres que no es veuen i sense les quals cau. Vuit passos.</p>
 <div class="fitxa" id="fitxa"></div>
 
 <div class="compt" id="compt"></div>
+
+<!-- ══ ON ETS TU ══ El pas 9: el mapa deixa de ser d'algú altre. ═══════════ -->
+<div class="fitxa" id="jo" hidden>
+  <h3>Què hi pots posar tu</h3>
+  <p class="ajuda" style="margin:.2rem 0 0">Capacitats, no identitat: aquí no hi ha nom, ni correu,
+  ni edat. Marca el que puguis posar-hi i el mapa et dirà on encaixes —<strong>et proposa, no
+  t'assigna</strong>. Es desa en aquest navegador i val per a tots els mapes del SOS.</p>
+  <div id="perfil"></div>
+  <div id="encaixos"></div>
+</div>
 
 <div class="peu">
 <p><strong>D'on surt això.</strong> És l'anàlisi de xarxes de valor de <strong>Verna Allee</strong>:
@@ -238,6 +271,100 @@ const ROLS=[
 ];
 const rol=id=>ROLS.find(r=>r.id===id);
 
+/* ══ EL PERFIL · què hi pots posar tu ══════════════════════════════════════
+   Un mapa de valor amb tots els rols buits és un pòster. El que el fa arrencar
+   és que algú s'hi posi, i el que frena la gent no sol ser la mandra: és no
+   saber on encaixa. Aquí es declara **què pots posar-hi**, i el mapa proposa
+   el rol —proposa, no assigna: l'última paraula és de qui el llegeix.
+
+   Tres decisions que el fan honest:
+
+   · **El perfil són capacitats, no identitat.** Cap nom, cap correu, cap edat,
+     cap test de personalitat. Deu caselles del que pots posar-hi, i prou.
+   · **Un rol només pot demanar el que el mapa diu que aquell rol lliura.** Cada
+     entrada de `CAL` porta `per`, que és una **cita literal** de la fitxa
+     d'aquell rol, i una guarda ho comprova. Sense això, «aquest rol demana
+     ordre» seria una opinió meva escrita amb lletra d'eina.
+   · **Es declara un cop i val a tot arreu.** Viu al navegador d'aquest
+     dispositiu, amb la mateixa clau a totes les pàgines amb mapa: qui l'ha
+     omplert a la colla castellera ja el porta posat al grup de consum.
+
+   Aquest bloc és **idèntic a totes les pàgines amb mapa de valor**, i una
+   guarda el compara caràcter a caràcter: si algú hi afegís una capacitat en una
+   pàgina i no a l'altra, dues persones amb el mateix perfil rebrien propostes
+   diferents i ningú sabria per què. Veda 109. */
+const PERFIL_CLAU='sos_perfil_aports';
+const APORTS=[
+  {id:'temps',    ic:'⏳',lbl:'Temps constant',        diu:'Pots dedicar-hi una estona fixa cada setmana, encara que sigui curta.'},
+  {id:'ordre',    ic:'📋',lbl:'Ordre i seguiment',     diu:'Portes llistes, dates i comptes sense que se t\'escapin.'},
+  {id:'contactes',ic:'🤝',lbl:'Contactes al territori',diu:'Coneixes qui és qui i pots trucar sense haver-te de presentar.'},
+  {id:'espai',    ic:'🏠',lbl:'Un espai o un local',   diu:'Tens on desar, rebre o repartir.'},
+  {id:'transport',ic:'🚐',lbl:'Vehicle i disponibilitat',diu:'Pots moure coses quan cal.'},
+  {id:'ofici',    ic:'🛠️',lbl:'Un ofici o producció',  diu:'Fas, cultives o repares alguna cosa.'},
+  {id:'numeros',  ic:'🧮',lbl:'Números i negociació',  diu:'Et trobes còmode amb preus, condicions i contractes.'},
+  {id:'cura',     ic:'💚',lbl:'Cura i acollida',       diu:'Fas que la gent es trobi bé i no plegui.'},
+  {id:'veu',      ic:'📣',lbl:'Veu i difusió',         diu:'Expliques les coses i arribes a gent nova.'},
+  {id:'diners',   ic:'💶',lbl:'Posar-hi diners',       diu:'Pots avançar o aportar capital, encara que sigui poc.'}
+];
+const aport=id=>APORTS.find(a=>a.id===id);
+/* Com es puntua l'encaix. Tres pesos, i no un:
+   · `cobreix` — quant del que el rol demana, tens. És el que decideix si el
+     podràs sostenir, i per això mana.
+   · `usa` — quant del que tu portes, el rol aprofita. Sense aquest terme, el
+     rol que demana menys guanyaria sempre i tothom acabaria al més fàcil.
+   · `pes` — com d'exigent és el rol. Entre dos que cobreixes del tot, val més
+     el que demana més: hi ets més necessari. Va **multiplicat per `cobreix`**,
+     i no sumat: sense això, un rol exigent que no cobreixes gens puntuava igual,
+     i amb el perfil buit sortia un rànquing sencer que no volia dir res. */
+const PES={cobreix:60,usa:25,pes:15};
+function encaix(cal,perfil,maxCal){
+  const dem=cal||[],te=dem.filter(a=>perfil.indexOf(a)>=0);
+  const cobreix=dem.length?te.length/dem.length:0;
+  const usa=perfil.length?te.length/perfil.length:0;
+  const pes=maxCal?dem.length/maxCal:0;
+  return {te,falten:dem.filter(a=>perfil.indexOf(a)<0),cobreix,
+    punts:Math.round(cobreix*PES.cobreix+usa*PES.usa+cobreix*pes*PES.pes)};
+}
+function llegeixPerfil(){
+  try{const j=JSON.parse(localStorage.getItem(PERFIL_CLAU)||'[]');
+    return Array.isArray(j)?j.filter(x=>!!aport(x)):[];}catch(e){return [];}
+}
+function desaPerfil(p){try{localStorage.setItem(PERFIL_CLAU,JSON.stringify(p));}catch(e){}}
+function commutaAport(id){
+  const p=llegeixPerfil(),i=p.indexOf(id);
+  if(!aport(id))return p;
+  if(i>=0)p.splice(i,1); else p.push(id);
+  desaPerfil(p);return p;
+}
+/* La graella de caselles. Igual a totes les pàgines perquè el que es declara
+   sigui exactament el mateix, es llegeixi on es llegeixi. */
+function perfilHTML(){
+  const p=llegeixPerfil();
+  return '<div class="aports">'+APORTS.map(a=>
+    '<button type="button" class="ap'+(p.indexOf(a.id)>=0?' on':'')+'" data-ap="'+a.id+'">'+
+    '<span class="ic">'+a.ic+'</span><span class="lb">'+a.lbl+'</span>'+
+    '<span class="dd">'+a.diu+'</span></button>').join('')+'</div>';
+}
+
+/* Què demana cada rol del castell a qui se'l posi. `per` és **la frase «al
+   poble» d'aquell rol**, literal: és la traducció que ja fa la fitxa, i és
+   l'única cosa que legitima demanar-li res a una persona. */
+const CAL={
+  enxaneta:{aports:['veu','cura'],per:'El resultat que es veu'},
+  acotxador:{aports:['cura','temps'],per:'Qui acompanya els últims metres'},
+  dosos:{aports:['temps','ofici'],per:'L\'equip que sosté el projecte concret'},
+  tercos:{aports:['temps','ordre'],per:'Qui executa el dia a dia'},
+  segons:{aports:['ordre','temps','cura'],per:'La coordinació del projecte'},
+  mans:{aports:['ofici','temps'],per:'El personal tècnic que empeny des de sota'},
+  baixos:{aports:['espai','cura','temps'],per:'El veïnat que ja hi era'},
+  crosses:{aports:['contactes','espai'],per:'Les entitats que aguanten el veïnat'},
+  contraforts:{aports:['temps','diners'],per:'Qui empeny sense veure\'n el resultat'},
+  laterals:{aports:['cura','ordre'],per:'Qui detecta el problema abans que es vegi'},
+  cap:{aports:['ordre','contactes','veu'],per:'Qui decideix i marca el calendari'},
+  musics:{aports:['veu','ordre'],per:'La comunicació que marca el ritme'}
+};
+
+
 /* ── Els lliuraments ──────────────────────────────────────────────────────
    Cadascun surt d'una frase de la fitxa d'algú: no n'hi ha cap d'inventat, i
    el comentari de la dreta diu de quina. `k` és 't' (es veu i es podria
@@ -297,10 +424,13 @@ const PASSOS=[
   mode:'nodes',flux:'tots',mira:'treu'},
  {n:'Pas 8 · el mateix graf',t:'I ara canvia els noms.',
   d:'El mateix mapa, amb els rols d\'un poble. Això és el que fem a les sessions: dibuixar-lo amb la gent del lloc, comptar les dues menes de lliurament i fer-hi les tres preguntes.',
-  mode:'poble',flux:'tots'}
+  mode:'poble',flux:'tots'},
+ {n:'Pas 9 · on ets tu',t:'I tu, on encaixes?',
+  d:'Un mapa amb tots els rols buits és un pòster. Marca què hi pots posar —temps, ordre, un espai, un ofici— i el mapa et proposa el rol que et demana el que tu portes. Et proposa: l\'última paraula és teva, i el rol es pot canviar el dia que canviï el que pots posar-hi.',
+  mode:'poble',flux:'tots',jo:true}
 ];
 
-const S={i:0,sel:null};
+const S={i:0,sel:null,jo:null};
 
 /* ── Dibuixar ─────────────────────────────────────────────────────────────── */
 function fletxa(f,tt,k,mig,apagat){
@@ -392,6 +522,14 @@ function pinta(){
         'font-weight':700,fill:'#ff9100'}));
     });
   }
+  /* I on ets tu. Es dibuixa igual que «només dona»: un anell i una paraula,
+     perquè el mapa deixi de ser d'algú altre en el moment que hi surts. */
+  if(S.jo&&rol(S.jo)){
+    const r=rol(S.jo);
+    llenc.appendChild(e('circle',{cx:r.x,cy:r.y,r:46,fill:'none',stroke:'#00e676','stroke-width':3}));
+    llenc.appendChild(txt('tu',{x:r.x,y:r.y-52,'text-anchor':'middle','font-size':18,
+      'font-weight':700,fill:'#00e676'}));
+  }
   if(fora){
     const perdudes=FLUXOS.filter(([f,tt])=>f===fora||tt===fora).length;
     llenc.appendChild(txt(perdudes+' lliuraments perduts',{x:1310,y:700,'text-anchor':'middle',
@@ -420,7 +558,7 @@ function pinta(){
   $('#btEnrere').disabled=S.i===0;
   $('#btAvant').disabled=S.i===PASSOS.length-1;
   $('#btAvant').textContent=S.i===PASSOS.length-1?'Ja està':'Següent →';
-  pintaPassos();pintaFitxa();pintaCompt();
+  pintaPassos();pintaFitxa();pintaCompt();pintaJo();
 }
 /* Rols amb lliuraments sortints i cap d'entrant. */
 function solsDonen(){
@@ -468,6 +606,60 @@ function pintaCompt(){
 }
 function tria(id){S.sel=S.sel===id?null:id;pinta();}
 
+/* ── On encaixes tu ───────────────────────────────────────────────────────
+   Ordena els dotze rols pel que et demanen contra el que has dit que pots
+   posar-hi. No és un test de personalitat: cada rol demana el que la seva
+   pròpia fitxa diu que lliura, i el motiu es veu escrit al costat. */
+const MAXCAL=Math.max.apply(null,Object.keys(CAL).map(k=>CAL[k].aports.length));
+function encaixos(){
+  const perfil=llegeixPerfil();
+  return ROLS.map(r=>{
+    const c=CAL[r.id]||{aports:[],per:''};
+    const e=encaix(c.aports,perfil,MAXCAL);
+    return Object.assign({id:r.id,curt:r.curt,poble:r.poble,cal:c.aports,per:c.per},e);
+  }).sort((a,b)=>b.punts-a.punts||a.falten.length-b.falten.length);
+}
+function pintaJo(){
+  const box=$('#jo');
+  if(!PASSOS[S.i].jo){box.hidden=true;return;}
+  box.hidden=false;
+  $('#perfil').innerHTML=perfilHTML();
+  const perfil=llegeixPerfil();
+  if(!perfil.length){
+    $('#encaixos').innerHTML='<p class="ajuda">Marca almenys una casella i aquí sortirà on '+
+      'encaixes. Cap resposta és millor que una altra: el castell necessita els dotze.</p>';
+    return;
+  }
+  const ll=encaixos(),plens=ll.filter(x=>x.falten.length===0);
+  const cap=plens.length?'':'<p class="ajuda">Amb el que has marcat no hi ha cap rol que cobreixis '+
+    'del tot. Això no vol dir que no hi càpigues: vol dir <strong>què hauries de trobar a algú '+
+    'altre</strong>, que és per a què serveix un mapa de valor.</p>';
+  $('#encaixos').innerHTML=cap+'<div class="encaixos">'+ll.slice(0,4).map((x,i)=>{
+    const dona=FLUXOS.filter(f=>f[0]===x.id);
+    return '<div class="enc'+(i===0?' top':'')+(S.jo===x.id?' meu':'')+'">'+
+      '<div class="cap"><b>'+esc(x.curt)+'</b><span class="ajuda" style="margin:0">'+
+      esc(x.poble)+'</span><span class="pt'+(x.falten.length?' fluix':'')+'">'+x.punts+'</span></div>'+
+      '<div class="dd">Demana <strong>'+x.cal.map(a=>esc(aport(a).lbl.toLowerCase())).join(' i ')+
+      '</strong>, perquè al poble aquest rol és «'+esc(x.per)+'».<br>'+
+      (x.te.length?'Hi poses: '+x.te.map(a=>aport(a).ic+' '+esc(aport(a).lbl)).join(' · '):'De moment no hi poses res del que demana')+
+      (x.falten.length?'.<br><em>Et faltaria: '+x.falten.map(a=>esc(aport(a).lbl)).join(', ')+
+        ' — o algú que ho porti.</em>':'.')+
+      '<br>Si l\'agafes, el que hi poses són <strong>'+dona.length+' lliuraments</strong>: '+
+      dona.map(f=>esc(f[3])).join(' · ')+'.</div>'+
+      '<div class="ac"><button type="button" data-jo="'+x.id+'">'+
+      (S.jo===x.id?'És el teu rol — deixa\'l':'Agafo aquest rol')+'</button></div></div>';
+  }).join('')+'</div>'+
+  (S.jo?'<p class="ajuda">Tens <strong>'+esc(rol(S.jo).curt)+'</strong>. Al dibuix hi surts amb '+
+    'un anell. Canvia\'l quan vulguis: un rol no és una condemna.</p>':'');
+}
+
+
+$('#jo').addEventListener('click',ev=>{
+  const a=ev.target.closest('[data-ap]'),j=ev.target.closest('[data-jo]');
+  if(a){commutaAport(a.dataset.ap);return pinta();}
+  /* Agafar un rol és una decisió reversible: es torna a prémer i es deixa. */
+  if(j){S.jo=S.jo===j.dataset.jo?null:j.dataset.jo;S.sel=S.jo;return pinta();}
+});
 $('#btAvant').onclick=()=>{if(S.i<PASSOS.length-1){S.i++;S.sel=null;pinta();}};
 $('#btEnrere').onclick=()=>{if(S.i>0){S.i--;S.sel=null;pinta();}};
 document.addEventListener('keydown',ev=>{
@@ -477,7 +669,8 @@ document.addEventListener('keydown',ev=>{
 });
 pinta();
 
-window.__VNA={ROLS,FLUXOS,PASSOS,S,pinta,tria,solsDonen,rol};
+window.__VNA={ROLS,FLUXOS,PASSOS,S,pinta,tria,solsDonen,rol,
+  APORTS,PES,PERFIL_CLAU,CAL,aport,encaix,encaixos,llegeixPerfil,desaPerfil,commutaAport};
 </script>
 </body>
 </html>

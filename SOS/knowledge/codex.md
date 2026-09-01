@@ -704,6 +704,56 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 120 — Un rol només pot demanar el que el mapa diu que lliura
+
+Els mapes de valor eren correctes i eren d'algú altre. El que frena la gent
+davant d'un no sol ser la mandra: és **no saber on encaixa**. Ara totes les
+pàgines amb mapa —`SOS/vna.html` i `SOS/compra.html`— deixen declarar què hi pots
+posar i et proposen el rol; a la colla apareixes amb un anell i la paraula «tu»,
+i al grup de consum el rol que agafes queda omplert i els seus lliuraments passen
+a comptar com a vius. Aquest és el cercle sencer: **perfil → rol → lliuraments**.
+
+La regla que ho separa d'un test de personalitat, i que és tota la veda:
+
+> Un rol només pot demanar a una persona **allò que el mapa diu que aquell rol
+> lliura**. Cada demanda porta `per`, que és una cita literal de la fitxa del rol
+> —un lliurament seu al grup de consum, la seva lectura de poble a la colla—, i
+> `SOS/tools/check-perfil.js` comprova que la cita hi sigui de debò.
+
+Sense això, «aquest rol demana ordre» és una opinió meva escrita amb lletra
+d'eina. Amb això, la pantalla pot dir-li a algú *per què* li proposa allò, i qui
+ho llegeix pot discutir-ho amb el mapa a la mà.
+
+De la mateixa peça:
+
+- **El perfil són capacitats, no identitat.** Deu caselles del que pots posar-hi
+  —temps, ordre, un espai, un ofici, contactes, veu…— i cap camp de nom, correu
+  o edat. Una eina que per proposar-te un rol et demana qui ets, ha canviat de
+  negoci sense avisar.
+- **Es declara un cop i val a tot arreu.** Mateixa clau a totes les pàgines: qui
+  l'ha omplert a la colla castellera el porta posat al grup de consum. Per això
+  el bloc és **caràcter a caràcter el mateix** i la guarda el compara: amb una
+  llista curta en una pàgina, dues persones amb el mateix perfil rebrien
+  propostes diferents i no petaria res.
+- **Proposa, no assigna.** L'ordre és una recomanació, el rol s'agafa i es deixa
+  prement el mateix botó, i agafar-ne un allibera l'anterior —no es fan dues
+  persones d'una.
+- **Quan no encaixes, ho diu.** Si cap rol es cobreix del tot, la pantalla no
+  arrodoneix: diu què et faltaria «o algú que ho porti», que és exactament per a
+  què serveix un mapa de valor.
+
+Dos defectes que va trobar posar-ho a prova, i que valen més que la funció:
+
+- **La puntuació premiava rols exigents que no cobries.** El terme de «com
+  d'exigent és el rol» anava sumat, així que amb el perfil buit sortia un
+  rànquing sencer que no volia dir res. Ara va multiplicat per la cobertura: si
+  no cobreixes res, no puntues res.
+- **La guarda es queixava d'unes dades correctes.** Aplanava els rols per nom, i
+  «Coordinació» existeix a les dues dinàmiques amb lliuraments diferents: el
+  motiu d'una es comprovava contra els lliuraments de l'altra. La clau ha de ser
+  el mapa **més** el rol. Una guarda que crida per un problema seu gasta la
+  confiança que necessitarà el dia que cridi per un de bo.
+
 ## Veda 119 — Un estalvi sense causa és una promesa, i el sobrant no és una pèrdua
 
 `SOS/compra.html` és l'eina de dues dinàmiques que fins ara només existien com a

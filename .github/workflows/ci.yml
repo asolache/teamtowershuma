@@ -64,6 +64,14 @@ jobs:
       - name: Guarda de La Compra (preus i regla del 80%)
         run: node SOS/tools/check-compra.js
 
+      # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
+      # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una
+      # llista de capacitats es queda curta no peta res —simplement ignora una
+      # casella marcada—, i dues persones amb el mateix perfil reben propostes
+      # diferents sense que ho vegi ningú.
+      - name: Guarda del perfil (un sol vocabulari als mapes)
+        run: node SOS/tools/check-perfil.js
+
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
       # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.

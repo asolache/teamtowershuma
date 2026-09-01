@@ -72,7 +72,7 @@ console.log('\n2 · El text és el de la portada, paraula per paraula');
   await ctx.close();
 }
 
-console.log('\n3 · Els vuit passos, i que cadascun ensenyi una cosa diferent');
+console.log('\n3 · Els nou passos, i que cadascun ensenyi una cosa diferent');
 {
   const { ctx, p, errs } = await nova();
   const r = await p.evaluate(() => {
@@ -85,14 +85,14 @@ console.log('\n3 · Els vuit passos, i que cadascun ensenyi una cosa diferent');
     }
     return out;
   });
-  ok(r.length === 8, `vuit passos (${r.length})`);
+  ok(r.length === 9, `nou passos (${r.length})`);
   ok(r.every(x => x.nodes === 12), 'els dotze rols hi són a tots');
   ok(r[0].fletxes === 0 && r[1].fletxes === 0, 'els dos primers no ensenyen cap fletxa: primer la colla, després els rols');
   ok(r[2].fletxes > 0 && r[3].fletxes > 0, 'el 3 ensenya el tangible i el 4 l\'intangible');
   ok(r[4].fletxes === r[2].fletxes + r[3].fletxes,
     `i el 5 les ensenya totes dues alhora (${r[4].fletxes} = ${r[2].fletxes} + ${r[3].fletxes})`);
-  ok(new Set(r.map(x => x.t)).size === 8, 'els vuit títols són diferents: cap pas repeteix el del davant');
-  ok(errs.length === 0, 'sense errors recorrent els vuit passos' + (errs.length ? ': ' + errs[0] : ''));
+  ok(new Set(r.map(x => x.t)).size === 9, 'els nou títols són diferents: cap pas repeteix el del davant');
+  ok(errs.length === 0, 'sense errors recorrent els nou passos' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 
@@ -190,7 +190,7 @@ console.log('\n8 · Es pot recórrer amb el teclat, i cap al mòbil');
   }));
   ok(un === 1 && zero === 0, 'les fletxes mouen entre passos');
   ok(r.enrere, 'al primer pas el botó d\'enrere està apagat i no enganya');
-  ok(r.tecles === 8, 'la barra de passos té els vuit trossos');
+  ok(r.tecles === 9, 'la barra de passos té els nou trossos');
   ok(r.focus && !!r.etiqueta, 'i cada rol es pot enfocar amb el teclat i diu qui és');
   await ctx.close();
 }
