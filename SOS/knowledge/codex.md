@@ -704,6 +704,89 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 124 — La caixa és el que trenca els grups, i no es pot fer amb paraules d'un cobrament
+
+`SOS/compra.html` calculava què costa la comanda i qui s'estalvia què, i després
+callava: qui deu quant, qui hi ha posat diners i si la caixa quadra no ho sabia
+ningú. El preu es negocia una vegada; **la caixa es porta cada setmana**, i els
+grups de consum no se solen desfer per un mal preu — es desfan al tercer mes,
+quan ningú sap qui deu quant i preguntar-ho comença a fer vergonya.
+
+Quatre decisions que fan que això sigui un compte i no un rebut:
+
+- **Fins que la comanda no es tanca, no deu res ningú.** Mentre és un càlcul que
+  canvia cada cop que algú toca una cistella, no és un deute. `tancaComanda()`
+  congela el repartiment; `obreComanda()` el desfà. Els diners que ja s'hi hagin
+  posat sobreviuen totes dues coses, perquè són moviments seus.
+- **Cada llar hi posa la part del que ha demanat d'aquell productor**, al cicle
+  d'aquell productor, i sobre el que el grup li ha de posar de debò: formats
+  sencers menys el tram de volum. Repartir sobre el total del grup seria més
+  curt i faria carregar el sac de llenties a qui no en vol.
+- **El cèntim de l'arrodoniment va a algú i es diu on.** Arrodonir dotze parts
+  no suma el total; el residu va a la llar que més hi posa i surt escrit. Un
+  cèntim que es perd cada comanda és el que fa que al tercer mes la caixa no
+  quadri i ningú sàpiga per què.
+- **La diferència no és un descuadre.** És gent que encara no hi ha posat els
+  diners, o algú que ho ha apuntat malament. Dir-ne descuadre convertiria una
+  conversa de deu segons en una auditoria. I el forat de debò —càrrecs de llars
+  donades de baixa— es compta a part com a **orfe** en comptes de deixar que la
+  resta no sumi.
+
+I la regla de vocabulari, que és la que sosté totes les altres: **a la caixa es
+*posa* i queda *declarat*, mai *pagat***. Ningú d'aquesta pàgina està en
+condicions de dir que s'hagi pagat res —no cobra, no demana cap targeta i no
+confirma res—, i de dir «ha posat» a «ha pagat» només hi ha una paraula que
+qualsevol pot canviar una tarda. Per això `tools/check-compra.js` **prohibeix la
+paraula, no la frase**: una frase concreta se salta canviant-li el temps verbal.
+La regla és deliberadament roma i tomba fins i tot frases certes («el grup ho ha
+de pagar»); s'hi ha reescrit la frase certa i s'ha deixat la regla, perquè en una
+pantalla on una paraula de més fa que algú ensenyi això com un rebut, val més
+reescriure que deixar una escletxa. Vedes 96 i 97.
+
+I els moviments són **per llar i sense noms de persona**, com tota la pàgina. Un
+registre al navegador d'algú de qui ha donat diners a qui és una altra cosa i no
+és aquesta: `MOVIMENT_CAMPS` és una llista blanca explícita i la guarda comprova
+que sigui exactament el que escriu `posaACaixa` — una llista blanca que ningú fa
+servir és un comentari.
+
+## Veda 123 — El color que es veu ha de ser el que s'ha guanyat
+
+El roster del Comando ja dibuixava una rodona per persona a les dues vistes, i
+era **`_colorFromName`**: un hash del nom convertit en to HSL, assegut **just al
+costat de `tier.color`**, que sí que vol dir alguna cosa. Dues coses dient qui
+ets, i la grossa era la que no en deia cap. És la veda 121 un altre cop, viva als
+dos llocs on l'app ensenya gent — i la llista de «qui mou més la xarxa» no en
+tenia cap: vint files de text.
+
+La correcció no és afegir una imatge sinó **treure el color inventat**:
+`superheroCromo` ja no reparteix cap `color`, i `_colorFromName` es queda només
+on toca —els herois canònics, personatges de ficció que no tenen tier perquè no
+han aportat res.
+
+I la part que el cap solt demanava: **es va mesurar abans de decidir**, amb la
+regla de decisió escrita abans de mirar el número. Estats sintètics de 60, 300 i
+1.000 persones, tres passades, mediana:
+
+| | 60 | 300 | 1.000 |
+|---|---|---|---|
+| `comandoRoster()`, que ja es paga avui | 6,8 ms | 155 ms | 1.774 ms |
+| 60 avatars amb el cromo ja calculat | +8,8 ms | +6,4 ms | +7,8 ms |
+| 20 avatars al rànquing (calculant el cromo) | +8,7 ms | +14,7 ms | +45,3 ms |
+| 20 punts de color, sense canvas | +1,3 ms | +5,2 ms | +17,9 ms |
+
+Tres coses que la mesura diu i que endevinar no hauria dit:
+
+- **El canvas no és el cost.** Al rànquing, canviar l'avatar per un punt de
+  color CSS només estalviaria el 40%: la resta és `superheroCromo`, que el
+  color del tier necessita igualment. L'alternativa «barata» comprava poc.
+- **Al roster el cost no creix amb la xarxa**, perquè `comandoRoster()` ja ha
+  pagat la part cara per a tothom. Per això `cromoAvatar` accepta **un cromo ja
+  calculat** i no només un nom: demanar-lo pel nom hauria recalculat
+  `personProfile` seixanta cops per no res.
+- **El sostre de debò és una altra cosa.** Amb 1.000 persones el roster triga
+  1,8 s abans de dibuixar cap avatar. El dia que això molesti, el que s'ha de
+  mirar és `comandoRoster()`, no les rodones.
+
 ## Veda 122 — No es pregunta a la porta el que el sistema pot deduir
 
 Qui entrava al SOS havia de triar **un rol d'entre sis** abans d'haver fet res, i

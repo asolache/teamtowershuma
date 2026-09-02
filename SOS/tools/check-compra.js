@@ -31,6 +31,10 @@
  *   6. Els preus porten data de revisió i es pinta a la pàgina.
  *   7. No hi ha cap camp que demani targeta, número o IBAN, ni cap text que
  *      digui que s'ha cobrat res. Vedes 96 i 97.
+ *   8. La caixa és **per llar**: cap camp del moviment és una dada d'identitat,
+ *      i el que declara la llista blanca és el que escriu `posaACaixa`. I la
+ *      pantalla diu que **no és un rebut**, amb el vocabulari de «posar a la
+ *      caixa» i «declarat» i no el del pagament.
  *
  * Veda 119.
  *
@@ -265,9 +269,79 @@ if (!perillosos.length) ok('cap camp demana targeta, IBAN ni res que s\'hi assem
 else bad(`${pl(perillosos.length, 'camp demana', 'camps demanen')} dades de pagament: ` +
   perillosos.slice(0, 2).join(' '));
 
-if (!/(s'ha (cobrat|pagat)|pagament confirmat|cobrament confirmat|pagat correctament)/i.test(PAG))
+const DIU_PAGAT = /(s'ha (cobrat|pagat)|ja ha pagat|queda pagat|pagament (confirmat|rebut)|cobrament confirmat|pagat correctament)/i;
+if (!DIU_PAGAT.test(PAG))
   ok('i enlloc es diu que s\'hagi cobrat o pagat res: aquí es planifica i s\'estima');
 else bad('la pàgina diu que s\'ha cobrat o pagat alguna cosa — el SOS no confirma mai un cobrament');
+
+/* ── 8 · La caixa: un compte per llar, i mai un rebut ───────────────────────
+   La caixa és la part que un dia algú voldrà fer créixer, i el pendent està a
+   favor de la mentida: d'apuntar qui deu quant a dir que algú ha pagat només hi
+   ha una paraula, i la paraula la pot canviar qualsevol tarda. Aquí es fixen
+   les dues coses que no poden lliscar: **el moviment no porta mai el nom d'una
+   persona** —els comptes són per llar, com tota la pàgina— i **la pantalla diu
+   que això no és un rebut**, que és el que evita que ningú l'ensenyi com si
+   ho fos. */
+const blancaMov = ((PAG.match(/const MOVIMENT_CAMPS=\[([^\]]*)\]/) || [])[1] || '')
+  .split(',').map(x => x.trim().replace(/'/g, '')).filter(Boolean);
+/* Els camps que escriu de debò `posaACaixa`, no els que la llista blanca
+   promet: una llista blanca que ningú fa servir és un comentari. */
+const cosMov = (PAG.match(/function posaACaixa\([\s\S]*?\n\}/) || [''])[0];
+const objMov = (cosMov.match(/const m=\{([\s\S]*?)\};/) || [])[1] || '';
+/* Fora el que hi ha entre parèntesis abans de partir per comes: si no, el
+   `slice(0, 40)` de la nota es llegia com un camp que es diu «40)». La guarda
+   es queixava d'ella mateixa, que és la manera més ràpida de gastar-se la
+   confiança que necessitarà el dia que trobi una cosa de debò. */
+const senseParen = t => { let out = '', d = 0;
+  for (const ch of t) { if (ch === '(') d++; else if (ch === ')') d--; else if (!d) out += ch; }
+  return out; };
+const escrits = senseParen(objMov).split(',')
+  .map(x => (x.split(':')[0] || '').trim()).filter(Boolean);
+const IDENTITAT = /persona|titular|nom|correu|email|telefon|dni|adreca|adreça|iban|targeta/i;
+
+if (!blancaMov.length) {
+  bad('no es troba MOVIMENT_CAMPS: sense llista blanca, el dia que algú afegeixi un camp ' +
+    'al moviment de caixa no ho notarà ningú');
+} else {
+  const identitat = blancaMov.filter(c => IDENTITAT.test(c));
+  if (!identitat.length) ok(`un moviment de caixa desa ${blancaMov.length} camps i cap és una dada d'identitat`);
+  else bad(`el moviment de caixa desa ${identitat.join(', ')}: els comptes són per llar, ` +
+    'i un registre de qui dona diners a qui, amb noms, al navegador d\'algú, és una altra cosa');
+
+  if (!escrits.length) bad('no es pot llegir què escriu posaACaixa: la guarda de la caixa s\'ha quedat cega');
+  else if (escrits.join('|') === blancaMov.join('|'))
+    ok('i és exactament el que escriu posaACaixa: la llista blanca no és un comentari');
+  else bad(`posaACaixa escriu [${escrits.join(', ')}] i la llista blanca diu ` +
+    `[${blancaMov.join(', ')}] — una de les dues menteix`);
+}
+
+const panCaixa = (PAG.match(/<div class="pan" id="pCaixa">[\s\S]*?\n<\/div>/) || [''])[0];
+if (!panCaixa) bad('no es troba la pantalla de la caixa: la guarda no pot comprovar què hi diu');
+else {
+  if (/no és un rebut/i.test(panCaixa))
+    ok('la pantalla de la caixa diu que no és un rebut i no prova res');
+  else bad('la pantalla de la caixa no diu que no és un rebut — algú l\'ensenyarà com si ho fos');
+
+  /* Aquí la regla no és «que no digui una frase concreta» sinó **que no faci
+     servir la paraula**. La frase prohibida se salta canviant-la de temps
+     verbal; la paraula, no. A la caixa es posa i es declara: qui pagui, que
+     pagui fora, i qui ho vulgui provar, que ho signi al SOS.
+
+     És deliberadament roma —tomba fins i tot frases certes, com «el grup ho ha
+     de pagar»— i es queda així: en una pantalla on una paraula de més fa que
+     algú ensenyi això com un rebut, val més reescriure una frase certa que
+     deixar una escletxa per on hi cabin les falses. La resta de la pàgina hi
+     pot dir el que calgui; el que es tanca és la caixa. */
+  const copiaCaixa = panCaixa + (PAG.match(/function pintaCaixa\(\)\{[\s\S]*?\n\}/) || [''])[0];
+  const paraules = [...copiaCaixa.matchAll(/pag(?:at|ats|ada|ades|ament|aments|ar)\b/gi)]
+    .map(m => m[0].toLowerCase());
+  if (/posa/i.test(panCaixa) && /declarat/i.test(copiaCaixa) && !paraules.length)
+    ok('i el vocabulari és «posar a la caixa» i «declarat»: la paraula «pagat» no hi surt');
+  else if (paraules.length)
+    bad(`la caixa fa servir el vocabulari del pagament (${[...new Set(paraules)].join(', ')}): ` +
+      'aquí ningú no està en condicions de dir que s\'hagi pagat res');
+  else bad('la caixa no fa servir «posar» ni «declarat»: el vocabulari és el que fa certa la copy');
+}
 
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a La Compra.`
   : '\n✅ Els preus quadren, la cistella arriba al 80% i aquí no es cobra res.');

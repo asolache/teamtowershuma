@@ -192,7 +192,8 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
   <button data-p="comanda">3 · La comanda</button>
   <button data-p="estalvi">4 · L'estalvi</button>
   <button data-p="mapa">5 · El mapa de valor</button>
-  <button data-p="metode">6 · Com es fa</button>
+  <button data-p="caixa">6 · La caixa</button>
+  <button data-p="metode">7 · Com es fa</button>
 </div>
 
 <!-- ══ 1 · LA CISTELLA ═══════════════════════════════════════════════════ -->
@@ -325,6 +326,55 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
   <div id="mapes"></div>
 </div>
 
+<!-- ══ 6 · LA CAIXA ══════════════════════════════════════════════════════ -->
+<div class="pan" id="pCaixa">
+  <section class="box">
+    <h3>Aquesta comanda</h3>
+    <p class="lead">Mentre no es tanca, això és un càlcul: canvia cada cop que algú toca una
+    cistella i <strong>no deu res ningú</strong>. Tancar-la és el que fan els grups quan passen
+    la comanda al pagès, i és el que la converteix en xifres que ja no es mouen.</p>
+    <p class="mut">Cada llar hi posa la part del que ha demanat <strong>d'aquell productor</strong>,
+    al cicle d'aquell productor — i sobre el que el grup li paga de debò: els formats sencers
+    menys el tram de volum. El sobrant de format hi va inclòs perquè el grup l'ha de posar igualment; el
+    que se'n fa després (rebost comú o repartir el fresc) és una decisió vostra, no una xifra.</p>
+    <div id="caixaAra"></div>
+    <div class="fila"><button class="b b-pri" id="btnTanca">Tanca la comanda</button></div>
+    <p class="mut" id="caixaAvis"></p>
+    <h4 style="margin:1.2rem 0 .3rem;font-size:.9rem">Comandes tancades</h4>
+    <div id="caixaComandes"></div>
+  </section>
+
+  <section class="box">
+    <h3>El compte de cada llar</h3>
+    <p class="lead">Carregat menys posat. <strong>Carregat</strong> és el que li han sumat les
+    comandes tancades; <strong>posat</strong> és el que la llar ha dit que ha portat a la caixa.
+    La pàgina no ho comprova ni ho pot comprovar: ho apunta el grup.</p>
+    <div class="taula"><table id="tComptes"></table></div>
+    <div class="fila">
+      <select id="movSoci"></select>
+      <label>€ <input id="movEur" type="number" min="0" step="0.01" value="0"></label>
+      <input id="movNota" placeholder="nota (opcional)" maxlength="40">
+      <button class="b b-pri" id="btnMov">Apunta-ho a la caixa</button>
+    </div>
+    <p class="mut" id="movAvis"></p>
+    <div id="movs"></div>
+  </section>
+
+  <section class="box">
+    <h3>La caixa del grup</h3>
+    <p class="lead">Quant hi hauria d'haver i quant s'ha declarat. La diferència <strong>no és un
+    descuadre</strong>: és gent que encara no hi ha posat els diners, o algú que ho ha apuntat
+    malament. Dir-ne descuadre convertiria una conversa de deu segons en una auditoria.</p>
+    <div class="capes" id="caixaCapes"></div>
+    <p class="nota" id="caixaDiu"></p>
+    <p class="nota avis"><strong>Això no és un rebut i no prova res.</strong> És el compte que
+    porta el grup, viu al navegador d'aquest dispositiu i enlloc més. Aquí no es cobra, no es
+    demana cap targeta i ningú no confirma haver rebut cap diner. Qui vulgui una prova que es
+    pugui ensenyar, que registri l'intercanvi al <a href="index.html">SOS</a>, que sí que el
+    signa i l'encadena.</p>
+  </section>
+</div>
+
 <!-- ══ 6 · COM ES FA ═════════════════════════════════════════════════════ -->
 <div class="pan" id="pMetode">
   <section class="box metode">
@@ -362,6 +412,19 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
     <p>Una taula de preus sense data menteix en silenci al cap d'un any. Aquesta porta la seva, i
     tots els preus són editables: <strong>reviseu-los cada temporada</strong>, que és quan canvien
     de debò.</p>
+
+    <h4>7 · Portar la caixa és més feina que negociar el preu</h4>
+    <p>El preu es negocia una vegada; la caixa es porta cada setmana. Els grups de consum no
+    se solen desfer per un mal preu: es desfan al tercer mes, quan ningú sap qui deu quant i
+    preguntar-ho comença a fer vergonya. Per això aquí una comanda <strong>es tanca</strong> —
+    fins llavors és un càlcul i no deu res ningú— i cada llar té un compte de dues xifres:
+    carregat i posat. La diferència es diu pel seu nom: gent que encara no hi ha posat els
+    diners, no un descuadre.</p>
+    <p class="mut">I el que la pàgina no farà mai: <strong>cobrar</strong>. No hi ha passarel·la,
+    no hi ha targeta i ningú d'aquí no està en condicions de confirmar que hagi rebut cap euro.
+    Els diners es mouen fora, entre persones. Si algun dia el grup ha de portar la caixa de
+    debò —amb comptes, rebuts i responsabilitat— això és una decisió de governança i una eina
+    diferent, no una casella més d'aquesta pantalla.</p>
 
     <h4>Què no cobreix aquesta cistella</h4>
     <p>No hi ha peix, ni carn més enllà del pollastre i un guisat, ni preparats, ni begudes fora
@@ -583,8 +646,8 @@ const OMPLE={
    mapa en una costura de debò i no en un pòster: cada flux marcat té una
    pantalla que el produeix, amb número. */
 const FA={
-  'comandes i pagament just':'La cistella de cada llar i el seu total (pantalla 2).',
-  'comanda agregada i pagament únic':'La comanda per productor, en formats sencers (pantalla 3).',
+  'comandes i pagament just':'La cistella de cada llar i el seu total (pantalla 2), i el que li toca de cada comanda tancada (pantalla 6).',
+  'comanda agregada i pagament únic':'La comanda per productor, en formats sencers (pantalla 3), i el que el grup ha de posar a cada productor, tram de volum inclòs (pantalla 6).',
   'disponibilitat i preus':'La taula de preus, formats i mínims de cada productor (pantalla 1).',
   'demanda agregada':'La suma de les cistelles de totes les llars (pantalla 3).',
   'estalvi i servei':'L\'estalvi separat per causes (pantalla 4).',
@@ -679,8 +742,8 @@ const CLAU='sos_compra_grup';
 const LLARS_DEFECTE=[['Llar Roca',3],['Llar Ferrer',2],['Llar Puig',4],['Llar Mas',1],
   ['Llar Serra',2],['Llar Camps',3],['Llar Bosch',2],['Llar Grau',4],['Llar Riera',2],
   ['Llar Soler',3],['Llar Font',2],['Llar Vidal',2]];
-let G={socis:[],preus:{},repartiment:'prop',llarBase:2,rols:{}};
-let _id=0;
+let G={socis:[],preus:{},repartiment:'prop',llarBase:2,rols:{},comandes:[],caixa:[]};
+let _id=0,_idc=0,_idm=0;
 
 /* La cistella per defecte, escalada per les persones de la llar. Ve
    preseleccionada: qui entra ha de veure una compra sencera i creïble, no una
@@ -719,8 +782,15 @@ function carrega(){
     const j=JSON.parse(localStorage.getItem(CLAU)||'null');
     if(j&&Array.isArray(j.socis)&&j.socis.length){
       G={socis:j.socis,preus:j.preus||{},repartiment:j.repartiment==='igual'?'igual':'prop',
-         llarBase:Number(j.llarBase)||2,rols:j.rols||{}};
+         llarBase:Number(j.llarBase)||2,rols:j.rols||{},
+         comandes:Array.isArray(j.comandes)?j.comandes:[],
+         caixa:Array.isArray(j.caixa)?j.caixa:[]};
       _id=G.socis.length;
+      /* Els comptadors surten del número més alt que hi ha, no de quants n'hi
+         ha: si algú n'ha esborrat un del mig, comptar-los tornaria a repartir
+         un identificador que ja existeix i dos apunts passarien a ser el
+         mateix. */
+      _idc=maxId(G.comandes,'c');_idm=maxId(G.caixa,'m');
       return true;
     }
   }catch(e){/* dades trencades: es comença de nou, que és millor que petar */}
@@ -729,7 +799,11 @@ function carrega(){
 function grupPerDefecte(){
   /* Els noms que el grup ha posat als rols del mapa NO es perden en tornar al
      grup d'exemple: són seus i no formen part de l'exemple. */
-  G={socis:[],preus:{},repartiment:'prop',llarBase:2,rols:G.rols||{}};_id=0;
+  /* La caixa SÍ que se'n va: els comptes són d'aquestes llars, i les del grup
+     d'exemple són unes altres. Deixar-los seria carregar deutes a gent que no
+     els ha fet. Per això el botó avisa abans, si hi ha res apuntat. */
+  G={socis:[],preus:{},repartiment:'prop',llarBase:2,rols:G.rols||{},comandes:[],caixa:[]};
+  _id=0;_idc=0;_idm=0;
   LLARS_DEFECTE.forEach(([n,l])=>nouSoci(n,l));
 }
 
@@ -827,6 +901,145 @@ function perSoci(){
     f.net=f.estructural+f.volum;
   });
   return {files,total:e};
+}
+
+/* ── La caixa · qui deu quant, i si quadra ──────────────────────────────────
+   Fins aquí la pàgina calculava què costa la comanda i qui s'estalvia què, i
+   després callava. Qui deu quant, qui hi ha posat diners i si la caixa quadra
+   no ho sabia ningú — i és exactament la feina que trenca els grups de consum
+   al segon o tercer mes, molt abans que el preu.
+
+   Tres regles que no es negocien:
+
+   · **Aquí no es cobra.** No hi ha cap camp de targeta, cap passarel·la i cap
+     confirmació. Els diners es mouen fora, entre persones. El que hi ha aquí és
+     el compte que porta el grup, i el vocabulari ho diu: es *posa a la caixa* i
+     queda *declarat*, mai *pagat*. Ningú d'aquesta pàgina està en condicions de
+     dir que s'hagi pagat res, i `tools/check-compra.js` fa que la copy no ho
+     pugui dir tampoc. Vedes 96 i 97.
+   · **Per llar i no per persona.** Tota la pàgina compta per llars i la caixa
+     també. Un registre al navegador d'algú de qui ha donat diners a qui, amb
+     noms, és una altra cosa i no és aquesta.
+   · **Fins que la comanda no es tanca, no deu res ningú.** Mentre és un càlcul
+     que canvia cada cop que algú toca una cistella, no és un deute. Tancar-la
+     és el que fan els grups quan passen la comanda al pagès, i és el que la
+     converteix en xifres que ja no es mouen. */
+const r2=n=>Math.round(n*100)/100;
+const ara=()=>new Date().toISOString().slice(0,10);
+const maxId=(arr,pre)=>(arr||[]).reduce((m,x)=>
+  Math.max(m,Number(String(x&&x.id||'').slice(pre.length))||0),0);
+
+/* El que es desa d'un moviment de caixa, i res més. Llista blanca explícita,
+   com al cromo: així afegir-hi un camp és una decisió i no un descuit — i el
+   camp que aquí no pot entrar mai és el nom d'una persona. */
+const MOVIMENT_CAMPS=['id','soci','eur','quan','nota'];
+
+/* Què li toca a cada llar d'aquesta comanda.
+   El grup paga al pagès el que encarrega —formats sencers— menys el tram de
+   volum, i cada llar hi posa la part del que ha demanat **d'aquell productor**,
+   al cicle d'aquell productor. Repartir-ho sobre el total del grup seria més
+   curt i faria pagar el sac de llenties a qui no en vol. */
+function repartComanda(){
+  const socis=G.socis,perProductor=[],brut={};
+  socis.forEach(s=>{brut[s.id]=0;});
+  let total=0,sotaMinim=0;
+  Object.keys(PRODUCTORS).forEach(pid=>{
+    const c=comandaDe(pid);if(!c.linies.length)return;
+    const paga=r2(c.encarregat-c.volum);
+    const meus=PRODUCTES.filter(p=>p.prod===pid);
+    const dem={};let tot=0;
+    socis.forEach(s=>{
+      let e=0;meus.forEach(p=>{e+=(Number(s.cistella[p.id])||0)*c.cicle.setmanes*preuGrup(p.id);});
+      dem[s.id]=e;tot+=e;
+    });
+    socis.forEach(s=>{brut[s.id]+=tot?paga*dem[s.id]/tot:paga/(socis.length||1);});
+    total=r2(total+paga);
+    if(c.falta>0)sotaMinim++;
+    perProductor.push({pid,nom:c.pr.nom,ic:c.pr.ic,cicle:c.cicle.lbl,
+      encarregat:r2(c.encarregat),volum:r2(c.volum),sobrant:r2(c.sobrant),
+      falta:r2(c.falta),paga});
+  });
+  /* Arrodonir cada part al cèntim no suma el total. El residu ha d'anar a
+     algú i s'hi posa a la vista, a la llar que més hi posa: un cèntim que es
+     perd cada comanda és el que fa que al tercer mes la caixa no quadri i
+     ningú sàpiga per què. */
+  const perSoci={};let suma=0;
+  socis.forEach(s=>{perSoci[s.id]=r2(brut[s.id]);suma=r2(suma+perSoci[s.id]);});
+  const resta=r2(total-suma);
+  if(resta&&socis.length){
+    const gran=socis.slice().sort((a,b)=>brut[b.id]-brut[a.id])[0];
+    perSoci[gran.id]=r2(perSoci[gran.id]+resta);
+  }
+  return {perProductor,perSoci,total,resta,sotaMinim};
+}
+function tancaComanda(){
+  if(!G.socis.length)return {err:'Sense llars no hi ha comanda'};
+  const r=repartComanda();
+  if(!(r.total>0))return {err:'La comanda és buida: no hi ha res a tancar'};
+  const c={id:'c'+(++_idc),quan:ara(),total:r.total,resta:r.resta,
+    sotaMinim:r.sotaMinim,perProductor:r.perProductor,perSoci:r.perSoci,
+    /* Es desa quantes llars hi havia: si demà n'hi ha una altra, aquesta
+       comanda segueix sent la de les d'aquell dia. */
+    llars:G.socis.length};
+  G.comandes.push(c);desa();
+  return {ok:true,comanda:c};
+}
+/* Tancar-la per error és el que passa més sovint. Obrir-la torna a deixar-ho
+   tot en un càlcul, i els diners que ja s'hi haguessin posat hi continuen: són
+   moviments seus i no els desfà tancar ni obrir res. */
+function obreComanda(id){
+  const n=G.comandes.length;
+  G.comandes=G.comandes.filter(c=>c.id!==id);desa();
+  return G.comandes.length<n;
+}
+
+/* El que una llar declara que ha posat a la caixa. Ho apunta el grup, no ho
+   confirma la pàgina: aquí no hi ha ningú que pugui dir que els diners hi
+   siguin. */
+function posaACaixa(soci,eur,nota){
+  if(!G.socis.some(s=>s.id===soci))return {err:'Aquesta llar no hi és'};
+  const v=r2(Number(String(eur).replace(',','.'))||0);
+  if(!(v>0))return {err:'Cal una xifra més gran que zero'};
+  const m={id:'m'+(++_idm),soci,eur:v,quan:ara(),nota:String(nota||'').trim().slice(0,40)};
+  G.caixa.push(m);desa();
+  return {ok:true,mov:m};
+}
+function treuMoviment(id){
+  const n=G.caixa.length;
+  G.caixa=G.caixa.filter(m=>m.id!==id);desa();
+  return G.caixa.length<n;
+}
+const movimentsDe=id=>G.caixa.filter(m=>m.soci===id).slice().reverse();
+
+/* Carregat menys posat. Res més: un saldo que necessita explicació és un saldo
+   que ningú comprovarà. */
+function compteDe(id){
+  const carregat=G.comandes.reduce((t,c)=>t+(Number(c.perSoci[id])||0),0);
+  const posat=G.caixa.reduce((t,m)=>m.soci===id?t+m.eur:t,0);
+  return {carregat:r2(carregat),posat:r2(posat),saldo:r2(carregat-posat)};
+}
+/* La caixa del grup: el que hi hauria d'haver contra el que s'ha declarat.
+   La diferència NO és un descuadre comptable i no s'anomena així: és gent que
+   encara no hi ha posat els diners, o algú que ho ha apuntat malament. Dir-ne
+   «descuadre» convertiria una conversa de deu segons en una auditoria.
+
+   I hi ha un forat que s'ha de dir en veu alta: si es dona de baixa una llar
+   després d'haver-li carregat una comanda, el càrrec segueix a la comanda
+   tancada i ja no és de ningú. Es compta a part com a orfe en comptes de
+   deixar que la resta no sumi. */
+function caixaGrup(){
+  const carregat=G.comandes.reduce((t,c)=>t+c.total,0);
+  const posat=G.caixa.reduce((t,m)=>t+m.eur,0);
+  const comptes=G.socis.map(s=>Object.assign({s},compteDe(s.id)));
+  const seus=comptes.reduce((t,c)=>t+c.carregat,0);
+  const orfeMov=G.caixa.filter(m=>!G.socis.some(s=>s.id===m.soci))
+    .reduce((t,m)=>t+m.eur,0);
+  return {carregat:r2(carregat),posat:r2(posat),diferencia:r2(carregat-posat),
+    comptes,
+    deuen:comptes.filter(c=>c.saldo>0.005).sort((a,b)=>b.saldo-a.saldo),
+    favor:comptes.filter(c=>c.saldo<-0.005).sort((a,b)=>a.saldo-b.saldo),
+    orfe:r2(carregat-seus),orfeMov:r2(orfeMov),
+    comandes:G.comandes.length,moviments:G.caixa.length};
 }
 
 /* ── El mapa de valor · qui omple cada rol i què es mou de debò ─────────── */
@@ -1208,7 +1421,102 @@ function pintaEstalvi(){
     '</tbody>';
 }
 
-function pinta(){pintaCistella();pintaSocis();pintaComanda();pintaEstalvi();pintaMapa();}
+function pintaCaixa(){
+  const r=repartComanda(),k=caixaGrup();
+
+  /* El que li tocaria a cada llar si es tanqués ara. Es diu «li tocaria» i no
+     «deu» a propòsit: encara no ho deu. */
+  $('#caixaAra').innerHTML=!r.total
+    ? '<p class="nota avis">Ara mateix la comanda és buida: no hi ha res a tancar.</p>'
+    : '<div class="taula"><table><thead><tr><th>Productor</th><th class="n">S\'encarrega</th>'+
+      '<th class="n">Tram</th><th class="n">El grup hi posa</th></tr></thead><tbody>'+
+      r.perProductor.map(x=>'<tr><td>'+x.ic+' '+esc(x.nom)+' <span class="mut">'+esc(x.cicle)+'</span></td>'+
+        '<td class="n">'+num(x.encarregat)+'</td>'+
+        '<td class="n"'+(x.volum?' style="color:var(--green)"':' class="n mut"')+'>'+
+          (x.volum?'−'+num(x.volum):'cap')+'</td>'+
+        '<td class="n"><strong>'+num(x.paga)+'</strong></td></tr>').join('')+
+      '<tr><td><strong>Total de la comanda</strong></td><td class="n"></td><td class="n"></td>'+
+      '<td class="n"><strong>'+num(r.total)+'</strong></td></tr></tbody></table></div>'+
+      '<div class="taula" style="margin-top:.6rem"><table><thead><tr><th>Llar</th>'+
+      '<th class="n">Li tocaria</th></tr></thead><tbody>'+
+      G.socis.map(x=>'<tr><td>'+esc(x.nom)+' <span class="mut">'+x.llar+'p</span></td>'+
+        '<td class="n">'+num(r.perSoci[x.id]||0)+'</td></tr>').join('')+
+      '</tbody></table></div>';
+
+  const avis=[];
+  if(r.sotaMinim)avis.push(r.sotaMinim+(r.sotaMinim===1?' productor no arriba':' productors no arriben')+
+    ' al mínim: tancar-ho apunta un deute per una comanda que potser no es fa.');
+  if(r.resta)avis.push('L\'arrodoniment al cèntim deixa '+eur(Math.abs(r.resta))+
+    ', i va a la llar que més hi posa perquè la suma quadri exacta.');
+  /* L'error més fàcil i el més car: tancar dos cops la mateixa comanda i
+     carregar-ho tot dues vegades. No es bloqueja —un grup pot tancar-ne dues
+     el mateix dia de debò— però es diu abans, no després. */
+  const ultima=G.comandes[G.comandes.length-1];
+  if(ultima&&ultima.quan===ara()&&Math.abs(ultima.total-r.total)<0.005)
+    avis.push('Avui ja se n\'ha tancat una pel mateix import: tancar-ne una altra ho carrega tot un segon cop.');
+  $('#caixaAvis').textContent=avis.join(' ');
+  $('#btnTanca').disabled=!r.total;
+
+  $('#caixaComandes').innerHTML=!G.comandes.length
+    ? '<p class="mut">Encara cap. Fins que no se\'n tanqui una, tots els comptes són a zero.</p>'
+    : G.comandes.slice().reverse().map(c=>'<div class="prodbox">'+
+      '<div class="cap"><b>Comanda del '+esc(c.quan)+'</b>'+
+      '<span class="mut">'+c.llars+' llars · '+c.perProductor.length+' productors</span>'+
+      '<span class="est">'+eur(c.total)+'</span></div>'+
+      (c.sotaMinim?'<p class="nota mal">'+c.sotaMinim+' per sota del mínim quan es va tancar.</p>':'')+
+      '<div class="fila"><button class="b" data-obre="'+c.id+'">Torna-la a obrir</button></div>'+
+      '</div>').join('');
+
+  /* Els comptes. Qui deu i qui té a favor, i cap dels dos amagat. */
+  $('#tComptes').innerHTML='<thead><tr><th>Llar</th><th class="n">Carregat</th>'+
+    '<th class="n">Posat</th><th class="n">Saldo</th></tr></thead><tbody>'+
+    (k.comptes.length?k.comptes.map(c=>'<tr><td>'+esc(c.s.nom)+' <span class="mut">'+c.s.llar+'p</span></td>'+
+      '<td class="n">'+num(c.carregat)+'</td><td class="n">'+num(c.posat)+'</td>'+
+      '<td class="n" style="color:'+(c.saldo>0.005?'var(--orange)':c.saldo<-0.005?'var(--blue)':'var(--green)')+'">'+
+      num(c.saldo)+'</td></tr>').join('')
+     :'<tr><td colspan="4" class="mut">Sense llars no hi ha comptes.</td></tr>')+
+    '<tr><td><strong>Total</strong></td>'+
+    '<td class="n"><strong>'+num(k.comptes.reduce((t,c)=>t+c.carregat,0))+'</strong></td>'+
+    '<td class="n"><strong>'+num(k.comptes.reduce((t,c)=>t+c.posat,0))+'</strong></td>'+
+    '<td class="n"><strong>'+num(k.comptes.reduce((t,c)=>t+c.saldo,0))+'</strong></td></tr></tbody>';
+
+  $('#movSoci').innerHTML=G.socis.map(x=>'<option value="'+x.id+'">'+esc(x.nom)+'</option>').join('');
+
+  $('#movs').innerHTML=!G.caixa.length
+    ? '<p class="mut">Encara no hi ha cap moviment apuntat.</p>'
+    : '<div class="taula"><table><thead><tr><th>Dia</th><th>Llar</th><th>Nota</th>'+
+      '<th class="n">€ posats</th><th></th></tr></thead><tbody>'+
+      G.caixa.slice().reverse().map(m=>{
+        const s2=G.socis.find(x=>x.id===m.soci);
+        return '<tr><td>'+esc(m.quan)+'</td><td>'+esc(s2?s2.nom:'llar donada de baixa')+'</td>'+
+          '<td class="mut">'+esc(m.nota||'—')+'</td><td class="n">'+num(m.eur)+'</td>'+
+          '<td class="n"><button class="b" data-treu="'+m.id+'">treu</button></td></tr>';
+      }).join('')+'</tbody></table></div>';
+
+  $('#caixaCapes').innerHTML=
+    '<div class="capa"><div class="n">'+eur(k.carregat)+'</div><div class="l">hi hauria d\'haver</div>'+
+      '<div class="d">La suma de les comandes tancades. Si no n\'hi ha cap, és zero i està bé que ho sigui.</div></div>'+
+    '<div class="capa blau"><div class="n">'+eur(k.posat)+'</div><div class="l">declarat</div>'+
+      '<div class="d">El que les llars diuen que hi han posat. Ho apunta el grup; la pàgina no ho comprova.</div></div>'+
+    '<div class="capa'+(Math.abs(k.diferencia)<0.005?' bo':' taronja')+'"><div class="n">'+eur(k.diferencia)+
+      '</div><div class="l">diferència</div>'+
+      '<div class="d">El que falta per posar-hi, o el que hi sobra si algú s\'ha avançat.</div></div>';
+
+  const diu=[];
+  if(!G.comandes.length)diu.push('Encara no s\'ha tancat cap comanda, o sigui que no deu res ningú.');
+  else if(k.deuen.length)diu.push('<strong>'+k.deuen.length+(k.deuen.length===1?' llar encara no ha posat':' llars encara no han posat')+
+    ' la seva part</strong>: '+k.deuen.slice(0,4).map(c=>esc(c.s.nom)+' '+eur(c.saldo)).join(', ')+'.');
+  else diu.push('<strong>Totes les llars hi han posat la seva part.</strong>');
+  if(k.favor.length)diu.push(k.favor.length+(k.favor.length===1?' llar hi té':' llars hi tenen')+
+    ' a favor: '+k.favor.slice(0,4).map(c=>esc(c.s.nom)+' '+eur(-c.saldo)).join(', ')+
+    ' — a descomptar de la comanda vinent.');
+  if(k.orfe)diu.push('<strong>'+eur(k.orfe)+' carregats a llars que ja no hi són.</strong> '+
+    'No és de ningú i per això es diu a part: o es torna a donar d\'alta la llar, o s\'obre aquella comanda.');
+  if(k.orfeMov)diu.push(eur(k.orfeMov)+' posats per llars que ja no hi són, i que segueixen comptant a la caixa.');
+  $('#caixaDiu').innerHTML=diu.join(' ');
+}
+
+function pinta(){pintaCistella();pintaSocis();pintaComanda();pintaEstalvi();pintaMapa();pintaCaixa();}
 
 /* ── Enganxar-ho ────────────────────────────────────────────────────────── */
 $('#tabs').addEventListener('click',e=>{
@@ -1222,7 +1530,34 @@ $('#tabs').addEventListener('click',e=>{
 $('#selLlar').innerHTML=[1,2,3,4,5,6].map(n=>'<option value="'+n+'">'+n+'</option>').join('');
 $('#selLlar').value=G.llarBase;
 $('#selLlar').addEventListener('change',e=>{G.llarBase=Number(e.target.value)||2;desa();pintaCistella();});
-$('#btnDefecte').addEventListener('click',()=>{grupPerDefecte();sociSel=null;$('#selLlar').value=G.llarBase;pinta();});
+$('#btnDefecte').addEventListener('click',()=>{
+  /* Tornar al grup d'exemple s'emporta els comptes, perquè són d'aquestes
+     llars. Si hi ha res apuntat, es demana abans: perdre una caixa sencera
+     amb un clic seria l'error més car de la pàgina. */
+  if((G.comandes.length||G.caixa.length)&&
+     !confirm('Tornar al grup d\'exemple esborra les '+G.comandes.length+
+       ' comandes tancades i els '+G.caixa.length+' moviments de caixa d\'aquestes llars. Segur?'))return;
+  grupPerDefecte();sociSel=null;$('#selLlar').value=G.llarBase;pinta();
+});
+$('#btnTanca').addEventListener('click',()=>{
+  const r=tancaComanda();
+  $('#movAvis').textContent=r.err||'';
+  pintaCaixa();
+});
+$('#caixaComandes').addEventListener('click',e=>{
+  const b=e.target.closest('[data-obre]');if(!b)return;
+  obreComanda(b.dataset.obre);pintaCaixa();
+});
+$('#btnMov').addEventListener('click',()=>{
+  const r=posaACaixa($('#movSoci').value,$('#movEur').value,$('#movNota').value);
+  if(r.err){$('#movAvis').textContent=r.err;return;}
+  $('#movAvis').textContent='';$('#movEur').value='0';$('#movNota').value='';
+  pintaCaixa();
+});
+$('#movs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-treu]');if(!b)return;
+  treuMoviment(b.dataset.treu);pintaCaixa();
+});
 
 $('#tCistella').addEventListener('change',e=>{
   const i=e.target.closest('[data-q]');if(!i)return;
@@ -1284,7 +1619,12 @@ window.__COMPRA={G,PRODUCTES,PRODUCTORS,DINAMIQUES,TRAMS,FONTS,UNITATS,CICLES,
   PREUS_REVISIO,LLARS_DEFECTE,perId,compta,cistellaPerDefecte,despesa,cistellaGrup,
   personesTotals,desequilibri,perQueNo,tramDe,tramSeguent,comandaDe,valLaPena,
   estalvi,perSoci,nouSoci,treuSoci,posaPreu,preuGrup,preuBotiga,grupPerDefecte,
-  desa,carrega,pinta,sel:id=>{sociSel=id;pinta();},CLAU,
+  desa,carrega,pinta,pintaCaixa,sel:id=>{sociSel=id;pinta();},CLAU,
+  /* La caixa. `G` es reassigna a `grupPerDefecte`, o sigui que l'estat es dona
+     per funció i no per referència: les proves han de veure el que veu la
+     pàgina, no una foto vella. */
+  MOVIMENT_CAMPS,repartComanda,tancaComanda,obreComanda,posaACaixa,treuMoviment,
+  movimentsDe,compteDe,caixaGrup,estat:()=>G,
   MAPA,OMPLE,FA,quiOmple,rolPle,posaRol,lliuraments,analisi,
   APORTS,PES,PERFIL_CLAU,CAL,MEU,aport,encaix,encaixos,elMeu,agafaRol,
   llegeixPerfil,desaPerfil,commutaAport};

@@ -773,6 +773,11 @@ a{color:var(--blue);text-decoration:none}
 /* El cromo com a imatge de perfil: rodó, amb el color del tier que ja porta
    dibuixat a dins, i sense cap vora afegida —la vora és part del cromo. */
 .cromo-av{display:block;border-radius:50%;flex-shrink:0}
+/* El forat de l'avatar, allà on el canvas encara no hi és. No és un
+   marcador de posició buit: ja porta el degradat i la vora del tier, o sigui
+   que si el dibuix no arriba, el que es queda diu el mateix. */
+.cm-av,.rk-av{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;font-weight:700;font-size:.72rem;color:#fff;overflow:hidden}
+.rk-av{width:30px;height:30px;font-size:.62rem}
 /* El mapa de rols: el que tens es llegeix, el que no es veu que és a l'abast.
    Apagar-los del tot els faria semblar prohibits, i no ho són: són el camí. */
 .rol-mapa{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.4rem;margin:.8rem 0;text-align:left}
@@ -6796,6 +6801,10 @@ const HERO_NAMES=CANONICAL_HEROES.map(h=>h.name);
      Llegenda ≈ centenars · infraestructura humana */
 const CROMO_TIERS=[{min:0,label:'Aprenent',color:'#c7c7d1',bg:'linear-gradient(135deg,#3a3a48,#22222a)'},{min:40,label:'Bronze',color:'#cd7f32',bg:'linear-gradient(135deg,#5a3a20,#3a2410)'},{min:150,label:'Plata',color:'#c0c0c0',bg:'linear-gradient(135deg,#4a4a58,#2a2a35)'},{min:450,label:'Or',color:'#ffd700',bg:'linear-gradient(135deg,#5a4a10,#3a3006)'},{min:1100,label:'Llegenda',color:'#e040fb',bg:'linear-gradient(135deg,#4a1055,#28082a)'}];
 const cromoTier=score=>CROMO_TIERS.slice().reverse().find(t=>score>=t.min)||CROMO_TIERS[0];
+/* Un to derivat del nom. Serveix per als **herois canònics** —personatges de
+   ficció, que no tenen cromo ni tier perquè no han aportat res— i no per a la
+   gent: allà el color el diu el tier, i tenir-ne dos de diferents al mateix
+   cercle era la veda 121 un altre cop. Cap altra crida que aquesta. */
 function _colorFromName(name){let h=0;for(let i=0;i<name.length;i++){h=(h*31+name.charCodeAt(i))>>>0;}const hue=h%360;return 'hsl('+hue+',65%,45%)';}
 function _initialsOf(name){return (name||'?').split(/\s+/).slice(0,2).map(s=>s.charAt(0).toUpperCase()).join('')||'?';}
 // Reptes de nivell (gamification). Cada tier té reptes concrets que desbloquen el següent.
@@ -6845,7 +6854,11 @@ function superheroCromo(nameOrKey){
   const godKey=(ch&&ch.archetype)||((dos&&(dos.declared||[])[0])||null);
   const god=godKey&&PANTHEON12[godKey]?Object.assign({key:godKey},PANTHEON12[godKey]):null;
   return{
-    name:p.name,key:p.key,initials:_initialsOf(p.name),color:_colorFromName(p.name),
+    /* Aquí hi havia un `color` tret del hash del nom, i el pintava el roster
+       just al costat de `tier.color`. El color del tier es guanya; el del hash
+       no vol dir res, i el que es veia gros era el que no deia res. Fora: el
+       cromo no reparteix cap color que no sigui el del tier. */
+    name:p.name,key:p.key,initials:_initialsOf(p.name),
     alias:(ch&&ch.alias)||'',motto:(ch&&ch.motto)||'',origin:(ch&&ch.origin)||'',
     character:ch,god,founder:godKey?founderOf(godKey):null,
     dossier:dos,dossierPct:dossierCompleteness(dos).pct,
@@ -7210,13 +7223,23 @@ function openComandoView(){
     '<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;margin:.5rem 0 1rem;overflow:hidden"><div style="height:100%;width:'+Math.max(0.5,pct)+'%;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);border-radius:5px"></div></div>'+
     (roster.length>rec?'<p class="m-sub" style="margin:-.4rem 0 .8rem">'+(roster.length-rec)+' fitxa'+(roster.length-rec===1?'':'es')+' encara sense cap aportació signada. No compten, i està bé que no comptin.</p>':'');
   const rosterBox=bg.querySelector('#cmRoster'),labelBox=bg.querySelector('#cmRosterLbl');
+  /* El forat on anirà el canvas. Es deixa marcat amb l'índex del roster i es
+     omple després de posar l'HTML, perquè un canvas no es pot escriure dins
+     d'una cadena. Mentre no s'omple, el que es veu ja és el color del tier: si
+     el dibuix fallés, el que quedaria seguiria dient la veritat. */
+  const avBuit=(c,i,px)=>'<span class="cm-av" data-av="'+i+'" data-av-px="'+px+'" style="width:'+px+'px;height:'+px+'px;background:'+c.tier.bg+';border:2px solid '+c.tier.color+'">'+esc(c.initials)+'</span>';
+  const avOmple=box=>box.querySelectorAll('[data-av]').forEach(sp=>{
+    const c=roster[Number(sp.dataset.av)];if(!c)return;
+    try{const cv=cromoAvatar(c,Number(sp.dataset.avPx)||44);sp.textContent='';sp.style.border='0';sp.appendChild(cv);}
+    catch(e){}
+  });
   // Vista pel·lícula: cromos cinematogràfics (balanç obrir/tallar, tier, XP, superpoders resum)
-  const renderFilm=()=>roster.length?roster.slice(0,60).map(c=>{
+  const renderFilm=()=>roster.length?roster.slice(0,60).map((c,i)=>{
     const shPct=c.shakti+c.shiva>0?Math.round(c.shakti*100/(c.shakti+c.shiva)):50;
     const lvlPct=c.level&&c.level.next?c.level.pctToNext:100;
     const nextLbl=c.level&&c.level.next?c.level.next.label:'màxim';
     return '<div class="ent-card" data-cromo="'+esc(c.name)+'" style="cursor:pointer;padding:0;overflow:hidden;background:'+c.tier.bg+';border:2px solid '+c.tier.color+';border-radius:12px">'+
-      '<div style="padding:.7rem .8rem;display:flex;align-items:center;gap:.6rem"><div style="width:44px;height:44px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(c.initials)+'</div><div style="min-width:0;flex:1"><div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · XP '+c.score+'</div></div></div>'+
+      '<div style="padding:.7rem .8rem;display:flex;align-items:center;gap:.6rem">'+avBuit(c,i,44)+'<div style="min-width:0;flex:1"><div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · XP '+c.score+'</div></div></div>'+
       '<div style="padding:0 .8rem"><div style="height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+lvlPct+'%;background:'+c.tier.color+'"></div></div><div style="font-size:.55rem;color:var(--muted);margin-top:.1rem;text-align:right">→ '+esc(nextLbl)+'</div></div>'+
       '<div style="padding:.3rem .8rem"><div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;position:relative"><div style="height:100%;background:linear-gradient(90deg,#00e676 0%,#00e676 '+shPct+'%,#ff5252 '+shPct+'%,#ff5252 100%)"></div></div><div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--muted);margin-top:.15rem"><span>obrir '+Math.round(c.shakti*100)+'</span><span>tallar '+Math.round(c.shiva*100)+'</span></div></div>'+
       '<div style="padding:.4rem .8rem 0"><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Superpoders</div><div style="display:flex;flex-wrap:wrap;gap:.2rem">'+(c.superpowers.length?c.superpowers.map(s=>'<span style="background:rgba(99,102,241,.2);color:var(--indigo);padding:.1rem .4rem;border-radius:10px;font-size:.62rem">'+esc(s.cat)+'</span>').join(''):'<span style="font-size:.6rem;color:var(--muted);opacity:.6">encara cap</span>')+'</div></div>'+
@@ -7225,14 +7248,14 @@ function openComandoView(){
     '</div>';
   }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
   // Vista fitxa: skills + recursos + projectes de cada personatge (agregat sobre tot l'ecosistema)
-  const renderFitxa=()=>roster.length?roster.slice(0,40).map(c=>{
+  const renderFitxa=()=>roster.length?roster.slice(0,40).map((c,i)=>{
     const sheet=characterSheetOf(c.name);
     const skillsHtml=c.superpowers.length?c.superpowers.map(s=>'<span class="cm-fitxa-tag" style="background:rgba(99,102,241,.18);color:var(--indigo);border-color:var(--indigo)">'+esc(s.cat)+' ×'+s.count+'</span>').join(''):'<span class="cm-fitxa-empty">encara cap skill</span>';
     const resHtml=(sheet.offers.length||sheet.objects.length)?(sheet.offers.slice(0,4).map(o=>'<span class="cm-fitxa-tag" style="background:rgba(0,230,118,.15);color:var(--green);border-color:var(--green)" title="'+esc(o.node)+' · '+o.kind+'">'+esc((o.title||o.category).slice(0,24))+'</span>').join('')+sheet.objects.slice(0,3).map(o=>'<span class="cm-fitxa-tag" style="background:rgba(0,176,255,.15);color:var(--blue);border-color:var(--blue)" title="'+esc(o.node)+'">🔧 '+esc(o.name.slice(0,20))+'</span>').join('')):'<span class="cm-fitxa-empty">cap oferta/objecte</span>';
     const projHtml=sheet.projects.length?sheet.projects.slice(0,6).map(p=>'<span class="cm-fitxa-tag" style="background:rgba(224,64,251,.15);color:var(--purple);border-color:var(--purple)" title="'+esc(p.dynamicType||'projecte')+'">'+esc(p.nodeName)+'</span>').join(''):'<span class="cm-fitxa-empty">cap projecte</span>';
     const ventHtml=sheet.ventures.length?sheet.ventures.slice(0,4).map(v=>'<span class="cm-fitxa-tag" style="background:rgba(255,145,0,.15);color:var(--orange);border-color:var(--orange)" title="'+esc(v.stage)+' · '+esc(v.nodeName)+'">🌱 '+esc(v.name)+'</span>').join(''):'';
     return '<div class="ent-card cm-fitxa" data-cromo="'+esc(c.name)+'" style="cursor:pointer;border:2px solid '+c.tier.color+'">'+
-      '<div class="cm-fitxa-hd"><div style="width:40px;height:40px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(c.initials)+'</div><div style="min-width:0;flex:1"><div style="font-weight:700;font-size:.95rem">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · '+c.hours+'h · '+c.communities+' comunitats</div></div></div>'+
+      '<div class="cm-fitxa-hd">'+avBuit(c,i,40)+'<div style="min-width:0;flex:1"><div style="font-weight:700;font-size:.95rem">'+esc(c.name)+'</div><div style="font-size:.7rem;color:'+c.tier.color+';font-weight:600">'+c.tier.label+' · '+c.hours+'h · '+c.communities+' comunitats</div></div></div>'+
       '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🧠 Skills (superpoders)</div><div class="cm-fitxa-body">'+skillsHtml+'</div></div>'+
       '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🔧 Recursos (ofertes · objectes)</div><div class="cm-fitxa-body">'+resHtml+'</div></div>'+
       '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🏘 Projectes on és membre</div><div class="cm-fitxa-body">'+projHtml+'</div></div>'+
@@ -7243,6 +7266,7 @@ function openComandoView(){
   const paint=()=>{
     labelBox.textContent=mode==='film'?'Cromos de la tribu':'Fitxes de personatge';
     rosterBox.innerHTML=mode==='film'?renderFilm():renderFitxa();
+    avOmple(rosterBox);
     rosterBox.style.gridTemplateColumns=mode==='film'?'repeat(auto-fill,minmax(180px,1fr))':'repeat(auto-fill,minmax(260px,1fr))';
     rosterBox.querySelectorAll('[data-cromo]').forEach(el=>el.onclick=()=>{closeModal();openPersonProfile(el.dataset.cromo);});
   };
@@ -9978,8 +10002,15 @@ function _tierColors(tier){
    guanyes.** El tier, les hores i les comunitats no s'editen —surten del que
    has aportat i ho verifica algú altre—; el que sí que és teu és l'àlies, i és
    el que obre el botó d'editar. */
-function cromoAvatar(nameOrKey,size){
-  const S=Math.max(24,Number(size)||64),c=superheroCromo(nameOrKey);
+/* Accepta un **cromo ja calculat** o un nom. No és comoditat: `superheroCromo`
+   crida `personProfile`, que recorre tots els nodes i tots els llibres, i el
+   roster ja l'ha pagat per a tothom abans de pintar res. Demanant-lo pel nom,
+   dibuixar seixanta avatars el tornaria a calcular seixanta cops per no res.
+   Mesurat: amb el cromo fet, seixanta avatars costen ~8 ms i no creixen amb la
+   xarxa; `comandoRoster()` en costa 155 amb 300 persones i 1.774 amb 1.000. */
+function cromoAvatar(cromoOrName,size){
+  const S=Math.max(24,Number(size)||64);
+  const c=(cromoOrName&&typeof cromoOrName==='object'&&cromoOrName.tier)?cromoOrName:superheroCromo(cromoOrName);
   const k=2,cv=document.createElement('canvas'),R=S*k;
   cv.width=R;cv.height=R;cv.style.width=S+'px';cv.style.height=S+'px';
   const x=cv.getContext('2d'),cols=_tierColors(c.tier);
@@ -10005,7 +10036,13 @@ function cromoImage(nameOrKey,opts){
   x.fillStyle=g;x.fillRect(0,0,W,H);
   x.strokeStyle=c.tier.color;x.lineWidth=8;x.strokeRect(6,6,W-12,H-12);
   x.textAlign='center';
-  x.beginPath();x.arc(W/2,168,72,0,Math.PI*2);x.fillStyle=c.color;x.fill();
+  /* El mateix cercle que la imatge de perfil, i pel mateix motiu: el degradat
+     i la vora són els del tier. Amb el color del hash, el cartell que et baixes
+     i la rodona de dalt eren de dues persones diferents. */
+  const gp=x.createLinearGradient(W/2-72,96,W/2+72,240);
+  gp.addColorStop(0,cols[0]);gp.addColorStop(1,cols[1]);
+  x.beginPath();x.arc(W/2,168,72,0,Math.PI*2);x.fillStyle=gp;x.fill();
+  x.lineWidth=4;x.strokeStyle=c.tier.color;x.stroke();
   x.fillStyle='#fff';x.font='600 58px system-ui,sans-serif';x.textBaseline='middle';
   x.fillText(c.initials,W/2,172);
   x.textBaseline='alphabetic';
@@ -15923,11 +15960,21 @@ function renderGent(w){
     const card=el('div','ent-card');
     sc.files.slice(0,20).forEach((p,i)=>{
       const r=el('div','rk-row');r.style.cursor='pointer';
+      /* El cromo de qui hi surt. Vint files: mesurat, entre 9 i 45 ms segons
+         com de gran sigui la xarxa —el gruix és `superheroCromo`, no el
+         canvas—, així que un punt de color en comptes de l'avatar s'estalviaria
+         la meitat barata i deixaria la cara fora. Si el dibuix falla, la fila
+         es queda sense rodona i amb el nom: mai una rodona que menteixi. */
+      let cr=null;try{cr=superheroCromo(p.name);}catch(e){}
+      const tier=(cr&&cr.tier)||cromoTier(0);
       r.innerHTML=(sc.ranquing?'<span class="rk-pos'+(i<3?' top':'')+'">'+(i+1)+'</span>':'<span class="rk-pos flat">·</span>')+
+        '<span class="rk-av" style="background:'+tier.bg+';border:2px solid '+tier.color+'">'+esc(_initialsOf(p.name))+'</span>'+
         '<span class="rk-main"><span class="rk-nm">'+esc(p.name)+
         (p.reciprocitat<.8?' <span class="ent-b b-unver">poc recíproc</span>':'')+'</span>'+
         '<span class="rk-why">'+esc(p.perque)+'</span></span>'+
         (sc.ranquing?'<span class="rk-pts">'+p.punts+'</span>':'');
+      const hole=r.querySelector('.rk-av');
+      if(hole&&cr){try{const cv=cromoAvatar(cr,30);hole.textContent='';hole.style.border='0';hole.appendChild(cv);}catch(e){}}
       r.onclick=()=>openPersonProfile(p.name);
       card.appendChild(r);
     });
