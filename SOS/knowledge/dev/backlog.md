@@ -882,37 +882,49 @@ propi quan toqui; aquí queda anotat perquè no es perdi.
 
 ### Una miniapp per cada tipus de projecte d'un poble
 
-**On som.** El catàleg té **12 tipus de dinàmica** i quatre tenen eina pròpia
-fora de l'app: `vna.html` (mapeig), `compra.html` (grup de consum i compra
-col·lectiva), `energia.html` (comunitat energètica) i `joc.html` (que és una
-altra cosa). `matriu.html` explica
-el model, no el fa servir. La resta viuen dins de `SOS/index.html`, que sap
-comptar-ne el valor però no sap **fer la feina concreta** de cadascuna.
+**El criteri, corregit.** Aquest bloc deia que el banc de temps i la biblioteca
+de les coses estaven pendents, i **era fals**: totes dues estan fetes des de fa
+temps *dins de l'app*, amb pestanya pròpia (`renderBancTemps`,
+`renderBiblioteca`) i el cicle sencer — ofertes i demandes, creuament
+(`findMatches`), saldo (`memberBalance`) i registre d'intercanvi signat
+(`exchangeHours`) per al banc; reserva, préstec, retard, desgast, donació,
+reparació i estadística circular (`reserveObject`, `lendObject`, `dueStatus`,
+`recordLoanWear`, `recordDonation`, `logRepair`, `circularStats`) per a la
+biblioteca. Escriure-les com a pendents era exactament la mena d'afirmació
+caducada que la resta d'aquest repositori existeix per evitar.
 
-**Per què importa i no és una llista de desitjos.** Una miniapp per tipus és el
-que converteix el SOS d'una comptabilitat en una eina: al grup de consum, la
-diferència entre «apunta les teves hores» i «aquí tens la comanda per productor
-amb els mínims i el sobrant de format» és si el grup l'obre cada setmana o no.
-El que fa que valgui la pena és que cada miniapp **lliuri fluxos del mapa de
-valor de la seva dinàmica** —com fa `FA` a La Compra—, no que sigui una
-calculadora amb un nom a sobre.
+La correcció canvia el criteri, i val la pena dir-lo bé: **el que decideix si
+una dinàmica necessita pàgina pròpia no és si té eina, sinó a qui serveix.**
 
-**Feta:** ⚡ **Comunitat energètica** → `SOS/energia.html`. Els coeficients amb la
-comparació dels tres repartiments, l'estalvi separat entre el que no compres i
-el que véns, l'amortització neta i el tràmit amb de qui depèn cada pas. La
-troballa que la justifica: dues llars amb el mateix coeficient amortitzen en
-4,3 i 7,8 anys segons l'horari. Veda 129.
+- **Dins de l'app** va el que es fa **quan ja hi ets**: apuntar hores, prestar
+  un trepant, tancar un intercanvi. Ho fa qui té sessió i context.
+- **Pàgina pròpia** té el que ha de **fer una feina abans que ningú s'apunti a
+  res**: La Compra dona la comanda per productor amb els mínims; L'Energia dona
+  els coeficients i l'amortització. Són portes d'entrada que resolen alguna
+  cosa el primer dia, i per això valen la pena com a fitxer a part.
 
-**Pendents, per ordre de necessitat real al territori:**
+Amb aquest criteri, el banc de temps i la biblioteca **no necessiten pàgina**:
+la seva feina és de dins, i ja hi és.
 
-| Dinàmica | Rols | La feina que la miniapp ha de fer, i que avui no fa ningú |
+**Fet, i on:**
+
+| Dinàmica | On viu | Què fa |
 |---|---|---|
-| 🏠 **Habitatge en cessió d'ús** | 6 | El càlcul de la quota, l'aportació inicial retornable i què passa si algú marxa — que és la conversa que ningú té fins que passa |
-| 🤝 **Suport mutu / cures veïnals** | 6 | El quadre de qui acompanya qui i quan, amb el que la veda diu: **avisar de sobrecàrrega abans que passi**, no comptar-la després |
-| ⏳ **Banc de temps** | 7 | El taulell d'ofertes i demandes amb el creuament d'àmbits, i el saldo d'hores llegible sense obrir el llibre |
-| 🧰 **Biblioteca de les coses** | 7 | Reserves, préstecs, retards i desgast: el cicle sencer d'un objecte, que avui es porta a mà |
-| 🛠 **Cooperativa de treball** | 6 | Les llesques del Slicing Pie vistes com les veu una sòcia treballadora, i el llindar de sostenibilitat |
-| 🏘 **Cens d'entitats** | 5 | Ja hi ha `online.html` com a directori; el que falta és **l'alta i la fitxa** des del territori, no només la consulta |
+| ⏳ **Banc de temps** | pestanya de l'app | Ofertes i demandes, creuament, saldo d'hores i registre d'intercanvi signat |
+| 🧰 **Biblioteca de les coses** | pestanya de l'app | Reserva, préstec, retard, desgast, donació, reparació i estadística circular |
+| 🕸 **Mapeig de xarxa de valor** | `vna.html` | El mapa amb rols i intercanvis, i on hi encaixa cadascú |
+| 🥬🛒 **Consum agroecològic i compra col·lectiva** | `compra.html` | Cistella del 80%, comanda per productor amb mínims i formats, estalvi per causa i la caixa de cada llar |
+| ⚡ **Comunitat energètica** | `energia.html` | Coeficients amb els tres repartiments comparats, estalvi separat, amortització neta i el tràmit amb de qui depèn cada pas. Veda 129 |
+| 🌱 **MATRIU** | app + `matriu.html` | La incubadora dins, i el model explicat fora |
+
+**Pendents, amb el criteri de dalt aplicat:**
+
+| Dinàmica | Rols | Què falta, i de quina mena |
+|---|---|---|
+| 🏠 **Habitatge en cessió d'ús** | 6 | **Pàgina pròpia.** La quota, l'aportació inicial retornable i què passa si algú marxa — la conversa que ningú té fins que passa, i que decideix si el projecte és viable abans de constituir res |
+| 🤝 **Suport mutu / cures veïnals** | 6 | **Dins de l'app.** El quadre de qui acompanya qui i quan, i sobretot **avisar de sobrecàrrega abans que passi**, no comptar-la després. Té mig camí fet a `bombaDisco` i `fadedPeople` |
+| 🛠 **Cooperativa de treball** | 6 | **Dins de l'app.** Les llesques del Slicing Pie vistes com les veu una sòcia treballadora, no com les veu la incubadora |
+| 🏘 **Cens d'entitats** | 5 | **A `online.html`**, que ja és el directori: el que falta és l'**alta i la fitxa** des del territori, no només la consulta |
 
 **Tres regles que valen per a totes** (i que surten del que ja ha passat amb La
 Compra):
@@ -925,10 +937,13 @@ Compra):
 - **Cap miniapp cobra ni confirma un cobrament.** El compte sí; el cobrament,
   mai — i el vocabulari ho ha de dir («posar a la caixa», «declarat»).
 
-**Estimació honesta**: cadascuna és de la mida de La Compra (una tanda de feina
-sencera amb el seu model, la seva guarda i les seves proves). No es poden fer
-totes de cop, i fer-les a mitges és pitjor que no fer-les: una eina que no
-resol la feina de la setmana no la torna a obrir ningú.
+**Estimació honesta**: una pàgina pròpia és de la mida de La Compra o de
+L'Energia — una tanda de feina sencera amb el seu model, la seva guarda i les
+seves proves. El que va dins de l'app és més curt, però hi ha el sostre de KISS
+a sobre (`SOS/index.html` és al 96%) i cada afegit hi ha d'anar amb la pujada
+de sostre justificada al commit. No es poden fer totes de cop, i fer-les a
+mitges és pitjor que no fer-les: una eina que no resol la feina de la setmana
+no la torna a obrir ningú.
 
 ### Molekulandia · el poble on cada edifici és un projecte del SOS
 
