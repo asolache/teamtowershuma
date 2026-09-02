@@ -704,6 +704,46 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 121 — Una foto la tries; el cromo te'l guanyes
+
+La imatge de perfil de l'app eren **dues inicials en un cercle**, i el Comando ja
+tenia un cromo que surt del que has aportat i que algú ha verificat. Dues coses
+dient qui ets, i la que sortia a totes les pantalles era la que no diu res.
+
+Ara la imatge de perfil **és el cromo**: al distintiu de dalt i a la capçalera del
+perfil, i tocant-la s'obre el cromo, que és on s'edita.
+
+La decisió que la fa útil és no haver fet la miniatura del cartell. A trenta
+píxels, un cartell de 600×840 és una taca. El que es dibuixa és **la mateixa
+identitat a la mida que es llegeix**: el degradat i el color del tier, i les
+inicials —les de l'àlies si n'hi ha—, tots tres sortits de `superheroCromo` i
+`_tierColors`, les mateixes funcions que dibuixen el cartell. El dia que algú
+pugi de tier, la rodona canvia de color el mateix dia que el cartell, i no perquè
+ho hagi recordat ningú. La prova ho comprova **llegint el píxel de la vora** i
+comparant-lo amb el `tier.color` que diu el model: una asserció sobre el que es
+veu, no sobre el codi que ho pinta.
+
+I el que calia dir en veu alta perquè el botó d'editar no menteixi:
+
+> **L'àlies, el lema i l'origen són teus i es canvien quan vulguis. El tier, les
+> hores i les comunitats no: surten del que has aportat i ho verifica algú
+> altre.**
+
+Per això la imatge de perfil és aquesta i no una foto —una foto la tries; això
+te la guanyes—, i per això «edita el cromo» porta al dossier i no a un selector
+de colors. Un botó que digués «edita» i deixés triar el tier convertiria tot el
+sistema de reputació en un formulari.
+
+De la mateixa peça, i és el que es va estar a punt d'oblidar: el distintiu de
+dalt **obria el perfil** i ara obre el cromo. Si el canvi s'hagués quedat aquí,
+el perfil s'hauria quedat sense cap camí des de la barra. El cromo porta els dos
+botons —al dossier i al perfil— i el perfil torna al cromo per la imatge: el
+cercle es tanca pels dos costats, i la prova recorre les dues voltes.
+
+I una regla petita que val per a qualsevol adorn: **si el cromo no es pot
+dibuixar, es torna a les inicials i el perfil s'obre igual.** Una il·lustració no
+pot ser mai el que impedeixi entrar a l'app ni veure les dades de ningú.
+
 ## Veda 120 — Un rol només pot demanar el que el mapa diu que lliura
 
 Els mapes de valor eren correctes i eren d'algú altre. El que frena la gent
