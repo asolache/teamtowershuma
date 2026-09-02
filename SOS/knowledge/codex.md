@@ -704,6 +704,88 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 125 — Un número que reparteix algú no és el teu número
+
+La pel·lícula del Comando va d'un reclutament de 150.000 superherois i cadascú té
+el seu número. La manera òbvia de fer-ho és un comptador en un servidor: el
+primer que s'apunta és l'1. És mentida per tres motius alhora, i cadascun sol ja
+n'hi hauria prou:
+
+- **Hi ha d'haver un amo que el reparteix.** Tota la resta de l'app existeix per
+  no necessitar-ne cap.
+- **Es guanya escrivint un nom.** És la mètrica de vanitat que la veda de la V79
+  va treure de la portada, tornant per la porta del darrere i amb una història
+  al davant perquè fes més gràcia.
+- **El dia que el servidor caigui no hi ha número enlloc**, i el que la gent
+  s'havia après de memòria deixa d'existir.
+
+Aquí **el número no l'assigna ningú: es dedueix.** És la posició en una llista
+pública i append-only —el registre que ja existia— i qualsevol la refà des de
+zero amb el mateix resultat. Cinc decisions el sostenen:
+
+- **L'alta és un compromís, no una identitat.** `sha256('sos-alta-v1' | did:sos |
+  hash de la primera aportació signada i encadenada)`, retallat. Ni el did ni
+  l'apunt surten del dispositiu.
+- **Es guanya amb evidència.** Signatura *i* encadenat. Sense les dues coses no
+  hi ha número, i no n'hi ha cap de provisional: **un número que canvia és pitjor
+  que cap número**, perquè algú ja l'haurà dit en veu alta.
+- **L'ordre és el de publicació.** Les `ts` d'un apunt les escriu qui vulgui; en
+  quina versió va sortir un compromís, no. Per això les altes són un **delta**
+  amb la seva posició de sortida (`altesAbans`) dins de l'arrel signada:
+  endarrerir un apunt no acosta ningú al número 1, només el deixa fora de la
+  versió on hauria volgut ser.
+- **Dins d'una versió mana la dada i no qui la munta.** Ordre per data i, a
+  igualtat, pel compromís. Dos que publiquin el mateix estat treuen la mateixa
+  llista; si no, hi ha forquilla i s'ha de veure.
+- **No es desa enlloc.** Es dedueix cada cop que es mira, i la guarda ho vigila:
+  un número desat és un número que un dia divergirà del registre.
+
+I la frase que va al prompt de les dues IA de guió perquè és l'error que
+cometen soles: **el número no és un rànquing.** És ordre de reclutament, no de
+mèrit. Qui té el 12 no ha fet més que qui té el 40.000; hi va arribar abans.
+
+### El que revela, i que no s'amaga
+
+Les fulles del registre —el hash de cada apunt— són públiques a posta: és el que
+fa possible la prova d'inclusió. Vol dir que **qui ja tingui el teu `did:sos` pot
+trobar-hi el teu número**. No es pot evitar sense trencar el que ho fa útil, que
+és que qualsevol ho pugui verificar sense demanar permís, i el qui té el teu did
+és qui tu li has donat. Està escrit al README i és una asserció de la prova, no
+una nota al peu: la propietat certa és que **del registre sol no se'n treu
+ningú**, no que sigui anònim contra tothom.
+
+### El cost, calculat i no promès
+
+La pregunta abans de sortir a fora era què costa això quan siguin 150.000. Amb
+la mesura sobre el paquet de debò (`pesRegistre()`), no amb una estimació:
+
+| | mida | cost |
+|---|---|---|
+| una alta | 26 bytes | — |
+| una versió, fins a ~3.900 altes | < 100 KiB | **0 €** |
+| els 150.000 sencers | 3,72 MB en 39 versions | **0 €** |
+| els 150.000 pagant-ho tot a tarifa | 3,72 MB | **0,09 $** |
+
+La peça que ho decideix és que **Turbo/ArDrive no cobra per sota de 100 KiB**: si
+cada versió hi cap, el registre sencer no costa res mai. I la xifra de seguretat
+és la de la darrera fila —encara ignorant el llindar, tot el Comando val nou
+cèntims—, que és el que fa que això no depengui de la caritat de ningú.
+
+Tres coses que la taula no diu i que van al README:
+
+- **El que creix no són les altes, són les fulles**: pugen amb l'activitat de la
+  xarxa, i el dia que una versió passi de 100 KiB la pantalla ho dirà amb la
+  xifra en comptes de deixar-ho descobrir a la factura.
+- **Gratis no és per sempre garantit**: el llindar és la decisió d'un proveïdor.
+  L'ordre de magnitud, sí.
+- **A qui es dona d'alta no li costa res**, i no com a oferta sinó com a
+  propietat: el compromís es calcula al seu navegador i no puja res des del seu
+  dispositiu. Ni compte, ni cartera, ni clau.
+
+El preu porta data i font a sobre —24,7 $/GiB, setembre de 2026— per la mateixa
+raó que la taula de La Compra, i la guarda ho comprova: una xifra de diners sense
+data menteix en silenci al cap d'un any.
+
 ## Veda 124 — La caixa és el que trenca els grups, i no es pot fer amb paraules d'un cobrament
 
 `SOS/compra.html` calculava què costa la comanda i qui s'estalvia què, i després

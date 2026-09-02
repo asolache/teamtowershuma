@@ -773,6 +773,8 @@ a{color:var(--blue);text-decoration:none}
 /* El cromo com a imatge de perfil: rodó, amb el color del tier que ja porta
    dibuixat a dins, i sense cap vora afegida —la vora és part del cromo. */
 .cromo-av{display:block;border-radius:50%;flex-shrink:0}
+.cr-num{font-family:var(--mono);font-size:1.7rem;font-weight:700;line-height:1.1;color:var(--indigo)}
+.cr-num span{font-size:.8rem;font-weight:600;color:var(--muted);margin-left:.3rem}
 /* El forat de l'avatar, allà on el canvas encara no hi és. No és un
    marcador de posició buit: ja porta el degradat i la vora del tier, o sigui
    que si el dibuix no arriba, el que es queda diu el mateix. */
@@ -3957,6 +3959,7 @@ function wireDossierBlocks(bg,d,p,opts){
       (ch.motto?'<div class="ch-motto">«'+esc(ch.motto)+'»</div>':'')+
       (g?'<div class="ent-badges"><span class="ent-b b-ver">'+g.ic+' '+esc(g.name)+'</span>'+(f?'<span class="ent-b">llinatge de '+esc(f.hero)+'</span>':'')+'</div>':'')+
       (ch.origin?'<div class="ch-sec">Origen</div><div class="ent-desc">'+esc(ch.origin)+'</div>':'')+
+          (ch.incorporacio?'<div class="ch-sec">Incorporació al Comando</div><div class="ent-desc">'+esc(ch.incorporacio)+'</div>':'')+
       ((ch.powers||[]).length?'<div class="ch-sec">Poders</div>'+ch.powers.map(pw=>'<div class="ent-card"><div class="ent-nm">✦ '+esc(pw.name)+'</div><div class="ent-desc">'+esc(pw.what)+(pw.evidence?'<br><span style="opacity:.7">d\'on surt: '+esc(pw.evidence)+'</span>':'')+'</div></div>').join(''):'')+
       (ch.shadow?'<div class="ch-sec">Ombra</div><div class="ent-desc">'+esc(ch.shadow)+'</div>':'')+
       (ch.firstMission?'<div class="ch-sec">Primera missió</div><div class="ent-card" style="border-left:3px solid var(--green)"><div class="ent-desc">'+esc(ch.firstMission)+'</div></div>':'')+
@@ -3969,7 +3972,8 @@ function wireDossierBlocks(bg,d,p,opts){
     const box=q('CharOut');box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Llegint el teu material i construint el personatge…</span></div>';
     try{
       const draft=Object.assign({name},collect());
-      const ch=await AI.call('character_dossier',characterContext(name,draft));
+      let _alta=null;try{_alta=await altaDe(name);}catch(e){}
+      const ch=await AI.call('character_dossier',characterContext(name,draft,_alta));
       st.character=Object.assign({},ch,{ts:now(),by:'ia'});
       renderChar(st.character);
       // El que la IA detecta del CV entra com a proposta, mai directament.
@@ -4944,7 +4948,13 @@ function openNarrativeKit(prefill){
     const box=bg.querySelector('#nkResult');box.innerHTML='<div class="ai-note"><span class="ic">✨</span><span>Generant el kit narratiu…</span></div>';
     try{
       const ev=molekulonEvidence(members);
-      const r=await AI.call('narrative_kit',{name,members,challenge,mode,evidence:ev});
+      /* El número de cada personatge, si el té. Es demana un cop aquí i no
+         dins de l'intent: llegir el registre és xarxa, i si falla el kit s'ha
+         de poder generar igualment —sense números, dient-ho. */
+      const numeros={};
+      for(const nm of members){try{const a=await altaDe(nm);if(a.ok)numeros[nm]=a.numero;}catch(e){}}
+      const r=await AI.call('narrative_kit',{name,members,challenge,mode,evidence:ev,
+        numeros,comandoTarget:COMANDO_TARGET});
       const sec=(t,body,cls)=>'<div class="ent-grp-lbl">'+t+'</div><div class="ent-card"'+(cls?' style="'+cls+'"':'')+'><pre style="white-space:pre-wrap;font-family:inherit;margin:0">'+esc(body||'—')+'</pre></div>';
       box.innerHTML=(r.title?'<h3 style="margin:.4rem 0">📖 '+esc(r.title)+'</h3>':'')+
         sec('📄 Sinopsi de còmic',r.synopsis)+
@@ -5456,16 +5466,193 @@ async function verifyAnchorPack(pack){
    Aquest pack cobreix TOTES les accions del registre alhora, amb una arrel que
    depèn de cada hash d'apunt — si en canvia un, l'arrel canvia i l'ancoratge
    publicat deixa de quadrar. */
-async function buildRegisterPack(list,{parent}={}){
+/* ═══════════ El número del Comando · 150.000, i cap no el reparteix ═══════════
+   La pel·lícula va d'un reclutament de 150.000 superherois, i cadascú té el seu
+   número. La manera fàcil de fer-ho seria un comptador en un servidor: el
+   primer que s'apunta és l'1. Seria mentida per tres motius alhora —hi hauria
+   d'haver un amo que el reparteix, es guanyaria escrivint un nom, i el dia que
+   el servidor caigués no hi hauria número enlloc.
+
+   Aquí el número **no l'assigna ningú: es dedueix**. És la posició a una llista
+   pública i append-only —el registre que ja existeix— i qualsevol la pot
+   recalcular des de zero amb el mateix resultat.
+
+   · **L'alta és un compromís, no una identitat.** `sha256('sos-alta-v1' | did |
+     hash de la teva primera aportació signada i encadenada)`, retallat. Ni el
+     `did:sos` ni l'apunt surten mai del dispositiu; el que es publica no permet
+     saber qui ets ni què vas fer, però sí que tu demostris que aquell número és
+     el teu —tens les dues peces per refer-lo i ningú més les té.
+   · **El número es guanya amb evidència, no amb una alta.** Calen les dues
+     coses: signatura i encadenat. És la mateixa regla que el comptador dels
+     150.000 ja feia servir des de la V79, aplicada ara a l'ordre.
+   · **L'ordre és el de publicació, i per això no es pot falsejar.** Les `ts`
+     de qualsevol apunt les escriu qui les escriu; el que no es pot retocar és
+     en quina versió del registre va aparèixer un compromís. Cada versió porta
+     només les altes noves i quantes n'hi havia abans, així que la posició queda
+     fixada el dia que es publica. Endarrerir la data d'un apunt no t'acosta al
+     número 1: només et deixa fora de la versió on hauries volgut ser.
+   · **Dins d'una mateixa versió mana la dada i no qui la munta.** L'ordre és per
+     data de la primera aportació i, a igualtat, pel compromís. Dues persones
+     que publiquin el mateix estat han de treure exactament la mateixa llista;
+     si no, hi ha una forquilla i s'ha de veure.
+   · **Qui s'hi dona d'alta no paga res.** No hi ha compte, ni cartera, ni cap
+     pujada des del seu dispositiu: el compromís es calcula al navegador i entra
+     al registre que publica qui el publiqui. El cost de publicar és a
+     `pesRegistre()`, amb la xifra i la data.
+
+   I el que això NO és: **no és un rànquing.** L'ordre és de reclutament —quan
+   vas entrar—, no de mèrit. Qui té el número 12 no ha fet més que qui té el
+   40.000; hi va arribar abans. Presentar-ho com una classificació seria tornar
+   a la mètrica de vanitat que la V79 va treure de la portada. */
+const ALTA_V='sos-alta-v1';
+/* 22 caràcters de base64url ≈ 132 bits. Per a 150.000 altes, la probabilitat de
+   dues iguals és irrellevant; i cada caràcter de més són 150 KB de registre. */
+const ALTA_LLARG=22;
+async function altaCommitment(did,hash){
+  if(!did||!hash)return '';
+  return (await sha256(_te.encode(ALTA_V+'|'+did+'|'+hash))).slice(0,ALTA_LLARG);
+}
+/* La primera aportació signada i encadenada de cada `did` que hi hagi al
+   material. Sense signatura no hi ha qui ho digui, i sense encadenat no hi ha
+   res a què lligar el compromís. */
+function primeresAltes(list){
+  const primers={};
+  (list||ledgerIndex()).forEach(r=>{
+    if(!r.signed||!r.chained||!r.signer||!r.hash)return;
+    const p=primers[r.signer];
+    if(!p||(r.ts||'')<(p.ts||'')||((r.ts||'')===(p.ts||'')&&String(r.id)<String(p.id)))
+      primers[r.signer]={did:r.signer,ts:r.ts||'',id:r.id,hash:r.hash};
+  });
+  return Object.values(primers);
+}
+async function altesNoves(list,ja){
+  const vistes=new Set(ja||[]),out=[];
+  for(const p of primeresAltes(list)){
+    const c=await altaCommitment(p.did,p.hash);
+    if(c&&!vistes.has(c)){vistes.add(c);out.push({c,ts:p.ts});}
+  }
+  out.sort((a,b)=>(a.ts||'').localeCompare(b.ts||'')||a.c.localeCompare(b.c));
+  return out.map(x=>x.c);
+}
+/* Tot el que ja s'ha publicat, en l'ordre en què es va publicar. L'ordre de
+   l'índex ÉS el registre: reordenar-lo per data deixaria que una versió amb la
+   data endarrerida s'avancés a la cua, que és exactament el que això evita. */
+async function altesPublicades(versions){
+  let list=versions;
+  if(!list){try{list=(await registerIndex()).versions;}catch(e){list=[];}}
+  const out=[];
+  for(const v of list||[]){
+    let pack;try{pack=await (await fetch(REGISTRE_BASE+v.file,{cache:'no-store'})).json();}catch(e){continue;}
+    const ver=await verifyRegisterPack(pack);
+    if(!ver.ok)continue;                     // una versió que no quadra no numera ningú
+    (pack.altes||[]).forEach(c=>{if(out.indexOf(c)<0)out.push(c);});
+  }
+  return out;
+}
+/* El número d'un compromís. Torna també la versió que el porta: sense poder dir
+   on hi és, «ets el 4.217» és una afirmació que ningú pot comprovar. */
+async function numeroDe(commitment,versions){
+  const c=String(commitment||'').trim();
+  if(!c)return{ok:false,per:'cal el compromís d\'alta'};
+  let list=versions;
+  if(!list){try{list=(await registerIndex()).versions;}catch(e){list=[];}}
+  let abans=0;
+  for(const v of list||[]){
+    let pack;try{pack=await (await fetch(REGISTRE_BASE+v.file,{cache:'no-store'})).json();}catch(e){continue;}
+    const ver=await verifyRegisterPack(pack);
+    if(!ver.ok)continue;
+    const i=(pack.altes||[]).indexOf(c);
+    const base=typeof pack.altesAbans==='number'?pack.altesAbans:abans;
+    if(i>=0)return{ok:true,numero:base+i+1,de:COMANDO_TARGET,
+      ple:base+i+1>COMANDO_TARGET,cid:pack.cid,ts:pack.ts,versio:v.file||''};
+    abans=typeof pack.altesTotal==='number'?pack.altesTotal:base+(pack.altes||[]).length;
+  }
+  return{ok:false,per:'encara no ets a cap versió publicada del registre',publicades:abans};
+}
+/* L'alta d'una persona del meu material. El `did` surt dels seus propis apunts
+   signats: no me'l puc inventar jo, i per això una persona sense cap aportació
+   signada no té número —ni n'hi pot tenir cap de provisional, que seria pitjor
+   que no tenir-ne, perquè canviaria. */
+async function altaDe(nameOrKey){
+  const k=personKey(nameOrKey);
+  const meus=ledgerIndex().filter(r=>r.personKey===k&&r.signed&&r.chained&&r.signer&&r.hash)
+    .sort((a,b)=>(a.ts||'').localeCompare(b.ts||'')||String(a.id).localeCompare(String(b.id)));
+  if(!meus.length)return{ok:false,sense:true,
+    per:'encara no hi ha cap aportació signada i encadenada seva: el número surt de la primera'};
+  const c=await altaCommitment(meus[0].signer,meus[0].hash);
+  return Object.assign({compromis:c,primera:{ts:meus[0].ts,hash:meus[0].hash,que:meus[0].what||''}},
+    await numeroDe(c));
+}
+async function elMeuNumero(){
+  const id=await getIdentity();
+  const meus=ledgerIndex().filter(r=>r.signed&&r.chained&&r.signer===id.did&&r.hash)
+    .sort((a,b)=>(a.ts||'').localeCompare(b.ts||'')||String(a.id).localeCompare(String(b.id)));
+  if(!meus.length)return{ok:false,sense:true,did:id.did,
+    per:'encara no has signat i encadenat cap aportació: el número surt de la primera'};
+  const c=await altaCommitment(id.did,meus[0].hash);
+  return Object.assign({compromis:c,did:id.did,
+    primera:{ts:meus[0].ts,hash:meus[0].hash,que:meus[0].what||''}},await numeroDe(c));
+}
+
+/* ── Què costa publicar-ho ──────────────────────────────────────────────────
+   La pregunta que s'ha de poder contestar abans de sortir a fora, i amb un
+   número: si el registre dels 150.000 costés diners cada mes, això no duraria.
+
+   Arweave cobra una vegada i es queda. El preu va amb la seva data i la seva
+   font a sobre, com la taula de preus de La Compra i pel mateix motiu: una
+   xifra sense data menteix en silenci al cap d'un any. I la peça que ho
+   canvia tot és que **per sota de 100 KiB la pujada és gratuïta** (Turbo /
+   ArDrive, sense compte previ): si cada versió es manté per sota, el registre
+   sencer no costa res mai.
+
+   El càlcul, i no la promesa, és a `pesRegistre()`. */
+const ARWEAVE={
+  preu:24.7,moneda:'USD',per:'GiB',
+  data:'setembre de 2026',
+  font:'11,03 AR/GiB (arweavefees, juliol de 2026) × 2,24 $/AR (2 de setembre de 2026)',
+  gratis:102400,                          // 100 KiB · llindar de pujada gratuïta de Turbo
+  gratisNota:'Turbo/ArDrive: per sota de 100 KiB la pujada no costa res i no cal cap compte.'
+};
+function pesRegistre(pack){
+  const p=pack||{},altes=p.altes||[];
+  const bytes=_te.encode(JSON.stringify(p)).length;
+  /* El cost per alta es mesura del paquet de debò, no s'estima: si demà el
+     compromís es fa més llarg, la projecció dels 150.000 canvia sola. */
+  const perAlta=altes.length?_te.encode(JSON.stringify(altes)).length/altes.length:ALTA_LLARG+3;
+  const base=Math.max(0,bytes-altes.length*perAlta);
+  const usd=b=>Math.round(b/(1024*1024*1024)*ARWEAVE.preu*10000)/10000;
+  const cabenGratis=Math.max(0,Math.floor((ARWEAVE.gratis-base)/perAlta));
+  const totBytes=Math.round(base+COMANDO_TARGET*perAlta);
+  return{
+    bytes,kib:Math.round(bytes/102.4)/10,altes:altes.length,
+    perAlta:Math.round(perAlta*10)/10,base:Math.round(base),
+    gratis:bytes<=ARWEAVE.gratis,cabenGratis,usd:usd(bytes),
+    /* La xifra que de debò es vol saber: tot el Comando. */
+    comando:{de:COMANDO_TARGET,bytes:totBytes,mib:Math.round(totBytes/1048576*100)/100,
+      usd:usd(totBytes),versions:Math.max(1,Math.ceil(COMANDO_TARGET/Math.max(1,cabenGratis)))}
+  };
+}
+
+async function buildRegisterPack(list,{parent,altesJa}={}){
   const acts=(list||ledgerIndex()).slice().sort((a,b)=>(a.ts||'').localeCompare(b.ts||'')||String(a.id).localeCompare(String(b.id)));
   const leaves=acts.map(x=>x.hash||('unhashed:'+x.nodeId+':'+x.id));
   const t=ledgerTotals(acts);
+  /* Les altes són un **delta**: només les que encara no eren publicades. És el
+     que fixa el número el dia de la publicació i el que manté cada versió
+     petita —i per sota dels 100 KiB, gratuïta. */
+  const ja=altesJa||[];
+  const altes=await altesNoves(acts,ja);
   const pack={
     v:1,type:'sos-register-pack',
     scope:{nodes:t.nodes,persones:t.persones,accions:acts.length},
     totals:{hores:t.hores,euros:t.euros,signats:t.signats,encadenats:t.encadenats},
     root:leaves.length?await sha256(_te.encode(leaves.join(':'))):'',
-    leaves,parent:parent||null,ts:now(),app:'sos-teamtowers'
+    leaves,
+    altes,altesAbans:ja.length,altesTotal:ja.length+altes.length,
+    /* L'arrel de les altes porta la posició de sortida a dins: així no es pot
+       moure una alta d'una versió a una altra sense trencar la verificació. */
+    altesRoot:altes.length?await sha256(_te.encode(ja.length+':'+altes.join(':'))):'',
+    parent:parent||null,ts:now(),app:'sos-teamtowers'
   };
   /* `parent` ha d'entrar ABANS de signar: el CID es calcula sobre tot el paquet
      menys el propi CID, així que afegir-hi un camp després invalida alhora la
@@ -5481,8 +5668,22 @@ async function verifyRegisterPack(pack){
   if(expected!==cid)return{ok:false,reason:'cid_mismatch',expected,got:cid};
   const root=(pack.leaves||[]).length?await sha256(_te.encode((pack.leaves||[]).join(':'))):'';
   if(root!==pack.root)return{ok:false,reason:'root_mismatch',expected:root,got:pack.root};
+  /* Les versions d'abans de les altes no en porten cap i segueixen sent
+     vàlides: comprovar-ho només quan hi són no és tolerància, és que una
+     versió antiga no menteix per no tenir un camp que encara no existia. */
+  const altes=pack.altes||[];
+  if(altes.length){
+    /* La forma i les repetides ABANS de l'arrel. Amb l'arrel primer, els tres
+       casos deien «altes_root_mismatch» i el motiu de debò no arribava mai a
+       sortir: un missatge que no distingeix res val el mateix que cap. */
+    const mal=altes.filter(c=>!/^[A-Za-z0-9_-]{22}$/.test(String(c)));
+    if(mal.length)return{ok:false,reason:'alta_mal_formada',got:mal[0]};
+    if(new Set(altes).size!==altes.length)return{ok:false,reason:'alta_repetida'};
+    const ar=await sha256(_te.encode((pack.altesAbans||0)+':'+altes.join(':')));
+    if(ar!==pack.altesRoot)return{ok:false,reason:'altes_root_mismatch',expected:ar,got:pack.altesRoot};
+  }
   const sig=await verifyRecord(rest);
-  return{ok:sig.ok,reason:sig.reason||'',cid,root};
+  return{ok:sig.ok,reason:sig.reason||'',cid,root,altes:altes.length};
 }
 function downloadAnchorPack(pack){
   const blob=new Blob([JSON.stringify(pack,null,2)],{type:'application/json'});
@@ -5694,11 +5895,14 @@ async function registerIndex(){
 }
 /* El sedàs abans de sortir, com a qualsevol paquet públic: si algun dia el
    registre portés res que sembli una persona, no es publica. */
-async function registerPublicPack({list,parent}={}){
+async function registerPublicPack({list,parent,altesJa}={}){
   /* Objecte i no `(list, parent)`: el cas normal és publicar-ho tot encadenant
      amb l'anterior, i amb dos posicionals això s'escriu `(null, cid)` — o pitjor,
      `(cid)`, que passa el CID com a llista i peta lluny d'aquí. */
-  const pack=await buildRegisterPack(list,{parent});
+  /* Les altes ja publicades es llegeixen del registre, no es passen a mà: una
+     versió que les ignorés tornaria a numerar gent que ja té número. */
+  const ja=altesJa||await altesPublicades();
+  const pack=await buildRegisterPack(list,{parent,altesJa:ja});
   const leak=verifyNoLeak(pack);
   if(!leak.ok)throw{code:'leak',msg:'El paquet porta dades de persones i no es publica: '+(leak.leaks||[]).slice(0,3).join(' · ')};
   return pack;
@@ -5829,8 +6033,9 @@ function openRegisterPackModal(list){
   bg.querySelector('#rpClose').onclick=closeModal;
   let pack=null;
   (async()=>{try{
-    pack=await buildRegisterPack(list);
+    pack=await buildRegisterPack(list,{altesJa:await altesPublicades()});
     const ver=await verifyRegisterPack(pack);
+    const pes=pesRegistre(pack);
     const box=bg.querySelector('#rpBody');if(!box||!box.isConnected)return;
     box.innerHTML='<div class="bib-stats"><div class="bib-tile"><div class="n" style="color:var(--indigo)">'+pack.scope.accions+'</div><div class="l">accions</div></div>'+
       '<div class="bib-tile"><div class="n" style="color:var(--green)">'+pack.totals.signats+'</div><div class="l">signades</div></div>'+
@@ -5840,6 +6045,31 @@ function openRegisterPackModal(list){
       '<div class="ent-grp-lbl">🔗 CID (SHA-256)</div><div class="ent-card"><code style="font-size:.72rem;word-break:break-all">'+esc(pack.cid)+'</code></div>'+
       '<div class="ent-grp-lbl">🔏 Signat per</div><div class="ent-card"><code style="font-size:.7rem;word-break:break-all">'+esc((pack.signer&&pack.signer.did)||'—')+'</code></div>'+
       '<div class="ai-note" style="margin-top:.5rem"><span class="ic">'+(ver.ok?'✅':'⚠')+'</span><span>'+(ver.ok?'Verificat aquí mateix: l\'arrel quadra amb els apunts i la firma és vàlida.':'Atenció: '+esc(ver.reason||'no verificat'))+'</span></div>'+
+      '<div class="ent-grp-lbl">🎟 Altes al Comando en aquesta versió</div>'+
+      '<div class="ent-card"><div class="ent-desc">'+
+        (pack.altes.length
+          ? '<strong>'+pack.altes.length+'</strong> persona'+(pack.altes.length===1?'':'es')+
+            ' rep'+(pack.altes.length===1?'':'en')+' número en publicar-la: del <strong>'+
+            (pack.altesAbans+1)+'</strong> al <strong>'+pack.altesTotal+'</strong> de '+
+            COMANDO_TARGET.toLocaleString('ca')+'.'
+          : 'Cap alta nova. Tothom qui té una aportació signada i encadenada ja té número.')+
+        '</div><div class="ent-desc" style="margin-top:.3rem;color:var(--muted)">El número no el reparteix ningú: '+
+        'és la posició en aquesta llista, i qualsevol la pot refer. Ordre de reclutament, no de mèrit.</div></div>'+
+      /* Què costa. Amb la xifra i la data, perquè «és barat» no és una xifra. */
+      '<div class="ent-grp-lbl">🜃 Què costa publicar-ho</div>'+
+      '<div class="ent-card"><div class="ent-desc">Aquesta versió pesa <strong>'+pes.kib+' KB</strong> — '+
+        (pes.gratis
+          ? '<span style="color:var(--green)">per sota dels 100 KiB, i la pujada a Arweave no costa res</span> ('+esc(ARWEAVE.gratisNota)+')'
+          : '<span style="color:var(--orange)">per sobre dels 100 KiB: la pujada ja no és gratuïta</span> i val uns '+pes.usd+' $')+
+        '.</div>'+
+        '<div class="ent-desc" style="margin-top:.35rem">Hi caben <strong>'+pes.cabenGratis.toLocaleString('ca')+
+        ' altes</strong> per versió gratuïta. Els '+COMANDO_TARGET.toLocaleString('ca')+' sencers són <strong>'+
+        pes.comando.mib+' MB</strong> en <strong>'+pes.comando.versions+' versions</strong>: <strong style="color:var(--green)">0 €</strong> '+
+        'aprofitant el llindar, i <strong>'+pes.comando.usd+' $</strong> pagant-ho tot a preu de tarifa.</div>'+
+        '<div class="ent-desc" style="margin-top:.35rem;color:var(--muted)">Preu de referència: '+ARWEAVE.preu+' $/GiB, '+
+        esc(ARWEAVE.data)+' — '+esc(ARWEAVE.font)+'. Una xifra sense data menteix en silenci al cap d\'un any.</div>'+
+        '<div class="ent-desc" style="margin-top:.35rem"><strong>A qui es dona d\'alta no li costa res</strong>: '+
+        'no hi ha compte, ni cartera, ni cap pujada des del seu dispositiu.</div></div>'+
       '<div class="ai-note"><span class="ic">🌐</span><span>Per fer-lo permanent: puja el JSON a <strong>Arweave</strong> (pagament únic) o pinna\'l a IPFS, i publica el CID. També pots ancorar l\'arrel a <strong>Nostr</strong>.</span></div>';
   }catch(e){const box=bg.querySelector('#rpBody');if(box&&box.isConnected)box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||String(e))+'</span></div>';}})();
   const cp=async(txt,msg)=>{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(txt);toast(msg);}else prompt(msg,txt);};
@@ -6885,9 +7115,35 @@ async function directorFilter(limit){
   state.nodes.forEach(nd=>venturesOf(nd).forEach(v=>(v.ledger||[]).forEach(e=>{if(!e.memberId)return;const m=memberById(nd,e.memberId);if(!m)return;items.push({t:'contribucio',ts:e.ts||'',node:nd.name+' · '+v.name,person:m.name,type:e.type,value:Number(e.value)||0,what:e.what||'',category:e.category||'',signed:!!e.sig});})));
   const narrs=await loadAllNarratives();
   narrs.forEach(x=>items.push({t:'narrativa',ts:x.createdAt||'',person:x.personKey,narrative:x.narrative}));
+  /* Les altes. Són el fil de la pel·lícula —el reclutament— i abans no sortien
+     als crèdits: la pantalla ensenyava aportacions soltes i el relat quedava
+     en un altre lloc. El registre es llegeix UN cop i es fa un mapa
+     compromís→número; demanar-ho persona a persona seria una crida per cap. */
+  try{
+    const publicades=await altesPublicades();
+    if(publicades.length){
+      const pos={};publicades.forEach((c,i)=>{pos[c]=i+1;});
+      /* L'índex es fa UN cop i es passa a les dues bandes. Amb `ledgerIndex()`
+         dins del bucle, uns crèdits de cent persones el recorrien cent vegades
+         i cadascuna recorre tots els nodes i tots els llibres. */
+      const idx=ledgerIndex(),perHash={};
+      idx.forEach(x=>{if(x.hash&&!perHash[x.hash])perHash[x.hash]=x;});
+      for(const p of primeresAltes(idx)){
+        const c=await altaCommitment(p.did,p.hash);
+        if(!pos[c])continue;
+        const r=perHash[p.hash]||{};
+        items.push({t:'alta',ts:p.ts,person:r.who||'',numero:pos[c],que:r.what||'',node:r.nodeName||''});
+      }
+    }
+  }catch(e){/* sense registre a mà, els crèdits segueixen sortint */}
   items.sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
   return items.slice(0,limit).map(x=>{
     if(x.t==='narrativa'){const n=x.narrative||{};return{icon:'📖',title:n.title||('Narrativa de '+x.person),body:n.synopsis||'—',person:x.person,ts:x.ts,badge:'multivers'};}
+    if(x.t==='alta')return{icon:'🎟',title:x.person+' s\'incorpora al Comando',
+      body:'Número '+x.numero.toLocaleString('ca')+' de '+COMANDO_TARGET.toLocaleString('ca')+
+        ', guanyat'+(x.que?' amb "'+x.que+'"':'')+(x.node?' a '+x.node:'')+'. '+
+        'Ordre de reclutament, no de mèrit: diu quan va entrar, no quant ha fet.',
+      person:x.person,ts:x.ts,badge:'alta'};
     const value=x.type==='moneda'?(x.value+' €'):(x.value+' h');
     const body=x.person+' va aportar '+value+(x.what?' a "'+x.what+'"':'')+(x.category?' amb el poder de '+x.category:'')+' al node '+x.node+'.';
     return{icon:x.type==='moneda'?'💰':'⏱',title:x.person+' actua a '+x.node,body,person:x.person,ts:x.ts,badge:x.signed?'firmat':'llegat'};
@@ -6922,7 +7178,10 @@ function characterSheetOf(name){
 /* Material que se li dona a la IA per construir el personatge. Es munta aquí i no
    dins del modal perquè el mateix context serveix a l'alta i a l'editor del dossier,
    i perquè es pugui inspeccionar en un test sense obrir cap finestra. */
-function characterContext(name,dossier){
+/* `alta` entra per paràmetre i no es va a buscar aquí dins: llegir el registre
+   és una crida de xarxa i això ha de poder-se muntar i inspeccionar en un test
+   sense obrir cap finestra ni tocar cap servidor. */
+function characterContext(name,dossier,alta){
   const d=dossier||dossierOf(name)||{};
   let sheet={cromo:{superpowers:[],signed:0,communities:0,hours:0},offers:[],objects:[],projects:[],ventures:[],hoursGiven:0};
   try{sheet=characterSheetOf(name);}catch(e){}
@@ -6942,7 +7201,16 @@ function characterContext(name,dossier){
   if(sheet.ventures.length)ev.push('lidera '+sheet.ventures.length+' venture(s)');
   const z=d.birth?zodiacOf(d.birth):null,cz=d.birth?chineseZodiacOf(d.birth):null;
   const sig=[z?z.name:'',cz?cz.name+' (aprox.)':''].filter(Boolean).join(' · ');
+  /* El número del Comando i el fet que el va guanyar. És el que converteix el
+     personatge en una **incorporació al reclutament** i no en una fitxa: sense
+     la data i l'aportació reals, l'escena seria inventada com qualsevol altra. */
+  const a=alta||null;
+  const numero=a&&a.ok?a.numero:null;
   return{name,municipi:d.municipi||'',role:d.role||roleOfPerson(name)||'',
+    numero,comandoTarget:COMANDO_TARGET,
+    altaTs:(a&&a.primera&&String(a.primera.ts||'').slice(0,10))||'',
+    altaQue:(a&&a.primera&&a.primera.que)||'',
+    altaPer:(a&&!a.ok&&a.per)||'',
     skills,resources,languages:(d.languages||[]).slice(0,8),availability:d.availability||'',
     wants:(d.wants||[]).map(w=>w.label||w).slice(0,8),
     declared:(d.declared||[]).map(k=>(PANTHEON12[k]||{}).name).filter(Boolean),
@@ -6952,7 +7220,8 @@ function characterContext(name,dossier){
 // Genera el personatge amb IA i el desa al dossier. Un sol camí: qui el crida no
 // ha de saber ni què és un intent ni com es persisteix.
 async function aiBuildCharacter(name,dossier){
-  const ctx=characterContext(name,dossier);
+  let alta=null;try{alta=await altaDe(name);}catch(e){}
+  const ctx=characterContext(name,dossier,alta);
   if(!ctx.skills.length&&!ctx.cv&&!ctx.declared.length)throw{msg:'Encara no hi ha material. Afegeix superpoders, recursos o el teu CV abans de generar el personatge.'};
   const r=await AI.call('character_dossier',ctx);
   const character=Object.assign({},r,{ts:now(),by:'ia'});
@@ -10097,6 +10366,8 @@ function openCromoModal(nameOrKey){
     ${buit?`<div class="ai-note"><span class="ic">🌱</span><span>Encara no en tens cap. Un cromo apareix quan registres una aportació amb categoria i queda <strong>signada</strong>.${col.sensVerificar?' En tens '+col.sensVerificar+' de registrades que encara no compten perquè ningú les ha verificat.':''}</span></div>`:'<div id="crCanvas" class="cr-canvas"></div>'}
     ${buit?'':`<details class="inc-det"><summary>Mira exactament què va a la imatge</summary><pre id="crPre" class="inc-pre"></pre></details>
     <div id="crLeak"></div>`}
+    <div class="ent-grp-lbl">🎟 El teu número al Comando</div>
+    <div id="crNum" class="ent-card"><div class="ent-desc">Mirant el registre…</div></div>
     <div class="ent-grp-lbl">📇 La col·lecció · ${col.tens.length} de ${col.deck}</div>
     <div class="ent-badges">${col.tens.map(x=>chip(x.cat,x.repes?'b-ver':'',' ×'+x.count)).join('')||'<span class="ent-desc">buida</span>'}</div>
     ${col.repes.length?`<p class="m-sub" style="margin-top:.5rem"><strong>Tens ${col.repes.length} repetit${col.repes.length===1?'':'s'}.</strong> Un repetit no et serveix de res tot sol: serveix per tenir alguna cosa a oferir a qui té el que et falta.</p>`:''}
@@ -10122,6 +10393,24 @@ function openCromoModal(nameOrKey){
       <button class="btn btn-ghost" id="crPerfil">👤 El teu perfil</button>
       <button class="btn btn-${buit?'primary':'ghost'}" id="crClose">${t('Tanca')}</button>
     </div>`);
+  /* El número. Es demana al registre publicat i, mentre no hi és, es diu que
+     encara no n'hi ha —mai un de provisional: un número que canvia és pitjor
+     que cap número, perquè algú l'haurà dit en veu alta. */
+  (async()=>{
+    const box=bg.querySelector('#crNum');if(!box)return;
+    let r;try{r=await altaDe(nom);}catch(e){r={ok:false,per:'no s\'ha pogut llegir el registre'};}
+    if(!box.isConnected)return;
+    box.innerHTML=r.ok
+      ? '<div class="cr-num">'+r.numero.toLocaleString('ca')+'<span> de '+COMANDO_TARGET.toLocaleString('ca')+'</span></div>'+
+        '<div class="ent-desc">Guanyat el '+esc(String(r.primera.ts||'').slice(0,10))+
+        (r.primera.que?' amb «'+esc(r.primera.que)+'»':'')+', i publicat a la versió <code>'+esc(String(r.versio||''))+'</code>.</div>'+
+        '<div class="ent-desc" style="margin-top:.3rem;color:var(--muted)">És la teva posició al registre públic: '+
+        'ordre de reclutament, no de mèrit. Qualsevol pot refer la llista i li ha de sortir el mateix número.</div>'
+      : '<div class="ent-desc">'+esc(r.per||'encara sense número')+'</div>'+
+        (r.compromis?'<div class="ent-desc" style="margin-top:.3rem">El teu compromís d\'alta ja està calculat: <code style="word-break:break-all">'+
+          esc(r.compromis)+'</code>. Quan surti una versió del registre que el porti, el número serà teu i no canviarà mai més.</div>':'')+
+        '<div class="ent-desc" style="margin-top:.3rem;color:var(--muted)">No et costa res: el compromís es calcula aquí i no puja res des d\'aquest dispositiu.</div>';
+  })();
   /* El cromo és la porta d'entrada a les dues coses que hi ha darrere: el que
      hi poses tu (el dossier) i el que se'n dedueix (el perfil). Sense aquests
      dos botons, entrar-hi des del distintiu de dalt deixava el perfil sense
@@ -11495,10 +11784,14 @@ const AI_INTENTS={
   },
   narrative_kit:{
     model:'claude-opus-4-8',max_tokens:2500,
-    system:'Ets guionista de còmic + compositor lletrista. Dissenya un kit narratiu breu per a un molekulon comunitari: 1) sinopsi de còmic (4-6 pàgines, tipus escola de superherois modern amb valors procomú), 2) estrofa d\'himne (16 versos amb rima assonant, en català), 3) escena performativa de graduació (5 min, amb rols). Estil: èpica quotidiana + humor càlid + veritats operatives.',
+    system:'Ets guionista de còmic + compositor lletrista. Dissenya un kit narratiu breu per a un molekulon comunitari: 1) sinopsi de còmic (4-6 pàgines, tipus escola de superherois modern amb valors procomú), 2) estrofa d\'himne (16 versos amb rima assonant, en català), 3) escena performativa de graduació (5 min, amb rols). Estil: èpica quotidiana + humor càlid + veritats operatives.\n\nLA SINOPSI CONTINUA EL RECLUTAMENT. El Comando Molekulon busca 150.000 superherois per aturar el Mundo Muerto, i aquest molekulon és una escena d\'aquest reclutament, no una història a part. Cada personatge que hi entra ho fa pel seu número, que és l\'ordre en què va entrar i no un rànquing. Fes servir NOMÉS els números i les dates que et donin; si algú no en té, hi és igualment i el relat ho diu així —encara no numerat—, però no te\'n pots inventar cap.',
     tool:{name:'kit_narratiu',description:'Retorna el kit narratiu del molekulon.',input_schema:{type:'object',properties:{synopsis:{type:'string'},anthem:{type:'string'},scene:{type:'string'},title:{type:'string'}},required:['synopsis','anthem','scene']}},
     build:ctx=>{
-      const L=['Molekulon: '+(ctx.name||''),'Personatges: '+(ctx.members||[]).join(', '),'Repte comunitari: '+(ctx.challenge||'')];
+      /* Els personatges van amb el seu número quan en tenen. Passar només els
+         noms era el que deixava la sinopsi flotant fora de la pel·lícula. */
+      const nums=ctx.numeros||{};
+      const qui=(ctx.members||[]).map(n=>n+(nums[n]?' (núm. '+nums[n]+' de '+(ctx.comandoTarget||150000)+')':' (encara sense número)'));
+      const L=['Molekulon: '+(ctx.name||''),'Personatges: '+qui.join(', '),'Repte comunitari: '+(ctx.challenge||'')];
       if(ctx.mode)L.push('Mode: '+ctx.mode);
       // L'acció real que ha passat al SOS. Si n'hi ha, el relat s'hi ha de basar:
       // aquesta tribu és creativa però el que la fa creïble és que va passar.
@@ -11519,10 +11812,11 @@ const AI_INTENTS={
   },
   character_dossier:{
     model:'claude-opus-4-8',max_tokens:2500,
-    system:'Ets guionista de còmic i alhora analista de talent comunitari. A partir de material REAL d\'una persona (CV o trajectòria, habilitats declarades, recursos, arquetips que ella mateixa ha triat i evidència comptable del seu pas pel SOS), construeixes el seu personatge dins l\'univers del Comando Molekulon: superherois quotidians que sostenen un territori.\n\nREGLES DURES:\n1) No inventis fets biogràfics. Si una dada no és al material, no la facis servir. Millor un origen curt i cert que un de llarg i fals.\n2) Cada poder ha de sortir d\'alguna cosa que la persona sap fer de debò, i has de dir de quin tros del material surt.\n3) L\'ombra no és un defecte inventat: és l\'excés del seu propi poder (l\'ombra de l\'arquetip).\n4) Res de superlatius buits ni d\'èpica militar. Èpica quotidiana: el que fa aquesta persona un dimarts.\n5) Català, frases curtes. La primera missió ha de ser un intercanvi concret i possible aquesta setmana.\nSortida sempre via l\'eina.',
+    system:'Ets guionista de còmic i alhora analista de talent comunitari. A partir de material REAL d\'una persona (CV o trajectòria, habilitats declarades, recursos, arquetips que ella mateixa ha triat i evidència comptable del seu pas pel SOS), construeixes el seu personatge dins l\'univers del Comando Molekulon: superherois quotidians que sostenen un territori.\n\nREGLES DURES:\n1) No inventis fets biogràfics. Si una dada no és al material, no la facis servir. Millor un origen curt i cert que un de llarg i fals.\n2) Cada poder ha de sortir d\'alguna cosa que la persona sap fer de debò, i has de dir de quin tros del material surt.\n3) L\'ombra no és un defecte inventat: és l\'excés del seu propi poder (l\'ombra de l\'arquetip).\n4) Res de superlatius buits ni d\'èpica militar. Èpica quotidiana: el que fa aquesta persona un dimarts.\n5) Català, frases curtes. La primera missió ha de ser un intercanvi concret i possible aquesta setmana.\n\nEL RECLUTAMENT (el marc de tot el que escrius):\nLa pel\u00b7lícula va d\'un reclutament: el Comando Molekulon busca 150.000 superherois per aturar el Mundo Muerto, i aquesta persona és una de les que s\'hi incorpora. El seu número NO és un rànquing ni una nota: és l\'ordre en què va entrar, i el va guanyar amb una aportació concreta amb data.\n6) L\'escena d\'incorporació («incorporacio») és una escena de pel\u00b7lícula de 2 a 4 frases que arrenca del fet REAL que li va donar el número —l\'aportació i la data que et donen— i acaba amb ella dins del Comando. Si et donen número, anomena\'l una vegada i sense solemnitat; si no en té, escriu l\'escena de qui hi és a punt d\'entrar i digues què li falta, sense inventar-ne cap.\n7) Cap número, data ni fet que no et donin. Ni un. Un número inventat es descobreix el mateix dia que dues persones es comparen els cromos, i llavors ja no es creu res més del que hi diu.\nSortida sempre via l\'eina.',
     tool:{name:'crear_personatge',description:'Retorna el personatge construït a partir del material real.',input_schema:{type:'object',properties:{
       alias:{type:'string',description:'Àlies de superheroi/na en català, evocador i no ridícul.'},
       origin:{type:'string',description:'Història d\'origen de 3 a 6 frases, només amb fets del material.'},
+      incorporacio:{type:'string',description:'Escena d\'incorporació al reclutament, 2-4 frases, a partir de l\'aportació i la data reals que et donen. Sense inventar cap número ni cap data.'},
       powers:{type:'array',items:{type:'object',properties:{name:{type:'string'},what:{type:'string'},evidence:{type:'string'}},required:['name','what']}},
       shadow:{type:'string',description:'L\'excés del seu propi poder.'},
       motto:{type:'string'},
@@ -11532,7 +11826,7 @@ const AI_INTENTS={
       first_mission:{type:'string',description:'Un intercanvi concret i possible aquesta setmana al seu territori.'},
       skills_detected:{type:'array',items:{type:'object',properties:{label:{type:'string'},category:{type:'string',enum:['idiomes','cuina','infants','informatica','acompanyament','jardineria','festes','transport','costura','reparacions','neteja','electronica','bricolatge','salut','altres']}},required:['label','category']}},
       resources_detected:{type:'array',items:{type:'string'}}
-    },required:['alias','origin','powers','motto','archetype','first_mission']}},
+    },required:['alias','origin','incorporacio','powers','motto','archetype','first_mission']}},
     build:ctx=>{
       const L=[];
       L.push('Persona: '+(ctx.name||'—')+(ctx.municipi?' · '+ctx.municipi:''));
@@ -11545,11 +11839,20 @@ const AI_INTENTS={
       if((ctx.declared||[]).length)L.push('Arquetips que ella mateixa ha triat: '+ctx.declared.join(', '));
       if(ctx.signals)L.push('Senyals simbòlics (pista feble, mai veredicte): '+ctx.signals);
       if(ctx.evidence)L.push('Evidència comptable al SOS: '+ctx.evidence);
+      /* El número va sempre, hi sigui o no: dir «no en té» és una dada, i
+         callar-ho és el que fa que la IA se n'inventi un. */
+      L.push(ctx.numero
+        ? 'Número al Comando: '+ctx.numero+' de '+ctx.comandoTarget+
+          (ctx.altaTs?' · guanyat el '+ctx.altaTs:'')+
+          (ctx.altaQue?' amb «'+ctx.altaQue+'»':'')
+        : 'Número al Comando: encara cap'+(ctx.altaPer?' ('+ctx.altaPer+')':'')+
+          '. NO te\'n pots inventar cap.');
       if(ctx.cv)L.push('\n--- CV / trajectòria aportada per la persona ---\n'+String(ctx.cv).slice(0,9000));
       return L.join('\n');
     },
     coerce:tu=>({
       alias:(tu.alias||'').trim(),origin:(tu.origin||'').trim(),
+      incorporacio:(tu.incorporacio||'').trim(),
       powers:(tu.powers||[]).slice(0,6).map(p=>({name:String(p.name||'').trim(),what:String(p.what||'').trim(),evidence:String(p.evidence||'').trim()})),
       shadow:(tu.shadow||'').trim(),motto:(tu.motto||'').trim(),
       archetype:PANTHEON12[tu.archetype]?tu.archetype:null,
@@ -13502,6 +13805,7 @@ function openPersonProfile(nameOrKey){
           (ch.motto?'<div class="ch-motto">«'+esc(ch.motto)+'»</div>':'')+
           (god?'<div class="ent-badges"><span class="ent-b b-ver">'+god.ic+' '+esc(god.name)+'</span>'+(f?'<span class="ent-b">llinatge de '+esc(f.hero)+'</span>':'')+'</div>':'')+
           (ch.origin?'<div class="ch-sec">Origen</div><div class="ent-desc">'+esc(ch.origin)+'</div>':'')+
+          (ch.incorporacio?'<div class="ch-sec">Incorporació al Comando</div><div class="ent-desc">'+esc(ch.incorporacio)+'</div>':'')+
           ((ch.powers||[]).length?'<div class="ch-sec">Poders</div><div class="ent-badges">'+ch.powers.map(pw=>'<span class="ent-b">✦ '+esc(pw.name)+'</span>').join('')+'</div>':'')+
           (ch.firstMission?'<div class="ch-sec">Primera missió</div><div class="ent-desc">'+esc(ch.firstMission)+'</div>':'')+
           '</div>';
@@ -18943,7 +19247,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,ALTA_V,ALTA_LLARG,ARWEAVE,altaCommitment,primeresAltes,altesNoves,altesPublicades,numeroDe,altaDe,elMeuNumero,pesRegistre,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon,_canonAll}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

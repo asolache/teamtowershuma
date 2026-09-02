@@ -64,6 +64,14 @@ jobs:
       - name: Guarda de La Compra (preus i regla del 80%)
         run: node SOS/tools/check-compra.js
 
+      # El registre és l'única cosa que es publica i no es pot desdir: un cop
+      # una versió és a fora, ni se'n treu el que hi ha dins ni es torna a
+      # numerar ningú. Aquí es vigila que al compromís d'alta no hi entri cap
+      # dada de persona, que el número es dedueixi i no es desi, i que el preu
+      # que la pantalla dona porti data i font.
+      - name: Guarda del registre públic (el número dels 150.000)
+        run: node SOS/tools/check-registre.js
+
       # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
       # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una
       # llista de capacitats es queda curta no peta res —simplement ignora una

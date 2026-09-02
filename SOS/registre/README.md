@@ -61,6 +61,89 @@ al revés, que seria un punter assenyalant un fitxer que no existeix.
   esborrar el passat —l'historial de git és públic i es pot forkejar— però sí
   aturar-se. Amb l'ancoratge es nota; sense, no.
 
+## El número del Comando
+
+La pel·lícula va d'un reclutament de **150.000 superherois** i cadascú té el seu
+número. La manera fàcil de fer-ho seria un comptador en un servidor: el primer
+que s'apunta és l'1. Seria mentida per tres motius alhora —hi hauria d'haver un
+amo que el reparteix, es guanyaria escrivint un nom, i el dia que el servidor
+caigués no hi hauria número enlloc.
+
+Aquí **el número no l'assigna ningú: es dedueix**. És la posició en aquesta
+llista append-only, i qualsevol la pot refer des de zero amb el mateix resultat.
+
+Cada versió porta:
+
+```json
+"altes": ["uMUTdTfKD7rBjBYkPTLzgD", "…"],
+"altesAbans": 4096,
+"altesTotal": 4318,
+"altesRoot": "…"
+```
+
+- **L'alta és un compromís, no una identitat.** `sha256('sos-alta-v1' | did:sos |
+  hash de la primera aportació signada i encadenada)`, retallat a 22 caràcters.
+- **Es guanya amb evidència.** Calen les dues coses, signatura i encadenat. Una
+  alta sense res fet no dona número — la mateixa regla que el comptador dels
+  150.000 ja feia servir.
+- **L'ordre és el de publicació.** Les `ts` d'un apunt les escriu qui les escriu;
+  el que no es pot retocar és en quina versió va aparèixer un compromís. Per això
+  les altes són un **delta** amb la seva posició de sortida: endarrerir la data
+  d'un apunt no acosta ningú al número 1.
+- **Dins d'una versió mana la dada, no qui la munta.** L'ordre és per data de la
+  primera aportació i, a igualtat, pel compromís.
+
+I el que **no** és: **no és un rànquing.** L'ordre és de reclutament —quan vas
+entrar—, no de mèrit. Qui té el número 12 no ha fet més que qui té el 40.000.
+
+### Què revela, i què no
+
+- **Del registre sol no se'n pot treure ningú.** Una llista de compromisos no
+  permet enumerar persones ni saber què va fer cap.
+- **Qui ja tingui el teu `did:sos` sí que hi pot trobar el teu número.** Les
+  fulles són públiques a posta —és el que fa possible la prova d'inclusió—, i amb
+  el teu did i les fulles el compromís es pot refer. No es pot evitar sense
+  trencar el que ho fa útil, que és que qualsevol ho pugui verificar sense
+  demanar permís a ningú. Es diu aquí en comptes de fer veure que no passa.
+- **El número no es desa enlloc**: es dedueix cada cop que es mira. Un número
+  desat és un número que un dia divergirà del registre.
+
+## Què costa, i qui ho paga
+
+**A qui es dona d'alta no li costa res**, i no és una promesa comercial sinó una
+propietat: el compromís es calcula al seu navegador i **no puja res des del seu
+dispositiu**. Ni compte, ni cartera, ni clau.
+
+Publicar sí que té un cost, i és aquest:
+
+| | mida | cost |
+|---|---|---|
+| una alta | ~26 bytes | — |
+| una versió (fins a ~3.900 altes) | < 100 KiB | **0 €** — Turbo/ArDrive no cobra per sota de 100 KiB |
+| els 150.000 sencers | 3,72 MB en ~39 versions | **0 €** aprofitant el llindar |
+| els 150.000, pagant-ho tot a tarifa | 3,72 MB | **≈ 0,09 $** |
+
+Preu de referència: **24,7 $/GiB**, setembre de 2026 — 11,03 AR/GiB
+(arweavefees, juliol de 2026) × 2,24 $/AR. Va amb la data a sobre a posta: una
+xifra de diners sense data menteix en silenci al cap d'un any.
+
+El càlcul el fa `pesRegistre()` amb el paquet de debò a la mà i surt a la
+pantalla del registre, així que si demà el compromís es fa més llarg o el preu
+canvia, la xifra canvia sola. La projecció **no és** una estimació escrita en un
+comentari.
+
+Tres coses que aquesta taula no diu i s'han de dir:
+
+- **El que creix no són les altes, són les fulles.** Cada apunt del registre hi
+  posa un hash, i això sí que puja amb l'activitat de la xarxa. El dia que una
+  versió passi de 100 KiB deixarà de ser gratuïta i la pantalla ho dirà amb la
+  xifra; la sortida és publicar les fulles per trams, com ja es fa amb les altes.
+- **Gratis no vol dir per sempre garantit.** El llindar de 100 KiB és una
+  decisió d'un proveïdor i pot canviar. El que no canvia és l'ordre de magnitud:
+  amb pagament complet, el registre sencer val cèntims.
+- **El camí gratuït de debò segueix sent aquest repositori.** Arweave és el que
+  fa que duri més que nosaltres, no el que el fa existir.
+
 ## Fer-lo permanent
 
 El repositori es pot esborrar i els relés no guarden res per sempre. Perquè una
