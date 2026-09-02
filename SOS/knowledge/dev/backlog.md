@@ -882,9 +882,10 @@ propi quan toqui; aquí queda anotat perquè no es perdi.
 
 ### Una miniapp per cada tipus de projecte d'un poble
 
-**On som.** El catàleg té **12 tipus de dinàmica** i només tres tenen eina
-pròpia fora de l'app: `vna.html` (mapeig), `compra.html` (grup de consum i
-compra col·lectiva) i `joc.html` (que és una altra cosa). `matriu.html` explica
+**On som.** El catàleg té **12 tipus de dinàmica** i quatre tenen eina pròpia
+fora de l'app: `vna.html` (mapeig), `compra.html` (grup de consum i compra
+col·lectiva), `energia.html` (comunitat energètica) i `joc.html` (que és una
+altra cosa). `matriu.html` explica
 el model, no el fa servir. La resta viuen dins de `SOS/index.html`, que sap
 comptar-ne el valor però no sap **fer la feina concreta** de cadascuna.
 
@@ -896,11 +897,16 @@ El que fa que valgui la pena és que cada miniapp **lliuri fluxos del mapa de
 valor de la seva dinàmica** —com fa `FA` a La Compra—, no que sigui una
 calculadora amb un nom a sobre.
 
+**Feta:** ⚡ **Comunitat energètica** → `SOS/energia.html`. Els coeficients amb la
+comparació dels tres repartiments, l'estalvi separat entre el que no compres i
+el que véns, l'amortització neta i el tràmit amb de qui depèn cada pas. La
+troballa que la justifica: dues llars amb el mateix coeficient amortitzen en
+4,3 i 7,8 anys segons l'horari. Veda 129.
+
 **Pendents, per ordre de necessitat real al territori:**
 
 | Dinàmica | Rols | La feina que la miniapp ha de fer, i que avui no fa ningú |
 |---|---|---|
-| ⚡ **Comunitat energètica** | 7 | El repartiment de la producció entre sòcies (coeficients), l'estimació d'estalvi per llar amb el preu de la tarifa i la seva data, i el punt on trenquen de debò: **el tràmit i els terminis** de la connexió i les subvencions |
 | 🏠 **Habitatge en cessió d'ús** | 6 | El càlcul de la quota, l'aportació inicial retornable i què passa si algú marxa — que és la conversa que ningú té fins que passa |
 | 🤝 **Suport mutu / cures veïnals** | 6 | El quadre de qui acompanya qui i quan, amb el que la veda diu: **avisar de sobrecàrrega abans que passi**, no comptar-la després |
 | ⏳ **Banc de temps** | 7 | El taulell d'ofertes i demandes amb el creuament d'àmbits, i el saldo d'hores llegible sense obrir el llibre |

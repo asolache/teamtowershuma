@@ -704,6 +704,62 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 129 — Repartir energia i repartir estalvi no són la mateixa cosa
+
+La primera miniapp de tipus de projecte després de La Compra, i el mateix
+patró: el que trenca les comunitats energètiques no és el preu de les plaques.
+És que **dues llars amb el mateix coeficient s'estalvien xifres molt
+diferents**, i ningú ho descobreix fins a la primera factura — quan ja s'ha
+signat el repartiment.
+
+Amb el grup de prova, dues llars idèntiques en tot menys en l'horari: la que
+consumeix de dia amortitza la seva part en **4,3 anys** i la que consumeix de
+nit en **7,8**. Mateix coeficient, mateixa inversió, mateixa energia assignada.
+No és que el repartiment fos injust: és que reparteix **energia**, i el que la
+gent creu que reparteix és **estalvi**.
+
+D'aquí surten les tres coses que la pàgina fa i que un full de càlcul no fa:
+
+- **Compara els tres repartiments alhora** —a parts iguals, proporcional al
+  consum, proporcional al consum de dia— amb l'estalvi del grup i, sobretot,
+  **amb la distància entre la llar que amortitza abans i la que ho fa després**.
+  Aquesta última xifra és la que diu si el repartiment aguantarà una assemblea.
+- **Diu quan els coeficients deixen de servir.** Amb una instal·lació
+  sobredimensionada, els tres repartiments donen exactament el mateix resultat
+  —tothom té més sol del que pot absorbir— i això no és un empat: és el senyal
+  que sobra instal·lació. La prova ho afirma.
+- **Separa el que no compres del que véns.** L'excedent es compensa a un terç
+  del preu de la factura, i barrejar-los en una xifra sola amaga que **moure la
+  rentadora al migdia canvia més números que un panell de més**.
+
+### Tres xifres que decideixen si una estimació és honesta
+
+- **La coincidència horària.** De l'energia que et toca només aprofites la que
+  coincideix hora a hora amb el que estàs consumint. Suposar-la del 100% infla
+  l'estalvi; aquí és **75%**, visible, editable i escrit — i la pàgina diu que
+  qualsevol xifra que et donin sense aquest número no és comparable amb aquesta.
+- **El sostre de l'ajut.** L'error més car que es podia cometre aquí: el
+  Programa 4 de l'ICAEN és el 40% **amb un màxim de 3.000 € per projecte**. Amb
+  40 kWp, comptar el percentatge sol dona 16.800 € i el sostre en dona 3.000 —
+  un forat de gairebé catorze mil euros al pressupost d'un grup.
+- **El cost d'operació.** Manteniment, assegurança i gestió, 1,5% de la
+  inversió l'any. Faltava, i sense això l'amortització surt més curta del que
+  serà. I al costat, **el que l'estimació NO inclou**: el canvi d'inversor cap a
+  l'any 12, el finançament i els honoraris del gestor. Qui et dona una xifra
+  sense dir-te què hi ha exclòs, no te l'està dient.
+
+### El que triga no és el que la gent es pensa
+
+El tràmit porta marcat **de qui depèn cada pas**. La instal·lació són dies; el
+permís d'accés i connexió, el conveni de la teulada i l'alta del repartiment són
+mesos i **no depenen del grup**. Planificar-los com si en depenguessin és el
+motiu més freqüent que una comunitat energètica es desinfli a mitges, i marcar-ho
+costa una classe CSS.
+
+I el marc legal va amb la seva data perquè ha canviat quatre vegades en set anys
+—500 m el 2019, 1 km el 2022, 2 km el 2023, **5 km des del RD-llei 7/2026**—: si
+algú et diu una distància, pregunta-li de quin any és.
+
 ## Veda 128 — Una pàgina que explica un mètode envelleix sense petar mai
 
 `SOS/matriu.html` explica la incubadora: quatre etapes, tres portes amb els seus

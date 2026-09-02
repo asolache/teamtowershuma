@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L'Energia · comunitat energètica i autoconsum compartit</title>
+<meta name="description" content="Miniapp per a comunitats energètiques: els coeficients de repartiment i per què repartir igual no estalvia igual, l'estalvi per llar amb el preu datat, l'amortització real i el tràmit amb els seus terminis.">
+<meta property="og:title" content="L'Energia · comunitat energètica i autoconsum compartit">
+<meta property="og:description" content="Repartir a parts iguals no estalvia igual: el que decideix qui s'estalvia què és a quina hora es consumeix. Amb els coeficients, l'amortització i el tràmit.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+nav.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.7rem 1.2rem;background:rgba(11,11,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text)}
+nav.top .brand span{color:var(--green)}
+nav.top .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto;font-size:.85rem}
+nav.top .links a{color:var(--light);text-decoration:none}
+nav.top .links a:hover{color:var(--text)}
+
+.hero{padding:3.4rem 1.5rem 2.2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(0,230,118,.16),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(0,176,255,.12),transparent 55%),var(--bg)}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:rgba(0,230,118,.14);color:var(--green);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#00e676,#00b0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:700px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:860px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--orange);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+/* Pestanyes */
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+tr.no80 td:first-child{border-left:2px solid var(--orange);padding-left:.35rem}
+
+input,select,button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .55rem}
+input[type=number]{width:78px;text-align:right;font-family:var(--mono)}
+input:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
+button.b{cursor:pointer}
+button.b:hover{border-color:var(--indigo)}
+.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+
+
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+.nota{font-size:.78rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.5rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+
+/* Les capes de resultat, com a La Compra */
+.capes{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin:.8rem 0}
+.capa{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.75rem .85rem}
+.capa .n{font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1.1}
+.capa .l{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:.1rem}
+.capa .d{font-size:.76rem;color:var(--light);margin-top:.35rem;line-height:1.45}
+.capa.bo .n{color:var(--green)} .capa.blau .n{color:var(--blue)} .capa.taronja .n{color:var(--orange)}
+
+/* La barra del perfil de consum: quant se'n va de dia i quant de nit. És la
+   xifra que decideix qui s'estalvia què, i per això es veu i no s'amaga. */
+.perfil{display:flex;height:16px;border-radius:8px;overflow:hidden;border:1px solid var(--border);min-width:90px}
+.perfil i{display:block;height:100%}
+.perfil .dia{background:linear-gradient(90deg,#ffd700,#ff9100)}
+.perfil .nit{background:#2a2a45}
+
+/* El tràmit: passos amb la seva durada */
+.pas{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.pas .num{flex:0 0 1.7rem;height:1.7rem;border-radius:50%;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.8rem;font-weight:700}
+.pas .cos{flex:1;min-width:0}
+.pas .t{font-weight:700;font-size:.9rem}
+.pas .d{font-size:.8rem;color:var(--light);margin-top:.15rem;line-height:1.45}
+.pas .q{font-family:var(--mono);font-size:.74rem;color:var(--orange);white-space:nowrap;flex:0 0 auto}
+.pas.crit .num{border-color:var(--red);color:var(--red)}
+
+.graella{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem;margin:.7rem 0}
+.tg{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.75rem .85rem}
+.tg b{font-size:.92rem}
+.tg p{margin:.25rem 0 0;font-size:.79rem;color:var(--light);line-height:1.45}
+
+</style>
+</head>
+<body>
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html" aria-current="page"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tag">⚡ Comunitat energètica · autoconsum compartit</div>
+    <h1>Repartir a parts iguals <em>no estalvia igual</em></h1>
+    <p class="sub">El que decideix quant s'estalvia cada llar no és el coeficient: és <strong>a quina
+    hora consumeix</strong>. Qui és a casa al migdia aprofita el sol; qui no hi és el ven a un terç
+    del que li costa comprar-lo. Aquesta pàgina ho posa amb números abans que el grup ho descobreixi
+    a la primera factura.</p>
+    <div class="avis">
+      <strong>Aquí no es contracta res.</strong> Això planifica i estima: no dona d'alta cap
+      instal·lació, no signa cap contracte i no parla amb cap distribuïdora. I tot el que hi
+      escriguis <strong>viu al navegador d'aquest dispositiu</strong> i enlloc més.
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="installacio" class="on">1 · La instal·lació</button>
+  <button data-p="llars">2 · Les llars</button>
+  <button data-p="coeficients">3 · Els coeficients</button>
+  <button data-p="estalvi">4 · L'estalvi i l'amortització</button>
+  <button data-p="tramit">5 · El tràmit</button>
+  <button data-p="mapa">6 · El mapa de valor</button>
+  <button data-p="metode">7 · Com es fa</button>
+</div>
+
+<!-- ══ 1 · LA INSTAL·LACIÓ ═══════════════════════════════════════════════ -->
+<div class="pan on" id="pInstallacio">
+  <section class="box">
+    <h3>Què hi ha a la teulada</h3>
+    <p class="lead">La potència instal·lada i el que produeix. La producció no és una promesa del
+    fabricant: és <strong>quilowatts hora l'any per quilowatt pic</strong>, que a Catalunya va segons
+    on i com estigui orientada.</p>
+    <div class="fila">
+      <label>kWp instal·lats <input id="inKwp" type="number" min="1" max="500" step="1"></label>
+      <label>kWh/kWp l'any <input id="inRend" type="number" min="800" max="1800" step="10"></label>
+      <label>€/kWp <input id="inCost" type="number" min="400" max="2500" step="10"></label>
+      <label>Ajut % <input id="inAjut" type="number" min="0" max="80" step="1"></label>
+    </div>
+    <div class="capes" id="capesInst"></div>
+    <p class="nota" id="instDiu"></p>
+    <p class="mut" id="instFont"></p>
+  </section>
+
+  <section class="box">
+    <h3>El factor que més s'infla, i va a la vista</h3>
+    <p class="lead">De l'energia que et toca, <strong>només aprofites la que coincideix hora a hora
+    amb el que estàs consumint</strong>. La resta és excedent, i l'excedent val un terç.</p>
+    <div class="fila">
+      <label>Coincidència horària <input id="inCoin" type="number" min="30" max="100" step="5"></label>
+      <span class="mut">% del consum diürn que de debò coincideix amb la producció</span>
+    </div>
+    <p class="nota avis">Suposar el 100% és el que fa que els pressupostos de fotovoltaica surtin
+    massa bonics. Ni el sol ni la rentadora van a l'hora exacta: <strong>el valor per defecte és el
+    75%</strong>, conservador i editable. Si algú et dona una xifra sense dir-te aquesta, la xifra
+    no és comparable.</p>
+  </section>
+</div>
+
+<!-- ══ 2 · LES LLARS ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pLlars">
+  <section class="box">
+    <h3>Qui hi ha, i quan consumeix</h3>
+    <p class="lead">Dues xifres per llar: el <strong>consum anual</strong> i <strong>quina part
+    n'és de dia</strong> (entre les 10 i les 18, que és quan hi ha sol). La segona és la que ningú
+    apunta i la que ho decideix tot.</p>
+    <div class="fila">
+      <input id="inNom" placeholder="Nom de la llar" maxlength="24">
+      <label>kWh/any <input id="inCons" type="number" min="100" max="20000" step="100" value="2800"></label>
+      <label>% de dia <input id="inDia" type="number" min="0" max="100" step="5" value="35"></label>
+      <button class="b b-pri" id="btnLlar">Dona-la d'alta</button>
+    </div>
+    <p class="mut" id="llarsAvis"></p>
+    <div class="taula"><table id="tLlars"></table></div>
+    <p class="nota" id="llarsDiu"></p>
+  </section>
+</div>
+
+<!-- ══ 3 · ELS COEFICIENTS ═══════════════════════════════════════════════ -->
+<div class="pan" id="pCoeficients">
+  <section class="box">
+    <h3>Com es reparteix el sol</h3>
+    <p class="lead">El coeficient diu quina part de la producció li toca a cada llar. La suma ha de
+    fer <strong>exactament 1</strong>, i és la xifra que es comunica a la distribuïdora.</p>
+    <div class="fila">
+      <label><input type="radio" name="coef" value="igual"> A parts iguals entre llars</label>
+      <label><input type="radio" name="coef" value="consum" checked> Proporcional al consum</label>
+      <label><input type="radio" name="coef" value="dia"> Proporcional al consum <strong>de dia</strong></label>
+    </div>
+    <div class="taula"><table id="tCoef"></table></div>
+    <p class="nota" id="coefDiu"></p>
+  </section>
+
+  <section class="box">
+    <h3>La comparació que val la pena mirar abans de signar res</h3>
+    <p class="lead">El mateix grup, la mateixa instal·lació, tres maneres de repartir. No hi ha una
+    de correcta: n'hi ha una que <strong>maximitza l'estalvi del grup</strong> i unes altres que
+    reparteixen d'una altra manera el que hi ha. La decisió és de l'assemblea; la xifra, no.</p>
+    <div class="taula"><table id="tComp"></table></div>
+    <p class="nota avis" id="compDiu"></p>
+    <p class="mut">Els <strong>coeficients dinàmics</strong> —que canvien hora a hora segons qui
+    consumeix— són legals i són el que més estalvi dona, però demanen un gestor que els calculi i
+    els comuniqui. El <strong>RD-llei 7/2026</strong> crea la figura del <em>gestor d'autoconsum</em>
+    precisament per això. Aquesta pàgina calcula els tres repartiments fixos: el dinàmic és una
+    decisió operativa, no un càlcul de full de càlcul.</p>
+  </section>
+</div>
+
+<!-- ══ 4 · L'ESTALVI ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pEstalvi">
+  <section class="box">
+    <h3>Què s'estalvia el grup, i d'on surt</h3>
+    <p class="lead">L'estalvi té dues peces molt diferents: <strong>el que deixes de comprar</strong>
+    (a preu de factura) i <strong>el que vens</strong> (a preu d'excedent, que és un terç). Barrejar-les
+    en una xifra sola amaga la que de debò importa.</p>
+    <div class="capes" id="capesEst"></div>
+    <p class="nota bo" id="estDiu"></p>
+    <p class="mut" id="estFont"></p>
+  </section>
+
+  <section class="box">
+    <h3>Llar per llar, i l'amortització de cadascuna</h3>
+    <p class="lead">Qui recupera la seva part de la inversió i en quant de temps. La columna que
+    sol sorprendre és l'última.</p>
+    <div class="taula"><table id="tEst"></table></div>
+    <p class="nota" id="amortDiu"></p>
+  </section>
+</div>
+
+<!-- ══ 5 · EL TRÀMIT ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pTramit">
+  <section class="box">
+    <h3>El que de debò triga</h3>
+    <p class="lead">Les plaques s'instal·len en dies. El que fa que una comunitat energètica trigui
+    un any i mig és <strong>el tràmit</strong>, i gairebé sempre pel mateix punt: el que depèn d'un
+    tercer i no de vosaltres.</p>
+    <div id="tramit"></div>
+    <p class="nota mal">Els passos marcats en vermell <strong>no depenen de vosaltres</strong>. Són
+    els que us faran esperar, i planificar-los com si depenguessin de vosaltres és el motiu més
+    freqüent que un grup es desinfli abans d'engegar.</p>
+  </section>
+
+  <section class="box">
+    <h3>El marc legal, amb la seva data</h3>
+    <p class="lead">L'autoconsum compartit ha canviat quatre vegades en set anys, i cada canvi ha
+    ampliat el radi. Si algú et diu una distància, pregunta-li de quin any és.</p>
+    <div class="taula"><table id="tLlei"></table></div>
+    <p class="nota" id="lleiDiu"></p>
+  </section>
+</div>
+
+<!-- ══ 6 · EL MAPA DE VALOR ══════════════════════════════════════════════ -->
+<div class="pan" id="pMapa">
+  <section class="box">
+    <h3>Aquesta pàgina és l'eina d'una dinàmica del catàleg</h3>
+    <p class="lead">No és una calculadora amb un nom a sobre: és <strong>l'eina d'un tipus de
+    projecte que ja existeix al SOS</strong>, amb els seus actors i els seus fluxos. El mapa que ve
+    a continuació és <strong>còpia literal del catàleg</strong>, i una guarda ho comprova paraula per
+    paraula.</p>
+    <p class="nota" id="mapaResum"></p>
+  </section>
+  <div id="mapes"></div>
+</div>
+
+<!-- ══ 7 · COM ES FA ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pMetode">
+  <section class="box">
+    <h3>El mètode</h3>
+    <p class="lead">El que sap qui n'ha muntat una, i que no surt als fullets.</p>
+
+    <h4>1 · El coeficient no és l'estalvi</h4>
+    <p>És l'error de partida de gairebé tots els grups: es reparteix a parts iguals perquè sembla
+    just, i al cap d'un any resulta que qui teletreballa s'ha estalviat el triple que qui fa torns
+    de nit. <strong>No és que el repartiment fos injust: és que repartir energia i repartir estalvi
+    no són la mateixa cosa.</strong> Es pot decidir el que vulgueu, però decidiu-ho sabent-ho.</p>
+
+    <h4>2 · L'excedent val un terç</h4>
+    <p>El que consumeixes en el moment te l'estalvies a preu de factura. El que sobra te'l compensen
+    a preu d'excedent, que avui és entre un quart i un terç. Per això <strong>moure el consum a les
+    hores de sol val més que posar més plaques</strong>: la rentadora al migdia canvia més números
+    que un panell de més.</p>
+
+    <h4>3 · La coincidència horària és on s'infla tot</h4>
+    <p>Un pressupost que suposa que tot el consum diürn coincideix amb la producció t'infla
+    l'estalvi un 25% llarg. Aquí es fa servir un <strong id="mCoin">75%</strong> i es diu; qualsevol
+    xifra que et donin sense aquest número no és comparable amb aquesta.</p>
+
+    <h4>4 · El mínim no és tècnic, és de gent</h4>
+    <p>Una instal·lació compartida necessita prou llars perquè la producció es consumeixi. Amb poca
+    gent, la meitat del sol se'n va com a excedent a preu d'excedent i l'amortització es dobla. El
+    número de sòcies mou l'amortització més que el preu de les plaques.</p>
+
+    <h4>5 · El que trigarà és el tràmit</h4>
+    <p>La instal·lació són dies. El permís d'accés i connexió, el canvi de contracte i l'alta del
+    repartiment són mesos, i <strong>no depenen de vosaltres</strong>. Compteu-ho des del principi
+    o el grup es desinflarà a mitges.</p>
+
+    <h4>Què no cobreix aquesta pàgina</h4>
+    <p>No hi ha bateries, ni comunitats amb consum industrial, ni la fiscalitat de cada cas. És una
+    estimació per <strong>decidir si val la pena continuar</strong>, no un projecte executiu: el
+    projecte el signa qui té competència per signar-lo.</p>
+  </section>
+</div>
+
+</main>
+
+<footer style="border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:center;color:var(--muted);font-size:.8rem">
+  <a href="index.html" style="color:var(--indigo)">SOS</a> ·
+  <a href="matriu.html" style="color:var(--indigo)">La MATRIU</a> ·
+  <a href="compra.html" style="color:var(--indigo)">La Compra</a> ·
+  les xifres porten data i font
+</footer>
+
+<script type="module">
+/* ══ L'Energia · comunitat energètica i autoconsum compartit ══════════════
+   El que trenca les comunitats energètiques no és el preu de les plaques:
+   és que **repartir energia i repartir estalvi no són la mateixa cosa**. Dues
+   llars amb el mateix coeficient s'estalvien xifres molt diferents segons a
+   quina hora consumeixen, i això no ho descobreix ningú fins a la primera
+   factura — quan ja s'ha signat.
+
+   Tres decisions que fan que aquesta pàgina valgui alguna cosa:
+
+   · **La coincidència horària va a la vista i es pot tocar.** És el factor que
+     infla tots els pressupostos de fotovoltaica: suposar que tot el consum
+     diürn coincideix amb la producció regala un 25% d'estalvi que no existeix.
+     Aquí és un número visible, conservador per defecte, i la pàgina diu que
+     qualsevol xifra que et donin sense aquest número no és comparable.
+   · **Cap preu sense data ni font.** Un preu de l'electricitat de fa un any no
+     és un preu: és una xifra amb aspecte de precisa. Mateixa regla que la
+     taula de La Compra, i la guarda ho comprova.
+   · **Aquí no es contracta res.** No dona d'alta cap instal·lació, no signa
+     cap contracte i no parla amb cap distribuïdora.
+
+   El mapa de valor de `comunitat_energetica` és còpia literal de `DYNAMICS`,
+   i `tools/check-energia.js` ho compara paraula per paraula: sense això, això
+   seria una calculadora amb el nom d'una dinàmica a sobre. */
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';
+const num=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
+const ent=n=>Math.round(n).toLocaleString('ca');
+const pc=n=>Math.round(n*10)/10;
+/* Un decimal SEMPRE. `Math.round` deixa «3» al costat de «3,9» i llavors dues
+   xifres de la mateixa columna no es poden comparar d'una ullada. */
+const un=n=>isFinite(n)?(Math.round(n*10)/10).toFixed(1).replace('.',','):'—';
+
+/* ── Els preus, amb la seva data i la seva font ──────────────────────────
+   Una taula de preus d'energia sense data menteix en silenci molt més de
+   pressa que una de queviures: el preu de la llum canvia cada dia. */
+const PREUS={
+  revisio:'setembre de 2026',
+  factura:0.185,
+  facturaFont:'PVPC ponderat de febrer de 2026 · terme d\'energia, sense peatges ni impostos',
+  excedent:0.06,
+  excedentRang:'0,05–0,08 €/kWh a PVPC · 0,04–0,10 al mercat lliure',
+  excedentFont:'compensació d\'excedents, mitjana de 2026',
+  rendiment:1450,
+  rendimentFont:'Catalunya litoral · orientació sud i inclinació habitual. Barcelona: ~2.500 h de sol i 5,3 kWh/m² al dia',
+  cost:1050,
+  costFont:'850–1.300 €/kWp instal·lat, 2026',
+  ajut:40,
+  /* El sostre és la part que se sol oblidar, i no és un detall: amb 40 kWp,
+     comptar el 40% sense sostre dona 16.800 € d'ajut quan de debò en són
+     3.000. Un grup que ho planifiqui així es troba un forat de 13.800 €. */
+  ajutMax:3000,
+  ajutFont:'ICAEN · Programa 4 d\'incentius a l\'autoconsum, fins al 40% amb un màxim de 3.000 € per projecte (2026)',
+  vida:25,
+  /* El que costa tenir-ho engegat: manteniment, assegurança, neteja i la
+     gestió administrativa del repartiment. Faltava, i sense això
+     l'amortització surt més curta del que serà. */
+  operacio:1.5,
+  operacioFont:'manteniment, assegurança i gestió · 1-2% de la inversió l\'any, ordre de magnitud habitual al sector'
+};
+/* La coincidència horària. És el número que decideix si un pressupost és
+   honest, i per això és una constant declarada i no una hipòtesi amagada. */
+const COINCIDENCIA=75;
+
+/* ── El marc legal, amb la seva data ─────────────────────────────────────
+   L'autoconsum compartit ha canviat quatre vegades en set anys i cada canvi
+   ha ampliat el radi. Una distància sense any no vol dir res. */
+const LLEI=[
+  {norma:'RD 244/2019',quan:'2019',km:0.5,diu:'El primer marc de l\'autoconsum compartit: 500 metres.'},
+  {norma:'RDL 18/2022',quan:'2022',km:1,diu:'1 km per a instal·lacions en coberta.'},
+  {norma:'RDL 8/2023',quan:'2023',km:2,diu:'2 km per a totes les tecnologies.'},
+  {norma:'RD-llei 7/2026',quan:'20 de març de 2026',km:5,diu:'5 km per a instal·lacions de fins a 5 MW. Crea la figura del gestor d\'autoconsum, redueix a un terç la majoria necessària a les comunitats de veïns i prorroga les deduccions fins al 31 de desembre de 2026.'}
+];
+const KM_AVUI=LLEI[LLEI.length-1];
+
+/* ── El tràmit, amb el que triga cada pas i de qui depèn ─────────────────
+   `meu:false` vol dir que no depèn del grup. Marcar-ho és tota la diferència
+   entre una planificació i una llista de desitjos: els passos que depenen
+   d'un tercer són els que faran esperar, i es planifiquen d'una altra manera. */
+const TRAMIT=[
+  {t:'Estudi de viabilitat',q:'2-6 setmanes',meu:true,
+   d:'Teulada, consum de les llars i primer repartiment. És el que fa aquesta pàgina.'},
+  {t:'Captació de sòcies',q:'2-6 mesos',meu:true,
+   d:'El pas que decideix l\'amortització, i el que més s\'infravalora. Amb poca gent, el sol se\'n va com a excedent.'},
+  {t:'Cessió de la teulada',q:'1-4 mesos',meu:false,
+   d:'Conveni amb l\'ajuntament o acord de la comunitat de propietaris. Des del RD-llei 7/2026, a les comunitats de veïns cal una majoria d\'un terç.'},
+  {t:'Constitució jurídica',q:'1-3 mesos',meu:true,
+   d:'Cooperativa, associació o comunitat de béns. Cadascuna té conseqüències fiscals diferents.'},
+  {t:'Finançament i ajuts',q:'2-8 mesos',meu:false,
+   d:'Els ajuts van per convocatòria i tenen finestra: fora de termini, s\'espera a la següent.'},
+  {t:'Permís d\'accés i connexió',q:'1-6 mesos',meu:false,
+   d:'El demana la distribuïdora i és el pas més imprevisible de tots. No hi ha manera d\'accelerar-lo.'},
+  {t:'Instal·lació',q:'1-3 setmanes',meu:true,
+   d:'La part que tothom es pensa que és el projecte. És la més curta.'},
+  {t:'Alta i comunicació del repartiment',q:'1-3 mesos',meu:false,
+   d:'Els coeficients es comuniquen a la distribuïdora. Canviar-los després té el seu propi termini.'}
+];
+
+/* ── El mapa de valor · còpia literal de DYNAMICS ───────────────────────── */
+const DIN={id:'comunitat_energetica',nom:'Comunitat Energètica',ic:'⚡'};
+const MAPA={
+  mission:'Produir i compartir energia renovable localment, guanyant sobirania energètica i estalvi.',
+  vision:'Energia neta, local i governada per la gent: cada teulada, un bé comú que retorna al territori.',
+  objectives:'100 kWp instal·lats · 50 sòcies · 20-40% d\'estalvi a la factura · excedents reinvertits al fons comú.',
+  roles:['Nucli promotor','Sòcies consumidores','Ajuntament','Instal·ladora','Cooperativa energètica','Assessoria tècnica-legal','Comunitat local'],
+  pairs:[
+   ['Sòcies consumidores','Nucli promotor','tangible','inversió i quotes','tangible','energia (kWh) i estalvi'],
+   ['Ajuntament','Nucli promotor','tangible','cessió de teulades','intangible','transició energètica (relat i dades)'],
+   ['Instal·ladora','Nucli promotor','tangible','instal·lació fotovoltaica','tangible','contracte i manteniment pagat'],
+   ['Cooperativa energètica','Nucli promotor','tangible','comercialització i garantia','tangible','excedents compartits'],
+   ['Assessoria tècnica-legal','Nucli promotor','intangible','viabilitat i seguretat jurídica','tangible','encàrrec i cas replicable'],
+   ['Nucli promotor','Comunitat local','intangible','sobirania i transparència','intangible','noves sòcies i legitimitat'],
+   ['Sòcies consumidores','Comunitat local','intangible','exemple i confiança','intangible','pressió social per ampliar'],
+   ['Ajuntament','Comunitat local','tangible','pla d\'energia i difusió','intangible','mandat ciutadà'],
+   ['Instal·ladora','Sòcies consumidores','tangible','posada en marxa a casa','intangible','recomanacions'],
+   ['Cooperativa energètica','Sòcies consumidores','tangible','factura i suport','tangible','consum agregat'],
+   ['Assessoria tècnica-legal','Ajuntament','intangible','marc normatiu aplicat','tangible','dades i tràmits']],
+  kanban:['Estudi de viabilitat','Captació de sòcies','Teulada municipal','Finançament','Constitució jurídica','Instal·lació','Posada en marxa'],
+  gov:'Una persona un vot · excedents reinvertits · transparència d\'inversió i consum.'
+};
+/* Quins rols omple aquesta pàgina amb dades seves, i quins no. Dir que cobreix
+   set rols quan en cobreix un seria la mentida més fàcil d'explicar. */
+const OMPLE={'Sòcies consumidores':'llars'};
+/* I quins lliuraments del mapa surten d'aquí, amb número. */
+const FA={
+  'inversió i quotes':'La part de la inversió de cada llar segons el seu coeficient (pantalla 4).',
+  'energia (kWh) i estalvi':'Els kWh que aprofita cada llar i el que s\'estalvia, separat per causa (pantalla 4).',
+  'viabilitat i seguretat jurídica':'L\'estudi de viabilitat amb l\'amortització, i el marc legal amb la seva data (pantalles 4 i 5).',
+  'marc normatiu aplicat':'La taula de normes amb el radi vigent i d\'on surt (pantalla 5).'
+};
+
+/* ── Estat · viu al navegador d'aquest dispositiu i enlloc més ──────────── */
+const CLAU='sos_energia_comunitat';
+const LLARS_DEFECTE=[
+  ['Llar Roca',3200,55],['Llar Ferrer',2400,30],['Llar Puig',4100,25],['Llar Mas',1800,60],
+  ['Llar Serra',2900,40],['Llar Camps',3500,20],['Llar Bosch',2600,45],['Llar Grau',3800,30],
+  ['Llar Riera',2200,50],['Llar Soler',3100,35],['Llar Font',2700,25],['Llar Vidal',2500,45]
+];
+let G={llars:[],kwp:10,rend:PREUS.rendiment,cost:PREUS.cost,ajut:PREUS.ajut,
+  coin:COINCIDENCIA,repartiment:'consum'};
+let _id=0;
+
+function novaLlar(nom,consum,dia){
+  nom=String(nom||'').trim().slice(0,24);
+  if(!nom)return {err:'Cal un nom per a la llar'};
+  if(G.llars.some(l=>l.nom.toLowerCase()===nom.toLowerCase()))return {err:'Ja hi ha una llar amb aquest nom'};
+  const c=Math.max(100,Math.min(20000,Number(consum)||0));
+  const d=Math.max(0,Math.min(100,Number(dia)||0));
+  const l={id:'l'+(++_id),nom,consum:c,dia:d};
+  G.llars.push(l);desa();return {ok:true,llar:l};
+}
+function treuLlar(id){const n=G.llars.length;G.llars=G.llars.filter(l=>l.id!==id);desa();return G.llars.length<n;}
+function desa(){try{localStorage.setItem(CLAU,JSON.stringify(G));}catch(e){/* sense memòria: funciona igual */}}
+function carrega(){
+  try{
+    const j=JSON.parse(localStorage.getItem(CLAU)||'null');
+    if(j&&Array.isArray(j.llars)&&j.llars.length){
+      G={llars:j.llars,kwp:Number(j.kwp)||10,rend:Number(j.rend)||PREUS.rendiment,
+        cost:Number(j.cost)||PREUS.cost,ajut:typeof j.ajut==='number'?j.ajut:PREUS.ajut,
+        coin:Number(j.coin)||COINCIDENCIA,
+        repartiment:['igual','consum','dia'].indexOf(j.repartiment)>=0?j.repartiment:'consum'};
+      _id=G.llars.length;return true;
+    }
+  }catch(e){/* dades trencades: es comença de nou, que és millor que petar */}
+  return false;
+}
+function grupPerDefecte(){
+  G={llars:[],kwp:10,rend:PREUS.rendiment,cost:PREUS.cost,ajut:PREUS.ajut,
+    coin:COINCIDENCIA,repartiment:'consum'};_id=0;
+  LLARS_DEFECTE.forEach(([n,c,d])=>novaLlar(n,c,d));
+}
+
+/* ── El model ────────────────────────────────────────────────────────────
+   Producció, repartiment i el que de debò s'aprofita. La peça que no és
+   òbvia és `aprofita`: de l'energia que et toca només te'n serveix la que
+   coincideix amb el que estàs consumint en aquell moment. */
+const produccio=()=>G.kwp*G.rend;
+const inversio=()=>G.kwp*G.cost;
+const ajutRebut=()=>Math.min(inversio()*G.ajut/100,PREUS.ajutMax);
+const inversioNeta=()=>inversio()-ajutRebut();
+const consumTotal=()=>G.llars.reduce((t,l)=>t+l.consum,0);
+const consumDia=l=>l.consum*l.dia/100;
+
+/* Els coeficients. Han de sumar exactament 1: és el que es comunica a la
+   distribuïdora, i una suma de 0,999 no és un detall d'arrodoniment sinó un
+   repartiment que no es pot donar d'alta. */
+function coeficients(mode){
+  const m=mode||G.repartiment,ll=G.llars;
+  if(!ll.length)return {};
+  let pes;
+  if(m==='igual')pes=ll.map(()=>1);
+  else if(m==='dia')pes=ll.map(l=>consumDia(l));
+  else pes=ll.map(l=>l.consum);
+  const tot=pes.reduce((a,b)=>a+b,0);
+  const c={};
+  if(!tot){ll.forEach(l=>{c[l.id]=1/ll.length;});return quadra(c,ll);}
+  ll.forEach((l,i)=>{c[l.id]=pes[i]/tot;});
+  return quadra(c,ll);
+}
+/* L'arrodoniment a quatre decimals no suma 1. El residu va a la llar amb el
+   coeficient més gros i es diu: un repartiment que no suma exactament 1 el
+   rebutja la distribuïdora, i llavors ningú sap per què. */
+function quadra(c,ll){
+  /* Es treballa amb enters de deu-mil·lèsimes i no amb decimals: sumant
+     nombres de coma flotant, dotze coeficients arrodonits donaven
+     0,9999999999999999 i la comprovació de «suma exactament 1» no es podia
+     ni escriure. Amb enters, la suma és exacta per construcció. */
+    const deu={};let suma=0;
+  ll.forEach(l=>{deu[l.id]=Math.round((c[l.id]||0)*10000);suma+=deu[l.id];});
+  const resta=10000-suma;
+  if(resta&&ll.length){
+    const gran=ll.slice().sort((a,b)=>(c[b.id]||0)-(c[a.id]||0))[0];
+    deu[gran.id]+=resta;
+  }
+  const r={};ll.forEach(l=>{r[l.id]=deu[l.id]/10000;});
+  r.__deu=deu;                       // la forma exacta, per poder-la afirmar
+  return r;
+}
+/* La suma en deu-mil·lèsimes. Sumant decimals dona 0,9999999999999999 i
+   llavors «suma exactament 1» no es pot ni comprovar; en enters, sí. */
+function sumaCoef(mode){
+  const c=coeficients(mode),d=c.__deu||{};
+  return Object.keys(d).reduce((a,k)=>a+d[k],0);
+}
+/* Què li passa a cada llar amb un repartiment donat. */
+function repartiment(mode){
+  const c=coeficients(mode),P=produccio(),k=G.coin/100,inv=inversioNeta();
+  const files=G.llars.map(l=>{
+    const assignat=P*(c[l.id]||0);
+    /* El sostre de l'autoconsum: el que consumeix de dia, i només la part que
+       coincideix hora a hora amb la producció. */
+    const sostre=consumDia(l)*k;
+    const auto=Math.min(assignat,sostre);
+    const excedent=assignat-auto;
+    const estalviAuto=auto*PREUS.factura;
+    const estalviExc=excedent*PREUS.excedent;
+    const part=inv*(c[l.id]||0);
+    /* L'estalvi net, amb la part del cost d'operació que li toca. Comptar
+       l'estalvi brut és el que fa que els pressupostos prometin
+       amortitzacions que després no arriben. */
+    const operacio=inversio()*PREUS.operacio/100*(c[l.id]||0);
+    const anual=estalviAuto+estalviExc-operacio;
+    return {l,coef:c[l.id]||0,assignat,auto,excedent,estalviAuto,estalviExc,operacio,
+      anual,part,anys:anual>0?part/anual:Infinity,
+      /* Quina part del que li toca aprofita de debò. És la xifra que explica
+         per què dues llars amb el mateix coeficient no s'estalvien igual. */
+      aprofita:assignat>0?auto/assignat:0,
+      factura:l.consum*PREUS.factura};
+  });
+  const tot=files.reduce((a,f)=>({
+    assignat:a.assignat+f.assignat,auto:a.auto+f.auto,excedent:a.excedent+f.excedent,
+    estalviAuto:a.estalviAuto+f.estalviAuto,estalviExc:a.estalviExc+f.estalviExc,
+    operacio:a.operacio+f.operacio,anual:a.anual+f.anual,factura:a.factura+f.factura
+  }),{assignat:0,auto:0,excedent:0,estalviAuto:0,estalviExc:0,operacio:0,anual:0,factura:0});
+  tot.inversio=inv;
+  tot.anys=tot.anual>0?inv/tot.anual:Infinity;
+  tot.pctFactura=tot.factura?tot.anual*100/tot.factura:0;
+  tot.aprofita=tot.assignat?tot.auto/tot.assignat:0;
+  return {files,tot,coef:c,mode:mode||G.repartiment};
+}
+/* Els tres repartiments alhora, per poder-los comparar sense triar-ne cap. */
+function comparativa(){
+  return ['igual','consum','dia'].map(m=>{
+    const r=repartiment(m);
+    const anys=r.files.map(f=>f.anys).filter(x=>isFinite(x));
+    return {mode:m,anual:r.tot.anual,anys:r.tot.anys,aprofita:r.tot.aprofita,
+      /* La diferència entre qui més s'estalvia i qui menys: és el número que
+         decideix si el repartiment aguantarà una assemblea. */
+      pitjor:anys.length?Math.max(...anys):Infinity,
+      millor:anys.length?Math.min(...anys):Infinity};
+  });
+}
+const MODE_LBL={igual:'A parts iguals',consum:'Proporcional al consum',dia:'Proporcional al consum de dia'};
+
+/* ── Les pantalles ───────────────────────────────────────────────────────── */
+function pintaInstal(){
+  $('#inKwp').value=G.kwp;$('#inRend').value=G.rend;$('#inCost').value=G.cost;
+  $('#inAjut').value=G.ajut;$('#inCoin').value=G.coin;
+  const P=produccio(),inv=inversio(),net=inversioNeta();
+  $('#capesInst').innerHTML=
+    '<div class="capa"><div class="n">'+ent(G.kwp)+' kWp</div><div class="l">potència</div>'+
+      '<div class="d">El que hi ha a la teulada.</div></div>'+
+    '<div class="capa bo"><div class="n">'+ent(P)+'</div><div class="l">kWh l\'any</div>'+
+      '<div class="d">A '+ent(G.rend)+' kWh per kWp. No és el que diu el fabricant: és el que dona aquí.</div></div>'+
+    '<div class="capa"><div class="n">'+ent(inv)+' €</div><div class="l">inversió</div>'+
+      '<div class="d">A '+ent(G.cost)+' €/kWp instal·lat.</div></div>'+
+    '<div class="capa blau"><div class="n">'+ent(net)+' €</div><div class="l">amb l\'ajut</div>'+
+      '<div class="d">L\'ajut és del '+G.ajut+'% <strong>amb un sostre de '+ent(PREUS.ajutMax)+' € per projecte</strong>, '+
+      'o sigui '+ent(ajutRebut())+' € aquí'+
+      (inversio()*G.ajut/100>PREUS.ajutMax?' — el percentatge en donaria '+ent(inversio()*G.ajut/100)+', i el sostre el talla':'')+
+      '. I van per convocatòria: fora de termini, s\'espera.</div></div>';
+  $('#instDiu').innerHTML='Amb <strong>'+ent(P)+' kWh l\'any</strong> i '+G.llars.length+' llars, '+
+    'toquen <strong>'+ent(G.llars.length?P/G.llars.length:0)+' kWh</strong> per llar de mitjana — '+
+    'però el que compta no és el que et toca sinó <strong>el que n\'aprofites</strong>, i això ho decideix l\'horari.';
+  $('#instFont').innerHTML='Preus i rendiment revisats el <strong>'+esc(PREUS.revisio)+'</strong>. '+
+    'Rendiment: '+esc(PREUS.rendimentFont)+'. Cost: '+esc(PREUS.costFont)+'. Ajut: '+esc(PREUS.ajutFont)+'.';
+  $('#mCoin').textContent=G.coin+'%';
+}
+function pintaLlars(){
+  const r=repartiment();
+  $('#tLlars').innerHTML='<thead><tr><th>Llar</th><th class="n">kWh/any</th><th>Quan consumeix</th>'+
+    '<th class="n">% de dia</th><th class="n">Factura/any</th><th></th></tr></thead><tbody>'+
+    (G.llars.length?G.llars.map(l=>'<tr><td>'+esc(l.nom)+'</td><td class="n">'+ent(l.consum)+'</td>'+
+      '<td><span class="perfil" title="'+l.dia+'% de dia"><i class="dia" style="width:'+l.dia+'%"></i>'+
+      '<i class="nit" style="width:'+(100-l.dia)+'%"></i></span></td>'+
+      '<td class="n">'+l.dia+'</td><td class="n">'+num(l.consum*PREUS.factura)+'</td>'+
+      '<td class="n"><button class="b" data-fora="'+l.id+'">treu</button></td></tr>').join('')
+     :'<tr><td colspan="6" class="mut">Encara cap llar.</td></tr>')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+ent(consumTotal())+'</strong></td>'+
+    '<td></td><td class="n"><strong>'+pc(consumTotal()?G.llars.reduce((t,l)=>t+consumDia(l),0)*100/consumTotal():0)+'</strong></td>'+
+    '<td class="n"><strong>'+num(consumTotal()*PREUS.factura)+'</strong></td><td></td></tr></tbody>';
+  const dia=consumTotal()?G.llars.reduce((t,l)=>t+consumDia(l),0)*100/consumTotal():0;
+  $('#llarsDiu').innerHTML=!G.llars.length?'Sense llars no hi ha repartiment.'
+    :'El grup consumeix <strong>'+ent(consumTotal())+' kWh l\'any</strong> i n\'hi ha un <strong>'+pc(dia)+
+     '%</strong> en hores de sol. La producció és de '+ent(produccio())+' kWh: '+
+     (produccio()>consumTotal()*dia/100
+       ? '<strong>hi ha més sol que consum diürn</strong>, o sigui que part se n\'anirà com a excedent a preu d\'excedent. Més llars val més que més plaques.'
+       : 'el consum diürn del grup dona per absorbir tota la producció, que és on l\'estalvi val més.');
+}
+function pintaCoef(){
+  const r=repartiment();
+  const suma=sumaCoef()/10000;
+  $('#tCoef').innerHTML='<thead><tr><th>Llar</th><th class="n">Coeficient</th><th class="n">Li toquen</th>'+
+    '<th class="n">N\'aprofita</th><th class="n">Excedent</th></tr></thead><tbody>'+
+    r.files.map(f=>'<tr><td>'+esc(f.l.nom)+' <span class="mut">'+f.l.dia+'% de dia</span></td>'+
+      '<td class="n">'+f.coef.toFixed(4).replace('.',',')+'</td>'+
+      '<td class="n">'+ent(f.assignat)+' kWh</td>'+
+      '<td class="n" style="color:'+(f.aprofita>=0.9?'var(--green)':f.aprofita>=0.6?'var(--orange)':'var(--red)')+'">'+
+      pc(f.aprofita*100)+'%</td>'+
+      '<td class="n">'+ent(f.excedent)+'</td></tr>').join('')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+suma.toFixed(4).replace('.',',')+'</strong></td>'+
+    '<td class="n"><strong>'+ent(r.tot.assignat)+'</strong></td>'+
+    '<td class="n"><strong>'+pc(r.tot.aprofita*100)+'%</strong></td>'+
+    '<td class="n"><strong>'+ent(r.tot.excedent)+'</strong></td></tr></tbody>';
+  $('#coefDiu').innerHTML='La suma dels coeficients és <strong>'+suma.toFixed(4).replace('.',',')+
+    '</strong>. Ha de fer exactament 1: si no, la distribuïdora rebutja el repartiment i ningú sap per què. '+
+    'L\'arrodoniment que sobra va a la llar amb el coeficient més gros, i es veu a la taula.';
+
+  const comp=comparativa();
+  $('#tComp').innerHTML='<thead><tr><th>Repartiment</th><th class="n">Estalvi del grup</th>'+
+    '<th class="n">Aprofitat</th><th class="n">Amortització</th><th class="n">La llar que abans</th>'+
+    '<th class="n">i la que després</th></tr></thead><tbody>'+
+    comp.map(c=>'<tr'+(c.mode===G.repartiment?' style="background:rgba(99,102,241,.08)"':'')+'>'+
+      '<td>'+esc(MODE_LBL[c.mode])+(c.mode===G.repartiment?' <span class="mut">(triat)</span>':'')+'</td>'+
+      '<td class="n">'+num(c.anual)+' €</td>'+
+      '<td class="n">'+pc(c.aprofita*100)+'%</td>'+
+      '<td class="n">'+un(c.anys)+' anys</td>'+
+      '<td class="n">'+un(c.millor)+'</td>'+
+      '<td class="n" style="color:var(--orange)">'+un(c.pitjor)+'</td></tr>').join('')+
+    '</tbody>';
+  const igual=comp.find(c=>c.mode==='igual'),millor=comp.slice().sort((a,b)=>b.anual-a.anual)[0];
+  $('#compDiu').innerHTML=!G.llars.length?''
+    :'<strong>A parts iguals</strong>, la llar que amortitza abans triga <strong>'+un(igual.millor)+
+     ' anys</strong> i la que triga més, <strong>'+un(igual.pitjor)+'</strong> — amb el mateix coeficient i la mateixa inversió. '+
+     'La diferència no és el repartiment: és <strong>l\'hora a la qual es consumeix</strong>. '+
+     'El que més estalvi dona al grup és «'+esc(MODE_LBL[millor.mode])+'» amb '+num(millor.anual)+' € l\'any.';
+}
+function pintaEstalvi(){
+  const r=repartiment();
+  $('#capesEst').innerHTML=
+    '<div class="capa"><div class="n">'+ent(r.tot.factura*1)+' €</div><div class="l">factura d\'avui</div>'+
+      '<div class="d">El que paguen les llars ara, al preu de referència.</div></div>'+
+    '<div class="capa bo"><div class="n">'+ent(r.tot.estalviAuto)+' €</div><div class="l">el que no compres</div>'+
+      '<div class="d">L\'energia aprofitada en el moment, a preu de factura. És el gruix i és el que val.</div></div>'+
+    '<div class="capa blau"><div class="n">'+ent(r.tot.estalviExc)+' €</div><div class="l">el que vens</div>'+
+      '<div class="d">L\'excedent compensat, a un terç del preu. Compta, però no és el mateix diner.</div></div>'+
+    '<div class="capa taronja"><div class="n">−'+ent(r.tot.operacio)+' €</div><div class="l">costa tenir-ho</div>'+
+      '<div class="d">Manteniment, assegurança i gestió: '+PREUS.operacio+'% de la inversió l\'any. Ja descomptat.</div></div>'+
+    '<div class="capa"><div class="n">'+pc(r.tot.pctFactura)+'%</div><div class="l">de la factura</div>'+
+      '<div class="d">L\'estalvi net anual sobre el que es paga avui.</div></div>';
+  $('#estDiu').innerHTML='<strong>Estalvi net: '+num(r.tot.anual)+' € l\'any</strong> per al grup sencer, '+
+    'i la inversió amb ajut es recupera en <strong>'+un(r.tot.anys)+' anys'+
+    '</strong> sobre una vida útil de '+PREUS.vida+'. D\'aquests, <strong>'+
+    pc(r.tot.anual?r.tot.estalviExc*100/r.tot.anual:0)+'%</strong> ve de vendre excedent: '+
+    'com més alta sigui aquesta xifra, més val la pena moure consum a les hores de sol en comptes de posar més plaques.';
+  $('#estFont').innerHTML='Preu de factura <strong>'+num(PREUS.factura)+' €/kWh</strong> ('+esc(PREUS.facturaFont)+'). '+
+    'Excedent <strong>'+num(PREUS.excedent)+' €/kWh</strong> ('+esc(PREUS.excedentRang)+'). '+
+    'Operació '+PREUS.operacio+'% l\'any ('+esc(PREUS.operacioFont)+'). '+
+    'Revisat el '+esc(PREUS.revisio)+'. Una xifra de diners sense data menteix en silenci al cap d\'un any.'+
+    '<br><strong>El que aquesta estimació NO inclou</strong>: el canvi d\'inversor cap a l\'any 12, '+
+    'el cost del finançament si no es paga al comptat, i els honoraris del gestor d\'autoconsum si en contracteu un. '+
+    'Amb tot això, l\'amortització de debò surt més llarga que la d\'aquí — i qui us digui una xifra sense dir-vos què hi ha exclòs, no us l\'està dient.';
+
+  $('#tEst').innerHTML='<thead><tr><th>Llar</th><th class="n">Aprofita</th><th class="n">No compra</th>'+
+    '<th class="n">Ven</th><th class="n">Estalvi/any</th><th class="n">La seva part</th>'+
+    '<th class="n">Anys</th></tr></thead><tbody>'+
+    r.files.map(f=>'<tr><td>'+esc(f.l.nom)+' <span class="mut">'+f.l.dia+'% de dia</span></td>'+
+      '<td class="n">'+ent(f.auto)+' kWh</td>'+
+      '<td class="n">'+num(f.estalviAuto)+'</td><td class="n">'+num(f.estalviExc)+'</td>'+
+      '<td class="n" style="color:var(--green)">'+num(f.anual)+'</td>'+
+      '<td class="n">'+num(f.part)+'</td>'+
+      '<td class="n" style="color:'+(f.anys<=10?'var(--green)':f.anys<=PREUS.vida?'var(--orange)':'var(--red)')+'">'+
+      un(f.anys)+'</td></tr>').join('')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+ent(r.tot.auto)+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.estalviAuto)+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.estalviExc)+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.anual)+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.inversio)+'</strong></td>'+
+    '<td class="n"><strong>'+un(r.tot.anys)+'</strong></td></tr></tbody>';
+  const llargues=r.files.filter(f=>f.anys>PREUS.vida);
+  $('#amortDiu').innerHTML=llargues.length
+    ? '<strong>'+llargues.length+(llargues.length===1?' llar no recupera':' llars no recuperen')+' la seva part '+
+      'dins dels '+PREUS.vida+' anys de vida útil</strong> ('+llargues.map(f=>esc(f.l.nom)).join(', ')+'). '+
+      'Amb el repartiment d\'ara, els estàs demanant que paguin una cosa que no els tornarà. La sortida no és '+
+      'convèncer-les: és canviar el coeficient o moure el consum.'
+    : 'Totes les llars recuperen la seva part dins de la vida útil de la instal·lació.';
+}
+function pintaTramit(){
+  $('#tramit').innerHTML=TRAMIT.map((p,i)=>'<div class="pas'+(p.meu?'':' crit')+'">'+
+    '<div class="num">'+(i+1)+'</div><div class="cos"><div class="t">'+esc(p.t)+
+    (p.meu?'':' <span class="mut">· no depèn de vosaltres</span>')+'</div>'+
+    '<div class="d">'+esc(p.d)+'</div></div><div class="q">'+esc(p.q)+'</div></div>').join('');
+  $('#tLlei').innerHTML='<thead><tr><th>Norma</th><th>Quan</th><th class="n">Radi</th><th>Què va canviar</th></tr></thead><tbody>'+
+    LLEI.map(l=>'<tr'+(l===KM_AVUI?' style="background:rgba(0,230,118,.07)"':'')+'>'+
+      '<td><strong>'+esc(l.norma)+'</strong></td><td class="mut">'+esc(l.quan)+'</td>'+
+      '<td class="n">'+(l.km<1?l.km*1000+' m':l.km+' km')+'</td><td>'+esc(l.diu)+'</td></tr>').join('')+
+    '</tbody>';
+  $('#lleiDiu').innerHTML='Avui el radi és de <strong>'+KM_AVUI.km+' km</strong> ('+esc(KM_AVUI.norma)+', '+
+    esc(KM_AVUI.quan)+'). Fa dos anys eren 2 i fa set, 500 metres: <strong>si algú et diu una distància, '+
+    'pregunta-li de quin any és</strong>.';
+}
+function pintaMapa(){
+  const rols=MAPA.roles,fl=MAPA.pairs.length*2;
+  const meus=Object.keys(OMPLE).length,fets=Object.keys(FA).filter(k=>FA[k]).length;
+  $('#mapaResum').innerHTML='El mapa de <strong>'+esc(DIN.nom)+'</strong> té <strong>'+rols.length+
+    ' rols</strong> i <strong>'+fl+' lliuraments</strong>. Aquesta pàgina omple <strong>'+meus+
+    '</strong> rol amb dades seves i produeix <strong>'+fets+'</strong> d\'aquests lliuraments. '+
+    'La resta els fa la gent, i dir el contrari convertiria la costura en decoració.';
+  const nomsRol=r=>OMPLE[r]?'<span class="xip si">l\'omple aquesta pàgina</span>':'';
+  $('#mapes').innerHTML='<section class="box"><h3>'+DIN.ic+' '+esc(DIN.nom)+'</h3>'+
+    '<p class="lead"><strong>Missió.</strong> '+esc(MAPA.mission)+'</p>'+
+    '<p class="mut"><strong>Visió.</strong> '+esc(MAPA.vision)+'</p>'+
+    '<p class="mut"><strong>Objectius.</strong> '+esc(MAPA.objectives)+'</p>'+
+    '<p class="mut"><strong>Governança.</strong> '+esc(MAPA.gov)+'</p>'+
+    '<div class="graella">'+rols.map(r=>'<div class="tg"><b>'+esc(r)+'</b>'+
+      (OMPLE[r]?'<p style="color:var(--green)">Aquesta pàgina el porta amb dades seves: '+
+        G.llars.length+' llars.</p>':'<p class="mut">El porta la gent, no l\'eina.</p>')+
+      '</div>').join('')+'</div>'+
+    '<div class="taula"><table><thead><tr><th>Qui</th><th>Dona</th><th>Rep de tornada</th>'+
+    '<th>Ho fa aquesta pàgina?</th></tr></thead><tbody>'+
+    MAPA.pairs.map(p=>'<tr><td>'+esc(p[0])+' ⇄ '+esc(p[1])+'</td>'+
+      '<td><span class="mut">'+esc(p[2])+'</span> '+esc(p[3])+'</td>'+
+      '<td><span class="mut">'+esc(p[4])+'</span> '+esc(p[5])+'</td>'+
+      '<td>'+(FA[p[3]]?'<span style="color:var(--green)">'+esc(FA[p[3]])+'</span>':
+              FA[p[5]]?'<span style="color:var(--green)">'+esc(FA[p[5]])+'</span>':'<span class="mut">no</span>')+
+      '</td></tr>').join('')+'</tbody></table></div>'+
+    '<p class="nota">Passos del mètode: '+MAPA.kanban.map(k=>esc(k)).join(' → ')+'.</p>'+
+    '</section>';
+}
+function pinta(){pintaInstal();pintaLlars();pintaCoef();pintaEstalvi();pintaTramit();pintaMapa();}
+
+/* ── Enganxar-ho ────────────────────────────────────────────────────────── */
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-p]');if(!b)return;
+  $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $$('.pan').forEach(p=>p.classList.toggle('on',p.id==='p'+b.dataset.p[0].toUpperCase()+b.dataset.p.slice(1)));
+});
+[['inKwp','kwp'],['inRend','rend'],['inCost','cost'],['inAjut','ajut'],['inCoin','coin']].forEach(([id,k])=>{
+  $('#'+id).addEventListener('change',e=>{
+    const v=Number(e.target.value)||0;
+    G[k]=k==='ajut'?Math.max(0,Math.min(80,v)):Math.max(1,v);
+    desa();pinta();
+  });
+});
+$('#btnLlar').addEventListener('click',()=>{
+  const r=novaLlar($('#inNom').value,$('#inCons').value,$('#inDia').value);
+  if(r.err){$('#llarsAvis').textContent=r.err;return;}
+  $('#llarsAvis').textContent='';$('#inNom').value='';pinta();
+});
+$('#tLlars').addEventListener('click',e=>{
+  const b=e.target.closest('[data-fora]');if(!b)return;
+  treuLlar(b.dataset.fora);pinta();
+});
+$$('input[name=coef]').forEach(r=>r.addEventListener('change',()=>{
+  G.repartiment=$('input[name=coef]:checked').value;desa();pinta();
+}));
+
+if(!carrega())grupPerDefecte();
+$('input[name=coef][value='+G.repartiment+']').checked=true;
+pinta();
+
+/* Hook de proves: les proves parlen amb la pàgina de debò, no amb una còpia. */
+window.__ENERGIA={PREUS,COINCIDENCIA,LLEI,KM_AVUI,TRAMIT,DIN,MAPA,OMPLE,FA,CLAU,
+  produccio,inversio,ajutRebut,inversioNeta,consumTotal,consumDia,coeficients,sumaCoef,repartiment,comparativa,
+  novaLlar,treuLlar,grupPerDefecte,desa,carrega,pinta,estat:()=>G};
+</script>
+</body>
+</html>
