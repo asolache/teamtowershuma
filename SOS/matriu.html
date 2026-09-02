@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La MATRIU · la incubadora cooperativa del SOS</title>
+<meta name="description" content="Com funciona la MATRIU: quatre etapes, tres portes amb criteris, repartiment de propietat per aportació real (Slicing Pie) i valor que circula entre projectes germans. El model explicat, i el botó per obrir-lo al SOS.">
+<meta property="og:title" content="La MATRIU · la incubadora cooperativa del SOS">
+<meta property="og:description" content="No incuba idees en abstracte: incuba activitats crítiques d'un territori fins que caminen soles. Quatre etapes, tres portes que no s'obren per clic.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+nav.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.7rem 1.2rem;background:rgba(11,11,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text)}
+nav.top .brand span{color:var(--green)}
+nav.top .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto;font-size:.85rem}
+nav.top .links a{color:var(--light);text-decoration:none}
+nav.top .links a:hover{color:var(--text)}
+
+.hero{padding:3.4rem 1.5rem 2.2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(0,230,118,.16),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(0,176,255,.12),transparent 55%),var(--bg)}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:rgba(0,230,118,.14);color:var(--green);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#00e676,#00b0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:700px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:860px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--orange);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+/* Pestanyes */
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+
+
+/* Taules i controls, iguals que a La Compra: dues pàgines del mateix lloc no
+   poden semblar de dos llocs diferents. */
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .55rem;cursor:pointer}
+button.b:hover{border-color:var(--indigo)}
+.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.nota{font-size:.78rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.5rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+
+/* El cicle: quatre etapes i tres portes. És el diagrama que explica la MATRIU
+   millor que qualsevol paràgraf, i per això és el primer que es veu. */
+.cicle{display:flex;align-items:stretch;gap:.35rem;flex-wrap:wrap;margin:1rem 0}
+.et{flex:1 1 150px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem .8rem;min-width:0}
+.et .n{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.et .t{font-weight:700;font-size:.95rem;margin:.1rem 0 .25rem}
+.et .d{font-size:.76rem;color:var(--light);line-height:1.4}
+.et.g{border-color:rgba(0,230,118,.5)}
+.porta{flex:0 0 auto;align-self:center;display:flex;flex-direction:column;align-items:center;
+  gap:.15rem;color:var(--orange);font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;padding:0 .15rem}
+.porta b{font-size:1.1rem;line-height:1}
+@media(max-width:700px){.cicle{flex-direction:column}.porta{flex-direction:row;gap:.4rem;align-self:flex-start;padding:.15rem 0}}
+
+/* Les targetes de via, tipus i criteri */
+.graella{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem;margin:.7rem 0}
+.tg{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.75rem .85rem}
+.tg .h{display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.3rem}
+.tg .h b{font-size:.92rem}
+.tg .h span{font-size:.7rem;color:var(--muted)}
+.tg p{margin:.2rem 0;font-size:.79rem;color:var(--light);line-height:1.45}
+.tg .quan{font-size:.75rem;color:var(--green);margin-top:.35rem}
+
+/* La barra de mesura: quantes coses del model ja fa l'app */
+.met{display:flex;align-items:baseline;gap:.5rem;margin:.6rem 0 .2rem}
+.met .big{font-size:2rem;font-weight:800;font-family:var(--mono);line-height:1}
+.bar{height:9px;background:var(--card);border:1px solid var(--border);border-radius:5px;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#00e676)}
+
+</style>
+</head>
+<body>
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html" aria-current="page"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tag">🌱 Incubadora cooperativa</div>
+    <h1>La MATRIU no incuba idees: <em>incuba el que un territori necessita</em></h1>
+    <p class="sub">Quatre etapes i <strong>tres portes que no s'obren amb un clic</strong>. La propietat
+    es reparteix per aportació real i es recalcula sola. I el valor <strong>circula entre projectes
+    germans</strong> en comptes d'acumular-se en un — que és exactament el que separa una incubadora
+    cooperativa d'una cartera d'inversió.</p>
+    <div class="fila" style="justify-content:center;margin-top:1.3rem">
+      <a class="b b-pri" href="index.html#/matriu" style="text-decoration:none;padding:.6rem 1.1rem">Obre la MATRIU al SOS →</a>
+      <a class="b" href="diagnostic.html" style="text-decoration:none;padding:.6rem 1.1rem">Fes el diagnòstic (3 min)</a>
+    </div>
+    <div class="avis">
+      <strong>Això és el model, no una promesa.</strong> Cada criteri d'aquesta pàgina és una
+      comprovació que el SOS fa de debò abans de deixar passar una venture d'etapa, i una guarda
+      compara les dues coses: si a l'app se'n canvia un, aquí no pot quedar l'antic sonant igual
+      de cert.
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="cicle" class="on">1 · El cicle</button>
+  <button data-p="portes">2 · Les portes</button>
+  <button data-p="vies">3 · Com neix una venture</button>
+  <button data-p="propietat">4 · La propietat</button>
+  <button data-p="valor">5 · El valor que circula</button>
+  <button data-p="entrar">6 · Per on s'hi entra</button>
+</div>
+
+<!-- ══ 1 · EL CICLE ══════════════════════════════════════════════════════ -->
+<div class="pan on" id="pCicle">
+  <section class="box">
+    <h3>Què és, i què no és</h3>
+    <p class="lead"><strong>És</strong> una incubadora que parteix del <strong>mapa de valor</strong> i
+    no del pla de negoci; que reparteix propietat per <strong>aportació real</strong> i no per
+    negociació prèvia; que exigeix <strong>evidència</strong> per avançar i no permís; i que mesura
+    l'èxit en impacte psicosocial tant com en euros.</p>
+    <p class="mut"><strong>No és</strong> una cartera d'inversió. No hi ha ronda, ni valoració
+    pre-money, ni exit. La graduació no és una venda: és que el projecte <strong>deixa de necessitar
+    la incubadora</strong>.</p>
+  </section>
+
+  <section class="box">
+    <h3>El cicle sencer</h3>
+    <p class="lead">Quatre etapes i tres portes. Cada porta té criteris, i el botó de passar surt
+    <strong>tancat amb el nombre de criteris pendents</strong> fins que es compleixen tots.</p>
+    <div class="cicle" id="cicle"></div>
+    <p class="nota">Per què portes i no permisos: qui decideix si un projecte està a punt hauria de
+    ser <strong>el que s'ha fet</strong>, no qui hi té més veu a la sala. Un criteri es pot discutir
+    abans; un cop escrit, es compleix o no es compleix.</p>
+  </section>
+
+  <section class="box">
+    <h3>Quan es gradua, què passa</h3>
+    <p class="lead">La venture es converteix en un <strong>node propi</strong> del SOS, amb el seu
+    mapa, els seus socis i la seva comptabilitat. I la feina pendent no es perd: <strong>els items
+    del backlog que no estaven fets viatgen</strong> al node nou com a targetes.</p>
+    <p class="mut">Després hi ha revisions als <strong>3, 6 i 12 mesos</strong>. Una incubadora que
+    no mira què va passar amb el que va graduar no sap si el seu mètode funciona: sap quantes
+    graduacions ha fet, que és una altra cosa.</p>
+  </section>
+</div>
+
+<!-- ══ 2 · LES PORTES ════════════════════════════════════════════════════ -->
+<div class="pan" id="pPortes">
+  <section class="box">
+    <h3>Els criteris, un per un</h3>
+    <p class="lead">Cadascun té un motiu, i el motiu importa més que el criteri: qui l'entén el pot
+    discutir, i qui només el compleix el fa trampa.</p>
+    <div id="portes"></div>
+  </section>
+
+  <section class="box">
+    <h3>El criteri que costa més d'acceptar</h3>
+    <p class="lead">Per graduar-se, <strong>cap membre pot concentrar més del 70% de l'equity</strong>.</p>
+    <p>Una venture on una sola persona en té el 85% no és una cooperativa: és un autònom amb
+    ajudants. Graduar-la seria <strong>enviar-la a trencar-se</strong> el primer dia que aquella
+    persona es cremi, marxi o emmalalteixi. El límit no és un ideal de repartiment: és una
+    comprovació de supervivència.</p>
+    <p class="mut">I no és un veto permanent: la tarta es recalcula sola, i qualsevol altra persona
+    que hi aporti la mou. La sortida no és negociar percentatges — és que hi participi més gent.</p>
+  </section>
+</div>
+
+<!-- ══ 3 · COM NEIX UNA VENTURE ══════════════════════════════════════════ -->
+<div class="pan" id="pVies">
+  <section class="box">
+    <h3>Tres vies, un sol resultat</h3>
+    <p class="lead">Totes tres desemboquen al mateix objecte. El que canvia és <strong>d'on surt el
+    mapa de valor</strong>, i això depèn de què sap ja qui la crea.</p>
+    <div class="graella" id="vies"></div>
+  </section>
+
+  <section class="box">
+    <h3>Del mapa a la feina: el pla d'sprints</h3>
+    <p class="lead">Un mapa de valor que ningú executa és un dibuix. El pla el converteix en un
+    backlog viu: <strong>una casella per cada rol i per cada flux</strong>, que algú ha de marcar.</p>
+    <div class="taula"><table id="sprints"></table></div>
+    <p class="nota bo">Aquí és on el diagnòstic es transforma en organització: mentre el mapa és un
+    pòster, cada rol és una bona intenció; convertit en casella, cada rol és una persona que falta
+    o que hi és.</p>
+  </section>
+</div>
+
+<!-- ══ 4 · LA PROPIETAT ══════════════════════════════════════════════════ -->
+<div class="pan" id="pPropietat">
+  <section class="box">
+    <h3>Slicing Pie · la propietat es recalcula, no es negocia</h3>
+    <p class="lead">Cada aportació —hores o diners— es converteix en <strong>llesques</strong>, i el
+    percentatge de cadascú és la seva part del total. Cada cop que algú hi aporta, els percentatges
+    canvien sols. <strong>No cal renegociar mai.</strong></p>
+    <p class="mono mut">llesques(temps) = hores × preu de referència × multiplicador no-cash<br>
+    llesques(diner) = euros × multiplicador cash</p>
+    <div class="taula"><table id="tipus"></table></div>
+    <p class="nota">El multiplicador del diner és <strong>sempre superior</strong> al del temps, i no
+    és per afavorir qui té estalvis: és per risc. Qui posa 1.000 € els pot perdre tots; qui posa 40
+    hores manté l'aprenentatge, els contactes i l'ofici. Això és Slicing Pie ortodox, i canviar-ho
+    faria que el diner deixés d'entrar.</p>
+    <p class="mut">Cada venture té <strong>la seva pròpia tarta</strong>, separada del fons de la
+    MATRIU: entrar a la incubadora no dilueix ningú.</p>
+  </section>
+
+  <section class="box">
+    <h3>El que això evita</h3>
+    <p class="lead">El repartiment fix al principi és el que trenca la majoria de projectes
+    col·lectius, i sempre pel mateix camí: es reparteix quan ningú ha fet res encara —o sigui, per
+    expectativa i per veu— i quan al cap d'un any la feina l'ha fet una altra persona, el
+    repartiment ja no es pot tocar sense trencar la relació.</p>
+    <p class="mut">Amb la tarta dinàmica no hi ha aquesta conversa perquè no hi ha res a repartir:
+    hi ha el que ja s'ha fet.</p>
+  </section>
+</div>
+
+<!-- ══ 5 · EL VALOR QUE CIRCULA ══════════════════════════════════════════ -->
+<div class="pan" id="pValor">
+  <section class="box">
+    <h3>El fons cooperatiu</h3>
+    <p class="lead">Què s'ha mobilitzat de debò: hores, objectes, talent i capital. I <strong>quant
+    val, amb rang d'incertesa</strong> —±30%— i el desglossament sencer a la vista.</p>
+    <p class="nota avis">El rang no és falsa modèstia. Una xifra única per a un fons fet d'hores i
+    objectes de segona mà <strong>és una xifra inventada amb aspecte de precisa</strong>, i es fa
+    servir per prendre decisions. Cada preu ve de l'oracle, es pot mirar i es pot canviar per node.</p>
+  </section>
+
+  <section class="box">
+    <h3>Intercooperació · el model Mondragón</h3>
+    <p class="lead">Una venture pot moure hores, objectes, talent o capital cap a una altra. Cada
+    transferència queda <strong>signada i encadenada</strong>, i s'agrega a la cartera.</p>
+    <p>Que el valor <strong>circuli entre projectes germans</strong> en comptes d'acumular-se en el
+    que va primer és exactament el que distingeix una incubadora cooperativa d'una cartera
+    d'inversió. En una cartera, el projecte que puja se separa dels altres; aquí, el que puja és el
+    que pot sostenir el següent.</p>
+  </section>
+
+  <section class="box">
+    <h3>Impacte psicosocial</h3>
+    <p class="lead">Es mesura al costat dels euros i no a sota. Un projecte que factura i crema la
+    gent que el sosté no és un projecte que funciona: és un que encara no ha fallat.</p>
+  </section>
+</div>
+
+<!-- ══ 6 · PER ON S'HI ENTRA ═════════════════════════════════════════════ -->
+<div class="pan" id="pEntrar">
+  <section class="box">
+    <h3>Tres portes d'entrada, segons on siguis</h3>
+    <div class="graella">
+      <div class="tg"><div class="h"><b>🔍 No sé per on començar</b></div>
+        <p>El <strong>diagnòstic</strong> pregunta d'on véns, què tens i què et falta, i en tres
+        minuts et diu el punt de partida i l'itinerari que et toca. No cal enviar-lo per veure'l.</p>
+        <p class="quan">→ <a href="diagnostic.html">Fes el diagnòstic</a></p></div>
+      <div class="tg"><div class="h"><b>🕸 Tinc un projecte i vull veure'n la forma</b></div>
+        <p>El <strong>mapa de valor</strong> és el primer pas de tot: rols funcionals, intercanvis
+        als dos sentits, i on hi encaixes tu.</p>
+        <p class="quan">→ <a href="vna.html">Fes el mapa</a></p></div>
+      <div class="tg"><div class="h"><b>🌱 Ja hi som i volem incubar</b></div>
+        <p>Obre el SOS, crea un node de tipus <strong>MATRIU</strong> i comença per la cartera. Les
+        ventures es creen des d'allà per qualsevol de les tres vies.</p>
+        <p class="quan">→ <a href="index.html#/matriu">Obre-la al SOS</a></p></div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h3>Què fa l'app d'aquest model, ara mateix</h3>
+    <p class="lead">La xifra surt de comptar les peces del model que tenen funció al SOS, no d'una
+    impressió. Les que falten estan escrites al pla de millora, no amagades.</p>
+    <div class="met"><span class="big" id="cobertN">—</span><span class="mut" id="cobertT"></span></div>
+    <div class="bar"><i id="cobertB" style="width:0"></i></div>
+    <div class="taula" style="margin-top:.8rem"><table id="coberta"></table></div>
+  </section>
+
+  <section class="box">
+    <h3>Per llegir-ho sencer</h3>
+    <p class="lead">Aquesta pàgina és el model explicat. La guia de funcionament té el detall de
+    cada peça i el pla de millora té el que encara falta — tots dos al repositori, oberts.</p>
+    <div class="fila">
+      <a class="b" href="knowledge/matriu/guia-funcionament.md" style="text-decoration:none">📘 Guia de funcionament</a>
+      <a class="b" href="knowledge/matriu/pla-millora.md" style="text-decoration:none">🛠 Pla de millora</a>
+      <a class="b" href="vedes.html" style="text-decoration:none">⚖ Les vedes</a>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<footer style="border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:center;color:var(--muted);font-size:.8rem">
+  <a href="index.html" style="color:var(--indigo)">SOS</a> ·
+  <a href="../index.html" style="color:var(--indigo)">TeamTowers Humà</a> ·
+  el model és obert i el codi també
+</footer>
+
+<script type="module">
+/* ══ La MATRIU · el model, explicat des de les mateixes taules que l'app ══
+   Aquesta pàgina no és un fullet: les etapes, les portes, els criteris, les
+   vies i els tipus de projecte són **còpia literal** del que `SOS/index.html`
+   fa servir per decidir, i `tools/check-matriu.js` ho compara un per un.
+
+   El motiu és el mateix de sempre i ja ens ha passat: una pàgina que explica
+   un mètode envelleix sense petar mai. Si a l'app es canvia un criteri de
+   graduació, aquí quedaria l'antic —sonant igual de cert— i qui el llegís
+   prepararia la seva venture per a una porta que ja no existeix. */
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* Les quatre etapes. `id` i `label` són els de VENTURE_STAGES i STAGE_LABELS. */
+const ETAPES=[
+  {id:'idea',label:'Idea',diu:'Hi ha una necessitat i algú que la vol portar. Encara no hi ha res fet.'},
+  {id:'prototip',label:'Prototip',diu:'El mapa s\'ha convertit en feina concreta i s\'ha completat un cicle sencer.'},
+  {id:'validacio',label:'Validació',diu:'Hi ha comptabilitat de valor real: algú hi ha posat hores o diners.'},
+  {id:'graduacio',label:'Graduada',diu:'Camina sola. Es converteix en node propi i se li fa seguiment als 3, 6 i 12 mesos.'}
+];
+/* Les tres portes, amb els criteris literals de `stageGate` i `ventureReadiness`.
+   El `per` de cada criteri és el motiu, i és el que fa que es pugui discutir. */
+const PORTES=[
+  {de:'idea',a:'prototip',n:1,criteris:[
+    ['Algú lidera la venture','Sense responsable no hi ha projecte: hi ha desig.'],
+    ['≥3 rols funcionals al mapa','Menys de tres no és una xarxa, és un encàrrec.'],
+    ['≥3 fluxos de valor','Cal saber què es mou entre qui abans de moure res.']]},
+  {de:'prototip',a:'validacio',n:2,criteris:[
+    ['Pla d\'sprints sembrat','El mapa s\'ha convertit en feina concreta.'],
+    ['Primer sprint tancat','S\'ha completat un cicle sencer, no només començat.'],
+    ['≥30% del backlog fet','Hi ha tracció real, no només planificació.'],
+    ['≥1 aportació al llibre','Algú hi ha posat hores o diners de veritat.']]},
+  {de:'validacio',a:'graduacio',n:3,criteris:[
+    ['Té soci líder assignat','Continuïtat després de sortir.'],
+    ['Almenys 1 sprint completat','Capacitat d\'execució demostrada.'],
+    ['≥60% dels items del backlog fets','El gruix de la feina fundacional està fet.'],
+    ['≥3 aportacions al llibre','Hi ha comptabilitat de valor real, no una.'],
+    ['Cap membre concentra >70% de l\'equity','No surt amb una dependència fatal.'],
+    /* El sisè només apareix als tipus amb ànim de lucre. No és una excepció:
+       és que a un projecte comunitari demanar-li que cobreixi costos seria
+       demanar-li una cosa que no és la seva. */
+    ['El llindar de sostenibilitat és assolible','Només als tipus amb ànim de lucre: graduar sense saber si es cobreixen costos és enviar el projecte a tancar.']]}
+];
+/* Les tres vies. Els noms de les taules són els de l'app. */
+const VIES=[
+  {via:'A',nom:'Activitat crítica del territori',taula:'CRITICAL_ACTIVITIES',n:14,
+   diu:'Catorze plantilles sectorials —dinamització comercial, ocupació, habitatge, energia, alimentació, cures, cultura, turisme, economia circular, digitalització, joventut, mobilitat, acollida i territori— cadascuna amb els seus rols, fluxos i passos.',
+   quan:'Quan el territori té una necessitat clara i sectorial.'},
+  {via:'B',nom:'Prototip de mapa de valor',taula:'PROTOTYPE_MAPS',n:6,
+   diu:'Sis mapes genèrics que cobreixen el gruix dels casos: servei de proximitat, producte artesà, consultoria, producte digital, cura social i educació. Cadascun amb ≥4 rols i ≥8 fluxos.',
+   quan:'Quan saps la forma del projecte —servei, producte, procés— però no encaixa en cap sector.'},
+  {via:'C',nom:'Planificador amb IA',taula:'aiPlanValueFlows',n:0,
+   diu:'Descrius la demanda en text lliure i proposa rols i fluxos. Sense clau d\'IA no es queda en blanc: tria el prototip més proper per coincidència de paraules i ho diu.',
+   quan:'Quan la demanda és específica i no la reconeixes en cap plantilla.'}
+];
+/* Els tipus de projecte: còpia literal de PROJECT_TYPES, equity inclosa. */
+const TIPUS=[
+  {id:'comunitari',ic:'🏘',nom:'Projecte comunitari',fmv:15,nonCash:1,cash:2,juridic:'associació, fundació, informal'},
+  {id:'cooperativa',ic:'🤝',nom:'Cooperativa',fmv:25,nonCash:2,cash:4,juridic:'SCCL, SCP, SL cooperativa'},
+  {id:'autonom',ic:'👤',nom:'Autònom / freelance',fmv:30,nonCash:2,cash:5,juridic:'autònom, autònom col·laborador'},
+  {id:'empresa',ic:'🏢',nom:'Empresa mercantil',fmv:40,nonCash:3,cash:6,juridic:'SL, SLU, SA'}
+];
+const SPRINTS=[
+  ['S1 · Fonaments','2 setmanes','Cobrir els rols amb persones reals','Un item per rol del mapa, més missió i visió'],
+  ['S2 · Activació dels fluxos','2 setmanes','Que cada intercanvi passi almenys un cop','Un item per flux del mapa'],
+  ['S3 · MVP entregable','3 setmanes','Un mínim replicable','Els passos de l\'activitat, més dues proves']
+];
+/* Què fa l'app de tot això. Cada peça amb la funció que la fa: una llista de
+   «sí» sense on mirar-ho és una llista de desitjos. */
+const COBERTURA=[
+  ['Les quatre etapes i el seu ordre','VENTURE_STAGES · STAGE_LABELS',1],
+  ['Les portes, amb els criteris comptats','stageGate · ventureReadiness',1],
+  ['Les tres vies de creació','CRITICAL_ACTIVITIES · PROTOTYPE_MAPS · aiPlanValueFlows',1],
+  ['La tarta per aportació real','computeVentureEquity',1],
+  ['El pla d\'sprints des del mapa','seedSprintPlanFromMap',1],
+  ['El fons amb rang d\'incertesa','fundRollup · fundValue',1],
+  ['Intercooperació entre ventures','transferBetweenVentures · cooperationSummary',1],
+  ['Impacte psicosocial','matriuPsychoImpact',1],
+  ['Revisions a 3, 6 i 12 mesos','REVIEW_MONTHS · postGradReviews',1],
+  ['Riscos i blocatges amb semàfor','risksOf · blocksOf · matriuLights',1],
+  ['Economia de la venture (ingressos i costos)','ventureEconomics · fundRunway',1],
+  ['Finançament i estat de cada convocatòria','fundingOf · fundingAlerts',1]
+];
+
+function pintaCicle(){
+  const b=[];
+  ETAPES.forEach((e,i)=>{
+    b.push('<div class="et'+(e.id==='graduacio'?' g':'')+'"><div class="n">Etapa '+(i+1)+'</div>'+
+      '<div class="t">'+esc(e.label)+'</div><div class="d">'+esc(e.diu)+'</div></div>');
+    const p=PORTES.find(x=>x.de===e.id);
+    if(p)b.push('<div class="porta"><b>🔒</b><span>porta '+p.n+'</span><span>'+p.criteris.length+' criteris</span></div>');
+  });
+  $('#cicle').innerHTML=b.join('');
+}
+function pintaPortes(){
+  $('#portes').innerHTML=PORTES.map(p=>
+    '<div class="tg" style="margin-bottom:.7rem"><div class="h"><b>Porta '+p.n+'</b>'+
+    '<span>'+esc(ETAPES.find(e=>e.id===p.de).label)+' → '+esc(ETAPES.find(e=>e.id===p.a).label)+'</span></div>'+
+    '<div class="taula"><table><thead><tr><th>Criteri</th><th>Per què</th></tr></thead><tbody>'+
+    p.criteris.map(c=>'<tr><td><strong>'+esc(c[0])+'</strong></td><td>'+esc(c[1])+'</td></tr>').join('')+
+    '</tbody></table></div></div>').join('');
+}
+function pintaVies(){
+  $('#vies').innerHTML=VIES.map(v=>'<div class="tg"><div class="h"><b>Via '+v.via+' · '+esc(v.nom)+'</b>'+
+    (v.n?'<span>'+v.n+' plantilles</span>':'<span>amb IA</span>')+'</div>'+
+    '<p>'+esc(v.diu)+'</p><p class="quan">'+esc(v.quan)+'</p></div>').join('');
+  $('#sprints').innerHTML='<thead><tr><th>Sprint</th><th>Durada</th><th>Objectiu</th><th>D\'on surten els items</th></tr></thead><tbody>'+
+    SPRINTS.map(s=>'<tr><td><strong>'+esc(s[0])+'</strong></td><td>'+esc(s[1])+'</td><td>'+esc(s[2])+'</td><td>'+esc(s[3])+'</td></tr>').join('')+'</tbody>';
+}
+function pintaTipus(){
+  $('#tipus').innerHTML='<thead><tr><th>Tipus</th><th class="n">Preu base</th><th class="n">Mult. temps</th>'+
+    '<th class="n">Mult. diner</th><th>Formes jurídiques</th></tr></thead><tbody>'+
+    TIPUS.map(t=>'<tr><td>'+t.ic+' <strong>'+esc(t.nom)+'</strong></td>'+
+      '<td class="n">'+t.fmv+' €/h</td><td class="n">×'+t.nonCash+'</td>'+
+      '<td class="n" style="color:var(--green)">×'+t.cash+'</td><td class="mut">'+esc(t.juridic)+'</td></tr>').join('')+
+    '</tbody>';
+}
+function pintaCobertura(){
+  const fets=COBERTURA.filter(c=>c[2]).length,tot=COBERTURA.length;
+  const pct=Math.round(fets*100/tot);
+  $('#cobertN').textContent=fets+'/'+tot;
+  $('#cobertT').textContent='peces del model amb funció al SOS · '+pct+'%';
+  $('#cobertB').style.width=pct+'%';
+  $('#coberta').innerHTML='<thead><tr><th>Peça del model</th><th>On viu al SOS</th></tr></thead><tbody>'+
+    COBERTURA.map(c=>'<tr><td>'+(c[2]?'✅':'○')+' '+esc(c[0])+'</td><td class="mono mut">'+esc(c[1])+'</td></tr>').join('')+
+    '</tbody>';
+}
+
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-p]');if(!b)return;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.pan').forEach(p=>p.classList.toggle('on',
+    p.id==='p'+b.dataset.p[0].toUpperCase()+b.dataset.p.slice(1)));
+});
+
+pintaCicle();pintaPortes();pintaVies();pintaTipus();pintaCobertura();
+
+/* Hook de proves: les proves parlen amb la pàgina de debò, no amb una còpia. */
+window.__MATRIU={ETAPES,PORTES,VIES,TIPUS,SPRINTS,COBERTURA};
+</script>
+</body>
+</html>

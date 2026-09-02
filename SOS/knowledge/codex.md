@@ -704,6 +704,83 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 128 — Una pàgina que explica un mètode envelleix sense petar mai
+
+`SOS/matriu.html` explica la incubadora: quatre etapes, tres portes amb els seus
+criteris, tres vies de creació i els multiplicadors del repartiment. Tot això
+existeix a l'app i **decideix de debò** què passa amb una venture.
+
+El risc no és que la pàgina estigui malament avui: és que no hi ha cap moment en
+què es torni a mirar. Si demà es canvia un criteri de graduació, aquí queda
+l'antic **sonant igual de cert**, i qui el llegeixi prepararà el seu projecte per
+a una porta que ja no existeix. La pàgina, a més, ho promet a la primera
+pantalla —«cada criteri d'aquesta pàgina és una comprovació que el SOS fa de
+debò»—, i una promesa que no vigila ningú és una promesa fins al primer canvi.
+
+`tools/check-matriu.js` compara les dues coses, i **el primer cop que va córrer
+va trobar dues divergències que ja hi eren**:
+
+- La guia de coneixement deia **10 plantilles d'activitat crítica** i a l'app
+  ja n'hi havia **14**. La pàgina havia copiat de la guia, no del codi.
+- La porta de graduació té un **sisè criteri** —que el llindar de sostenibilitat
+  sigui assolible— que només s'aplica als tipus amb ànim de lucre, i ni la guia
+  ni la pàgina el deien.
+
+D'aquí surt la regla, que val per a qualsevol pàgina que expliqui el que fa
+l'eina: **la pàgina no copia de la documentació, es compara amb el codi.** La
+documentació també envelleix, i copiar-ne hereta l'error amb una capa més de
+distància fins a la font.
+
+I una comprovació que val el doble que les altres: **cada peça que la pàgina diu
+que el SOS fa ha d'existir al fitxer.** La taula de cobertura anomena funcions, i
+totes s'han de poder trobar. Presumir d'una funció que no hi és és el pitjor que
+pot fer una pàgina que ve a explicar per què confiar en una eina.
+
+## Veda 127 — Sis menús raonables no fan una arquitectura
+
+`comando.html` tenia nou enllaços al menú, `compra.html` sis, `vna.html` cinc,
+`crm.html` tres. Cap dels sis coincidia amb cap altre, i cadascun era **una
+decisió raonable presa en un moment concret**: quan es va escriure aquella
+pàgina, aquells eren els llocs on tenia sentit anar.
+
+Això no peta mai, i és exactament el problema. **Ningú pot aprendre on són les
+coses si es mouen a cada pantalla.** El que a una app comercial és memòria
+muscular —«el menú és aquí i l'acció principal a la dreta»— aquí era tornar a
+llegir sis vegades. I una pàgina nova heretava el menú de la que s'havia copiat,
+que ja era el més divergent de tots.
+
+La sortida és la de sempre en aquest repositori: **es declara un cop i es
+genera.** `tools/build-nav.js` porta l'arquitectura —quatre grups i una acció— i
+l'escriu a totes les pàgines entre marques; `--check` peta al CI si alguna se'n
+desvia. Afegir una pàgina al SOS passa a incloure dir on va al menú, que és
+justament la decisió que abans no prenia ningú.
+
+### Quatre grups, i l'ordre no és alfabètic
+
+`Comença · Eines · Aprèn · Xarxa`, i és el camí que fa la gent: primer saber on
+ets, després les eines, després aprendre'n, i al final la xarxa. Quatre i no set
+—un menú amb set grups es torna a llegir cada vegada, que és el que això ve a
+arreglar.
+
+### Dues decisions d'implementació que no són òbvies
+
+- **Sense JavaScript.** Els desplegables són `<details>`/`<summary>`, que el
+  navegador ja serveix com a component accessible i amb teclat. Injectar un
+  script a catorze fitxers autocontinguts seria catorze còpies d'una cosa que
+  ja existeix —i el dia de tocar-la, catorze llocs.
+- **Les excepcions es declaren amb el motiu.** `index.html` té la seva pròpia
+  barra d'aplicació i `joc.html` és una pantalla de joc completa. Una excepció
+  no escrita és un descuit que d'aquí a sis mesos ningú sabrà si era volgut.
+
+### El conflicte que va sortir en fer-ho
+
+`build-vedes.js` genera `vedes.html` sencer des del codex, o sigui que escrivia
+per sobre del menú i la següent passada del generador del menú el tornava a
+posar: **dues guardes contradient-se, i cap de les dues equivocada.** La sortida
+no va ser desactivar-ne una sinó que el generador dels vedes **apliqui el mateix
+menú**, requerint-lo de `build-nav.js`. Una sola declaració, dos que la fan
+servir — que és el que la regla deia des del principi.
+
 ## Veda 126 — La tercera anotació hi era, i es llençava al moment de guardar-la
 
 El SOS feia triple entrada **en potència** des de la veda 64: l'apunt signat de

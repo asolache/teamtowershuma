@@ -334,7 +334,12 @@ function build() {
 `;
 }
 
-const html = build();
+/* El menú global l'aplica aquest generador ell mateix. Sense això, `build-nav`
+   l'escrivia a `vedes.html` i la següent passada d'aquí el tornava a treure:
+   dues guardes que es contradiuen, i cap de les dues equivocada. L'arquitectura
+   es declara un sol cop a `build-nav.js` i aquí només s'hi aplica. */
+const { posa } = require('./build-nav.js');
+const html = posa(build(), 'vedes.html');
 if (process.argv.includes('--check')) {
   const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
   if (have !== html) {

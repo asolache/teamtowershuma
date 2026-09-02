@@ -79,6 +79,20 @@ jobs:
       - name: Guarda del mapa (cap carpeta sense cara)
         run: node SOS/tools/build-mapa.js --check
 
+      # La pàgina de la MATRIU explica un mètode i promet, a la primera
+      # pantalla, que cada criteri és una comprovació que l'app fa de debò. Una
+      # pàgina que explica un mètode envelleix sense petar mai: si es canvia un
+      # criteri de graduació, aquí queda l'antic sonant igual de cert i qui el
+      # llegeixi prepararà la venture per a una porta que ja no existeix.
+      - name: Guarda de la MATRIU (el model i el codi diuen el mateix)
+        run: node SOS/tools/check-matriu.js
+
+      # Sis pàgines tenien sis menús diferents, cadascun raonable per si sol.
+      # Això no peta mai i és exactament el problema: ningú pot aprendre on són
+      # les coses si es mouen a cada pantalla.
+      - name: Guarda del menú (una sola arquitectura)
+        run: node SOS/tools/build-nav.js --check
+
       # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
       # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una
       # llista de capacitats es queda curta no peta res —simplement ignora una
