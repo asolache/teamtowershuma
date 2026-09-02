@@ -254,6 +254,130 @@ const SETUP = `
   await ctx.close();
 }
 
+/* ══ L'entrada: s'entra per un sol lloc ══════════════════════════════════════
+   Abans es preguntava quin rol ets abans d'haver fet res, i dues vegades: al
+   tour i al formulari de perfil. Ningú que arriba pot contestar-ho, i la
+   pregunta contradeia el que aquesta mateixa app fa —deduir el rol de
+   l'evidència. El que es prova aquí és que la porta ja no ho demana i que cada
+   rol que es promet **té un camí que el codi recorre de debò**. */
+{
+  const { ctx, p, errs } = await open();
+
+  const taula = await p.evaluate(() => {
+    const S = window.__SOS;
+    const rols = Object.keys(S.SOS_ROLES);
+    return { rols, sensCami: rols.filter(k => !S.ROLE_ACCES[k]),
+      assignables: S.ROLS_ASSIGNABLES,
+      /* Cap rol que es guanyi o se signi pot estar al desplegable de la fitxa. */
+      repartits: S.ROLS_ASSIGNABLES.filter(k => ['guardian', 'mentor'].indexOf(k) >= 0),
+      vies: rols.map(k => S.ROLE_ACCES[k] && S.ROLE_ACCES[k].via).filter(v => !v).length };
+  });
+  ok('rols: cada rol declarat diu com s\'hi arriba', !taula.sensCami.length && !taula.vies,
+    taula.rols.length + ' rols, cap sense camí');
+  ok('rols: els que se signen no es reparteixen des d\'un desplegable', !taula.repartits.length,
+    'a la fitxa només ' + taula.assignables.join(' i '));
+
+  /* ── La porta no pregunta cap rol ────────────────────────────────────── */
+  const porta = await p.evaluate(async () => {
+    const S = window.__SOS;
+    S.openSuperheroiOnboarding();
+    const camps = document.querySelectorAll('.modal [data-role], .modal .sh-role').length;
+    const diu = /Entres com a superheroi/i.test(document.querySelector('.modal').textContent);
+    S.closeModal();
+    return { camps, diu };
+  });
+  ok('rols: el formulari de perfil no demana triar rol', porta.camps === 0 && porta.diu,
+    porta.camps + ' selectors de rol');
+
+  const tour = await p.evaluate(() => {
+    const S = window.__SOS;
+    S.openOnboardingTour();
+    let triables = 0, mapa = 0, txt = '';
+    for (let i = 0; i < 8; i++) {
+      const m = document.querySelector('.modal');
+      if (!m) break;
+      triables += m.querySelectorAll('[data-r]').length;
+      mapa += m.querySelectorAll('.rol-mapa .rol-c').length;
+      txt += ' ' + m.textContent;
+      const n = m.querySelector('#obNext'); if (!n) break; n.click();
+    }
+    document.querySelectorAll('.modal-bg').forEach(x => x.remove());
+    return { triables, mapa, entra: /Entres com a superheroi/i.test(txt),
+      diuCom: /te'ls assigna qui porta el node/i.test(txt) };
+  });
+  ok('rols: el tour tampoc en fa triar cap', tour.triables === 0, tour.triables + ' botons de rol');
+  ok('rols: i ensenya el mapa sencer amb com s\'arriba a cadascun',
+    tour.mapa >= 6 && tour.entra && tour.diuCom, tour.mapa + ' targetes de rol');
+
+  /* ── Cada camí, recorregut de debò ───────────────────────────────────── */
+  const cami = await p.evaluate(async () => {
+    const S = window.__SOS;
+    const n = S.newNode('Node del camí', 'projecte', null);
+    S.state.nodes.push(n);
+    const m = S.newMember({ name: 'Pau Camí' }); S.membersOf(n).push(m);
+    const te = () => S.rolesOfPerson('Pau Camí').map(r => r.role);
+
+    const entrada = te();                      // acabat d'entrar
+    /* superheroi: una aportació registrada. */
+    n.ledger.push({ id: 'L1', memberId: m.id, type: 'temps', value: 2, what: 'Cuinar' });
+    const ambAportacio = te();
+    /* coordinador / agent: marcats a la fitxa per qui porta el node. */
+    m.role = 'coordinador'; const coord = te();
+    m.role = 'agent'; const agent = te();
+    m.role = 'superheroi';                     // «cap rol assignat»
+    const sensAssignar = te();
+    /* mentor: inscrit al registre de mentories d'una venture. */
+    /* `newVenture` retorna la venture i no la desa —qui la crida l'ha de posar
+       al node—, i `addMentor` és posicional. Muntar-ho malament feia que la
+       prova digués que el camí de mentora no existeix quan el que no existia
+       era el meu muntatge. */
+    const v = S.newVenture(n, { name: 'Forn comunitari' });
+    S.venturesOf(n).push(v);
+    S.addMentor(v, m.id, 'general');
+    const mentor = te();
+    /* guardian: reclamant el node — governança, no casella. */
+    m.did = 'did:sos:zPauCami';
+    S.govOf(n).owner = m.did;
+    const guardian = te();
+    return { entrada, ambAportacio, coord, agent, sensAssignar, mentor, guardian };
+  });
+  ok('rols: qui acaba d\'entrar no és res encara', cami.entrada.join() === 'simpatitzant',
+    cami.entrada.join(', '));
+  ok('rols: superheroi/na es guanya amb la primera aportació',
+    cami.ambAportacio.indexOf('superheroi') >= 0, cami.ambAportacio.join(', '));
+  ok('rols: coordinador/a i agent s\'assignen des de la fitxa',
+    cami.coord.indexOf('coordinador') >= 0 && cami.agent.indexOf('agent') >= 0,
+    cami.coord.join(', ') + ' · ' + cami.agent.join(', '));
+  ok('rols: i desassignar-los els treu', cami.sensAssignar.indexOf('coordinador') < 0 &&
+    cami.sensAssignar.indexOf('agent') < 0, cami.sensAssignar.join(', '));
+  ok('rols: mentor/a surt del registre de mentories', cami.mentor.indexOf('mentor') >= 0,
+    cami.mentor.join(', '));
+  ok('rols: guardiana surt de la governança, no d\'una casella',
+    cami.guardian.indexOf('guardian') >= 0, cami.guardian.join(', '));
+
+  /* ── La lent només pot ser un rol que tens ───────────────────────────── */
+  const lent = await p.evaluate(async () => {
+    const S = window.__SOS;
+    await S.setActivePersona('Pau Camí');
+    const propi = S.activeRoleId();
+    await S.setLensRole('mentor'); const legit = S.activeRoleId();
+    await S.setLensRole('agent'); const usurpat = S.activeRoleId();
+    await S.setLensRole(null);
+    const disp = S.rolesDisponibles('Pau Camí');
+    return { propi, legit, usurpat,
+      te: disp.filter(x => x.tens).map(x => x.role),
+      falten: disp.filter(x => !x.tens).map(x => x.role),
+      ambPerque: disp.filter(x => x.tens).every(x => !!x.why),
+      ambVia: disp.filter(x => !x.tens).every(x => !!x.acces.via) };
+  });
+  ok('rols: la lent es pot posar a un rol que tens', lent.legit === 'mentor', lent.legit);
+  ok('rols: i no a un que no tens', lent.usurpat !== 'agent', 'queda a ' + lent.usurpat);
+  ok('rols: els que tens porten la seva evidència', lent.ambPerque, lent.te.join(', '));
+  ok('rols: i els que no, el camí per arribar-hi', lent.ambVia, lent.falten.join(', ') || 'cap');
+  ok('rols: sense errors de pàgina a tot el recorregut', errs.length === 0, errs[0] || '');
+  await ctx.close();
+}
+
 await b.close();
 const failed = Object.entries(results).filter(([, v]) => !v).map(([k]) => k);
 console.log('\n' + (failed.length ? '❌ FAILED (' + failed.length + '): ' + failed.join(', ') : '✅ ALL PASSED (' + Object.keys(results).length + ')'));
