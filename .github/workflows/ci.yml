@@ -64,6 +64,14 @@ jobs:
       - name: Guarda de La Compra (preus i regla del 80%)
         run: node SOS/tools/check-compra.js
 
+      # L'Energia dona xifres que un grup farà servir per decidir si es gasta
+      # desenes de milers d'euros, i per parlar amb un ajuntament i amb una
+      # instal·ladora. L'error més car és comptar l'ajut sense el seu sostre;
+      # el més freqüent, suposar que tot el consum diürn coincideix amb la
+      # producció i inflar l'estalvi un quart.
+      - name: Guarda de L'Energia (comunitat energètica)
+        run: node SOS/tools/check-energia.js
+
       # El registre és l'única cosa que es publica i no es pot desdir: un cop
       # una versió és a fora, ni se'n treu el que hi ha dins ni es torna a
       # numerar ningú. Aquí es vigila que al compromís d'alta no hi entri cap
