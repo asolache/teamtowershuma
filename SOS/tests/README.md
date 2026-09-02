@@ -25,6 +25,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-pont.mjs` | V44 | El pont entre les taxonomies del banc de temps i la biblioteca |
 | `test-circular.mjs` | V45 | Donació vs posada a disposició, valor per préstec, sessió de reparació |
 | `test-rols.mjs` | V46 | Rols per context, deduïts de l'evidència, i la lent triable |
+| `test-rol-persona.mjs` | veda 120 | Associar una persona a cada rol del mapa: el mateix vocabulari que a les pàgines de mapa, proposar sense imposar, i penalitzar concentrar rols en poca gent |
 | `test-publica.mjs` | V47 | Que el paquet públic sigui agregat i no filtri res |
 | `test-versions.mjs` | V48 | CID, pare, diferències i tornada enrere de les publicacions |
 | `test-qr.mjs` | V49 | Lectura de QR, i que digui la veritat on no pot |

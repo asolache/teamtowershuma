@@ -704,6 +704,248 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 120 — Un rol només pot demanar el que el mapa diu que lliura
+
+Els mapes de valor eren correctes i eren d'algú altre. El que frena la gent
+davant d'un no sol ser la mandra: és **no saber on encaixa**. Ara totes les
+pàgines amb mapa —`SOS/vna.html` i `SOS/compra.html`— deixen declarar què hi pots
+posar i et proposen el rol; a la colla apareixes amb un anell i la paraula «tu»,
+i al grup de consum el rol que agafes queda omplert i els seus lliuraments passen
+a comptar com a vius. Aquest és el cercle sencer: **perfil → rol → lliuraments**.
+
+La regla que ho separa d'un test de personalitat, i que és tota la veda:
+
+> Un rol només pot demanar a una persona **allò que el mapa diu que aquell rol
+> lliura**. Cada demanda porta `per`, que és una cita literal de la fitxa del rol
+> —un lliurament seu al grup de consum, la seva lectura de poble a la colla—, i
+> `SOS/tools/check-perfil.js` comprova que la cita hi sigui de debò.
+
+Sense això, «aquest rol demana ordre» és una opinió meva escrita amb lletra
+d'eina. Amb això, la pantalla pot dir-li a algú *per què* li proposa allò, i qui
+ho llegeix pot discutir-ho amb el mapa a la mà.
+
+De la mateixa peça:
+
+- **El perfil són capacitats, no identitat.** Deu caselles del que pots posar-hi
+  —temps, ordre, un espai, un ofici, contactes, veu…— i cap camp de nom, correu
+  o edat. Una eina que per proposar-te un rol et demana qui ets, ha canviat de
+  negoci sense avisar.
+- **Es declara un cop i val a tot arreu.** Mateixa clau a totes les pàgines: qui
+  l'ha omplert a la colla castellera el porta posat al grup de consum. Per això
+  el bloc és **caràcter a caràcter el mateix** i la guarda el compara: amb una
+  llista curta en una pàgina, dues persones amb el mateix perfil rebrien
+  propostes diferents i no petaria res.
+- **Proposa, no assigna.** L'ordre és una recomanació, el rol s'agafa i es deixa
+  prement el mateix botó, i agafar-ne un allibera l'anterior —no es fan dues
+  persones d'una.
+- **Quan no encaixes, ho diu.** Si cap rol es cobreix del tot, la pantalla no
+  arrodoneix: diu què et faltaria «o algú que ho porti», que és exactament per a
+  què serveix un mapa de valor.
+
+### I a l'app, on els rols els dibuixa la gent
+
+`SOS/index.html` també deixa associar una persona a cada rol del mapa. Hi ha una
+diferència que canvia el disseny: a les altres dues pàgines els rols són fixos i
+el que demanen ve escrit amb una cita del mapa; **aquí els rols els dibuixa la
+gent**, i per tant el que demana cada rol també l'ha de dir la gent. El que fa el
+formulari és posar-li al davant **què lliura aquell rol segons el mapa**, que és
+l'única cosa que legitima demanar-li res a ningú — la mateixa regla, aplicada on
+no es pot escriure per endavant.
+
+El que sí que és igual, i la guarda ho compara: el vocabulari, els pesos i la
+clau. Una persona no pot rebre propostes diferents segons per quina pantalla hi
+entri.
+
+Dues coses que només tenen sentit a l'app:
+
+- **Assigna per defecte.** Omple d'un cop els rols buits, i **no toca els que
+  algú ja ha triat a mà**: una proposta no pot desfer una decisió.
+- **Concentrar rols es penalitza i es diu.** Cada rol que algú ja porta li baixa
+  la puntuació per al següent, i la pantalla avisa de qui en porta més d'un.
+  Portar-ne tres no és eficiència: és exactament el que aquest mètode serveix
+  per veure abans que passi, i seria absurd que l'eina hi empenyés.
+
+Dos defectes que va trobar posar-ho a prova, i que valen més que la funció:
+
+- **La puntuació premiava rols exigents que no cobries.** El terme de «com
+  d'exigent és el rol» anava sumat, així que amb el perfil buit sortia un
+  rànquing sencer que no volia dir res. Ara va multiplicat per la cobertura: si
+  no cobreixes res, no puntues res.
+- **La guarda es queixava d'unes dades correctes.** Aplanava els rols per nom, i
+  «Coordinació» existeix a les dues dinàmiques amb lliuraments diferents: el
+  motiu d'una es comprovava contra els lliuraments de l'altra. La clau ha de ser
+  el mapa **més** el rol. Una guarda que crida per un problema seu gasta la
+  confiança que necessitarà el dia que cridi per un de bo.
+- **Comparar text no distingeix codi de comentari.** El bloc es va enganxar a
+  l'app sota un comentari que no vaig tancar: les tres pàgines el tenien
+  «idèntic», la guarda donava verd, i a l'app no hi havia ni `APORTS`. Ho va
+  trobar la prova de navegador, que és el lloc car de trobar-ho. Ara la guarda
+  mira enrere des de la declaració i comprova que no quedi dins d'un comentari.
+  El primer intent d'aquesta comprovació —«que comenci a principi de línia»— no
+  detectava el mateix error que la va motivar, i el segon es va tallar sol
+  perquè el comentari que l'explicava contenia els dos caràcters del tancament.
+  Tres vegades el mateix, i és el motiu pel qual **una guarda nova s'ha de
+  provar trencant expressament allò que ha de trobar**, no llegint-la.
+
+## Veda 119 — Un estalvi sense causa és una promesa, i el sobrant no és una pèrdua
+
+`SOS/compra.html` és l'eina de dues dinàmiques que fins ara només existien com a
+text al catàleg: **Grup de Consum Agroecològic** i **Compra Col·lectiva /
+Estalvi**. Cistella per defecte amb el 80% de la despesa en menjar de proximitat,
+bàsic i sa; socis amb la seva llista; comanda agregada per productor; i estimació
+d'estalvi.
+
+Aquesta pàgina és diferent de les altres en una cosa: **dona xifres de diners que
+algú farà servir per parlar amb un pagès**. Una afirmació que la pàgina fa i les
+dades no sostenen no és un error de format, és fer quedar malament un grup davant
+de qui li ven. Tot el que segueix surt d'aquí.
+
+### El model es va calcular abans d'escriure la pàgina, i va sortir malament
+
+El primer càlcul deia que **comprar junts sortia a compte negatiu**: −63 € al
+mes, un −3,2%. L'error era comptable i era meu: estava comparant «comprar a la
+botiga exactament el que et cal» contra «comprar sacs sencers», i a més restava
+el sobrant de format com si fos diner cremat.
+
+El sobrant de format **no és una pèrdua**. En sec és rebost pagat per avançat —
+te'l menjaràs el mes que ve—; en fresc és menjar de més que s'ha de repartir.
+Cap de les dues coses és diner que desaparegui, i totes dues s'han de gestionar:
+la primera és caixa, la segona és una regla de repartiment. Comptades bé, les
+mateixes dades donen +1.012 € al mes i un 26,2%.
+
+Si això s'hagués escrit directe a la pàgina, hauria quedat una eina que diu que
+comprar junts és pitjor, o —pitjor encara— algú l'hauria «arreglada» pujant els
+preus de botiga fins que la xifra fes goig. **El prototip de trenta línies abans
+del fitxer de mil és el que ho va evitar.**
+
+### El que va aparèixer en fer-ho bé
+
+- **El descompte per volum és el 4,5% de l'estalvi.** És on tothom mira primer i
+  on menys n'hi ha. El gruix ve de treure l'intermediari, comprar a granel i
+  comprar de temporada — coses que no es negocien, es decideixen. Una eina que
+  posés «−X% per volum» de titular ensenyaria a negociar el tros petit.
+- **Perseguir un tram pot ser una pèrdua.** Comprar 200 € de més per guanyar un
+  4% sobre 600 és guanyar 24 i gastar-ne 200. La pàgina ho diu tram per tram:
+  *surt a compte* o *no surt a compte*.
+- **Agrupar en el temps també és agregar volum.** Un grup que demana llenties
+  cada setmana no arriba a cap mínim; el mateix grup demanant-les cada mes, sí.
+  Per això cada productor té ritme, i el sec va mensual.
+- **El que trenca els grups no és el preu: és el mínim de comanda.** Un pagès
+  que ha de moure la furgoneta per 90 € deixa de venir i el grup es desfà sense
+  que ningú hagi discutit de res. La comanda ensenya quant falta.
+- **Cada preu porta la causa de ser més barat** —directe, granel, temporada,
+  format—. Un preu més baix sense causa declarada és una promesa; amb causa, és
+  una decisió que es pot discutir amb qui ven.
+
+### Tres regles que la guarda aplica
+
+- **El 80% es mesura en euros, no en articles.** Comptant articles, una cistella
+  amb vint espècies locals i el gruix dels diners en processats passaria la
+  regla. I la guarda **refà el càlcul amb les dades del fitxer**: si algú afegeix
+  un producte que la trenca, ho diu el CI i no la pàgina d'un grup.
+- **Una taula de preus sense data menteix en silenci al cap d'un any.** Porta la
+  seva, tots són editables, i la guarda comprova que la data existeixi i es
+  pinti.
+- **La comparació ha de ser honesta o no serveix.** La referència de botiga és el
+  mateix producte a qualitat comparable, no la marca blanca més barata. Fer
+  trampa aquí és la manera més ràpida de perdre la confiança del grup el dia que
+  algú ho comprovi, i està escrit a la pàgina perquè no es pugui oblidar.
+
+I les vedes 96 i 97 seguides al peu de la lletra en una pàgina que va de diners:
+**aquí no es cobra res**. Cap camp de targeta, cap cobrament, cap pagament
+confirmat. La guarda mira tots els `<input>` de la pàgina, que és una manera de
+dir-ho que no depèn de recordar-ho.
+
+### Anomenar una dinàmica no és ser-ne l'eina
+
+La primera versió deia que era l'eina de dues dinàmiques del catàleg i el que
+feia era **anomenar-les en un paràgraf**. Preguntat directament si es connectava
+amb els tipus de projecte, la resposta honesta era «a mitges», i el que faltava
+era el mapa de valor: sense els rols i els intercanvis, una pàgina amb el nom
+d'una dinàmica a sobre és una calculadora amb una etiqueta.
+
+Ara hi és sencer —missió, visió, objectius, governança, rols, passos i cada
+intercanvi— copiat literalment de `DYNAMICS`, i la guarda ho compara camp a
+camp. Tres coses que va ensenyar posar-l'hi:
+
+- **Els intercanvis són recíprocs i s'han de desplegar.** El format del catàleg
+  és `[A, B, mena del que dona A, què dona A, mena del que dona B, què dona B]`:
+  cada parella són **dos lliuraments**. Comptar parelles amagava justament el que
+  es vol veure —què posa cadascú i què se n'emporta— i vint-i-vuit lliuraments
+  es convertien en catorze línies mudes.
+- **La pàgina ha de dir quins fluxos fa ella i quins no.** En fa 8 de 28. Dir-ne
+  cinc de cinc rols quan en cobreix dos seria la mentida més fàcil d'explicar i
+  la més cara de descobrir; la guarda comprova que cada rol que diu omplir i cada
+  lliurament que diu produir existeixin de debò al mapa.
+- **L'anàlisi ha de sortir del graf, no d'una llista escrita.** Comptant tangibles
+  donats contra rebuts apareix sol qui posa més del que es veu que no rep: al
+  grup de consum és el **punt de repartiment** —el local que deixa l'espai i en
+  rep «vida i clientela»—, que és exactament qui es crema als grups de debò. I
+  la **comunitat** es mou només amb valor invisible, que és el primer que
+  s'oblida quan es fan comptes.
+
+Els rols que la pàgina no omple es queden buits i amb un camp per posar-hi nom:
+en posar-ne un, els fluxos que hi toquen passen a viure. **El mapa no es queda
+de mostra: es fa del grup.**
+
+## Veda 118 — Si el repte és la velocitat, res es pot cobrar sol
+
+El joc tenia el model bo i cap ritme. Les hores del banc de temps se sumaven
+soles cada 1800 ms, l'onada no arrencava fins que premies un botó, i les vuit
+dinàmiques sortien de cop a la barra amb sis d'apagades. Cada pas era fàcil i cap
+tenia pressa: es podia deixar la pantalla oberta i tornar-hi.
+
+L'encàrrec era el disseny de *Plants vs Zombies* —passos fàcils, repte de
+velocitat—, i el que el fa funcionar no és la dificultat de cap decisió: és que
+**el recurs s'ha de recollir amb el dit**. Ara el banc de temps no ingressa res:
+deixa caure una fitxa que viu nou segons, i la que no agafa ningú es perd. Resulta
+que això també és cert al SOS —una hora oferta que no recull ningú caduca—, i és
+la classe de regla que només es descobreix quan busques ritme i no lliçó.
+
+De la mateixa peça, i cadascuna amb la seva raó:
+
+- **L'onada ve sola.** Entre onada i onada hi ha un compte enrere visible. El
+  botó ja no és «comença»: és «⏩ Ja!», i paga les hores que no gastes esperant.
+  Un botó que atura el temps regala la pressa; un que la premia, la crea.
+- **Una dinàmica oberta, i una més per cada onada aguantada.** Vuit targetes el
+  primer minut, sis apagades, no són sis opcions: són una pantalla que no es pot
+  llegir. I es compten les **aguantades**, no les començades: comptant les que
+  arrenquen, la targeta nova apareixia just quan et venien a sobre.
+- **El primer moviment sempre és possible.** Els dos que apareixen en activar una
+  comarca ja no tenen rols a l'atzar: porten els que demana la dinàmica que ja
+  tens oberta. Un poble podia néixer sense poder fer res.
+- **La primera arribada la para el veïnat.** Una vegada per fila i per plaça. Un
+  error pot ser gratuït un cop i el segon no, que és com va: la primera vegada
+  que un poble veu allò arribar, surt al carrer; la segona ja està cansat.
+- **Es pot treure el que has plantat.** Si posar-ho on no tocava fos definitiu,
+  deixaries de provar —i tot el disseny va de provar.
+
+I la part que lliga el joc amb l'eina: **les caselles d'aportació**. Tres per
+plaça, cadascuna amb el nom d'un projecte del SOS copiat literalment de
+`DYNAMICS` —MATRIU, Biblioteca de les Coses, Banc de Temps—, i plantar-hi registra
+una **aportació** al node. No és una xifra de joc: és el criteri de la porta 2 de
+la MATRIU, «≥1 aportació al ledger», i per això compta per pujar a Gestor/a.
+
+Aquí la veda 109 torna amb una cara pitjor de l'habitual. Dues llistes que
+divergeixen en silenci ja és car; **una casella que diu «MATRIU · Incubadora»
+quan a l'app aquell projecte s'ha rebatejat segueix sonant igual de real**. No
+peta, no es veu, i el joc anomena una cosa que no existeix. `SOS/tools/check-joc.js`
+compara les vuit caselles amb `DYNAMICS` paraula per paraula, i de passada
+comprova el que no es nota fins a jugar-hi: que l'ordre de desbloqueig les
+contingui totes, que comenci per una que no costa hores —si comencés per una de
+pagament la partida naixeria bloquejada— i que cap bonus estigui promès sense
+branca que el faci.
+
+Dues coses més que va ensenyar el tauler:
+
+- **Una capa que es refà vuit cops per segon no es pot tocar.** La fitxa d'hores
+  viu en una capa pròpia que només es reconstrueix quan canvia quina fitxa hi ha;
+  «se'n va» és una classe sobre el botó que ja hi és. Amb la reconstrucció
+  sencera, el dit arribava a un element que ja no existia.
+- **Dinou caselles il·luminades no assenyalen res.** El primer to del ressaltat
+  era tan fort que el tauler sencer semblava seleccionat i les tres caselles
+  d'aportació desapareixien entre elles.
+
 ## Veda 117 — Una regla que decideix la partida no s'explica: es deixa provar
 
 El joc obria amb un modal de tres regles escrites. Es llegia en deu segons, es

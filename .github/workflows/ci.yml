@@ -50,6 +50,28 @@ jobs:
       - name: Guarda del mapa de valor
         run: node SOS/tools/check-vna.js
 
+      # Les caselles de bonus de la plaça porten el nom d'un projecte del SOS i
+      # plantar-hi hi registra una aportació. Si a l'app se'n canvia el nom, la
+      # casella segueix dient-lo i sona igual de real: el joc anomenaria un
+      # projecte que ja no existeix i no petaria res.
+      - name: Guarda del joc (caselles d'aportació)
+        run: node SOS/tools/check-joc.js
+
+      # La Compra dona xifres de diners que algú farà servir per parlar amb un
+      # pagès. Una afirmació que la pàgina fa i les dades no sostenen —el 80%
+      # de proximitat, un «estalvi» que no ho és— no és un error de format: és
+      # fer quedar malament un grup davant de qui li ven.
+      - name: Guarda de La Compra (preus i regla del 80%)
+        run: node SOS/tools/check-compra.js
+
+      # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
+      # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una
+      # llista de capacitats es queda curta no peta res —simplement ignora una
+      # casella marcada—, i dues persones amb el mateix perfil reben propostes
+      # diferents sense que ho vegi ningú.
+      - name: Guarda del perfil (un sol vocabulari als mapes)
+        run: node SOS/tools/check-perfil.js
+
       # El SOS ha crescut sempre per addició. Aquesta guarda no prohibeix
       # créixer: obliga que créixer sigui una decisió escrita, no un descuit.
       # Puja un sostre a SOS/tools/check-kiss.js i digues per què al commit.
