@@ -31,7 +31,14 @@ const { join } = require('node:path');
 
 const ARREL = join(__dirname, '..', '..');
 const llegeix = f => readFileSync(join(ARREL, 'SOS', f), 'utf8');
-const PAGINES = ['vna.html', 'compra.html'];
+/* `index.html` també hi és: l'app deixa associar una persona a cada rol del
+   mapa amb el mateix vocabulari. El que hi comparteix és el **vocabulari i la
+   puntuació**; el que demana cada rol no pot ser una taula del fitxer, perquè
+   allà els rols els dibuixa la gent. */
+const PAGINES = ['vna.html', 'compra.html', 'index.html'];
+/* Les que porten la taula de demandes escrita al fitxer, i per tant es poden
+   comprovar cita a cita. */
+const AMB_CAL = ['vna.html', 'compra.html'];
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m);
@@ -41,13 +48,26 @@ const tros = (txt, des, fins) => {
   const i = txt.indexOf(des); if (i < 0) return '';
   const j = txt.indexOf(fins, i); return j < 0 ? '' : txt.slice(i, j + fins.length);
 };
+/* El tros compartit va de la clau fins al final de `encaix`, i s'acaba just
+   allà. Tallar-lo «fins a la funció següent» feia que un comentari escrit entre
+   mig comptés com a divergència: el vocabulari i la puntuació són els mateixos
+   a tot arreu, però el que ve després no —a les pàgines de mapa el perfil és
+   del navegador, i a l'app és de cada persona del node. */
+const blocPerfil = t => {
+  const i = t.indexOf('const PERFIL_CLAU=');
+  if (i < 0) return '';
+  const k = t.indexOf('function encaix(', i);
+  if (k < 0) return '';
+  const j = t.indexOf('\n}\n', k);
+  return j < 0 ? '' : t.slice(i, j + 3);
+};
 
 console.log('\nGuarda del perfil · un sol vocabulari a tots els mapes de valor');
 
 /* ── 1 · El bloc compartit, idèntic ─────────────────────────────────────── */
 const blocs = PAGINES.map(f => {
   const t = llegeix(f);
-  return { f, txt: t, bloc: tros(t, "const PERFIL_CLAU=", 'function desaPerfil(') };
+    return { f, txt: t, bloc: blocPerfil(t) };
 });
 if (blocs.some(b => !b.bloc)) {
   bad('alguna pàgina no porta el bloc del perfil: ' +
@@ -56,17 +76,45 @@ if (blocs.some(b => !b.bloc)) {
   const n = (blocs[0].bloc.match(/\{id:'/g) || []).length;
   ok(`les ${blocs.length} pàgines amb mapa declaren el mateix perfil, amb ${n} capacitats`);
 } else {
-  /* Es diu ON divergeix, no només que divergeix: amb setanta línies iguals,
-     «no coincideixen» és una pista inútil. */
-  const [a, b] = blocs;
-  const la = a.bloc.split('\n'), lb = b.bloc.split('\n');
-  const i = la.findIndex((l, k) => l !== lb[k]);
-  bad(`el bloc del perfil difereix entre ${a.f} i ${b.f}, a la línia ${i + 1} del bloc:\n` +
-    `      ${a.f}: ${(la[i] || '(no hi és)').trim().slice(0, 90)}\n` +
-    `      ${b.f}: ${(lb[i] || '(no hi és)').trim().slice(0, 90)}`);
+  /* Es diu QUINA pàgina i ON, no només que no coincideixen: amb tres pàgines i
+     setanta línies iguals, «difereixen» és una pista inútil. Abans es
+     comparaven sempre les dues primeres, que podien ser les dues bones. */
+  const ref = blocs[0], lr = ref.bloc.split('\n');
+  blocs.slice(1).filter(b => b.bloc !== ref.bloc).forEach(b => {
+    const lb = b.bloc.split('\n');
+    const i = lr.findIndex((l, k) => l !== lb[k]);
+    const n = i < 0 ? Math.min(lr.length, lb.length) : i;
+    bad(`el bloc del perfil de ${b.f} no és el de ${ref.f}, a la línia ${n + 1} del bloc:\n` +
+      `      ${ref.f}: ${(lr[n] || '(s\'acaba aquí)').trim().slice(0, 90)}\n` +
+      `      ${b.f}: ${(lb[n] || '(s\'acaba aquí)').trim().slice(0, 90)}`);
+  });
 }
 const aports = new Set([...(blocs[0].bloc || '').matchAll(/\{id:'(\w+)',/g)].map(m => m[1]));
 if (!aports.size) { bad('no s\'ha pogut llegir cap capacitat: la guarda no pot comprovar res'); }
+
+/* Comparar text no distingeix codi de comentari: enganxant el bloc sota un
+   comentari sense tancar, les tres pàgines el tenien «idèntic» i a l'app no hi
+   havia ni APORTS. Ho va trobar una prova de navegador, que és el lloc car de
+   trobar-ho.
+
+   Estar a principi de línia no n'hi ha prou —el primer intent d'aquesta
+   comprovació ho donava per bo i deixava passar el mateix error que la va
+   motivar—. Es mira enrere des de la declaració: si l'obertura de comentari més
+   propera és més a prop que el tancament més proper, la declaració és dins d'un
+   comentari i no s'executa.
+
+   I aquest mateix comentari no pot contenir els dos caràcters del tancament,
+   perquè es tallaria ell sol. Que és, exactament, el que va passar. */
+const viu = (txt, decl) => {
+  const i = txt.search(new RegExp('^' + decl, 'm'));
+  if (i < 0) return false;
+  const obre = txt.lastIndexOf('/*', i), tanca = txt.lastIndexOf('*/', i);
+  return obre < 0 || tanca > obre;
+};
+const morts = blocs.filter(b => !viu(b.txt, 'const APORTS=\\[') || !viu(b.txt, 'const PES=\\{'));
+if (!morts.length) ok('i el bloc és codi viu a totes, no text dins d\'un comentari');
+else bad(`${pl(morts.length, 'pàgina té', 'pàgines tenen')} el bloc del perfil comentat o sagnat: ` +
+  morts.map(b => b.f).join(', ') + ' — hi és escrit i no s\'executa');
 
 /* ── 2, 3 i 4 · Cada rol demana el que el mapa diu que lliura ───────────── */
 const cadenes = s => [...s.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map(m => m[1]);
@@ -112,7 +160,19 @@ function rolsDe(f, txt) {
   return out;
 }
 
-blocs.forEach(({ f, txt }) => {
+/* L'app no porta taula de demandes, però sí que ha de saber fer-hi servir el
+   vocabulari: si les peces que associen persona i rol desapareixen, el mapa
+   torna a ser un pòster i cap altra guarda ho notaria. */
+const PECES = ['memberAports', 'roleCal', 'roleOwner', 'assignRoleMember',
+  'roleDelivers', 'suggestRoleMembers', 'autoAssignRoles', 'rolesSobrecarrega'];
+blocs.filter(b => !AMB_CAL.includes(b.f)).forEach(({ f, txt }) => {
+  const falten = PECES.filter(p => !new RegExp('(function|const)\\s+' + p + '\\b').test(txt));
+  if (!falten.length) ok(`${f}: les peces per associar una persona a un rol hi són`);
+  else bad(`${f}: ${pl(falten.length, 'peça', 'peces')} que falta per associar una persona a ` +
+    `un rol del mapa: ${falten.join(', ')}`);
+});
+
+blocs.filter(b => AMB_CAL.includes(b.f)).forEach(({ f, txt }) => {
   const cal = calDe(txt), rols = rolsDe(f, txt);
   if (!cal.length || !rols.length) {
     bad(`${f}: no s'han pogut llegir els rols o el que demanen — la guarda s'ha quedat cega`);

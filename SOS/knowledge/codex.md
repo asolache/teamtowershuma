@@ -742,6 +742,29 @@ De la mateixa peça:
   arrodoneix: diu què et faltaria «o algú que ho porti», que és exactament per a
   què serveix un mapa de valor.
 
+### I a l'app, on els rols els dibuixa la gent
+
+`SOS/index.html` també deixa associar una persona a cada rol del mapa. Hi ha una
+diferència que canvia el disseny: a les altres dues pàgines els rols són fixos i
+el que demanen ve escrit amb una cita del mapa; **aquí els rols els dibuixa la
+gent**, i per tant el que demana cada rol també l'ha de dir la gent. El que fa el
+formulari és posar-li al davant **què lliura aquell rol segons el mapa**, que és
+l'única cosa que legitima demanar-li res a ningú — la mateixa regla, aplicada on
+no es pot escriure per endavant.
+
+El que sí que és igual, i la guarda ho compara: el vocabulari, els pesos i la
+clau. Una persona no pot rebre propostes diferents segons per quina pantalla hi
+entri.
+
+Dues coses que només tenen sentit a l'app:
+
+- **Assigna per defecte.** Omple d'un cop els rols buits, i **no toca els que
+  algú ja ha triat a mà**: una proposta no pot desfer una decisió.
+- **Concentrar rols es penalitza i es diu.** Cada rol que algú ja porta li baixa
+  la puntuació per al següent, i la pantalla avisa de qui en porta més d'un.
+  Portar-ne tres no és eficiència: és exactament el que aquest mètode serveix
+  per veure abans que passi, i seria absurd que l'eina hi empenyés.
+
 Dos defectes que va trobar posar-ho a prova, i que valen més que la funció:
 
 - **La puntuació premiava rols exigents que no cobries.** El terme de «com
@@ -753,6 +776,16 @@ Dos defectes que va trobar posar-ho a prova, i que valen més que la funció:
   motiu d'una es comprovava contra els lliuraments de l'altra. La clau ha de ser
   el mapa **més** el rol. Una guarda que crida per un problema seu gasta la
   confiança que necessitarà el dia que cridi per un de bo.
+- **Comparar text no distingeix codi de comentari.** El bloc es va enganxar a
+  l'app sota un comentari que no vaig tancar: les tres pàgines el tenien
+  «idèntic», la guarda donava verd, i a l'app no hi havia ni `APORTS`. Ho va
+  trobar la prova de navegador, que és el lloc car de trobar-ho. Ara la guarda
+  mira enrere des de la declaració i comprova que no quedi dins d'un comentari.
+  El primer intent d'aquesta comprovació —«que comenci a principi de línia»— no
+  detectava el mateix error que la va motivar, i el segon es va tallar sol
+  perquè el comentari que l'explicava contenia els dos caràcters del tancament.
+  Tres vegades el mateix, i és el motiu pel qual **una guarda nova s'ha de
+  provar trencant expressament allò que ha de trobar**, no llegint-la.
 
 ## Veda 119 — Un estalvi sense causa és una promesa, i el sobrant no és una pèrdua
 

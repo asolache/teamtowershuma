@@ -1414,10 +1414,19 @@ footer a{color:var(--light)}
 <li><strong>Proposa, no assigna.</strong> L'ordre és una recomanació, el rol s'agafa i es deixa prement el mateix botó, i agafar-ne un allibera l'anterior —no es fan dues persones d'una.</li>
 <li><strong>Quan no encaixes, ho diu.</strong> Si cap rol es cobreix del tot, la pantalla no arrodoneix: diu què et faltaria «o algú que ho porti», que és exactament per a què serveix un mapa de valor.</li>
 </ul>
+<h4>I a l'app, on els rols els dibuixa la gent</h4>
+<p><code>SOS/index.html</code> també deixa associar una persona a cada rol del mapa. Hi ha una diferència que canvia el disseny: a les altres dues pàgines els rols són fixos i el que demanen ve escrit amb una cita del mapa; <strong>aquí els rols els dibuixa la gent</strong>, i per tant el que demana cada rol també l'ha de dir la gent. El que fa el formulari és posar-li al davant <strong>què lliura aquell rol segons el mapa</strong>, que és l'única cosa que legitima demanar-li res a ningú — la mateixa regla, aplicada on no es pot escriure per endavant.</p>
+<p>El que sí que és igual, i la guarda ho compara: el vocabulari, els pesos i la clau. Una persona no pot rebre propostes diferents segons per quina pantalla hi entri.</p>
+<p>Dues coses que només tenen sentit a l'app:</p>
+<ul>
+<li><strong>Assigna per defecte.</strong> Omple d'un cop els rols buits, i <strong>no toca els que algú ja ha triat a mà</strong>: una proposta no pot desfer una decisió.</li>
+<li><strong>Concentrar rols es penalitza i es diu.</strong> Cada rol que algú ja porta li baixa la puntuació per al següent, i la pantalla avisa de qui en porta més d'un. Portar-ne tres no és eficiència: és exactament el que aquest mètode serveix per veure abans que passi, i seria absurd que l'eina hi empenyés.</li>
+</ul>
 <p>Dos defectes que va trobar posar-ho a prova, i que valen més que la funció:</p>
 <ul>
 <li><strong>La puntuació premiava rols exigents que no cobries.</strong> El terme de «com d'exigent és el rol» anava sumat, així que amb el perfil buit sortia un rànquing sencer que no volia dir res. Ara va multiplicat per la cobertura: si no cobreixes res, no puntues res.</li>
 <li><strong>La guarda es queixava d'unes dades correctes.</strong> Aplanava els rols per nom, i «Coordinació» existeix a les dues dinàmiques amb lliuraments diferents: el motiu d'una es comprovava contra els lliuraments de l'altra. La clau ha de ser el mapa <strong>més</strong> el rol. Una guarda que crida per un problema seu gasta la confiança que necessitarà el dia que cridi per un de bo.</li>
+<li><strong>Comparar text no distingeix codi de comentari.</strong> El bloc es va enganxar a l'app sota un comentari que no vaig tancar: les tres pàgines el tenien «idèntic», la guarda donava verd, i a l'app no hi havia ni <code>APORTS</code>. Ho va trobar la prova de navegador, que és el lloc car de trobar-ho. Ara la guarda mira enrere des de la declaració i comprova que no quedi dins d'un comentari. El primer intent d'aquesta comprovació —«que comenci a principi de línia»— no detectava el mateix error que la va motivar, i el segon es va tallar sol perquè el comentari que l'explicava contenia els dos caràcters del tancament. Tres vegades el mateix, i és el motiu pel qual <strong>una guarda nova s'ha de provar trencant expressament allò que ha de trobar</strong>, no llegint-la.</li>
 </ul>
 </article>
   <p class="empty hidden" id="empty">Cap veda amb aquest text. Prova amb una paraula més curta.</p>
