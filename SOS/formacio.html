@@ -301,13 +301,65 @@ footer a{color:var(--indigo);text-decoration:none}
 </ul></div>
 </div>
 
+<h3 class="section">Comptabilitat de triple entrada</h3>
+<p class="lead">És la peça que fa que tot l'anterior serveixi per a alguna cosa, i és el concepte
+del mòdul que més fàcil és explicar malament. Val la pena dir exactament què canvia — i què no.</p>
+
+<p><strong>La partida doble té dos llibres, i per tant un problema.</strong> Qui dona apunta a
+casa seva, qui rep apunta a casa seva, i els dos poden no dir el mateix. El que es fa per
+resoldre-ho són dues feines caríssimes: <strong>conciliar</strong> —seure amb els dos llibres i
+quadrar-los línia a línia— i, quan hi ha prou diners a sobre, <strong>auditar</strong>: pagar algú
+de fora perquè reconstrueixi què va passar a partir de papers que cada part guarda per separat.</p>
+
+<p><strong>La triple entrada afegeix una anotació que no és de cap dels dos:</strong> un
+<strong>rebut signat pels dos</strong>, que tots dos guarden igual. I d'aquí surt el que canvia:</p>
+
+<ul>
+<li><strong>La conciliació desapareix.</strong> No hi ha dos llibres a quadrar: hi ha un rebut, i
+o el tens o no el tens. Dues còpies del mateix rebut no poden discrepar — si discrepen, una de
+les dues no verifica, i es veu <em>quina</em>.</li>
+<li><strong>L'auditoria no desapareix: canvia de feina.</strong> Deixa de ser reconstruir què va
+passar i passa a ser <strong>comprovar firmes</strong>. Ho pot fer qualsevol, en un segon, sense
+accés privilegiat i sense demanar permís a ningú. No treu l'auditor de sobre —segueix fent falta
+per dir si el que es va apuntar era cert, que és una altra pregunta— però li treu la part cara i
+li deixa la que val.</li>
+<li><strong>El que NO fa: dir que el fet sigui cert.</strong> Un rebut prova que dues persones van
+afirmar el mateix i quan. Que aquelles tres hores es fessin de debò ho diu qui hi era. Confondre
+les dues coses és el que fa que després algú es pensi que un registre substitueix la confiança.</li>
+</ul>
+
+<p class="lead">I la conseqüència d'arquitectura, que és la veda 64 del codex:
+<strong>un ordre global vol dir un amo.</strong> Amb una sola cadena per node cal decidir qui
+apunta primer, i aquell «qui decideix» és un servidor. Amb el rebut compartit, cada autor encadena
+el seu i la unió de dues cadenes és vàlida sense reordenar res. Per això <strong>cada còpia de més
+és una prova de més</strong> en comptes d'un conflicte a resoldre: perdre el telèfon deixa de ser
+perdre la feina, perquè qui era a l'altra banda també la té.</p>
+
+<div class="box eines"><h4>🧰 Les tres anotacions al SOS</h4>
+<p><strong>1 · L'apunt</strong> de qui l'escriu, signat i encadenat amb l'anterior <em>del mateix
+did</em> (<code>pushLedger()</code>). <strong>2 · El vistiplau</strong> signat de l'altra banda
+(<code>submitEntry()</code> → <code>confirmPending()</code>), que <strong>entra al llibre amb la
+seva firma</strong> i no com una nota. <strong>3 · El rebut</strong>
+(<code>buildRebut()</code>), que és el mateix objecte per a tots dos i es verifica sol
+(<code>verifyRebut()</code>) fora de l'app. I el quart lloc, que no és una anotació sinó una
+data: el <strong>registre públic</strong>, on la petjada de l'apunt fa que la data deixi de
+dependre de qui guarda el fitxer.</p>
+</div>
+
 <div class="box eines"><h4>🧰 Eines / conceptes SOS</h4>
-<p><code>getIdentity()</code> · <code>signRecord(rec)</code> · <code>verifyRecord(rec)</code> · <code>chainLedger(list)</code> · <code>verifyChain(list)</code> · <code>pushLedger()</code> · <code>bindPasskey()</code> · <code>generateNodeKey()</code> · <code>wrapNodeKeyForMember()</code> · <code>getMyNodeKey()</code> · <code>myExchangeCard()</code></p>
+<p><code>getIdentity()</code> · <code>signRecord(rec)</code> · <code>verifyRecord(rec)</code> · <code>chainLedger(list)</code> · <code>verifyChain(list)</code> · <code>pushLedger()</code> · <code>submitEntry()</code> · <code>confirmPending()</code> · <code>buildRebut()</code> · <code>verifyRebut()</code> · <code>rebutAlRegistre()</code> · <code>bindPasskey()</code> · <code>generateNodeKey()</code> · <code>wrapNodeKeyForMember()</code> · <code>getMyNodeKey()</code> · <code>myExchangeCard()</code></p>
 </div>
 
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Segueix el flux "primer boot → identitat automàtica → primera firma → primer envelope". Fes servir DevTools per veure les JWKs sense sortir del navegador. Utilitza el <strong>test-crypto.mjs</strong> com a guió d'aprenentatge.</p></div>
 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>1) Obre SOS en dos navegadors diferents (dues identitats did:sos). 2) A la Sabiduria del node, comparteix la clau de xifratge amb l'altre. 3) Verifica que l'altre pot llegir el contingut xifrat i un tercer navegador no.</p></div>
+
+<div class="box exercici"><h4>✏ Exercici de triple entrada</h4><p>1) Amb les dues identitats,
+registra una aportació amb contrapart: veuràs que <strong>no entra al llibre</strong> fins que
+l'altra banda hi diu la seva. 2) Dona-hi el vistiplau des del segon navegador. 3) Baixa el rebut
+(📄 al teu ledger) i obre'l amb un editor de text: has de poder llegir el fet, les dues firmes i
+la petjada. 4) Canvia-hi una xifra a mà i torna a verificar-lo. <strong>Aquest quart pas és el
+mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que tocar-ho es noti.</p></div>
 </section>
 
 <section class="module mod-3" id="m3">

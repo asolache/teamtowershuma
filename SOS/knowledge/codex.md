@@ -704,6 +704,68 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 126 — La tercera anotació hi era, i es llençava al moment de guardar-la
+
+El SOS feia triple entrada **en potència** des de la veda 64: l'apunt signat de
+qui l'escriu, el vistiplau signat de l'altra banda, i el registre públic com a
+tercer lloc. Auditant-ho de prop, la tercera anotació es perdia exactament on
+havia de quedar-se.
+
+`confirmPending` signa el vistiplau —i verifica— i tot seguit el posava al
+llibre retallat a mà: `confirmedBy: p.got.map(g => ({name, did, ts}))`.
+**La firma es queda fora.** El llibre deia «confirmat per Bru» i des del llibre
+no ho podia comprovar ningú: era una afirmació, no una prova. I `activityRanking`
+en repartia punts de reputació, en una pantalla que a sota diu, amb totes les
+lletres, *«només puntua el que està signat»*. No era una decisió de disseny amb
+la qual es pogués conviure: era una frase de la pantalla que el codi no complia,
+i entre les dues coses mana la frase.
+
+Tres correccions, i la tercera és la que fa que existeixi la cosa:
+
+- **El vistiplau entra sencer**, amb la seva firma, i es verifica des del llibre.
+- **Només els vistiplaus signats puntuen.** Els de l'esquema antic hi perden els
+  punts de confirmació —cosa que no és dir que estiguin trencats, l'apunt segueix
+  valent— i fabricar-se reputació editant el propi fitxer deixa de funcionar.
+- **El rebut existeix com a objecte** (`buildRebut` / `verifyRebut`), portàtil i
+  verificable fora de l'app. Un rebut que no es pot treure del dispositiu no és
+  una tercera anotació: és una nota al marge del primer llibre.
+
+### Dues decisions del rebut que no són òbvies
+
+- **Porta l'apunt tal com es va signar, no un resum.** La temptació és desar els
+  camps que semblen importants; la firma cobreix l'objecte, i qualsevol camp que
+  hi falti fa que deixi de verificar-se — i llavors el rebut només val dins de
+  l'app que el va fer, que és el contrari de portàtil.
+- **El resum llegible es compara amb la firma.** El rebut porta també una versió
+  llegible per a qui l'obri amb un editor de text, i sense aquesta comprovació
+  el frau més fàcil amb un rebut a la mà seria que el text digués trenta hores i
+  la signatura tres. Totes dues meitats «verificarien».
+
+I un vistiplau d'abans de la firma **no es diu trencat**: es marca com a antic i
+no compta com a prova. És el mateix tracte que la veda 64 dona a les cadenes
+globals — marcar de corrupte el que ningú ha tocat és la manera més ràpida que
+algú deixi de refiar-se del verificador.
+
+### El que la triple entrada elimina, i el que no
+
+Va a la formació, mòdul 2, perquè és el concepte que més fàcil s'explica
+malament i la versió grandiloqüent es descobreix a la primera:
+
+- **Desapareix la conciliació.** No hi ha dos llibres a quadrar: hi ha un rebut,
+  i o el tens o no el tens. Dues còpies del mateix rebut no poden discrepar — si
+  discrepen, una no verifica i es veu quina.
+- **L'auditoria no desapareix: canvia de feina.** Deixa de ser reconstruir què va
+  passar i passa a ser comprovar firmes, cosa que pot fer qualsevol en un segon i
+  sense accés privilegiat. No treu l'auditor de sobre —segueix fent falta per dir
+  si el que es va apuntar era cert— però li treu la part cara.
+- **No diu que el fet sigui cert.** Un rebut prova que dues persones van afirmar
+  el mateix i quan. Que aquelles tres hores es fessin ho diu qui hi era.
+  Confondre les dues coses és el que fa que després algú es pensi que un registre
+  substitueix la confiança.
+
+La guarda comprova les tres coses al fitxer, la formació inclosa: si algun dia la
+docència diu «s'acaben les auditories», el CI peta.
+
 ## Veda 125 — Un número que reparteix algú no és el teu número
 
 La pel·lícula del Comando va d'un reclutament de 150.000 superherois i cadascú té

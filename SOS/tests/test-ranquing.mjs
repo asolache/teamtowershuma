@@ -141,6 +141,34 @@ ok(veda56.abans === veda56.despres,
   'una estimació de l\'oracle no mou el rànquing del node: ' + veda56.abans + ' → ' + veda56.despres);
 ok(veda56.reciproc, 'i la reciprocitat segueix comptant a l\'escala petita');
 
+/* La pantalla d'aquest rànquing diu, a sota i amb totes les lletres, «només
+   puntua el que està signat». Els vistiplaus no ho complien: es comptaven
+   portessin firma o no, i un vistiplau sense firma és un nom escrit en un camp.
+   Volia dir que qualsevol es podia fabricar reputació editant el seu fitxer. */
+console.log('\nUn vistiplau sense firma no puntua, perquè la pantalla diu que no');
+{
+  const r = await page.evaluate(async () => {
+    const S = window.__SOS;
+    const n = S.newNode('Node del vistiplau', 'projecte', null);
+    n.ledger = []; S.state.nodes.push(n);
+    const qui = S.newMember({ name: 'Fa Feina' }), fals = S.newMember({ name: 'Vistiplau Fals' });
+    S.membersOf(n).push(qui, fals);
+    await S.pushLedger(n.ledger, { id: 'vf1', ts: '2026-08-01T09:00:00Z', type: 'temps', value: 5,
+      what: 'Taller', memberId: qui.id,
+      /* Escrit a mà, sense firma: exactament el que es podria colar editant el
+         fitxer del navegador. */
+      confirmedBy: [{ name: 'Vistiplau Fals', did: 'did:sos:ed25519:FALS', ts: '2026-08-01T10:00:00Z' }] });
+    const r1 = S.activityRanking({ scopeId: n.id });
+    const jo = r1.find(x => x.name === 'Vistiplau Fals');
+    return { fila: !!jo, conf: jo ? jo.confirmacions : 0,
+      total: r1.length, teFeina: !!r1.find(x => x.name === 'Fa Feina') };
+  });
+  ok(!r.fila || r.conf === 0,
+    'un vistiplau escrit a mà i sense firma no dona cap punt de confirmació: ' +
+    'fabricar-se reputació editant el fitxer deixa de funcionar');
+  ok(r.teFeina, 'i l\'apunt de qui va fer la feina segueix comptant: no es tomba res que sí que està signat');
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

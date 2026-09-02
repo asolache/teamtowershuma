@@ -2582,7 +2582,13 @@ async function confirmPending(node,p,memberId){
     }else{
       /* L'apunt conserva la data del fet, no la de la confirmació: el que va
          passar va passar quan va passar. Qui ho ha validat queda a dins. */
-      const e=Object.assign({},p.entry,{confirmedBy:p.got.map(g=>({name:g.name,did:g.did,ts:g.ts})),confirmedTs:p.decidedTs});
+      /* El vistiplau entra SENCER, amb la seva firma. Abans es reduïa a
+         `{name,did,ts}` i la firma es quedava fora: el llibre deia «confirmat
+         per Bru» i no hi havia manera de comprovar-ho des del llibre. Una
+         afirmació que no es pot comprovar val el mateix que cap —i pitjor,
+         perquè el rànquing en repartia punts. És la tercera anotació de la
+         triple entrada, i era la que es llençava. Veda 126. */
+      const e=Object.assign({},p.entry,{confirmedBy:p.got.map(g=>Object.assign({},g)),confirmedTs:p.decidedTs});
       await pushLedger(node.ledger||(node.ledger=[]),e);
       p.entryId=e.id;
     }
@@ -6375,6 +6381,132 @@ async function openPack(pack,type,node){
    firma. Els que no en porten no viatgen —no perquè siguin falsos, sinó perquè
    a l'altra banda no hi hauria manera de comprovar-los, i llavors el canal
    estaria movent afirmacions en comptes de proves. */
+/* ═══════════ El rebut · la tercera anotació, com a objecte ═══════════
+   La comptabilitat de partida doble té dos llibres i, per tant, un problema:
+   els dos poden no dir el mateix, i el que es fa per resoldre-ho és
+   **conciliar** —seure amb els dos llibres i quadrar-los línia a línia— i, si
+   hi ha prou diners a sobre, **auditar**: que algú de fora reconstrueixi el que
+   va passar a partir de papers que les dues parts guarden per separat.
+
+   La triple entrada afegeix una tercera anotació que **no és de cap dels dos**:
+   un rebut signat pels dos, que tots dos guarden igual. D'aquí surt el que de
+   debò canvia, i convé dir-ho amb precisió perquè la versió grandiloqüent és
+   falsa:
+
+   · **El que desapareix és la conciliació.** No hi ha dos llibres a quadrar:
+     hi ha un rebut, i o el tens o no el tens. Dues còpies del mateix rebut no
+     poden discrepar —si discrepen, una de les dues no verifica i es veu quina.
+   · **El que canvia és l'auditoria, no desapareix.** Deixa de ser reconstruir
+     què va passar i passa a ser **comprovar firmes**: qualsevol ho pot fer, en
+     un segon, sense accés privilegiat i sense demanar-li res a ningú. Això no
+     treu l'auditor de sobre —segueix calent per dir si el que es va apuntar era
+     cert, que és una altra pregunta— però li treu la feina caríssima i li deixa
+     la que val.
+   · **El que NO fa** és dir que el fet sigui cert. Un rebut prova que dues
+     persones van afirmar el mateix i quan; que aquelles tres hores es fessin de
+     debò, això ho diu qui hi era. Confondre les dues coses és el que fa que
+     després algú es pensi que un registre substitueix la confiança.
+
+   Al SOS les tres anotacions ja hi eren **en potència** —l'apunt signat de qui
+   l'escriu, el vistiplau signat de l'altra banda i el registre públic com a
+   tercer lloc— però el rebut no existia com a **objecte**: el vistiplau vivia
+   dins de l'apunt de l'autor i, en entrar-hi, **perdia la firma**. Un rebut que
+   no es pot treure d'un dispositiu i comprovar a fora no és una tercera
+   anotació: és una nota al marge del primer llibre. Veda 126. */
+const REBUT_TYPE='sos-rebut-v1';
+/* Els camps del rebut, declarats. Llista blanca com al cromo i als moviments de
+   La Compra: el rebut es dona a l'altra banda i pot acabar a qualsevol lloc, i
+   afegir-hi un camp ha de ser una decisió i no un descuit. */
+const REBUT_CAMPS=['type','v','apunt','fet','dona','rep','vistiplaus','node','ts','cid'];
+/* Es fa a partir d'un apunt del llibre i **no en necessita res més**: qui el
+   rebi ha de poder-lo verificar sense el node, sense l'app i sense nosaltres. */
+async function buildRebut(node,entry){
+  if(!entry||!entry.sig)throw{msg:'Un apunt sense firma no fa rebut: no hi ha ningú que ho hagi dit.'};
+  const qui=id=>{const m=id&&node?memberById(node,resolveMemberId(node,id)):null;
+    return m?{nom:m.name,did:m.did||''}:null;};
+  const r={
+    type:REBUT_TYPE,v:1,
+    /* L'apunt tal com es va signar, sencer. No una còpia amb els camps que a mi
+       em semblin importants: la firma cobreix l'objecte, i qualsevol camp que
+       hi tregui fa que deixi de verificar-se. */
+    apunt:Object.assign({},entry),
+    /* I el mateix, llegible. El rebut s'ha de poder entendre sense obrir l'app
+       —si per saber què diu calgués una eina, no seria portàtil— però el resum
+       **no pot dir una cosa diferent de la firma**, i `verifyRebut` ho compara:
+       ensenyar un rebut on el text diu trenta hores i la firma en diu tres
+       seria la manera més fàcil d'enganyar amb això a la mà. */
+    fet:{hash:entry.hash||'',id:entry.id||'',ts:entry.ts||'',
+      que:entry.what||'',mena:entry.type||'temps',quant:Number(entry.value)||0,
+      categoria:entry.category||''},
+    dona:Object.assign({},qui(entry.memberId)||{},{signer:entry.signer||null}),
+    rep:qui(entry.counterpartId),
+    /* Els vistiplaus sencers, amb la seva firma. És el que fa que sigui un
+       rebut i no la paraula d'una banda. */
+    vistiplaus:(entry.confirmedBy||[]).map(c=>Object.assign({},c)),
+    node:node?{id:node.id,nom:node.name}:null,
+    ts:now()
+  };
+  r.cid=await _cidOf(r);
+  return r;
+}
+/* Verificar-lo és comprovar firmes, i prou. Aquesta funció és tota l'auditoria
+   que la triple entrada estalvia: el que abans era reconstruir, aquí és mirar. */
+async function verifyRebut(rebut){
+  if(!rebut||rebut.type!==REBUT_TYPE)return{ok:false,per:'això no és un rebut del SOS'};
+  const{cid,...rest}=rebut;
+  if(await _cidOf(rest)!==cid)return{ok:false,per:'el rebut s\'ha tocat després de fer-lo'};
+  const ap=rebut.apunt||{};
+  /* El resum llegible contra el que es va signar. Aquesta comprovació és la
+     que fa que ensenyar el rebut valgui de res: sense ella, el JSON diria una
+     cosa i la pantalla una altra i totes dues «verificarien». */
+  const f=rebut.fet||{};
+  const quadra=String(f.id||'')===String(ap.id||'')&&String(f.ts||'')===String(ap.ts||'')&&
+    String(f.que||'')===String(ap.what||'')&&String(f.mena||'')===String(ap.type||'')&&
+    Number(f.quant||0)===Number(ap.value||0)&&String(f.hash||'')===String(ap.hash||'');
+  if(!quadra)return{ok:false,per:'el que el rebut diu i el que porta signat no són el mateix'};
+  const dona=ap.sig?await verifyRecord(ap):{ok:false,reason:'sense firma'};
+  const vist=[];
+  for(const c of rebut.vistiplaus||[]){
+    /* i que siguin els mateixos que porta l'apunt signat: afegir-ne un al
+       rebut i no a l'apunt seria inventar-se un vistiplau. */
+    if(!(ap.confirmedBy||[]).some(x=>x.did===c.did&&x.ts===c.ts))
+      {vist.push({qui:c.name||c.did||'',ok:false,per:'aquest vistiplau no és a l\'apunt signat'});continue;}
+    /* Un vistiplau sense firma és d'abans que això existís. No es diu que
+       estigui trencat —no ho està, és d'un altre esquema— però tampoc compta
+       com a prova. Veda 64, el mateix tracte que amb les cadenes antigues. */
+    if(!c.sig){vist.push({qui:c.name||c.did||'',ok:false,antic:true,per:'vistiplau d\'abans de la firma'});continue;}
+    const v=await verifyRecord(c);
+    vist.push({qui:c.name||c.did||'',ok:!!v.ok,per:v.reason||''});
+  }
+  const bons=vist.filter(v=>v.ok).length;
+  return{ok:!!dona.ok&&bons>0,dona:!!dona.ok,perDona:dona.reason||'',
+    vistiplaus:vist,signat:bons,antics:vist.filter(v=>v.antic).length,
+    /* Les dues bandes signades és el que fa que això sigui triple entrada. Amb
+       una sola firma és un apunt, i s'ha de dir així. */
+    tresAnotacions:!!dona.ok&&bons>0,
+    per:!dona.ok?'la firma de qui l\'escriu no verifica':(bons?'':'cap vistiplau signat: encara és la paraula d\'una banda')};
+}
+/* On és aquest rebut respecte del registre públic: si la seva petjada ja hi és,
+   la data deixa de dependre de qui guarda el fitxer. I el número de les dues
+   bandes, que és el que lliga el rebut amb el registre de persones. */
+async function rebutAlRegistre(rebut){
+  if(!rebut||!rebut.fet||!rebut.fet.hash)return{ok:false,per:'el rebut no porta la petjada de l\'apunt'};
+  let inc={ok:false};
+  try{inc=await proveInclusion(rebut.fet.hash);}catch(e){inc={ok:false,reason:'no s\'ha pogut llegir el registre'};}
+  const num=async b=>{
+    if(!b||!b.did)return null;
+    try{const c=await altaCommitment(b.did,rebut.fet.hash);const n=await numeroDe(c);return n.ok?n.numero:null;}catch(e){return null;}
+  };
+  return{ok:!!inc.ok,per:inc.reason||'',cid:inc.cid||'',ts:inc.ts||'',
+    /* Només surt número si aquest apunt ÉS la seva alta: si no ho és, el número
+       hi és igualment però no es dedueix d'aquí, i inventar-ho seria dir que
+       aquest rebut prova una cosa que no prova. */
+    numDona:await num(rebut.dona),numRep:await num(rebut.rep)};
+}
+function downloadRebut(rebut){
+  downloadText('sos-rebut-'+String(rebut.fet.id||'').slice(0,12)+'-'+String(rebut.ts||'').slice(0,10)+'.json',
+    JSON.stringify(rebut,null,2));
+}
 const signedReceipts=node=>(node.ledger||[]).filter(e=>e&&e.sig&&e.signer);
 async function buildChannelPack(node,theme,{encrypt=true}={}){
   if(!node)throw{msg:'Cal un node'};
@@ -14952,6 +15084,73 @@ function showValueReturn(before,{node,title}={}){
 function matchesForNode(nodeId){try{return findMatches().filter(m=>m.offer.nodeId===nodeId||m.demand.nodeId===nodeId);}catch(e){return[];}}
 /* Vista compartida pel ledger personal i el registre públic. La diferència entre
    els dos és el filtre inicial i el to, no el codi: així no poden divergir. */
+/* La pantalla del rebut. Tres coses i cap més: què diu, qui ho ha signat, i on
+   és al registre. La quarta —què costaria comprovar-ho d'una altra manera— hi és
+   escrita perquè és el que fa entendre per què això val la pena. */
+function openRebut(node,entry){
+  const bg=modal(`
+    <h2>📄 El rebut</h2>
+    <p class="m-sub">La <strong>tercera anotació</strong>: no és del qui dona ni del qui rep, és de tots dos.
+    Se'l poden endur i comprovar sense l'app, sense el node i sense nosaltres.</p>
+    <div id="rbBody">Fent el rebut…</div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem">
+      <button class="btn btn-ghost" id="rbCopy">📋 Copia'l</button>
+      <button class="btn btn-primary" id="rbDl">⭳ Baixa'l</button>
+      <button class="btn btn-ghost" id="rbClose">${t('Tanca')}</button>
+    </div>`);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#rbClose').onclick=closeModal;
+  let r=null;
+  (async()=>{
+    const box=bg.querySelector('#rbBody');
+    try{r=await buildRebut(node,entry);}
+    catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||String(e))+'</span></div>';return;}
+    const v=await verifyRebut(r);
+    if(!box.isConnected)return;
+    const q=r.fet.mena==='moneda'?(r.fet.quant+' €'):(r.fet.quant+' h');
+    box.innerHTML=
+      '<div class="ent-card"><div class="ent-nm">'+esc(r.fet.que||'aportació')+' · '+q+'</div>'+
+      '<div class="ent-desc">'+esc((r.dona&&r.dona.nom)||'—')+(r.rep?' → '+esc(r.rep.nom):'')+
+      ' · '+esc(String(r.fet.ts||'').slice(0,10))+(r.node?' · '+esc(r.node.nom):'')+'</div></div>'+
+      '<div class="ent-grp-lbl">🔏 Les firmes</div>'+
+      '<div class="ent-card"><div class="ent-desc">'+
+        (v.dona?'✅ <strong>Qui l\'escriu</strong>: firma verificada aquí mateix.'
+               :'⚠ <strong>Qui l\'escriu</strong>: '+esc(v.perDona||v.per||'no verifica'))+'</div>'+
+      (v.vistiplaus||[]).map(x=>'<div class="ent-desc">'+(x.ok?'✅':'⚠')+' <strong>'+esc(x.qui||'algú')+'</strong>: '+
+        (x.ok?'vistiplau signat i verificat.':esc(x.per||'no verifica'))+'</div>').join('')+
+      (!(v.vistiplaus||[]).length?'<div class="ent-desc">Encara cap vistiplau: <strong>això és la paraula d\'una banda</strong>, '+
+        'no un rebut. Amb el vistiplau de l\'altra part es tanca la triple entrada.</div>':'')+
+      '</div>'+
+      '<div class="ai-note"><span class="ic">'+(v.tresAnotacions?'✅':'⚠')+'</span><span>'+
+        (v.tresAnotacions
+          ? '<strong>Les tres anotacions hi són</strong>: l\'apunt de qui dona, el vistiplau de qui rep i aquest rebut, que és el mateix per a tots dos. '+
+            'Res a conciliar: dues còpies d\'això no poden discrepar — si discrepen, una no verifica i es veu quina.'
+          : esc(v.per||'encara no és una tercera anotació'))+'</span></div>'+
+      '<div class="ent-grp-lbl">🌐 Al registre públic</div><div class="ent-card" id="rbReg"><div class="ent-desc">Mirant-ho…</div></div>'+
+      '<p class="m-sub" style="margin-top:.6rem"><strong>Què prova i què no.</strong> Prova que aquestes persones van afirmar el mateix i quan. '+
+      '<strong>No prova que el fet sigui cert</strong> — això ho diu qui hi era. Confondre les dues coses és el que fa que algú es pensi '+
+      'que un registre substitueix la confiança.</p>';
+    const rb=bg.querySelector('#rbReg');
+    const reg=await rebutAlRegistre(r);
+    if(!rb||!rb.isConnected)return;
+    rb.innerHTML=reg.ok
+      ? '<div class="ent-desc">✅ La petjada d\'aquest apunt ja és a una versió publicada del '+
+        'registre (<code>'+esc(String(reg.cid||'').slice(0,24))+'…</code>, '+esc(String(reg.ts||'').slice(0,10))+'). '+
+        'A partir d\'aquí <strong>la data no depèn ni de tu ni de nosaltres</strong>.</div>'+
+        (reg.numDona||reg.numRep?'<div class="ent-desc" style="margin-top:.3rem">🎟 '+
+          [reg.numDona?'qui dona és el número '+reg.numDona.toLocaleString('ca'):'',
+           reg.numRep?'qui rep és el '+reg.numRep.toLocaleString('ca'):''].filter(Boolean).join(' · ')+
+          ' de '+COMANDO_TARGET.toLocaleString('ca')+' — aquesta va ser la seva alta.</div>':'')
+      : '<div class="ent-desc">Encara no és a cap versió publicada. El rebut val igual —les firmes es comproven soles— '+
+        'però la data encara depèn de qui guarda el fitxer. '+esc(reg.per||'')+'</div>';
+  })();
+  bg.querySelector('#rbDl').onclick=()=>{if(r)downloadRebut(r);};
+  bg.querySelector('#rbCopy').onclick=async()=>{
+    if(!r)return;const txt=JSON.stringify(r,null,2);
+    if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(txt);toast('📋 Rebut copiat');}
+    else prompt('Copia el rebut:',txt);
+  };
+}
 function buildActionsView(bg,{source,searchId,listId,statsId,verify}){
   const q=bg.querySelector('#'+searchId),box=bg.querySelector('#'+listId),stats=bg.querySelector('#'+statsId);
   let verified={};
@@ -14968,7 +15167,7 @@ function buildActionsView(bg,{source,searchId,listId,statsId,verify}){
       '<div class="bib-tile"><div class="n" style="color:var(--purple)">'+t.persones+'</div><div class="l">persones</div></div>'+
       '<div class="bib-tile"><div class="n" style="color:var(--blue)">'+t.nodes+'</div><div class="l">nodes</div></div></div>';
     if(!list.length){box.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>'+(q&&q.value.trim()?'Cap acció que coincideixi amb «'+esc(q.value.trim())+'».':'Encara no hi ha cap acció registrada.')+'</span></div>';return;}
-    box.innerHTML='<div class="acts">'+list.slice(0,150).map(x=>{
+    box.innerHTML='<div class="acts">'+list.slice(0,150).map((x,i)=>{
       const v=verified[x.id];
       const badge=!x.signed?'<span class="ent-b">sense firma</span>'
         :v?(v.ok?'<span class="ent-b b-ver">🔏 firma verificada</span>':'<span class="ent-b" style="color:var(--red);border-color:var(--red)">⚠ firma invàlida</span>')
@@ -14978,10 +15177,20 @@ function buildActionsView(bg,{source,searchId,listId,statsId,verify}){
         '<span class="act-b"><span class="act-t">'+esc(x.what||'aportació')+'</span>'+
         '<span class="act-d">'+esc(x.who)+(x.counterpart?' → '+esc(x.counterpart):'')+' · '+esc(x.nodeName)+(x.ventureName?' · '+esc(x.ventureName):'')+
         (x.flow?' · <em>'+esc(x.flow)+'</em>':'')+(x.deliverables?' · '+esc(x.deliverables):'')+'</span>'+
-        '<span class="ent-badges">'+badge+(x.chained?'<span class="ent-b">⛓ encadenada</span>':'')+'</span></span>'+
+        '<span class="ent-badges">'+badge+(x.chained?'<span class="ent-b">⛓ encadenada</span>':'')+
+        ((x.entry&&x.entry.confirmedBy||[]).length?'<span class="ent-b b-ver">✋ amb vistiplau</span>':'')+
+        (x.signed?'<button type="button" class="ent-b act-rb" data-rb="'+i+'" title="El rebut d\'aquest apunt">📄 rebut</button>':'')+
+        '</span></span>'+
         '<span class="act-v">'+(x.type==='moneda'?(x.value+' €'):(x.value+' h'))+'</span></div>';
     }).join('')+'</div>'+(list.length>150?'<div class="ent-desc">… i '+(list.length-150)+' més. Afina la cerca.</div>':'');
-    box.querySelectorAll('.act-row').forEach(r=>r.onclick=()=>{closeModal();selectNode(r.dataset.node);});
+    box.querySelectorAll('.act-row').forEach(r=>r.onclick=e=>{
+      if(e.target.closest('[data-rb]'))return;      // el rebut no és anar al node
+      closeModal();selectNode(r.dataset.node);});
+    box.querySelectorAll('[data-rb]').forEach(b=>b.onclick=e=>{
+      e.stopPropagation();
+      const x=list[Number(b.dataset.rb)];
+      if(x&&x.node&&x.entry)openRebut(x.node,x.entry);
+    });
     if(verify&&!skipVerify){
       verified=await verifyActions(list);
       // Repintat una sola vegada, i només si la cerca no ha canviat mentrestant
@@ -15728,6 +15937,15 @@ function activityRanking({scopeId,limit,now:nowMs}={}){
          El `did` de la confirmació mana sobre el nom, com a tot arreu. */
       (e.confirmedBy||[]).forEach(c=>{
         if(!c)return;
+        /* Només els vistiplaus amb firma. La pantalla d'aquest rànquing diu, a
+           sota i amb totes les lletres, «només puntua el que està signat», i
+           això no ho complia: un vistiplau sense firma és un nom escrit en un
+           camp, i comptar-lo volia dir que qualsevol podia fabricar-se
+           reputació editant el seu propi fitxer. Els de l'esquema antic hi
+           perden els punts de confirmació —que no és dir que estiguin trencats:
+           l'apunt segueix valent— però la frase de la pantalla passa a ser
+           certa, i entre les dues coses mana la frase. */
+        if(!c.sig)return;
         const k=c.did?'did:'+c.did:keyOfName(c.name);
         const p=rec(k,c.name);if(!p)return;
         p.confirmacions++;p.nodes.add(id);});
@@ -19247,7 +19465,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,ALTA_V,ALTA_LLARG,ARWEAVE,altaCommitment,primeresAltes,altesNoves,altesPublicades,numeroDe,altaDe,elMeuNumero,pesRegistre,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,_canon,_canonAll}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,ALTA_V,ALTA_LLARG,ARWEAVE,altaCommitment,primeresAltes,altesNoves,altesPublicades,numeroDe,altaDe,elMeuNumero,pesRegistre,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,REBUT_TYPE,REBUT_CAMPS,buildRebut,verifyRebut,rebutAlRegistre,downloadRebut,openRebut,_canon,_canonAll}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

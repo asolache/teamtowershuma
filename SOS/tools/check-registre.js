@@ -181,7 +181,62 @@ else bad('el prompt del kit narratiu no prohibeix inventar números');
   else bad(`${nom} no diu que el número no és un rànquing — és l'error que una IA de guió comet sola`);
 });
 
-/* ── 8 · L'índex comença buit i és llegible ──────────────────────────────── */
+/* ── 8 · La tercera anotació és una anotació, no una nota al marge ────────
+   El vistiplau es signa i durant molt de temps entrava al llibre com
+   `{name,did,ts}`: la firma es quedava fora i el llibre deia «confirmat per
+   Bru» sense que ningú ho pogués comprovar des del llibre. Això no és un detall
+   d'implementació —és tota la diferència entre triple entrada i partida doble
+   amb una nota al costat— i per tant es vigila aquí. */
+const conf = cos('async function confirmPending(');
+const rebut = cos('async function buildRebut(');
+const verRebut = cos('async function verifyRebut(');
+
+if (!conf) bad('no es troba confirmPending: la guarda de la tercera anotació s\'ha quedat cega');
+else if (/confirmedBy:p\.got\.map\(g=>\(\{[^)]*\}\)\)/.test(conf))
+  bad('el vistiplau entra al llibre retallat a mà: la firma es queda fora i el llibre ' +
+    'diu «confirmat per algú» sense que ningú ho pugui comprovar');
+else if (/confirmedBy:p\.got\.map\(g=>Object\.assign\(\{\},g\)\)/.test(conf))
+  ok('el vistiplau entra al llibre sencer, amb la seva firma: es pot comprovar des del llibre');
+else bad('no es pot llegir com entra el vistiplau al llibre — si es retalla, la firma es perd');
+
+if (!rebut || !verRebut) {
+  bad('no es troben buildRebut/verifyRebut: el rebut no existeix com a objecte i la tercera ' +
+    'anotació torna a ser una nota dins del primer llibre');
+} else {
+  /* El rebut ha de portar l'apunt tal com es va signar. Amb una còpia amb els
+     camps que semblin importants, la firma deixa de verificar-se i el rebut
+     només val dins de l'app que el va fer — que és el contrari de portàtil. */
+  if (/apunt:Object\.assign\(\{\},entry\)/.test(rebut))
+    ok('el rebut porta l\'apunt tal com es va signar, no una còpia amb els camps triats');
+  else bad('el rebut no porta l\'apunt sencer: la firma no es podrà verificar fora de l\'app');
+
+  if (/const quadra=/.test(verRebut) && /el que el rebut diu i el que porta signat/.test(verRebut))
+    ok('i el resum llegible es compara amb el que hi ha signat: no poden dir coses diferents');
+  else bad('el resum llegible del rebut no es compara amb la firma — un rebut on el text digués ' +
+    'trenta hores i la firma tres verificaria igual');
+
+  if (/aquest vistiplau no és a l/.test(verRebut))
+    ok('i un vistiplau que no sigui a l\'apunt signat no compta: no se\'n poden afegir al rebut');
+  else bad('es pot afegir un vistiplau al rebut que no és a l\'apunt signat');
+
+  if (/antic:true/.test(verRebut))
+    ok('els vistiplaus d\'abans de la firma no es diuen trencats, però tampoc compten com a prova');
+  else bad('no es distingeix un vistiplau antic d\'un d\'invàlid — marcar de corrupte el que ' +
+    'ningú ha tocat és la manera més ràpida de fer que algú deixi de refiar-se del verificador');
+}
+
+/* I la promesa que la formació fa sobre això, que és la que més fàcil s'infla. */
+const FORM = readFileSync(join(ARREL, 'SOS', 'formacio.html'), 'utf8');
+if (!/triple entrada/i.test(FORM))
+  bad('la formació no anomena mai la comptabilitat de triple entrada, que és el concepte ' +
+    'que sosté tota l\'arquitectura del registre');
+else if (/L'auditoria no desapareix/.test(FORM) && /No prova que el fet sigui cert|NO fa: dir que el fet sigui cert/i.test(FORM))
+  ok('la formació explica la triple entrada dient què elimina (la conciliació) i què no ' +
+    '(l\'auditoria, i la veritat del fet)');
+else bad('la formació parla de triple entrada sense dir què NO elimina — la versió ' +
+  'grandiloqüent («s\'acaben les auditories») és falsa i es descobreix a la primera');
+
+/* ── 9 · L'índex comença buit i és llegible ──────────────────────────────── */
 try {
   const j = JSON.parse(IDX);
   if (Array.isArray(j.versions)) ok(`l'índex del registre és llegible i té ${j.versions.length} versions`);
