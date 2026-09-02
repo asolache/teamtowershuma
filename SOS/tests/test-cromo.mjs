@@ -209,6 +209,63 @@ ok(/apareix quan registres una aportació/i.test(cul.txt),
 ok(!cul.teBaixa, 'i no hi ha res per baixar quan no hi ha res: no s\'ofereix un cartell buit');
 ok(cul.prim === 1, 'també aquí una sola acció primària');
 
+console.log('\n· La imatge de perfil és el cromo, i porta a editar-lo');
+{
+  const r = await page.evaluate(async () => {
+    const S = window.__SOS;
+    await S.setActivePersona('Marta Vidal');
+    const badge = document.getElementById('personaBadge');
+    const av = badge.querySelector('canvas.cromo-av');
+    const c = S.superheroCromo('Marta Vidal');
+    /* El color que es pinta ha de ser el del tier que diu `superheroCromo`, no
+       un de triat a part: si divergissin, la rodona de dalt i el cartell que et
+       baixes serien de dues persones diferents. */
+    const hex = s => '#' + [0, 1, 2].map(i => s[i].toString(16).padStart(2, '0')).join('');
+    const x = av.getContext('2d');
+    /* La vora: el píxel de dalt al mig de la circumferència. */
+    const vora = x.getImageData(av.width / 2, 2, 1, 1).data;
+    return { hi: !!av, amagat: badge.hidden,
+      escala: av.width / parseInt(av.style.width, 10),
+      etiqueta: av.getAttribute('aria-label') || '',
+      lb: (badge.querySelector('.tb-lb') || {}).textContent || '',
+      tier: c.tier.label, color: c.tier.color.toLowerCase(),
+      voraHex: hex(vora), voraOpaca: vora[3] > 0 };
+  });
+  ok(r.hi && !r.amagat, 'el distintiu de dalt porta el cromo dibuixat, no unes inicials en un cercle');
+  ok(r.escala === 2, 'i es dibuixa al doble de resolució: a una pantalla fina no es veu borrós');
+  ok(new RegExp(r.tier).test(r.etiqueta),
+    `l'etiqueta accessible diu de qui és i quin tier té: «${r.etiqueta}»`);
+  ok(r.voraOpaca && r.voraHex === r.color,
+    `la vora és el color del tier que diu superheroCromo (${r.voraHex}): la rodona i el cartell no poden divergir`);
+  ok(!!r.lb, `i al costat hi va l'àlies o el nom: «${r.lb}»`);
+}
+
+console.log('\n· El cromo obre les dues portes que té darrere');
+{
+  const r = await page.evaluate(async () => {
+    const S = window.__SOS;
+    document.getElementById('personaBadge').click();
+    const cromo = document.querySelector('.modal h2').textContent;
+    const edita = !!document.getElementById('crEdita'), perfil = !!document.getElementById('crPerfil');
+    const diu = document.querySelector('.modal').textContent;
+    document.getElementById('crPerfil').click();
+    const titolPerfil = document.querySelector('.modal h2').textContent;
+    const av = document.querySelector('#pfAv canvas.cromo-av');
+    if (av) av.click();
+    const torna = document.querySelector('.modal h2').textContent;
+    S.closeModal();
+    return { cromo, edita, perfil, titolPerfil, avatarPerfil: !!av, torna,
+      diuQueNo: /El tier, les hores i les comunitats/.test(diu) };
+  });
+  ok(/cromo/i.test(r.cromo), 'tocar la imatge de perfil obre el cromo');
+  ok(r.edita && r.perfil, 'que porta a editar-lo i al perfil: entrar-hi no deixa el perfil sense camí');
+  ok(r.avatarPerfil && /Marta Vidal/.test(r.titolPerfil),
+    'el perfil ensenya la mateixa imatge a la capçalera');
+  ok(/cromo/i.test(r.torna), 'i tocar-la hi torna: el cercle es tanca pels dos costats');
+  ok(r.diuQueNo,
+    'i el cromo diu què NO s\'hi pot editar: el tier i les hores es guanyen, no es trien');
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

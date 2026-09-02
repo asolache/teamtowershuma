@@ -704,6 +704,102 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 122 — No es pregunta a la porta el que el sistema pot deduir
+
+Qui entrava al SOS havia de triar **un rol d'entre sis** abans d'haver fet res, i
+li ho preguntaven **dues vegades**: al pas 4 del tour i un altre cop al formulari
+de perfil. Ningú que arriba pot saber si és «Guardian del territori» o «Agent
+territorial»; el que sap és que li estan demanant una cosa que no pot contestar.
+
+I la pregunta contradeia el que aquesta mateixa app fa dues funcions més amunt:
+`rolesOfPersonIn` **dedueix els rols de l'evidència** —qui reclama un node és
+guardiana, qui acompanya ventures és mentora, qui aporta hores i objectes és
+superheroina— i el seu propi comentari ja deia que la casella declarada no és
+l'única evidència. Dues fonts per a la mateixa cosa, i la que es preguntava
+primer era la que menys sabia.
+
+Ara **s'entra com a superheroi/na i prou**. Els altres rols queden com el que ja
+eren: coses que **es guanyen** fent o que **algú t'assigna**. El pas del tour no
+desapareix —la pregunta «i jo què puc arribar a ser?» és bona i mereix
+resposta—: deixa de ser un selector i passa a ser el mapa, amb cada rol dient
+com s'hi arriba.
+
+La regla, que és la veda 120 aplicada a una altra taula:
+
+> **Només es pot prometre un camí que el codi recorri de debò.** Per això la
+> prova no llegeix `ROLE_ACCES`: reclama un node, inscriu una mentoria, registra
+> una aportació i marca una fitxa, i comprova que el rol apareix.
+
+### El forat que el canvi va destapar
+
+`coordinador` i `agent` **no tenien cap camí d'evidència**: només s'obtenien
+escrivint-los a la casella de la fitxa, i aquella casella només es tocava a la
+porta. Treure el selector sense res més els hauria deixat inabastables i ningú
+ho hauria notat fins que algú els busqués. Ara s'assignen **des de la fitxa de
+soci**, per qui porta el node.
+
+I una decisió que costa d'explicar però que és la que dona sentit a la resta: al
+desplegable de la fitxa **només hi ha aquests dos**. `guardian` surt de la
+governança signada i `mentor` del registre de mentories, i posar-los en un
+desplegable seria repartir per formulari el que es guanya deixant rastre. Un
+sistema de rols on el rol més alt es tria en un `<select>` no és un sistema de
+rols.
+
+Dues coses petites que la pantalla va ensenyar en pintar-la:
+
+- **La porta ha de sortir primera.** Ordenant els rols pel pes del rol,
+  «superheroi/na» —el rol pel qual s'entra— sortia el cinquè de sis a la pantalla
+  d'entrada.
+- **L'etiqueta de cada rol la diu la taula, no una condicional.** «Ciutadà/na
+  simpatitzant» no és una porta per on s'entra: és on ets mentre no hi ha res
+  registrat, i deduir l'etiqueta del tipus feia dir-li el que no és.
+
+I un error meu que val la pena per la seva forma: la prova del camí de mentora
+deia que aquell camí no existia. El que no existia era **el meu muntatge** —
+`newVenture` retorna la venture i no la desa, i `addMentor` és posicional. Segona
+vegada en poques tandes que una prova acusa el codi d'un defecte propi: quan una
+prova nova falla, la primera hipòtesi ha de ser la prova.
+
+## Veda 121 — Una foto la tries; el cromo te'l guanyes
+
+La imatge de perfil de l'app eren **dues inicials en un cercle**, i el Comando ja
+tenia un cromo que surt del que has aportat i que algú ha verificat. Dues coses
+dient qui ets, i la que sortia a totes les pantalles era la que no diu res.
+
+Ara la imatge de perfil **és el cromo**: al distintiu de dalt i a la capçalera del
+perfil, i tocant-la s'obre el cromo, que és on s'edita.
+
+La decisió que la fa útil és no haver fet la miniatura del cartell. A trenta
+píxels, un cartell de 600×840 és una taca. El que es dibuixa és **la mateixa
+identitat a la mida que es llegeix**: el degradat i el color del tier, i les
+inicials —les de l'àlies si n'hi ha—, tots tres sortits de `superheroCromo` i
+`_tierColors`, les mateixes funcions que dibuixen el cartell. El dia que algú
+pugi de tier, la rodona canvia de color el mateix dia que el cartell, i no perquè
+ho hagi recordat ningú. La prova ho comprova **llegint el píxel de la vora** i
+comparant-lo amb el `tier.color` que diu el model: una asserció sobre el que es
+veu, no sobre el codi que ho pinta.
+
+I el que calia dir en veu alta perquè el botó d'editar no menteixi:
+
+> **L'àlies, el lema i l'origen són teus i es canvien quan vulguis. El tier, les
+> hores i les comunitats no: surten del que has aportat i ho verifica algú
+> altre.**
+
+Per això la imatge de perfil és aquesta i no una foto —una foto la tries; això
+te la guanyes—, i per això «edita el cromo» porta al dossier i no a un selector
+de colors. Un botó que digués «edita» i deixés triar el tier convertiria tot el
+sistema de reputació en un formulari.
+
+De la mateixa peça, i és el que es va estar a punt d'oblidar: el distintiu de
+dalt **obria el perfil** i ara obre el cromo. Si el canvi s'hagués quedat aquí,
+el perfil s'hauria quedat sense cap camí des de la barra. El cromo porta els dos
+botons —al dossier i al perfil— i el perfil torna al cromo per la imatge: el
+cercle es tanca pels dos costats, i la prova recorre les dues voltes.
+
+I una regla petita que val per a qualsevol adorn: **si el cromo no es pot
+dibuixar, es torna a les inicials i el perfil s'obre igual.** Una il·lustració no
+pot ser mai el que impedeixi entrar a l'app ni veure les dades de ningú.
+
 ## Veda 120 — Un rol només pot demanar el que el mapa diu que lliura
 
 Els mapes de valor eren correctes i eren d'algú altre. El que frena la gent
