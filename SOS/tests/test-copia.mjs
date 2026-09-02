@@ -1,259 +1,155 @@
+/* Les còpies · per defecte, i sense mentir sobre elles
+   ────────────────────────────────────────────────────
+   Tot el SOS viu al navegador d'un dispositiu. Sense còpia, un mòbil perdut se
+   l'emporta — i la identitat és l'única part que **no es pot refer**: sense la
+   clau, el que vas signar segueix valent però ja no el pots continuar tu.
+
+   El que un navegador **no** pot fer és desar un fitxer sol. Per tant «per
+   defecte» aquí no vol dir automàtic, i el pitjor que podria fer aquesta
+   pantalla és dir-te que ja tens còpia quan no en tens. El que es prova:
+
+   · **Es demana sol**, amb un llindar declarat i encès per defecte.
+   · **L'estat es desa quan s'ha baixat un fitxer**, no quan algú obre la
+     pantalla.
+   · **No es diu «estàs protegit»**: es diu l'últim cop que en vas fer una, i
+     que si el fitxer encara existeix això no ho sap ningú des d'aquí.
+   · **La identitat es compta a part**, perquè una còpia de tot sense identitat
+     no protegeix la clau. */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-/* La ruta surt d'on és aquest fitxer, no d'una ruta absoluta d'una màquina
-   concreta: així els tests corren a qualsevol clon del repositori. */
+
 const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', 'index.html');
-const results = {};
-const ok = (k, v, x) => { results[k] = !!v; console.log((v ? '✅' : '❌') + ' ' + k + (x ? ' — ' + x : '')); };
-/* El navegador el resol Playwright. `SOS_CHROMIUM` només cal si el tens en un
-   lloc no estàndard (com a l'entorn de desenvolupament d'on surten aquests
-   tests): sense la variable, funciona a qualsevol màquina amb `playwright
-   install chromium` fet. */
+let pass = 0, fail = 0;
+const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
+
 const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] },
   process.env.SOS_CHROMIUM ? { executablePath: process.env.SOS_CHROMIUM } : {}));
-async function open() {
-  const ctx = await b.newContext();
-  const p = await ctx.newPage();
-  const errs = []; p.on('pageerror', e => errs.push(e.message));
-  await p.goto(APP); await p.waitForFunction(() => window.__SOS, null, { timeout: 20000 });
-  try { await p.waitForSelector('#obSkip', { timeout: 3000 }); await p.click('#obSkip'); } catch (e) {}
-  await p.waitForTimeout(400);
-  await p.evaluate(() => { try { window.__SOS.markOnboardingDone(); } catch (e) {} document.querySelectorAll('.modal-bg').forEach(m => m.remove()); });
-  return { ctx, p, errs };
-}
-async function seed(p) {
-  return await p.evaluate(async () => {
+const page = await b.newPage();
+page.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+await page.goto(APP);
+await page.waitForFunction(() => window.__SOS && window.__SOS.copiaEstat);
+await page.evaluate(async () => { await window.__SOS.markOnboardingDone(); });
+
+console.log('\n1 · Un SOS acabat d\'estrenar no demana res, i no diu que tingui còpia');
+{
+  const r = await page.evaluate(async () => {
     const S = window.__SOS;
-    S.state.nodes.length = 0;
-    const n = { id: 'BT', name: 'BdT Manresa', nodeLevel: 'projecte', parentId: null, dynamicType: 'banc_temps',
-      metaskill: {}, vna: { roles: [], exchanges: [] }, kanban: { cards: [] }, ledger: [], createdAt: '', updatedAt: '' };
-    S.seedFromDynamic(n, S.dynById('banc_temps')); S.state.nodes.push(n);
-    const m = S.joinNode(n, { name: 'Mazinguer' });
-    S.joinNode(n, { name: 'Pigmentona' });
-    await S.pushLedger(n.ledger, { id: 'l1', who: 'Mazinguer', memberId: m.id, type: 'temps', value: 4, what: 'fusteria', ts: new Date().toISOString() });
+    return { e: await S.copiaEstat(), dies: S.COPIA_DIES, apunts: S.COPIA_APUNTS };
+  });
+  ok(r.e.mai && !r.e.cal,
+    'sense cap apunt no hi ha res a perdre i no es molesta ningú');
+  ok(r.e.recorda === true, 'però el recordatori ve encès per defecte, no s\'ha d\'anar a buscar');
+  ok(r.e.identitat === false,
+    'i la identitat consta com a NO copiada, que és la veritat el primer dia');
+  ok(r.dies > 0 && r.apunts > 0,
+    `el llindar està declarat i és mirable: cada ${r.dies} dies o ${r.apunts} apunts nous`);
+}
+
+console.log('\n2 · Amb feina registrada i cap còpia, es demana — i es diu per què');
+{
+  const r = await page.evaluate(async () => {
+    const S = window.__SOS;
+    const n = S.newNode('Banc de la còpia', 'projecte', null);
+    n.ledger = []; S.state.nodes.push(n);
+    const m = S.newMember({ name: 'Anna' }); S.membersOf(n).push(m);
+    for (let i = 0; i < 3; i++)
+      await S.pushLedger(n.ledger, { id: 'c' + i, ts: '2026-05-0' + (i + 1) + 'T09:00:00Z',
+        type: 'temps', value: 2, what: 'Feina ' + i, memberId: m.id });
     await S.persist(n);
-    await S.getIdentity();   // assegura que hi ha identitat al magatzem
-    return { did: (await S.getIdentity()).did };
+    S.updatePendingBadge();
+    await new Promise(r2 => setTimeout(r2, 300));
+    return { e: await S.copiaEstat(), pastilla: !!document.getElementById('copiaBadge'),
+      etiqueta: (document.getElementById('copiaBadge') || {}).ariaLabel || '' };
   });
+  ok(r.e.cal && r.e.apunts === 3, `amb ${r.e.apunts} apunts i cap còpia, es demana`);
+  ok(/encara no has fet cap còpia/.test(r.e.per), `i es diu el motiu: «${r.e.per}»`);
+  ok(r.pastilla, 'la pastilla surt a la barra de dalt');
+  ok(/Fes una còpia/.test(r.etiqueta), `amb una etiqueta que diu què és: «${r.etiqueta}»`);
 }
 
-// ═══ 1. Amb contrasenya: tot xifrat, res llegible ═══
+console.log('\n3 · L\'estat es desa quan hi ha fitxer, no quan s\'obre la pantalla');
 {
-  const { ctx, p, errs } = await open();
-  await seed(p);
-  const r = await p.evaluate(async () => {
+  const r = await page.evaluate(async () => {
     const S = window.__SOS;
-    const pack = await S.exportBackup('unaclaularga');
-    const raw = JSON.stringify(pack);
-    let short = null;
-    try { await S.exportBackup('curta'); } catch (e) { short = e.msg; }
-    return { type: pack.type, enc: pack.enc, alg: pack.alg, iters: pack.iters,
-      hasCt: !!pack.ct, hasSalt: !!pack.salt, count: pack.count, hasIdentity: pack.hasIdentity,
-      noPlainNames: !/Mazinguer/.test(raw), noPlainKey: !/privJwk/.test(raw),
-      noPlainNode: !/BdT Manresa/.test(raw), short };
+    S.openCopiaAvis();
+    await new Promise(r2 => setTimeout(r2, 300));
+    const txt = document.querySelector('.modal').textContent.replace(/\s+/g, ' ');
+    S.closeModal();
+    const nomesMirar = await S.copiaEstat();
+    /* Ara sí: una còpia de debò, com la que fa el botó de descarregar. */
+    const pack = await S.exportBackup('', { withIdentity: true });
+    await S.copiaMarca({ identitat: true, total: pack.count });
+    const despres = await S.copiaEstat();
+    return { txt, nomesMirar, despres };
   });
-  ok('backupIsTyped', r.type === 'sos-full-backup', r.type);
-  ok('passwordEncrypts', r.enc === true && r.alg === 'AES-GCM-PBKDF2' && r.iters === 210000, r.alg + ' · ' + r.iters);
-  ok('nothingReadableInside', r.noPlainNames && r.noPlainNode && r.noPlainKey, 'ni noms, ni nodes, ni clau privada en clar');
-  ok('backupCountsWhatItCarries', r.count > 0 && r.hasIdentity === true, r.count + ' registres · amb identitat');
-  ok('shortPasswordRefused', /8 car/.test(r.short || ''), r.short);
-  ok('noPageErrors', errs.length === 0, errs.join(' | '));
-  await ctx.close();
+  ok(r.nomesMirar.mai,
+    'obrir la pantalla i tancar-la no compta com a còpia: el que es desa és que hi ha hagut un fitxer');
+  ok(!r.despres.mai && r.despres.dies === 0 && !r.despres.cal,
+    'després de baixar-ne una de debò, la pastilla se\'n va sola');
+  ok(r.despres.identitat, 'i la identitat consta copiada perquè hi anava a dins');
+  ok(/no pot desar un fitxer sol/.test(r.txt),
+    'la pantalla diu que això és un recordatori i no una còpia automàtica');
+  ok(/no ho pot saber ningú des d'aquí|no que el fitxer encara existeixi/.test(r.txt),
+    'i que saber si el fitxer encara existeix no ho pot saber ningú des d\'aquí');
 }
 
-// ═══ 2. En blanc: es desa en clar, i el fitxer ho diu ═══
+console.log('\n4 · Torna a demanar-ho quan hi ha prou feina nova');
 {
-  const { ctx, p, errs } = await open();
-  await seed(p);
-  const r = await p.evaluate(async () => {
+  const r = await page.evaluate(async () => {
     const S = window.__SOS;
-    const pack = await S.exportBackup('');
-    const raw = JSON.stringify(pack);
-    const sense = await S.exportBackup('', { withIdentity: false });
-    const rawS = JSON.stringify(sense);
-    return { enc: pack.enc, hasData: !!pack.data, plainName: /Mazinguer/.test(raw),
-      keyIsVisible: /privJwk/.test(raw), flagged: pack.hasIdentity === true,
-      senseEnc: sense.enc, senseKey: /privJwk/.test(rawS), senseFlag: sense.hasIdentity,
-      senseStillHasNodes: /BdT Manresa/.test(rawS),
-      fewer: sense.count === pack.count - 1 };
+    const n = S.state.nodes.find(x => x.name === 'Banc de la còpia');
+    const m = S.membersOf(n)[0];
+    const abans = await S.copiaEstat();
+    for (let i = 0; i < S.COPIA_APUNTS; i++)
+      await S.pushLedger(n.ledger, { id: 'n' + i, ts: '2026-06-01T09:00:00Z', type: 'temps',
+        value: 1, what: 'Més feina ' + i, memberId: m.id });
+    const despres = await S.copiaEstat();
+    return { abans, despres, llindar: S.COPIA_APUNTS };
   });
-  ok('blankMeansPlain', r.enc === false && r.hasData, 'sense contrasenya, sense xifrar');
-  ok('plainIsReallyPlain', r.plainName, 'els noms es llegeixen');
-  ok('plainExposesThePrivateKey', r.keyIsVisible, 'la clau privada hi és — per això s\'avisa');
-  ok('headerDeclaresIdentity', r.flagged, 'el fitxer diu que porta identitat');
-  ok('identityCanBeLeftOut', r.senseEnc === false && !r.senseKey && r.senseFlag === false, 'sense identitat: cap clau dins');
-  ok('leavingItOutKeepsTheRest', r.senseStillHasNodes && r.fewer, 'un registre menys, la resta hi és');
-  ok('noErrorsInPlain', errs.length === 0, errs.join(' | '));
-  await ctx.close();
+  ok(!r.abans.cal, 'just després de copiar no molesta');
+  ok(r.despres.cal && r.despres.nous >= r.llindar,
+    `i amb ${r.despres.nous} apunts nous torna a demanar-ho`);
+  ok(/has registrat \d+ apunts des de l'última còpia/.test(r.despres.per),
+    `dient exactament què ha canviat: «${r.despres.per}»`);
 }
 
-// ═══ 3. Restaurar en un navegador buit ═══
+console.log('\n5 · Es pot apagar, i llavors calla de debò');
 {
-  const { ctx, p, errs } = await open();
-  await seed(p);
-  const pack = await p.evaluate(async () => await window.__SOS.exportBackup('unaclaularga'));
-  await ctx.close();
-  // navegador nou, sense res
-  const fresh = await open();
-  const r = await fresh.p.evaluate(async o => {
+  const r = await page.evaluate(async () => {
     const S = window.__SOS;
-    const before = (await S.state.nodes).length;
-    let bad = null;
-    try { await S.importBackup(o.pack, 'incorrecta'); } catch (e) { bad = e.code; }
-    let none = null;
-    try { await S.importBackup(o.pack, ''); } catch (e) { none = e.code; }
-    const res = await S.importBackup(o.pack, 'unaclaularga', { mode: 'replace' });
-    const all = await (async () => { const out = []; return out; })();
-    return { before, bad, none, res };
-  }, { pack });
-  ok('wrongPasswordFails', r.bad === 'badpass', 'codi: ' + r.bad);
-  ok('missingPasswordIsItsOwnError', r.none === 'needpass', 'codi: ' + r.none);
-  ok('restoreReportsWhatEntered', r.res.restored > 0 && r.res.hadIdentity, r.res.restored + ' registres, amb identitat');
-  ok('noErrorsInRestore', fresh.errs.length === 0, fresh.errs.join(' | '));
-  await fresh.ctx.close();
-}
-
-// ═══ 4. La còpia porta la feina, no només la clau ═══
-{
-  const { ctx, p, errs } = await open();
-  const seeded = await seed(p);
-  const pack = await p.evaluate(async () => await window.__SOS.exportBackup(''));
-  await ctx.close();
-  const fresh = await open();
-  const r = await fresh.p.evaluate(async o => {
-    const S = window.__SOS;
-    await S.importBackup(o.pack, '', { mode: 'replace' });
-    // recarregar l'estat des del magatzem
-    const recs = o.pack.data.records;
-    const node = recs.find(x => x.id === 'BT');
-    const ident = recs.find(x => x.id === '__identity');
-    const sum = S.backupSummary(o.pack.data);
-    return { node: !!node, members: (node.members || []).length, ledger: (node.ledger || []).length,
-      identDid: ident ? ident.did : null, sum };
-  }, { pack });
-  ok('backupCarriesTheNode', r.node, 'el node hi és');
-  ok('backupCarriesMembers', r.members === 2, r.members + ' socis');
-  ok('backupCarriesLedger', r.ledger === 1, r.ledger + ' apunt al ledger');
-  ok('backupCarriesTheIdentity', r.identDid === seeded.did, 'el mateix did:sos');
-  ok('summaryCountsWhatMatters', r.sum.nodes === 1 && r.sum.members === 2 && r.sum.ledger === 1 && r.sum.hasIdentity,
-    r.sum.nodes + ' nodes · ' + r.sum.members + ' socis · ' + r.sum.ledger + ' apunts');
-  ok('noErrorsInCarry', fresh.errs.length === 0, fresh.errs.join(' | '));
-  await fresh.ctx.close();
-}
-
-// ═══ 5. Merge no esborra; replace sí, i cal demanar-ho ═══
-{
-  const { ctx, p, errs } = await open();
-  await seed(p);
-  const pack = await p.evaluate(async () => await window.__SOS.exportBackup(''));
-  const r = await p.evaluate(async o => {
-    const S = window.__SOS;
-    // un node que NO és a la còpia
-    const extra = { id: 'NOU', name: 'Node posterior', nodeLevel: 'projecte', parentId: null, dynamicType: 'generic',
-      metaskill: {}, vna: { roles: [], exchanges: [] }, kanban: { cards: [] }, ledger: [], createdAt: '', updatedAt: '' };
-    S.state.nodes.push(extra); await S.persist(extra);
-    await S.importBackup(o.pack, '');            // merge per defecte
-    const afterMerge = (await window.indexedDB ? 1 : 1);
-    const merged = await new Promise(res => { const req = indexedDB.open('SOS_MVP'); req.onsuccess = () => {
-      const db = req.result, tx = db.transaction('nodes', 'readonly').objectStore('nodes').getAll();
-      tx.onsuccess = () => res(tx.result.map(x => x.id)); }; });
-    await S.importBackup(o.pack, '', { mode: 'replace' });
-    const replaced = await new Promise(res => { const req = indexedDB.open('SOS_MVP'); req.onsuccess = () => {
-      const db = req.result, tx = db.transaction('nodes', 'readonly').objectStore('nodes').getAll();
-      tx.onsuccess = () => res(tx.result.map(x => x.id)); }; });
-    return { merged, replaced };
-  }, { pack });
-  ok('mergeKeepsWhatWasThere', r.merged.includes('NOU') && r.merged.includes('BT'), r.merged.join(', '));
-  ok('replaceRemovesIt', !r.replaced.includes('NOU') && r.replaced.includes('BT'), r.replaced.join(', '));
-  ok('noErrorsInModes', errs.length === 0, errs.join(' | '));
-  await ctx.close();
-}
-
-// ═══ 6. La pantalla diu la veritat sobre què farà ═══
-{
-  const { ctx, p, errs } = await open();
-  await seed(p);
-  await p.evaluate(() => window.__SOS.openBackup('export'));
-  await p.waitForTimeout(400);
-  const blank = await p.evaluate(() => ({
-    btn: document.querySelector('#bkGo').textContent,
-    warnVisible: document.querySelector('#bkWarn').style.display !== 'none',
-    warnSaysKey: /signar en el teu nom/i.test(document.querySelector('#bkWarn').innerText),
-    noId: !!document.querySelector('#bkNoIdC')
-  }));
-  ok('blankButtonWarns', /SENSE xifrar/.test(blank.btn), blank.btn);
-  ok('blankShowsTheWarning', blank.warnVisible && blank.warnSaysKey, 'avisa que qui el tingui pot signar per tu');
-  ok('canLeaveIdentityOut', blank.noId, 'opció de treure la identitat');
-  await p.fill('#bkPass', 'unaclaularga');
-  await p.waitForTimeout(200);
-  const withPass = await p.evaluate(() => ({
-    btn: document.querySelector('#bkGo').textContent,
-    warnHidden: document.querySelector('#bkWarn').style.display === 'none'
-  }));
-  ok('passwordButtonSaysEncrypted', /xifrada/.test(withPass.btn), withPass.btn);
-  ok('warningGoesAwayWithPassword', withPass.warnHidden, 'l\'avís marxa quan ja no cal');
-  await p.fill('#bkPass2', 'altracosa');
-  await p.click('#bkGo');
-  await p.waitForTimeout(300);
-  const mismatch = await p.evaluate(() => document.querySelector('#bkMsg').textContent);
-  ok('mismatchIsCaught', /no coincideixen/i.test(mismatch), mismatch);
-  ok('noErrorsOnExportScreen', errs.length === 0, errs.join(' | '));
-  await ctx.close();
-}
-
-// ═══ 7. La pantalla de restaurar ensenya què entrarà ═══
-{
-  const { ctx, p, errs } = await open();
-  await seed(p);
-  const pack = await p.evaluate(async () => await window.__SOS.exportBackup('unaclaularga'));
-  await p.evaluate(() => window.__SOS.openBackup('import'));
-  await p.waitForTimeout(400);
-  await p.fill('#bkText', JSON.stringify(pack));
-  await p.waitForTimeout(400);
-  const peek = await p.evaluate(() => ({
-    text: document.querySelector('#bkPeek').innerText,
-    hasRep: !!document.querySelector('#bkRepC')
-  }));
-  ok('previewShowsItIsEncrypted', /xifrada/i.test(peek.text), peek.text.split('\n')[0]);
-  ok('previewCountsRecords', /registres/i.test(peek.text), peek.text.replace(/\n/g, ' · '));
-  ok('previewFlagsIdentity', /amb identitat/i.test(peek.text), 'diu si porta identitat');
-  ok('replaceIsOptIn', peek.hasRep, 'substituir s\'ha de marcar expressament');
-  await p.fill('#bkText', '{"type":"una-altra-cosa"}');
-  await p.waitForTimeout(400);
-  const wrong = await p.evaluate(() => document.querySelector('#bkPeek').innerText);
-  ok('foreignFileIsRejectedOnSight', /no és una còpia/i.test(wrong), wrong.trim());
-  await p.fill('#bkText', 'no és json');
-  await p.waitForTimeout(400);
-  const junk = await p.evaluate(() => document.querySelector('#bkPeek').innerText);
-  ok('junkIsCaught', /JSON/i.test(junk), junk.trim());
-  ok('noErrorsOnImportScreen', errs.length === 0, errs.join(' | '));
-  await ctx.close();
-}
-
-// ═══ 8. Casos límit ═══
-{
-  const { ctx, p, errs } = await open();
-  await seed(p);
-  const r = await p.evaluate(async () => {
-    const S = window.__SOS;
-    let notMine = null, noRecs = null;
-    try { await S.importBackup({ type: 'una-altra' }, ''); } catch (e) { notMine = e.msg; }
-    try { await S.importBackup({ type: 'sos-full-backup', enc: false, data: {} }, ''); } catch (e) { noRecs = e.msg; }
-    const emptySum = S.backupSummary(null);
-    const empty = await S.importBackup({ type: 'sos-full-backup', enc: false, data: { records: [] } }, '');
-    return { notMine, noRecs, emptySum, empty };
+    await S.copiaRecorda(false);
+    const apagat = await S.copiaEstat();
+    S.updateCopiaBadge();
+    await new Promise(r2 => setTimeout(r2, 250));
+    const pastilla = !!document.getElementById('copiaBadge');
+    await S.copiaRecorda(true);
+    const ences = await S.copiaEstat();
+    return { apagat, pastilla, ences };
   });
-  ok('foreignPackRefused', /no és una còpia completa/i.test(r.notMine || ''), r.notMine);
-  ok('packWithoutRecordsRefused', /registres llegibles/i.test(r.noRecs || ''), r.noRecs);
-  ok('emptySummaryIsZeroNotAnError', r.emptySum.total === 0 && r.emptySum.nodes === 0, 'un resum de res és zero');
-  ok('emptyBackupRestoresNothing', r.empty.restored === 0, 'restaura 0 sense petar');
-  ok('noErrorsInEdges', errs.length === 0, errs.join(' | '));
-  await ctx.close();
+  ok(!r.apagat.cal && !r.pastilla, 'apagat, no es demana i la pastilla se\'n va');
+  ok(r.apagat.nous > 0,
+    'però l\'estat segueix sent el de debò: apagar l\'avís no fa veure que hi hagi còpia');
+  ok(r.ences.cal, 'i tornant-lo a encendre, hi torna a ser');
+}
+
+console.log('\n6 · La identitat es compta a part de tot el altre');
+{
+  const r = await page.evaluate(async () => {
+    const S = window.__SOS;
+    /* Una còpia SENSE identitat: protegeix les dades i no la clau, i el que es
+       diu de la identitat no pot canviar per això. */
+    const pack = await S.exportBackup('', { withIdentity: false });
+    await S.copiaMarca({ identitat: false, total: pack.count });
+    const e = await S.copiaEstat();
+    return { e, teIdentitat: pack.hasIdentity };
+  });
+  ok(!r.teIdentitat, 'una còpia sense identitat no en porta: el fitxer diu la veritat sobre si mateix');
+  ok(r.e.identitat,
+    'i la data de la còpia d\'identitat es guarda a part, o sigui que una còpia sense identitat ' +
+    'no esborra que abans sí que se n\'havia fet una');
 }
 
 await b.close();
-const failed = Object.entries(results).filter(([, v]) => !v);
-console.log('');
-if (failed.length) { console.log('❌ FAILED: ' + failed.map(([k]) => k).join(', ')); process.exit(1); }
-console.log('✅ ALL PASSED (' + Object.keys(results).length + ')');
+console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
+process.exit(fail ? 1 : 0);

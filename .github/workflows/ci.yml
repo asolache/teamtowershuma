@@ -72,6 +72,13 @@ jobs:
       - name: Guarda del registre públic (el número dels 150.000)
         run: node SOS/tools/check-registre.js
 
+      # Un mapa desactualitzat és pitjor que cap mapa: sense mapa mires, i amb
+      # un mapa fals vas. I aquí qui llegeix sovint és una IA, que no pregunta:
+      # llegeix el nom de la carpeta i escriu. Crear una carpeta sense dir què
+      # és deixa la pregunta «on va això?» sense resposta, i això peta.
+      - name: Guarda del mapa (cap carpeta sense cara)
+        run: node SOS/tools/build-mapa.js --check
+
       # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
       # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una
       # llista de capacitats es queda curta no peta res —simplement ignora una
