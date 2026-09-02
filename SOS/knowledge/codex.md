@@ -704,6 +704,310 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 128 — Una pàgina que explica un mètode envelleix sense petar mai
+
+`SOS/matriu.html` explica la incubadora: quatre etapes, tres portes amb els seus
+criteris, tres vies de creació i els multiplicadors del repartiment. Tot això
+existeix a l'app i **decideix de debò** què passa amb una venture.
+
+El risc no és que la pàgina estigui malament avui: és que no hi ha cap moment en
+què es torni a mirar. Si demà es canvia un criteri de graduació, aquí queda
+l'antic **sonant igual de cert**, i qui el llegeixi prepararà el seu projecte per
+a una porta que ja no existeix. La pàgina, a més, ho promet a la primera
+pantalla —«cada criteri d'aquesta pàgina és una comprovació que el SOS fa de
+debò»—, i una promesa que no vigila ningú és una promesa fins al primer canvi.
+
+`tools/check-matriu.js` compara les dues coses, i **el primer cop que va córrer
+va trobar dues divergències que ja hi eren**:
+
+- La guia de coneixement deia **10 plantilles d'activitat crítica** i a l'app
+  ja n'hi havia **14**. La pàgina havia copiat de la guia, no del codi.
+- La porta de graduació té un **sisè criteri** —que el llindar de sostenibilitat
+  sigui assolible— que només s'aplica als tipus amb ànim de lucre, i ni la guia
+  ni la pàgina el deien.
+
+D'aquí surt la regla, que val per a qualsevol pàgina que expliqui el que fa
+l'eina: **la pàgina no copia de la documentació, es compara amb el codi.** La
+documentació també envelleix, i copiar-ne hereta l'error amb una capa més de
+distància fins a la font.
+
+I una comprovació que val el doble que les altres: **cada peça que la pàgina diu
+que el SOS fa ha d'existir al fitxer.** La taula de cobertura anomena funcions, i
+totes s'han de poder trobar. Presumir d'una funció que no hi és és el pitjor que
+pot fer una pàgina que ve a explicar per què confiar en una eina.
+
+## Veda 127 — Sis menús raonables no fan una arquitectura
+
+`comando.html` tenia nou enllaços al menú, `compra.html` sis, `vna.html` cinc,
+`crm.html` tres. Cap dels sis coincidia amb cap altre, i cadascun era **una
+decisió raonable presa en un moment concret**: quan es va escriure aquella
+pàgina, aquells eren els llocs on tenia sentit anar.
+
+Això no peta mai, i és exactament el problema. **Ningú pot aprendre on són les
+coses si es mouen a cada pantalla.** El que a una app comercial és memòria
+muscular —«el menú és aquí i l'acció principal a la dreta»— aquí era tornar a
+llegir sis vegades. I una pàgina nova heretava el menú de la que s'havia copiat,
+que ja era el més divergent de tots.
+
+La sortida és la de sempre en aquest repositori: **es declara un cop i es
+genera.** `tools/build-nav.js` porta l'arquitectura —quatre grups i una acció— i
+l'escriu a totes les pàgines entre marques; `--check` peta al CI si alguna se'n
+desvia. Afegir una pàgina al SOS passa a incloure dir on va al menú, que és
+justament la decisió que abans no prenia ningú.
+
+### Quatre grups, i l'ordre no és alfabètic
+
+`Comença · Eines · Aprèn · Xarxa`, i és el camí que fa la gent: primer saber on
+ets, després les eines, després aprendre'n, i al final la xarxa. Quatre i no set
+—un menú amb set grups es torna a llegir cada vegada, que és el que això ve a
+arreglar.
+
+### Dues decisions d'implementació que no són òbvies
+
+- **Sense JavaScript.** Els desplegables són `<details>`/`<summary>`, que el
+  navegador ja serveix com a component accessible i amb teclat. Injectar un
+  script a catorze fitxers autocontinguts seria catorze còpies d'una cosa que
+  ja existeix —i el dia de tocar-la, catorze llocs.
+- **Les excepcions es declaren amb el motiu.** `index.html` té la seva pròpia
+  barra d'aplicació i `joc.html` és una pantalla de joc completa. Una excepció
+  no escrita és un descuit que d'aquí a sis mesos ningú sabrà si era volgut.
+
+### El conflicte que va sortir en fer-ho
+
+`build-vedes.js` genera `vedes.html` sencer des del codex, o sigui que escrivia
+per sobre del menú i la següent passada del generador del menú el tornava a
+posar: **dues guardes contradient-se, i cap de les dues equivocada.** La sortida
+no va ser desactivar-ne una sinó que el generador dels vedes **apliqui el mateix
+menú**, requerint-lo de `build-nav.js`. Una sola declaració, dos que la fan
+servir — que és el que la regla deia des del principi.
+
+## Veda 126 — La tercera anotació hi era, i es llençava al moment de guardar-la
+
+El SOS feia triple entrada **en potència** des de la veda 64: l'apunt signat de
+qui l'escriu, el vistiplau signat de l'altra banda, i el registre públic com a
+tercer lloc. Auditant-ho de prop, la tercera anotació es perdia exactament on
+havia de quedar-se.
+
+`confirmPending` signa el vistiplau —i verifica— i tot seguit el posava al
+llibre retallat a mà: `confirmedBy: p.got.map(g => ({name, did, ts}))`.
+**La firma es queda fora.** El llibre deia «confirmat per Bru» i des del llibre
+no ho podia comprovar ningú: era una afirmació, no una prova. I `activityRanking`
+en repartia punts de reputació, en una pantalla que a sota diu, amb totes les
+lletres, *«només puntua el que està signat»*. No era una decisió de disseny amb
+la qual es pogués conviure: era una frase de la pantalla que el codi no complia,
+i entre les dues coses mana la frase.
+
+Tres correccions, i la tercera és la que fa que existeixi la cosa:
+
+- **El vistiplau entra sencer**, amb la seva firma, i es verifica des del llibre.
+- **Només els vistiplaus signats puntuen.** Els de l'esquema antic hi perden els
+  punts de confirmació —cosa que no és dir que estiguin trencats, l'apunt segueix
+  valent— i fabricar-se reputació editant el propi fitxer deixa de funcionar.
+- **El rebut existeix com a objecte** (`buildRebut` / `verifyRebut`), portàtil i
+  verificable fora de l'app. Un rebut que no es pot treure del dispositiu no és
+  una tercera anotació: és una nota al marge del primer llibre.
+
+### Dues decisions del rebut que no són òbvies
+
+- **Porta l'apunt tal com es va signar, no un resum.** La temptació és desar els
+  camps que semblen importants; la firma cobreix l'objecte, i qualsevol camp que
+  hi falti fa que deixi de verificar-se — i llavors el rebut només val dins de
+  l'app que el va fer, que és el contrari de portàtil.
+- **El resum llegible es compara amb la firma.** El rebut porta també una versió
+  llegible per a qui l'obri amb un editor de text, i sense aquesta comprovació
+  el frau més fàcil amb un rebut a la mà seria que el text digués trenta hores i
+  la signatura tres. Totes dues meitats «verificarien».
+
+I un vistiplau d'abans de la firma **no es diu trencat**: es marca com a antic i
+no compta com a prova. És el mateix tracte que la veda 64 dona a les cadenes
+globals — marcar de corrupte el que ningú ha tocat és la manera més ràpida que
+algú deixi de refiar-se del verificador.
+
+### El que la triple entrada elimina, i el que no
+
+Va a la formació, mòdul 2, perquè és el concepte que més fàcil s'explica
+malament i la versió grandiloqüent es descobreix a la primera:
+
+- **Desapareix la conciliació.** No hi ha dos llibres a quadrar: hi ha un rebut,
+  i o el tens o no el tens. Dues còpies del mateix rebut no poden discrepar — si
+  discrepen, una no verifica i es veu quina.
+- **L'auditoria no desapareix: canvia de feina.** Deixa de ser reconstruir què va
+  passar i passa a ser comprovar firmes, cosa que pot fer qualsevol en un segon i
+  sense accés privilegiat. No treu l'auditor de sobre —segueix fent falta per dir
+  si el que es va apuntar era cert— però li treu la part cara.
+- **No diu que el fet sigui cert.** Un rebut prova que dues persones van afirmar
+  el mateix i quan. Que aquelles tres hores es fessin ho diu qui hi era.
+  Confondre les dues coses és el que fa que després algú es pensi que un registre
+  substitueix la confiança.
+
+La guarda comprova les tres coses al fitxer, la formació inclosa: si algun dia la
+docència diu «s'acaben les auditories», el CI peta.
+
+## Veda 125 — Un número que reparteix algú no és el teu número
+
+La pel·lícula del Comando va d'un reclutament de 150.000 superherois i cadascú té
+el seu número. La manera òbvia de fer-ho és un comptador en un servidor: el
+primer que s'apunta és l'1. És mentida per tres motius alhora, i cadascun sol ja
+n'hi hauria prou:
+
+- **Hi ha d'haver un amo que el reparteix.** Tota la resta de l'app existeix per
+  no necessitar-ne cap.
+- **Es guanya escrivint un nom.** És la mètrica de vanitat que la veda de la V79
+  va treure de la portada, tornant per la porta del darrere i amb una història
+  al davant perquè fes més gràcia.
+- **El dia que el servidor caigui no hi ha número enlloc**, i el que la gent
+  s'havia après de memòria deixa d'existir.
+
+Aquí **el número no l'assigna ningú: es dedueix.** És la posició en una llista
+pública i append-only —el registre que ja existia— i qualsevol la refà des de
+zero amb el mateix resultat. Cinc decisions el sostenen:
+
+- **L'alta és un compromís, no una identitat.** `sha256('sos-alta-v1' | did:sos |
+  hash de la primera aportació signada i encadenada)`, retallat. Ni el did ni
+  l'apunt surten del dispositiu.
+- **Es guanya amb evidència.** Signatura *i* encadenat. Sense les dues coses no
+  hi ha número, i no n'hi ha cap de provisional: **un número que canvia és pitjor
+  que cap número**, perquè algú ja l'haurà dit en veu alta.
+- **L'ordre és el de publicació.** Les `ts` d'un apunt les escriu qui vulgui; en
+  quina versió va sortir un compromís, no. Per això les altes són un **delta**
+  amb la seva posició de sortida (`altesAbans`) dins de l'arrel signada:
+  endarrerir un apunt no acosta ningú al número 1, només el deixa fora de la
+  versió on hauria volgut ser.
+- **Dins d'una versió mana la dada i no qui la munta.** Ordre per data i, a
+  igualtat, pel compromís. Dos que publiquin el mateix estat treuen la mateixa
+  llista; si no, hi ha forquilla i s'ha de veure.
+- **No es desa enlloc.** Es dedueix cada cop que es mira, i la guarda ho vigila:
+  un número desat és un número que un dia divergirà del registre.
+
+I la frase que va al prompt de les dues IA de guió perquè és l'error que
+cometen soles: **el número no és un rànquing.** És ordre de reclutament, no de
+mèrit. Qui té el 12 no ha fet més que qui té el 40.000; hi va arribar abans.
+
+### El que revela, i que no s'amaga
+
+Les fulles del registre —el hash de cada apunt— són públiques a posta: és el que
+fa possible la prova d'inclusió. Vol dir que **qui ja tingui el teu `did:sos` pot
+trobar-hi el teu número**. No es pot evitar sense trencar el que ho fa útil, que
+és que qualsevol ho pugui verificar sense demanar permís, i el qui té el teu did
+és qui tu li has donat. Està escrit al README i és una asserció de la prova, no
+una nota al peu: la propietat certa és que **del registre sol no se'n treu
+ningú**, no que sigui anònim contra tothom.
+
+### El cost, calculat i no promès
+
+La pregunta abans de sortir a fora era què costa això quan siguin 150.000. Amb
+la mesura sobre el paquet de debò (`pesRegistre()`), no amb una estimació:
+
+| | mida | cost |
+|---|---|---|
+| una alta | 26 bytes | — |
+| una versió, fins a ~3.900 altes | < 100 KiB | **0 €** |
+| els 150.000 sencers | 3,72 MB en 39 versions | **0 €** |
+| els 150.000 pagant-ho tot a tarifa | 3,72 MB | **0,09 $** |
+
+La peça que ho decideix és que **Turbo/ArDrive no cobra per sota de 100 KiB**: si
+cada versió hi cap, el registre sencer no costa res mai. I la xifra de seguretat
+és la de la darrera fila —encara ignorant el llindar, tot el Comando val nou
+cèntims—, que és el que fa que això no depengui de la caritat de ningú.
+
+Tres coses que la taula no diu i que van al README:
+
+- **El que creix no són les altes, són les fulles**: pugen amb l'activitat de la
+  xarxa, i el dia que una versió passi de 100 KiB la pantalla ho dirà amb la
+  xifra en comptes de deixar-ho descobrir a la factura.
+- **Gratis no és per sempre garantit**: el llindar és la decisió d'un proveïdor.
+  L'ordre de magnitud, sí.
+- **A qui es dona d'alta no li costa res**, i no com a oferta sinó com a
+  propietat: el compromís es calcula al seu navegador i no puja res des del seu
+  dispositiu. Ni compte, ni cartera, ni clau.
+
+El preu porta data i font a sobre —24,7 $/GiB, setembre de 2026— per la mateixa
+raó que la taula de La Compra, i la guarda ho comprova: una xifra de diners sense
+data menteix en silenci al cap d'un any.
+
+## Veda 124 — La caixa és el que trenca els grups, i no es pot fer amb paraules d'un cobrament
+
+`SOS/compra.html` calculava què costa la comanda i qui s'estalvia què, i després
+callava: qui deu quant, qui hi ha posat diners i si la caixa quadra no ho sabia
+ningú. El preu es negocia una vegada; **la caixa es porta cada setmana**, i els
+grups de consum no se solen desfer per un mal preu — es desfan al tercer mes,
+quan ningú sap qui deu quant i preguntar-ho comença a fer vergonya.
+
+Quatre decisions que fan que això sigui un compte i no un rebut:
+
+- **Fins que la comanda no es tanca, no deu res ningú.** Mentre és un càlcul que
+  canvia cada cop que algú toca una cistella, no és un deute. `tancaComanda()`
+  congela el repartiment; `obreComanda()` el desfà. Els diners que ja s'hi hagin
+  posat sobreviuen totes dues coses, perquè són moviments seus.
+- **Cada llar hi posa la part del que ha demanat d'aquell productor**, al cicle
+  d'aquell productor, i sobre el que el grup li ha de posar de debò: formats
+  sencers menys el tram de volum. Repartir sobre el total del grup seria més
+  curt i faria carregar el sac de llenties a qui no en vol.
+- **El cèntim de l'arrodoniment va a algú i es diu on.** Arrodonir dotze parts
+  no suma el total; el residu va a la llar que més hi posa i surt escrit. Un
+  cèntim que es perd cada comanda és el que fa que al tercer mes la caixa no
+  quadri i ningú sàpiga per què.
+- **La diferència no és un descuadre.** És gent que encara no hi ha posat els
+  diners, o algú que ho ha apuntat malament. Dir-ne descuadre convertiria una
+  conversa de deu segons en una auditoria. I el forat de debò —càrrecs de llars
+  donades de baixa— es compta a part com a **orfe** en comptes de deixar que la
+  resta no sumi.
+
+I la regla de vocabulari, que és la que sosté totes les altres: **a la caixa es
+*posa* i queda *declarat*, mai *pagat***. Ningú d'aquesta pàgina està en
+condicions de dir que s'hagi pagat res —no cobra, no demana cap targeta i no
+confirma res—, i de dir «ha posat» a «ha pagat» només hi ha una paraula que
+qualsevol pot canviar una tarda. Per això `tools/check-compra.js` **prohibeix la
+paraula, no la frase**: una frase concreta se salta canviant-li el temps verbal.
+La regla és deliberadament roma i tomba fins i tot frases certes («el grup ho ha
+de pagar»); s'hi ha reescrit la frase certa i s'ha deixat la regla, perquè en una
+pantalla on una paraula de més fa que algú ensenyi això com un rebut, val més
+reescriure que deixar una escletxa. Vedes 96 i 97.
+
+I els moviments són **per llar i sense noms de persona**, com tota la pàgina. Un
+registre al navegador d'algú de qui ha donat diners a qui és una altra cosa i no
+és aquesta: `MOVIMENT_CAMPS` és una llista blanca explícita i la guarda comprova
+que sigui exactament el que escriu `posaACaixa` — una llista blanca que ningú fa
+servir és un comentari.
+
+## Veda 123 — El color que es veu ha de ser el que s'ha guanyat
+
+El roster del Comando ja dibuixava una rodona per persona a les dues vistes, i
+era **`_colorFromName`**: un hash del nom convertit en to HSL, assegut **just al
+costat de `tier.color`**, que sí que vol dir alguna cosa. Dues coses dient qui
+ets, i la grossa era la que no en deia cap. És la veda 121 un altre cop, viva als
+dos llocs on l'app ensenya gent — i la llista de «qui mou més la xarxa» no en
+tenia cap: vint files de text.
+
+La correcció no és afegir una imatge sinó **treure el color inventat**:
+`superheroCromo` ja no reparteix cap `color`, i `_colorFromName` es queda només
+on toca —els herois canònics, personatges de ficció que no tenen tier perquè no
+han aportat res.
+
+I la part que el cap solt demanava: **es va mesurar abans de decidir**, amb la
+regla de decisió escrita abans de mirar el número. Estats sintètics de 60, 300 i
+1.000 persones, tres passades, mediana:
+
+| | 60 | 300 | 1.000 |
+|---|---|---|---|
+| `comandoRoster()`, que ja es paga avui | 6,8 ms | 155 ms | 1.774 ms |
+| 60 avatars amb el cromo ja calculat | +8,8 ms | +6,4 ms | +7,8 ms |
+| 20 avatars al rànquing (calculant el cromo) | +8,7 ms | +14,7 ms | +45,3 ms |
+| 20 punts de color, sense canvas | +1,3 ms | +5,2 ms | +17,9 ms |
+
+Tres coses que la mesura diu i que endevinar no hauria dit:
+
+- **El canvas no és el cost.** Al rànquing, canviar l'avatar per un punt de
+  color CSS només estalviaria el 40%: la resta és `superheroCromo`, que el
+  color del tier necessita igualment. L'alternativa «barata» comprava poc.
+- **Al roster el cost no creix amb la xarxa**, perquè `comandoRoster()` ja ha
+  pagat la part cara per a tothom. Per això `cromoAvatar` accepta **un cromo ja
+  calculat** i no només un nom: demanar-lo pel nom hauria recalculat
+  `personProfile` seixanta cops per no res.
+- **El sostre de debò és una altra cosa.** Amb 1.000 persones el roster triga
+  1,8 s abans de dibuixar cap avatar. El dia que això molesti, el que s'ha de
+  mirar és `comandoRoster()`, no les rodones.
+
 ## Veda 122 — No es pregunta a la porta el que el sistema pot deduir
 
 Qui entrava al SOS havia de triar **un rol d'entre sis** abans d'haver fet res, i

@@ -880,6 +880,108 @@ per tant, té comptes. I té una conseqüència de disseny que estalvia feina:
 **Font**: converses amb l'Àlvar. Cal desenvolupar-ho com a document de visió
 propi quan toqui; aquí queda anotat perquè no es perdi.
 
+### Una miniapp per cada tipus de projecte d'un poble
+
+**On som.** El catàleg té **12 tipus de dinàmica** i només tres tenen eina
+pròpia fora de l'app: `vna.html` (mapeig), `compra.html` (grup de consum i
+compra col·lectiva) i `joc.html` (que és una altra cosa). `matriu.html` explica
+el model, no el fa servir. La resta viuen dins de `SOS/index.html`, que sap
+comptar-ne el valor però no sap **fer la feina concreta** de cadascuna.
+
+**Per què importa i no és una llista de desitjos.** Una miniapp per tipus és el
+que converteix el SOS d'una comptabilitat en una eina: al grup de consum, la
+diferència entre «apunta les teves hores» i «aquí tens la comanda per productor
+amb els mínims i el sobrant de format» és si el grup l'obre cada setmana o no.
+El que fa que valgui la pena és que cada miniapp **lliuri fluxos del mapa de
+valor de la seva dinàmica** —com fa `FA` a La Compra—, no que sigui una
+calculadora amb un nom a sobre.
+
+**Pendents, per ordre de necessitat real al territori:**
+
+| Dinàmica | Rols | La feina que la miniapp ha de fer, i que avui no fa ningú |
+|---|---|---|
+| ⚡ **Comunitat energètica** | 7 | El repartiment de la producció entre sòcies (coeficients), l'estimació d'estalvi per llar amb el preu de la tarifa i la seva data, i el punt on trenquen de debò: **el tràmit i els terminis** de la connexió i les subvencions |
+| 🏠 **Habitatge en cessió d'ús** | 6 | El càlcul de la quota, l'aportació inicial retornable i què passa si algú marxa — que és la conversa que ningú té fins que passa |
+| 🤝 **Suport mutu / cures veïnals** | 6 | El quadre de qui acompanya qui i quan, amb el que la veda diu: **avisar de sobrecàrrega abans que passi**, no comptar-la després |
+| ⏳ **Banc de temps** | 7 | El taulell d'ofertes i demandes amb el creuament d'àmbits, i el saldo d'hores llegible sense obrir el llibre |
+| 🧰 **Biblioteca de les coses** | 7 | Reserves, préstecs, retards i desgast: el cicle sencer d'un objecte, que avui es porta a mà |
+| 🛠 **Cooperativa de treball** | 6 | Les llesques del Slicing Pie vistes com les veu una sòcia treballadora, i el llindar de sostenibilitat |
+| 🏘 **Cens d'entitats** | 5 | Ja hi ha `online.html` com a directori; el que falta és **l'alta i la fitxa** des del territori, no només la consulta |
+
+**Tres regles que valen per a totes** (i que surten del que ja ha passat amb La
+Compra):
+
+- **Cap xifra sense data ni font.** Les tarifes elèctriques, les quotes i els
+  preus caduquen igual que els del pagès. Vedes de La Compra.
+- **El mapa de valor de la dinàmica va a dins**, còpia literal, amb guarda que
+  el compari amb `DYNAMICS`. Sense això la miniapp és una calculadora amb el nom
+  d'una dinàmica a sobre.
+- **Cap miniapp cobra ni confirma un cobrament.** El compte sí; el cobrament,
+  mai — i el vocabulari ho ha de dir («posar a la caixa», «declarat»).
+
+**Estimació honesta**: cadascuna és de la mida de La Compra (una tanda de feina
+sencera amb el seu model, la seva guarda i les seves proves). No es poden fer
+totes de cop, i fer-les a mitges és pitjor que no fer-les: una eina que no
+resol la feina de la setmana no la torna a obrir ningú.
+
+### Molekulandia · el poble on cada edifici és un projecte del SOS
+
+**La idea.** Una pàgina que dibuixi **Molekulandia**: una comunitat
+autosuficient amb la plaça i l'arcada, i als edificis del voltant els espais de
+cada tipus de projecte que hi ha a qualsevol poble. El **bar és el banc de
+temps**. La **ferreteria és la biblioteca de les coses**. I així amb tot: el que
+a un poble ja existeix com a edifici, al SOS ja existeix com a dinàmica.
+
+**Per què això no és decoració.** És la resposta a la pregunta que ningú sap
+contestar quan li expliques el SOS: *«i això, què és?»*. Un catàleg de dotze
+dinàmiques és una llista; un poble amb dotze portes és un lloc on entrar. La
+plaça del joc (`joc.html`) ja fa aquesta feina per a una dinàmica; Molekulandia
+la fa per a totes alhora.
+
+**I la part que la fa valuosa de debò: les professions noves.** Si sumes els
+rols de **totes** les fonts —les dinàmiques del catàleg, les activitats
+crítiques del territori i els prototips de mapa— surt el mapa complet del que
+una persona **pot aprendre a ser** dins del SOS:
+
+| Font | Plantilles | Rols |
+|---|---|---|
+| `DYNAMICS` · tipus de projecte | 12 | 65 |
+| `CRITICAL_ACTIVITIES` · activitats del territori | 14 | 70 |
+| `PROTOTYPE_MAPS` · formes genèriques de projecte | 6 | 30 |
+| **Total** | **32** | **165** |
+
+Cent seixanta-cinc rols, amb repeticions entre fonts —«Coordinació» surt a
+mitja dotzena de mapes— i per tant amb una feina de fons abans de dibuixar res:
+**agrupar-los en professions**. Aquesta és la peça intel·lectual del projecte i
+no s'ha de saltar: una llista de 165 etiquetes no és una visió, és un índex.
+
+**El que Molekulandia ha de deixar fer, i no només mirar:**
+
+- **Entrar a un edifici** i veure què és aquell projecte, quins rols té i quin
+  et proposa el teu perfil (el mateix `encaix` que ja fan `vna.html` i
+  `compra.html`: es declara un cop i val a tot arreu).
+- **Veure què hi ha de debò al teu poble** i què no: els edificis que la teva
+  xarxa ja té encesos i els que són buits. Un poble dibuixat que ensenyi dotze
+  edificis oberts quan al teu territori n'hi ha dos seria un cartell, no un
+  mapa.
+- **Anar del rol a l'aprenentatge**: cada professió amb els mòduls de formació
+  que la sostenen i les proves d'evidència que la fan certa. Aquí es tanca el
+  cercle amb l'itinerari que ja calcula `diagnostic.html`.
+
+**Riscos que s'han de dir abans de començar:**
+
+- **Que sigui un pòster.** El criteri per saber si val: si des de la pàgina no
+  s'hi pot **entrar a fer alguna cosa**, no és Molekulandia, és una il·lustració.
+- **Que prometi edificis que no existeixen.** Set de les dotze dinàmiques
+  encara no tenen miniapp (bloc anterior). L'edifici hi pot ser i s'ha de veure
+  què hi ha a dins avui: el mapa de valor sí, l'eina encara no.
+- **La taxonomia de professions és feina de fons**, no un `groupBy` per nom.
+  Fer-la malament donaria una llista de sinònims amb aire de descobriment.
+
+**Dependència**: la taula de rols agrupats hauria de sortir **generada de les
+taules** i comparada amb una guarda, com fa `check-matriu.js`. Escrita a mà,
+divergiria a la primera dinàmica nova.
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.

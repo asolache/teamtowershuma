@@ -265,7 +265,9 @@ console.log('\n9 · Les dues dinàmiques del catàleg, i la pàgina que es pinta
   ok(r.dins.every(n => r.txt.includes(n)),
     'les dues dinàmiques surten pel seu nom: ' + r.dins.join(' i '));
   ok(r.txt.includes(r.data), `i els preus diuen quan es van revisar: ${r.data}`);
-  ok(r.tabs === 6 && r.pans.length === 6, 'sis pantalles, sis pestanyes');
+  /* Cada pestanya ha de tenir la seva pantalla i cap pantalla ha de quedar
+     sense pestanya: una pantalla òrfena és feina feta que no veurà ningú. */
+  ok(r.tabs === 7 && r.pans.length === 7, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
   ok(r.files > 30, `la taula de la cistella es pinta sencera (${r.files} files)`);
   ok(r.ample, 'i a 390px la pàgina no desborda de costat');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
@@ -467,6 +469,167 @@ console.log('\n15 · El perfil es declara un cop i val a tots els mapes');
   ok(!r.camps.some(c => /nom|correu|edat|dni|telefon/i.test(c)),
     'cap capacitat és una dada d\'identitat: es demana què pots posar, no qui ets');
   ok(!!v.top, `i la colla li proposa «${v.top}» (${v.punts})`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+/* ── La caixa ─────────────────────────────────────────────────────────────
+   És la part que trenca els grups de consum, i és la part on una pàgina té més
+   ganes de mentir: d'apuntar qui deu quant a dir que algú ha pagat només hi ha
+   una paraula. El que es prova és que els números quadrin al cèntim i que la
+   pàgina no digui mai el que no pot saber. */
+console.log('\n9 · Fins que la comanda no es tanca, no deu res ningú');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA, G = C.estat();
+    const abans = C.caixaGrup();
+    const cap = G.socis.map(s => C.compteDe(s.id).carregat);
+    const prev = C.repartComanda();
+    return { comandes: abans.comandes, carregat: abans.carregat,
+      cap: cap.filter(x => x !== 0).length,
+      previst: prev.total, llars: G.socis.length };
+  });
+  ok(r.comandes === 0 && r.carregat === 0,
+    'sense cap comanda tancada, la caixa és a zero');
+  ok(r.cap === 0, 'i cap de les 12 llars té res carregat, encara que la comanda ja estigui calculada');
+  ok(r.previst > 0, `el càlcul hi és igualment: la comanda d'ara valdria ${r.previst} €`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n10 · Tancada, el que deu cada llar suma el total exacte');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA;
+    const t = C.tancaComanda();
+    const G = C.estat();
+    const parts = G.socis.map(s => C.compteDe(s.id).carregat);
+    const suma = Math.round(parts.reduce((a, x) => a + x, 0) * 100) / 100;
+    /* El que el grup posa a cada productor és el que encarrega menys el tram:
+       si la suma dels productors no fos el total, la caixa demanaria diners
+       que ningú deu a ningú. */
+    const prod = Math.round(t.comanda.perProductor.reduce((a, x) => a + x.paga, 0) * 100) / 100;
+    return { total: t.comanda.total, suma, prod, parts: parts.length,
+      zero: parts.filter(x => x <= 0).length, resta: t.comanda.resta,
+      quan: t.comanda.quan, id: t.comanda.id };
+  });
+  ok(r.suma === r.total,
+    `la suma del que deu cada llar és el total de la comanda, al cèntim: ${r.suma} = ${r.total} €`);
+  ok(r.prod === r.total, `i el total és el que es posa a cada productor: ${r.prod} €`);
+  ok(r.zero === 0, 'cap llar surt a zero: totes han demanat alguna cosa i totes hi posen');
+  ok(Math.abs(r.resta) <= 0.05,
+    `l'arrodoniment que sobra és d'un cèntim o dos (${r.resta} €) i va a la llar que més hi posa, ` +
+    'no es perd');
+  ok(/^\d{4}-\d{2}-\d{2}$/.test(r.quan), `i queda amb data: ${r.quan}`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n11 · Posar diners baixa el saldo d\'aquella llar i de ningú més');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA;
+    C.tancaComanda();
+    const G = C.estat(), un = G.socis[0], altre = G.socis[1];
+    const a0 = C.compteDe(un.id), b0 = C.compteDe(altre.id);
+    const mov = C.posaACaixa(un.id, 50, 'transferència');
+    const a1 = C.compteDe(un.id), b1 = C.compteDe(altre.id);
+    const treta = C.treuMoviment(mov.mov.id);
+    const a2 = C.compteDe(un.id);
+    const errAltre = C.posaACaixa('no-existeix', 10).err;
+    const errZero = C.posaACaixa(un.id, 0).err;
+    return { a0: a0.saldo, a1: a1.saldo, a2: a2.saldo, b0: b0.saldo, b1: b1.saldo,
+      posat: a1.posat, treta, camps: Object.keys(mov.mov).join(','),
+      blanca: C.MOVIMENT_CAMPS.join(','), errAltre, errZero };
+  });
+  ok(Math.abs(r.a0 - r.a1 - 50) < 0.005,
+    `posar 50 € baixa el saldo d'aquella llar de ${r.a0} a ${r.a1}`);
+  ok(r.b0 === r.b1, 'i no toca el de cap altra: ' + r.b1 + ' abans i després');
+  ok(r.a2 === r.a0 && r.treta, 'treure el moviment ho desfà exacte: apuntar-se malament es pot corregir');
+  ok(r.camps === r.blanca,
+    `el moviment desa exactament els camps declarats (${r.camps}) i cap més`);
+  ok(!/persona|titular|nom|iban|targeta/i.test(r.camps),
+    'i cap és el nom d\'una persona: els comptes són per llar, com tota la pàgina');
+  ok(!!r.errAltre && !!r.errZero,
+    `no s'apunta res a una llar que no hi és («${r.errAltre}») ni per zero euros («${r.errZero}»)`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n12 · La caixa del grup quadra, i el que no quadra es diu pel seu nom');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const C = window.__COMPRA;
+    C.tancaComanda();
+    const G = C.estat();
+    /* Dues llars hi posen: una just el que li toca i una altra de més. */
+    const un = G.socis[0], altre = G.socis[1];
+    C.posaACaixa(un.id, C.compteDe(un.id).carregat);
+    C.posaACaixa(altre.id, C.compteDe(altre.id).carregat + 20);
+    const k = C.caixaGrup();
+    const sumaSaldos = Math.round(k.comptes.reduce((a, c) => a + c.saldo, 0) * 100) / 100;
+    /* I el forat que s'ha de dir: donar de baixa una llar carregada deixa un
+       càrrec que ja no és de ningú. */
+    C.treuSoci(G.socis[2].id);
+    const k2 = C.caixaGrup();
+    return { carregat: k.carregat, posat: k.posat, dif: k.diferencia, sumaSaldos,
+      deuen: k.deuen.length, favor: k.favor.length, orfe0: k.orfe,
+      orfe: k2.orfe, llars: k2.comptes.length,
+      quadra2: Math.round((k2.comptes.reduce((a, c) => a + c.carregat, 0) + k2.orfe) * 100) / 100 };
+  });
+  ok(Math.abs(r.carregat - r.posat - r.dif) < 0.005,
+    `carregat ${r.carregat} − declarat ${r.posat} = ${r.dif} €`);
+  ok(Math.abs(r.dif - r.sumaSaldos) < 0.02,
+    'i la diferència és exactament la suma dels saldos de les llars: no hi ha diners a cap racó');
+  ok(r.deuen === 10 && r.favor === 1,
+    `${r.deuen} llars encara no hi han posat res i ${r.favor} hi té a favor — totes dues coses dites`);
+  ok(r.orfe0 === 0, 'mentre hi són totes les llars, no hi ha cap càrrec orfe');
+  ok(r.orfe > 0 && r.llars === 11,
+    `donar de baixa una llar carregada deixa ${r.orfe} € que ja no són de ningú, i es compten a part`);
+  ok(Math.abs(r.quadra2 - r.carregat) < 0.005,
+    'sumant l\'orfe torna a quadrar amb el total: el forat es diu, no s\'amaga');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n13 · A la pantalla: es tanca, es desa i no es diu mai que ningú hagi pagat');
+{
+  const { ctx, p, errs } = await nova();
+  await p.click('#tabs button[data-p="caixa"]');
+  const r = await p.evaluate(async () => {
+    const C = window.__COMPRA;
+    const visible = !!document.querySelector('#pCaixa.on');
+    document.querySelector('#btnTanca').click();
+    const G = C.estat();
+    const un = G.socis[0];
+    document.querySelector('#movSoci').value = un.id;
+    document.querySelector('#movEur').value = '25';
+    document.querySelector('#btnMov').click();
+    const txt = document.querySelector('#pCaixa').textContent.replace(/\s+/g, ' ');
+    /* Es desa: rellegint el que hi ha al navegador ha de sortir el mateix. */
+    const desat = JSON.parse(localStorage.getItem(C.CLAU) || '{}');
+    return { visible, txt, comandes: (desat.comandes || []).length,
+      caixa: (desat.caixa || []).length,
+      camps: Object.keys((desat.caixa || [])[0] || {}).join(','),
+      files: document.querySelectorAll('#tComptes tbody tr').length,
+      movs: document.querySelectorAll('#movs [data-treu]').length };
+  });
+  ok(r.visible, 'la pestanya «6 · La caixa» obre la seva pantalla');
+  ok(r.comandes === 1 && r.caixa === 1,
+    'tancar i apuntar es desa al navegador: en tornar-hi demà, els comptes hi són');
+  ok(r.camps === 'id,soci,eur,quan,nota',
+    `i el que es desa de cada moviment són els camps declarats: ${r.camps}`);
+  ok(r.files >= 13 && r.movs === 1, `${r.files - 1} llars a la taula de comptes i ${r.movs} moviment amb el seu botó de treure`);
+  ok(/no és un rebut/i.test(r.txt), 'la pantalla diu que això no és un rebut i no prova res');
+  ok(/ja se n'ha tancat una pel mateix import/.test(r.txt),
+    'i avisa abans de tancar-ne una segona igual el mateix dia: carregar-ho tot dos cops és ' +
+    'l\'error més fàcil i el més car');
+  ok(!/pag(at|ats|ada|ades|ament|aments|ar)\b/i.test(r.txt),
+    'i enlloc de la caixa hi surt la paraula «pagat»: aquí es posa i es declara');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }

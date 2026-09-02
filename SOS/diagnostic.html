@@ -47,6 +47,14 @@ textarea{min-height:88px;resize:vertical}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 @media(max-width:600px){.grid2{grid-template-columns:1fr}}
+/* Les portes: on continuar, ara i sense enviar res */
+.portes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem}
+.porta-c{display:block;text-decoration:none;background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:.75rem .85rem;transition:border-color .15s}
+.porta-c:hover{border-color:var(--indigo)}
+.porta-c .pt{display:block;font-weight:700;font-size:.92rem;color:var(--text)}
+.porta-c .pd{display:block;font-size:.79rem;color:var(--light);margin-top:.2rem;line-height:1.45}
+.porta-c .pq{display:block;font-size:.75rem;color:var(--green);margin-top:.35rem}
 /* Resultat */
 #result{display:none}
 .dx{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(0,230,118,.06));border:2px solid var(--indigo);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1.2rem}
@@ -86,14 +94,63 @@ footer a{color:var(--indigo);text-decoration:none}
 </style>
 </head>
 <body>
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html" aria-current="page"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
 <header>
 <h1>Diagnòstic comunitari</h1>
 <p>Explica'ns d'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l'itinerari formatiu que et toca i una proposta orientativa d'acompanyament — <strong>l'enviïs o no</strong>.</p>
-<nav>
-<a href="../index.html">← TeamTowers Humà</a> ·
-<a href="index.html">Obre SOS</a> ·
-<a href="formacio.html">Guia formativa</a>
-</nav>
 </header>
 
 <main class="wrap">
@@ -248,6 +305,11 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="sec"><h3>🤝 Com us podem acompanyar</h3><div id="rSvcs"></div></div>
 <div class="sec" id="rFundBox"><h3>💶 D'on poden sortir els diners</h3><ul id="rFund"></ul></div>
 <div class="sec"><h3>👣 Primer pas, el faci qui el faci</h3><p id="rNext"></p></div>
+<div class="sec"><h3>🚪 Per on continuar ara mateix</h3>
+<p style="color:var(--light);font-size:.9rem;margin:.2rem 0 .7rem">Sense enviar res i sense donar-te d'alta
+enlloc: aquestes són les eines del SOS que responen al que has marcat, i cadascuna diu <strong>per què és
+aquesta</strong> i no una altra.</p>
+<div id="rPortes"></div></div>
 
 <div class="send">
 <h3>📨 Vols que ho mirem junts?</h3>
@@ -390,6 +452,54 @@ const NEED_GAP={diagnostic:'no teniu clar què hi ha ni què falta al vostre tei
   equity:'heu de repartir propietat i no sabeu com fer-ho just',impacte:'no podeu demostrar el que aconseguiu',
   formacio:'l\'equip necessita formació',eina:'no teniu cap eina per gestionar-ho',mentors:'voleu poder formar altres'};
 
+/* ── Les portes cap al SOS ─────────────────────────────────────────
+   El diagnòstic acabava en un correu: deia què et falta i et deixava allà. Però
+   el que et falta ja té eina, i no fer-ho notar convertia la pàgina en un
+   fullet de contacte.
+
+   Cada porta es tria pel que la persona ha marcat, i porta escrit **per què és
+   aquesta**. Una llista de totes les eines no seria una recomanació: seria un
+   menú, i el menú ja hi és a dalt. */
+const PORTES=[
+  {id:'vna',url:'vna.html',t:'🕸 El mapa de valor',
+   d:'Rols funcionals i intercanvis als dos sentits. És el primer pas de tot i es fa en una tarda.',
+   si:d=>d.need.includes('diagnostic')||d.need.includes('metode')||!d.serveis.length,
+   per:d=>d.need.includes('diagnostic')?'Perquè has dit que no teniu clar què hi ha ni què falta.'
+        :d.need.includes('metode')?'Perquè has dit que aneu fent sense mètode: aquest és el mètode.'
+        :'Perquè encara no teniu cap dinàmica en marxa, i tot comença aquí.'},
+  {id:'matriu',url:'matriu.html',t:'🌱 La MATRIU',
+   d:'La incubadora: quatre etapes, tres portes amb criteris i la propietat repartida per aportació real.',
+   si:d=>d.need.includes('equity')||d.need.includes('juridicN')||d.serveis.length>=2,
+   per:d=>d.need.includes('equity')?'Perquè heu de repartir propietat: aquí es recalcula sola i no es negocia.'
+        :d.need.includes('juridicN')?'Perquè el tipus de projecte decideix la forma jurídica i el repartiment alhora.'
+        :'Perquè ja teniu diverses coses en marxa i el que toca és fer-les caminar soles.'},
+  {id:'registre',url:'index.html',t:'⊞ El registre del SOS',
+   d:'Cada aportació signada per qui la fa i confirmada per l\'altra banda. El rebut val fora de l\'app.',
+   si:d=>d.need.includes('relleu')||d.need.includes('impacte')||d.need.includes('eina'),
+   per:d=>d.need.includes('relleu')?'Perquè el relleu es dissenya amb dades: qui sosté què, amb hores a la taula.'
+        :d.need.includes('impacte')?'Perquè demostrar el que aconseguiu és tenir-ho signat, no explicat.'
+        :'Perquè has dit que no teniu cap eina per gestionar-ho.'},
+  {id:'compra',url:'compra.html',t:'🛒 La Compra',
+   d:'Grup de consum i compra col·lectiva, amb la comanda agregada i l\'estalvi dit per la seva causa.',
+   si:d=>d.serveis.includes('consum')||d.need.includes('financament'),
+   per:d=>d.serveis.includes('consum')?'Perquè ja teniu grup de consum i això és l\'eina que li falta.'
+        :'Perquè abans de buscar diners fora, el que es deixa de gastar també compta.'},
+  {id:'formacio',url:'formacio.html',t:'🎓 La formació',
+   d:'Setze mòduls de N0 a N3, amb les hores i el nivell de cadascun.',
+   si:d=>d.need.includes('formacio')||d.need.includes('mentors')||d.mods.length>=5,
+   per:d=>d.need.includes('mentors')?'Perquè voleu formar altres, i això té itinerari propi.'
+        :'Perquè el vostre itinerari són '+d.mods.length+' mòduls i val la pena veure\'ls sencers.'},
+  {id:'escola',url:'escola.html',t:'🏫 El programa d\'escola',
+   d:'El SOS a mida d\'aula, sense cap dada de cap infant.',
+   si:d=>d.org==='ajuntament'||d.org==='comarcal',
+   per:()=>'Perquè des d\'un ajuntament l\'escola sol ser la porta amb menys fricció del territori.'}
+];
+/* Tres com a màxim. Sis recomanacions no són una recomanació. */
+function portesDe(d){
+  const tria=PORTES.filter(p=>{try{return p.si(d);}catch(e){return false;}});
+  return (tria.length?tria:PORTES.filter(p=>p.id==='vna')).slice(0,3);
+}
+
 /* ── Motor de diagnòstic ─────────────────────────────────────────── */
 function diagnose(){
   const P=PROFILES[st.org]||PROFILES.particular;
@@ -416,7 +526,7 @@ function diagnose(){
   else if(need.includes('financament'))next='Munteu el calendari de convocatòries dels propers 12 mesos abans de res. Les hores que ja doneu es poden acreditar com a aportació en espècie, que sovint és el cofinançament que falta.';
   else if(!serveis.length)next='Trieu UNA dinàmica per començar — banc de temps o biblioteca de les coses són les que menys friccions tenen — i poseu-la en marxa amb el mapa de valor fet. Una que funcioni val més que tres començades.';
   else next='Feu el mapa de valor del que ja teniu en marxa. Gairebé sempre apareixen fluxos que ningú havia anomenat i rols que no cobreix ningú — i aquí és on hi ha el marge de millora immediat.';
-  return{P,have,need,serveis,maturity,support,mods,svcs,next};
+  return{P,org:st.org,have,need,serveis,maturity,support,mods,svcs,next};
 }
 
 function renderDx(d){
@@ -441,6 +551,9 @@ function renderDx(d){
   $('#rSvcs').innerHTML=d.svcs.map(s=>'<div class="svc"><span class="svc-n">'+s+'</span><span class="svc-b"><span class="svc-t">'+SERVICES[s][0]+'</span><span class="svc-d">'+SERVICES[s][1]+'</span></span></div>').join('');
   $('#rFund').innerHTML=P.fund.map(f=>'<li>'+f+'</li>').join('');
   $('#rNext').textContent=d.next;
+  $('#rPortes').innerHTML='<div class="portes">'+portesDe(d).map(p=>
+    '<a class="porta-c" href="'+p.url+'"><span class="pt">'+p.t+'</span>'+
+    '<span class="pd">'+p.d+'</span><span class="pq">'+p.per(d)+'</span></a>').join('')+'</div>';
 }
 
 /* ── Resum en text pla · el que viatja per correu ────────────────── */

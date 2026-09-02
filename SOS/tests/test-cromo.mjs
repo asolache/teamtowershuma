@@ -266,6 +266,80 @@ console.log('\n· El cromo obre les dues portes que té darrere');
     'i el cromo diu què NO s\'hi pot editar: el tier i les hores es guanyen, no es trien');
 }
 
+/* Els dos llocs on el Comando ensenya gent. Fins ara hi pintaven una rodona
+   amb un to derivat del hash del nom, just al costat del color del tier: dues
+   coses dient qui ets, i la grossa era la que no deia res. */
+console.log('\n· Allà on surt gent, la rodona és el cromo i no el hash');
+{
+  await page.evaluate(async s => {
+    const S = window.__SOS, n = S.byId(s.id);
+    /* Aportacions signades a tres persones perquè el roster no surti pla:
+       calen tiers diferents per poder distingir un color guanyat d'un d'inventat. */
+    const qui = [[s.marta, 40], [s.jordi, 8], [s.nuria, 2]];
+    qui.forEach(([mid, quants]) => {
+      for (let i = 0; i < quants; i++) n.ledger.push({
+        id: 'r' + mid + i, ts: '2026-08-0' + (1 + i % 9) + 'T10:00:00Z', type: 'temps',
+        value: 2, memberId: mid, category: 'cuina', sig: { s: 'x' }, hash: 'h' + i });
+    });
+    await S.persist(n);
+  }, seed);
+
+  const r = await page.evaluate(() => {
+    const S = window.__SOS;
+    const hex = d => '#' + [0, 1, 2].map(i => d[i].toString(16).padStart(2, '0')).join('');
+    const mira = () => [...document.querySelectorAll('#cmRoster [data-cromo]')].map(card => {
+      const cv = card.querySelector('canvas.cromo-av');
+      if (!cv) return { nom: card.dataset.cromo, cv: false };
+      const x = cv.getContext('2d');
+      return { nom: card.dataset.cromo, cv: true,
+        escala: cv.width / parseInt(cv.style.width, 10),
+        vora: hex(x.getImageData(cv.width / 2, 2, 1, 1).data),
+        tier: S.superheroCromo(card.dataset.cromo).tier.color.toLowerCase() };
+    });
+    S.openComandoView();
+    const film = mira();
+    document.querySelector('.cm-mode-btn[data-mode="fitxa"]').click();
+    const fitxa = mira();
+    S.closeModal();
+    return { film, fitxa, capColor: 'color' in S.superheroCromo('Marta Vidal') };
+  });
+  ok(r.film.length >= 3 && r.film.every(c => c.cv),
+    `les ${r.film.length} targetes de la vista pel·lícula porten el cromo dibuixat`);
+  ok(r.film.every(c => c.vora === c.tier),
+    'i la vora de cadascuna és el color del seu tier, llegit del píxel: ' +
+    r.film.map(c => c.nom.split(' ')[0] + ' ' + c.vora).join(', '));
+  ok(r.film.every(c => c.escala === 2), 'totes al doble de resolució, com la de dalt');
+  ok(r.fitxa.length >= 3 && r.fitxa.every(c => c.cv && c.vora === c.tier),
+    'i la vista fitxa fa exactament el mateix: no hi ha dues maneres de dibuixar una persona');
+  ok(new Set(r.film.map(c => c.vora)).size > 1,
+    'els colors no són tots iguals: distingeixen el que s\'ha aportat, que és per al que serveixen');
+  ok(!r.capColor,
+    'i el cromo ja no reparteix cap color derivat del nom: no en queda cap per tornar a pintar');
+}
+
+console.log('\n· I a la llista de gent, que no en tenia cap');
+{
+  const r = await page.evaluate(() => {
+    const S = window.__SOS;
+    const hex = d => '#' + [0, 1, 2].map(i => d[i].toString(16).padStart(2, '0')).join('');
+    S.state.rankScope = ''; S.state.activeId = null; S.state.homeView = 'gent';
+    S.render();
+    const files = [...document.querySelectorAll('#rkBody .rk-row')].map(row => {
+      const cv = row.querySelector('canvas.cromo-av');
+      const nom = (row.querySelector('.rk-nm') || {}).textContent || '';
+      if (!cv) return { nom, cv: false };
+      const x = cv.getContext('2d');
+      return { nom, cv: true, vora: hex(x.getImageData(cv.width / 2, 2, 1, 1).data),
+        tier: S.superheroCromo(nom.replace(/\s*poc recíproc\s*$/, '')).tier.color.toLowerCase() };
+    });
+    return { files };
+  });
+  ok(r.files.length > 0 && r.files.every(f => f.cv),
+    `les ${r.files.length} files del rànquing porten cara: abans eren vint línies de text`);
+  ok(r.files.every(f => f.vora === f.tier),
+    'i és la mateixa cara que al roster, amb el mateix color del mateix tier');
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

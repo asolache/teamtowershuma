@@ -69,7 +69,8 @@ el botó surt 🔒 amb el nombre de criteris pendents fins que es compleixen tot
 | ≥1 aportació al ledger | Algú hi ha posat hores o diners de veritat |
 
 ### Porta 3 · Validació → Graduació
-Les 5 comprovacions completes de `ventureReadiness`:
+Les comprovacions de `ventureReadiness` — cinc sempre, i una sisena només als
+tipus amb ànim de lucre:
 
 | Criteri | Per què |
 |---|---|
@@ -78,6 +79,7 @@ Les 5 comprovacions completes de `ventureReadiness`:
 | ≥60% dels items del backlog fets | El gruix de la feina fundacional està fet |
 | ≥3 aportacions al ledger | Hi ha comptabilitat de valor real |
 | Cap membre concentra >70% equity | No surt amb una dependència fatal |
+| El llindar de sostenibilitat és assolible *(només amb ànim de lucre)* | Graduar sense saber si es cobreixen costos és enviar el projecte a tancar. A un projecte comunitari no se li demana, perquè no és la seva feina |
 
 **Per què el límit del 70%**: una venture on una sola persona té el 85% no és una
 cooperativa, és un autònom amb ajudants. Graduar-la seria enviar-la a trencar-se.
@@ -88,10 +90,16 @@ cooperativa, és un autònom amb ajudants. Graduar-la seria enviar-la a trencar-
 
 Totes tres desemboquen al mateix objecte `venture`; canvia d'on ve el mapa.
 
-### Via A · Activitat crítica del territori (10 plantilles)
+### Via A · Activitat crítica del territori (14 plantilles)
 `CRITICAL_ACTIVITIES` — dinamització comercial, ocupació, habitatge, energia,
-alimentació, cures, cultura, turisme, economia circular, digitalització.
+alimentació, cures, cultura, turisme, economia circular, digitalització,
+joventut, mobilitat, acollida i territori.
 Cadascuna porta rols, fluxos i kanban propis del sector.
+
+> Aquest document deia **10** quan a l'app ja n'hi havia **14**. Ho va trobar
+> `tools/check-matriu.js` el primer cop que va córrer, i és exactament el motiu
+> pel qual la pàgina pública no copia d'aquí sinó que es compara amb el codi: un
+> document explicatiu envelleix sense petar mai.
 
 **Quan fer-la servir**: quan el territori té una necessitat clara i sectorial.
 
