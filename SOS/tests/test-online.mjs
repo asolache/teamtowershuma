@@ -329,6 +329,175 @@ console.log('\n8 · La identitat és la mateixa que la de l\'aplicació');
   await ctx.close();
 }
 
+console.log('\n8b · La fitxa segueix valent quan torna amb les claus desordenades');
+/* Aquesta és la prova de l'avaria que va deixar el directori en blanc amb una
+   sola fitxa publicada, la del propi autor. Tot verificava —la firma Ed25519
+   quadrava amb els bytes desats— i tot i així el sedàs la descartava dient «el
+   did no surt d'aquesta clau».
+
+   El motiu: el `did` es derivava del hash de `JSON.stringify(jwk)`, i això no
+   és un hash de la clau sinó de **com l'ha escrit qui l'hagi escrit**. El
+   navegador exporta el JWK alfabèticament; Postgres el torna com a `jsonb`,
+   que ordena les claus per longitud i després pel seu byte. Mateixa clau, dos
+   textos, dos dids.
+
+   Aquí es reprodueix el viatge: es firma una fitxa i se li reordenen les claus
+   del JWK **tal com ho fa `jsonb`** abans de tornar-la a passar pel sedàs. Si
+   algun dia algú torna a posar `JSON.stringify` a `_didFromJwk`, aquesta
+   asserció cau i diu per què. */
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(async () => {
+    const O = window.__ONLINE;
+    const jo = await O.getIdentity();
+    const f = O.bastirFitxa({ nom: 'Marta Vidal', municipi: 'Torrelles', did: jo.did,
+      ofereix: [{ cat: 'cuina', txt: 'Cuino per a colles' }], busca: [], exPub: jo.exchange.pubJwk });
+    await O.signRecord(f);
+    const abans = await O.fitxaValida(f);
+    /* L'ordre que retorna `jsonb`: primer per longitud de la clau, després
+       byte a byte. No és una invenció de la prova, és el que fa Postgres. */
+    const comJsonb = o => {
+      const out = {};
+      Object.keys(o).sort((a, c) => a.length - c.length || (a < c ? -1 : a > c ? 1 : 0))
+        .forEach(k => { out[k] = o[k]; });
+      return out;
+    };
+    const tornada = JSON.parse(JSON.stringify(f));
+    tornada.signer.pubJwk = comJsonb(tornada.signer.pubJwk);
+    const despres = await O.fitxaValida(tornada);
+    /* I la prova que l'ordre canviava de debò: la derivació vella. */
+    const _te = new TextEncoder();
+    const vell = 'did:sos:' + jo.alg.toLowerCase() + ':' +
+      (await O.sha256(_te.encode(JSON.stringify(tornada.signer.pubJwk)))).slice(0, 32);
+    const nou = await O._didFromJwk(jo.alg, tornada.signer.pubJwk);
+    return { abans: abans.ok, despres, ordreCanviat: Object.keys(tornada.signer.pubJwk).join(',')
+      !== Object.keys(f.signer.pubJwk).join(','), vell, nou, did: jo.did,
+      cru: Object.keys(f.signer.pubJwk).join(','), jsonb: Object.keys(tornada.signer.pubJwk).join(',') };
+  });
+  ok(r.abans, 'la fitxa acabada de firmar val');
+  ok(r.ordreCanviat, 'i en tornar de la taula les claus arriben en un altre ordre: ' + r.cru + ' → ' + r.jsonb);
+  ok(r.despres.ok, 'i **segueix valent**, que és el que abans no passava: ' + r.despres.reason);
+  ok(r.vell !== r.did, 'la derivació vella li hauria donat un did diferent (' + r.vell.slice(9, 30) + '…) i l\'hauria descartada');
+  ok(r.nou === r.did, 'i la canònica li dona el seu: ' + r.nou.slice(0, 26) + '…');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n8c · El cartell de descartades diu el motiu, i no acusa quan la fitxa és teva');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(async () => {
+    const O = window.__ONLINE, S = O.S;
+    const jo = await O.getIdentity();
+    /* Una fitxa meva que no quadra (li toquem el nom després de firmar) i una
+       d'un desconegut que ve directament sense firma. */
+    const meva = O.bastirFitxa({ nom: 'Jo', municipi: 'Foix', did: jo.did, ofereix: [{ cat: 'cuina', txt: 'x' }], busca: [] });
+    await O.signRecord(meva);
+    meva.nom = 'Un altre';
+    const seva = { '@type': O.FITXA_TIPUS, v: 1, did: 'did:sos:ed25519:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      nom: 'Ningú', municipi: 'Enlloc', ofereix: [], busca: [], at: new Date().toISOString() };
+    const t = await O.tamisar([{ did: meva.did, fitxa: meva }, { did: seva.did, fitxa: seva }], jo.did);
+    S.descartades = t.descartades; S.fitxes = t.fitxes;
+    O.pintaEstat();
+    return { motius: t.descartades.map(d => d.motiu), meus: t.descartades.filter(d => d.meu).length,
+      txt: document.querySelector('#estat').innerText.replace(/\s+/g, ' ') };
+  });
+  ok(r.motius.includes('firma que no quadra') && r.motius.includes('sense firma'),
+    'el sedàs guarda el motiu de cadascuna: ' + r.motius.join(' · '));
+  ok(r.meus === 1, 'i sap quina de les dues és teva');
+  ok(/firma que no quadra/.test(r.txt) && /sense firma/.test(r.txt),
+    'el cartell diu els motius reals en comptes d\'un de sol per a tot');
+  ok(/una de les descartades és la teva/i.test(r.txt) && /no és cap intrús/i.test(r.txt),
+    'i quan una és teva no acusa ningú: diu que és aquest navegador');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n8d · «Porta el meu perfil del SOS» llegeix el que ja tens, i no publica res');
+/* El perfil no s'importa de cap lloc: viu a la mateixa IndexedDB. El que es
+   prova és que s'hi arriba pel `did` —no pel nom, que dos veïns poden
+   compartir— i que omplir el formulari no és publicar. */
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(async () => {
+    const O = window.__ONLINE;
+    const jo = await O.getIdentity();
+    /* Se sembra un node com el que deixaria l'app: dues persones, una amb el
+       meu did, ofertes i demandes, i una oferta retirada que no ha de sortir. */
+    await O.dbPut({ id: 'n1', type: 'node', name: 'Banc de temps de Foix', municipi: 'Torrelles de Foix',
+      members: [{ id: 'm1', name: 'Marta Vidal', did: jo.did }, { id: 'm2', name: 'Un altre' }],
+      offers: [
+        { id: 'o1', memberId: 'm1', kind: 'oferta', category: 'cuina', title: 'Cuino per a colles — Marta Vidal', status: 'activa' },
+        { id: 'o2', memberId: 'm1', kind: 'demanda', category: 'transport', title: 'Algú que em porti caixes', status: 'activa' },
+        { id: 'o3', memberId: 'm1', kind: 'oferta', category: 'costura', title: 'Cosir — Marta Vidal', status: 'retirada' },
+        { id: 'o4', memberId: 'm2', kind: 'oferta', category: 'idiomes', title: 'Anglès — Un altre', status: 'activa' },
+        /* Un títol amb guionet propi: no s'ha de retallar per la meitat. */
+        { id: 'o5', memberId: 'm1', kind: 'oferta', category: 'idiomes', title: 'Classes de reforç – matemàtiques', status: 'activa' }
+      ] });
+    await O.dbPut({ id: 'dossier:marta-vidal', type: 'dossier', personKey: 'marta-vidal',
+      name: 'Marta Vidal', municipi: 'Sant Quintí de Mediona' });
+    const perfil = await O.perfilDelSOS();
+    O.obreAlta();
+    await O.portaPerfil();
+    const previ = document.querySelector('#previ').innerText.replace(/\s+/g, ' ');
+    return { perfil, nom: document.querySelector('#fNom').value,
+      muni: document.querySelector('#fMuni').value,
+      avis: document.querySelector('#perfilAvis').textContent, previ,
+      meva: O.S.meva };
+  });
+  ok(r.perfil.nom === 'Marta Vidal', 'troba el teu nom pel did, no pel nom: ' + r.perfil.nom);
+  ok(r.perfil.ofereix.length === 2 && r.perfil.ofereix[0].txt === 'Cuino per a colles',
+    'i li treu el sufix del nom que l\'app hi enganxa: «' + r.perfil.ofereix[0].txt + '»');
+  ok(r.perfil.ofereix.some(x => x.txt === 'Classes de reforç – matemàtiques'),
+    'però un títol amb guionet propi arriba sencer, no retallat pel primer guionet');
+  ok(r.perfil.ofereix[0].cat === 'cuina' && r.perfil.busca[0].cat === 'transport',
+    'les categories creuen directament amb les del banc de temps');
+  ok(!r.perfil.ofereix.some(x => /Cosir/.test(x.txt)), 'una oferta retirada no torna a sortir sola');
+  ok(!r.perfil.ofereix.concat(r.perfil.busca).some(x => /Anglès/.test(x.txt)),
+    'i el que és d\'un altre soci no és teu');
+  ok(r.muni === 'Sant Quintí de Mediona', 'el municipi surt del teu dossier, no del node: ' + r.muni);
+  ok(r.nom === 'Marta Vidal' && /Cuino per a colles/.test(r.previ),
+    'el formulari queda ple i la previsualització ja ho ensenya');
+  ok(/no s'ha publicat res/i.test(r.avis), 'i es diu que encara no s\'ha publicat res: «' + r.avis.slice(-46) + '»');
+  ok(!r.meva, 'perquè de fet no s\'ha publicat: no hi ha cap fitxa teva al directori');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n8e · Entrar amb la identitat del SOS, que és un fitxer i una contrasenya');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(async () => {
+    const O = window.__ONLINE;
+    const original = (await O.getIdentity()).did;
+    const copia = await O.exportaIdentitat('una-frase-llarga');
+    const out = { original, tipus: copia.type, iters: copia.iters, teCt: !!copia.ct,
+      claueEnClar: /privJwk|"x":/.test(JSON.stringify(copia).replace(/"ct":"[^"]*"/, '')) };
+    /* Contrasenya equivocada: no entra, i ho diu pel seu nom. */
+    try { await O.entraAmbIdentitat(copia, 'una-altra-frase'); out.malament = 'ha entrat!'; }
+    catch (e) { out.malament = e.code + ' · ' + e.message; }
+    /* Una identitat diferent no es substitueix sense dir-ho. */
+    const altra = JSON.parse(JSON.stringify(copia));
+    altra.did = 'did:sos:ed25519:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB';
+    try { await O.entraAmbIdentitat(altra, 'una-frase-llarga'); out.sensePermis = 'ha entrat!'; }
+    catch (e) { out.sensePermis = e.code; }
+    out.encaraSoc = (await O.getIdentity()).did;
+    /* I amb la contrasenya bona, entra. */
+    const r2 = await O.entraAmbIdentitat(copia, 'una-frase-llarga');
+    out.tornat = r2.did;
+    return out;
+  });
+  ok(r.tipus === 'sos-identity-backup' && r.iters === 210000 && r.teCt,
+    'la còpia té el format i els paràmetres de l\'app (' + r.tipus + ', ' + r.iters + ' iteracions)');
+  ok(!r.claueEnClar, 'i la clau privada només hi és xifrada: fora del `ct` no hi ha res de la clau');
+  ok(/bad_pass/.test(r.malament), 'amb la contrasenya equivocada no entra: «' + r.malament + '»');
+  ok(r.sensePermis === 'exists', 'i una identitat diferent no substitueix la que hi ha sense confirmar-ho');
+  ok(r.encaraSoc === r.original, 'després dels dos intents segueixes sent qui eres');
+  ok(r.tornat === r.original, 'amb la còpia bona, hi entres: ' + r.tornat.slice(0, 26) + '…');
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
 console.log('\n9 · A 390 px no es desborda i tot es pot prémer');
 {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });

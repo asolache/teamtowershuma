@@ -704,6 +704,74 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 136 — Un avís que acusa ha de poder dir de qui és la culpa
+
+El directori tenia un cartell per a les fitxes que el sedàs descarta. Deia sempre
+el mateix: *«no es pinten perquè la firma no quadra. Això no és un error teu: vol
+dir que algú ha escrit al directori sense la clau de qui deia ser, i el sedàs ho
+ha aturat»*.
+
+Amb una sola fitxa publicada —la de qui havia escrit el cartell— el missatge era
+fals de dalt a baix. No hi havia cap intrús: hi havia la veda 135. I com que el
+cartell donava una causa amb tanta seguretat, va enviar a buscar un atacant
+inexistent en comptes de mirar la derivació del `did`.
+
+L'error de disseny no és el text, és **haver escrit una causa on només hi havia
+un símptoma**. El sedàs ja sabia el motiu de cada descart —`sense firma`, `firma
+que no quadra`, `el did no surt d'aquesta clau`— i el cartell els llençava tots
+per posar-hi una explicació inventada.
+
+Dues regles, doncs:
+
+- **Es diu el motiu que s'ha recollit, no el que se suposa.** Els motius van
+  agrupats i comptats, i cadascun és el que el sedàs ha vist de debò.
+- **Una acusació ha de saber a qui acusa.** Quan la fitxa descartada és la de qui
+  mira la pantalla, dir «algú ha escrit sense la seva clau» és mentir-li sobre la
+  seva pròpia fitxa. Ara les pròpies es diuen a part i s'apunta on toca: aquest
+  navegador. La frase que culpa un tercer només surt quan es pot descartar que
+  siguis tu, i la guarda del directori falla si algun dia torna a sortir tota
+  sola.
+
+## Veda 135 — Un identificador que surt de `JSON.stringify` identifica l'ordre de les claus, no la clau
+
+El `did:sos` d'una persona és el hash de la seva clau pública. Per fer-ne el hash
+cal convertir la clau en text, i allà hi havia escrit `JSON.stringify(jwk)`. És
+la línia més raonable del món i va estar mesos sense fer cap mal, perquè tots dos
+extrems escrivien el JSON igual.
+
+Fins que un extrem va ser Postgres. El navegador exporta el JWK amb les claus en
+ordre alfabètic; `jsonb` les torna ordenades **per longitud i després pel seu
+byte**. Mateixa clau, dos textos, dos hashos, dos `did`. El directori recalculava
+el did de cada fitxa per lligar-la a qui la firmava —que és el que impedeix
+suplantar ningú— i li'n sortia sempre un altre. Resultat: **totes les fitxes
+descartades, amb la firma perfectament vàlida**.
+
+Val la pena veure per què no ho va trobar res. La firma Ed25519 verificava, i
+verificava de debò: el que fallava era una comparació d'igualtat entre dues
+cadenes que havien de ser la mateixa. Les proves passaven perquè totes vivien
+dins d'un navegador, on l'ordre no canvia mai. I llegint el codi no es veu: cal
+saber què fa `jsonb` amb les claus d'un objecte.
+
+La regla, doncs, no és «vigileu Postgres»:
+
+**Tot el que identifica o es firma passa per la forma canònica.** `_canon`
+ordena les claus i dona els mateixos bytes vingui d'on vingui l'objecte —d'un
+`exportKey`, d'un fitxer, d'una taula, d'un altre navegador. `JSON.stringify` no
+serveix per a res que s'hagi de comparar més tard amb el resultat d'una altra
+màquina, i no perquè estigui malament: perquè no promet el que li demanem.
+
+Dues conseqüències que ja s'han aplicat:
+
+- El **hash del certificat** (`confirmCertificate`) tenia exactament el mateix
+  patró i s'ha canviat alhora, abans que dues confirmacions del mateix certificat
+  parlessin de «sobres» diferents.
+- **La canònica és l'alfabètica**, que és la que el navegador ja feia servir: cap
+  identitat existent s'ha mogut. No era garantit, es va comprovar contra la fitxa
+  ja publicada abans de tocar res. Si algun dia una identitat no quadra amb la
+  seva pròpia clau, **no es torna a derivar sola**: el `did` és el que et fa
+  propietari dels teus nodes i el que porta els teus vistiplaus, canviar-lo no té
+  camí de tornada, i el que toca és dir-ho.
+
 ## Veda 134 — El teu percentatge no és teu
 
 L'equity de la MATRIU mira la tarta des de qui reparteix: quina part té cadascú.

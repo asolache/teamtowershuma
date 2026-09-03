@@ -112,6 +112,13 @@ textarea{min-height:70px;resize:vertical}
 .previ dd{margin:0;color:var(--text)}
 .no-surt{margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
 .no-surt b{color:var(--light)}
+/* El pont amb l'eina: portar el perfil, i entrar amb la identitat de sempre. */
+.porta{border:1px dashed var(--border);border-radius:10px;padding:.7rem;margin-bottom:1.2rem}
+.porta .mini{margin-top:.5rem}
+.jo-did{font-family:var(--mono);font-size:.72rem;word-break:break-all;background:var(--bg);
+  border:1px solid var(--border);border-radius:8px;padding:.5rem;margin:.4rem 0}
+.jo-sec{border-top:1px solid var(--border);padding-top:1rem;margin-top:1rem}
+.jo-sec h3{margin:0 0 .5rem;font-size:.95rem}
 
 /* ── Xat ───────────────────────────────────────────────────────────────── */
 .xat-fils{display:flex;flex-direction:column;gap:.5rem;min-height:180px;max-height:44vh;overflow-y:auto;
@@ -187,6 +194,7 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
     <a class="brand" href="/">Team<span>Towers</span> · SOS</a>
     <nav>
       <a class="btn btn-sm" href="/SOS/" target="_blank" rel="noopener">L'eina</a>
+      <button class="btn btn-sm" id="btnJo" type="button">🆔 La teva identitat</button>
       <button class="btn-primary btn-sm" id="btnAlta" type="button">Dona't d'alta</button>
     </nav>
   </div>
@@ -241,6 +249,14 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
   <form method="dialog" id="formAlta">
     <div class="dlg-cap"><h2 id="altaTitol">La teva fitxa</h2></div>
     <div class="dlg-cos">
+      <!-- El perfil no s'importa de cap lloc extern: és el que ja tens al SOS
+           en aquest mateix navegador. Omple el formulari; publicar segueix sent
+           una decisió a part. -->
+      <div class="porta">
+        <button type="button" class="btn" id="btnPerfil">⇩ Porta el meu perfil del SOS</button>
+        <p class="mini" id="perfilAvis" aria-live="polite">Omple aquest formulari amb el que ja tens apuntat a l'eina en aquest navegador. No publica res.</p>
+      </div>
+
       <label for="fNom">Com vols que et trobin</label>
       <input type="text" id="fNom" maxlength="60" placeholder="Marta Vidal, o Ca la Marta" required>
       <p class="mini">Pot ser el teu nom, un àlies o el nom de l'entitat. El que escriguis aquí és el que veurà tothom.</p>
@@ -276,6 +292,51 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
       <button type="button" class="btn-primary" id="btnPublica">Publica la fitxa</button>
     </div>
   </form>
+</dialog>
+
+<!-- ═══════════ La identitat ═══════════
+     No és una sessió. «Entrar» aquí vol dir posar la teva clau en aquest
+     navegador, amb el mateix fitxer xifrat que exporta l'eina. Sense servidor
+     no hi ha ningú a qui demanar que et deixi passar, i tampoc ningú que et
+     pugui restablir la contrasenya: el preu de no tenir amo. -->
+<dialog id="dlgJo">
+  <div class="dlg-cap"><h2>La teva identitat</h2></div>
+  <div class="dlg-cos">
+    <p class="mini">Aquí no hi ha comptes ni contrasenyes de cap servei. Qui ets és una clau que
+    viu en aquest navegador i que firma el que publiques. És <strong>la mateixa</strong> que fa
+    servir l'eina en aquest navegador: entrar aquí és entrar-hi també.</p>
+    <div class="jo-did" id="joDid">—</div>
+    <button type="button" class="btn btn-sm" id="joCopia">Copia el did</button>
+
+    <div class="jo-sec">
+      <h3>Entra amb la teva identitat del SOS</h3>
+      <p class="mini">La còpia xifrada que vas guardar des de l'eina (<code>🆔 La meva identitat
+      digital → ⭳ Exporta còpia xifrada</code>). Carrega el fitxer o enganxa'l, i posa la
+      contrasenya que hi vas posar.</p>
+      <input type="file" id="joFitxer" accept="application/json,.json">
+      <textarea id="joText" placeholder="…o enganxa aquí el contingut del fitxer"></textarea>
+      <input type="password" id="joPass" placeholder="La contrasenya de la còpia" autocomplete="current-password">
+      <button type="button" class="btn-primary" id="joEntra">Entra amb aquesta identitat</button>
+      <p class="mini" id="joAvis" aria-live="polite"></p>
+    </div>
+
+    <div class="jo-sec">
+      <h3>Guarda'n una còpia</h3>
+      <p class="mini">Si aquesta identitat ha nascut aquí, aquesta és l'única manera de no
+      perdre-la en esborrar les dades del navegador, i de portar-la a un altre aparell.
+      Mínim 8 caràcters. <strong>Ningú la pot restablir</strong>: apunta-la en paper.</p>
+      <input type="password" id="joPassNova" placeholder="Una contrasenya llarga" autocomplete="new-password">
+      <button type="button" class="btn" id="joExporta">⭳ Descarrega la còpia xifrada</button>
+      <p class="mini" id="joAvisExp" aria-live="polite"></p>
+    </div>
+
+    <div class="jo-sec">
+      <p class="mini"><strong>El que això no és.</strong> No hi ha sessió que caduqui ni servidor
+      que et reconegui: hi ha una clau en aquest navegador. Si l'esborres i no en tens còpia,
+      no la recupera ningú —ni jo, ni qui allotja el directori.</p>
+    </div>
+  </div>
+  <div class="dlg-peu"><button type="button" class="btn" id="joTanca">Tanca</button></div>
 </dialog>
 
 <!-- ═══════════ Xat ═══════════ -->
@@ -373,6 +434,8 @@ function dbGet(id){return new Promise(res=>{try{const r=_db.transaction(STORE,'r
   r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null);}catch(e){res(null);}});}
 function dbPut(rec){return new Promise(res=>{try{const r=_db.transaction(STORE,'readwrite').objectStore(STORE).put(rec);
   r.onsuccess=()=>res(true);r.onerror=()=>res(false);}catch(e){res(false);}});}
+function dbGetAll(){return new Promise(res=>{try{const r=_db.transaction(STORE,'readonly').objectStore(STORE).getAll();
+  r.onsuccess=()=>res(r.result||[]);r.onerror=()=>res([]);}catch(e){res([]);}});}
 
 const _signParams=alg=>alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',hash:'SHA-256'};
 const _importPub=(alg,jwk)=>crypto.subtle.importKey('jwk',jwk,alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['verify']);
@@ -392,7 +455,19 @@ async function _makeKeypair(){
 const _makeEx=()=>crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);
 const _importExPriv=jwk=>crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);
 const _importExPub=jwk=>crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,[]);
-async function _didFromJwk(alg,jwk){return 'did:sos:'+alg.toLowerCase()+':'+(await sha256(_te.encode(JSON.stringify(jwk)))).slice(0,32);}
+/* Veda 135. Aquí hi havia `JSON.stringify(jwk)`, i era l'avaria que feia que el
+   directori no pintés res. La clau es converteix en text per fer-ne el hash, i
+   `JSON.stringify` escriu les claus en l'ordre que li arriben: el navegador
+   exporta el JWK en ordre alfabètic, però la mateixa clau tornant de Postgres
+   com a `jsonb` arriba ordenada per longitud. Mateixa clau, dos textos, dos
+   dids —i totes les fitxes queien a `fitxaValida` amb «el did no surt d'aquesta
+   clau», acusant un intrús que no existia.
+
+   `_canon` ordena les claus i fa la derivació reproduïble vingui d'on vingui el
+   JWK. I com que l'ordre canònic **és** l'alfabètic que el navegador ja feia
+   servir, cap identitat es mou: comprovat contra la fitxa ja publicada, que
+   segueix donant exactament el mateix did:sos. */
+async function _didFromJwk(alg,jwk){return 'did:sos:'+alg.toLowerCase()+':'+(await sha256(_te.encode(_canon(jwk)))).slice(0,32);}
 
 let _identity=null;
 async function getIdentity(){
@@ -495,14 +570,20 @@ async function supaPut(fitxa){
    **la fitxa vàlida més nova**. Una de falsificada no guanya per ser més nova:
    cau abans, en no verificar. I una retirada guanya com qualsevol altra —per
    això retirar-se funciona encara que la fila vella hi segueixi. */
-async function tamisar(files){
+async function tamisar(files,meuDid){
   const per={},descartades=[];
+  /* Es desa el motiu **i de qui era la fila**. Abans només es comptaven, i el
+     cartell n'havia de deduir una causa: sempre deia que algú havia escrit sense
+     la clau de qui deia ser. Quan la fitxa descartada era la teva, allò era
+     directament fals i t'enviava a buscar un intrús inexistent (veda 136). */
+  const fora=(motiu,did)=>descartades.push({motiu,meu:!!(meuDid&&did===meuDid)});
   for(const row of files||[]){
     const f=row&&row.fitxa;
-    if(!f||f['@type']!==FITXA_TIPUS){descartades.push('no és una fitxa');continue;}
-    if(row.did&&f.did!==row.did){descartades.push('el did de la fila no és el de la fitxa');continue;}
+    const did=(f&&f.did)||(row&&row.did)||'';
+    if(!f||f['@type']!==FITXA_TIPUS){fora('no és una fitxa',did);continue;}
+    if(row.did&&f.did!==row.did){fora('el did de la fila no és el de la fitxa',did);continue;}
     const v=await fitxaValida(f);
-    if(!v.ok){descartades.push(v.reason);continue;}
+    if(!v.ok){fora(v.reason,did);continue;}
     const prev=per[f.did];
     if(prev&&String(prev.at||'')>=String(f.at||''))continue;
     per[f.did]=f;
@@ -513,7 +594,7 @@ async function tamisar(files){
 }
 
 /* ── Estat ───────────────────────────────────────────────────────────────── */
-const S={fitxes:[],descartades:[],jo:null,meva:null,q:'',dir:'',nomesMeu:false,
+const S={fitxes:[],descartades:[],jo:null,meva:null,q:'',dir:'',nomesMeu:false,didOrfe:false,
   esborrany:{ofereix:[],busca:[]}};
 
 /* ── El cercador ─────────────────────────────────────────────────────────────
@@ -551,18 +632,45 @@ function pintaEstat(){
       '<p>Mentrestant pots escriure la teva fitxa i veure exactament què es publicaria.</p></div>';
     return;
   }
+  /* La identitat d'aquest navegador no es pot comprovar contra la seva pròpia
+     clau. Passa si ve d'una derivació anterior a la veda 135. **No es torna a
+     derivar sola**: el did és el que et fa propietari dels teus nodes, el que
+     et lliga la fitxa a cada node i el que porta els teus vistiplaus, i no hi
+     ha camí de tornada. Es diu, i es diu què fer. */
+  if(S.didOrfe){
+    box.innerHTML='<div class="avis greu"><h3>Aquesta identitat no es pot comprovar</h3>'+
+      '<p>El teu <code>did:sos</code> no surt de la teva pròpia clau pública, així que ningú '+
+      'no podrà verificar el que publiquis aquí. Sol passar amb identitats fetes amb una '+
+      'versió antiga.</p><p>La sortida és entrar amb una còpia d\'identitat més nova, o crear-ne '+
+      'una en un navegador net. No es toca sola: el <code>did</code> és el que et fa propietari '+
+      'dels teus nodes a l\'eina, i canviar-lo t\'ho trauria.</p></div>';
+    return;
+  }
+  /* Un avís que acusa ha de poder dir de qui és la culpa. Es diu el motiu que
+     el sedàs ha recollit de debò, agrupat, i les fitxes teves es diuen a part:
+     una fitxa teva que cau no és cap intrús, és aquest navegador. */
   if(S.descartades.length){
-    box.innerHTML='<div class="avis"><h3>'+S.descartades.length+' fitxa'+(S.descartades.length>1?'s':'')+
-      ' descartada'+(S.descartades.length>1?'s':'')+'</h3><p>No es pinten perquè la firma no quadra. '+
-      'Això no és un error teu: vol dir que algú ha escrit al directori sense la clau de qui deia ser, '+
-      'i el sedàs ho ha aturat.</p></div>';
+    const n=S.descartades.length,meves=S.descartades.filter(d=>d.meu);
+    const per={};S.descartades.forEach(d=>{per[d.motiu]=(per[d.motiu]||0)+1;});
+    const detall=Object.keys(per).sort().map(m=>'<li>'+esc(m)+(per[m]>1?' — '+per[m]+' fitxes':'')+'</li>').join('');
+    box.innerHTML='<div class="avis'+(meves.length?' greu':'')+'"><h3>'+n+' fitxa'+(n>1?'s':'')+
+      ' descartada'+(n>1?'s':'')+'</h3><ul>'+detall+'</ul>'+
+      (meves.length
+        ?'<p><strong>Una de les descartades és la teva.</strong> Això no és cap intrús: '+
+         'la fitxa que hi ha publicada no lliga amb la identitat d\'aquest navegador. '+
+         'Si has entrat amb una còpia d\'identitat, comprova que sigui la bona; si no, '+
+         'torna a publicar la fitxa i la nova substituirà la vella.</p>'
+        :'<p>Aquestes fitxes no es pinten perquè no superen la comprovació. Mentre el motiu '+
+         'sigui de firma o de clau, vol dir que algú ha escrit al directori sense la clau de '+
+         'qui deia ser i el sedàs ho ha aturat.</p>')+
+      '</div>';
   }else box.innerHTML='';
 }
 function pintaCompte(n){
   const t=S.fitxes.length;
   $('#compte').textContent=!configurat()?'':
     (n===t?t+(t===1?' fitxa':' fitxes'):n+' de '+t)+
-    (S.descartades.length?' · '+S.descartades.length+' descartades per firma':'');
+    (S.descartades.length?' · '+S.descartades.length+' descartades (el motiu, a dalt)':'');
 }
 function liniaHTML(x,dir){
   const m=catMeta(x.cat);
@@ -592,6 +700,136 @@ function pintaFitxes(){
              :'<button type="button" class="btn btn-sm" data-xat="'+esc(f.did)+'">💬 Parla-hi</button>')+
       '</footer></article>';
   }).join('');
+}
+
+/* ── Entrar amb la identitat del SOS ─────────────────────────────────────────
+   L'eina ja sabia posar una identitat en un segon dispositiu: un fitxer xifrat
+   amb contrasenya (PBKDF2-SHA256 210 000 · AES-GCM-256) que tu custodies. El
+   que faltava era que el directori sabés llegir-lo, perquè qui arriba pel
+   directori des d'un mòbil nou no hi entrava com ell mateix, sinó com algú nou.
+
+   Els paràmetres són **exactament** els de l'app: si divergissin, un fitxer
+   fet allà no s'obriria aquí i seríem dos programes que fan veure que són un.
+   → SOS/index.html · _kekFromPass / exportIdentity / importIdentity */
+const IDENTITY_BACKUP_TYPE='sos-identity-backup';
+const _td=new TextDecoder();
+async function _kekFromPass(pass,saltB64){
+  const salt=saltB64?_unb64u(saltB64):crypto.getRandomValues(new Uint8Array(16));
+  const km=await crypto.subtle.importKey('raw',_te.encode(pass),{name:'PBKDF2'},false,['deriveKey']);
+  const kek=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:210000,hash:'SHA-256'},km,
+    {name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  return{kek,salt:_b64u(salt)};
+}
+async function exportaIdentitat(pass){
+  if(!pass||String(pass).length<8)throw new Error('Cal una contrasenya de 8 caràcters o més');
+  const rec=await dbGet('__identity');
+  if(!rec||!rec.privJwk)throw new Error('Encara no hi ha identitat en aquest navegador');
+  const secret={did:rec.did,alg:rec.alg,pubJwk:rec.pubJwk,privJwk:rec.privJwk,
+    exPubJwk:rec.exPubJwk||null,exPrivJwk:rec.exPrivJwk||null,createdAt:rec.createdAt||''};
+  const{kek,salt}=await _kekFromPass(pass);
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},kek,_te.encode(JSON.stringify(secret)));
+  return{v:1,type:IDENTITY_BACKUP_TYPE,alg:'AES-GCM-PBKDF2',iters:210000,
+    did:rec.did,salt,iv:_b64u(iv),ct:_b64u(ct),ts:now(),app:'sos-teamtowers'};
+}
+/* Mateixa guarda que a l'app: substituir una identitat que ja ha firmat coses
+   és irreversible, i per això no passa sense dir-ho explícitament. */
+async function entraAmbIdentitat(backup,pass,{overwrite}={}){
+  if(!backup||backup.type!==IDENTITY_BACKUP_TYPE)throw new Error('Això no és una còpia d\'identitat SOS');
+  const existent=await dbGet('__identity');
+  if(existent&&existent.did&&existent.did!==backup.did&&!overwrite){
+    const e=new Error('Aquest navegador ja té una identitat pròpia ('+existent.did.slice(0,24)+'…). Confirma que la vols substituir.');
+    e.code='exists';throw e;
+  }
+  let secret;
+  try{
+    const{kek}=await _kekFromPass(pass,backup.salt);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:_unb64u(backup.iv)},kek,_unb64u(backup.ct));
+    secret=JSON.parse(_td.decode(pt));
+  }catch(e){const x=new Error('Contrasenya incorrecta o fitxer malmès');x.code='bad_pass';throw x;}
+  if(!secret||!secret.privJwk||!secret.did)throw new Error('Còpia incompleta');
+  await dbPut({id:'__identity',type:'meta',did:secret.did,alg:secret.alg,pubJwk:secret.pubJwk,
+    privJwk:secret.privJwk,exPubJwk:secret.exPubJwk,exPrivJwk:secret.exPrivJwk,
+    passkey:null,createdAt:secret.createdAt||now(),restoredAt:now()});
+  _identity=null;                        // força rellegir-la de la base de dades
+  S.jo=await getIdentity();
+  S.didOrfe=S.jo.did!==await _didFromJwk(S.jo.alg,S.jo.pubJwk);
+  return{did:S.jo.did};
+}
+function descarrega(nom,txt){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));
+  a.download=nom;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);
+}
+
+/* ── El perfil que ja tens al SOS ────────────────────────────────────────────
+   Aquesta pàgina i l'eina comparteixen la base de dades del navegador. El teu
+   perfil, doncs, **no s'ha d'exportar ni importar: ja hi és**. El que faltava
+   era llegir-lo i no fer-te reescriure a mà el que ja havies escrit una vegada.
+
+   Qui ets, dins d'aquella base, no és el nom sinó el `did`: és el criteri que
+   `joinNode` fa servir a l'app per dir que dues fitxes amb noms diferents són
+   la mateixa persona. Aquí es fa igual.
+
+   Aquest botó **omple el formulari i no publica res**. La previsualització
+   segueix sent l'última cosa que es veu abans que surti de casa (veda 47): que
+   les dades vinguin de tu no vol dir que ja hagis dit que sí a publicar-les. */
+const _norm=s=>(s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+  .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+async function perfilDelSOS(){
+  const jo=S.jo||await getIdentity();
+  const tot=await dbGetAll();
+  const nodes=tot.filter(n=>n&&Array.isArray(n.members));
+  let nom='',municipi='';const ofereix=[],busca=[];
+  nodes.forEach(n=>{
+    const m=n.members.find(x=>x&&x.did===jo.did);
+    if(!m)return;
+    if(!nom&&m.name)nom=m.name;
+    (n.offers||[]).forEach(o=>{
+      if(o.memberId!==m.id||o.status!=='activa')return;
+      /* Els títols que encunya l'app porten el nom enganxat («Cuino — Marta
+         Vidal») perquè allà una oferta viu barrejada amb les dels altres. Aquí
+         el nom ja és a dalt de la fitxa: repetir-lo seria soroll.
+
+         Es treu **el nom exacte del soci**, no «tot el que hi ha després d'un
+         guionet»: hi ha títols que en porten un de seu («Classes de reforç –
+         matemàtiques») i retallar-los per la meitat seria pitjor que deixar el
+         nom repetit. */
+      let txt=String(o.title||'').trim();
+      const cua=new RegExp('\\s+[—–-]\\s+'+(m.name||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$');
+      txt=txt.replace(cua,'').trim().slice(0,80);
+      if(!txt)return;
+      (o.kind==='demanda'?busca:ofereix).push({cat:CAT[o.category]?o.category:'altres',txt});
+    });
+  });
+  if(nom){
+    const k=_norm(nom);
+    const d=tot.find(x=>x&&x.type==='dossier'&&x.personKey===k);
+    municipi=(d&&d.municipi)||'';
+  }
+  if(!municipi)municipi=(nodes.find(n=>n.members.some(x=>x&&x.did===jo.did)&&n.municipi)||{}).municipi||'';
+  return{nom,municipi,ofereix:ofereix.slice(0,12),busca:busca.slice(0,12),
+    trobat:!!(nom||ofereix.length||busca.length)};
+}
+async function portaPerfil(){
+  const btn=$('#btnPerfil'),avis=$('#perfilAvis');
+  btn.disabled=true;
+  try{
+    const p=await perfilDelSOS();
+    if(!p.trobat){
+      avis.textContent='En aquest navegador el SOS no et té apuntat enlloc amb aquesta identitat, '+
+        'així que no hi ha res a portar. Escriu la fitxa aquí i ja està.';
+      return;
+    }
+    if(p.nom)$('#fNom').value=p.nom;
+    if(p.municipi)$('#fMuni').value=p.municipi;
+    S.esborrany={ofereix:p.ofereix,busca:p.busca};
+    pintaLlistes();
+    avis.textContent='Portat del SOS: '+p.ofereix.length+' cosa'+(p.ofereix.length===1?'':'es')+
+      ' que ofereixes i '+p.busca.length+' que busques. Encara no s\'ha publicat res — '+
+      'mira-ho, canvia el que vulguis i publica quan vulguis.';
+  }finally{btn.disabled=false;}
 }
 
 /* ── Formulari d'alta ────────────────────────────────────────────────────── */
@@ -735,7 +973,7 @@ async function carrega(){
   if(!configurat()){pintaEstat();pintaFitxes();return;}
   try{
     const files=await supaGet();
-    const r=await tamisar(files);
+    const r=await tamisar(files,S.jo&&S.jo.did);
     S.fitxes=r.fitxes;S.descartades=r.descartades;
     S.meva=S.jo?(S.fitxes.find(f=>f.did===S.jo.did)||null):null;
     $('#btnAlta').textContent=S.meva?'Edita la teva fitxa':'Dona\'t d\'alta';
@@ -753,9 +991,55 @@ async function init(){
   omplirCats();
   await openDB();
   S.jo=await getIdentity();
+  S.didOrfe=S.jo.did!==await _didFromJwk(S.jo.alg,S.jo.pubJwk);
   await carrega();
 
   $('#btnAlta').addEventListener('click',obreAlta);
+  $('#btnPerfil').addEventListener('click',portaPerfil);
+
+  const pintaJo=()=>{$('#joDid').textContent=S.jo?S.jo.did:'—';};
+  $('#btnJo').addEventListener('click',()=>{pintaJo();$('#joAvis').textContent='';
+    $('#joAvisExp').textContent='';$('#dlgJo').showModal();});
+  $('#joTanca').addEventListener('click',()=>$('#dlgJo').close());
+  $('#joCopia').addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText(S.jo.did);$('#joAvis').textContent='Did copiat.';}
+    catch(e){$('#joAvis').textContent='El navegador no ha deixat copiar; selecciona\'l a mà.';}
+  });
+  $('#joFitxer').addEventListener('change',async e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    $('#joText').value=await f.text();
+    $('#joAvis').textContent='Fitxer carregat. Posa la contrasenya i entra.';
+  });
+  $('#joEntra').addEventListener('click',async()=>{
+    const avis=$('#joAvis');
+    let backup;
+    try{backup=JSON.parse($('#joText').value.trim());}
+    catch(e){avis.textContent='Això no s\'entén com a fitxer d\'identitat.';return;}
+    const pass=$('#joPass').value;
+    const prova=async ow=>{
+      const r=await entraAmbIdentitat(backup,pass,{overwrite:ow});
+      $('#joPass').value='';$('#joText').value='';$('#joFitxer').value='';
+      pintaJo();await carrega();
+      avis.textContent='Ja hi ets: '+r.did.slice(0,26)+'… Aquesta és ara la identitat d\'aquest navegador, aquí i a l\'eina.';
+    };
+    try{await prova(false);}
+    catch(e){
+      if(e.code==='exists'){
+        if(!confirm(e.message+'\n\nLa que hi ha ara es perdrà si no n\'has guardat còpia.')){
+          avis.textContent='No s\'ha tocat res.';return;}
+        try{await prova(true);}catch(e2){avis.textContent=e2.message;}
+      }else avis.textContent=e.message;
+    }
+  });
+  $('#joExporta').addEventListener('click',async()=>{
+    const avis=$('#joAvisExp');
+    try{
+      const b=await exportaIdentitat($('#joPassNova').value);
+      descarrega('sos-identitat-'+b.did.slice(-12)+'.json',JSON.stringify(b,null,2));
+      $('#joPassNova').value='';
+      avis.textContent='Descarregada. Guarda-la en dos llocs que no siguin aquest aparell, i la contrasenya en paper.';
+    }catch(e){avis.textContent=e.message;}
+  });
   $('#btnTanca').addEventListener('click',()=>$('#dlgAlta').close());
   $('#btnPublica').addEventListener('click',()=>publica());
   $('#btnRetira').addEventListener('click',async()=>{
@@ -822,7 +1106,8 @@ async function init(){
    codi de debò, no amb una còpia. */
 window.__ONLINE={S,CATS,CAT,catMeta,FITXA_TIPUS,CAMPS,bastirFitxa,fitxaValida,verifyRecord,signRecord,
   getIdentity,tamisar,filtrar,textCercable,salaEntre,clauEntre,xifra,desxifra,configurat,
-  pintaFitxes,pintaPrevi,carrega,obreAlta,publica,_canon,_didFromJwk,sha256,sha256hex};
+  pintaFitxes,pintaPrevi,pintaEstat,carrega,obreAlta,publica,_canon,_didFromJwk,sha256,sha256hex,
+  dbGet,dbPut,dbGetAll,perfilDelSOS,portaPerfil,IDENTITY_BACKUP_TYPE,exportaIdentitat,entraAmbIdentitat};
 
 init();
 </script>
