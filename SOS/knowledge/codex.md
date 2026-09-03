@@ -704,6 +704,76 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 133 — Comptar hores de cura és explicar el que ja ha passat
+
+Totes les eines de cures fan el mateix: registren les hores que s'han fet. És
+útil per justificar una subvenció i **no serveix de res per evitar el que
+trenca les xarxes de cura**, que és sempre la mateixa cosa: la càrrega es
+concentra en poques persones, ningú ho veu perquè cadascú només sap el que fa
+ell, una crema i plega —i la gent que acompanyava es queda sense ningú.
+
+Quan això passa, les hores estan perfectament comptades. Totes.
+
+Per això la pestanya de cures **no compta el que s'ha fet: declara el
+compromís** —qui acompanya qui, què i cada quan— i d'això en surten tres coses
+que una llista d'hores no dona:
+
+- **La càrrega de cada persona cuidadora** en hores a la setmana, contra un
+  llindar declarat i visible (6 h o 3 persones). «Cada quinze dies» compta la
+  meitat i «un cop al mes» compta 12/52: comptar-ho tot com si tornés cada
+  setmana inflaria la càrrega de qui fa un favor un cop.
+- **La cobertura de cada persona acompanyada**: quantes cuidadores diferents
+  té. **Una de sola no és cura, és una dependència d'una persona concreta.**
+- **La projecció.** Si aquesta persona plega, qui es queda sense ningú.
+
+### La xifra que canvia la conversa
+
+Amb el barri de prova, la Marta porta 7 de les 7,96 hores setmanals: el **88%**
+de tota la cura del node. La lectura fàcil és «la Marta està cremada, que faci
+menys hores». És falsa, i la pantalla ho diu: **si la Marta plega, qui es queda
+sense ningú és el Pau** —la Rosa i l'Enric tenen algú altre—, i fer-li fer menys
+hores a ella no arregla res, perquè algú les ha de fer igualment.
+
+El que ho arregla és **una segona cuidadora per al Pau**. La prova ho afirma
+sencer: afegint-la, els orfes passen d'1 a 0, la cobertura fràgil a 0, i **la
+càrrega de la Marta no baixa gens**. El problema mai va ser el nombre d'hores:
+era de qui depenien.
+
+I la concentració es diu pel seu nom: quan una sola persona porta més de la
+meitat de les hores, allò **no és una xarxa de cura, és una persona amb
+ajudants**.
+
+### Dues regles que el context imposa, i que una paraula no vigila
+
+La governança d'aquesta dinàmica al catàleg diu «confidencialitat». Una paraula
+no protegeix res, i aquí el que s'apunta és qui necessita ajuda al seu barri:
+
+- **Cap dada de salut.** Els tipus d'acompanyament són una **llista tancada** de
+  vuit —companyia, gestions, visites, compra, àpats, casa, transport, trucada— i
+  totes diuen **què es fa, no què li passa a ningú**. Una casella de text lliure
+  amb el nom de «situació» acabaria tenint diagnòstics escrits pel veïnat,
+  desats al navegador d'algú i sincronitzats a qui tingui la clau del node. La
+  nota que hi ha és d'organització —dies, claus, telèfons— i es talla a 160
+  caràcters perquè no sigui un diari.
+- **Els noms només els veu qui sosté el node.** La resta veu els números, que
+  és el que fa falta per decidir, i cap persona concreta. I la pantalla ho
+  explica, perquè si no semblaria un error.
+
+### El que la guarda vigila i que no és evident
+
+Que la projecció **es calculi** no vol dir que serveixi de res: es pot tenir
+`siPlega` perfectament escrit i no ensenyar-lo enlloc, i llavors això torna a
+ser una eina que compta hores després. La guarda compta les crides.
+
+I les hores fetes van **al ledger signat de sempre**, no a un segon registre al
+costat: dos registres d'hores acabarien dient coses diferents, i el que ja hi
+havia està signat.
+
+Una nota d'un fals positiu meu, per si torna: la primera versió de la guarda
+buscava noms pintats sense comprovar qui mira, i **acusava la línia que defineix
+la comprovació**. Una guarda que assenyala justament el que protegeix gasta la
+confiança que necessitarà el dia que trobi una fuita de debò.
+
 ## Veda 132 — Totes les portes portaven cap endins, i cap cap enfora
 
 Les setze pàgines del SOS porten a l'aplicació: cadascuna té «Obre SOS →» al

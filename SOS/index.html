@@ -1061,7 +1061,7 @@ a{color:var(--blue);text-decoration:none}
 
 <!--SOS-EINES-->
 <script id="sos-eines" type="application/json">
-{"grups":[{"lbl":"Comença","ic":"🧭","links":[{"h":"diagnostic.html","t":"Diagnòstic","d":"On ets i què et falta, en 3 minuts"},{"h":"intro.html","t":"La intro","d":"De què va tot això"},{"h":"uneix-te.html","t":"Uneix-t'hi","d":"El que ja fas al barri, comptat"}]},{"lbl":"Eines","ic":"🛠","links":[{"h":"vna.html","t":"Mapa de valor","d":"Rols i intercanvis d'un projecte"},{"h":"matriu.html","t":"La MATRIU","d":"La incubadora: etapes, portes i propietat"},{"h":"compra.html","t":"La Compra","d":"Grup de consum i compra col·lectiva"},{"h":"energia.html","t":"L'Energia","d":"Comunitat energètica i autoconsum compartit"},{"h":"habitatge.html","t":"L'Habitatge","d":"Cessió d'ús: quota, entrada i sortida"},{"h":"molekulandia.html","t":"Molekulandia","d":"El poble sencer i les nou professions"},{"h":"joc.html","t":"El joc","d":"La plaça, a ritme"}]},{"lbl":"Aprèn","ic":"🎓","links":[{"h":"formacio.html","t":"Formació","d":"16 mòduls, de N0 a N3"},{"h":"escola.html","t":"Escoles","d":"El SOS a mida d'aula"},{"h":"vedes.html","t":"Les vedes","d":"Les regles, amb el motiu al costat"},{"h":"blog.html","t":"Blog","d":"Cada capacitat, explicada"}]},{"lbl":"Xarxa","ic":"🏘","links":[{"h":"comando.html","t":"El Comando","d":"La tribu i el reclutament"},{"h":"online.html","t":"Directori","d":"Qui hi ha, per territori"}]}],"eines":{"banc_temps":["index.html","A dins de l'app"],"biblioteca_coses":["index.html","A dins de l'app"],"matriu":["matriu.html","La MATRIU"],"mapeig_vna":["vna.html","Mapa de valor"],"comunitat_energetica":["energia.html","L'Energia"],"habitatge_cessio":["habitatge.html","L'Habitatge"],"consum_agroecologic":["compra.html","La Compra"],"compra_collectiva":["compra.html","La Compra"],"cens_entitats":["online.html","El directori"]}}
+{"grups":[{"lbl":"Comença","ic":"🧭","links":[{"h":"diagnostic.html","t":"Diagnòstic","d":"On ets i què et falta, en 3 minuts"},{"h":"intro.html","t":"La intro","d":"De què va tot això"},{"h":"uneix-te.html","t":"Uneix-t'hi","d":"El que ja fas al barri, comptat"}]},{"lbl":"Eines","ic":"🛠","links":[{"h":"vna.html","t":"Mapa de valor","d":"Rols i intercanvis d'un projecte"},{"h":"matriu.html","t":"La MATRIU","d":"La incubadora: etapes, portes i propietat"},{"h":"compra.html","t":"La Compra","d":"Grup de consum i compra col·lectiva"},{"h":"energia.html","t":"L'Energia","d":"Comunitat energètica i autoconsum compartit"},{"h":"habitatge.html","t":"L'Habitatge","d":"Cessió d'ús: quota, entrada i sortida"},{"h":"molekulandia.html","t":"Molekulandia","d":"El poble sencer i les nou professions"},{"h":"joc.html","t":"El joc","d":"La plaça, a ritme"}]},{"lbl":"Aprèn","ic":"🎓","links":[{"h":"formacio.html","t":"Formació","d":"16 mòduls, de N0 a N3"},{"h":"escola.html","t":"Escoles","d":"El SOS a mida d'aula"},{"h":"vedes.html","t":"Les vedes","d":"Les regles, amb el motiu al costat"},{"h":"blog.html","t":"Blog","d":"Cada capacitat, explicada"}]},{"lbl":"Xarxa","ic":"🏘","links":[{"h":"comando.html","t":"El Comando","d":"La tribu i el reclutament"},{"h":"online.html","t":"Directori","d":"Qui hi ha, per territori"}]}],"eines":{"banc_temps":["index.html","A dins de l'app"],"biblioteca_coses":["index.html","A dins de l'app"],"suport_mutu":["index.html","A dins de l'app"],"matriu":["matriu.html","La MATRIU"],"mapeig_vna":["vna.html","Mapa de valor"],"comunitat_energetica":["energia.html","L'Energia"],"habitatge_cessio":["habitatge.html","L'Habitatge"],"consum_agroecologic":["compra.html","La Compra"],"compra_collectiva":["compra.html","La Compra"],"cens_entitats":["online.html","El directori"]}}
 </script>
 <!--/SOS-EINES-->
 
@@ -9103,6 +9103,7 @@ function _renderWorkspace(){
   if(territory)tdefs.push(['entitats',t('⬡ Entitats'),entitiesFor(node.id).length]);
   if(node.dynamicType==='biblioteca_coses')tdefs.push(['socis',t('👥 Socis'),membersOf(node).length],['biblioteca',t('📚 Biblioteca'),objectsOf(node).length]);
   else if(node.dynamicType==='banc_temps')tdefs.push(['socis',t('👥 Socis'),membersOf(node).length],['banctemps',t('⏳ Ofertes'),offersOf(node).length]);
+  else if(node.dynamicType==='suport_mutu')tdefs.push(['socis',t('👥 Socis'),membersOf(node).length],['cures',t('🤝 Cures'),curesActives(node).length]);
   else if(node.dynamicType==='matriu')tdefs.push(['socis',t('👥 Socis'),membersOf(node).length],['cartera',t('🌱 Cartera'),venturesOf(node).length],['cohort',t('▦ Cohort'),venturesOf(node).length],['ecosistema',t('🕸 Ecosistema'),linksOf(node).length],['equity',t('🥧 Equity'),membersOf(node).length]);
   const vis=visibleTabs(tdefs);
   if(!vis.some(t=>t[0]===state.tab))state.tab=vis[0][0];
@@ -9135,6 +9136,7 @@ function _renderWorkspace(){
   else if(state.tab==='socis')renderSocis(body,node);
   else if(state.tab==='biblioteca')renderBiblioteca(body,node);
   else if(state.tab==='banctemps')renderBancTemps(body,node);
+  else if(state.tab==='cures')renderCures(body,node);
   else if(state.tab==='cartera')renderMatriuVentures(body,node);
   else if(state.tab==='cohort')renderMatriuCohort(body,node);
   else if(state.tab==='ecosistema')renderMatriuResources(body,node);
@@ -10010,6 +10012,16 @@ const CONTEXT_GUIDES={
       {k:'exch',label:'Primer intercanvi registrat en hores',done:n=>(n.ledger||[]).some(e=>e.type==='temps'&&e.counterpartId)}
     ],
     lens:{mentor:'El banc de temps és on trobaràs qui pot ensenyar el que a la teva venture falta.',superheroi:'Publica el que saps fer i mira els pings: allà hi ha algú esperant-te.',coordinador:'Sense demandes no hi ha intercanvi: costa més captar-les que les ofertes.',guardian:'Vigila els saldos: una hora val una hora, sempre.',agent:'Les hores intercanviades són l\'indicador social més fàcil d\'explicar.',simpatitzant:'Demana alguna cosa petita: és la millor manera d\'entrar.'}},
+  cures:{ic:'🤝',t:'Cures i acompanyament',one:'Qui acompanya qui, i què passaria el dia que plegués.',
+    flow:['Cada acompanyament es declara com a compromís: qui, a qui, què i cada quan.','D\'això en surt la càrrega de cada persona cuidadora i la cobertura de cada persona acompanyada.','La projecció avisa abans que passi: si aquesta persona plega, qui es queda sense ningú.'],
+    steps:[
+      {k:'gent',label:'Almenys dues persones al node',done:n=>membersOf(n).length>=2,act:n=>{state.tab='socis';renderWorkspace();}},
+      {k:'cura',label:'Primer acompanyament declarat',done:n=>curesActives(n).length>0,act:n=>openCuraForm(n,null)},
+      {k:'segona',label:'Ningú depèn d\'una sola persona',done:n=>curesActives(n).length>0&&fragilsCures(n).length===0},
+      {k:'llindar',label:'Ningú per sobre del llindar de càrrega',done:n=>curesActives(n).length>0&&sobrecarregades(n).length===0},
+      {k:'hores',label:'Alguna hora de cura registrada al ledger',done:n=>(n.ledger||[]).some(e=>e.type==='temps'&&e.counterpartId)}
+    ],
+    lens:{mentor:'La pregunta que has de fer no és quantes hores es fan, sinó de qui depèn cadascú.',guardian:'Aquesta pantalla és teva: la concentració de cura és un risc de govern, no un detall.',agent:'La cobertura fràgil és el que un ajuntament entén de seguida: diu on es trencaria el barri.',coordinador:'Busca segones cuidadores per a qui en té una de sola: és la feina més barata que tens.',superheroi:'Mira on falta una segona persona i posa-t\'hi: no cal que sigui molt de temps.',simpatitzant:'Una trucada de seguiment cada quinze dies ja és un acompanyament.'}},
   cartera:{ic:'🌱',t:'Cartera de la MATRIU',one:'Els projectes que s\'incuben fins que poden caminar sols.',
     flow:['Una necessitat del territori es converteix en una venture amb equip.','La MATRIU hi posa mètode, mentoria i recursos; la venture hi posa treball.','Quan passa el llindar de graduació, marxa amb el seu equity repartit.'],
     steps:[
@@ -13391,6 +13403,270 @@ function lendObject(node,o){
     else toast('Objecte prestat');
   };
 }
+/* ══ CURES · qui acompanya qui, i què passa el dia que plegui ═════════════
+   Les eines de cures compten hores **després**. El que trenca una xarxa de
+   cura no és que les hores no estiguin comptades: és que **la càrrega es
+   concentra en poques persones i no ho veu ningú fins que una crema i
+   plega** — i llavors la gent que acompanyava es queda sense ningú.
+
+   Per això aquí no es compta el que s'ha fet: es declara el **compromís** —qui
+   acompanya qui, cada quan i quantes hores— i d'això en surten tres coses que
+   una llista d'hores no dona:
+
+   · **La càrrega de cada persona cuidadora**, en hores a la setmana, contra un
+     llindar declarat i visible.
+   · **La cobertura de cada persona acompanyada**: quantes cuidadores diferents
+     té. Una de sola no és cura, és una dependència.
+   · **La projecció**: si aquesta persona plega, qui es queda sense ningú. És
+     l'única de les tres que avisa abans que passi, i és tot el motiu d'això.
+
+   Dues regles que no són negociables i que la guarda vigila:
+   **cap dada de salut** —hi ha una llista tancada de tipus d'acompanyament i
+   prou— i **els noms només els veu qui sosté el node**: aquí hi ha qui rep
+   cura al seu barri, que és el que la governança d'aquesta dinàmica anomena
+   confidencialitat. */
+const curesOf=node=>node.cures||(node.cures=[]);
+/* Els tipus d'acompanyament. Llista tancada i **sense res clínic**: què es fa
+   acompanyant, no què li passa a ningú. Una casella de text lliure aquí
+   acabaria tenint diagnòstics escrits pel veïnat. */
+const CURES_QUE=[
+  ['companyia','Companyia i conversa','☕'],
+  ['gestions','Gestions i paperassa','📋'],
+  ['visites','Acompanyament a visites','🏥'],
+  ['compra','Compra i encàrrecs','🛒'],
+  ['apats','Àpats','🍲'],
+  ['casa','Tasques de casa','🧹'],
+  ['transport','Transport','🚗'],
+  ['trucada','Trucada de seguiment','📞']
+];
+const curesQueMeta=id=>CURES_QUE.find(x=>x[0]===id)||['altres','Altres','🤝'];
+/* Cada quan, i quant compta a la setmana. El puntual compta **zero** a la
+   càrrega recurrent i es diu a part: comptar-lo com si tornés cada setmana
+   inflaria la càrrega de qui fa un favor un cop. */
+const CURES_CADA=[['setmana','Cada setmana',1],['quinzena','Cada quinze dies',0.5],
+  ['mes','Un cop al mes',12/52],['puntual','Puntual',0]];
+const curesCadaMeta=id=>CURES_CADA.find(x=>x[0]===id)||CURES_CADA[3];
+/* El llindar de sobrecàrrega. Va declarat i visible, com l'esforç de
+   L'Habitatge: una xifra que decideix qui està cremant-se s'ha de poder
+   discutir a l'assemblea, no quedar amagada dins d'una condició. */
+const CURES_LLINDAR={hores:6,persones:3};
+
+function newCura({cuidaId,cuidatId,que,cada,hores,notes}){
+  return{id:uid(),cuidaId,cuidatId,que:que||'companyia',cada:cada||'setmana',
+    hores:Math.max(0,Number(hores)||0),desde:now(),actiu:true,notes:(notes||'').slice(0,160)};
+}
+const curaHores=c=>(c&&c.actiu!==false?(Number(c.hores)||0)*curesCadaMeta(c.cada)[2]:0);
+const curesActives=node=>curesOf(node).filter(c=>c.actiu!==false);
+
+/* La càrrega d'una persona com a cuidadora. */
+function carregaCures(node,memberId){
+  const seus=curesActives(node).filter(c=>c.cuidaId===memberId);
+  return{compromisos:seus.length,
+    persones:new Set(seus.map(c=>c.cuidatId)).size,
+    hores:Math.round(seus.reduce((a,c)=>a+curaHores(c),0)*100)/100,
+    puntuals:seus.filter(c=>c.cada==='puntual').length};
+}
+/* Qui passa del llindar. Es torna sempre ordenat de més a menys: la primera
+   d'aquesta llista és de qui depèn més gent. */
+function sobrecarregades(node){
+  return membersOf(node).map(m=>Object.assign({member:m},carregaCures(node,m.id)))
+    .filter(x=>x.hores>CURES_LLINDAR.hores||x.persones>CURES_LLINDAR.persones)
+    .sort((a,b)=>b.hores-a.hores);
+}
+/* Quantes cuidadores diferents té una persona acompanyada. Una de sola no és
+   cura: és una dependència d'una persona concreta. */
+function coberturaCures(node,cuidatId){
+  const qui=[...new Set(curesActives(node).filter(c=>c.cuidatId===cuidatId).map(c=>c.cuidaId))];
+  return{cuidadores:qui.map(id=>memberById(node,id)).filter(Boolean),n:qui.length};
+}
+const fragilsCures=node=>[...new Set(curesActives(node).map(c=>c.cuidatId))]
+  .map(id=>({member:memberById(node,id),cob:coberturaCures(node,id)}))
+  .filter(x=>x.member&&x.cob.n===1);
+
+/* ── La projecció ────────────────────────────────────────────────────────
+   Si aquesta persona plega, qui es queda sense ningú. No és una estadística
+   del que ha passat: és l'única xifra d'aquesta pantalla que es pot fer servir
+   per evitar-ho, i per això és la que mana. */
+function siPlega(node,memberId){
+  const seus=curesActives(node).filter(c=>c.cuidaId===memberId);
+  const orfes=[...new Set(seus.map(c=>c.cuidatId))]
+    .filter(id=>coberturaCures(node,id).n===1)
+    .map(id=>memberById(node,id)).filter(Boolean);
+  const c=carregaCures(node,memberId);
+  return{orfes,persones:c.persones,hores:c.hores,compromisos:c.compromisos};
+}
+/* El resum del node, amb la concentració: quina part de totes les hores porta
+   la persona que en porta més. */
+function curesResum(node){
+  const act=curesActives(node);
+  const hores=Math.round(act.reduce((a,c)=>a+curaHores(c),0)*100)/100;
+  const cuidadores=[...new Set(act.map(c=>c.cuidaId))];
+  const carregues=cuidadores.map(id=>carregaCures(node,id).hores).sort((a,b)=>b-a);
+  const orfesTot=cuidadores.map(id=>siPlega(node,id).orfes.length);
+  return{compromisos:act.length,hores,
+    cuidadores:cuidadores.length,
+    acompanyades:new Set(act.map(c=>c.cuidatId)).size,
+    fragils:fragilsCures(node).length,
+    sobre:sobrecarregades(node).length,
+    /* Concentració: si una sola persona porta la meitat de les hores, el node
+       no té una xarxa de cura, té una persona amb ajudants. */
+    concentracio:hores?Math.round((carregues[0]||0)*1000/hores)/10:0,
+    /* El pitjor cas: la baixa que deixaria més gent sense ningú. */
+    pitjor:orfesTot.length?Math.max(...orfesTot):0};
+}
+
+function renderCures(body,node){
+  const ms=membersOf(node),act=curesActives(node),r=curesResum(node);
+  /* Els noms només els veu qui sosté el node. La resta veu els números, que és
+     el que fa falta per decidir, i cap persona concreta. */
+  const meu=(canWrite(node)||{}).ok;
+  const nom=m=>meu?esc(m.name):'—';
+
+  const bar=el('div','ent-bar');
+  const add=el('button','btn btn-primary btn-sm','+ Acompanyament');
+  add.onclick=()=>{if(ms.length<2){toast('Cal almenys dues persones al node');state.tab='socis';renderWorkspace();return;}openCuraForm(node,null);};
+  bar.appendChild(add);
+  body.appendChild(bar);
+
+  const note=el('div','ai-note');note.style.marginTop='.9rem';
+  note.innerHTML='<span class="ic">🤝</span><span>Aquí es declara <strong>el compromís</strong>, no el que ja s\'ha fet: '+
+    'qui acompanya qui i cada quan. D\'això en surt la càrrega de cada persona i, sobretot, '+
+    '<strong>què passaria si plegués</strong>. Les hores fetes es registren com sempre, al ledger.</span>';
+  body.appendChild(note);
+
+  if(!act.length){
+    body.appendChild(el('div','ent-desc','Encara no hi ha cap acompanyament declarat. '+
+      'El primer diu poc; a partir del tercer, la pantalla ja avisa d\'on es concentra la cura.'));
+    return;
+  }
+
+  /* El resum, i el número que mana ben visible. */
+  const grid=el('div','ent-grid');
+  const capsa=(t,v,d,mal)=>{const c=el('div','ent-card');
+    c.innerHTML='<div class="ent-nm">'+v+'</div><div class="ent-badges"><span class="ent-b'+(mal?' b-unver':'')+'">'+t+'</span></div>'+
+      '<div class="ent-desc">'+d+'</div>';return c;};
+  grid.appendChild(capsa('acompanyaments',r.compromisos,r.hores+' h a la setmana entre '+r.cuidadores+
+    (r.cuidadores===1?' persona cuidadora':' persones cuidadores')+'.'));
+  grid.appendChild(capsa('concentració',r.concentracio+'%',
+    'de les hores les porta una sola persona.'+(r.concentracio>50?' <strong>Això no és una xarxa: és una persona amb ajudants.</strong>':''),
+    r.concentracio>50));
+  grid.appendChild(capsa('cobertura fràgil',r.fragils,
+    r.fragils?'persones acompanyades per <strong>una sola</strong> cuidadora. Si aquella plega, es queden sense ningú.'
+      :'tothom té més d\'una persona a sobre. És el que fa que això aguanti.',r.fragils>0));
+  grid.appendChild(capsa('la pitjor baixa',r.pitjor,
+    r.pitjor?'persones es quedarien sense ningú si plegués qui més en sosté.'
+      :'ningú es quedaria sense ningú. Aquest és el número que val la pena mirar cada mes.',r.pitjor>0));
+  body.appendChild(grid);
+
+  /* Qui està per sobre del llindar, amb la projecció al costat. */
+  const sob=sobrecarregades(node);
+  body.appendChild(el('div','ent-grp-lbl','⚠ Càrrega per persona cuidadora · llindar declarat: '+
+    CURES_LLINDAR.hores+' h/setmana o '+CURES_LLINDAR.persones+' persones'));
+  const cg=el('div','ent-grid');
+  [...new Set(act.map(c=>c.cuidaId))].map(id=>({m:memberById(node,id),c:carregaCures(node,id),p:siPlega(node,id)}))
+    .filter(x=>x.m).sort((a,b)=>b.c.hores-a.c.hores).forEach(x=>{
+      const passa=x.c.hores>CURES_LLINDAR.hores||x.c.persones>CURES_LLINDAR.persones;
+      const c=el('div','ent-card');
+      c.innerHTML='<div class="ent-nm">'+nom(x.m)+'</div>'+
+        '<div class="ent-badges"><span class="ent-b'+(passa?' b-unver':' b-ver')+'">'+x.c.hores+' h/setmana</span>'+
+        '<span class="ent-b">'+x.c.persones+(x.c.persones===1?' persona':' persones')+'</span>'+
+        (x.c.puntuals?'<span class="ent-b">'+x.c.puntuals+' puntual'+(x.c.puntuals===1?'':'s')+'</span>':'')+'</div>'+
+        '<div class="ent-desc">'+(x.p.orfes.length
+          ? '<strong>Si plega, '+x.p.orfes.length+(x.p.orfes.length===1?' persona es queda':' persones es queden')+' sense ningú.</strong>'+
+            (meu?' ('+x.p.orfes.map(o=>esc(o.name)).join(', ')+')':'')
+          : 'Si plega, tothom que acompanya té algú més.')+'</div>';
+      cg.appendChild(c);
+    });
+  body.appendChild(cg);
+  if(sob.length){
+    const av=el('div','ai-note');av.style.marginTop='.6rem';
+    av.innerHTML='<span class="ic">⚠</span><span><strong>'+sob.length+
+      (sob.length===1?' persona passa':' persones passen')+' del llindar.</strong> El llindar no és una norma: '+
+      'és el punt on val la pena preguntar-ho abans que ho digui ella. La sortida no és que faci menys hores '+
+      '—algú les ha de fer—: és <strong>que aquelles persones tinguin una segona cuidadora</strong>.</span>';
+    body.appendChild(av);
+  }
+
+  /* Qui rep cura, i de quanta gent. */
+  body.appendChild(el('div','ent-grp-lbl','🫂 Qui rep acompanyament, i de quantes persones'));
+  const rg=el('div','ent-grid');
+  [...new Set(act.map(c=>c.cuidatId))].map(id=>({m:memberById(node,id),cob:coberturaCures(node,id)}))
+    .filter(x=>x.m).sort((a,b)=>a.cob.n-b.cob.n).forEach(x=>{
+      const c=el('div','ent-card');
+      c.innerHTML='<div class="ent-nm">'+nom(x.m)+'</div>'+
+        '<div class="ent-badges"><span class="ent-b'+(x.cob.n===1?' b-unver':' b-ver')+'">'+x.cob.n+
+        (x.cob.n===1?' cuidadora':' cuidadores')+'</span></div>'+
+        '<div class="ent-desc">'+(x.cob.n===1
+          ? 'Depèn d\'una sola persona. Buscar-li una segona és la feina més barata que té aquest node.'
+          : 'Té més d\'una persona: si una falla, no es queda sol/a.')+'</div>';
+      rg.appendChild(c);
+    });
+  body.appendChild(rg);
+
+  /* El quadre: qui acompanya qui, què i cada quan. */
+  body.appendChild(el('div','ent-grp-lbl','🗓 El quadre'));
+  const q=el('div','ent-grid');
+  act.slice().sort((a,b)=>curaHores(b)-curaHores(a)).forEach(c=>{
+    const cui=memberById(node,c.cuidaId),cat=memberById(node,c.cuidatId);
+    if(!cui||!cat)return;
+    const meta=curesQueMeta(c.que),cd=curesCadaMeta(c.cada);
+    const card=el('div','ent-card');
+    card.innerHTML='<div class="ent-nm">'+meta[2]+' '+nom(cui)+' → '+nom(cat)+'</div>'+
+      '<div class="ent-badges"><span class="ent-b">'+esc(meta[1])+'</span><span class="ent-b">'+esc(cd[1])+'</span>'+
+      '<span class="ent-b">'+c.hores+' h</span></div>'+
+      (c.notes&&meu?'<div class="ent-desc">'+esc(c.notes)+'</div>':'');
+    const acts=el('div');acts.style.marginTop='.5rem';acts.style.display='flex';acts.style.gap='.3rem';acts.style.flexWrap='wrap';
+    /* Registrar l'hora feta passa pel ledger de sempre: no s'inventa un segon
+       registre d'hores al costat del que ja existeix i ja es signa. */
+    const reg=el('button','btn btn-ghost btn-sm','⏱ Registra l\'hora feta');
+    reg.onclick=()=>exchangeHours(node,{fromId:c.cuidaId,toId:c.cuidatId,what:meta[1]});
+    const ed=el('button','btn btn-ghost btn-sm','✎');ed.onclick=()=>openCuraForm(node,c);
+    const fi=el('button','btn btn-ghost btn-sm','✓ Tanca');
+    fi.title='L\'acompanyament s\'ha acabat';
+    fi.onclick=async()=>{c.actiu=false;await persist(node);renderWorkspace();toast('Acompanyament tancat');};
+    acts.append(reg,ed,fi);card.appendChild(acts);q.appendChild(card);
+  });
+  body.appendChild(q);
+  if(!meu)body.appendChild(el('div','ent-desc','Els noms només els veu qui sosté el node: '+
+    'aquí hi ha qui rep cura al seu barri.'));
+}
+
+function openCuraForm(node,cura){
+  const ms=membersOf(node);
+  const opt=(sel)=>ms.map(m=>'<option value="'+m.id+'"'+(m.id===sel?' selected':'')+'>'+esc(m.name)+'</option>').join('');
+  const bg=modal(`
+    <h2>🤝 ${cura?'Edita l\'acompanyament':'Nou acompanyament'}</h2>
+    <p class="m-sub">Un compromís, no una hora feta: qui acompanya qui i cada quan. Les hores fetes
+    es registren al ledger, com tota la resta.</p>
+    <div class="field"><label>Qui acompanya</label><select id="cuA">${opt(cura&&cura.cuidaId)}</select></div>
+    <div class="field"><label>A qui</label><select id="cuB">${opt(cura&&cura.cuidatId)}</select></div>
+    <div class="field"><label>Què</label><select id="cuQ">${CURES_QUE.map(x=>'<option value="'+x[0]+'"'+(cura&&cura.que===x[0]?' selected':'')+'>'+x[2]+' '+esc(x[1])+'</option>').join('')}</select></div>
+    <div class="field"><label>Cada quan</label><select id="cuC">${CURES_CADA.map(x=>'<option value="'+x[0]+'"'+(cura&&cura.cada===x[0]?' selected':'')+'>'+esc(x[1])+'</option>').join('')}</select></div>
+    <div class="field"><label>Hores cada vegada</label><input id="cuH" type="number" min="0" step="0.5" value="${cura?cura.hores:1}"></div>
+    <div class="field"><label>Nota d'organització (opcional)</label><input id="cuN" maxlength="160" placeholder="Dimarts a la tarda, porta ell les claus" value="${cura?esc(cura.notes||''):''}"></div>
+    <div class="wz-key-note"><strong>Res de salut.</strong> Aquí es diu què es fa acompanyant, no què li
+    passa a ningú. La nota és per organitzar-se —dies, claus, telèfons de la família— i la veu només qui
+    sosté el node.</div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="cuCancel">Cancel·la</button><button class="btn btn-primary" id="cuSave">${cura?'Desa':'⬢ Declara'}</button></div>`);
+  bg.querySelector('.modal').classList.add('wz-modal');
+  if(!cura&&ms[1])bg.querySelector('#cuB').selectedIndex=1;
+  bg.querySelector('#cuCancel').onclick=closeModal;
+  bg.querySelector('#cuSave').onclick=async()=>{
+    const a=bg.querySelector('#cuA').value,b2=bg.querySelector('#cuB').value;
+    if(a===b2){toast('Ningú s\'acompanya a si mateix');return;}
+    const dades={cuidaId:a,cuidatId:b2,que:bg.querySelector('#cuQ').value,
+      cada:bg.querySelector('#cuC').value,hores:bg.querySelector('#cuH').value,
+      notes:bg.querySelector('#cuN').value};
+    if(cura)Object.assign(cura,dades,{hores:Math.max(0,Number(dades.hores)||0)});
+    else curesOf(node).push(newCura(dades));
+    await persist(node);closeModal();state.tab='cures';renderWorkspace();
+    const p=siPlega(node,a);
+    if(p.orfes.length)toast('Declarat · si aquesta persona plega, '+p.orfes.length+
+      (p.orfes.length===1?' es queda':' es queden')+' sense ningú',4200);
+    else toast('Acompanyament declarat');
+  };
+}
+
 function renderBancTemps(body,node){
   const offs=offersOf(node),ms=membersOf(node);
   const bar=el('div','ent-bar');
@@ -19697,7 +19973,7 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,COPIA_ID,COPIA_DIES,COPIA_APUNTS,copiaEstat,copiaMarca,copiaRecorda,updateCopiaBadge,openCopiaAvis,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,ALTA_V,ALTA_LLARG,ARWEAVE,altaCommitment,primeresAltes,altesNoves,altesPublicades,numeroDe,altaDe,elMeuNumero,pesRegistre,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,EINES_SOS,einaDe,einesFora,openEines,REBUT_TYPE,REBUT_CAMPS,buildRebut,verifyRebut,rebutAlRegistre,downloadRebut,openRebut,_canon,_canonAll}; // hook per a tests
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,COPIA_ID,COPIA_DIES,COPIA_APUNTS,copiaEstat,copiaMarca,copiaRecorda,updateCopiaBadge,openCopiaAvis,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,ALTA_V,ALTA_LLARG,ARWEAVE,altaCommitment,primeresAltes,altesNoves,altesPublicades,numeroDe,altaDe,elMeuNumero,pesRegistre,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,EINES_SOS,einaDe,einesFora,openEines,curesOf,CURES_QUE,CURES_CADA,CURES_LLINDAR,curesQueMeta,curesCadaMeta,newCura,curaHores,curesActives,carregaCures,sobrecarregades,coberturaCures,fragilsCures,siPlega,curesResum,renderCures,openCuraForm,REBUT_TYPE,REBUT_CAMPS,buildRebut,verifyRebut,rebutAlRegistre,downloadRebut,openRebut,_canon,_canonAll}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

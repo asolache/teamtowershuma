@@ -94,6 +94,7 @@ const EXCEPCIONS = {
 const EINES = {
   banc_temps: ['index.html', 'A dins de l\'app'],
   biblioteca_coses: ['index.html', 'A dins de l\'app'],
+  suport_mutu: ['index.html', 'A dins de l\'app'],
   matriu: ['matriu.html', 'La MATRIU'],
   mapeig_vna: ['vna.html', 'Mapa de valor'],
   comunitat_energetica: ['energia.html', 'L\'Energia'],
