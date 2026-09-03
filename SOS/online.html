@@ -316,13 +316,16 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Configuració ───────────────────────────────────────────────────────────
-   On viu el directori. Es deixa buit al repositori a propòsit: així el fitxer
-   es pot publicar sense credencials i la pàgina diu què li falta en comptes de
-   semblar trencada. La clau `anon` de Supabase és publicable per disseny —el
-   que protegeix les dades és la política RLS de `SOS/sql/001_online_fitxes.sql`,
-   no amagar-la. */
-const SUPA_URL = '';
-const SUPA_KEY = '';
+   On viu el directori. La clau és **publicable per disseny** i per això va al
+   repositori: el que protegeix les dades no és amagar-la, sinó la política RLS
+   de `SOS/sql/001_online_fitxes.sql`, que està aplicada i comprovada com a
+   `anon` —llegir sí, afegir sí, modificar i esborrar no, ni la teva pròpia
+   fila—. La clau `service_role` no surt mai d'aquí ni de cap altre fitxer.
+
+   Si algun dia calgués tornar-ho a deixar en blanc, la pàgina segueix sabent
+   dir què li falta en comptes de semblar trencada: aquell camí no s'ha tocat. */
+const SUPA_URL = 'https://grkgrceioxktmbwdhvmm.supabase.co';
+const SUPA_KEY = 'sb_publishable_xsEfyOqJ5tJwaxcoH_CiNg_SlsqDZb1';
 const TAULA    = 'online_fitxes';
 const configurat = () => !!(SUPA_URL && SUPA_KEY);
 

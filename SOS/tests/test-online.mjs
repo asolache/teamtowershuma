@@ -19,6 +19,8 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 
 const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', 'online.html');
 let pass = 0, fail = 0;
@@ -38,22 +40,59 @@ const nova = async () => {
 
 console.log('\n1 · Sense credencials, la pàgina diu què li falta');
 {
-  const { ctx, p, errs } = await nova();
-  const r = await p.evaluate(() => ({
-    configurat: window.__ONLINE.configurat(),
-    estat: document.querySelector('#estat').innerText.replace(/\s+/g, ' '),
-    buit: document.querySelector('#fitxes').innerText.replace(/\s+/g, ' '),
-    did: window.__ONLINE.S.jo.did
-  }));
-  ok(!r.configurat && /no està connectat/i.test(r.estat),
-    'diu que el directori no està connectat, en comptes de semblar buit');
-  ok(/SUPA_URL/.test(r.estat) && /001_online_fitxes\.sql/.test(r.estat),
-    'i diu exactament què cal fer perquè funcioni');
-  ok(!/no hi ha ningú apuntat/i.test(r.buit),
-    'i NO diu «no hi ha ningú apuntat», que seria mentida');
-  ok(/^did:sos:/.test(r.did), 'la identitat es crea sola en entrar: ' + r.did.slice(0, 28) + '…');
-  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
-  await ctx.close();
+  /* Aquesta prova mirava el fitxer publicat i donava per fet que no tenia
+     credencials. El dia que el directori es va connectar de debò, va fallar
+     —i el que havia canviat no era el codi, era el món—. Ara es prova **el
+     camí**, no l'estat del fitxer: es carrega una còpia amb les credencials
+     tretes, que és exactament la situació de qui es clona el repositori i
+     encara no té projecte. */
+  const cru = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'online.html'), 'utf8');
+  const buida = join(tmpdir(), 'online-sense-credencials-' + Date.now() + '.html');
+  writeFileSync(buida, cru
+    .replace(/const SUPA_URL = '[^']*';/, "const SUPA_URL = '';")
+    .replace(/const SUPA_KEY = '[^']*';/, "const SUPA_KEY = '';"));
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  try {
+    await p.goto('file://' + buida);
+    await p.waitForFunction(() => window.__ONLINE && window.__ONLINE.S.jo);
+    const r = await p.evaluate(() => ({
+      configurat: window.__ONLINE.configurat(),
+      estat: document.querySelector('#estat').innerText.replace(/\s+/g, ' '),
+      buit: document.querySelector('#fitxes').innerText.replace(/\s+/g, ' '),
+      did: window.__ONLINE.S.jo.did
+    }));
+    ok(!r.configurat && /no està connectat/i.test(r.estat),
+      'sense credencials diu que el directori no està connectat, en comptes de semblar buit');
+    ok(/SUPA_URL/.test(r.estat) && /001_online_fitxes\.sql/.test(r.estat),
+      'i diu exactament què cal fer perquè funcioni');
+    ok(!/no hi ha ningú apuntat/i.test(r.buit),
+      'i NO diu «no hi ha ningú apuntat», que seria mentida');
+    ok(/^did:sos:/.test(r.did), 'la identitat es crea sola en entrar: ' + r.did.slice(0, 28) + '…');
+    ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  } finally {
+    await ctx.close();
+    try { unlinkSync(buida); } catch (e) { /* ja no hi és */ }
+  }
+}
+
+console.log('\n1b · I amb credencials, apunta a un projecte de debò');
+{
+  /* El que es pot comprovar sense sortir a la xarxa: que la configuració que
+     porta el fitxer tingui la forma bona i que la clau **no** sigui mai la de
+     servei. Que el projecte respongui no ho pot dir una prova d'aquí. */
+  const cru = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'online.html'), 'utf8');
+  const url = (cru.match(/const SUPA_URL = '([^']*)'/) || [])[1];
+  const key = (cru.match(/const SUPA_KEY = '([^']*)'/) || [])[1];
+  if (!url && !key) {
+    ok(true, 'aquest clon encara no té directori connectat, i la pàgina ho diu (prova 1)');
+  } else {
+    ok(/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(url), `la URL té la forma d'un projecte: ${url}`);
+    ok(/^(sb_publishable_|eyJ)/.test(key), 'i la clau és de les publicables');
+    ok(!/^sb_secret_/.test(key) && !/service_role/.test(key),
+      'i NO és la de servei: aquella dona accés a tot i no pot viure en un fitxer que es publica');
+  }
 }
 
 console.log('\n══ El que importa: la firma mana, no el permís ══');
