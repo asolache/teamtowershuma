@@ -82,7 +82,34 @@ const EXCEPCIONS = {
   'joc.html': 'És una pantalla de joc completa; un menú a sobre en trencaria el ritme.'
 };
 
+/* ══ QUINA EINA SERVEIX QUINA DINÀMICA ═══════════════════════════════════
+   Set de les dotze dinàmiques del catàleg tenen una pàgina que fa la seva
+   feina, i dues es fan dins de l'aplicació mateixa. Fins ara això només ho
+   sabia Molekulandia, per pintar la porta de cada edifici; ara ho necessita
+   també l'app —des d'un projecte de comunitat energètica s'ha de poder obrir
+   L'Energia— i per això es declara aquí, on ja viu el mapa de pàgines.
+
+   Dues còpies d'aquesta taula divergirien el dia que una dinàmica estrenés
+   eina, i no petaria res: senzillament, un dels dos llocs no l'oferiria. */
+const EINES = {
+  banc_temps: ['index.html', 'A dins de l\'app'],
+  biblioteca_coses: ['index.html', 'A dins de l\'app'],
+  matriu: ['matriu.html', 'La MATRIU'],
+  mapeig_vna: ['vna.html', 'Mapa de valor'],
+  comunitat_energetica: ['energia.html', 'L\'Energia'],
+  habitatge_cessio: ['habitatge.html', 'L\'Habitatge'],
+  consum_agroecologic: ['compra.html', 'La Compra'],
+  compra_collectiva: ['compra.html', 'La Compra'],
+  cens_entitats: ['online.html', 'El directori']
+};
+
 const OBRE = '<!--SOS-NAV-->', TANCA = '<!--/SOS-NAV-->';
+/* L'aplicació no porta la barra —això segueix sent cert i és a EXCEPCIONS—,
+   però sí que ha de portar **la mateixa llista de destins**. L'excepció era
+   sobre la barra, no sobre el contingut: fins ara, de dins de l'app no hi havia
+   manera d'arribar a cap de les eines de fora. Ni una. */
+const APP = 'index.html';
+const A_OBRE = '<!--SOS-EINES-->', A_TANCA = '<!--/SOS-EINES-->';
 
 /* ══ El marcatge ═════════════════════════════════════════════════════════ */
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -162,7 +189,7 @@ const CSS = `<style>
    diria que hi és i la dels vedes que la pàgina no correspon al codex. Per això
    el menú s'exporta i el generador dels vedes l'aplica ell mateix — una sola
    declaració, dos que la fan servir. */
-module.exports = { posa, nav, PAGINES, EXCEPCIONS, GRUPS, CTA };
+module.exports = { posa, nav, PAGINES, EXCEPCIONS, GRUPS, CTA, EINES };
 if (require.main !== module) return;
 
 let fails = 0;
@@ -185,6 +212,27 @@ function posa(html, pagina) {
   return net.slice(0, fi) + '\n' + bloc + '\n' + net.slice(fi);
 }
 
+/* ══ El bloc de dades de l'aplicació ═════════════════════════════════════
+   L'app no pinta aquest menú: el llegeix. Per això no és marcatge sinó dades
+   —els mateixos grups i els mateixos destins—, i l'app decideix com
+   ensenyar-los amb la seva barra. Així el dia que s'afegeixi una pàgina, surt
+   als setze llocs i a dins de l'app, i no cal recordar-se'n. */
+function blocApp() {
+  const dades = {
+    grups: GRUPS.map(g => ({ lbl: g.lbl, ic: g.ic,
+      links: g.links.filter(l => l[0] !== APP).map(([h, t, d]) => ({ h, t, d })) }))
+      .filter(g => g.links.length),
+    eines: EINES
+  };
+  return A_OBRE + '\n<script id="sos-eines" type="application/json">\n' +
+    JSON.stringify(dades) + '\n</script>\n' + A_TANCA;
+}
+function posaApp(html) {
+  const i = html.indexOf(A_OBRE), j = html.indexOf(A_TANCA);
+  if (i < 0 || j <= i) return null;
+  return html.slice(0, i) + blocApp() + html.slice(j + A_TANCA.length);
+}
+
 if (CHECK) console.log('\nGuarda del menú · una sola arquitectura a totes les pàgines');
 let tocades = 0;
 
@@ -200,6 +248,19 @@ PAGINES.forEach(p => {
   } else if (nou !== html) { writeFileSync(f, nou); tocades++; }
 });
 
+/* I l'aplicació, que no porta la barra però sí la llista. */
+{
+  const f = join(SOS, APP);
+  const html = readFileSync(f, 'utf8');
+  const nou = posaApp(html);
+  if (nou === null) bad(`${APP} no té les marques ${A_OBRE} … ${A_TANCA}: de dins de l'app no ` +
+    'hi hauria manera d\'arribar a cap eina de fora');
+  else if (CHECK) {
+    if (nou !== html) bad(`${APP} no porta la llista d'eines declarada, o l'ha canviada pel seu compte`);
+    else ok(`i l'aplicació porta la mateixa llista de destins que les pàgines`);
+  } else if (nou !== html) { writeFileSync(f, nou); tocades++; }
+}
+
 if (CHECK) {
   const totes = PAGINES.length;
   if (!fails) ok(`les ${totes} pàgines porten exactament el mateix menú`);
@@ -213,6 +274,32 @@ if (CHECK) {
     .filter(h => !existsSync(join(SOS, h)));
   if (!morts.length) ok(`i els ${GRUPS.reduce((a, g) => a + g.links.length, 0) + 1} destins existeixen tots`);
   else bad(`el menú porta a pàgines que no hi són: ${morts.join(', ')}`);
+
+  /* ── La taula d'eines per dinàmica ────────────────────────────────────
+     Tres maneres de trencar-la, i cap peta sola. */
+  const app = readFileSync(join(SOS, APP), 'utf8');
+  const einesMortes = [...new Set(Object.values(EINES).map(e => e[0]))]
+    .filter(h => !existsSync(join(SOS, h)));
+  if (!einesMortes.length) ok(`i les ${Object.keys(EINES).length} eines per dinàmica van a un fitxer que existeix`);
+  else bad(`eines que apunten a una pàgina que no hi és: ${einesMortes.join(', ')}`);
+  /* Una clau que no és cap dinàmica no peta: senzillament, no s'ofereix mai. */
+  const fantasma = Object.keys(EINES).filter(k => !new RegExp(`\\{id:'${k}',name:`).test(app));
+  if (!fantasma.length) ok('i cada clau de la taula és una dinàmica del catàleg');
+  else bad(`${fantasma.join(', ')} no és cap dinàmica de DYNAMICS: aquella eina no s'oferiria mai ` +
+    'i ningú se n\'adonaria');
+  /* I la que de debò importa: que l'aplicació la faci servir. El bloc pot estar
+     al dia i la vista de projecte no llegir-lo — llavors l'app torna a ser el
+     cul-de-sac que això ve a arreglar, amb les dades correctes a dins. */
+  const llegeix = /getElementById\('sos-eines'\)/.test(app);
+  const usa = (app.match(/einaDe\(/g) || []).length >= 2;
+  const menu = /id="btnEines"/.test(app) && /openEines\(\)/.test(app);
+  if (llegeix && usa && menu)
+    ok('i l\'app la fa servir de debò: la llegeix, l\'ofereix a la vista de projecte i té entrada al menú');
+  else bad('l\'app no fa servir la llista d\'eines' +
+    (!llegeix ? ' (no llegeix el bloc sos-eines)' : '') +
+    (!usa ? ' (la vista de projecte no crida einaDe)' : '') +
+    (!menu ? ' (no hi ha entrada de menú que obri les eines)' : '') +
+    ': el bloc pot ser correcte i l\'app seguir sent un cul-de-sac');
 
   console.log(fails ? `\n❌ ${fails} problema${fails === 1 ? '' : 's'} al menú. Arregla-ho amb:  node SOS/tools/build-nav.js`
     : '\n✅ Una sola arquitectura de menús, i tots els camins existeixen.');
