@@ -149,18 +149,14 @@ const EDIFICIS = [
 const SENSE_EDIFICI = { generic: 'És la plantilla en blanc, no un tipus de projecte: no hi ha cap edifici que sigui «una xarxa qualsevol».' };
 
 /* Les eines que hi ha de debò darrere de cada edifici, avui. Prometre una porta
-   que no s'obre és el pitjor que podria fer aquesta pàgina. */
-const EINES = {
-  banc_temps: ['index.html', 'A dins de l\'app'],
-  biblioteca_coses: ['index.html', 'A dins de l\'app'],
-  matriu: ['matriu.html', 'La MATRIU'],
-  mapeig_vna: ['vna.html', 'Mapa de valor'],
-  comunitat_energetica: ['energia.html', 'L\'Energia'],
-  habitatge_cessio: ['habitatge.html', 'L\'Habitatge'],
-  consum_agroecologic: ['compra.html', 'La Compra'],
-  compra_collectiva: ['compra.html', 'La Compra'],
-  cens_entitats: ['online.html', 'El directori']
-};
+   que no s'obre és el pitjor que podria fer aquesta pàgina.
+
+   La declaració viu a `build-nav.js`, que és qui sap el mapa de pàgines del
+   SOS, perquè ara la fan servir dos llocs: la fitxa d'un edifici d'aquí, i la
+   vista de projecte de l'aplicació —des d'un projecte d'energia s'ha de poder
+   obrir L'Energia—. Dues còpies d'aquesta taula divergirien el dia que una
+   dinàmica estrenés eina, i no petaria res. */
+const { EINES } = require('./build-nav.js');
 
 /* ══ LLEGIR LES TAULES ═══════════════════════════════════════════════════════ */
 const APP = readFileSync(join(SOS, 'index.html'), 'utf8');

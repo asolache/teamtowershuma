@@ -704,6 +704,67 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 132 — Totes les portes portaven cap endins, i cap cap enfora
+
+Les setze pàgines del SOS porten a l'aplicació: cadascuna té «Obre SOS →» al
+mateix lloc de la barra, i això es va fer a posta. El que ningú va mirar és el
+camí de tornada: **de dins de l'aplicació no hi havia manera d'arribar a cap
+d'elles.** Ni al mapa de valor, ni a La Compra, ni a L'Energia, ni a la MATRIU,
+ni a Molekulandia.
+
+Fer-ho evident va costar una línia: comptar quantes vegades surt cada pàgina a
+`SOS/index.html`. `energia.html`, `habitatge.html`, `matriu.html` i
+`molekulandia.html` en donaven **zero**; `compra.html` en donava dos, i **tots
+dos eren comentaris**. Zero enllaços de debò, en tot el fitxer. Qui era a dins
+no és que no hi arribés: és que no sabia que existien.
+
+Això és el defecte més silenciós de tots els que porta aquest codex, perquè no
+es manifesta com un error sinó com **una cosa que la gent no fa**. La feina
+estava feta, provada i publicada; simplement no hi anava ningú.
+
+### El que ho arregla, i per què són dues coses i no una
+
+- **Accés** — una entrada al menú, «🧰 Les eines del SOS», amb els mateixos
+  quatre grups i els mateixos setze destins que la barra de les pàgines. Serveix
+  per descobrir que existeixen.
+- **Integració** — a la fitxa d'un projecte, **l'eina del seu tipus**. Qui obre
+  un projecte de comunitat energètica té el càlcul dels coeficients a un clic,
+  just al costat de la governança i dels recursos del catàleg, que és on ja
+  mirava. Serveix per fer-les servir.
+
+La primera sense la segona seria un calaix; la segona sense la primera només
+existiria per a qui ja té un projecte d'aquell tipus.
+
+### Una excepció que era sobre el marc, no sobre el contingut
+
+`index.html` és a `EXCEPCIONS` de `build-nav.js` amb el motiu escrit: «és
+l'aplicació i té la seva pròpia barra». Seguia sent cert i segueix sent-ho —una
+segona barra a sobre de la de l'app seria pitjor—, però es va llegir com si
+volgués dir «l'app queda fora de l'arquitectura de navegació». **L'excepció era
+sobre el marc, no sobre la llista de destins.** Ara l'app no pinta el menú: en
+llegeix les dades, generades de la mateixa declaració, i les ensenya a la seva
+manera.
+
+De pas, la taula de **quina eina serveix quina dinàmica** passa a viure amb el
+mapa de pàgines, perquè ara la fan servir dos llocs —la fitxa d'un edifici de
+Molekulandia i la vista de projecte de l'app—. Dues còpies haurien divergit el
+dia que una dinàmica estrenés eina, i de la pitjor manera: un dels dos llocs
+senzillament no l'hauria ofert.
+
+### La regla que aquesta guarda vigila i que no és òbvia
+
+Que el bloc de dades sigui correcte **no vol dir que serveixi de res**. Es pot
+regenerar cada dia i tenir la vista de projecte sense cridar-lo, i llavors
+l'aplicació torna a ser el cul-de-sac amb les dades bones a dins. Per això la
+guarda comprova tres coses a la vegada: que l'app **llegeixi** el bloc, que la
+vista de projecte **cridi** `einaDe`, i que hi hagi una **entrada de menú** que
+les obri. Provat trencant les tres per separat.
+
+I on **no** ha de sortir és la meitat del disseny: les dinàmiques que es fan
+dins de l'app no ofereixen res —un enllaç a l'app des de l'app no porta enlloc—
+i les que encara no tenen eina, tampoc. Inventar-los una porta seria pitjor que
+no tenir-ne.
+
 ## Veda 131 — Cent setze noms no són cent setze professions
 
 Molekulandia és el poble on cada edifici és un projecte del catàleg: el bar és
