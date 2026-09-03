@@ -164,13 +164,103 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
       diag: !!hero.querySelector('a[href*="diagnostic"]'),
       sos: !!hero.querySelector('a[href="/SOS/"]'),
       finan: /subvencions/i.test(hero.textContent),
-      seccions: document.querySelectorAll('section[id]').length
+      ordre: [...document.querySelectorAll('section[id]')].map(s => s.id)
     };
   });
   ok(r.dolor === 3, 'els tres dolors del principi no s\'han perdut pel camí');
   ok(r.diag && r.sos, 'els dos camins de sortida segueixen a la primera pantalla');
   ok(r.finan, 'i la línia que diu qui ho paga, que és la primera pregunta d\'un ajuntament');
-  ok(r.seccions === 14, `la resta de la pàgina segueix sencera (${r.seccions} seccions amb àncora)`);
+  /* Abans això comptava seccions. Comptar-les no diu res del que importa i peta
+     el dia que se'n reordena una: el que ha de ser cert és **l'ordre del
+     discurs**, benefici → procés → detall, que és el que fa que qui llegeix
+     arribi al preu havent entès per què val això. */
+  const ESPINA = ['enfoc', 'glossari', 'relat', 'com', 'fentpinya',
+                  'aprenent', 'cataleg', 'sos', 'trajectoria', 'objeccions'];
+  const pos = id => r.ordre.indexOf(id);
+  const falten = ESPINA.filter(id => pos(id) < 0);
+  ok(!falten.length, 'l\'espina de la pàgina hi és sencera' + (falten.length ? ': falta ' + falten.join(', ') : ''));
+  const desordre = ESPINA.slice(1).filter((id, i) => pos(id) < pos(ESPINA[i]));
+  ok(!desordre.length,
+    'i va en ordre: primer el benefici, després el procés, i el preu al final'
+    + (desordre.length ? ' — fora de lloc: ' + desordre.join(', ') : ''));
+  await ctx.close();
+}
+
+console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui contractar');
+/* La pàgina no ven serveis, ven paquets tancats. La diferència és exactament
+   això: un servei explica què és; un paquet diu qui el compra, quant dura, què
+   t'endús, quant costa i quantes vegades s'ha fet. Sense les cinc, un tècnic
+   municipal no ho pot portar a una junta. Veda 137. */
+{
+  const { ctx, p } = await nova();
+  const r = await p.evaluate(() => {
+    const eur = t => Number(String(t).replace(/[^\d]/g, ''));
+    const paquets = [...document.querySelectorAll('.paquet')].map(a => ({
+      id: a.id,
+      nom: (a.querySelector('h4') || {}).textContent || '',
+      punt: (a.querySelector('.pk-punt') || {}).textContent || '',
+      camps: [...a.querySelectorAll('.pk-dades dt')].map(d => d.textContent.trim()),
+      endus: ((a.querySelector('.pk-endus') || {}).textContent || '').trim(),
+      preu: eur((a.querySelector('.pk-preu strong') || {}).textContent || ''),
+      qui: ((a.querySelectorAll('.pk-dades dd')[0] || {}).textContent || '')
+    }));
+    return {
+      paquets,
+      families: [...document.querySelectorAll('.pk-fam')].map(f => f.id),
+      /* Els enllaços del catàleg, per comprovar que cap porta és falsa. */
+      enllacos: [...document.querySelectorAll('.paquet h4 a')].map(a => a.getAttribute('href'))
+    };
+  });
+  ok(r.paquets.length >= 15, r.paquets.length + ' paquets al catàleg');
+  ok(r.families.length === 3, 'tres famílies: ' + r.families.join(', '));
+
+  const migFets = r.paquets.filter(x =>
+    !x.nom.trim() || !x.endus || !x.preu || !x.punt.trim() || x.camps.length !== 3);
+  ok(!migFets.length, 'tots diuen les sis coses (nom, entregable, per a qui, durada, diners, preu)'
+    + (migFets.length ? ' — a mitges: ' + migFets.map(x => x.id).join(', ') : ''));
+
+  /* El sostre no és un caprici: per sobre, una proposta deixa de ser una
+     decisió d'una regidoria i passa a ser un procediment. */
+  const publics = r.paquets.filter(x => /ajuntament|consell|escola|afa|administracion|entitat/i.test(x.qui));
+  const cars = publics.filter(x => x.preu > 5000);
+  ok(publics.length >= 6, publics.length + ' paquets dirigits a administració o entitats');
+  ok(!cars.length, 'i cap passa dels 5.000 €'
+    + (cars.length ? ' — ' + cars.map(x => x.id + ' (' + x.preu + ')').join(', ') : ''));
+
+  const punts = new Set(r.paquets.map(x => x.punt.trim()));
+  ok(punts.size >= 2, 'i no tots diuen el mateix punt d\'adaptació: ' + [...punts].join(' · '));
+  ok(r.paquets.some(x => /provat/i.test(x.punt)) && r.paquets.some(x => /nou/i.test(x.punt)),
+    'hi ha coses provades i coses noves, i es distingeixen');
+  await ctx.close();
+}
+
+console.log('\n8 · El que encara no existeix, es diu');
+/* La temptació de tota pàgina comercial és vendre el que estàs a punt de tenir.
+   Aquí la regla és la mateixa que vigila Molekulandia: cap porta cap a un lloc
+   que no hi és. Els contractes intel·ligents no estan construïts, i per això el
+   que es ven és l'estudi. */
+{
+  const { ctx, p } = await nova();
+  const r = await p.evaluate(() => {
+    const sos = document.querySelector('#sos');
+    const contractes = document.querySelector('#pk-contractes');
+    return {
+      txtSos: sos ? sos.textContent.replace(/\s+/g, ' ') : '',
+      contractes: contractes ? contractes.textContent.replace(/\s+/g, ' ') : '',
+      lliure: sos ? /gratu|lliure/i.test(sos.textContent) : false,
+      cos: document.body.textContent.replace(/\s+/g, ' ')
+    };
+  });
+  ok(/estudi de viabilitat/i.test(r.contractes),
+    'els contractes intel·ligents es venen com a estudi, no com a eina');
+  ok(/no est(à|an) constru/i.test(r.txtSos) || /encara no/i.test(r.contractes),
+    'i es diu obertament que encara no estan construïts');
+  ok(r.lliure, 'la secció del SOS diu que l\'eina és lliure i funciona sense contractar res');
+  ok(!/qu[àa]ntic/i.test(r.cos), 'i no es promet res de seguretat quàntica, que no existeix aquí');
+  /* La guia de marca prohibeix aquestes: no diuen res i sonen a fullet. */
+  const prohibides = ['disruptiu', 'disruptiva', 'solucions innovadores', 'ecosistema disruptiu'];
+  const dites = prohibides.filter(w => new RegExp(w, 'i').test(r.cos));
+  ok(!dites.length, 'cap paraula de fullet' + (dites.length ? ': ' + dites.join(', ') : ''));
   await ctx.close();
 }
 

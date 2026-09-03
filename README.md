@@ -1,146 +1,241 @@
 # TeamTowers Humà 🏰
 
-**De las torres humanas a las organizaciones humanas**  
-*Consultoría estratégica de RRHH con enfoque humanista desde el corazón del Penedès*
+**De las torres humanas a las organizaciones humanas**
+*Consultoría, formación y dinamización para comunidades y organizaciones, desde el Penedès*
 
 ![TeamTowers Humà Banner](https://raw.githubusercontent.com/asolache/Teamtowers/main/images/logoteamtowers.png)
 
-## 🌟 Visión
+## 🌟 De dónde viene esto
 
-TeamTowers Humà es la evolución natural de 20+ años construyendo equipos sólidos como castillos. Fundada por **Álvaro Solache**, combinamos la sabiduría ancestral de los castellers (Patrimonio Inmaterial UNESCO) con metodologías innovadoras de análisis de redes de valor para transformar organizaciones en espacios donde el talento humano florece naturalmente.
+Un castell no lo aguanta quien sube: lo aguanta la pinya. Una organización tampoco.
 
-> *"No construimos solo torres humanas. Construimos organizaciones humanas donde cada persona encuentra su lugar, propósito y poder para contribuir al todo."*  
-> — Álvaro Solache, Fundador
+Lo que empezó siendo una experiencia castellera para equipos de empresa acabó
+siendo un método para mirar **quién sostiene qué** —el análisis de redes de valor
+de Verna Allee— y, después, una herramienta libre para que eso no se pierda
+cuando el consultor se va.
 
-## 🚀 Servicios
+> *"No construimos solo torres humanas. Construimos organizaciones humanas donde
+> cada persona encuentra su lugar, propósito y poder para contribuir al todo."*
+> — Álvaro Solache, fundador
 
-Nuestra oferta integral de consultoría estratégica en gestión de personas:
+**Dos marcas, un método.** **TeamTowers** es la consultora y el método;
+**TeamTowers Humà** es lo que hace en el territorio: ayuntamientos, consejos
+comarcales, entidades y grupos promotores.
 
-| Servicio | Descripción | Impacto Medible |
-|----------|-------------|-----------------|
-| **TeamTowers** | Experiencias castelleras transformadoras para equipos corporativos | +30-50% cohesión de equipo en 2 horas |
-| **Value Network Analysis** | Mapeo estratégico de flujos de valor tangibles e intangibles | -30% ineficiencias identificadas |
-| **Comunidades de Práctica** | Modelos de aprendizaje basados en redes de valor | -47% tiempo onboarding, +65% retención talento |
-| **Consultoría RRHH Estratégica** | Outsourcing, transformación cultural y People Analytics | Soluciones personalizadas para PYMEs y grandes empresas |
-| **Producción de Eventos** | Eventos corporativos, team building y festivales | 20+ años produciendo para empresas líderes |
-| **Formación de Equipos** | Programas transformadores con metodologías únicas | Liderazgo colaborativo y gestión del cambio |
+## 🎒 El catálogo
 
-## 🎯 Propuesta de Valor Única
+Tres familias, que son los tres oficios: **consultoría**, **formación**, y
+**producción y dinamización**. Dentro de cada una conviven la versión para
+organización y la versión comunitaria del mismo producto — eso es lo que hace
+visible la adaptación al mercado en vez de esconderla.
 
-Somos **la única consultora** que fusiona:
+Cada paquete dice **para quién es, cuánto dura, qué te llevas, cuánto cuesta,
+con qué dinero se paga y en qué punto está**. Los que van a administración
+pública quedan **por debajo de los 5.000 €**, que es lo que se contrata sin
+abrir un expediente largo.
 
-✅ **Experiencia física** construyendo torres humanas (60.000+ participantes transformados)  
-✅ **Análisis estratégico** mediante Value Network Analysis (metodología de Verna Allee)  
-✅ **Territorialidad auténtica** desde Vilafranca del Penedès, corazón del cooperativismo catalán  
-✅ **Enfoque humanista** que prioriza el valor humano sobre métricas frías  
-✅ **Resultados cuantificables** con impacto en negocio real (no solo "satisfacción post-curso")
+> El **punto** no es decoración. *Probado* = entregado muchas veces, con casos
+> que enseñar. *En adaptación* = producto probado que se está llevando a un
+> mercado nuevo. *Nuevo* = todavía no se ha entregado suficientes veces, y se
+> dice. Sin esa columna, veinte años de mundo corporativo servirían de prueba de
+> un producto comunitario que aún no la tiene.
 
-## 📊 Impacto en Cifras
+> ⚠️ Esta tabla la genera `SOS/tools/build-oferta.js` a partir de la declaración
+> única del catálogo. **No la edites a mano**: cambia el generador y vuelve a
+> ejecutarlo, o el CI lo rechazará.
 
-```
-20+ años  → Experiencia construyendo equipos sólidos como castillos
-150+ empresas → Transformadas (IKEA, Telefónica, Vodafone, Novartis, BBVA, Porsche...)
-95% satisfacción → Clientes que repiten y recomiendan
-60.000+ participantes → Formados en valores de colaboración y confianza
-4x mayor → Transferencia de aprendizaje vs. modelos tradicionales
-```
+<!--TT-OFERTA-MD-->
 
-## 💻 Tecnología
+### 🕸️ Consultoría
 
-Landing page 100% estática optimizada para rendimiento y conversión:
+*Mirar y decidir con el mapa en la mano*
 
-- **HTML5 semántico** con Schema.org estructurado para SEO
-- **CSS puro** sin frameworks pesados (carga < 50KB)
-- **JavaScript ligero** para:
-  - Cambio de idioma sin recarga (ES/CA)
-  - Sistema de contacto obfuscado anti-bots
-  - Animaciones suaves y experiencia de usuario premium
-- **Video background** optimizado para engagement máximo
-- **Responsive design** mobile-first (100% Lighthouse)
+| Paquete | Para quién | Cuánto dura | Precio | Punto |
+|---|---|---|---|---|
+| **Diagnóstico del tejido local** | Ayuntamientos, consejos comarcales y entidades | 2 sesiones · 3 semanas | 1.800 € | En adaptación |
+| **Mapa de valor de una organización** | Empresas, cooperativas y entidades con equipo propio | 3 sesiones · 4-6 semanas | 3.500 € | Probado |
+| **Mapa comarcal y asamblea federativa** | Consejos comarcales y mancomunidades | 4 sesiones con varios municipios · 2-3 meses | 4.800 € | Nuevo |
+| **Medida de impacto y justificación** | Ayuntamientos, fundaciones y financiadores | Informe semestral o anual · 2 semanas | 900 € | Nuevo |
+| **Diagnóstico de personas y cultura** | Empresas y cooperativas con equipo | 3 sesiones · 6 semanas | 2.400 € | Probado |
 
-## 🌐 Posicionamiento Territorial
+### 🎓 Formación
 
-TeamTowers Humà nace con un compromiso claro con el **Penedès**:
+*Se aprende haciendo, sobre vuestro caso y no sobre uno inventado*
 
-📍 Ubicación estratégica en Vilafranca del Penedès (capital del cava y cooperativismo)  
-📍 Alianzas con tejido empresarial local (bodegas, cooperativas, industria)  
-📍 Acceso a ayudas de la Generalitat para innovación social y economía social  
-📍 Conexión con el patrimonio cultural catalán como diferencial competitivo
+| Paquete | Para quién | Cuánto dura | Precio | Punto |
+|---|---|---|---|---|
+| **Programa de Gestor/a** | Técnicos municipales y profesionales · precio por persona | ~45 h en 3-4 meses | 1.800 € | Nuevo |
+| **Programa de equipo gestor** | Una entidad del territorio, financiada por el ayuntamiento | 12 semanas · 5 roles · ~34 h de mentoría | 4.900 € | Nuevo |
+| **Comunidades de práctica** | Organizaciones con conocimiento disperso | 6 sesiones en 3 meses | 3.900 € | Probado |
+| **Formación de equipos** | Empresas, cooperativas y equipos técnicos | Media jornada · más sesiones, a escalar | 1.600 € | Probado |
+| **La Fábrica de Superhéroes** | Escuelas y AFA · 6 a 13 años | 8 sesiones | 2.400 € | Nuevo |
+| **Formación de formadores** | Ateneus Cooperatius y profesionales independientes | 20 h + tutela de 2 casos | 2.900 € | Nuevo |
 
-## 🚀 Despliegue
+### 🎪 Producción y dinamización
 
-Este proyecto está diseñado para despliegue rápido en plataformas estáticas:
+*Que pase de verdad, y que el lunes siga pasando*
 
-```bash
-# 1. Clona el repositorio
-git clone https://github.com/asolache/teamtowershuma.git
-cd teamtowershuma
+| Paquete | Para quién | Cuánto dura | Precio | Punto |
+|---|---|---|---|---|
+| **Comú-diada** | Ayuntamientos, consejos comarcales y entidades | Una jornada · 3 semanas de producción antes | 2.900 € | Nuevo |
+| **Fent Pinya** | Equipos de empresa, plenos municipales y mesas comunitarias | 2 h | 2.200 € | Probado |
+| **Producción de eventos** | Empresas, ayuntamientos y festivales | Una jornada, de la idea al desmontaje | 4.500 € | Probado |
+| **Puesta en marcha de una dinámica** | Entidades y grupos promotores, financiado por el ayuntamiento | 6 meses · sesiones quincenales | 3.600 € | En adaptación |
 
-# 2. Edita el archivo index.html con tus datos
-nano index.html
+### 🖥️ Alrededor del SOS
 
-# 3. Despliega en Netlify (recomendado)
-#    - Conecta tu repositorio GitHub
-#    - Netlify detectará automáticamente el index.html
-#    - ¡Listo en 30 segundos!
+*La herramienta es libre. Esto es lo que sí se contrata.*
 
-# 4. O despliega manualmente en cualquier hosting estático
-scp index.html usuario@tudominio.com:/var/www/html/
-```
+| Paquete | Para quién | Cuánto dura | Precio | Punto |
+|---|---|---|---|---|
+| **Implantación y soporte** | Ayuntamientos, consejos comarcales y Ateneus | 3 semanas | 1.500 € | Nuevo |
+| **IA con frenos · sesión de viabilidad** | Quien se plantee usar IA con datos de personas | 1 sesión + informe · 2 semanas | 900 € | En adaptación |
+| **Contratos inteligentes · estudio de viabilidad** | Cooperativas y administraciones que quieran automatizar acuerdos | 3 semanas | 1.500 € | Nuevo |
 
-## 📁 Estructura del Proyecto
+<!--/TT-OFERTA-MD-->
+
+Qué entrega cada paquete, con el detalle y en las dos lenguas, está en la
+portada: [teamtowershuma.netlify.app](https://teamtowershuma.netlify.app).
+La segmentación completa —ocho públicos, sus dolores y sus vías de
+financiación— está en
+[`SOS/knowledge/negoci/formacio-mentoria.md`](SOS/knowledge/negoci/formacio-mentoria.md).
+
+## 🖥️ El SOS, proyecto por sí solo
+
+El **SOS** (Sistema Operativo Social) es gratuito, abierto y funciona sin
+nosotros. Se abre en el navegador, sin cuenta y sin instalar nada, y los datos
+se quedan en el aparato de quien los escribe.
+
+**No vendemos el programa: vendemos el acompañamiento.** Eso obliga a algo
+incómodo y sano — si el acompañamiento no aporta valor, el cliente se va y se
+lleva la herramienta igualmente. No hay lock-in técnico que sostenga un servicio
+mediocre.
+
+Se aprende usándolo, y se puede visitar todo ahora mismo:
+
+| Proyecto | Qué es |
+|---|---|
+| [El SOS](https://teamtowershuma.netlify.app/SOS/) | El mapa del pueblo, el banco de tiempo, la biblioteca de las cosas, las cuentas y las decisiones tomadas |
+| [Comando Molekulon](https://teamtowershuma.netlify.app/SOS/comando.html) | Se aprende jugando: doce personajes, reconocimiento que sale de lo hecho de verdad, y una historia |
+| [Molekulandia](https://teamtowershuma.netlify.app/SOS/molekulandia.html) | El pueblo entero en una pantalla: cada edificio es un tipo de proyecto |
+| [La Fábrica de Superhéroes](https://teamtowershuma.netlify.app/SOS/escola.html) | El mismo método en la escuela, 6 a 13 años, sin ningún nombre real fuera del aula |
+| [El directorio abierto](https://teamtowershuma.netlify.app/SOS/online.html) | Quién hay en el territorio, con cada ficha firmada por su autor |
+| [La guía formativa](https://teamtowershuma.netlify.app/SOS/formacio.html) | 16 módulos, de N0 a N3 |
+
+**La IA tiene freno.** Propone un primer borrador del mapa y encuentra entidades
+del territorio, pero **nada entra sin que una persona lo haya comprobado**, y
+siempre dice de dónde lo ha sacado.
+
+**Lo que todavía no existe, se dice.** Los contratos inteligentes no están
+construidos en el SOS: por eso se vende el estudio de viabilidad y no la
+herramienta. Ninguna puerta apunta a un sitio que no está.
+
+## 📊 Trayectoria
+
+De dónde viene cada prueba, dicho por su línea, porque mezclarlas sería la
+trampa más fácil de este documento:
+
+**Línea corporativa y de formación de equipos** — es donde están los veinte años:
+
+| Desde | 1996, creando y desarrollando equipos |
+|---|---|
+| Personas formadas | 60.000+, en colaboración y confianza |
+| Organizaciones acompañadas | 150+ (InfoJobs y más de 150 empresas en formación y cohesión) |
+| Universidades | UB, UOC, UAB, UPC, La Salle, Universidad de León |
+| Sector público | Diputació de Barcelona, Ajuntament de Vilafranca, Junta de Castilla y León |
+
+**Línea comunitaria** — más nueva, y con menos kilómetros:
+
+- **2009 · Banco de Tiempo de León**, el primero de la ciudad.
+- **Comunitats.org**, plataforma de banco de tiempo y red de conocimiento.
+- **Fent Pinya & VNA** al servicio de ayuntamientos, cooperativas y ateneus.
+
+*Las cifras de impacto porcentual que este README publicaba antes (+30-50 % de
+cohesión, −47 % de tiempo de onboarding, 4× de transferencia) se han retirado:
+no llevaban fuente ni fecha. Una cifra exacta que nadie puede comprobar genera
+menos confianza que un rango honesto.*
+
+## 💻 Cómo está hecho
+
+Sitio estático, sin build, sin dependencias en tiempo de ejecución. Cada página
+es un HTML autocontenido que se puede abrir con `file://`.
 
 ```
 teamtowershuma/
-├── index.html          # Landing page principal (bilingüe ES/CA)
-├── README.md           # Este archivo
-└── assets/             # Recursos externos (no incluidos en repo)
-    ├── logo.png        # Logo TeamTowers
-    ├── alvaro.jpg      # Foto fundador
-    └── video.mp4       # Video background (enlazado desde GitHub)
+├── index.html          # La portada (bilingüe CA/ES)
+├── SOS/                # La aplicación y las páginas: una por cosa
+│   ├── index.html      # El SOS
+│   ├── tools/          # Las guardas que petan en CI cuando una promesa deja de ser cierta
+│   ├── tests/          # Playwright contra las páginas de verdad, por file://
+│   └── knowledge/      # El codex, el modelo de negocio, la guía de marca
+└── .github/            # Qué guardas corren y en qué orden
 ```
 
-## 🔒 Privacidad y Anti-Bots
+El mapa completo de carpetas, generado desde el árbol y no escrito a mano, está
+en [`SOS/knowledge/MAPA.md`](SOS/knowledge/MAPA.md).
 
-El sistema de contacto implementa múltiples capas de protección:
+### Generadores y guardas
 
-```javascript
-// Email construido dinámicamente para evitar scraping
-const email = 'asolache' + '@' + 'mac.com';
+Lo que se declara una vez se escribe en todas partes, y el CI falla si se ha
+desviado:
 
-// Asuntos personalizados por servicio para mejor segmentación
-contactService('TeamTowers'); 
-// → mailto:asolache@mac.com?subject=Consulta%20sobre%20TeamTowers
+```bash
+node SOS/tools/build-oferta.js        # el catálogo → portada + este README
+node SOS/tools/build-nav.js           # el menú → todas las páginas
+node SOS/tools/build-vedes.js         # el codex → SOS/vedes.html
+node SOS/tools/build-mapa.js          # el árbol → MAPA.md
+node SOS/tools/check-landing.js       # la portada: diccionarios y catálogo
+node SOS/tests/run.mjs                # la regresión entera
 ```
+
+## 🚀 Despliegue
+
+```bash
+git clone https://github.com/asolache/teamtowershuma.git
+cd teamtowershuma
+# No hay build. Se sirve tal cual desde cualquier hosting estático.
+```
+
+## 🔒 Privacidad
+
+El contacto se construye en cliente para no dejarlo expuesto a rastreadores, y
+**no hay ningún formulario que envíe datos a un tercero**: predicar local-first y
+que el primer contacto pase por un servicio externo sería la contradicción más
+visible del proyecto.
 
 ## 🤝 Colabora
 
-¿Eres diseñador, desarrollador o especialista en marketing del Penedès? ¡Nos encantaría colaborar contigo!
+¿Eres diseñadora, desarrollador o especialista en comunicación del Penedès?
 
-1. **Fork** este repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/awesome-feature`)
-3. Haz commit de tus cambios (`git commit -am 'Add awesome feature'`)
-4. Haz push a la rama (`git push origin feature/awesome-feature`)
-5. Abre un **Pull Request**
+1. **Fork** de este repositorio.
+2. Rama para tu cambio (`git checkout -b feature/lo-que-sea`).
+3. Antes de abrir el PR, pasa las guardas: `node SOS/tools/check-landing.js` y
+   `node SOS/tests/run.mjs`.
+4. Abre un **Pull Request**.
+
+Las reglas que se ha impuesto el proyecto —y el motivo de cada una— están en
+[`SOS/knowledge/codex.md`](SOS/knowledge/codex.md) y publicadas en
+[/vedes](https://teamtowershuma.netlify.app/SOS/vedes.html).
 
 ## 📜 Licencia
 
-Este proyecto es propiedad de **TeamTowers Humà** y está protegido por derechos de autor. El código HTML/CSS/JS puede ser utilizado como referencia educativa, pero cualquier uso comercial requiere autorización previa.
+Proyecto propiedad de **TeamTowers Humà**. El código puede usarse como
+referencia educativa; cualquier uso comercial requiere autorización previa.
 
 ```
 © 2026 TeamTowers Humà
-Consultoría estratégica de RRHH en Vilafranca del Penedès
+Consultoría, formación y dinamización en Vilafranca del Penedès
 https://teamtowershuma.netlify.app
 asolache@mac.com | +34 629 86 77 15
 ```
 
-## 🌍 Enlaces de Interés
+## 🌍 Enlaces
 
-- [🌐 Sitio web principal](https://teamtowershuma.netlify.app)
-- [👥 TeamTowers original](https://www.teamtowers.eu)
+- [🌐 Sitio web](https://teamtowershuma.netlify.app)
+- [👥 TeamTowers](https://www.teamtowers.eu)
 - [🔬 Value Network Lab](https://valuenetworklab.netlify.app)
 - [🎓 Curso de VNA](https://cursovna.netlify.app)
-- [👤 Perfil de Álvaro Solache](https://alvarosolache.netlify.app)
+- [👤 Álvaro Solache](https://alvarosolache.netlify.app)
 - [💼 LinkedIn](https://linkedin.com/in/alvarosolache)
 
 ---

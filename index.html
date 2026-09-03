@@ -200,26 +200,58 @@
         .pull-quote { margin-top:1.5rem; padding:1.5rem; background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02)); border-left:2px solid var(--accent-indigo); }
         .pull-quote p { font-family:var(--sans); font-size:1.1rem; font-weight:500; color:var(--light); line-height:1.7; margin:0; }
 
-        /* TRÍADA */
-        .triada { padding:8rem 0; background:var(--bg-panel); }
-        .triada-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
-        .triada-card { background:var(--bg-dark); padding:2.75rem 2.25rem; position:relative; transition:background .2s; }
-        .triada-card:hover { background:var(--bg-elevated); }
-        .triada-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
-        .triada-cohesio::before   { background:linear-gradient(90deg,var(--accent-purple),transparent); }
-        .triada-diagnostic::before{ background:linear-gradient(90deg,var(--accent-blue),transparent); }
-        .triada-motor::before     { background:linear-gradient(90deg,var(--accent-indigo),transparent); }
-        .triada-label { font-family:var(--mono); font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:1.25rem; display:block; font-weight:700; }
-        .triada-cohesio .triada-label    { color:var(--accent-purple); }
-        .triada-diagnostic .triada-label { color:var(--accent-blue); }
-        .triada-motor .triada-label      { color:var(--accent-indigo); }
-        .triada-card h3 { font-family:var(--sans); font-size:1.55rem; font-weight:700; margin-bottom:.9rem; }
-        .triada-card p { font-size:.85rem; color:var(--muted); line-height:1.75; margin-bottom:1.25rem; }
-        .triada-tags { display:flex; flex-wrap:wrap; gap:.5rem; }
-        .triada-tag { font-size:.7rem; font-family:var(--mono); padding:.35rem .7rem; border-radius:3px; }
-        .triada-cohesio .triada-tag    { background:var(--purple-dim); color:var(--accent-purple); }
-        .triada-diagnostic .triada-tag { background:var(--blue-dim); color:var(--accent-blue); }
-        .triada-motor .triada-tag      { background:var(--indigo-dim); color:var(--accent-indigo); }
+        /* D'ON VE AIXÒ · les quatre baules del relat, en ordre */
+        .relat { padding:8rem 0; background:var(--bg-panel); }
+        .relat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
+        .relat-card { background:var(--bg-dark); padding:2.5rem 1.9rem; position:relative; transition:background .2s; }
+        .relat-card:hover { background:var(--bg-elevated); }
+        .relat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px;
+            background:linear-gradient(90deg,var(--accent-indigo),transparent); }
+        .relat-card:nth-child(2)::before { background:linear-gradient(90deg,var(--accent-blue),transparent); }
+        .relat-card:nth-child(3)::before { background:linear-gradient(90deg,var(--accent-purple),transparent); }
+        .relat-card:nth-child(4)::before { background:linear-gradient(90deg,var(--accent-green),transparent); }
+        .relat-num { font-family:var(--mono); font-size:.65rem; letter-spacing:.2em; color:var(--accent-indigo);
+            margin-bottom:1.1rem; display:block; font-weight:700; }
+        .relat-card:nth-child(2) .relat-num { color:var(--accent-blue); }
+        .relat-card:nth-child(3) .relat-num { color:var(--accent-purple); }
+        .relat-card:nth-child(4) .relat-num { color:var(--accent-green); }
+        .relat-card h3 { font-family:var(--sans); font-size:1.35rem; font-weight:700; margin-bottom:.8rem; }
+        .relat-card p { font-size:.85rem; color:var(--muted); line-height:1.75; margin:0; }
+
+        /* EL CATÀLEG · el bloc que genera SOS/tools/build-oferta.js */
+        .cataleg { padding:8rem 0; }
+        .pk-fam { margin-bottom:4.5rem; }
+        .pk-fam-cap { border-top:1px solid var(--border); padding-top:1.5rem; margin-bottom:2rem; }
+        .pk-fam-ic { font-size:1.6rem; display:block; margin-bottom:.6rem; }
+        .pk-fam-cap h3 { font-family:var(--sans); font-size:1.7rem; font-weight:700; margin:0 0 .35rem; }
+        .pk-fam-cap p { color:var(--muted); font-size:.9rem; margin:0; }
+        .pk-graella { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:2px; }
+        .paquet { background:var(--bg-panel); padding:2rem 1.8rem; display:flex; flex-direction:column;
+            transition:background .2s; }
+        .paquet:hover { background:var(--bg-elevated); }
+        .paquet header { display:flex; align-items:flex-start; justify-content:space-between; gap:.8rem;
+            margin-bottom:.9rem; }
+        .paquet h4 { font-family:var(--sans); font-size:1.15rem; font-weight:700; margin:0; line-height:1.3; }
+        .paquet h4 a { color:inherit; text-decoration:underline; text-underline-offset:3px;
+            text-decoration-color:var(--border); }
+        .paquet h4 a:hover { text-decoration-color:var(--accent-green); }
+        /* El punt d'adaptació. Tres colors i tres significats: no és decoració,
+           és la diferència entre un producte amb casos i un que encara no en té. */
+        .pk-punt { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase;
+            padding:.3rem .55rem; border-radius:3px; white-space:nowrap; flex-shrink:0; font-weight:700; }
+        .pk-provat { background:var(--green-dim); color:var(--accent-green); }
+        .pk-adapt  { background:var(--blue-dim); color:var(--accent-blue); }
+        .pk-nou    { background:var(--purple-dim); color:var(--accent-purple); }
+        .pk-endus { font-size:.85rem; color:var(--light); line-height:1.7; margin:0 0 1.2rem; }
+        .pk-dades { display:grid; grid-template-columns:auto 1fr; gap:.4rem .9rem; margin:0 0 1.3rem;
+            font-size:.78rem; }
+        .pk-dades dt { font-family:var(--mono); font-size:.65rem; letter-spacing:.06em; color:var(--muted);
+            text-transform:uppercase; padding-top:.1rem; }
+        .pk-dades dd { margin:0; color:var(--light); }
+        .pk-preu { margin-top:auto; padding-top:1rem; border-top:1px solid var(--border); }
+        .pk-preu strong { font-family:var(--sans); font-size:1.5rem; font-weight:700; color:var(--white); }
+        .pk-nota { color:var(--muted); font-size:.82rem; line-height:1.75; margin-top:2rem;
+            border-left:2px solid var(--accent-green); padding-left:1rem; }
 
         /* ── FENT PINYA SECTION ── */
         .fentpinya { padding:8rem 0; }
@@ -379,9 +411,10 @@
            queia per sota del plec i la primera pantalla es feia el doble de
            llarga. Són dos problemes diferents i ara tenen dos llindars. */
         @media (max-width:1080px) {
-            .enfoc-grid,.fentpinya-grid,.sos-grid,.aprenentatge-grid { grid-template-columns:1fr; gap:3rem; }
+            .enfoc-grid,.fentpinya-grid { grid-template-columns:1fr; gap:3rem; }
             .hero-grid { grid-template-columns:1fr; gap:2.2rem; grid-template-areas:'cap' 'vis' 'cos'; }
-            .triada-grid { grid-template-columns:1fr; }
+            .relat-grid { grid-template-columns:1fr; }
+            .pk-graella { grid-template-columns:1fr; }
             .tangible-intangible { grid-template-columns:1fr; }
         }
         @media (max-width:1340px) {
@@ -397,7 +430,7 @@
             .nav-cta { margin:.7rem 2rem 0; justify-content:center; padding:.9rem 1.2rem!important; }
             .lang-switch { display:flex !important; }
         }
-        @media (max-width:600px) { .triada-grid { gap:1px; } }
+        @media (max-width:600px) { .relat-grid { gap:1px; } .pk-graella { gap:1px; } }
 
         /* ── Parlem clar · el glossari ───────────────────────────────────────
            Cada paraula que la pàgina fa servir i que algú podria no entendre té
@@ -473,10 +506,10 @@
     <div style="display:flex;align-items:center;gap:1.5rem;">
         <ul class="nav-links" id="navLinks">
             <li><a href="#com" data-i18n="nav.com">Com funciona</a></li>
-            <li><a href="#serveis" data-i18n="nav.serveis">Serveis</a></li>
-            <li><a href="#fentpinya" data-i18n="nav.fentpinya">Fent Pinya</a></li>
+            <li><a href="#relat" data-i18n="nav.relat">D'on ve</a></li>
+            <li><a href="#aprenent" data-i18n="nav.aprenent">S'aprèn fent</a></li>
+            <li><a href="#cataleg" data-i18n="nav.cataleg">El catàleg</a></li>
             <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
-            <li><a href="#oferta" data-i18n="nav.oferta">Què oferim</a></li>
             <li><a href="/SOS/comando.html" target="_blank" rel="noopener" data-i18n="nav.comando">Comando</a></li>
             <li><a href="/SOS/blog.html" target="_blank" rel="noopener" data-i18n="nav.blog">Blog</a></li>
             <li><a href="/SOS/formacio.html" target="_blank" rel="noopener" data-i18n="nav.formacio">Formació</a></li>
@@ -691,31 +724,40 @@
 </section>
 
 <!-- TRÍADA -->
-<section class="triada" id="triada">
+<!-- D'ON VE AIXÒ ────────────────────────────────────────────────────────────
+     Aquí hi havia «la tríada»: cohesió, diagnòstic i sostenibilitat. Era
+     correcta i no explicava d'on surt res. Qui contracta una consultoria petita
+     contracta una persona, i vol saber per què aquesta i no una altra.
+
+     Quatre baules, en ordre, i cadascuna explica la següent. La quarta és la
+     que importa: Humà no és el taller Fent Pinya, és el catàleg sencer. -->
+<section class="relat" id="relat">
     <div class="container">
         <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="triada.eyebrow">La nostra metodologia</div>
-            <h2 data-i18n-html="triada.h2">Tres peces. <em>Un únic sistema.</em></h2>
-            <p data-i18n="triada.intro">Cohesió, diagnòstic i sostenibilitat: la tríada que fem servir per convertir bona voluntat en un ecosistema que s'autogestiona.</p>
+            <div class="section-eyebrow" data-i18n="relat.eyebrow">D'on ve això</div>
+            <h2 data-i18n-html="relat.h2">Vint anys aixecant castells, <em>i el mateix problema a dins</em></h2>
+            <p data-i18n="relat.intro">Un castell no l'aguanta qui hi puja. Una organització tampoc. El que va començar sent una experiència per a equips d'empresa va acabar sent un mètode per mirar qui sosté què —i una eina per no perdre-ho de vista.</p>
         </div>
-        <div class="triada-grid fade-up">
-            <div class="triada-card triada-cohesio">
-                <span class="triada-label" data-i18n="triada.cohesio.label">Cohesió · El Cor</span>
-                <h3 data-i18n="triada.cohesio.h3">Fent Pinya</h3>
-                <p data-i18n="triada.cohesio.p">Dinàmiques vivencials basades en l'estructura i els valors dels castells humans. En poques hores, un grup de veïns, tècnics o sòcies experimenta físicament el que després necessitarà per sostenir un projecte: confiança, interdependència i seguretat psicològica.</p>
-                <div class="triada-tags"><span class="triada-tag" data-i18n="triada.cohesio.tag1">Confiança veïnal</span><span class="triada-tag" data-i18n="triada.cohesio.tag2">Interdependència</span></div>
+        <div class="relat-grid fade-up">
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n1">01 · La persona</span>
+                <h3 data-i18n="relat.t1">Álvaro Solache</h3>
+                <p data-i18n="relat.p1">Vint anys formant equips i produint esdeveniments, des del Penedès. La feina sempre ha estat la mateixa: que un grup de gent que no s'ha triat aguanti el pes junt.</p>
             </div>
-            <div class="triada-card triada-diagnostic">
-                <span class="triada-label" data-i18n="triada.diagnostic.label">Diagnòstic · El Cervell</span>
-                <h3 data-i18n="triada.diagnostic.h3">El mapa del poble</h3>
-                <p data-i18n="triada.diagnostic.p">Dibuixem qui es relaciona amb qui i què es passen: hores, diners i locals, però sobretot els favors, la informació i la confiança que no apunta ningú. Es veu de seguida de qui penja tot i quins vincles estan a punt de trencar-se. És el mètode que en diuen VNA.</p>
-                <div class="triada-tags"><span class="triada-tag" data-i18n="triada.diagnostic.tag1">Qui sosté què</span><span class="triada-tag" data-i18n="triada.diagnostic.tag2">El que no surt a les actes</span></div>
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n2">02 · L'ofici</span>
+                <h3 data-i18n="relat.t2">Psicologia de grups i desenvolupament de comunitats</h3>
+                <p data-i18n="relat.p2">Els projectes comunitaris no moren per falta de mètode: moren per falta de gent, per conflictes que ningú tracta i per no saber com finançar-se. Això s'estudia i es treballa.</p>
             </div>
-            <div class="triada-card triada-motor">
-                <span class="triada-label" data-i18n="triada.motor.label">Sostenibilitat · El Motor</span>
-                <h3 data-i18n="triada.motor.h3">L'eina · el SOS</h3>
-                <p data-i18n="triada.motor.p">Una aplicació gratuïta on el projecte queda escrit: qui hi és, qui fa què i quantes hores hi ha posat cadascú. Deixa de dependre de la memòria —i del cansament— de dues persones, i qui entra nou pot posar-s'hi al dia sol.</p>
-                <div class="triada-tags"><span class="triada-tag" data-i18n="triada.motor.tag1">Tauler de tasques</span><span class="triada-tag" data-i18n="triada.motor.tag2">Sense dependre de ningú</span></div>
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n3">03 · El mètode</span>
+                <h3 data-i18n="relat.t3">TeamTowers</h3>
+                <p data-i18n="relat.p3">Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee.</p>
+            </div>
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n4">04 · Al territori</span>
+                <h3 data-i18n="relat.t4">TeamTowers Humà</h3>
+                <p data-i18n="relat.p4">El mateix mètode portat al poble i al barri, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s'ha après.</p>
             </div>
         </div>
     </div>
@@ -758,44 +800,6 @@
                 <p data-i18n="com.p4.p">Formem gent vostra perquè ho sàpiga portar: acollir gent nova, fer les trobades i mantenir els comptes. Si al cap d'un any encara ens necessiteu per a què funcioni, no ho hem fet bé.</p>
                 <div class="pas-meta"><span data-i18n="com.p4.m1">45 hores</span><span data-i18n="com.p4.m2">3-4 mesos</span><span class="t-endus" data-i18n="com.p4.m3">T'endús: gent teva formada</span></div>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- SERVEIS -->
-<section class="serveis" id="serveis">
-    <div class="container">
-        <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="serv.eyebrow">Serveis</div>
-            <h2 data-i18n-html="serv.h2">Què podem fer <em>al teu territori</em></h2>
-            <p data-i18n="serv.intro">Serveis contractables per ajuntaments, consells comarcals i entitats — pensats per finançar-se amb subvencions, sense càrrega directa per al poble o el barri.</p>
-        </div>
-        <div class="serv-fam fade-up">
-            <div class="serv-fam-lbl" data-i18n="serv.metod">Metodològics · psicologia social i acció comunitària</div>
-            <div class="eines-grid">
-                <div class="eina-card"><span class="eina-ic">🕸️</span><h3 data-i18n="serv.m1.n">Mapa del teixit local</h3><p data-i18n="serv.m1.d">Qui es relaciona amb qui al poble i què es passen: hores, favors, informació i confiança. Es veu de qui penja tot abans que es cremi. (Mètode VNA.)</p></div>
-                <div class="eina-card"><span class="eina-ic">🏰</span><h3 data-i18n="serv.m2.n">Cohesió i confiança (Fent Pinya)</h3><p data-i18n="serv.m2.d">Sessions on veïnat, tècnics i entitats aprenen a repartir el pes com en un castell: fiar-se, avisar abans de cedir i poder dir el que es pensa sense por.</p></div>
-                <div class="eina-card"><span class="eina-ic">⚙️</span><h3 data-i18n="serv.m3.n">Posada en marxa de dinàmiques</h3><p data-i18n="serv.m3.d">Bancs de temps, biblioteques de coses, grups de consum, cures veïnals… de la idea a l'acció, amb rols i governança.</p></div>
-                <div class="eina-card"><span class="eina-ic">⬡</span><h3 data-i18n="serv.m4.n">Governança cooperativa</h3><p data-i18n="serv.m4.d">Acompanyem la constitució, els estatuts i la presa de decisions de cooperatives i associacions que duren.</p></div>
-                <div class="eina-card"><span class="eina-ic">🎓</span><h3 data-i18n="serv.m5.n">Formar gent del poble</h3><p data-i18n="serv.m5.d">S'aprèn portant el projecte de veritat, no en un curs a part. És el model de la Universitat de Mondragón, i acaba amb gent vostra que ho sap fer sola.</p></div>
-                <div class="eina-card"><span class="eina-ic">⚖️</span><h3 data-i18n="serv.m6.n">Repartir el resultat sense baralles</h3><p data-i18n="serv.m6.d">S'apunta el que hi posa cada persona mentre es fa, i el repartiment surt d'aquí. Qui hi ha treballat hi té veu i part. (Mètode Slicing Pie.)</p></div>
-                <div class="eina-card"><span class="eina-ic">🏫</span><h3 data-i18n="serv.m7.n">El programa a l'escola (6-13 anys)</h3><p data-i18n-html="serv.m7.d">La <a href="/SOS/escola.html">Fàbrica de Superherois</a>: vuit sessions on una classe fa el seu mapa de recursos i s'intercanvia ajuda de debò. El cromo es dissenya; els superpoders es guanyen quan un company confirma que l'has ajudat.</p></div>
-                <div class="eina-card"><span class="eina-ic">🛒</span><h3 data-i18n="serv.m8.n">Comprar junts, i saber per què surt més barat</h3><p data-i18n-html="serv.m8.d"><a href="/SOS/compra.html">La Compra</a>: cistella amb el 80% de la despesa en menjar de proximitat, bàsic i sa, la comanda agregada amb el mínim de cada pagès, i l'estalvi dit per la seva causa — fora intermediari, a granel, de temporada, per volum.</p></div>
-            </div>
-        </div>
-        <div class="serv-fam fade-up">
-            <div class="serv-fam-lbl" data-i18n="serv.tec">Tecnològics · eines digitals sobiranes</div>
-            <div class="eines-grid">
-                <div class="eina-card"><span class="eina-ic">🖥️</span><h3 data-i18n="serv.t1.n">Posar en marxa el SOS</h3><p data-i18n="serv.t1.d">Deixem l'eina preparada amb el vostre cas a dins i la gent sabent-la fer servir. S'obre al navegador i les dades es queden a casa.</p></div>
-                <div class="eina-card"><span class="eina-ic">✦</span><h3 data-i18n="serv.t2.n">Intel·ligència artificial, amb frens</h3><p data-i18n="serv.t2.d">Proposa un primer esborrany del mapa i troba entitats del territori. <strong>Res entra sense que una persona ho hagi comprovat</strong>, i sempre diu d'on ho ha tret.</p></div>
-                <div class="eina-card"><span class="eina-ic">🌐</span><h3 data-i18n="serv.t3.n">Directori obert del territori</h3><p data-i18n="serv.t3.d">La llista de qui hi ha —consells, entitats, iniciatives— feta entre tots i comprovable. Sense propietari i sense caducar cada legislatura.</p></div>
-                <div class="eina-card"><span class="eina-ic">🔧</span><h3 data-i18n="serv.t4.n">Eines fetes a mida</h3><p data-i18n="serv.t4.d">Amb estàndards oberts i el codi a la vista, perquè demà us ho pugui mantenir qualsevol i no calgui tornar a nosaltres.</p></div>
-                <div class="eina-card"><span class="eina-ic">📶</span><h3 data-i18n="serv.t5.n">Perdre la por a les eines digitals</h3><p data-i18n="serv.t5.d">Formació per a entitats que avui depenen del nebot que en sap. Perquè les portin elles, no un tercer.</p></div>
-            </div>
-        </div>
-        <div class="serv-fund fade-up">
-            <div class="serv-fund-tag" data-i18n="serv.fund.tag">Sense càrrega directa per al poble</div>
-            <p data-i18n-html="serv.fund.p">Molts d'aquests serveis són <strong>finançables amb fons ja existents</strong>: el catàleg de serveis i les subvencions de la <strong>Diputació de Barcelona</strong> (suport a municipis, especialment de menys de 20.000 habitants), els <strong>Ateneus Cooperatius</strong> (aracoop, gratuïts), fons <strong>Leader/GAL</strong> de desenvolupament rural i programes <strong>Next Generation</strong>. T'ajudem a trobar i justificar la via de finançament perquè el cost no recaigui sobre el veïnat.</p>
         </div>
     </div>
 </section>
@@ -952,66 +956,357 @@
     </div>
 </section>
 
-<!-- SOS -->
-<section class="sos-section" id="sos">
+<!-- S'APRÈN FENT ───────────────────────────────────────────────────────────
+     La prova d'una formació-acció no és el temari: és el que se n'ha fet. Aquí
+     hi ha els projectes propis, tots oberts i tots visitables ara mateix. Van
+     abans del catàleg a propòsit: primer es veu, després es compra. -->
+<section class="eines" id="aprenent">
     <div class="container">
-        <div class="sos-grid">
-            <div class="sos-content fade-up">
-                <div class="section-eyebrow" style="text-align:left;margin-bottom:1.5rem;" data-i18n="sos.eyebrow">Sostenibilitat</div>
-                <h2 data-i18n-html="sos.h2">L'eina que <em>fa que duri.</em></h2>
-                <p data-i18n-html="sos.p1">El SOS és una aplicació gratuïta on queda escrit tot el que ara viu en un grup de WhatsApp i en el cap de dues persones: <strong>qui hi és, qui fa què, quantes hores hi ha posat cadascú i què s'ha decidit</strong>. Quan aquestes dues persones es cansen o marxen, el projecte no se'n va amb elles.</p>
-                <p data-i18n-html="sos.p2">S'obre com una pàgina web qualsevol. <strong>No cal crear cap compte ni donar cap dada, i el que s'hi escriu es queda al teu ordinador</strong> — no en un servidor nostre. És oberta i te la pots endur quan vulguis.</p>
-                <ul class="sos-bullets">
-                    <li data-i18n="sos.b1">Un tauler de tasques del projecte, obert a tothom</li>
-                    <li data-i18n="sos.b2">Qui s'encarrega de què, sempre a la vista</li>
-                    <li data-i18n="sos.b3">Les hores i aportacions de cadascú, apuntades i comprovables</li>
-                    <li data-i18n="sos.b4">Qui entra nou es posa al dia sol, sense que ningú li ho expliqui</li>
-                </ul>
-            </div>
-            <div class="fade-up" style="animation-delay:.2s">
-                <div class="sos-demo-card">
-                    <div class="sos-demo-header">
-                        <div class="sos-demo-dot"></div>
-                        <span class="sos-demo-title">SOS · l'eina del projecte</span>
-                    </div>
-                    <div class="sos-demo-body">
-                        <p data-i18n="sos.demo.p1">Cada projecte hi té el seu mapa, les seves tasques i els seus comptes. I pot aprofitar el que ja han après altres pobles: les dinàmiques venen preparades, no es comença de zero.</p>
-                        <p data-i18n="sos.demo.p2">El mapa és el mateix de l'informe: cada cercle és una persona o una entitat, cada línia és una cosa que es passen. El que es va fent queda apuntat sobre aquell mapa.</p>
-                        <p style="color:var(--muted);font-size:.78rem;margin-top:1.5rem;" data-i18n="sos.demo.p3">Obre'l i tafaneja. No demana correu, ni contrasenya, ni instal·lar res.</p>
-                    </div>
-                    <a href="/SOS/" target="_blank" rel="noopener" class="sos-demo-link" data-i18n="sos.demo.link">Explora el SOS en viu</a>
-                    <!-- Una eina que diu que és transparent i no ensenya per què fa
-                         el que fa, demana confiança sense donar-ne cap motiu. -->
-                    <div><a href="/vedes" target="_blank" rel="noopener" class="sos-demo-link" style="margin-top:.75rem" data-i18n="sos.demo.vedes">Les regles que s'ha imposat</a></div>
-                </div>
-            </div>
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="apf.eyebrow">Formació-acció</div>
+            <h2 data-i18n-html="apf.h2">S'aprèn fent, <em>i el que es fa queda</em></h2>
+            <p data-i18n="apf.intro">No hi ha cursos sobre casos inventats. S'aprèn a emprendre en grup portant un projecte de veritat, amb mètode i bones pràctiques, i amb IA que proposa però no decideix mai. Aquests són els nostres, oberts: entra-hi i mira'ls per dins abans de contractar res.</p>
         </div>
+        <div class="oferta-grid">
+            <a class="oferta-card lliure fade-up" href="/SOS/" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="apf.k1">Lliure · sense compte</span>
+                <span class="oferta-t" data-i18n="apf.t1">El SOS</span>
+                <span class="oferta-d" data-i18n="apf.d1">El mapa del poble, el banc de temps, la biblioteca de les coses, els comptes i les decisions preses. Al navegador, sense instal·lar res.</span>
+                <span class="oferta-go" data-i18n="apf.g1">Obre'l →</span>
+            </a>
+            <a class="oferta-card lliure fade-up" style="animation-delay:.05s" href="/SOS/comando.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="apf.k2">Lliure</span>
+                <span class="oferta-t" data-i18n="apf.t2">Comando Molekulon</span>
+                <span class="oferta-d" data-i18n="apf.d2">S'aprèn jugant: dotze personatges per posar nom al que sap fer cadascú, reconeixement que surt del que has fet de veritat, i una història que fa tornar la gent.</span>
+                <span class="oferta-go" data-i18n="apf.g2">Descobreix-lo →</span>
+            </a>
+            <a class="oferta-card lliure fade-up" style="animation-delay:.1s" href="/SOS/molekulandia.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="apf.k3">Lliure</span>
+                <span class="oferta-t" data-i18n="apf.t3">Molekulandia</span>
+                <span class="oferta-d" data-i18n="apf.d3">El poble sencer en una pantalla: cada edifici és un tipus de projecte, i de cadascun s'entra a l'eina que el porta. Onze edificis i nou professions.</span>
+                <span class="oferta-go" data-i18n="apf.g3">Passeja-hi →</span>
+            </a>
+            <a class="oferta-card lliure fade-up" style="animation-delay:.15s" href="/SOS/escola.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="apf.k4">Lliure · 8 sessions</span>
+                <span class="oferta-t" data-i18n="apf.t4">La Fàbrica de Superherois</span>
+                <span class="oferta-d" data-i18n="apf.d4">El mateix, a l'escola: una classe fa el seu mapa de recursos i s'intercanvia ajuda. Els superpoders es guanyen quan un company ho confirma.</span>
+                <span class="oferta-go" data-i18n="apf.g4">Mira el programa →</span>
+            </a>
+            <a class="oferta-card lliure fade-up" style="animation-delay:.2s" href="/SOS/online.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="apf.k5">Lliure · sense compte</span>
+                <span class="oferta-t" data-i18n="apf.t5">El directori obert</span>
+                <span class="oferta-d" data-i18n="apf.d5">Qui hi ha al territori, què ofereix i què busca. Cadascú signa la seva fitxa amb una clau del seu navegador: ningú pot publicar en nom d'un altre.</span>
+                <span class="oferta-go" data-i18n="apf.g5">Obre'l →</span>
+            </a>
+            <a class="oferta-card lliure fade-up" style="animation-delay:.25s" href="/SOS/formacio.html" target="_blank" rel="noopener">
+                <span class="oferta-k" data-i18n="apf.k6">Lliure · 16 mòduls</span>
+                <span class="oferta-t" data-i18n="apf.t6">La guia formativa</span>
+                <span class="oferta-d" data-i18n="apf.d6">Del mapa del territori a com es decideix en comú, com s'acompanya una idea i d'on surten els diners. Amb un camí marcat segons què hi facis.</span>
+                <span class="oferta-go" data-i18n="apf.g6">Llegeix-la →</span>
+            </a>
+        </div>
+        <p class="pk-nota" data-i18n-html="apf.peu"><strong>I això, a la pràctica, què és?</strong> Formacions que contractes tu per als teus ciutadans o socis. Ells hi aprenen a emprendre en grup portant un projecte del poble de debò, i el que en surt es queda al poble.</p>
     </div>
 </section>
 
-<!-- EINES DE DESENVOLUPAMENT COMUNITARI -->
-<section class="eines" id="eines">
+<!-- EL CATÀLEG ──────────────────────────────────────────────────────────────
+     Generat per SOS/tools/build-oferta.js. NO s'edita a mà: cada paquet viu al
+     quadre, a la clau catalana i a la castellana, i escrit a mà arriba el dia
+     que se'n queda un enrere i la pàgina diu dos preus alhora —i no ho veu
+     ningú, perquè el castellà el llegeixen altres persones que el català. -->
+<section class="cataleg" id="cataleg">
     <div class="container">
         <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="eines.eyebrow">Sessions al SOS</div>
-            <h2 data-i18n-html="eines.h2">Sessions de <em>desenvolupament comunitari</em></h2>
-            <p data-i18n="eines.intro">Cada sessió arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.</p>
+            <div class="section-eyebrow" data-i18n="pk.eyebrow">El catàleg</div>
+            <h2 data-i18n-html="pk.h2">Propostes tancades. <em>Amb el preu escrit.</em></h2>
+            <p data-i18n="pk.intro">Cada paquet diu per a qui és, quant dura, què t'endús, quant costa, amb quins diners es paga i quantes vegades s'ha fet. Els que van a administració pública queden per sota dels 5.000 €, que és el que es contracta sense obrir un expedient llarg.</p>
         </div>
-        <div class="eines-grid fade-up">
-            <div class="eina-card"><span class="eina-ic">⏳</span><h3 data-i18n="eines.banc.n">Banc de Temps</h3><p data-i18n="eines.banc.d">Intercanvi de serveis veïnals mesurats en hores, no en diners. Una hora val una hora.</p></div>
-            <div class="eina-card"><span class="eina-ic">🧰</span><h3 data-i18n="eines.biblio.n">Biblioteca de les Coses</h3><p data-i18n="eines.biblio.d">Pool compartit d'objectes i eines en préstec: estalvi, menys residus i trobada.</p></div>
-            <div class="eina-card"><span class="eina-ic">⚡</span><h3 data-i18n="eines.energia.n">Comunitat Energètica</h3><p data-i18n="eines.energia.d">Energia renovable produïda i compartida localment, en cooperativa. Sobirania i estalvi.</p></div>
-            <div class="eina-card"><span class="eina-ic">🌱</span><h3 data-i18n="eines.matriu.n">MATRIU · Incubadora</h3><p data-i18n="eines.matriu.d">Acompanya idees ciutadanes fins a projectes viables i sobirans, aprenent fent.</p></div>
-            <div class="eina-card"><span class="eina-ic">🏘️</span><h3 data-i18n="eines.habitatge.n">Habitatge en cessió d'ús</h3><p data-i18n="eines.habitatge.d">Propietat col·lectiva i dret d'ús indefinit, sense especulació (model Andel).</p></div>
-            <div class="eina-card"><span class="eina-ic">🥬</span><h3 data-i18n="eines.consum.n">Consum Agroecològic</h3><p data-i18n="eines.consum.d">Compra directa a pagès, sense intermediaris: aliments sans i preu just.</p></div>
-            <div class="eina-card"><span class="eina-ic">🤝</span><h3 data-i18n="eines.cures.n">Suport Mutu i Cures</h3><p data-i18n="eines.cures.d">Xarxa veïnal de cura i acompanyament contra la soledat, connectada als serveis.</p></div>
-            <div class="eina-card"><span class="eina-ic">🛠️</span><h3 data-i18n="eines.coop.n">Cooperativa de Treball</h3><p data-i18n="eines.coop.d">Ocupació digna i democràtica: qui treballa és soci i decideix. Una persona, un vot.</p></div>
-            <div class="eina-card"><span class="eina-ic">🕸️</span><h3 data-i18n="eines.vna.n">Mapa del teixit local</h3><p data-i18n="eines.vna.d">Qui es relaciona amb qui al poble, i què es passen: hores, favors, informació i confiança.</p></div>
-            <div class="eina-card"><span class="eina-ic">🛒</span><h3 data-i18n="eines.compra.n">Compra Col·lectiva</h3><p data-i18n="eines.compra.d">Agregar la demanda del veïnat per aconseguir millors preus i condicions.</p></div>
+<!--TT-OFERTA-->
+
+      <div class="pk-fam" id="fam-consultoria">
+        <div class="pk-fam-cap">
+          <span class="pk-fam-ic" aria-hidden="true">🕸️</span>
+          <h3 data-i18n="pk.fam.consultoria">Consultoria</h3>
+          <p data-i18n="pk.fam.consultoria.s">Mirar i decidir amb el mapa a la mà</p>
         </div>
-        <div class="eines-cta fade-up">
-            <a href="/SOS/" target="_blank" rel="noopener" class="btn-primary" data-i18n="eines.cta">Obre el catàleg al SOS →</a>
+        <div class="pk-graella">
+        <article class="paquet" id="pk-diagnostic-teixit">
+          <header>
+            <h4><a href="/SOS/vna.html" data-i18n="pk.diagnostic-teixit.n">Diagnòstic del teixit local</a></h4>
+            <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.diagnostic-teixit.e">L'informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i de qui penja tot abans que es cremi.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.diagnostic-teixit.q">Ajuntaments, consells comarcals i entitats</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.diagnostic-teixit.d">2 sessions · 3 setmanes</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.diagnostic-teixit.f">Catàleg de serveis de la Diputació · partida de participació ciutadana</dd>
+          </dl>
+          <div class="pk-preu"><strong>1.800 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-mapa-organitzacio">
+          <header>
+            <h4><a href="/SOS/vna.html" data-i18n="pk.mapa-organitzacio.n">Mapa de valor d'una organització</a></h4>
+            <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.mapa-organitzacio.e">El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.mapa-organitzacio.q">Empreses, cooperatives i entitats amb equip propi</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.mapa-organitzacio.d">3 sessions · 4-6 setmanes</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.mapa-organitzacio.f">Pressupost propi de millora o de formació</dd>
+          </dl>
+          <div class="pk-preu"><strong>3.500 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-mapa-comarcal">
+          <header>
+            <h4><a href="/SOS/vna.html" data-i18n="pk.mapa-comarcal.n">Mapa comarcal i assemblea federativa</a></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.mapa-comarcal.e">El mapa de tota la comarca i una decisió presa i registrada amb pes per arrel de població i correcció de desigualtat: el municipi gran no decideix pels petits, i els petits no valen el mateix que el gran.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.mapa-comarcal.q">Consells comarcals i mancomunitats</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.mapa-comarcal.d">4 sessions amb diversos municipis · 2-3 mesos</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.mapa-comarcal.f">Pressupost de cooperació intermunicipal</dd>
+          </dl>
+          <div class="pk-preu"><strong>4.800 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-impacte">
+          <header>
+            <h4><span data-i18n="pk.impacte.n">Mesura d'impacte i justificació</span></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.impacte.e">Hores donades, persones actives i reciprocitat, sortint d'un registre signat i comprovable — no d'una enquesta de satisfacció.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.impacte.q">Ajuntaments, fundacions i finançadors</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.impacte.d">Informe semestral o anual · 2 setmanes</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.impacte.f">La mateixa partida que ja finança el projecte que es justifica</dd>
+          </dl>
+          <div class="pk-preu"><strong>900 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-persones-cultura">
+          <header>
+            <h4><span data-i18n="pk.persones-cultura.n">Diagnòstic de persones i cultura</span></h4>
+            <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.persones-cultura.e">On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer. És la porta d'entrada a la consultoria de persones; el que ve després es dimensiona amb aquest informe a la mà.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.persones-cultura.q">Empreses i cooperatives amb equip</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.persones-cultura.d">3 sessions · 6 setmanes</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.persones-cultura.f">Pressupost propi de recursos humans</dd>
+          </dl>
+          <div class="pk-preu"><strong>2.400 €</strong></div>
+        </article>
         </div>
+      </div>
+      <div class="pk-fam" id="fam-formacio">
+        <div class="pk-fam-cap">
+          <span class="pk-fam-ic" aria-hidden="true">🎓</span>
+          <h3 data-i18n="pk.fam.formacio">Formació</h3>
+          <p data-i18n="pk.fam.formacio.s">S'aprèn fent, sobre el vostre cas i no sobre un d'inventat</p>
+        </div>
+        <div class="pk-graella">
+        <article class="paquet" id="pk-gestor">
+          <header>
+            <h4><a href="/SOS/formacio.html" data-i18n="pk.gestor.n">Programa de Gestor/a</a></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.gestor.e">Una persona del territori que sap engegar i sostenir participació sense dependre de ningú. Es fa sobre el vostre projecte, no sobre un cas inventat.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.gestor.q">Tècnics municipals i professionals · preu per persona</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.gestor.d">~45 h en 3-4 mesos</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.gestor.f">Pla de formació municipal · subvenció de Diputació</dd>
+          </dl>
+          <div class="pk-preu"><strong>1.800 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-equip-gestor">
+          <header>
+            <h4><a href="/SOS/formacio.html" data-i18n="pk.equip-gestor.n">Programa d'equip gestor</a></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.equip-gestor.e">Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant. Forma un equip i no una persona, perquè un territori no el sosté un gestor.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.equip-gestor.q">Una entitat del territori, finançada per l'ajuntament</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.equip-gestor.d">12 setmanes · 5 rols · ~34 h de mentoria</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.equip-gestor.f">Partida de participació · Ateneus Cooperatius</dd>
+          </dl>
+          <div class="pk-preu"><strong>4.900 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-comunitats-practica">
+          <header>
+            <h4><span data-i18n="pk.comunitats-practica.n">Comunitats de pràctica</span></h4>
+            <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.comunitats-practica.e">El mapa del coneixement que ja teniu i un grup que el fa circular sol quan nosaltres marxem.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.comunitats-practica.q">Organitzacions amb coneixement dispers</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.comunitats-practica.d">6 sessions en 3 mesos</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.comunitats-practica.f">Pressupost de formació</dd>
+          </dl>
+          <div class="pk-preu"><strong>3.900 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-formacio-equips">
+          <header>
+            <h4><span data-i18n="pk.formacio-equips.n">Formació d'equips</span></h4>
+            <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.formacio-equips.e">Lideratge col·laboratiu i gestió del canvi amb metodologia castellera: repartir el pes, avisar abans de cedir i poder dir el que es pensa sense por.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.formacio-equips.q">Empreses, cooperatives i equips tècnics</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.formacio-equips.d">Mitja jornada · més sessions, a escalar</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.formacio-equips.f">Pressupost de formació</dd>
+          </dl>
+          <div class="pk-preu"><strong>1.600 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-escola">
+          <header>
+            <h4><a href="/SOS/escola.html" data-i18n="pk.escola.n">La Fàbrica de Superherois</a></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.escola.e">Una classe amb el seu mapa de recursos i ajuda intercanviada de veritat. Els superpoders es guanyen quan un company confirma que l'has ajudat, i cap nom real surt de l'aula.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.escola.q">Escoles i AFA · 6 a 13 anys</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.escola.d">8 sessions</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.escola.f">Pla educatiu d'entorn · regidoria d'educació</dd>
+          </dl>
+          <div class="pk-preu"><strong>2.400 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-formar-formadors">
+          <header>
+            <h4><a href="/SOS/formacio.html" data-i18n="pk.formar-formadors.n">Formació de formadors</a></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.formar-formadors.e">Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable. És el que fa que això escali sense passar per nosaltres.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.formar-formadors.q">Ateneus Cooperatius i professionals independents</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.formar-formadors.d">20 h + tutela de 2 casos</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.formar-formadors.f">Programa propi de l'Ateneu · formació de professionals</dd>
+          </dl>
+          <div class="pk-preu"><strong>2.900 €</strong></div>
+        </article>
+        </div>
+      </div>
+      <div class="pk-fam" id="fam-dinamitzacio">
+        <div class="pk-fam-cap">
+          <span class="pk-fam-ic" aria-hidden="true">🎪</span>
+          <h3 data-i18n="pk.fam.dinamitzacio">Producció i dinamització</h3>
+          <p data-i18n="pk.fam.dinamitzacio.s">Que passi de debò, i que el dilluns segueixi passant</p>
+        </div>
+        <div class="pk-graella">
+        <article class="paquet" id="pk-comu-diada">
+          <header>
+            <h4><span data-i18n="pk.comu-diada.n">Comú-diada</span></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.comu-diada.e">La jornada feta i, el dilluns, la gent apuntada i la dinàmica engegada. La diferència amb una festa és que el dimarts encara hi ha alguna cosa en marxa.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.comu-diada.q">Ajuntaments, consells comarcals i entitats</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.comu-diada.d">Una jornada · 3 setmanes de producció abans</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.comu-diada.f">Partida de festes, participació o promoció econòmica</dd>
+          </dl>
+          <div class="pk-preu"><strong>2.900 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-fent-pinya">
+          <header>
+            <h4><span data-i18n="pk.fent-pinya.n">Fent Pinya</span></h4>
+            <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.fent-pinya.e">Un grup que ha experimentat repartir el pes de debò —perquè s'ha aixecat un castell— i el vocabulari per parlar-ne l'endemà a la feina.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.fent-pinya.q">Equips d'empresa, plens municipals i taules comunitàries</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.fent-pinya.d">2 h</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.fent-pinya.f">Pressupost de formació o de festes</dd>
+          </dl>
+          <div class="pk-preu"><strong>2.200 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-produccio">
+          <header>
+            <h4><span data-i18n="pk.produccio.n">Producció d'esdeveniments</span></h4>
+            <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.produccio.e">L'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament. Els festivals i els formats de diversos dies es dimensionen a part.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.produccio.q">Empreses, ajuntaments i festivals</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.produccio.d">Una jornada, de la idea al desmuntatge</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.produccio.f">Pressupost de l'esdeveniment</dd>
+          </dl>
+          <div class="pk-preu"><strong>4.500 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-posar-en-marxa">
+          <header>
+            <h4><a href="/SOS/molekulandia.html" data-i18n="pk.posar-en-marxa.n">Posada en marxa d'una dinàmica</a></h4>
+            <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.posar-en-marxa.e">La dinàmica funcionant amb rols, governança i comptes: banc de temps, biblioteca de les coses, grup de consum, cures veïnals, comunitat energètica o habitatge en cessió d'ús.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.posar-en-marxa.q">Entitats i grups promotors, finançat per l'ajuntament</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.posar-en-marxa.d">6 mesos · sessions quinzenals</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.posar-en-marxa.f">Partida de participació · Ateneus Cooperatius</dd>
+          </dl>
+          <div class="pk-preu"><strong>3.600 €</strong></div>
+        </article>
+        </div>
+      </div>
+
+<!--/TT-OFERTA-->
+        <p class="pk-nota" data-i18n-html="pk.peu"><strong>El punt de cada paquet no és decoració.</strong> <em>Provat</em> vol dir entregat moltes vegades i amb casos per ensenyar. <em>En adaptació</em> vol dir un producte provat que s'està portant a un mercat nou. <em>Nou</em> vol dir que encara no s'ha entregat prou vegades — i dir-ho val més que la venda que es perd.</p>
+    </div>
+</section>
+
+<!-- EL SOS, PROJECTE PER SI SOL ─────────────────────────────────────────────
+     No és una família del catàleg: és el projecte, i és lliure. Aquí es diu
+     què és i què sí que es contracta al seu voltant. -->
+<section class="cataleg" id="sos" style="background:var(--bg-panel);">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="sosp.eyebrow">El projecte</div>
+            <h2 data-i18n-html="sosp.h2">El SOS existeix <em>encara que no ens contractis</em></h2>
+            <p data-i18n="sosp.intro">És gratuït, obert i funciona sense nosaltres. S'obre al navegador, sense compte i sense instal·lar res, i les dades es queden al teu aparell. No venem el programa: venem l'acompanyament — i si l'acompanyament no et convenç, l'eina te la quedes igualment.</p>
+        </div>
+<!--TT-SOS-->
+
+      <div class="pk-graella">
+        <article class="paquet" id="pk-implantacio">
+          <header>
+            <h4><a href="/SOS/" data-i18n="pk.implantacio.n">Implantació i suport</a></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.implantacio.e">L'eina amb el vostre cas a dins, la sincronització entre aparells resolta i la gent sabent-la fer servir. Les dades es queden al vostre navegador.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.implantacio.q">Ajuntaments, consells comarcals i Ateneus</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.implantacio.d">3 setmanes</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.implantacio.f">Partida de digitalització · fons Next Generation</dd>
+          </dl>
+          <div class="pk-preu"><strong>1.500 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-ia-amb-frens">
+          <header>
+            <h4><span data-i18n="pk.ia-amb-frens.n">IA amb frens · sessió de viabilitat</span></h4>
+            <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.ia-amb-frens.e">Què es pot automatitzar amb garanties i què no, amb el criteri escrit: la màquina proposa, res entra sense que una persona ho hagi comprovat, i sempre es diu d'on ho ha tret.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.ia-amb-frens.q">Qui es plantegi fer servir IA amb dades de persones</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.ia-amb-frens.d">1 sessió + informe · 2 setmanes</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.ia-amb-frens.f">Partida de digitalització</dd>
+          </dl>
+          <div class="pk-preu"><strong>900 €</strong></div>
+        </article>
+        <article class="paquet" id="pk-contractes">
+          <header>
+            <h4><span data-i18n="pk.contractes.n">Contractes intel·ligents · estudi de viabilitat</span></h4>
+            <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.contractes.e">Un informe de si val la pena, què costaria i quins riscos té. Es ven l'estudi i no l'eina: al SOS això encara no està construït, i l'informe ho diu.</p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.contractes.q">Cooperatives i administracions que vulguin automatitzar acords</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.contractes.d">3 setmanes</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.contractes.f">Fons d'innovació · Next Generation</dd>
+          </dl>
+          <div class="pk-preu"><strong>1.500 €</strong></div>
+        </article>
+      </div>
+
+<!--/TT-SOS-->
+        <p class="pk-nota" data-i18n-html="sosp.peu"><strong>El que encara no hi és, es diu.</strong> Els contractes intel·ligents no estan construïts al SOS: per això es ven l'estudi de si val la pena, i no una eina que no existeix. La regla d'aquesta casa és que cap porta apunti a un lloc que no hi és.</p>
     </div>
 </section>
 
@@ -1044,34 +1339,6 @@
             </div>
         </div>
         <p class="ben-note fade-up" data-i18n-html="ben.note"><span>→</span> Evidència qualitativa i xifres orientatives; l'estalvi real depèn de cada projecte. Ens basem en la literatura d'acció comunitària i en experiències pròpies com el Banc de Temps de León (2009) i Comunitats.org.</p>
-    </div>
-</section>
-
-<!-- APRENENTATGE CONTINU -->
-<section class="aprenentatge" id="aprenentatge">
-    <div class="container">
-        <div class="aprenentatge-grid">
-            <div class="aprenentatge-content fade-up">
-                <div class="section-eyebrow" style="text-align:left;margin-bottom:1.5rem;" data-i18n="apr.eyebrow">Sobirania a llarg termini</div>
-                <h2 data-i18n-html="apr.h2">Perquè la comunitat <em>aprengui a caminar sola.</em></h2>
-                <p data-i18n="apr.p1">No fem cursos a part: s'aprèn portant el projecte de veritat, en equip i entre iguals. És el model d'una escola finlandesa —Tiimiakatemia— que la Universitat de Mondragón porta anys aplicant al cooperativisme basc.</p>
-                <p data-i18n-html="apr.p2">L'objectiu no és que ens necessiteu sempre. És que <strong>quan marxem, al poble hi quedi gent que sap acollir els nous, decidir en comú i portar els comptes</strong> sense trucar a ningú de fora.</p>
-            </div>
-            <div class="pilars fade-up" style="animation-delay:.15s">
-                <div class="pilar">
-                    <div class="pilar-title" data-i18n="apr.pilar1.title">Aprendre fent</div>
-                    <p data-i18n="apr.pilar1.p">El projecte real és l'aula. Cada repte es converteix en aprenentatge compartit, no en teoria aïllada.</p>
-                </div>
-                <div class="pilar">
-                    <div class="pilar-title" data-i18n="apr.pilar2.title">Equips que s'autogestionen</div>
-                    <p data-i18n="apr.pilar2.p">Cel·les de treball entre iguals, amb rols rotatius i decisions preses en comú, no per un sol líder.</p>
-                </div>
-                <div class="pilar">
-                    <div class="pilar-title" data-i18n="apr.pilar3.title">Risc i responsabilitat compartida</div>
-                    <p data-i18n="apr.pilar3.p">Cooperativisme real: qui hi posa feina, hi té veu i part del resultat — no promeses, fets.</p>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -1139,53 +1406,11 @@
                 <p data-i18n="cl.p3.d">Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d'ajuntaments, cooperatives i ateneus del territori.</p>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- QUÈ POTS FER SERVIR AVUI -->
-<section id="oferta">
-    <div class="container">
-        <div class="section-label fade-up" data-i18n="oferta.label">Què pots fer servir avui</div>
-        <h2 class="fade-up" data-i18n-html="oferta.h2">Tot això ja <em>existeix i és obert</em></h2>
-        <p class="section-desc fade-up" data-i18n="oferta.desc">No venem el programa: és gratuït i funciona sense nosaltres. El que es paga és l'acompanyament. Si l'acompanyament no et convenç, l'eina te la quedes igualment — no hi ha res que t'hi lligui.</p>
-        <div class="oferta-grid">
-            <a class="oferta-card lliure fade-up" href="/SOS/diagnostic.html" target="_blank" rel="noopener">
-                <span class="oferta-k" data-i18n="oferta.k1">Lliure · 3 min</span>
-                <span class="oferta-t" data-i18n="oferta.t1">Diagnòstic comunitari</span>
-                <span class="oferta-d" data-i18n="oferta.d1">Digues d'on véns, què tens i què et falta. En surts amb el teu punt de partida, l'itinerari formatiu que et toca i d'on poden sortir els diners.</span>
-                <span class="oferta-go" data-i18n="oferta.g1">Comença →</span>
-            </a>
-            <a class="oferta-card lliure fade-up" style="animation-delay:.05s" href="/SOS/" target="_blank" rel="noopener">
-                <span class="oferta-k" data-i18n="oferta.k2">Lliure · sense compte</span>
-                <span class="oferta-t" data-i18n="oferta.t2">SOS · l'eina</span>
-                <span class="oferta-d" data-i18n="oferta.d2">El mapa del poble, el banc de temps, la biblioteca de les coses, els comptes i les decisions preses. Tot al navegador, sense compte i sense instal·lar res.</span>
-                <span class="oferta-go" data-i18n="oferta.g2">Obre'l →</span>
-            </a>
-            <a class="oferta-card lliure fade-up" style="animation-delay:.1s" href="/SOS/formacio.html" target="_blank" rel="noopener">
-                <span class="oferta-k" data-i18n="oferta.k3">Lliure · 16 mòduls</span>
-                <span class="oferta-t" data-i18n="oferta.t3">Guia formativa</span>
-                <span class="oferta-d" data-i18n="oferta.d3">Del mapa del territori a com es decideix en comú, com s'acompanya una idea i d'on surten els diners. Amb un camí marcat segons què hi facis.</span>
-                <span class="oferta-go" data-i18n="oferta.g3">Llegeix-la →</span>
-            </a>
-            <a class="oferta-card fade-up" style="animation-delay:.15s" href="/SOS/comando.html" target="_blank" rel="noopener">
-                <span class="oferta-k" data-i18n="oferta.k4">Lliure</span>
-                <span class="oferta-t" data-i18n="oferta.t4">Comando Molekulon</span>
-                <span class="oferta-d" data-i18n="oferta.d4">El joc que hi ha a sobre: dotze personatges per posar nom al que sap fer cadascú, reconeixement que surt del que has fet de veritat, i una història que fa tornar la gent.</span>
-                <span class="oferta-go" data-i18n="oferta.g4">Descobreix-lo →</span>
-            </a>
-            <div class="oferta-card fade-up" style="animation-delay:.2s">
-                <span class="oferta-k" data-i18n="oferta.k5">Acompanyament</span>
-                <span class="oferta-t" data-i18n="oferta.t5">Diagnòstic territorial</span>
-                <span class="oferta-d" data-i18n="oferta.d5">Dues sessions i un informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i per on començar.</span>
-                <span class="oferta-go" data-i18n="oferta.g5">Al diagnòstic ho concretem</span>
-            </div>
-            <div class="oferta-card fade-up" style="animation-delay:.25s">
-                <span class="oferta-k" data-i18n="oferta.k6">Acompanyament</span>
-                <span class="oferta-t" data-i18n="oferta.t6">Programa de Gestor/a SOS</span>
-                <span class="oferta-d" data-i18n="oferta.d6">Unes 45 hores en 3-4 mesos, sobre el vostre projecte i no sobre un cas inventat. En surt gent del poble que ho sap portar sola.</span>
-                <span class="oferta-go" data-i18n="oferta.g6">Finançable amb subvenció</span>
-            </div>
-        </div>
+        <!-- Els vint anys són certs i són un actiu. El que no són és la prova
+             del producte comunitari, que és més nou i té menys quilòmetres. Fer
+             passar l'una per l'altra seria la trampa més fàcil d'aquesta
+             pàgina, i per això el catàleg marca cada paquet amb el seu punt. -->
+        <p class="pk-nota" data-i18n-html="cl.honest"><strong>D'on ve cada prova.</strong> Les xifres de dalt són del món corporatiu i de la formació d'equips: allà hi ha vint anys i es poden ensenyar casos. La línia comunitària és més nova i té menys quilòmetres — per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.</p>
     </div>
 </section>
 
@@ -1217,6 +1442,10 @@
             <details class="faq-item">
                 <summary data-i18n="faq.q4">Quedem lligats a vosaltres?</summary>
                 <div class="faq-a" data-i18n-html="faq.a4">No, i està fet expressament perquè no pugueu. El programa és obert i funciona sense nosaltres, les dades s'exporten en un fitxer que és vostre, i el pas 4 del mètode és formar gent del poble perquè ho porti. <strong>Si al cap d'un any encara ens necessiteu, la feina ha sortit malament.</strong></div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q6">Com se signa això, administrativament?</summary>
+                <div class="faq-a" data-i18n-html="faq.a6">Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.</div>
             </details>
             <details class="faq-item">
                 <summary data-i18n="faq.q5">Ja tenim una app de participació. Això no és el mateix?</summary>
@@ -1274,25 +1503,120 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
-  'oferta.label':'Què pots fer servir avui','oferta.h2':'Tot això ja <em>existeix i és obert</em>','oferta.desc':'No venem el programa: és gratuït i funciona sense nosaltres. El que es paga és l\'acompanyament. Si l\'acompanyament no et convenç, l\'eina te la quedes igualment — no hi ha res que t\'hi lligui.','oferta.k1':'Lliure · 3 min','oferta.t1':'Diagnòstic comunitari','oferta.d1':'Digues d\'on véns, què tens i què et falta. En surts amb el teu punt de partida, l\'itinerari formatiu que et toca i d\'on poden sortir els diners.','oferta.g1':'Comença →','oferta.k2':'Lliure · sense compte','oferta.t2':'SOS · l\'eina','oferta.d2':'El mapa del poble, el banc de temps, la biblioteca de les coses, els comptes i les decisions preses. Tot al navegador, sense compte i sense instal·lar res.','oferta.g2':'Obre\'l →','oferta.k3':'Lliure · 16 mòduls','oferta.t3':'Guia formativa','oferta.d3':'Del mapa del territori a com es decideix en comú, com s\'acompanya una idea i d\'on surten els diners. Amb un camí marcat segons què hi facis.','oferta.g3':'Llegeix-la →','oferta.k4':'Lliure','oferta.t4':'Comando Molekulon','oferta.d4':'El joc que hi ha a sobre: dotze personatges per posar nom al que sap fer cadascú, reconeixement que surt del que has fet de veritat, i una història que fa tornar la gent.','oferta.g4':'Descobreix-lo →','oferta.k5':'Acompanyament','oferta.t5':'Diagnòstic territorial','oferta.d5':'Dues sessions i un informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i per on començar.','oferta.g5':'Al diagnòstic ho concretem','oferta.k6':'Acompanyament','oferta.t6':'Programa de Gestor/a SOS','oferta.d6':'Unes 45 hores en 3-4 mesos, sobre el vostre projecte i no sobre un cas inventat. En surt gent del poble que ho sap portar sola.','oferta.g6':'Finançable amb subvenció','nav.serveis':'Serveis','nav.fentpinya':'Fent Pinya','nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.oferta':'Què oferim','nav.traj':'Trajectòria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formació','nav.diagnostic':'Diagnòstic','nav.demo':'Viu-ho →',
-  'serv.eyebrow':'Serveis','serv.h2':'Què podem fer <em>al teu territori</em>','serv.intro':'Serveis contractables per ajuntaments, consells comarcals i entitats — pensats per finançar-se amb subvencions, sense càrrega directa per al poble o el barri.',
-  'serv.metod':'Metodològics · psicologia social i acció comunitària','serv.tec':'Tecnològics · eines digitals sobiranes',
-  'serv.m1.n':'Mapa del teixit local','serv.m1.d':'Qui es relaciona amb qui al poble i què es passen: hores, favors, informació i confiança. Es veu de qui penja tot abans que es cremi. (Mètode VNA.)',
-  'serv.m2.n':'Cohesió i confiança (Fent Pinya)','serv.m2.d':'Sessions on veïnat, tècnics i entitats aprenen a repartir el pes com en un castell: fiar-se, avisar abans de cedir i poder dir el que es pensa sense por.',
-  'serv.m3.n':'Posada en marxa de dinàmiques','serv.m3.d':'Bancs de temps, biblioteques de coses, grups de consum, cures veïnals… de la idea a l\'acció, amb rols i governança.',
-  'serv.m4.n':'Governança cooperativa','serv.m4.d':'Acompanyem la constitució, els estatuts i la presa de decisions de cooperatives i associacions que duren.',
-  'serv.m5.n':'Formar gent del poble','serv.m5.d':'S\'aprèn portant el projecte de veritat, no en un curs a part. És el model de la Universitat de Mondragón, i acaba amb gent vostra que ho sap fer sola.',
-  'serv.m6.n':'Repartir el resultat sense baralles','serv.m6.d':'S\'apunta el que hi posa cada persona mentre es fa, i el repartiment surt d\'aquí. Qui hi ha treballat hi té veu i part. (Mètode Slicing Pie.)',
-  'serv.m7.n':'El programa a l\'escola (6-13 anys)',
-  'serv.m7.d':'La <a href="/SOS/escola.html">Fàbrica de Superherois</a>: vuit sessions on una classe fa el seu mapa de recursos i s\'intercanvia ajuda de debò. El cromo es dissenya; els superpoders es guanyen quan un company confirma que l\'has ajudat.',
-  'serv.m8.n':'Comprar junts, i saber per què surt més barat',
-  'serv.m8.d':'<a href="/SOS/compra.html">La Compra</a>: cistella amb el 80% de la despesa en menjar de proximitat, bàsic i sa, la comanda agregada amb el mínim de cada pagès, i l\'estalvi dit per la seva causa — fora intermediari, a granel, de temporada, per volum.',
-  'serv.t1.n':'Posar en marxa el SOS','serv.t1.d':'Deixem l\'eina preparada amb el vostre cas a dins i la gent sabent-la fer servir. S\'obre al navegador i les dades es queden a casa.',
-  'serv.t2.n':'Intel·ligència artificial, amb frens','serv.t2.d':'Proposa un primer esborrany del mapa i troba entitats del territori. Res entra sense que una persona ho hagi comprovat, i sempre diu d\'on ho ha tret.',
-  'serv.t3.n':'Directori obert del territori','serv.t3.d':'La llista de qui hi ha —consells, entitats, iniciatives— feta entre tots i comprovable. Sense propietari i sense caducar cada legislatura.',
-  'serv.t4.n':'Eines fetes a mida','serv.t4.d':'Amb estàndards oberts i el codi a la vista, perquè demà us ho pugui mantenir qualsevol i no calgui tornar a nosaltres.',
-  'serv.t5.n':'Perdre la por a les eines digitals','serv.t5.d':'Formació per a entitats que avui depenen del nebot que en sap. Perquè les portin elles, no un tercer.',
-  'serv.fund.tag':'Sense càrrega directa per al poble','serv.fund.p':'Molts d\'aquests serveis són <strong>finançables amb fons ja existents</strong>: el catàleg de serveis i les subvencions de la <strong>Diputació de Barcelona</strong> (suport a municipis, especialment de menys de 20.000 habitants), els <strong>Ateneus Cooperatius</strong> (aracoop, gratuïts), fons <strong>Leader/GAL</strong> de desenvolupament rural i programes <strong>Next Generation</strong>. T\'ajudem a trobar i justificar la via de finançament perquè el cost no recaigui sobre el veïnat.',
+/*TT-I18N-CA*/
+
+  'pk.fam.consultoria':'Consultoria','pk.fam.consultoria.s':'Mirar i decidir amb el mapa a la mà',
+  'pk.fam.formacio':'Formació','pk.fam.formacio.s':'S\'aprèn fent, sobre el vostre cas i no sobre un d\'inventat',
+  'pk.fam.dinamitzacio':'Producció i dinamització','pk.fam.dinamitzacio.s':'Que passi de debò, i que el dilluns segueixi passant',
+  'pk.punt.provat':'Provat',
+  'pk.punt.adaptacio':'En adaptació',
+  'pk.punt.nou':'Nou',
+  'pk.lbl.qui':'Per a qui','pk.lbl.dura':'Quant dura','pk.lbl.diners':'Amb quins diners',
+  'pk.diagnostic-teixit.n':'Diagnòstic del teixit local','pk.diagnostic-teixit.e':'L\'informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i de qui penja tot abans que es cremi.',
+  'pk.diagnostic-teixit.q':'Ajuntaments, consells comarcals i entitats','pk.diagnostic-teixit.d':'2 sessions · 3 setmanes','pk.diagnostic-teixit.f':'Catàleg de serveis de la Diputació · partida de participació ciutadana',
+  'pk.mapa-organitzacio.n':'Mapa de valor d\'una organització','pk.mapa-organitzacio.e':'El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.',
+  'pk.mapa-organitzacio.q':'Empreses, cooperatives i entitats amb equip propi','pk.mapa-organitzacio.d':'3 sessions · 4-6 setmanes','pk.mapa-organitzacio.f':'Pressupost propi de millora o de formació',
+  'pk.mapa-comarcal.n':'Mapa comarcal i assemblea federativa','pk.mapa-comarcal.e':'El mapa de tota la comarca i una decisió presa i registrada amb pes per arrel de població i correcció de desigualtat: el municipi gran no decideix pels petits, i els petits no valen el mateix que el gran.',
+  'pk.mapa-comarcal.q':'Consells comarcals i mancomunitats','pk.mapa-comarcal.d':'4 sessions amb diversos municipis · 2-3 mesos','pk.mapa-comarcal.f':'Pressupost de cooperació intermunicipal',
+  'pk.impacte.n':'Mesura d\'impacte i justificació','pk.impacte.e':'Hores donades, persones actives i reciprocitat, sortint d\'un registre signat i comprovable — no d\'una enquesta de satisfacció.',
+  'pk.impacte.q':'Ajuntaments, fundacions i finançadors','pk.impacte.d':'Informe semestral o anual · 2 setmanes','pk.impacte.f':'La mateixa partida que ja finança el projecte que es justifica',
+  'pk.persones-cultura.n':'Diagnòstic de persones i cultura','pk.persones-cultura.e':'On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer. És la porta d\'entrada a la consultoria de persones; el que ve després es dimensiona amb aquest informe a la mà.',
+  'pk.persones-cultura.q':'Empreses i cooperatives amb equip','pk.persones-cultura.d':'3 sessions · 6 setmanes','pk.persones-cultura.f':'Pressupost propi de recursos humans',
+  'pk.gestor.n':'Programa de Gestor/a','pk.gestor.e':'Una persona del territori que sap engegar i sostenir participació sense dependre de ningú. Es fa sobre el vostre projecte, no sobre un cas inventat.',
+  'pk.gestor.q':'Tècnics municipals i professionals · preu per persona','pk.gestor.d':'~45 h en 3-4 mesos','pk.gestor.f':'Pla de formació municipal · subvenció de Diputació',
+  'pk.equip-gestor.n':'Programa d\'equip gestor','pk.equip-gestor.e':'Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant. Forma un equip i no una persona, perquè un territori no el sosté un gestor.',
+  'pk.equip-gestor.q':'Una entitat del territori, finançada per l\'ajuntament','pk.equip-gestor.d':'12 setmanes · 5 rols · ~34 h de mentoria','pk.equip-gestor.f':'Partida de participació · Ateneus Cooperatius',
+  'pk.comunitats-practica.n':'Comunitats de pràctica','pk.comunitats-practica.e':'El mapa del coneixement que ja teniu i un grup que el fa circular sol quan nosaltres marxem.',
+  'pk.comunitats-practica.q':'Organitzacions amb coneixement dispers','pk.comunitats-practica.d':'6 sessions en 3 mesos','pk.comunitats-practica.f':'Pressupost de formació',
+  'pk.formacio-equips.n':'Formació d\'equips','pk.formacio-equips.e':'Lideratge col·laboratiu i gestió del canvi amb metodologia castellera: repartir el pes, avisar abans de cedir i poder dir el que es pensa sense por.',
+  'pk.formacio-equips.q':'Empreses, cooperatives i equips tècnics','pk.formacio-equips.d':'Mitja jornada · més sessions, a escalar','pk.formacio-equips.f':'Pressupost de formació',
+  'pk.escola.n':'La Fàbrica de Superherois','pk.escola.e':'Una classe amb el seu mapa de recursos i ajuda intercanviada de veritat. Els superpoders es guanyen quan un company confirma que l\'has ajudat, i cap nom real surt de l\'aula.',
+  'pk.escola.q':'Escoles i AFA · 6 a 13 anys','pk.escola.d':'8 sessions','pk.escola.f':'Pla educatiu d\'entorn · regidoria d\'educació',
+  'pk.formar-formadors.n':'Formació de formadors','pk.formar-formadors.e':'Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable. És el que fa que això escali sense passar per nosaltres.',
+  'pk.formar-formadors.q':'Ateneus Cooperatius i professionals independents','pk.formar-formadors.d':'20 h + tutela de 2 casos','pk.formar-formadors.f':'Programa propi de l\'Ateneu · formació de professionals',
+  'pk.comu-diada.n':'Comú-diada','pk.comu-diada.e':'La jornada feta i, el dilluns, la gent apuntada i la dinàmica engegada. La diferència amb una festa és que el dimarts encara hi ha alguna cosa en marxa.',
+  'pk.comu-diada.q':'Ajuntaments, consells comarcals i entitats','pk.comu-diada.d':'Una jornada · 3 setmanes de producció abans','pk.comu-diada.f':'Partida de festes, participació o promoció econòmica',
+  'pk.fent-pinya.n':'Fent Pinya','pk.fent-pinya.e':'Un grup que ha experimentat repartir el pes de debò —perquè s\'ha aixecat un castell— i el vocabulari per parlar-ne l\'endemà a la feina.',
+  'pk.fent-pinya.q':'Equips d\'empresa, plens municipals i taules comunitàries','pk.fent-pinya.d':'2 h','pk.fent-pinya.f':'Pressupost de formació o de festes',
+  'pk.produccio.n':'Producció d\'esdeveniments','pk.produccio.e':'L\'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament. Els festivals i els formats de diversos dies es dimensionen a part.',
+  'pk.produccio.q':'Empreses, ajuntaments i festivals','pk.produccio.d':'Una jornada, de la idea al desmuntatge','pk.produccio.f':'Pressupost de l\'esdeveniment',
+  'pk.posar-en-marxa.n':'Posada en marxa d\'una dinàmica','pk.posar-en-marxa.e':'La dinàmica funcionant amb rols, governança i comptes: banc de temps, biblioteca de les coses, grup de consum, cures veïnals, comunitat energètica o habitatge en cessió d\'ús.',
+  'pk.posar-en-marxa.q':'Entitats i grups promotors, finançat per l\'ajuntament','pk.posar-en-marxa.d':'6 mesos · sessions quinzenals','pk.posar-en-marxa.f':'Partida de participació · Ateneus Cooperatius',
+  'pk.implantacio.n':'Implantació i suport','pk.implantacio.e':'L\'eina amb el vostre cas a dins, la sincronització entre aparells resolta i la gent sabent-la fer servir. Les dades es queden al vostre navegador.',
+  'pk.implantacio.q':'Ajuntaments, consells comarcals i Ateneus','pk.implantacio.d':'3 setmanes','pk.implantacio.f':'Partida de digitalització · fons Next Generation',
+  'pk.ia-amb-frens.n':'IA amb frens · sessió de viabilitat','pk.ia-amb-frens.e':'Què es pot automatitzar amb garanties i què no, amb el criteri escrit: la màquina proposa, res entra sense que una persona ho hagi comprovat, i sempre es diu d\'on ho ha tret.',
+  'pk.ia-amb-frens.q':'Qui es plantegi fer servir IA amb dades de persones','pk.ia-amb-frens.d':'1 sessió + informe · 2 setmanes','pk.ia-amb-frens.f':'Partida de digitalització',
+  'pk.contractes.n':'Contractes intel·ligents · estudi de viabilitat','pk.contractes.e':'Un informe de si val la pena, què costaria i quins riscos té. Es ven l\'estudi i no l\'eina: al SOS això encara no està construït, i l\'informe ho diu.',
+  'pk.contractes.q':'Cooperatives i administracions que vulguin automatitzar acords','pk.contractes.d':'3 setmanes','pk.contractes.f':'Fons d\'innovació · Next Generation',
+
+/*/TT-I18N-CA*/
+  'faq.q6':'Com se signa això, administrativament?',
+  'faq.a6':'Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.',
+  'cl.honest':'<strong>D\'on ve cada prova.</strong> Les xifres de dalt són del món corporatiu i de la formació d\'equips: allà hi ha vint anys i es poden ensenyar casos. La línia comunitària és més nova i té menys quilòmetres — per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.',
+  'nav.relat':'D\'on ve',
+  'nav.aprenent':'S\'aprèn fent',
+  'nav.cataleg':'El catàleg',
+  'relat.eyebrow':'D\'on ve això',
+  'relat.h2':'Vint anys aixecant castells, <em>i el mateix problema a dins</em>',
+  'relat.intro':'Un castell no l\'aguanta qui hi puja. Una organització tampoc. El que va començar sent una experiència per a equips d\'empresa va acabar sent un mètode per mirar qui sosté què —i una eina per no perdre-ho de vista.',
+  'relat.n1':'01 · La persona',
+  'relat.t1':'Álvaro Solache',
+  'relat.p1':'Vint anys formant equips i produint esdeveniments, des del Penedès. La feina sempre ha estat la mateixa: que un grup de gent que no s\'ha triat aguanti el pes junt.',
+  'relat.n2':'02 · L\'ofici',
+  'relat.t2':'Psicologia de grups i desenvolupament de comunitats',
+  'relat.p2':'Els projectes comunitaris no moren per falta de mètode: moren per falta de gent, per conflictes que ningú tracta i per no saber com finançar-se. Això s\'estudia i es treballa.',
+  'relat.n3':'03 · El mètode',
+  'relat.t3':'TeamTowers',
+  'relat.p3':'Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee.',
+  'relat.n4':'04 · Al territori',
+  'relat.t4':'TeamTowers Humà',
+  'relat.p4':'El mateix mètode portat al poble i al barri, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s\'ha après.',
+  'apf.eyebrow':'Formació-acció',
+  'apf.h2':'S\'aprèn fent, <em>i el que es fa queda</em>',
+  'apf.intro':'No hi ha cursos sobre casos inventats. S\'aprèn a emprendre en grup portant un projecte de veritat, amb mètode i bones pràctiques, i amb IA que proposa però no decideix mai. Aquests són els nostres, oberts: entra-hi i mira\'ls per dins abans de contractar res.',
+  'apf.k1':'Lliure · sense compte',
+  'apf.t1':'El SOS',
+  'apf.d1':'El mapa del poble, el banc de temps, la biblioteca de les coses, els comptes i les decisions preses. Al navegador, sense instal·lar res.',
+  'apf.g1':'Obre\'l →',
+  'apf.k2':'Lliure',
+  'apf.t2':'Comando Molekulon',
+  'apf.d2':'S\'aprèn jugant: dotze personatges per posar nom al que sap fer cadascú, reconeixement que surt del que has fet de veritat, i una història que fa tornar la gent.',
+  'apf.g2':'Descobreix-lo →',
+  'apf.k3':'Lliure',
+  'apf.t3':'Molekulandia',
+  'apf.d3':'El poble sencer en una pantalla: cada edifici és un tipus de projecte, i de cadascun s\'entra a l\'eina que el porta. Onze edificis i nou professions.',
+  'apf.g3':'Passeja-hi →',
+  'apf.k4':'Lliure · 8 sessions',
+  'apf.t4':'La Fàbrica de Superherois',
+  'apf.d4':'El mateix, a l\'escola: una classe fa el seu mapa de recursos i s\'intercanvia ajuda. Els superpoders es guanyen quan un company ho confirma.',
+  'apf.g4':'Mira el programa →',
+  'apf.k5':'Lliure · sense compte',
+  'apf.t5':'El directori obert',
+  'apf.d5':'Qui hi ha al territori, què ofereix i què busca. Cadascú signa la seva fitxa amb una clau del seu navegador: ningú pot publicar en nom d\'un altre.',
+  'apf.g5':'Obre\'l →',
+  'apf.k6':'Lliure · 16 mòduls',
+  'apf.t6':'La guia formativa',
+  'apf.d6':'Del mapa del territori a com es decideix en comú, com s\'acompanya una idea i d\'on surten els diners. Amb un camí marcat segons què hi facis.',
+  'apf.g6':'Llegeix-la →',
+  'apf.peu':'<strong>I això, a la pràctica, què és?</strong> Formacions que contractes tu per als teus ciutadans o socis. Ells hi aprenen a emprendre en grup portant un projecte del poble de debò, i el que en surt es queda al poble.',
+  'pk.eyebrow':'El catàleg',
+  'pk.h2':'Propostes tancades. <em>Amb el preu escrit.</em>',
+  'pk.intro':'Cada paquet diu per a qui és, quant dura, què t\'endús, quant costa, amb quins diners es paga i quantes vegades s\'ha fet. Els que van a administració pública queden per sota dels 5.000 €, que és el que es contracta sense obrir un expedient llarg.',
+  'pk.peu':'<strong>El punt de cada paquet no és decoració.</strong> <em>Provat</em> vol dir entregat moltes vegades i amb casos per ensenyar. <em>En adaptació</em> vol dir un producte provat que s\'està portant a un mercat nou. <em>Nou</em> vol dir que encara no s\'ha entregat prou vegades — i dir-ho val més que la venda que es perd.',
+  'sosp.eyebrow':'El projecte',
+  'sosp.h2':'El SOS existeix <em>encara que no ens contractis</em>',
+  'sosp.intro':'És gratuït, obert i funciona sense nosaltres. S\'obre al navegador, sense compte i sense instal·lar res, i les dades es queden al teu aparell. No venem el programa: venem l\'acompanyament — i si l\'acompanyament no et convenç, l\'eina te la quedes igualment.',
+  'sosp.peu':'<strong>El que encara no hi és, es diu.</strong> Els contractes intel·ligents no estan construïts al SOS: per això es ven l\'estudi de si val la pena, i no una eina que no existeix. La regla d\'aquesta casa és que cap porta apunti a un lloc que no hi és.',
+  'nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formació','nav.diagnostic':'Diagnòstic','nav.demo':'Viu-ho →',
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'ben.eyebrow':'Per què val la pena','ben.h2':'Beneficis <em>psicosocials i econòmics</em>','ben.intro':'Teixir comunitat no és només bonic: millora la salut de les persones i estalvia diners reals als pobles i barris.',
   'ben.psico':'Psicosocials','ben.econ':'Econòmics · casos d\'estalvi',
   'ben.ps1.t':'Menys soledat i aïllament.','ben.ps1.d':'El suport mutu i la trobada regular protegeixen la salut mental, sobretot de la gent gran.',
@@ -1327,18 +1651,12 @@ ca: {
   'enfoc.intangible.h4':'El que ho sosté de veritat',
   'enfoc.intangible.p':'Confiança veïnal, favors, coneixement acumulat, reputació. Cap acta ho recull — però decideix si el projecte aguanta.',
   'enfoc.note':'<span style="color:var(--accent-indigo);">→</span> La diferència entre un projecte que dura i un que es col·lapsa gairebé mai és als processos formals. Està en els intangibles no mapats.',
-  'triada.eyebrow':'La nostra metodologia',
-  'triada.h2':'Tres peces. <em>Un únic sistema.</em>',
-  'triada.intro':'Cohesió, diagnòstic i sostenibilitat: la tríada que fem servir per convertir bona voluntat en un ecosistema que s\'autogestiona.',
-  'triada.cohesio.label':'Cohesió · El Cor','triada.cohesio.h3':'Fent Pinya',
-  'triada.cohesio.p':'Dinàmiques vivencials basades en l\'estructura i els valors dels castells humans. En poques hores, un grup de veïns, tècnics o sòcies experimenta físicament el que després necessitarà per sostenir un projecte: confiança, interdependència i seguretat psicològica.',
-  'triada.cohesio.tag1':'Confiança veïnal','triada.cohesio.tag2':'Interdependència',
-  'triada.diagnostic.label':'Diagnòstic · El Cervell','triada.diagnostic.h3':'El mapa del poble',
-  'triada.diagnostic.p':'Dibuixem qui es relaciona amb qui i què es passen: hores, diners i locals, però sobretot els favors, la informació i la confiança que no apunta ningú. Es veu de seguida de qui penja tot i quins vincles estan a punt de trencar-se. És el mètode que en diuen VNA.',
-  'triada.diagnostic.tag1':'Qui sosté què','triada.diagnostic.tag2':'El que no surt a les actes',
-  'triada.motor.label':'Sostenibilitat · El Motor','triada.motor.h3':'L\'eina · el SOS',
-  'triada.motor.p':'Una aplicació gratuïta on el projecte queda escrit: qui hi és, qui fa què i quantes hores hi ha posat cadascú. Deixa de dependre de la memòria —i del cansament— de dues persones, i qui entra nou pot posar-s\'hi al dia sol.',
-  'triada.motor.tag1':'Tauler de tasques','triada.motor.tag2':'Sense dependre de ningú',
+  
+  
+  
+  
+  
+  
   'fp.eyebrow':'Cohesió en acció',
   'fp.h2':'Els Castells:<br><em>una xarxa de valor de 200 anys</em>',
   'fp.intro':'Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que apliquem a les sessions de cohesió Fent Pinya.',
@@ -1352,44 +1670,25 @@ ca: {
   'fp.i2.p':'Una crossa que cedeix 2mm fa caure tota la torre. <strong>Una persona voluntària que s\'esgota sense relleu pot enfonsar un banc de temps sencer.</strong> El mapa ensenya quins vincles estan carregats de més mentre encara es pot repartir.',
   'fp.i3.title':'03 · El lideratge s\'ha de repartir',
   'fp.i3.p':'En castells complexos, el Cap de Colla no veu el nucli: l\'autoritat es reparteix entre líders naturals de cada nivell. <strong>Els projectes que duren fan el mateix — no depenen d\'una sola persona imprescindible.</strong>',
-  'sos.eyebrow':'Sostenibilitat',
-  'sos.h2':'L\'eina que <em>fa que duri.</em>',
-  'sos.p1':'El SOS és una aplicació gratuïta on queda escrit tot el que ara viu en un grup de WhatsApp i en el cap de dues persones: <strong>qui hi és, qui fa què, quantes hores hi ha posat cadascú i què s\'ha decidit</strong>. Quan aquestes dues persones es cansen o marxen, el projecte no se\'n va amb elles.',
-  'sos.p2':'S\'obre com una pàgina web qualsevol. <strong>No cal crear cap compte ni donar cap dada, i el que s\'hi escriu es queda al teu ordinador</strong> — no en un servidor nostre. És oberta i te la pots endur quan vulguis.',
-  'sos.b1':'Un tauler de tasques del projecte, obert a tothom',
-  'sos.b2':'Qui s\'encarrega de què, sempre a la vista',
-  'sos.b3':'Les hores i aportacions de cadascú, apuntades i comprovables',
-  'sos.b4':'Qui entra nou es posa al dia sol, sense que ningú li ho expliqui',
-  'sos.demo.p1':'Cada projecte hi té el seu mapa, les seves tasques i els seus comptes. I pot aprofitar el que ja han après altres pobles: les dinàmiques venen preparades, no es comença de zero.',
-  'sos.demo.p2':'El mapa és el mateix de l\'informe: cada cercle és una persona o una entitat, cada línia és una cosa que es passen. El que es va fent queda apuntat sobre aquell mapa.',
-  'sos.demo.p3':'Obre\'l i tafaneja. No demana correu, ni contrasenya, ni instal·lar res.',
-  'sos.demo.link':'Explora el SOS en viu',
-  'sos.demo.vedes':'Les regles que s\'ha imposat',
-  'eines.eyebrow':'Sessions al SOS',
-  'eines.h2':'Sessions de <em>desenvolupament comunitari</em>',
-  'eines.intro':'Cada sessió arriba amb el seu mapa de valor, el seu tauler i la seva comptabilitat ja preparats, i amb recursos per implementar-la. Instancia-la al teu territori en un clic.',
-  'eines.banc.n':'Banc de Temps','eines.banc.d':'Intercanvi de serveis veïnals mesurats en hores, no en diners. Una hora val una hora.',
-  'eines.biblio.n':'Biblioteca de les Coses','eines.biblio.d':'Pool compartit d\'objectes i eines en préstec: estalvi, menys residus i trobada.',
-  'eines.energia.n':'Comunitat Energètica','eines.energia.d':'Energia renovable produïda i compartida localment, en cooperativa. Sobirania i estalvi.',
-  'eines.matriu.n':'MATRIU · Incubadora','eines.matriu.d':'Acompanya idees ciutadanes fins a projectes viables i sobirans, aprenent fent.',
-  'eines.habitatge.n':'Habitatge en cessió d\'ús','eines.habitatge.d':'Propietat col·lectiva i dret d\'ús indefinit, sense especulació (model Andel).',
-  'eines.consum.n':'Consum Agroecològic','eines.consum.d':'Compra directa a pagès, sense intermediaris: aliments sans i preu just.',
   
-  'eines.cures.n':'Suport Mutu i Cures','eines.cures.d':'Xarxa veïnal de cura i acompanyament contra la soledat, connectada als serveis.',
-  'eines.coop.n':'Cooperativa de Treball','eines.coop.d':'Ocupació digna i democràtica: qui treballa és soci i decideix. Una persona, un vot.',
-  'eines.vna.n':'Mapa del teixit local','eines.vna.d':'Qui es relaciona amb qui al poble, i què es passen: hores, favors, informació i confiança.',
-  'eines.compra.n':'Compra Col·lectiva','eines.compra.d':'Agregar la demanda del veïnat per aconseguir millors preus i condicions.',
-  'eines.cta':'Obre el catàleg al SOS →',
-  'apr.eyebrow':'Sobirania a llarg termini',
-  'apr.h2':'Perquè la comunitat <em>aprengui a caminar sola.</em>',
-  'apr.p1':'No fem cursos a part: s\'aprèn portant el projecte de veritat, en equip i entre iguals. És el model d\'una escola finlandesa —Tiimiakatemia— que la Universitat de Mondragón porta anys aplicant al cooperativisme basc.',
-  'apr.p2':'L\'objectiu no és que ens necessiteu sempre. És que <strong>quan marxem, al poble hi quedi gent que sap acollir els nous, decidir en comú i portar els comptes</strong> sense trucar a ningú de fora.',
-  'apr.pilar1.title':'Aprendre fent',
-  'apr.pilar1.p':'El projecte real és l\'aula. Cada repte es converteix en aprenentatge compartit, no en teoria aïllada.',
-  'apr.pilar2.title':'Equips que s\'autogestionen',
-  'apr.pilar2.p':'Cel·les de treball entre iguals, amb rols rotatius i decisions preses en comú, no per un sol líder.',
-  'apr.pilar3.title':'Risc i responsabilitat compartida',
-  'apr.pilar3.p':'Cooperativisme real: qui hi posa feina, hi té veu i part del resultat — no promeses, fets.',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'fac.eyebrow':'Qui hi ha darrere',
   'fac.role':'Psicòleg social · Innovador comunitari',
   'fac.p1':'Arrelat a Torrelles de Foix, al cor de l\'Alt Penedès, més de 20 anys dissenyant dinàmiques de grup i xarxes de valor, avui posats al servei dels ecosistemes locals.',
@@ -1405,7 +1704,6 @@ ca: {
   'cl.p2.tag':'Projecte pioner · 2009','cl.p2.n':'Banc de Temps de León','cl.p2.d':'El primer banc de temps de la ciutat: intercanvi de serveis mesurat en hores, sense diners, teixint confiança i suport mutu entre veïns.',
   'cl.p3.tag':'Desenvolupament comunitari','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d\'ajuntaments, cooperatives i ateneus del territori.',
   'cta.h2':'Té el teu poble un projecte<br>que <em>s\'aguanta amb pinces?</em>',
-  
   
   'cta.btn2':'Explora el SOS en viu →','cta.btn3':'Fes el diagnòstic en 3 min →',
   'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprenentatge','footer.facilitador':'Facilitador',
@@ -1465,7 +1763,7 @@ ca: {
   'faq.h2':'El que ens pregunten <em>sempre</em>',
   'faq.intro':'Les cinc de veritat, amb la resposta que donaríem a la primera reunió.',
   'faq.q1':'Quant costa?',
-  'faq.a1':'<strong>L\'eina, res: és gratuïta i te la pots endur.</strong> El que es paga és l\'acompanyament, i en la majoria de casos no surt del pressupost municipal sinó de fons que ja existeixen —el catàleg de la Diputació de Barcelona, els Ateneus Cooperatius, els fons Leader de desenvolupament rural o els Next Generation. Al diagnòstic de 3 minuts et diem quina via encaixa amb el teu cas i què cal per justificar-la. Si cap no encaixa, també t\'ho direm.',
+  'faq.a1':'<strong>Cada paquet del catàleg porta el preu escrit</strong>, i l\'eina no en té: és gratuïta i te la pots endur. El que es paga és l\'acompanyament, i en la majoria de casos no surt del pressupost municipal sinó de fons que ja existeixen —el catàleg de la Diputació de Barcelona, els Ateneus Cooperatius, els fons Leader de desenvolupament rural o els Next Generation. Cada paquet diu quina via li encaixa. Al diagnòstic de 3 minuts ho concretem al teu cas, i si cap no encaixa, també t\'ho direm.',
   'faq.q2':'Quanta feina li caurà al personal tècnic?',
   'faq.a2':'Dues sessions per fer el mapa i <strong>una reunió al mes</strong> mentre allò camina. Res més. Si al final la feina de sostenir el projecte acaba sobre la taula del tècnic de participació, hem fallat: precisament veníem a evitar-ho.',
   'faq.q3':'On queden les dades del veïnat?',
@@ -1481,25 +1779,120 @@ ca: {
   'cta.pr.nota':'El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l\'eina, el mètode i la trajectòria de qui hi ha darrere.'
 },
 es: {
-  'oferta.label':'Qué puedes usar hoy','oferta.h2':'Todo esto ya <em>existe y es abierto</em>','oferta.desc':'No vendemos el programa: es gratuito y funciona sin nosotros. Lo que se paga es el acompañamiento. Si el acompañamiento no te convence, la herramienta te la quedas igual — no hay nada que te ate.','oferta.k1':'Libre · 3 min','oferta.t1':'Diagnóstico comunitario','oferta.d1':'Dinos de dónde vienes, qué tienes y qué te falta. Sales con tu punto de partida, el itinerario formativo que te toca y de dónde pueden salir los fondos.','oferta.g1':'Empieza →','oferta.k2':'Libre · sin cuenta','oferta.t2':'SOS · la herramienta','oferta.d2':'El mapa del pueblo, el banco de tiempo, la biblioteca de las cosas, las cuentas y las decisiones tomadas. Todo en el navegador, sin cuenta y sin instalar nada.','oferta.g2':'Ábrelo →','oferta.k3':'Libre · 16 módulos','oferta.t3':'Guía formativa','oferta.d3':'Del mapa del territorio a cómo se decide en común, cómo se acompaña una idea y de dónde sale el dinero. Con un camino marcado según qué hagas.','oferta.g3':'Léela →','oferta.k4':'Libre','oferta.t4':'Comando Molekulon','oferta.d4':'El juego que hay encima: doce personajes para poner nombre a lo que sabe hacer cada uno, reconocimiento que sale de lo que has hecho de verdad, y una historia que hace volver a la gente.','oferta.g4':'Descúbrelo →','oferta.k5':'Acompañamiento','oferta.t5':'Diagnóstico territorial','oferta.d5':'Dos sesiones y un informe con el mapa de valor del tejido real: quién sostiene qué, qué flujos faltan y por dónde empezar.','oferta.g5':'En el diagnóstico lo concretamos','oferta.k6':'Acompañamiento','oferta.t6':'Programa de Gestor/a SOS','oferta.d6':'Unas 45 horas en 3-4 meses, sobre vuestro proyecto y no sobre un caso inventado. Sale gente del pueblo que sabe llevarlo sola.','oferta.g6':'Financiable con subvención','nav.serveis':'Servicios','nav.fentpinya':'Fent Pinya','nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formación','nav.diagnostic':'Diagnóstico','nav.demo':'Verlo en vivo →',
-  'serv.eyebrow':'Servicios','serv.h2':'Qué podemos hacer <em>en tu territorio</em>','serv.intro':'Servicios contratables por ayuntamientos, consejos comarcales y entidades — pensados para financiarse con subvenciones, sin carga directa para el pueblo o el barrio.',
-  'serv.metod':'Metodológicos · psicología social y acción comunitaria','serv.tec':'Tecnológicos · herramientas digitales soberanas',
-  'serv.m1.n':'Mapa del tejido local','serv.m1.d':'Quién se relaciona con quién en el pueblo y qué se pasan: horas, favores, información y confianza. Se ve de quién cuelga todo antes de que se queme. (Método VNA.)',
-  'serv.m2.n':'Cohesión y confianza (Fent Pinya)','serv.m2.d':'Sesiones donde vecindario, técnicos y entidades aprenden a repartir el peso como en un castell: fiarse, avisar antes de ceder y poder decir lo que se piensa sin miedo.',
-  'serv.m3.n':'Puesta en marcha de dinámicas','serv.m3.d':'Bancos de tiempo, bibliotecas de las cosas, grupos de consumo, cuidados vecinales… de la idea a la acción, con roles y gobernanza.',
-  'serv.m4.n':'Gobernanza cooperativa','serv.m4.d':'Acompañamos la constitución, los estatutos y la toma de decisiones de cooperativas y asociaciones que duran.',
-  'serv.m5.n':'Formar a gente del pueblo','serv.m5.d':'Se aprende llevando el proyecto de verdad, no en un curso aparte. Es el modelo de la Universidad de Mondragón, y acaba con gente vuestra que sabe hacerlo sola.',
-  'serv.m6.n':'Repartir el resultado sin peleas','serv.m6.d':'Se anota lo que pone cada persona mientras se hace, y el reparto sale de ahí. Quien ha trabajado tiene voz y parte. (Método Slicing Pie.)',
-  'serv.m7.n':'El programa en la escuela (6-13 años)',
-  'serv.m7.d':'La <a href="/SOS/escola.html">Fábrica de Superhéroes</a>: ocho sesiones donde una clase hace su mapa de recursos e intercambia ayuda de verdad. El cromo se diseña; los superpoderes se ganan cuando un compañero confirma que le has ayudado.',
-  'serv.m8.n':'Comprar juntos, y saber por qué sale más barato',
-  'serv.m8.d':'<a href="/SOS/compra.html">La Compra</a>: cesta con el 80% del gasto en comida de proximidad, básica y sana, el pedido agregado con el mínimo de cada productor, y el ahorro dicho por su causa — sin intermediario, a granel, de temporada, por volumen.',
-  'serv.t1.n':'Poner en marcha el SOS','serv.t1.d':'Dejamos la herramienta preparada con vuestro caso dentro y a la gente sabiendo usarla. Se abre en el navegador y los datos se quedan en casa.',
-  'serv.t2.n':'Inteligencia artificial, con frenos','serv.t2.d':'Propone un primer borrador del mapa y encuentra entidades del territorio. Nada entra sin que una persona lo haya comprobado, y siempre dice de dónde lo ha sacado.',
-  'serv.t3.n':'Directorio abierto del territorio','serv.t3.d':'La lista de quién hay —consejos, entidades, iniciativas— hecha entre todos y comprobable. Sin dueño y sin caducar cada legislatura.',
-  'serv.t4.n':'Herramientas a medida','serv.t4.d':'Con estándares abiertos y el código a la vista, para que mañana os lo pueda mantener cualquiera y no haya que volver a nosotros.',
-  'serv.t5.n':'Perder el miedo a las herramientas digitales','serv.t5.d':'Formación para entidades que hoy dependen del sobrino que sabe. Para que las lleven ellas, no un tercero.',
-  'serv.fund.tag':'Sin carga directa para el pueblo','serv.fund.p':'Muchos de estos servicios son <strong>financiables con fondos ya existentes</strong>: el catálogo de servicios y las subvenciones de la <strong>Diputació de Barcelona</strong> (apoyo a municipios, especialmente de menos de 20.000 habitantes), los <strong>Ateneus Cooperatius</strong> (aracoop, gratuitos), fondos <strong>Leader/GAL</strong> de desarrollo rural y programas <strong>Next Generation</strong>. Te ayudamos a encontrar y justificar la vía de financiación para que el coste no recaiga sobre el vecindario.',
+/*TT-I18N-ES*/
+
+  'pk.fam.consultoria':'Consultoría','pk.fam.consultoria.s':'Mirar y decidir con el mapa en la mano',
+  'pk.fam.formacio':'Formación','pk.fam.formacio.s':'Se aprende haciendo, sobre vuestro caso y no sobre uno inventado',
+  'pk.fam.dinamitzacio':'Producción y dinamización','pk.fam.dinamitzacio.s':'Que pase de verdad, y que el lunes siga pasando',
+  'pk.punt.provat':'Probado',
+  'pk.punt.adaptacio':'En adaptación',
+  'pk.punt.nou':'Nuevo',
+  'pk.lbl.qui':'Para quién','pk.lbl.dura':'Cuánto dura','pk.lbl.diners':'Con qué dinero',
+  'pk.diagnostic-teixit.n':'Diagnóstico del tejido local','pk.diagnostic-teixit.e':'El informe con el mapa de valor del tejido real: quién sostiene qué, qué flujos faltan y de quién cuelga todo antes de que se queme.',
+  'pk.diagnostic-teixit.q':'Ayuntamientos, consejos comarcales y entidades','pk.diagnostic-teixit.d':'2 sesiones · 3 semanas','pk.diagnostic-teixit.f':'Catálogo de servicios de la Diputación · partida de participación ciudadana',
+  'pk.mapa-organitzacio.n':'Mapa de valor de una organización','pk.mapa-organitzacio.e':'El mapa de los intercambios reales, tangibles e intangibles, y dónde se pierde valor sin que lo vea nadie. Método VNA de Verna Allee.',
+  'pk.mapa-organitzacio.q':'Empresas, cooperativas y entidades con equipo propio','pk.mapa-organitzacio.d':'3 sesiones · 4-6 semanas','pk.mapa-organitzacio.f':'Presupuesto propio de mejora o de formación',
+  'pk.mapa-comarcal.n':'Mapa comarcal y asamblea federativa','pk.mapa-comarcal.e':'El mapa de toda la comarca y una decisión tomada y registrada con peso por raíz de población y corrección de desigualdad: el municipio grande no decide por los pequeños, y los pequeños no valen lo mismo que el grande.',
+  'pk.mapa-comarcal.q':'Consejos comarcales y mancomunidades','pk.mapa-comarcal.d':'4 sesiones con varios municipios · 2-3 meses','pk.mapa-comarcal.f':'Presupuesto de cooperación intermunicipal',
+  'pk.impacte.n':'Medida de impacto y justificación','pk.impacte.e':'Horas donadas, personas activas y reciprocidad, saliendo de un registro firmado y comprobable — no de una encuesta de satisfacción.',
+  'pk.impacte.q':'Ayuntamientos, fundaciones y financiadores','pk.impacte.d':'Informe semestral o anual · 2 semanas','pk.impacte.f':'La misma partida que ya financia el proyecto que se justifica',
+  'pk.persones-cultura.n':'Diagnóstico de personas y cultura','pk.persones-cultura.e':'Dónde se rompe la colaboración, quién sostiene lo que no consta en ningún sitio, y qué habría que cambiar primero. Es la puerta de entrada a la consultoría de personas; lo que viene después se dimensiona con este informe en la mano.',
+  'pk.persones-cultura.q':'Empresas y cooperativas con equipo','pk.persones-cultura.d':'3 sesiones · 6 semanas','pk.persones-cultura.f':'Presupuesto propio de recursos humanos',
+  'pk.gestor.n':'Programa de Gestor/a','pk.gestor.e':'Una persona del territorio que sabe arrancar y sostener participación sin depender de nadie. Se hace sobre vuestro proyecto, no sobre un caso inventado.',
+  'pk.gestor.q':'Técnicos municipales y profesionales · precio por persona','pk.gestor.d':'~45 h en 3-4 meses','pk.gestor.f':'Plan de formación municipal · subvención de Diputación',
+  'pk.equip-gestor.n':'Programa de equipo gestor','pk.equip-gestor.e':'Un equipo de cinco a siete personas con los roles repartidos y el relevo previsto, y la dinámica funcionando. Forma un equipo y no una persona, porque un territorio no lo sostiene un gestor.',
+  'pk.equip-gestor.q':'Una entidad del territorio, financiada por el ayuntamiento','pk.equip-gestor.d':'12 semanas · 5 roles · ~34 h de mentoría','pk.equip-gestor.f':'Partida de participación · Ateneus Cooperatius',
+  'pk.comunitats-practica.n':'Comunidades de práctica','pk.comunitats-practica.e':'El mapa del conocimiento que ya tenéis y un grupo que lo hace circular solo cuando nosotros nos vamos.',
+  'pk.comunitats-practica.q':'Organizaciones con conocimiento disperso','pk.comunitats-practica.d':'6 sesiones en 3 meses','pk.comunitats-practica.f':'Presupuesto de formación',
+  'pk.formacio-equips.n':'Formación de equipos','pk.formacio-equips.e':'Liderazgo colaborativo y gestión del cambio con metodología castellera: repartir el peso, avisar antes de ceder y poder decir lo que se piensa sin miedo.',
+  'pk.formacio-equips.q':'Empresas, cooperativas y equipos técnicos','pk.formacio-equips.d':'Media jornada · más sesiones, a escalar','pk.formacio-equips.f':'Presupuesto de formación',
+  'pk.escola.n':'La Fábrica de Superhéroes','pk.escola.e':'Una clase con su mapa de recursos y ayuda intercambiada de verdad. Los superpoderes se ganan cuando un compañero confirma que le has ayudado, y ningún nombre real sale del aula.',
+  'pk.escola.q':'Escuelas y AFA · 6 a 13 años','pk.escola.d':'8 sesiones','pk.escola.f':'Plan educativo de entorno · concejalía de educación',
+  'pk.formar-formadors.n':'Formación de formadores','pk.formar-formadors.e':'Poder formar y acreditar a otros, con tu recorrido en el registro firmado y auditable. Es lo que hace que esto escale sin pasar por nosotros.',
+  'pk.formar-formadors.q':'Ateneus Cooperatius y profesionales independientes','pk.formar-formadors.d':'20 h + tutela de 2 casos','pk.formar-formadors.f':'Programa propio del Ateneu · formación de profesionales',
+  'pk.comu-diada.n':'Comú-diada','pk.comu-diada.e':'La jornada hecha y, el lunes, la gente apuntada y la dinámica en marcha. La diferencia con una fiesta es que el martes todavía hay algo funcionando.',
+  'pk.comu-diada.q':'Ayuntamientos, consejos comarcales y entidades','pk.comu-diada.d':'Una jornada · 3 semanas de producción antes','pk.comu-diada.f':'Partida de fiestas, participación o promoción económica',
+  'pk.fent-pinya.n':'Fent Pinya','pk.fent-pinya.e':'Un grupo que ha experimentado repartir el peso de verdad —porque se ha levantado un castell— y el vocabulario para hablar de ello al día siguiente en el trabajo.',
+  'pk.fent-pinya.q':'Equipos de empresa, plenos municipales y mesas comunitarias','pk.fent-pinya.d':'2 h','pk.fent-pinya.f':'Presupuesto de formación o de fiestas',
+  'pk.produccio.n':'Producción de eventos','pk.produccio.e':'El evento producido entero: proveedores, permisos, montaje, equipo y cierre. Los festivales y los formatos de varios días se dimensionan aparte.',
+  'pk.produccio.q':'Empresas, ayuntamientos y festivales','pk.produccio.d':'Una jornada, de la idea al desmontaje','pk.produccio.f':'Presupuesto del evento',
+  'pk.posar-en-marxa.n':'Puesta en marcha de una dinámica','pk.posar-en-marxa.e':'La dinámica funcionando con roles, gobernanza y cuentas: banco de tiempo, biblioteca de las cosas, grupo de consumo, cuidados vecinales, comunidad energética o vivienda en cesión de uso.',
+  'pk.posar-en-marxa.q':'Entidades y grupos promotores, financiado por el ayuntamiento','pk.posar-en-marxa.d':'6 meses · sesiones quincenales','pk.posar-en-marxa.f':'Partida de participación · Ateneus Cooperatius',
+  'pk.implantacio.n':'Implantación y soporte','pk.implantacio.e':'La herramienta con vuestro caso dentro, la sincronización entre aparatos resuelta y la gente sabiendo usarla. Los datos se quedan en vuestro navegador.',
+  'pk.implantacio.q':'Ayuntamientos, consejos comarcales y Ateneus','pk.implantacio.d':'3 semanas','pk.implantacio.f':'Partida de digitalización · fondos Next Generation',
+  'pk.ia-amb-frens.n':'IA con frenos · sesión de viabilidad','pk.ia-amb-frens.e':'Qué se puede automatizar con garantías y qué no, con el criterio escrito: la máquina propone, nada entra sin que una persona lo haya comprobado, y siempre se dice de dónde lo ha sacado.',
+  'pk.ia-amb-frens.q':'Quien se plantee usar IA con datos de personas','pk.ia-amb-frens.d':'1 sesión + informe · 2 semanas','pk.ia-amb-frens.f':'Partida de digitalización',
+  'pk.contractes.n':'Contratos inteligentes · estudio de viabilidad','pk.contractes.e':'Un informe de si vale la pena, qué costaría y qué riesgos tiene. Se vende el estudio y no la herramienta: en el SOS esto todavía no está construido, y el informe lo dice.',
+  'pk.contractes.q':'Cooperativas y administraciones que quieran automatizar acuerdos','pk.contractes.d':'3 semanas','pk.contractes.f':'Fondos de innovación · Next Generation',
+
+/*/TT-I18N-ES*/
+  'faq.q6':'¿Cómo se firma esto, administrativamente?',
+  'faq.a6':'Cada paquete del catálogo lleva el precio cerrado y todos los que van a administración pública quedan <strong>por debajo de los 5.000 €</strong>. Con la propuesta y el presupuesto en la mano, la contratación menor lo resuelve sin abrir un expediente largo. Si lo que necesitáis es más grande, se parte en fases o se plantea como un contrato de servicios: os decimos qué vía os conviene antes de haceros perder el tiempo.',
+  'cl.honest':'<strong>De dónde viene cada prueba.</strong> Las cifras de arriba son del mundo corporativo y de la formación de equipos: ahí hay veinte años y se pueden enseñar casos. La línea comunitaria es más nueva y tiene menos kilómetros — por eso en el catálogo cada paquete dice si está <em>probado</em>, <em>en adaptación</em> o es <em>nuevo</em>, en vez de usar estos números como si lo demostraran todo.',
+  'nav.relat':'De dónde viene',
+  'nav.aprenent':'Se aprende haciendo',
+  'nav.cataleg':'El catálogo',
+  'relat.eyebrow':'De dónde viene esto',
+  'relat.h2':'Veinte años levantando castells, <em>y el mismo problema dentro</em>',
+  'relat.intro':'Un castell no lo aguanta quien sube. Una organización tampoco. Lo que empezó siendo una experiencia para equipos de empresa acabó siendo un método para mirar quién sostiene qué —y una herramienta para no perderlo de vista.',
+  'relat.n1':'01 · La persona',
+  'relat.t1':'Álvaro Solache',
+  'relat.p1':'Veinte años formando equipos y produciendo eventos, desde el Penedès. El trabajo siempre ha sido el mismo: que un grupo de gente que no se ha elegido aguante el peso junto.',
+  'relat.n2':'02 · El oficio',
+  'relat.t2':'Psicología de grupos y desarrollo de comunidades',
+  'relat.p2':'Los proyectos comunitarios no mueren por falta de método: mueren por falta de gente, por conflictos que nadie trata y por no saber cómo financiarse. Eso se estudia y se trabaja.',
+  'relat.n3':'03 · El método',
+  'relat.t3':'TeamTowers',
+  'relat.p3':'Los castells como experiencia, y el mapa de red de valor como diagnóstico: dibujar quién da qué a quién, incluyendo los favores, la información y la confianza que no apunta nadie. Es el método VNA de Verna Allee.',
+  'relat.n4':'04 · En el territorio',
+  'relat.t4':'TeamTowers Humà',
+  'relat.p4':'El mismo método llevado al pueblo y al barrio, con el catálogo entero: consultoría, formación, y producción y dinamización. Y una herramienta gratuita para que cuando nos vayamos no se vaya con nosotros lo aprendido.',
+  'apf.eyebrow':'Formación-acción',
+  'apf.h2':'Se aprende haciendo, <em>y lo que se hace queda</em>',
+  'apf.intro':'No hay cursos sobre casos inventados. Se aprende a emprender en grupo llevando un proyecto de verdad, con método y buenas prácticas, y con IA que propone pero nunca decide. Estos son los nuestros, abiertos: entra y míralos por dentro antes de contratar nada.',
+  'apf.k1':'Libre · sin cuenta',
+  'apf.t1':'El SOS',
+  'apf.d1':'El mapa del pueblo, el banco de tiempo, la biblioteca de las cosas, las cuentas y las decisiones tomadas. En el navegador, sin instalar nada.',
+  'apf.g1':'Ábrelo →',
+  'apf.k2':'Libre',
+  'apf.t2':'Comando Molekulon',
+  'apf.d2':'Se aprende jugando: doce personajes para poner nombre a lo que sabe hacer cada uno, reconocimiento que sale de lo que has hecho de verdad, y una historia que hace volver a la gente.',
+  'apf.g2':'Descúbrelo →',
+  'apf.k3':'Libre',
+  'apf.t3':'Molekulandia',
+  'apf.d3':'El pueblo entero en una pantalla: cada edificio es un tipo de proyecto, y de cada uno se entra a la herramienta que lo lleva. Once edificios y nueve profesiones.',
+  'apf.g3':'Paséate →',
+  'apf.k4':'Libre · 8 sesiones',
+  'apf.t4':'La Fábrica de Superhéroes',
+  'apf.d4':'Lo mismo, en la escuela: una clase hace su mapa de recursos y se intercambia ayuda. Los superpoderes se ganan cuando un compañero lo confirma.',
+  'apf.g4':'Mira el programa →',
+  'apf.k5':'Libre · sin cuenta',
+  'apf.t5':'El directorio abierto',
+  'apf.d5':'Quién hay en el territorio, qué ofrece y qué busca. Cada cual firma su ficha con una clave de su navegador: nadie puede publicar en nombre de otro.',
+  'apf.g5':'Ábrelo →',
+  'apf.k6':'Libre · 16 módulos',
+  'apf.t6':'La guía formativa',
+  'apf.d6':'Del mapa del territorio a cómo se decide en común, cómo se acompaña una idea y de dónde sale el dinero. Con un camino marcado según qué hagas.',
+  'apf.g6':'Léela →',
+  'apf.peu':'<strong>Y esto, en la práctica, ¿qué es?</strong> Formaciones que contratas tú para tus ciudadanos o socios. Ellos aprenden a emprender en grupo llevando un proyecto del pueblo de verdad, y lo que sale se queda en el pueblo.',
+  'pk.eyebrow':'El catálogo',
+  'pk.h2':'Propuestas cerradas. <em>Con el precio escrito.</em>',
+  'pk.intro':'Cada paquete dice para quién es, cuánto dura, qué te llevas, cuánto cuesta, con qué dinero se paga y cuántas veces se ha hecho. Los que van a administración pública quedan por debajo de los 5.000 €, que es lo que se contrata sin abrir un expediente largo.',
+  'pk.peu':'<strong>El punto de cada paquete no es decoración.</strong> <em>Probado</em> significa entregado muchas veces y con casos que enseñar. <em>En adaptación</em> significa un producto probado que se está llevando a un mercado nuevo. <em>Nuevo</em> significa que todavía no se ha entregado suficientes veces — y decirlo vale más que la venta que se pierde.',
+  'sosp.eyebrow':'El proyecto',
+  'sosp.h2':'El SOS existe <em>aunque no nos contrates</em>',
+  'sosp.intro':'Es gratuito, abierto y funciona sin nosotros. Se abre en el navegador, sin cuenta y sin instalar nada, y los datos se quedan en tu aparato. No vendemos el programa: vendemos el acompañamiento — y si el acompañamiento no te convence, la herramienta te la quedas igualmente.',
+  'sosp.peu':'<strong>Lo que todavía no está, se dice.</strong> Los contratos inteligentes no están construidos en el SOS: por eso se vende el estudio de si vale la pena, y no una herramienta que no existe. La regla de esta casa es que ninguna puerta apunte a un sitio que no está.',
+  'nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formación','nav.diagnostic':'Diagnóstico','nav.demo':'Verlo en vivo →',
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'ben.eyebrow':'Por qué vale la pena','ben.h2':'Beneficios <em>psicosociales y económicos</em>','ben.intro':'Tejer comunidad no es solo bonito: mejora la salud de las personas y ahorra dinero real a pueblos y barrios.',
   'ben.psico':'Psicosociales','ben.econ':'Económicos · casos de ahorro',
   'ben.ps1.t':'Menos soledad y aislamiento.','ben.ps1.d':'El apoyo mutuo y el encuentro regular protegen la salud mental, sobre todo de las personas mayores.',
@@ -1534,18 +1927,12 @@ es: {
   'enfoc.intangible.h4':'Lo que lo sostiene de verdad',
   'enfoc.intangible.p':'Confianza vecinal, favores, conocimiento acumulado, reputación. Ninguna acta lo recoge — pero decide si el proyecto aguanta.',
   'enfoc.note':'<span style="color:var(--accent-indigo);">→</span> La diferencia entre un proyecto que dura y uno que colapsa casi nunca está en los procesos formales. Está en los intangibles no mapeados.',
-  'triada.eyebrow':'Nuestra metodología',
-  'triada.h2':'Tres piezas. <em>Un único sistema.</em>',
-  'triada.intro':'Cohesión, diagnóstico y sostenibilidad: la tríada que usamos para convertir buena voluntad en un ecosistema que se autogestiona.',
-  'triada.cohesio.label':'Cohesión · El Corazón','triada.cohesio.h3':'Fent Pinya',
-  'triada.cohesio.p':'Dinámicas vivenciales basadas en la estructura y los valores de los castells humanos. En pocas horas, un grupo de vecinos, técnicos o socias experimenta físicamente lo que después necesitará para sostener un proyecto: confianza, interdependencia y seguridad psicológica.',
-  'triada.cohesio.tag1':'Confianza vecinal','triada.cohesio.tag2':'Interdependencia',
-  'triada.diagnostic.label':'Diagnóstico · El Cerebro','triada.diagnostic.h3':'El mapa del pueblo',
-  'triada.diagnostic.p':'Dibujamos quién se relaciona con quién y qué se pasan: horas, dinero y locales, pero sobre todo los favores, la información y la confianza que no apunta nadie. Se ve enseguida de quién cuelga todo y qué vínculos están a punto de romperse. Es el método al que llaman VNA.',
-  'triada.diagnostic.tag1':'Quién sostiene qué','triada.diagnostic.tag2':'Lo que no sale en las actas',
-  'triada.motor.label':'Sostenibilidad · El Motor','triada.motor.h3':'La herramienta · el SOS',
-  'triada.motor.p':'Una aplicación gratuita donde el proyecto queda escrito: quién está, quién hace qué y cuántas horas ha puesto cada uno. Deja de depender de la memoria —y del cansancio— de dos personas, y quien entra nuevo puede ponerse al día solo.',
-  'triada.motor.tag1':'Tablero de tareas','triada.motor.tag2':'Sin depender de nadie',
+  
+  
+  
+  
+  
+  
   'fp.eyebrow':'Cohesión en acción',
   'fp.h2':'Los Castells:<br><em>una red de valor de 200 años</em>',
   'fp.intro':'Una torre humana es la red de valor más transparente que existe. Cada rol, cada intercambio, cada intangible — visible en tiempo real. Tres lecciones que aplicamos en las sesiones de cohesión Fent Pinya.',
@@ -1559,44 +1946,25 @@ es: {
   'fp.i2.p':'Una crossa que cede 2mm hace caer toda la torre. <strong>Una persona voluntaria que se agota sin relevo puede hundir un banco de tiempo entero.</strong> El mapa enseña qué vínculos están cargados de más mientras todavía se puede repartir.',
   'fp.i3.title':'03 · El liderazgo debe repartirse',
   'fp.i3.p':'En castells complejos, el Cap de Colla no ve el núcleo: la autoridad se reparte entre líderes naturales de cada nivel. <strong>Los proyectos que duran hacen lo mismo — no dependen de una sola persona imprescindible.</strong>',
-  'sos.eyebrow':'Sostenibilidad',
-  'sos.h2':'La herramienta que <em>hace que dure.</em>',
-  'sos.p1':'El SOS es una aplicación gratuita donde queda escrito todo lo que ahora vive en un grupo de WhatsApp y en la cabeza de dos personas: <strong>quién está, quién hace qué, cuántas horas ha puesto cada uno y qué se ha decidido</strong>. Cuando esas dos personas se cansan o se van, el proyecto no se va con ellas.',
-  'sos.p2':'Se abre como una página web cualquiera. <strong>No hay que crear ninguna cuenta ni dar ningún dato, y lo que se escribe se queda en tu ordenador</strong> — no en un servidor nuestro. Es abierta y te la puedes llevar cuando quieras.',
-  'sos.b1':'Un tablero de tareas del proyecto, abierto a todo el mundo',
-  'sos.b2':'Quién se encarga de qué, siempre a la vista',
-  'sos.b3':'Las horas y aportaciones de cada uno, anotadas y comprobables',
-  'sos.b4':'Quien entra nuevo se pone al día solo, sin que nadie se lo explique',
-  'sos.demo.p1':'Cada proyecto tiene ahí su mapa, sus tareas y sus cuentas. Y puede aprovechar lo que ya han aprendido otros pueblos: las dinámicas vienen preparadas, no se empieza de cero.',
-  'sos.demo.p2':'El mapa es el mismo del informe: cada círculo es una persona o una entidad, cada línea es algo que se pasan. Lo que se va haciendo queda anotado sobre ese mapa.',
-  'sos.demo.p3':'Ábrelo y curiosea. No pide correo, ni contraseña, ni instalar nada.',
-  'sos.demo.link':'Explora el SOS en vivo',
-  'sos.demo.vedes':'Las reglas que se ha impuesto',
-  'eines.eyebrow':'Sesiones en el SOS',
-  'eines.h2':'Sesiones de <em>desarrollo comunitario</em>',
-  'eines.intro':'Cada sesión llega con su mapa de valor, su tablero y su contabilidad ya preparados, y con recursos para implementarla. Instánciala en tu territorio en un clic.',
-  'eines.banc.n':'Banco de Tiempo','eines.banc.d':'Intercambio de servicios vecinales medidos en horas, no en dinero. Una hora vale una hora.',
-  'eines.biblio.n':'Biblioteca de las Cosas','eines.biblio.d':'Pool compartido de objetos y herramientas en préstamo: ahorro, menos residuos y encuentro.',
-  'eines.energia.n':'Comunidad Energética','eines.energia.d':'Energía renovable producida y compartida localmente, en cooperativa. Soberanía y ahorro.',
-  'eines.matriu.n':'MATRIU · Incubadora','eines.matriu.d':'Acompaña ideas ciudadanas hasta proyectos viables y soberanos, aprendiendo haciendo.',
-  'eines.habitatge.n':'Vivienda en cesión de uso','eines.habitatge.d':'Propiedad colectiva y derecho de uso indefinido, sin especulación (modelo Andel).',
-  'eines.consum.n':'Consumo Agroecológico','eines.consum.d':'Compra directa a payés, sin intermediarios: alimentos sanos y precio justo.',
   
-  'eines.cures.n':'Apoyo Mutuo y Cuidados','eines.cures.d':'Red vecinal de cuidado y acompañamiento contra la soledad, conectada a los servicios.',
-  'eines.coop.n':'Cooperativa de Trabajo','eines.coop.d':'Empleo digno y democrático: quien trabaja es socio y decide. Una persona, un voto.',
-  'eines.vna.n':'Mapa del tejido local','eines.vna.d':'Quién se relaciona con quién en el pueblo, y qué se pasan: horas, favores, información y confianza.',
-  'eines.compra.n':'Compra Colectiva','eines.compra.d':'Agregar la demanda del vecindario para conseguir mejores precios y condiciones.',
-  'eines.cta':'Abre el catálogo en el SOS →',
-  'apr.eyebrow':'Soberanía a largo plazo',
-  'apr.h2':'Para que la comunidad <em>aprenda a caminar sola.</em>',
-  'apr.p1':'No hacemos cursos aparte: se aprende llevando el proyecto de verdad, en equipo y entre iguales. Es el modelo de una escuela finlandesa —Tiimiakatemia— que la Universidad de Mondragón lleva años aplicando al cooperativismo vasco.',
-  'apr.p2':'El objetivo no es que nos necesitéis siempre. Es que <strong>cuando nos vayamos, en el pueblo quede gente que sabe acoger a los nuevos, decidir en común y llevar las cuentas</strong> sin llamar a nadie de fuera.',
-  'apr.pilar1.title':'Aprender haciendo',
-  'apr.pilar1.p':'El proyecto real es el aula. Cada reto se convierte en aprendizaje compartido, no en teoría aislada.',
-  'apr.pilar2.title':'Equipos que se autogestionan',
-  'apr.pilar2.p':'Células de trabajo entre iguales, con roles rotativos y decisiones tomadas en común, no por un solo líder.',
-  'apr.pilar3.title':'Riesgo y responsabilidad compartida',
-  'apr.pilar3.p':'Cooperativismo real: quien pone trabajo, tiene voz y parte del resultado — no promesas, hechos.',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'fac.eyebrow':'Quién hay detrás',
   'fac.role':'Psicólogo social · Innovador comunitario',
   'fac.p1':'Arraigado en Torrelles de Foix, en el corazón del Alt Penedès, más de 20 años diseñando dinámicas de grupo y redes de valor, hoy puestos al servicio de los ecosistemas locales.',
@@ -1612,7 +1980,6 @@ es: {
   'cl.p2.tag':'Proyecto pionero · 2009','cl.p2.n':'Banco de Tiempo de León','cl.p2.d':'El primer banco de tiempo de la ciudad: intercambio de servicios medido en horas, sin dinero, tejiendo confianza y apoyo mutuo entre vecinos.',
   'cl.p3.tag':'Desarrollo comunitario','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodología propia de cohesión castellera y mapeo de redes de valor, hoy al servicio de ayuntamientos, cooperativas y ateneos del territorio.',
   'cta.h2':'¿Tiene tu pueblo un proyecto<br>que <em>se aguanta con pinzas?</em>',
-  
   
   'cta.btn2':'Explora el SOS en vivo →','cta.btn3':'Haz el diagnóstico en 3 min →',
   'footer.fentpinya':'Fent Pinya','footer.aprenentatge':'Aprendizaje','footer.facilitador':'Facilitador',
@@ -1672,7 +2039,7 @@ es: {
   'faq.h2':'Lo que nos preguntan <em>siempre</em>',
   'faq.intro':'Las cinco de verdad, con la respuesta que daríamos en la primera reunión.',
   'faq.q1':'¿Cuánto cuesta?',
-  'faq.a1':'<strong>La herramienta, nada: es gratuita y te la puedes llevar.</strong> Lo que se paga es el acompañamiento, y en la mayoría de casos no sale del presupuesto municipal sino de fondos que ya existen —el catálogo de la Diputación de Barcelona, los Ateneus Cooperatius, los fondos Leader de desarrollo rural o los Next Generation. En el diagnóstico de 3 minutos te decimos qué vía encaja con tu caso y qué hace falta para justificarla. Si no encaja ninguna, también te lo diremos.',
+  'faq.a1':'<strong>Cada paquete del catálogo lleva el precio escrito</strong>, y la herramienta no tiene: es gratuita y te la puedes llevar. Lo que se paga es el acompañamiento, y en la mayoría de casos no sale del presupuesto municipal sino de fondos que ya existen —el catálogo de la Diputación de Barcelona, los Ateneus Cooperatius, los fondos Leader de desarrollo rural o los Next Generation. Cada paquete dice qué vía le encaja. En el diagnóstico de 3 minutos lo concretamos a tu caso, y si ninguna encaja, también te lo diremos.',
   'faq.q2':'¿Cuánto trabajo le va a caer al personal técnico?',
   'faq.a2':'Dos sesiones para hacer el mapa y <strong>una reunión al mes</strong> mientras aquello anda. Nada más. Si al final el trabajo de sostener el proyecto acaba sobre la mesa del técnico de participación, hemos fallado: precisamente veníamos a evitarlo.',
   'faq.q3':'¿Dónde quedan los datos del vecindario?',
@@ -1686,8 +2053,7 @@ es: {
   'cta.pr2':'Personas formadas en cooperación y confianza desde 1996',
   'cta.pr3':'De la herramienta es gratuita y abierta: se puede revisar antes de confiar en ella',
   'cta.pr.nota':'El servicio de diagnóstico en el territorio es nuevo y <strong>todavía no tenemos testimonios</strong>. Preferimos decirlo a inventarnos uno: lo que sí puedes comprobar hoy es la herramienta, el método y la trayectoria de quien hay detrás.',
-  'nav.oferta':'Qué ofrecemos'
-}
+  }
 };
 
 // Tooltips Castellers en CA

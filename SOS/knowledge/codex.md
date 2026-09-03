@@ -704,6 +704,43 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 137 — Un servei no és un paquet fins que diu quantes vegades s'ha fet
+
+Hi havia tres catàlegs que no es parlaven: el `README` venia sis serveis
+corporatius amb vint anys d'entrega darrere, la portada en venia tretze de
+comunitaris que el README ignorava, i el document de negoci —l'únic amb públics,
+dolors i preus— no arribava a cap pantalla.
+
+Els tretze quadres de la portada explicaven molt bé **què és** cada cosa. Cap
+deia el que decideix una compra: qui la fa, quant dura, què s'endú, quant costa
+i amb quins diners es paga. Un tècnic municipal no pot portar un quadre a una
+junta.
+
+**Un servei explica; un paquet es pot contractar.** Les cinc coses de dalt són
+el mínim, i falta la sisena, que és la que fa honesta tota la resta:
+
+**Quantes vegades s'ha fet.** *Provat* vol dir entregat moltes vegades i amb
+casos per ensenyar. *En adaptació* vol dir un producte provat que s'està portant
+a un mercat nou. *Nou* vol dir que encara no s'ha entregat prou vegades.
+
+Sense aquesta columna, els vint anys de món corporatiu servirien de prova d'un
+producte comunitari que encara no en té —i era exactament el que feia el README:
+posar 60.000 participants i 150 empreses al costat d'una oferta d'acció
+comunitària que és molt més nova. No és mentir: és deixar que la xifra menteixi
+sola. Dir «nou» perd alguna venda i evita la que es perd quan es descobreix.
+
+Dues conseqüències pràctiques:
+
+- **Un sostre declarat.** Els paquets per a administració pública queden per
+  sota dels 5.000 €, que és el que una regidoria contracta sense obrir un
+  expedient llarg. Per sobre, la proposta deixa de ser una decisió i passa a ser
+  un procediment. Els d'empresa no tenen aquest sostre i no cal que en tinguin.
+- **Es declara un cop i es genera.** Cada paquet viu al quadre de la portada, a
+  la clau catalana, a la castellana i a la taula del README. Escrit a mà, arriba
+  el dia que se'n queda un enrere i la pàgina diu dos preus alhora sense que ho
+  vegi ningú, perquè el castellà el llegeixen altres persones que el català.
+  `SOS/tools/build-oferta.js` l'escriu a tot arreu i `--check` peta al CI.
+
 ## Veda 136 — Un avís que acusa ha de poder dir de qui és la culpa
 
 El directori tenia un cartell per a les fitxes que el sedàs descarta. Deia sempre
