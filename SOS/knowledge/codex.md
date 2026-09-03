@@ -704,6 +704,48 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 138 — Vuit safates és cap safata
+
+El SOS sabia perfectament què calia fer. Ho sabia **en vuit llocs diferents**:
+les missions, la safata de vistiplaus, el tauler d'atenció, els riscos, els
+blocatges, les alertes de cures, els taulers de cada projecte i els forats de la
+xarxa. I cap deia «això és el que et toca a tu».
+
+Cadascuna, per si sola, era correcta. Aquest és el motiu pel qual va durar
+tant: **no hi havia res a arreglar en cap de les vuit**. El defecte era la suma
+—el cost de saber què has de fer era obrir vuit pantalles i recordar-les totes—
+i un defecte que només existeix a la suma no el troba mai qui mira les parts.
+
+La sortida no és afegir una novena pantalla que les resumeixi: és que la llista
+**sigui** l'única, i que les vuit fonts hi desemboquin. Res es recalcula; es
+normalitza el que ja hi havia.
+
+### Tres coses que la fan servir d'alguna cosa, i que la guarda vigila
+
+- **Les columnes són les que ja existien.** Cada projecte té el seu tauler amb
+  per fer / fent / fet. Inventar-ne unes altres a la safata comuna hauria estat
+  el mateix defecte un pis més amunt: dues maneres de dir en quin punt està una
+  feina.
+- **Només es mou el que té estat desat.** La majoria d'aquestes tasques es
+  calculen a cada pintada. Deixar arrossegar-les a «fent» escriuria un estat que
+  el següent render desmentiria, i una columna que menteix és pitjor que una
+  columna que no hi és.
+- **Els dos eixos, i les dues direccions.** Territori i tema ja existien al codi
+  i no es feien servir junts enlloc. El que faltava de debò era la direcció:
+  **cap enfora ha de veure el que et conté i tu no**. Si l'àmbit s'inclogués a
+  si mateix, les dues direccions dirien gairebé el mateix i el botó no serviria
+  de res. La meitat de la feina d'una xarxa és cap amunt.
+
+I una que ve de la veda 133 i es podia perdre aquí sense adonar-se'n: **portar
+les alertes de cures a una pantalla comuna era la manera més fàcil de saltar-se
+el permís**. Una alerta que abans només veia qui sostenia el node ara la veu
+qualsevol que obri la safata, així que el nom hi passa pel mateix gate que a
+`renderCures` — i qui no pot escriure al node veu el número i cap persona.
+
+Finalment, una tasca **sense node no es filtra mai**: no és de cap territori ni
+de cap tema perquè és de tothom, i amagar-la seria amagar precisament la feina
+que ningú ha reclamat encara.
+
 ## Veda 137 — Un servei no és un paquet fins que diu quantes vegades s'ha fet
 
 Hi havia tres catàlegs que no es parlaven: el `README` venia sis serveis

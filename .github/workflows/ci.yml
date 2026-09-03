@@ -143,6 +143,16 @@ jobs:
       - name: Guarda del catàleg (un sol preu per paquet)
         run: node SOS/tools/build-oferta.js --check
 
+      # El SOS sabia què calia fer i ho sabia en vuit llocs diferents. Cap
+      # d'ells petava: cada safata, per si sola, era correcta. Ara són una, i
+      # el perill és el simètric i tampoc petaria —que una font es despengi i
+      # el que està a punt de cremar-se deixi de sortir sense que ningú ho
+      # vegi. Aquí es vigila que hi arribin totes, que les columnes siguin les
+      # del tauler que ja existeix, que els dos eixos filtrin en les dues
+      # direccions, i que els noms de les cures no passin el gate de permís.
+      - name: Guarda de les tasques (una safata i no vuit)
+        run: node SOS/tools/check-tasques.js
+
       # Un mapa desactualitzat és pitjor que cap mapa: sense mapa mires, i amb
       # un mapa fals vas. I aquí qui llegeix sovint és una IA, que no pregunta:
       # llegeix el nom de la carpeta i escriu. Crear una carpeta sense dir què

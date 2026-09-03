@@ -1045,6 +1045,36 @@ de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
 
+### Una sola SOS · «Les meves tasques» · fet
+
+El SOS sabia què calia fer i ho sabia **en vuit llocs diferents**: missions,
+safata de vistiplaus, tauler d'atenció, riscos, blocatges, alertes de cures,
+taulers de projecte i forats de la xarxa. Cap deia «això és el que et toca a
+tu». Vuit safates és cap safata, i el defecte només existia a la suma —per això
+va durar tant: cadascuna, per si sola, era correcta. Veda 138.
+
+- **Una safata**, `lesMevesTasques()`. **No calcula res de nou**: normalitza les
+  onze fonts que ja hi havia i les posa a la mateixa llista.
+- **Les columnes són les del tauler que cada projecte ja té** (`KCOLS`: per fer,
+  fent, fet). Només les targetes del tauler es poden moure —són les úniques amb
+  l'estat desat—, i moure-les des d'aquí les desa al node.
+- **Els dos eixos, amb les dues direccions.** Territori (endins = el subarbre;
+  enfora = el que et conté i tu no) i tema. Els dos ja existien al codi i no es
+  feien servir junts enlloc.
+- **Les cures hi entren amb el seu permís**: qui no sosté el node veu el número
+  i cap nom, el mateix gate que `renderCures`.
+- **Cada tasca diu a quin intercanvi del mapa de valor serveix** quan es pot
+  saber. Quan no, no es diu res: `fluxDeTasca` compara text, i acusar el mapa
+  d'una limitació del matcher hauria estat la veda 136 una altra vegada.
+- **Sostre de KISS de 490 a 510 KB**, justificat: aquesta pantalla no compra una
+  funcionalitat nova, en compra una de menys. Cost mesurat: 5 KB gzip.
+
+**Queda obert d'aquesta línia**: les miniapps que viuen fora de l'app —La
+Compra, L'Energia, L'Habitatge— tenen dades pròpies a la seva pàgina i **no
+poden alimentar aquesta llista**. Cures i llesca sí que hi són, perquè viuen a
+dins. Portar-hi les de fora vol decidir abans on viuen les seves dades, i no
+s'ha fet aquí.
+
 ### La portada v2 · paquetitzat el que ja es fa · fet
 
 Els tres catàlegs que no es parlaven ara són un. Es va **paquetitzar l'oferta
