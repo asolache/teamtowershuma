@@ -704,6 +704,78 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 131 — Cent setze noms no són cent setze professions
+
+Molekulandia és el poble on cada edifici és un projecte del catàleg: el bar és
+el banc de temps, la ferreteria és la biblioteca de les coses. Existeix per
+contestar la pregunta que ningú sap contestar quan li expliques el SOS —*«i
+això, què és?»*—, i la resposta és que **un catàleg de dotze dinàmiques és una
+llista, i un poble amb onze portes és un lloc on entrar**.
+
+La feina de veritat, però, no era dibuixar el poble. Era això:
+
+Sumant els rols de les tres fonts del SOS —les dinàmiques, les activitats
+crítiques del territori i les formes de projecte— surten **165 caselles de rol**
+amb **116 noms diferents**. La temptació és presentar-ho com «116 professions
+que pots aprendre al SOS». Seria fals, i el que és pitjor, seria fals d'una
+manera que fa quedar bé.
+
+**La majoria d'aquells noms no són oficis.** Abans de saber a quina professió va
+un rol cal saber si és una professió, i per això cada nom porta **natura** abans
+que família:
+
+- **ofici** (33) — una cosa que es pot aprendre a fer. Només aquests en tenen.
+- **part** (31) — una manera de prendre-hi part. Ser sòcia, usuària o unitat de
+  convivència **no s'aprèn: s'hi és**. Comptar-ho com a professió hauria
+  triplicat el número sense ensenyar res a ningú.
+- **fora** (44) — qui hi ha a l'altra banda: l'ajuntament, la clientela, qui
+  finança. És la natura **més nombrosa de totes**, i això diu una cosa del SOS
+  que no és òbvia: un mapa de valor és sobretot **un mapa de fronteres**.
+- **peça** (8) — una peça del projecte mateix: un lloc, una entitat, un registre.
+
+Els 33 oficis es tanquen en **nou professions**. Nou, i no cent setze. Un
+`groupBy` pel nom hauria donat una llista de sinònims amb aire de descobriment
+—«Coordinació» i «Coordinació pedagògica» separades, «Pagesia local» al mateix
+sac que «Proveïdors locals»—, i hauria semblat molta més feina.
+
+### El que es genera i el que es declara
+
+La taxonomia **es declara**: un nom per línia a `tools/build-molekulandia.js`,
+perquè es pugui discutir. És la peça intel·lectual i no la pot fer una màquina.
+El que fa la màquina és **no deixar-ne cap fora**: llegeix les tres taules de
+`index.html` i falla si un rol no té natura, si una classificació apunta a un
+rol que ja no existeix, o si una professió es queda sense cap rol viu. Afegir un
+rol al catàleg obliga a prendre una decisió; no el deixa colar com a «altres».
+
+D'aquí surt una troballa que no s'hauria vist mirant la llista: **una de les nou
+professions —Cultura i relat— no s'aprèn a cap edifici de l'arcada.** Només
+existeix a les activitats del terme. És un forat del catàleg, no de la professió,
+i es veu perquè la pàgina ho calcula en comptes d'escriure-ho.
+
+### El criteri que decideix si això val alguna cosa
+
+Estava escrit al backlog abans de començar: **si des de la pàgina no s'hi pot
+entrar a fer alguna cosa, no és Molekulandia, és una il·lustració.** De cada
+edifici s'hi entra —què és al poble, què és al SOS, quins rols té, quines
+professions s'hi aprenen— i cadascun té **exactament una sortida**: o una porta
+a una eina que existeix, o la frase que diu que encara no n'hi ha cap. Mai les
+dues, mai cap de les dues, i la guarda compta que cada porta apunti a un fitxer
+que hi és.
+
+I el que hi ha encès al poble **ho marca qui llegeix**. La pàgina no ho pot
+saber —el registre viu a l'aplicació, en un altre origen— i fer veure que ho sap
+seria el mateix pecat que dibuixar onze edificis oberts a un territori que en té
+dos.
+
+### Una guarda que exigia el que no tocava
+
+En afegir la pàgina al vocabulari compartit del perfil, `check-perfil.js` li va
+reclamar vuit funcions de l'aplicació (`memberAports`, `roleCal`…). No era cap
+error de la pàgina: la guarda derivava la llista **per exclusió** —«tot el que no
+té taula de demandes»— i allà només hi havia hagut mai `index.html`. Derivar una
+llista per exclusió funciona fins que apareix el segon cas. Ara és explícita, com
+les excepcions del menú.
+
 ## Veda 130 — L'entrada i la quota són la mateixa palanca, i exclouen gent diferent
 
 La tercera miniapp de tipus de projecte, i la mateixa manera de trobar el nus:

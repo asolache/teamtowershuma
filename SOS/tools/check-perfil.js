@@ -35,7 +35,11 @@ const llegeix = f => readFileSync(join(ARREL, 'SOS', f), 'utf8');
    mapa amb el mateix vocabulari. El que hi comparteix és el **vocabulari i la
    puntuació**; el que demana cada rol no pot ser una taula del fitxer, perquè
    allà els rols els dibuixa la gent. */
-const PAGINES = ['vna.html', 'compra.html', 'index.html'];
+/* `molekulandia.html` també: proposa professions amb el mateix vocabulari. El
+   que demana cada professió no és una taula d'aquest fitxer —la genera
+   `build-molekulandia.js` des del catàleg—, per això comparteix el vocabulari i
+   no entra a `AMB_CAL`. */
+const PAGINES = ['vna.html', 'compra.html', 'index.html', 'molekulandia.html'];
 /* Les que porten la taula de demandes escrita al fitxer, i per tant es poden
    comprovar cita a cita. */
 const AMB_CAL = ['vna.html', 'compra.html'];
@@ -162,10 +166,15 @@ function rolsDe(f, txt) {
 
 /* L'app no porta taula de demandes, però sí que ha de saber fer-hi servir el
    vocabulari: si les peces que associen persona i rol desapareixen, el mapa
-   torna a ser un pòster i cap altra guarda ho notaria. */
+   torna a ser un pòster i cap altra guarda ho notaria.
+   La llista de qui ha de portar aquestes peces és **explícita**, i no «tot el
+   que no té taula de demandes»: derivar-la per exclusió feia que qualsevol
+   pàgina nova que compartís el vocabulari —`molekulandia.html` va ser la
+   primera— se li exigissin vuit funcions de l'aplicació que no li toquen. */
 const PECES = ['memberAports', 'roleCal', 'roleOwner', 'assignRoleMember',
   'roleDelivers', 'suggestRoleMembers', 'autoAssignRoles', 'rolesSobrecarrega'];
-blocs.filter(b => !AMB_CAL.includes(b.f)).forEach(({ f, txt }) => {
+const AMB_PECES = ['index.html'];
+blocs.filter(b => AMB_PECES.includes(b.f)).forEach(({ f, txt }) => {
   const falten = PECES.filter(p => !new RegExp('(function|const)\\s+' + p + '\\b').test(txt));
   if (!falten.length) ok(`${f}: les peces per associar una persona a un rol hi són`);
   else bad(`${f}: ${pl(falten.length, 'peça', 'peces')} que falta per associar una persona a ` +

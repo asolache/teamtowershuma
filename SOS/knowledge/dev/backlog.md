@@ -945,63 +945,34 @@ de sostre justificada al commit. No es poden fer totes de cop, i fer-les a
 mitges és pitjor que no fer-les: una eina que no resol la feina de la setmana
 no la torna a obrir ningú.
 
-### Molekulandia · el poble on cada edifici és un projecte del SOS
+### Molekulandia · fet a `molekulandia.html`
 
-**La idea.** Una pàgina que dibuixi **Molekulandia**: una comunitat
-autosuficient amb la plaça i l'arcada, i als edificis del voltant els espais de
-cada tipus de projecte que hi ha a qualsevol poble. El **bar és el banc de
-temps**. La **ferreteria és la biblioteca de les coses**. I així amb tot: el que
-a un poble ja existeix com a edifici, al SOS ja existeix com a dinàmica.
+El poble on cada edifici és un projecte del catàleg: **el bar és el banc de
+temps, la ferreteria és la biblioteca de les coses**. Onze edificis a l'arcada,
+la plaça al mig, i el terme al voltant amb les 14 activitats crítiques i les 6
+formes de projecte.
 
-**Per què això no és decoració.** És la resposta a la pregunta que ningú sap
-contestar quan li expliques el SOS: *«i això, què és?»*. Un catàleg de dotze
-dinàmiques és una llista; un poble amb dotze portes és un lloc on entrar. La
-plaça del joc (`joc.html`) ja fa aquesta feina per a una dinàmica; Molekulandia
-la fa per a totes alhora.
+**La peça intel·lectual, resolta i generada.** Sumant les tres fonts surten
+**165 caselles de rol amb 116 noms**. La troballa és que la majoria **no són
+professions**: 33 són oficis, 31 són maneres de prendre-hi part —ser sòcia no
+s'aprèn, s'hi és—, 44 són qui hi ha a fora i 8 són peces del projecte. Els 33
+oficis es tanquen en **nou professions**. Ho genera
+`tools/build-molekulandia.js` de les taules de `index.html`: la taxonomia es
+declara allà, un nom per línia, i un rol nou al catàleg **obliga a decidir de
+quina natura és** en comptes de colar-se com a «altres». Veda 131.
 
-**I la part que la fa valuosa de debò: les professions noves.** Si sumes els
-rols de **totes** les fonts —les dinàmiques del catàleg, les activitats
-crítiques del territori i els prototips de mapa— surt el mapa complet del que
-una persona **pot aprendre a ser** dins del SOS:
+**El criteri es va complir:** de cada edifici s'hi entra, i cadascun té
+exactament una sortida —o una porta a una eina que existeix (9), o la frase que
+diu que encara no n'hi ha cap (2). Cap porta apunta a un fitxer que no hi és, i
+`check-molekulandia.js` ho compta.
 
-| Font | Plantilles | Rols |
-|---|---|---|
-| `DYNAMICS` · tipus de projecte | 12 | 65 |
-| `CRITICAL_ACTIVITIES` · activitats del territori | 14 | 70 |
-| `PROTOTYPE_MAPS` · formes genèriques de projecte | 6 | 30 |
-| **Total** | **32** | **165** |
+**El que en va sortir i no s'havia previst:**
 
-Cent seixanta-cinc rols, amb repeticions entre fonts —«Coordinació» surt a
-mitja dotzena de mapes— i per tant amb una feina de fons abans de dibuixar res:
-**agrupar-los en professions**. Aquesta és la peça intel·lectual del projecte i
-no s'ha de saltar: una llista de 165 etiquetes no és una visió, és un índex.
-
-**El que Molekulandia ha de deixar fer, i no només mirar:**
-
-- **Entrar a un edifici** i veure què és aquell projecte, quins rols té i quin
-  et proposa el teu perfil (el mateix `encaix` que ja fan `vna.html` i
-  `compra.html`: es declara un cop i val a tot arreu).
-- **Veure què hi ha de debò al teu poble** i què no: els edificis que la teva
-  xarxa ja té encesos i els que són buits. Un poble dibuixat que ensenyi dotze
-  edificis oberts quan al teu territori n'hi ha dos seria un cartell, no un
-  mapa.
-- **Anar del rol a l'aprenentatge**: cada professió amb els mòduls de formació
-  que la sostenen i les proves d'evidència que la fan certa. Aquí es tanca el
-  cercle amb l'itinerari que ja calcula `diagnostic.html`.
-
-**Riscos que s'han de dir abans de començar:**
-
-- **Que sigui un pòster.** El criteri per saber si val: si des de la pàgina no
-  s'hi pot **entrar a fer alguna cosa**, no és Molekulandia, és una il·lustració.
-- **Que prometi edificis que no existeixen.** Set de les dotze dinàmiques
-  encara no tenen miniapp (bloc anterior). L'edifici hi pot ser i s'ha de veure
-  què hi ha a dins avui: el mapa de valor sí, l'eina encara no.
-- **La taxonomia de professions és feina de fons**, no un `groupBy` per nom.
-  Fer-la malament donaria una llista de sinònims amb aire de descobriment.
-
-**Dependència**: la taula de rols agrupats hauria de sortir **generada de les
-taules** i comparada amb una guarda, com fa `check-matriu.js`. Escrita a mà,
-divergiria a la primera dinàmica nova.
+| Troballa | Què vol dir |
+|---|---|
+| **Cultura i relat no s'aprèn a cap edifici de l'arcada** | Existeix només a les activitats del terme (cultura, turisme). És un **forat del catàleg**, no de la professió: hi falta un tipus de projecte que la sostingui |
+| **«fora» és la natura més nombrosa (44 de 116)** | Un mapa de valor és sobretot **un mapa de fronteres**: la major part dels noms que hi surten són gent amb qui es tracta, no gent que hi és a dins |
+| El casal (suport mutu) i el taller (coop. de treball) són els dos edificis sense eina | Coincideix amb els pendents del bloc anterior, i ara es veu des del poble |
 
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
