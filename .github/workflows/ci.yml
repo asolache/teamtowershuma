@@ -134,6 +134,15 @@ jobs:
       - name: Guarda del directori (un sol did, unes soles categories)
         run: node SOS/tools/check-online.js
 
+      # El catàleg comercial viu en cinc llocs per paquet: el quadre de la
+      # portada, la clau catalana, la castellana, la taula del README i el
+      # document de negoci. Escrit a mà, arriba el dia que se'n queda un
+      # enrere i la pàgina diu dos preus alhora —i no ho veu ningú, perquè el
+      # castellà el llegeixen altres persones que el català. Es declara un cop
+      # a build-oferta.js i s'escriu a tot arreu.
+      - name: Guarda del catàleg (un sol preu per paquet)
+        run: node SOS/tools/build-oferta.js --check
+
       # Un mapa desactualitzat és pitjor que cap mapa: sense mapa mires, i amb
       # un mapa fals vas. I aquí qui llegeix sovint és una IA, que no pregunta:
       # llegeix el nom de la carpeta i escriu. Crear una carpeta sense dir què

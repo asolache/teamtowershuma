@@ -1045,7 +1045,40 @@ de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
 
-### Revisió de la portada amb l'eix del producte · i el README, que ven una altra empresa
+### La portada v2 · paquetitzat el que ja es fa · fet
+
+Els tres catàlegs que no es parlaven ara són un. Es va **paquetitzar l'oferta
+que ja existia** en comptes d'inventar-ne una: els sis serveis del README hi
+entren sencers, els S1–S7 del document de negoci també, i les tres famílies
+són **els tres oficis** —consultoria, formació, i producció i dinamització—,
+amb la versió d'organització i la comunitària del mateix producte convivint
+dins de cadascuna.
+
+**El camp que ho fa honest és el punt d'adaptació**: *provat*, *en adaptació* o
+*nou*. Sense ell, els vint anys de món corporatiu servirien de prova d'un
+producte comunitari que encara no en té, que és el que feia el README. Veda 137.
+
+- **18 paquets**, tots amb per a qui, quant dura, què s'endú, quant costa, amb
+  quins diners es paga i quantes vegades s'ha fet. Els d'administració pública,
+  per sota de **5.000 €**.
+- **Declarat un cop**: `SOS/tools/build-oferta.js` escriu el catàleg a la
+  portada (amb les claus dels dos idiomes) i la taula al README. `--check` al CI.
+- **L'espina**: benefici → procés → detall, amb el relat de quatre baules
+  (Àlvar → psicologia de grups → TeamTowers → Humà) i la formació-acció provada
+  amb els projectes propis, tots visitables.
+- **El SOS té secció pròpia**: és el projecte, és lliure, i al seu voltant hi ha
+  implantació, IA amb frens i l'estudi de contractes intel·ligents —l'estudi, no
+  l'eina, perquè l'eina no existeix i es diu.
+- **Fora la seguretat quàntica**: no hi ha res construït i les firmes Ed25519
+  del SOS no són post-quàntiques.
+
+**Queda obert d'aquesta línia**: el material de visita en paper (un full per
+paquet i un guió d'una pàgina), i confirmar les xifres corporatives del README
+amb la seva font —s'han retirat els percentatges sense referència, però els
+60.000 participants i les 150 empreses encara no tenen data ni document al
+costat.
+
+### Revisió de la portada amb l'eix del producte · i el README, que ven una altra empresa · fet a dalt
 
 **El que s'ha demanat**: revisar `index.html` amb **enfocament a conclusió per
 producte** —que qui hi entra acabi sabent què contracta— i repassar les

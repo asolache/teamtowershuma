@@ -21,7 +21,7 @@
 
    Corre en menys d'un segon i sense dependències, com les altres.
    node SOS/tools/check-landing.js */
-const { readFileSync } = require('node:fs');
+const { readFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
 const APP = process.argv[2] || join(__dirname, '..', '..', 'index.html');
@@ -47,7 +47,10 @@ if (iCa < 0 || iEs < 0 || iFi < 0) {
   console.log('\n❌ 1 problema.');
   process.exit(1);
 }
-const KV = /'([A-Za-z0-9_.]+)':'(?:[^'\\]|\\.)*'/g;
+/* El guionet hi és perquè les claus del catàleg porten l'id del paquet
+   (`pk.diagnostic-teixit.n`), i sense ell la guarda no les veia i acusava de
+   no estar traduït el que sí que ho estava. */
+const KV = /'([A-Za-z0-9_.-]+)':'(?:[^'\\]|\\.)*'/g;
 const claus = txt => [...txt.matchAll(KV)].map(m => m[1]);
 const ca = claus(src.slice(iCa, iEs));
 const es = claus(src.slice(iEs, iFi));
@@ -82,10 +85,84 @@ else bad(`${pl(orfes.length, 'element traduïble', 'elements traduïbles')} sens
 if (!mortes.length) ok('cap clau del diccionari apunta a un element que ja no hi és');
 else bad(`${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')} res (${mostra(mortes)}) — fan creure que aquell text està cobert`);
 
-// ── 4 · Informatiu ───────────────────────────────────────────────────────
+/* ── 4 · El catàleg no pot vendre serveis a mitges ─────────────────────────
+   Un servei explica què és; un paquet diu qui el compra, quant dura, què
+   s'endú, quant costa i quantes vegades s'ha fet. Sense les cinc coses, un
+   tècnic municipal no ho pot portar a una junta —que era exactament el
+   problema dels tretze quadres que hi havia abans. Veda 137. */
+const paquets = [...cos.matchAll(/<article class="paquet" id="pk-([^"]+)">([\s\S]*?)<\/article>/g)]
+  .map(m => ({ id: m[1], html: m[2] }));
+if (!paquets.length) bad('no hi ha cap paquet a la portada: aquesta guarda no pot comprovar res');
+else {
+  const camp = (h, re) => re.test(h);
+  const migFets = paquets.filter(p =>
+    !camp(p.html, /class="pk-endus"/) ||
+    !camp(p.html, /class="pk-punt /) ||
+    !camp(p.html, /class="pk-preu"><strong>[\d.]+ €/) ||
+    (p.html.match(/<dt /g) || []).length !== 3);
+  if (!migFets.length) ok(`${paquets.length} paquets, tots amb entregable, per a qui, durada, diners, preu i punt`);
+  else bad(`${pl(migFets.length, 'paquet a mitges', 'paquets a mitges')} (${mostra(migFets.map(p => p.id))}) — un servei sense preu ni durada no es pot portar a una junta`);
+
+  /* El sostre dels 5.000 €: per sobre, la proposta deixa de ser una decisió
+     d'una regidoria i passa a ser un procediment. Només s'aplica als paquets
+     dirigits a administració o entitats; els d'empresa no en tenen. */
+  const SOSTRE = 5000;
+  const cars = paquets.filter(p => {
+    const qui = (p.html.match(/class="pk-dades">[\s\S]*?<dd[^>]*>([^<]*)</) || [])[1] || '';
+    if (!/ajuntament|consell|escola|afa|entitat|administracion|ateneu/i.test(qui)) return false;
+    const preu = Number(((p.html.match(/class="pk-preu"><strong>([\d.]+)/) || [])[1] || '0').replace(/\./g, ''));
+    return preu > SOSTRE;
+  });
+  if (!cars.length) ok(`cap paquet per a administració o entitats passa dels ${SOSTRE.toLocaleString('ca-ES')} €`);
+  else bad(`${pl(cars.length, 'paquet passa', 'paquets passen')} del sostre de ${SOSTRE} € (${mostra(cars.map(p => p.id))}) — deixen de ser contractació menor`);
+
+  /* Una porta cap a un fitxer que no hi és. Mateixa regla que a Molekulandia. */
+  const dests = [...cos.matchAll(/<article class="paquet"[\s\S]*?<h4><a href="([^"]+)"/g)].map(m => m[1]);
+  const falsos = dests.filter(d => !existsSync(join(__dirname, '..', '..', d.replace(/^\//, '').replace(/\/$/, '/index.html'))));
+  if (!falsos.length) ok(`${dests.length} enllaços de paquet, tots a una pàgina que existeix`);
+  else bad(`${pl(falsos.length, 'enllaç', 'enllaços')} a un fitxer que no hi és (${mostra(falsos)})`);
+
+  /* Tot punt d'adaptació igual seria no dir res: la columna existeix
+     precisament per distingir el que té casos del que encara no en té. */
+  const punts = new Set(paquets.map(p => (p.html.match(/class="pk-punt (pk-[a-z]+)"/) || [])[1]));
+  if (punts.size >= 2) ok(`i es distingeixen ${punts.size} punts d'adaptació, no tots el mateix`);
+  else bad('tots els paquets diuen el mateix punt d\'adaptació: la columna no informa de res');
+}
+
+/* ── 5 · Cap servei del README s'ha quedat pel camí ────────────────────────
+   Els sis serveis del README són productes existents amb anys d'entrega. La
+   portada els ignorava, i eren dos catàlegs venent dues empreses diferents. */
+const README = readFileSync(join(__dirname, '..', '..', 'README.md'), 'utf8');
+const enMd = [...README.matchAll(/^\| \*\*([^*]+)\*\* \|/gm)].map(m => m[1].trim());
+if (!enMd.length) bad('el README no porta cap paquet: el catàleg no s\'hi ha generat');
+else {
+  const enHtml = [...src.matchAll(/'pk\.[a-z0-9-]+\.n':'((?:[^'\\]|\\.)*)'/g)]
+    .map(m => m[1].replace(/\\'/g, "'"));
+  const orfesMd = enMd.filter(n => !enHtml.includes(n));
+  if (!orfesMd.length) ok(`els ${enMd.length} paquets del README són tots a la portada`);
+  else bad(`${pl(orfesMd.length, 'paquet del README no surt', 'paquets del README no surten')} a la portada (${mostra(orfesMd)}) — dos catàlegs són dues empreses`);
+}
+
+/* ── 6 · Les paraules que la guia de marca prohibeix ───────────────────────
+   «No diuen res i sonen a fullet», diu SOS/knowledge/marketing/guia-estil-marca.md.
+   Es miren només al text visible: als comentaris del codi s'hi val a anomenar
+   el que s'evita, i de fet aquesta guarda ho fa. */
+const visible = cos.replace(/<!--[\s\S]*?-->/g, '').replace(/<style[\s\S]*?<\/style>/g, '')
+  .replace(/<script[\s\S]*?<\/script>/g, '');
+const PROHIBIDES = [
+  [/disruptiu|disruptiva|disruptivo/i, 'disruptiu'],
+  [/solucions innovadores|soluciones innovadoras/i, 'solucions innovadores'],
+  [/ecosistema disruptiu/i, 'ecosistema disruptiu'],
+  [/empoderament\b(?!\s+(de|per|dels|de les))/i, 'empoderament sense objecte']
+];
+const dites = PROHIBIDES.filter(([re]) => re.test(visible)).map(([, n]) => n);
+if (!dites.length) ok('cap paraula de fullet al text visible');
+else bad(`${pl(dites.length, 'paraula prohibida', 'paraules prohibides')} per la guia de marca: ${dites.join(', ')}`);
+
+// ── 7 · Informatiu ───────────────────────────────────────────────────────
 const seccions = (cos.match(/<section/g) || []).length;
 const detalls = (cos.match(/<details class="faq-item"/g) || []).length;
-console.log(`  · ${seccions} seccions · ${detalls} objeccions · ${Math.round(Buffer.byteLength(src) / 1024)} KB en cru`);
+console.log(`  · ${seccions} seccions · ${paquets.length} paquets · ${detalls} objeccions · ${Math.round(Buffer.byteLength(src) / 1024)} KB en cru`);
 
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la portada.` : '\n✅ La portada quadra.');
 process.exit(fails ? 1 : 0);
