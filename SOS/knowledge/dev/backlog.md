@@ -974,6 +974,39 @@ diu que encara no n'hi ha cap (2). Cap porta apunta a un fitxer que no hi és, i
 | **«fora» és la natura més nombrosa (44 de 116)** | Un mapa de valor és sobretot **un mapa de fronteres**: la major part dels noms que hi surten són gent amb qui es tracta, no gent que hi és a dins |
 | El casal (suport mutu) i el taller (coop. de treball) són els dos edificis sense eina | Coincideix amb els pendents del bloc anterior, i ara es veu des del poble |
 
+### Parlar el llenguatge del programa municipal que ja existeix
+
+**La idea.** El SOS diu «oferta de servei», «banc de temps», «mapa de valor».
+Un ajuntament que ja té un programa en marxa diu una altra cosa —a **Pacs del
+Penedès**, el **Consell de l'Experiència**— i qui hi participa s'hi reconeix per
+aquell nom, no pel nostre. Avui, per entrar-hi, li demanem que aprengui el
+nostre vocabulari primer. És la barrera més barata de treure i la que no es veu.
+
+**El que caldria**, i que és més de comunicació que de codi:
+
+- **Una capa de noms per territori.** El mateix que fa el SOS, dit amb el nom
+  del programa local: el que aquí és una oferta d'acompanyament, allà és una
+  activitat del Consell de l'Experiència. Ni traducció ni marca blanca:
+  **el nom del programa a fora i el mateix registre a dins**, perquè les hores
+  segueixin sent hores comparables entre municipis.
+- **Un full d'entrada per programa**: què hi guanya l'ajuntament (les hores
+  comptades i signades que avui no té), què hi guanya qui hi participa, i què
+  **no** és —que no substitueix el programa ni el gestiona.
+- **La comunicació de sortida**: com s'expliquen les ofertes a qui ja és al
+  programa, que sol arribar-hi en paper i per la regidoria, no per una app.
+
+**Abans de fer res, cal confirmar-ho amb la font.** No sé com funciona el
+Consell de l'Experiència de Pacs —qui l'organitza, què hi fa la gent, si té
+inscripció i amb quin calendari—, i inventar-s'ho seria exactament l'error que
+la resta d'aquest repositori intenta evitar. **Primer una conversa amb qui el
+porta, després el disseny.** El mateix per a qualsevol altre programa: el patró
+és replicable, els noms no.
+
+**Per què val la pena.** És el camí invers al que hem fet fins ara: en comptes
+de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
+organitzada per un ajuntament és exactament qui més té a aportar al banc de
+temps i qui menys probable és que s'instal·li res pel seu compte.
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.
