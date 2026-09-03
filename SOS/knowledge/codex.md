@@ -704,6 +704,157 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 131 — Cent setze noms no són cent setze professions
+
+Molekulandia és el poble on cada edifici és un projecte del catàleg: el bar és
+el banc de temps, la ferreteria és la biblioteca de les coses. Existeix per
+contestar la pregunta que ningú sap contestar quan li expliques el SOS —*«i
+això, què és?»*—, i la resposta és que **un catàleg de dotze dinàmiques és una
+llista, i un poble amb onze portes és un lloc on entrar**.
+
+La feina de veritat, però, no era dibuixar el poble. Era això:
+
+Sumant els rols de les tres fonts del SOS —les dinàmiques, les activitats
+crítiques del territori i les formes de projecte— surten **165 caselles de rol**
+amb **116 noms diferents**. La temptació és presentar-ho com «116 professions
+que pots aprendre al SOS». Seria fals, i el que és pitjor, seria fals d'una
+manera que fa quedar bé.
+
+**La majoria d'aquells noms no són oficis.** Abans de saber a quina professió va
+un rol cal saber si és una professió, i per això cada nom porta **natura** abans
+que família:
+
+- **ofici** (33) — una cosa que es pot aprendre a fer. Només aquests en tenen.
+- **part** (31) — una manera de prendre-hi part. Ser sòcia, usuària o unitat de
+  convivència **no s'aprèn: s'hi és**. Comptar-ho com a professió hauria
+  triplicat el número sense ensenyar res a ningú.
+- **fora** (44) — qui hi ha a l'altra banda: l'ajuntament, la clientela, qui
+  finança. És la natura **més nombrosa de totes**, i això diu una cosa del SOS
+  que no és òbvia: un mapa de valor és sobretot **un mapa de fronteres**.
+- **peça** (8) — una peça del projecte mateix: un lloc, una entitat, un registre.
+
+Els 33 oficis es tanquen en **nou professions**. Nou, i no cent setze. Un
+`groupBy` pel nom hauria donat una llista de sinònims amb aire de descobriment
+—«Coordinació» i «Coordinació pedagògica» separades, «Pagesia local» al mateix
+sac que «Proveïdors locals»—, i hauria semblat molta més feina.
+
+### El que es genera i el que es declara
+
+La taxonomia **es declara**: un nom per línia a `tools/build-molekulandia.js`,
+perquè es pugui discutir. És la peça intel·lectual i no la pot fer una màquina.
+El que fa la màquina és **no deixar-ne cap fora**: llegeix les tres taules de
+`index.html` i falla si un rol no té natura, si una classificació apunta a un
+rol que ja no existeix, o si una professió es queda sense cap rol viu. Afegir un
+rol al catàleg obliga a prendre una decisió; no el deixa colar com a «altres».
+
+D'aquí surt una troballa que no s'hauria vist mirant la llista: **una de les nou
+professions —Cultura i relat— no s'aprèn a cap edifici de l'arcada.** Només
+existeix a les activitats del terme. És un forat del catàleg, no de la professió,
+i es veu perquè la pàgina ho calcula en comptes d'escriure-ho.
+
+### El criteri que decideix si això val alguna cosa
+
+Estava escrit al backlog abans de començar: **si des de la pàgina no s'hi pot
+entrar a fer alguna cosa, no és Molekulandia, és una il·lustració.** De cada
+edifici s'hi entra —què és al poble, què és al SOS, quins rols té, quines
+professions s'hi aprenen— i cadascun té **exactament una sortida**: o una porta
+a una eina que existeix, o la frase que diu que encara no n'hi ha cap. Mai les
+dues, mai cap de les dues, i la guarda compta que cada porta apunti a un fitxer
+que hi és.
+
+I el que hi ha encès al poble **ho marca qui llegeix**. La pàgina no ho pot
+saber —el registre viu a l'aplicació, en un altre origen— i fer veure que ho sap
+seria el mateix pecat que dibuixar onze edificis oberts a un territori que en té
+dos.
+
+### Una guarda que exigia el que no tocava
+
+En afegir la pàgina al vocabulari compartit del perfil, `check-perfil.js` li va
+reclamar vuit funcions de l'aplicació (`memberAports`, `roleCal`…). No era cap
+error de la pàgina: la guarda derivava la llista **per exclusió** —«tot el que no
+té taula de demandes»— i allà només hi havia hagut mai `index.html`. Derivar una
+llista per exclusió funciona fins que apareix el segon cas. Ara és explícita, com
+les excepcions del menú.
+
+## Veda 130 — L'entrada i la quota són la mateixa palanca, i exclouen gent diferent
+
+La tercera miniapp de tipus de projecte, i la mateixa manera de trobar el nus:
+el que decideix si un projecte d'habitatge en cessió d'ús es fa no és el preu
+del metre quadrat. És que **l'aportació d'entrada i la quota mensual són la
+mateixa palanca girada al revés**. Cada euro d'entrada que no es demana és un
+euro de préstec, i el préstec es paga amb la quota. Els grups discuteixen
+aquesta xifra durant mesos sense veure-la mai sencera.
+
+I quan es veu, es veu també que **no hi ha una xifra bona**. N'hi ha una que
+exclou per estalvis i una altra que exclou per ingressos, i triar és decidir de
+quina gent serà el projecte. Amb el grup de mostra —dotze llars amb superfícies,
+ingressos i estalvis desiguals— el recorregut sencer surt així: sense entrada en
+queden fora deu (per la quota), amb 60.000 € en queden fora dotze (per l'estalvi)
+i **el mínim és a 15.000 €, amb quatre**. La corba té fons, i el fons no és cap
+dels dos extrems que la gent defensa a les assemblees.
+
+### La troballa: el mínim d'exclusió no és finançable
+
+Aquí hi ha la peça que fa que aquesta pàgina valgui la pena. Cap entitat de
+finances ètiques finança el 100%: el sostre habitual és el 80%, o sigui que
+**un 20% del cost ha de venir d'un lloc que no sigui el préstec**. I aquell punt
+de mínima exclusió, el de 15.000 €, no hi arriba: es queda al 12,9%. La primera
+aportació que passa la porta és de 25.000 €, i allà els quatre exclosos ja són
+vuit.
+
+**La distància entre aquests dos números és exactament el que compren els títols
+participatius.** Amb 99.418 € de préstecs de l'entorn del projecte —per sota del
+tipus de mercat— el grup pot quedar-se a 15.000 € d'entrada i passar igualment.
+Vol dir que els títols no són una manera de finançar més barat: són **la manera
+que hi càpiga aquella gent**. Qui finança el projecte no és el grup, és l'entorn
+del grup, i això es construeix com es construeix un edifici.
+
+I tenen data: al venciment es torna el principal sencer, i la quota ja està
+compromesa a pagar préstec, manteniment i cànon. És un segon precipici set o deu
+anys després del primer, i quasi cap pla inicial l'apunta.
+
+### El retorn és nominal, i això és el model
+
+Qui marxa cobra **el que va posar, sense revaloració**. Amb un IPC del 2% i vint
+anys d'estada, això és perdre un 32,7% del poder adquisitiu d'aquells diners.
+No és un defecte: **si l'aportació es revalorés, l'habitatge tornaria a ser un
+actiu i la cessió d'ús no serviria per a res.** El que sí que seria injust és no
+dir-ho, i per això la pàgina en calcula la xifra en comptes d'amagar-la darrere
+de «retornable».
+
+Té una guarda pròpia perquè és el tipus d'error que ningú veuria: el dia que
+algú calculés un retorn actualitzat —amb tota la bona intenció, per «no
+perjudicar qui marxa»— la pàgina seguiria funcionant i el model hauria deixat
+d'existir.
+
+### I la pregunta que no surt als fullets: qui t'ho torna
+
+La cooperativa no té l'aportació en un calaix; **és a l'edifici**. Sense fons de
+retorn i sense llista d'espera, l'aportació de qui marxa **la torna qui entra**
+—i si no entra ningú, no es torna. Això funciona mentre hi ha cua i deixa de
+funcionar exactament el dia que més falta fa: en una crisi, quan marxa més gent
+i n'entra menys. Un 5-10% de la quota destinat a aquest fons és l'assegurança
+del model, costa el que costa —la quota puja, i la pàgina ho ensenya— i quasi
+cap projecte l'apunta al pla inicial.
+
+### Dos defectes que van sortir provant, i cap dels dos petava
+
+- **Comparar percentatges en coma flotant.** Qui posava exactament els euros que
+  la pàgina li acabava de demanar es trobava que encara no passava la porta:
+  19,999999…% no és ≥ 20%. Dues frases de la mateixa pantalla es contradeien. La
+  porta ara es pregunta pel forat en euros, arrodonit al cèntim, que és la unitat
+  en què es demanen diners.
+- **El residu d'arrodoniment donat sencer a una.** Repartint la quota «a parts
+  iguals» entre dotze, cap base no dona una divisió exacta; el residu anava tot a
+  la part més grossa i aquella llar pagava vuit cèntims més que les seves iguals,
+  en una columna que la pantalla presenta com a idèntica. Ara es reparteix
+  d'unitat en unitat i la base és de milionèsimes.
+
+I la regla que val per a totes tres miniapps: **el sòl no s'ha pagat, i per això
+la quota és baixa**. Un projecte sense cessió és un altre projecte —mateixa forma
+jurídica, un altre preu i una altra gent a dins—, i val més saber-ho a la primera
+reunió que a la quarta.
+
 ## Veda 129 — Repartir energia i repartir estalvi no són la mateixa cosa
 
 La primera miniapp de tipus de projecte després de La Compra, i el mateix

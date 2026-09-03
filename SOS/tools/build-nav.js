@@ -50,6 +50,8 @@ const GRUPS = [
     ['matriu.html', 'La MATRIU', 'La incubadora: etapes, portes i propietat'],
     ['compra.html', 'La Compra', 'Grup de consum i compra col·lectiva'],
     ['energia.html', 'L\'Energia', 'Comunitat energètica i autoconsum compartit'],
+    ['habitatge.html', 'L\'Habitatge', 'Cessió d\'ús: quota, entrada i sortida'],
+    ['molekulandia.html', 'Molekulandia', 'El poble sencer i les nou professions'],
     ['joc.html', 'El joc', 'La plaça, a ritme']
   ] },
   { id: 'apren', lbl: 'Aprèn', ic: '🎓', links: [
@@ -69,7 +71,8 @@ const MARCA = ['../index.html', 'TeamTowers', 'Humà'];
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
 const PAGINES = ['blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
-  'energia.html', 'escola.html', 'formacio.html', 'intro.html', 'matriu.html', 'online.html',
+  'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'intro.html', 'matriu.html',
+  'molekulandia.html', 'online.html',
   'uneix-te.html', 'vedes.html', 'vna.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit

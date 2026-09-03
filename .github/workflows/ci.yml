@@ -72,6 +72,30 @@ jobs:
       - name: Guarda de L'Energia (comunitat energètica)
         run: node SOS/tools/check-energia.js
 
+      # L'Habitatge decideix si un grup es compromet vint-i-cinc anys. Dos
+      # errors serien cars i cap dels dos peta: planificar amb menys del 20% de
+      # recursos no bancaris —cap entitat ètica finança el 100%, i això no es
+      # descobreix fins que ja s'ha gastat un any— i calcular un retorn
+      # revaloritzat de l'aportació, que convertiria l'habitatge en un actiu i
+      # deixaria la cessió d'ús sense sentit.
+      - name: Guarda de L'Habitatge (cessió d'ús)
+        run: node SOS/tools/check-habitatge.js
+
+      # Molekulandia diu que sumant els rols de les tres taules del catàleg
+      # surten 116 noms, 33 oficis i 9 professions. Escrit a mà, això divergiria
+      # a la primera dinàmica nova i una llista de professions no peta mai.
+      # Aquí es genera del catàleg, i un rol nou obliga a decidir de quina
+      # natura és en comptes de colar-se com a «altres».
+      - name: Guarda de Molekulandia (les professions surten del catàleg)
+        run: node SOS/tools/build-molekulandia.js --check
+
+      # I l'altra meitat, la que no es genera: que sigui un lloc on entrar. El
+      # criteri es va escriure abans de començar —si des de la pàgina no s'hi
+      # pot entrar a fer alguna cosa, és una il·lustració— i cap edifici pot
+      # prometre una eina que encara no existeix.
+      - name: Guarda de Molekulandia (no és un pòster)
+        run: node SOS/tools/check-molekulandia.js
+
       # El registre és l'única cosa que es publica i no es pot desdir: un cop
       # una versió és a fora, ni se'n treu el que hi ha dins ni es torna a
       # numerar ningú. Aquí es vigila que al compromís d'alta no hi entri cap

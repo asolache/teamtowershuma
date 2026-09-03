@@ -91,12 +91,16 @@ if (!seu || !meu) {
     (perdudes.length ? `, i ${pl(perdudes.length, 'no hi és', 'no hi són')}: «${perdudes[0].split(' | ').slice(0, 2).join('→')}»` : ''));
 
   /* I el que la pàgina diu que omple i que produeix ha d'existir al mapa. */
-  const rols = new Set(llista(meu, 'roles') || []);
-  const lliur = new Set(meves.flatMap(p => { const c = p.split(' | '); return [c[3], c[5]]; }));
+  /* Les cadenes venen del codi font i porten l'apòstrof escapat (`d\'ús`). Aquí
+     encara no hi ha cap rol ni cap lliurament amb apòstrof, però el dia que
+     n'hi hagi la guarda diria que és un fantasma quan no ho és. */
+  const net = s => s.replace(/\\'/g, "'");
+  const rols = new Set((llista(meu, 'roles') || []).map(net));
+  const lliur = new Set(meves.flatMap(p => { const c = p.split(' | '); return [net(c[3]), net(c[5])]; }));
   const ompleKeys = [...bloc(PAG, 'const OMPLE={', '};').matchAll(/'((?:[^'\\]|\\.)*)':'/g)].map(m => m[1]);
   const faKeys = [...bloc(PAG, 'const FA={', '\n};').matchAll(/^\s{2}'((?:[^'\\]|\\.)*)':/gm)].map(m => m[1]);
-  const rolsFantasma = ompleKeys.filter(r => !rols.has(r));
-  const fluxFantasma = faKeys.filter(f => !lliur.has(f));
+  const rolsFantasma = ompleKeys.filter(r => !rols.has(net(r)));
+  const fluxFantasma = faKeys.filter(f => !lliur.has(net(f)));
   if (ompleKeys.length && !rolsFantasma.length) ok(`el rol que la pàgina omple existeix al mapa: ${ompleKeys.join(', ')}`);
   else bad(`rols que la pàgina diu omplir i no són al mapa: ${rolsFantasma.join(', ') || '—'}`);
   if (faKeys.length && !fluxFantasma.length) ok(`i els ${faKeys.length} lliuraments que anomena són lliuraments del mapa`);

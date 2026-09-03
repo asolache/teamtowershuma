@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Molekulandia · el poble on cada edifici és un projecte</title>
+<meta name="description" content="El poble sencer del SOS: el bar és el banc de temps, la ferreteria és la biblioteca de les coses. Onze edificis on entrar, i les nou professions que en surten sumant tots els rols del catàleg.">
+<meta property="og:title" content="Molekulandia · el poble on cada edifici és un projecte">
+<meta property="og:description" content="Un catàleg de dotze dinàmiques és una llista. Un poble amb onze portes és un lloc on entrar.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+.hero{padding:3.2rem 1.5rem 2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(255,215,0,.13),transparent 60%),
+             radial-gradient(ellipse at bottom left,rgba(0,230,118,.11),transparent 55%),var(--bg)}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:rgba(255,215,0,.13);color:var(--gold);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#ffd700,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:700px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:860px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--gold);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+.nota{font-size:.78rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.5rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .55rem;cursor:pointer}
+button.b:hover{border-color:var(--indigo)}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+
+.capes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin:.8rem 0}
+.capa{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.75rem .85rem}
+.capa .n{font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1.1}
+.capa .l{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:.1rem}
+.capa .d{font-size:.76rem;color:var(--light);margin-top:.35rem;line-height:1.45}
+.capa.bo .n{color:var(--green)} .capa.blau .n{color:var(--blue)} .capa.or .n{color:var(--gold)}
+
+/* ── El poble ─────────────────────────────────────────────────────────────
+   Els edificis es col·loquen en tant per cent sobre un quadre, i les seves
+   posicions surten del generador: així la plaça i el catàleg no poden dir
+   coses diferents. A sota d'una certa amplada el dibuix es converteix en
+   llista —un poble de 390 px amb onze rètols no es llegeix. */
+.poble{position:relative;width:100%;aspect-ratio:1/.78;max-width:760px;margin:1rem auto;
+  border:1px solid var(--border);border-radius:18px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 48%,rgba(255,215,0,.10),transparent 46%),var(--card)}
+.poble .arcada{position:absolute;left:8%;top:8%;width:84%;height:84%;border-radius:50%;
+  border:2px dashed rgba(255,255,255,.13)}
+.poble .placa{position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);text-align:center;
+  width:min(42%,260px)}
+.poble .placa b{display:block;font-size:.82rem;color:var(--gold)}
+.poble .placa span{display:block;font-size:.7rem;color:var(--muted);line-height:1.35}
+.ed{position:absolute;transform:translate(-50%,-50%);width:104px;text-align:center;cursor:pointer;
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.4rem .3rem;
+  color:var(--light);font:inherit}
+.ed:hover{border-color:var(--indigo);color:var(--text)}
+.ed.on{border-color:var(--green);background:rgba(0,230,118,.10);color:var(--text)}
+.ed.tria{outline:2px solid var(--indigo);outline-offset:2px}
+.ed .ic{display:block;font-size:1.3rem;line-height:1.2}
+.ed .nm{display:block;font-size:.76rem;font-weight:700}
+.ed .dn{display:block;font-size:.66rem;color:var(--muted);line-height:1.3}
+.ed.on .dn{color:var(--light)}
+@media(max-width:720px){
+  /* A mòbil el dibuix no cap: les mateixes portes, en llista. Cap edifici
+     desapareix —el que canvia és com es col·loquen. */
+  .poble{aspect-ratio:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:.5rem;padding:.6rem;background:none;border:none}
+  .poble .arcada{display:none}
+  .poble .placa{position:static;transform:none;width:auto;grid-column:1/-1;
+    border:1px dashed var(--border);border-radius:12px;padding:.5rem}
+  .ed{position:static;transform:none;width:auto}
+}
+
+.fitxa{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.9rem 1rem;margin-top:.8rem}
+.fitxa h4{font-size:1rem;margin-bottom:.25rem}
+.xips{display:flex;gap:.35rem;flex-wrap:wrap;margin:.5rem 0}
+.xip{font-size:.72rem;padding:.18rem .5rem;border-radius:999px;border:1px solid var(--border);color:var(--light)}
+.xip.ofici{border-color:var(--green);color:var(--green)}
+.xip.part{border-color:var(--blue);color:var(--blue)}
+.xip.fora{border-color:var(--muted);color:var(--muted)}
+.xip.peça{border-color:var(--orange);color:var(--orange)}
+.porta{display:inline-block;margin-top:.4rem;padding:.35rem .7rem;border-radius:9px;
+  background:var(--indigo);color:#fff;text-decoration:none;font-size:.82rem;font-weight:600}
+.tanca{display:inline-block;padding:.35rem .7rem;border-radius:9px;border:1px solid var(--border);
+  background:var(--panel);color:var(--light);font-size:.82rem;cursor:pointer;font-family:inherit}
+
+/* El perfil · mateixes caselles que a vna.html i compra.html */
+.aports{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.45rem;margin:.6rem 0}
+.ap{font:inherit;text-align:left;cursor:pointer;background:var(--card);color:var(--light);
+  border:1px solid var(--border);border-radius:11px;padding:.55rem .65rem;display:block}
+.ap:hover{border-color:var(--orange)}
+.ap.on{border-color:var(--green);background:rgba(0,230,118,.10);color:var(--text)}
+.ap .ic{font-size:1.1rem;margin-right:.35rem}
+.ap .lb{font-weight:700;font-size:.85rem}
+.ap .dd{display:block;font-size:.74rem;color:var(--muted);margin-top:.2rem;line-height:1.4}
+.ap.on .dd{color:var(--light)}
+
+.profs{display:grid;gap:.55rem;margin:.7rem 0}
+.prof{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem .8rem}
+.prof.top{border-color:var(--green)}
+.prof .cap{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.prof .cap b{font-size:.95rem}
+.prof .pt{margin-left:auto;font-family:var(--mono);font-size:.9rem;color:var(--green)}
+.prof .diu{font-size:.8rem;color:var(--light);margin:.25rem 0 .35rem;line-height:1.45}
+.barra{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin:.35rem 0}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,#00e676,#00b0ff)}
+
+.graella{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:.55rem;margin:.7rem 0}
+.tg{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem .8rem}
+.tg b{font-size:.88rem}
+.tg p{margin:.2rem 0 0;font-size:.77rem;color:var(--light);line-height:1.45}
+</style>
+</head>
+<body>
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html" aria-current="page"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tag">🏘 El poble sencer · totes les dinàmiques alhora</div>
+    <h1>Molekulandia no té 165 professions. <em>En té nou.</em></h1>
+    <p class="sub">Un catàleg de dotze dinàmiques és una llista; <strong>un poble amb onze portes és
+    un lloc on entrar</strong>. El bar és el banc de temps i la ferreteria és la biblioteca de les
+    coses: el que a qualsevol poble ja existeix com a edifici, al SOS ja existeix com a projecte.</p>
+    <div class="avis">
+      <strong>Això no és un pòster.</strong> De cada edifici s'hi entra: què és, qui hi fa falta i
+      quina eina hi ha de debò avui — o que encara no n'hi ha cap. I la taula de professions
+      <strong>està generada de les taules del catàleg</strong>, no escrita a mà: si demà hi ha una
+      dinàmica nova, o surt aquí o falla la construcció.
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="placa" class="on">1 · La plaça</button>
+  <button data-p="professions">2 · Les professions</button>
+  <button data-p="terme">3 · El terme</button>
+  <button data-p="compte">4 · Com s'ha comptat</button>
+</div>
+
+<!-- ══ 1 · LA PLAÇA ══════════════════════════════════════════════════════ -->
+<div class="pan on" id="pPlaca">
+  <section class="box">
+    <h3>El poble</h3>
+    <p class="lead"><strong>Clica un edifici per entrar-hi.</strong> I amb el botó de sota, marca
+    els que al teu poble ja estan encesos: un mapa que ensenyi onze edificis oberts quan al teu
+    territori n'hi ha dos seria un cartell, no un mapa.</p>
+    <div class="fila">
+      <button class="b" id="btnMode">Marcar què hi ha encès</button>
+      <span class="mut" id="modeDiu"></span>
+    </div>
+    <div class="poble" id="poble"></div>
+    <div id="fitxa"></div>
+    <p class="nota" id="placaDiu"></p>
+  </section>
+</div>
+
+<!-- ══ 2 · LES PROFESSIONS ═══════════════════════════════════════════════ -->
+<div class="pan" id="pProfessions">
+  <section class="box">
+    <h3>Què hi pots posar</h3>
+    <p class="lead">Marca el que tens. És <strong>el mateix perfil que a la resta del SOS</strong>:
+    si ja l'has omplert al mapa de valor o a La Compra, aquí ja el portes posat, i es queda en
+    aquest dispositiu.</p>
+    <div id="perfil"></div>
+    <p class="mut" id="perfilDiu"></p>
+  </section>
+
+  <section class="box">
+    <h3>Les nou professions de Molekulandia</h3>
+    <p class="lead">Sumant els rols de les tres fonts del catàleg surten <strong id="mCaselles">—</strong>
+    caselles de rol amb <strong id="mUnics">—</strong> noms diferents. La majoria <strong>no són
+    professions</strong>: són qui hi ha a l'altra banda, maneres de prendre-hi part o peces del
+    projecte. Els que sí que s'aprenen es tanquen en aquestes nou.</p>
+    <div class="profs" id="profs"></div>
+    <p class="nota" id="profsDiu"></p>
+  </section>
+</div>
+
+<!-- ══ 3 · EL TERME ══════════════════════════════════════════════════════ -->
+<div class="pan" id="pTerme">
+  <section class="box">
+    <h3>El que qualsevol poble ha de tenir resolt</h3>
+    <p class="lead">A l'arcada hi ha els projectes que es poden muntar. Al voltant hi ha
+    <strong>el terme</strong>: les activitats crítiques del territori, que no són projectes sinó
+    necessitats. Cadascuna té el seu mapa de rols al SOS.</p>
+    <div class="graella" id="activitats"></div>
+  </section>
+  <section class="box">
+    <h3>I les formes que pren un projecte nou</h3>
+    <p class="lead">Quan una cosa encara no té nom, el SOS li ofereix una forma. Són sis, i
+    serveixen per arrencar quan cap dels onze edificis és exactament allò.</p>
+    <div class="graella" id="prototips"></div>
+  </section>
+</div>
+
+<!-- ══ 4 · COM S'HA COMPTAT ══════════════════════════════════════════════ -->
+<div class="pan" id="pCompte">
+  <section class="box">
+    <h3>Els números, i d'on surten</h3>
+    <p class="lead">Tot això es genera de les taules de l'app amb
+    <code>tools/build-molekulandia.js</code>. Res d'aquesta pàgina està escrit a mà dues vegades.</p>
+    <div class="capes" id="capes"></div>
+    <div class="taula"><table id="tFonts"></table></div>
+  </section>
+
+  <section class="box">
+    <h3>Per què 116 noms no són 116 professions</h3>
+    <p class="lead">Aquesta és la feina que decideix si això val alguna cosa. Agrupar els rols pel
+    nom hauria donat <strong>una llista de sinònims amb aire de descobriment</strong>. Abans de
+    saber a quina professió va un rol, cal saber si és una professió.</p>
+    <div class="taula"><table id="tNatura"></table></div>
+    <p class="nota avis">La distinció que costa més d'acceptar és <strong>«part»</strong>. Ser
+    sòcia, usuària o unitat de convivència <em>no és un ofici</em>: no s'aprèn, s'hi és. Comptar-ho
+    com a professió hauria triplicat el número i no hauria ensenyat res a ningú sobre què pot
+    aprendre a fer.</p>
+    <p class="nota">I <strong>«fora»</strong> és la més nombrosa de totes, cosa que diu una cosa del
+    SOS que no és òbvia: la major part dels noms que surten als mapes són <strong>gent amb qui es
+    tracta</strong>, no gent que hi és a dins. Un mapa de valor és sobretot un mapa de fronteres.</p>
+  </section>
+
+  <section class="box">
+    <h3>Què no fa aquesta pàgina</h3>
+    <p class="lead">No hi ha cap itinerari formatiu calculat aquí —això ho fa
+    <a href="diagnostic.html">el diagnòstic</a>— ni cap manera de donar-se d'alta a res. Els
+    edificis que encara no tenen eina ho diuen: <strong>el mapa de valor hi és sempre, l'eina
+    no</strong>, i inventar-se una porta que no s'obre seria exactament el contrari del que això ve
+    a fer.</p>
+    <p class="mut" id="peuFont"></p>
+  </section>
+</div>
+
+</main>
+
+<footer style="border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:center;color:var(--muted);font-size:.8rem">
+  <a href="index.html" style="color:var(--indigo)">SOS</a> ·
+  <a href="vna.html" style="color:var(--indigo)">Mapa de valor</a> ·
+  <a href="diagnostic.html" style="color:var(--indigo)">Diagnòstic</a> ·
+  la taula de professions es genera del catàleg
+</footer>
+
+<!--MOLEK-DADES-->
+<script id="molek-dades" type="application/json">
+{"resum":{"caselles":165,"unics":116,"professions":9,"ofici":33,"part":31,"fora":44,"peca":8},"fonts":[{"id":"dinamiques","lbl":"Tipus de projecte","diu":"Les dinàmiques del catàleg: el que es pot muntar.","plantilles":12,"rols":65},{"id":"activitats","lbl":"Activitats crítiques del territori","diu":"El que qualsevol poble necessita tenir resolt.","plantilles":14,"rols":70},{"id":"prototips","lbl":"Formes de projecte","diu":"Les formes genèriques que pren un projecte nou.","plantilles":6,"rols":30}],"professions":[{"id":"impuls","nom":"Impuls i governança","ic":"🌱","diu":"Qui fa que una cosa comenci i qui la sosté quan ja no és nova. És el rol que més es crema i el que menys es reconeix.","demana":["temps","contactes","ordre"],"rols":[{"nom":"Grup motor","cops":2,"on":["habitatge_cessio","habitatge"]},{"nom":"Nucli promotor","cops":2,"on":["comunitat_energetica","energia"]},{"nom":"Nucli gestor","cops":4,"on":["banc_temps","biblioteca_coses","economia_circular","servei_proximitat"]},{"nom":"Nucli operatiu","cops":1,"on":["servei_tecnic"]},{"nom":"Equips promotors","cops":1,"on":["matriu"]},{"nom":"Consell rector","cops":1,"on":["coop_treball"]}]},{"id":"facilitacio","nom":"Facilitació i coordinació","ic":"🧭","diu":"Qui fa que un grup decideixi sense trencar-se, i qui recorda què s'havia dit. No mana: fa que es pugui manar entre tots.","demana":["ordre","cura","temps"],"rols":[{"nom":"Coordinació","cops":2,"on":["consum_agroecologic","compra_collectiva"]},{"nom":"Facilitador/a","cops":1,"on":["matriu"]},{"nom":"Facilitador VNA","cops":1,"on":["mapeig_vna"]},{"nom":"Referent territorial","cops":1,"on":["servei_proximitat"]}]},{"id":"aprenentatge","nom":"Aprenentatge i mentoria","ic":"🎓","diu":"Qui ensenya el que sap i qui acompanya el que comença. La professió que multiplica totes les altres.","demana":["veu","temps","cura"],"rols":[{"nom":"Formadors","cops":1,"on":["digitalitzacio"]},{"nom":"Formadors/es","cops":1,"on":["formacio"]},{"nom":"Mentors","cops":1,"on":["matriu"]},{"nom":"Coordinació pedagògica","cops":1,"on":["formacio"]}]},{"id":"cura","nom":"Cura i acompanyament","ic":"💚","diu":"Qui sosté la gent, no les tasques. És la feina que fa que un projecte duri i la que menys surt als comptes.","demana":["cura","temps","contactes"],"rols":[{"nom":"Nucli de cura","cops":2,"on":["suport_mutu","cures"]},{"nom":"Persones cuidadores","cops":1,"on":["cura_social"]},{"nom":"Monitoratge","cops":1,"on":["joventut"]}]},{"id":"assessorament","nom":"Assessorament tècnic i jurídic","ic":"⚖️","diu":"Qui sap què es pot fer i com, i qui signa que es pot fer. Sense això, un projecte s'encalla a la primera llicència.","demana":["numeros","ordre","contactes"],"rols":[{"nom":"Assessoria","cops":1,"on":["energia"]},{"nom":"Assessoria tècnica","cops":1,"on":["habitatge_cessio"]},{"nom":"Assessoria tècnica-legal","cops":1,"on":["comunitat_energetica"]},{"nom":"Consultors/es","cops":1,"on":["servei_tecnic"]}]},{"id":"dades","nom":"Dades, eines i coneixement","ic":"🗂","diu":"Qui compta el que passa i qui construeix l'eina que ho compta. La professió més nova de totes i la que menys nom té.","demana":["ordre","temps","numeros"],"rols":[{"nom":"Nucli tècnic","cops":1,"on":["digitalitzacio"]},{"nom":"Equip producte","cops":1,"on":["producte_digital"]},{"nom":"Equip de cens","cops":1,"on":["cens_entitats"]}]},{"id":"terra","nom":"Producció i oficis de la terra","ic":"🌾","diu":"Qui fa, cultiva i transforma. L'ofici més antic del poble i el que el SOS connecta amb tota la resta.","demana":["ofici","espai","temps"],"rols":[{"nom":"Pagesia","cops":1,"on":["territori"]},{"nom":"Pagesia local","cops":1,"on":["alimentacio"]},{"nom":"Productors","cops":1,"on":["turisme"]},{"nom":"Productors/es locals","cops":1,"on":["consum_agroecologic"]},{"nom":"Artesans/es","cops":1,"on":["producte_artesa"]}]},{"id":"circular","nom":"Circularitat i reparació","ic":"♻️","diu":"Qui allarga la vida de les coses. En un poble autosuficient no és un servei: és infraestructura.","demana":["ofici","espai","temps"],"rols":[{"nom":"Servei de reparació","cops":1,"on":["biblioteca_coses"]},{"nom":"Recicladors","cops":1,"on":["economia_circular"]}]},{"id":"relat","nom":"Cultura i relat","ic":"🎭","diu":"Qui explica el poble al poble. Sense això, tot el que hi passa és cert i no ho sap ningú.","demana":["veu","contactes","ofici"],"rols":[{"nom":"Artistes","cops":1,"on":["cultura"]},{"nom":"Guies locals","cops":1,"on":["turisme"]}]}],"rols":[{"nom":"Actors del territori","natura":"fora","professio":null,"on":["mapeig_vna"],"cops":1},{"nom":"Administració","natura":"fora","professio":null,"on":["habitatge"],"cops":1},{"nom":"Administració (cessió de sòl)","natura":"fora","professio":null,"on":["habitatge_cessio"],"cops":1},{"nom":"Ajuntament","natura":"fora","professio":null,"on":["banc_temps","biblioteca_coses","mapeig_vna","comunitat_energetica","cens_entitats","dinamitzacio_comercial","ocupacio","energia","cultura","turisme","economia_circular","digitalitzacio","joventut","mobilitat","acollida","territori"],"cops":16},{"nom":"Ajuntament / finançament","natura":"fora","professio":null,"on":["matriu"],"cops":1},{"nom":"Allotjaments","natura":"fora","professio":null,"on":["turisme"],"cops":1},{"nom":"Aprenents","natura":"part","professio":null,"on":["formacio"],"cops":1},{"nom":"Artesans/es","natura":"ofici","professio":"terra","on":["producte_artesa"],"cops":1},{"nom":"Artistes","natura":"ofici","professio":"relat","on":["cultura"],"cops":1},{"nom":"Assessoria","natura":"ofici","professio":"assessorament","on":["energia"],"cops":1},{"nom":"Assessoria tècnica","natura":"ofici","professio":"assessorament","on":["habitatge_cessio"],"cops":1},{"nom":"Assessoria tècnica-legal","natura":"ofici","professio":"assessorament","on":["comunitat_energetica"],"cops":1},{"nom":"Associació de comerciants","natura":"fora","professio":null,"on":["dinamitzacio_comercial"],"cops":1},{"nom":"Ateneu Cooperatiu","natura":"fora","professio":null,"on":["coop_treball"],"cops":1},{"nom":"CAP / serveis socials","natura":"fora","professio":null,"on":["suport_mutu","cures"],"cops":2},{"nom":"Clientes","natura":"fora","professio":null,"on":["producte_artesa"],"cops":1},{"nom":"Clients","natura":"fora","professio":null,"on":["coop_treball"],"cops":1},{"nom":"Clients institucionals","natura":"fora","professio":null,"on":["servei_tecnic"],"cops":1},{"nom":"Clients privats","natura":"fora","professio":null,"on":["servei_tecnic"],"cops":1},{"nom":"Comerç col·laborador","natura":"fora","professio":null,"on":["biblioteca_coses"],"cops":1},{"nom":"Comerços","natura":"fora","professio":null,"on":["economia_circular"],"cops":1},{"nom":"Comerços de proximitat","natura":"fora","professio":null,"on":["dinamitzacio_comercial"],"cops":1},{"nom":"Comunitat","natura":"part","professio":null,"on":["mapeig_vna","consum_agroecologic","suport_mutu","compra_collectiva","coop_treball"],"cops":5},{"nom":"Comunitat contributora","natura":"part","professio":null,"on":["producte_digital"],"cops":1},{"nom":"Comunitat de l'atles","natura":"part","professio":null,"on":["cens_entitats"],"cops":1},{"nom":"Comunitat de pràctica","natura":"part","professio":null,"on":["formacio"],"cops":1},{"nom":"Comunitat del barri","natura":"part","professio":null,"on":["biblioteca_coses"],"cops":1},{"nom":"Comunitat destinatària","natura":"part","professio":null,"on":["matriu"],"cops":1},{"nom":"Comunitat i formació","natura":"part","professio":null,"on":["producte_artesa"],"cops":1},{"nom":"Comunitat local","natura":"part","professio":null,"on":["comunitat_energetica"],"cops":1},{"nom":"Comunitat veïnal","natura":"part","professio":null,"on":["banc_temps"],"cops":1},{"nom":"Consell rector","natura":"ofici","professio":"impuls","on":["coop_treball"],"cops":1},{"nom":"Consultors/es","natura":"ofici","professio":"assessorament","on":["servei_tecnic"],"cops":1},{"nom":"Consumidors","natura":"part","professio":null,"on":["dinamitzacio_comercial","alimentacio"],"cops":2},{"nom":"Cooperativa","natura":"peça","professio":null,"on":["habitatge_cessio","habitatge"],"cops":2},{"nom":"Cooperativa energètica","natura":"fora","professio":null,"on":["comunitat_energetica"],"cops":1},{"nom":"Cooperatives madrines","natura":"fora","professio":null,"on":["matriu"],"cops":1},{"nom":"Coordinació","natura":"ofici","professio":"facilitacio","on":["consum_agroecologic","compra_collectiva"],"cops":2},{"nom":"Coordinació pedagògica","natura":"ofici","professio":"aprenentatge","on":["formacio"],"cops":1},{"nom":"Custòdia / entitat","natura":"fora","professio":null,"on":["territori"],"cops":1},{"nom":"Donants","natura":"fora","professio":null,"on":["biblioteca_coses"],"cops":1},{"nom":"Ecosistema aliat","natura":"fora","professio":null,"on":["servei_proximitat"],"cops":1},{"nom":"Empreses locals","natura":"fora","professio":null,"on":["ocupacio"],"cops":1},{"nom":"Entitat amfitriona","natura":"fora","professio":null,"on":["banc_temps"],"cops":1},{"nom":"Entitats","natura":"fora","professio":null,"on":["mapeig_vna","digitalitzacio"],"cops":2},{"nom":"Entitats culturals","natura":"fora","professio":null,"on":["cultura"],"cops":1},{"nom":"Entitats d'acollida","natura":"fora","professio":null,"on":["acollida"],"cops":1},{"nom":"Entitats del territori","natura":"fora","professio":null,"on":["cens_entitats"],"cops":1},{"nom":"Entitats formatives","natura":"fora","professio":null,"on":["ocupacio"],"cops":1},{"nom":"Equip de cens","natura":"ofici","professio":"dades","on":["cens_entitats"],"cops":1},{"nom":"Equip producte","natura":"ofici","professio":"dades","on":["producte_digital"],"cops":1},{"nom":"Equips promotors","natura":"ofici","professio":"impuls","on":["matriu"],"cops":1},{"nom":"Escoles","natura":"fora","professio":null,"on":["cultura","joventut","mobilitat","acollida"],"cops":4},{"nom":"Espai formatiu","natura":"peça","professio":null,"on":["formacio"],"cops":1},{"nom":"Esplai / entitats","natura":"fora","professio":null,"on":["joventut"],"cops":1},{"nom":"Facilitador VNA","natura":"ofici","professio":"facilitacio","on":["mapeig_vna"],"cops":1},{"nom":"Facilitador/a","natura":"ofici","professio":"facilitacio","on":["matriu"],"cops":1},{"nom":"Famílies","natura":"part","professio":null,"on":["cura_social"],"cops":1},{"nom":"Finançament","natura":"fora","professio":null,"on":["coop_treball"],"cops":1},{"nom":"Finançament ètic","natura":"fora","professio":null,"on":["habitatge_cessio","habitatge"],"cops":2},{"nom":"Font oberta / IA","natura":"peça","professio":null,"on":["cens_entitats"],"cops":1},{"nom":"Formadors","natura":"ofici","professio":"aprenentatge","on":["digitalitzacio"],"cops":1},{"nom":"Formadors/es","natura":"ofici","professio":"aprenentatge","on":["formacio"],"cops":1},{"nom":"Gent gran","natura":"part","professio":null,"on":["suport_mutu","cures"],"cops":2},{"nom":"Grup de consum","natura":"part","professio":null,"on":["alimentacio"],"cops":1},{"nom":"Grup motor","natura":"ofici","professio":"impuls","on":["habitatge_cessio","habitatge"],"cops":2},{"nom":"Grups ciclistes","natura":"fora","professio":null,"on":["mobilitat"],"cops":1},{"nom":"Guies locals","natura":"ofici","professio":"relat","on":["turisme"],"cops":1},{"nom":"Infraestructura","natura":"peça","professio":null,"on":["producte_digital"],"cops":1},{"nom":"Instal·ladora","natura":"fora","professio":null,"on":["comunitat_energetica","energia"],"cops":2},{"nom":"Jovent","natura":"part","professio":null,"on":["joventut"],"cops":1},{"nom":"Mentors","natura":"ofici","professio":"aprenentatge","on":["matriu"],"cops":1},{"nom":"Monitoratge","natura":"ofici","professio":"cura","on":["joventut"],"cops":1},{"nom":"Nouvinguts","natura":"part","professio":null,"on":["acollida"],"cops":1},{"nom":"Nucli de cura","natura":"ofici","professio":"cura","on":["suport_mutu","cures"],"cops":2},{"nom":"Nucli gestor","natura":"ofici","professio":"impuls","on":["banc_temps","biblioteca_coses","economia_circular","servei_proximitat"],"cops":4},{"nom":"Nucli operatiu","natura":"ofici","professio":"impuls","on":["servei_tecnic"],"cops":1},{"nom":"Nucli promotor","natura":"ofici","professio":"impuls","on":["comunitat_energetica","energia"],"cops":2},{"nom":"Nucli tècnic","natura":"ofici","professio":"dades","on":["digitalitzacio"],"cops":1},{"nom":"Obrador","natura":"peça","professio":null,"on":["alimentacio"],"cops":1},{"nom":"Pagesia","natura":"ofici","professio":"terra","on":["territori"],"cops":1},{"nom":"Pagesia local","natura":"ofici","professio":"terra","on":["alimentacio"],"cops":1},{"nom":"Participants","natura":"part","professio":null,"on":["compra_collectiva"],"cops":1},{"nom":"Patrocini i inversió","natura":"fora","professio":null,"on":["producte_digital"],"cops":1},{"nom":"Persones cuidades","natura":"part","professio":null,"on":["cura_social"],"cops":1},{"nom":"Persones cuidadores","natura":"ofici","professio":"cura","on":["cura_social"],"cops":1},{"nom":"Persones en cerca de feina","natura":"part","professio":null,"on":["ocupacio"],"cops":1},{"nom":"Persones oferents","natura":"part","professio":null,"on":["servei_proximitat"],"cops":1},{"nom":"Persones sòcies","natura":"part","professio":null,"on":["biblioteca_coses"],"cops":1},{"nom":"Persones usuàries","natura":"part","professio":null,"on":["servei_proximitat"],"cops":1},{"nom":"Productors","natura":"ofici","professio":"terra","on":["turisme"],"cops":1},{"nom":"Productors/es locals","natura":"ofici","professio":"terra","on":["consum_agroecologic"],"cops":1},{"nom":"Propietaris","natura":"fora","professio":null,"on":["territori"],"cops":1},{"nom":"Proveïdor/a","natura":"fora","professio":null,"on":["compra_collectiva"],"cops":1},{"nom":"Proveïdors locals","natura":"fora","professio":null,"on":["producte_artesa"],"cops":1},{"nom":"Punt de repartiment","natura":"peça","professio":null,"on":["consum_agroecologic","alimentacio"],"cops":2},{"nom":"Punt de venda","natura":"peça","professio":null,"on":["producte_artesa"],"cops":1},{"nom":"Recicladors","natura":"ofici","professio":"circular","on":["economia_circular"],"cops":1},{"nom":"Referent territorial","natura":"ofici","professio":"facilitacio","on":["servei_proximitat"],"cops":1},{"nom":"Registre d'hores","natura":"peça","professio":null,"on":["banc_temps"],"cops":1},{"nom":"Restauració","natura":"fora","professio":null,"on":["turisme"],"cops":1},{"nom":"Servei d'ocupació","natura":"fora","professio":null,"on":["ocupacio"],"cops":1},{"nom":"Servei de reparació","natura":"ofici","professio":"circular","on":["biblioteca_coses"],"cops":1},{"nom":"Serveis socials/CAP","natura":"fora","professio":null,"on":["cura_social"],"cops":1},{"nom":"Sòcies consumidores","natura":"part","professio":null,"on":["comunitat_energetica","energia"],"cops":2},{"nom":"Sòcies demandants","natura":"part","professio":null,"on":["banc_temps"],"cops":1},{"nom":"Sòcies oferents","natura":"part","professio":null,"on":["banc_temps"],"cops":1},{"nom":"Sòcies treballadores","natura":"part","professio":null,"on":["coop_treball"],"cops":1},{"nom":"Transport públic","natura":"fora","professio":null,"on":["mobilitat"],"cops":1},{"nom":"Unitats de convivència","natura":"part","professio":null,"on":["habitatge_cessio","habitatge"],"cops":2},{"nom":"Unitats familiars","natura":"part","professio":null,"on":["consum_agroecologic"],"cops":1},{"nom":"Usuaris/es","natura":"part","professio":null,"on":["producte_digital"],"cops":1},{"nom":"Veïnat","natura":"part","professio":null,"on":["suport_mutu","dinamitzacio_comercial","cures","cultura","economia_circular","digitalitzacio","mobilitat","acollida"],"cops":8},{"nom":"Voluntariat","natura":"part","professio":null,"on":["suport_mutu","cures","territori","cura_social"],"cops":4},{"nom":"Xarxa d'entitats","natura":"fora","professio":null,"on":["matriu"],"cops":1},{"nom":"Xarxa de partners","natura":"fora","professio":null,"on":["servei_tecnic"],"cops":1}],"edificis":[{"din":"banc_temps","nom":"El bar","ic":"🍺","x":16,"y":20,"es":"On es paga amb el temps de cadascú i tothom sap qui deu una ronda.","dinNom":"Banc de Temps","dinIc":"⏳","one":"Intercanvi de serveis en hores, no en diners.","rols":["Nucli gestor","Sòcies oferents","Sòcies demandants","Registre d'hores","Ajuntament","Entitat amfitriona","Comunitat veïnal"],"eina":["index.html","A dins de l'app"]},{"din":"biblioteca_coses","nom":"La ferreteria","ic":"🔧","x":38,"y":14,"es":"On es va a buscar el trepant que fas servir dos cops l'any.","dinNom":"Biblioteca de les Coses","dinIc":"🧰","one":"Pool compartit d'objectes i eines en préstec.","rols":["Nucli gestor","Persones sòcies","Donants","Ajuntament","Comerç col·laborador","Servei de reparació","Comunitat del barri"],"eina":["index.html","A dins de l'app"]},{"din":"consum_agroecologic","nom":"El mercat","ic":"🥬","x":62,"y":14,"es":"On el que menges té nom de qui ho ha fet i el preu el pacten tots dos.","dinNom":"Grup de Consum Agroecològic","dinIc":"🥬","one":"Compra directa a pagès, sense intermediaris.","rols":["Unitats familiars","Productors/es locals","Coordinació","Punt de repartiment","Comunitat"],"eina":["compra.html","La Compra"]},{"din":"comunitat_energetica","nom":"La central","ic":"⚡","x":84,"y":20,"es":"La teulada del poble, que és de qui hi viu i no de qui la ven.","dinNom":"Comunitat Energètica","dinIc":"⚡","one":"Energia renovable compartida (cooperativa).","rols":["Nucli promotor","Sòcies consumidores","Ajuntament","Instal·ladora","Cooperativa energètica","Assessoria tècnica-legal","Comunitat local"],"eina":["energia.html","L'Energia"]},{"din":"habitatge_cessio","nom":"Les cases","ic":"🏘️","x":88,"y":46,"es":"On es viu sense comprar ni llogar: la casa és de totes i l'ús és teu.","dinNom":"Habitatge en cessió d'ús","dinIc":"🏘️","one":"Propietat col·lectiva, dret d'ús indefinit (model Andel).","rols":["Grup motor","Unitats de convivència","Administració (cessió de sòl)","Finançament ètic","Cooperativa","Assessoria tècnica"],"eina":["habitatge.html","L'Habitatge"]},{"din":"coop_treball","nom":"El taller","ic":"🛠️","x":82,"y":72,"es":"On es treballa sense amo i el que es reparteix és el que s'ha aportat.","dinNom":"Cooperativa de Treball","dinIc":"🛠️","one":"Les persones treballadores en són sòcies.","rols":["Sòcies treballadores","Consell rector","Clients","Ateneu Cooperatiu","Finançament","Comunitat"],"eina":null},{"din":"suport_mutu","nom":"El casal","ic":"🤝","x":60,"y":82,"es":"On es porta la cura del carrer, que és la feina que no fa ningú i la fa tothom.","dinNom":"Suport Mutu / Cures Veïnals","dinIc":"🤝","one":"Xarxa de cura i acompanyament al barri.","rols":["Nucli de cura","Veïnat","Gent gran","CAP / serveis socials","Voluntariat","Comunitat"],"eina":null},{"din":"compra_collectiva","nom":"El magatzem","ic":"🛒","x":38,"y":82,"es":"On es compra junt el que sol comprar-se car i sol.","dinNom":"Compra Col·lectiva / Estalvi","dinIc":"🛒","one":"Agregar demanda per millors condicions.","rols":["Participants","Coordinació","Proveïdor/a","Comunitat"],"eina":["compra.html","La Compra"]},{"din":"cens_entitats","nom":"L'arxiu","ic":"🗂️","x":16,"y":72,"es":"On consta qui hi ha al poble, què fa i com se'l troba.","dinNom":"Sprint de Cens d'Entitats","dinIc":"🗂️","one":"Mapatge i verificació del teixit local per a l'atles.","rols":["Equip de cens","Font oberta / IA","Entitats del territori","Ajuntament","Comunitat de l'atles"],"eina":["online.html","El directori"]},{"din":"matriu","nom":"El viver","ic":"🌱","x":10,"y":46,"es":"On una idea passa a projecte, i on es diu quan encara no ho és.","dinNom":"MATRIU · Incubadora","dinIc":"🌱","one":"Acompanya idees ciutadanes fins a projectes viables.","rols":["Facilitador/a","Equips promotors","Mentors","Ajuntament / finançament","Xarxa d'entitats","Cooperatives madrines","Comunitat destinatària"],"eina":["matriu.html","La MATRIU"]},{"din":"mapeig_vna","nom":"La sala de plànols","ic":"🕸️","x":50,"y":56,"es":"Al mig de la plaça: el mapa de qui dona què a qui. És el pas que va abans de tots.","dinNom":"Mapeig de Xarxa de Valor","dinIc":"🕸️","one":"El diagnòstic VNA del territori com a servei.","rols":["Facilitador VNA","Actors del territori","Ajuntament","Entitats","Comunitat"],"eina":["vna.html","Mapa de valor"]}],"senseEdifici":{"generic":"És la plantilla en blanc, no un tipus de projecte: no hi ha cap edifici que sigui «una xarxa qualsevol»."},"plantilles":[{"id":"banc_temps","nom":"Banc de Temps","ic":"⏳","font":"dinamiques","rols":7},{"id":"biblioteca_coses","nom":"Biblioteca de les Coses","ic":"🧰","font":"dinamiques","rols":7},{"id":"matriu","nom":"MATRIU · Incubadora","ic":"🌱","font":"dinamiques","rols":7},{"id":"mapeig_vna","nom":"Mapeig de Xarxa de Valor","ic":"🕸️","font":"dinamiques","rols":5},{"id":"comunitat_energetica","nom":"Comunitat Energètica","ic":"⚡","font":"dinamiques","rols":7},{"id":"habitatge_cessio","nom":"Habitatge en cessió d'ús","ic":"🏘️","font":"dinamiques","rols":6},{"id":"consum_agroecologic","nom":"Grup de Consum Agroecològic","ic":"🥬","font":"dinamiques","rols":5},{"id":"suport_mutu","nom":"Suport Mutu / Cures Veïnals","ic":"🤝","font":"dinamiques","rols":6},{"id":"compra_collectiva","nom":"Compra Col·lectiva / Estalvi","ic":"🛒","font":"dinamiques","rols":4},{"id":"coop_treball","nom":"Cooperativa de Treball","ic":"🛠️","font":"dinamiques","rols":6},{"id":"cens_entitats","nom":"Sprint de Cens d'Entitats","ic":"🗂️","font":"dinamiques","rols":5},{"id":"generic","nom":"Xarxa genèrica","ic":"◇","font":"dinamiques","rols":0},{"id":"dinamitzacio_comercial","nom":"Dinamització comercial","ic":"🏪","font":"activitats","rols":5},{"id":"ocupacio","nom":"Ocupació i inserció laboral","ic":"💼","font":"activitats","rols":5},{"id":"habitatge","nom":"Habitatge assequible","ic":"🏘️","font":"activitats","rols":5},{"id":"energia","nom":"Comunitat energètica","ic":"⚡","font":"activitats","rols":5},{"id":"alimentacio","nom":"Alimentació sostenible","ic":"🥬","font":"activitats","rols":5},{"id":"cures","nom":"Cures i salut comunitària","ic":"💗","font":"activitats","rols":5},{"id":"cultura","nom":"Cultura i patrimoni","ic":"🎭","font":"activitats","rols":5},{"id":"turisme","nom":"Turisme de poble sostenible","ic":"🧭","font":"activitats","rols":5},{"id":"economia_circular","nom":"Economia circular","ic":"♻️","font":"activitats","rols":5},{"id":"digitalitzacio","nom":"Digitalització i sobirania tecnològica","ic":"🖥️","font":"activitats","rols":5},{"id":"joventut","nom":"Joventut i lleure","ic":"🛹","font":"activitats","rols":5},{"id":"mobilitat","nom":"Mobilitat sostenible","ic":"🚲","font":"activitats","rols":5},{"id":"acollida","nom":"Acollida i inclusió","ic":"🫂","font":"activitats","rols":5},{"id":"territori","nom":"Custòdia del territori","ic":"🌳","font":"activitats","rols":5},{"id":"servei_proximitat","nom":"Servei de proximitat","ic":"🛎","font":"prototips","rols":5},{"id":"producte_artesa","nom":"Producte artesà / manufactura","ic":"🧶","font":"prototips","rols":5},{"id":"servei_tecnic","nom":"Consultoria / servei tècnic","ic":"💼","font":"prototips","rols":5},{"id":"producte_digital","nom":"Producte digital / SaaS","ic":"📱","font":"prototips","rols":5},{"id":"cura_social","nom":"Cura i acompanyament social","ic":"💗","font":"prototips","rols":5},{"id":"formacio","nom":"Educació / formació","ic":"📚","font":"prototips","rols":5}]}
+</script>
+<!--/MOLEK-DADES-->
+
+<script type="module">
+/* ══ Molekulandia · el poble on cada edifici és un projecte ═══════════════
+   La pregunta que ningú sap contestar quan li expliques el SOS és «i això, què
+   és?». Un catàleg de dotze dinàmiques és una llista; un poble amb onze portes
+   és un lloc on entrar. El bar és el banc de temps, la ferreteria és la
+   biblioteca de les coses.
+
+   Tres decisions que fan que això no sigui una il·lustració:
+
+   · **De cada edifici s'hi entra.** Què és al poble, què és al SOS, quins rols
+     té i —sobretot— quina eina hi ha de debò avui. Els que encara no en tenen
+     ho diuen: el mapa de valor hi és sempre, l'eina no.
+   · **Les professions es generen de les taules.** Sumant els rols de les tres
+     fonts del catàleg surten 165 caselles amb 116 noms. Escrites a mà,
+     divergirien a la primera dinàmica nova i no petaria res. Les genera
+     `tools/build-molekulandia.js` i les vigila `--check`.
+   · **116 noms no són 116 professions.** La feina de fons no és agrupar-los:
+     és decidir quins són oficis. La majoria són qui hi ha a l'altra banda,
+     maneres de prendre-hi part o peces del projecte, i comptar-los hauria
+     inflat el número sense ensenyar res.
+
+   El que hi ha encès al teu poble te'l marques tu i es queda al navegador. La
+   pàgina no ho pot saber sola, i fer veure que ho sap seria el mateix pecat que
+   dibuixar onze edificis oberts a un territori que en té dos. */
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ent=n=>isFinite(n)?Math.round(n).toLocaleString('ca'):'—';
+
+/* Les dades, generades. Si algú les edita a mà, `--check` ho diu al primer PR. */
+const D=JSON.parse(document.getElementById('molek-dades').textContent);
+
+/* ── El perfil · idèntic a vna.html i compra.html ────────────────────────
+   El vocabulari i la puntuació són els mateixos a totes les pàgines amb mapa:
+   qui l'ha declarat en una, el porta posat a l'altra. Ho vigila
+   `tools/check-perfil.js` caràcter a caràcter. */
+const PERFIL_CLAU='sos_perfil_aports';
+const APORTS=[
+  {id:'temps',    ic:'⏳',lbl:'Temps constant',        diu:'Pots dedicar-hi una estona fixa cada setmana, encara que sigui curta.'},
+  {id:'ordre',    ic:'📋',lbl:'Ordre i seguiment',     diu:'Portes llistes, dates i comptes sense que se t\'escapin.'},
+  {id:'contactes',ic:'🤝',lbl:'Contactes al territori',diu:'Coneixes qui és qui i pots trucar sense haver-te de presentar.'},
+  {id:'espai',    ic:'🏠',lbl:'Un espai o un local',   diu:'Tens on desar, rebre o repartir.'},
+  {id:'transport',ic:'🚐',lbl:'Vehicle i disponibilitat',diu:'Pots moure coses quan cal.'},
+  {id:'ofici',    ic:'🛠️',lbl:'Un ofici o producció',  diu:'Fas, cultives o repares alguna cosa.'},
+  {id:'numeros',  ic:'🧮',lbl:'Números i negociació',  diu:'Et trobes còmode amb preus, condicions i contractes.'},
+  {id:'cura',     ic:'💚',lbl:'Cura i acollida',       diu:'Fas que la gent es trobi bé i no plegui.'},
+  {id:'veu',      ic:'📣',lbl:'Veu i difusió',         diu:'Expliques les coses i arribes a gent nova.'},
+  {id:'diners',   ic:'💶',lbl:'Posar-hi diners',       diu:'Pots avançar o aportar capital, encara que sigui poc.'}
+];
+const aport=id=>APORTS.find(a=>a.id===id);
+/* Com es puntua l'encaix. Tres pesos, i no un:
+   · `cobreix` — quant del que el rol demana, tens. És el que decideix si el
+     podràs sostenir, i per això mana.
+   · `usa` — quant del que tu portes, el rol aprofita. Sense aquest terme, el
+     rol que demana menys guanyaria sempre i tothom acabaria al més fàcil.
+   · `pes` — com d'exigent és el rol. Entre dos que cobreixes del tot, val més
+     el que demana més: hi ets més necessari. Va **multiplicat per `cobreix`**,
+     i no sumat: sense això, un rol exigent que no cobreixes gens puntuava igual,
+     i amb el perfil buit sortia un rànquing sencer que no volia dir res. */
+const PES={cobreix:60,usa:25,pes:15};
+function encaix(cal,perfil,maxCal){
+  const dem=cal||[],te=dem.filter(a=>perfil.indexOf(a)>=0);
+  const cobreix=dem.length?te.length/dem.length:0;
+  const usa=perfil.length?te.length/perfil.length:0;
+  const pes=maxCal?dem.length/maxCal:0;
+  return {te,falten:dem.filter(a=>perfil.indexOf(a)<0),cobreix,
+    punts:Math.round(cobreix*PES.cobreix+usa*PES.usa+cobreix*pes*PES.pes)};
+}
+function llegeixPerfil(){
+  try{const j=JSON.parse(localStorage.getItem(PERFIL_CLAU)||'[]');
+    return Array.isArray(j)?j.filter(x=>!!aport(x)):[];}catch(e){return [];}
+}
+function desaPerfil(p){try{localStorage.setItem(PERFIL_CLAU,JSON.stringify(p));}catch(e){}}
+function commutaAport(id){
+  const p=llegeixPerfil(),i=p.indexOf(id);
+  if(!aport(id))return p;
+  if(i>=0)p.splice(i,1); else p.push(id);
+  desaPerfil(p);return p;
+}
+function perfilHTML(){
+  const p=llegeixPerfil();
+  return '<div class="aports">'+APORTS.map(a=>
+    '<button type="button" class="ap'+(p.indexOf(a.id)>=0?' on':'')+'" data-ap="'+a.id+'">'+
+    '<span class="ic">'+a.ic+'</span><span class="lb">'+a.lbl+'</span>'+
+    '<span class="dd">'+a.diu+'</span></button>').join('')+'</div>';
+}
+
+/* ── El que hi ha encès al teu poble ─────────────────────────────────────
+   Ho marca qui llegeix. La pàgina no ho pot saber —el registre viu a l'app, en
+   un altre origen— i fer veure que ho sap seria pitjor que no dir-ho. */
+const ENCES_CLAU='sos_molek_encesos';
+function llegeixEncesos(){
+  try{const j=JSON.parse(localStorage.getItem(ENCES_CLAU)||'[]');
+    return Array.isArray(j)?j.filter(x=>D.edificis.some(e=>e.din===x)):[];}catch(e){return [];}
+}
+function desaEncesos(l){try{localStorage.setItem(ENCES_CLAU,JSON.stringify(l));}catch(e){}}
+function commutaEnces(din){
+  const l=llegeixEncesos(),i=l.indexOf(din);
+  if(!D.edificis.some(e=>e.din===din))return l;
+  if(i>=0)l.splice(i,1); else l.push(din);
+  desaEncesos(l);return l;
+}
+
+/* ── L'encaix d'una professió amb el teu perfil ───────────────────────── */
+const MAXCAL=Math.max.apply(null,D.professions.map(p=>p.demana.length));
+function professionsOrdenades(){
+  const perfil=llegeixPerfil();
+  return D.professions.map(p=>Object.assign({},p,encaix(p.demana,perfil,MAXCAL),
+    {caselles:p.rols.reduce((a,r)=>a+r.cops,0),edificis:edificisDe(p)}))
+    .sort((a,b)=>b.punts-a.punts||b.caselles-a.caselles);
+}
+/* Quines professions ensenya un edifici: les dels seus rols que són oficis. */
+function professionsDe(edifici){
+  const ids=[...new Set(edifici.rols.map(r=>(D.rols.find(x=>x.nom===r)||{}).professio).filter(Boolean))];
+  return ids.map(id=>D.professions.find(p=>p.id===id)).filter(Boolean);
+}
+/* I al revés: en quins edificis s'aprèn una professió. Es calcula i no
+   s'escriu, perquè d'aquí en surt una cosa que no s'hauria vist mirant la
+   llista —hi ha professions que a l'arcada no s'aprenen enlloc, i només
+   existeixen al terme. Escrita a mà, aquella frase deixaria de ser certa el dia
+   que algú afegís un rol a una dinàmica. */
+function edificisDe(professio){
+  return D.edificis.filter(e=>professionsDe(e).some(p=>p.id===professio.id));
+}
+const nomesAlTerme=()=>D.professions.filter(p=>!edificisDe(p).length);
+const naturaDe=nom=>(D.rols.find(x=>x.nom===nom)||{}).natura||'—';
+const NAT_LBL={ofici:'ofici',part:'manera de ser-hi',fora:'de fora','peça':'peça del projecte'};
+
+/* ── Estat de pantalla ──────────────────────────────────────────────────── */
+let tria=null, mode=false;
+
+/* ── Les pantalles ──────────────────────────────────────────────────────── */
+function pintaPoble(){
+  const enc=llegeixEncesos();
+  $('#poble').innerHTML='<div class="arcada"></div>'+
+    '<div class="placa"><b>La plaça</b><span>L\'assemblea i el registre: on consta qui ha aportat què, signat.</span></div>'+
+    D.edificis.map(e=>'<button type="button" class="ed'+(enc.indexOf(e.din)>=0?' on':'')+
+      (tria===e.din?' tria':'')+'" data-ed="'+e.din+'" style="left:'+e.x+'%;top:'+e.y+'%" '+
+      'aria-pressed="'+(enc.indexOf(e.din)>=0)+'">'+
+      '<span class="ic">'+e.ic+'</span><span class="nm">'+esc(e.nom)+'</span>'+
+      '<span class="dn">'+esc(e.dinNom)+'</span></button>').join('');
+  $('#btnMode').textContent=mode?'✓ Fet: tornar a entrar als edificis':'Marcar què hi ha encès';
+  $('#modeDiu').textContent=mode
+    ? 'Ara clicar un edifici l\'encén o l\'apaga en comptes d\'obrir-lo.'
+    : 'Ara clicar un edifici l\'obre.';
+  const n=enc.length,t=D.edificis.length;
+  $('#placaDiu').innerHTML=!n
+    ? 'Encara no has marcat cap edifici. <strong>Un poble sense res encès no és un poble buit: és un '+
+      'poble no comptat</strong> — i el primer edifici de tots sol ser el que ja existeix i no s\'anomena així.'
+    : '<strong>'+n+' de '+t+' encesos.</strong> '+
+      (n<=3?'Amb tres o menys, el que decideix què ve després no és quin projecte és més bonic sinó '+
+            'quin comparteix gent amb els que ja tens.'
+       :n<t?'Els '+(t-n)+' que falten no són deures: són el que <strong>encara no fa falta</strong>. '+
+            'Un poble no necessita els onze, necessita els que resolen alguna cosa seva.'
+       :'Els onze. Si això és cert, el que et falta no és cap edifici més: és relleu a dins dels que tens.');
+}
+function pintaFitxa(){
+  const e=D.edificis.find(x=>x.din===tria);
+  if(!e){$('#fitxa').innerHTML='';return;}
+  const profs=professionsDe(e);
+  const oficis=e.rols.filter(r=>naturaDe(r)==='ofici');
+  $('#fitxa').innerHTML='<div class="fitxa">'+
+    '<h4>'+e.ic+' '+esc(e.nom)+' <span class="mut">— '+esc(e.dinIc)+' '+esc(e.dinNom)+'</span></h4>'+
+    '<p class="lead">'+esc(e.es)+'</p>'+
+    '<p class="mut">Al SOS: '+esc(e.one)+'</p>'+
+    '<p class="mut">Rols del mapa ('+e.rols.length+'):</p>'+
+    '<div class="xips">'+e.rols.map(r=>'<span class="xip '+naturaDe(r)+'">'+esc(r)+
+      ' <span class="mut">· '+esc(NAT_LBL[naturaDe(r)]||'')+'</span></span>').join('')+'</div>'+
+    '<p class="mut">Professions que s\'hi aprenen: '+
+      (profs.length?profs.map(p=>p.ic+' '+esc(p.nom)).join(' · ')
+        :'<strong>cap</strong> — aquí tots els rols són maneres de ser-hi o gent de fora, i això '+
+         'no vol dir que l\'edifici valgui menys: vol dir que el que s\'hi aprèn s\'aprèn en un altre.')+
+      ' <span class="mut">('+oficis.length+' de '+e.rols.length+' rols són oficis)</span></p>'+
+    (e.eina
+      ? '<a class="porta" href="'+esc(e.eina[0])+'">Entra-hi: '+esc(e.eina[1])+' →</a>'
+      : '<p class="nota avis"><strong>Aquest edifici encara no té eina pròpia.</strong> El mapa de '+
+        'valor hi és —rols i intercanvis, a <a href="vna.html">vna.html</a>—, i l\'eina no. '+
+        'Dibuixar-hi una porta que no s\'obre seria el contrari del que això ve a fer.</p>')+
+    ' <button type="button" class="tanca" id="tancaFitxa">Tanca</button>'+
+    '</div>';
+}
+function pintaProfessions(){
+  $('#perfil').innerHTML=perfilHTML();
+  const perfil=llegeixPerfil();
+  $('#perfilDiu').textContent=perfil.length
+    ? perfil.length+' capacitats declarades. Es desen en aquest dispositiu i valen a tot el SOS.'
+    : 'Sense res marcat, l\'ordre de sota és el de les professions que demanen més gent, no el teu.';
+  $('#mCaselles').textContent=ent(D.resum.caselles);
+  $('#mUnics').textContent=ent(D.resum.unics);
+  const llista=professionsOrdenades();
+  $('#profs').innerHTML=llista.map((p,i)=>'<div class="prof'+(i===0&&perfil.length?' top':'')+'">'+
+    '<div class="cap"><b>'+p.ic+' '+esc(p.nom)+'</b>'+
+    '<span class="mut">'+p.rols.length+(p.rols.length===1?' rol':' rols')+' · '+p.caselles+' caselles</span>'+
+    (perfil.length?'<span class="pt">'+p.punts+'</span>':'')+'</div>'+
+    '<div class="diu">'+esc(p.diu)+'</div>'+
+    (perfil.length?'<div class="barra"><i style="width:'+Math.min(100,p.punts)+'%"></i></div>':'')+
+    '<div class="xips">'+p.demana.map(d=>'<span class="xip'+(perfil.indexOf(d)>=0?' ofici':'')+'">'+
+      (aport(d)||{}).ic+' '+esc((aport(d)||{}).lbl)+'</span>').join('')+'</div>'+
+    '<p class="mut">'+(perfil.length&&p.falten.length
+      ? 'Et falta: '+p.falten.map(f=>esc((aport(f)||{}).lbl)).join(', ')+'.'
+      : perfil.length?'Tens tot el que demana.':'')+
+      ' Surt com a: '+p.rols.map(r=>esc(r.nom)+' <span class="mut">×'+r.cops+'</span>').join(' · ')+'</p>'+
+    '<p class="mut">'+(p.edificis.length
+      ? 'S\'aprèn a: '+p.edificis.map(e=>e.ic+' '+esc(e.nom)).join(' · ')
+      : '<strong style="color:var(--orange)">A l\'arcada no s\'aprèn enlloc</strong> — aquesta professió '+
+        'només surt a les activitats del terme.')+'</p>'+
+    '</div>').join('');
+  const top=llista[0];
+  const orfes=nomesAlTerme();
+  $('#profsDiu').innerHTML=(!perfil.length
+    ? 'Marca alguna capacitat de dalt i aquesta llista es reordena pel teu encaix. Sense perfil, '+
+      'l\'ordre no vol dir res i val més dir-ho que fingir un rànquing.'
+    : 'Amb el que has marcat, el que més t\'encaixa és <strong>'+esc(top.nom)+'</strong> ('+top.punts+' punts). '+
+      'Això no és una recomanació de carrera: és <strong>on faries menys falta que et supleixin</strong>. '+
+      'La professió que et falta cobrir del tot també és informació — diu què hauries d\'aprendre si la vols.')+
+    (orfes.length
+      ? '<br><br>I una cosa que no s\'hauria vist mirant la llista: <strong>'+orfes.length+' de les '+
+        D.professions.length+(orfes.length===1?' no s\'aprèn':' no s\'aprenen')+
+        ' a cap edifici de l\'arcada</strong> ('+
+        orfes.map(p=>esc(p.nom)).join(', ')+'). Existeixen al terme —a les activitats que el poble '+
+        'necessita— i no a cap projecte del catàleg. <strong>És un forat del catàleg, no de la '+
+        'professió</strong>, i es veu perquè això es calcula en comptes d\'escriure\'s.'
+      : '<br><br>Les '+D.professions.length+' professions s\'aprenen en algun edifici de l\'arcada: '+
+        'el catàleg cobreix tot el que el terme demana.');
+}
+function pintaTerme(){
+  const act=D.plantilles.filter(p=>p.font==='activitats');
+  const pro=D.plantilles.filter(p=>p.font==='prototips');
+  const targeta=p=>'<div class="tg"><b>'+esc(p.ic)+' '+esc(p.nom)+'</b>'+
+    '<p>'+p.rols+(p.rols===1?' rol al mapa':' rols al mapa')+'</p></div>';
+  $('#activitats').innerHTML=act.map(targeta).join('');
+  $('#prototips').innerHTML=pro.map(targeta).join('');
+}
+function pintaCompte(){
+  const r=D.resum;
+  $('#capes').innerHTML=
+    '<div class="capa"><div class="n">'+ent(r.caselles)+'</div><div class="l">caselles de rol</div>'+
+      '<div class="d">Sumant les 32 plantilles de les tres fonts.</div></div>'+
+    '<div class="capa blau"><div class="n">'+ent(r.unics)+'</div><div class="l">noms diferents</div>'+
+      '<div class="d">«Coordinació» surt a mitja dotzena de mapes.</div></div>'+
+    '<div class="capa bo"><div class="n">'+ent(r.ofici)+'</div><div class="l">són oficis</div>'+
+      '<div class="d">Els únics que es poden aprendre a fer.</div></div>'+
+    '<div class="capa or"><div class="n">'+ent(r.professions)+'</div><div class="l">professions</div>'+
+      '<div class="d">On es tanquen aquells oficis.</div></div>';
+  $('#tFonts').innerHTML='<thead><tr><th>Font</th><th class="n">Plantilles</th><th class="n">Caselles</th>'+
+    '<th>Què és</th></tr></thead><tbody>'+
+    D.fonts.map(f=>'<tr><td><strong>'+esc(f.lbl)+'</strong></td><td class="n">'+f.plantilles+'</td>'+
+      '<td class="n">'+f.rols+'</td><td class="mut">'+esc(f.diu)+'</td></tr>').join('')+
+    '<tr><td><strong>Total</strong></td>'+
+    '<td class="n"><strong>'+D.fonts.reduce((a,f)=>a+f.plantilles,0)+'</strong></td>'+
+    '<td class="n"><strong>'+D.fonts.reduce((a,f)=>a+f.rols,0)+'</strong></td><td></td></tr></tbody>';
+  const N=[['ofici',r.ofici,'Una cosa que es pot aprendre a fer. Només aquests tenen professió.'],
+    ['part',r.part,'Una manera de prendre-hi part. No s\'aprèn: s\'hi és — sòcia, usuària, veïna.'],
+    ['fora',r.fora,'Qui hi ha a l\'altra banda i no forma part del projecte: l\'ajuntament, la clientela, qui finança.'],
+    ['peça',r.peca,'Una peça del projecte mateix: un lloc, una entitat, un registre.']];
+  $('#tNatura').innerHTML='<thead><tr><th>Natura</th><th class="n">Noms</th><th class="n">%</th>'+
+    '<th>Què vol dir</th><th>Exemples</th></tr></thead><tbody>'+
+    N.map(([n,q,d])=>'<tr><td><span class="xip '+n+'">'+n+'</span></td><td class="n">'+q+'</td>'+
+      '<td class="n">'+Math.round(q*100/r.unics)+'</td><td class="mut">'+esc(d)+'</td>'+
+      '<td class="mut">'+D.rols.filter(x=>x.natura===n).slice(0,3).map(x=>esc(x.nom)).join(', ')+'…</td></tr>').join('')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+r.unics+'</strong></td>'+
+    '<td class="n"><strong>100</strong></td><td></td><td></td></tr></tbody>';
+  $('#peuFont').innerHTML='Generat de <code>DYNAMICS</code>, <code>CRITICAL_ACTIVITIES</code> i '+
+    '<code>PROTOTYPE_MAPS</code> de <code>SOS/index.html</code> per '+
+    '<code>SOS/tools/build-molekulandia.js</code>. La taxonomia de natures i professions va '+
+    'declarada allà mateix, un nom per línia, perquè es pugui discutir: el que fa la màquina és '+
+    'no deixar-ne cap fora. La llista sencera és a <code>SOS/knowledge/professions.md</code>.';
+}
+function pinta(){pintaPoble();pintaFitxa();pintaProfessions();pintaTerme();pintaCompte();}
+
+/* ── Enganxar-ho ────────────────────────────────────────────────────────── */
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-p]');if(!b)return;
+  $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $$('.pan').forEach(p=>p.classList.toggle('on',p.id==='p'+b.dataset.p[0].toUpperCase()+b.dataset.p.slice(1)));
+});
+$('#poble').addEventListener('click',e=>{
+  const b=e.target.closest('[data-ed]');if(!b)return;
+  if(mode){commutaEnces(b.dataset.ed);pintaPoble();return;}
+  tria=tria===b.dataset.ed?null:b.dataset.ed;
+  pintaPoble();pintaFitxa();
+});
+$('#fitxa').addEventListener('click',e=>{
+  if(e.target.id==='tancaFitxa'){tria=null;pintaPoble();pintaFitxa();}
+});
+$('#btnMode').addEventListener('click',()=>{mode=!mode;if(mode)tria=null;pintaPoble();pintaFitxa();});
+$('#perfil').addEventListener('click',e=>{
+  const b=e.target.closest('[data-ap]');if(!b)return;
+  commutaAport(b.dataset.ap);pintaProfessions();
+});
+
+pinta();
+
+/* Hook de proves: les proves parlen amb la pàgina de debò, no amb una còpia. */
+window.__MOLEK={D,APORTS,PES,PERFIL_CLAU,ENCES_CLAU,MAXCAL,aport,encaix,
+  llegeixPerfil,desaPerfil,commutaAport,llegeixEncesos,desaEncesos,commutaEnces,
+  professionsOrdenades,professionsDe,edificisDe,nomesAlTerme,naturaDe,pinta,
+  obre:d=>{tria=d;pintaPoble();pintaFitxa();},
+  estat:()=>({tria,mode})};
+</script>
+</body>
+</html>

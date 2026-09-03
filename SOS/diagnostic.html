@@ -143,7 +143,7 @@ footer a{color:var(--indigo);text-decoration:none}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html" aria-current="page"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html" aria-current="page"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
@@ -484,6 +484,17 @@ const PORTES=[
    si:d=>d.serveis.includes('consum')||d.need.includes('financament'),
    per:d=>d.serveis.includes('consum')?'Perquè ja teniu grup de consum i això és l\'eina que li falta.'
         :'Perquè abans de buscar diners fora, el que es deixa de gastar també compta.'},
+  /* Les dues dinàmiques que tenen eina pròpia i no tenien porta: qui deia que
+     ja té comunitat energètica o projecte d'habitatge acabava el diagnòstic
+     sense que ningú li digués que l'eina d'allò existeix. */
+  {id:'energia',url:'energia.html',t:'⚡ L\'Energia',
+   d:'Comunitat energètica: els coeficients, l\'estalvi real de cada llar i l\'amortització amb el tràmit.',
+   si:d=>d.serveis.includes('energia'),
+   per:d=>'Perquè ja teniu comunitat energètica: aquí es veu qui s\'estalvia què de debò, que no és el mateix que el coeficient.'},
+  {id:'habitatge',url:'habitatge.html',t:'🏠 L\'Habitatge',
+   d:'Cessió d\'ús: el cost, la porta del 20%, la quota de cada llar i què passa si algú marxa.',
+   si:d=>d.serveis.includes('habitatge'),
+   per:d=>'Perquè ja teniu projecte d\'habitatge: aquí es veu qui queda fora per l\'entrada i qui per la quota, abans de constituir res.'},
   {id:'formacio',url:'formacio.html',t:'🎓 La formació',
    d:'Setze mòduls de N0 a N3, amb les hores i el nivell de cadascun.',
    si:d=>d.need.includes('formacio')||d.need.includes('mentors')||d.mods.length>=5,
