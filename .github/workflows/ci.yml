@@ -72,6 +72,15 @@ jobs:
       - name: Guarda de L'Energia (comunitat energètica)
         run: node SOS/tools/check-energia.js
 
+      # L'Habitatge decideix si un grup es compromet vint-i-cinc anys. Dos
+      # errors serien cars i cap dels dos peta: planificar amb menys del 20% de
+      # recursos no bancaris —cap entitat ètica finança el 100%, i això no es
+      # descobreix fins que ja s'ha gastat un any— i calcular un retorn
+      # revaloritzat de l'aportació, que convertiria l'habitatge en un actiu i
+      # deixaria la cessió d'ús sense sentit.
+      - name: Guarda de L'Habitatge (cessió d'ús)
+        run: node SOS/tools/check-habitatge.js
+
       # El registre és l'única cosa que es publica i no es pot desdir: un cop
       # una versió és a fora, ni se'n treu el que hi ha dins ni es torna a
       # numerar ningú. Aquí es vigila que al compromís d'alta no hi entri cap

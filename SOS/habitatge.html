@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L'Habitatge · cessió d'ús, quota i aportació retornable</title>
+<meta name="description" content="Miniapp per a projectes d'habitatge en cessió d'ús: què costa, qui el finança, quina quota surt, qui queda fora per l'entrada i qui per la quota, i què passa de debò si algú marxa.">
+<meta property="og:title" content="L'Habitatge · cessió d'ús, quota i aportació retornable">
+<meta property="og:description" content="Baixar l'aportació d'entrada puja la quota. Les dues coses deixen gent fora, i no la mateixa. Aquí es veu, amb números, abans de constituir res.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+.hero{padding:3.4rem 1.5rem 2.2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(224,64,251,.14),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(0,176,255,.12),transparent 55%),var(--bg)}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:rgba(224,64,251,.14);color:var(--purple);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#e040fb,#00b0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:700px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:860px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--orange);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+/* Pestanyes */
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+input,select,button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .55rem}
+input[type=number]{width:88px;text-align:right;font-family:var(--mono)}
+input:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
+button.b{cursor:pointer}
+button.b:hover{border-color:var(--indigo)}
+.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+tr.fora td:first-child{border-left:2px solid var(--red);padding-left:.35rem}
+tr.tria{background:rgba(99,102,241,.1)}
+/* El punt de mínima exclusió es marca encara que no passi la porta: sovint és
+   precisament aquell, i amagar-lo seria amagar la troballa. */
+tr.min td:first-child{border-left:2px solid var(--purple);padding-left:.35rem}
+.nota{font-size:.78rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.5rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+
+.capes{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin:.8rem 0}
+.capa{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.75rem .85rem}
+.capa .n{font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1.1}
+.capa .l{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:.1rem}
+.capa .d{font-size:.76rem;color:var(--light);margin-top:.35rem;line-height:1.45}
+.capa.bo .n{color:var(--green)} .capa.blau .n{color:var(--blue)} .capa.taronja .n{color:var(--orange)}
+.capa.mal .n{color:var(--red)}
+
+/* La porta del finançament: passa o no passa, i es veu de lluny */
+.porta{display:flex;gap:.8rem;align-items:center;padding:.8rem .9rem;border-radius:12px;
+  border:1px solid var(--border);background:var(--card);margin:.7rem 0}
+.porta .marca{flex:0 0 2.6rem;height:2.6rem;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:1.3rem;border:2px solid}
+.porta.si .marca{border-color:var(--green);color:var(--green)}
+.porta.no .marca{border-color:var(--red);color:var(--red)}
+.porta .cos{flex:1;min-width:0;font-size:.86rem}
+.porta .cos b{display:block;font-size:.95rem;margin-bottom:.15rem}
+
+/* La barra de fonts de finançament: qui posa què */
+.fonts{display:flex;height:22px;border-radius:8px;overflow:hidden;border:1px solid var(--border);margin:.6rem 0}
+.fonts i{display:block;height:100%}
+.fonts .ap{background:linear-gradient(90deg,#e040fb,#a855f7)}
+.fonts .ti{background:linear-gradient(90deg,#00b0ff,#0284c7)}
+.fonts .aj{background:#00e676}
+.fonts .pr{background:#2a2a45}
+.llegenda{display:flex;gap:.9rem;flex-wrap:wrap;font-size:.74rem;color:var(--light)}
+.llegenda span{display:flex;align-items:center;gap:.3rem}
+.llegenda i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+.graella{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem;margin:.7rem 0}
+.tg{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.75rem .85rem}
+.tg b{font-size:.92rem}
+.tg p{margin:.25rem 0 0;font-size:.79rem;color:var(--light);line-height:1.45}
+
+.pas{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.pas .num{flex:0 0 1.7rem;height:1.7rem;border-radius:50%;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.8rem;font-weight:700}
+.pas .cos{flex:1;min-width:0}
+.pas .t{font-weight:700;font-size:.9rem}
+.pas .d{font-size:.8rem;color:var(--light);margin-top:.15rem;line-height:1.45}
+.pas .q{font-family:var(--mono);font-size:.74rem;color:var(--orange);white-space:nowrap;flex:0 0 auto}
+.pas.crit .num{border-color:var(--red);color:var(--red)}
+</style>
+</head>
+<body>
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html" aria-current="page"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="tag">🏠 Habitatge en cessió d'ús · model Andel</div>
+    <h1>Baixar l'entrada <em>puja la quota</em></h1>
+    <p class="sub">Les dues coses deixen gent fora, i <strong>no la mateixa gent</strong>. Una aportació
+    d'entrada alta exclou qui no té estalvis; una de baixa exclou qui no arriba a la quota. Aquesta
+    pàgina posa números a aquesta tensió —i a la conversa que ningú té fins que passa: <strong>què
+    cobra qui marxa, i qui li ho torna</strong>.</p>
+    <div class="avis">
+      <strong>Aquí no es compra res ni s'adjudica cap habitatge.</strong> Això és un estudi de
+      viabilitat: no constitueix cap cooperativa, no signa cap préstec i no reserva cap unitat. I tot
+      el que hi escriguis <strong>viu al navegador d'aquest dispositiu</strong> i enlloc més.
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="llars" class="on">1 · Les llars</button>
+  <button data-p="obra">2 · L'obra i el sòl</button>
+  <button data-p="finances">3 · El finançament</button>
+  <button data-p="quota">4 · La quota</button>
+  <button data-p="tensio">5 · Qui queda fora</button>
+  <button data-p="marxa">6 · Si algú marxa</button>
+  <button data-p="mapa">7 · El mapa de valor</button>
+  <button data-p="metode">8 · Com es fa</button>
+</div>
+
+<!-- ══ 1 · LES LLARS ═════════════════════════════════════════════════════ -->
+<div class="pan on" id="pLlars">
+  <section class="box">
+    <h3>Qui hi viurà, i amb què compta</h3>
+    <p class="lead">Quatre xifres per llar. Les dues últimes són les que no s'apunten enlloc i les
+    que ho decideixen tot: <strong>què pot posar d'entrada</strong> i <strong>de què viu cada
+    mes</strong>. Sense elles, un estudi de viabilitat només diu si el projecte és viable per a algú
+    —no per a aquestes persones.</p>
+    <p class="mut">Aquí no hi ha noms de persona: les files són <strong>llars</strong>, com a tota la
+    pàgina. Un registre dels ingressos de persones concretes al navegador d'algú és una altra cosa, i
+    no és aquesta.</p>
+    <div class="fila">
+      <input id="inNom" placeholder="Nom de la llar" maxlength="24">
+      <label>m² <input id="inM2" type="number" min="20" max="200" step="5" value="65"></label>
+      <label>persones <input id="inPers" type="number" min="1" max="10" step="1" value="2"></label>
+      <label>ingressos nets/mes <input id="inIng" type="number" min="0" max="20000" step="100" value="2200"></label>
+      <label>pot posar <input id="inPot" type="number" min="0" max="200000" step="1000" value="20000"></label>
+      <button class="b b-pri" id="btnLlar">Dona-la d'alta</button>
+    </div>
+    <p class="mut" id="llarsAvis"></p>
+    <div class="taula"><table id="tLlars"></table></div>
+    <p class="nota" id="llarsDiu"></p>
+  </section>
+</div>
+
+<!-- ══ 2 · L'OBRA I EL SÒL ═══════════════════════════════════════════════ -->
+<div class="pan" id="pObra">
+  <section class="box">
+    <h3>Què costa l'edifici</h3>
+    <p class="lead">El cost no és el preu del metre quadrat: és el metre quadrat <strong>més els
+    espais comuns</strong>, més els honoraris tècnics, més l'IVA. Els comuns són el que fa que això
+    sigui cessió d'ús i no un bloc de pisos, i per això surten com una línia i no com un detall.</p>
+    <div class="fila">
+      <label>€/m² d'obra <input id="inObra" type="number" min="600" max="3500" step="50"></label>
+      <label>% de comuns <input id="inComuns" type="number" min="0" max="60" step="1"></label>
+      <label>% tècnics <input id="inTecnics" type="number" min="0" max="25" step="1"></label>
+      <label>% IVA <input id="inIva" type="number" min="0" max="21" step="1"></label>
+    </div>
+    <div class="capes" id="capesObra"></div>
+    <div class="taula"><table id="tCost"></table></div>
+    <p class="nota" id="obraDiu"></p>
+    <p class="mut" id="obraFont"></p>
+  </section>
+
+  <section class="box">
+    <h3>El sòl, que no es compra</h3>
+    <p class="lead">Aquí hi ha tota la diferència de preu, i convé dir-la sense eufemismes:
+    <strong>la quota no surt barata per eficiència, surt barata perquè el sòl no s'ha pagat</strong>.
+    L'administració en cedeix l'ús i la cooperativa hi construeix; passat el termini, l'edifici torna.</p>
+    <div class="fila">
+      <label>Cànon €/habitatge al mes <input id="inCanon" type="number" min="0" max="500" step="5"></label>
+    </div>
+    <p class="nota" id="soDiu"></p>
+    <p class="nota avis">Si el sòl s'hagués de comprar, aquesta pàgina no diria el que diu. Un
+    projecte sense cessió és un altre projecte: mateixa forma jurídica, un altre preu i una altra
+    gent a dins. Val més saber-ho al començament que a la quarta reunió amb l'ajuntament.</p>
+  </section>
+</div>
+
+<!-- ══ 3 · EL FINANÇAMENT ════════════════════════════════════════════════ -->
+<div class="pan" id="pFinances">
+  <section class="box">
+    <h3>La porta que decideix si això existeix</h3>
+    <p class="lead">Cap entitat de finances ètiques finança el 100%. El sostre habitual és el
+    <strong>80%</strong>, o sigui que del cost total ha de venir <strong>un 20% que no sigui del
+    préstec</strong>. Aquest 20% és, gairebé sempre, el motiu real pel qual un projecte s'encalla.</p>
+    <div class="fila">
+      <label>Aportació demanada € <input id="inAport" type="number" min="0" max="200000" step="1000"></label>
+      <label>Títols participatius € <input id="inTitols" type="number" min="0" max="5000000" step="10000"></label>
+      <label>Ajuts i subvencions € <input id="inAjut" type="number" min="0" max="5000000" step="10000"></label>
+    </div>
+    <div class="fonts" id="barraFonts"></div>
+    <div class="llegenda" id="llegFonts"></div>
+    <div class="porta" id="porta"></div>
+    <div class="capes" id="capesFin"></div>
+    <p class="nota" id="finDiu"></p>
+  </section>
+
+  <section class="box">
+    <h3>El préstec, i el que costa tenir-lo</h3>
+    <p class="lead">El tipus i el termini no són un detall administratiu: mouen la quota molt més que
+    els metres quadrats.</p>
+    <div class="fila">
+      <label>Interès % <input id="inInteres" type="number" min="0" max="12" step="0.1"></label>
+      <label>Anys <input id="inAnys" type="number" min="5" max="40" step="1"></label>
+      <label>Títols: interès % <input id="inTiInt" type="number" min="0" max="10" step="0.1"></label>
+      <label>Títols: venciment (anys) <input id="inTiAnys" type="number" min="1" max="30" step="1"></label>
+    </div>
+    <div class="taula"><table id="tFin"></table></div>
+    <p class="nota mal" id="venDiu"></p>
+    <p class="mut" id="finFont"></p>
+  </section>
+</div>
+
+<!-- ══ 4 · LA QUOTA ══════════════════════════════════════════════════════ -->
+<div class="pan" id="pQuota">
+  <section class="box">
+    <h3>Què paga cada llar cada mes</h3>
+    <p class="lead">La quota d'ús no és un lloguer i no és una hipoteca: és <strong>la part que li
+    toca a cada llar del que costa tenir l'edifici dret</strong> —préstec, operació i cànon. Com es
+    reparteix és una decisió d'assemblea, i les dues maneres habituals no donen el mateix.</p>
+    <div class="fila">
+      <label><input type="radio" name="rep" value="m2" checked> Proporcional als m²</label>
+      <label><input type="radio" name="rep" value="igual"> A parts iguals</label>
+      <label>% de manteniment i reserva <input id="inOper" type="number" min="0" max="6" step="0.1"></label>
+      <label>% per al fons de retorn <input id="inReserva" type="number" min="0" max="30" step="1"></label>
+    </div>
+    <div class="capes" id="capesQuota"></div>
+    <div class="taula"><table id="tQuota"></table></div>
+    <p class="nota" id="quotaDiu"></p>
+  </section>
+
+  <section class="box">
+    <h3>La comparació amb el lloguer, dita sencera</h3>
+    <p class="lead">La quota és més baixa, però <strong>hi has posat una entrada que el lloguer no
+    demana</strong>. Comparar només la mensualitat és el truc més fàcil d'aquest sector, i no cal
+    fer-lo per guanyar la comparació: surt igualment.</p>
+    <div class="fila">
+      <label>Lloguer de referència €/m² al mes <input id="inLloguer" type="number" min="4" max="40" step="0.5"></label>
+    </div>
+    <div class="taula"><table id="tLloguer"></table></div>
+    <p class="nota bo" id="llogDiu"></p>
+    <p class="mut" id="quotaFont"></p>
+  </section>
+</div>
+
+<!-- ══ 5 · QUI QUEDA FORA ════════════════════════════════════════════════ -->
+<div class="pan" id="pTensio">
+  <section class="box">
+    <h3>L'entrada i la quota es mouen en direccions contràries</h3>
+    <p class="lead">Puja l'aportació i baixa la quota: entra qui té estalvis. Baixa-la i puja la
+    quota: entra qui té ingressos. <strong>Les dues deixen gent fora, i no és la mateixa.</strong>
+    Aquesta taula fa el recorregut sencer amb les llars que hi ha donades d'alta.</p>
+    <div class="taula"><table id="tTensio"></table></div>
+    <p class="nota" id="tensioDiu"></p>
+    <p class="nota avis">El mínim d'aquesta columna no és «la resposta»: és <strong>el punt on
+    l'exclusió és més petita amb aquest grup concret</strong>. Amb unes altres llars surt un altre
+    número, i aquesta és exactament la gràcia —el projecte es dissenya per a la gent que hi ha, no
+    per a una família mitjana que no existeix.</p>
+  </section>
+
+  <section class="box">
+    <h3>L'esforç, amb el llindar escrit</h3>
+    <p class="lead">Una llar que destina més del <strong id="mEsforc">30%</strong> dels ingressos
+    nets a l'habitatge està en sobrecàrrega. No és una opinió d'aquesta pàgina: és el llindar amb
+    què es mesura l'accés a l'habitatge, i el fem servir perquè la xifra es pugui discutir.</p>
+    <div class="taula"><table id="tEsforc"></table></div>
+    <p class="nota" id="esforcDiu"></p>
+  </section>
+</div>
+
+<!-- ══ 6 · SI ALGÚ MARXA ═════════════════════════════════════════════════ -->
+<div class="pan" id="pMarxa">
+  <section class="box">
+    <h3>Què cobra qui marxa</h3>
+    <p class="lead">L'aportació és <strong>retornable i nominal</strong>: es torna el que es va
+    posar, sense revaloració. Això no és un descuit del model —<strong>és el model</strong>: si es
+    revalorés, l'habitatge tornaria a ser un actiu i la cessió d'ús no serviria per a res. El preu
+    d'aquesta virtut el paga qui marxa, i val més dir-l'hi el primer dia.</p>
+    <div class="fila">
+      <label>Anys vivint-hi <input id="inAnysFora" type="number" min="1" max="60" step="1" value="20"></label>
+      <label>IPC anual suposat % <input id="inIpc" type="number" min="0" max="10" step="0.1"></label>
+    </div>
+    <div class="capes" id="capesMarxa"></div>
+    <p class="nota" id="marxaDiu"></p>
+  </section>
+
+  <section class="box">
+    <h3>I sobretot: qui li ho torna</h3>
+    <p class="lead">Aquesta és la pregunta que no surt als fullets. La cooperativa no té l'aportació
+    en un calaix: <strong>és a l'edifici</strong>. Si no hi ha fons de retorn ni llista d'espera,
+    <strong>l'aportació la torna qui entra</strong> —i si no entra ningú, no es torna.</p>
+    <div class="capes" id="capesFons"></div>
+    <p class="nota" id="fonsDiu"></p>
+    <p class="nota avis">Amb un fons de retorn al 0%, l'única sortida és que entri algú. Això
+    funciona mentre hi ha llista d'espera i deixa de funcionar exactament quan més falta fa: en una
+    crisi, quan marxa més gent i n'entra menys. Un 5-10% de la quota destinat a aquest fons és
+    l'assegurança d'aquest model, i quasi cap projecte l'apunta al pla inicial.</p>
+  </section>
+</div>
+
+<!-- ══ 7 · EL MAPA DE VALOR ══════════════════════════════════════════════ -->
+<div class="pan" id="pMapa">
+  <section class="box">
+    <h3>Aquesta pàgina és l'eina d'una dinàmica del catàleg</h3>
+    <p class="lead">No és una calculadora amb un nom a sobre: és <strong>l'eina d'un tipus de
+    projecte que ja existeix al SOS</strong>, amb els seus actors i els seus fluxos. El mapa que ve a
+    continuació és <strong>còpia literal del catàleg</strong>, i una guarda ho comprova paraula per
+    paraula.</p>
+    <p class="nota" id="mapaResum"></p>
+  </section>
+  <div id="mapes"></div>
+</div>
+
+<!-- ══ 8 · COM ES FA ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pMetode">
+  <section class="box">
+    <h3>El tràmit, amb de qui depèn cada pas</h3>
+    <p class="lead">L'obra són mesos. El que fa que un projecte de cessió d'ús trigui sis anys és
+    tot el que hi ha abans, i gairebé sempre pel mateix motiu: <strong>depèn d'un tercer</strong>.</p>
+    <div id="tramit"></div>
+    <p class="nota mal">Els passos en vermell no depenen de vosaltres. Planificar-los com si en
+    depenguessin és el motiu més freqüent que un grup motor es desfaci abans de constituir res.</p>
+  </section>
+
+  <section class="box">
+    <h3>El mètode</h3>
+    <p class="lead">El que sap qui n'ha muntat un, i que no surt als fullets.</p>
+
+    <h4>1 · L'entrada i la quota són la mateixa palanca</h4>
+    <p>Cada euro d'aportació que no es demana és un euro de préstec, i el préstec es paga amb la
+    quota. Per això <strong>no hi ha una xifra bona d'aportació</strong>: n'hi ha una que exclou per
+    estalvis i una altra que exclou per ingressos, i la decisió és de quina gent voleu que sigui el
+    projecte. Decidiu-ho mirant la pantalla 5, no discutint-ho.</p>
+
+    <h4>2 · El 20% no el posen les sòcies</h4>
+    <p>Amb les aportacions habituals i els costos d'obra habituals, <strong>els números no arriben
+    al 20% de recursos no bancaris</strong>. El forat el tanquen els <strong>títols
+    participatius</strong>: préstecs de la comunitat, per sota del tipus de mercat, que és el que ha
+    fet possibles els projectes de referència. Vol dir que el projecte no el finança el grup: el
+    finança l'entorn del grup, i això s'ha de construir com es construeix un edifici.</p>
+
+    <h4>3 · Els títols venen, i tenen data</h4>
+    <p>Un títol participatiu no és una donació: es torna. Al venciment hi ha un pic que
+    <strong>la quota no cobreix</strong> i que s'ha de refinançar o renovar. És un segon precipici,
+    set o deu anys després del primer, i quasi cap pla inicial l'apunta.</p>
+
+    <h4>4 · L'aportació la torna qui entra</h4>
+    <p>La cooperativa no guarda l'aportació: se l'ha gastada a construir. Sense fons de retorn i
+    sense llista d'espera, qui marxa cobra <strong>quan hi hagi qui entri</strong>. Això es diu al
+    començament o es descobreix en el pitjor moment.</p>
+
+    <h4>5 · Es torna el nominal, i això és a posta</h4>
+    <p>Vint anys després es cobra el mateix que es va posar. Amb un IPC del 2%, això és perdre un
+    terç del poder adquisitiu d'aquells diners. <strong>No és una injustícia del model: és el que fa
+    que l'habitatge no s'especuli.</strong> El que sí que seria injust és no dir-ho.</p>
+
+    <h4>Què no cobreix aquesta pàgina</h4>
+    <p>No hi ha fiscalitat de la cooperativa, ni el cost del sòl si s'ha de comprar, ni l'IVA
+    recuperable, ni els sobrecostos d'obra —que existeixen sempre—, ni cap ajut concret amb la seva
+    convocatòria. És una estimació per <strong>decidir si val la pena continuar</strong>: el pla
+    econòmic financer el signa qui té competència per signar-lo.</p>
+  </section>
+</div>
+
+</main>
+
+<footer style="border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:center;color:var(--muted);font-size:.8rem">
+  <a href="index.html" style="color:var(--indigo)">SOS</a> ·
+  <a href="energia.html" style="color:var(--indigo)">L'Energia</a> ·
+  <a href="compra.html" style="color:var(--indigo)">La Compra</a> ·
+  les xifres porten data i font
+</footer>
+
+<script type="module">
+/* ══ L'Habitatge · cessió d'ús, quota i aportació retornable ══════════════
+   La tercera miniapp de tipus de projecte, i el mateix patró que a les altres
+   dues: el que trenca els projectes d'habitatge cooperatiu no és el preu del
+   metre quadrat, és que **l'aportació d'entrada i la quota mensual són la
+   mateixa palanca**. Baixar-ne una puja l'altra, i cadascuna deixa fora gent
+   diferent —qui no té estalvis o qui no té ingressos. Quasi tots els grups
+   discuteixen aquesta xifra sense veure-la.
+
+   Quatre decisions que fan que això valgui alguna cosa:
+
+   · **La porta del 20% es veu abans de constituir res.** Cap entitat de
+     finances ètiques finança el 100%: cal un 20% que no vingui del préstec, i
+     amb les aportacions i els costos habituals *els números no hi arriben*.
+     Qui tanca el forat és la comunitat amb títols participatius, i això surt
+     dit i comptat en comptes de descobrir-se al sisè mes.
+   · **El venciment dels títols té data.** Es tornen, la quota no els cobreix, i
+     és el segon precipici que cap pla inicial apunta.
+   · **El retorn és nominal i es diu.** Es torna el que es va posar, sense
+     revaloració: és el que fa que l'habitatge no s'especuli, i el preu el paga
+     qui marxa. La pàgina en calcula el poder adquisitiu perdut i no l'amaga.
+   · **I qui torna l'aportació.** La cooperativa no la guarda —és a l'edifici—:
+     sense fons de retorn, la torna qui entra. Si no entra ningú, no es torna.
+
+   El mapa de valor de `habitatge_cessio` és còpia literal de `DYNAMICS`, i
+   `tools/check-habitatge.js` ho compara paraula per paraula: sense això, això
+   seria una calculadora amb el nom d'una dinàmica a sobre. */
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',')+' €';
+const num=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
+const ent=n=>isFinite(n)?Math.round(n).toLocaleString('ca'):'—';
+const pc=n=>Math.round(n*10)/10;
+/* Un decimal sempre: `Math.round` deixa «3» al costat de «3,9» i llavors dues
+   xifres de la mateixa columna no es poden comparar d'una ullada. */
+const un=n=>isFinite(n)?(Math.round(n*10)/10).toFixed(1).replace('.',','):'—';
+
+/* ── Les xifres, amb la seva data i la seva font ─────────────────────────
+   Un preu d'obra o una aportació sense data no és una xifra: és una xifra amb
+   aspecte de precisa. Aquí cada número porta d'on surt, i les hipòtesis van
+   dites com a hipòtesis. */
+const DADES={
+  revisio:'setembre de 2026',
+  aportacio:20000,
+  aportacioFont:'aportació inicial retornable · ~20.000 € de mitjana als projectes de Barcelona i 13.000-17.000 € als de Palamós i Granollers (2026)',
+  quotaRef:500,
+  quotaRefFont:'quota d\'ús mensual dels projectes en marxa · 490-750 € segons superfície (2026)',
+  obra:1400,
+  obraFont:'1.300-2.500 €/m² construït segons qualitat, alçada i grau d\'industrialització (2026) · per defecte l\'extrem baix, que és on construeixen els projectes en cessió d\'ús',
+  comuns:20,
+  comunsFont:'espais comuns dels projectes en cessió d\'ús · 15-25% sobre la superfície privada',
+  tecnics:12,
+  tecnicsFont:'projecte, direcció d\'obra, estudis i llicències · 10-14% del cost d\'obra',
+  iva:10,
+  ivaFont:'IVA d\'obra nova d\'habitatge · 10%',
+  interes:3.5,
+  interesFont:'préstec a cooperativa d\'habitatge en cessió d\'ús · 3-5% segons entitat i garanties (2026)',
+  anys:25,
+  anysFont:'Coop57 · préstec d\'habitatge cooperatiu fins a 25 anys i 2.000.000 € per operació',
+  propisMin:20,
+  propisFont:'Coop57 · finança fins al 80% del cost, o sigui un mínim del 20% de recursos que no siguin del préstec',
+  titolsInteres:2,
+  titolsAnys:10,
+  titolsFont:'títols participatius de projectes en cessió d\'ús · interès per sota de mercat i venciment habitual a 7-10 anys',
+  operacio:1.8,
+  operacioFont:'manteniment, assegurança, IBI i fons de reserva · 1,5-2% del cost d\'obra l\'any, ordre de magnitud del sector',
+  canon:15,
+  canonFont:'cànon del dret de superfície · de simbòlic a un percentatge dels ingressos, segons el conveni amb l\'administració',
+  cessio:75,
+  cessioProrroga:90,
+  cessioFont:'dret de superfície sobre sòl públic · 75 anys prorrogables a 90',
+  ipc:2,
+  ipcFont:'objectiu d\'inflació a mitjà termini · hipòtesi editable, no una previsió',
+  lloguer:16,
+  lloguerFont:'lloguer de referència en €/m² al mes · hipòtesi editable, cada municipi té el seu índex'
+};
+/* El llindar d'esforç. Va declarat i no amagat dins d'una condició: una xifra
+   que decideix qui està en sobrecàrrega s'ha de poder discutir. */
+const ESFORC_MAX=30;
+
+/* ── El tràmit, amb el que triga i de qui depèn ─────────────────────────── */
+const TRAMIT=[
+  {t:'Consolidar el grup motor',q:'6-18 mesos',meu:true,
+   d:'El pas que decideix tots els altres. Un grup que no aguanta aquesta espera no aguantarà l\'obra.'},
+  {t:'Cerca de sòl i cessió',q:'1-4 anys',meu:false,
+   d:'Depèn d\'un concurs públic o d\'un conveni. És el pas més llarg i el més fora del vostre control.'},
+  {t:'Estudi de viabilitat',q:'2-4 mesos',meu:true,
+   d:'Cost, finançament, quota i qui hi pot entrar. És el que fa aquesta pàgina.'},
+  {t:'Constitució de la cooperativa',q:'2-4 mesos',meu:true,
+   d:'Estatuts, règim d\'ús i condicions de sortida. Escriviu les de sortida ara, no quan calguin.'},
+  {t:'Finançament ètic i títols',q:'6-18 mesos',meu:false,
+   d:'El préstec depèn de l\'entitat i el 20% no bancari depèn de l\'entorn. Cap dels dos depèn de vosaltres sols.'},
+  {t:'Projecte i llicències',q:'8-18 mesos',meu:false,
+   d:'Redacció i tramitació municipal. Els terminis els marca l\'ajuntament.'},
+  {t:'Obra',q:'14-24 mesos',meu:true,
+   d:'La part que tothom es pensa que és el projecte. És la que menys sorpreses de calendari dona.'},
+  {t:'Entrada i convivència',q:'permanent',meu:true,
+   d:'Els acords de convivència i el relleu de qui marxa. No s\'acaba mai, i és el que fa que duri.'}
+];
+
+/* ── El mapa de valor · còpia literal de DYNAMICS ───────────────────────── */
+const DIN={id:'habitatge_cessio',nom:'Habitatge en cessió d\'ús',ic:'🏘️'};
+const MAPA={
+  mission:'Accedir a habitatge digne sense especulació: la cooperativa és propietària, les sòcies tenen dret d\'ús.',
+  vision:'Un habitatge que no s\'especula: llars estables per a tota la vida i una comunitat que es cuida.',
+  objectives:'Grup motor consolidat · sòl cedit · viabilitat tancada · quota d\'ús per sota del mercat · convivència acordada.',
+  roles:['Grup motor','Unitats de convivència','Administració (cessió de sòl)','Finançament ètic','Cooperativa','Assessoria tècnica'],
+  pairs:[
+   ['Administració (cessió de sòl)','Cooperativa','tangible','dret de superfície','intangible','retorn social i mixtura'],
+   ['Unitats de convivència','Cooperativa','tangible','aportació i quota d\'ús','tangible','dret d\'ús indefinit'],
+   ['Finançament ètic','Cooperativa','tangible','préstec','intangible','projecte solvent i valors'],
+   ['Assessoria tècnica','Cooperativa','intangible','viabilitat i seguretat','tangible','encàrrec i cas de referència'],
+   ['Grup motor','Unitats de convivència','intangible','convivència i confiança','intangible','implicació i cura'],
+   ['Grup motor','Cooperativa','intangible','impuls i governança','tangible','marc jurídic estable'],
+   ['Grup motor','Administració (cessió de sòl)','intangible','interlocució i pressió','tangible','informació de sòl i terminis'],
+   ['Assessoria tècnica','Finançament ètic','intangible','estudi econòmic','intangible','criteris de risc'],
+   ['Unitats de convivència','Administració (cessió de sòl)','intangible','compliment del retorn social','tangible','seguiment i garantia']],
+  kanban:['Consolidar el grup motor','Cerca de sòl / cessió','Estudi de viabilitat','Constitució de la cooperativa','Finançament ètic','Projecte i obra','Convivència'],
+  gov:'Assemblea + comissions (convivència, economia, obres) · consentiment · quota d\'ús sense especulació.'
+};
+/* Quin rol omple aquesta pàgina amb dades seves, i quins no. Dir que en cobreix
+   sis quan en cobreix un seria la mentida més fàcil d'explicar. */
+const OMPLE={'Unitats de convivència':'llars'};
+/* I quins lliuraments del mapa surten d'aquí, amb número. */
+const FA={
+  'aportació i quota d\'ús':'L\'aportació demanada i la quota de cada llar, amb l\'esforç sobre els seus ingressos (pantalles 3, 4 i 5).',
+  'viabilitat i seguretat':'L\'estudi de viabilitat: cost, porta del 20%, quota i condicions de sortida (pantalles 2 a 6).',
+  'estudi econòmic':'El quadre de fonts de finançament i el servei del deute amb el venciment dels títols (pantalla 3).',
+  'dret de superfície':'El cànon i el termini de la cessió, i què vol dir per a la quota (pantalla 2).'
+};
+
+/* ── Estat · viu al navegador d'aquest dispositiu i enlloc més ──────────── */
+const CLAU='sos_habitatge_cessio';
+/* Un grup de dotze llars amb la barreja que tenen els projectes de debò:
+   superfícies de 40 a 75 m² —la mitjana dels projectes en marxa és de seixanta
+   i escaig—, ingressos de 1.500 a 3.400 € nets i estalvis molt desiguals. La
+   desigualtat dels estalvis no és decorativa: és el que fa que la pantalla 5
+   digui alguna cosa. */
+const LLARS_DEFECTE=[
+  ['Llar Roca',65,3,2600,26000],['Llar Ferrer',45,2,1900,12000],['Llar Puig',75,4,3400,40000],
+  ['Llar Mas',40,1,1500,8000],['Llar Serra',55,2,2200,20000],['Llar Camps',70,4,2900,30000],
+  ['Llar Bosch',45,1,1700,15000],['Llar Grau',60,3,2400,22000],['Llar Riera',50,2,2000,18000],
+  ['Llar Soler',70,4,3100,35000],['Llar Font',45,2,1800,10000],['Llar Vidal',55,3,2300,24000]
+];
+const BUIT=()=>({llars:[],obra:DADES.obra,comuns:DADES.comuns,tecnics:DADES.tecnics,iva:DADES.iva,
+  aportacio:DADES.aportacio,titols:0,ajut:0,interes:DADES.interes,anys:DADES.anys,
+  titolsInteres:DADES.titolsInteres,titolsAnys:DADES.titolsAnys,operacio:DADES.operacio,
+  canon:DADES.canon,reserva:0,ipc:DADES.ipc,lloguer:DADES.lloguer,repartiment:'m2',anysFora:20});
+let G=BUIT(),_id=0;
+
+function novaLlar(nom,m2,persones,ingressos,pot){
+  nom=String(nom||'').trim().slice(0,24);
+  if(!nom)return {err:'Cal un nom per a la llar'};
+  if(G.llars.some(l=>l.nom.toLowerCase()===nom.toLowerCase()))return {err:'Ja hi ha una llar amb aquest nom'};
+  const l={id:'u'+(++_id),nom,
+    m2:Math.max(20,Math.min(200,Number(m2)||0)),
+    persones:Math.max(1,Math.min(10,Number(persones)||1)),
+    ingressos:Math.max(0,Math.min(20000,Number(ingressos)||0)),
+    pot:Math.max(0,Math.min(200000,Number(pot)||0))};
+  G.llars.push(l);desa();return {ok:true,llar:l};
+}
+function treuLlar(id){const n=G.llars.length;G.llars=G.llars.filter(l=>l.id!==id);desa();return G.llars.length<n;}
+function desa(){try{localStorage.setItem(CLAU,JSON.stringify(G));}catch(e){/* sense memòria: funciona igual */}}
+function carrega(){
+  try{
+    const j=JSON.parse(localStorage.getItem(CLAU)||'null');
+    if(j&&Array.isArray(j.llars)&&j.llars.length){
+      const d=BUIT();
+      Object.keys(d).forEach(k=>{if(typeof j[k]===typeof d[k]&&k!=='llars')d[k]=j[k];});
+      d.llars=j.llars;d.repartiment=['m2','igual'].indexOf(j.repartiment)>=0?j.repartiment:'m2';
+      G=d;_id=G.llars.length;return true;
+    }
+  }catch(e){/* dades trencades: es comença de nou, que és millor que petar */}
+  return false;
+}
+function grupPerDefecte(){
+  G=BUIT();_id=0;
+  LLARS_DEFECTE.forEach(([n,m,p,i,pot])=>novaLlar(n,m,p,i,pot));
+}
+
+/* ── El model ────────────────────────────────────────────────────────────
+   El cost de l'edifici, les fonts que el paguen i el que costa cada mes tenir-lo
+   dret. La peça que no és òbvia és `porta`: el préstec no pot passar del 80%,
+   i amb les xifres habituals del sector el 20% restant NO surt de les
+   aportacions. Aquesta és la troballa de la pantalla 3. */
+const m2Privats=()=>G.llars.reduce((t,l)=>t+l.m2,0);
+const m2Totals=()=>m2Privats()*(1+G.comuns/100);
+const costObra=()=>m2Totals()*G.obra;
+const costTecnics=()=>costObra()*G.tecnics/100;
+const costIva=()=>(costObra()+costTecnics())*G.iva/100;
+const costTotal=()=>costObra()+costTecnics()+costIva();
+
+const aportacions=(a)=>G.llars.length*(a==null?G.aportacio:a);
+const recursosPropis=(a)=>aportacions(a)+G.titols+G.ajut;
+const prestec=(a)=>Math.max(0,costTotal()-recursosPropis(a));
+const pctPropis=(a)=>{const c=costTotal();return c?recursosPropis(a)*100/c:0;};
+/* El que falta per passar la porta, dit en euros i no en percentatge: un
+   percentatge no es pot anar a buscar, i uns euros sí. Arrodonit al cèntim, que
+   és la unitat en què es demanen diners. */
+const falta=(a)=>Math.max(0,Math.round((costTotal()*DADES.propisMin/100-recursosPropis(a))*100)/100);
+/* La porta del finançament ètic: recursos no bancaris ≥ 20% del cost. Es
+   pregunta pel forat en euros i no pel percentatge a posta —comparant
+   percentatges en coma flotant, qui posava exactament el que la pàgina li
+   acabava de demanar es trobava que encara no passava, i les dues frases de la
+   mateixa pantalla es contradeien. */
+const passaPorta=(a)=>falta(a)<=0;
+
+/* L'anualitat d'un préstec francès. Amb interès zero és el capital entre els
+   anys, i no una divisió per zero. */
+function anualitat(capital,interes,anys){
+  const r=interes/100,n=Math.max(1,anys);
+  if(!capital)return 0;
+  if(!r)return capital/n;
+  return capital*r/(1-Math.pow(1+r,-n));
+}
+/* Els títols participatius paguen interès durant la vida i tornen el principal
+   al venciment. Comptar-los com si s'amortitzessin faria la quota més cara del
+   que és i amagaria el pic del venciment, que és el problema de debò. */
+const interesTitols=()=>G.titols*G.titolsInteres/100;
+const operacioAnual=()=>costObra()*G.operacio/100;
+const canonAnual=()=>G.canon*12*G.llars.length;
+const serveiDeute=(a)=>anualitat(prestec(a),G.interes,G.anys);
+/* El fons de retorn: un percentatge de la quota que es reserva per poder tornar
+   aportacions sense esperar que entri algú. Per defecte 0, que és el que fan
+   quasi tots els projectes —i per això surt a la pantalla amb el seu risc. */
+const despesaBase=(a)=>serveiDeute(a)+interesTitols()+operacioAnual()+canonAnual();
+const fonsRetornAnual=(a)=>despesaBase(a)*G.reserva/100;
+const despesaAnual=(a)=>despesaBase(a)+fonsRetornAnual(a);
+const quotaGrup=(a)=>despesaAnual(a)/12;
+
+/* El repartiment de la quota. En enters, com als coeficients de L'Energia:
+   sumant decimals, dotze parts arrodonides no fan mai exactament el total i
+   llavors la taula no quadra amb la fila de total.
+
+   La base és de milionèsimes i no de deu-mil·lèsimes perquè aquí hi ha un cas
+   que allà no hi era: a parts iguals entre dotze, cap base no dona una divisió
+   exacta, i el residu s'ha de repartir. En deu-mil·lèsimes el residu era prou
+   gros per fer que «a parts iguals» no pagués igual —vuit cèntims de diferència
+   en una columna que la pantalla presenta com a idèntica. */
+const BASE=1000000;
+function coeficients(mode){
+  const m=mode||G.repartiment,ll=G.llars;
+  if(!ll.length)return {__deu:{}};
+  const pes=m==='igual'?ll.map(()=>1):ll.map(l=>l.m2);
+  const tot=pes.reduce((a,b)=>a+b,0);
+  const deu={};let suma=0;
+  ll.forEach((l,i)=>{deu[l.id]=Math.floor((tot?pes[i]/tot:1/ll.length)*BASE);suma+=deu[l.id];});
+  /* El residu es reparteix d'unitat en unitat entre les parts més grosses, i no
+     de cop a la primera: donant-lo sencer a una, aquella pagava visiblement més
+     que les seves iguals. */
+  let resta=BASE-suma;
+  const ordre=ll.slice().sort((a,b)=>(deu[b.id]||0)-(deu[a.id]||0));
+  for(let i=0;resta>0&&ordre.length;i++,resta--)deu[ordre[i%ordre.length].id]++;
+  const c={};ll.forEach(l=>{c[l.id]=deu[l.id]/BASE;});
+  c.__deu=deu;
+  return c;
+}
+const sumaCoef=mode=>{const d=coeficients(mode).__deu||{};return Object.keys(d).reduce((a,k)=>a+d[k],0);};
+/* La suma en percentatge, per poder-la ensenyar sense que la base s'escampi
+   per la pantalla. */
+const sumaPct=mode=>sumaCoef(mode)*100/BASE;
+
+/* Què li passa a cada llar amb una aportació demanada i un repartiment. */
+function repartiment(a,mode){
+  const ap=a==null?G.aportacio:a;
+  const c=coeficients(mode),Q=quotaGrup(ap);
+  const files=G.llars.map(l=>{
+    const coef=c[l.id]||0,quota=Q*coef;
+    return {l,coef,quota,
+      /* L'esforç: quota sobre ingressos nets. Sense ingressos declarats no
+         s'inventa cap número —es diu que no se sap. */
+      esforc:l.ingressos?quota*100/l.ingressos:null,
+      lloguer:l.m2*G.lloguer,
+      /* Les dues portes de sortida, per separat: qui no pot posar l'entrada i
+         qui no pot pagar la quota. No és la mateixa gent. */
+      foraEntrada:l.pot<ap,
+      foraQuota:l.ingressos?quota*100/l.ingressos>ESFORC_MAX:false};
+  });
+  const tot=files.reduce((x,f)=>({quota:x.quota+f.quota,lloguer:x.lloguer+f.lloguer}),{quota:0,lloguer:0});
+  return {files,tot,aportacio:ap,mode:mode||G.repartiment,
+    foraEntrada:files.filter(f=>f.foraEntrada).length,
+    foraQuota:files.filter(f=>f.foraQuota).length,
+    /* Qui queda fora per un motiu o per l'altre, sense comptar dues vegades qui
+       queda fora pels dos. */
+    fora:files.filter(f=>f.foraEntrada||f.foraQuota).length};
+}
+
+/* El recorregut sencer de l'aportació: la taula que fa visible que l'entrada i
+   la quota es mouen en direccions contràries. */
+function tensio(){
+  const passos=[];
+  for(let a=0;a<=60000;a+=5000){
+    const r=repartiment(a);
+    passos.push({a,quota:r.tot.quota/(G.llars.length||1),propis:pctPropis(a),porta:passaPorta(a),
+      foraEntrada:r.foraEntrada,foraQuota:r.foraQuota,fora:r.fora});
+  }
+  return passos;
+}
+/* El punt on l'exclusió és més petita, entre els que passen la porta. Si cap
+   no la passa, no s'inventa un guanyador: es diu que no n'hi ha. */
+function millorPunt(){
+  const bons=tensio().filter(p=>p.porta);
+  if(!bons.length)return null;
+  return bons.slice().sort((x,y)=>x.fora-y.fora||x.a-y.a)[0];
+}
+/* I el punt d'exclusió més petita sense mirar la porta. La distància entre
+   aquests dos punts és la troballa d'aquesta pantalla: l'aportació que deixaria
+   menys gent fora sol ser més baixa que la que el finançament exigeix, i el que
+   compra aquella distància són els títols participatius. */
+function millorAbsolut(){
+  const t=tensio();
+  return t.slice().sort((x,y)=>x.fora-y.fora||x.a-y.a)[0]||null;
+}
+/* Quants títols participatius calen perquè el punt de mínima exclusió passi la
+   porta. És l'única xifra d'aquesta pantalla que es pot anar a buscar. */
+function titolsNecessaris(a){
+  const ap=a==null?G.aportacio:a;
+  return Math.max(0,costTotal()*DADES.propisMin/100-(aportacions(ap)+G.ajut+G.titols));
+}
+
+/* Si algú marxa. El retorn és nominal: es torna el que es va posar. Calcular-hi
+   una revaloració seria calcular una altra cosa —i aquella altra cosa és
+   exactament el que la cessió d'ús existeix per no ser. */
+function sortida(anys,a){
+  const posat=a==null?G.aportacio:a,n=Math.max(0,Number(anys)||0);
+  const equivalent=posat*Math.pow(1+G.ipc/100,n);
+  return {posat,retorn:posat,anys:n,equivalent,
+    perdua:equivalent-posat,
+    /* Quina part del poder adquisitiu s'ha quedat pel camí. */
+    pctPerdut:equivalent?(equivalent-posat)*100/equivalent:0};
+}
+/* I qui li ho torna. Sense fons acumulat, la resposta és «qui entri». */
+function fonsRetorn(anys,a){
+  const posat=a==null?G.aportacio:a,n=Math.max(0,Number(anys)||0);
+  const acumulat=fonsRetornAnual(posat)*n;
+  return {acumulat,anys:n,
+    cobertes:posat?Math.floor(acumulat/posat):0,
+    /* El pic dels títols: al venciment es torna el principal sencer, i la quota
+       d'un any no hi arriba ni de bon tros. */
+    titols:G.titols,titolsAny:G.titolsAnys,
+    quotaAnual:quotaGrup(posat)*12};
+}
+
+/* ── Les pantalles ───────────────────────────────────────────────────────── */
+function pintaLlars(){
+  const r=repartiment();
+  $('#tLlars').innerHTML='<thead><tr><th>Llar</th><th class="n">m²</th><th class="n">persones</th>'+
+    '<th class="n">ingressos/mes</th><th class="n">pot posar</th><th class="n">quota</th><th class="n">esforç</th><th></th></tr></thead><tbody>'+
+    (G.llars.length?r.files.map(f=>'<tr'+(f.foraEntrada||f.foraQuota?' class="fora"':'')+'>'+
+      '<td>'+esc(f.l.nom)+'</td><td class="n">'+f.l.m2+'</td><td class="n">'+f.l.persones+'</td>'+
+      '<td class="n">'+ent(f.l.ingressos)+'</td><td class="n">'+ent(f.l.pot)+'</td>'+
+      '<td class="n">'+num(f.quota)+'</td>'+
+      '<td class="n" style="color:'+(f.esforc==null?'var(--muted)':f.esforc<=ESFORC_MAX?'var(--green)':'var(--red)')+'">'+
+      (f.esforc==null?'—':un(f.esforc)+'%')+'</td>'+
+      '<td class="n"><button class="b" data-fora="'+f.l.id+'">treu</button></td></tr>').join('')
+     :'<tr><td colspan="8" class="mut">Encara cap llar.</td></tr>')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+ent(m2Privats())+'</strong></td>'+
+    '<td class="n"><strong>'+G.llars.reduce((t,l)=>t+l.persones,0)+'</strong></td><td></td>'+
+    '<td class="n"><strong>'+ent(G.llars.reduce((t,l)=>t+l.pot,0))+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.quota)+'</strong></td><td></td><td></td></tr></tbody>';
+  $('#llarsDiu').innerHTML=!G.llars.length?'Sense llars no hi ha projecte: tot el que ve després es calcula sobre aquestes files.'
+    :'<strong>'+G.llars.length+' llars</strong> i '+G.llars.reduce((t,l)=>t+l.persones,0)+' persones en '+
+     ent(m2Privats())+' m² privats. Amb l\'aportació demanada d\'ara ('+ent(G.aportacio)+' €), '+
+     '<strong>'+r.foraEntrada+'</strong> no hi poden entrar per l\'estalvi i <strong>'+r.foraQuota+
+     '</strong> quedarien per sobre del '+ESFORC_MAX+'% d\'esforç. Les files marcades en vermell són les unes i les altres.';
+}
+function pintaObra(){
+  $('#inObra').value=G.obra;$('#inComuns').value=G.comuns;$('#inTecnics').value=G.tecnics;
+  $('#inIva').value=G.iva;$('#inCanon').value=G.canon;
+  const n=G.llars.length||1;
+  $('#capesObra').innerHTML=
+    '<div class="capa"><div class="n">'+ent(m2Privats())+' m²</div><div class="l">privats</div>'+
+      '<div class="d">La suma del que ocupa cada llar.</div></div>'+
+    '<div class="capa blau"><div class="n">'+ent(m2Totals())+' m²</div><div class="l">construïts</div>'+
+      '<div class="d">Amb un '+G.comuns+'% de comuns. Els comuns són el que fa que això sigui cessió d\'ús i no un bloc de pisos.</div></div>'+
+    '<div class="capa"><div class="n">'+ent(costTotal())+' €</div><div class="l">cost total</div>'+
+      '<div class="d">Obra, honoraris tècnics i IVA. Sense sòl: el sòl es cedeix.</div></div>'+
+    '<div class="capa taronja"><div class="n">'+ent(costTotal()/n)+' €</div><div class="l">per llar</div>'+
+      '<div class="d">El que costa cada habitatge abans de dir qui el paga.</div></div>';
+  $('#tCost').innerHTML='<thead><tr><th>Partida</th><th class="n">Import</th><th>D\'on surt</th></tr></thead><tbody>'+
+    '<tr><td>Obra</td><td class="n">'+ent(costObra())+' €</td><td class="mut">'+ent(m2Totals())+' m² × '+ent(G.obra)+' €/m²</td></tr>'+
+    '<tr><td>Honoraris tècnics</td><td class="n">'+ent(costTecnics())+' €</td><td class="mut">'+G.tecnics+'% de l\'obra</td></tr>'+
+    '<tr><td>IVA</td><td class="n">'+ent(costIva())+' €</td><td class="mut">'+G.iva+'% sobre obra i honoraris</td></tr>'+
+    '<tr><td>Sòl</td><td class="n">0 €</td><td class="mut">cedit en dret de superfície</td></tr>'+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+ent(costTotal())+' €</strong></td><td></td></tr></tbody>';
+  $('#obraDiu').innerHTML='Els comuns hi afegeixen <strong>'+ent(m2Totals()-m2Privats())+' m²</strong> — '+
+    ent((m2Totals()-m2Privats())*G.obra)+' € d\'obra. No és un sobrecost: és <strong>la cuina gran, '+
+    'la sala i el taller que fan que 65 m² privats siguin habitables per a una família</strong>. Retallar-los '+
+    'abarateix el pressupost i encareix la vida a dins.';
+  $('#obraFont').innerHTML='Xifres revisades el <strong>'+esc(DADES.revisio)+'</strong>. '+
+    'Obra: '+esc(DADES.obraFont)+'. Comuns: '+esc(DADES.comunsFont)+'. Tècnics: '+esc(DADES.tecnicsFont)+'. '+
+    'IVA: '+esc(DADES.ivaFont)+'.';
+  $('#soDiu').innerHTML='El sòl es cedeix per <strong>'+DADES.cessio+' anys, prorrogables a '+DADES.cessioProrroga+
+    '</strong> ('+esc(DADES.cessioFont)+'), amb un cànon de <strong>'+ent(G.canon)+' € per habitatge i mes</strong> '+
+    '— '+ent(canonAnual())+' € l\'any per a la cooperativa. '+esc(DADES.canonFont)+'. '+
+    'Si aquest sòl s\'hagués de comprar, al cost total li hauríeu de sumar el preu del solar i la quota '+
+    'pujaria en conseqüència: <strong>aquesta és la partida que fa possible tota la resta</strong>.';
+}
+function pintaFinances(){
+  $('#inAport').value=G.aportacio;$('#inTitols').value=G.titols;$('#inAjut').value=G.ajut;
+  $('#inInteres').value=G.interes;$('#inAnys').value=G.anys;
+  $('#inTiInt').value=G.titolsInteres;$('#inTiAnys').value=G.titolsAnys;
+  const c=costTotal()||1,ap=aportacions(),ti=G.titols,aj=G.ajut,pr=prestec();
+  const w=x=>Math.max(0,x*100/c);
+  $('#barraFonts').innerHTML='<i class="ap" style="width:'+w(ap)+'%"></i><i class="ti" style="width:'+w(ti)+'%"></i>'+
+    '<i class="aj" style="width:'+w(aj)+'%"></i><i class="pr" style="width:'+w(pr)+'%"></i>';
+  $('#llegFonts').innerHTML=
+    '<span><i style="background:#e040fb"></i>Aportacions '+ent(ap)+' € ('+pc(w(ap))+'%)</span>'+
+    '<span><i style="background:#00b0ff"></i>Títols participatius '+ent(ti)+' € ('+pc(w(ti))+'%)</span>'+
+    '<span><i style="background:#00e676"></i>Ajuts '+ent(aj)+' € ('+pc(w(aj))+'%)</span>'+
+    '<span><i style="background:#2a2a45"></i>Préstec '+ent(pr)+' € ('+pc(w(pr))+'%)</span>';
+  const passa=passaPorta();
+  $('#porta').className='porta '+(passa?'si':'no');
+  $('#porta').innerHTML='<div class="marca">'+(passa?'✓':'✗')+'</div><div class="cos">'+
+    '<b>Recursos no bancaris: '+pc(pctPropis())+'% del cost</b>'+
+    (passa?'Passa el mínim del '+DADES.propisMin+'%: aquest projecte es pot presentar a una entitat de finances ètiques.'
+          :'<strong style="color:var(--red)">No arriba al mínim del '+DADES.propisMin+'%.</strong> Falten <strong>'+
+           ent(falta())+' €</strong> que no poden venir del préstec — són '+
+           ent(G.llars.length?falta()/G.llars.length:0)+' € més per llar, o els mateixos euros en títols participatius.')+
+    '</div>';
+  $('#capesFin').innerHTML=
+    '<div class="capa"><div class="n">'+ent(costTotal())+' €</div><div class="l">a finançar</div>'+
+      '<div class="d">El cost total de la pantalla anterior.</div></div>'+
+    '<div class="capa '+(passa?'bo':'mal')+'"><div class="n">'+pc(pctPropis())+'%</div><div class="l">no bancari</div>'+
+      '<div class="d">Aportacions, títols i ajuts. El mínim és '+DADES.propisMin+'%.</div></div>'+
+    '<div class="capa blau"><div class="n">'+ent(prestec())+' €</div><div class="l">préstec</div>'+
+      '<div class="d">A '+un(G.interes)+'% i '+G.anys+' anys.</div></div>'+
+    '<div class="capa taronja"><div class="n">'+ent(despesaAnual()/12)+' €</div><div class="l">al mes, el grup</div>'+
+      '<div class="d">Préstec, interessos dels títols, operació i cànon.</div></div>';
+  $('#finDiu').innerHTML='Amb una aportació de <strong>'+ent(G.aportacio)+' €</strong> per llar, les sòcies posen '+
+    ent(ap)+' € — un <strong>'+pc(w(ap))+'%</strong> del cost. '+
+    (w(ap)>=DADES.propisMin
+      ? 'Amb això ja n\'hi ha prou per a la porta del '+DADES.propisMin+'%, cosa que amb els costos d\'obra habituals no sol passar.'
+      : 'El mínim és el '+DADES.propisMin+'%: <strong>les aportacions soles no hi arriben</strong>, i no és un defecte d\'aquest grup '+
+        'sinó l\'aritmètica del sector. El forat el tanquen els <strong>títols participatius</strong> —préstecs de l\'entorn del '+
+        'projecte, per sota del tipus de mercat—, que és el que ha fet possibles els projectes de referència. '+
+        'Falten '+ent(falta())+' €.');
+
+  const sd=serveiDeute(),it=interesTitols(),op=operacioAnual(),ca=canonAnual(),fr=fonsRetornAnual();
+  const tot=sd+it+op+ca+fr;
+  const fila=(t,v,d)=>'<tr><td>'+t+'</td><td class="n">'+ent(v)+' €</td><td class="n">'+ent(v/12)+' €</td><td class="mut">'+d+'</td></tr>';
+  $('#tFin').innerHTML='<thead><tr><th>Concepte</th><th class="n">a l\'any</th><th class="n">al mes</th><th>Què és</th></tr></thead><tbody>'+
+    fila('Quota del préstec',sd,'capital i interessos, '+G.anys+' anys al '+un(G.interes)+'%')+
+    fila('Interessos dels títols',it,'només interessos: el principal es torna al venciment')+
+    fila('Manteniment, assegurança, IBI i reserva',op,G.operacio+'% del cost d\'obra l\'any')+
+    fila('Cànon del dret de superfície',ca,ent(G.canon)+' € per habitatge i mes')+
+    fila('Fons de retorn d\'aportacions',fr,G.reserva+'% de la despesa · es configura a la pantalla 4')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+ent(tot)+' €</strong></td>'+
+    '<td class="n"><strong>'+ent(tot/12)+' €</strong></td><td></td></tr></tbody>';
+  /* La comparació es calcula, no s'afirma: segons les xifres, el principal dels
+     títols pot ser més gros o més petit que la quota d'un any, i dir sempre el
+     mateix seria mentir la meitat de les vegades. El que no canvia és que la
+     quota ja està compromesa —paga préstec, manteniment i cànon— i que per tant
+     no és diner disponible. */
+  const mesosQuota=quotaGrup()?G.titols/quotaGrup():0;
+  const fonsAlVenciment=fonsRetornAnual()*G.titolsAnys;
+  $('#venDiu').innerHTML=G.titols
+    ? 'D\'aquí a <strong>'+G.titolsAnys+' anys</strong> venç el principal dels títols: <strong>'+ent(G.titols)+
+      ' €</strong> de cop. Són <strong>'+un(mesosQuota)+' mesos de quota de tot el grup</strong> — i la quota no és '+
+      'diner disponible: ja està compromesa a pagar el préstec, el manteniment i el cànon. '+
+      (fonsAlVenciment>=G.titols
+        ? 'El fons de retorn n\'hauria acumulat '+ent(fonsAlVenciment)+' € en aquella data, o sigui que <strong>hi arribaria</strong> — '+
+          'a canvi de quedar-se sense fons per tornar aportacions.'
+        : 'El fons de retorn només n\'hauria acumulat '+ent(fonsAlVenciment)+' € en aquella data: <strong>aquell any '+
+          's\'han de renovar, refinançar o cobrir amb aportacions noves</strong>.')+
+      ' És el segon precipici del model, i quasi cap pla inicial l\'apunta.'
+    : 'Sense títols participatius no hi ha venciment a mitges. També vol dir que tot el que no posin les sòcies '+
+      'ho ha de posar el préstec, i el préstec té un sostre.';
+  $('#finFont').innerHTML='Préstec: '+esc(DADES.anysFont)+'. Sostre de finançament: '+esc(DADES.propisFont)+'. '+
+    'Títols: '+esc(DADES.titolsFont)+'. Operació: '+esc(DADES.operacioFont)+'. '+
+    'Aportació de referència: '+esc(DADES.aportacioFont)+'. Revisat el '+esc(DADES.revisio)+'.'+
+    '<br><strong>El que aquesta estimació NO inclou</strong>: la fiscalitat de la cooperativa, l\'IVA que es pugui '+
+    'recuperar, els sobrecostos d\'obra —que existeixen sempre—, el cost del sòl si s\'ha de comprar i cap ajut '+
+    'concret amb la seva convocatòria. Amb tot això, la quota de debò surt més alta que la d\'aquí.';
+}
+function pintaQuota(){
+  $('#inOper').value=G.operacio;$('#inReserva').value=G.reserva;$('#inLloguer').value=G.lloguer;
+  $('#mEsforc').textContent=ESFORC_MAX+'%';
+  const r=repartiment();
+  const mitjana=G.llars.length?r.tot.quota/G.llars.length:0;
+  $('#capesQuota').innerHTML=
+    '<div class="capa bo"><div class="n">'+ent(mitjana)+' €</div><div class="l">quota mitjana</div>'+
+      '<div class="d">Al mes, per llar. La referència del sector són '+ent(DADES.quotaRef)+' €.</div></div>'+
+    '<div class="capa"><div class="n">'+ent(r.tot.quota)+' €</div><div class="l">tot el grup</div>'+
+      '<div class="d">El que ha d\'entrar cada mes perquè l\'edifici es mantingui dret.</div></div>'+
+    '<div class="capa blau"><div class="n">'+ent(G.aportacio)+' €</div><div class="l">entrada</div>'+
+      '<div class="d">Retornable i sense revaloració. Pantalla 6.</div></div>'+
+    '<div class="capa taronja"><div class="n">'+r.foraQuota+'</div><div class="l">per sobre del '+ESFORC_MAX+'%</div>'+
+      '<div class="d">Llars per a qui aquesta quota és sobrecàrrega.</div></div>';
+  $('#tQuota').innerHTML='<thead><tr><th>Llar</th><th class="n">m²</th><th class="n">part</th>'+
+    '<th class="n">quota/mes</th><th class="n">ingressos</th><th class="n">esforç</th></tr></thead><tbody>'+
+    r.files.map(f=>'<tr'+(f.foraQuota?' class="fora"':'')+'><td>'+esc(f.l.nom)+'</td>'+
+      '<td class="n">'+f.l.m2+'</td><td class="n">'+(f.coef*100).toFixed(2).replace('.',',')+'%</td>'+
+      '<td class="n">'+num(f.quota)+'</td><td class="n">'+ent(f.l.ingressos)+'</td>'+
+      '<td class="n" style="color:'+(f.esforc==null?'var(--muted)':f.esforc<=ESFORC_MAX?'var(--green)':'var(--red)')+'">'+
+      (f.esforc==null?'—':un(f.esforc)+'%')+'</td></tr>').join('')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+ent(m2Privats())+'</strong></td>'+
+    '<td class="n"><strong>'+sumaPct().toFixed(2).replace('.',',')+'%</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.quota)+'</strong></td><td></td><td></td></tr></tbody>';
+  const perM2=repartiment(null,'m2'),igual=repartiment(null,'igual');
+  const dif=Math.max(...perM2.files.map(f=>f.quota))-Math.min(...perM2.files.map(f=>f.quota));
+  $('#quotaDiu').innerHTML=!G.llars.length?'Sense llars no hi ha quota.'
+    :'La suma de les parts fa <strong>'+sumaPct().toFixed(2).replace('.',',')+'%</strong> exactes: '+
+     'l\'arrodoniment que sobra va a la part més grossa, i per això la columna quadra amb el total al cèntim. '+
+     'Repartint per m², entre la quota més alta i la més baixa hi ha <strong>'+ent(dif)+' € al mes</strong>; '+
+     'a parts iguals, cap. <strong>Cap de les dues és la justa</strong>: la primera cobra pel que s\'ocupa i la '+
+     'segona pel fet de ser-hi, i la diferència entre elles és de '+
+     ent(Math.max(...igual.files.map(f=>f.quota))-Math.min(...perM2.files.map(f=>f.quota)))+' € per a la llar més gran.';
+
+  $('#tLloguer').innerHTML='<thead><tr><th>Llar</th><th class="n">quota</th><th class="n">lloguer</th>'+
+    '<th class="n">diferència/mes</th><th class="n">anys per recuperar l\'entrada</th></tr></thead><tbody>'+
+    r.files.map(f=>{
+      const d=f.lloguer-f.quota;
+      return '<tr><td>'+esc(f.l.nom)+'</td><td class="n">'+num(f.quota)+'</td>'+
+        '<td class="n">'+num(f.lloguer)+'</td>'+
+        '<td class="n" style="color:'+(d>0?'var(--green)':'var(--red)')+'">'+num(d)+'</td>'+
+        '<td class="n">'+(d>0?un(G.aportacio/(d*12)):'mai')+'</td></tr>';
+    }).join('')+
+    '<tr><td><strong>Total</strong></td><td class="n"><strong>'+num(r.tot.quota)+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.lloguer)+'</strong></td>'+
+    '<td class="n"><strong>'+num(r.tot.lloguer-r.tot.quota)+'</strong></td><td></td></tr></tbody>';
+  const dif2=r.tot.lloguer-r.tot.quota;
+  $('#llogDiu').innerHTML=dif2>0
+    ? 'El grup s\'estalvia <strong>'+ent(dif2)+' € al mes</strong> respecte del lloguer de referència. Però hi ha '+
+      'posat <strong>'+ent(aportacions())+' €</strong> d\'entrada: l\'última columna diu quants anys triga cada llar '+
+      'a recuperar-la per la via de la diferència. <strong>Aquesta columna és la comparació honesta</strong>, i és la '+
+      'que no surt a cap fullet.'
+    : 'Amb aquest lloguer de referència, la quota no surt més barata. Si això passa amb el sòl cedit, o el lloguer '+
+      'de referència és baix o el projecte és car: val la pena mirar els comuns i el termini del préstec abans de continuar.';
+  $('#quotaFont').innerHTML='Quota de referència: '+esc(DADES.quotaRefFont)+'. Lloguer: '+esc(DADES.lloguerFont)+'. '+
+    'Revisat el '+esc(DADES.revisio)+'. Una xifra de diners sense data menteix en silenci al cap d\'un any.';
+}
+function pintaTensio(){
+  const t=tensio(),bo=millorPunt(),ab=millorAbsolut();
+  $('#tTensio').innerHTML='<thead><tr><th class="n">Aportació</th><th class="n">quota mitjana</th>'+
+    '<th class="n">no bancari</th><th>porta del '+DADES.propisMin+'%</th>'+
+    '<th class="n">fora per l\'entrada</th><th class="n">fora per la quota</th><th class="n">fora en total</th></tr></thead><tbody>'+
+    t.map(p=>'<tr class="'+(bo&&p.a===bo.a?'tria ':'')+(ab&&p.a===ab.a?'min':'')+'"><td class="n">'+ent(p.a)+' €</td>'+
+      '<td class="n">'+ent(p.quota)+' €</td>'+
+      '<td class="n">'+pc(p.propis)+'%</td>'+
+      '<td style="color:'+(p.porta?'var(--green)':'var(--red)')+'">'+(p.porta?'passa':'no passa')+'</td>'+
+      '<td class="n">'+p.foraEntrada+'</td><td class="n">'+p.foraQuota+'</td>'+
+      '<td class="n"><strong>'+p.fora+'</strong></td></tr>').join('')+'</tbody>';
+  const zero=t[0],alt=t[t.length-1],abs=millorAbsolut();
+  $('#tensioDiu').innerHTML=!G.llars.length?'Sense llars no hi ha ningú a qui deixar fora.'
+    :'Sense entrada, la quota mitjana seria de <strong>'+ent(zero.quota)+' €</strong> i el projecte '+
+     (zero.porta?'passaria':'<strong>no passaria</strong>')+' la porta del finançament. Amb '+ent(alt.a)+' € '+
+     'seria de <strong>'+ent(alt.quota)+' €</strong>, i '+alt.foraEntrada+' llars d\'aquest grup no la podrien posar. '+
+     'Enmig hi ha el punt on l\'exclusió és més petita: <strong>'+ent(abs.a)+' € d\'aportació</strong>, amb '+
+     abs.fora+(abs.fora===1?' llar fora':' llars fora')+' i una quota mitjana de '+ent(abs.quota)+' €. '+
+     (abs.porta
+       ? 'I aquest punt passa la porta del '+DADES.propisMin+'%, o sigui que es pot fer tal com és.'
+       : (bo
+         ? '<strong>Però aquest punt no passa la porta del '+DADES.propisMin+'%.</strong> La aportació més baixa que la '+
+           'passa és <strong>'+ent(bo.a)+' €</strong>, i allà en queden fora <strong>'+bo.fora+'</strong>. '+
+           '<strong>La distància entre aquests dos números —'+ent(bo.a-abs.a)+' € d\'entrada i '+(bo.fora-abs.fora)+
+           (bo.fora-abs.fora===1?' llar':' llars')+'— és exactament el que compren els títols participatius:</strong> amb '+
+           ent(titolsNecessaris(abs.a))+' € de títols, el projecte podria quedar-se a '+ent(abs.a)+
+           ' € d\'entrada i passar igualment. Això no és una manera de finançar més barat: és la manera que hi càpiga aquella gent.'
+         : '<strong>Cap aportació d\'aquesta taula passa la porta del '+DADES.propisMin+'%</strong>: amb aquest cost i sense '+
+           'títols participatius ni ajuts, aquest projecte no és finançable a cap preu d\'entrada. Caldrien '+
+           ent(titolsNecessaris(abs.a))+' € de títols per fer-lo possible al punt de mínima exclusió. Aquesta és una '+
+           'troballa, no un error de la pàgina.'));
+
+  const r=repartiment();
+  $('#tEsforc').innerHTML='<thead><tr><th>Llar</th><th class="n">ingressos</th><th class="n">quota</th>'+
+    '<th class="n">esforç</th><th>Què vol dir</th></tr></thead><tbody>'+
+    r.files.slice().sort((a,b)=>(b.esforc||0)-(a.esforc||0)).map(f=>
+      '<tr'+(f.foraQuota?' class="fora"':'')+'><td>'+esc(f.l.nom)+'</td>'+
+      '<td class="n">'+ent(f.l.ingressos)+'</td><td class="n">'+num(f.quota)+'</td>'+
+      '<td class="n" style="color:'+(f.esforc==null?'var(--muted)':f.esforc<=ESFORC_MAX?'var(--green)':'var(--red)')+'">'+
+      (f.esforc==null?'—':un(f.esforc)+'%')+'</td>'+
+      '<td class="mut">'+(f.esforc==null?'no ha declarat ingressos'
+        :f.esforc<=ESFORC_MAX?'dins del llindar':'sobrecàrrega: '+ent(f.quota-f.l.ingressos*ESFORC_MAX/100)+' € per sobre del '+ESFORC_MAX+'%')+
+      '</td></tr>').join('')+'</tbody>';
+  const fora=r.files.filter(f=>f.foraQuota);
+  $('#esforcDiu').innerHTML=fora.length
+    ? '<strong>'+fora.length+(fora.length===1?' llar passa':' llars passen')+' del '+ESFORC_MAX+'% d\'esforç</strong> ('+
+      fora.map(f=>esc(f.l.nom)).join(', ')+'). Amb el repartiment d\'ara els esteu demanant una quota que no poden '+
+      'sostenir. Les sortides són tres i totes tenen preu: <strong>menys metres</strong> per a aquella llar, '+
+      '<strong>més aportació</strong> —que pot excloure-la per l\'altra banda— o <strong>un repartiment que no sigui '+
+      'proporcional als m²</strong>, que és una decisió política i s\'ha de dir com a tal.'
+    : 'Cap llar passa del '+ESFORC_MAX+'% d\'esforç amb aquesta quota.';
+}
+function pintaMarxa(){
+  $('#inIpc').value=G.ipc;$('#inAnysFora').value=G.anysFora;
+  const s=sortida(G.anysFora),f=fonsRetorn(G.anysFora);
+  $('#capesMarxa').innerHTML=
+    '<div class="capa"><div class="n">'+ent(s.posat)+' €</div><div class="l">va posar</div>'+
+      '<div class="d">L\'aportació inicial retornable.</div></div>'+
+    '<div class="capa bo"><div class="n">'+ent(s.retorn)+' €</div><div class="l">cobra</div>'+
+      '<div class="d">El mateix, nominal. Sense revaloració: és el que fa que l\'habitatge no s\'especuli.</div></div>'+
+    '<div class="capa taronja"><div class="n">'+ent(s.equivalent)+' €</div><div class="l">valdrien avui</div>'+
+      '<div class="d">Els mateixos diners amb un IPC del '+un(G.ipc)+'% durant '+s.anys+' anys.</div></div>'+
+    '<div class="capa mal"><div class="n">−'+pc(s.pctPerdut)+'%</div><div class="l">de poder adquisitiu</div>'+
+      '<div class="d">'+ent(s.perdua)+' € que no es recuperen. Dit el primer dia, és un acord; dit l\'últim, és una sorpresa.</div></div>';
+  $('#marxaDiu').innerHTML='Qui marxa al cap de <strong>'+s.anys+' anys</strong> cobra els <strong>'+ent(s.retorn)+
+    ' €</strong> que va posar. Amb un IPC del '+un(G.ipc)+'%, per comprar el mateix que llavors en caldrien '+
+    ent(s.equivalent)+': ha perdut <strong>'+pc(s.pctPerdut)+'%</strong> de poder adquisitiu. '+
+    '<strong>Això no és un defecte del model, és el model</strong> — si l\'aportació es revalorés, l\'habitatge '+
+    'tornaria a ser un actiu i la cessió d\'ús no serviria per a res. A canvi, aquells anys ha pagat una quota '+
+    'per sota del mercat i ha viscut en un lloc que no li podien pujar. El que seria injust és no dir-l\'hi.';
+
+  $('#capesFons').innerHTML=
+    '<div class="capa '+(f.cobertes?'bo':'mal')+'"><div class="n">'+f.cobertes+'</div><div class="l">sortides cobertes</div>'+
+      '<div class="d">Amb el fons de retorn acumulat en '+f.anys+' anys.</div></div>'+
+    '<div class="capa"><div class="n">'+ent(f.acumulat)+' €</div><div class="l">al fons</div>'+
+      '<div class="d">Un '+G.reserva+'% de la despesa mensual. Es configura a la pantalla 4.</div></div>'+
+    '<div class="capa blau"><div class="n">'+ent(G.aportacio)+' €</div><div class="l">cada retorn</div>'+
+      '<div class="d">El que s\'ha de tenir disponible cada vegada que algú marxa.</div></div>';
+  $('#fonsDiu').innerHTML=f.cobertes
+    ? 'Amb el fons d\'ara, la cooperativa pot tornar <strong>'+f.cobertes+
+      (f.cobertes===1?' aportació':' aportacions')+'</strong> sense esperar que entri ningú. La resta les torna qui entra.'
+    : '<strong>El fons no cobreix cap sortida</strong>: aquí, l\'aportació de qui marxa la torna <strong>qui '+
+      'entra</strong>. Mentre hi hagi llista d\'espera això no es nota; el dia que no n\'hi hagi, qui vol marxar '+
+      'no pot. I aquell dia sol coincidir amb el dia en què més gent vol marxar.';
+}
+function pintaTramit(){
+  $('#tramit').innerHTML=TRAMIT.map((p,i)=>'<div class="pas'+(p.meu?'':' crit')+'">'+
+    '<div class="num">'+(i+1)+'</div><div class="cos"><div class="t">'+esc(p.t)+
+    (p.meu?'':' <span class="mut">· no depèn de vosaltres</span>')+'</div>'+
+    '<div class="d">'+esc(p.d)+'</div></div><div class="q">'+esc(p.q)+'</div></div>').join('');
+}
+function pintaMapa(){
+  const rols=MAPA.roles,fl=MAPA.pairs.length*2;
+  const meus=Object.keys(OMPLE).length,fets=Object.keys(FA).filter(k=>FA[k]).length;
+  $('#mapaResum').innerHTML='El mapa de <strong>'+esc(DIN.nom)+'</strong> té <strong>'+rols.length+
+    ' rols</strong> i <strong>'+fl+' lliuraments</strong>. Aquesta pàgina omple <strong>'+meus+
+    '</strong> rol amb dades seves i produeix <strong>'+fets+'</strong> d\'aquests lliuraments. '+
+    'La resta els fa la gent, i dir el contrari convertiria la costura en decoració.';
+  $('#mapes').innerHTML='<section class="box"><h3>'+DIN.ic+' '+esc(DIN.nom)+'</h3>'+
+    '<p class="lead"><strong>Missió.</strong> '+esc(MAPA.mission)+'</p>'+
+    '<p class="mut"><strong>Visió.</strong> '+esc(MAPA.vision)+'</p>'+
+    '<p class="mut"><strong>Objectius.</strong> '+esc(MAPA.objectives)+'</p>'+
+    '<p class="mut"><strong>Governança.</strong> '+esc(MAPA.gov)+'</p>'+
+    '<div class="graella">'+rols.map(r=>'<div class="tg"><b>'+esc(r)+'</b>'+
+      (OMPLE[r]?'<p style="color:var(--green)">Aquesta pàgina el porta amb dades seves: '+
+        G.llars.length+' llars.</p>':'<p class="mut">El porta la gent, no l\'eina.</p>')+
+      '</div>').join('')+'</div>'+
+    '<div class="taula"><table><thead><tr><th>Qui</th><th>Dona</th><th>Rep de tornada</th>'+
+    '<th>Ho fa aquesta pàgina?</th></tr></thead><tbody>'+
+    MAPA.pairs.map(p=>'<tr><td>'+esc(p[0])+' ⇄ '+esc(p[1])+'</td>'+
+      '<td><span class="mut">'+esc(p[2])+'</span> '+esc(p[3])+'</td>'+
+      '<td><span class="mut">'+esc(p[4])+'</span> '+esc(p[5])+'</td>'+
+      '<td>'+(FA[p[3]]?'<span style="color:var(--green)">'+esc(FA[p[3]])+'</span>':
+              FA[p[5]]?'<span style="color:var(--green)">'+esc(FA[p[5]])+'</span>':'<span class="mut">no</span>')+
+      '</td></tr>').join('')+'</tbody></table></div>'+
+    '<p class="nota">Passos del mètode: '+MAPA.kanban.map(k=>esc(k)).join(' → ')+'.</p>'+
+    '</section>';
+}
+function pinta(){pintaLlars();pintaObra();pintaFinances();pintaQuota();pintaTensio();pintaMarxa();pintaTramit();pintaMapa();}
+
+/* ── Enganxar-ho ────────────────────────────────────────────────────────── */
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-p]');if(!b)return;
+  $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $$('.pan').forEach(p=>p.classList.toggle('on',p.id==='p'+b.dataset.p[0].toUpperCase()+b.dataset.p.slice(1)));
+});
+[['inObra','obra',600],['inComuns','comuns',0],['inTecnics','tecnics',0],['inIva','iva',0],
+ ['inCanon','canon',0],['inAport','aportacio',0],['inTitols','titols',0],['inAjut','ajut',0],
+ ['inInteres','interes',0],['inAnys','anys',5],['inTiInt','titolsInteres',0],['inTiAnys','titolsAnys',1],
+ ['inOper','operacio',0],['inReserva','reserva',0],['inLloguer','lloguer',0],
+ ['inIpc','ipc',0],['inAnysFora','anysFora',1]].forEach(([id,k,min])=>{
+  $('#'+id).addEventListener('change',e=>{
+    G[k]=Math.max(min,Number(e.target.value)||0);desa();pinta();
+  });
+});
+$('#btnLlar').addEventListener('click',()=>{
+  const r=novaLlar($('#inNom').value,$('#inM2').value,$('#inPers').value,$('#inIng').value,$('#inPot').value);
+  if(r.err){$('#llarsAvis').textContent=r.err;return;}
+  $('#llarsAvis').textContent='';$('#inNom').value='';pinta();
+});
+$('#tLlars').addEventListener('click',e=>{
+  const b=e.target.closest('[data-fora]');if(!b)return;
+  treuLlar(b.dataset.fora);pinta();
+});
+$$('input[name=rep]').forEach(r=>r.addEventListener('change',()=>{
+  G.repartiment=$('input[name=rep]:checked').value;desa();pinta();
+}));
+
+if(!carrega())grupPerDefecte();
+$('input[name=rep][value='+G.repartiment+']').checked=true;
+pinta();
+
+/* Hook de proves: les proves parlen amb la pàgina de debò, no amb una còpia. */
+window.__HABITATGE={DADES,ESFORC_MAX,TRAMIT,DIN,MAPA,OMPLE,FA,CLAU,
+  m2Privats,m2Totals,costObra,costTecnics,costIva,costTotal,
+  aportacions,recursosPropis,prestec,pctPropis,passaPorta,falta,
+  anualitat,interesTitols,operacioAnual,canonAnual,serveiDeute,fonsRetornAnual,despesaAnual,quotaGrup,
+  coeficients,sumaCoef,sumaPct,BASE,repartiment,tensio,millorPunt,millorAbsolut,titolsNecessaris,sortida,fonsRetorn,
+  novaLlar,treuLlar,grupPerDefecte,desa,carrega,pinta,estat:()=>G};
+</script>
+</body>
+</html>
