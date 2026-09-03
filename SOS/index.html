@@ -2000,7 +2000,19 @@ async function _makeKeypair(){
 }
 const _signParams=alg=>alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',hash:'SHA-256'};
 const _importPub=async(alg,jwk)=>crypto.subtle.importKey('jwk',jwk,alg==='Ed25519'?{name:'Ed25519'}:{name:'ECDSA',namedCurve:'P-256'},true,['verify']);
-async function _didFromJwk(alg,jwk){return 'did:sos:'+alg.toLowerCase()+':'+(await sha256(_te.encode(JSON.stringify(jwk)))).slice(0,32);}
+/* El did surt del hash de la clau pública, i per això la clau s'ha de convertir
+   en text **d'una sola manera possible**. Aquí hi havia `JSON.stringify(jwk)`,
+   que no ho és: escriu les claus en l'ordre que li arriben. El navegador les
+   exporta en ordre alfabètic, però la mateixa clau tornant de Postgres com a
+   `jsonb` arriba ordenada per longitud, i el mateix JWK donava dos dids. Al
+   directori això feia caure la fitxa de tothom amb «el did no surt d'aquesta
+   clau», acusant un intrús que no existia.
+
+   `_canon` ordena les claus, que és el que fa la derivació reproduïble vingui
+   d'on vingui el JWK. I com que l'ordre canònic **és** l'alfabètic que el
+   navegador ja feia servir, cap identitat existent es mou: comprovat contra la
+   fitxa publicada, que segueix donant el mateix did:sos que ja tenia. */
+async function _didFromJwk(alg,jwk){return 'did:sos:'+alg.toLowerCase()+':'+(await sha256(_te.encode(_canon(jwk)))).slice(0,32);}
 let _identity=null;
 async function _makeExchangeKeypair(){return crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
 async function _importExchangePriv(jwk){return crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
@@ -11426,9 +11438,14 @@ async function verifyCertificate(pack){
   };
 }
 /* La confirmació de qui acompanya: un registre propi, signat per ell, sobre el
-   hash del certificat. No el fa més vàlid —el fa testimoniat. */
+   hash del certificat. No el fa més vàlid —el fa testimoniat.
+
+   El hash va per `_canonAll` i no per `JSON.stringify`, pel mateix que el did:
+   un certificat que ha passat per un fitxer, per un `jsonb` o per un altre
+   navegador pot arribar amb les claus en un altre ordre, i llavors dues
+   confirmacions del mateix certificat parlarien de «sobres» diferents. */
 async function confirmCertificate(pack,text){
-  const conf={sobre:await sha256(_te.encode(JSON.stringify(certBody(pack)))),
+  const conf={sobre:await sha256(_te.encode(_canonAll(certBody(pack)))),
     text:(text||'').trim(),ts:now()};
   await signRecord(conf);
   (pack.confirmacions||(pack.confirmacions=[])).push(conf);

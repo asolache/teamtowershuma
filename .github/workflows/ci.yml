@@ -122,6 +122,18 @@ jobs:
       - name: Guarda del registre públic (el número dels 150.000)
         run: node SOS/tools/check-registre.js
 
+      # El directori és l'única pantalla que publica un nom i un municipi cap
+      # enfora, i tot el que ho fa acceptable és que ho puguis comprovar. Es va
+      # veure què val no vigilar-ho: el `did` es derivava amb `JSON.stringify`
+      # del JWK, que escriu les claus en l'ordre que li arriben, i com que
+      # Postgres les torna en un altre ordre, el sedàs descartava TOTES les
+      # fitxes acusant un intrús inexistent. Cap prova ni cap lectura del codi
+      # ho hauria trobat. Aquí es vigila la derivació, que les categories no
+      # divergeixin de les del banc de temps, que mai hi hagi un camp de correu
+      # o de telèfon, i que la clau privada no arribi a cap petició de xarxa.
+      - name: Guarda del directori (un sol did, unes soles categories)
+        run: node SOS/tools/check-online.js
+
       # Un mapa desactualitzat és pitjor que cap mapa: sense mapa mires, i amb
       # un mapa fals vas. I aquí qui llegeix sovint és una IA, que no pregunta:
       # llegeix el nom de la carpeta i escriu. Crear una carpeta sense dir què

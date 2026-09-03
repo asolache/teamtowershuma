@@ -974,6 +974,44 @@ diu que encara no n'hi ha cap (2). Cap porta apunta a un fitxer que no hi és, i
 | **«fora» és la natura més nombrosa (44 de 116)** | Un mapa de valor és sobretot **un mapa de fronteres**: la major part dels noms que hi surten són gent amb qui es tracta, no gent que hi és a dins |
 | El casal (suport mutu) i el taller (coop. de treball) són els dos edificis sense eina | Coincideix amb els pendents del bloc anterior, i ara es veu des del poble |
 
+### El directori, endollat a la identitat del SOS · fet
+
+El directori publicava però no pintava. Amb una sola fitxa a la taula —la de
+l'autor— la pantalla deia *«1 fitxa descartada… algú ha escrit al directori
+sense la clau de qui deia ser»*, i ho deia al mòbil, a la tauleta i a
+l'ordinador.
+
+**L'avaria era nostra i era d'una línia.** El `did` es derivava del hash de
+`JSON.stringify(jwk)`, i això no és el hash de la clau sinó de com l'ha escrit
+qui l'hagi escrit. El navegador exporta el JWK alfabèticament; Postgres el torna
+com a `jsonb`, que ordena les claus per longitud. Mateixa clau, dos dids, i
+`fitxaValida` descartava tothom. La firma Ed25519 verificava perfectament tota
+l'estona. Vedes 135 i 136.
+
+Es va comprovar què costaria si el canvi mogués alguna identitat, perquè no era
+obvi: dins de l'app el `did` **no entra mai als bytes signats** i `_didFromJwk`
+només s'invoca en crear la identitat, així que l'única verificació de tot el
+projecte que el recalcula és la del directori. I la forma canònica **és**
+l'alfabètica que el navegador ja feia servir: cap identitat s'ha mogut, comprovat
+contra la fitxa ja publicada abans de tocar res.
+
+Sobre això, les dues coses que faltaven perquè el directori i l'eina fossin la
+mateixa persona:
+
+- **«Porta el meu perfil del SOS».** Les dues pàgines comparteixen la IndexedDB
+  del navegador: el perfil no s'exporta ni s'importa, ja hi és. S'hi arriba pel
+  `did` —el criteri de `joinNode`, no el nom— i omple el formulari sense publicar
+  res: la previsualització segueix sent l'últim que es veu (veda 47).
+- **Entrar amb la identitat del SOS.** El mateix fitxer xifrat que exporta
+  l'eina (PBKDF2 210 000 · AES-GCM), amb la mateixa guarda: substituir una
+  identitat que ja ha firmat coses no passa sense confirmar-ho. I es pot guardar
+  una còpia des d'aquí, perquè qui arribi primer pel directori no es quedi sense
+  manera de tornar-hi.
+
+**Queda obert**: la sala de xat no té relé endollat —es xifra i no surt del
+navegador—, i el 🏘 cens d'entitats de la taula de dalt segueix sent l'alta i la
+fitxa des del territori.
+
 ### Parlar el llenguatge del programa municipal que ja existeix
 
 **La idea.** El SOS diu «oferta de servei», «banc de temps», «mapa de valor».
@@ -1006,6 +1044,77 @@ porta, després el disseny.** El mateix per a qualsevol altre programa: el patr�
 de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
+
+### Revisió de la portada amb l'eix del producte · i el README, que ven una altra empresa
+
+**El que s'ha demanat**: revisar `index.html` amb **enfocament a conclusió per
+producte** —que qui hi entra acabi sabent què contracta— i repassar les
+propostes comercials del **README** actualitzant-les amb els productes i
+serveis que es volen vendre de debò, per tenir **material de disseny i planing
+per a la visita comercial**.
+
+**Els quatre productes**, dits amb les paraules de qui els ven i que ara no són
+l'eix de cap de les dues peces:
+
+1. **Consultoria** — disseny i desenvolupament de comunitats.
+2. **Formació**.
+3. **Producció** de comú-diades.
+4. **Dinamització** de comú-diades.
+
+**La primera troballa, i és la que fa mal: el README i la portada venen dues
+empreses diferents.**
+
+- El **README** ven consultoria de RRHH corporativa: *«Consultoría estratégica
+  de RRHH»*, IKEA, Telefónica, Vodafone, BBVA, Porsche, team building, +30-50 %
+  de cohesió en dues hores. Sis serveis, i cap és cap dels quatre de dalt.
+- La **portada** ven acció comunitària municipal: 13 serveis en dues famílies
+  (metodològics i tecnològics), contractables per ajuntaments i consells
+  comarcals, finançables amb Diputació, Ateneus Cooperatius, Leader i Next
+  Generation.
+
+Cap de les dues és falsa —són dos negocis que la mateixa persona sap fer— però
+qui arriba pel repositori i qui arriba per la web no veuen la mateixa casa, i
+els números del README (60.000 participants, 150 empreses) sostenen el discurs
+corporatiu i no el comunitari.
+
+**La segona: la portada té serveis, no productes.** Els 13 quadres diuen molt bé
+*què és* cada cosa i no diuen res del que decideix una compra: **qui ho compra,
+quant dura, què s'endú, quant costa i què fa demà al matí**. La secció de
+finançament és l'única que hi arriba, i està una sola vegada al final per a tots
+tretze. Un tècnic municipal no pot portar un quadre a una junta.
+
+**I la tercera, que és la que serveix per a la visita: les comú-diades no hi
+són.** Producció i dinamització d'una comú-diada és el producte més fàcil
+d'explicar en una reunió —una data, un poble, una jornada— i el més fàcil de
+finançar, i a la portada no apareix com a producte. Hi ha «Fent Pinya» com a
+sessions de cohesió i «posada en marxa de dinàmiques», que en són trossos.
+
+**El que caldria fer**, per ordre:
+
+- **Un sol catàleg, quatre productes**, i els 13 serveis actuals repartits com a
+  contingut de dins. La consultoria és on va el mapa del teixit (VNA), la
+  governança i el repartiment; la formació és on va Mondragón, l'escola i perdre
+  la por a les eines; producció i dinamització són la comú-diada, que avui està
+  desmuntada en peces.
+- **Una fitxa de producte que conclogui**: per a qui, què s'endú, quant dura, en
+  quina forquilla de preu i **quina és la via de finançament d'aquest producte**
+  —no la llista genèrica del final. Amb una acció clara per producte.
+- **El README reescrit** amb els mateixos quatre productes, i les xifres
+  separades per línia: el que ve del món corporatiu és cert i és un actiu, però
+  no és la prova del producte comunitari i no es pot fer servir com si ho fos.
+- **El material de visita** que en surt sol si les fitxes estan escrites: un
+  full per producte i un guió d'una pàgina, en paper, perquè és el que arriba a
+  una regidoria.
+
+**Dues regles que ja valen aquí**, i que la guarda de la portada
+(`check-landing.js`) hauria d'estendre al catàleg nou:
+
+- **Cap xifra sense data ni font.** Els percentatges d'impacte del README
+  (+30-50 %, −47 %, 4×) no diuen d'on surten. O es documenten, o no van a una
+  proposta comercial.
+- **Cap producte que apunti a una eina que no existeix.** És la mateixa regla que
+  ja vigila Molekulandia: si una fitxa promet una pàgina o una plantilla, ha
+  d'existir.
 
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
