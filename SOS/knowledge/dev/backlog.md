@@ -916,6 +916,7 @@ la seva feina és de dins, i ja hi és.
 | 🥬🛒 **Consum agroecològic i compra col·lectiva** | `compra.html` | Cistella del 80%, comanda per productor amb mínims i formats, estalvi per causa i la caixa de cada llar |
 | ⚡ **Comunitat energètica** | `energia.html` | Coeficients amb els tres repartiments comparats, estalvi separat, amortització neta i el tràmit amb de qui depèn cada pas. Veda 129 |
 | 🤝 **Suport mutu / cures veïnals** | pestanya de l'app | El compromís d'acompanyament (qui, a qui, què, cada quan), la càrrega per cuidadora amb llindar declarat, la cobertura de cada persona acompanyada i **la projecció**: si aquesta plega, qui es queda sense ningú. Cap dada de salut i els noms només per a qui sosté el node. Veda 133 |
+| 🛠 **Cooperativa de treball** | pestanya de l'app | El Slicing Pie vist per qui hi treballa: la llesca desglossada, la dilució amb el ritme d'ara, **què costa parar** en punts, quantes hores falten per a un objectiu, i la forquilla salarial calculada de les tarifes reals del registre. Veda 134 |
 | 🏠 **Habitatge en cessió d'ús** | `habitatge.html` | El cost amb els comuns, la porta del 20% de recursos no bancaris, la quota per llar amb l'esforç sobre els seus ingressos, el recorregut sencer de l'aportació —qui queda fora per l'entrada i qui per la quota— i què cobra i qui li ho torna a qui marxa. Veda 130 |
 | 🌱 **MATRIU** | app + `matriu.html` | La incubadora dins, i el model explicat fora |
 
@@ -923,7 +924,6 @@ la seva feina és de dins, i ja hi és.
 
 | Dinàmica | Rols | Què falta, i de quina mena |
 |---|---|---|
-| 🛠 **Cooperativa de treball** | 6 | **Dins de l'app.** Les llesques del Slicing Pie vistes com les veu una sòcia treballadora, no com les veu la incubadora |
 | 🏘 **Cens d'entitats** | 5 | **A `online.html`**, que ja és el directori: el que falta és l'**alta i la fitxa** des del territori, no només la consulta |
 
 **Tres regles que valen per a totes** (i que surten del que ja ha passat amb La
@@ -973,6 +973,39 @@ diu que encara no n'hi ha cap (2). Cap porta apunta a un fitxer que no hi és, i
 | **Cultura i relat no s'aprèn a cap edifici de l'arcada** | Existeix només a les activitats del terme (cultura, turisme). És un **forat del catàleg**, no de la professió: hi falta un tipus de projecte que la sostingui |
 | **«fora» és la natura més nombrosa (44 de 116)** | Un mapa de valor és sobretot **un mapa de fronteres**: la major part dels noms que hi surten són gent amb qui es tracta, no gent que hi és a dins |
 | El casal (suport mutu) i el taller (coop. de treball) són els dos edificis sense eina | Coincideix amb els pendents del bloc anterior, i ara es veu des del poble |
+
+### Parlar el llenguatge del programa municipal que ja existeix
+
+**La idea.** El SOS diu «oferta de servei», «banc de temps», «mapa de valor».
+Un ajuntament que ja té un programa en marxa diu una altra cosa —a **Pacs del
+Penedès**, el **Consell de l'Experiència**— i qui hi participa s'hi reconeix per
+aquell nom, no pel nostre. Avui, per entrar-hi, li demanem que aprengui el
+nostre vocabulari primer. És la barrera més barata de treure i la que no es veu.
+
+**El que caldria**, i que és més de comunicació que de codi:
+
+- **Una capa de noms per territori.** El mateix que fa el SOS, dit amb el nom
+  del programa local: el que aquí és una oferta d'acompanyament, allà és una
+  activitat del Consell de l'Experiència. Ni traducció ni marca blanca:
+  **el nom del programa a fora i el mateix registre a dins**, perquè les hores
+  segueixin sent hores comparables entre municipis.
+- **Un full d'entrada per programa**: què hi guanya l'ajuntament (les hores
+  comptades i signades que avui no té), què hi guanya qui hi participa, i què
+  **no** és —que no substitueix el programa ni el gestiona.
+- **La comunicació de sortida**: com s'expliquen les ofertes a qui ja és al
+  programa, que sol arribar-hi en paper i per la regidoria, no per una app.
+
+**Abans de fer res, cal confirmar-ho amb la font.** No sé com funciona el
+Consell de l'Experiència de Pacs —qui l'organitza, què hi fa la gent, si té
+inscripció i amb quin calendari—, i inventar-s'ho seria exactament l'error que
+la resta d'aquest repositori intenta evitar. **Primer una conversa amb qui el
+porta, després el disseny.** El mateix per a qualsevol altre programa: el patró
+és replicable, els noms no.
+
+**Per què val la pena.** És el camí invers al que hem fet fins ara: en comptes
+de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
+organitzada per un ajuntament és exactament qui més té a aportar al banc de
+temps i qui menys probable és que s'instal·li res pel seu compte.
 
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.

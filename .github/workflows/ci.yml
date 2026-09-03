@@ -105,6 +105,15 @@ jobs:
       - name: Guarda de les Cures (confidencialitat i projecció)
         run: node SOS/tools/check-cures.js
 
+      # La llesca d'una sòcia surt d'apunts signats i de res més. Una pantalla
+      # que pogués ajustar un percentatge —encara que fos «per corregir»—
+      # convertiria el repartiment en una opinió, i és el més fàcil d'afegir
+      # sense adonar-se'n. I la forquilla salarial, que la governança d'aquesta
+      # dinàmica declara, es perd apunt a apunt: si ningú la mira, la tarta ja
+      # reparteix segons una regla que la cooperativa no ha acordat.
+      - name: Guarda de la cooperativa (la llesca no es toca)
+        run: node SOS/tools/check-coop.js
+
       # El registre és l'única cosa que es publica i no es pot desdir: un cop
       # una versió és a fora, ni se'n treu el que hi ha dins ni es torna a
       # numerar ningú. Aquí es vigila que al compromís d'alta no hi entri cap
