@@ -55,8 +55,32 @@ const src = readFileSync(APP, 'utf8');
 
    Conclusió: el fitxer pesa perquè fa molt i s'explica, no perquè arrossegui
    pes mort. La comprovació segueix servint per al mateix —obligar a mesurar
-   abans de créixer— i aquesta és la segona vegada que ho ha aconseguit. */
-const MAX_GZIP_KB = 490;   // el que es descarrega d'un cop, amb dades mòbils d'un poble
+   abans de créixer— i aquesta és la segona vegada que ho ha aconseguit.
+
+   ── Tercera pujada · 490 → 510 ─────────────────────────────────────────────
+   Aquesta no compra una funcionalitat nova: en compra **una de menys**.
+
+   El SOS sabia què calia fer i ho sabia en vuit llocs diferents —missions,
+   safata de vistiplaus, tauler d'atenció, riscos, blocatges, alertes de cures,
+   taulers de projecte i forats de la xarxa—, i cap d'ells deia «això és el que
+   et toca a tu». Vuit safates és cap safata: el cost de saber què has de fer
+   era obrir vuit pantalles i recordar-les totes.
+
+   «Les meves tasques» les uneix en una, amb els dos eixos que ja existien al
+   codi i no es feien servir junts —territori (endins i enfora) i tema—, i amb
+   les columnes del tauler que cada projecte ja té. **No calcula res de nou**:
+   normalitza el que ja hi havia.
+
+   Podia haver anat a una pàgina a part, com el directori, i no s'ha fet a
+   posta: una pantalla que ha de dir «què em toca» vivint fora de l'aplicació
+   seria la novena safata. El que això ve a arreglar és precisament que n'hi
+   hagi més d'una.
+
+   El preu mesurat és de 5 KB gzip (483 → 488). El sostre puja a 510 perquè un
+   marge de 2 KB no és un marge: obliga a decidir en cada línia si val la pena
+   escriure el comentari que la justifica, i aquest repositori es defensa amb
+   els comentaris. */
+const MAX_GZIP_KB = 510;   // el que es descarrega d'un cop, amb dades mòbils d'un poble
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;
