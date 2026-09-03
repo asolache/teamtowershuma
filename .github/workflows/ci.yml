@@ -96,6 +96,15 @@ jobs:
       - name: Guarda de Molekulandia (no és un pòster)
         run: node SOS/tools/check-molekulandia.js
 
+      # La pestanya de cures és l'única del SOS on el que s'apunta és qui
+      # necessita ajuda i qui l'hi dona. Dos errors farien mal de debò i cap
+      # dels dos peta: que hi entri informació de salut —una casella de text
+      # lliure amb el nom de «situació» acaba tenint diagnòstics escrits pel
+      # veïnat— i que els noms els vegi qualsevol. I una tercera de sentit: que
+      # la projecció de baixa es calculi i no s'ensenyi enlloc.
+      - name: Guarda de les Cures (confidencialitat i projecció)
+        run: node SOS/tools/check-cures.js
+
       # El registre és l'única cosa que es publica i no es pot desdir: un cop
       # una versió és a fora, ni se'n treu el que hi ha dins ni es torna a
       # numerar ningú. Aquí es vigila que al compromís d'alta no hi entri cap
