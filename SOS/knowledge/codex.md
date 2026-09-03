@@ -704,6 +704,70 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 134 — El teu percentatge no és teu
+
+L'equity de la MATRIU mira la tarta des de qui reparteix: quina part té cadascú.
+És correcte i respon a la pregunta de la incubadora. Qui hi treballa en té una
+altra, i és la que trenca cooperatives:
+
+**El teu percentatge no és teu.** És una raó, i baixa cada vegada que qualsevol
+altre aporta, encara que tu no paris ni un dia.
+
+La prova ho afirma amb el cas net: el Bru fa una setmana forta, **l'Ada no fa
+res ni deixa de fer res**, i el seu percentatge cau del 19,2% al 15,6%. Les
+seves llesques són exactament les mateixes: 4.000. Ningú li ha tret res.
+
+Matemàticament és correcte i és **el que fa que el Slicing Pie sigui just**. El
+problema no és el model: és descobrir-ho sis mesos després mirant un gràfic.
+Llavors el que se sent és que t'han robat, i ja no hi ha conversa possible.
+
+### Les tres xifres que converteixen una sorpresa en una decisió
+
+- **Si segueixes al teu ritme i la resta al seu**, on acabes d'aquí a sis
+  mesos. Que baixi vol dir que la resta va més de pressa que tu; no vol dir res
+  més.
+- **Si pares del tot.** Amb la coop de prova, l'Ada passaria del 15,6% al 5,8%.
+- **La diferència entre les dues: 9,8 punts.** Això és el que costa parar sis
+  mesos. Dit avui és una decisió que es pren; descobert al gràfic d'aquí a sis
+  mesos, és una traïció. I creix amb el temps: parar un mes en costa 3,4.
+
+I la inversa, que és l'única que es pot fer servir demà al matí: **quantes hores
+falten** per arribar a un percentatge. Surt d'aïllar `(s+x)/(T+x)=p`, o sigui
+`x=(pT−s)/(1−p)`, i es divideix pel que val una hora teva. Amb la coop de prova,
+l'Ada necessita **260 hores** per arribar al 40% a 20 €/h… i **86,7** a 60 €/h.
+
+Aquí es veu la conversa de debò d'una cooperativa: **no és quantes hores fas,
+és què val una hora teva.**
+
+### La forquilla es perd apunt a apunt
+
+La governança d'aquesta dinàmica declara «forquilla salarial acotada», i la
+tarifa es fixa **a cada apunt**. Un sol registre amb una tarifa posada a mà
+porta la forquilla de 3:1 a 10:1 —la prova ho fa— i a partir d'aquell moment la
+tarta reparteix segons una regla que la cooperativa **no ha acordat mai**, sense
+que salti res. Per això es calcula de les tarifes reals del registre i no del
+paràmetre del node: mirar el paràmetre no veuria mai el cas que la trenca.
+
+### El que la guarda vigila, i que és fàcil d'afegir sense adonar-se'n
+
+**Una llesca no es toca.** Surt d'apunts signats i de res més. Una pantalla que
+pogués ajustar un percentatge —encara que fos «per corregir un error»—
+convertiria el repartiment en una opinió. La guarda prohibeix qualsevol
+assignació a `slices`, `pct`, `rate` o `value` dins d'aquesta pantalla, i les
+aportacions han de passar pel camí de sempre, que és el que signa.
+
+I dos detalls que semblen menors i no ho són: demanar el **100%** ha de dir que
+no pot ser —seria una divisió per zero amb aspecte de resposta— i un objectiu
+que ja tens ha de dir-ho, en comptes de demanar hores negatives.
+
+### Dos falsos positius meus, en dues guardes seguides
+
+La guarda de cures acusava la línia que defineix la comprovació de noms. La
+d'aquí acusava `inp.value=` d'un camp de formulari com si fos un apunt del
+registre. Totes dues es van arreglar mirant **qui rep** l'assignació, no el nom
+del camp. Val la pena apuntar-ho junt: quan una guarda busca un patró de text,
+el primer que troba sol ser codi propi que fa exactament el que ha de fer.
+
 ## Veda 133 — Comptar hores de cura és explicar el que ja ha passat
 
 Totes les eines de cures fan el mateix: registren les hores que s'han fet. És

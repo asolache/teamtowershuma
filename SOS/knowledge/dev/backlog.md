@@ -916,6 +916,7 @@ la seva feina és de dins, i ja hi és.
 | 🥬🛒 **Consum agroecològic i compra col·lectiva** | `compra.html` | Cistella del 80%, comanda per productor amb mínims i formats, estalvi per causa i la caixa de cada llar |
 | ⚡ **Comunitat energètica** | `energia.html` | Coeficients amb els tres repartiments comparats, estalvi separat, amortització neta i el tràmit amb de qui depèn cada pas. Veda 129 |
 | 🤝 **Suport mutu / cures veïnals** | pestanya de l'app | El compromís d'acompanyament (qui, a qui, què, cada quan), la càrrega per cuidadora amb llindar declarat, la cobertura de cada persona acompanyada i **la projecció**: si aquesta plega, qui es queda sense ningú. Cap dada de salut i els noms només per a qui sosté el node. Veda 133 |
+| 🛠 **Cooperativa de treball** | pestanya de l'app | El Slicing Pie vist per qui hi treballa: la llesca desglossada, la dilució amb el ritme d'ara, **què costa parar** en punts, quantes hores falten per a un objectiu, i la forquilla salarial calculada de les tarifes reals del registre. Veda 134 |
 | 🏠 **Habitatge en cessió d'ús** | `habitatge.html` | El cost amb els comuns, la porta del 20% de recursos no bancaris, la quota per llar amb l'esforç sobre els seus ingressos, el recorregut sencer de l'aportació —qui queda fora per l'entrada i qui per la quota— i què cobra i qui li ho torna a qui marxa. Veda 130 |
 | 🌱 **MATRIU** | app + `matriu.html` | La incubadora dins, i el model explicat fora |
 
@@ -923,7 +924,6 @@ la seva feina és de dins, i ja hi és.
 
 | Dinàmica | Rols | Què falta, i de quina mena |
 |---|---|---|
-| 🛠 **Cooperativa de treball** | 6 | **Dins de l'app.** Les llesques del Slicing Pie vistes com les veu una sòcia treballadora, no com les veu la incubadora |
 | 🏘 **Cens d'entitats** | 5 | **A `online.html`**, que ja és el directori: el que falta és l'**alta i la fitxa** des del territori, no només la consulta |
 
 **Tres regles que valen per a totes** (i que surten del que ja ha passat amb La
