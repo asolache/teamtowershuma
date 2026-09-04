@@ -42,6 +42,7 @@ const CHECK = process.argv.includes('--check');
 const GRUPS = [
   { id: 'comenca', lbl: 'Comença', ic: '🧭', links: [
     ['diagnostic.html', 'Diagnòstic', 'On ets i què et falta, en 3 minuts'],
+    ['pressupost.html', 'Demana pressupost', 'Tria què vols i en surt la proposta'],
     ['intro.html', 'La intro', 'De què va tot això'],
     ['uneix-te.html', 'Uneix-t\'hi', 'El que ja fas al barri, comptat']
   ] },
@@ -56,6 +57,7 @@ const GRUPS = [
   ] },
   { id: 'apren', lbl: 'Aprèn', ic: '🎓', links: [
     ['formacio.html', 'Formació', '16 mòduls, de N0 a N3'],
+    ['ia.html', 'Fluxos amb IA', 'Automatitzar el tangible, valorar l\'intangible'],
     ['escola.html', 'Escoles', 'El SOS a mida d\'aula'],
     ['vedes.html', 'Les vedes', 'Les regles, amb el motiu al costat'],
     ['blog.html', 'Blog', 'Cada capacitat, explicada']
@@ -71,8 +73,8 @@ const MARCA = ['../index.html', 'TeamTowers', 'Humà'];
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
 const PAGINES = ['blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
-  'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'intro.html', 'matriu.html',
-  'molekulandia.html', 'online.html',
+  'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
+  'matriu.html', 'molekulandia.html', 'online.html', 'pressupost.html',
   'uneix-te.html', 'vedes.html', 'vna.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit

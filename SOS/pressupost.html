@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demana pressupost · SOS · TeamTowers Humà</title>
+<meta name="description" content="Tria els paquets que t'interessen i en surt una proposta esborrany amb el desglossament: forquilla per paquet, hores per nivell si el contractes per hores, i què falta per tancar-la. Te la pots endur encara que no ens l'enviïs.">
+<meta property="og:title" content="Demana pressupost · TeamTowers Humà">
+<meta property="og:description" content="Una proposta esborrany en cinc minuts, amb el mapa de cost a la vista i sense trucar.">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:#2a2a35;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--mono:'SF Mono',Monaco,'Cascadia Code',monospace}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b0b12,#12121c);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:800px;margin:0 auto;padding:2rem 1.2rem 4rem}
+header{padding:3rem 1.2rem 1.5rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.07)}
+header h1{font-size:2rem;margin:0 0 .6rem;background:linear-gradient(90deg,#6366f1,#00e676,#e040fb);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:var(--light);margin:0 auto;font-size:1.02rem;max-width:620px}
+.prog{display:flex;gap:.35rem;margin:1.5rem 0 1.2rem}
+.prog-s{flex:1;height:4px;background:var(--border);border-radius:2px;transition:background .25s}
+.prog-s.on{background:linear-gradient(90deg,var(--indigo),var(--green))}
+.step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1rem}
+.step[hidden]{display:none}
+.step h2{margin:0 0 .3rem;font-size:1.3rem}
+.step .sub{color:var(--muted);font-size:.88rem;margin:0 0 1.2rem;line-height:1.55}
+.f{margin-bottom:1.1rem}
+.f label{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;color:var(--indigo);margin-bottom:.35rem}
+.f .hint{font-size:.76rem;color:var(--muted);margin-top:.25rem;line-height:1.45}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.6rem .75rem;font:inherit;font-size:.92rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--indigo)}
+textarea{min-height:88px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem}
+.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.opt:hover{border-color:var(--indigo)}
+.opt.sel{border-color:var(--c,var(--indigo));background:color-mix(in srgb,var(--c,var(--indigo)) 14%,transparent)}
+.opt .o-t{font-weight:600;font-size:.88rem}
+.opt .o-d{font-size:.74rem;color:var(--muted);line-height:1.4}
+.nav-btns{display:flex;gap:.6rem;justify-content:space-between;margin-top:1.4rem;flex-wrap:wrap}
+.btn{background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:.65rem 1.3rem;font:inherit;font-size:.92rem;cursor:pointer;transition:all .13s;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.btn:hover{border-color:var(--indigo)}
+.btn-primary{background:linear-gradient(90deg,var(--indigo),#7c7ef5);border-color:transparent;font-weight:600}
+.btn-primary:hover{filter:brightness(1.1)}
+.err{color:var(--red);font-size:.83rem;margin-top:.5rem;display:none}
+.err.on{display:block}
+
+/* ── El triador de paquets ─────────────────────────────────────────────
+   Caselles i no xips: aquí es tria més d'una cosa i el preu depèn de quantes,
+   així que la casella marcada ha de ser inequívoca i no un color de fons. */
+.pq-fam{font-size:.95rem;margin:1.4rem 0 .5rem;color:var(--light)}
+.pq-fam:first-child{margin-top:0}
+.pq-g{display:grid;gap:.4rem}
+.pq{display:flex;align-items:center;gap:.6rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;cursor:pointer;transition:all .13s}
+.pq:hover{border-color:var(--indigo)}
+.pq:has(input:checked){border-color:var(--green);background:rgba(0,230,118,.08)}
+.pq input{width:auto;flex:none;accent-color:var(--green);min-width:18px;min-height:18px}
+.pq-n{flex:1;font-size:.9rem}
+.pq-p{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+.pq[hidden]{display:none}
+.pq-filtre{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.pq-f{background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:.35rem .8rem;font:inherit;font-size:.78rem;color:var(--muted);cursor:pointer}
+.pq-f.on{background:rgba(99,102,241,.18);border-color:var(--indigo);color:var(--text);font-weight:600}
+
+/* ── L'escala per hores ────────────────────────────────────────────────── */
+.esc{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:.4rem}
+.esc th,.esc td{padding:.5rem .55rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+.esc thead th{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.esc td input{width:5.5rem;padding:.35rem .5rem}
+.esc .e-h{font-family:var(--mono);color:var(--light);white-space:nowrap}
+.esc .e-s{text-align:right;font-weight:600;color:var(--text);white-space:nowrap}
+.taula-scroll{overflow-x:auto}
+
+/* ── El resultat ───────────────────────────────────────────────────────── */
+#result{display:none}
+.prop{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem}
+.tot{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 14px 14px 0;padding:1.2rem 1.4rem;margin:1.2rem 0}
+.tot .t-l{font-family:var(--mono);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+.tot .t-v{font-size:1.7rem;font-weight:700;margin-top:.2rem;line-height:1.2}
+.tot .t-d{font-size:.82rem;color:var(--muted);margin-top:.45rem;line-height:1.55}
+.sec{margin-top:1.5rem}
+.sec h3{font-size:1rem;margin:0 0 .6rem}
+.lin{list-style:none;padding:0;margin:0}
+.lin li{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.lin li span:last-child{font-family:var(--mono);font-size:.8rem;color:var(--light);white-space:nowrap}
+.lin li.mida span:last-child{color:var(--orange)}
+.falta{background:var(--bg);border:1px dashed var(--border);border-radius:12px;padding:1rem 1.2rem;margin-top:1.2rem;font-size:.88rem;color:var(--light)}
+.falta ul{margin:.5rem 0 0;padding-left:1.1rem}
+.falta li{margin-bottom:.3rem}
+.send-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem}
+.priv{font-size:.82rem;color:var(--muted);margin-top:1.2rem;line-height:1.6}
+footer{padding:2.4rem 1.2rem 3rem;text-align:center;color:var(--muted);font-size:.83rem;border-top:1px solid rgba(255,255,255,.06)}
+footer a{color:var(--light)}
+</style>
+</head>
+<body>
+
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html" aria-current="page"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+<header>
+<h1>Demana pressupost</h1>
+<p>Tria el que t'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: la forquilla de cada paquet, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l'enviïs.</strong></p>
+</header>
+
+<main class="wrap">
+
+<div class="prog" id="prog" aria-hidden="true">
+<div class="prog-s on"></div><div class="prog-s"></div><div class="prog-s"></div><div class="prog-s"></div>
+</div>
+
+<form id="pForm" autocomplete="on">
+
+<!-- ── Pas 1 · Qui ets ── (bloc compartit amb el diagnòstic) ── -->
+<section class="step" id="s1">
+<h2>1 · Qui ets</h2>
+<p class="sub">Per saber amb qui parlem i com adreçar-nos-hi. Si ja has fet el diagnòstic, això ja hauria de venir omplert.</p>
+<!--FORM-QUI-->
+<div class="grid2">
+<div class="f"><label for="nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio">Direcció general o gerència</option><option value="persones">Direcció de persones o RRHH</option><option value="innovacio">Innovació, estratègia o projectes</option><option value="organitzacio">Organització, processos o qualitat</option><option value="tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic">Càrrec electe o de confiança</option><option value="coordinacio">Coordinació d'equip o de programa</option><option value="altre">Una altra cosa</option></select></div>
+</div>
+<div class="grid2">
+<div class="f"><label for="mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+</div>
+<div class="f"><label for="carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<!--/FORM-QUI-->
+<div class="err" id="e1">Cal com a mínim el nom i un correu vàlid.</div>
+<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2">Següent →</button></div>
+</section>
+
+<!-- ── Pas 2 · D'on véns ── (bloc compartit amb el diagnòstic) ── -->
+<section class="step" id="s2" hidden>
+<h2>2 · D'on véns</h2>
+<p class="sub">El tipus d'organització canvia què us podem oferir i — sobretot — d'on poden sortir els diners.</p>
+<!--FORM-ORG-->
+<div class="f">
+<label>Tipus d'organització *</label>
+<div class="opts" id="orgType">
+<button type="button" class="opt" data-v="ajuntament" data-sector="public" style="--c:var(--indigo)"><span class="o-t">🏛 Ajuntament</span><span class="o-d">Regidoria, àrea tècnica o servei municipal</span></button>
+<button type="button" class="opt" data-v="comarcal" data-sector="public" style="--c:var(--indigo)"><span class="o-t">🗺 Consell comarcal</span><span class="o-d">O mancomunitat de municipis</span></button>
+<button type="button" class="opt" data-v="entitat" data-sector="public" style="--c:var(--green)"><span class="o-t">🤝 Entitat o associació</span><span class="o-d">AVV, ateneu, casal, banc de temps</span></button>
+<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🚀 Cooperativa o empresa</span><span class="o-d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="grup" data-sector="public" style="--c:var(--blue)"><span class="o-t">🌱 Grup promotor</span><span class="o-d">Encara sense forma jurídica</span></button>
+<button type="button" class="opt" data-v="acompanyament" data-sector="privat" style="--c:var(--purple)"><span class="o-t">🎓 Entitat d'acompanyament</span><span class="o-d">Ateneu Cooperatiu, consultoria ESS</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="particular" data-sector="tots" style="--c:var(--muted)"><span class="o-t">👤 A títol personal</span><span class="o-d">Professional o persona interessada</span></button>
+</div>
+</div>
+<div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="grid2">
+<div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
+</div>
+<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
+<!--/FORM-ORG-->
+<div class="err" id="e2">Tria el tipus d'organització i escriu el municipi.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-go="3">Següent →</button></div>
+</section>
+
+<!-- ── Pas 3 · Què vols ── -->
+<section class="step" id="s3" hidden>
+<h2>3 · Què vols</h2>
+<p class="sub">Marca'n els que t'interessin. Es poden combinar, i sovint el que en surt és millor que un de sol: el mateix mètode —mirar qui sosté què amb el <a href="vna.html">mapa de valor</a>, i després fer-ho passar— serveix per a un equip d'empresa, per a un poble o per a una xarxa d'entitats. El que canvia és la forma, no el fons.</p>
+<div class="pq-filtre" role="group" aria-label="Filtra per sector">
+<button type="button" class="pq-f on" data-sec="tot">Tot</button>
+<button type="button" class="pq-f" data-sec="privat">Empreses i cooperatives</button>
+<button type="button" class="pq-f" data-sec="public">Administració i entitats</button>
+</div>
+<!--FORM-PAQUETS-->
+<h4 class="pq-fam">🕸️ Consultoria</h4>
+<div class="pq-g">
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="diagnostic-teixit" data-min="1500" data-max="3000"><span class="pq-n">Diagnòstic del teixit local</span><span class="pq-p">1.500–3.000 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="mapa-organitzacio" data-min="2500" data-max="4500"><span class="pq-n">Mapa de valor d'una organització</span><span class="pq-p">2.500–4.500 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="mapa-comarcal" data-min="3500" data-max="6000"><span class="pq-n">Mapa comarcal i assemblea federativa</span><span class="pq-p">3.500–6.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="impacte" data-min="600" data-max="1500"><span class="pq-n">Mesura d'impacte i justificació</span><span class="pq-p">600–1.500 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="persones-cultura" data-min="1800" data-max="3200"><span class="pq-n">Diagnòstic de persones i cultura</span><span class="pq-p">1.800–3.200 €</span></label>
+</div>
+<h4 class="pq-fam">🎓 Formació</h4>
+<div class="pq-g">
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="gestor" data-min="1200" data-max="2000"><span class="pq-n">Programa de Gestor/a</span><span class="pq-p">1.200–2.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="equip-gestor" data-min="4500" data-max="7000"><span class="pq-n">Programa d'equip gestor</span><span class="pq-p">4.500–7.000 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="comunitats-practica" data-min="3000" data-max="5500"><span class="pq-n">Comunitats de pràctica</span><span class="pq-p">3.000–5.500 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="formacio-equips" data-min="1200" data-max="2800"><span class="pq-n">Formació d'equips</span><span class="pq-p">1.200–2.800 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="escola" data-min="1800" data-max="3200"><span class="pq-n">La Fàbrica de Superherois</span><span class="pq-p">1.800–3.200 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="formar-formadors" data-min="2000" data-max="3500"><span class="pq-n">Formació de formadors</span><span class="pq-p">2.000–3.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="mentoria-directiva" data-min="3500" data-max="9000"><span class="pq-n">Mentoria per a equips directius</span><span class="pq-p">3.500–9.000 €</span></label>
+</div>
+<h4 class="pq-fam">🎪 Producció i dinamització</h4>
+<div class="pq-g">
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="comu-diada" data-min="2200" data-max="4500"><span class="pq-n">Comú-diada</span><span class="pq-p">2.200–4.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fent-pinya" data-mida="1"><span class="pq-n">Taller de castells «Fent Pinya»</span><span class="pq-p">a mida</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="demos" data-mida="1"><span class="pq-n">Demostració castellera</span><span class="pq-p">a mida</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="produccio" data-min="3000" data-max="9000"><span class="pq-n">Producció d'esdeveniments</span><span class="pq-p">3.000–9.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="posar-en-marxa" data-min="2400" data-max="5400"><span class="pq-n">Posada en marxa d'una dinàmica</span><span class="pq-p">2.400–5.400 €</span></label>
+</div>
+<h4 class="pq-fam">⚙️ Digital i IA</h4>
+<div class="pq-g">
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fluxos-ia" data-min="1800" data-max="4500"><span class="pq-n">Fluxos amb IA · consultoria i formació</span><span class="pq-p">1.800–4.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="web-ia" data-min="2500" data-max="8000"><span class="pq-n">Web o eina feta amb IA</span><span class="pq-p">2.500–8.000 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="transmedia" data-min="4000" data-max="12000"><span class="pq-n">Projecte transmèdia</span><span class="pq-p">4.000–12.000 €</span></label>
+</div>
+<h4 class="pq-fam">🖥️ Al voltant del SOS</h4>
+<div class="pq-g">
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="implantacio" data-min="800" data-max="2500"><span class="pq-n">Implantació i suport</span><span class="pq-p">800–2.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="ia-amb-frens" data-min="600" data-max="1500"><span class="pq-n">IA amb frens · sessió de viabilitat</span><span class="pq-p">600–1.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="contractes" data-min="1200" data-max="2500"><span class="pq-n">Contractes intel·ligents · estudi de viabilitat</span><span class="pq-p">1.200–2.500 €</span></label>
+</div>
+<!--/FORM-PAQUETS-->
+<div class="err" id="e3">Marca com a mínim un paquet.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="2">← Enrere</button><button type="button" class="btn btn-primary" data-go="4">Següent →</button></div>
+</section>
+
+<!-- ── Pas 4 · Com i quan ── -->
+<section class="step" id="s4" hidden>
+<h2>4 · Com i quan</h2>
+<p class="sub">Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.</p>
+
+<div class="f"><label for="repte">Què voleu resoldre, en poques paraules</label><textarea id="repte" name="repte" placeholder="p.ex. L'equip directiu ha crescut de 6 a 14 persones en dos anys i les decisions s'encallen. Volem entendre per què abans de reorganitzar res."></textarea></div>
+
+<div class="grid2">
+<div class="f"><label for="termini">Quan</label>
+<select id="termini" name="termini">
+<option value="explorant">Estem explorant, sense presses</option>
+<option value="curs" selected>Aquest curs o semestre</option>
+<option value="data">Tenim una data concreta</option>
+</select></div>
+<div class="f"><label for="diners">D'on sortirien els diners</label>
+<select id="diners" name="diners">
+<option value="propi" selected>Pressupost propi</option>
+<option value="partida">Partida ja assignada</option>
+<option value="subvencio">D'una subvenció que hem de demanar</option>
+<option value="perveure">Encara per veure</option>
+</select></div>
+</div>
+
+<h3 style="font-size:.98rem;margin:1.6rem 0 .4rem">Si ho contracteu per hores</h3>
+<p class="sub" style="margin-bottom:.6rem">Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.</p>
+<div class="taula-scroll">
+<table class="esc" id="escala">
+<thead><tr><th>Nivell</th><th>Preu hora</th><th>Hores</th><th style="text-align:right">Subtotal</th></tr></thead>
+<tbody id="escBody"></tbody>
+</table>
+</div>
+
+<!--FORM-MIDA-->
+<div class="grid2">
+<div class="f"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Per al taller «Fent Pinya». Marca la diferència més gran del pressupost.</div></div>
+<div class="f"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
+<option value="">— No en demano —</option>
+<option value="4">4 pisos</option>
+<option value="5">5 pisos</option>
+<option value="6">6 pisos</option>
+</select><div class="hint">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
+</div>
+<div class="f"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
+<!--/FORM-MIDA-->
+
+<div class="nav-btns"><button type="button" class="btn" data-go="3">← Enrere</button><button type="button" class="btn btn-primary" id="doProp">Veure la proposta →</button></div>
+</section>
+
+</form>
+
+<!-- ── El resultat ── -->
+<div id="result">
+<div class="prop">
+<h2 id="rTitle" style="margin-top:0">Proposta esborrany</h2>
+<p id="rLead" style="color:var(--light);margin:.3rem 0 0;font-size:.94rem"></p>
+
+<div class="tot">
+<div class="t-l">Total orientatiu · sense IVA</div>
+<div class="t-v" id="rTotal"></div>
+<div class="t-d" id="rTotalD"></div>
+</div>
+
+<div class="sec"><h3>El que has triat</h3><ul class="lin" id="rLin"></ul></div>
+<div class="sec" id="rHoresBox" hidden><h3>Contractació per hores</h3><ul class="lin" id="rHores"></ul></div>
+<div class="sec"><h3>Com s'ha calculat</h3><p id="rMetode" style="font-size:.88rem;color:var(--muted);line-height:1.65"></p></div>
+
+<div class="falta">
+<strong>Què falta per tancar-ho</strong>
+<ul id="rFalta"></ul>
+</div>
+
+<div class="send-btns">
+<a class="btn btn-primary" id="bSend" href="#">✉ Envia'ns la petició</a>
+<button type="button" class="btn" id="bCopy">📋 Copia-la</button>
+<button type="button" class="btn" id="bJson">⬇ Descarrega-la (JSON)</button>
+<button type="button" class="btn" id="bAgain">↺ Torna-hi</button>
+</div>
+
+<p class="priv">🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d'aquí fins que tu premis «Envia'ns la petició». No hi ha analítica ni seguiment en aquesta pàgina.</p>
+</div>
+</div>
+
+</main>
+
+<footer>
+<p>SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnòstic</a> · <a href="../index.html#cost">El mapa de cost</a></p>
+</footer>
+
+<script type="module">
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const _U='asolache',_D='mac'+'.'+'com';
+const mailAddr=()=>_U+'@'+_D;
+
+/*FORM-DADES*/
+// Generat per SOS/tools/build-formularis.js — no ho editis a mà.
+const ORG_SECTOR={'ajuntament':'public','comarcal':'public','entitat':'public','cooperativa':'privat','grup':'public','acompanyament':'privat','fundacio':'public','particular':'tots'};
+const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció de persones o RRHH','innovacio':'Innovació, estratègia o projectes','organitzacio':'Organització, processos o qualitat','tecnic':'Tècnic/a de participació, promoció o serveis','politic':'Càrrec electe o de confiança','coordinacio':'Coordinació d\'equip o de programa','altre':'Una altra cosa'};
+/*/FORM-DADES*/
+
+/*FORM-ESCALA*/
+// Generat per SOS/tools/build-formularis.js des del catàleg — no ho editis a mà.
+const NIVELLS=[{id:'N1',nom:'Practicant',hora:35},{id:'N2',nom:'Gestor/a',hora:55},{id:'N3',nom:'Mentor/a',hora:80}];
+const PAQ_NOM={'diagnostic-teixit':'Diagnòstic del teixit local','mapa-organitzacio':'Mapa de valor d\'una organització','mapa-comarcal':'Mapa comarcal i assemblea federativa','impacte':'Mesura d\'impacte i justificació','persones-cultura':'Diagnòstic de persones i cultura','gestor':'Programa de Gestor/a','equip-gestor':'Programa d\'equip gestor','comunitats-practica':'Comunitats de pràctica','formacio-equips':'Formació d\'equips','escola':'La Fàbrica de Superherois','formar-formadors':'Formació de formadors','mentoria-directiva':'Mentoria per a equips directius','comu-diada':'Comú-diada','fent-pinya':'Taller de castells «Fent Pinya»','demos':'Demostració castellera','produccio':'Producció d\'esdeveniments','posar-en-marxa':'Posada en marxa d\'una dinàmica','fluxos-ia':'Fluxos amb IA · consultoria i formació','web-ia':'Web o eina feta amb IA','transmedia':'Projecte transmèdia','implantacio':'Implantació i suport','ia-amb-frens':'IA amb frens · sessió de viabilitat','contractes':'Contractes intel·ligents · estudi de viabilitat'};
+/*/FORM-ESCALA*/
+
+const st={org:''};
+const eur=n=>n.toLocaleString('ca-ES')+' €';
+const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
+
+/* ── El pont amb el diagnòstic ────────────────────────────────────────────
+   Els dos formularis comparteixen els dos primers blocs, i per això el segon
+   no ha de tornar a preguntar el que el primer ja sap. Viu al navegador i no
+   surt d'aquí. Si el navegador no ho deixa llegir —finestra privada, dades
+   bloquejades—, el formulari comença en blanc i prou. */
+const PONT='tt.form.qui';
+function desaPont(){
+  try{ localStorage.setItem(PONT, JSON.stringify({
+    nom:v('nom'), rol:v('rol'), carrec:v('carrec'), mail:v('mail'), tel:v('tel'),
+    org:st.org, orgNom:v('orgNom'), municipi:v('municipi'), comarca:v('comarca'), poblacio:v('poblacio')
+  })); }catch(e){}
+}
+function llegeixPont(){
+  let d=null; try{ d=JSON.parse(localStorage.getItem(PONT)||'null'); }catch(e){}
+  if(!d)return false;
+  ['nom','carrec','mail','tel','orgNom','municipi','comarca','poblacio'].forEach(k=>{
+    const el=$('#'+k); if(el&&d[k])el.value=d[k];
+  });
+  if(d.rol&&$('#rol'))$('#rol').value=d.rol;
+  if(d.org){ st.org=d.org; $$('#orgType .opt').forEach(x=>x.classList.toggle('sel',x.dataset.v===d.org)); }
+  return !!(d.nom||d.municipi);
+}
+
+/* ── Selecció del tipus d'organització ── */
+$$('#orgType .opt').forEach(b=>b.onclick=()=>{
+  st.org=b.dataset.v;
+  $$('#orgType .opt').forEach(x=>x.classList.toggle('sel',x===b));
+  filtraPaquets(ORG_SECTOR[st.org]==='tots'?'tot':(ORG_SECTOR[st.org]||'tot'));
+});
+
+/* ── El filtre de paquets ─────────────────────────────────────────────────
+   Es posa sol segons el tipus d'organització que has triat, i es pot desfer:
+   endevinar el sector estalvia llegir vint fitxes, però decidir per l'altre
+   quines pot comprar seria una altra cosa. */
+function filtraPaquets(sec){
+  $$('.pq').forEach(l=>{
+    l.hidden=!(sec==='tot'||l.dataset.sector===sec||l.dataset.sector==='tots');
+    if(l.hidden){const c=l.querySelector('input');if(c)c.checked=false;}
+  });
+  $$('.pq-fam').forEach(h=>{
+    const g=h.nextElementSibling;
+    if(g&&g.classList.contains('pq-g'))h.hidden=!g.querySelector('.pq:not([hidden])');
+  });
+  $$('.pq-f').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
+}
+$$('.pq-f').forEach(b=>b.onclick=()=>filtraPaquets(b.dataset.sec));
+
+/* ── L'escala per hores ── */
+NIVELLS.forEach(n=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td><strong>'+n.id+'</strong> · '+n.nom+'</td>'+
+    '<td class="e-h">'+n.hora+' €/h</td>'+
+    '<td><input type="number" min="0" step="1" value="0" data-niv="'+n.id+'" data-hora="'+n.hora+'"></td>'+
+    '<td class="e-s" data-sub="'+n.id+'">0 €</td>';
+  $('#escBody').appendChild(tr);
+});
+function totalHores(){
+  let t=0;
+  $$('#escBody input').forEach(i=>{
+    const h=Math.max(0,Number(i.value)||0), s=h*Number(i.dataset.hora);
+    t+=s;
+    $('[data-sub="'+i.dataset.niv+'"]').textContent=eur(s);
+  });
+  return t;
+}
+$('#escBody').addEventListener('input',totalHores);
+
+/* ── Passos ── */
+let pas=1;
+const showStep=n=>{
+  pas=n;
+  [1,2,3,4].forEach(i=>{const s=$('#s'+i);if(s)s.hidden=i!==n;});
+  $$('.prog-s').forEach((s,i)=>s.classList.toggle('on',i<n));
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+const validate=n=>{
+  if(n===1){
+    const ok=v('nom').length>1&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('mail'));
+    $('#e1').classList.toggle('on',!ok); return ok;
+  }
+  if(n===2){ const ok=!!st.org&&v('municipi').length>1; $('#e2').classList.toggle('on',!ok); return ok; }
+  if(n===3){ const ok=tries().length>0; $('#e3').classList.toggle('on',!ok); return ok; }
+  return true;
+};
+$$('[data-go]').forEach(b=>b.onclick=()=>{
+  const to=Number(b.dataset.go);
+  if(to>pas&&!validate(pas))return;
+  showStep(to);
+});
+
+const tries=()=>$$('input[name="paquet"]:checked').map(c=>({
+  id:c.value, nom:PAQ_NOM[c.value]||c.value,
+  mida:c.dataset.mida==='1',
+  min:Number(c.dataset.min||0), max:Number(c.dataset.max||0)
+}));
+
+/* ── La proposta ──────────────────────────────────────────────────────────
+   No inventa cap xifra. Suma les forquilles publicades del que has triat i
+   deixa fora, dites pel seu nom, les que no en tenen: aquestes es pressuposten
+   amb el mapa de cost i el desglossament arriba a la proposta de debò.
+
+   Un total únic seria mentida i una forquilla que ho digui, no: la banda baixa
+   és el que costa si tot cau al mínim, i qui llegeix ha de poder veure les
+   dues. */
+function proposta(){
+  const sel=tries(), horesT=totalHores();
+  const min=sel.filter(p=>!p.mida).reduce((a,p)=>a+p.min,0)+horesT;
+  const max=sel.filter(p=>!p.mida).reduce((a,p)=>a+p.max,0)+horesT;
+  const mides=sel.filter(p=>p.mida);
+  return {sel,mides,min,max,horesT};
+}
+
+function pinta(P){
+  $('#rTotal').textContent = P.min===P.max ? eur(P.min) : 'De '+P.min.toLocaleString('ca-ES')+' a '+eur(P.max);
+  $('#rTotalD').textContent = P.mides.length
+    ? 'No hi entren '+P.mides.map(p=>'«'+p.nom+'»').join(' i ')+': es pressuposten amb el mapa de cost i el desglossament va a la proposta.'
+    : 'Sense IVA. És una forquilla orientativa: la proposta final la tanca una conversa.';
+
+  $('#rLin').innerHTML='';
+  P.sel.forEach(p=>{
+    const li=document.createElement('li');
+    if(p.mida)li.className='mida';
+    li.innerHTML='<span>'+p.nom+'</span><span>'+
+      (p.mida?'a mida':(p.min===p.max?eur(p.min):p.min.toLocaleString('ca-ES')+'–'+eur(p.max)))+'</span>';
+    $('#rLin').appendChild(li);
+  });
+
+  $('#rHoresBox').hidden = P.horesT<=0;
+  $('#rHores').innerHTML='';
+  if(P.horesT>0){
+    $$('#escBody input').forEach(i=>{
+      const h=Math.max(0,Number(i.value)||0); if(!h)return;
+      const n=NIVELLS.find(x=>x.id===i.dataset.niv);
+      const li=document.createElement('li');
+      li.innerHTML='<span>'+n.id+' · '+n.nom+' — '+h+' h × '+n.hora+' €/h</span><span>'+eur(h*n.hora)+'</span>';
+      $('#rHores').appendChild(li);
+    });
+  }
+
+  $('#rMetode').textContent='Les hores surten dels fluxos del mapa de valor, cada rol es cobra al preu del seu nivell i les despeses directes van al seu preu de factura, sense marge a sobre. El que separa un nivell del següent és evidència registrada i verificable, no antiguitat.';
+
+  const F=[];
+  if(P.mides.length)F.push('Dimensionar '+P.mides.map(p=>'«'+p.nom+'»').join(' i ')+' amb les dades que has donat, i tornar-t\'ho desglossat.');
+  F.push('Una conversa de 45 minuts per ajustar l\'abast: sovint hi sobra alguna cosa.');
+  if($('#diners').value==='subvencio')F.push('Mirar el calendari de la convocatòria: la data de justificació canvia el calendari de la feina.');
+  if($('#diners').value==='perveure')F.push('Trobar la partida o la convocatòria que ho pot pagar. Sovint ja existeix i no s\'hi havia mirat.');
+  if(v('termini')==='data'||$('#termini').value==='data')F.push('Confirmar la data i reservar equip.');
+  F.push('Condicions de reserva i cancel·lació per escrit abans de signar res.');
+  $('#rFalta').innerHTML=F.map(t=>'<li>'+t+'</li>').join('');
+
+  const q=v('orgNom')||v('municipi')||'';
+  $('#rLead').textContent='Per a '+(q||'la teva organització')+' · '+P.sel.length+' paquet'+(P.sel.length===1?'':'s')+' · generada el '+new Date().toLocaleDateString('ca');
+}
+
+function resum(P){
+  const L=[];
+  L.push('PETICIÓ DE PRESSUPOST · TEAMTOWERS HUMÀ');
+  L.push('Generada el '+new Date().toLocaleString('ca'));
+  L.push('');
+  L.push('── QUI ──');
+  const rolTxt=ROL_NOM[v('rol')]||'';
+  L.push('Nom: '+v('nom')+(v('carrec')?' ('+v('carrec')+')':(rolTxt?' ('+rolTxt+')':'')));
+  if(rolTxt&&v('carrec'))L.push('Paper: '+rolTxt);
+  L.push('Correu: '+v('mail')+(v('tel')?' · Tel: '+v('tel'):''));
+  L.push('');
+  L.push('── D\'ON ──');
+  L.push('Tipus: '+st.org+' ['+(ORG_SECTOR[st.org]||'')+']');
+  if(v('orgNom'))L.push('Organització: '+v('orgNom'));
+  L.push('Territori: '+v('municipi')+(v('comarca')?' ('+v('comarca')+')':''));
+  if(v('poblacio'))L.push('Població: '+v('poblacio'));
+  L.push('');
+  L.push('── QUÈ ──');
+  P.sel.forEach(p=>L.push('· '+p.nom+' — '+(p.mida?'a mida (mapa de cost)':
+    (p.min===p.max?eur(p.min):'de '+p.min.toLocaleString('ca-ES')+' a '+eur(p.max)))));
+  if(P.horesT>0){
+    L.push('');
+    L.push('── PER HORES ──');
+    $$('#escBody input').forEach(i=>{
+      const h=Math.max(0,Number(i.value)||0); if(!h)return;
+      const n=NIVELLS.find(x=>x.id===i.dataset.niv);
+      L.push('· '+n.id+' '+n.nom+': '+h+' h × '+n.hora+' €/h = '+eur(h*n.hora));
+    });
+  }
+  L.push('');
+  L.push('TOTAL ORIENTATIU (sense IVA): '+(P.min===P.max?eur(P.min):'de '+P.min.toLocaleString('ca-ES')+' a '+eur(P.max)));
+  if(P.mides.length)L.push('No hi entra: '+P.mides.map(p=>p.nom).join(', ')+' — es pressuposten amb el mapa de cost.');
+  L.push('');
+  L.push('── CONTEXT ──');
+  if(v('repte'))L.push('Repte: '+v('repte'));
+  L.push('Termini: '+$('#termini').value+' · Diners: '+$('#diners').value);
+  if(v('participants'))L.push('Participants previstos: '+v('participants'));
+  if($('#alcada').value)L.push('Demostració: '+$('#alcada').value+' pisos');
+  if(v('lloc'))L.push('Lloc: '+v('lloc'));
+  L.push('');
+  L.push('Generada a teamtowershuma.com/SOS/pressupost.html — proposta esborrany, no vinculant.');
+  return L.join('\n');
+}
+
+let actual=null;
+$('#doProp').onclick=()=>{
+  if(!validate(1)){showStep(1);return;}
+  if(!validate(2)){showStep(2);return;}
+  if(!validate(3)){showStep(3);return;}
+  desaPont();
+  actual=proposta();
+  pinta(actual);
+  $('#pForm').style.display='none';
+  $('#prog').style.display='none';
+  $('#result').style.display='block';
+  const subj='Petició de pressupost · '+(v('orgNom')||v('municipi')||v('nom'));
+  $('#bSend').href='mailto:'+mailAddr()+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(resum(actual));
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+$('#bCopy').onclick=async()=>{
+  try{ await navigator.clipboard.writeText(resum(actual)); $('#bCopy').textContent='✓ Copiada'; }
+  catch(e){ $('#bCopy').textContent='No s\'ha pogut copiar'; }
+  setTimeout(()=>{$('#bCopy').textContent='📋 Copia-la';},2200);
+};
+$('#bJson').onclick=()=>{
+  const d={
+    generat:new Date().toISOString(),
+    persona:{nom:v('nom'),rol:v('rol'),carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
+    organitzacio:{tipus:st.org,sector:ORG_SECTOR[st.org]||'',nom:v('orgNom'),municipi:v('municipi'),comarca:v('comarca'),poblacio:v('poblacio')?Number(v('poblacio')):null},
+    paquets:actual.sel.map(p=>({id:p.id,nom:p.nom,mida:p.mida,min:p.min||null,max:p.max||null})),
+    hores:$$('#escBody input').map(i=>({nivell:i.dataset.niv,hores:Number(i.value)||0,preuHora:Number(i.dataset.hora)})).filter(x=>x.hores>0),
+    total:{min:actual.min,max:actual.max,iva:false},
+    context:{repte:v('repte'),termini:$('#termini').value,diners:$('#diners').value,
+      participants:v('participants')?Number(v('participants')):null,alcada:$('#alcada').value||null,lloc:v('lloc')}
+  };
+  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='pressupost-teamtowers-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+};
+$('#bAgain').onclick=()=>{
+  $('#result').style.display='none';
+  $('#pForm').style.display='';
+  $('#prog').style.display='';
+  showStep(1);
+};
+
+/* Arrencada: si el diagnòstic ja ens ha dit qui ets, se salta el que ja saps. */
+if(llegeixPont()&&validate(1)&&validate(2)){ showStep(3); }
+else { $('#e1').classList.remove('on'); $('#e2').classList.remove('on'); showStep(1); }
+totalHores();
+</script>
+
+</body>
+</html>

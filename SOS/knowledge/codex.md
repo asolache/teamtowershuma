@@ -704,6 +704,85 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 143 — Una garantia sense la seva condició escrita no és una garantia
+
+El programa de mentoria per a organitzacions es ven amb un compromís: si al
+final del sisè mes una evidència no hi és, les sessions que calguin per tancar-la
+no es tornen a facturar. És el que el fa diferent d'un curs, i és el que el fa
+venible.
+
+També és el lloc més fàcil per mentir. Una promesa d'aquest tipus té dues vores
+que gairebé mai s'escriuen, i totes dues s'han d'escriure abans de cobrar:
+
+- **Fins on arriba.** No es pot prometre que una decisió sigui bona ni que una
+  persona canviï. El que es compromet és la nostra part —que la competència quedi
+  desenvolupada i demostrada— i no el resultat de negoci de l'altre. Vendre-ho
+  com si fos el segon és el que fa que després ningú es refiï de cap consultora.
+- **On decau.** La condició és que la persona vingui a les sessions i porti
+  l'encàrrec fet. Si no passa, el compromís s'acaba. Una garantia sense condició
+  és una que s'invocarà el dia que algú no hagi vingut mai, i llavors es
+  discutirà de mala fe per les dues bandes.
+
+La regla general: **quan es prometi alguna cosa amb un cost al davant, la
+promesa i la seva condició van al mateix paràgraf.** Si la condició queda per a
+un annex, o per a la conversa, la promesa és publicitat. I si no es troba una
+condició que es pugui escriure, el que hi havia no era una garantia.
+
+## Veda 142 — Un filtre que amaga per defecte és una pàgina que amaga oferta
+
+El catàleg de la portada té un filtre per sector. La manera fàcil de fer-lo és
+que arrenqui amb un sector triat i vagi mostrant el que toca; i és la manera
+equivocada per un motiu que no es veu mai des de dins.
+
+Sense JavaScript —una extensió, una connexió a mitges, un cercador indexant— el
+que es queda és l'estat inicial de l'HTML. Si aquest estat amaga la meitat dels
+paquets, la pàgina n'ha deixat de vendre la meitat i **no ho dirà cap error**.
+El mateix val per a qualsevol cosa que un script «millora»: l'HTML ha de ser
+complet i el script ha de restar, no sumar.
+
+Així que el filtre arrenca amb tot visible, els botons no amaguen res fins que
+algú els prem, i les portes del hero que el preseleccionen són enllaços a
+`#cataleg` que funcionen igual si el script no corre mai.
+
+I una segona cosa que s'aprèn en fer-ho: **si s'amaguen fitxes, s'ha d'amagar
+també la família que es queda buida.** Un títol amb una graella buida a sota no
+es llegeix com un filtre; es llegeix com una pàgina trencada.
+
+## Veda 141 — El que decideix un preu es pregunta, no s'endevina
+
+El formulari de pressupost podria haver calculat un import per al taller de
+castells: hi ha trams per nombre de participants i seria fàcil. No ho fa, i
+val la pena dir per què, perquè la temptació tornarà.
+
+El que costa un taller depèn de **quanta gent hi ha, quanta colla cal moure i a
+quina distància**. Les tres coses les sap el client i no la pàgina. Un formulari
+que en calculés un total hauria d'endevinar-les, i el que en sortiria és una
+xifra amb aparença de càlcul que després s'ha de desdir — que és pitjor que no
+donar-ne cap, perquè el client ja l'ha portada a una junta.
+
+El que sí que ha de fer el formulari és **preguntar-les** i dir clarament que
+aquell paquet es pressuposta a part. La proposta esborrany en surt honesta: suma
+el que té forquilla publicada, deixa fora el que no en té dient-ho pel seu nom,
+i explica el mètode amb què es tancarà.
+
+## Veda 140 — «A mida» sense el mètode és «consulta'ns»
+
+Deixar de publicar un preu és una decisió legítima quan el que costa una cosa
+depèn de coses que la pàgina no pot saber. El que no és legítim és que això
+acabi sent el «consulta'ns» de sempre, que obliga a trucar per saber si t'ho
+pots ni plantejar i que fa que la meitat dels que trucarien no ho facin.
+
+La sortida és que **cada paquet sense xifra porti al mètode amb què es
+calcula**, i que el mètode sigui a la pàgina sencer: els passos, l'escala de
+preus hora i què hi entra com a despesa directa. Amb això, qui llegeix pot fer
+el càlcul pel seu compte abans de trucar; sense això, el preu només el sap qui
+truca, i qui no truca no el sabrà mai.
+
+Per això la guarda de la portada exigeix les dues coses alhora: que cap fitxa
+«a mida» es quedi muda, i que la secció on porten existeixi de debò amb els seus
+passos i els seus nivells. Un enllaç a una àncora que no hi és no dona cap
+error: baixa la pàgina fins al final i qui hi clica es pensa que s'ha equivocat.
+
 ## Veda 139 — Una forquilla sense el que la mou és un rang, no un preu
 
 El catàleg va néixer amb un preu tancat per paquet, i era el que semblava més

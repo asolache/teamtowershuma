@@ -63,8 +63,31 @@ const FAMILIES = [
   { id: 'dinamitzacio', ic: '🎪',
     nom: 'Producció i dinamització', nomEs: 'Producción y dinamización',
     sub: 'Que passi de debò, i que el dilluns segueixi passant',
-    subEs: 'Que pase de verdad, y que el lunes siga pasando' }
+    subEs: 'Que pase de verdad, y que el lunes siga pasando' },
+  /* La quarta família no és una moda: és on cauen les dues coses que abans no
+     tenien lloc al catàleg —automatitzar fluxos i construir peces— i que es
+     venen a empresa i a administració exactament igual. */
+  { id: 'digital', ic: '⚙️',
+    nom: 'Digital i IA', nomEs: 'Digital e IA',
+    sub: 'Automatitzar el que es repeteix, posar valor al que no es veu',
+    subEs: 'Automatizar lo que se repite, poner valor a lo que no se ve' }
 ];
+
+/* ══ EL SECTOR ════════════════════════════════════════════════════════════
+   El catàleg parla a dues cases que compren de manera diferent: una empresa
+   decideix i signa, i una administració ha de poder-ho encaixar en una
+   partida i sota un sostre de contractació. Fins ara la portada només parlava
+   a la segona —«per a ajuntaments, consells comarcals i entitats» era la
+   primera línia de la pàgina— i la meitat de l'oferta, la que té vint anys de
+   quilòmetres, quedava fora del que la pàgina deia que venia.
+
+   Es declara al paquet i el filtre de la portada el llegeix de l'atribut. Sense
+   JavaScript surten tots, que és el que ha de passar. */
+const SECTORS = {
+  privat: { lbl: 'Empreses i cooperatives', lblEs: 'Empresas y cooperativas' },
+  public: { lbl: 'Administració i entitats', lblEs: 'Administración y entidades' },
+  tots:   { lbl: 'Els dos', lblEs: 'Los dos' }
+};
 
 /* ══ EL PUNT D'ADAPTACIÓ ══════════════════════════════════════════════════
    El camp que fa honesta tota la resta. Un paquet «provat» té els casos per
@@ -85,8 +108,11 @@ const PUNTS = {
    qui la diu no pot defensar. N'hi ha de tres menes en aquest catàleg i es
    diuen totes tres, perquè no valen el mateix:
 
-     · `tarifari` — surt del catàleg comercial de TeamTowers 2026, que és el
-       que es factura de debò. Aquestes no es negocien a l'aire.
+     · `mapa`     — no porta xifra publicada. El preu es dimensiona amb el mapa
+       de cost (rols, hores i nivells) i es tanca a la proposta. És el cas del
+       taller i de les demostracions: el que costen depèn de quanta gent hi ha,
+       quanta colla cal moure i on és, i publicar-ne una xifra tancada seria
+       comprometre'n una que després s'ha de desdir.
      · `negoci`   — surt de les forquilles del model de negoci
        (`SOS/knowledge/negoci/formacio-mentoria.md` §3), pensades i escrites.
      · `estimacio`— encara no s'ha facturat prou vegades per tenir tarifa.
@@ -96,10 +122,64 @@ const PUNTS = {
    paquet diu **què fa pujar o baixar dins de la seva** (`perque`) i **què
    s'endú qui la paga** (`valor`), que és l'única pregunta que decideix. */
 const FONTS = {
-  tarifari:  { lbl: 'Tarifa 2026',     lblEs: 'Tarifa 2026' },
+  mapa:      { lbl: 'Segons mapa de cost', lblEs: 'Según mapa de coste' },
   negoci:    { lbl: 'Forquilla del model', lblEs: 'Horquilla del modelo' },
   estimacio: { lbl: 'A validar',       lblEs: 'A validar' }
 };
+
+/* ══ L'ESCALA ═════════════════════════════════════════════════════════════
+   Tres nivells i un preu hora, que és com contracta una administració quan
+   contracta serveis professionals. El que els separa **no és l'antiguitat**:
+   és l'evidència que hi ha al registre del SOS, la mateixa que acredita un
+   gestor o un mentor. Un currículum diu el que un vol; el registre diu el que
+   ha passat, i qui contracta ho pot verificar sense confiar en ningú.
+
+   Per això aquesta taula i els nivells de la formació són la mateixa cosa i no
+   dues de semblants: si algú puja de nivell és perquè té les evidències, i la
+   proposta diu quina persona fa quines hores i a quin nivell.
+
+   Les xifres són **sense IVA** i són tarifa proposada per al 2026: encara no
+   s'han facturat prou vegades per dir-ne una altra cosa, i dir-ho val més que
+   la venda que es perdi. */
+const NIVELLS = [
+  { id: 'N1', nom: 'Practicant', nomEs: 'Practicante', hora: 35,
+    fa: 'Executa la feina acompanyada: recull, registra, prepara sessions i sosté el dia a dia.',
+    faEs: 'Ejecuta el trabajo acompañado: recoge, registra, prepara sesiones y sostiene el día a día.',
+    ev: 'Perfil actiu i aportacions signades al registre.',
+    evEs: 'Perfil activo y aportaciones firmadas en el registro.' },
+  { id: 'N2', nom: 'Gestor/a', nomEs: 'Gestor/a', hora: 55,
+    fa: 'Sosté un node sencer sol: facilita, mapa, governança, comptes i seguiment.',
+    faEs: 'Sostiene un nodo entero solo: facilita, mapa, gobernanza, cuentas y seguimiento.',
+    ev: 'Més de 20 h registrades i tres comunitats acompanyades, o una iniciativa liderada.',
+    evEs: 'Más de 20 h registradas y tres comunidades acompañadas, o una iniciativa liderada.' },
+  { id: 'N3', nom: 'Mentor/a', nomEs: 'Mentor/a', hora: 80,
+    fa: 'Dissenya l\'encàrrec, hi posa el criteri, decideix davant del client i forma els altres.',
+    faEs: 'Diseña el encargo, pone el criterio, decide ante el cliente y forma a los demás.',
+    ev: 'Més de 50 h, tres comunitats, dues iniciatives o una graduada, i gestors formats.',
+    evEs: 'Más de 50 h, tres comunidades, dos iniciativas o una graduada, y gestores formados.' }
+];
+
+/* Els quatre passos del mapa de cost. Es declaren aquí perquè la portada, el
+   README i la pàgina d'IA en diguin exactament el mateix: el dia que el mètode
+   canviï, canvia en un lloc. */
+const PASSOS_COST = [
+  { t: 'Es dibuixa la feina com un mapa de valor',
+    tEs: 'Se dibuja el trabajo como un mapa de valor',
+    d: 'Quins rols la fan i quins intercanvis hi ha entre ells. És el mateix mapa que us ensenyem a fer, i el mateix que us quedeu.',
+    dEs: 'Qué roles la hacen y qué intercambios hay entre ellos. Es el mismo mapa que os enseñamos a hacer, y el mismo que os quedáis.' },
+  { t: 'Cada rol porta les seves hores',
+    tEs: 'Cada rol lleva sus horas',
+    d: 'Les hores surten dels fluxos del mapa, no d\'una intuïció. Si un flux no hi és, no es cobra; si hi és, es pot discutir.',
+    dEs: 'Las horas salen de los flujos del mapa, no de una intuición. Si un flujo no está, no se cobra; si está, se puede discutir.' },
+  { t: 'Cada rol té el preu del seu nivell',
+    tEs: 'Cada rol tiene el precio de su nivel',
+    d: 'Tres nivells, i el que els separa és evidència verificable al registre. La proposta diu quina persona fa quines hores.',
+    dEs: 'Tres niveles, y lo que los separa es evidencia verificable en el registro. La propuesta dice qué persona hace qué horas.' },
+  { t: 'Les despeses directes, al seu preu de factura',
+    tEs: 'Los gastos directos, a su precio de factura',
+    d: 'Desplaçaments, materials, lloguers, músics, monitors i tercers. Sense marge amagat a sobre: si es revenen, es diu.',
+    dEs: 'Desplazamientos, materiales, alquileres, músicos, monitores y terceros. Sin margen escondido encima: si se revenden, se dice.' }
+];
 
 /* El sostre. Un ajuntament o un consell comarcal contracta fins aquí sense
    obrir un expedient llarg; per sobre, la proposta deixa de ser una decisió
@@ -119,7 +199,7 @@ const SOSTRE_PUBLIC = 5000;
 const PAQUETS = [
 
   /* ── 1 · Consultoria ─────────────────────────────────────────────────── */
-  { id: 'diagnostic-teixit', fam: 'consultoria', ve: 'S1', punt: 'adaptacio',
+  { id: 'diagnostic-teixit', sector: 'public', fam: 'consultoria', ve: 'S1', punt: 'adaptacio',
     preuMin: 1500, preuMax: 3000, font: 'negoci', publica: true, enllac: '/SOS/vna.html',
     nom: 'Diagnòstic del teixit local',
     nomEs: 'Diagnóstico del tejido local',
@@ -136,7 +216,7 @@ const PAQUETS = [
     diners: 'Catàleg de serveis de la Diputació · partida de participació ciutadana',
     dinersEs: 'Catálogo de servicios de la Diputación · partida de participación ciudadana' },
 
-  { id: 'mapa-organitzacio', fam: 'consultoria', ve: 'README', punt: 'provat',
+  { id: 'mapa-organitzacio', sector: 'privat', fam: 'consultoria', ve: 'README', punt: 'provat',
     preuMin: 2500, preuMax: 4500, font: 'estimacio', publica: false, enllac: '/SOS/vna.html',
     nom: 'Mapa de valor d\'una organització',
     nomEs: 'Mapa de valor de una organización',
@@ -153,7 +233,7 @@ const PAQUETS = [
     diners: 'Pressupost propi de millora o de formació',
     dinersEs: 'Presupuesto propio de mejora o de formación' },
 
-  { id: 'mapa-comarcal', fam: 'consultoria', ve: 'S1', punt: 'nou',
+  { id: 'mapa-comarcal', sector: 'public', fam: 'consultoria', ve: 'S1', punt: 'nou',
     preuMin: 3500, preuMax: 6000, font: 'negoci', publica: true, enllac: '/SOS/vna.html',
     nom: 'Mapa comarcal i assemblea federativa',
     nomEs: 'Mapa comarcal y asamblea federativa',
@@ -170,7 +250,7 @@ const PAQUETS = [
     diners: 'Pressupost de cooperació intermunicipal',
     dinersEs: 'Presupuesto de cooperación intermunicipal' },
 
-  { id: 'impacte', fam: 'consultoria', ve: 'S7', punt: 'nou',
+  { id: 'impacte', sector: 'public', fam: 'consultoria', ve: 'S7', punt: 'nou',
     preuMin: 600, preuMax: 1500, font: 'negoci', publica: true, enllac: '',
     nom: 'Mesura d\'impacte i justificació',
     nomEs: 'Medida de impacto y justificación',
@@ -187,7 +267,7 @@ const PAQUETS = [
     diners: 'La mateixa partida que ja finança el projecte que es justifica',
     dinersEs: 'La misma partida que ya financia el proyecto que se justifica' },
 
-  { id: 'persones-cultura', fam: 'consultoria', ve: 'README', punt: 'provat',
+  { id: 'persones-cultura', sector: 'privat', fam: 'consultoria', ve: 'README', punt: 'provat',
     preuMin: 1800, preuMax: 3200, font: 'estimacio', publica: false, enllac: '',
     nom: 'Diagnòstic de persones i cultura',
     nomEs: 'Diagnóstico de personas y cultura',
@@ -205,7 +285,7 @@ const PAQUETS = [
     dinersEs: 'Presupuesto propio de recursos humanos' },
 
   /* ── 2 · Formació ────────────────────────────────────────────────────── */
-  { id: 'gestor', fam: 'formacio', ve: 'S3', punt: 'nou',
+  { id: 'gestor', sector: 'public', fam: 'formacio', ve: 'S3', punt: 'nou',
     preuMin: 1200, preuMax: 2000, font: 'negoci', publica: true, enllac: '/SOS/formacio.html',
     nom: 'Programa de Gestor/a',
     nomEs: 'Programa de Gestor/a',
@@ -222,7 +302,7 @@ const PAQUETS = [
     diners: 'Pla de formació municipal · subvenció de Diputació',
     dinersEs: 'Plan de formación municipal · subvención de Diputación' },
 
-  { id: 'equip-gestor', fam: 'formacio', ve: 'S3', punt: 'nou',
+  { id: 'equip-gestor', sector: 'public', fam: 'formacio', ve: 'S3', punt: 'nou',
     preuMin: 4500, preuMax: 7000, font: 'negoci', publica: true, enllac: '/SOS/formacio.html',
     nom: 'Programa d\'equip gestor',
     nomEs: 'Programa de equipo gestor',
@@ -239,7 +319,7 @@ const PAQUETS = [
     diners: 'Partida de participació · Ateneus Cooperatius',
     dinersEs: 'Partida de participación · Ateneus Cooperatius' },
 
-  { id: 'comunitats-practica', fam: 'formacio', ve: 'README', punt: 'provat',
+  { id: 'comunitats-practica', sector: 'privat', fam: 'formacio', ve: 'README', punt: 'provat',
     preuMin: 3000, preuMax: 5500, font: 'estimacio', publica: false, enllac: '',
     nom: 'Comunitats de pràctica',
     nomEs: 'Comunidades de práctica',
@@ -256,7 +336,7 @@ const PAQUETS = [
     diners: 'Pressupost de formació',
     dinersEs: 'Presupuesto de formación' },
 
-  { id: 'formacio-equips', fam: 'formacio', ve: 'README', punt: 'provat',
+  { id: 'formacio-equips', sector: 'privat', fam: 'formacio', ve: 'README', punt: 'provat',
     preuMin: 1200, preuMax: 2800, font: 'estimacio', publica: false, enllac: '',
     nom: 'Formació d\'equips',
     nomEs: 'Formación de equipos',
@@ -273,7 +353,7 @@ const PAQUETS = [
     diners: 'Pressupost de formació',
     dinersEs: 'Presupuesto de formación' },
 
-  { id: 'escola', fam: 'formacio', ve: 'repo', punt: 'nou',
+  { id: 'escola', sector: 'public', fam: 'formacio', ve: 'repo', punt: 'nou',
     preuMin: 1800, preuMax: 3200, font: 'estimacio', publica: true, enllac: '/SOS/escola.html',
     nom: 'La Fàbrica de Superherois',
     nomEs: 'La Fábrica de Superhéroes',
@@ -290,7 +370,7 @@ const PAQUETS = [
     diners: 'Pla educatiu d\'entorn · regidoria d\'educació',
     dinersEs: 'Plan educativo de entorno · concejalía de educación' },
 
-  { id: 'formar-formadors', fam: 'formacio', ve: 'S5', punt: 'nou',
+  { id: 'formar-formadors', sector: 'tots', fam: 'formacio', ve: 'S5', punt: 'nou',
     preuMin: 2000, preuMax: 3500, font: 'negoci', publica: false, enllac: '/SOS/formacio.html',
     nom: 'Formació de formadors',
     nomEs: 'Formación de formadores',
@@ -307,8 +387,26 @@ const PAQUETS = [
     diners: 'Programa propi de l\'Ateneu · formació de professionals',
     dinersEs: 'Programa propio del Ateneu · formación de profesionales' },
 
+  { id: 'mentoria-directiva', sector: 'tots', fam: 'formacio', ve: 'S5', punt: 'nou',
+    preuMin: 3500, preuMax: 9000, font: 'estimacio', publica: true,
+    enllac: '/SOS/formacio.html',
+    nom: 'Mentoria per a equips directius',
+    nomEs: 'Mentoría para equipos directivos',
+    qui: 'Direcció, persones, innovació i organització · empreses, cooperatives i sector públic',
+    quiEs: 'Dirección, personas, innovación y organización · empresas, cooperativas y sector público',
+    dura: '6 mesos · sessió quinzenal d\'1 h per persona',
+    duraEs: '6 meses · sesión quincenal de 1 h por persona',
+    endus: 'De tres a sis persones amb responsabilitat d\'equip, cadascuna amb el seu itinerari, treballant sobre un encàrrec real de la casa. Cada competència tanca amb una evidència comprovable, no amb un certificat d\'assistència.',
+    endusEs: 'De tres a seis personas con responsabilidad de equipo, cada una con su itinerario, trabajando sobre un encargo real de la casa. Cada competencia cierra con una evidencia comprobable, no con un certificado de asistencia.',
+    valor: 'El que es compra no són sessions: és que unes competències concretes quedin desenvolupades i es puguin ensenyar. Si al final del programa una evidència no hi és, les sessions que calguin per tancar-la no es tornen a facturar.',
+    valorEs: 'Lo que se compra no son sesiones: es que unas competencias concretas queden desarrolladas y se puedan enseñar. Si al final del programa una evidencia no está, las sesiones que hagan falta para cerrarla no se vuelven a facturar.',
+    perque: 'Puja amb el nombre de persones i amb els itineraris diferents que s\'obren alhora; tres persones amb un mateix itinerari i sis mesos és el mínim.',
+    perqueEs: 'Sube con el número de personas y con los itinerarios distintos que se abren a la vez; tres personas con un mismo itinerario y seis meses es el mínimo.',
+    diners: 'Pla de formació · Fundae · pla de formació de l\'administració',
+    dinersEs: 'Plan de formación · Fundae · plan de formación de la administración' },
+
   /* ── 3 · Producció i dinamització ────────────────────────────────────── */
-  { id: 'comu-diada', fam: 'dinamitzacio', ve: 'repo', punt: 'nou',
+  { id: 'comu-diada', sector: 'public', fam: 'dinamitzacio', ve: 'repo', punt: 'nou',
     preuMin: 2200, preuMax: 4500, font: 'estimacio', publica: true, enllac: '',
     nom: 'Comú-diada',
     nomEs: 'Comú-diada',
@@ -325,14 +423,19 @@ const PAQUETS = [
     diners: 'Partida de festes, participació o promoció econòmica',
     dinersEs: 'Partida de fiestas, participación o promoción económica' },
 
-  /* El tarifari de debò, del catàleg comercial 2026. Aquí no hi ha forquilla
-     a negociar: hi ha trams per nombre de participants, i per això es pinten
-     tal com es facturen. Tot són preus sense IVA i per a esdeveniments a
-     menys de dues hores de Barcelona. */
-  { id: 'fent-pinya', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
-    preuMin: 1700, preuMax: 8925, font: 'tarifari', publica: true, enllac: '',
-    trams: [['10-29 persones', 1700], ['30-48', 2100], ['50-99', 3150],
-            ['100-199', 4725], ['200-399', 6300], ['+400', 8925]],
+  /* El taller i les demostracions **no publiquen preu**, i és una decisió, no
+     un descuit. El que costen depèn de tres coses que no es poden endevinar
+     des d'una pàgina —quanta gent hi ha, quanta colla cal moure i a quina
+     distància— i publicar-ne una xifra tancada vol dir una de dues: o es diu
+     alta i espanta la meitat dels que trucarien, o es diu baixa i s'ha de
+     desdir a la proposta, que és pitjor.
+
+     El que sí que es publica és **com es calcula**, que és el que qui compra
+     necessita per saber si li encaixa: rols, hores i nivells del mapa de cost,
+     més les despeses directes al seu preu de factura. La secció `#cost` de la
+     portada ho explica sencer. */
+  { id: 'fent-pinya', sector: 'tots', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
+    mida: true, font: 'mapa', publica: true, enllac: '',
     nom: 'Taller de castells «Fent Pinya»',
     nomEs: 'Taller de castells «Fent Pinya»',
     qui: 'Equips d\'empresa, plens municipals, escoles i taules comunitàries · de 10 a 1.000 persones',
@@ -343,15 +446,13 @@ const PAQUETS = [
     endusEs: 'Un dinamizador, un mínimo de cuatro monitores castellers y dos músicos, fajas de alquiler, seguro de responsabilidad civil y material didáctico. Se hace en cualquier espacio de 10×10×5 m, en castellano, catalán, inglés, alemán o francés.',
     valor: 'Un grup que ha repartit el pes de debò, perquè s\'ha aixecat un castell, i que en surt amb el vocabulari per parlar-ne l\'endemà. És el producte amb més quilòmetres de la casa: 60.000 persones des del 2005.',
     valorEs: 'Un grupo que ha repartido el peso de verdad, porque se ha levantado un castell, y que sale con el vocabulario para hablar de ello al día siguiente. Es el producto con más kilómetros de la casa: 60.000 personas desde 2005.',
-    perque: 'No es negocia: el preu el fixa el tram de participants. Els desplaçaments a més de dues hores de Barcelona es pressuposten a part.',
-    perqueEs: 'No se negocia: el precio lo fija el tramo de participantes. Los desplazamientos a más de dos horas de Barcelona se presupuestan aparte.',
+    perque: 'El pressupost surt del mapa de cost: dinamitzador, monitors castellers i músics segons el nombre de participants, més faixes, assegurança i desplaçament. S\'ensenya desglossat i sense marge amagat.',
+    perqueEs: 'El presupuesto sale del mapa de coste: dinamizador, monitores castellers y músicos según el número de participantes, más fajas, seguro y desplazamiento. Se enseña desglosado y sin margen escondido.',
     diners: 'Pressupost de formació, d\'esdeveniment o de festes',
     dinersEs: 'Presupuesto de formación, de evento o de fiestas' },
 
-  { id: 'demos', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
-    preuMin: 3300, preuMax: 6500, font: 'tarifari', publica: true, enllac: '',
-    trams: [['4 pisos · 13 castellers', 3300], ['5 pisos · 20 castellers', 4800],
-            ['6 pisos · 30 castellers', 6500]],
+  { id: 'demos', sector: 'tots', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
+    mida: true, font: 'mapa', publica: true, enllac: '',
     nom: 'Demostració castellera',
     nomEs: 'Demostración castellera',
     qui: 'Empreses, ajuntaments, festes majors i agències d\'esdeveniments',
@@ -362,12 +463,12 @@ const PAQUETS = [
     endusEs: 'Una colla profesional levantando castells de hasta seis pisos: pilares, torres y tres de seis según la altura contratada.',
     valor: 'És la peça cultural que es recorda i es comparteix. No és formació —no toca ningú de l\'equip— i per això no substitueix el taller: l\'acompanya.',
     valorEs: 'Es la pieza cultural que se recuerda y se comparte. No es formación —no toca a nadie del equipo— y por eso no sustituye al taller: lo acompaña.',
-    perque: 'El preu el fixa l\'alçada, que és el nombre de castellers que cal moure. Màxim quatre castells per actuació, per qualitat.',
-    perqueEs: 'El precio lo fija la altura, que es el número de castellers que hay que mover. Máximo cuatro castells por actuación, por calidad.',
+    perque: 'El que el mou és l\'alçada, que és quanta colla cal moure, i la distància. Màxim quatre castells per actuació, per qualitat. El pressupost es presenta desglossat: colla, coordinació, desplaçament i assegurança.',
+    perqueEs: 'Lo que lo mueve es la altura, que es cuánta colla hay que mover, y la distancia. Máximo cuatro castells por actuación, por calidad. El presupuesto se presenta desglosado: colla, coordinación, desplazamiento y seguro.',
     diners: 'Pressupost de l\'esdeveniment o de festes',
     dinersEs: 'Presupuesto del evento o de fiestas' },
 
-  { id: 'produccio', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
+  { id: 'produccio', sector: 'tots', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
     preuMin: 3000, preuMax: 9000, font: 'estimacio', publica: true, enllac: '',
     nom: 'Producció d\'esdeveniments',
     nomEs: 'Producción de eventos',
@@ -384,7 +485,7 @@ const PAQUETS = [
     diners: 'Pressupost de l\'esdeveniment',
     dinersEs: 'Presupuesto del evento' },
 
-  { id: 'posar-en-marxa', fam: 'dinamitzacio', ve: 'S4', punt: 'adaptacio',
+  { id: 'posar-en-marxa', sector: 'public', fam: 'dinamitzacio', ve: 'S4', punt: 'adaptacio',
     preuMin: 2400, preuMax: 5400, font: 'negoci', publica: true, enllac: '/SOS/molekulandia.html',
     nom: 'Posada en marxa d\'una dinàmica',
     nomEs: 'Puesta en marcha de una dinámica',
@@ -399,7 +500,59 @@ const PAQUETS = [
     perque: 'Són de 400 a 900 € al mes segons la mida del grup i si cal constituir res; sis mesos és el mínim per veure si s\'aguanta sol.',
     perqueEs: 'Son de 400 a 900 € al mes según el tamaño del grupo y si hay que constituir algo; seis meses es el mínimo para ver si se aguanta solo.',
     diners: 'Partida de participació · Ateneus Cooperatius',
-    dinersEs: 'Partida de participación · Ateneus Cooperatius' }
+    dinersEs: 'Partida de participación · Ateneus Cooperatius' },
+
+  /* ── 4 · Digital i IA ─────────────────────────────────────────────────── */
+  { id: 'fluxos-ia', sector: 'tots', fam: 'digital', ve: 'repo', punt: 'adaptacio',
+    preuMin: 1800, preuMax: 4500, font: 'estimacio', publica: true, enllac: '/SOS/ia.html',
+    nom: 'Fluxos amb IA · consultoria i formació',
+    nomEs: 'Flujos con IA · consultoría y formación',
+    qui: 'Empreses, cooperatives, ajuntaments i entitats amb equip propi',
+    quiEs: 'Empresas, cooperativas, ayuntamientos y entidades con equipo propio',
+    dura: '4 sessions · 6-8 setmanes',
+    duraEs: '4 sesiones · 6-8 semanas',
+    endus: 'El mapa dels vostres fluxos amb cadascun marcat: quins es repeteixen igual i es poden automatitzar, quins porten criteri i no s\'han de tocar, i quins són intangibles que no consten enlloc. Amb dos fluxos automatitzats de debò i el criteri de fre escrit.',
+    endusEs: 'El mapa de vuestros flujos con cada uno marcado: cuáles se repiten igual y se pueden automatizar, cuáles llevan criterio y no hay que tocar, y cuáles son intangibles que no constan en ningún sitio. Con dos flujos automatizados de verdad y el criterio de freno escrito.',
+    valor: 'Recupereu hores de feina que es repetia, i ho feu sense trencar pel camí el que sostenia la relació amb qui us compra o us vota. L\'equip en surt sabent decidir sol què toca la màquina i què no.',
+    valorEs: 'Recuperáis horas de trabajo que se repetía, y lo hacéis sin romper por el camino lo que sostenía la relación con quien os compra o os vota. El equipo sale sabiendo decidir solo qué toca la máquina y qué no.',
+    perque: 'Puja amb el nombre de fluxos a mapar i amb els que es deixen automatitzats i funcionant; un sol equip i dos fluxos és el mínim.',
+    perqueEs: 'Sube con el número de flujos a mapear y con los que se dejan automatizados y funcionando; un solo equipo y dos flujos es el mínimo.',
+    diners: 'Pressupost de millora o de formació · partida de digitalització',
+    dinersEs: 'Presupuesto de mejora o de formación · partida de digitalización' },
+
+  { id: 'web-ia', sector: 'tots', fam: 'digital', ve: 'repo', punt: 'adaptacio',
+    preuMin: 2500, preuMax: 8000, font: 'estimacio', publica: true, enllac: '/SOS/ia.html',
+    nom: 'Web o eina feta amb IA',
+    nomEs: 'Web o herramienta hecha con IA',
+    qui: 'Empreses, cooperatives, ajuntaments i entitats',
+    quiEs: 'Empresas, cooperativas, ayuntamientos y entidades',
+    dura: '4-10 setmanes',
+    duraEs: '4-10 semanas',
+    endus: 'La peça funcionant, els fitxers vostres i sense lligam amb ningú, i les guardes que comproven a cada canvi que segueix dient la veritat: un preu declarat un cop, cap enllaç mort, i les dues llengües sempre iguals.',
+    endusEs: 'La pieza funcionando, los ficheros vuestros y sin atadura con nadie, y las guardas que comprueban en cada cambio que sigue diciendo la verdad: un precio declarado una vez, ningún enlace muerto, y los dos idiomas siempre iguales.',
+    valor: 'La diferència amb una web feta amb IA i prou es veu al tercer mes: aquesta la pot canviar el vostre equip sense trencar-la, perquè el que la manté honesta és un programa i no la memòria de qui la va fer.',
+    valorEs: 'La diferencia con una web hecha con IA y ya está se ve al tercer mes: esta la puede cambiar vuestro equipo sin romperla, porque lo que la mantiene honesta es un programa y no la memoria de quien la hizo.',
+    perque: 'Puja amb el nombre de pantalles, amb els idiomes i amb les dades que ha de llegir; una pàgina de presentació amb un idioma és el mínim i una eina amb dades a dins és la banda alta.',
+    perqueEs: 'Sube con el número de pantallas, con los idiomas y con los datos que tiene que leer; una página de presentación con un idioma es el mínimo y una herramienta con datos dentro es la banda alta.',
+    diners: 'Pressupost de comunicació · partida de digitalització · Next Generation',
+    dinersEs: 'Presupuesto de comunicación · partida de digitalización · Next Generation' },
+
+  { id: 'transmedia', sector: 'tots', fam: 'digital', ve: 'repo', punt: 'nou',
+    preuMin: 4000, preuMax: 12000, font: 'estimacio', publica: false, enllac: '/SOS/comando.html',
+    nom: 'Projecte transmèdia',
+    nomEs: 'Proyecto transmedia',
+    qui: 'Ajuntaments, fundacions, marques i programes educatius',
+    quiEs: 'Ayuntamientos, fundaciones, marcas y programas educativos',
+    dura: '3-6 mesos',
+    duraEs: '3-6 meses',
+    endus: 'Història, personatges, joc i registre: el model del Comando Molekulon aplicat al vostre encàrrec, amb la condició que acabi en alguna cosa registrada i no en visites.',
+    endusEs: 'Historia, personajes, juego y registro: el modelo del Comando Molekulon aplicado a vuestro encargo, con la condición de que acabe en algo registrado y no en visitas.',
+    valor: 'Una campanya deixa impressions; això deixa gent donada d\'alta fent alguna cosa que queda comptada. Sis mesos després encara es pot ensenyar què va passar, que és el que cap informe de campanya sap respondre.',
+    valorEs: 'Una campaña deja impresiones; esto deja gente dada de alta haciendo algo que queda contado. Seis meses después todavía se puede enseñar qué pasó, que es lo que ningún informe de campaña sabe responder.',
+    perque: 'Es contracta sencer o per peces. Puja amb la il·lustració, amb el joc i amb els idiomes; una història amb personatges i alta al registre, sense joc, és el mínim.',
+    perqueEs: 'Se contrata entero o por piezas. Sube con la ilustración, con el juego y con los idiomas; una historia con personajes y alta en el registro, sin juego, es el mínimo.',
+    diners: 'Pressupost de comunicació · obra social · programa educatiu',
+    dinersEs: 'Presupuesto de comunicación · obra social · programa educativo' }
 ];
 
 /* ══ AL VOLTANT DEL SOS ═══════════════════════════════════════════════════
@@ -411,7 +564,7 @@ const PAQUETS = [
    no la peça —un informe de si val la pena és un entregable real; una eina que
    no existeix, no—, i la fitxa ho diu a la cara. */
 const SOS_PAQUETS = [
-  { id: 'implantacio', ve: 'S6', punt: 'nou', preuMin: 800, preuMax: 2500,
+  { id: 'implantacio', sector: 'public', ve: 'S6', punt: 'nou', preuMin: 800, preuMax: 2500,
     font: 'negoci', publica: true, enllac: '/SOS/',
     nom: 'Implantació i suport',
     nomEs: 'Implantación y soporte',
@@ -428,7 +581,7 @@ const SOS_PAQUETS = [
     diners: 'Partida de digitalització · fons Next Generation',
     dinersEs: 'Partida de digitalización · fondos Next Generation' },
 
-  { id: 'ia-amb-frens', ve: 'repo', punt: 'adaptacio', preuMin: 600, preuMax: 1500,
+  { id: 'ia-amb-frens', sector: 'tots', ve: 'repo', punt: 'adaptacio', preuMin: 600, preuMax: 1500,
     font: 'estimacio', publica: true, enllac: '',
     nom: 'IA amb frens · sessió de viabilitat',
     nomEs: 'IA con frenos · sesión de viabilidad',
@@ -445,7 +598,7 @@ const SOS_PAQUETS = [
     diners: 'Partida de digitalització',
     dinersEs: 'Partida de digitalización' },
 
-  { id: 'contractes', ve: 'repo', punt: 'nou', preuMin: 1200, preuMax: 2500,
+  { id: 'contractes', sector: 'tots', ve: 'repo', punt: 'nou', preuMin: 1200, preuMax: 2500,
     font: 'estimacio', publica: true, enllac: '',
     nom: 'Contractes intel·ligents · estudi de viabilitat',
     nomEs: 'Contratos inteligentes · estudio de viabilidad',
@@ -477,13 +630,13 @@ function fitxa(p) {
   const nom = p.enllac
     ? `<a href="${p.enllac}" data-i18n="${k(p.id, 'n')}">${esc(p.nom)}</a>`
     : `<span data-i18n="${k(p.id, 'n')}">${esc(p.nom)}</span>`;
-  /* Els trams no són una forquilla: són el preu, i es pinten com una taula
-     perquè qui compra sap en quin tram cau abans de trucar. */
-  const preu = p.trams
-    ? `<table class="pk-trams">${p.trams.map(([q, v]) =>
-        `<tr><th>${esc(q)}</th><td>${eur(v)}</td></tr>`).join('')}</table>`
+  /* Un paquet «a mida» no diu «consulta'ns», que és el que fa tothom i el que
+     obliga a trucar per saber si t'ho pots ni plantejar: diu **com es calcula**
+     i hi porta. Sense aquest enllaç, no publicar preu seria amagar-lo. */
+  const preu = p.mida
+    ? `<strong class="pk-mida"><a href="#cost" data-i18n="pk.mida">A mida · calculat amb el mapa de cost</a></strong>`
     : `<strong>${forq(p)}</strong>`;
-  return `        <article class="paquet" id="pk-${p.id}">
+  return `        <article class="paquet" id="pk-${p.id}" data-sector="${p.sector}">
           <header>
             <h4>${nom}</h4>
             <span class="pk-punt ${pt.cls}" data-i18n="pk.punt.${p.punt}">${esc(pt.lbl)}</span>
@@ -526,6 +679,60 @@ ${SOS_PAQUETS.map(fitxa).join('\n')}
       </div>`;
 }
 
+/* ══ El filtre de sector ══════════════════════════════════════════════════
+   Va generat i no escrit a mà per un motiu concret: el dia que s'afegeixi un
+   sector, el botó ha de sortir sol. Un filtre escrit a mà que no coneix un
+   valor no falla —simplement amaga paquets sense que ho digui ningú.
+
+   `data-sec="tot"` primer i marcat: sense JavaScript surten tots els paquets,
+   que és l'estat correcte, i els botons no fan res però tampoc menteixen. */
+function blocFiltre() {
+  const bt = (id, lbl, clau, on) =>
+    `<button type="button" class="pk-f${on ? ' on' : ''}" data-sec="${id}" data-i18n="${clau}">${esc(lbl)}</button>`;
+  return `      <div class="pk-filtre" role="group" aria-label="Filtra per sector">
+        ${bt('tot', 'Tot el catàleg', 'pk.f.tot', true)}
+        ${bt('privat', SECTORS.privat.lbl, 'pk.f.privat', false)}
+        ${bt('public', SECTORS.public.lbl, 'pk.f.public', false)}
+      </div>`;
+}
+
+/* ══ El mapa de cost ══════════════════════════════════════════════════════
+   La secció que substitueix les tarifes que ja no es publiquen. No és una
+   nota al peu: és **el mètode**, i va sencer a la pàgina perquè qui llegeix
+   pugui fer el càlcul pel seu compte abans de trucar. Un preu que només es pot
+   saber trucant és un preu que qui no truca no sabrà mai. */
+function blocCost() {
+  const passos = PASSOS_COST.map((p, i) => `        <li class="cm-pas">
+          <h4 data-i18n="cm.p${i + 1}.t">${esc(p.t)}</h4>
+          <p data-i18n="cm.p${i + 1}.d">${esc(p.d)}</p>
+        </li>`).join('\n');
+  const files = NIVELLS.map(n => `          <tr>
+            <th><span class="cm-niv">${n.id}</span> <span data-i18n="cm.${n.id}.n">${esc(n.nom)}</span></th>
+            <td data-i18n="cm.${n.id}.f">${esc(n.fa)}</td>
+            <td data-i18n="cm.${n.id}.e">${esc(n.ev)}</td>
+            <td class="cm-h">${n.hora} €/h</td>
+          </tr>`).join('\n');
+  return `      <ol class="cm-passos">
+${passos}
+      </ol>
+      <h3 class="cm-h3" data-i18n="cm.esc.h">L'escala, i què separa un nivell del següent</h3>
+      <p class="cm-int" data-i18n="cm.esc.i">Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell.</p>
+      <div class="cm-taula-scroll">
+        <table class="cm-taula">
+          <thead><tr>
+            <th data-i18n="cm.th.niv">Nivell</th>
+            <th data-i18n="cm.th.fa">Què fa</th>
+            <th data-i18n="cm.th.ev">Com s'acredita</th>
+            <th data-i18n="cm.th.h">Preu hora</th>
+          </tr></thead>
+          <tbody>
+${files}
+          </tbody>
+        </table>
+      </div>
+      <p class="cm-peu" data-i18n-html="cm.peu">Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.</p>`;
+}
+
 /* Les claus dels dos idiomes surten de la mateixa declaració, i per això no
    poden divergir: mig traduir és pitjor que no traduir. */
 function diccionari(llengua) {
@@ -545,6 +752,33 @@ function diccionari(llengua) {
              `${q('pk.lbl.dura')}:${q(es ? 'Cuánto dura' : 'Quant dura')},` +
              `${q('pk.lbl.diners')}:${q(es ? 'Con qué dinero' : 'Amb quins diners')},` +
              `${q('pk.lbl.valor')}:${q(es ? 'Qué te aporta' : "Què t'aporta")},`);
+  /* El filtre i el preu a mida. Van al mateix diccionari perquè el dia que
+     canviï el nom d'un sector no hi hagi un botó en català sobre la pàgina
+     castellana. */
+  files.push(`  ${q('pk.f.tot')}:${q(es ? 'Todo el catálogo' : 'Tot el catàleg')},` +
+             `${q('pk.f.privat')}:${q(es ? SECTORS.privat.lblEs : SECTORS.privat.lbl)},` +
+             `${q('pk.f.public')}:${q(es ? SECTORS.public.lblEs : SECTORS.public.lbl)},` +
+             `${q('pk.mida')}:${q(es ? 'A medida · calculado con el mapa de coste' : 'A mida · calculat amb el mapa de cost')},`);
+  /* El mapa de cost: quatre passos, tres nivells i el peu. */
+  PASSOS_COST.forEach((p, i) => {
+    files.push(`  ${q('cm.p' + (i + 1) + '.t')}:${q(es ? p.tEs : p.t)},${q('cm.p' + (i + 1) + '.d')}:${q(es ? p.dEs : p.d)},`);
+  });
+  NIVELLS.forEach(n => {
+    files.push(`  ${q('cm.' + n.id + '.n')}:${q(es ? n.nomEs : n.nom)},` +
+               `${q('cm.' + n.id + '.f')}:${q(es ? n.faEs : n.fa)},` +
+               `${q('cm.' + n.id + '.e')}:${q(es ? n.evEs : n.ev)},`);
+  });
+  files.push(`  ${q('cm.th.niv')}:${q(es ? 'Nivel' : 'Nivell')},` +
+             `${q('cm.th.fa')}:${q(es ? 'Qué hace' : 'Què fa')},` +
+             `${q('cm.th.ev')}:${q(es ? 'Cómo se acredita' : "Com s'acredita")},` +
+             `${q('cm.th.h')}:${q(es ? 'Precio hora' : 'Preu hora')},`);
+  files.push(`  ${q('cm.esc.h')}:${q(es ? 'La escala, y qué separa un nivel del siguiente' : "L'escala, i què separa un nivell del següent")},`);
+  files.push(`  ${q('cm.esc.i')}:${q(es
+    ? 'Para contrataciones por horas —que es como contrata el sector público cuando contrata servicios profesionales— esta es la tabla que presentamos. Lo que separa un nivel del siguiente no es la antigüedad: es evidencia registrada y verificable, la misma que acredita a un gestor o a un mentor en la formación. La propuesta dice siempre qué persona hace qué horas y a qué nivel.'
+    : "Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell.")},`);
+  files.push(`  ${q('cm.peu')}:${q(es
+    ? 'Todos los precios de esta página son <strong>sin IVA</strong>. La escala es tarifa propuesta para 2026 y se revisa cada año. El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y no llevan precio cerrado publicado: lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia, y preferimos enseñar el desglose que comprometer una cifra que después haya que desdecir.'
+    : "Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.")},`);
   PAQUETS.concat(SOS_PAQUETS).forEach(p => {
     files.push(`  ${q(k(p.id, 'n'))}:${q(es ? p.nomEs : p.nom)},` +
                `${q(k(p.id, 'e'))}:${q(es ? p.endusEs : p.endus)},`);
@@ -564,8 +798,10 @@ function diccionari(llengua) {
 function taulaMd() {
   /* El README és en castellà de dalt a baix; una taula en català a dins seria
      mitja traducció, que és el que la guia de marca prohibeix expressament. */
-  const preuEs = p => p.trams
-    ? p.trams.map(([q2, v]) => q2 + ': ' + eur(v)).join(' · ')
+  /* Un paquet a mida no porta cifra al README tampoc. Si la portada no la
+     publica i el README sí, el que hi ha són dos preus i un de fals. */
+  const preuEs = p => p.mida
+    ? 'A medida · [mapa de coste](#el-mapa-de-coste)'
     : (p.preuMin === p.preuMax ? eur(p.preuMin)
        : 'De ' + eur(p.preuMin).replace(' €', '') + ' a ' + eur(p.preuMax));
   const fila = p => `| **${p.nomEs}** | ${p.quiEs} | ${p.duraEs} | ${preuEs(p)} | ${p.valorEs} | ${PUNTS[p.punt].lblEs} · ${FONTS[p.font].lblEs} |`;
@@ -581,14 +817,31 @@ function taulaMd() {
     + taula(SOS_PAQUETS);
 }
 
+/* El mateix mètode al README, perquè qui arriba pel repositori pugui fer el
+   càlcul sense obrir la portada. */
+function costMd() {
+  const passos = PASSOS_COST.map((p, i) => `${i + 1}. **${p.tEs}** — ${p.dEs}`).join('\n');
+  const files = NIVELLS.map(n =>
+    `| **${n.id} · ${n.nomEs}** | ${n.faEs} | ${n.evEs} | ${n.hora} €/h |`).join('\n');
+  return passos + '\n\n| Nivel | Qué hace | Cómo se acredita | Precio hora |\n|---|---|---|---|\n' + files +
+    '\n\nTodos los precios son **sin IVA**. La escala es tarifa propuesta para 2026 y se revisa cada año. ' +
+    'El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y **no llevan precio cerrado publicado**: ' +
+    'lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia.';
+}
+
 /* ══ Escriure ═════════════════════════════════════════════════════════════ */
 const MARQUES = [
   ['<!--TT-OFERTA-->', '<!--/TT-OFERTA-->', blocCataleg],
+  ['<!--TT-FILTRE-->', '<!--/TT-FILTRE-->', blocFiltre],
+  ['<!--TT-COST-->', '<!--/TT-COST-->', blocCost],
   ['<!--TT-SOS-->', '<!--/TT-SOS-->', blocSos],
   ['/*TT-I18N-CA*/', '/*/TT-I18N-CA*/', () => diccionari('ca')],
   ['/*TT-I18N-ES*/', '/*/TT-I18N-ES*/', () => diccionari('es')]
 ];
-const MARQUES_MD = [['<!--TT-OFERTA-MD-->', '<!--/TT-OFERTA-MD-->', taulaMd]];
+const MARQUES_MD = [
+  ['<!--TT-OFERTA-MD-->', '<!--/TT-OFERTA-MD-->', taulaMd],
+  ['<!--TT-COST-MD-->', '<!--/TT-COST-MD-->', costMd]
+];
 
 function posa(src, marques) {
   let out = src, faltaven = [];
@@ -599,6 +852,14 @@ function posa(src, marques) {
   }
   return { out, faltaven };
 }
+
+/* El catàleg és la font única, i el formulari de pressupost necessita la
+   mateixa llista de paquets i la mateixa escala per calcular. S'exporta en
+   comptes de copiar-se, i per això aquest fitxer només fa la seva feina quan
+   s'executa: si escrivís en carregar-se, requerir-lo des d'una altra eina
+   reescriuria la portada de rebot. */
+module.exports = { FAMILIES, SECTORS, PUNTS, FONTS, NIVELLS, PASSOS_COST, PAQUETS, SOS_PAQUETS };
+if (require.main !== module) return;
 
 const src = readFileSync(PORTADA, 'utf8');
 const { out, faltaven } = posa(src, MARQUES);

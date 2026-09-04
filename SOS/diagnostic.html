@@ -143,7 +143,7 @@ footer a{color:var(--indigo);text-decoration:none}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html" aria-current="page"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html" aria-current="page"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
@@ -165,14 +165,17 @@ footer a{color:var(--indigo);text-decoration:none}
 <section class="step" id="s1">
 <h2>1 · Qui ets</h2>
 <p class="sub">Per saber amb qui parlem i com respondre't.</p>
+<!--FORM-QUI-->
 <div class="grid2">
 <div class="f"><label for="nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
-<div class="f"><label for="carrec">Càrrec o paper</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"></div>
+<div class="f"><label for="rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio">Direcció general o gerència</option><option value="persones">Direcció de persones o RRHH</option><option value="innovacio">Innovació, estratègia o projectes</option><option value="organitzacio">Organització, processos o qualitat</option><option value="tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic">Càrrec electe o de confiança</option><option value="coordinacio">Coordinació d'equip o de programa</option><option value="altre">Una altra cosa</option></select></div>
 </div>
 <div class="grid2">
 <div class="f"><label for="mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
 <div class="f"><label for="tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
 </div>
+<div class="f"><label for="carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<!--/FORM-QUI-->
 <div class="err" id="e1">Cal com a mínim el nom i un correu vàlid.</div>
 <div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2">Següent →</button></div>
 </section>
@@ -181,17 +184,18 @@ footer a{color:var(--indigo);text-decoration:none}
 <section class="step" id="s2" hidden>
 <h2>2 · D'on véns</h2>
 <p class="sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
+<!--FORM-ORG-->
 <div class="f">
 <label>Tipus d'organització *</label>
 <div class="opts" id="orgType">
-<button type="button" class="opt" data-v="ajuntament" style="--c:var(--indigo)"><span class="o-t">🏛 Ajuntament</span><span class="o-d">Regidoria, àrea tècnica o servei municipal</span></button>
-<button type="button" class="opt" data-v="comarcal" style="--c:var(--indigo)"><span class="o-t">🗺 Consell comarcal</span><span class="o-d">O mancomunitat de municipis</span></button>
-<button type="button" class="opt" data-v="entitat" style="--c:var(--green)"><span class="o-t">🤝 Entitat o associació</span><span class="o-d">AVV, ateneu, casal, banc de temps</span></button>
-<button type="button" class="opt" data-v="cooperativa" style="--c:var(--orange)"><span class="o-t">🚀 Cooperativa o empresa</span><span class="o-d">SCCL, SL, projecte econòmic</span></button>
-<button type="button" class="opt" data-v="grup" style="--c:var(--blue)"><span class="o-t">🌱 Grup promotor</span><span class="o-d">Encara sense forma jurídica</span></button>
-<button type="button" class="opt" data-v="acompanyament" style="--c:var(--purple)"><span class="o-t">🎓 Entitat d'acompanyament</span><span class="o-d">Ateneu Cooperatiu, consultoria ESS</span></button>
-<button type="button" class="opt" data-v="fundacio" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
-<button type="button" class="opt" data-v="particular" style="--c:var(--muted)"><span class="o-t">👤 A títol personal</span><span class="o-d">Professional o persona interessada</span></button>
+<button type="button" class="opt" data-v="ajuntament" data-sector="public" style="--c:var(--indigo)"><span class="o-t">🏛 Ajuntament</span><span class="o-d">Regidoria, àrea tècnica o servei municipal</span></button>
+<button type="button" class="opt" data-v="comarcal" data-sector="public" style="--c:var(--indigo)"><span class="o-t">🗺 Consell comarcal</span><span class="o-d">O mancomunitat de municipis</span></button>
+<button type="button" class="opt" data-v="entitat" data-sector="public" style="--c:var(--green)"><span class="o-t">🤝 Entitat o associació</span><span class="o-d">AVV, ateneu, casal, banc de temps</span></button>
+<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🚀 Cooperativa o empresa</span><span class="o-d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="grup" data-sector="public" style="--c:var(--blue)"><span class="o-t">🌱 Grup promotor</span><span class="o-d">Encara sense forma jurídica</span></button>
+<button type="button" class="opt" data-v="acompanyament" data-sector="privat" style="--c:var(--purple)"><span class="o-t">🎓 Entitat d'acompanyament</span><span class="o-d">Ateneu Cooperatiu, consultoria ESS</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="particular" data-sector="tots" style="--c:var(--muted)"><span class="o-t">👤 A títol personal</span><span class="o-d">Professional o persona interessada</span></button>
 </div>
 </div>
 <div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
@@ -200,6 +204,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
 <div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
+<!--/FORM-ORG-->
 <div class="err" id="e2">Tria el tipus d'organització i escriu el municipi.</div>
 <div class="nav-btns"><button type="button" class="btn" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-go="3">Següent →</button></div>
 </section>
@@ -318,6 +323,7 @@ aquesta</strong> i no una altra.</p>
 <a class="btn btn-primary" id="bSend" href="#">✉ Envia'ns-ho per correu</a>
 <button type="button" class="btn" id="bCopy">📋 Copia el resum</button>
 <button type="button" class="btn" id="bJson">⬇ Descarrega'l (JSON)</button>
+<a class="btn" href="pressupost.html" id="bPressu">💶 Ara demana el pressupost →</a>
 <button type="button" class="btn" id="bAgain">↺ Refés-lo</button>
 </div>
 <p class="priv">🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d'aquí fins que tu premis «Envia'ns-ho». No hi ha analítica ni seguiment en aquesta pàgina.</p>
@@ -335,8 +341,38 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const _U='asolache',_D='mac'+'.'+'com';
 const mailAddr=()=>_U+'@'+_D;
 
+/*FORM-DADES*/
+// Generat per SOS/tools/build-formularis.js — no ho editis a mà.
+const ORG_SECTOR={'ajuntament':'public','comarcal':'public','entitat':'public','cooperativa':'privat','grup':'public','acompanyament':'privat','fundacio':'public','particular':'tots'};
+const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció de persones o RRHH','innovacio':'Innovació, estratègia o projectes','organitzacio':'Organització, processos o qualitat','tecnic':'Tècnic/a de participació, promoció o serveis','politic':'Càrrec electe o de confiança','coordinacio':'Coordinació d\'equip o de programa','altre':'Una altra cosa'};
+/*/FORM-DADES*/
+
 /* ── Estat del formulari ─────────────────────────────────────────── */
 const st={org:'',have:new Set(),serveis:new Set(),need:new Set()};
+
+/* El que aquest formulari sap de tu, perquè el de pressupost no t'ho torni a
+   preguntar. Viu al teu navegador i no surt d'aquí: és el mateix tracte que fa
+   la resta de la casa. Si el navegador no ho deixa desar (finestra privada,
+   dades bloquejades), no passa res —simplement l'altre formulari començarà en
+   blanc, que és com començava abans. */
+const PONT='tt.form.qui';
+function desaPont(){
+  try{ localStorage.setItem(PONT, JSON.stringify({
+    nom:$('#nom').value, rol:$('#rol')?$('#rol').value:'', carrec:$('#carrec').value,
+    mail:$('#mail').value, tel:$('#tel').value, org:st.org, orgNom:$('#orgNom').value,
+    municipi:$('#municipi').value, comarca:$('#comarca').value, poblacio:$('#poblacio').value
+  })); }catch(e){}
+}
+function llegeixPont(){
+  let d=null; try{ d=JSON.parse(localStorage.getItem(PONT)||'null'); }catch(e){}
+  if(!d)return;
+  ['nom','carrec','mail','tel','orgNom','municipi','comarca','poblacio'].forEach(k=>{
+    const el=$('#'+k); if(el&&d[k]&&!el.value)el.value=d[k];
+  });
+  if(d.rol&&$('#rol'))$('#rol').value=d.rol;
+  if(d.org){ st.org=d.org; $$('#orgType .opt').forEach(x=>x.classList.toggle('sel',x.dataset.v===d.org)); }
+}
+llegeixPont();
 
 /* Selecció única (tipus d'organització) */
 $$('#orgType .opt').forEach(b=>b.onclick=()=>{
@@ -575,7 +611,9 @@ function buildSummary(d){
   L.push('Generat el '+new Date().toLocaleString('ca'));
   L.push('');
   L.push('── QUI ──');
-  L.push('Nom: '+v('nom')+(v('carrec')?' ('+v('carrec')+')':''));
+  const rolTxt=$('#rol')?(ROL_NOM[$('#rol').value]||''):'';
+  L.push('Nom: '+v('nom')+(v('carrec')?' ('+v('carrec')+')':(rolTxt?' ('+rolTxt+')':'')));
+  if(rolTxt&&v('carrec'))L.push('Paper: '+rolTxt);
   L.push('Correu: '+v('mail')+(v('tel')?' · Tel: '+v('tel'):''));
   L.push('');
   L.push('── D\'ON ──');
@@ -609,8 +647,8 @@ function buildSummary(d){
 function buildJson(d){
   const v=id=>$('#'+id).value.trim();
   return{generatedAt:new Date().toISOString(),
-    persona:{nom:v('nom'),carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
-    organitzacio:{tipus:st.org,perfil:d.P.title,segment:d.P.seg,nom:v('orgNom'),municipi:v('municipi'),comarca:v('comarca'),poblacio:v('poblacio')?Number(v('poblacio')):null},
+    persona:{nom:v('nom'),rol:$('#rol')?$('#rol').value:'',carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
+    organitzacio:{tipus:st.org,sector:ORG_SECTOR[st.org]||'',perfil:d.P.title,segment:d.P.seg,nom:v('orgNom'),municipi:v('municipi'),comarca:v('comarca'),poblacio:v('poblacio')?Number(v('poblacio')):null},
     te:{recursos:d.have,serveis:d.serveis,experiencia:$('#experiencia').value},
     necessita:{items:d.need,repte:v('repte'),termini:$('#termini').value,pressupost:$('#pressupost').value},
     diagnostic:{maturity:d.maturity,support:d.support,itinerari:d.mods,durada:d.P.dur,fita:d.P.fita,serveis:d.svcs,financament:d.P.fund,primerPas:d.next}};
@@ -623,6 +661,7 @@ $('#doDx').onclick=()=>{
   $('#e4').classList.remove('on');
   if(!validate(1)){showStep(1);return;}
   if(!validate(2)){showStep(2);return;}
+  desaPont();
   current=diagnose();
   renderDx(current);
   $('#dxForm').style.display='none';

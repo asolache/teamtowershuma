@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fluxos amb IA · automatitzar el que es repeteix, posar valor al que no es veu</title>
+<meta name="description" content="Formació i consultoria amb IA: automatitzem els fluxos tangibles amb frens escrits i posem nom i mesura als intangibles que sostenen la casa. I la fàbrica: com dissenyem i desenvolupem webs i projectes transmèdia amb IA, amb aquest mateix repositori com a prova.">
+<meta property="og:title" content="Fluxos amb IA · TeamTowers Humà">
+<meta property="og:description" content="Automatitzar el tangible sense trencar l'intangible. El mapa de valor primer, la màquina després, i una persona que confirma.">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:#2a2a35;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--blue:#00b0ff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b0b12,#12121c);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+.wrap{max-width:920px;margin:0 auto;padding:0 1.2rem}
+a{color:var(--indigo)}
+
+.hero{padding:3.2rem 1.2rem 2.2rem;text-align:center}
+.hero .kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:'SF Mono',Monaco,monospace}
+.hero h1{font-size:clamp(1.8rem,5.6vw,2.8rem);line-height:1.16;margin:.7rem auto .9rem;max-width:20ch;background:linear-gradient(90deg,#6366f1,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{font-size:clamp(1rem,2.4vw,1.18rem);color:var(--light);max-width:38rem;margin:0 auto 1.6rem}
+.ctas{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+.cta{display:inline-flex;align-items:center;gap:.5rem;background:var(--green);color:#08120c;font-weight:700;font-size:1rem;padding:.85rem 1.4rem;border-radius:12px;text-decoration:none;border:0}
+.cta:hover{filter:brightness(1.08)}
+.cta.ghost{background:transparent;color:var(--light);border:1px solid var(--border);font-weight:600}
+
+section{padding:2.4rem 0;border-top:1px solid rgba(255,255,255,.06)}
+h2{font-size:clamp(1.25rem,3.4vw,1.7rem);margin:0 0 .5rem}
+h3.section{font-size:1.02rem;margin:1.8rem 0 .8rem;color:var(--light);letter-spacing:.01em}
+.sub{color:var(--muted);margin:0 0 1.4rem;font-size:.95rem}
+.lead{color:var(--light)}
+
+/* ── Els dos fluxos, un al costat de l'altre ─────────────────────────────
+   Van en dues columnes i no en dues seccions a posta: la tesi d'aquesta
+   pàgina és que **es decideixen junts**. Separar-los verticalment tornaria a
+   explicar el que aquí es denuncia —automatitzar per una banda i, per l'altra,
+   descobrir tard què s'ha trencat. */
+.fluxos{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1rem}
+.flux{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.3rem}
+.flux.tang{border-top:3px solid var(--blue)}
+.flux.intang{border-top:3px solid var(--purple)}
+.flux h4{margin:.2rem 0 .5rem;font-size:1.05rem}
+.flux .q{font-size:.8rem;color:var(--muted);font-family:'SF Mono',Monaco,monospace;text-transform:uppercase;letter-spacing:.1em}
+.flux ul{margin:.6rem 0 0;padding-left:1.1rem;color:var(--light);font-size:.92rem}
+.flux li{margin-bottom:.35rem}
+.flux .què{margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--text)}
+
+.avis{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--orange);
+  border-radius:0 14px 14px 0;padding:1.2rem 1.3rem;margin:1.4rem 0}
+.avis p{margin:0 0 .6rem;color:var(--light)}
+.avis p:last-child{margin-bottom:0}
+.avis strong{color:var(--text)}
+
+.passos{counter-reset:p;display:grid;gap:.8rem;margin-top:1rem}
+.pas{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem 1rem 3.2rem;position:relative}
+.pas::before{counter-increment:p;content:counter(p);position:absolute;left:1.1rem;top:1rem;
+  width:1.5rem;height:1.5rem;border-radius:50%;background:var(--indigo);color:#fff;
+  font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.pas h4{margin:0 0 .3rem;font-size:1rem}
+.pas p{margin:0;font-size:.92rem;color:var(--light)}
+
+.frens{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.9rem;margin-top:1rem}
+.fre{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem}
+.fre b{display:block;color:var(--green);font-size:.9rem;margin-bottom:.35rem}
+.fre span{font-size:.88rem;color:var(--light)}
+
+table.rt{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.9rem}
+table.rt th,table.rt td{border:1px solid var(--border);padding:.6rem .7rem;text-align:left;vertical-align:top}
+table.rt thead th{background:var(--panel);color:var(--light);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
+.taula-scroll{overflow-x:auto}
+
+.proves{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.9rem;margin-top:1rem}
+.prova{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;text-decoration:none;display:block;color:inherit}
+.prova:hover{border-color:var(--indigo)}
+.prova b{display:block;font-size:.95rem;color:var(--text)}
+.prova span{display:block;font-size:.83rem;color:var(--muted);margin-top:.3rem;line-height:1.4}
+
+.tanca{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.3rem 1.4rem;margin-top:1.6rem}
+.tanca p{margin:0 0 .7rem;color:var(--light)}
+.tanca p:last-child{margin-bottom:0}
+footer{padding:2.4rem 1.2rem 3rem;text-align:center;color:var(--muted);font-size:.83rem;border-top:1px solid rgba(255,255,255,.06)}
+footer a{color:var(--light)}
+</style>
+</head>
+<body>
+
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g sn-here"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html" aria-current="page"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+<header class="hero">
+  <div class="kicker">Formació · consultoria · producció</div>
+  <h1>Automatitzar el que es repeteix. Posar valor al que no es veu.</h1>
+  <p class="lead">A tota organització hi circulen dos tipus de flux. Els <strong>tangibles</strong> es poden comptar, es repeteixen i es poden automatitzar. Els <strong>intangibles</strong> no consten enlloc i són els que sostenen la casa. Aquí es treballen <em>els dos alhora</em>, perquè tocar l'un sense mirar l'altre és com surt malament.</p>
+  <div class="ctas">
+    <a class="cta" href="vna.html">Comença pel mapa de valor</a>
+    <a class="cta ghost" href="../index.html#cataleg">Veure què es contracta →</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ═══ 1 · La tesi ═══════════════════════════════════════════════════════ -->
+<section id="tesi">
+  <h2>Els dos fluxos</h2>
+  <p class="sub">Un mapa de valor no dibuixa organigrames: dibuixa <strong>intercanvis</strong>. I quan es dibuixen tots, sempre en surten de dues menes.</p>
+
+  <div class="fluxos">
+    <div class="flux tang">
+      <div class="q">Tangibles</div>
+      <h4>El que ja es compta</h4>
+      <ul>
+        <li>Comandes, factures i cobraments</li>
+        <li>Altes, baixes i renovacions</li>
+        <li>Informes periòdics i justificació de subvencions</li>
+        <li>Inventaris, reserves, calendaris</li>
+        <li>Actes, acords i el seu seguiment</li>
+      </ul>
+      <p class="què"><strong>Què s'hi fa:</strong> es mesura quantes vegades es repeteixen i quantes hores costen. El que es repeteix igual, s'automatitza. El que canvia cada vegada, no.</p>
+    </div>
+    <div class="flux intang">
+      <div class="q">Intangibles</div>
+      <h4>El que sosté i no consta</h4>
+      <ul>
+        <li>Confiança amb qui et compra o et vota</li>
+        <li>Coneixement que només té una persona</li>
+        <li>Reputació de l'equip fora de casa</li>
+        <li>Cures: qui destensa una reunió, qui acompanya el nou</li>
+        <li>Vincles amb el teixit del voltant</li>
+      </ul>
+      <p class="què"><strong>Què s'hi fa:</strong> es posen al mapa amb nom propi, es diu qui els sosté i es mesuren. El que té nom es pot repartir; el que no en té, se sobrecarrega sempre sobre la mateixa persona.</p>
+    </div>
+  </div>
+
+  <div class="avis">
+    <p><strong>L'error de sempre</strong> és automatitzar el tangible i descobrir sis mesos després que pel camí s'ha trencat un intangible que ningú havia mapat: el client que trucava i ara rep un formulari, la persona que sabia el context i ara només valida.</p>
+    <p>Per això aquí <strong>primer es dibuixa el mapa sencer</strong> i després es decideix què toca la màquina. L'ordre no és un detall metodològic: és tota la diferència.</p>
+  </div>
+</section>
+
+<!-- ═══ 2 · Com es fa ═════════════════════════════════════════════════════ -->
+<section id="com">
+  <h2>Com es fa</h2>
+  <p class="sub">Quatre passos, i el mapa de valor és el primer perquè és el que fa discutibles tots els altres.</p>
+
+  <div class="passos">
+    <div class="pas">
+      <h4>Es dibuixa el mapa amb la gent, no per a la gent</h4>
+      <p>Una sessió de mapatge amb 6–10 persones de la casa. En surten els rols funcionals —no els càrrecs— i els intercanvis reals entre ells, tangibles i intangibles. Es fa amb <a href="vna.html">el mapa de valor</a>, que és lliure i us el quedeu.</p>
+    </div>
+    <div class="pas">
+      <h4>Es marca cada flux: repetitiu, o de criteri</h4>
+      <p>Per a cada intercanvi: quantes vegades passa al mes, quantes hores costa i si cada vegada es decideix alguna cosa. El que es repeteix igual és candidat a automatitzar-se. El que porta criteri, judici o relació, no ho és — encara que sembli mecànic.</p>
+    </div>
+    <div class="pas">
+      <h4>S'automatitza el tangible, amb els frens posats abans</h4>
+      <p>Es munta el que estalvia hores de debò, i es munta amb el criteri de fre escrit abans de comprar res: qui confirma, què no pot sortir de casa i què s'ha de poder desfer. Un flux automatitzat sense fre és un flux que ningú vigila.</p>
+    </div>
+    <div class="pas">
+      <h4>Es posa nom i mesura a l'intangible</h4>
+      <p>Les hores de cura, el coneixement que només té una persona i els vincles amb el teixit entren al mapa com a fluxos de primera. Es mesuren —qui en dona, qui en rep, on hi ha desequilibri crònic— i el que en surt és el material amb què es reparteix feina i es preveu un relleu.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3 · Els frens ═════════════════════════════════════════════════════ -->
+<section id="frens">
+  <h2>Els frens, escrits abans</h2>
+  <p class="sub">Aquestes quatre regles no són una declaració d'intencions: són com està construït el SOS, i es poden anar a mirar.</p>
+
+  <div class="frens">
+    <div class="fre"><b>La màquina proposa, una persona confirma</b><span>Cap suggeriment d'IA entra sol al mapa ni als comptes. Es pinta com a proposta i algú l'accepta o la llença.</span></div>
+    <div class="fre"><b>Sempre diu d'on ho ha tret</b><span>Una proposta sense procedència no és una troballa: és una afirmació. Si no es pot dir d'on surt, no s'aplica.</span></div>
+    <div class="fre"><b>Les dades de persones no viatgen</b><span>El que arriba a un model és una llista tancada de camps decidida abans, no el que hi hagi a la pantalla.</span></div>
+    <div class="fre"><b>El que decideix una persona queda signat</b><span>Perquè d'aquí a un any es pugui saber qui va decidir què, i amb quina informació al davant.</span></div>
+  </div>
+
+  <p class="lead" style="margin-top:1rem">Les regles d'aquesta casa s'escriuen quan s'aprenen, amb el motiu al costat: són <a href="vedes.html">les vedes</a>. Cap és teòrica — totes surten d'alguna cosa que va sortir malament una vegada.</p>
+</section>
+
+<!-- ═══ 4 · La fàbrica ════════════════════════════════════════════════════ -->
+<section id="fabrica">
+  <h2>La fàbrica · dissenyar i desenvolupar amb IA</h2>
+  <p class="sub">El mateix mètode, aplicat a construir la cosa: webs, eines i projectes transmèdia fets amb IA sense que el resultat sigui una peça que ningú pot mantenir.</p>
+
+  <p class="lead">Fer una web amb IA és fàcil i és el que ven tothom. El problema arriba al tercer mes: ningú sap per què el codi és així, canviar un preu vol dir encertar cinc llocs alhora, i el dia que un se n'oblida la pàgina diu dues coses contradictòries i ningú ho veu. La feina no és generar: <strong>és deixar-ho de manera que segueixi sent cert</strong>.</p>
+
+  <h3 class="section">Les cinc regles de la fàbrica</h3>
+  <div class="taula-scroll">
+  <table class="rt">
+    <thead><tr><th>Regla</th><th>Què vol dir</th><th>Què evita</th></tr></thead>
+    <tbody>
+      <tr><td><b>Es declara un cop i es genera</b></td><td>Un preu, un menú, un catàleg o un mapa viuen en un sol fitxer de declaració; el generador els escriu a totes les pantalles i als dos idiomes.</td><td>Que el català i el castellà diguin preus diferents i ningú ho noti, perquè els llegeixen persones diferents.</td></tr>
+      <tr><td><b>Una guarda per cada cosa apresa</b></td><td>Cada regla que s'ha après es converteix en un programa que la comprova a cada canvi, i cada guarda es prova trencant-la a posta.</td><td>Que la lliçó duri fins que se n'oblidi qui hi era. Una guarda que mai s'ha vist fallar no vigila res.</td></tr>
+      <tr><td><b>Les proves obren la pàgina de debò</b></td><td>Un navegador obre el fitxer publicat i comprova el que hi veu una persona, no el que diu una simulació.</td><td>Proves verdes sobre una pàgina que no carrega.</td></tr>
+      <tr><td><b>Sense muntatge ni dependències</b></td><td>Fitxers que s'obren fent doble clic. Ni instal·lació, ni servidor, ni cadena de paquets que caduquen.</td><td>Que d'aquí a dos anys el projecte no compili i ningú sàpiga per què.</td></tr>
+      <tr><td><b>Cap porta a un lloc que no existeix</b></td><td>Tot enllaç generat es comprova contra el fitxer real abans de publicar-se.</td><td>El clic que no va enlloc, que el navegador no denuncia mai.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 class="section">Què s'endú qui ho contracta</h3>
+  <p class="lead">La peça funcionant, <strong>les guardes que la mantenen honesta</strong> i el vostre equip sabent-les fer servir. No es lloga una plataforma i no hi ha lligam: els fitxers són vostres i s'obren sols.</p>
+
+  <h3 class="section">La prova és aquest repositori</h3>
+  <p class="sub">Tot això està fet així, i es pot obrir ara mateix.</p>
+  <div class="proves">
+    <a class="prova" href="index.html"><b>El SOS</b><span>L'aplicació sencera en un fitxer: mapa de valor, comptes, governança i incubadora, sense compte ni servidor.</span></a>
+    <a class="prova" href="comando.html"><b>Comando Molekulon</b><span>Còmic, roster i reclutament: una història que acaba fent que algú faci alguna cosa al seu barri.</span></a>
+    <a class="prova" href="joc.html"><b>El joc</b><span>La plaça a ritme, amb els nivells lligats als mòduls de formació de debò.</span></a>
+    <a class="prova" href="molekulandia.html"><b>Molekulandia</b><span>El poble i les nou professions, generat de les mateixes taules que fa servir l'app.</span></a>
+    <a class="prova" href="escola.html"><b>La Fàbrica de Superherois</b><span>Vuit sessions d'aula on cap nom real surt del centre.</span></a>
+    <a class="prova" href="online.html"><b>El directori</b><span>Qui hi ha, per territori, amb la firma comprovada a cada fitxa.</span></a>
+  </div>
+</section>
+
+<!-- ═══ 5 · Projectes com el Comando ══════════════════════════════════════ -->
+<section id="transmedia">
+  <h2>Projectes transmèdia · el cas del Comando Molekulon</h2>
+  <p class="sub">Quan el que cal no és una web sinó una història que faci moure algú.</p>
+
+  <p class="lead">El Comando Molekulon és una tribu de superherois de barri: un còmic, un roster de personatges, un joc i un reclutament que acaba amb algú donant d'alta el que ja fa al seu carrer. És l'exemple del model complet — <strong>narrativa, joc i registre real, la mateixa peça</strong>— i és el que es replica quan un ajuntament, una fundació o una marca necessita que una campanya deixi alguna cosa i no només impressions.</p>
+
+  <div class="taula-scroll">
+  <table class="rt">
+    <thead><tr><th>Peça</th><th>Què fa</th></tr></thead>
+    <tbody>
+      <tr><td><b>La història</b></td><td>Dona un motiu per entrar que no és «apunta't». Es llegeix sola i no demana res.</td></tr>
+      <tr><td><b>Els personatges</b></td><td>Cadascú s'hi reconeix en un: qui arregla, qui cuida, qui presta, qui ensenya. El reconeixement és el que converteix un lector en participant.</td></tr>
+      <tr><td><b>El joc</b></td><td>Ensenya el sistema jugant-hi, i cada nivell porta al mòdul de formació de debò que li toca.</td></tr>
+      <tr><td><b>El registre</b></td><td>El que es fa de veritat queda signat i comptat. Sense això la campanya s'acaba el dia que s'acaba el pressupost.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="lead" style="margin-top:1rem">Es contracta sencer o per peces, i sempre amb la mateixa condició: <strong>ha d'acabar en alguna cosa registrada</strong>. Una campanya que només genera visites no la fem, perquè no la sabem defensar sis mesos després.</p>
+</section>
+
+<!-- ═══ 6 · El valor formatiu ═════════════════════════════════════════════ -->
+<section id="formatiu">
+  <h2>I el que s'aprèn pel camí</h2>
+  <p class="sub">Això no s'entrega tancat: s'entrega ensenyant-lo. El que sabem fer amb IA es pot transmetre, i transmetre'l és la meitat de la feina.</p>
+
+  <div class="taula-scroll">
+  <table class="rt">
+    <thead><tr><th>Es treballa</th><th>Perquè sense això…</th></tr></thead>
+    <tbody>
+      <tr><td><b>Escriure l'encàrrec com una especificació</b></td><td>…es demana el que sona bé i s'obté el que sona bé. Un encàrrec sense criteri de correcte és un desig.</td></tr>
+      <tr><td><b>Distingir generar de decidir</b></td><td>…s'accepta la primera versió perquè és plausible. Que soni bé i que sigui cert són dues comprovacions diferents.</td></tr>
+      <tr><td><b>Convertir cada lliçó en una guarda</b></td><td>…el mateix error torna quan canvia la persona. Una regla escrita al cap de algú no és una regla del sistema.</td></tr>
+      <tr><td><b>Comprovar contra la realitat, no contra el model</b></td><td>…es prova el que hauria d'haver passat. La prova ha d'obrir el fitxer que llegeix el client.</td></tr>
+      <tr><td><b>Decidir què no toca la màquina</b></td><td>…s'automatitza el que era una relació, i es descobreix tard.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="lead" style="margin-top:1rem">Aquestes cinc coses són <strong>el moll de la formació amb IA</strong> i es fan sobre el vostre cas, no sobre un d'inventat: el primer flux que s'automatitza és un de vostre, i el primer intangible que es mesura també.</p>
+</section>
+
+<!-- ═══ 7 · Què es contracta ══════════════════════════════════════════════ -->
+<section id="contractar">
+  <h2>Què es contracta</h2>
+  <p class="sub">Els preus, el que els mou i d'on surten són al catàleg. Cap és tancat abans de dimensionar la feina.</p>
+
+  <div class="proves">
+    <a class="prova" href="../index.html#pk-fluxos-ia"><b>Fluxos amb IA</b><span>Consultoria i formació: el mapa, els tangibles automatitzats i els intangibles mesurats.</span></a>
+    <a class="prova" href="../index.html#pk-web-ia"><b>Web o eina feta amb IA</b><span>La peça funcionant, amb les guardes que la mantenen honesta i el vostre equip sabent-les fer servir.</span></a>
+    <a class="prova" href="../index.html#pk-transmedia"><b>Projecte transmèdia</b><span>Història, joc i registre, com el Comando Molekulon.</span></a>
+    <a class="prova" href="../index.html#pk-ia-amb-frens"><b>IA amb frens · sessió de viabilitat</b><span>Què es pot automatitzar amb garanties i què no, amb el criteri escrit.</span></a>
+  </div>
+
+  <div class="tanca">
+    <p><strong>D'on surt el preu.</strong> De les hores per rol que surten del mapa de valor, al preu del nivell de qui les farà, més les despeses directes al seu preu de factura. La proposta ensenya la taula sencera.</p>
+    <p><a href="../index.html#cost">Com es calcula un preu, pas a pas →</a></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><a href="../index.html">TeamTowers Humà</a> · <a href="formacio.html">Formació</a> · <a href="vna.html">Mapa de valor</a> · <a href="vedes.html">Les vedes</a></p>
+</footer>
+
+</body>
+</html>
