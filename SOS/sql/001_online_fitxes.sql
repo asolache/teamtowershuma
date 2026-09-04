@@ -52,6 +52,17 @@ create table if not exists public.online_fitxes (
   constraint online_firmada check (fitxa ? 'sig' and fitxa ? 'signer')
 );
 
+-- ── Camps nous ─────────────────────────────────────────────────────────────
+-- La fitxa és `jsonb` i per això afegir-hi camps **no és una migració**: el
+-- setembre del 2026 hi van entrar `nick` i `pais` i aquest fitxer no es va
+-- haver de tocar. Qui mana sobre què hi viatja és la llista `CAMPS` del client,
+-- que és on es decideix; Postgres només comprova la forma i la mida.
+--
+-- El corol·lari, que val la pena tenir escrit: **una fitxa antiga segueix sent
+-- vàlida**. No porta `nick` ni `pais`, i el client ha de pintar-la igual. Si
+-- algun dia un camp nou es fes obligatori, les fitxes de tothom deixarien de
+-- validar de cop i ningú entendria per què.
+
 -- Es llegeix sempre «l'última fitxa vàlida de cada did»: aquest és l'ordre.
 create index if not exists online_fitxes_did_creat on public.online_fitxes (did, creat desc);
 create index if not exists online_fitxes_creat on public.online_fitxes (creat desc);

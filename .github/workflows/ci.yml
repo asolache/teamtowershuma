@@ -227,6 +227,18 @@ jobs:
       - name: La pàgina d'IA compleix el que promet
         run: node SOS/tools/check-ia.js
 
+      # Els municipis surten de les taules de l'app, que és qui les fa servir
+      # per construir l'arbre de territoris. Dues llistes divergirien i la que
+      # es quedaria enrere seria la del directori, que ningú manté.
+      - name: La geografia del directori surt de l'app
+        run: node SOS/tools/build-geo.js --check
+
+      # El nick no identifica ningú —qui identifica és el did— i pel relé del
+      # xat no hi pot passar text en clar. Les dues coses es poden tornar
+      # falses sense que peti res.
+      - name: El nick, el territori i el relé del directori
+        run: node SOS/tools/check-nick.js
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests

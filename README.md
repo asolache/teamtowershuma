@@ -233,11 +233,13 @@ desviado:
 ```bash
 node SOS/tools/build-oferta.js        # el catálogo → portada + este README
 node SOS/tools/build-formularis.js    # los bloques compartidos → diagnóstico + presupuesto
+node SOS/tools/build-geo.js           # los municipios de la app → el directorio
 node SOS/tools/build-nav.js           # el menú → todas las páginas
 node SOS/tools/build-vedes.js         # el codex → SOS/vedes.html
 node SOS/tools/build-mapa.js          # el árbol → MAPA.md
 node SOS/tools/check-landing.js       # la portada: diccionarios y catálogo
 node SOS/tools/check-formularis.js    # los formularios: no envían nada solos
+node SOS/tools/check-nick.js          # el nick no identifica; por el relé solo pasa cifrado
 node SOS/tests/run.mjs                # la regresión entera
 ```
 

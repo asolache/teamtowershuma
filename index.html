@@ -8,19 +8,19 @@
          «projecte comunitari que no dura»— i no el nom intern del mètode. La versió
          anterior encapçalava amb «Value Network Analysis»: tres paraules en anglès
          que ningú del públic objectiu ha buscat mai. -->
-    <title>Projectes comunitaris que duren · Bancs de temps, cohesió i eines per a ajuntaments i entitats | TeamTowers Humà</title>
-    <meta name="description" content="Ajudem ajuntaments, consells comarcals i entitats a engegar bancs de temps, biblioteques de les coses i comunitats energètiques que no depenguin de dues persones. Diagnòstic gratuït en 3 minuts. Finançable amb subvencions.">
+    <title>Comunitats que aprenen, emprenen i estalvien · Consultoria, formació i dinamització per a empreses, ajuntaments i entitats | TeamTowers Humà</title>
+    <meta name="description" content="Consultoria, formació, dinamització i IA per a empreses, cooperatives, ajuntaments i entitats. Vint anys aixecant castells amb equips i posant en marxa projectes al territori. Diagnòstic gratuït en 3 minuts i el mètode de preu publicat.">
     <link rel="canonical" href="https://teamtowershuma.com/">
-    <meta property="og:title" content="Projectes veïnals que aguanten quan marxen els de sempre">
-    <meta property="og:description" content="Mètode, cohesió d'equips i una eina lliure perquè els projectes comunitaris del teu poble no visquin al cap de dues persones. Diagnòstic gratuït en 3 minuts.">
+    <meta property="og:title" content="Comunitats que aprenen, emprenen i estalvien amb consciència i eficiència">
+    <meta property="og:description" content="Mètode, cohesió d'equips i una eina lliure perquè el que engegueu no visqui al cap de dues persones. Per a empresa i per a administració. Diagnòstic gratuït en 3 minuts.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/">
     <meta property="og:locale" content="ca_ES">
     <meta property="og:locale:alternate" content="es_ES">
     <meta property="og:site_name" content="TeamTowers Humà">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Projectes veïnals que aguanten quan marxen els de sempre">
-    <meta name="twitter:description" content="Diagnòstic comunitari gratuït en 3 minuts. Per a ajuntaments, consells comarcals i entitats.">
+    <meta name="twitter:title" content="Comunitats que aprenen, emprenen i estalvien amb consciència i eficiència">
+    <meta name="twitter:description" content="Diagnòstic gratuït en 3 minuts. Per a empreses, cooperatives, ajuntaments i entitats.">
     <meta name="theme-color" content="#050507">
 
     <!-- Dades estructurades. Les preguntes són exactament les que es veuen a la
@@ -133,7 +133,13 @@
         .hero-cap { grid-area:cap; } .hero-cos { grid-area:cos; } .hero-visual { grid-area:vis; }
         .hero-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.5rem; display:flex; align-items:center; gap:.75rem; }
         .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--accent-indigo); }
-        .hero h1 { font-family:var(--sans); font-size:clamp(2.05rem,3.4vw,3.6rem); font-weight:700; line-height:1.1; letter-spacing:-.02em; margin-bottom:1.5rem; }
+        /* L'escala respon a la llargada del titular, no al revés. El titular va
+           passar de 54 a 76 caràcters i a 1440 px se n'anava a quatre línies,
+           que empenyien el botó principal per sota del plec —la cosa que la
+           prova de la primera pantalla vigila. Baixar el sostre i el mínim és
+           la resposta tipogràfica normal a un text més llarg; escurçar el que
+           s'ha de dir per encabir-hi una mida seria fer-ho al revés. */
+        .hero h1 { font-family:var(--sans); font-size:clamp(1.85rem,3vw,3rem); font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:1.3rem; }
         .hero h1 em { font-style:normal; color:var(--accent-blue); }
         .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.75; margin-bottom:1.6rem; max-width:540px; }
         .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
@@ -687,7 +693,7 @@
                     <span aria-hidden="true">·</span>
                     <a href="#cataleg" data-sec="public" data-i18n="hero.porta2">Ajuntaments, consells i entitats</a>
                 </div>
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Equips i comunitats que aguanten <em>quan marxen els de sempre</em></h1>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Comunitats que <em>aprenen, emprenen i estalvien</em> amb consciència i eficiència</h1>
                 <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Vint anys aixecant castells amb equips d'empresa i posant en marxa projectes al territori. <strong>El mateix mètode:</strong> eixamplar la base fins que marxar-ne un no tombi res.</p>
             </div>
             <div class="hero-cos">
@@ -2141,7 +2147,7 @@ ca: {
   'ben.ec3.t':'Compra col·lectiva i energia.','ben.ec3.d':'Agregar demanda i produir energia en cooperativa abarateix la factura de llum, materials o assegurances.',
   'ben.ec4.t':'Habitatge en cessió d\'ús.','ben.ec4.d':'Quota d\'ús per sota del mercat i sense especulació: accés estable a l\'habitatge a llarg termini.',
   'ben.note':'<span>→</span> Evidència qualitativa i xifres orientatives; l\'estalvi real depèn de cada projecte. Ens basem en la literatura d\'acció comunitària i en experiències pròpies com el Banc de Temps de León (2009) i Comunitats.org.',
-  'hero.h1':'Equips i comunitats que aguanten <em>quan marxen els de sempre</em>',
+  'hero.h1':'Comunitats que <em>aprenen, emprenen i estalvien</em> amb consciència i eficiència',
   'hero.desc':'Vint anys aixecant castells amb equips d\'empresa i posant en marxa projectes al territori. <strong>El mateix mètode:</strong> eixamplar la base fins que marxar-ne un no tombi res.',
   'hero.porta1':'Empreses i cooperatives','hero.porta2':'Ajuntaments, consells i entitats',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
@@ -2471,7 +2477,7 @@ es: {
   'ben.ec3.t':'Compra colectiva y energía.','ben.ec3.d':'Agregar demanda y producir energía en cooperativa abarata la factura de luz, materiales o seguros.',
   'ben.ec4.t':'Vivienda en cesión de uso.','ben.ec4.d':'Cuota de uso por debajo del mercado y sin especulación: acceso estable a la vivienda a largo plazo.',
   'ben.note':'<span>→</span> Evidencia cualitativa y cifras orientativas; el ahorro real depende de cada proyecto. Nos basamos en la literatura de acción comunitaria y en experiencias propias como el Banco de Tiempo de León (2009) y Comunitats.org.',
-  'hero.h1':'Equipos y comunidades que aguantan <em>cuando se van los de siempre</em>',
+  'hero.h1':'Comunidades que <em>aprenden, emprenden y ahorran</em> con conciencia y eficiencia',
   'hero.desc':'Veinte años levantando castells con equipos de empresa y poniendo en marcha proyectos en el territorio. <strong>El mismo método:</strong> ensanchar la base hasta que irse uno no tumbe nada.',
   'hero.porta1':'Empresas y cooperativas','hero.porta2':'Ayuntamientos, consejos y entidades',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',

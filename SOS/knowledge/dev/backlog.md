@@ -1045,6 +1045,95 @@ de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
 
+### El pomodoro i l'oferta navegable · fet
+
+Dues coses que s'assemblen a coses que hi ha a tot arreu, i el que s'ha
+construït és exactament el que les fa diferents.
+
+- **El pomodoro acaba al registre.** Un comptador enrere no calia construir-lo;
+  el que calia és el final: aquí el temps que dones és una aportació signada, i
+  el forat era que ningú apunta les hores perquè quan les apuntaria ja fa dies
+  que van passar. Es pot donar per fet abans d'hora —el que compta és la feina,
+  no el rellotge—, en corre un de sol, viu al navegador i no al registre, i desa
+  **l'hora d'acabar** i no els minuts que falten: un mòbil que s'adorm atura el
+  temporitzador i el compte ha de seguir sent cert. Veda 145.
+- **La biblioteca i el banc, per zona, tema i els meus grups.** Es miraven node
+  per node: per saber si algú de la comarca tenia un trepant calia entrar a cada
+  biblioteca. Ara `searchSupply` accepta els **mateixos tres eixos que la
+  pantalla de tasques** —zona amb les dues direccions, tema, i els meus grups—
+  perquè qui aprèn a navegar en un lloc no ha de tornar a aprendre. I les
+  coincidències hi passen també: proposar un intercanvi amb algú que el filtre
+  amaga és proposar el que ningú pot fer.
+- **Les dues pestanyes tenen sortida.** Un botó a la biblioteca i al banc obre
+  la cerca creuada amb aquell àmbit ja triat: la pestanya passa de ser un cul de
+  sac a ser un punt de partida.
+
+**Dos defectes trobats pel camí i arreglats**, cap dels dos denunciat per res:
+
+- `var(--accent-green)` s'usava a **quatre llocs** de l'app i el token no
+  existeix en aquest fitxer (és el de la portada). Una variable CSS que no
+  resol invalida la declaració: quatre colors que no s'aplicaven mai.
+- `openSupplySearch(prefill)` només llegia `prefill.q`, i hi havia una crida
+  que hi passava un text —`openSupplySearch(g.label)`. `'fusteria'.q` és
+  `undefined`: la cerca s'obria en blanc i qui hi clicava tornava a escriure el
+  que acabava de llegir. Ara accepta les dues formes.
+
+**Guardes**: quatre regles noves a `check-tasques.js`, provades trencant-les.
+**Proves**: `test-pomodoro.mjs`.
+
+**El que queda obert:**
+
+- **El pomodoro no sap quantes estones portes.** Comptar-les voldria dir desar
+  un historial, i el que ja es desa de debò són les hores registrades: abans de
+  duplicar-ho, val la pena mirar si el registre ja respon la pregunta.
+- **La durada és fixa a 25 minuts.** Fer-la triable és fàcil; decidir si val la
+  pena és una altra cosa.
+
+### El directori endollat al SOS · nick, territori i xat · fet
+
+Quatre coses que anaven juntes perquè totes surten del mateix: **el directori i
+l'app eren dues cases que no es parlaven**, i qui passava d'una a l'altra havia
+de tornar a escriure el que ja tenia.
+
+- **`@nick`.** Sense una manera d'anomenar algú, parlar d'una persona vol dir
+  enganxar-ne el `did`. Es normalitza abans de firmar, avisa si ja el fa servir
+  algú, i **no bloqueja**: aquí ningú reparteix noms. La pàgina diu que qui
+  identifica és la firma. Veda 144.
+- **El territori es tria, no s'escriu.** `build-geo.js` llegeix `CAT_GEO` i
+  `EUS_GEO` de l'app —188 municipis de Catalunya i 125 d'Euskadi, que és qui
+  els fa servir per construir l'arbre— i els escriu al directori. La comarca es
+  dedueix del municipi i no es demana. Qui és de fora tria país d'una llista de
+  78 i escriu el poble: una llista incompleta no ha de deixar ningú fora.
+- **El camí des de l'app.** Des del perfil, «Publica'm al directori» obre
+  `online.html#alta-sos` amb tot portat. **Cap còpia de dades**: el directori i
+  l'app es serveixen del mateix lloc i el directori ja podia llegir el que tens
+  apuntat. Copiar-ho a `localStorage` hauria estat una segona còpia que
+  envelliria. I arribar-hi no publica res: la previsualització segueix sent
+  l'última paraula (veda 47).
+- **El xat, endollat.** `online.html` xifrava el missatge i després no tenia on
+  enviar-lo: `__SOS_ONLINE_RELAY` era un ganxo que no implementava ningú. Ara hi
+  ha relé, i **sense configurar res**: el directori ja parla amb aquest projecte
+  Supabase per llegir les fitxes, i el canal de temps real hi va per sobre amb
+  la mateixa clau publicable. Es connecta en obrir una conversa i no en carregar
+  la pàgina, i pel canal hi passa el blob xifrat i mai el text.
+
+**Guardes**: `check-nick.js` (el nick no identifica, la geografia surt de l'app,
+pel relé només hi passa xifrat) i `build-geo.js --check`. Sis regles provades
+trencant-les. **Proves**: `test-nick.mjs`.
+
+**El que queda obert d'aquesta onada:**
+
+- **El nick a la permaweb.** Ara viu a la fitxa firmada i prou. Ancorar-lo
+  voldria dir decidir què passa quan dos el reclamen, i això és una decisió de
+  governança abans que de codi.
+- **El kanban com a lloc únic de registre i interacció**, amb pomodoro i
+  comptador. No s'ha tocat.
+- **La biblioteca i el banc amb filtres per grup, zona i ATG.** No s'ha tocat.
+- **`uneix-te.html` substituïda per la landing nova.** No s'ha tocat, i cal
+  aclarir quina landing.
+- **Provar el relé de debò.** Des d'aquí el proxy bloqueja `supabase.co`, així
+  que el que s'ha comprovat és el camí i no la connexió.
+
 ### El hero obert, el preu sense tarifa publicada, i el formulari de pressupost · fet
 
 Set coses que es van decidir juntes perquè totes surten de la mateixa: **la

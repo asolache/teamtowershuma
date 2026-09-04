@@ -124,6 +124,55 @@ else if (/canWrite\(nd\)/.test(cures) && /meu\?/.test(cures))
   ok('les alertes de cures diuen el nom només a qui pot escriure al node');
 else bad('les alertes de cures porten noms sense comprovar el permís: la pantalla comuna s\'ha saltat el gate de `renderCures`');
 
+/* ── 6 · El pomodoro acaba en un registre, no en una felicitació ───────────
+   Un comptador enrere és un giny que hi ha a mil llocs. El que el fa d'aquesta
+   casa és **què passa quan s'acaba**: aquí el temps que dones és una aportació
+   signada, i el forat era que ningú apunta les hores perquè quan les apuntaria
+   ja fa dies que van passar.
+
+   Si algun dia el final es converteix en un «bona feina!», el giny s'haurà
+   convertit en el que és a tot arreu: una manera de sentir-se productiu sense
+   que en quedi res. */
+const pomo = (CODI.match(/function renderPomo\(\)\{[\s\S]*?\n\}/) || [''])[0];
+if (!pomo) bad('no es troba `renderPomo`: el pomodoro no hi és');
+else {
+  if (/openLedgerEntryModal|openLogValue/.test(pomo))
+    ok('el pomodoro acaba oferint apuntar el temps al registre');
+  else bad('el pomodoro no porta a registrar res — seria un comptador i prou');
+  /* Apuntar-lo abans d'hora ha de ser possible: has acabat la feina en deu
+     minuts i el que compta és la feina. */
+  if (/Ja està fet/.test(pomo)) ok('i es pot donar per fet abans que s\'acabi el temps');
+  else bad('només es pot registrar quan el rellotge arriba a zero: el que compta és la feina, no el comptador');
+}
+if (/localStorage\.setItem\(POMO_ID/.test(CODI) && !/kanban\.cards[^\n]*pomo/i.test(CODI))
+  ok('i viu al navegador, no al registre: un pomodoro a mitges no és cap fet');
+else bad('el pomodoro s\'escriu al node — el que va al registre és l\'hora feta, quan la persona ho confirma');
+/* Es desa l'hora d'acabar i no els minuts que falten: així el compte segueix
+   sent cert encara que el temporitzador s'aturi perquè el mòbil s'ha adormit. */
+if (/fi:Date\.now\(\)\+/.test(CODI)) ok('i desa l\'hora d\'acabar, no els minuts que falten');
+else bad('el pomodoro desa un compte enrere: si el mòbil s\'adorm, mentirà');
+
+/* ── 7 · L'oferta es pot navegar pels mateixos eixos que les tasques ───────
+   La biblioteca i el banc es miraven node per node. Els eixos són els mateixos
+   que aquí a posta: qui aprèn a navegar en un lloc no ha de tornar a aprendre. */
+const cerca = (CODI.match(/function searchSupply\([\s\S]*?\n\}/) || [''])[0];
+if (!cerca) bad('no es troba `searchSupply`');
+else {
+  if (/ambit,dins,tema,meus/.test(cerca)) ok('la cerca d\'oferta accepta zona, tema i els meus grups');
+  else bad('la cerca d\'oferta no té els tres eixos: la biblioteca i el banc tornen a ser node per node');
+  if (/subtreeIds\(ambit\)/.test(cerca) && /ancestors\(ambit\)/.test(cerca))
+    ok('i les dues direccions: cap endins el subarbre, cap enfora el que et conté');
+  else bad('la cerca d\'oferta només sap mirar en una direcció');
+  if (/filter\(id=>id!==ambit\)/.test(cerca))
+    ok('i cap enfora exclou l\'àmbit mateix, com a les tasques');
+  else bad('cap enfora inclou l\'àmbit: mirar amunt tornaria a ensenyar el de casa');
+}
+/* I les coincidències han de passar pels mateixos filtres: proposar un
+   intercanvi amb algú que el filtre amaga és proposar el que ningú pot fer. */
+if (/function supplyMatches\(q,\{from,kinds,onlyAvailable,domain,ambit,dins,tema,meus\}/.test(CODI))
+  ok('i les coincidències es filtren igual que la llista');
+else bad('les coincidències no passen pels filtres: proposarien intercanvis amb gent amagada');
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a les tasques.`
-  : '\n✅ Una safata, les columnes del tauler, i els dos eixos amb les dues direccions.');
+  : '\n✅ Una safata, les columnes del tauler, els dos eixos amb les dues direccions, i el temps que es compta acaba al registre.');
 process.exit(fails ? 1 : 0);

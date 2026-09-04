@@ -62,7 +62,10 @@ button[disabled]{opacity:.45;cursor:not-allowed}
 .fitxa{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.1rem;
   display:flex;flex-direction:column;gap:.55rem}
 .fitxa h3{font-size:1.05rem}
+/* El nick va al costat del nom i més fluix: és com et diuen, no qui ets. */
+.fitxa h3 .nick{font-family:var(--mono);font-size:.78rem;font-weight:400;color:var(--purple)}
 .fitxa .lloc{font-family:var(--mono);font-size:.7rem;color:var(--blue);letter-spacing:.05em}
+.fitxa .lloc .com{color:var(--muted)}
 .linia{display:flex;gap:.45rem;align-items:flex-start;font-size:.87rem;color:var(--light)}
 .linia .dir{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;padding:.16rem .4rem;border-radius:3px;
   flex-shrink:0;margin-top:.15rem}
@@ -102,6 +105,17 @@ textarea{min-height:70px;resize:vertical}
   border-radius:8px;padding:.4rem .5rem .4rem .7rem;font-size:.87rem}
 .llista li span{flex:1}
 .mini{font-size:.78rem;color:var(--muted);margin-top:.4rem}
+/* Un avís de xoc de nick no és un error: és una cosa que has de saber abans de
+   decidir. Taronja i no vermell, perquè es pot publicar igualment. */
+.mini.avis-xoc{color:var(--orange)}
+.opc{font-weight:400;color:var(--muted);font-size:.8em}
+/* L'arrova és part del camp i no del que escrius: així ningú l'escriu dues
+   vegades ni es pregunta si l'ha de posar. */
+.nick-camp{display:flex;align-items:center;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden}
+.nick-camp .nick-at{padding:0 .1rem 0 .7rem;color:var(--muted);font-family:var(--mono)}
+.nick-camp input{border:0;background:transparent;flex:1;font-family:var(--mono)}
+.nick-camp:focus-within{border-color:var(--indigo)}
 
 /* La previsualització: el que sortirà, tal com sortirà. */
 .previ{border:1px solid var(--green);border-radius:10px;background:rgba(0,230,118,.05);padding:1rem;margin-top:.4rem}
@@ -121,6 +135,10 @@ textarea{min-height:70px;resize:vertical}
 .jo-sec h3{margin:0 0 .5rem;font-size:.95rem}
 
 /* ── Xat ───────────────────────────────────────────────────────────────── */
+/* L'estat de la sala. Va dins de l'avís i no a la barra de dalt perquè el que
+   informa és aquesta conversa: si la sala no s'obre, el que escriguis no surt,
+   i això s'ha de llegir al costat del camp on l'escrius. */
+.rl-estat{margin:.5rem 0 0;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
 .xat-fils{display:flex;flex-direction:column;gap:.5rem;min-height:180px;max-height:44vh;overflow-y:auto;
   padding:.3rem;background:var(--bg);border:1px solid var(--border);border-radius:10px}
 .msg{max-width:82%;padding:.5rem .75rem;border-radius:12px;font-size:.88rem;background:var(--card);
@@ -261,8 +279,35 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
       <input type="text" id="fNom" maxlength="60" placeholder="Marta Vidal, o Ca la Marta" required>
       <p class="mini">Pot ser el teu nom, un àlies o el nom de l'entitat. El que escriguis aquí és el que veurà tothom.</p>
 
-      <label for="fMuni">Municipi</label>
-      <input type="text" id="fMuni" maxlength="60" placeholder="Torrelles de Foix" required>
+      <!-- El nick és **per dir-lo en veu alta**, no per identificar ningú: qui
+           identifica és el `did`, que surt de la teva clau i no el pot tenir
+           dos cops ningú. Per això aquí es pot avisar d'una coincidència però
+           no es pot bloquejar: no hi ha cap autoritat que reparteixi noms, i
+           inventar-ne una seria posar un porter a una xarxa que no en té. -->
+      <label for="fNick">El teu @nick <span class="opc">(opcional)</span></label>
+      <div class="nick-camp">
+        <span class="nick-at" aria-hidden="true">@</span>
+        <input type="text" id="fNick" maxlength="20" placeholder="marta-vidal" autocapitalize="none" autocorrect="off" spellcheck="false">
+      </div>
+      <p class="mini" id="nickAvis" aria-live="polite">Lletres, números i guions. Serveix perquè la gent et pugui anomenar; qui t'identifica de debò és la teva firma.</p>
+
+      <label for="fPais">On ets</label>
+      <select id="fPais">
+        <option value="cat">🏴 Catalunya</option>
+        <option value="eus">🏴 Euskadi</option>
+        <option value="altre">🌍 Un altre lloc</option>
+      </select>
+      <div id="blocMuni">
+        <label for="fMuni">Municipi</label>
+        <input type="text" id="fMuni" maxlength="60" placeholder="Torrelles de Foix" required list="llistaMuni" autocomplete="off">
+        <datalist id="llistaMuni"></datalist>
+        <p class="mini" id="muniAvis">Comença a escriure i tria'l de la llista: així la teva fitxa s'agrupa amb les del teu territori.</p>
+      </div>
+      <div id="blocPaisAltre" hidden>
+        <label for="fPaisAltre">País</label>
+        <select id="fPaisAltre"></select>
+        <p class="mini">Fora de Catalunya i d'Euskadi encara no tenim la divisió administrativa. El poble s'escriu a mà i el país queda al costat, que és el que permet agrupar-hi les fitxes.</p>
+      </div>
       <p class="mini">Només el municipi. No demanem l'adreça, i no la posis al text.</p>
 
       <label for="fCat">Què ofereixes</label>
@@ -389,6 +434,180 @@ const SUPA_URL = 'https://grkgrceioxktmbwdhvmm.supabase.co';
 const SUPA_KEY = 'sb_publishable_xsEfyOqJ5tJwaxcoH_CiNg_SlsqDZb1';
 const TAULA    = 'online_fitxes';
 const configurat = () => !!(SUPA_URL && SUPA_KEY);
+
+/* ── La geografia ────────────────────────────────────────────────────────────
+   Generada per `SOS/tools/build-geo.js` des de les taules `CAT_GEO` i `EUS_GEO`
+   de l'aplicació, que és qui les fa servir per construir l'arbre de territoris.
+   Escrites dues vegades divergirien, i la que es quedaria enrere seria aquesta.
+   No ho editis a mà. */
+/*GEO*/
+/* Generat per SOS/tools/build-geo.js des de CAT_GEO i EUS_GEO de l'app.
+   No ho editis a mà: canvia les taules de SOS/index.html i torna a generar.
+   Format 'Municipi|Comarca' per no repetir claus 313 vegades. */
+const GEO_CAT=[
+  'Avinyonet del Penedès|Alt Penedès','Les Cabanyes|Alt Penedès','Castellet i la Gornal|Alt Penedès','Castellví de la Marca|Alt Penedès',
+  'Font-rubí|Alt Penedès','Gelida|Alt Penedès','La Granada|Alt Penedès','Mediona|Alt Penedès',
+  'Olèrdola|Alt Penedès','Olesa de Bonesvalls|Alt Penedès','Pacs del Penedès|Alt Penedès','El Pla del Penedès|Alt Penedès',
+  'Pontons|Alt Penedès','Puigdàlber|Alt Penedès','Sant Cugat Sesgarrigues|Alt Penedès','Sant Llorenç d\'Hortons|Alt Penedès',
+  'Sant Martí Sarroca|Alt Penedès','Sant Pere de Riudebitlles|Alt Penedès','Sant Quintí de Mediona|Alt Penedès','Sant Sadurní d\'Anoia|Alt Penedès',
+  'Santa Fe del Penedès|Alt Penedès','Santa Margarida i els Monjos|Alt Penedès','Subirats|Alt Penedès','Torrelavit|Alt Penedès',
+  'Torrelles de Foix|Alt Penedès','Vilafranca del Penedès|Alt Penedès','Vilobí del Penedès|Alt Penedès','Canyelles|Garraf',
+  'Cubelles|Garraf','Olivella|Garraf','Sant Pere de Ribes|Garraf','Sitges|Garraf',
+  'Vilanova i la Geltrú|Garraf','Albinyana|Baix Penedès','L\'Arboç|Baix Penedès','Banyeres del Penedès|Baix Penedès',
+  'Bellvei|Baix Penedès','La Bisbal del Penedès|Baix Penedès','Bonastre|Baix Penedès','Calafell|Baix Penedès',
+  'Cunit|Baix Penedès','Llorenç del Penedès|Baix Penedès','Masllorenç|Baix Penedès','El Montmell|Baix Penedès',
+  'Sant Jaume dels Domenys|Baix Penedès','Santa Oliva|Baix Penedès','El Vendrell|Baix Penedès','Barcelona|Barcelonès',
+  'L\'Hospitalet de Llobregat|Barcelonès','Badalona|Barcelonès','Santa Coloma de Gramenet|Barcelonès','Sant Adrià de Besòs|Barcelonès',
+  'Cornellà de Llobregat|Baix Llobregat','Sant Boi de Llobregat|Baix Llobregat','El Prat de Llobregat|Baix Llobregat','Viladecans|Baix Llobregat',
+  'Castelldefels|Baix Llobregat','Gavà|Baix Llobregat','Sant Feliu de Llobregat|Baix Llobregat','Esplugues de Llobregat|Baix Llobregat',
+  'Molins de Rei|Baix Llobregat','Martorell|Baix Llobregat','Sant Vicenç dels Horts|Baix Llobregat','Sant Just Desvern|Baix Llobregat',
+  'Vallirana|Baix Llobregat','Terrassa|Vallès Occidental','Sabadell|Vallès Occidental','Sant Cugat del Vallès|Vallès Occidental',
+  'Rubí|Vallès Occidental','Cerdanyola del Vallès|Vallès Occidental','Ripollet|Vallès Occidental','Barberà del Vallès|Vallès Occidental',
+  'Sant Quirze del Vallès|Vallès Occidental','Castellar del Vallès|Vallès Occidental','Palau-solità i Plegamans|Vallès Occidental','Granollers|Vallès Oriental',
+  'Mollet del Vallès|Vallès Oriental','Les Franqueses del Vallès|Vallès Oriental','La Garriga|Vallès Oriental','Sant Celoni|Vallès Oriental',
+  'Cardedeu|Vallès Oriental','Parets del Vallès|Vallès Oriental','La Roca del Vallès|Vallès Oriental','Mataró|Maresme',
+  'El Masnou|Maresme','Premià de Mar|Maresme','Vilassar de Mar|Maresme','Pineda de Mar|Maresme',
+  'Malgrat de Mar|Maresme','Calella|Maresme','Arenys de Mar|Maresme','Argentona|Maresme',
+  'Canet de Mar|Maresme','Igualada|Anoia','Vilanova del Camí|Anoia','Piera|Anoia',
+  'Capellades|Anoia','Òdena|Anoia','Els Hostalets de Pierola|Anoia','Manresa|Bages',
+  'Sant Joan de Vilatorrada|Bages','Sant Fruitós de Bages|Bages','Súria|Bages','Cardona|Bages',
+  'Navàs|Bages','Sant Vicenç de Castellet|Bages','Vic|Osona','Manlleu|Osona',
+  'Torelló|Osona','Roda de Ter|Osona','Centelles|Osona','Tona|Osona',
+  'Berga|Berguedà','Puig-reig|Berguedà','Gironella|Berguedà','Moià|Moianès',
+  'Castellcir|Moianès','Girona|Gironès','Salt|Gironès','Sarrià de Ter|Gironès',
+  'Figueres|Alt Empordà','Roses|Alt Empordà','Castelló d\'Empúries|Alt Empordà','L\'Escala|Alt Empordà',
+  'Palafrugell|Baix Empordà','Sant Feliu de Guíxols|Baix Empordà','La Bisbal d\'Empordà|Baix Empordà','Palamós|Baix Empordà',
+  'Torroella de Montgrí|Baix Empordà','Blanes|Selva','Lloret de Mar|Selva','Santa Coloma de Farners|Selva',
+  'Tossa de Mar|Selva','Arbúcies|Selva','Olot|Garrotxa','Sant Joan les Fonts|Garrotxa',
+  'Besalú|Garrotxa','Banyoles|Pla de l\'Estany','Ripoll|Ripollès','Sant Joan de les Abadesses|Ripollès',
+  'Puigcerdà|Cerdanya','Lleida|Segrià','Alcarràs|Segrià','Almacelles|Segrià',
+  'Aitona|Segrià','Balaguer|Noguera','Artesa de Segre|Noguera','Ponts|Noguera',
+  'Tàrrega|Urgell','Agramunt|Urgell','Mollerussa|Pla d\'Urgell','Bellpuig|Urgell',
+  'Cervera|Segarra','Guissona|Segarra','Les Borges Blanques|Garrigues','Solsona|Solsonès',
+  'La Seu d\'Urgell|Alt Urgell','Tremp|Pallars Jussà','La Pobla de Segur|Pallars Jussà','Sort|Pallars Sobirà',
+  'El Pont de Suert|Alta Ribagorça','Vielha e Mijaran|Val d\'Aran','Tarragona|Tarragonès','Salou|Tarragonès',
+  'Vila-seca|Tarragonès','Torredembarra|Tarragonès','Roda de Berà|Tarragonès','Reus|Baix Camp',
+  'Cambrils|Baix Camp','Mont-roig del Camp|Baix Camp','Riudoms|Baix Camp','Valls|Alt Camp',
+  'Alcover|Alt Camp','Tortosa|Baix Ebre','L\'Ampolla|Baix Ebre','Deltebre|Baix Ebre',
+  'L\'Aldea|Baix Ebre','Amposta|Montsià','Sant Carles de la Ràpita|Montsià','Alcanar|Montsià',
+  'Ulldecona|Montsià','Móra d\'Ebre|Ribera d\'Ebre','Flix|Ribera d\'Ebre','Móra la Nova|Ribera d\'Ebre',
+  'Gandesa|Terra Alta','Montblanc|Conca de Barberà','L\'Espluga de Francolí|Conca de Barberà','Falset|Priorat'
+];
+const GEO_EUS=[
+  'Vitoria-Gasteiz|Quadrilla de Vitoria-Gasteiz','Llodio/Laudio|Quadrilla d\'Ayala/Aiara','Amurrio|Quadrilla d\'Ayala/Aiara','Artziniega|Quadrilla d\'Ayala/Aiara',
+  'Iruña Oka/Iruña de Oca|Quadrilla d\'Añana','Lantarón|Quadrilla d\'Añana','Agurain/Salvatierra|Quadrilla de Salvatierra/Agurain','Alegría-Dulantzi|Quadrilla de Salvatierra/Agurain',
+  'Asparrena|Quadrilla de Salvatierra/Agurain','Zuia|Quadrilla de Zuia','Legutio|Quadrilla de Zuia','Zigoitia|Quadrilla de Zuia',
+  'Aramaio|Quadrilla de Zuia','Laguardia|Quadrilla de Laguardia-Rioja Alavesa','Oyón-Oion|Quadrilla de Laguardia-Rioja Alavesa','Labastida/Bastida|Quadrilla de Laguardia-Rioja Alavesa',
+  'Elciego|Quadrilla de Laguardia-Rioja Alavesa','Campezo/Kanpezu|Quadrilla de Campezo-Montaña Alavesa','Bernedo|Quadrilla de Campezo-Montaña Alavesa','Bilbao|Bilbo Handia',
+  'Barakaldo|Bilbo Handia','Getxo|Bilbo Handia','Portugalete|Bilbo Handia','Santurtzi|Bilbo Handia',
+  'Basauri|Bilbo Handia','Sestao|Bilbo Handia','Leioa|Bilbo Handia','Galdakao|Bilbo Handia',
+  'Erandio|Bilbo Handia','Arrigorriaga|Bilbo Handia','Etxebarri|Bilbo Handia','Ortuella|Bilbo Handia',
+  'Muskiz|Bilbo Handia','Mungia|Uribe','Sopela|Uribe','Plentzia|Uribe',
+  'Gorliz|Uribe','Berango|Uribe','Urduliz|Uribe','Bakio|Uribe',
+  'Derio|Uribe','Zamudio|Uribe','Larrabetzu|Uribe','Durango|Durangaldea',
+  'Amorebieta-Etxano|Durangaldea','Abadiño|Durangaldea','Elorrio|Durangaldea','Ermua|Durangaldea',
+  'Berriz|Durangaldea','Iurreta|Durangaldea','Zaldibar|Durangaldea','Gernika-Lumo|Busturialdea',
+  'Bermeo|Busturialdea','Mundaka|Busturialdea','Busturia|Busturialdea','Muxika|Busturialdea',
+  'Markina-Xemein|Lea-Artibai','Ondarroa|Lea-Artibai','Lekeitio|Lea-Artibai','Berriatua|Lea-Artibai',
+  'Balmaseda|Enkarterri','Zalla|Enkarterri','Güeñes|Enkarterri','Sopuerta|Enkarterri',
+  'Gordexola|Enkarterri','Karrantza Harana/Valle de Carranza|Enkarterri','Igorre|Arratia-Nerbioi','Areatza|Arratia-Nerbioi',
+  'Zeanuri|Arratia-Nerbioi','Lemoa|Arratia-Nerbioi','Ugao-Miraballes|Arratia-Nerbioi','Orozko|Arratia-Nerbioi',
+  'Orduña/Urduña|Arratia-Nerbioi','Donostia/San Sebastián|Donostialdea','Errenteria|Donostialdea','Pasaia|Donostialdea',
+  'Lasarte-Oria|Donostialdea','Hernani|Donostialdea','Oiartzun|Donostialdea','Andoain|Donostialdea',
+  'Usurbil|Donostialdea','Astigarraga|Donostialdea','Urnieta|Donostialdea','Lezo|Donostialdea',
+  'Irun|Bidasoa Beherea','Hondarribia|Bidasoa Beherea','Eibar|Debabarrena','Elgoibar|Debabarrena',
+  'Deba|Debabarrena','Mutriku|Debabarrena','Mendaro|Debabarrena','Soraluze-Placencia de las Armas|Debabarrena',
+  'Arrasate/Mondragón|Debagoiena','Bergara|Debagoiena','Oñati|Debagoiena','Aretxabaleta|Debagoiena',
+  'Eskoriatza|Debagoiena','Antzuola|Debagoiena','Elgeta|Debagoiena','Beasain|Goierri',
+  'Ordizia|Goierri','Zumarraga|Goierri','Urretxu|Goierri','Legazpi|Goierri',
+  'Lazkao|Goierri','Idiazabal|Goierri','Ataun|Goierri','Segura|Goierri',
+  'Zegama|Goierri','Tolosa|Tolosaldea','Villabona|Tolosaldea','Ibarra|Tolosaldea',
+  'Anoeta|Tolosaldea','Alegia|Tolosaldea','Asteasu|Tolosaldea','Zizurkil|Tolosaldea',
+  'Berastegi|Tolosaldea','Zarautz|Urola Kosta','Azpeitia|Urola Kosta','Azkoitia|Urola Kosta',
+  'Zumaia|Urola Kosta','Orio|Urola Kosta','Getaria|Urola Kosta','Zestoa|Urola Kosta',
+  'Aia|Urola Kosta'
+];
+const PAISOS=[
+  ['ES','Espanya'],
+  ['FR','França'],
+  ['AD','Andorra'],
+  ['PT','Portugal'],
+  ['IT','Itàlia'],
+  ['DE','Alemanya'],
+  ['GB','Regne Unit'],
+  ['BE','Bèlgica'],
+  ['NL','Països Baixos'],
+  ['CH','Suïssa'],
+  ['AT','Àustria'],
+  ['IE','Irlanda'],
+  ['DK','Dinamarca'],
+  ['SE','Suècia'],
+  ['NO','Noruega'],
+  ['FI','Finlàndia'],
+  ['PL','Polònia'],
+  ['CZ','Txèquia'],
+  ['SK','Eslovàquia'],
+  ['HU','Hongria'],
+  ['RO','Romania'],
+  ['BG','Bulgària'],
+  ['GR','Grècia'],
+  ['HR','Croàcia'],
+  ['SI','Eslovènia'],
+  ['RS','Sèrbia'],
+  ['UA','Ucraïna'],
+  ['MA','Marroc'],
+  ['DZ','Algèria'],
+  ['TN','Tunísia'],
+  ['SN','Senegal'],
+  ['ML','Mali'],
+  ['GM','Gàmbia'],
+  ['GH','Ghana'],
+  ['NG','Nigèria'],
+  ['CM','Camerun'],
+  ['ZA','Sud-àfrica'],
+  ['EG','Egipte'],
+  ['US','Estats Units'],
+  ['CA','Canadà'],
+  ['MX','Mèxic'],
+  ['GT','Guatemala'],
+  ['HN','Hondures'],
+  ['SV','El Salvador'],
+  ['NI','Nicaragua'],
+  ['CR','Costa Rica'],
+  ['PA','Panamà'],
+  ['CU','Cuba'],
+  ['DO','República Dominicana'],
+  ['CO','Colòmbia'],
+  ['VE','Veneçuela'],
+  ['EC','Equador'],
+  ['PE','Perú'],
+  ['BO','Bolívia'],
+  ['BR','Brasil'],
+  ['PY','Paraguai'],
+  ['UY','Uruguai'],
+  ['AR','Argentina'],
+  ['CL','Xile'],
+  ['CN','Xina'],
+  ['JP','Japó'],
+  ['KR','Corea del Sud'],
+  ['IN','Índia'],
+  ['PK','Pakistan'],
+  ['BD','Bangladesh'],
+  ['PH','Filipines'],
+  ['ID','Indonèsia'],
+  ['TH','Tailàndia'],
+  ['VN','Vietnam'],
+  ['TR','Turquia'],
+  ['RU','Rússia'],
+  ['IL','Israel'],
+  ['PS','Palestina'],
+  ['LB','Líban'],
+  ['SY','Síria'],
+  ['AU','Austràlia'],
+  ['NZ','Nova Zelanda'],
+  ['XX','Un altre lloc']
+];
+/*/GEO*/
 
 /* ── Les categories, les mateixes que l'aplicació ────────────────────────────
    Si aquí se n'inventessin d'altres, el que es publiqui des del directori no
@@ -534,15 +753,27 @@ const FITXA_TIPUS='sos-online-fitxa';
 /* Els únics camps que viatgen. Escriure la llista i publicar només el que hi és
    evita el descuit de sempre: afegir un camp al formulari per provar i que
    acabi sortint de casa sense que ningú ho decideixi. */
-const CAMPS=['@type','v','did','nom','municipi','ofereix','busca','exPub','retirada','at'];
-function bastirFitxa({nom,municipi,ofereix,busca,retirada,did,exPub}){
+const CAMPS=['@type','v','did','nom','nick','municipi','pais','ofereix','busca','exPub','retirada','at'];
+/* El nick es normalitza **abans** de firmar, no en pintar-lo. Si es normalitzés
+   només a la pantalla, dues fitxes amb «Marta_Vidal» i «marta-vidal» tindrien
+   firmes diferents del mateix nom i cap manera de saber que xoquen. */
+function normNick(s){
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9-]+/g,'-').replace(/-+/g,'-').replace(/^-+|-+$/g,'').slice(0,20);
+}
+function bastirFitxa({nom,nick,municipi,pais,ofereix,busca,retirada,did,exPub}){
   const neteja=l=>(l||[]).slice(0,12).map(x=>({
     cat:CAT[x.cat]?x.cat:'altres',
     txt:String(x.txt||'').trim().slice(0,80)
   })).filter(x=>x.txt);
   const f={'@type':FITXA_TIPUS,v:1,did,
     nom:String(nom||'').trim().slice(0,60),
+    nick:normNick(nick),
     municipi:String(municipi||'').trim().slice(0,60),
+    /* Codi ISO de dues lletres o el codi del territori (`cat`, `eus`). Un camp
+       de dues o tres lletres i no el nom escrit: els noms de país es tradueixen
+       i llavors no agrupen res. */
+    pais:String(pais||'').trim().toLowerCase().slice(0,3),
     ofereix:neteja(ofereix),busca:neteja(busca),
     exPub:exPub||null,at:now()};
   if(retirada)f.retirada=true;
@@ -602,7 +833,12 @@ const S={fitxes:[],descartades:[],jo:null,meva:null,q:'',dir:'',nomesMeu:false,d
    cercador que només mirés una d'aquestes obligaria a endevinar per quina
    paraula està desada la cosa, que és el problema que venia a resoldre. */
 function textCercable(f){
-  return [f.nom,f.municipi,
+  /* El nick hi entra amb i sense l'arrova: qui el busca l'escriurà de les dues
+     maneres i cap de les dues ha de tornar zero resultats. I la comarca també,
+     encara que no sigui a la fitxa: es dedueix del municipi, i buscar «Alt
+     Penedès» ha de portar a la gent de l'Alt Penedès. */
+  const com=f.municipi?comarcaDe(f.municipi,f.pais==='eus'?'eus':'cat'):'';
+  return [f.nom,f.municipi,com,f.nick?'@'+f.nick+' '+f.nick:'',
     ...(f.ofereix||[]).map(x=>x.txt+' '+catMeta(x.cat).label),
     ...(f.busca||[]).map(x=>x.txt+' '+catMeta(x.cat).label)
   ].join(' ').toLowerCase();
@@ -689,9 +925,18 @@ function pintaFitxes(){
   }
   cont.innerHTML=llista.map(f=>{
     const meva=S.jo&&f.did===S.jo.did;
+    /* La comarca surt al costat del poble encara que la fitxa no la porti: es
+       dedueix de la llista, i és el que fa que algú de fora sàpiga on cau
+       Font-rubí. El país només si no és d'aquí, perquè dir «Catalunya» a totes
+       les fitxes seria soroll. */
+    const com=comarcaDe(f.municipi,f.pais==='eus'?'eus':'cat');
+    const forà=f.pais&&f.pais!=='cat'&&f.pais!=='eus'
+      ? (PAISOS.find(p=>p[0]===f.pais.toUpperCase())||[])[1]||'' : '';
     return '<article class="fitxa">'+
-      '<h3>'+esc(f.nom)+'</h3>'+
-      '<div class="lloc">📍 '+esc(f.municipi)+'</div>'+
+      '<h3>'+esc(f.nom)+(f.nick?' <span class="nick">@'+esc(f.nick)+'</span>':'')+'</h3>'+
+      '<div class="lloc">📍 '+esc(f.municipi)+
+        (com?' <span class="com">· '+esc(com)+'</span>':'')+
+        (forà?' <span class="com">· '+esc(forà)+'</span>':'')+'</div>'+
       (f.ofereix||[]).map(x=>liniaHTML(x,'ofereix')).join('')+
       (f.busca||[]).map(x=>liniaHTML(x,'busca')).join('')+
       '<footer>'+
@@ -823,8 +1068,16 @@ async function portaPerfil(){
       return;
     }
     if(p.nom)$('#fNom').value=p.nom;
-    if(p.municipi)$('#fMuni').value=p.municipi;
+    if(p.municipi){
+      $('#fMuni').value=p.municipi;
+      /* Si el poble és a una de les dues llistes, el territori se sap i no cal
+         preguntar-lo. Si no hi és, es deixa on estava: endevinar-lo malament
+         és pitjor que no endevinar-lo. */
+      if(comarcaDe(p.municipi,'eus'))$('#fPais').value='eus';
+      else if(comarcaDe(p.municipi,'cat'))$('#fPais').value='cat';
+    }
     S.esborrany={ofereix:p.ofereix,busca:p.busca};
+    pintaMunicipis();
     pintaLlistes();
     avis.textContent='Portat del SOS: '+p.ofereix.length+' cosa'+(p.ofereix.length===1?'':'es')+
       ' que ofereixes i '+p.busca.length+' que busques. Encara no s\'ha publicat res — '+
@@ -849,12 +1102,85 @@ function pintaLlistes(){
 /* La previsualització no és decorativa: és el contracte. El que hi surt és el
    que s'enviarà, camp per camp, i el bloc de sota diu el que NO s'envia —que
    és el que la gent de debò es pregunta. */
+/* ── On ets ──────────────────────────────────────────────────────────────────
+   Tres estats i no dos: Catalunya, Euskadi i la resta. Els dos primers tenen
+   la divisió administrativa a l'app i per això el municipi es tria d'una
+   llista amb la comarca al costat; el tercer no la té, i llavors el poble
+   torna a ser text lliure amb el país al costat.
+
+   El `datalist` és nadiu: escrivint filtra sol, funciona amb teclat i a mòbil,
+   i no cal cap component. I com que no obliga a triar de la llista, qui visqui
+   en un poble que no hi és el pot escriure igualment —una llista incompleta no
+   ha de deixar ningú fora. */
+function omplirPaisos(){
+  $('#fPaisAltre').innerHTML=PAISOS.map(([c,n])=>'<option value="'+c+'">'+esc(n)+'</option>').join('');
+}
+function pintaMunicipis(){
+  const on=$('#fPais').value;
+  const altre=on==='altre';
+  $('#blocMuni').hidden=false;
+  $('#blocPaisAltre').hidden=!altre;
+  const llista=on==='cat'?GEO_CAT:on==='eus'?GEO_EUS:[];
+  $('#llistaMuni').innerHTML=llista.map(x=>{
+    const [m,c]=x.split('|');
+    return '<option value="'+esc(m)+'">'+(c?esc(c):'')+'</option>';
+  }).join('');
+  $('#muniAvis').textContent=altre
+    ? 'Escriu el poble o la ciutat tal com se’n diu allà.'
+    : 'Comença a escriure i tria’l de la llista: així la teva fitxa s’agrupa amb les del teu territori.';
+  pintaPrevi();
+}
+/* La comarca no es demana: se sap. Buscar-la aquí i no fer-la escriure evita
+   l'error de sempre —que dues persones del mateix poble n'escriguin dues de
+   diferents— i no afegeix cap camp al formulari. */
+function comarcaDe(muni,on){
+  const llista=on==='cat'?GEO_CAT:on==='eus'?GEO_EUS:[];
+  const n=(muni||'').trim().toLowerCase();
+  const t=llista.find(x=>x.split('|')[0].toLowerCase()===n);
+  return t?t.split('|')[1]:'';
+}
+function paisActual(){
+  const on=$('#fPais').value;
+  return on==='altre'?$('#fPaisAltre').value.toLowerCase():on;
+}
+
+/* ── El nick ─────────────────────────────────────────────────────────────────
+   No hi ha registre de noms i no n'hi pot haver: qui reparteix noms mana, i
+   aquesta xarxa no té ningú que mani. El que sí que es pot fer és **dir-te si
+   ja el fa servir algú**, amb el directori que ja tens carregat al davant, i
+   deixar-te decidir. La identitat segueix sent el `did`. */
+function avisNick(){
+  const cru=$('#fNick').value;
+  const nick=normNick(cru);
+  const el=$('#nickAvis');
+  if(!nick){
+    el.textContent='Lletres, números i guions. Serveix perquè la gent et pugui anomenar; qui t\'identifica de debò és la teva firma.';
+    el.classList.remove('avis-xoc');pintaPrevi();return;
+  }
+  const meu=S.jo?S.jo.did:'';
+  const xoc=(S.fitxes||[]).filter(f=>f&&f.nick===nick&&f.did!==meu);
+  if(xoc.length){
+    el.textContent='Aquest @'+nick+' ja el fa servir algú altre al directori. Pots posar-l\'hi igualment '+
+      '—ningú reparteix noms aquí— però sereu dos, i qui us busqui haurà de mirar la firma per saber qui és qui.';
+    el.classList.add('avis-xoc');
+  }else{
+    el.textContent='@'+nick+(cru.trim()!==nick?' (així és com quedarà escrit)':'')+' · lliure ara mateix al directori.';
+    el.classList.remove('avis-xoc');
+  }
+  pintaPrevi();
+}
+
 function pintaPrevi(){
   const nom=$('#fNom').value.trim(),muni=$('#fMuni').value.trim();
+  const nick=normNick($('#fNick').value),on=$('#fPais').value;
+  const com=comarcaDe(muni,on);
   const o=S.esborrany.ofereix,b=S.esborrany.busca;
   const files=[];
   files.push(['Nom',nom||'—']);
-  files.push(['Municipi',muni||'—']);
+  if(nick)files.push(['Nick','@'+nick]);
+  files.push(['Municipi',(muni||'—')+(com?' ('+com+')':'')]);
+  files.push(['On',on==='cat'?'Catalunya':on==='eus'?'Euskadi':
+    ((PAISOS.find(p=>p[0]===$('#fPaisAltre').value)||[])[1]||'—')]);
   if(o.length)files.push(['Ofereix',o.map(x=>catMeta(x.cat).ic+' '+x.txt).join(' · ')]);
   if(b.length)files.push(['Busca',b.map(x=>catMeta(x.cat).ic+' '+x.txt).join(' · ')]);
   files.push(['Firma',S.jo?S.jo.did.slice(0,26)+'…':'—']);
@@ -868,12 +1194,18 @@ function obreAlta(){
   if(S.meva){
     $('#altaTitol').textContent='Edita la teva fitxa';
     $('#fNom').value=S.meva.nom;$('#fMuni').value=S.meva.municipi;
+    $('#fNick').value=S.meva.nick||'';
+    const p=S.meva.pais||'';
+    if(p==='cat'||p==='eus')$('#fPais').value=p;
+    else if(p){$('#fPais').value='altre';$('#fPaisAltre').value=p.toUpperCase();}
     S.esborrany={ofereix:(S.meva.ofereix||[]).slice(),busca:(S.meva.busca||[]).slice()};
     $('#btnRetira').hidden=false;
   }else{
     $('#altaTitol').textContent='La teva fitxa';
     $('#btnRetira').hidden=true;
   }
+  pintaMunicipis();
+  avisNick();
   pintaLlistes();
   $('#dlgAlta').showModal();
 }
@@ -883,7 +1215,8 @@ async function publica({retirada}={}){
   if(!retirada&&!S.esborrany.ofereix.length&&!S.esborrany.busca.length){
     alert('Posa almenys una cosa que ofereixis o que busquis: si no, ningú et podrà trobar per res.');return;}
   const id=await getIdentity();
-  const f=bastirFitxa({nom,municipi:muni,ofereix:S.esborrany.ofereix,busca:S.esborrany.busca,
+  const f=bastirFitxa({nom,nick:$('#fNick').value,municipi:muni,pais:paisActual(),
+    ofereix:S.esborrany.ofereix,busca:S.esborrany.busca,
     retirada:!!retirada,did:id.did,exPub:id.exchange&&id.exchange.pubJwk});
   await signRecord(f);
   if(!configurat()){
@@ -942,6 +1275,69 @@ function xatMsg(txt,meu,qui){
   $('#xatFils').appendChild(d);
   $('#xatFils').scrollTop=$('#xatFils').scrollHeight;
 }
+/* ── El relé ─────────────────────────────────────────────────────────────────
+   La sala i la clau ja les sabíem calcular; el que faltava era **per on passa
+   el sobre**. Aquí no cal configurar res: el directori ja parla amb aquest
+   projecte per llegir les fitxes, i el canal de temps real hi va per sobre amb
+   la mateixa clau publicable.
+
+   El que hi passa és **text ja xifrat** amb la clau ECDH dels dos `did`. Qui
+   allotja el servei veu passar un blob i el nom de la sala, que és un hash: no
+   té cap de les dues claus privades i no pot desxifrar-ho. Això no és una
+   promesa d'aquesta pàgina, és el que fa que la promesa es pugui complir.
+
+   Tres coses que segueixen sent certes i s'han de dir:
+   · **No hi ha entrega garantida ni històric.** Si l'altra persona no és
+     connectada ara mateix, no li arriba i no es guarda enlloc.
+   · **La sala no viatja en clar**: el que s'envia és el seu hash.
+   · **Si el relé cau, el xat deixa de funcionar i la resta del directori no.**
+     Publicar i buscar no hi passen per sobre. */
+const RL_HB=25000;
+let _rl=null,_rlHb=null,_rlTopic='',_rlObert=false;
+function relayWsUrl(){
+  return SUPA_URL.replace(/^http/,'ws').replace(/\/+$/,'')+
+    '/realtime/v1/websocket?apikey='+encodeURIComponent(SUPA_KEY)+'&vsn=1.0.0';
+}
+function _rlSend(o){try{_rl.send(JSON.stringify(o));}catch(e){}}
+function relayTanca(){
+  clearInterval(_rlHb);_rlHb=null;_rlObert=false;_rlTopic='';
+  if(_rl){try{_rl.close();}catch(e){}_rl=null;}
+}
+/* Es connecta **en obrir una conversa**, no en carregar la pàgina: qui només ve
+   a mirar qui hi ha no ha d'obrir cap connexió permanent amb ningú. */
+function relayObre(sala,onMissatge){
+  return new Promise(res=>{
+    relayTanca();
+    if(typeof WebSocket==='undefined')return res(false);
+    _rlTopic='realtime:sos-online-'+String(sala).slice(0,24);
+    let fet=false;const acaba=v=>{if(!fet){fet=true;res(v);}};
+    try{_rl=new WebSocket(relayWsUrl());}catch(e){return acaba(false);}
+    /* Si el relé no respon en cinc segons, es diu i s'acaba. Una espera oberta
+       fa creure que el missatge ha sortit quan no ha sortit. */
+    const talla=setTimeout(()=>{if(!_rlObert){relayTanca();acaba(false);}},5000);
+    _rl.onopen=()=>{
+      _rlSend({topic:_rlTopic,event:'phx_join',ref:'1',
+        payload:{config:{broadcast:{self:false},presence:{key:''}}}});
+      _rlHb=setInterval(()=>_rlSend({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'}),RL_HB);
+    };
+    _rl.onmessage=ev=>{
+      let m;try{m=JSON.parse(ev.data);}catch(e){return;}
+      if(m.event==='phx_reply'&&m.payload&&m.payload.status==='ok'&&!_rlObert){
+        _rlObert=true;clearTimeout(talla);acaba(true);
+      }
+      if(m.event==='broadcast'&&m.payload&&m.payload.event==='xat')onMissatge(m.payload.payload||{});
+    };
+    _rl.onerror=()=>{clearTimeout(talla);acaba(false);};
+    _rl.onclose=()=>{clearInterval(_rlHb);_rlHb=null;_rlObert=false;acaba(false);};
+  });
+}
+function relayEnvia(blob){
+  if(!_rlObert||!_rl)return false;
+  _rlSend({topic:_rlTopic,event:'broadcast',ref:'m',
+    payload:{type:'broadcast',event:'xat',payload:{b:blob,at:Date.now()}}});
+  return true;
+}
+
 async function obreXat(did){
   const f=S.fitxes.find(x=>x.did===did);
   if(!f)return;
@@ -963,9 +1359,22 @@ async function obreXat(did){
   avis.innerHTML='<div class="avis bo"><h3>Sala xifrada d\'extrem a extrem</h3>'+
     '<p>Només vosaltres dos podeu llegir el que us digueu. <strong>No queda desat enlloc</strong>: '+
     'si tanques la finestra, la conversa desapareix, i si l\'altra persona no és connectada ara mateix, '+
-    'no li arribarà.</p></div>';
+    'no li arribarà.</p><p class="rl-estat" id="rlEstat">Obrint la sala…</p></div>';
   $('#dlgXat').showModal();
   $('#xatTxt').focus();
+  /* El desxifrat va aquí i no al mòdul del relé: el relé no ha de saber què
+     porta a dins el que transporta, i així no hi ha cap camí on el text en
+     clar passi per la part que parla amb la xarxa. */
+  const obert=await relayObre(sala,async m=>{
+    if(!_xat||!m||!m.b)return;
+    try{ xatMsg(await desxifra(_xat.clau,m.b),false,_xat.nom); }
+    catch(e){ xatMsg('Ha arribat un missatge que no s\'ha pogut desxifrar. '+
+      'Vol dir que no venia d\'aquesta sala.',false,'el sistema'); }
+  });
+  const est=$('#rlEstat');
+  if(est)est.textContent=obert
+    ? 'Sala oberta. El que escriguis surt xifrat i arriba a l\'instant si l\'altra persona hi és.'
+    : 'No s\'ha pogut obrir la sala. Pots escriure igualment, però no sortirà del teu navegador.';
 }
 
 /* ── Càrrega ─────────────────────────────────────────────────────────────── */
@@ -986,9 +1395,33 @@ async function carrega(){
   pintaEstat();pintaFitxes();
 }
 
+/* ── L'entrada des del SOS ───────────────────────────────────────────────────
+   Aquesta és tota la connexió que calia, i és a posta que sigui tan poca cosa.
+
+   El SOS i el directori es serveixen del mateix lloc, així que **el directori
+   ja pot llegir el que tens apuntat a l'eina**: és el que fa `perfilDelSOS()`.
+   El que faltava no era copiar dades enlloc, era el camí: des de l'app, un
+   enllaç a `online.html#alta` obre el formulari amb el perfil ja portat.
+
+   Copiar el perfil a `localStorage` per passar-lo hauria estat una segona còpia
+   de dades que ja hi són, i una que es quedaria vella el dia que canviessis una
+   oferta a l'eina i no tornessis a passar per aquí.
+
+   El que **no** fa aquest camí, i és el que el fa acceptable: no publica res.
+   S'obre el formulari, s'omple i es veu la previsualització. Veda 47. */
+async function entradaPerHash(){
+  const h=(location.hash||'').replace('#','');
+  if(h!=='alta'&&h!=='alta-sos')return;
+  obreAlta();
+  /* `#alta-sos` és el que fa servir l'app: obre i porta el perfil. `#alta` sec
+     només obre, per a qui es desa l'adreça del formulari. */
+  if(h==='alta-sos')await portaPerfil();
+}
+
 /* ── Enganxar-ho tot ─────────────────────────────────────────────────────── */
 async function init(){
   omplirCats();
+  omplirPaisos();
   await openDB();
   S.jo=await getIdentity();
   S.didOrfe=S.jo.did!==await _didFromJwk(S.jo.alg,S.jo.pubJwk);
@@ -996,6 +1429,7 @@ async function init(){
 
   $('#btnAlta').addEventListener('click',obreAlta);
   $('#btnPerfil').addEventListener('click',portaPerfil);
+  await entradaPerHash();
 
   const pintaJo=()=>{$('#joDid').textContent=S.jo?S.jo.did:'—';};
   $('#btnJo').addEventListener('click',()=>{pintaJo();$('#joAvis').textContent='';
@@ -1047,6 +1481,9 @@ async function init(){
     await publica({retirada:true});
   });
   ['#fNom','#fMuni'].forEach(s=>$(s).addEventListener('input',pintaPrevi));
+  $('#fNick').addEventListener('input',avisNick);
+  $('#fPais').addEventListener('change',pintaMunicipis);
+  $('#fPaisAltre').addEventListener('change',pintaPrevi);
 
   const afegir=(key,selCat,selTxt)=>{
     const txt=$(selTxt).value.trim();
@@ -1082,7 +1519,9 @@ async function init(){
     const x=e.target.closest('[data-xat]');if(x)return obreXat(x.dataset.xat);
     if(e.target.closest('[data-edita]'))return obreAlta();
   });
-  $('#xatTanca').addEventListener('click',()=>{$('#dlgXat').close();_xat=null;});
+  /* Tancar la conversa tanca la connexió. Deixar-la oberta en segon pla seria
+     mantenir un canal viu amb algú amb qui ja no parles. */
+  $('#xatTanca').addEventListener('click',()=>{$('#dlgXat').close();_xat=null;relayTanca();});
   $('#xatEnvia').addEventListener('click',enviaXat);
   $('#xatTxt').addEventListener('keydown',e=>{if(e.key==='Enter')enviaXat();});
 
@@ -1094,9 +1533,11 @@ async function init(){
     const blob=await xifra(_xat.clau,t);
     xatMsg(t,true,'tu');
     $('#xatTxt').value='';
-    if(!window.__SOS_ONLINE_RELAY){
-      xatMsg('Encara no hi ha relé endollat, així que això no ha sortit del teu navegador. '+
-        'El missatge s\'ha xifrat correctament ('+blob.length+' caràcters) i el codi ja és a punt.',
+    /* El que surt és el blob i mai el text. Si el relé no és obert es diu, i
+       no es guarda a cap cua: una cua faria creure que ja s'ha enviat. */
+    if(!relayEnvia(blob)){
+      xatMsg('Això no ha sortit del teu navegador: la sala no és oberta. '+
+        'S\'ha xifrat correctament ('+blob.length+' caràcters), però sense sala no hi ha per on enviar-ho.',
         false,'el sistema');
     }
   }
@@ -1105,6 +1546,8 @@ async function init(){
 /* Hook de proves. Mateix criteri que a l'aplicació: els tests parlen amb el
    codi de debò, no amb una còpia. */
 window.__ONLINE={S,CATS,CAT,catMeta,FITXA_TIPUS,CAMPS,bastirFitxa,fitxaValida,verifyRecord,signRecord,
+  normNick,comarcaDe,paisActual,avisNick,pintaMunicipis,omplirPaisos,GEO_CAT,GEO_EUS,PAISOS,
+  relayWsUrl,relayObre,relayEnvia,relayTanca,entradaPerHash,
   getIdentity,tamisar,filtrar,textCercable,salaEntre,clauEntre,xifra,desxifra,configurat,
   pintaFitxes,pintaPrevi,pintaEstat,carrega,obreAlta,publica,_canon,_didFromJwk,sha256,sha256hex,
   dbGet,dbPut,dbGetAll,perfilDelSOS,portaPerfil,IDENTITY_BACKUP_TYPE,exportaIdentitat,entraAmbIdentitat};
