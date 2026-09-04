@@ -704,6 +704,34 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 144 — Un nom que qualsevol pot copiar no identifica ningú, i s'ha de dir
+
+El directori va estrenar `@nick` perquè fa falta: sense una manera d'anomenar
+algú, per parlar d'una persona cal enganxar-ne el `did`, que són trenta-tants
+caràcters que ningú diu en veu alta.
+
+I un nick té una trampa que ve de sèrie a totes les xarxes que en tenen: **la
+gent es pensa que identifica**. A les que hi ha un servidor, identifica de debò
+perquè hi ha algú que reparteix els noms i no en dona dos iguals. Aquí no hi ha
+ningú que reparteixi res, i posar-hi un porter seria inventar una autoritat que
+aquesta xarxa existeix precisament per no tenir.
+
+Així que es fan tres coses, i la tercera és la que compta:
+
+1. **Es normalitza abans de firmar.** Si es normalitzés només en pintar-lo,
+   «Marta_Vidal» i «marta-vidal» serien dues firmes del mateix nom i no hi
+   hauria manera de saber que xoquen.
+2. **S'avisa del xoc i es deixa continuar.** Amb el directori al davant es pot
+   dir «aquest ja el fa servir algú»; bloquejar-ho seria repartir noms.
+3. **Es diu, a la pantalla, que qui identifica és la firma.** Aquesta és
+   l'única defensa contra la suplantació que una xarxa sense autoritat pot
+   oferir: no amagar-ho. Si la pàgina calla, algú confiarà en un nom copiable, i
+   la culpa serà de la pàgina i no seva.
+
+La regla general: **quan una cosa s'assembla a una identitat i no ho és, dir-ho
+forma part de construir-la.** Val per al nick, per a un nom de node i per a
+qualsevol etiqueta que la gent farà servir per confiar.
+
 ## Veda 143 — Una garantia sense la seva condició escrita no és una garantia
 
 El programa de mentoria per a organitzacions es ven amb un compromís: si al

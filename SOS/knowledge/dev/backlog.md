@@ -1045,6 +1045,51 @@ de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
 
+### El directori endollat al SOS · nick, territori i xat · fet
+
+Quatre coses que anaven juntes perquè totes surten del mateix: **el directori i
+l'app eren dues cases que no es parlaven**, i qui passava d'una a l'altra havia
+de tornar a escriure el que ja tenia.
+
+- **`@nick`.** Sense una manera d'anomenar algú, parlar d'una persona vol dir
+  enganxar-ne el `did`. Es normalitza abans de firmar, avisa si ja el fa servir
+  algú, i **no bloqueja**: aquí ningú reparteix noms. La pàgina diu que qui
+  identifica és la firma. Veda 144.
+- **El territori es tria, no s'escriu.** `build-geo.js` llegeix `CAT_GEO` i
+  `EUS_GEO` de l'app —188 municipis de Catalunya i 125 d'Euskadi, que és qui
+  els fa servir per construir l'arbre— i els escriu al directori. La comarca es
+  dedueix del municipi i no es demana. Qui és de fora tria país d'una llista de
+  78 i escriu el poble: una llista incompleta no ha de deixar ningú fora.
+- **El camí des de l'app.** Des del perfil, «Publica'm al directori» obre
+  `online.html#alta-sos` amb tot portat. **Cap còpia de dades**: el directori i
+  l'app es serveixen del mateix lloc i el directori ja podia llegir el que tens
+  apuntat. Copiar-ho a `localStorage` hauria estat una segona còpia que
+  envelliria. I arribar-hi no publica res: la previsualització segueix sent
+  l'última paraula (veda 47).
+- **El xat, endollat.** `online.html` xifrava el missatge i després no tenia on
+  enviar-lo: `__SOS_ONLINE_RELAY` era un ganxo que no implementava ningú. Ara hi
+  ha relé, i **sense configurar res**: el directori ja parla amb aquest projecte
+  Supabase per llegir les fitxes, i el canal de temps real hi va per sobre amb
+  la mateixa clau publicable. Es connecta en obrir una conversa i no en carregar
+  la pàgina, i pel canal hi passa el blob xifrat i mai el text.
+
+**Guardes**: `check-nick.js` (el nick no identifica, la geografia surt de l'app,
+pel relé només hi passa xifrat) i `build-geo.js --check`. Sis regles provades
+trencant-les. **Proves**: `test-nick.mjs`.
+
+**El que queda obert d'aquesta onada:**
+
+- **El nick a la permaweb.** Ara viu a la fitxa firmada i prou. Ancorar-lo
+  voldria dir decidir què passa quan dos el reclamen, i això és una decisió de
+  governança abans que de codi.
+- **El kanban com a lloc únic de registre i interacció**, amb pomodoro i
+  comptador. No s'ha tocat.
+- **La biblioteca i el banc amb filtres per grup, zona i ATG.** No s'ha tocat.
+- **`uneix-te.html` substituïda per la landing nova.** No s'ha tocat, i cal
+  aclarir quina landing.
+- **Provar el relé de debò.** Des d'aquí el proxy bloqueja `supabase.co`, així
+  que el que s'ha comprovat és el camí i no la connexió.
+
 ### El hero obert, el preu sense tarifa publicada, i el formulari de pressupost · fet
 
 Set coses que es van decidir juntes perquè totes surten de la mateixa: **la
