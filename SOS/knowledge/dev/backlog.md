@@ -1045,6 +1045,50 @@ de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
 
+### El pomodoro i l'oferta navegable · fet
+
+Dues coses que s'assemblen a coses que hi ha a tot arreu, i el que s'ha
+construït és exactament el que les fa diferents.
+
+- **El pomodoro acaba al registre.** Un comptador enrere no calia construir-lo;
+  el que calia és el final: aquí el temps que dones és una aportació signada, i
+  el forat era que ningú apunta les hores perquè quan les apuntaria ja fa dies
+  que van passar. Es pot donar per fet abans d'hora —el que compta és la feina,
+  no el rellotge—, en corre un de sol, viu al navegador i no al registre, i desa
+  **l'hora d'acabar** i no els minuts que falten: un mòbil que s'adorm atura el
+  temporitzador i el compte ha de seguir sent cert. Veda 145.
+- **La biblioteca i el banc, per zona, tema i els meus grups.** Es miraven node
+  per node: per saber si algú de la comarca tenia un trepant calia entrar a cada
+  biblioteca. Ara `searchSupply` accepta els **mateixos tres eixos que la
+  pantalla de tasques** —zona amb les dues direccions, tema, i els meus grups—
+  perquè qui aprèn a navegar en un lloc no ha de tornar a aprendre. I les
+  coincidències hi passen també: proposar un intercanvi amb algú que el filtre
+  amaga és proposar el que ningú pot fer.
+- **Les dues pestanyes tenen sortida.** Un botó a la biblioteca i al banc obre
+  la cerca creuada amb aquell àmbit ja triat: la pestanya passa de ser un cul de
+  sac a ser un punt de partida.
+
+**Dos defectes trobats pel camí i arreglats**, cap dels dos denunciat per res:
+
+- `var(--accent-green)` s'usava a **quatre llocs** de l'app i el token no
+  existeix en aquest fitxer (és el de la portada). Una variable CSS que no
+  resol invalida la declaració: quatre colors que no s'aplicaven mai.
+- `openSupplySearch(prefill)` només llegia `prefill.q`, i hi havia una crida
+  que hi passava un text —`openSupplySearch(g.label)`. `'fusteria'.q` és
+  `undefined`: la cerca s'obria en blanc i qui hi clicava tornava a escriure el
+  que acabava de llegir. Ara accepta les dues formes.
+
+**Guardes**: quatre regles noves a `check-tasques.js`, provades trencant-les.
+**Proves**: `test-pomodoro.mjs`.
+
+**El que queda obert:**
+
+- **El pomodoro no sap quantes estones portes.** Comptar-les voldria dir desar
+  un historial, i el que ja es desa de debò són les hores registrades: abans de
+  duplicar-ho, val la pena mirar si el registre ja respon la pregunta.
+- **La durada és fixa a 25 minuts.** Fer-la triable és fàcil; decidir si val la
+  pena és una altra cosa.
+
 ### El directori endollat al SOS · nick, territori i xat · fet
 
 Quatre coses que anaven juntes perquè totes surten del mateix: **el directori i

@@ -704,6 +704,34 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 145 — Un giny que hi ha a tot arreu s'ha de guanyar el lloc pel final
+
+El pomodoro és un comptador enrere. N'hi ha mil, són tots iguals, i construir-ne
+un altre no aporta res a ningú.
+
+El que el fa d'aquesta casa **no és el comptador: és què passa quan s'acaba.**
+Aquí el temps que dones és una aportació signada, i el forat real era que ningú
+apunta les hores —quan les apuntaries, ja fa dies que van passar i no te'n
+recordes. Comptar-les mentre passen ho arregla, i per això el pomodoro acaba
+oferint **registrar-les** i no felicitant-te.
+
+Si acabés amb un «bona feina», seria exactament el que és a tot arreu: una
+manera de sentir-se productiu sense que en quedi res. La guarda ho comprova, i
+comprova també que es pugui donar per fet abans d'hora —has acabat la feina en
+deu minuts i el que compta és la feina, no el rellotge.
+
+Dues coses més que se n'aprenen i valen per a qualsevol comptador:
+
+- **Es desa l'hora d'acabar, no els minuts que falten.** Un mòbil que s'adorm
+  atura el temporitzador; l'hora d'acabar segueix sent certa quan tornes.
+- **Un pomodoro a mitges no és cap fet**, i per això viu al navegador i no al
+  registre. El que va al registre és l'hora feta, quan la persona ho confirma.
+
+La regla general: **abans de construir una cosa que ja existeix a tot arreu,
+digues què hi farà de diferent al final.** Si la resposta és «res», no cal
+construir-la; si n'hi ha una, aquella és la part que s'ha de vigilar, perquè és
+la primera que es perdrà en una simplificació futura.
+
 ## Veda 144 — Un nom que qualsevol pot copiar no identifica ningú, i s'ha de dir
 
 El directori va estrenar `@nick` perquè fa falta: sense una manera d'anomenar
