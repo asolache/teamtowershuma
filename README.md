@@ -50,47 +50,48 @@ abrir un expediente largo.
 
 *Mirar y decidir con el mapa en la mano*
 
-| Paquete | Para quién | Cuánto dura | Precio | Punto |
-|---|---|---|---|---|
-| **Diagnóstico del tejido local** | Ayuntamientos, consejos comarcales y entidades | 2 sesiones · 3 semanas | 1.800 € | En adaptación |
-| **Mapa de valor de una organización** | Empresas, cooperativas y entidades con equipo propio | 3 sesiones · 4-6 semanas | 3.500 € | Probado |
-| **Mapa comarcal y asamblea federativa** | Consejos comarcales y mancomunidades | 4 sesiones con varios municipios · 2-3 meses | 4.800 € | Nuevo |
-| **Medida de impacto y justificación** | Ayuntamientos, fundaciones y financiadores | Informe semestral o anual · 2 semanas | 900 € | Nuevo |
-| **Diagnóstico de personas y cultura** | Empresas y cooperativas con equipo | 3 sesiones · 6 semanas | 2.400 € | Probado |
+| Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
+|---|---|---|---|---|---|
+| **Diagnóstico del tejido local** | Ayuntamientos, consejos comarcales y entidades | 2 sesiones · 3 semanas | De 1.500 a 3.000 € | Dejas de decidir por intuición. Sabes qué tres vínculos sostienen el pueblo y cuál se romperá primero, que es lo que evita perder un año en un proyecto que no se aguantaba. | En adaptación · Horquilla del modelo |
+| **Mapa de valor de una organización** | Empresas, cooperativas y entidades con equipo propio | 3 sesiones · 4-6 semanas | De 2.500 a 4.500 € | Se ve quién sostiene lo que no consta en ningún organigrama. Es la conversación que evita que, cuando esa persona se vaya, el equipo descubra de golpe todo lo que hacía. | Probado · A validar |
+| **Mapa comarcal y asamblea federativa** | Consejos comarcales y mancomunidades | 4 sesiones con varios municipios · 2-3 meses | De 3.500 a 6.000 € | Resuelve el problema político que tenéis: que el municipio grande no decida por los pequeños y que los pequeños no valgan lo mismo que el grande. Con esto, los acuerdos se toman; sin ello, se vuelven a aplazar. | Nuevo · Horquilla del modelo |
+| **Medida de impacto y justificación** | Ayuntamientos, fundaciones y financiadores | Informe semestral o anual · 2 semanas | De 600 a 1.500 € | Podéis justificar la subvención con datos que aguantan una auditoría, y pedir la siguiente con lo que ha pasado de verdad en vez de con el número de actividades hechas. | Nuevo · Horquilla del modelo |
+| **Diagnóstico de personas y cultura** | Empresas y cooperativas con equipo | 3 sesiones · 6 semanas | De 1.800 a 3.200 € | Es la puerta de entrada: lo que viene después se dimensiona con este informe en la mano y no con una propuesta a ciegas. Sabéis qué costará antes de comprometer un presupuesto. | Probado · A validar |
 
 ### 🎓 Formación
 
 *Se aprende haciendo, sobre vuestro caso y no sobre uno inventado*
 
-| Paquete | Para quién | Cuánto dura | Precio | Punto |
-|---|---|---|---|---|
-| **Programa de Gestor/a** | Técnicos municipales y profesionales · precio por persona | ~45 h en 3-4 meses | 1.800 € | Nuevo |
-| **Programa de equipo gestor** | Una entidad del territorio, financiada por el ayuntamiento | 12 semanas · 5 roles · ~34 h de mentoría | 4.900 € | Nuevo |
-| **Comunidades de práctica** | Organizaciones con conocimiento disperso | 6 sesiones en 3 meses | 3.900 € | Probado |
-| **Formación de equipos** | Empresas, cooperativas y equipos técnicos | Media jornada · más sesiones, a escalar | 1.600 € | Probado |
-| **La Fábrica de Superhéroes** | Escuelas y AFA · 6 a 13 años | 8 sesiones | 2.400 € | Nuevo |
-| **Formación de formadores** | Ateneus Cooperatius y profesionales independientes | 20 h + tutela de 2 casos | 2.900 € | Nuevo |
+| Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
+|---|---|---|---|---|---|
+| **Programa de Gestor/a** | Técnicos municipales y profesionales · precio por persona | ~45 h en 3-4 meses | De 1.200 a 2.000 € | Dejáis de depender de una consultora para sostener lo que ya tenéis. Lo que antes se volvía a contratar cada año queda dentro de la casa. | Nuevo · Horquilla del modelo |
+| **Programa de equipo gestor** | Una entidad del territorio, financiada por el ayuntamiento | 12 semanas · 5 roles · ~34 h de mentoría | De 4.500 a 7.000 € | Forma un equipo y no una persona. Es la diferencia entre una dinámica que sobrevive a quien la arrancó y una que se muere cuando esa persona se cansa —que es como mueren la mayoría. | Nuevo · Horquilla del modelo |
+| **Comunidades de práctica** | Organizaciones con conocimiento disperso | 6 sesiones en 3 meses | De 3.000 a 5.500 € | Lo que sabe una persona deja de salir por la puerta con ella. Quien entra nuevo no vuelve a empezar de cero, y eso se nota en el tiempo que tarda en ser útil. | Probado · A validar |
+| **Formación de equipos** | Empresas, cooperativas y equipos técnicos | De media jornada a cuatro sesiones | De 1.200 a 2.800 € | El equipo sale con un vocabulario compartido para hablar de lo que antes no se decía. La conversación difícil del lunes se puede tener, porque hay palabras para tenerla. | Probado · A validar |
+| **La Fábrica de Superhéroes** | Escuelas y AFA · 6 a 13 años | 8 sesiones | De 1.800 a 3.200 € | La criatura descubre que tiene algo que dar, y lo descubre porque otro lo confirma. Eso es lo que después sostiene una comunidad, y se aprende antes de los trece. | Nuevo · A validar |
+| **Formación de formadores** | Ateneus Cooperatius y profesionales independientes | 20 h + tutela de 2 casos | De 2.000 a 3.500 € | Es el único paquete que multiplica sin consumir nuestras horas: un Ateneu formado acompaña decenas de proyectos que nosotros no tocaríamos nunca. | Nuevo · Horquilla del modelo |
 
 ### 🎪 Producción y dinamización
 
 *Que pase de verdad, y que el lunes siga pasando*
 
-| Paquete | Para quién | Cuánto dura | Precio | Punto |
-|---|---|---|---|---|
-| **Comú-diada** | Ayuntamientos, consejos comarcales y entidades | Una jornada · 3 semanas de producción antes | 2.900 € | Nuevo |
-| **Fent Pinya** | Equipos de empresa, plenos municipales y mesas comunitarias | 2 h | 2.200 € | Probado |
-| **Producción de eventos** | Empresas, ayuntamientos y festivales | Una jornada, de la idea al desmontaje | 4.500 € | Probado |
-| **Puesta en marcha de una dinámica** | Entidades y grupos promotores, financiado por el ayuntamiento | 6 meses · sesiones quincenales | 3.600 € | En adaptación |
+| Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
+|---|---|---|---|---|---|
+| **Comú-diada** | Ayuntamientos, consejos comarcales y entidades | Una jornada · 3 semanas de producción antes | De 2.200 a 4.500 € | La diferencia con una fiesta es que el martes todavía hay algo funcionando. Se paga una jornada y queda una dinámica con gente apuntada, no un álbum de fotos. | Nuevo · A validar |
+| **Taller de castells «Fent Pinya»** | Equipos de empresa, plenos municipales, escuelas y mesas comunitarias · de 10 a 1.000 personas | 2 h + 30 min de reflexión | 10-29 persones: 1.700 € · 30-48: 2.100 € · 50-99: 3.150 € · 100-199: 4.725 € · 200-399: 6.300 € · +400: 8.925 € | Un grupo que ha repartido el peso de verdad, porque se ha levantado un castell, y que sale con el vocabulario para hablar de ello al día siguiente. Es el producto con más kilómetros de la casa: 60.000 personas desde 2005. | Probado · Tarifa 2026 |
+| **Demostración castellera** | Empresas, ayuntamientos, fiestas mayores y agencias de eventos | Hasta 4 castells por actuación | 4 pisos · 13 castellers: 3.300 € · 5 pisos · 20 castellers: 4.800 € · 6 pisos · 30 castellers: 6.500 € | Es la pieza cultural que se recuerda y se comparte. No es formación —no toca a nadie del equipo— y por eso no sustituye al taller: lo acompaña. | Probado · Tarifa 2026 |
+| **Producción de eventos** | Empresas, ayuntamientos y festivales | De una jornada a un festival de varios días | De 3.000 a 9.000 € | Una sola persona responsable de todo lo que puede salir mal, y veinte años sabiendo qué sale mal. Lo que compráis no es el montaje: es no tener que estar. | Probado · A validar |
+| **Puesta en marcha de una dinámica** | Entidades y grupos promotores, financiado por el ayuntamiento | 6 meses · sesiones quincenales | De 2.400 a 5.400 € | Al sexto mes hay intercambios registrados y gente que sabe llevarlo. La diferencia con un plan estratégico es que esto se puede enseñar funcionando. | En adaptación · Horquilla del modelo |
 
 ### 🖥️ Alrededor del SOS
 
 *La herramienta es libre. Esto es lo que sí se contrata.*
 
-| Paquete | Para quién | Cuánto dura | Precio | Punto |
-|---|---|---|---|---|
-| **Implantación y soporte** | Ayuntamientos, consejos comarcales y Ateneus | 3 semanas | 1.500 € | Nuevo |
-| **IA con frenos · sesión de viabilidad** | Quien se plantee usar IA con datos de personas | 1 sesión + informe · 2 semanas | 900 € | En adaptación |
-| **Contratos inteligentes · estudio de viabilidad** | Cooperativas y administraciones que quieran automatizar acuerdos | 3 semanas | 1.500 € | Nuevo |
+| Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
+|---|---|---|---|---|---|
+| **Implantación y soporte** | Ayuntamientos, consejos comarcales y Ateneus | 3 semanas | De 800 a 2.500 € | La herramienta es gratuita y te la puedes llevar. Lo que se paga es no tener que descubrir solo cómo se monta, y que el día uno ya estén vuestros datos dentro. | Nuevo · Horquilla del modelo |
+| **IA con frenos · sesión de viabilidad** | Quien se plantee usar IA con datos de personas | 1 sesión + informe · 2 semanas | De 600 a 1.500 € | Salís de la reunión con una decisión escrita y no con una intuición. Y con el criterio de freno puesto antes de comprar nada, que es cuando todavía se puede poner. | En adaptación · A validar |
+| **Contratos inteligentes · estudio de viabilidad** | Cooperativas y administraciones que quieran automatizar acuerdos | 3 semanas | De 1.200 a 2.500 € | Sabréis si esto os sirve antes de gastar nada. Un «no vale la pena» con los números al lado vale lo mismo que un «sí», y es más barato que descubrirlo construyendo. | Nuevo · A validar |
 
 <!--/TT-OFERTA-MD-->
 
@@ -135,14 +136,17 @@ herramienta. Ninguna puerta apunta a un sitio que no está.
 De dónde viene cada prueba, dicho por su línea, porque mezclarlas sería la
 trampa más fácil de este documento:
 
-**Línea corporativa y de formación de equipos** — es donde están los veinte años:
+**Línea corporativa y castellera** — es donde están los veinte años. Fuente:
+catálogo comercial TeamTowers 2026 y [teamtowers.eu](https://www.teamtowers.eu).
 
-| Desde | 1996, creando y desarrollando equipos |
+| Desde | 2005, experiencias castelleras para equipos |
 |---|---|
-| Personas formadas | 60.000+, en colaboración y confianza |
-| Organizaciones acompañadas | 150+ (InfoJobs y más de 150 empresas en formación y cohesión) |
-| Universidades | UB, UOC, UAB, UPC, La Salle, Universidad de León |
+| Personas | 60.000+ han pasado por el taller Fent Pinya |
+| Organizaciones | 150+ |
+| Clientes | Telefónica, Vodafone, La Caixa, UBS, AkzoNobel, Novartis, Roca, Everis, InfoJobs, IKEA, Porsche, Mercedes, BBVA |
+| Escuelas de negocio | ESADE, IESE, EADA, La Salle |
 | Sector público | Diputació de Barcelona, Ajuntament de Vilafranca, Junta de Castilla y León |
+| Cohesión post-evento | +30-50 %, **según encuestas internas** — no es un estudio externo |
 
 **Línea comunitaria** — más nueva, y con menos kilómetros:
 
@@ -150,10 +154,11 @@ trampa más fácil de este documento:
 - **Comunitats.org**, plataforma de banco de tiempo y red de conocimiento.
 - **Fent Pinya & VNA** al servicio de ayuntamientos, cooperativas y ateneus.
 
-*Las cifras de impacto porcentual que este README publicaba antes (+30-50 % de
-cohesión, −47 % de tiempo de onboarding, 4× de transferencia) se han retirado:
-no llevaban fuente ni fecha. Una cifra exacta que nadie puede comprobar genera
-menos confianza que un rango honesto.*
+*El +30-50 % de cohesión vuelve con su fuente dicha —encuestas internas
+posteriores al evento—, que es lo que le faltaba. El −47 % de tiempo de
+onboarding y el 4× de transferencia siguen retirados: no se ha encontrado de
+dónde salían. Una cifra exacta que nadie puede comprobar genera menos confianza
+que un rango honesto.*
 
 ## 💻 Cómo está hecho
 

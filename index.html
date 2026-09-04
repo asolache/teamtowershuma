@@ -200,6 +200,36 @@
         .pull-quote { margin-top:1.5rem; padding:1.5rem; background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02)); border-left:2px solid var(--accent-indigo); }
         .pull-quote p { font-family:var(--sans); font-size:1.1rem; font-weight:500; color:var(--light); line-height:1.7; margin:0; }
 
+        /* TOTES LES PÀGINES · el desplegable que genera SOS/tools/build-nav.js
+           de la mateixa arquitectura que el menú del SOS. `<details>` natiu: el
+           navegador ja sap fer un desplegable accessible i amb teclat. */
+        .tt-pagines { position:relative; }
+        .tt-pagines > summary { list-style:none; cursor:pointer; color:var(--muted);
+            font-size:.82rem; padding:.3rem 0; transition:color .2s; white-space:nowrap; }
+        .tt-pagines > summary::-webkit-details-marker { display:none; }
+        .tt-pagines > summary::after { content:' ▾'; font-size:.7em; opacity:.7; }
+        .tt-pagines > summary:hover, .tt-pagines[open] > summary { color:var(--white); }
+        .tp-p { position:absolute; right:0; top:calc(100% + .6rem); z-index:80; width:min(92vw,620px);
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.2rem;
+            background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:12px;
+            padding:.9rem; box-shadow:0 18px 50px rgba(0,0,0,.6); }
+        .tp-g { min-width:0; }
+        .tp-g-l { font-family:var(--mono); font-size:.62rem; letter-spacing:.12em; text-transform:uppercase;
+            color:var(--muted); padding:.4rem .5rem .25rem; }
+        /* Els enllaços del panell viuen dins de `.nav-links`, que posa
+           majúscules, espaiat de lletra i `white-space:nowrap` a tot `a` per
+           evitar que la barra es parteixi en tres files. Aquí això no val: són
+           frases, no etiquetes de menú, i sense desfer-ho es trepitgen entre
+           columnes. Es desfà explícitament i no amb `!important`. */
+        .nav-links .tp-p a { display:block; padding:.4rem .5rem; border-radius:7px;
+            text-decoration:none; color:inherit; white-space:normal; text-transform:none;
+            letter-spacing:normal; font-size:inherit; }
+        .nav-links .tp-p a:hover { background:var(--bg-panel); }
+        .nav-links .tp-p a b { display:block; font-size:.84rem; font-weight:600; color:var(--white); }
+        .nav-links .tp-p a span { display:block; font-size:.7rem; color:var(--muted); line-height:1.35;
+            overflow-wrap:anywhere; }
+        @media (max-width:900px) { .tp-p { position:static; width:auto; box-shadow:none; margin-top:.5rem; } }
+
         /* D'ON VE AIXÒ · les quatre baules del relat, en ordre */
         .relat { padding:8rem 0; background:var(--bg-panel); }
         .relat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
@@ -248,8 +278,27 @@
         .pk-dades dt { font-family:var(--mono); font-size:.65rem; letter-spacing:.06em; color:var(--muted);
             text-transform:uppercase; padding-top:.1rem; }
         .pk-dades dd { margin:0; color:var(--light); }
+        /* L'aportació de valor. Va abans de les dades i del preu a posta: la
+           pregunta que decideix una compra no és què és ni què costa, és què
+           se n'endú qui la paga. */
+        .pk-valor { font-size:.84rem; line-height:1.65; color:var(--white); margin:0 0 1.2rem;
+            border-left:2px solid var(--accent-green); padding-left:.9rem; }
+        .pk-valor-l { display:block; font-family:var(--mono); font-size:.62rem; letter-spacing:.12em;
+            text-transform:uppercase; color:var(--accent-green); margin-bottom:.3rem; }
         .pk-preu { margin-top:auto; padding-top:1rem; border-top:1px solid var(--border); }
-        .pk-preu strong { font-family:var(--sans); font-size:1.5rem; font-weight:700; color:var(--white); }
+        .pk-preu strong { font-family:var(--sans); font-size:1.35rem; font-weight:700; color:var(--white);
+            display:block; }
+        /* D'on surt el preu: tarifa, forquilla del model o estimació a validar.
+           Una xifra sense procedència no la pot discutir qui la llegeix ni
+           defensar qui la diu. */
+        .pk-font { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase;
+            color:var(--muted); display:inline-block; margin-top:.35rem; }
+        .pk-perque { font-size:.75rem; line-height:1.6; color:var(--muted); margin:.55rem 0 0; }
+        /* Els trams no són una forquilla a negociar: són la tarifa. */
+        .pk-trams { width:100%; border-collapse:collapse; font-size:.78rem; }
+        .pk-trams th { text-align:left; font-weight:400; color:var(--muted); padding:.2rem 0;
+            font-family:var(--mono); font-size:.7rem; }
+        .pk-trams td { text-align:right; color:var(--white); font-weight:600; padding:.2rem 0; }
         .pk-nota { color:var(--muted); font-size:.82rem; line-height:1.75; margin-top:2rem;
             border-left:2px solid var(--accent-green); padding-left:1rem; }
 
@@ -510,10 +559,45 @@
             <li><a href="#aprenent" data-i18n="nav.aprenent">S'aprèn fent</a></li>
             <li><a href="#cataleg" data-i18n="nav.cataleg">El catàleg</a></li>
             <li><a href="#sos" data-i18n="nav.sos">El SOS</a></li>
-            <li><a href="/SOS/comando.html" target="_blank" rel="noopener" data-i18n="nav.comando">Comando</a></li>
-            <li><a href="/SOS/blog.html" target="_blank" rel="noopener" data-i18n="nav.blog">Blog</a></li>
-            <li><a href="/SOS/formacio.html" target="_blank" rel="noopener" data-i18n="nav.formacio">Formació</a></li>
-            <li><a href="/SOS/diagnostic.html" target="_blank" rel="noopener" data-i18n="nav.diagnostic">Diagnòstic</a></li>
+            <li class="nav-pag"><!--TT-PAGINES-->
+<details class="tt-pagines">
+  <summary>Totes les pàgines</summary>
+  <div class="tp-p">
+      <div class="tp-g">
+        <div class="tp-g-l">🧭 Comença</div>
+        <a href="/SOS/diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a>
+        <a href="/SOS/intro.html"><b>La intro</b><span>De què va tot això</span></a>
+        <a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l">🛠 Eines</div>
+        <a href="/SOS/vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a>
+        <a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a>
+        <a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a>
+        <a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a>
+        <a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a>
+        <a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a>
+        <a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l">🎓 Aprèn</div>
+        <a href="/SOS/formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a>
+        <a href="/SOS/escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a>
+        <a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a>
+        <a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l">🏘 Xarxa</div>
+        <a href="/SOS/comando.html"><b>El Comando</b><span>La tribu i el reclutament</span></a>
+        <a href="/SOS/online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l">🖥 L'eina</div>
+        <a href="/SOS/"><b>El SOS</b><span>L'aplicació sencera, al navegador</span></a>
+      </div>
+  </div>
+</details>
+<!--/TT-PAGINES--></li>
             <li><a href="/SOS/" target="_blank" rel="noopener" class="nav-cta" data-i18n="nav.demo">Viu-ho →</a></li>
         </ul>
         <div class="lang-switch" style="flex-shrink:0;">
@@ -1019,7 +1103,7 @@
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="pk.eyebrow">El catàleg</div>
             <h2 data-i18n-html="pk.h2">Propostes tancades. <em>Amb el preu escrit.</em></h2>
-            <p data-i18n="pk.intro">Cada paquet diu per a qui és, quant dura, què t'endús, quant costa, amb quins diners es paga i quantes vegades s'ha fet. Els que van a administració pública queden per sota dels 5.000 €, que és el que es contracta sense obrir un expedient llarg.</p>
+            <p data-i18n="pk.intro">Cada paquet diu per a qui és, quant dura, què t'endús, **què t'aporta**, quant costa i què fa moure el preu dins de la forquilla. Els que van a administració pública hi entren per sota dels 5.000 €, que és el que es contracta sense obrir un expedient llarg.</p>
         </div>
 <!--TT-OFERTA-->
 
@@ -1036,12 +1120,18 @@
             <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
           </header>
           <p class="pk-endus" data-i18n="pk.diagnostic-teixit.e">L'informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i de qui penja tot abans que es cremi.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.diagnostic-teixit.v">Deixes de decidir per intuïció. Saps quins tres vincles sostenen el poble i quin es trencarà primer, que és el que evita perdre un any en un projecte que no s'aguantava.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.diagnostic-teixit.q">Ajuntaments, consells comarcals i entitats</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.diagnostic-teixit.d">2 sessions · 3 setmanes</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.diagnostic-teixit.f">Catàleg de serveis de la Diputació · partida de participació ciutadana</dd>
           </dl>
-          <div class="pk-preu"><strong>1.800 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 1.500 a 3.000 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.diagnostic-teixit.p">Puja amb el nombre d'actors a mapar i amb les sessions de validació amb el teixit; baixa si ja teniu un cens d'entitats fet.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-mapa-organitzacio">
           <header>
@@ -1049,25 +1139,37 @@
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
           </header>
           <p class="pk-endus" data-i18n="pk.mapa-organitzacio.e">El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.mapa-organitzacio.v">Es veu qui sosté el que no consta a cap organigrama. És la conversa que evita que, quan aquella persona plegui, l'equip descobreixi de cop tot el que feia.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.mapa-organitzacio.q">Empreses, cooperatives i entitats amb equip propi</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.mapa-organitzacio.d">3 sessions · 4-6 setmanes</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.mapa-organitzacio.f">Pressupost propi de millora o de formació</dd>
           </dl>
-          <div class="pk-preu"><strong>3.500 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 2.500 a 4.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.mapa-organitzacio.p">Puja amb el nombre de rols i de departaments implicats; baixa si el mapa es fa amb un sol equip i no amb tota la casa.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-mapa-comarcal">
           <header>
             <h4><a href="/SOS/vna.html" data-i18n="pk.mapa-comarcal.n">Mapa comarcal i assemblea federativa</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
-          <p class="pk-endus" data-i18n="pk.mapa-comarcal.e">El mapa de tota la comarca i una decisió presa i registrada amb pes per arrel de població i correcció de desigualtat: el municipi gran no decideix pels petits, i els petits no valen el mateix que el gran.</p>
+          <p class="pk-endus" data-i18n="pk.mapa-comarcal.e">El mapa de tota la comarca i una decisió presa i registrada amb pes per arrel de població i correcció de desigualtat.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.mapa-comarcal.v">Resol el problema polític que teniu: que el municipi gran no decideixi pels petits i que els petits no valguin el mateix que el gran. Amb això, els acords es prenen; sense, es tornen a ajornar.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.mapa-comarcal.q">Consells comarcals i mancomunitats</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.mapa-comarcal.d">4 sessions amb diversos municipis · 2-3 mesos</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.mapa-comarcal.f">Pressupost de cooperació intermunicipal</dd>
           </dl>
-          <div class="pk-preu"><strong>4.800 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 3.500 a 6.000 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.mapa-comarcal.p">Puja amb el nombre de municipis que hi entren i amb els desplaçaments; per sota de vuit municipis és a la banda baixa i cap sota el sostre de contractació menor.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-impacte">
           <header>
@@ -1075,25 +1177,37 @@
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
           <p class="pk-endus" data-i18n="pk.impacte.e">Hores donades, persones actives i reciprocitat, sortint d'un registre signat i comprovable — no d'una enquesta de satisfacció.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.impacte.v">Podeu justificar la subvenció amb dades que aguanten una auditoria, i demanar la següent amb el que ha passat de debò en comptes d'amb el nombre d'activitats fetes.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.impacte.q">Ajuntaments, fundacions i finançadors</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.impacte.d">Informe semestral o anual · 2 setmanes</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.impacte.f">La mateixa partida que ja finança el projecte que es justifica</dd>
           </dl>
-          <div class="pk-preu"><strong>900 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 600 a 1.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.impacte.p">Puja amb el nombre de projectes a agregar i amb l'ancoratge permanent si el voleu; el primer informe d'un sol projecte és el mínim.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-persones-cultura">
           <header>
             <h4><span data-i18n="pk.persones-cultura.n">Diagnòstic de persones i cultura</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
           </header>
-          <p class="pk-endus" data-i18n="pk.persones-cultura.e">On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer. És la porta d'entrada a la consultoria de persones; el que ve després es dimensiona amb aquest informe a la mà.</p>
+          <p class="pk-endus" data-i18n="pk.persones-cultura.e">On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.persones-cultura.v">És la porta d'entrada: el que ve després es dimensiona amb aquest informe a la mà i no amb una proposta a cegues. Sabeu què costarà abans de comprometre-hi un pressupost.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.persones-cultura.q">Empreses i cooperatives amb equip</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.persones-cultura.d">3 sessions · 6 setmanes</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.persones-cultura.f">Pressupost propi de recursos humans</dd>
           </dl>
-          <div class="pk-preu"><strong>2.400 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 1.800 a 3.200 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.persones-cultura.p">Puja amb la mida de l'equip i amb les entrevistes individuals; amb menys de vint persones és a la banda baixa.</p>
+          </div>
         </article>
         </div>
       </div>
@@ -1110,25 +1224,37 @@
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
           <p class="pk-endus" data-i18n="pk.gestor.e">Una persona del territori que sap engegar i sostenir participació sense dependre de ningú. Es fa sobre el vostre projecte, no sobre un cas inventat.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.gestor.v">Deixeu de dependre d'una consultora per sostenir el que ja teniu. El que abans es tornava a contractar cada any queda a dins de la casa.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.gestor.q">Tècnics municipals i professionals · preu per persona</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.gestor.d">~45 h en 3-4 mesos</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.gestor.f">Pla de formació municipal · subvenció de Diputació</dd>
           </dl>
-          <div class="pk-preu"><strong>1.800 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 1.200 a 2.000 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.gestor.p">Baixa per persona a partir de la tercera del mateix territori; puja si el projecte sobre el qual es treballa encara no existeix i cal muntar-lo.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-equip-gestor">
           <header>
             <h4><a href="/SOS/formacio.html" data-i18n="pk.equip-gestor.n">Programa d'equip gestor</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
-          <p class="pk-endus" data-i18n="pk.equip-gestor.e">Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant. Forma un equip i no una persona, perquè un territori no el sosté un gestor.</p>
+          <p class="pk-endus" data-i18n="pk.equip-gestor.e">Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.equip-gestor.v">Forma un equip i no una persona. És la diferència entre una dinàmica que sobreviu a qui la va engegar i una que es mor quan aquella persona es cansa —que és com moren la majoria.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.equip-gestor.q">Una entitat del territori, finançada per l'ajuntament</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.equip-gestor.d">12 setmanes · 5 rols · ~34 h de mentoria</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.equip-gestor.f">Partida de participació · Ateneus Cooperatius</dd>
           </dl>
-          <div class="pk-preu"><strong>4.900 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 4.500 a 7.000 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.equip-gestor.p">Entra sota el sostre de contractació menor amb cinc persones i dotze setmanes; puja si l'equip és més gran o si l'acompanyament s'allarga més enllà del trimestre.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-comunitats-practica">
           <header>
@@ -1136,12 +1262,18 @@
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
           </header>
           <p class="pk-endus" data-i18n="pk.comunitats-practica.e">El mapa del coneixement que ja teniu i un grup que el fa circular sol quan nosaltres marxem.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.comunitats-practica.v">El que sap una persona deixa de sortir per la porta amb ella. Qui entra nou no torna a començar de zero, i això es nota al temps que triga a ser útil.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.comunitats-practica.q">Organitzacions amb coneixement dispers</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.comunitats-practica.d">6 sessions en 3 mesos</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.comunitats-practica.f">Pressupost de formació</dd>
           </dl>
-          <div class="pk-preu"><strong>3.900 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 3.000 a 5.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.comunitats-practica.p">Puja amb el nombre de comunitats que s'engeguen alhora i amb les seus; una sola comunitat en un sol centre és el mínim.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-formacio-equips">
           <header>
@@ -1149,12 +1281,18 @@
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
           </header>
           <p class="pk-endus" data-i18n="pk.formacio-equips.e">Lideratge col·laboratiu i gestió del canvi amb metodologia castellera: repartir el pes, avisar abans de cedir i poder dir el que es pensa sense por.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.formacio-equips.v">L'equip surt amb un vocabulari compartit per parlar del que abans no es deia. La conversa difícil de dilluns es pot tenir, perquè hi ha paraules per tenir-la.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.formacio-equips.q">Empreses, cooperatives i equips tècnics</dd>
-            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.formacio-equips.d">Mitja jornada · més sessions, a escalar</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.formacio-equips.d">De mitja jornada a quatre sessions</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.formacio-equips.f">Pressupost de formació</dd>
           </dl>
-          <div class="pk-preu"><strong>1.600 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 1.200 a 2.800 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.formacio-equips.p">Mitja jornada és el mínim; puja amb el nombre de sessions i amb el seguiment posterior.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-escola">
           <header>
@@ -1162,25 +1300,37 @@
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
           <p class="pk-endus" data-i18n="pk.escola.e">Una classe amb el seu mapa de recursos i ajuda intercanviada de veritat. Els superpoders es guanyen quan un company confirma que l'has ajudat, i cap nom real surt de l'aula.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.escola.v">La criatura descobreix que té alguna cosa per donar, i ho descobreix perquè algú altre ho confirma. Això és el que després sosté una comunitat, i s'aprèn abans dels tretze.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.escola.q">Escoles i AFA · 6 a 13 anys</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.escola.d">8 sessions</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.escola.f">Pla educatiu d'entorn · regidoria d'educació</dd>
           </dl>
-          <div class="pk-preu"><strong>2.400 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 1.800 a 3.200 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.escola.p">Puja amb el nombre de grups-classe; una sola aula és el mínim i tot el cicle superior d'una escola és la banda alta.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-formar-formadors">
           <header>
             <h4><a href="/SOS/formacio.html" data-i18n="pk.formar-formadors.n">Formació de formadors</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
-          <p class="pk-endus" data-i18n="pk.formar-formadors.e">Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable. És el que fa que això escali sense passar per nosaltres.</p>
+          <p class="pk-endus" data-i18n="pk.formar-formadors.e">Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.formar-formadors.v">És l'únic paquet que multiplica sense consumir les nostres hores: un Ateneu format acompanya desenes de projectes que nosaltres no tocaríem mai.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.formar-formadors.q">Ateneus Cooperatius i professionals independents</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.formar-formadors.d">20 h + tutela de 2 casos</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.formar-formadors.f">Programa propi de l'Ateneu · formació de professionals</dd>
           </dl>
-          <div class="pk-preu"><strong>2.900 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 2.000 a 3.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.formar-formadors.p">Puja amb el nombre de casos tutelats i amb els materials propis que vulgueu; dos casos i els materials de sèrie són el mínim.</p>
+          </div>
         </article>
         </div>
       </div>
@@ -1196,39 +1346,76 @@
             <h4><span data-i18n="pk.comu-diada.n">Comú-diada</span></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
-          <p class="pk-endus" data-i18n="pk.comu-diada.e">La jornada feta i, el dilluns, la gent apuntada i la dinàmica engegada. La diferència amb una festa és que el dimarts encara hi ha alguna cosa en marxa.</p>
+          <p class="pk-endus" data-i18n="pk.comu-diada.e">La jornada feta i, el dilluns, la gent apuntada i la dinàmica engegada.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.comu-diada.v">La diferència amb una festa és que el dimarts encara hi ha alguna cosa en marxa. Es paga una jornada i queda una dinàmica amb gent apuntada, no un àlbum de fotos.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.comu-diada.q">Ajuntaments, consells comarcals i entitats</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.comu-diada.d">Una jornada · 3 setmanes de producció abans</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.comu-diada.f">Partida de festes, participació o promoció econòmica</dd>
           </dl>
-          <div class="pk-preu"><strong>2.900 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 2.200 a 4.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.comu-diada.p">Puja amb el nombre d'entitats que s'hi impliquen, amb els espais i amb la producció tècnica; una plaça i quatre entitats és el mínim.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-fent-pinya">
           <header>
-            <h4><span data-i18n="pk.fent-pinya.n">Fent Pinya</span></h4>
+            <h4><span data-i18n="pk.fent-pinya.n">Taller de castells «Fent Pinya»</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
           </header>
-          <p class="pk-endus" data-i18n="pk.fent-pinya.e">Un grup que ha experimentat repartir el pes de debò —perquè s'ha aixecat un castell— i el vocabulari per parlar-ne l'endemà a la feina.</p>
+          <p class="pk-endus" data-i18n="pk.fent-pinya.e">Un dinamitzador, un mínim de quatre monitors castellers i dos músics, faixes de lloguer, assegurança de responsabilitat civil i material didàctic. Es fa en qualsevol espai de 10×10×5 m, en castellà, català, anglès, alemany o francès.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.fent-pinya.v">Un grup que ha repartit el pes de debò, perquè s'ha aixecat un castell, i que en surt amb el vocabulari per parlar-ne l'endemà. És el producte amb més quilòmetres de la casa: 60.000 persones des del 2005.</span></p>
           <dl class="pk-dades">
-            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.fent-pinya.q">Equips d'empresa, plens municipals i taules comunitàries</dd>
-            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.fent-pinya.d">2 h</dd>
-            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.fent-pinya.f">Pressupost de formació o de festes</dd>
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.fent-pinya.q">Equips d'empresa, plens municipals, escoles i taules comunitàries · de 10 a 1.000 persones</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.fent-pinya.d">2 h + 30 min de reflexió</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.fent-pinya.f">Pressupost de formació, d'esdeveniment o de festes</dd>
           </dl>
-          <div class="pk-preu"><strong>2.200 €</strong></div>
+          <div class="pk-preu">
+            <table class="pk-trams"><tr><th>10-29 persones</th><td>1.700 €</td></tr><tr><th>30-48</th><td>2.100 €</td></tr><tr><th>50-99</th><td>3.150 €</td></tr><tr><th>100-199</th><td>4.725 €</td></tr><tr><th>200-399</th><td>6.300 €</td></tr><tr><th>+400</th><td>8.925 €</td></tr></table>
+            <span class="pk-font" data-i18n="pk.font.tarifari">Tarifa 2026</span>
+            <p class="pk-perque" data-i18n="pk.fent-pinya.p">No es negocia: el preu el fixa el tram de participants. Els desplaçaments a més de dues hores de Barcelona es pressuposten a part.</p>
+          </div>
+        </article>
+        <article class="paquet" id="pk-demos">
+          <header>
+            <h4><span data-i18n="pk.demos.n">Demostració castellera</span></h4>
+            <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
+          </header>
+          <p class="pk-endus" data-i18n="pk.demos.e">Una colla professional aixecant castells de fins a sis pisos: pilars, torres i tres de sis segons l'alçada contractada.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.demos.v">És la peça cultural que es recorda i es comparteix. No és formació —no toca ningú de l'equip— i per això no substitueix el taller: l'acompanya.</span></p>
+          <dl class="pk-dades">
+            <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.demos.q">Empreses, ajuntaments, festes majors i agències d'esdeveniments</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.demos.d">Fins a 4 castells per actuació</dd>
+            <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.demos.f">Pressupost de l'esdeveniment o de festes</dd>
+          </dl>
+          <div class="pk-preu">
+            <table class="pk-trams"><tr><th>4 pisos · 13 castellers</th><td>3.300 €</td></tr><tr><th>5 pisos · 20 castellers</th><td>4.800 €</td></tr><tr><th>6 pisos · 30 castellers</th><td>6.500 €</td></tr></table>
+            <span class="pk-font" data-i18n="pk.font.tarifari">Tarifa 2026</span>
+            <p class="pk-perque" data-i18n="pk.demos.p">El preu el fixa l'alçada, que és el nombre de castellers que cal moure. Màxim quatre castells per actuació, per qualitat.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-produccio">
           <header>
             <h4><span data-i18n="pk.produccio.n">Producció d'esdeveniments</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
           </header>
-          <p class="pk-endus" data-i18n="pk.produccio.e">L'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament. Els festivals i els formats de diversos dies es dimensionen a part.</p>
+          <p class="pk-endus" data-i18n="pk.produccio.e">L'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.produccio.v">Una sola persona responsable de tot el que pot sortir malament, i vint anys sabent què surt malament. El que compreu no és el muntatge: és no haver-hi de ser.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.produccio.q">Empreses, ajuntaments i festivals</dd>
-            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.produccio.d">Una jornada, de la idea al desmuntatge</dd>
+            <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.produccio.d">D'una jornada a un festival de diversos dies</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.produccio.f">Pressupost de l'esdeveniment</dd>
           </dl>
-          <div class="pk-preu"><strong>4.500 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 3.000 a 9.000 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.produccio.p">Puja amb els dies, els escenaris i el nombre de proveïdors a coordinar. Una jornada d'un sol espai entra sota el sostre de contractació menor; un festival, no.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-posar-en-marxa">
           <header>
@@ -1236,18 +1423,24 @@
             <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
           </header>
           <p class="pk-endus" data-i18n="pk.posar-en-marxa.e">La dinàmica funcionant amb rols, governança i comptes: banc de temps, biblioteca de les coses, grup de consum, cures veïnals, comunitat energètica o habitatge en cessió d'ús.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.posar-en-marxa.v">Al sisè mes hi ha intercanvis registrats i gent que sap portar-ho. La diferència amb un pla estratègic és que això es pot ensenyar funcionant.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.posar-en-marxa.q">Entitats i grups promotors, finançat per l'ajuntament</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.posar-en-marxa.d">6 mesos · sessions quinzenals</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.posar-en-marxa.f">Partida de participació · Ateneus Cooperatius</dd>
           </dl>
-          <div class="pk-preu"><strong>3.600 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 2.400 a 5.400 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.posar-en-marxa.p">Són de 400 a 900 € al mes segons la mida del grup i si cal constituir res; sis mesos és el mínim per veure si s'aguanta sol.</p>
+          </div>
         </article>
         </div>
       </div>
 
 <!--/TT-OFERTA-->
-        <p class="pk-nota" data-i18n-html="pk.peu"><strong>El punt de cada paquet no és decoració.</strong> <em>Provat</em> vol dir entregat moltes vegades i amb casos per ensenyar. <em>En adaptació</em> vol dir un producte provat que s'està portant a un mercat nou. <em>Nou</em> vol dir que encara no s'ha entregat prou vegades — i dir-ho val més que la venda que es perd.</p>
+        <p class="pk-nota" data-i18n-html="pk.peu"><strong>Tots els preus són sense IVA</strong>, i cadascun diu d'on surt: <em>tarifa 2026</em> és el que es factura de debò, <em>forquilla del model</em> és la banda pensada al model de negoci, i <em>a validar</em> vol dir que encara no s'ha facturat prou vegades i que la primera conversa el tanca. El <em>punt</em> és una altra cosa: diu quantes vegades s'ha entregat —<em>provat</em>, <em>en adaptació</em> o <em>nou</em>— i dir-ho val més que la venda que es perd.</p>
     </div>
 </section>
 
@@ -1270,12 +1463,18 @@
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
           <p class="pk-endus" data-i18n="pk.implantacio.e">L'eina amb el vostre cas a dins, la sincronització entre aparells resolta i la gent sabent-la fer servir. Les dades es queden al vostre navegador.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.implantacio.v">L'eina és gratuïta i te la pots endur. El que es paga és no haver de descobrir sol com es munta, i que el dia u ja hi hagi les vostres dades a dins.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.implantacio.q">Ajuntaments, consells comarcals i Ateneus</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.implantacio.d">3 setmanes</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.implantacio.f">Partida de digitalització · fons Next Generation</dd>
           </dl>
-          <div class="pk-preu"><strong>1.500 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 800 a 2.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.negoci">Forquilla del model</span>
+            <p class="pk-perque" data-i18n="pk.implantacio.p">Puja amb el volum de dades a migrar i amb l'ancoratge permanent; una instal·lació neta amb formació d'un equip és el mínim.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-ia-amb-frens">
           <header>
@@ -1283,12 +1482,18 @@
             <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
           </header>
           <p class="pk-endus" data-i18n="pk.ia-amb-frens.e">Què es pot automatitzar amb garanties i què no, amb el criteri escrit: la màquina proposa, res entra sense que una persona ho hagi comprovat, i sempre es diu d'on ho ha tret.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.ia-amb-frens.v">Sortiu de la reunió amb una decisió escrita i no amb una intuïció. I amb el criteri de fre posat abans de comprar res, que és quan encara es pot posar.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.ia-amb-frens.q">Qui es plantegi fer servir IA amb dades de persones</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.ia-amb-frens.d">1 sessió + informe · 2 setmanes</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.ia-amb-frens.f">Partida de digitalització</dd>
           </dl>
-          <div class="pk-preu"><strong>900 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 600 a 1.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.ia-amb-frens.p">Puja si cal revisar processos que ja toquen dades de persones; una sessió d'exploració és el mínim.</p>
+          </div>
         </article>
         <article class="paquet" id="pk-contractes">
           <header>
@@ -1296,12 +1501,18 @@
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
           </header>
           <p class="pk-endus" data-i18n="pk.contractes.e">Un informe de si val la pena, què costaria i quins riscos té. Es ven l'estudi i no l'eina: al SOS això encara no està construït, i l'informe ho diu.</p>
+          <p class="pk-valor"><span class="pk-valor-l" data-i18n="pk.lbl.valor">Què t'aporta</span>
+            <span data-i18n="pk.contractes.v">Sabreu si això us serveix abans de gastar-hi res. Un «no val la pena» amb els números al costat val el mateix que un «sí», i és més barat que descobrir-ho construint.</span></p>
           <dl class="pk-dades">
             <dt data-i18n="pk.lbl.qui">Per a qui</dt><dd data-i18n="pk.contractes.q">Cooperatives i administracions que vulguin automatitzar acords</dd>
             <dt data-i18n="pk.lbl.dura">Quant dura</dt><dd data-i18n="pk.contractes.d">3 setmanes</dd>
             <dt data-i18n="pk.lbl.diners">Amb quins diners</dt><dd data-i18n="pk.contractes.f">Fons d'innovació · Next Generation</dd>
           </dl>
-          <div class="pk-preu"><strong>1.500 €</strong></div>
+          <div class="pk-preu">
+            <strong>De 1.200 a 2.500 €</strong>
+            <span class="pk-font" data-i18n="pk.font.estimacio">A validar</span>
+            <p class="pk-perque" data-i18n="pk.contractes.p">Puja amb el nombre d'acords a modelar i amb la part jurídica; un sol cas d'ús és el mínim.</p>
+          </div>
         </article>
       </div>
 
@@ -1366,10 +1577,10 @@
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="cl.eyebrow">Trajectòria i confiança</div>
             <h2 data-i18n-html="cl.h2">20 anys teixint <em>equips i comunitats</em></h2>
-            <p data-i18n="cl.intro">Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals.</p>
+            <p data-i18n="cl.intro">Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals. Les xifres de sota són del catàleg comercial de TeamTowers 2026, i cadascuna diu d'on surt.</p>
         </div>
         <div class="cl-stats fade-up">
-            <div class="cl-stat"><div class="n">1996</div><div class="l" data-i18n="cl.s1">Creant i desenvolupant equips des de</div></div>
+            <div class="cl-stat"><div class="n">2005</div><div class="l" data-i18n="cl.s1">TeamTowers · experiències castelleres des de</div></div>
             <div class="cl-stat"><div class="n">60.000+</div><div class="l" data-i18n="cl.s2">Persones formades en col·laboració i confiança</div></div>
             <div class="cl-stat"><div class="n">150+</div><div class="l" data-i18n="cl.s3">Empreses i organitzacions acompanyades</div></div>
             <div class="cl-stat"><div class="n">2009</div><div class="l" data-i18n="cl.s4">Primer banc de temps de la ciutat de León</div></div>
@@ -1410,7 +1621,7 @@
              del producte comunitari, que és més nou i té menys quilòmetres. Fer
              passar l'una per l'altra seria la trampa més fàcil d'aquesta
              pàgina, i per això el catàleg marca cada paquet amb el seu punt. -->
-        <p class="pk-nota" data-i18n-html="cl.honest"><strong>D'on ve cada prova.</strong> Les xifres de dalt són del món corporatiu i de la formació d'equips: allà hi ha vint anys i es poden ensenyar casos. La línia comunitària és més nova i té menys quilòmetres — per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.</p>
+        <p class="pk-nota" data-i18n-html="cl.honest"><strong>D'on ve cada prova.</strong> Les xifres de dalt són de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> i del taller Fent Pinya: 60.000 persones i 150 organitzacions des del 2005, i una millora del 30-50 % en cohesió d'equip <em>segons les enquestes internes posteriors a l'esdeveniment</em> — no és un estudi extern i es diu. La línia comunitària és més nova i té menys quilòmetres: per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.</p>
     </div>
 </section>
 
@@ -1511,48 +1722,72 @@ ca: {
   'pk.punt.provat':'Provat',
   'pk.punt.adaptacio':'En adaptació',
   'pk.punt.nou':'Nou',
-  'pk.lbl.qui':'Per a qui','pk.lbl.dura':'Quant dura','pk.lbl.diners':'Amb quins diners',
+  'pk.font.tarifari':'Tarifa 2026',
+  'pk.font.negoci':'Forquilla del model',
+  'pk.font.estimacio':'A validar',
+  'pk.lbl.qui':'Per a qui','pk.lbl.dura':'Quant dura','pk.lbl.diners':'Amb quins diners','pk.lbl.valor':'Què t\'aporta',
   'pk.diagnostic-teixit.n':'Diagnòstic del teixit local','pk.diagnostic-teixit.e':'L\'informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i de qui penja tot abans que es cremi.',
   'pk.diagnostic-teixit.q':'Ajuntaments, consells comarcals i entitats','pk.diagnostic-teixit.d':'2 sessions · 3 setmanes','pk.diagnostic-teixit.f':'Catàleg de serveis de la Diputació · partida de participació ciutadana',
+  'pk.diagnostic-teixit.v':'Deixes de decidir per intuïció. Saps quins tres vincles sostenen el poble i quin es trencarà primer, que és el que evita perdre un any en un projecte que no s\'aguantava.','pk.diagnostic-teixit.p':'Puja amb el nombre d\'actors a mapar i amb les sessions de validació amb el teixit; baixa si ja teniu un cens d\'entitats fet.',
   'pk.mapa-organitzacio.n':'Mapa de valor d\'una organització','pk.mapa-organitzacio.e':'El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.',
   'pk.mapa-organitzacio.q':'Empreses, cooperatives i entitats amb equip propi','pk.mapa-organitzacio.d':'3 sessions · 4-6 setmanes','pk.mapa-organitzacio.f':'Pressupost propi de millora o de formació',
-  'pk.mapa-comarcal.n':'Mapa comarcal i assemblea federativa','pk.mapa-comarcal.e':'El mapa de tota la comarca i una decisió presa i registrada amb pes per arrel de població i correcció de desigualtat: el municipi gran no decideix pels petits, i els petits no valen el mateix que el gran.',
+  'pk.mapa-organitzacio.v':'Es veu qui sosté el que no consta a cap organigrama. És la conversa que evita que, quan aquella persona plegui, l\'equip descobreixi de cop tot el que feia.','pk.mapa-organitzacio.p':'Puja amb el nombre de rols i de departaments implicats; baixa si el mapa es fa amb un sol equip i no amb tota la casa.',
+  'pk.mapa-comarcal.n':'Mapa comarcal i assemblea federativa','pk.mapa-comarcal.e':'El mapa de tota la comarca i una decisió presa i registrada amb pes per arrel de població i correcció de desigualtat.',
   'pk.mapa-comarcal.q':'Consells comarcals i mancomunitats','pk.mapa-comarcal.d':'4 sessions amb diversos municipis · 2-3 mesos','pk.mapa-comarcal.f':'Pressupost de cooperació intermunicipal',
+  'pk.mapa-comarcal.v':'Resol el problema polític que teniu: que el municipi gran no decideixi pels petits i que els petits no valguin el mateix que el gran. Amb això, els acords es prenen; sense, es tornen a ajornar.','pk.mapa-comarcal.p':'Puja amb el nombre de municipis que hi entren i amb els desplaçaments; per sota de vuit municipis és a la banda baixa i cap sota el sostre de contractació menor.',
   'pk.impacte.n':'Mesura d\'impacte i justificació','pk.impacte.e':'Hores donades, persones actives i reciprocitat, sortint d\'un registre signat i comprovable — no d\'una enquesta de satisfacció.',
   'pk.impacte.q':'Ajuntaments, fundacions i finançadors','pk.impacte.d':'Informe semestral o anual · 2 setmanes','pk.impacte.f':'La mateixa partida que ja finança el projecte que es justifica',
-  'pk.persones-cultura.n':'Diagnòstic de persones i cultura','pk.persones-cultura.e':'On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer. És la porta d\'entrada a la consultoria de persones; el que ve després es dimensiona amb aquest informe a la mà.',
+  'pk.impacte.v':'Podeu justificar la subvenció amb dades que aguanten una auditoria, i demanar la següent amb el que ha passat de debò en comptes d\'amb el nombre d\'activitats fetes.','pk.impacte.p':'Puja amb el nombre de projectes a agregar i amb l\'ancoratge permanent si el voleu; el primer informe d\'un sol projecte és el mínim.',
+  'pk.persones-cultura.n':'Diagnòstic de persones i cultura','pk.persones-cultura.e':'On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer.',
   'pk.persones-cultura.q':'Empreses i cooperatives amb equip','pk.persones-cultura.d':'3 sessions · 6 setmanes','pk.persones-cultura.f':'Pressupost propi de recursos humans',
+  'pk.persones-cultura.v':'És la porta d\'entrada: el que ve després es dimensiona amb aquest informe a la mà i no amb una proposta a cegues. Sabeu què costarà abans de comprometre-hi un pressupost.','pk.persones-cultura.p':'Puja amb la mida de l\'equip i amb les entrevistes individuals; amb menys de vint persones és a la banda baixa.',
   'pk.gestor.n':'Programa de Gestor/a','pk.gestor.e':'Una persona del territori que sap engegar i sostenir participació sense dependre de ningú. Es fa sobre el vostre projecte, no sobre un cas inventat.',
   'pk.gestor.q':'Tècnics municipals i professionals · preu per persona','pk.gestor.d':'~45 h en 3-4 mesos','pk.gestor.f':'Pla de formació municipal · subvenció de Diputació',
-  'pk.equip-gestor.n':'Programa d\'equip gestor','pk.equip-gestor.e':'Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant. Forma un equip i no una persona, perquè un territori no el sosté un gestor.',
+  'pk.gestor.v':'Deixeu de dependre d\'una consultora per sostenir el que ja teniu. El que abans es tornava a contractar cada any queda a dins de la casa.','pk.gestor.p':'Baixa per persona a partir de la tercera del mateix territori; puja si el projecte sobre el qual es treballa encara no existeix i cal muntar-lo.',
+  'pk.equip-gestor.n':'Programa d\'equip gestor','pk.equip-gestor.e':'Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant.',
   'pk.equip-gestor.q':'Una entitat del territori, finançada per l\'ajuntament','pk.equip-gestor.d':'12 setmanes · 5 rols · ~34 h de mentoria','pk.equip-gestor.f':'Partida de participació · Ateneus Cooperatius',
+  'pk.equip-gestor.v':'Forma un equip i no una persona. És la diferència entre una dinàmica que sobreviu a qui la va engegar i una que es mor quan aquella persona es cansa —que és com moren la majoria.','pk.equip-gestor.p':'Entra sota el sostre de contractació menor amb cinc persones i dotze setmanes; puja si l\'equip és més gran o si l\'acompanyament s\'allarga més enllà del trimestre.',
   'pk.comunitats-practica.n':'Comunitats de pràctica','pk.comunitats-practica.e':'El mapa del coneixement que ja teniu i un grup que el fa circular sol quan nosaltres marxem.',
   'pk.comunitats-practica.q':'Organitzacions amb coneixement dispers','pk.comunitats-practica.d':'6 sessions en 3 mesos','pk.comunitats-practica.f':'Pressupost de formació',
+  'pk.comunitats-practica.v':'El que sap una persona deixa de sortir per la porta amb ella. Qui entra nou no torna a començar de zero, i això es nota al temps que triga a ser útil.','pk.comunitats-practica.p':'Puja amb el nombre de comunitats que s\'engeguen alhora i amb les seus; una sola comunitat en un sol centre és el mínim.',
   'pk.formacio-equips.n':'Formació d\'equips','pk.formacio-equips.e':'Lideratge col·laboratiu i gestió del canvi amb metodologia castellera: repartir el pes, avisar abans de cedir i poder dir el que es pensa sense por.',
-  'pk.formacio-equips.q':'Empreses, cooperatives i equips tècnics','pk.formacio-equips.d':'Mitja jornada · més sessions, a escalar','pk.formacio-equips.f':'Pressupost de formació',
+  'pk.formacio-equips.q':'Empreses, cooperatives i equips tècnics','pk.formacio-equips.d':'De mitja jornada a quatre sessions','pk.formacio-equips.f':'Pressupost de formació',
+  'pk.formacio-equips.v':'L\'equip surt amb un vocabulari compartit per parlar del que abans no es deia. La conversa difícil de dilluns es pot tenir, perquè hi ha paraules per tenir-la.','pk.formacio-equips.p':'Mitja jornada és el mínim; puja amb el nombre de sessions i amb el seguiment posterior.',
   'pk.escola.n':'La Fàbrica de Superherois','pk.escola.e':'Una classe amb el seu mapa de recursos i ajuda intercanviada de veritat. Els superpoders es guanyen quan un company confirma que l\'has ajudat, i cap nom real surt de l\'aula.',
   'pk.escola.q':'Escoles i AFA · 6 a 13 anys','pk.escola.d':'8 sessions','pk.escola.f':'Pla educatiu d\'entorn · regidoria d\'educació',
-  'pk.formar-formadors.n':'Formació de formadors','pk.formar-formadors.e':'Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable. És el que fa que això escali sense passar per nosaltres.',
+  'pk.escola.v':'La criatura descobreix que té alguna cosa per donar, i ho descobreix perquè algú altre ho confirma. Això és el que després sosté una comunitat, i s\'aprèn abans dels tretze.','pk.escola.p':'Puja amb el nombre de grups-classe; una sola aula és el mínim i tot el cicle superior d\'una escola és la banda alta.',
+  'pk.formar-formadors.n':'Formació de formadors','pk.formar-formadors.e':'Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable.',
   'pk.formar-formadors.q':'Ateneus Cooperatius i professionals independents','pk.formar-formadors.d':'20 h + tutela de 2 casos','pk.formar-formadors.f':'Programa propi de l\'Ateneu · formació de professionals',
-  'pk.comu-diada.n':'Comú-diada','pk.comu-diada.e':'La jornada feta i, el dilluns, la gent apuntada i la dinàmica engegada. La diferència amb una festa és que el dimarts encara hi ha alguna cosa en marxa.',
+  'pk.formar-formadors.v':'És l\'únic paquet que multiplica sense consumir les nostres hores: un Ateneu format acompanya desenes de projectes que nosaltres no tocaríem mai.','pk.formar-formadors.p':'Puja amb el nombre de casos tutelats i amb els materials propis que vulgueu; dos casos i els materials de sèrie són el mínim.',
+  'pk.comu-diada.n':'Comú-diada','pk.comu-diada.e':'La jornada feta i, el dilluns, la gent apuntada i la dinàmica engegada.',
   'pk.comu-diada.q':'Ajuntaments, consells comarcals i entitats','pk.comu-diada.d':'Una jornada · 3 setmanes de producció abans','pk.comu-diada.f':'Partida de festes, participació o promoció econòmica',
-  'pk.fent-pinya.n':'Fent Pinya','pk.fent-pinya.e':'Un grup que ha experimentat repartir el pes de debò —perquè s\'ha aixecat un castell— i el vocabulari per parlar-ne l\'endemà a la feina.',
-  'pk.fent-pinya.q':'Equips d\'empresa, plens municipals i taules comunitàries','pk.fent-pinya.d':'2 h','pk.fent-pinya.f':'Pressupost de formació o de festes',
-  'pk.produccio.n':'Producció d\'esdeveniments','pk.produccio.e':'L\'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament. Els festivals i els formats de diversos dies es dimensionen a part.',
-  'pk.produccio.q':'Empreses, ajuntaments i festivals','pk.produccio.d':'Una jornada, de la idea al desmuntatge','pk.produccio.f':'Pressupost de l\'esdeveniment',
+  'pk.comu-diada.v':'La diferència amb una festa és que el dimarts encara hi ha alguna cosa en marxa. Es paga una jornada i queda una dinàmica amb gent apuntada, no un àlbum de fotos.','pk.comu-diada.p':'Puja amb el nombre d\'entitats que s\'hi impliquen, amb els espais i amb la producció tècnica; una plaça i quatre entitats és el mínim.',
+  'pk.fent-pinya.n':'Taller de castells «Fent Pinya»','pk.fent-pinya.e':'Un dinamitzador, un mínim de quatre monitors castellers i dos músics, faixes de lloguer, assegurança de responsabilitat civil i material didàctic. Es fa en qualsevol espai de 10×10×5 m, en castellà, català, anglès, alemany o francès.',
+  'pk.fent-pinya.q':'Equips d\'empresa, plens municipals, escoles i taules comunitàries · de 10 a 1.000 persones','pk.fent-pinya.d':'2 h + 30 min de reflexió','pk.fent-pinya.f':'Pressupost de formació, d\'esdeveniment o de festes',
+  'pk.fent-pinya.v':'Un grup que ha repartit el pes de debò, perquè s\'ha aixecat un castell, i que en surt amb el vocabulari per parlar-ne l\'endemà. És el producte amb més quilòmetres de la casa: 60.000 persones des del 2005.','pk.fent-pinya.p':'No es negocia: el preu el fixa el tram de participants. Els desplaçaments a més de dues hores de Barcelona es pressuposten a part.',
+  'pk.demos.n':'Demostració castellera','pk.demos.e':'Una colla professional aixecant castells de fins a sis pisos: pilars, torres i tres de sis segons l\'alçada contractada.',
+  'pk.demos.q':'Empreses, ajuntaments, festes majors i agències d\'esdeveniments','pk.demos.d':'Fins a 4 castells per actuació','pk.demos.f':'Pressupost de l\'esdeveniment o de festes',
+  'pk.demos.v':'És la peça cultural que es recorda i es comparteix. No és formació —no toca ningú de l\'equip— i per això no substitueix el taller: l\'acompanya.','pk.demos.p':'El preu el fixa l\'alçada, que és el nombre de castellers que cal moure. Màxim quatre castells per actuació, per qualitat.',
+  'pk.produccio.n':'Producció d\'esdeveniments','pk.produccio.e':'L\'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament.',
+  'pk.produccio.q':'Empreses, ajuntaments i festivals','pk.produccio.d':'D\'una jornada a un festival de diversos dies','pk.produccio.f':'Pressupost de l\'esdeveniment',
+  'pk.produccio.v':'Una sola persona responsable de tot el que pot sortir malament, i vint anys sabent què surt malament. El que compreu no és el muntatge: és no haver-hi de ser.','pk.produccio.p':'Puja amb els dies, els escenaris i el nombre de proveïdors a coordinar. Una jornada d\'un sol espai entra sota el sostre de contractació menor; un festival, no.',
   'pk.posar-en-marxa.n':'Posada en marxa d\'una dinàmica','pk.posar-en-marxa.e':'La dinàmica funcionant amb rols, governança i comptes: banc de temps, biblioteca de les coses, grup de consum, cures veïnals, comunitat energètica o habitatge en cessió d\'ús.',
   'pk.posar-en-marxa.q':'Entitats i grups promotors, finançat per l\'ajuntament','pk.posar-en-marxa.d':'6 mesos · sessions quinzenals','pk.posar-en-marxa.f':'Partida de participació · Ateneus Cooperatius',
+  'pk.posar-en-marxa.v':'Al sisè mes hi ha intercanvis registrats i gent que sap portar-ho. La diferència amb un pla estratègic és que això es pot ensenyar funcionant.','pk.posar-en-marxa.p':'Són de 400 a 900 € al mes segons la mida del grup i si cal constituir res; sis mesos és el mínim per veure si s\'aguanta sol.',
   'pk.implantacio.n':'Implantació i suport','pk.implantacio.e':'L\'eina amb el vostre cas a dins, la sincronització entre aparells resolta i la gent sabent-la fer servir. Les dades es queden al vostre navegador.',
   'pk.implantacio.q':'Ajuntaments, consells comarcals i Ateneus','pk.implantacio.d':'3 setmanes','pk.implantacio.f':'Partida de digitalització · fons Next Generation',
+  'pk.implantacio.v':'L\'eina és gratuïta i te la pots endur. El que es paga és no haver de descobrir sol com es munta, i que el dia u ja hi hagi les vostres dades a dins.','pk.implantacio.p':'Puja amb el volum de dades a migrar i amb l\'ancoratge permanent; una instal·lació neta amb formació d\'un equip és el mínim.',
   'pk.ia-amb-frens.n':'IA amb frens · sessió de viabilitat','pk.ia-amb-frens.e':'Què es pot automatitzar amb garanties i què no, amb el criteri escrit: la màquina proposa, res entra sense que una persona ho hagi comprovat, i sempre es diu d\'on ho ha tret.',
   'pk.ia-amb-frens.q':'Qui es plantegi fer servir IA amb dades de persones','pk.ia-amb-frens.d':'1 sessió + informe · 2 setmanes','pk.ia-amb-frens.f':'Partida de digitalització',
+  'pk.ia-amb-frens.v':'Sortiu de la reunió amb una decisió escrita i no amb una intuïció. I amb el criteri de fre posat abans de comprar res, que és quan encara es pot posar.','pk.ia-amb-frens.p':'Puja si cal revisar processos que ja toquen dades de persones; una sessió d\'exploració és el mínim.',
   'pk.contractes.n':'Contractes intel·ligents · estudi de viabilitat','pk.contractes.e':'Un informe de si val la pena, què costaria i quins riscos té. Es ven l\'estudi i no l\'eina: al SOS això encara no està construït, i l\'informe ho diu.',
   'pk.contractes.q':'Cooperatives i administracions que vulguin automatitzar acords','pk.contractes.d':'3 setmanes','pk.contractes.f':'Fons d\'innovació · Next Generation',
+  'pk.contractes.v':'Sabreu si això us serveix abans de gastar-hi res. Un «no val la pena» amb els números al costat val el mateix que un «sí», i és més barat que descobrir-ho construint.','pk.contractes.p':'Puja amb el nombre d\'acords a modelar i amb la part jurídica; un sol cas d\'ús és el mínim.',
 
 /*/TT-I18N-CA*/
   'faq.q6':'Com se signa això, administrativament?',
   'faq.a6':'Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.',
-  'cl.honest':'<strong>D\'on ve cada prova.</strong> Les xifres de dalt són del món corporatiu i de la formació d\'equips: allà hi ha vint anys i es poden ensenyar casos. La línia comunitària és més nova i té menys quilòmetres — per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.',
+  'cl.honest':'<strong>D\'on ve cada prova.</strong> Les xifres de dalt són de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> i del taller Fent Pinya: 60.000 persones i 150 organitzacions des del 2005, i una millora del 30-50 % en cohesió d\'equip <em>segons les enquestes internes posteriors a l\'esdeveniment</em> — no és un estudi extern i es diu. La línia comunitària és més nova i té menys quilòmetres: per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.',
   'nav.relat':'D\'on ve',
   'nav.aprenent':'S\'aprèn fent',
   'nav.cataleg':'El catàleg',
@@ -1601,13 +1836,13 @@ ca: {
   'apf.peu':'<strong>I això, a la pràctica, què és?</strong> Formacions que contractes tu per als teus ciutadans o socis. Ells hi aprenen a emprendre en grup portant un projecte del poble de debò, i el que en surt es queda al poble.',
   'pk.eyebrow':'El catàleg',
   'pk.h2':'Propostes tancades. <em>Amb el preu escrit.</em>',
-  'pk.intro':'Cada paquet diu per a qui és, quant dura, què t\'endús, quant costa, amb quins diners es paga i quantes vegades s\'ha fet. Els que van a administració pública queden per sota dels 5.000 €, que és el que es contracta sense obrir un expedient llarg.',
-  'pk.peu':'<strong>El punt de cada paquet no és decoració.</strong> <em>Provat</em> vol dir entregat moltes vegades i amb casos per ensenyar. <em>En adaptació</em> vol dir un producte provat que s\'està portant a un mercat nou. <em>Nou</em> vol dir que encara no s\'ha entregat prou vegades — i dir-ho val més que la venda que es perd.',
+  'pk.intro':'Cada paquet diu per a qui és, quant dura, què t\'endús, **què t\'aporta**, quant costa i què fa moure el preu dins de la forquilla. Els que van a administració pública hi entren per sota dels 5.000 €, que és el que es contracta sense obrir un expedient llarg.',
+  'pk.peu':'<strong>Tots els preus són sense IVA</strong>, i cadascun diu d\'on surt: <em>tarifa 2026</em> és el que es factura de debò, <em>forquilla del model</em> és la banda pensada al model de negoci, i <em>a validar</em> vol dir que encara no s\'ha facturat prou vegades i que la primera conversa el tanca. El <em>punt</em> és una altra cosa: diu quantes vegades s\'ha entregat —<em>provat</em>, <em>en adaptació</em> o <em>nou</em>— i dir-ho val més que la venda que es perd.',
   'sosp.eyebrow':'El projecte',
   'sosp.h2':'El SOS existeix <em>encara que no ens contractis</em>',
   'sosp.intro':'És gratuït, obert i funciona sense nosaltres. S\'obre al navegador, sense compte i sense instal·lar res, i les dades es queden al teu aparell. No venem el programa: venem l\'acompanyament — i si l\'acompanyament no et convenç, l\'eina te la quedes igualment.',
   'sosp.peu':'<strong>El que encara no hi és, es diu.</strong> Els contractes intel·ligents no estan construïts al SOS: per això es ven l\'estudi de si val la pena, i no una eina que no existeix. La regla d\'aquesta casa és que cap porta apunti a un lloc que no hi és.',
-  'nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formació','nav.diagnostic':'Diagnòstic','nav.demo':'Viu-ho →',
+  'nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.demo':'Viu-ho →',
   
   
   
@@ -1696,8 +1931,8 @@ ca: {
   'fac.tag1':'Psicologia Social i Comunitària','fac.tag2':'Value Network Analysis','fac.tag3':'Facilitació Fent Pinya',
   'cl.eyebrow':'Trajectòria i confiança',
   'cl.h2':'20 anys teixint <em>equips i comunitats</em>',
-  'cl.intro':'Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals.',
-  'cl.s1':'Creant i desenvolupant equips des de','cl.s2':'Persones formades en col·laboració i confiança','cl.s3':'Empreses i organitzacions acompanyades','cl.s4':'Primer banc de temps de la ciutat de León',
+  'cl.intro':'Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals. Les xifres de sota són del catàleg comercial de TeamTowers 2026, i cadascuna diu d\'on surt.',
+  'cl.s1':'TeamTowers · experiències castelleres des de','cl.s2':'Persones que han passat pel taller Fent Pinya','cl.s3':'Empreses i organitzacions acompanyades','cl.s4':'Primer banc de temps de la ciutat de León',
   'cl.g1':'Universitats i formació','cl.g2':'Sector públic','cl.g3':'Empreses',
   'cl.emp':'i +150 empreses en formació i cohesió d\'equips',
   'cl.p1.tag':'Software comunitari','cl.p1.d':'Banc de temps i xarxa de coneixement. Una plataforma que empreses i organitzacions lloguen per crear la seva pròpia economia del temps i dinamitzar la seva comunitat.',
@@ -1774,7 +2009,7 @@ ca: {
   'faq.a5':'No, i sovint són compatibles. Les eines de participació serveixen per <strong>recollir</strong>: propostes, vots, pressupostos participatius. Això altre serveix per <strong>sostenir</strong> el dia a dia d\'un projecte que ja s\'ha decidit —qui fa què, qui hi ha posat hores, qui entra ara. Si el que ja teniu ho fa, t\'ho direm i no et vendrem res.',
   'faq.nota':'<span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn del poble, no de l\'eina—, ni fem enquestes massives al veïnat. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.',
   'cta.pr1':'Primer banc de temps de la ciutat de León, engegat i encara explicable pas a pas',
-  'cta.pr2':'Persones formades en cooperació i confiança des del 1996',
+  'cta.pr2':'Persones pel taller Fent Pinya des del 2005',
   'cta.pr3':'De l\'eina és gratuïta i oberta: es pot revisar abans de confiar-hi',
   'cta.pr.nota':'El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l\'eina, el mètode i la trajectòria de qui hi ha darrere.'
 },
@@ -1787,48 +2022,72 @@ es: {
   'pk.punt.provat':'Probado',
   'pk.punt.adaptacio':'En adaptación',
   'pk.punt.nou':'Nuevo',
-  'pk.lbl.qui':'Para quién','pk.lbl.dura':'Cuánto dura','pk.lbl.diners':'Con qué dinero',
+  'pk.font.tarifari':'Tarifa 2026',
+  'pk.font.negoci':'Horquilla del modelo',
+  'pk.font.estimacio':'A validar',
+  'pk.lbl.qui':'Para quién','pk.lbl.dura':'Cuánto dura','pk.lbl.diners':'Con qué dinero','pk.lbl.valor':'Qué te aporta',
   'pk.diagnostic-teixit.n':'Diagnóstico del tejido local','pk.diagnostic-teixit.e':'El informe con el mapa de valor del tejido real: quién sostiene qué, qué flujos faltan y de quién cuelga todo antes de que se queme.',
   'pk.diagnostic-teixit.q':'Ayuntamientos, consejos comarcales y entidades','pk.diagnostic-teixit.d':'2 sesiones · 3 semanas','pk.diagnostic-teixit.f':'Catálogo de servicios de la Diputación · partida de participación ciudadana',
+  'pk.diagnostic-teixit.v':'Dejas de decidir por intuición. Sabes qué tres vínculos sostienen el pueblo y cuál se romperá primero, que es lo que evita perder un año en un proyecto que no se aguantaba.','pk.diagnostic-teixit.p':'Sube con el número de actores a mapear y con las sesiones de validación con el tejido; baja si ya tenéis un censo de entidades hecho.',
   'pk.mapa-organitzacio.n':'Mapa de valor de una organización','pk.mapa-organitzacio.e':'El mapa de los intercambios reales, tangibles e intangibles, y dónde se pierde valor sin que lo vea nadie. Método VNA de Verna Allee.',
   'pk.mapa-organitzacio.q':'Empresas, cooperativas y entidades con equipo propio','pk.mapa-organitzacio.d':'3 sesiones · 4-6 semanas','pk.mapa-organitzacio.f':'Presupuesto propio de mejora o de formación',
-  'pk.mapa-comarcal.n':'Mapa comarcal y asamblea federativa','pk.mapa-comarcal.e':'El mapa de toda la comarca y una decisión tomada y registrada con peso por raíz de población y corrección de desigualdad: el municipio grande no decide por los pequeños, y los pequeños no valen lo mismo que el grande.',
+  'pk.mapa-organitzacio.v':'Se ve quién sostiene lo que no consta en ningún organigrama. Es la conversación que evita que, cuando esa persona se vaya, el equipo descubra de golpe todo lo que hacía.','pk.mapa-organitzacio.p':'Sube con el número de roles y departamentos implicados; baja si el mapa se hace con un solo equipo y no con toda la casa.',
+  'pk.mapa-comarcal.n':'Mapa comarcal y asamblea federativa','pk.mapa-comarcal.e':'El mapa de toda la comarca y una decisión tomada y registrada con peso por raíz de población y corrección de desigualdad.',
   'pk.mapa-comarcal.q':'Consejos comarcales y mancomunidades','pk.mapa-comarcal.d':'4 sesiones con varios municipios · 2-3 meses','pk.mapa-comarcal.f':'Presupuesto de cooperación intermunicipal',
+  'pk.mapa-comarcal.v':'Resuelve el problema político que tenéis: que el municipio grande no decida por los pequeños y que los pequeños no valgan lo mismo que el grande. Con esto, los acuerdos se toman; sin ello, se vuelven a aplazar.','pk.mapa-comarcal.p':'Sube con el número de municipios que entran y con los desplazamientos; por debajo de ocho municipios está en la banda baja y cabe bajo el techo de contratación menor.',
   'pk.impacte.n':'Medida de impacto y justificación','pk.impacte.e':'Horas donadas, personas activas y reciprocidad, saliendo de un registro firmado y comprobable — no de una encuesta de satisfacción.',
   'pk.impacte.q':'Ayuntamientos, fundaciones y financiadores','pk.impacte.d':'Informe semestral o anual · 2 semanas','pk.impacte.f':'La misma partida que ya financia el proyecto que se justifica',
-  'pk.persones-cultura.n':'Diagnóstico de personas y cultura','pk.persones-cultura.e':'Dónde se rompe la colaboración, quién sostiene lo que no consta en ningún sitio, y qué habría que cambiar primero. Es la puerta de entrada a la consultoría de personas; lo que viene después se dimensiona con este informe en la mano.',
+  'pk.impacte.v':'Podéis justificar la subvención con datos que aguantan una auditoría, y pedir la siguiente con lo que ha pasado de verdad en vez de con el número de actividades hechas.','pk.impacte.p':'Sube con el número de proyectos a agregar y con el anclaje permanente si lo queréis; el primer informe de un solo proyecto es el mínimo.',
+  'pk.persones-cultura.n':'Diagnóstico de personas y cultura','pk.persones-cultura.e':'Dónde se rompe la colaboración, quién sostiene lo que no consta en ningún sitio, y qué habría que cambiar primero.',
   'pk.persones-cultura.q':'Empresas y cooperativas con equipo','pk.persones-cultura.d':'3 sesiones · 6 semanas','pk.persones-cultura.f':'Presupuesto propio de recursos humanos',
+  'pk.persones-cultura.v':'Es la puerta de entrada: lo que viene después se dimensiona con este informe en la mano y no con una propuesta a ciegas. Sabéis qué costará antes de comprometer un presupuesto.','pk.persones-cultura.p':'Sube con el tamaño del equipo y con las entrevistas individuales; con menos de veinte personas está en la banda baja.',
   'pk.gestor.n':'Programa de Gestor/a','pk.gestor.e':'Una persona del territorio que sabe arrancar y sostener participación sin depender de nadie. Se hace sobre vuestro proyecto, no sobre un caso inventado.',
   'pk.gestor.q':'Técnicos municipales y profesionales · precio por persona','pk.gestor.d':'~45 h en 3-4 meses','pk.gestor.f':'Plan de formación municipal · subvención de Diputación',
-  'pk.equip-gestor.n':'Programa de equipo gestor','pk.equip-gestor.e':'Un equipo de cinco a siete personas con los roles repartidos y el relevo previsto, y la dinámica funcionando. Forma un equipo y no una persona, porque un territorio no lo sostiene un gestor.',
+  'pk.gestor.v':'Dejáis de depender de una consultora para sostener lo que ya tenéis. Lo que antes se volvía a contratar cada año queda dentro de la casa.','pk.gestor.p':'Baja por persona a partir de la tercera del mismo territorio; sube si el proyecto sobre el que se trabaja todavía no existe y hay que montarlo.',
+  'pk.equip-gestor.n':'Programa de equipo gestor','pk.equip-gestor.e':'Un equipo de cinco a siete personas con los roles repartidos y el relevo previsto, y la dinámica funcionando.',
   'pk.equip-gestor.q':'Una entidad del territorio, financiada por el ayuntamiento','pk.equip-gestor.d':'12 semanas · 5 roles · ~34 h de mentoría','pk.equip-gestor.f':'Partida de participación · Ateneus Cooperatius',
+  'pk.equip-gestor.v':'Forma un equipo y no una persona. Es la diferencia entre una dinámica que sobrevive a quien la arrancó y una que se muere cuando esa persona se cansa —que es como mueren la mayoría.','pk.equip-gestor.p':'Entra bajo el techo de contratación menor con cinco personas y doce semanas; sube si el equipo es mayor o si el acompañamiento se alarga más allá del trimestre.',
   'pk.comunitats-practica.n':'Comunidades de práctica','pk.comunitats-practica.e':'El mapa del conocimiento que ya tenéis y un grupo que lo hace circular solo cuando nosotros nos vamos.',
   'pk.comunitats-practica.q':'Organizaciones con conocimiento disperso','pk.comunitats-practica.d':'6 sesiones en 3 meses','pk.comunitats-practica.f':'Presupuesto de formación',
+  'pk.comunitats-practica.v':'Lo que sabe una persona deja de salir por la puerta con ella. Quien entra nuevo no vuelve a empezar de cero, y eso se nota en el tiempo que tarda en ser útil.','pk.comunitats-practica.p':'Sube con el número de comunidades que se arrancan a la vez y con las sedes; una sola comunidad en un solo centro es el mínimo.',
   'pk.formacio-equips.n':'Formación de equipos','pk.formacio-equips.e':'Liderazgo colaborativo y gestión del cambio con metodología castellera: repartir el peso, avisar antes de ceder y poder decir lo que se piensa sin miedo.',
-  'pk.formacio-equips.q':'Empresas, cooperativas y equipos técnicos','pk.formacio-equips.d':'Media jornada · más sesiones, a escalar','pk.formacio-equips.f':'Presupuesto de formación',
+  'pk.formacio-equips.q':'Empresas, cooperativas y equipos técnicos','pk.formacio-equips.d':'De media jornada a cuatro sesiones','pk.formacio-equips.f':'Presupuesto de formación',
+  'pk.formacio-equips.v':'El equipo sale con un vocabulario compartido para hablar de lo que antes no se decía. La conversación difícil del lunes se puede tener, porque hay palabras para tenerla.','pk.formacio-equips.p':'Media jornada es el mínimo; sube con el número de sesiones y con el seguimiento posterior.',
   'pk.escola.n':'La Fábrica de Superhéroes','pk.escola.e':'Una clase con su mapa de recursos y ayuda intercambiada de verdad. Los superpoderes se ganan cuando un compañero confirma que le has ayudado, y ningún nombre real sale del aula.',
   'pk.escola.q':'Escuelas y AFA · 6 a 13 años','pk.escola.d':'8 sesiones','pk.escola.f':'Plan educativo de entorno · concejalía de educación',
-  'pk.formar-formadors.n':'Formación de formadores','pk.formar-formadors.e':'Poder formar y acreditar a otros, con tu recorrido en el registro firmado y auditable. Es lo que hace que esto escale sin pasar por nosotros.',
+  'pk.escola.v':'La criatura descubre que tiene algo que dar, y lo descubre porque otro lo confirma. Eso es lo que después sostiene una comunidad, y se aprende antes de los trece.','pk.escola.p':'Sube con el número de grupos-clase; una sola aula es el mínimo y todo el ciclo superior de una escuela es la banda alta.',
+  'pk.formar-formadors.n':'Formación de formadores','pk.formar-formadors.e':'Poder formar y acreditar a otros, con tu recorrido en el registro firmado y auditable.',
   'pk.formar-formadors.q':'Ateneus Cooperatius y profesionales independientes','pk.formar-formadors.d':'20 h + tutela de 2 casos','pk.formar-formadors.f':'Programa propio del Ateneu · formación de profesionales',
-  'pk.comu-diada.n':'Comú-diada','pk.comu-diada.e':'La jornada hecha y, el lunes, la gente apuntada y la dinámica en marcha. La diferencia con una fiesta es que el martes todavía hay algo funcionando.',
+  'pk.formar-formadors.v':'Es el único paquete que multiplica sin consumir nuestras horas: un Ateneu formado acompaña decenas de proyectos que nosotros no tocaríamos nunca.','pk.formar-formadors.p':'Sube con el número de casos tutelados y con los materiales propios que queráis; dos casos y los materiales de serie son el mínimo.',
+  'pk.comu-diada.n':'Comú-diada','pk.comu-diada.e':'La jornada hecha y, el lunes, la gente apuntada y la dinámica en marcha.',
   'pk.comu-diada.q':'Ayuntamientos, consejos comarcales y entidades','pk.comu-diada.d':'Una jornada · 3 semanas de producción antes','pk.comu-diada.f':'Partida de fiestas, participación o promoción económica',
-  'pk.fent-pinya.n':'Fent Pinya','pk.fent-pinya.e':'Un grupo que ha experimentado repartir el peso de verdad —porque se ha levantado un castell— y el vocabulario para hablar de ello al día siguiente en el trabajo.',
-  'pk.fent-pinya.q':'Equipos de empresa, plenos municipales y mesas comunitarias','pk.fent-pinya.d':'2 h','pk.fent-pinya.f':'Presupuesto de formación o de fiestas',
-  'pk.produccio.n':'Producción de eventos','pk.produccio.e':'El evento producido entero: proveedores, permisos, montaje, equipo y cierre. Los festivales y los formatos de varios días se dimensionan aparte.',
-  'pk.produccio.q':'Empresas, ayuntamientos y festivales','pk.produccio.d':'Una jornada, de la idea al desmontaje','pk.produccio.f':'Presupuesto del evento',
+  'pk.comu-diada.v':'La diferencia con una fiesta es que el martes todavía hay algo funcionando. Se paga una jornada y queda una dinámica con gente apuntada, no un álbum de fotos.','pk.comu-diada.p':'Sube con el número de entidades implicadas, con los espacios y con la producción técnica; una plaza y cuatro entidades es el mínimo.',
+  'pk.fent-pinya.n':'Taller de castells «Fent Pinya»','pk.fent-pinya.e':'Un dinamizador, un mínimo de cuatro monitores castellers y dos músicos, fajas de alquiler, seguro de responsabilidad civil y material didáctico. Se hace en cualquier espacio de 10×10×5 m, en castellano, catalán, inglés, alemán o francés.',
+  'pk.fent-pinya.q':'Equipos de empresa, plenos municipales, escuelas y mesas comunitarias · de 10 a 1.000 personas','pk.fent-pinya.d':'2 h + 30 min de reflexión','pk.fent-pinya.f':'Presupuesto de formación, de evento o de fiestas',
+  'pk.fent-pinya.v':'Un grupo que ha repartido el peso de verdad, porque se ha levantado un castell, y que sale con el vocabulario para hablar de ello al día siguiente. Es el producto con más kilómetros de la casa: 60.000 personas desde 2005.','pk.fent-pinya.p':'No se negocia: el precio lo fija el tramo de participantes. Los desplazamientos a más de dos horas de Barcelona se presupuestan aparte.',
+  'pk.demos.n':'Demostración castellera','pk.demos.e':'Una colla profesional levantando castells de hasta seis pisos: pilares, torres y tres de seis según la altura contratada.',
+  'pk.demos.q':'Empresas, ayuntamientos, fiestas mayores y agencias de eventos','pk.demos.d':'Hasta 4 castells por actuación','pk.demos.f':'Presupuesto del evento o de fiestas',
+  'pk.demos.v':'Es la pieza cultural que se recuerda y se comparte. No es formación —no toca a nadie del equipo— y por eso no sustituye al taller: lo acompaña.','pk.demos.p':'El precio lo fija la altura, que es el número de castellers que hay que mover. Máximo cuatro castells por actuación, por calidad.',
+  'pk.produccio.n':'Producción de eventos','pk.produccio.e':'El evento producido entero: proveedores, permisos, montaje, equipo y cierre.',
+  'pk.produccio.q':'Empresas, ayuntamientos y festivales','pk.produccio.d':'De una jornada a un festival de varios días','pk.produccio.f':'Presupuesto del evento',
+  'pk.produccio.v':'Una sola persona responsable de todo lo que puede salir mal, y veinte años sabiendo qué sale mal. Lo que compráis no es el montaje: es no tener que estar.','pk.produccio.p':'Sube con los días, los escenarios y el número de proveedores a coordinar. Una jornada de un solo espacio entra bajo el techo de contratación menor; un festival, no.',
   'pk.posar-en-marxa.n':'Puesta en marcha de una dinámica','pk.posar-en-marxa.e':'La dinámica funcionando con roles, gobernanza y cuentas: banco de tiempo, biblioteca de las cosas, grupo de consumo, cuidados vecinales, comunidad energética o vivienda en cesión de uso.',
   'pk.posar-en-marxa.q':'Entidades y grupos promotores, financiado por el ayuntamiento','pk.posar-en-marxa.d':'6 meses · sesiones quincenales','pk.posar-en-marxa.f':'Partida de participación · Ateneus Cooperatius',
+  'pk.posar-en-marxa.v':'Al sexto mes hay intercambios registrados y gente que sabe llevarlo. La diferencia con un plan estratégico es que esto se puede enseñar funcionando.','pk.posar-en-marxa.p':'Son de 400 a 900 € al mes según el tamaño del grupo y si hay que constituir algo; seis meses es el mínimo para ver si se aguanta solo.',
   'pk.implantacio.n':'Implantación y soporte','pk.implantacio.e':'La herramienta con vuestro caso dentro, la sincronización entre aparatos resuelta y la gente sabiendo usarla. Los datos se quedan en vuestro navegador.',
   'pk.implantacio.q':'Ayuntamientos, consejos comarcales y Ateneus','pk.implantacio.d':'3 semanas','pk.implantacio.f':'Partida de digitalización · fondos Next Generation',
+  'pk.implantacio.v':'La herramienta es gratuita y te la puedes llevar. Lo que se paga es no tener que descubrir solo cómo se monta, y que el día uno ya estén vuestros datos dentro.','pk.implantacio.p':'Sube con el volumen de datos a migrar y con el anclaje permanente; una instalación limpia con formación de un equipo es el mínimo.',
   'pk.ia-amb-frens.n':'IA con frenos · sesión de viabilidad','pk.ia-amb-frens.e':'Qué se puede automatizar con garantías y qué no, con el criterio escrito: la máquina propone, nada entra sin que una persona lo haya comprobado, y siempre se dice de dónde lo ha sacado.',
   'pk.ia-amb-frens.q':'Quien se plantee usar IA con datos de personas','pk.ia-amb-frens.d':'1 sesión + informe · 2 semanas','pk.ia-amb-frens.f':'Partida de digitalización',
+  'pk.ia-amb-frens.v':'Salís de la reunión con una decisión escrita y no con una intuición. Y con el criterio de freno puesto antes de comprar nada, que es cuando todavía se puede poner.','pk.ia-amb-frens.p':'Sube si hay que revisar procesos que ya tocan datos de personas; una sesión de exploración es el mínimo.',
   'pk.contractes.n':'Contratos inteligentes · estudio de viabilidad','pk.contractes.e':'Un informe de si vale la pena, qué costaría y qué riesgos tiene. Se vende el estudio y no la herramienta: en el SOS esto todavía no está construido, y el informe lo dice.',
   'pk.contractes.q':'Cooperativas y administraciones que quieran automatizar acuerdos','pk.contractes.d':'3 semanas','pk.contractes.f':'Fondos de innovación · Next Generation',
+  'pk.contractes.v':'Sabréis si esto os sirve antes de gastar nada. Un «no vale la pena» con los números al lado vale lo mismo que un «sí», y es más barato que descubrirlo construyendo.','pk.contractes.p':'Sube con el número de acuerdos a modelar y con la parte jurídica; un solo caso de uso es el mínimo.',
 
 /*/TT-I18N-ES*/
   'faq.q6':'¿Cómo se firma esto, administrativamente?',
   'faq.a6':'Cada paquete del catálogo lleva el precio cerrado y todos los que van a administración pública quedan <strong>por debajo de los 5.000 €</strong>. Con la propuesta y el presupuesto en la mano, la contratación menor lo resuelve sin abrir un expediente largo. Si lo que necesitáis es más grande, se parte en fases o se plantea como un contrato de servicios: os decimos qué vía os conviene antes de haceros perder el tiempo.',
-  'cl.honest':'<strong>De dónde viene cada prueba.</strong> Las cifras de arriba son del mundo corporativo y de la formación de equipos: ahí hay veinte años y se pueden enseñar casos. La línea comunitaria es más nueva y tiene menos kilómetros — por eso en el catálogo cada paquete dice si está <em>probado</em>, <em>en adaptación</em> o es <em>nuevo</em>, en vez de usar estos números como si lo demostraran todo.',
+  'cl.honest':'<strong>De dónde viene cada prueba.</strong> Las cifras de arriba son de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> y del taller Fent Pinya: 60.000 personas y 150 organizaciones desde 2005, y una mejora del 30-50 % en cohesión de equipo <em>según las encuestas internas posteriores al evento</em> — no es un estudio externo y se dice. La línea comunitaria es más nueva y tiene menos kilómetros: por eso en el catálogo cada paquete dice si está <em>probado</em>, <em>en adaptación</em> o es <em>nuevo</em>, en vez de usar estos números como si lo demostraran todo.',
   'nav.relat':'De dónde viene',
   'nav.aprenent':'Se aprende haciendo',
   'nav.cataleg':'El catálogo',
@@ -1877,13 +2136,13 @@ es: {
   'apf.peu':'<strong>Y esto, en la práctica, ¿qué es?</strong> Formaciones que contratas tú para tus ciudadanos o socios. Ellos aprenden a emprender en grupo llevando un proyecto del pueblo de verdad, y lo que sale se queda en el pueblo.',
   'pk.eyebrow':'El catálogo',
   'pk.h2':'Propuestas cerradas. <em>Con el precio escrito.</em>',
-  'pk.intro':'Cada paquete dice para quién es, cuánto dura, qué te llevas, cuánto cuesta, con qué dinero se paga y cuántas veces se ha hecho. Los que van a administración pública quedan por debajo de los 5.000 €, que es lo que se contrata sin abrir un expediente largo.',
-  'pk.peu':'<strong>El punto de cada paquete no es decoración.</strong> <em>Probado</em> significa entregado muchas veces y con casos que enseñar. <em>En adaptación</em> significa un producto probado que se está llevando a un mercado nuevo. <em>Nuevo</em> significa que todavía no se ha entregado suficientes veces — y decirlo vale más que la venta que se pierde.',
+  'pk.intro':'Cada paquete dice para quién es, cuánto dura, qué te llevas, **qué te aporta**, cuánto cuesta y qué mueve el precio dentro de la horquilla. Los que van a administración pública entran por debajo de los 5.000 €, que es lo que se contrata sin abrir un expediente largo.',
+  'pk.peu':'<strong>Todos los precios son sin IVA</strong>, y cada uno dice de dónde sale: <em>tarifa 2026</em> es lo que se factura de verdad, <em>horquilla del modelo</em> es la banda pensada en el modelo de negocio, y <em>a validar</em> significa que todavía no se ha facturado suficientes veces y que la primera conversación lo cierra. El <em>punto</em> es otra cosa: dice cuántas veces se ha entregado —<em>probado</em>, <em>en adaptación</em> o <em>nuevo</em>— y decirlo vale más que la venta que se pierde.',
   'sosp.eyebrow':'El proyecto',
   'sosp.h2':'El SOS existe <em>aunque no nos contrates</em>',
   'sosp.intro':'Es gratuito, abierto y funciona sin nosotros. Se abre en el navegador, sin cuenta y sin instalar nada, y los datos se quedan en tu aparato. No vendemos el programa: vendemos el acompañamiento — y si el acompañamiento no te convence, la herramienta te la quedas igualmente.',
   'sosp.peu':'<strong>Lo que todavía no está, se dice.</strong> Los contratos inteligentes no están construidos en el SOS: por eso se vende el estudio de si vale la pena, y no una herramienta que no existe. La regla de esta casa es que ninguna puerta apunte a un sitio que no está.',
-  'nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.comando':'Comando','nav.blog':'Blog','nav.formacio':'Formación','nav.diagnostic':'Diagnóstico','nav.demo':'Verlo en vivo →',
+  'nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.demo':'Verlo en vivo →',
   
   
   
@@ -1972,8 +2231,8 @@ es: {
   'fac.tag1':'Psicología Social y Comunitaria','fac.tag2':'Value Network Analysis','fac.tag3':'Facilitación Fent Pinya',
   'cl.eyebrow':'Trayectoria y confianza',
   'cl.h2':'20 años tejiendo <em>equipos y comunidades</em>',
-  'cl.intro':'Del mundo corporativo a la innovación social: una metodología probada con universidades, administraciones públicas, empresas y proyectos comunitarios reales.',
-  'cl.s1':'Creando y desarrollando equipos desde','cl.s2':'Personas formadas en colaboración y confianza','cl.s3':'Empresas y organizaciones acompañadas','cl.s4':'Primer banco de tiempo de la ciudad de León',
+  'cl.intro':'Del mundo corporativo a la innovación social: una metodología probada con universidades, administraciones públicas, empresas y proyectos comunitarios reales. Las cifras de abajo son del catálogo comercial de TeamTowers 2026, y cada una dice de dónde sale.',
+  'cl.s1':'TeamTowers · experiencias castelleras desde','cl.s2':'Personas que han pasado por el taller Fent Pinya','cl.s3':'Empresas y organizaciones acompañadas','cl.s4':'Primer banco de tiempo de la ciudad de León',
   'cl.g1':'Universidades y formación','cl.g2':'Sector público','cl.g3':'Empresas',
   'cl.emp':'y +150 empresas en formación y cohesión de equipos',
   'cl.p1.tag':'Software comunitario','cl.p1.d':'Banco de tiempo y red de conocimiento. Una plataforma que empresas y organizaciones alquilan para crear su propia economía del tiempo y dinamizar su comunidad.',
@@ -2050,7 +2309,7 @@ es: {
   'faq.a5':'No, y a menudo son compatibles. Las herramientas de participación sirven para <strong>recoger</strong>: propuestas, votos, presupuestos participativos. Esto otro sirve para <strong>sostener</strong> el día a día de un proyecto que ya se ha decidido —quién hace qué, quién ha puesto horas, quién entra ahora. Si lo que ya tenéis lo hace, te lo diremos y no te venderemos nada.',
   'faq.nota':'<span>→</span> Lo que <strong>no</strong> hacemos: ni gestionamos el proyecto por vosotros, ni garantizamos que la gente participe —eso depende del pueblo, no de la herramienta—, ni hacemos encuestas masivas al vecindario. Y no dinamizamos nada que no tenga al menos tres personas dispuestas a sostenerlo.',
   'cta.pr1':'Primer banco de tiempo de la ciudad de León, puesto en marcha y todavía explicable paso a paso',
-  'cta.pr2':'Personas formadas en cooperación y confianza desde 1996',
+  'cta.pr2':'Personas por el taller Fent Pinya desde 2005',
   'cta.pr3':'De la herramienta es gratuita y abierta: se puede revisar antes de confiar en ella',
   'cta.pr.nota':'El servicio de diagnóstico en el territorio es nuevo y <strong>todavía no tenemos testimonios</strong>. Preferimos decirlo a inventarnos uno: lo que sí puedes comprobar hoy es la herramienta, el método y la trayectoria de quien hay detrás.',
   }

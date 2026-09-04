@@ -92,35 +92,58 @@ else bad(`${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')
    problema dels tretze quadres que hi havia abans. Veda 137. */
 const paquets = [...cos.matchAll(/<article class="paquet" id="pk-([^"]+)">([\s\S]*?)<\/article>/g)]
   .map(m => ({ id: m[1], html: m[2] }));
+const visible0 = cos.replace(/<!--[\s\S]*?-->/g, '');
 if (!paquets.length) bad('no hi ha cap paquet a la portada: aquesta guarda no pot comprovar res');
 else {
   const camp = (h, re) => re.test(h);
+  /* Set coses, i les dues últimes són les que fan que un preu es pugui
+     defensar: **què t'aporta** (`pk-valor`) i **què el mou dins de la
+     forquilla** (`pk-perque`). Una forquilla sense el que la mou és un rang,
+     no un preu, i qui la llegeix no pot saber on cau. Veda 139. */
   const migFets = paquets.filter(p =>
     !camp(p.html, /class="pk-endus"/) ||
     !camp(p.html, /class="pk-punt /) ||
-    !camp(p.html, /class="pk-preu"><strong>[\d.]+ €/) ||
+    !camp(p.html, /class="pk-valor"/) ||
+    !camp(p.html, /class="pk-perque"/) ||
+    !camp(p.html, /class="pk-font"/) ||
+    !camp(p.html, /(<strong>[^<]*[\d.]+ €|class="pk-trams")/) ||
     (p.html.match(/<dt /g) || []).length !== 3);
-  if (!migFets.length) ok(`${paquets.length} paquets, tots amb entregable, per a qui, durada, diners, preu i punt`);
-  else bad(`${pl(migFets.length, 'paquet a mitges', 'paquets a mitges')} (${mostra(migFets.map(p => p.id))}) — un servei sense preu ni durada no es pot portar a una junta`);
+  if (!migFets.length) ok(`${paquets.length} paquets, tots amb entregable, aportació de valor, per a qui, durada, diners, preu amb la seva font i el que el mou`);
+  else bad(`${pl(migFets.length, 'paquet a mitges', 'paquets a mitges')} (${mostra(migFets.map(p => p.id))}) — un preu sense el que l'aporta i el que el mou no es pot defensar`);
 
   /* El sostre dels 5.000 €: per sobre, la proposta deixa de ser una decisió
      d'una regidoria i passa a ser un procediment. Només s'aplica als paquets
      dirigits a administració o entitats; els d'empresa no en tenen. */
   const SOSTRE = 5000;
+  /* El que ha de quedar sota el sostre és **l'entrada** de la forquilla: si el
+     mínim ja hi passa, aquell paquet no té cap manera d'entrar a una
+     contractació menor. Que el màxim la superi és legítim —un festival de tres
+     dies no és un contracte menor— sempre que la fitxa digui què l'hi porta,
+     cosa que la regla de dalt ja exigeix (`pk-perque`). */
   const cars = paquets.filter(p => {
     const qui = (p.html.match(/class="pk-dades">[\s\S]*?<dd[^>]*>([^<]*)</) || [])[1] || '';
     if (!/ajuntament|consell|escola|afa|entitat|administracion|ateneu/i.test(qui)) return false;
-    const preu = Number(((p.html.match(/class="pk-preu"><strong>([\d.]+)/) || [])[1] || '0').replace(/\./g, ''));
-    return preu > SOSTRE;
+    /* Es miren totes les xifres del bloc del preu, no només les que porten el
+       símbol al costat: a «De 3.500 a 6.000 €» l'euro només és al final, i
+       mirar-hi el mínim per l'€ donava el màxim. */
+    const bloc = (p.html.match(/class="pk-preu">([\s\S]*?)<p class="pk-perque"/) || [])[1] || '';
+    const nums = [...bloc.matchAll(/\b(\d{1,3}(?:\.\d{3})+|\d{3,})\b/g)]
+      .map(m => Number(m[1].replace(/\./g, ''))).filter(n => n >= 100);
+    return nums.length ? Math.min(...nums) > SOSTRE : false;
   });
-  if (!cars.length) ok(`cap paquet per a administració o entitats passa dels ${SOSTRE.toLocaleString('ca-ES')} €`);
-  else bad(`${pl(cars.length, 'paquet passa', 'paquets passen')} del sostre de ${SOSTRE} € (${mostra(cars.map(p => p.id))}) — deixen de ser contractació menor`);
+  if (!cars.length) ok(`tot paquet per a administració o entitats hi entra per sota dels ${SOSTRE.toLocaleString('ca-ES')} €`);
+  else bad(`${pl(cars.length, 'paquet no té entrada', 'paquets no tenen entrada')} sota el sostre de ${SOSTRE} € (${mostra(cars.map(p => p.id))}) — no hi ha manera de contractar-los com a contracte menor`);
 
   /* Una porta cap a un fitxer que no hi és. Mateixa regla que a Molekulandia. */
   const dests = [...cos.matchAll(/<article class="paquet"[\s\S]*?<h4><a href="([^"]+)"/g)].map(m => m[1]);
   const falsos = dests.filter(d => !existsSync(join(__dirname, '..', '..', d.replace(/^\//, '').replace(/\/$/, '/index.html'))));
   if (!falsos.length) ok(`${dests.length} enllaços de paquet, tots a una pàgina que existeix`);
   else bad(`${pl(falsos.length, 'enllaç', 'enllaços')} a un fitxer que no hi és (${mostra(falsos)})`);
+
+  /* Un catàleg de preus que no diu si porten IVA obliga a trucar per saber què
+     costa una cosa, que és exactament el que aquest catàleg ve a evitar. */
+  if (/sense IVA|sin IVA|IVA incl/i.test(visible0)) ok('el catàleg diu si els preus porten IVA');
+  else bad('el catàleg no diu si els preus porten IVA: qui compra ha de trucar per saber què costa');
 
   /* Tot punt d'adaptació igual seria no dir res: la columna existeix
      precisament per distingir el que té casos del que encara no en té. */

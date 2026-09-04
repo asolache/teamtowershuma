@@ -1045,6 +1045,48 @@ de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
 
+### El catàleg amb tarifa de debò, i totes les pàgines a un clic · fet
+
+Amb el **catàleg comercial TeamTowers 2026** a la mà, el catàleg del web deixa
+de portar xifres tancades per mi.
+
+- **Els preus són forquilla amb el que la mou**, i cada un diu d'on surt:
+  *tarifa 2026* (2 paquets), *forquilla del model* (8) o *a validar* (9). Un
+  preu tancat que ningú ha facturat mai no és més honest que un rang: és un rang
+  amb una precisió que no té. Veda 139.
+- **El taller Fent Pinya i les demostracions es pinten per trams**, tal com es
+  facturen: de 1.700 € (10-29 persones) a 8.925 € (+400), i de 3.300 a 6.500 €
+  segons l'alçada. No es negocien.
+- **Cada paquet diu què aporta**, que és la pregunta que decideix una compra i
+  no hi era. Va abans de les dades i del preu.
+- **El sostre dels 5.000 € s'aplica a l'entrada de la forquilla**, no al màxim:
+  el que ha de ser cert és que hi hagi manera d'entrar-hi per contractació
+  menor. Un festival de tres dies pot passar-lo, i la fitxa diu què l'hi porta.
+- **Tots els preus són sense IVA**, i ara ho diu.
+
+**Les xifres, amb la seva font.** El catàleg diu «des del 2005», no 1996: la
+portada deia les dues coses i eren incompatibles. Les 60.000 persones són del
+taller Fent Pinya i de teamtowers.eu, i el +30-50 % de cohesió porta ara la font
+que li faltava —*enquestes internes posteriors a l'esdeveniment*—, que és el que
+el fa defensable. El **40 % de retenció d'agències** del catàleg **no s'ha
+portat al web**: no porta font, ni mostra, ni període.
+
+**El desplegable de totes les pàgines** a la portada, generat de la mateixa
+arquitectura que el menú del SOS (`build-nav.js`), i el modal de l'app rebatejat
+«Totes les pàgines». La barra de la portada perd quatre enllaços solts que ara
+són al desplegable. I una guarda nova: **cap pàgina de `SOS/` pot existir sense
+sortir a un menú o dir per què no** —`crm.html` és privada i ara ho declara.
+
+**La revisió del catàleg PDF** és a
+`SOS/knowledge/negoci/cataleg-teamtowers-2026.md`: el contingut buidat, i sis
+coses que hi milloraria —la contradicció de dates, les xifres sense font, els
+anglicismes que la guia de marca prohibeix, les exclamacions, el que falta i
+decideix una compra (pla de pluja, cancel·lació, desplaçaments, edat mínima,
+testimonis amb nom) i el pont cap a la resta del catàleg, que no hi és.
+
+**Queda obert**: portar aquestes correccions al PDF mateix, que no es toca des
+d'aquí; i les condicions de reserva i cancel·lació, que no consten enlloc.
+
 ### Una sola SOS · «Les meves tasques» · fet
 
 El SOS sabia què calia fer i ho sabia **en vuit llocs diferents**: missions,
