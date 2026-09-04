@@ -1053,7 +1053,7 @@ a{color:var(--blue);text-decoration:none}
           <button class="tb-mi" role="menuitem" id="btnFons"><span aria-hidden="true">🏦</span> Fons cooperatiu</button>
           <button class="tb-mi" role="menuitem" id="btnModels"><span aria-hidden="true">🧭</span> Models de país</button>
           <button class="tb-mi" role="menuitem" id="btnActivity"><span aria-hidden="true">📜</span> Registre d'activitat</button>
-          <button class="tb-mi" role="menuitem" id="btnEines"><span aria-hidden="true">🧰</span> Les eines del SOS</button>
+          <button class="tb-mi" role="menuitem" id="btnEines"><span aria-hidden="true">🧰</span> Totes les pàgines</button>
           <div class="tb-menu-lbl" role="presentation">Sistema</div>
           <button class="tb-mi" role="menuitem" id="btnSync"><span aria-hidden="true">🔗</span> Sincronitza un dispositiu</button>
           <button class="tb-mi" role="menuitem" id="btnSettings"><span aria-hidden="true">⚙</span> Configuració i dades</button>
@@ -11931,9 +11931,10 @@ function einesFora(){
 function openEines(){
   const gs=einesFora();
   const bg=modal(`
-    <h2>🧰 Les eines del SOS</h2>
-    <p class="m-sub">Cada eina és una pàgina que fa una feina concreta i que es pot obrir sense
-    sessió. S'obren en una pestanya nova: això no marxa d'aquí.</p>
+    <h2>🧰 Totes les pàgines</h2>
+    <p class="m-sub">Tot el que hi ha fora d'aquesta aplicació, en una llista. Cada pàgina fa una
+    feina concreta i s'obre sense sessió, en una pestanya nova: això que tens obert no marxa d'aquí.
+    És la mateixa llista que hi ha al desplegable de la portada, declarada un sol cop.</p>
     <div id="einesBox"></div>
     <div class="modal-actions"><button class="btn btn-primary" id="einesClose">${t('Tanca')}</button></div>`);
   const box=bg.querySelector('#einesBox');

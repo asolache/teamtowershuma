@@ -704,6 +704,34 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 139 — Una forquilla sense el que la mou és un rang, no un preu
+
+El catàleg va néixer amb un preu tancat per paquet, i era el que semblava més
+útil: un tècnic municipal pot portar una xifra a una junta i un rang, no.
+
+L'error era un altre. **Dels dinou paquets, només dos tenien tarifa de debò**
+—el taller de castells i les demostracions, que es facturen per trams des del
+2005— i els altres disset portaven una xifra que jo havia tancat des de les
+forquilles del model de negoci. Un preu tancat que ningú ha facturat mai no és
+més honest que un rang: és un rang amb una precisió que no té.
+
+La sortida no és tornar al rang. És que **cada preu digui tres coses**:
+
+- **D'on surt.** *Tarifa*, *forquilla del model* o *a validar*. No valen el
+  mateix i qui compra ho ha de poder distingir. Una xifra sense procedència no
+  la pot discutir qui la llegeix ni defensar qui la diu.
+- **Què la mou.** «Puja amb el nombre de municipis que hi entren» converteix el
+  rang en una pregunta que el client sap respondre sol. Sense això, la forquilla
+  només diu «truca'ns», que és exactament el que el catàleg ve a evitar.
+- **Què aporta.** La pregunta que decideix una compra no és què és ni què costa:
+  és què se n'endú qui la paga. És el camp que faltava, i és el que va primer a
+  la fitxa.
+
+I una conseqüència sobre el sostre de contractació menor: **el que ha de quedar
+per sota és l'entrada de la forquilla, no el màxim**. Que un festival de tres
+dies passi dels 5.000 € és normal; el que no pot passar és que un paquet no
+tingui cap manera d'entrar-hi.
+
 ## Veda 138 — Vuit safates és cap safata
 
 El SOS sabia perfectament què calia fer. Ho sabia **en vuit llocs diferents**:

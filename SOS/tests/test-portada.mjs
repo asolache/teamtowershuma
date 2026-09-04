@@ -194,14 +194,22 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
 {
   const { ctx, p } = await nova();
   const r = await p.evaluate(() => {
-    const eur = t => Number(String(t).replace(/[^\d]/g, ''));
+    const eur = t => Number(String(t).replace(/\./g, '').replace(/[^\d]/g, ''));
     const paquets = [...document.querySelectorAll('.paquet')].map(a => ({
       id: a.id,
       nom: (a.querySelector('h4') || {}).textContent || '',
       punt: (a.querySelector('.pk-punt') || {}).textContent || '',
       camps: [...a.querySelectorAll('.pk-dades dt')].map(d => d.textContent.trim()),
       endus: ((a.querySelector('.pk-endus') || {}).textContent || '').trim(),
-      preu: eur((a.querySelector('.pk-preu strong') || {}).textContent || ''),
+      valor: ((a.querySelector('.pk-valor') || {}).textContent || '').trim(),
+      perque: ((a.querySelector('.pk-perque') || {}).textContent || '').trim(),
+      font: ((a.querySelector('.pk-font') || {}).textContent || ''),
+      trams: a.querySelectorAll('.pk-trams tr').length,
+      /* El preu és la xifra més baixa del bloc: a «De 1.500 a 3.000 €» i a una
+         taula de trams, l'entrada és el que decideix si es pot contractar. */
+      preu: Math.min(...([...((a.querySelector('.pk-preu') || {}).textContent || '')
+        .matchAll(/(\d{1,3}(?:\.\d{3})+|\d{3,})/g)].map(m => eur(m[1])).filter(n => n >= 100)
+        .concat([Infinity]))),
       qui: ((a.querySelectorAll('.pk-dades dd')[0] || {}).textContent || '')
     }));
     return {
@@ -215,8 +223,9 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
   ok(r.families.length === 3, 'tres famílies: ' + r.families.join(', '));
 
   const migFets = r.paquets.filter(x =>
-    !x.nom.trim() || !x.endus || !x.preu || !x.punt.trim() || x.camps.length !== 3);
-  ok(!migFets.length, 'tots diuen les sis coses (nom, entregable, per a qui, durada, diners, preu)'
+    !x.nom.trim() || !x.endus || !x.preu || !x.punt.trim() || x.camps.length !== 3
+    || !x.valor || !x.perque || !x.font.trim());
+  ok(!migFets.length, 'tots diuen les set coses (nom, entregable, aportació, per a qui, durada, diners, preu amb font i el que el mou)'
     + (migFets.length ? ' — a mitges: ' + migFets.map(x => x.id).join(', ') : ''));
 
   /* El sostre no és un caprici: per sobre, una proposta deixa de ser una
@@ -224,8 +233,15 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
   const publics = r.paquets.filter(x => /ajuntament|consell|escola|afa|administracion|entitat/i.test(x.qui));
   const cars = publics.filter(x => x.preu > 5000);
   ok(publics.length >= 6, publics.length + ' paquets dirigits a administració o entitats');
-  ok(!cars.length, 'i cap passa dels 5.000 €'
+  ok(!cars.length, 'i tots hi entren per sota dels 5.000 €'
     + (cars.length ? ' — ' + cars.map(x => x.id + ' (' + x.preu + ')').join(', ') : ''));
+  /* La tarifa de debò es pinta com el que és: una taula de trams, no un rang a
+     negociar. Si algun dia es convertís en forquilla, seria dir que el preu del
+     taller es discuteix, i no es discuteix. */
+  const ambTrams = r.paquets.filter(x => x.trams > 0);
+  ok(ambTrams.length >= 2, ambTrams.length + ' paquets amb tarifa per trams (el taller i les demos)');
+  ok(r.paquets.some(x => /Tarifa/i.test(x.font)) && r.paquets.some(x => /validar/i.test(x.font)),
+    'i el preu diu d\'on surt: n\'hi ha de tarifa i n\'hi ha a validar');
 
   const punts = new Set(r.paquets.map(x => x.punt.trim()));
   ok(punts.size >= 2, 'i no tots diuen el mateix punt d\'adaptació: ' + [...punts].join(' · '));

@@ -138,50 +138,46 @@ Dinamitzadors, consultors ESS, tècnics en atur o transició.
 
 ### 3b · Del servei al paquet · el que hi ha publicat (setembre 2026)
 
-Les forquilles de sobre segueixen sent la referència per negociar. El que surt
-a la portada i al README és una **selecció tancada** d'aquestes forquilles, amb
-un preu concret, perquè un tècnic municipal pugui portar-ho a una junta sense
-trucar abans. Veda 137.
+El que surt a la portada i al README **no és una xifra tancada meva**: és la
+forquilla d'aquí, amb dues coses més que la fan servir d'alguna cosa. Veda 139.
 
-Dues decisions que expliquen les xifres:
+- **Què la mou.** Una forquilla sense el que la fa pujar o baixar és un rang, no
+  un preu: qui la llegeix no sap on cau el seu cas i ha de trucar, que és
+  exactament el que això ve a evitar.
+- **Què aporta.** La pregunta que decideix una compra no és què és ni què costa,
+  és què se n'endú qui la paga. Cada paquet ho diu en una frase.
 
-- **Sostre de 5.000 € per als paquets d'administració pública.** És el que una
-  regidoria contracta sense obrir un expedient llarg. Per això `S3b` —programa
-  d'equip gestor, forquilla 4.500–7.000 €— es publica a **4.900 €** i no al mig
-  de la forquilla: per sobre del sostre deixaria de ser una decisió i passaria a
-  ser un procediment. Els paquets per a empresa no tenen aquest sostre.
-- **Els sis serveis del README hi entren.** Els castells per a equips, el mapa
-  de valor d'organització, les comunitats de pràctica, la formació d'equips, la
-  consultoria de persones i la producció d'esdeveniments són productes existents
-  i provats, i fins ara la portada els ignorava. Ara conviuen amb els S1–S7 dins
-  de les tres famílies —consultoria, formació, i producció i dinamització—
-  perquè són **la versió d'organització del mateix producte**.
+I cada preu diu **d'on surt**, perquè no valen el mateix:
 
-| Servei | Forquilla | Publicat | Paquet a la portada |
-|---|---|---|---|
-| S1 | 1.500–3.000 € | **1.800 €** | Diagnòstic del teixit local |
-| S1+P2 | — | **4.800 €** | Mapa comarcal i assemblea federativa |
-| S3 | 1.200–2.000 €/pers. | **1.800 €** | Programa de Gestor/a |
-| S3b | 4.500–7.000 €/equip | **4.900 €** | Programa d'equip gestor |
-| S4 | 400–900 €/mes | **3.600 €** (6 mesos) | Posada en marxa d'una dinàmica |
-| S5 | 2.000–3.500 € | **2.900 €** | Formació de formadors |
-| S6 | 800–2.500 € | **1.500 €** | Implantació i suport |
-| S7 | 600–1.500 €/informe | **900 €** | Mesura d'impacte i justificació |
+| Marca | Vol dir | Quants |
+|---|---|---|
+| **Tarifa 2026** | Del catàleg comercial castellera. Es factura així | 2 |
+| **Forquilla del model** | D'aquesta taula. Pensada i escrita | 8 |
+| **A validar** | Encara no s'ha facturat prou vegades | 9 |
 
-**La font única és `SOS/tools/build-oferta.js`**: allà es declaren els divuit
-paquets amb el seu preu, el seu punt d'adaptació i la seva via de finançament, i
-d'allà s'escriuen la portada i el README. Si aquesta taula i el generador
-divergeixen, mana el generador —i aquesta taula s'ha d'actualitzar a mà, que és
-l'única cosa d'aquest circuit que encara no vigila cap guarda.
+**El sostre dels 5.000 €** s'aplica a **l'entrada** de la forquilla i no al
+màxim: el que ha de ser cert és que hi hagi manera d'entrar-hi per contractació
+menor. Que el màxim el superi és legítim —un festival de tres dies no és un
+contracte menor, i el mapa comarcal de vint municipis tampoc— sempre que la
+fitxa digui què l'hi porta.
 
-**Els tres paquets que no surten de cap forquilla** i que calia inventar:
-la **comú-diada** (2.900 €), producció i dinamització d'una jornada; **IA amb
-frens** (900 €), sessió de viabilitat; i **contractes intel·ligents**
-(1.500 €), estudi de viabilitat. Els dos últims venen l'**estudi i no l'eina**:
-al SOS els contractes intel·ligents no estan construïts, i vendre'ls seria la
-primera porta d'aquesta casa que apunta a un lloc que no existeix.
+**La línia castellera té tarifa de debò** i no forquilla: el taller Fent Pinya i
+les demostracions es facturen per trams, i estan buidades a
+[`cataleg-teamtowers-2026.md`](cataleg-teamtowers-2026.md) amb la revisió del
+document al costat. El que el web n'agafa és la tarifa, no una estimació meva.
 
----
+**La font única és `SOS/tools/build-oferta.js`**: allà es declaren els dinou
+paquets amb la seva forquilla, el que la mou, l'aportació de valor, el punt
+d'adaptació i la via de finançament, i d'allà s'escriuen la portada i el README.
+Si aquesta taula i el generador divergeixen, mana el generador —i aquesta taula
+s'ha d'actualitzar a mà, que és l'única cosa d'aquest circuit que encara no
+vigila cap guarda.
+
+**Els paquets que no surten de cap forquilla d'aquí** i que calia inventar: la
+**comú-diada**, **IA amb frens** i **contractes intel·ligents**. Els dos últims
+venen l'**estudi i no l'eina**: al SOS els contractes intel·ligents no estan
+construïts, i vendre'ls seria la primera porta d'aquesta casa que apunta a un
+lloc que no existeix.
 
 ## 4. Itineraris formatius per públic
 

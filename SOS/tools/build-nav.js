@@ -82,6 +82,14 @@ const EXCEPCIONS = {
   'joc.html': 'És una pantalla de joc completa; un menú a sobre en trencaria el ritme.'
 };
 
+/* I les que porten el menú però **no surten a cap grup**, que és una altra
+   cosa. Una pàgina publicada i no enllaçada des d'enlloc és un dels errors que
+   la guia de marca documenta, així que si n'hi ha una ha de ser a posta i amb
+   el motiu escrit. */
+const FORA_DEL_MENU = {
+  'crm.html': 'És el CRM privat: hi ha contactes i converses de gent real, i no és una pàgina per passejar-hi. Qui l\'ha de fer servir hi va per l\'adreça.'
+};
+
 /* ══ QUINA EINA SERVEIX QUINA DINÀMICA ═══════════════════════════════════
    Set de les dotze dinàmiques del catàleg tenen una pàgina que fa la seva
    feina, i dues es fan dins de l'aplicació mateixa. Fins ara això només ho
@@ -111,6 +119,12 @@ const OBRE = '<!--SOS-NAV-->', TANCA = '<!--/SOS-NAV-->';
    manera d'arribar a cap de les eines de fora. Ni una. */
 const APP = 'index.html';
 const A_OBRE = '<!--SOS-EINES-->', A_TANCA = '<!--/SOS-EINES-->';
+/* I la portada. No hi va la barra del SOS —té la seva pròpia i posar-n'hi dues
+   seria dir dues vegades el mateix amb dos dissenys—, però sí **el mateix
+   desplegable de destins**: qui arriba per la portada no tenia manera
+   d'arribar a cap de les pàgines si no les sabia de memòria. */
+const PORTADA = join(ARREL, 'index.html');
+const P_OBRE = '<!--TT-PAGINES-->', P_TANCA = '<!--/TT-PAGINES-->';
 
 /* ══ El marcatge ═════════════════════════════════════════════════════════ */
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -190,7 +204,7 @@ const CSS = `<style>
    diria que hi és i la dels vedes que la pàgina no correspon al codex. Per això
    el menú s'exporta i el generador dels vedes l'aplica ell mateix — una sola
    declaració, dos que la fan servir. */
-module.exports = { posa, nav, PAGINES, EXCEPCIONS, GRUPS, CTA, EINES };
+module.exports = { posa, nav, PAGINES, EXCEPCIONS, FORA_DEL_MENU, GRUPS, CTA, EINES };
 if (require.main !== module) return;
 
 let fails = 0;
@@ -228,6 +242,35 @@ function blocApp() {
   return A_OBRE + '\n<script id="sos-eines" type="application/json">\n' +
     JSON.stringify(dades) + '\n</script>\n' + A_TANCA;
 }
+/* El desplegable de la portada. `<details>` natiu, com el menú del SOS: és un
+   component de disclosure accessible i amb teclat que el navegador ja porta, i
+   injectar-hi un script seria una còpia més d'una cosa que ja funciona.
+
+   Les rutes van amb `/SOS/` al davant perquè la portada viu a l'arrel. */
+function blocPortada() {
+  const grup = g => `      <div class="tp-g">
+        <div class="tp-g-l">${g.ic} ${esc(g.lbl)}</div>
+` + g.links.map(([h, t, d]) =>
+    `        <a href="/SOS/${h}"><b>${esc(t)}</b><span>${esc(d)}</span></a>`).join('\n') +
+    `\n      </div>`;
+  return P_OBRE + `
+<details class="tt-pagines">
+  <summary>Totes les pàgines</summary>
+  <div class="tp-p">
+` + GRUPS.map(grup).join('\n') + `
+      <div class="tp-g">
+        <div class="tp-g-l">🖥 L'eina</div>
+        <a href="/SOS/"><b>El SOS</b><span>L'aplicació sencera, al navegador</span></a>
+      </div>
+  </div>
+</details>
+` + P_TANCA;
+}
+function posaPortada(html) {
+  const i = html.indexOf(P_OBRE), j = html.indexOf(P_TANCA);
+  if (i < 0 || j <= i) return null;
+  return html.slice(0, i) + blocPortada() + html.slice(j + P_TANCA.length);
+}
 function posaApp(html) {
   const i = html.indexOf(A_OBRE), j = html.indexOf(A_TANCA);
   if (i < 0 || j <= i) return null;
@@ -248,6 +291,39 @@ PAGINES.forEach(p => {
     bad(`${p} no porta el menú declarat, o l'ha canviat pel seu compte`);
   } else if (nou !== html) { writeFileSync(f, nou); tocades++; }
 });
+
+/* I la portada, que tampoc porta la barra però sí el desplegable. */
+{
+  const html = readFileSync(PORTADA, 'utf8');
+  const nou = posaPortada(html);
+  if (nou === null) bad(`index.html de l'arrel no té les marques ${P_OBRE} … ${P_TANCA}: ` +
+    'de la portada no hi hauria manera d\'arribar a cap pàgina');
+  else if (CHECK) {
+    if (nou !== html) bad('index.html de l\'arrel no porta el desplegable declarat, o l\'ha canviat pel seu compte');
+    else ok('i la portada porta el mateix desplegable de destins');
+  } else if (nou !== html) { writeFileSync(PORTADA, nou); tocades++; }
+}
+
+/* ── Cap pàgina publicada i no enllaçada des d'enlloc ──────────────────────
+   És un dels errors que la guia de marca documenta, i el més fàcil de cometre:
+   la pàgina existeix, es va fer amb ganes, i no hi arriba ningú. Aquí es compta
+   què hi ha a `SOS/*.html` i es compara amb el que surt a algun grup; el que no
+   hi surt ha de tenir el motiu escrit a `FORA_DEL_MENU`. */
+if (CHECK) {
+  const { readdirSync } = require('node:fs');
+  const totesLesPagines = readdirSync(SOS).filter(f => f.endsWith('.html'));
+  const alMenu = new Set(GRUPS.flatMap(g => g.links.map(l => l[0])).concat([APP]));
+  const orfes = totesLesPagines.filter(f => !alMenu.has(f) && !FORA_DEL_MENU[f]);
+  if (!orfes.length)
+    ok(`les ${totesLesPagines.length} pàgines de SOS/ surten al menú, o diuen per què no`);
+  else bad(`${orfes.length} pàgina${orfes.length === 1 ? '' : 's'} que existeix${orfes.length === 1 ? '' : 'en'} ` +
+    `i no surt${orfes.length === 1 ? '' : 'en'} de cap menú (${orfes.join(', ')}) — ` +
+    'existeixen i no hi arriba ningú. Posa-les a un grup o escriu el motiu a FORA_DEL_MENU');
+  Object.keys(FORA_DEL_MENU).forEach(f => {
+    if (!existsSync(join(SOS, f)))
+      bad(`${f} té motiu escrit a FORA_DEL_MENU i ja no existeix: sobra`);
+  });
+}
 
 /* I l'aplicació, que no porta la barra però sí la llista. */
 {
