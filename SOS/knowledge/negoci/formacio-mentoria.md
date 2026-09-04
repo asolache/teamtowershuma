@@ -151,9 +151,9 @@ I cada preu diu **d'on surt**, perquè no valen el mateix:
 
 | Marca | Vol dir | Quants |
 |---|---|---|
-| **Tarifa 2026** | Del catàleg comercial castellera. Es factura així | 2 |
+| **Segons mapa de cost** | No porta xifra publicada; es dimensiona i es tanca a la proposta | 2 |
 | **Forquilla del model** | D'aquesta taula. Pensada i escrita | 8 |
-| **A validar** | Encara no s'ha facturat prou vegades | 9 |
+| **A validar** | Encara no s'ha facturat prou vegades | 13 |
 
 **El sostre dels 5.000 €** s'aplica a **l'entrada** de la forquilla i no al
 màxim: el que ha de ser cert és que hi hagi manera d'entrar-hi per contractació
@@ -161,10 +161,15 @@ menor. Que el màxim el superi és legítim —un festival de tres dies no és u
 contracte menor, i el mapa comarcal de vint municipis tampoc— sempre que la
 fitxa digui què l'hi porta.
 
-**La línia castellera té tarifa de debò** i no forquilla: el taller Fent Pinya i
-les demostracions es facturen per trams, i estan buidades a
-[`cataleg-teamtowers-2026.md`](cataleg-teamtowers-2026.md) amb la revisió del
-document al costat. El que el web n'agafa és la tarifa, no una estimació meva.
+**La línia castellera no publica preu** (canvi de setembre de 2026). El taller
+Fent Pinya i les demostracions es pressuposten amb el **mapa de cost** —rols,
+hores, nivells i despeses directes— i el que la web publica és el mètode, no una
+xifra. El tarifari de 2026 segueix buidat a
+[`cataleg-teamtowers-2026.md`](cataleg-teamtowers-2026.md) com a registre intern
+i referència de partida; el mètode és a
+[`cost-mapa-valor.md`](cost-mapa-valor.md), que és també d'on surt **l'escala de
+tres nivells** (N1 35 €/h · N2 55 €/h · N3 80 €/h, sense IVA) amb què es
+contracta per hores al sector públic.
 
 **La font única és `SOS/tools/build-oferta.js`**: allà es declaren els dinou
 paquets amb la seva forquilla, el que la mou, l'aportació de valor, el punt
@@ -240,6 +245,64 @@ Durada: 6 mesos després d'assolir N2.
 `M1 → M14 → M8`
 Fita: un informe d'impacte verificat amb Anchor Pack.
 Durada: 3 sessions.
+
+### 4b · Els itineraris directius · el públic que faltava
+
+Totes les rutes de dalt parlen a qui ja és dins del SOS o a qui ve d'una
+entitat. **Cap parlava a qui decideix i qui contracta**, que és qui signa: una
+direcció general, una direcció de persones, un responsable d'innovació o
+d'organització, un cap de servei d'una administració, un consell rector.
+
+Aquest és el forat comercial més gran que teníem, i no era d'oferta sinó de
+llenguatge: un director de persones no es reconeix en «guardià del territori»
+—ni ha de fer-ho—, i per tant no llegia mai el que sí que li servia.
+
+Sis rutes, publicades a [`SOS/formacio.html#itineraris`](../../formacio.html#itineraris):
+
+| Rol | El que s'hi juga | Itinerari | Fita | Durada |
+|---|---|---|---|---|
+| **Direcció general o gerència** | De qui penja la casa abans que aquella persona plegui | M3 · M5 · M11 · M14 · M6 | El mapa de valor de la casa amb els tres vincles crítics i qui els sosté | 3 mesos |
+| **Direcció de persones · RRHH** | Que el que sap la gent no surti per la porta amb ella | M3 · M11 · M9 · M10 · M16 | El mapa dels intangibles amb els desequilibris nomenats | 3–4 mesos |
+| **Innovació i estratègia** | Deixar de finançar projectes que no arriben enlloc | M3 · M6 · M8 · M14 · M13 | Una iniciativa passada per portes d'etapa, amb propietat repartida | 4–6 mesos |
+| **Organització i processos** | Automatitzar sense trencar el que sostenia la relació | M3 · M8 · M15 · M14 | Els fluxos marcats un a un, amb els frens escrits | 2–3 mesos |
+| **Direcció pública** | Justificar amb el que ha passat, no amb activitats fetes | M3 · M5 · M12 · M14 · M9 | Un informe que aguanta una auditoria i una decisió registrada | 3–4 mesos |
+| **Direcció cooperativa** | Repartir propietat i decisió sense encallar-se | M3 · M5 · M6 · M13 · M12 | Un repartiment d'equity defensable davant dels socis | 4–6 mesos |
+
+**M3 hi és a totes sis.** No és mandra: el mapa de valor és l'única cosa que
+totes sis feines necessiten abans de decidir res, i és també el que fa que la
+resta del programa es pugui discutir amb dades.
+
+### 4c · El programa de mentoria per a organitzacions
+
+La mentoria que ja teníem es fa **dins de la comunitat, entre iguals i sense
+factura**. Aquesta és la mateixa pràctica venuda a una empresa o a una
+institució, i és el paquet `mentoria-directiva` del catàleg (3.500–9.000 €, a
+validar).
+
+**Sis mesos · 3 a 6 persones amb equip a càrrec · 1 h quinzenal per persona ·
+un encàrrec real de la casa.** Cadascú fa el seu itinerari directiu; les
+sessions de grup són les que creuen els camins.
+
+**El que el fa venible no és el format: és què es compra.** No es compren
+sessions, es compren competències amb la seva evidència. Cada competència porta
+escrita al contracte, **abans de començar**, quina evidència la tanca: un mapa
+validat per l'equip, un informe que aguanta una auditoria, una decisió presa amb
+quòrum i registrada. Si al sisè mes una evidència no hi és, **les sessions que
+calguin per tancar-la no es tornen a facturar**.
+
+Els límits, escrits perquè no es venguin com una altra cosa:
+
+- **No és una garantia de resultat de negoci** i no es ven com a tal. No podem
+  prometre que una decisió sigui bona ni que una persona canviï.
+- **Té una condició, i és al contracte**: la persona ve a les sessions i porta
+  l'encàrrec fet. Si això no passa, el compromís decau.
+- **El risc que assumim és el nostre temps**, no un resultat de l'altre. És
+  l'únic compromís que podem sostenir sense mentir, i per això és el que hi ha.
+
+**Per què l'evidència val més que un certificat**: un certificat diu que algú va
+assistir; una evidència diu què va fer, quan i qui ho va confirmar, i queda
+signada de manera que qualsevol la pot verificar. És la mateixa acreditació que
+fixa el nivell —i per tant el preu hora— de qui acompanya.
 
 ---
 

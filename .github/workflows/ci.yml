@@ -209,6 +209,24 @@ jobs:
       - name: L'esquelet de la formació correspon a la docència
         run: node SOS/tools/check-formacio.js
 
+      # El diagnòstic i el pressupost comparteixen els blocs «qui ets» i «d'on
+      # véns». Escrits dues vegades divergirien en silenci: el dia que un
+      # conegués un tipus d'organització que l'altre no, qui vingués del primer
+      # no s'hi trobaria al segon i ningú sabria per què abandona.
+      - name: Els blocs compartits dels formularis quadren
+        run: node SOS/tools/build-formularis.js --check
+
+      # I el que els fa fiables: cap dels dos envia res sol —la pàgina ho promet
+      # en negreta—, cap publica un preu que la portada amaga, i tot el catàleg
+      # es pot demanar.
+      - name: Els formularis no envien res sols i venen el mateix catàleg
+        run: node SOS/tools/check-formularis.js
+
+      # `ia.html` és l'única pàgina que ven el que fem amb IA, i diu que els
+      # frens es poden anar a mirar. Cada porta que obre ha de portar on diu.
+      - name: La pàgina d'IA compleix el que promet
+        run: node SOS/tools/check-ia.js
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests

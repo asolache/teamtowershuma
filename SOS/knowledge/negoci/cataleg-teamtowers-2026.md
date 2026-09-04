@@ -23,6 +23,13 @@ Seguretat certificada de baix risc, amb assegurança inclosa.
 músics, un mínim de quatre monitors castellers, faixes de lloguer, assegurança
 de responsabilitat civil i material didàctic.
 
+> ⚠️ **Aquestes tarifes ja no es publiquen a la web** (setembre de 2026). Segueixen
+> aquí perquè són el registre del document comercial i la referència de partida per
+> pressupostar, però la portada i el README només diuen **com es calcula** el preu:
+> vegeu [`cost-mapa-valor.md`](cost-mapa-valor.md). El motiu és que el que costa un
+> taller depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i
+> una xifra tancada o espanta o s'ha de desdir.
+
 | Participants | PVP (sense IVA) |
 |---|---|
 | 10–29 | 1.700 € |

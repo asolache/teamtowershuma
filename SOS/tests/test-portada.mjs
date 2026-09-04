@@ -162,20 +162,30 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
     return {
       dolor: hero.querySelectorAll('.hero-pains li').length,
       diag: !!hero.querySelector('a[href*="diagnostic"]'),
-      sos: !!hero.querySelector('a[href="/SOS/"]'),
+      /* La segona sortida era «veure el SOS en viu» i ara és demanar
+         pressupost. Les dues tornen alguna cosa sense demanar res a canvi, que
+         és el que la fa una sortida i no una crida a l'acció qualsevol; i el
+         SOS segueix a un clic des de la barra de dalt, que és on el busca qui
+         el vol veure. */
+      segona: !!hero.querySelector('a[href*="pressupost"]') || !!hero.querySelector('a[href="/SOS/"]'),
+      sosAlMenu: !!document.querySelector('.nav-links a[href="/SOS/"], nav a[href="/SOS/"]'),
       finan: /subvencions/i.test(hero.textContent),
       ordre: [...document.querySelectorAll('section[id]')].map(s => s.id)
     };
   });
   ok(r.dolor === 3, 'els tres dolors del principi no s\'han perdut pel camí');
-  ok(r.diag && r.sos, 'els dos camins de sortida segueixen a la primera pantalla');
+  ok(r.diag && r.segona, 'els dos camins de sortida segueixen a la primera pantalla');
+  ok(r.sosAlMenu, 'i el SOS és a un clic des de la barra de dalt');
   ok(r.finan, 'i la línia que diu qui ho paga, que és la primera pregunta d\'un ajuntament');
   /* Abans això comptava seccions. Comptar-les no diu res del que importa i peta
      el dia que se'n reordena una: el que ha de ser cert és **l'ordre del
      discurs**, benefici → procés → detall, que és el que fa que qui llegeix
      arribi al preu havent entès per què val això. */
+  /* `cost` va just després del catàleg i no abans: primer es veu què es ven i
+     amb quina forquilla, i llavors d'on surt el número. A l'inrevés seria
+     explicar una comptabilitat a algú que encara no sap què li ofereixes. */
   const ESPINA = ['enfoc', 'glossari', 'relat', 'com', 'fentpinya',
-                  'aprenent', 'cataleg', 'sos', 'trajectoria', 'objeccions'];
+                  'aprenent', 'cataleg', 'cost', 'sos', 'trajectoria', 'objeccions'];
   const pos = id => r.ordre.indexOf(id);
   const falten = ESPINA.filter(id => pos(id) < 0);
   ok(!falten.length, 'l\'espina de la pàgina hi és sencera' + (falten.length ? ': falta ' + falten.join(', ') : ''));
@@ -204,9 +214,14 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
       valor: ((a.querySelector('.pk-valor') || {}).textContent || '').trim(),
       perque: ((a.querySelector('.pk-perque') || {}).textContent || '').trim(),
       font: ((a.querySelector('.pk-font') || {}).textContent || ''),
-      trams: a.querySelectorAll('.pk-trams tr').length,
-      /* El preu és la xifra més baixa del bloc: a «De 1.500 a 3.000 €» i a una
-         taula de trams, l'entrada és el que decideix si es pot contractar. */
+      /* Un paquet sense xifra publicada. No és un descuit: el taller i les
+         demostracions depenen de quanta gent hi ha, quanta colla cal moure i a
+         quina distància, i cap d'aquestes tres coses la pot saber la pàgina. */
+      mida: !!a.querySelector('.pk-mida'),
+      capACost: ((a.querySelector('.pk-mida a') || {}).getAttribute
+        ? a.querySelector('.pk-mida a').getAttribute('href') : ''),
+      /* El preu és la xifra més baixa del bloc: a «De 1.500 a 3.000 €»,
+         l'entrada és el que decideix si es pot contractar. */
       preu: Math.min(...([...((a.querySelector('.pk-preu') || {}).textContent || '')
         .matchAll(/(\d{1,3}(?:\.\d{3})+|\d{3,})/g)].map(m => eur(m[1])).filter(n => n >= 100)
         .concat([Infinity]))),
@@ -220,10 +235,10 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
     };
   });
   ok(r.paquets.length >= 15, r.paquets.length + ' paquets al catàleg');
-  ok(r.families.length === 3, 'tres famílies: ' + r.families.join(', '));
+  ok(r.families.length === 4, 'quatre famílies: ' + r.families.join(', '));
 
   const migFets = r.paquets.filter(x =>
-    !x.nom.trim() || !x.endus || !x.preu || !x.punt.trim() || x.camps.length !== 3
+    !x.nom.trim() || !x.endus || !(x.preu || x.mida) || !x.punt.trim() || x.camps.length !== 3
     || !x.valor || !x.perque || !x.font.trim());
   ok(!migFets.length, 'tots diuen les set coses (nom, entregable, aportació, per a qui, durada, diners, preu amb font i el que el mou)'
     + (migFets.length ? ' — a mitges: ' + migFets.map(x => x.id).join(', ') : ''));
@@ -231,17 +246,23 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
   /* El sostre no és un caprici: per sobre, una proposta deixa de ser una
      decisió d'una regidoria i passa a ser un procediment. */
   const publics = r.paquets.filter(x => /ajuntament|consell|escola|afa|administracion|entitat/i.test(x.qui));
-  const cars = publics.filter(x => x.preu > 5000);
+  /* Els que no publiquen xifra no hi entren: no tenen cap import que comparar,
+     i el `Infinity` del mínim d'una llista buida no és un preu car —és cap. */
+  const cars = publics.filter(x => !x.mida && x.preu > 5000);
   ok(publics.length >= 6, publics.length + ' paquets dirigits a administració o entitats');
   ok(!cars.length, 'i tots hi entren per sota dels 5.000 €'
     + (cars.length ? ' — ' + cars.map(x => x.id + ' (' + x.preu + ')').join(', ') : ''));
-  /* La tarifa de debò es pinta com el que és: una taula de trams, no un rang a
-     negociar. Si algun dia es convertís en forquilla, seria dir que el preu del
-     taller es discuteix, i no es discuteix. */
-  const ambTrams = r.paquets.filter(x => x.trams > 0);
-  ok(ambTrams.length >= 2, ambTrams.length + ' paquets amb tarifa per trams (el taller i les demos)');
-  ok(r.paquets.some(x => /Tarifa/i.test(x.font)) && r.paquets.some(x => /validar/i.test(x.font)),
-    'i el preu diu d\'on surt: n\'hi ha de tarifa i n\'hi ha a validar');
+  /* El taller i les demostracions no publiquen preu, i això és una decisió: el
+     que costen depèn de tres coses que la pàgina no pot saber. El que no pot
+     passar és que es quedin mudes —«a mida» sense el mètode és el «consulta'ns»
+     de sempre—, així que cada una ha de portar al mapa de cost. Veda 140. */
+  const aMida = r.paquets.filter(x => x.mida);
+  ok(aMida.length >= 2, aMida.length + ' paquets sense xifra publicada (el taller i les demos)');
+  const mudes = aMida.filter(x => x.capACost !== '#cost');
+  ok(!mudes.length, 'i tots porten al mapa de cost'
+    + (mudes.length ? ' — muts: ' + mudes.map(x => x.id).join(', ') : ''));
+  ok(r.paquets.some(x => /mapa de cost/i.test(x.font)) && r.paquets.some(x => /validar/i.test(x.font)),
+    'i el preu diu d\'on surt: n\'hi ha segons mapa de cost i n\'hi ha a validar');
 
   const punts = new Set(r.paquets.map(x => x.punt.trim()));
   ok(punts.size >= 2, 'i no tots diuen el mateix punt d\'adaptació: ' + [...punts].join(' · '));

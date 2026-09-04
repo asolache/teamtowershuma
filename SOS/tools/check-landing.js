@@ -90,8 +90,8 @@ else bad(`${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')
    s'endú, quant costa i quantes vegades s'ha fet. Sense les cinc coses, un
    tècnic municipal no ho pot portar a una junta —que era exactament el
    problema dels tretze quadres que hi havia abans. Veda 137. */
-const paquets = [...cos.matchAll(/<article class="paquet" id="pk-([^"]+)">([\s\S]*?)<\/article>/g)]
-  .map(m => ({ id: m[1], html: m[2] }));
+const paquets = [...cos.matchAll(/<article class="paquet" id="pk-([^"]+)" data-sector="([a-z]+)">([\s\S]*?)<\/article>/g)]
+  .map(m => ({ id: m[1], sector: m[2], html: m[3] }));
 const visible0 = cos.replace(/<!--[\s\S]*?-->/g, '');
 if (!paquets.length) bad('no hi ha cap paquet a la portada: aquesta guarda no pot comprovar res');
 else {
@@ -106,10 +106,37 @@ else {
     !camp(p.html, /class="pk-valor"/) ||
     !camp(p.html, /class="pk-perque"/) ||
     !camp(p.html, /class="pk-font"/) ||
-    !camp(p.html, /(<strong>[^<]*[\d.]+ €|class="pk-trams")/) ||
+    !camp(p.html, /(<strong>[^<]*[\d.]+ €|class="pk-mida")/) ||
     (p.html.match(/<dt /g) || []).length !== 3);
   if (!migFets.length) ok(`${paquets.length} paquets, tots amb entregable, aportació de valor, per a qui, durada, diners, preu amb la seva font i el que el mou`);
   else bad(`${pl(migFets.length, 'paquet a mitges', 'paquets a mitges')} (${mostra(migFets.map(p => p.id))}) — un preu sense el que l'aporta i el que el mou no es pot defensar`);
+
+  /* Un paquet sense xifra publicada ha de dir **com es calcula** i portar-hi.
+     Sense això, «a mida» és el «consulta'ns» de sempre: obliga a trucar per
+     saber si t'ho pots ni plantejar, que és exactament el que aquest catàleg
+     ve a evitar. Veda 140. */
+  const mides = paquets.filter(p => camp(p.html, /class="pk-mida"/));
+  const mudes = mides.filter(p => !/class="pk-mida"[^>]*>\s*<a href="#cost"/.test(p.html));
+  if (!mides.length) ok('cap paquet amaga el preu');
+  else if (!mudes.length) ok(`${pl(mides.length, 'paquet sense xifra publicada', 'paquets sense xifra publicada')}, i porten al mapa de cost`);
+  else bad(`${pl(mudes.length, 'paquet diu «a mida» i no', 'paquets diuen «a mida» i no')} porten enlloc (${mostra(mudes.map(p => p.id))}) — «a mida» sense el mètode és «consulta\'ns»`);
+
+  /* I la secció on porten ha d'existir de debò, amb els seus passos i la seva
+     escala. Un enllaç a `#cost` que no troba res no dona cap error: baixa la
+     pàgina fins al final i qui hi clica es pensa que s'ha equivocat. */
+  const teCost = /id="cost"/.test(cos) && (cos.match(/class="cm-pas"/g) || []).length >= 3
+    && (cos.match(/class="cm-niv"/g) || []).length >= 3;
+  if (teCost) ok('el mapa de cost hi és, amb els seus passos i tres nivells d\'escala');
+  else bad('el mapa de cost no hi és o li falten passos o nivells — els enllaços «a mida» no van enlloc');
+
+  /* Cada paquet declara a quin sector parla, i n'hi ha dels dos. Si tots
+     diguessin el mateix, el filtre seria un botó que no filtra i la pàgina
+     tornaria a parlar a una sola casa —que és d'on venim. */
+  const sectors = new Set(paquets.map(p => p.sector));
+  const filtre = (cos.match(/class="pk-f[ "]/g) || []).length;
+  if (sectors.has('privat') && sectors.has('public') && filtre >= 3)
+    ok(`${sectors.size} sectors declarats i ${filtre} botons de filtre`);
+  else bad(`el catàleg no parla als dos sectors (${[...sectors].join(', ') || 'cap'}) o no té filtre (${filtre} botons) — la pàgina torna a vendre a una sola casa`);
 
   /* El sostre dels 5.000 €: per sobre, la proposta deixa de ser una decisió
      d'una regidoria i passa a ser un procediment. Només s'aplica als paquets
@@ -156,7 +183,13 @@ else {
    Els sis serveis del README són productes existents amb anys d'entrega. La
    portada els ignorava, i eren dos catàlegs venent dues empreses diferents. */
 const README = readFileSync(join(__dirname, '..', '..', 'README.md'), 'utf8');
-const enMd = [...README.matchAll(/^\| \*\*([^*]+)\*\* \|/gm)].map(m => m[1].trim());
+/* Només el bloc del catàleg. El README té més taules generades —l'escala de
+   nivells del mapa de cost n'és una— i llegir-les totes feia que la guarda
+   busqués un paquet anomenat «N1 · Practicante» a la portada. */
+const iMd = README.indexOf('<!--TT-OFERTA-MD-->'), fMd = README.indexOf('<!--/TT-OFERTA-MD-->');
+const blocMd = iMd >= 0 && fMd > iMd ? README.slice(iMd, fMd) : '';
+if (!blocMd) bad('no es troba el bloc del catàleg al README: aquesta comprovació no pot mirar res');
+const enMd = [...blocMd.matchAll(/^\| \*\*([^*]+)\*\* \|/gm)].map(m => m[1].trim());
 if (!enMd.length) bad('el README no porta cap paquet: el catàleg no s\'hi ha generat');
 else {
   const enHtml = [...src.matchAll(/'pk\.[a-z0-9-]+\.n':'((?:[^'\\]|\\.)*)'/g)]

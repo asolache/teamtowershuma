@@ -1045,6 +1045,69 @@ de portar gent nova al SOS, portar el SOS on la gent ja és. I la gent gran
 organitzada per un ajuntament és exactament qui més té a aportar al banc de
 temps i qui menys probable és que s'instal·li res pel seu compte.
 
+### El hero obert, el preu sense tarifa publicada, i el formulari de pressupost · fet
+
+Set coses que es van decidir juntes perquè totes surten de la mateixa: **la
+pàgina venia a dues cases i només en nomenava una**, i el preu era una xifra
+tancada allà on no es podia tancar.
+
+- **El hero parla als dos sectors.** L'eyebrow deia «per a ajuntaments, consells
+  comarcals i entitats» i la meitat de l'oferta —la que té vint anys de
+  quilòmetres— quedava fora del que la pàgina deia que venia. Ara nomena les dues
+  cases, hi ha **dues portes** que filtren el catàleg, i el titular ja no és
+  només comunitari.
+- **El catàleg filtra per sector.** Cada paquet declara `privat`, `public` o
+  `tots` al generador. Sense JavaScript surten tots, que és l'estat correcte, i
+  la família que es queda buida s'amaga amb el seu títol. Veda 142.
+- **El taller Fent Pinya i les demostracions ja no publiquen preu.** El que
+  costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància;
+  una xifra tancada o espanta o s'ha de desdir. El tarifari 2026 es queda com a
+  registre intern a `cataleg-teamtowers-2026.md`.
+- **En lloc del preu hi ha el mètode**, sencer i a la pàgina (`#cost`): quatre
+  passos —mapa, hores per rol, preu del nivell, despeses directes al seu preu de
+  factura— perquè qui llegeix pugui refer el càlcul sense trucar. Veda 140.
+- **Escala de tres nivells per hores**, per al sector públic: N1 35 €/h, N2
+  55 €/h, N3 80 €/h, sense IVA. El que els separa **no és l'antiguitat**, és
+  evidència registrada al SOS — la mateixa que acredita un gestor o un mentor.
+- **Itineraris per rol directiu** a `formacio.html`: direcció general, persones,
+  innovació, organització, direcció pública i direcció cooperativa. Fins ara els
+  itineraris eren rols del SOS, i qui contracta no es diu «guardià del
+  territori».
+- **Programa de mentoria venible** amb compromís d'evidència i la seva condició
+  escrita al mateix paràgraf. Veda 143.
+- **`SOS/ia.html`**: fluxos tangibles automatitzats amb frens, intangibles
+  mesurats, i la fàbrica —com es dissenyen webs i projectes com el Comando amb
+  IA— amb aquest repositori com a prova.
+- **`SOS/pressupost.html`** i `build-formularis.js`: els blocs «qui ets» i «d'on
+  véns» declarats un cop i escrits al diagnòstic i al pressupost, amb pont per
+  `localStorage` perquè el segon no torni a preguntar el que el primer ja sap.
+  La proposta suma les forquilles publicades i deixa fora, dites pel seu nom, les
+  que no en tenen. Veda 141.
+- **La trajectòria real d'Álvaro** a `#facilitador`: InfoJobs, UOC–GEC, Foment
+  del Treball, VNA de Verna Allee, Pantheon Work, comunitats.org, i **Fèlix
+  Miret com a creador del taller Fent Pinya**. Buidada a
+  `SOS/knowledge/negoci/trajectoria.md`.
+
+**Guardes noves**: `check-formularis.js`, `check-ia.js`, `build-formularis.js
+--check`, i sis regles més a `check-landing.js`. **Proves noves**:
+`test-cost.mjs`, `test-pressupost.mjs`, `test-ia.mjs`.
+
+**El que queda obert d'aquesta onada:**
+
+- **Les hores per rol de cada paquet no estan declarades.** El catàleg publica la
+  forquilla i el que la mou; el desglossament d'hores el fa la proposta a mà.
+  Declarar-lo per als vint-i-tres o no declarar-lo: mig fet seria pitjor.
+- **Els preus unitaris de les despeses directes** (monitor casteller, músic,
+  lloguer de faixes) no són al repositori i no me'ls puc inventar.
+- **Condicions de reserva i cancel·lació**: segueixen sense existir, i és la
+  primera pregunta de qui contracta un esdeveniment.
+- **Els itineraris d'inserció** (PIL, Labora't, Prepara't, Singulars, ADA, Dones
+  RIU, ACOL, TRFO Joves) no tenen paquet al catàleg, i el Fent Pinya hi encaixa
+  amb les seves deu competències. És l'únic dels cinc encaixos que ell mateix
+  llista que no té oferta.
+- **L'article d'*El Periódico* (2007)** sobre castells i integració és prova
+  social amb data i mitjà, i encara no és enllaçat enlloc.
+
 ### El catàleg amb tarifa de debò, i totes les pàgines a un clic · fet
 
 Amb el **catàleg comercial TeamTowers 2026** a la mà, el catàleg del web deixa
