@@ -704,6 +704,39 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 146 — Sis peces bones que no es diuen entre elles no són un projecte
+
+El Comando existia sis vegades. La història dels còmics, a la seva pàgina. Els
+catorze personatges, dins de l'app en una constant. El perfil de superheroi/na,
+en un modal. El kit narratiu amb IA, en un altre. El multivers, en un tercer. I
+el poble on tot allò passa, en una pàgina a part. **Cada peça estava ben feta i
+cap deia que les altres existissin.**
+
+El que faltava no era una peça més: era **dir què és tot plegat**. Una
+pel·lícula col·laborativa que faran 150.000 persones, on el teu personatge no
+és un avatar inventat sinó el que ja fas amb nom i superarma. Amb aquesta frase
+al davant, les sis peces deixen de ser sis coses i passen a ser quatre passos
+seguits i un decorat.
+
+Això no peta mai, i per això costa tant de veure: cada peça, provada per
+separat, funciona. El senyal de què està passant és **que ningú no arriba a la
+segona**. La guarda comprova ara que els quatre mòduls s'obrin des de la pàgina
+pel seu nom de ruta, perquè el dia que un canviï de nom l'enllaç no petarà:
+obrirà l'aplicació per la portada i semblarà que no ha passat res.
+
+I dues regles que van sortir de fer-ho:
+
+- **El que encara no està filmat es diu, i no es pinta com una porta.** De les
+  sis peces de vídeo i so declarades, cinc encara no tenen enllaç. Surten a la
+  pàgina dient exactament això. La temptació era enllaçar-hi el canal de YouTube
+  «mentrestant»: qui hi clica no troba el que anava a veure i deixa de fer cas
+  de la resta de targetes. Un inventari honest val més que una promesa (veda 116).
+- **Una xifra que la pàgina presenta com a dada surt del codi que la fa servir.**
+  L'objectiu de gent és a `COMANDO_TARGET` i el nombre d'herois és el llarg de
+  `CANONICAL_HEROES`; escrits a mà, el comptador ja va arribar a dir vuit herois
+  quan n'hi havia nou. Comprovar que «la xifra surt a la pàgina» no n'hi ha
+  prou: surt tres vegades, i canviar-ne dues hauria passat la guarda.
+
 ## Veda 145 — Un giny que hi ha a tot arreu s'ha de guanyar el lloc pel final
 
 El pomodoro és un comptador enrere. N'hi ha mil, són tots iguals, i construir-ne

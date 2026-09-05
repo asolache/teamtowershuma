@@ -163,7 +163,7 @@ Se aprende usándolo, y se puede visitar todo ahora mismo:
 | Proyecto | Qué es |
 |---|---|
 | [El SOS](https://teamtowershuma.netlify.app/SOS/) | El mapa del pueblo, el banco de tiempo, la biblioteca de las cosas, las cuentas y las decisiones tomadas |
-| [Comando Molekulon](https://teamtowershuma.netlify.app/SOS/comando.html) | Se aprende jugando: doce personajes, reconocimiento que sale de lo hecho de verdad, y una historia |
+| [Comando Molekulon](https://teamtowershuma.netlify.app/SOS/comando.html) | La primera película que haremos 150.000 personas: catorce personajes canónicos, tu personaje es lo que ya haces, y los créditos son el registro firmado |
 | [Molekulandia](https://teamtowershuma.netlify.app/SOS/molekulandia.html) | El pueblo entero en una pantalla: cada edificio es un tipo de proyecto |
 | [La Fábrica de Superhéroes](https://teamtowershuma.netlify.app/SOS/escola.html) | El mismo método en la escuela, 6 a 13 años, sin ningún nombre real fuera del aula |
 | [El directorio abierto](https://teamtowershuma.netlify.app/SOS/online.html) | Quién hay en el territorio, con cada ficha firmada por su autor |

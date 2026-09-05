@@ -239,6 +239,12 @@ jobs:
       - name: El nick, el territori i el relé del directori
         run: node SOS/tools/check-nick.js
 
+      # Les fitxes d'heroi de la pàgina del Comando eren una còpia a mà de la
+      # llista de l'app, i ja van divergir un cop. Ara se'n generen, junt amb
+      # els eixos, els passos, les peces filmades i els enllaços al blog.
+      - name: El Comando surt de les llistes declarades
+        run: node SOS/tools/build-comando.js --check
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests

@@ -1089,6 +1089,47 @@ construït és exactament el que les fa diferents.
 - **La durada és fixa a 25 minuts.** Fer-la triable és fàcil; decidir si val la
   pena és una altra cosa.
 
+### El Comando com a projecte de pel·lícula · fet
+
+El Comando existia sis vegades sense que cap peça digués que les altres hi
+fossin: la història dels còmics a `comando.html`, els catorze personatges a
+`CANONICAL_HEROES`, el perfil de superheroi/na en un modal, el kit narratiu en
+un altre, el multivers en un tercer i Molekulandia en una pàgina a part. El que
+faltava no era una peça més sinó **dir què és tot plegat**: una pel·lícula
+col·laborativa que faran 150.000 persones, on el personatge de cadascú és el
+que ja fa al seu barri.
+
+- **`build-comando.js`** declara els sis eixos (art, ficció, educació,
+  inspiració, empoderament de les comunitats i autonomia — cadascun amb la
+  pantalla on allò es fa), els quatre passos amb la seva ruta a l'app, les peces
+  de vídeo i so, i els enllaços al blog. Les **fitxes d'heroi ja no són una
+  còpia a mà**: surten de `CANONICAL_HEROES`, que era el que `check-comando.js`
+  vigilava des que van divergir.
+- **Ruta `kit`** nova a `MODAL_ROUTES`: sense ella l'enllaç del pas 2 obria
+  l'app per la portada i semblava que no hagués passat res.
+- **Ponts als dos sentits**: des del modal del Comando a la pàgina del projecte,
+  i des del perfil acabat de fer al kit narratiu amb el nom ja posat.
+- **`check-comando.js`** guanya cinc regles: la xifra del comptador surt de
+  `COMANDO_TARGET`, els quatre mòduls s'obren des de la pàgina, cap enllaç mort
+  (fitxer, ruta o àncora), cap peça sense enllaç pintada com a porta, i cap
+  paraula de la llista negra de la guia de marca. Veda 146.
+
+**El que falta i és de l'autor, no del codi:** cinc de les sis peces de vídeo i
+so **no tenen enllaç**. La pàgina les ensenya dient-ho, i el dia que arribin es
+posa l'URL a `VIDEOS` dins de `build-comando.js` i prou:
+
+| Peça | Qui | Què falta |
+|---|---|---|
+| Reciclator · el taller | Reciclator | l'URL del vídeo |
+| Supergerminador · germinar | Supergerminador | l'URL del vídeo i la web pròpia |
+| Fraktalman · el tema | Fraktalman | l'URL del tema |
+| La banda en directe | — | l'URL d'un directe |
+| Un taller, filmat | — | l'URL d'una sessió filmada |
+
+I dues coses més que segueixen obertes: l'Amazon i l'Instagram de
+`MOLEKULON_LINKS` són provisionals i estan escrits com si fossin certs, i el
+final del còmic 3 no és al repositori públic a posta.
+
 ### El directori endollat al SOS · nick, territori i xat · fet
 
 Quatre coses que anaven juntes perquè totes surten del mateix: **el directori i
