@@ -133,6 +133,15 @@ a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
 .vid-t{font-weight:700;font-size:.98rem;margin-bottom:.35rem}
 .vid-d{margin:0 0 .9rem;color:var(--light);font-size:.85rem;line-height:1.5;flex:1}
 .vid-go{color:var(--green);font-weight:600;font-size:.82rem}
+/* La sèrie sencera és, avui, la porta que porta més lluny: mentre els capítols
+   no tinguin adreça d'un en un, és per on s'hi entra. Pintada igual que les
+   altres quedava una targeta més entre set. */
+.vid-llista{grid-column:1/-1;flex-direction:row;align-items:center;gap:1.2rem;flex-wrap:wrap;
+  background:linear-gradient(135deg,rgba(224,64,251,.14),rgba(99,102,241,.08));
+  border-color:rgba(224,64,251,.35)}
+.vid-llista .vid-d{margin:0;flex:1;min-width:16rem}
+.vid-llista .vid-t{font-size:1.15rem}
+.vid-llista .vid-go{margin-left:auto}
 .vid-buit{border-style:dashed;opacity:.72}
 .vid-buit .vid-mena{color:var(--muted)}
 .vid-no{color:var(--muted);font-size:.8rem;font-style:italic}
@@ -564,18 +573,20 @@ que el SOS ja sap fer — el que faltava era dir que van seguides.</p>
      d'algú que ha vingut a mirar (veda 116). -->
 <section id="videos" class="center">
 <h2>🎥 Els personatges, en imatge i en so</h2>
-<p class="lead">Els herois no viuen només a la vinyeta: n'hi ha que tenen tema propi i n'hi ha
-que viuen en vídeo. I el Comando toca en directe, que és la prova que darrere d'això hi ha gent.</p>
+<p class="lead">Els herois no viuen només a la vinyeta: hi ha una sèrie de capítols on
+<strong>a cadascun es presenta un superheroi i un supervilà del Mundo Muerto</strong>, i és on viu el
+videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere d'això hi ha gent.</p>
 <!--CM-VIDEOS-->
 <div class="vids">
-  <a class="vid" href="media/comando-horacio.mp3"><div class="vid-mena">Tema</div><div class="vid-t">El tema d'Horacio Motomachi</div><p class="vid-d">La cançó sencera. Sona també a la intro.</p><span class="vid-go">▶ Mira-ho</span></a>
-  <div class="vid vid-buit"><div class="vid-mena">Personatge</div><div class="vid-t">Reciclator · el taller</div><p class="vid-d">Construeix les superarmes de la banda amb el que els altres han llençat.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
+  <a class="vid vid-llista" href="https://youtube.com/playlist?list=PLMB33ApQeOYWbPLQRbf9B5gMpgs0cL5NB" target="_blank" rel="noopener"><div class="vid-mena">La sèrie</div><div class="vid-t">Els capítols del Comando</div><p class="vid-d">La sèrie sencera. A cada capítol es presenta un superheroi i un supervilà del Mundo Muerto.</p><span class="vid-go">▶ Mira la sèrie</span></a>
+  <a class="vid" href="media/comando-horacio.mp3"><div class="vid-mena">Tema</div><div class="vid-t">El tema d'Horacio Motomachi</div><p class="vid-d">La cançó sencera. Sona també a la intro; el videoclip és a la llista de capítols.</p><span class="vid-go">▶ Mira-ho</span></a>
+  <div class="vid vid-buit"><div class="vid-mena">Personatge</div><div class="vid-t">Reciclator · el taller</div><p class="vid-d">Construeix les superarmes de la banda amb el que els altres han llençat: d'allà en surten la Bomba Amor i el Rato Cagón.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
   <div class="vid vid-buit"><div class="vid-mena">Personatge</div><div class="vid-t">Supergerminador · germinar</div><p class="vid-d">Ensenya a germinar per menjar superaliments, i canta amb la seva rialla.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
   <div class="vid vid-buit"><div class="vid-mena">Personatge</div><div class="vid-t">Fraktalman · el tema</div><p class="vid-d">La forma que es repeteix a totes les escales, convertida en cançó.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
   <div class="vid vid-buit"><div class="vid-mena">Directe</div><div class="vid-t">La banda en directe</div><p class="vid-d">El Comando tocant. És la prova que això no és una marca: hi ha gent que hi puja.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
   <div class="vid vid-buit"><div class="vid-mena">Directe</div><div class="vid-t">Un taller, filmat</div><p class="vid-d">Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
 </div>
-<p class="vids-nota">De les 6 peces que el projecte preveu, <strong>5 encara no tenen enllaç públic</strong>. Surten aquí perquè es vegi què hi ha i què falta — no com una promesa amb un enllaç que no obre: el dia que en tinguem l'adreça, aquesta mateixa targeta s'obre.</p>
+<p class="vids-nota">De les 7 peces que el projecte preveu, <strong>5 encara no tenen enllaç públic</strong>. Surten aquí perquè es vegi què hi ha i què falta — no com una promesa amb un enllaç que no obre: el dia que en tinguem l'adreça, aquesta mateixa targeta s'obre.</p>
 <!--/CM-VIDEOS-->
 </section>
 
@@ -688,7 +699,7 @@ que viuen en vídeo. I el Comando toca en directe, que és la prova que darrere 
 <div class="hcard-head"><div class="hcard-avatar" style="background:hsl(192,62%,44%)">R</div>
 <div><div class="hcard-nm">Reciclator</div><div class="hcard-role">Fabricant de superarmes</div></div></div>
 <div class="hcard-power">Construeix les superarmes de la banda a partir del que els altres han llençat</div>
-<div class="hcard-arma"><span>Superarma</span> El taller: el que ja existeix i ningú volia</div>
+<div class="hcard-arma"><span>Superarma</span> El taller: el que ja existeix i ningú volia. D'allà en surten la Bomba Amor i el Rato Cagón</div>
 <div class="hcard-vna"><span>A un equip</span> Qui fa que no calgui comprar res nou perquè ja hi és, en un altre lloc i amb una altra forma</div>
 <div><span class="hfont">Vídeo</span></div>
 </div>

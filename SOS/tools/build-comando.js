@@ -118,10 +118,22 @@ const DECORAT = { href: 'molekulandia.html', t: 'Molekulandia',
    `qui` ha de ser un nom del roster quan la mena és `personatge`: la guarda ho
    comprova contra `CANONICAL_HEROES`, que és la mateixa regla de la veda 109. */
 const VIDEOS = [
+  /* La llista sencera. És l'única porta d'aquesta secció que obre de debò cap
+     als capítols, i per això va primera: mentre els vídeos no tinguin l'adreça
+     d'un en un, qui vulgui veure'ls els té tots aquí. */
+  { id: 'capitols', mena: 'llista', qui: null, titol: 'Els capítols del Comando',
+    d: 'La sèrie sencera. A cada capítol es presenta un superheroi i un supervilà del Mundo Muerto.',
+    url: 'https://youtube.com/playlist?list=PLMB33ApQeOYWbPLQRbf9B5gMpgs0cL5NB' },
   { id: 'horacio', mena: 'tema', qui: 'Horacio Motomachi', titol: 'El tema d\'Horacio Motomachi',
-    d: 'La cançó sencera. Sona també a la intro.', url: 'media/comando-horacio.mp3' },
+    d: 'La cançó sencera. Sona també a la intro; el videoclip és a la llista de capítols.',
+    url: 'media/comando-horacio.mp3' },
+  /* Els d'un en un. Tenen capítol i és a la llista de dalt; el que falta és
+     **l'adreça de cadascun**, i fins que no hi sigui no es pinten com una
+     porta: enviar algú a la llista sencera quan li has promès el capítol d'un
+     personatge concret és la mateixa mentida amable que un «pròximament».
+     Quan arribin, es posa l'URL aquí i prou. */
   { id: 'reciclator', mena: 'personatge', qui: 'Reciclator', titol: 'Reciclator · el taller',
-    d: 'Construeix les superarmes de la banda amb el que els altres han llençat.', url: null },
+    d: 'Construeix les superarmes de la banda amb el que els altres han llençat: d\'allà en surten la Bomba Amor i el Rato Cagón.', url: null },
   { id: 'supergerminador', mena: 'personatge', qui: 'Supergerminador', titol: 'Supergerminador · germinar',
     d: 'Ensenya a germinar per menjar superaliments, i canta amb la seva rialla.', url: null },
   { id: 'fraktalman', mena: 'personatge', qui: 'Fraktalman', titol: 'Fraktalman · el tema',
@@ -188,6 +200,13 @@ VIDEOS.filter(v => v.mena === 'personatge').forEach(v => {
 VIDEOS.filter(v => v.url && !/^https?:/.test(v.url)).forEach(v => {
   if (!existsSync(join(SOS, v.url))) bad(`el vídeo «${v.titol}» apunta a ${v.url}, que no existeix`);
 });
+/* La llista de capítols és l'única peça que **ha** de tenir adreça: és la que
+   sosté la secció mentre els capítols no en tinguin una d'un en un. Si algun
+   dia es queda sense, la secció es converteix en vuit portes tancades i una
+   nota, i això no és un inventari: és un cartell de «pròximament». */
+const llistes = VIDEOS.filter(v => v.mena === 'llista');
+if (llistes.length !== 1) bad(`hi ha ${llistes.length} llistes de capítols declarades i n'hi ha d'haver una`);
+else if (!llistes[0].url) bad('la llista de capítols no té adreça: és l\'única peça que no pot quedar pendent');
 PASSOS.forEach(p => { if (!RUTES.has(p.ruta)) bad(`el pas ${p.n} obre la ruta «${p.ruta}», que no és a MODAL_ROUTES`); });
 const BLOG = readFileSync(join(SOS, 'blog.html'), 'utf8');
 POSTS.forEach(p => { if (!BLOG.includes(`id="${p.anc}"`)) bad(`el blog no té cap entrada «${p.anc}»`); });
@@ -222,15 +241,19 @@ const htmlPassos = () =>
   `<span><strong>I el poble on passa és ${esc(DECORAT.t)}.</strong> ${esc(DECORAT.d)}</span>` +
   `<span class="dec-fl">→</span></a>`;
 
-const MENA_LBL = { personatge: 'Personatge', directe: 'Directe', tema: 'Tema' };
+const MENA_LBL = { llista: 'La sèrie', personatge: 'Personatge', directe: 'Directe', tema: 'Tema' };
 const htmlVideos = () => {
   const fitxa = v => {
     const cap = `<div class="vid-mena">${MENA_LBL[v.mena] || esc(v.mena)}</div>` +
       `<div class="vid-t">${esc(v.titol)}</div><p class="vid-d">${esc(v.d)}</p>`;
     if (v.url) {
       const fora = /^https?:/.test(v.url);
-      return `  <a class="vid" href="${v.url}"${fora ? ' target="_blank" rel="noopener"' : ''}>${cap}` +
-        `<span class="vid-go">▶ Mira-ho</span></a>`;
+      /* La llista es destaca perquè avui és la porta que porta més lluny: si
+         es pinta igual que les altres, queda una targeta més entre vuit i qui
+         busca els capítols no la troba. */
+      const cls = v.mena === 'llista' ? 'vid vid-llista' : 'vid';
+      return `  <a class="${cls}" href="${v.url}"${fora ? ' target="_blank" rel="noopener"' : ''}>${cap}` +
+        `<span class="vid-go">▶ ${v.mena === 'llista' ? 'Mira la sèrie' : 'Mira-ho'}</span></a>`;
     }
     return `  <div class="vid vid-buit">${cap}<span class="vid-no">Encara no en tenim l'enllaç</span></div>`;
   };

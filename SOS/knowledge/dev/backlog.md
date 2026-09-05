@@ -1257,17 +1257,37 @@ que ja fa al seu barri.
   (fitxer, ruta o àncora), cap peça sense enllaç pintada com a porta, i cap
   paraula de la llista negra de la guia de marca. Veda 146.
 
-**El que falta i és de l'autor, no del codi:** cinc de les sis peces de vídeo i
-so **no tenen enllaç**. La pàgina les ensenya dient-ho, i el dia que arribin es
-posa l'URL a `VIDEOS` dins de `build-comando.js` i prou:
+**La llista de capítols ja hi és.** L'autor l'ha donada i és a
+`MOLEKULON_LINKS.capitols` i a `VIDEOS`: cada capítol presenta un superheroi i
+un **supervilà del Mundo Muerto**, i és on viu el videoclip d'Horacio. És
+l'única peça que la guarda obliga a tenir adreça —mentre els capítols no en
+tinguin una d'un en un, és la porta que sosté la secció.
+
+**El que falta i és de l'autor, no del codi:** cinc de les set peces **no tenen
+enllaç propi**. La pàgina les ensenya dient-ho, i el dia que arribin es posa
+l'URL a `VIDEOS` dins de `build-comando.js` i prou:
 
 | Peça | Qui | Què falta |
 |---|---|---|
-| Reciclator · el taller | Reciclator | l'URL del vídeo |
-| Supergerminador · germinar | Supergerminador | l'URL del vídeo i la web pròpia |
+| Reciclator · el taller | Reciclator | l'URL del seu capítol |
+| Supergerminador · germinar | Supergerminador | l'URL del capítol i la web pròpia |
 | Fraktalman · el tema | Fraktalman | l'URL del tema |
 | La banda en directe | — | l'URL d'un directe |
 | Un taller, filmat | — | l'URL d'una sessió filmada |
+
+> **Per què no els he tret jo de la llista.** YouTube està bloquejat per
+> l'egress proxy de la sessió (403 tant per WebFetch com per curl), així que no
+> es pot enumerar la playlist des d'aquí. Cal l'adreça de cada capítol escrita,
+> o obrir el domini al proxy.
+
+**El que sí que ha entrat del contingut dels vídeos:** al capítol de Reciclator
+s'hi parla de dues superarmes, la **Bomba Amor** i el **Rato Cagón**. Van a la
+seva fitxa de `CANONICAL_HEROES`, al taller i no a la mà de ningú: el que se
+sap és que d'allà en surten, i quin heroi les porta ho diu l'obra. Queda per
+mirar la resta de capítols amb el mateix criteri —**cada capítol presenta també
+un supervilà**, i `COMANDO_VILLAINS` només en té tres (Max Miedox, Mala Yerbax,
+Mc Greggor); si als vídeos n'hi surten més, hi han d'entrar amb el seu nom tal
+com el diu l'obra.
 
 I dues coses més que segueixen obertes: l'Amazon i l'Instagram de
 `MOLEKULON_LINKS` són provisionals i estan escrits com si fossin certs, i el

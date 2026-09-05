@@ -47,6 +47,7 @@ I el decorat és **Molekulandia** (`molekulandia.html`).
 
 | Peça | Mena | Qui | Estat |
 |---|---|---|---|
+| Els capítols del Comando | La sèrie | — | `https://youtube.com/playlist?list=PLMB33ApQeOYWbPLQRbf9B5gMpgs0cL5NB` |
 | El tema d'Horacio Motomachi | Tema | Horacio Motomachi | `media/comando-horacio.mp3` |
 | Reciclator · el taller | Personatge | Reciclator | **falta l'enllaç** |
 | Supergerminador · germinar | Personatge | Supergerminador | **falta l'enllaç** |
