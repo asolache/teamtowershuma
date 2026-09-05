@@ -44,6 +44,133 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+**P0 · El repte, dit per als dos sectors · i el mapa de valor privat** — pendent
+
+Dues coses que van juntes perquè totes dues surten del mateix: **la
+metodologia és una i els productes són dos**, i avui la portada només explica
+el repte d'un dels dos.
+
+### (a) `#enfoc` i la resta de seccions: un sol repte, dos sectors
+
+El hero ja obre dues portes —empreses i cooperatives / ajuntaments, consells i
+entitats— i el catàleg ja filtra per sector. **La secció del repte, no.** Diu:
+
+> «La majoria de **projectes ciutadans** —bancs de temps, biblioteques de coses,
+> comunitats energètiques, horts comunitaris— neixen amb una empenta enorme de
+> voluntariat… Dues o tres persones ho sostenen tot fins que es cremen.»
+
+Tot això és cert i **una empresa que hi arriba no s'hi reconeix**: llegeix
+«voluntariat» i «horts comunitaris» i conclou que això no va amb ella. Ha
+travessat el hero que li deia que sí. Aquesta és la incoherència, i no és de
+disseny: és que el text es va escriure quan la portada només venia al món
+comunitari.
+
+El patró **és el mateix a les dues bandes** i és el que s'ha de dir sense
+canviar de mètode:
+
+| | Sector públic i comunitari | Empresa i cooperativa |
+|---|---|---|
+| Qui ho sosté | dues o tres persones voluntàries | dues o tres persones clau, sovint sense el rol al paper |
+| Què falla | governança, rols i relleu generacional | governança, rols i relleu — i ningú sap qui sap què |
+| Què no es veu | confiança veïnal, favors, coneixement acumulat | coneixement tàcit, xarxes informals, reputació interna |
+| Què passa quan marxen | el projecte marxa amb elles | se'n va el que no era a cap procediment |
+
+**El mateix objectiu, i s'ha de dir així:** millorar **psicosocialment i
+econòmicament** qualsevol organització, i **mesurar-ho pel mapeig dels fluxos de
+valor**. Aquesta frase és el pont entre les dues portes i avui no és enlloc.
+
+El que s'ha de revisar, secció per secció, amb aquest criteri:
+
+- **`#enfoc`** — reescriure el repte perquè s'hi reconeguin els dos. La frase
+  «un projecte ciutadà no fracassa per falta de cor, fracassa per falta
+  d'esquelet» és bona i **el que li falta és la seva bessona d'empresa**, no
+  substituir-la.
+- **`#glossari`** — les sis paraules es van triar per a un públic; comprovar
+  quines no diuen res a una direcció de persones.
+- **`#relat` («D'on ve això»), `#com` i `#aprenent` («s'aprèn fent»)** — el
+  relat és Àlvar → psicologia de grups → TeamTowers → Humà, i **ja és mixt**
+  (InfoJobs, Foment del Treball, 150 organitzacions). Avui la portada no ho fa
+  servir per legitimar la banda privada: el titular de `#relat` diu «vint anys
+  aixecant castells» i el que hi ha a sota és, en bona part, món corporatiu.
+- **`#fentpinya`** — l'experiència castellera és el producte amb més
+  quilòmetres i **es va vendre a empreses primer**; la secció l'explica com si
+  fos comunitària.
+- **`#cataleg`** — el filtre existeix; falta que **cada família digui el mateix
+  producte a les dues bandes** en comptes de semblar dos catàlegs. Comença per
+  `#pk-mapa-organitzacio` i `#pk-diagnostic-teixit`, que són el mateix mètode
+  amb dos noms.
+- **`#cost`** — l'escala de tres nivells i el sostre de 5.000 € són del sector
+  públic; el que decideix un preu a una empresa no és el mateix i la secció no
+  ho diu.
+- **`#trajectoria` i `#objeccions`** — les objeccions de preu i contractació són
+  diferents a una regidoria i a un comitè de direcció, i ara només hi ha les
+  d'una.
+- **`SOS/ia.html`, `SOS/diagnostic.html` i `SOS/pressupost.html`** — el formulari
+  ja pregunta quina mena d'entitat ets (`ORGS` amb el seu `sector`); el text del
+  voltant encara no canvia amb la resposta.
+
+**El criteri per saber si està fet:** que una directora de persones d'una empresa
+de 200 persones i una tècnica de participació d'un ajuntament de 8.000 habitants
+llegeixin la mateixa secció i **totes dues s'hi reconeguin**, sense que cap de
+les dues hagi de traduir mentalment l'exemple de l'altra.
+
+### (b) Mapes de valor privats d'una organització
+
+**Una web per fer mapes de valor d'una organització on només hi entrin jo, el
+meu equip i el client.** Al catàleg el paquet ja existeix
+(`#pk-mapa-organitzacio`) i **l'eina per entregar-lo, no**: `SOS/vna.html` és
+explicativa i pública —serveix per entendre el mètode amb una colla
+castellera— i l'app és del territori, no d'un encàrrec. Avui aquesta feina es
+lliura fora del repositori, que és exactament el lloc on el mètode no es pot
+millorar ni mesurar.
+
+Aquí hi ha d'haver **excel·lència**, perquè és on el SOS i TeamTowers Humà diuen
+el mateix: la metodologia és una, els productes són dos, i el que es mesura és
+el mapeig dels fluxos de valor.
+
+El que ja hi ha i no s'ha de tornar a fer:
+
+- **La local-first i les claus.** `generateNodeKey`, `encryptWithKey`,
+  `wrapKeyWithPass`, `shareNodeKeyWithMember` i els sobres per membre ja fan
+  exactament la figura «només aquestes persones ho poden llegir», i el servidor
+  —quan n'hi ha— **només guarda**, no desxifra.
+- **L'abast de publicació.** `publishScopeOf` / `setPublishScope` ja decideixen
+  què surt i què no. Un espai de client és `publishScope` buit i prou.
+- **El mapa mateix.** `mapFlowsOf`, `vnaAudit`, `suggestReturn`, `aiPlanValueFlows`
+  i `aiSuggestMap` ja fan el mapa, l'auditen i proposen retorns.
+
+El que falta, i és on és la feina de debò:
+
+1. **L'espai de client** com a concepte: un lloc amb el seu mapa, els seus rols,
+   la seva gent i **la seva llista de qui hi pot entrar**, que avui no existeix
+   com a unitat —hi ha nodes, i un node no és un encàrrec.
+2. **Convidar sense donar un compte.** L'única manera honesta amb el codex és
+   passar la clau del node a qui hi ha d'entrar; falta el camí de fer-ho que no
+   demani entendre què és una clau.
+3. **La proposta de valor intangible, feta tangible amb IA.** És el que el
+   client compra: que d'una conversa i uns documents en surti **el mapa dels
+   fluxos intangibles amb el seu valor estimat**, amb el fre de sempre —la IA
+   proposa, una persona valida, i cada línia diu d'on surt. `SOS/ia.html` ja
+   declara el marc; falta l'entregable.
+4. **L'allotjament més barat que compleixi el codex.** Cap servidor que pugui
+   llegir el contingut, cap compte obligatori i el client se n'ha de poder
+   endur tot. Cal comparar-ho i **escriure per què es tria el que es triï**, no
+   decidir-ho pel camí.
+
+**Dues coses que s'han de decidir abans de codificar**, i que no pot decidir el
+codi:
+
+- **Qui és l'amo del mapa quan s'acaba l'encàrrec.** Si és el client, el nostre
+  accés s'ha de poder retirar i s'ha de veure que s'ha retirat. Si és compartit,
+  s'ha de dir a la proposta i no a la lletra petita.
+- **Què passa amb el que el mapa revela.** Un mapa de valor honest ensenya qui
+  sosté què, i això dins d'una empresa **té conseqüències per a persones
+  concretes**. La regla d'aquesta casa —els noms de les cures només els veu qui
+  sosté el node— ha de tenir la seva versió aquí, escrita, abans del primer
+  client.
+
+---
+
 **P0 · Revisió UX del flux de valor cap al fons** — feta i implementada
 
 La revisió completa és a `SOS/knowledge/vision/review-ux-flux-de-valor.md`. Va
@@ -1088,6 +1215,47 @@ construït és exactament el que les fa diferents.
   duplicar-ho, val la pena mirar si el registre ja respon la pregunta.
 - **La durada és fixa a 25 minuts.** Fer-la triable és fàcil; decidir si val la
   pena és una altra cosa.
+
+### El Comando com a projecte de pel·lícula · fet
+
+El Comando existia sis vegades sense que cap peça digués que les altres hi
+fossin: la història dels còmics a `comando.html`, els catorze personatges a
+`CANONICAL_HEROES`, el perfil de superheroi/na en un modal, el kit narratiu en
+un altre, el multivers en un tercer i Molekulandia en una pàgina a part. El que
+faltava no era una peça més sinó **dir què és tot plegat**: una pel·lícula
+col·laborativa que faran 150.000 persones, on el personatge de cadascú és el
+que ja fa al seu barri.
+
+- **`build-comando.js`** declara els sis eixos (art, ficció, educació,
+  inspiració, empoderament de les comunitats i autonomia — cadascun amb la
+  pantalla on allò es fa), els quatre passos amb la seva ruta a l'app, les peces
+  de vídeo i so, i els enllaços al blog. Les **fitxes d'heroi ja no són una
+  còpia a mà**: surten de `CANONICAL_HEROES`, que era el que `check-comando.js`
+  vigilava des que van divergir.
+- **Ruta `kit`** nova a `MODAL_ROUTES`: sense ella l'enllaç del pas 2 obria
+  l'app per la portada i semblava que no hagués passat res.
+- **Ponts als dos sentits**: des del modal del Comando a la pàgina del projecte,
+  i des del perfil acabat de fer al kit narratiu amb el nom ja posat.
+- **`check-comando.js`** guanya cinc regles: la xifra del comptador surt de
+  `COMANDO_TARGET`, els quatre mòduls s'obren des de la pàgina, cap enllaç mort
+  (fitxer, ruta o àncora), cap peça sense enllaç pintada com a porta, i cap
+  paraula de la llista negra de la guia de marca. Veda 146.
+
+**El que falta i és de l'autor, no del codi:** cinc de les sis peces de vídeo i
+so **no tenen enllaç**. La pàgina les ensenya dient-ho, i el dia que arribin es
+posa l'URL a `VIDEOS` dins de `build-comando.js` i prou:
+
+| Peça | Qui | Què falta |
+|---|---|---|
+| Reciclator · el taller | Reciclator | l'URL del vídeo |
+| Supergerminador · germinar | Supergerminador | l'URL del vídeo i la web pròpia |
+| Fraktalman · el tema | Fraktalman | l'URL del tema |
+| La banda en directe | — | l'URL d'un directe |
+| Un taller, filmat | — | l'URL d'una sessió filmada |
+
+I dues coses més que segueixen obertes: l'Amazon i l'Instagram de
+`MOLEKULON_LINKS` són provisionals i estan escrits com si fossin certs, i el
+final del còmic 3 no és al repositori públic a posta.
 
 ### El directori endollat al SOS · nick, territori i xat · fet
 

@@ -79,6 +79,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-trobada.mjs` | V80 · veda 86 | Tres SOS de debò per WebRTC: dues sessions alhora, i que el que crea un arribi al tercer **sense fer voltes** |
 | `test-vedes.mjs` | — | Que la pàgina dels vedes no perdi cap veda del codex pel camí, i que s'hi arribi per l'URL |
 | `test-registre.mjs` | V72 | El registre públic: que surtin hashes i mai files, i que puguis demostrar que hi ets |
+| `test-peli.mjs` | veda 146 | El Comando com a projecte: que els quatre mòduls del SOS **obrin el que prometen** —s'hi va per la ruta i es mira quin modal surt—, que els herois de la pàgina siguin els de l'app un per un, que les entrades del blog caiguin sobre un article que hi és, i que les peces de vídeo que encara no tenen enllaç ho diguin sense ser clicables |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
 heartbeat, presència i broadcast). Guarda a `messages` tot el que li arriba, que

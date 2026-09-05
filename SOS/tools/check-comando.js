@@ -257,5 +257,108 @@ DOCS.forEach(({ f, txt }) => {
 });
 if (!restesDoc) ok(`${DOCS.filter(x => x.txt !== null).length} documents de coneixement, cap amb noms vells en ús`);
 
+// ── 6 · La pàgina diu de què va el projecte, i el número és el de l'app ──
+/* La pàgina va estar molt de temps reclutant una tribu sense dir mai què es
+   feia amb la tribu. Ara diu la cosa concreta —una pel·lícula col·laborativa—
+   i el número de gent surt de `COMANDO_TARGET`, que és d'on el llegeix l'app.
+   Escrit a mà en dos llocs, el dia que siguin 200.000 en dirà dos de diferents
+   i el de la pàgina serà el que llegeix tothom. */
+const OBJECTIU = Number((APP.match(/const COMANDO_TARGET=(\d+)/) || [, 0])[1]);
+if (!OBJECTIU) bad('no es troba COMANDO_TARGET a l\'app');
+else {
+  const escrit = OBJECTIU.toLocaleString('ca-ES').replace(/ /g, '.');
+  /* Es mira el comptador i no «que la xifra surti a la pàgina»: el número surt
+     al títol, al subtítol i al comptador, i comprovant només que hi és, canviar
+     els altres dos i deixar-ne un de bo hauria passat. El comptador és el que
+     la pàgina presenta com a dada. */
+  const cmp = PAG.match(/<div class="n">([\d.]+)<\/div><div class="l">coprotagonistes/);
+  if (!cmp) bad('no es troba el comptador de coprotagonistes a comando.html');
+  else if (cmp[1] === escrit) ok(`el comptador diu el mateix objectiu que l'app (${escrit})`);
+  else bad(`el comptador diu ${cmp[1]} coprotagonistes i l'app en declara ${escrit}`);
+  /* I que el text que l'acompanya no en digui un altre. Aquí la comprovació és
+     grollera a posta: qualsevol número de sis xifres amb punt que no sigui el
+     bo, al text visible, és una xifra que ja no quadra amb l'app. */
+  /* Els límits han de descartar els números més llargs: al còmic hi ha
+     «200.000.000 de candidats», i sense això la guarda acusava aquell tros de
+     ser una xifra de coprotagonistes mal escrita. */
+  const altres = [...new Set([...PAG.replace(/<!--[\s\S]*?-->/g, ' ')
+    .matchAll(/(?<![\d.])(\d{3}\.\d{3})(?![\d.])/g)].map(m => m[1]))].filter(n => n !== escrit);
+  if (!altres.length) ok('i cap altra xifra de coprotagonistes al text');
+  else bad(`la pàgina diu també ${altres.join(', ')}: dues xifres per al mateix`);
+  if (/pel·lícula/i.test(PAG)) ok('i diu què és el projecte, no només qui hi entra');
+  else bad('la pàgina no diu què es fa amb els que recluta: torna a ser una tribu sense projecte');
+}
+
+// ── 7 · Els mòduls del SOS hi són tots, i per la seva ruta ──────────────
+/* El perfil de superheroi/na, el kit narratiu, el multivers i els crèdits
+   existien tots quatre dins de l'app i cap deia que els altres hi fossin. El
+   valor d'aquesta pàgina és **que van seguits**; si un se'n despenja, tornen a
+   ser quatre modals que ningú relaciona. */
+const RUTES = new Set([...(APP.match(/^const MODAL_ROUTES=\{[\s\S]*?\n\};/m) || [''])[0]
+  .matchAll(/^\s{2}(\w+):\{open:/gm)].map(m => m[1]));
+const CALEN = [['alta', 'el perfil de superheroi/na'], ['kit', 'el kit narratiu amb IA'],
+  ['multivers', 'el multivers'], ['comando', 'els crèdits']];
+const faltenMod = CALEN.filter(([r]) => !PAG.includes('index.html#/' + r));
+if (!faltenMod.length) ok(`els ${CALEN.length} mòduls del SOS s'obren des de la pàgina`);
+else bad(`la pàgina no porta a ${faltenMod.map(([, q]) => q).join(', ')} — tornen a ser modals solts`);
+
+// ── 8 · Cap porta a un lloc que no existeix ─────────────────────────────
+/* Es miren tots els enllaços locals de la pàgina: el fitxer ha d'existir, una
+   ruta `#/x` ha de ser a `MODAL_ROUTES` i una àncora `#y` ha de ser a la
+   pàgina de destí. Un enllaç trencat no peta: deixa qui el clica al capdamunt
+   d'una pàgina que no és la que buscava, i això no ho veu mai qui l'ha escrit
+   perquè ell ja sap on volia anar. Veda 116. */
+const { existsSync } = require('node:fs');
+const dests = [...new Set([...PAG.matchAll(/href="([^"]+)"/g)].map(m => m[1]))]
+  .filter(h => !/^(https?:|mailto:|#)/.test(h));
+const morts = [];
+dests.forEach(h => {
+  const [fitxer, anc] = h.split('#');
+  const cami = fitxer.startsWith('../') ? join(ARREL, fitxer.slice(3)) : join(ARREL, 'SOS', fitxer);
+  if (!existsSync(cami)) { morts.push(`${h} (no existeix ${fitxer})`); return; }
+  if (!anc) return;
+  if (anc.startsWith('/')) {
+    const r = anc.slice(1).split('/')[0];
+    if (!RUTES.has(r)) morts.push(`${h} (cap ruta «${r}» a MODAL_ROUTES)`);
+    return;
+  }
+  const dst = llegeix(cami);
+  if (dst && !dst.includes(`id="${anc}"`)) morts.push(`${h} (cap àncora «${anc}» a ${fitxer})`);
+});
+/* Les àncores de la pàgina mateixa. Aquesta comprovació hi és perquè les
+   seccions han canviat de nom en aquest mateix canvi, i els enllaços interns
+   d'un menú de pàgina són justament els que ningú reclica. */
+[...new Set([...PAG.matchAll(/href="(#[^"/][^"]*)"/g)].map(m => m[1].slice(1)))]
+  .forEach(a => { if (!PAG.includes(`id="${a}"`)) morts.push(`#${a} (cap secció així a la pàgina)`); });
+if (!morts.length) ok(`els ${dests.length} destins de comando.html existeixen tots`);
+else bad(`${pl(morts.length, 'enllaç mort', 'enllaços morts')} a comando.html: ${morts.join(', ')}`);
+
+// ── 9 · El que no està filmat no es pinta com si ho estigués ────────────
+/* Les peces sense enllaç surten dient que encara no hi són. La temptació
+   contrària —posar-hi el canal de YouTube «mentrestant»— és el que converteix
+   un inventari honest en una promesa: qui hi clica no troba el que anava a
+   veure i no torna a fer cas de cap altra targeta de la pàgina. */
+const buides = [...PAG.matchAll(/<(a|div) class="vid vid-buit"/g)].map(m => m[1]);
+if (!buides.length) ok('totes les peces declarades tenen enllaç');
+else if (buides.every(t => t === 'div')) ok(`${pl(buides.length, 'peça pendent', 'peces pendents')}, i cap es pinta com una porta`);
+else bad('hi ha una peça sense enllaç pintada com a enllaç: prometria una porta que no obre');
+
+// ── 10 · Les paraules que la guia de marca no deixa dir ─────────────────
+/* Les mateixes que vigila `check-landing.js` a la portada. Aquesta pàgina és
+   la més temptadora de totes per posar-n'hi: parla de comunitat, de poder i de
+   transformació, que és exactament el camp on aquests mots són fum.
+   «Empoderament» sense objecte és el cas clar: empoderar **algú** es pot
+   comprovar, «empoderament» a seques no vol dir res. */
+const visible = PAG.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')
+  .replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]+>/g, ' ');
+const PROHIBIDES = [
+  [/disruptiu|disruptiva|disruptivo/i, 'disruptiu'],
+  [/solucions innovadores/i, 'solucions innovadores'],
+  [/empoderament\b(?!\s+(de|per|dels|de les))/i, 'empoderament sense objecte']
+];
+const dites = PROHIBIDES.filter(([re]) => re.test(visible)).map(([, n]) => n);
+if (!dites.length) ok('cap paraula de la llista negra de la guia de marca');
+else bad(`comando.html diu ${dites.join(', ')} — la guia de marca ho prohibeix`);
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} al relat.` : '\n✅ El relat quadra.');
 process.exit(fails ? 1 : 0);

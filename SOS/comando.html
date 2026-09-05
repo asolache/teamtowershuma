@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Comando Molekulon · 150.000 superherois per canviar la història</title>
-<meta name="description" content="Catorze superherois amb la seva superarma, la seva lletra i el que volen dir dins d'un equip. La història dels còmics 1 i 2, i els altres 149.986 que encara no saben que hi són.">
-<meta property="og:title" content="Comando Molekulon · segurament ja ets un d'ells">
-<meta property="og:description" content="Cada personatge és una manera de sostenir un grup. Mira si te'n reconeixes alguna — i apunta el que ja fas al teu barri.">
+<title>Comando Molekulon · la primera pel·lícula que farem 150.000 persones</title>
+<meta name="description" content="Un còmic, una banda i una pel·lícula que encara no existeix: es farà amb 150.000 superherois reals que aporten al seu barri i ho registren. Art, ficció, educació i autonomia, amb el SOS a sota i Molekulandia com a decorat.">
+<meta property="og:title" content="Comando Molekulon · la pel·lícula la fem 150.000">
+<meta property="og:description" content="El teu personatge no és un avatar inventat: és el que ja fas, amb nom i amb superarma. Fes-te'l, escriu la teva història i entra als crèdits.">
 <meta property="og:type" content="website">
 <style>
 :root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700}
@@ -86,6 +86,69 @@ section.center{text-align:center}
 @media(max-width:720px){.escena{grid-template-columns:1fr}}
 
 
+/* ── Els sis eixos ────────────────────────────────────────────────────────
+   Sis paraules grosses. Cadascuna porta la pantalla on allò és una cosa que
+   es fa: sense l'enllaç del peu, aquesta graella seria l'apartat de valors
+   d'una web corporativa. */
+.eixos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:2rem;text-align:left}
+.eix{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.2rem 1.3rem;
+  display:flex;flex-direction:column}
+.eix-ic{font-size:1.5rem;line-height:1}
+.eix-n{font-weight:700;font-size:1.02rem;margin:.45rem 0 .35rem}
+.eix-q{margin:0 0 .9rem;color:var(--light);font-size:.88rem;line-height:1.55;flex:1}
+.eix-on{margin-top:auto;color:var(--green);text-decoration:none;font-size:.8rem;font-weight:600}
+.eix-on:hover{text-decoration:underline}
+
+/* ── Els passos · com es fa la pel·lícula ─────────────────────────────────
+   Cada pas obre un mòdul del SOS per la seva ruta. Són els mateixos que hi
+   havia escampats per l'app; el que faltava era dir per quin ordre van. */
+.passos{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:1.1rem;margin-top:2rem;text-align:left}
+.pas{background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.5rem 1.3rem 1.2rem;
+  position:relative;display:flex;flex-direction:column}
+.pas-n{position:absolute;top:-15px;left:1.3rem;background:linear-gradient(90deg,#6366f1,#e040fb);
+  width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:700;color:#0b0b12}
+.pas-t{font-weight:700;font-size:1.02rem;margin:.3rem 0 .45rem}
+.pas-d{margin:0 0 1rem;color:var(--light);font-size:.88rem;line-height:1.55;flex:1}
+.pas-d strong{color:var(--text)}
+.pas-cta{margin-top:auto;color:var(--indigo);text-decoration:none;font-weight:600;font-size:.85rem}
+.pas-cta:hover{text-decoration:underline}
+.decorat{display:flex;gap:.9rem;align-items:center;margin-top:1.4rem;padding:1.1rem 1.3rem;text-align:left;
+  background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(99,102,241,.07));
+  border:1px solid rgba(0,230,118,.25);border-radius:14px;text-decoration:none;color:var(--light);font-size:.9rem}
+.decorat:hover{border-color:rgba(0,230,118,.5)}
+.decorat strong{color:var(--text)}
+.dec-ic{font-size:1.8rem;flex-shrink:0}
+.dec-fl{margin-left:auto;color:var(--green);font-size:1.2rem}
+
+/* ── Les peces filmades, i les que falten ─────────────────────────────────
+   Una peça sense enllaç no es pinta com una porta: es pinta dient que encara
+   no hi és. Una porta que no obre és pitjor que no tenir-la (veda 116). */
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-top:2rem;text-align:left}
+.vid{display:flex;flex-direction:column;background:var(--card);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:1.2rem;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
+.vid-mena{font-family:'SF Mono',Monaco,monospace;font-size:.6rem;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--purple);margin-bottom:.4rem}
+.vid-t{font-weight:700;font-size:.98rem;margin-bottom:.35rem}
+.vid-d{margin:0 0 .9rem;color:var(--light);font-size:.85rem;line-height:1.5;flex:1}
+.vid-go{color:var(--green);font-weight:600;font-size:.82rem}
+.vid-buit{border-style:dashed;opacity:.72}
+.vid-buit .vid-mena{color:var(--muted)}
+.vid-no{color:var(--muted);font-size:.8rem;font-style:italic}
+.vids-nota{max-width:70ch;margin:1.3rem auto 0;color:var(--muted);font-size:.86rem;line-height:1.6}
+.vids-nota strong{color:var(--light)}
+
+/* ── El blog del Comando ──────────────────────────────────────────────────── */
+.posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:.7rem;margin-top:2rem;text-align:left}
+.post{display:flex;gap:.8rem;align-items:flex-start;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:.95rem 1.1rem;
+  text-decoration:none;color:inherit;transition:border-color .15s}
+.post:hover{border-color:var(--indigo)}
+.post-ic{font-size:1.3rem;line-height:1.2;flex-shrink:0}
+.post-t{display:block;font-weight:700;font-size:.94rem}
+.post-d{display:block;color:var(--light);font-size:.84rem;line-height:1.5;margin-top:.15rem}
+
 /* Canonical heroes grid */
 .heroes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;margin-top:2rem}
 .hcard{background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(99,102,241,.08));border:1px solid rgba(224,64,251,.3);border-radius:14px;padding:1.2rem;transition:border-color .2s}
@@ -111,13 +174,11 @@ section.center{text-align:center}
 .hfont{display:inline-block;font-family:'SF Mono',Monaco,monospace;font-size:.6rem;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);border:1px solid rgba(255,255,255,.12);
   border-radius:3px;padding:.1rem .35rem;margin-top:.4rem}
+/* Quan del personatge n'hi ha peça enregistrada, l'etiqueta de la font es
+   torna una porta. Només quan n'hi ha: la resta no en tenen cap. */
+.hfont-go{color:var(--green);border-color:rgba(0,230,118,.35);text-decoration:none}
+.hfont-go:hover{background:rgba(0,230,118,.12)}
 
-/* How it works */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;margin-top:2rem;text-align:left}
-.step{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.4rem;position:relative}
-.step-n{position:absolute;top:-15px;left:1.4rem;background:linear-gradient(90deg,#6366f1,#e040fb);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b0b12}
-.step h3{margin:.4rem 0 .5rem;font-size:1.05rem}
-.step p{margin:0;color:var(--light);font-size:.9rem}
 
 /* Registry */
 .registry{background:linear-gradient(180deg,rgba(0,230,118,.05),rgba(99,102,241,.05));border:1px solid rgba(0,230,118,.15);border-radius:16px;padding:2rem;margin-top:2rem}
@@ -210,30 +271,58 @@ nav.top .links a:hover{color:var(--text)}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g sn-here"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html" aria-current="page"><b>El Comando</b><span>La tribu i el reclutament</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g sn-here"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html" aria-current="page"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
 
 
 
-<!-- HERO -->
+<!-- HERO ───────────────────────────────────────────────────────────────────
+     Abans aquesta pàgina era el reclutament d'una tribu, i no deia què es
+     feia amb la tribu un cop reclutada. Ara diu la cosa concreta: es fa una
+     pel·lícula, la fem entre tots, i el teu personatge és el que ja fas.
+     El comptador el genera `build-comando.js` de `COMANDO_TARGET` i del
+     roster, que és d'on ho llegeix l'app: escrit a mà va arribar a dir 8
+     herois quan n'hi havia 9. -->
 <div class="hero">
 <div class="hero-inner">
-<span class="tag">🧬 Tribu creativa oberta</span>
-<h1>150.000 superherois per canviar la història</h1>
-<p class="sub">Enviats a la Terra pel <strong>Gran Molekulon</strong>, <strong>Mazinguer i Horacio Motomachi</strong> ens han de reclutar abans que el <strong>Mundo Muerto</strong> ho apagui tot i <strong>Mr. McGragor</strong> ens torni a posar a picar pedra. Cada aportació teva a un banc de temps, cada objecte que comparteixes, cada intercanvi signat és una llavor.</p>
+<span class="tag">🎬 Projecte obert · art, ficció i comunitat</span>
+<h1>La primera pel·lícula que farem 150.000 persones</h1>
+<p class="sub">El <strong>Comando Molekulon</strong> és un còmic, una banda i una pel·lícula que encara no existeix. Es farà amb <strong>150.000 superherois reals</strong>: gent que aporta hores, objectes i coneixement al seu barri i que ho registra. El teu personatge no és un avatar inventat — <strong>és el que ja fas</strong>, amb nom i amb superarma. I el poble on passa tot plegat és <a href="molekulandia.html" style="color:var(--green)">Molekulandia</a>.</p>
 <div class="ctas">
-<a class="cta cta-primary" href="intro.html">▶ Mira-ho en 90 segons</a>
-<a class="cta cta-ghost" href="index.html">✦ Crea el meu cromo</a>
+<a class="cta cta-primary" href="index.html#/alta">🦸 Fes el meu personatge</a>
+<a class="cta cta-ghost" href="intro.html">▶ Mira-ho en 90 segons</a>
 </div>
+<!--CM-COMPTADOR-->
 <div class="counter">
-<div class="item"><div class="n">150.000</div><div class="l">objectiu Comando</div></div>
+<div class="item"><div class="n">150.000</div><div class="l">coprotagonistes</div></div>
 <div class="item"><div class="n">14</div><div class="l">herois canònics</div></div>
-<div class="item"><div class="n">27+6</div><div class="l">pobles Alt Penedès + Garraf</div></div>
+<div class="item"><div class="n">2</div><div class="l">còmics publicats</div></div>
+</div>
+<!--/CM-COMPTADOR-->
 </div>
 </div>
+
+<!-- ELS SIS EIXOS ─────────────────────────────────────────────────────────
+     Sis paraules que qualsevol projecte cultural es posa a la web. El que
+     les fa certes aquí és l'enllaç de sota: cadascuna diu **a quina pantalla
+     això és una cosa que es fa**. -->
+<section id="eixos" class="center">
+<h2>De què està fet això</h2>
+<p class="lead">Un projecte cultural que és alhora una eina de gestió comunitària. Sis coses,
+i cadascuna té la seva pantalla: si no la tingués, seria un cartell.</p>
+<!--CM-EIXOS-->
+<div class="eixos">
+  <div class="eix"><div class="eix-ic">🎨</div><div class="eix-n">Art</div><p class="eix-q">El còmic, la música i el dibuix no il·lustren el projecte: en són la matèria. Cada personatge té la seva superarma, el seu vers i el seu tema.</p><a class="eix-on" href="#historia">La història →</a></div>
+  <div class="eix"><div class="eix-ic">📖</div><div class="eix-n">Ficció</div><p class="eix-q">Una història inventada és el permís per dir en veu alta el que passa de debò a la teva feina i al teu barri. El Mundo Muerto no és una metàfora amable.</p><a class="eix-on" href="#herois">Els herois canònics →</a></div>
+  <div class="eix"><div class="eix-ic">🎓</div><div class="eix-n">Educació</div><p class="eix-q">El mateix relat és material d'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.</p><a class="eix-on" href="escola.html">A l'escola →</a></div>
+  <div class="eix"><div class="eix-ic">✨</div><div class="eix-n">Inspiració</div><p class="eix-q">Ningú es mou per un informe. Es mou perquè algú altre s'ha mogut i ho ha explicat prou bé perquè es vegi que es podia.</p><a class="eix-on" href="#blog">El blog del Comando →</a></div>
+  <div class="eix"><div class="eix-ic">💪</div><div class="eix-n">Empoderament de les comunitats</div><p class="eix-q">Poder concret i comprovable: qui té les claus, qui decideix i qui cobra el que aporta. Cada aportació va signada i el registre és públic.</p><a class="eix-on" href="index.html#/registre">El registre públic →</a></div>
+  <div class="eix"><div class="eix-ic">🕊</div><div class="eix-n">Autonomia</div><p class="eix-q">Sense compte, sense contrasenya i sense demanar permís. La clau te la fa el navegador i no surt del teu aparell; si te'n vas, t'ho endús tot.</p><a class="eix-on" href="#perfil">El teu perfil és teu →</a></div>
 </div>
+<!--/CM-EIXOS-->
+</section>
 
 <!-- PER ON ENTRES ─────────────────────────────────────────────────────────
      Aquesta pàgina tenia cinc crides al capdamunt i cap explicava què passava
@@ -292,6 +381,27 @@ si només en fas una, fes la primera.</p>
 </div>
 <p style="text-align:center;margin-top:1.6rem"><a href="#historia" style="color:var(--muted)">
 o baixa i llegeix la història dels còmics ↓</a></p>
+</section>
+
+<!-- COM ES FA ─────────────────────────────────────────────────────────────
+     Els mòduls del SOS que fan el Comando existien tots i estaven escampats:
+     el perfil de superheroi/na és un modal, el kit narratiu n'és un altre, el
+     multivers un tercer i els crèdits un quart. Cap sabia dels altres i cap
+     deia per quin ordre van. Això és l'ordre, i cada pas obre el mòdul que
+     toca per la seva ruta. -->
+<section id="peli" class="center">
+<h2>Com es fa una pel·lícula amb 150.000 persones</h2>
+<p class="lead">No es fa un càsting: es fa un registre. Quatre passos, i tots quatre són coses
+que el SOS ja sap fer — el que faltava era dir que van seguides.</p>
+<!--CM-PASSOS-->
+<div class="passos">
+  <div class="pas"><div class="pas-n">1</div><div class="pas-t">🦸 Fes el teu personatge</div><p class="pas-d">Nom, població, fins a <strong>cinc superpoders</strong> i les teves <strong>superarmes</strong> — el que saps fer i el que pots deixar. Es fa al navegador i no puja enlloc.</p><a class="pas-cta" href="index.html#/alta">Crea el meu perfil →</a></div>
+  <div class="pas"><div class="pas-n">2</div><div class="pas-t">🎬 Escriu la teva història amb IA</div><p class="pas-d">El kit narratiu en treu sinopsi de còmic, himne i escena performativa a partir del que has fet <strong>de debò</strong>. La clau de la IA la poses tu i cap dada de ningú hi entra sense confirmar-ho.</p><a class="pas-cta" href="index.html#/kit">Obre el kit narratiu →</a></div>
+  <div class="pas"><div class="pas-n">3</div><div class="pas-t">🌌 Entra al multivers</div><p class="pas-d">Cada història desada s'apila amb les altres. El multivers <strong>és el guió</strong>: no l'escriu ningú a soles, es va omplint.</p><a class="pas-cta" href="index.html#/multivers">Mira el multivers →</a></div>
+  <div class="pas"><div class="pas-n">4</div><div class="pas-t">🎞 Els crèdits són el registre</div><p class="pas-d">Cada aportació signada surt als crèdits amb el seu nom i la seva data. <strong>Aquí no hi ha figurants</strong>: qui hi surt és perquè ha fet alguna cosa i algú altre ho ha confirmat.</p><a class="pas-cta" href="index.html#/comando">Obre el Comando a l'app →</a></div>
+</div>
+<a class="decorat" href="molekulandia.html"><span class="dec-ic">🏘</span><span><strong>I el poble on passa és Molekulandia.</strong> El poble sencer: onze edificis on entrar i nou professions. El bar és el banc de temps i la ferreteria és la biblioteca de les coses.</span><span class="dec-fl">→</span></a>
+<!--/CM-PASSOS-->
 </section>
 
 <!-- LA HISTÒRIA · CÒMICS 1 I 2 -->
@@ -435,95 +545,120 @@ o baixa i llegeix la història dels còmics ↓</a></p>
   </div>
 
   <div class="acte">
-    <div class="acte-n">Acte III · En construcció</div>
+    <div class="acte-n">Acte III · En rodatge</div>
     <h3>El que encara no s'ha publicat</h3>
     <p>El Comando no se'n surt sol, i aquí és on la història deixa de ser només un còmic:
     continua en obert, amb les decisions de qui hi entra. <strong>El final està escrit i
     encara no es diu.</strong> El que sí que es pot dir és el mecanisme: cada persona que es
     dona d'alta i aporta de debò és un node més de la xarxa, i la xarxa és el que fa la
-    força. Els comptadors d'aquesta pàgina són reals.</p>
+    força. <strong>Això és el tercer acte, i s'està rodant ara.</strong> Els comptadors
+    d'aquesta pàgina són reals.</p>
   </div>
 </section>
 
+<!-- LES PECES ENREGISTRADES ───────────────────────────────────────────────
+     Personatges i directes. La llista la declara `build-comando.js` i inclou
+     les peces que existeixen **i les que encara no tenen enllaç**: aquestes
+     surten dient-ho, no com una porta que no obre. Dir «pròximament» amb un
+     enllaç que no va enlloc és la manera més ràpida de perdre la confiança
+     d'algú que ha vingut a mirar (veda 116). -->
+<section id="videos" class="center">
+<h2>🎥 Els personatges, en imatge i en so</h2>
+<p class="lead">Els herois no viuen només a la vinyeta: n'hi ha que tenen tema propi i n'hi ha
+que viuen en vídeo. I el Comando toca en directe, que és la prova que darrere d'això hi ha gent.</p>
+<!--CM-VIDEOS-->
+<div class="vids">
+  <a class="vid" href="media/comando-horacio.mp3"><div class="vid-mena">Tema</div><div class="vid-t">El tema d'Horacio Motomachi</div><p class="vid-d">La cançó sencera. Sona també a la intro.</p><span class="vid-go">▶ Mira-ho</span></a>
+  <div class="vid vid-buit"><div class="vid-mena">Personatge</div><div class="vid-t">Reciclator · el taller</div><p class="vid-d">Construeix les superarmes de la banda amb el que els altres han llençat.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
+  <div class="vid vid-buit"><div class="vid-mena">Personatge</div><div class="vid-t">Supergerminador · germinar</div><p class="vid-d">Ensenya a germinar per menjar superaliments, i canta amb la seva rialla.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
+  <div class="vid vid-buit"><div class="vid-mena">Personatge</div><div class="vid-t">Fraktalman · el tema</div><p class="vid-d">La forma que es repeteix a totes les escales, convertida en cançó.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
+  <div class="vid vid-buit"><div class="vid-mena">Directe</div><div class="vid-t">La banda en directe</div><p class="vid-d">El Comando tocant. És la prova que això no és una marca: hi ha gent que hi puja.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
+  <div class="vid vid-buit"><div class="vid-mena">Directe</div><div class="vid-t">Un taller, filmat</div><p class="vid-d">Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
+</div>
+<p class="vids-nota">De les 6 peces que el projecte preveu, <strong>5 encara no tenen enllaç públic</strong>. Surten aquí perquè es vegi què hi ha i què falta — no com una promesa amb un enllaç que no obre: el dia que en tinguem l'adreça, aquesta mateixa targeta s'obre.</p>
+<!--/CM-VIDEOS-->
+</section>
+
 <!-- CANONICAL HEROES -->
-<section class="center">
+<section id="herois" class="center">
 <h2>🌟 Els herois canònics</h2>
-<p class="lead">El nucli del Comando: els que estan buscant els altres 149.986. Alguns surten al còmic, d'altres en vídeo o tenen tema propi — <strong>i tots són igual de reals</strong>.</p>
+<p class="lead">El nucli del Comando: els que estan buscant la resta. Alguns surten al còmic, d'altres en vídeo o tenen tema propi — <strong>i tots són igual de reals</strong>. Cadascun és també una manera de sostenir un grup: mira si te'n reconeixes alguna.</p>
+<!--CM-HEROIS-->
 <div class="heroes" style="text-align:left">
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(210,65%,45%)">M</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(46,62%,44%)">M</div>
 <div><div class="hcard-nm">Mazinguer</div><div class="hcard-role">Líder estratega i DJ</div></div></div>
-<div class="hcard-power">Coneix el pla i guia la banda. Sense superpoder aparent: l&#x27;ego perdut és el seu poder</div>
+<div class="hcard-power">Coneix el pla i guia la banda. Sense superpoder aparent: l'ego perdut és el seu poder</div>
 <div class="hcard-arma"><span>Superarma</span> La Bomba Disco i els plats de DJ</div>
 <div class="hcard-lletra">«Mazinguer: aunque no lo parecía siempre sabía lo que hay que hacer.»</div>
 <div class="hcard-vna"><span>A un equip</span> Qui munta la plataforma i atrau els primers nodes. El cap de colla</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(30,65%,45%)">H</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(110,62%,44%)">HM</div>
 <div><div class="hcard-nm">Horacio Motomachi</div><div class="hcard-role">El savi que rep el mandat</div></div></div>
-<div class="hcard-power">Coprotagonista de l&#x27;encàrrec original. Converteix l&#x27;experiència en relat</div>
+<div class="hcard-power">Coprotagonista de l'encàrrec original. Converteix l'experiència en relat</div>
 <div class="hcard-arma"><span>Superarma</span> La Bomba Disco i els plats de DJ</div>
 <div class="hcard-lletra">«Horacio: muy sabio, buena onda y tener un palacio.»</div>
 <div class="hcard-vna"><span>A un equip</span> La visió de conjunt: qui sap explicar cap on va tot plegat</div>
-<div><span class="hfont">Còmic 1</span></div>
+<div><span class="hfont">Còmic 1</span> <a class="hfont hfont-go" href="media/comando-horacio.mp3">▶ Tema</a></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(120,65%,45%)">G</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(273,62%,44%)">GG</div>
 <div><div class="hcard-nm">Guiri-Guay</div><div class="hcard-role">Cuidador i sanador</div></div></div>
 <div class="hcard-power">Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup</div>
 <div class="hcard-arma"><span>Superarma</span> Guitarra acústica country</div>
 <div class="hcard-lletra">«Con mi guitarra curo heridas, bailando se mueven las neuronas.»</div>
-<div class="hcard-vna"><span>A un equip</span> Qui té cura de l&#x27;equip: sosté la moral i cura les friccions abans que es podreixin</div>
+<div class="hcard-vna"><span>A un equip</span> Qui té cura de l'equip: sosté la moral i cura les friccions abans que es podreixin</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(280,65%,45%)">P</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(318,62%,44%)">P</div>
 <div><div class="hcard-nm">Purpleman</div><div class="hcard-role">Transmutador</div></div></div>
 <div class="hcard-power">Entra a les tenebres i els gasos tòxics i els torna benestar immediat</div>
 <div class="hcard-arma"><span>Superarma</span> El Rayo Eliminador</div>
 <div class="hcard-lletra">«Elimino a los malos olores con mi rayo eliminador y huele todo a flor y amor.»</div>
-<div class="hcard-vna"><span>A un equip</span> Qui absorbeix la toxicitat de l&#x27;ambient i la torna clima. Si no té nom, no ho fa ningú</div>
+<div class="hcard-vna"><span>A un equip</span> Qui absorbeix la toxicitat de l'ambient i la torna clima. Si no té nom, no ho fa ningú</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(330,65%,45%)">A</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(314,62%,44%)">A</div>
 <div><div class="hcard-nm">Afrodito</div><div class="hcard-role">Motor passional</div></div></div>
-<div class="hcard-power">Holometabolisme: la seva identitat musical li trenca l&#x27;armadura que el mantenia alienat</div>
+<div class="hcard-power">Holometabolisme: la seva identitat musical li trenca l'armadura que el mantenia alienat</div>
 <div class="hcard-arma"><span>Superarma</span> El ritme Soul Train</div>
 <div class="hcard-lletra">«Sexy motherfunky mito. Piensa con el corazón.»</div>
-<div class="hcard-vna"><span>A un equip</span> El talent amagat. Passió en cru que només necessita un lloc segur per treure&#x27;s la cuirassa</div>
+<div class="hcard-vna"><span>A un equip</span> El talent amagat. Passió en cru que només necessita un lloc segur per treure's la cuirassa</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(195,65%,45%)">A</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(289,62%,44%)">EA</div>
 <div><div class="hcard-nm">El Aviador</div><div class="hcard-role">Suport tàctic</div></div></div>
-<div class="hcard-power">Orientació i rescat in extremis: apareix del cel quan l&#x27;equip s&#x27;ha perdut</div>
+<div class="hcard-power">Orientació i rescat in extremis: apareix del cel quan l'equip s'ha perdut</div>
 <div class="hcard-arma"><span>Superarma</span> El Bajo Volador</div>
 <div class="hcard-lletra">«No tiene mojo, no tiene duende, no tiene don, pero tiene un bajo volador.»</div>
-<div class="hcard-vna"><span>A un equip</span> L&#x27;executor hiperespecialitzat. Ni el més carismàtic ni el líder: el que desencalla projectes</div>
+<div class="hcard-vna"><span>A un equip</span> L'executor hiperespecialitzat. Ni el més carismàtic ni el líder: el que desencalla projectes</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(15,75%,50%)">P</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(87,62%,44%)">P</div>
 <div><div class="hcard-nm">Pigmentón</div><div class="hcard-role">Mapador i dissenyador</div></div></div>
-<div class="hcard-power">Assigna identitats. Capaç d&#x27;il·luminar fins i tot els forats negres</div>
+<div class="hcard-power">Assigna identitats. Capaç d'il·luminar fins i tot els forats negres</div>
 <div class="hcard-arma"><span>Superarma</span> El Güengüentón i el pinzell creador</div>
 <div class="hcard-lletra">«De colores pintó el maestro Pigmentón el mundo para que todo pueda tener el color que le corresponda.»</div>
 <div class="hcard-vna"><span>A un equip</span> Qui dibuixa la xarxa i dona a cadascú el color que li toca perquè pugui operar</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(180,65%,45%)">MA</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(40,62%,44%)">LM</div>
 <div><div class="hcard-nm">La Medusa Andaluza</div><div class="hcard-role">Connectora · el hub</div></div></div>
 <div class="hcard-power">Sincronització i fusió cultural. És qui dona llum interconnectant tot el grup</div>
-<div class="hcard-arma"><span>Superarma</span> Cables connectors i una ampolla de Jack Daniel&#x27;s</div>
-<div class="hcard-lletra">«En mi cabeza se cruzan los cables ¿Te echo uno tío? Pa&#x27; que conectes con mi són.»</div>
+<div class="hcard-arma"><span>Superarma</span> Cables connectors i una ampolla de Jack Daniel's</div>
+<div class="hcard-lletra">«En mi cabeza se cruzan los cables ¿Te echo uno tío? Pa' que conectes con mi són.»</div>
 <div class="hcard-vna"><span>A un equip</span> El node central que creua informació entre parts que no es parlaven</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(240,65%,45%)">E</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(176,62%,44%)">E</div>
 <div><div class="hcard-nm">Electroplasman</div><div class="hcard-role">Impulsor de recursos</div></div></div>
 <div class="hcard-power">Injecta liquiditat al sistema nerviós central del comando i a les naus que no enlairaven</div>
 <div class="hcard-arma"><span>Superarma</span> La viola · violí electrònic</div>
@@ -532,25 +667,25 @@ o baixa i llegeix la història dels còmics ↓</a></p>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(90,60%,42%)">A</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(314,62%,44%)">EA</div>
 <div><div class="hcard-nm">El Anguila</div><div class="hcard-role">Bateria</div></div></div>
-<div class="hcard-power">S&#x27;escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l&#x27;escletxa</div>
+<div class="hcard-power">S'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l'escletxa</div>
 <div class="hcard-arma"><span>Superarma</span> La bateria i la percussió</div>
 <div class="hcard-lletra">«El Anguila: con un buen groove y una birra se espabila.»</div>
 <div class="hcard-vna"><span>A un equip</span> Qui marca el ritme operatiu. La pinya no aguanta sense un compàs</div>
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(45,55%,45%)">B</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(295,62%,44%)">B</div>
 <div><div class="hcard-nm">Barbamuda</div><div class="hcard-role">Segona baixista</div></div></div>
 <div class="hcard-power">Fa supertratges i ensenya des del silenci. No explica: deixa que ho vegis</div>
 <div class="hcard-arma"><span>Superarma</span> El baix i el silenci tàctic</div>
 <div class="hcard-lletra">«Barbamuda: que habla solo cuando debe y todo se la suda.»</div>
-<div class="hcard-vna"><span>A un equip</span> L&#x27;estabilitat estructural. Qui no es mou quan tot es mou és el que evita la caiguda</div>
+<div class="hcard-vna"><span>A un equip</span> L'estabilitat estructural. Qui no es mou quan tot es mou és el que evita la caiguda</div>
 <div><span class="hfont">Còmic</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(160,55%,40%)">R</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(192,62%,44%)">R</div>
 <div><div class="hcard-nm">Reciclator</div><div class="hcard-role">Fabricant de superarmes</div></div></div>
 <div class="hcard-power">Construeix les superarmes de la banda a partir del que els altres han llençat</div>
 <div class="hcard-arma"><span>Superarma</span> El taller: el que ja existeix i ningú volia</div>
@@ -558,7 +693,7 @@ o baixa i llegeix la història dels còmics ↓</a></p>
 <div><span class="hfont">Vídeo</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(105,50%,40%)">S</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(271,62%,44%)">S</div>
 <div><div class="hcard-nm">Supergerminador</div><div class="hcard-role">Mestre del germinat</div></div></div>
 <div class="hcard-power">Ensenya a germinar per menjar superaliments. I canta amb la seva rialla</div>
 <div class="hcard-arma"><span>Superarma</span> Les llavors, i la pròpia rialla</div>
@@ -566,7 +701,7 @@ o baixa i llegeix la història dels còmics ↓</a></p>
 <div><span class="hfont">Vídeo i web pròpia</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(0,60%,48%)">F</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(305,62%,44%)">F</div>
 <div><div class="hcard-nm">Fraktalman</div><div class="hcard-role">Ordre a partir del caos</div></div></div>
 <div class="hcard-power">Converteix el caos en ordre sense aplanar-lo</div>
 <div class="hcard-arma"><span>Superarma</span> La forma que es repeteix a totes les escales</div>
@@ -575,23 +710,36 @@ o baixa i llegeix la història dels còmics ↓</a></p>
 <div><span class="hfont">Té tema propi</span></div>
 </div>
 </div>
+<!--/CM-HEROIS-->
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="center">
-<h2>Com et convertiràs en superheroi</h2>
-<p class="lead">Tres passos. Un minut. Cap servidor. La teva identitat es queda al teu dispositiu.</p>
-<div class="steps">
-<div class="step"><div class="step-n">1</div><h3>Obre SOS al teu navegador</h3><p>No descarregues res. El navegador et fa una clau la primera vegada i <strong>no surt mai del teu aparell</strong>: és la que firma el que aportes. <em>(Una identitat did:sos, estàndard del W3C.)</em></p></div>
-<div class="step"><div class="step-n">2</div><h3>Crea el teu cromo</h3><p>Nom + població + fins a <strong>5 superpoders</strong> (skills) + <strong>superarmes</strong> (objectes que poses en comú). El sistema et vincula al banc de temps + biblioteca del teu barri.</p></div>
-<div class="step"><div class="step-n">3</div><h3>Puja de nivell</h3><p>Aprenent → Bronze → Plata → Or → Llegenda. Cada intercanvi firmat, cada objecte compartit, cada molekulon activat suma XP. Els reptes del següent tier són visibles al teu cromo.</p></div>
+<!-- EL BLOG DEL COMANDO ───────────────────────────────────────────────────
+     Les entrades existien i no hi arribava ningú des d'aquí: la pàgina que
+     explica el Comando enllaçava el blog sencer i prou, i qui hi anava havia
+     de trobar sol quines cinc entrades en parlaven. -->
+<section id="blog" class="center">
+<h2>📖 El blog del Comando</h2>
+<p class="lead">D'on surt tot això, escrit a poc a poc. Cinc entrades, i van en aquest ordre.</p>
+<!--CM-POSTS-->
+<div class="posts">
+  <a class="post" href="blog.html#post-origen"><span class="post-ic">🎬</span><span><span class="post-t">L'origen</span><span class="post-d">Mazinguer i Horacio Motomachi reben l'encàrrec del Gran Molekulon i baixen a buscar els 150.000.</span></span></a>
+  <a class="post" href="blog.html#post-molekulon"><span class="post-ic">🧬</span><span><span class="post-t">La síntesi, a peu de carrer</span><span class="post-d">Amb l'estructura i l'energia alhora, què fa el Comando quan toca de peus a terra.</span></span></a>
+  <a class="post" href="blog.html#post-seny"><span class="post-ic">🏛</span><span><span class="post-t">Seny</span><span class="post-d">L'estructura que sosté quan els reptes es tornen intensos. La pinya abans que els dosos.</span></span></a>
+  <a class="post" href="blog.html#post-rauxa"><span class="post-ic">🔥</span><span><span class="post-t">Rauxa</span><span class="post-d">L'energia que encén una vegada la matriu ja està armada. Sense pinya, és soroll.</span></span></a>
+  <a class="post" href="blog.html#post-2"><span class="post-ic">🦸</span><span><span class="post-t">El teu perfil és una xarxa neuronal creativa</span><span class="post-d">Ja no cal triar de quina cosa ets: ets una persona amb una reputació que travessa totes les capes.</span></span></a>
 </div>
+<!--/CM-POSTS-->
 </section>
 
-<!-- TIERS -->
-<section class="center">
+<!-- TIERS ─────────────────────────────────────────────────────────────────
+     Aquí hi havia abans una escala de tres passos —«obre el SOS, fes el
+     cromo, puja de nivell»— que deia el mateix que la secció «com es fa la
+     pel·lícula» un pam més amunt. Dues escales per al mateix camí fan dubtar
+     de quina és la bona; ha quedat la que porta als mòduls. -->
+<section id="nivells" class="center">
 <h2>🏆 Nivells del Comando</h2>
-<p class="lead">Reputació verificable, no puntuació opaca. Cada tier té reptes concrets al teu cromo.</p>
+<p class="lead">Reputació verificable, no puntuació opaca. Cada tier té reptes concrets al teu cromo,
+i cap s'aconsegueix mirant: es guanyen amb aportacions que algú altre ha confirmat.</p>
 <div class="tiers">
 <div class="tier t-apr"><div class="tier-name">Aprenent</div><div class="tier-xp">XP 0 → 50</div></div>
 <div class="tier t-brz"><div class="tier-name">Bronze</div><div class="tier-xp">XP 50 → 200</div></div>
@@ -602,7 +750,7 @@ o baixa i llegeix la història dels còmics ↓</a></p>
 </section>
 
 <!-- REGISTRE -->
-<section>
+<section id="perfil">
 <div class="registry">
 <h2 style="margin-top:0">🔐 El teu perfil és teu, i es pot comprovar</h2>
 <p class="lead" style="margin-left:0">Ningú el pot canviar sense la teva firma — <strong>ni nosaltres</strong>. I te'l pots endur quan vulguis, sense demanar permís.</p>
@@ -617,12 +765,15 @@ o baixa i llegeix la història dels còmics ↓</a></p>
 </div>
 </section>
 
-<!-- TRANSMEDIA -->
-<section class="center">
-<h2>🎬 L'univers transmedia</h2>
-<p class="lead">El Comando no viu només al paper: n'hi ha que tenen tema propi, com Fraktalman, i n'hi ha que viuen en vídeo, com Reciclator i el Supergerminador. La comunitat, aquí.</p>
+<!-- TRANSMEDIA ────────────────────────────────────────────────────────────
+     Aquí hi ha **els canals**, no les peces: les peces són a «els personatges,
+     en imatge i en so», i tenir-les a dos llocs feia que una es quedés vella.
+     El que hi va aquí és on segueix passant. -->
+<section id="canals" class="center">
+<h2>🎬 On segueix passant</h2>
+<p class="lead">Els canals oberts del Comando. La música i els capítols els publiquem aquí;
+els còmics 1 i 2 ja són impresos.</p>
 <div class="transmedia">
-<a class="tm" href="media/comando-horacio.mp3"><div class="ic">🎧</div><div class="n">«Horacio Motomachi»</div><div class="d">El tema d'Horacio, sencer · sona també a <a href="intro.html">la intro</a></div></a>
 <a class="tm" href="https://on.soundcloud.com/lWyXGGtlhQ8HsMbJ5U" target="_blank" rel="noopener"><div class="ic">🎵</div><div class="n">SoundCloud</div><div class="d">Música del Comando</div></a>
 <a class="tm" href="https://youtube.com/@comandomolekulon" target="_blank" rel="noopener"><div class="ic">🎥</div><div class="n">YouTube</div><div class="d">Capítols de personatges</div></a>
 <a class="tm" href="https://amazon.es/s?k=comando+molekulon+comic" target="_blank" rel="noopener"><div class="ic">📚</div><div class="n">Amazon</div><div class="d">Còmics 1 i 2</div></a>
@@ -632,9 +783,10 @@ o baixa i llegeix la història dels còmics ↓</a></p>
 
 <!-- FINAL CTA -->
 <div class="final">
-<h2>Uneix-te ara</h2>
-<p>El Comando arriba a la teva població quan tu arribes. Cada superheroi és una llavor local. Sense descarregar res, sense crear cap compte, en un minut.</p>
-<div class="ctas"><a class="cta cta-primary" href="index.html">✦ Crea el meu cromo</a><a class="cta cta-ghost" href="intro.html">▶ La intro · 90 s</a><a class="cta cta-ghost" href="blog.html">📖 Llegeix més històries</a></div>
+<h2>El repartiment encara no està tancat</h2>
+<p>El Comando arriba a la teva població quan tu arribes. Fes-te el personatge, escriu la teva
+història i mira't als crèdits: sense descarregar res, sense crear cap compte, en un minut.</p>
+<div class="ctas"><a class="cta cta-primary" href="index.html#/alta">🦸 Fes el meu personatge</a><a class="cta cta-ghost" href="index.html#/kit">🎬 Escriu la meva història</a><a class="cta cta-ghost" href="intro.html">▶ La intro · 90 s</a></div>
 </div>
 
 <footer>

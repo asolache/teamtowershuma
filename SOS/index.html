@@ -1098,7 +1098,7 @@ a{color:var(--blue);text-decoration:none}
 
 <!--SOS-EINES-->
 <script id="sos-eines" type="application/json">
-{"grups":[{"lbl":"Comença","ic":"🧭","links":[{"h":"diagnostic.html","t":"Diagnòstic","d":"On ets i què et falta, en 3 minuts"},{"h":"pressupost.html","t":"Demana pressupost","d":"Tria què vols i en surt la proposta"},{"h":"intro.html","t":"La intro","d":"De què va tot això"},{"h":"uneix-te.html","t":"Uneix-t'hi","d":"El que ja fas al barri, comptat"}]},{"lbl":"Eines","ic":"🛠","links":[{"h":"vna.html","t":"Mapa de valor","d":"Rols i intercanvis d'un projecte"},{"h":"matriu.html","t":"La MATRIU","d":"La incubadora: etapes, portes i propietat"},{"h":"compra.html","t":"La Compra","d":"Grup de consum i compra col·lectiva"},{"h":"energia.html","t":"L'Energia","d":"Comunitat energètica i autoconsum compartit"},{"h":"habitatge.html","t":"L'Habitatge","d":"Cessió d'ús: quota, entrada i sortida"},{"h":"molekulandia.html","t":"Molekulandia","d":"El poble sencer i les nou professions"},{"h":"joc.html","t":"El joc","d":"La plaça, a ritme"}]},{"lbl":"Aprèn","ic":"🎓","links":[{"h":"formacio.html","t":"Formació","d":"16 mòduls, de N0 a N3"},{"h":"ia.html","t":"Fluxos amb IA","d":"Automatitzar el tangible, valorar l'intangible"},{"h":"escola.html","t":"Escoles","d":"El SOS a mida d'aula"},{"h":"vedes.html","t":"Les vedes","d":"Les regles, amb el motiu al costat"},{"h":"blog.html","t":"Blog","d":"Cada capacitat, explicada"}]},{"lbl":"Xarxa","ic":"🏘","links":[{"h":"comando.html","t":"El Comando","d":"La tribu i el reclutament"},{"h":"online.html","t":"Directori","d":"Qui hi ha, per territori"}]}],"eines":{"banc_temps":["index.html","A dins de l'app"],"biblioteca_coses":["index.html","A dins de l'app"],"suport_mutu":["index.html","A dins de l'app"],"matriu":["matriu.html","La MATRIU"],"mapeig_vna":["vna.html","Mapa de valor"],"comunitat_energetica":["energia.html","L'Energia"],"habitatge_cessio":["habitatge.html","L'Habitatge"],"consum_agroecologic":["compra.html","La Compra"],"compra_collectiva":["compra.html","La Compra"],"cens_entitats":["online.html","El directori"]}}
+{"grups":[{"lbl":"Comença","ic":"🧭","links":[{"h":"diagnostic.html","t":"Diagnòstic","d":"On ets i què et falta, en 3 minuts"},{"h":"pressupost.html","t":"Demana pressupost","d":"Tria què vols i en surt la proposta"},{"h":"intro.html","t":"La intro","d":"De què va tot això"},{"h":"uneix-te.html","t":"Uneix-t'hi","d":"El que ja fas al barri, comptat"}]},{"lbl":"Eines","ic":"🛠","links":[{"h":"vna.html","t":"Mapa de valor","d":"Rols i intercanvis d'un projecte"},{"h":"matriu.html","t":"La MATRIU","d":"La incubadora: etapes, portes i propietat"},{"h":"compra.html","t":"La Compra","d":"Grup de consum i compra col·lectiva"},{"h":"energia.html","t":"L'Energia","d":"Comunitat energètica i autoconsum compartit"},{"h":"habitatge.html","t":"L'Habitatge","d":"Cessió d'ús: quota, entrada i sortida"},{"h":"molekulandia.html","t":"Molekulandia","d":"El poble sencer i les nou professions"},{"h":"joc.html","t":"El joc","d":"La plaça, a ritme"}]},{"lbl":"Aprèn","ic":"🎓","links":[{"h":"formacio.html","t":"Formació","d":"16 mòduls, de N0 a N3"},{"h":"ia.html","t":"Fluxos amb IA","d":"Automatitzar el tangible, valorar l'intangible"},{"h":"escola.html","t":"Escoles","d":"El SOS a mida d'aula"},{"h":"vedes.html","t":"Les vedes","d":"Les regles, amb el motiu al costat"},{"h":"blog.html","t":"Blog","d":"Cada capacitat, explicada"}]},{"lbl":"Xarxa","ic":"🏘","links":[{"h":"comando.html","t":"El Comando","d":"La pel·lícula que farem 150.000"},{"h":"online.html","t":"Directori","d":"Qui hi ha, per territori"}]}],"eines":{"banc_temps":["index.html","A dins de l'app"],"biblioteca_coses":["index.html","A dins de l'app"],"suport_mutu":["index.html","A dins de l'app"],"matriu":["matriu.html","La MATRIU"],"mapeig_vna":["vna.html","Mapa de valor"],"comunitat_energetica":["energia.html","L'Energia"],"habitatge_cessio":["habitatge.html","L'Habitatge"],"consum_agroecologic":["compra.html","La Compra"],"compra_collectiva":["compra.html","La Compra"],"cens_entitats":["online.html","El directori"]}}
 </script>
 <!--/SOS-EINES-->
 
@@ -4842,7 +4842,9 @@ function openSuperheroiOnboarding(prefill){
          encara no hi és. I no publica res: obre el formulari del directori amb
          la previsualització, que segueix sent l'última paraula. Veda 47. -->
     ${editing ? `<div class="sh-pont"><a class="btn btn-ghost" href="online.html#alta-sos" target="_blank" rel="noopener">🌐 Publica'm al directori</a>
-      <span class="sh-pont-n">Obre el directori amb aquest perfil ja portat. No publica res fins que tu ho diguis.</span></div>` : ''}
+      <span class="sh-pont-n">Obre el directori amb aquest perfil ja portat. No publica res fins que tu ho diguis.</span></div>
+    <div class="sh-pont"><button type="button" class="btn btn-ghost" id="shKit">🎬 Escriu la meva història</button>
+      <span class="sh-pont-n">El personatge ja el tens; el kit narratiu en treu sinopsi, himne i escena a partir del que has fet de debò. És el pas 2 de <a href="comando.html" target="_blank" rel="noopener" style="color:var(--green)">la pel·lícula del Comando</a>.</span></div>` : ''}
     <div class="modal-actions"><button class="btn btn-ghost" id="shCancel">Cancel·la</button><button class="btn btn-primary" id="shSave">${editing?'⬢ Desa els canvis':'✦ Crea el meu perfil'}</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
@@ -4857,6 +4859,10 @@ function openSuperheroiOnboarding(prefill){
   bg.querySelectorAll('.sh-sk').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.i);if(sel.sk.has(i)){sel.sk.delete(i);b.classList.remove('sel');}else if(sel.sk.size<5){sel.sk.add(i);b.classList.add('sel');}else{toast('Ja tens 5 superpoders. Treu-ne un abans d\'afegir-ne un altre.');}updCounts();});
   bg.querySelectorAll('.sh-ob').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.i);if(sel.ob.has(i)){sel.ob.delete(i);b.classList.remove('sel');}else{sel.ob.add(i);b.classList.add('sel');}updCounts();});
   bg.querySelector('#shCancel').onclick=closeModal;
+  /* El pas següent. Es tanca aquest modal i s'obre el kit amb el nom ja posat:
+     qui acaba de fer-se el personatge no ha de tornar a escriure com es diu. */
+  const shKit=bg.querySelector('#shKit');
+  if(shKit)shKit.onclick=()=>{const n=(bg.querySelector('#shName')||{}).value||prefill.name||'';closeModal();openNarrativeKit({members:n?[n.trim()]:[]});};
   bg.querySelector('#shSave').onclick=async()=>{
     const name=bg.querySelector('#shName').value.trim(),muniName=bg.querySelector('#shMuni').value.trim(),barri=bg.querySelector('#shBarri').value.trim();
     if(!name||!muniName){toast('Cal nom i població');return;}
@@ -7835,6 +7841,11 @@ function openComandoView(){
       <div class="cm-hero-syn">Mazinguer i Horacio són enviats a la Terra per reclutar-los abans que el <strong>Mundo Muerto</strong> engoleixi les comunitats. <strong>Cada acció real que registres al SOS és una llavor d'aquesta pel·lícula.</strong></div>
       <div class="cm-hero-billing">Una tribu creativa oberta · projecte mestre de la MATRIU</div>
     </div>
+    <!-- El pont cap a la pàgina del projecte. Aquest modal ensenya el que has
+         registrat tu; la pàgina explica què és el projecte sencer —la
+         pel·lícula, els eixos, la història i el que encara s'ha de filmar—, i
+         fins ara no hi havia manera d'anar-hi des d'aquí. Veda 146. -->
+    <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎬</span><span>Això és <strong>una pel·lícula que farem 150.000 persones</strong>. <a href="comando.html" target="_blank" rel="noopener" style="color:var(--green)">Mira el projecte sencer</a> · o <a href="#" id="cmKit" style="color:var(--purple)">escriu la teva història amb IA</a>.</span></div>
     <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎵</span><span>Transmedia · escolta <a href="${MOLEKULON_LINKS.soundcloud}" target="_blank" rel="noopener" style="color:var(--indigo)">SoundCloud</a> · mira <a href="${MOLEKULON_LINKS.youtube}" target="_blank" rel="noopener" style="color:var(--red)">YouTube</a> · compra el còmic a <a href="${MOLEKULON_LINKS.amazon}" target="_blank" rel="noopener" style="color:var(--orange)">Amazon</a> · segueix a <a href="${MOLEKULON_LINKS.instagram}" target="_blank" rel="noopener" style="color:var(--purple)">Instagram</a></span></div>
     <div class="cm-mode-bar"><button class="cm-mode-btn sel" data-mode="film">🎬 Vista pel·lícula</button><button class="cm-mode-btn" data-mode="fitxa">📇 Vista fitxes · skills · recursos · projectes</button></div>
     <div id="cmStats"></div>
@@ -7918,6 +7929,7 @@ function openComandoView(){
     rosterBox.querySelectorAll('[data-cromo]').forEach(el=>el.onclick=()=>{closeModal();openPersonProfile(el.dataset.cromo);});
   };
   bg.querySelectorAll('.cm-mode-btn').forEach(btn=>btn.onclick=()=>{mode=btn.dataset.mode;bg.querySelectorAll('.cm-mode-btn').forEach(x=>x.classList.toggle('sel',x===btn));paint();});
+  const kitLn=bg.querySelector('#cmKit');if(kitLn)kitLn.onclick=e=>{e.preventDefault();closeModal();openNarrativeKit();};
   paint();
   bg.querySelector('#cmCanonical').innerHTML=CANONICAL_HEROES.map(h=>{const color=_colorFromName(h.name);return '<div class="ent-card" style="padding:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(99,102,241,.08));border:1px solid rgba(224,64,251,.3);border-radius:12px"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="width:36px;height:36px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">'+esc(_initialsOf(h.name))+'</div><div style="min-width:0"><div style="font-weight:600;font-size:.9rem">'+esc(h.name)+'</div><div style="font-size:.68rem;color:var(--purple);font-weight:600">'+esc(h.role)+'</div></div></div><div style="font-size:.72rem;color:var(--light);line-height:1.35">'+esc(h.power)+'</div></div>';}).join('');
   // El panteó: cada fundador amb la pregunta que encarna, el seu pack de paraules
@@ -12094,6 +12106,11 @@ const MODAL_ROUTES={
   directori:{open:()=>openDirectory(),label:'Directori d\'entitats'},
   identitat:{open:()=>openIdentityDashboard(),label:'La meva identitat'},
   multivers:{open:()=>openMultiverse(),label:'Multivers Molekulon'},
+  /* El kit narratiu té ruta pròpia perquè la pàgina del Comando hi porta
+     directament: allà el pas 2 és «escriu la teva història amb IA», i sense
+     ruta l'enllaç obria l'app per la portada i semblava que no hagués passat
+     res. Qui ja ha decidit escriure ha de caure al formulari d'escriure. */
+  kit:{open:()=>openNarrativeKit(),label:'Kit narratiu Molekulon'},
   pings:{open:()=>openMatchesModal(),label:'Pings ecosistema'},
   mentoria:{open:()=>{const n=state.activePersona;if(!n){toast('Identifica\'t primer per preparar la mentoria');return false;}openMentoringPlan(n);},label:'La meva mentoria'},
   eines:{open:()=>openEines(),label:'Les eines del SOS'}

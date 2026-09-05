@@ -63,7 +63,7 @@ const GRUPS = [
     ['blog.html', 'Blog', 'Cada capacitat, explicada']
   ] },
   { id: 'xarxa', lbl: 'Xarxa', ic: '🏘', links: [
-    ['comando.html', 'El Comando', 'La tribu i el reclutament'],
+    ['comando.html', 'El Comando', 'La pel·lícula que farem 150.000'],
     ['online.html', 'Directori', 'Qui hi ha, per territori']
   ] }
 ];
