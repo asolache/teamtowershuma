@@ -73,6 +73,23 @@ roster.forEach(n => { if (vistos.has(n)) dups.add(n); vistos.add(n); });
 if (!dups.size) ok('cap nom repetit');
 else bad(`${pl(dups.size, 'nom repetit', 'noms repetits')} al roster: ${[...dups].join(', ')}`);
 
+// ── 1b · Cap comentari entre dues fitxes del roster ──────────────────────
+/* Aquesta guarda i el generador llegeixen `CANONICAL_HEROES` amb una expressió
+   que espera que una fitxa comenci **just després** de l'anterior. Un comentari
+   enmig fon dues fitxes en una i el roster es queda curt — i com que el que
+   se'n treu és una llista de noms, no peta res: simplement, un personatge
+   desapareix de la pàgina i de totes les comprovacions alhora.
+   Ho vaig fer jo escrivint una nota sobre Reciclator, i la guarda va acusar
+   d'inexistent un heroi que hi era. El que s'hagi de dir d'un personatge va al
+   comentari de capçalera de la llista, que per això hi és. */
+const entrades = (bloc.match(/^  \{name:'/gm) || []).length;
+const comentaris = /\n  \/\*[\s\S]*?\*\/\n  \{name:'/.test(bloc);
+if (entrades === roster.length && !comentaris)
+  ok(`les ${entrades} fitxes van seguides: cap comentari enmig que en fongui dues`);
+else if (comentaris) bad('hi ha un comentari entre dues fitxes de `CANONICAL_HEROES`: '
+  + 'fon les dues en una i el roster es queda curt sense que peti res — va al comentari de capçalera');
+else bad(`el bloc té ${entrades} fitxes i se n'han llegit ${roster.length}: alguna cosa les fon`);
+
 // ── 2 · Tot heroi anomenat a l'app és del roster ─────────────────────────
 /* Es miren les dues llistes que anomenen herois: les pantalles amb frase
    (`HERO_SCREENS`) i els fundadors lligats al panteó (`COMANDO_FOUNDERS`). */

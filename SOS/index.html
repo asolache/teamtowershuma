@@ -7293,6 +7293,11 @@ const COMANDO_TARGET=150000;
 const MOLEKULON_LINKS={
   soundcloud:'https://on.soundcloud.com/lWyXGGtlhQ8HsMbJ5U',
   youtube:'https://youtube.com/@comandomolekulon',
+  /* La llista dels capítols, donada per l'autor. Cada capítol presenta un
+     superheroi i un supervilà del Mundo Muerto, i és on viu el videoclip
+     d'Horacio. Va a part del canal perquè el canal és tot i això és la sèrie:
+     qui vol veure la història no ha de triar entre trenta vídeos. */
+  capitols:'https://youtube.com/playlist?list=PLMB33ApQeOYWbPLQRbf9B5gMpgs0cL5NB',
   amazon:'https://amazon.es/s?k=comando+molekulon+comic',
   instagram:'https://instagram.com/comando_molekulon'
 };
@@ -7328,6 +7333,16 @@ const MOLEKULON_LINKS={
    · `vna` — què vol dir aquest personatge en una organització. És el pont amb
      la resta de l'eina, i el motiu pel qual aquest relat viu dins d'un programa
      de gestió comunitària i no en un fullet a part.
+
+   **Cap comentari entre dues fitxes.** Les guardes llegeixen aquesta llista amb
+   una expressió que espera que una fitxa comenci just després de l'anterior; un
+   comentari enmig les fon i el roster es queda curt sense que peti res. El que
+   s'hagi de dir d'un personatge concret es diu aquí dalt.
+
+   **La Bomba Amor i el Rato Cagón** són superarmes que surten del capítol en
+   vídeo de Reciclator, dites per l'autor. No són del còmic. Van al seu taller i
+   no a la mà de ningú, perquè el que se sap és que d'allà en surten; quin heroi
+   les porta ho diu l'obra i no aquesta llista.
 
    Veda 109. */
 const CANONICAL_HEROES=[
@@ -7388,7 +7403,7 @@ const CANONICAL_HEROES=[
    vna:'L\'estabilitat estructural. Qui no es mou quan tot es mou és el que evita la caiguda'},
   {name:'Reciclator',role:'Fabricant de superarmes',on:'Vídeo',
    power:'Construeix les superarmes de la banda a partir del que els altres han llençat',
-   arma:'El taller: el que ja existeix i ningú volia',
+   arma:'El taller: el que ja existeix i ningú volia. D\'allà en surten la Bomba Amor i el Rato Cagón',
    vna:'Qui fa que no calgui comprar res nou perquè ja hi és, en un altre lloc i amb una altra forma'},
   {name:'Supergerminador',role:'Mestre del germinat',on:'Vídeo i web pròpia',
    power:'Ensenya a germinar per menjar superaliments. I canta amb la seva rialla',
@@ -7846,7 +7861,7 @@ function openComandoView(){
          pel·lícula, els eixos, la història i el que encara s'ha de filmar—, i
          fins ara no hi havia manera d'anar-hi des d'aquí. Veda 146. -->
     <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎬</span><span>Això és <strong>una pel·lícula que farem 150.000 persones</strong>. <a href="comando.html" target="_blank" rel="noopener" style="color:var(--green)">Mira el projecte sencer</a> · o <a href="#" id="cmKit" style="color:var(--purple)">escriu la teva història amb IA</a>.</span></div>
-    <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎵</span><span>Transmedia · escolta <a href="${MOLEKULON_LINKS.soundcloud}" target="_blank" rel="noopener" style="color:var(--indigo)">SoundCloud</a> · mira <a href="${MOLEKULON_LINKS.youtube}" target="_blank" rel="noopener" style="color:var(--red)">YouTube</a> · compra el còmic a <a href="${MOLEKULON_LINKS.amazon}" target="_blank" rel="noopener" style="color:var(--orange)">Amazon</a> · segueix a <a href="${MOLEKULON_LINKS.instagram}" target="_blank" rel="noopener" style="color:var(--purple)">Instagram</a></span></div>
+    <div class="ai-note" style="margin-bottom:.6rem"><span class="ic">🎵</span><span>Transmedia · escolta <a href="${MOLEKULON_LINKS.soundcloud}" target="_blank" rel="noopener" style="color:var(--indigo)">SoundCloud</a> · mira <a href="${MOLEKULON_LINKS.capitols}" target="_blank" rel="noopener" style="color:var(--red)">els capítols</a> o el <a href="${MOLEKULON_LINKS.youtube}" target="_blank" rel="noopener" style="color:var(--red)">canal sencer</a> · compra el còmic a <a href="${MOLEKULON_LINKS.amazon}" target="_blank" rel="noopener" style="color:var(--orange)">Amazon</a> · segueix a <a href="${MOLEKULON_LINKS.instagram}" target="_blank" rel="noopener" style="color:var(--purple)">Instagram</a></span></div>
     <div class="cm-mode-bar"><button class="cm-mode-btn sel" data-mode="film">🎬 Vista pel·lícula</button><button class="cm-mode-btn" data-mode="fitxa">📇 Vista fitxes · skills · recursos · projectes</button></div>
     <div id="cmStats"></div>
     <div class="cm-act"><span class="cm-act-n">Acte I</span><span class="cm-act-t">Els protagonistes</span><span class="cm-act-s">còmics 1 i 2</span></div>
