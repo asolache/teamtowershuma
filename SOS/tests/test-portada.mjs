@@ -301,6 +301,73 @@ console.log('\n8 · El que encara no existeix, es diu');
   await ctx.close();
 }
 
+console.log('\n9 · Les dues portes porten a dos llocs diferents de debò');
+/* El hero convida empreses i administració, i el repte s'explicava només per
+   a una. La guarda ja mira que el text anomeni els dos; aquí es comprova el
+   que un text no pot: **que clicar cada porta canviï el que es veu**.
+
+   Una porta que baixa al catàleg sense filtrar no peta ni es nota —l'àncora
+   funciona igual— i deixa qui hi entra davant de vint-i-tres paquets, la
+   meitat dels quals no són per a ell. Era el cas real: el codi enganxava el
+   filtre a `.hero-portes a[data-sec]` i les portes noves del repte queien
+   fora del selector. */
+{
+  const { ctx, p } = await nova();
+  const r = await p.evaluate(() => {
+    const q = s => [...document.querySelectorAll(s)];
+    const bandes = q('.banda');
+    const visibles = () => q('.paquet[data-sector]').filter(x => !x.hidden);
+    const porta = s => document.querySelector('.banda-cta[data-sec="' + s + '"]');
+    const tot = visibles().length;
+    porta('privat').click();
+    const privat = visibles().map(x => x.dataset.sector);
+    porta('public').click();
+    const pub = visibles().map(x => x.dataset.sector);
+    const repte = (document.querySelector('#enfoc') || {}).innerText || '';
+    return {
+      bandes: bandes.length,
+      claus: bandes.map(x => (x.querySelector('.banda-k') || {}).textContent || ''),
+      files: bandes.map(x => x.querySelectorAll('.banda-dl dt').length),
+      tot, privat, pub, repte
+    };
+  });
+  ok(r.bandes === 2, 'el repte ensenya les dues bandes del mateix patró');
+  ok(r.files.every(n => n === 3),
+    'i totes dues responen les mateixes tres preguntes: qui ho sosté, què no es veu, què passa quan marxen');
+  ok(/empresa|cooperativa/i.test(r.repte) && /ajuntament|comunitari|veïn/i.test(r.repte),
+    'el text del repte anomena els dos mons, no un');
+  ok(/mateix objectiu/i.test(r.repte) && /fluxos de valor/i.test(r.repte),
+    'i diu l\'objectiu compartit i com es mesura');
+  ok(r.privat.length > 0 && r.privat.length < r.tot && r.privat.every(s => s === 'privat' || s === 'tots'),
+    `la porta privada filtra de debò: ${r.privat.length} paquets de ${r.tot}`);
+  ok(r.pub.length > 0 && r.pub.length < r.tot && r.pub.every(s => s === 'public' || s === 'tots'),
+    `i la pública, la seva: ${r.pub.length} de ${r.tot}`);
+  ok(r.privat.length !== r.pub.length || r.privat.join() !== r.pub.join(),
+    'i les dues portes no donen la mateixa llista, que seria no filtrar');
+  await ctx.close();
+}
+
+console.log('\n10 · I les objeccions cobreixen els dos costats');
+{
+  const { ctx, p } = await nova();
+  /* `textContent` i no `innerText`: un `<details>` tancat no té text visible,
+     i llegint-lo amb `innerText` només arriben els titulars. La resposta és
+     justament on viu el vocabulari de cada sector. */
+  const r = await p.evaluate(() => [...document.querySelectorAll('.faq-item')]
+    .map(d => d.textContent.replace(/\s+/g, ' ')));
+  const pub = r.filter(t => /ajuntament|municipal|veïn|entitat|administració/i.test(t)).length;
+  const pri = r.filter(t => /empresa|cooperativa|direcció de persones|organigrama/i.test(t)).length;
+  ok(pub > 0, `${pub} objeccions parlen al sector públic`);
+  ok(pri > 0, `i ${pri} a una empresa: qui ve d'aquella porta en troba alguna que és la seva`);
+  /* La incòmoda. Un mapa de valor honest ensenya qui sosté què dins d'una
+     organització amb jerarquia, i qui el compra té gent a càrrec. Que la
+     pàgina digui què no és —i que no és material per acomiadar— ha de ser
+     explícit: si desapareix, la venda es fa sense dir-ho. */
+  ok(r.some(t => /no és una avaluació de rendiment|no es una evaluación de desempeño/i.test(t)),
+    'i es diu que el mapa no és una avaluació de rendiment');
+  await ctx.close();
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

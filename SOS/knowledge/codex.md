@@ -704,6 +704,46 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 147 — Una porta que convida i una sala que no t'espera
+
+El hero de la portada obre dues portes —empreses i cooperatives, ajuntaments i
+entitats— i el catàleg filtra per sector. La secció del repte, just a sota, es
+va quedar dient «projectes ciutadans», «voluntariat» i «horts comunitaris»,
+perquè es va escriure quan aquesta pàgina només venia al món comunitari.
+
+**Convidar algú i que la primera sala no el reconegui és pitjor que no
+convidar-lo.** Qui ve del costat privat travessa una porta que li diu que sí i
+llegeix, tres línies més avall, un text que li diu que no. I no ho veu ningú de
+dins, perquè qui l'ha escrit ja sap que el mètode val per als dos.
+
+El que ho arregla no és afegir un paràgraf: és **dir el patró a les dues
+bandes de costat**, amb les mateixes tres preguntes —qui ho sosté, què no es
+veu enlloc, què passa quan marxen— i una frase que digui per què és el mateix
+problema: *mateixa metodologia, productes diferents, mateix objectiu —que
+l'organització estigui millor psicosocialment i econòmicament— i una sola manera
+de mesurar-ho: mapejar els fluxos de valor*. Llegides alhora es veu que és el
+mateix; llegides per separat semblarien dos negocis.
+
+Tres coses que se n'aprenen i valen per a qualsevol pàgina amb més d'un públic:
+
+- **Cada porta ha de canviar el que es veu.** Una porta que baixa al catàleg
+  sense filtrar no peta —l'àncora funciona igual— i deixa qui hi entra davant
+  de vint-i-tres paquets, la meitat dels quals no són seus. Passava: el codi
+  enganxava el filtre a `.hero-portes a[data-sec]`, un contenidor concret, i
+  qualsevol porta nova hi queia fora. Ara escolta `a[data-sec]`.
+- **Les objeccions es compten per sector.** Sis de sis eren municipals
+  —pressupost municipal, tècnic de participació, dades del veïnat, contractació
+  menor— i una direcció de persones no en trobava ni una que fos la seva.
+- **El sostre de 5.000 € és una regla de l'altra banda, no una tarifa.** Existeix
+  perquè és el que un ajuntament contracta sense obrir expedient llarg. Sense
+  dir-ho, una empresa el llegia com el nostre preu màxim.
+
+I una que no és de màrqueting: quan el mateix mètode es ven dins d'una empresa,
+**el mapa ensenya qui sosté què a gent que té algú a càrrec**. Això s'ha de dir
+a la pàgina abans que a la sala: el mapa no és una avaluació de rendiment, el
+que en surten són fluxos i càrregues i no rànquings de persones, i qui vulgui
+material per acomiadar ha de sentir que no.
+
 ## Veda 146 — Sis peces bones que no es diuen entre elles no són un projecte
 
 El Comando existia sis vegades. La història dels còmics, a la seva pàgina. Els

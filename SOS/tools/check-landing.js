@@ -215,7 +215,74 @@ const dites = PROHIBIDES.filter(([re]) => re.test(visible)).map(([, n]) => n);
 if (!dites.length) ok('cap paraula de fullet al text visible');
 else bad(`${pl(dites.length, 'paraula prohibida', 'paraules prohibides')} per la guia de marca: ${dites.join(', ')}`);
 
-// ── 7 · Informatiu ───────────────────────────────────────────────────────
+/* ── 7 · La pàgina obre dues portes: totes dues s'han de poder travessar ───
+   El hero convida empreses i administració, i el catàleg filtra per sector.
+   El repte, en canvi, es va escriure quan aquesta pàgina només venia al món
+   comunitari, i seguia dient «voluntariat» i «hort comunitari»: qui venia del
+   costat privat hi arribava i concloïa que allò no anava amb ell —just després
+   que el hero li hagués dit que sí.
+
+   Això no peta mai i no ho veu ningú de dins, perquè qui l'ha escrita ja sap
+   que el mètode val per als dos. Es comprova sobre **el text visible**, que és
+   el que llegeix una persona, i no sobre les intencions del codi. */
+const bloc = (des, fins) => {
+  const i = visible.indexOf(des); if (i < 0) return '';
+  const j = visible.indexOf(fins, i + des.length);
+  return visible.slice(i, j < 0 ? visible.length : j);
+};
+const sensTags = t => t.replace(/<[^>]+>/g, ' ');
+
+const PUBLIC = /ajuntament|consell comarcal|entitat|veïn|comunitari|voluntari|municipal|público|vecin|comunitario|voluntari/i;
+const PRIVAT = /empresa|cooperativa|organigrama|direcció de persones|comitè de direcció|departament|dirección de personas|comité de dirección|departamento/i;
+
+const repte = sensTags(bloc('<section class="enfoc" id="enfoc"', '</section>'));
+if (!repte) bad('no es troba la secció del repte (`#enfoc`)');
+else {
+  const teP = PUBLIC.test(repte), teE = PRIVAT.test(repte);
+  if (teP && teE) ok('el repte s\'explica per als dos sectors, no per a un');
+  else bad(`el repte només parla ${teP ? 'del sector públic i comunitari' : 'de l\'empresa'}: `
+    + 'qui ve de l\'altra porta del hero hi arriba i conclou que això no va amb ell');
+  /* La frase que uneix les dues bandes. Sense ella, dues columnes de costat
+     són dos negocis; amb ella, són un mètode amb dos productes. */
+  const pont = /mateix objectiu|mismo objetivo/i.test(repte)
+    && /(psicosocial)/i.test(repte) && /(econòmica|económica)/i.test(repte)
+    && /(fluxos de valor|flujos de valor)/i.test(repte);
+  if (pont) ok('i diu l\'objectiu que comparteixen, i com es mesura');
+  else bad('falta la frase que uneix les dues bandes: mateix objectiu —millor psicosocialment i '
+    + 'econòmicament— i una sola manera de mesurar-ho, els fluxos de valor');
+}
+
+/* Les portes han de filtrar de debò. El primer parell vivia dins de
+   `.hero-portes` i el codi les enganxava per aquell contenidor: una porta nova
+   en un altre lloc de la pàgina hauria baixat al catàleg **sense filtrar**, i
+   no ho hauria vist ningú perquè l'àncora sí que funciona. */
+const portes = [...src.matchAll(/<a[^>]*\sdata-sec="([^"]+)"/g)].map(m => m[1]);
+const filtres = new Set([...src.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"]+)"/g)].map(m => m[1]));
+if (portes.length < 4) bad(`només hi ha ${portes.length} portes de sector a la pàgina: el hero i el repte n'han de portar dues cadascun`);
+else {
+  const orfes = [...new Set(portes)].filter(s => !filtres.has(s));
+  if (!orfes.length) ok(`les ${portes.length} portes de sector porten a un filtre que existeix`);
+  else bad(`hi ha portes que demanen un sector que el filtre no té: ${orfes.join(', ')}`);
+}
+if (/document\.querySelectorAll\('a\[data-sec\]'\)/.test(src))
+  ok('i el filtre les escolta totes, no les d\'un contenidor concret');
+else bad('el filtre s\'enganxa a les portes d\'un contenidor concret: una porta nova en un altre '
+  + 'lloc baixaria al catàleg sense filtrar i ningú se n\'adonaria');
+
+/* Les objeccions. Sis de sis eren municipals —pressupost municipal, tècnic de
+   participació, dades del veïnat, contractació menor— i una direcció de
+   persones no en trobava cap que fos la seva. */
+const faqs = [...visible.matchAll(/<details class="faq-item">([\s\S]*?)<\/details>/g)].map(m => sensTags(m[1]));
+if (!faqs.length) bad('no es troba cap objecció');
+else {
+  const pub = faqs.filter(f => PUBLIC.test(f)).length;
+  const pri = faqs.filter(f => PRIVAT.test(f)).length;
+  if (pub && pri) ok(`les ${faqs.length} objeccions cobreixen els dos sectors (${pub} i ${pri})`);
+  else bad(`cap objecció parla ${pub ? 'a una empresa' : 'al sector públic'}: `
+    + 'qui hi arriba des d\'aquella porta no en troba ni una que sigui la seva');
+}
+
+// ── 8 · Informatiu ───────────────────────────────────────────────────────
 const seccions = (cos.match(/<section/g) || []).length;
 const detalls = (cos.match(/<details class="faq-item"/g) || []).length;
 console.log(`  · ${seccions} seccions · ${paquets.length} paquets · ${detalls} objeccions · ${Math.round(Buffer.byteLength(src) / 1024)} KB en cru`);

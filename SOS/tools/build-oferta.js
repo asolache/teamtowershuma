@@ -730,6 +730,7 @@ ${files}
           </tbody>
         </table>
       </div>
+      <p class="cm-int" data-i18n-html="cm.priv">I a una empresa o una cooperativa, <strong>la suma és la mateixa i el sostre no hi és</strong>: els 5.000 € existeixen per encaixar en una contractació menor de l'administració, i fora d'allà no volen dir res. El que canvia és d'on surt el pressupost —sovint de l'àrea que té el problema, no de formació— i que allà sí que es poden plantejar encàrrecs llargs sense partir-los en fases.</p>
       <p class="cm-peu" data-i18n-html="cm.peu">Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.</p>`;
 }
 
@@ -776,6 +777,12 @@ function diccionari(llengua) {
   files.push(`  ${q('cm.esc.i')}:${q(es
     ? 'Para contrataciones por horas —que es como contrata el sector público cuando contrata servicios profesionales— esta es la tabla que presentamos. Lo que separa un nivel del siguiente no es la antigüedad: es evidencia registrada y verificable, la misma que acredita a un gestor o a un mentor en la formación. La propuesta dice siempre qué persona hace qué horas y a qué nivel.'
     : "Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell.")},`);
+  /* El sostre de 5.000 € és una regla de l'administració, no una tarifa. Sense
+     dir-ho, una empresa que llegia aquesta secció es pensava que era el nostre
+     preu màxim —i el sector públic es pensava que era una xifra arbitrària. */
+  files.push(`  ${q('cm.priv')}:${q(es
+    ? 'Y en una empresa o una cooperativa, <strong>la suma es la misma y el techo no está</strong>: los 5.000 € existen para encajar en una contratación menor de la administración, y fuera de ahí no quieren decir nada. Lo que cambia es de dónde sale el presupuesto —a menudo del área que tiene el problema, no de formación— y que ahí sí se pueden plantear encargos largos sin partirlos en fases.'
+    : "I a una empresa o una cooperativa, <strong>la suma és la mateixa i el sostre no hi és</strong>: els 5.000 € existeixen per encaixar en una contractació menor de l'administració, i fora d'allà no volen dir res. El que canvia és d'on surt el pressupost —sovint de l'àrea que té el problema, no de formació— i que allà sí que es poden plantejar encàrrecs llargs sense partir-los en fases.")},`);
   files.push(`  ${q('cm.peu')}:${q(es
     ? 'Todos los precios de esta página son <strong>sin IVA</strong>. La escala es tarifa propuesta para 2026 y se revisa cada año. El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y no llevan precio cerrado publicado: lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia, y preferimos enseñar el desglose que comprometer una cifra que después haya que desdecir.'
     : "Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.")},`);

@@ -207,6 +207,37 @@
         .tx-card p  { font-size:.83rem; color:var(--muted); line-height:1.6; }
         .pull-quote { margin-top:1.5rem; padding:1.5rem; background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02)); border-left:2px solid var(--accent-indigo); }
         .pull-quote p { font-family:var(--sans); font-size:1.1rem; font-weight:500; color:var(--light); line-height:1.7; margin:0; }
+        /* La segona cita és la bessona de la primera dita per a l'altra banda.
+           Va una mica més petita i separada: és el mateix, no una de nova. */
+        .pull-quote .pq-bis { margin-top:.9rem; padding-top:.9rem; border-top:1px solid rgba(255,255,255,.09);
+            font-size:1rem; color:var(--muted); }
+
+        /* LES DUES BANDES · el mateix patró amb dos vocabularis
+           Va a tota amplada i sota les dues columnes perquè és la conclusió de
+           la secció, no una tercera columna: llegides de costat es veu que és
+           el mateix problema, i per això el mètode pot ser un de sol. */
+        .bandes { margin-top:3.5rem; padding-top:2.5rem; border-top:1px solid var(--border); }
+        .bandes-lead { max-width:74ch; margin:0 auto 2rem; text-align:center; font-size:1.05rem;
+            line-height:1.75; color:var(--muted); }
+        .bandes-lead strong { color:var(--light); font-weight:600; }
+        .bandes-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+        .banda { background:var(--bg-panel); border:1px solid var(--border); padding:1.75rem 1.75rem 1.5rem;
+            display:flex; flex-direction:column; }
+        .banda:first-child { border-top:2px solid var(--accent-green); }
+        .banda:last-child  { border-top:2px solid var(--accent-indigo); }
+        .banda-k { font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+            color:var(--muted); margin-bottom:1.2rem; }
+        .banda:first-child .banda-k { color:var(--accent-green); }
+        .banda:last-child  .banda-k { color:var(--accent-indigo); }
+        .banda-dl { margin:0 0 1.4rem; flex:1; }
+        .banda-dl dt { font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
+            color:var(--muted); opacity:.75; }
+        .banda-dl dd { margin:.25rem 0 1rem; font-size:.9rem; line-height:1.6; color:var(--light); }
+        .banda-dl dd:last-child { margin-bottom:0; }
+        .banda-cta { margin-top:auto; font-size:.85rem; font-weight:600; text-decoration:none; color:var(--accent-indigo); }
+        .banda:first-child .banda-cta { color:var(--accent-green); }
+        .banda-cta:hover { text-decoration:underline; }
+        @media (max-width:760px) { .bandes-grid { grid-template-columns:1fr; } }
 
         /* TOTES LES PÀGINES · el desplegable que genera SOS/tools/build-nav.js
            de la mateixa arquitectura que el menú del SOS. `<details>` natiu: el
@@ -815,11 +846,12 @@
             <div class="enfoc-content fade-up">
                 <div class="section-eyebrow" style="margin-bottom:1.5rem;" data-i18n="enfoc.eyebrow">El repte</div>
                 <h3 data-i18n-html="enfoc.h3">Moltes ganes. <em>Poca estructura.</em></h3>
-                <p data-i18n="enfoc.p1">La majoria de projectes ciutadans —bancs de temps, biblioteques de coses, comunitats energètiques, horts comunitaris— neixen amb una empenta enorme de voluntariat. I s'apaguen igual de ràpid: no per falta d'il·lusió, sinó per falta de governança, rols clars i relleu generacional.</p>
-                <p data-i18n-html="enfoc.p2"><strong>Dues o tres persones ho sostenen tot fins que es cremen.</strong> Quan marxen, el projecte marxa amb elles. És el patró que veiem repetir-se en ajuntaments, ateneus i cooperatives de tot el territori.</p>
+                <p data-i18n="enfoc.p1">Un projecte ciutadà —banc de temps, comunitat energètica, hort comunitari— neix amb una empenta enorme i s'apaga igual de ràpid: no per falta d'il·lusió, sinó per falta de governança, rols clars i relleu. En una empresa o una cooperativa és la mateixa escena amb un altre vocabulari: un equip que arrenca amb ganes i acaba depenent de dues persones que ho saben tot.</p>
+                <p data-i18n-html="enfoc.p2"><strong>Dues o tres persones ho sostenen tot fins que es cremen.</strong> Quan marxen, se'n va amb elles el que no era a cap procediment. És el patró que veiem repetir-se en ajuntaments, ateneus i cooperatives —i en comitès de direcció.</p>
                 <p data-i18n-html="enfoc.p3">La Psicologia Social i Comunitària no ve a posar més voluntat. Ve a posar <strong>l'esquelet que la voluntat necessita</strong> per no ensorrar-se: rols, confiança, ritme i dades reals sobre qui sosté què.</p>
                 <div class="pull-quote">
                     <p data-i18n="enfoc.quote">"Un projecte ciutadà no fracassa per falta de cor. Fracassa per falta d'esquelet."</p>
+                    <p class="pq-bis" data-i18n="enfoc.quote2">"I una empresa no perd el talent quan algú marxa. El perd molt abans: el dia que va deixar de saber què sostenia."</p>
                 </div>
             </div>
             <div class="fade-up" style="animation-delay:.15s">
@@ -837,6 +869,46 @@
                 </div>
                 <div style="margin-top:1rem;padding:1.5rem;background:var(--bg-panel);border:1px solid var(--border);">
                     <p style="font-family:var(--mono);font-size:.75rem;color:var(--muted);line-height:1.7;" data-i18n-html="enfoc.note"><span style="color:var(--accent-indigo);">→</span> La diferència entre un projecte que dura i un que es col·lapsa gairebé mai és als processos formals. Està en els intangibles no mapats.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- LES DUES BANDES ────────────────────────────────────────────────
+             El hero obre dues portes i el catàleg filtra per sector; el repte
+             es continuava explicant només per a una. Qui ve del costat privat
+             llegia «voluntariat» i «hort comunitari» i concloïa que això no
+             anava amb ell — just després que el hero li hagués dit que sí.
+
+             Les dues columnes són el mateix patró amb dos vocabularis, i van
+             de costat a posta: llegides alhora es veu que és el mateix
+             problema, que és el que fa creïble que el mètode sigui un de sol.
+             Cada banda acaba a la seva porta del catàleg. -->
+        <div class="bandes fade-up">
+            <p class="bandes-lead" data-i18n-html="enfoc.b.lead">Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l'organització estigui millor psicosocialment i econòmicament. I es mesura d'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.</p>
+            <div class="bandes-grid">
+                <div class="banda">
+                    <div class="banda-k" data-i18n="enfoc.b.pub.k">Al sector públic i comunitari</div>
+                    <dl class="banda-dl">
+                        <dt data-i18n="enfoc.b.l1">Qui ho sosté</dt>
+                        <dd data-i18n="enfoc.b.pub.d1">Dues o tres persones voluntàries, sovint les mateixes des del primer dia.</dd>
+                        <dt data-i18n="enfoc.b.l2">Què no es veu enlloc</dt>
+                        <dd data-i18n="enfoc.b.pub.d2">Confiança veïnal, favors, coneixement acumulat, reputació al barri. Cap acta ho recull.</dd>
+                        <dt data-i18n="enfoc.b.l3">Què passa quan marxen</dt>
+                        <dd data-i18n="enfoc.b.pub.d3">El projecte marxa amb elles, i el següent equip torna a començar de zero.</dd>
+                    </dl>
+                    <a class="banda-cta" href="#cataleg" data-sec="public" data-i18n="enfoc.b.pub.cta">Ajuntaments, consells i entitats →</a>
+                </div>
+                <div class="banda">
+                    <div class="banda-k" data-i18n="enfoc.b.priv.k">A l'empresa i la cooperativa</div>
+                    <dl class="banda-dl">
+                        <dt data-i18n="enfoc.b.l1">Qui ho sosté</dt>
+                        <dd data-i18n="enfoc.b.priv.d1">Dues o tres persones clau, i sovint el paper que fan no és a cap organigrama.</dd>
+                        <dt data-i18n="enfoc.b.l2">Què no es veu enlloc</dt>
+                        <dd data-i18n="enfoc.b.priv.d2">Coneixement tàcit, xarxes informals, qui desencalla les coses de debò. Cap procés ho recull.</dd>
+                        <dt data-i18n="enfoc.b.l3">Què passa quan marxen</dt>
+                        <dd data-i18n="enfoc.b.priv.d3">Se'n va el que no era a cap procediment, i es descobreix el mes següent.</dd>
+                    </dl>
+                    <a class="banda-cta" href="#cataleg" data-sec="privat" data-i18n="enfoc.b.priv.cta">Empreses i cooperatives →</a>
                 </div>
             </div>
         </div>
@@ -909,17 +981,17 @@
             <div class="relat-card">
                 <span class="relat-num" data-i18n="relat.n1">01 · La persona</span>
                 <h3 data-i18n="relat.t1">Álvaro Solache</h3>
-                <p data-i18n="relat.p1">Vint anys formant equips i produint esdeveniments, des del Penedès. La feina sempre ha estat la mateixa: que un grup de gent que no s'ha triat aguanti el pes junt.</p>
+                <p data-i18n="relat.p1">Psicòleg social. Va ser responsable de RRHH d'InfoJobs, va dirigir la formació a la UOC–GEC i va dinamitzar el grup de benchmarking de direccions de persones al Fòrum de RRHH de Foment del Treball. Des del Penedès, i sempre la mateixa feina: que un grup de gent que no s'ha triat aguanti el pes junt.</p>
             </div>
             <div class="relat-card">
                 <span class="relat-num" data-i18n="relat.n2">02 · L'ofici</span>
                 <h3 data-i18n="relat.t2">Psicologia de grups i desenvolupament de comunitats</h3>
-                <p data-i18n="relat.p2">Els projectes comunitaris no moren per falta de mètode: moren per falta de gent, per conflictes que ningú tracta i per no saber com finançar-se. Això s'estudia i es treballa.</p>
+                <p data-i18n="relat.p2">Els grups no es trenquen per falta de mètode: es trenquen per falta de gent, per conflictes que ningú tracta i per no saber com sostenir-se. Passa igual en un projecte de barri i en un departament, i les dues coses s'estudien i es treballen.</p>
             </div>
             <div class="relat-card">
                 <span class="relat-num" data-i18n="relat.n3">03 · El mètode</span>
                 <h3 data-i18n="relat.t3">TeamTowers</h3>
-                <p data-i18n="relat.p3">Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee.</p>
+                <p data-i18n="relat.p3">Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee, i va començar amb equips d'empresa.</p>
             </div>
             <div class="relat-card">
                 <span class="relat-num" data-i18n="relat.n4">04 · Al territori</span>
@@ -977,7 +1049,7 @@
         <div class="section-header fade-up" style="margin-bottom:4rem;">
             <div class="section-eyebrow" data-i18n="fp.eyebrow">Cohesió en acció</div>
             <h2 data-i18n-html="fp.h2">Els Castells:<br><em>una xarxa de valor de 200 anys</em></h2>
-            <p data-i18n="fp.intro">Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que apliquem a les sessions de cohesió Fent Pinya.</p>
+            <p data-i18n="fp.intro">Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Va néixer per a equips d'empresa i avui es fa igual amb un equip de govern municipal o un consell rector. Tres lliçons que apliquem a les sessions de cohesió Fent Pinya.</p>
             <p style="margin-top:1rem"><a href="/SOS/vna.html" data-i18n="fp.mes">Veure-ho pas a pas: qui dona què a qui →</a></p>
         </div>
         <div class="fentpinya-grid">
@@ -1690,6 +1762,7 @@
           </tbody>
         </table>
       </div>
+      <p class="cm-int" data-i18n-html="cm.priv">I a una empresa o una cooperativa, <strong>la suma és la mateixa i el sostre no hi és</strong>: els 5.000 € existeixen per encaixar en una contractació menor de l'administració, i fora d'allà no volen dir res. El que canvia és d'on surt el pressupost —sovint de l'àrea que té el problema, no de formació— i que allà sí que es poden plantejar encàrrecs llargs sense partir-los en fases.</p>
       <p class="cm-peu" data-i18n-html="cm.peu">Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.</p>
 
 <!--/TT-COST-->
@@ -1890,7 +1963,7 @@
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="faq.eyebrow">Abans de trucar</div>
             <h2 data-i18n-html="faq.h2">El que ens pregunten <em>sempre</em></h2>
-            <p data-i18n="faq.intro">Les cinc de veritat, amb la resposta que donaríem a la primera reunió.</p>
+            <p data-i18n="faq.intro">Les vuit de veritat —les del sector públic i les de l'empresa—, amb la resposta que donaríem a la primera reunió.</p>
         </div>
         <div class="faq-list fade-up">
             <details class="faq-item">
@@ -1912,6 +1985,20 @@
             <details class="faq-item">
                 <summary data-i18n="faq.q6">Com se signa això, administrativament?</summary>
                 <div class="faq-a" data-i18n-html="faq.a6">Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.</div>
+            </details>
+            <!-- Les dues del costat privat. Fins ara les sis objeccions eren
+                 totes municipals —pressupost municipal, tècnic de participació,
+                 dades del veïnat, contractació menor— i una direcció de
+                 persones no en trobava cap que fos la seva. La segona no és
+                 còmoda i per això hi és: un mapa honest ensenya qui sosté què,
+                 i qui ho llegeix té gent a càrrec. -->
+            <details class="faq-item">
+                <summary data-i18n="faq.q7">Som una empresa. Com es contracta i d'on surt el pressupost?</summary>
+                <div class="faq-a" data-i18n-html="faq.a7">Directament, i sense el sostre dels 5.000 € que ens posem al sector públic: allà existeix per encaixar en una contractació menor, i a una empresa no pinta res. El pressupost surt de <a href="#cost">la mateixa suma que podeu refer</a> —hores dels fluxos del mapa, cada rol al preu del seu nivell, despeses a preu de factura—, i sovint <strong>no surt de formació</strong> sinó del pressupost de l'àrea que té el problema. Si teniu crèdit de formació bonificada, part hi encaixa i us direm quina part.</div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q8">Un mapa així ensenya qui sosté què. I si això perjudica algú?</summary>
+                <div class="faq-a" data-i18n-html="faq.a8">És la pregunta bona, i la resposta ha de ser abans de començar. <strong>El mapa no és una avaluació de rendiment i no s'entrega com si ho fos:</strong> el que en surt són fluxos i càrregues —«aquest node depèn d'una sola persona»—, no rànquings de gent. Ho acordem per escrit a la proposta: qui veu què, què és agregat i què no surt de la sala. Si el que es busca és material per decidir acomiadaments, no és la nostra feina i ho direm a la primera reunió.</div>
             </details>
             <details class="faq-item">
                 <summary data-i18n="faq.q5">Ja tenim una app de participació. Això no és el mateix?</summary>
@@ -1993,6 +2080,7 @@ ca: {
   'cm.th.niv':'Nivell','cm.th.fa':'Què fa','cm.th.ev':'Com s\'acredita','cm.th.h':'Preu hora',
   'cm.esc.h':'L\'escala, i què separa un nivell del següent',
   'cm.esc.i':'Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l\'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell.',
+  'cm.priv':'I a una empresa o una cooperativa, <strong>la suma és la mateixa i el sostre no hi és</strong>: els 5.000 € existeixen per encaixar en una contractació menor de l\'administració, i fora d\'allà no volen dir res. El que canvia és d\'on surt el pressupost —sovint de l\'àrea que té el problema, no de formació— i que allà sí que es poden plantejar encàrrecs llargs sense partir-los en fases.',
   'cm.peu':'Tots els preus d\'aquesta pàgina són <strong>sense IVA</strong>. L\'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s\'hagi de desdir.',
   'pk.diagnostic-teixit.n':'Diagnòstic del teixit local','pk.diagnostic-teixit.e':'L\'informe amb el mapa de valor del teixit real: qui sosté què, quins fluxos falten i de qui penja tot abans que es cremi.',
   'pk.diagnostic-teixit.q':'Ajuntaments, consells comarcals i entitats','pk.diagnostic-teixit.d':'2 sessions · 3 setmanes','pk.diagnostic-teixit.f':'Catàleg de serveis de la Diputació · partida de participació ciutadana',
@@ -2067,6 +2155,10 @@ ca: {
 /*/TT-I18N-CA*/
   'faq.q6':'Com se signa això, administrativament?',
   'faq.a6':'Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.',
+  'faq.q7':'Som una empresa. Com es contracta i d\'on surt el pressupost?',
+  'faq.a7':'Directament, i sense el sostre dels 5.000 € que ens posem al sector públic: allà existeix per encaixar en una contractació menor, i a una empresa no pinta res. El pressupost surt de <a href="#cost">la mateixa suma que podeu refer</a> —hores dels fluxos del mapa, cada rol al preu del seu nivell, despeses a preu de factura—, i sovint <strong>no surt de formació</strong> sinó del pressupost de l\'àrea que té el problema. Si teniu crèdit de formació bonificada, part hi encaixa i us direm quina part.',
+  'faq.q8':'Un mapa així ensenya qui sosté què. I si això perjudica algú?',
+  'faq.a8':'És la pregunta bona, i la resposta ha de ser abans de començar. <strong>El mapa no és una avaluació de rendiment i no s\'entrega com si ho fos:</strong> el que en surt són fluxos i càrregues —«aquest node depèn d\'una sola persona»—, no rànquings de gent. Ho acordem per escrit a la proposta: qui veu què, què és agregat i què no surt de la sala. Si el que es busca és material per decidir acomiadaments, no és la nostra feina i ho direm a la primera reunió.',
   'cl.honest':'<strong>D\'on ve cada prova.</strong> Les xifres de dalt són de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> i del taller Fent Pinya: 60.000 persones i 150 organitzacions des del 2005, i una millora del 30-50 % en cohesió d\'equip <em>segons les enquestes internes posteriors a l\'esdeveniment</em> — no és un estudi extern i es diu. La línia comunitària és més nova i té menys quilòmetres: per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.',
   'nav.relat':'D\'on ve',
   'nav.aprenent':'S\'aprèn fent',
@@ -2076,13 +2168,13 @@ ca: {
   'relat.intro':'Un castell no l\'aguanta qui hi puja. Una organització tampoc. El que va començar sent una experiència per a equips d\'empresa va acabar sent un mètode per mirar qui sosté què —i una eina per no perdre-ho de vista.',
   'relat.n1':'01 · La persona',
   'relat.t1':'Álvaro Solache',
-  'relat.p1':'Vint anys formant equips i produint esdeveniments, des del Penedès. La feina sempre ha estat la mateixa: que un grup de gent que no s\'ha triat aguanti el pes junt.',
+  'relat.p1':'Psicòleg social. Va ser responsable de RRHH d\'InfoJobs, va dirigir la formació a la UOC–GEC i va dinamitzar el grup de benchmarking de direccions de persones al Fòrum de RRHH de Foment del Treball. Des del Penedès, i sempre la mateixa feina: que un grup de gent que no s\'ha triat aguanti el pes junt.',
   'relat.n2':'02 · L\'ofici',
   'relat.t2':'Psicologia de grups i desenvolupament de comunitats',
-  'relat.p2':'Els projectes comunitaris no moren per falta de mètode: moren per falta de gent, per conflictes que ningú tracta i per no saber com finançar-se. Això s\'estudia i es treballa.',
+  'relat.p2':'Els grups no es trenquen per falta de mètode: es trenquen per falta de gent, per conflictes que ningú tracta i per no saber com sostenir-se. Passa igual en un projecte de barri i en un departament, i les dues coses s\'estudien i es treballen.',
   'relat.n3':'03 · El mètode',
   'relat.t3':'TeamTowers',
-  'relat.p3':'Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee.',
+  'relat.p3':'Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee, i va començar amb equips d\'empresa.',
   'relat.n4':'04 · Al territori',
   'relat.t4':'TeamTowers Humà',
   'relat.p4':'El mateix mètode portat al poble i al barri, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s\'ha après.',
@@ -2160,10 +2252,25 @@ ca: {
   'hero.cta1':'Diagnostica la teva organització · 3 min','hero.cta2':'Demana pressupost →','hero.pain1':'«Sempre tirem els mateixos quatre.»','hero.pain2':'«Ningú sap què fem ni quant val.»','hero.pain3':'«Quan marxa qui ho sostenia, allò es mor.»','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El repte',
   'enfoc.h3':'Moltes ganes. <em>Poca estructura.</em>',
-  'enfoc.p1':'La majoria de projectes ciutadans —bancs de temps, biblioteques de coses, comunitats energètiques, horts comunitaris— neixen amb una empenta enorme de voluntariat. I s\'apaguen igual de ràpid: no per falta d\'il·lusió, sinó per falta de governança, rols clars i relleu generacional.',
-  'enfoc.p2':'<strong>Dues o tres persones ho sostenen tot fins que s\'esgoten.</strong> Quan marxen, el projecte marxa amb elles. És el patró que veiem repetir-se en ajuntaments, ateneus i cooperatives de tot el territori.',
+  'enfoc.p1':'Un projecte ciutadà —banc de temps, comunitat energètica, hort comunitari— neix amb una empenta enorme i s\'apaga igual de ràpid: no per falta d\'il·lusió, sinó per falta de governança, rols clars i relleu. En una empresa o una cooperativa és la mateixa escena amb un altre vocabulari: un equip que arrenca amb ganes i acaba depenent de dues persones que ho saben tot.',
+  'enfoc.p2':'<strong>Dues o tres persones ho sostenen tot fins que es cremen.</strong> Quan marxen, se\'n va amb elles el que no era a cap procediment. És el patró que veiem repetir-se en ajuntaments, ateneus i cooperatives —i en comitès de direcció.',
   'enfoc.p3':'La Psicologia Social i Comunitària no ve a posar més voluntat. Ve a posar <strong>l\'esquelet que la voluntat necessita</strong> per no ensorrar-se: rols, confiança, ritme i dades reals sobre qui sosté què.',
   'enfoc.quote':'"Un projecte ciutadà no fracassa per falta de cor. Fracassa per falta d\'esquelet."',
+  'enfoc.quote2':'"I una empresa no perd el talent quan algú marxa. El perd molt abans: el dia que va deixar de saber què sostenia."',
+  'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
+  'enfoc.b.l1':'Qui ho sosté',
+  'enfoc.b.l2':'Què no es veu enlloc',
+  'enfoc.b.l3':'Què passa quan marxen',
+  'enfoc.b.pub.k':'Al sector públic i comunitari',
+  'enfoc.b.pub.d1':'Dues o tres persones voluntàries, sovint les mateixes des del primer dia.',
+  'enfoc.b.pub.d2':'Confiança veïnal, favors, coneixement acumulat, reputació al barri. Cap acta ho recull.',
+  'enfoc.b.pub.d3':'El projecte marxa amb elles, i el següent equip torna a començar de zero.',
+  'enfoc.b.pub.cta':'Ajuntaments, consells i entitats →',
+  'enfoc.b.priv.k':'A l\'empresa i la cooperativa',
+  'enfoc.b.priv.d1':'Dues o tres persones clau, i sovint el paper que fan no és a cap organigrama.',
+  'enfoc.b.priv.d2':'Coneixement tàcit, xarxes informals, qui desencalla les coses de debò. Cap procés ho recull.',
+  'enfoc.b.priv.d3':'Se\'n va el que no era a cap procediment, i es descobreix el mes següent.',
+  'enfoc.b.priv.cta':'Empreses i cooperatives →',
   'enfoc.tangible.h4':'El que es diu a les reunions',
   'enfoc.tangible.p':'Hores de voluntariat, quotes, subvencions, actes. Visible sobre el paper. Necessari, però no suficient.',
   'enfoc.intangible.h4':'El que ho sosté de veritat',
@@ -2177,7 +2284,7 @@ ca: {
   
   'fp.eyebrow':'Cohesió en acció',
   'fp.h2':'Els Castells:<br><em>una xarxa de valor de 200 anys</em>',
-  'fp.intro':'Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Tres lliçons que apliquem a les sessions de cohesió Fent Pinya.',
+  'fp.intro':'Una torre humana és la xarxa de valor més transparent que existeix. Cada rol, cada intercanvi, cada intangible — visible en temps real. Va néixer per a equips d\'empresa i avui es fa igual amb un equip de govern municipal o un consell rector. Tres lliçons que apliquem a les sessions de cohesió Fent Pinya.',
   'fp.mes':'Veure-ho pas a pas: qui dona què a qui →',
   'fp.insights.eyebrow':'3 lliçons per a la comunitat',
   'fp.h3':'La prova més antiga que <em>els intangibles van primer</em>',
@@ -2281,7 +2388,7 @@ ca: {
   'com.p4.m3':'T\'endús: gent teva formada',
   'faq.eyebrow':'Abans de trucar',
   'faq.h2':'El que ens pregunten <em>sempre</em>',
-  'faq.intro':'Les cinc de veritat, amb la resposta que donaríem a la primera reunió.',
+  'faq.intro':'Les vuit de veritat —les del sector públic i les de l\'empresa—, amb la resposta que donaríem a la primera reunió.',
   'faq.q1':'Quant costa?',
   'faq.a1':'<strong>Cada paquet del catàleg porta el preu escrit</strong>, i l\'eina no en té: és gratuïta i te la pots endur. El que es paga és l\'acompanyament, i en la majoria de casos no surt del pressupost municipal sinó de fons que ja existeixen —el catàleg de la Diputació de Barcelona, els Ateneus Cooperatius, els fons Leader de desenvolupament rural o els Next Generation. Cada paquet diu quina via li encaixa. Al diagnòstic de 3 minuts ho concretem al teu cas, i si cap no encaixa, també t\'ho direm.',
   'faq.q2':'Quanta feina li caurà al personal tècnic?',
@@ -2323,6 +2430,7 @@ es: {
   'cm.th.niv':'Nivel','cm.th.fa':'Qué hace','cm.th.ev':'Cómo se acredita','cm.th.h':'Precio hora',
   'cm.esc.h':'La escala, y qué separa un nivel del siguiente',
   'cm.esc.i':'Para contrataciones por horas —que es como contrata el sector público cuando contrata servicios profesionales— esta es la tabla que presentamos. Lo que separa un nivel del siguiente no es la antigüedad: es evidencia registrada y verificable, la misma que acredita a un gestor o a un mentor en la formación. La propuesta dice siempre qué persona hace qué horas y a qué nivel.',
+  'cm.priv':'Y en una empresa o una cooperativa, <strong>la suma es la misma y el techo no está</strong>: los 5.000 € existen para encajar en una contratación menor de la administración, y fuera de ahí no quieren decir nada. Lo que cambia es de dónde sale el presupuesto —a menudo del área que tiene el problema, no de formación— y que ahí sí se pueden plantear encargos largos sin partirlos en fases.',
   'cm.peu':'Todos los precios de esta página son <strong>sin IVA</strong>. La escala es tarifa propuesta para 2026 y se revisa cada año. El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y no llevan precio cerrado publicado: lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia, y preferimos enseñar el desglose que comprometer una cifra que después haya que desdecir.',
   'pk.diagnostic-teixit.n':'Diagnóstico del tejido local','pk.diagnostic-teixit.e':'El informe con el mapa de valor del tejido real: quién sostiene qué, qué flujos faltan y de quién cuelga todo antes de que se queme.',
   'pk.diagnostic-teixit.q':'Ayuntamientos, consejos comarcales y entidades','pk.diagnostic-teixit.d':'2 sesiones · 3 semanas','pk.diagnostic-teixit.f':'Catálogo de servicios de la Diputación · partida de participación ciudadana',
@@ -2397,6 +2505,10 @@ es: {
 /*/TT-I18N-ES*/
   'faq.q6':'¿Cómo se firma esto, administrativamente?',
   'faq.a6':'Cada paquete del catálogo lleva el precio cerrado y todos los que van a administración pública quedan <strong>por debajo de los 5.000 €</strong>. Con la propuesta y el presupuesto en la mano, la contratación menor lo resuelve sin abrir un expediente largo. Si lo que necesitáis es más grande, se parte en fases o se plantea como un contrato de servicios: os decimos qué vía os conviene antes de haceros perder el tiempo.',
+  'faq.q7':'Somos una empresa. ¿Cómo se contrata y de dónde sale el presupuesto?',
+  'faq.a7':'Directamente, y sin el techo de los 5.000 € que nos ponemos en el sector público: allí existe para encajar en una contratación menor, y en una empresa no pinta nada. El presupuesto sale de <a href="#cost">la misma suma que podéis rehacer</a> —horas de los flujos del mapa, cada rol al precio de su nivel, gastos a precio de factura—, y a menudo <strong>no sale de formación</strong> sino del presupuesto del área que tiene el problema. Si tenéis crédito de formación bonificada, parte encaja y os diremos qué parte.',
+  'faq.q8':'Un mapa así enseña quién sostiene qué. ¿Y si eso perjudica a alguien?',
+  'faq.a8':'Es la pregunta buena, y la respuesta tiene que estar antes de empezar. <strong>El mapa no es una evaluación de desempeño y no se entrega como si lo fuera:</strong> lo que sale son flujos y cargas —«este nodo depende de una sola persona»—, no rankings de gente. Lo acordamos por escrito en la propuesta: quién ve qué, qué es agregado y qué no sale de la sala. Si lo que se busca es material para decidir despidos, no es nuestro trabajo y lo diremos en la primera reunión.',
   'cl.honest':'<strong>De dónde viene cada prueba.</strong> Las cifras de arriba son de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> y del taller Fent Pinya: 60.000 personas y 150 organizaciones desde 2005, y una mejora del 30-50 % en cohesión de equipo <em>según las encuestas internas posteriores al evento</em> — no es un estudio externo y se dice. La línea comunitaria es más nueva y tiene menos kilómetros: por eso en el catálogo cada paquete dice si está <em>probado</em>, <em>en adaptación</em> o es <em>nuevo</em>, en vez de usar estos números como si lo demostraran todo.',
   'nav.relat':'De dónde viene',
   'nav.aprenent':'Se aprende haciendo',
@@ -2406,13 +2518,13 @@ es: {
   'relat.intro':'Un castell no lo aguanta quien sube. Una organización tampoco. Lo que empezó siendo una experiencia para equipos de empresa acabó siendo un método para mirar quién sostiene qué —y una herramienta para no perderlo de vista.',
   'relat.n1':'01 · La persona',
   'relat.t1':'Álvaro Solache',
-  'relat.p1':'Veinte años formando equipos y produciendo eventos, desde el Penedès. El trabajo siempre ha sido el mismo: que un grupo de gente que no se ha elegido aguante el peso junto.',
+  'relat.p1':'Psicólogo social. Fue responsable de RRHH de InfoJobs, dirigió la formación en la UOC–GEC y dinamizó el grupo de benchmarking de direcciones de personas en el Foro de RRHH de Foment del Treball. Desde el Penedès, y siempre el mismo trabajo: que un grupo de gente que no se ha elegido aguante el peso junto.',
   'relat.n2':'02 · El oficio',
   'relat.t2':'Psicología de grupos y desarrollo de comunidades',
-  'relat.p2':'Los proyectos comunitarios no mueren por falta de método: mueren por falta de gente, por conflictos que nadie trata y por no saber cómo financiarse. Eso se estudia y se trabaja.',
+  'relat.p2':'Los grupos no se rompen por falta de método: se rompen por falta de gente, por conflictos que nadie trata y por no saber cómo sostenerse. Pasa igual en un proyecto de barrio y en un departamento, y las dos cosas se estudian y se trabajan.',
   'relat.n3':'03 · El método',
   'relat.t3':'TeamTowers',
-  'relat.p3':'Los castells como experiencia, y el mapa de red de valor como diagnóstico: dibujar quién da qué a quién, incluyendo los favores, la información y la confianza que no apunta nadie. Es el método VNA de Verna Allee.',
+  'relat.p3':'Los castells como experiencia, y el mapa de red de valor como diagnóstico: dibujar quién da qué a quién, incluyendo los favores, la información y la confianza que no apunta nadie. Es el método VNA de Verna Allee, y empezó con equipos de empresa.',
   'relat.n4':'04 · En el territorio',
   'relat.t4':'TeamTowers Humà',
   'relat.p4':'El mismo método llevado al pueblo y al barrio, con el catálogo entero: consultoría, formación, y producción y dinamización. Y una herramienta gratuita para que cuando nos vayamos no se vaya con nosotros lo aprendido.',
@@ -2490,10 +2602,25 @@ es: {
   'hero.cta1':'Diagnostica tu organización · 3 min','hero.cta2':'Pide presupuesto →','hero.pain1':'«Siempre tiramos los mismos cuatro.»','hero.pain2':'«Nadie sabe qué hacemos ni cuánto vale.»','hero.pain3':'«Cuando se va quien lo sostenía, aquello se muere.»','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El reto',
   'enfoc.h3':'Muchas ganas. <em>Poca estructura.</em>',
-  'enfoc.p1':'La mayoría de proyectos ciudadanos —bancos de tiempo, bibliotecas de las cosas, comunidades energéticas, huertos comunitarios— nacen con un empujón enorme de voluntariado. Y se apagan igual de rápido: no por falta de ilusión, sino por falta de gobernanza, roles claros y relevo generacional.',
-  'enfoc.p2':'<strong>Dos o tres personas lo sostienen todo hasta agotarse.</strong> Cuando se van, el proyecto se va con ellas. Es el patrón que vemos repetirse en ayuntamientos, ateneos y cooperativas de todo el territorio.',
+  'enfoc.p1':'Un proyecto ciudadano —banco de tiempo, comunidad energética, huerto comunitario— nace con un empujón enorme y se apaga igual de rápido: no por falta de ilusión, sino por falta de gobernanza, roles claros y relevo. En una empresa o una cooperativa es la misma escena con otro vocabulario: un equipo que arranca con ganas y acaba dependiendo de dos personas que lo saben todo.',
+  'enfoc.p2':'<strong>Dos o tres personas lo sostienen todo hasta quemarse.</strong> Cuando se van, se va con ellas lo que no estaba en ningún procedimiento. Es el patrón que vemos repetirse en ayuntamientos, ateneos y cooperativas —y en comités de dirección.',
   'enfoc.p3':'La Psicología Social y Comunitaria no viene a poner más voluntad. Viene a poner <strong>el esqueleto que la voluntad necesita</strong> para no derrumbarse: roles, confianza, ritmo y datos reales sobre quién sostiene qué.',
   'enfoc.quote':'"Un proyecto ciudadano no fracasa por falta de corazón. Fracasa por falta de esqueleto."',
+  'enfoc.quote2':'"Y una empresa no pierde el talento cuando alguien se va. Lo pierde mucho antes: el día que dejó de saber qué sostenía."',
+  'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',
+  'enfoc.b.l1':'Quién lo sostiene',
+  'enfoc.b.l2':'Qué no se ve en ningún sitio',
+  'enfoc.b.l3':'Qué pasa cuando se van',
+  'enfoc.b.pub.k':'En el sector público y comunitario',
+  'enfoc.b.pub.d1':'Dos o tres personas voluntarias, a menudo las mismas desde el primer día.',
+  'enfoc.b.pub.d2':'Confianza vecinal, favores, conocimiento acumulado, reputación en el barrio. Ninguna acta lo recoge.',
+  'enfoc.b.pub.d3':'El proyecto se va con ellas, y el siguiente equipo vuelve a empezar de cero.',
+  'enfoc.b.pub.cta':'Ayuntamientos, consejos y entidades →',
+  'enfoc.b.priv.k':'En la empresa y la cooperativa',
+  'enfoc.b.priv.d1':'Dos o tres personas clave, y a menudo el papel que hacen no está en ningún organigrama.',
+  'enfoc.b.priv.d2':'Conocimiento tácito, redes informales, quién desencalla las cosas de verdad. Ningún proceso lo recoge.',
+  'enfoc.b.priv.d3':'Se va lo que no estaba en ningún procedimiento, y se descubre al mes siguiente.',
+  'enfoc.b.priv.cta':'Empresas y cooperativas →',
   'enfoc.tangible.h4':'Lo que se dice en las reuniones',
   'enfoc.tangible.p':'Horas de voluntariado, cuotas, subvenciones, actas. Visible sobre el papel. Necesario, pero no suficiente.',
   'enfoc.intangible.h4':'Lo que lo sostiene de verdad',
@@ -2507,7 +2634,7 @@ es: {
   
   'fp.eyebrow':'Cohesión en acción',
   'fp.h2':'Los Castells:<br><em>una red de valor de 200 años</em>',
-  'fp.intro':'Una torre humana es la red de valor más transparente que existe. Cada rol, cada intercambio, cada intangible — visible en tiempo real. Tres lecciones que aplicamos en las sesiones de cohesión Fent Pinya.',
+  'fp.intro':'Una torre humana es la red de valor más transparente que existe. Cada rol, cada intercambio, cada intangible — visible en tiempo real. Nació para equipos de empresa y hoy se hace igual con un equipo de gobierno municipal o un consejo rector. Tres lecciones que aplicamos en las sesiones de cohesión Fent Pinya.',
   'fp.mes':'Verlo paso a paso: quién da qué a quién →',
   'fp.insights.eyebrow':'3 lecciones para la comunidad',
   'fp.h3':'La prueba más antigua de que <em>los intangibles van primero</em>',
@@ -2611,7 +2738,7 @@ es: {
   'com.p4.m3':'Te llevas: gente tuya formada',
   'faq.eyebrow':'Antes de llamar',
   'faq.h2':'Lo que nos preguntan <em>siempre</em>',
-  'faq.intro':'Las cinco de verdad, con la respuesta que daríamos en la primera reunión.',
+  'faq.intro':'Las ocho de verdad —las del sector público y las de la empresa—, con la respuesta que daríamos en la primera reunión.',
   'faq.q1':'¿Cuánto cuesta?',
   'faq.a1':'<strong>Cada paquete del catálogo lleva el precio escrito</strong>, y la herramienta no tiene: es gratuita y te la puedes llevar. Lo que se paga es el acompañamiento, y en la mayoría de casos no sale del presupuesto municipal sino de fondos que ya existen —el catálogo de la Diputación de Barcelona, los Ateneus Cooperatius, los fondos Leader de desarrollo rural o los Next Generation. Cada paquete dice qué vía le encaja. En el diagnóstico de 3 minutos lo concretamos a tu caso, y si ninguna encaja, también te lo diremos.',
   'faq.q2':'¿Cuánto trabajo le va a caer al personal técnico?',
@@ -2743,9 +2870,13 @@ applyLang(currentLang);
         var b = e.target.closest('.pk-f');
         if (b) filtra(b.dataset.sec);
     });
-    // Les dues portes del hero entren al catàleg amb el filtre ja posat. L'àncora
-    // segueix fent la seva feina si això no s'executa mai.
-    document.querySelectorAll('.hero-portes a[data-sec]').forEach(function (a) {
+    // Qualsevol porta de la pàgina entra al catàleg amb el filtre ja posat:
+    // les dues del hero i les dues del repte. El selector era `.hero-portes
+    // a[data-sec]` i lligava el filtre a un contenidor concret — la segona
+    // parella de portes hauria baixat al catàleg sense filtrar i ningú ho
+    // hauria vist, perquè l'àncora sí que funciona. L'àncora segueix fent la
+    // seva feina si això no s'executa mai.
+    document.querySelectorAll('a[data-sec]').forEach(function (a) {
         a.addEventListener('click', function () { filtra(a.dataset.sec); });
     });
 })();
