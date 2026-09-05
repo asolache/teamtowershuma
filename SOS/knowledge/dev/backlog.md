@@ -44,6 +44,60 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+**P0 · Les dues dinàmiques fundacionals no tenen pàgina** — pendent
+
+De les dotze dinàmiques del catàleg, sis ja tenen la seva pàgina pública —La
+Compra, L'Energia, L'Habitatge, la MATRIU, el mapa de valor i Molekulandia— i
+**les dues que expliquen què és el SOS, no**:
+
+| Dinàmica | Pàgina | Avui |
+|---|---|---|
+| Banc de temps | **falta** | `EINES` a `build-nav.js` diu `index.html` · «A dins de l'app» |
+| Biblioteca de les coses | **falta** | igual |
+| Suport mutu / cures | falta | igual |
+
+És l'error de sempre girat del revés: hi ha pàgina per a les dinàmiques
+d'entrada difícil i no per a les dues que qualsevol entén de seguida i que són
+**per on comença tothom**. Qui arriba a la portada i vol saber què és un banc de
+temps ha d'obrir l'aplicació sencera, que és demanar-li una decisió abans de
+respondre-li la pregunta.
+
+El que ha de portar cadascuna, amb la mateixa espina que ja tenen les altres
+sis: què és amb una frase que no faci servir la paraula «plataforma», com
+comença un grup de zero, què passa el primer dia i què el sisè mes, què compta
+com una hora i qui ho confirma, i la porta a l'eina. La biblioteca, a més, ha de
+dir la part que ningú explica i és la que fa fallar la dinàmica: **què passa
+quan una cosa es trenca o no torna** —el SOS ja ho calcula (`WEAR_RATES`,
+`loanValue`, `recordLoanWear`, `logRepair`) i cap pàgina ho diu.
+
+Quan existeixin, entren a `EINES` de `build-nav.js` i al menú; la guarda del menú
+ja comprova que cada dinàmica del catàleg tingui una eina que existeix.
+
+---
+
+**P0 · El comptador del Comando, petit i sempre a la vista** — pendent
+
+Avui el compte cap als 150.000 només es veu obrint el modal del Comando. Ha
+d'estar **a la barra de l'app, petit, i actualitzar-se** quan el número canvia
+—no només en carregar la pàgina.
+
+Tres coses que decideixen si això és útil o soroll, i que van escrites abans de
+fer-ho:
+
+- **Quin número.** El del Comando (`comandoRoster().length` sobre
+  `COMANDO_TARGET`) i no el fons: el fons ja té la seva portada (`#/fons`) i és
+  una xifra en euros que a la barra no es pot llegir de reüll. *Si el que volies
+  era el fons, digues-m'ho i giro l'eix.*
+- **Que s'actualitzi de debò.** Un comptador que es pinta un cop i es queda
+  mentint és pitjor que no tenir-lo: ha de repintar-se quan hi ha una aportació
+  nova, que és quan el número canvia.
+- **Que no menteixi el que compta.** «Superherois validats» vol dir gent amb
+  alguna cosa registrada i confirmada, no altes. Ja va passar un cop que això
+  comptava socis de qualsevol node i s'etiquetava «validats»; el comptador de la
+  barra no pot tornar-hi.
+
+---
+
 **P0 · El repte, dit per als dos sectors · i el mapa de valor privat** — (a) fet, (b) pendent
 
 Dues coses que van juntes perquè totes dues surten del mateix: **la
@@ -1263,25 +1317,47 @@ un **supervilà del Mundo Muerto**, i és on viu el videoclip d'Horacio. És
 l'única peça que la guarda obliga a tenir adreça —mentre els capítols no en
 tinguin una d'un en un, és la porta que sosté la secció.
 
-**El que falta i és de l'autor, no del codi:** cinc de les set peces **no tenen
-enllaç propi**. La pàgina les ensenya dient-ho, i el dia que arribin es posa
-l'URL a `VIDEOS` dins de `build-comando.js` i prou:
+**Els vídeos, d'un en un.** L'autor n'ha donat tretze i el catàleg n'és a
+`VIDEOS`: videoclips d'Horacio, Reciclator, Supergerminador, la Medusa
+Andaluza, la Bomba Disco (Guiri-Guay i Flying Frog), Flying Frog, la Formiga
+Atòmica, el Risitas i el Príncep de Bekelar, i Mc Greggor; els temes d'Horacio i
+del Guiri-Guay; i el directe de la Bomba Disco a la Floresta.
+
+**El que encara falta:**
 
 | Peça | Qui | Què falta |
 |---|---|---|
-| Reciclator · el taller | Reciclator | l'URL del seu capítol |
-| Supergerminador · germinar | Supergerminador | l'URL del capítol i la web pròpia |
-| Fraktalman · el tema | Fraktalman | l'URL del tema |
-| La banda en directe | — | l'URL d'un directe |
+| Pigmentón | Pigmentón | l'URL del videoclip |
+| Fraktalman | Fraktalman | l'URL del tema |
+| Tekno Kartoffeln | — | l'URL. **Dubte a resolir:** és el mateix vídeo que el de Mc Greggor o un de propi? El missatge els va donar seguits amb un sol enllaç |
 | Un taller, filmat | — | l'URL d'una sessió filmada |
+| Supergerminador | Supergerminador | la web pròpia (el videoclip ja hi és) |
 
 > **Per què no els he tret jo de la llista.** YouTube està bloquejat per
-> l'egress proxy de la sessió (403 tant per WebFetch com per curl), així que no
-> es pot enumerar la playlist des d'aquí. Cal l'adreça de cada capítol escrita,
-> o obrir el domini al proxy.
+> l'egress proxy de la sessió (403 tant per WebFetch com per curl): no es pot
+> enumerar la playlist ni mirar cap capítol des d'aquí. Tot el que hi ha entrat
+> ve del que ha escrit l'autor, no de mirar els vídeos. **N'hi ha més que
+> arribaran**: el catàleg està fet per créixer una línia per peça.
+
+**Personatges nous que han entrat pels vídeos**, a `COMANDO_ALLIES`: la Formiga
+Atòmica ja hi era i ara diu què fa (modista, superarma **Pistola Amor**), i
+s'hi afegeixen **Flying Frog** —la que posa el color al còmic—, **El Risitas**
+—el nòvio de la Formiga— i el **Príncep de Bekelar**. Els dos últims van amb
+`previ:true`: l'autor n'ha dit el nom i encara no ha dit de quin bàndol són ni
+quin paper hi fan. Cap dels quatre entra a `CANONICAL_HEROES`, que exigeix
+poder i equivalència a un equip: inventar-los seria fer passar per obra el que
+no ho és.
+
+> **Defecte obert, i el decideix l'autor.** El supervilà té **dues grafies** al
+> repositori: `COMANDO_VILLAINS` diu `Mc Greggor` i el text dels còmics —a
+> `comando.html`, al blog, al codex i a la funció `ofereixMcGragor` de
+> `joc.html`— diu **McGragor**. És exactament el defecte de la veda 109 un pis
+> més avall: la guarda del relat vigila els noms d'heroi i **no els dels
+> vilans**. Quan l'autor digui quina és la bona, s'unifica a tot arreu i la
+> guarda s'estén als vilans i als aliats.
 
 **El que sí que ha entrat del contingut dels vídeos:** al capítol de Reciclator
-s'hi parla de dues superarmes, la **Bomba Amor** i el **Rato Cagón**. Van a la
+s'hi parla de dues superarmes, la **Bomba Amor** i el **Rayo Cagón**. Van a la
 seva fitxa de `CANONICAL_HEROES`, al taller i no a la mà de ningú: el que se
 sap és que d'allà en surten, i quin heroi les porta ho diu l'obra. Queda per
 mirar la resta de capítols amb el mateix criteri —**cada capítol presenta també
