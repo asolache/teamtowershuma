@@ -90,6 +90,39 @@ else if (comentaris) bad('hi ha un comentari entre dues fitxes de `CANONICAL_HER
   + 'fon les dues en una i el roster es queda curt sense que peti res — va al comentari de capçalera');
 else bad(`el bloc té ${entrades} fitxes i se n'han llegit ${roster.length}: alguna cosa les fon`);
 
+// ── 1c · Els vilans i els aliats també es declaren un sol cop ────────────
+/* Aquesta guarda va néixer per als herois i durant mesos no va mirar ni els
+   vilans ni els aliats. El resultat és el previsible: el supervilà va viure amb
+   dues grafies —«Mc Greggor» a les dades i «McGragor» al text dels còmics— en
+   set fitxers alhora, i cap comprovació ho podia veure perquè cap de les dues
+   llistes existia per a la guarda.
+   Aquí es llegeixen i es comprova el mateix que als herois: cap nom repetit,
+   cap fitxa buida, i —a la regla 5— cap grafia vella viva a les pàgines. */
+const llista = re => {
+  const b = (APP.match(re) || [''])[0];
+  return [...b.matchAll(/\{[^}]*name:'((?:[^'\\]|\\.)*)'[^}]*\}/g)]
+    .map(m => ({ nom: m[1].replace(/\\'/g, "'"), txt: m[0] }));
+};
+const VILANS = llista(/^const COMANDO_VILLAINS=\[[\s\S]*?\n\];/m);
+const ALIATS = llista(/^const COMANDO_ALLIES=\[[\s\S]*?\n\];/m);
+if (!VILANS.length || !ALIATS.length) bad('no es poden llegir COMANDO_VILLAINS o COMANDO_ALLIES');
+else {
+  const tots = VILANS.concat(ALIATS).map(x => x.nom);
+  const dupsV = tots.filter((x, i) => tots.indexOf(x) !== i);
+  if (dupsV.length) bad(`nom repetit entre vilans i aliats: ${[...new Set(dupsV)].join(', ')}`);
+  /* Un vilà sense `what` és un nom i prou, i llavors el joc i el panteó se
+     l'han d'inventar cadascú pel seu compte — que és com comencen les
+     divergències. Els aliats en poden no tenir mentre siguin `previ`. */
+  const vSense = VILANS.filter(v => !/\bwhat:'/.test(v.txt)).map(v => v.nom);
+  const aSense = ALIATS.filter(a => !/\bwhat:'/.test(a.txt) && !/previ:true/.test(a.txt)).map(a => a.nom);
+  if (!dupsV.length && !vSense.length && !aSense.length)
+    ok(`${VILANS.length} vilans i ${ALIATS.length} aliats declarats, tots amb el que fan`);
+  if (vSense.length) bad(`vilans sense dir què són: ${vSense.join(', ')}`);
+  if (aSense.length) bad(`aliats sense dir què són i sense marcar \`previ\`: ${aSense.join(', ')}`);
+  const previs = ALIATS.filter(a => /previ:true/.test(a.txt)).map(a => a.nom);
+  if (previs.length) console.log(`  · ${previs.length} aliats marcats com a previs (l'autor n'ha dit el nom i encara no de quin bàndol són): ${previs.join(', ')}`);
+}
+
 // ── 2 · Tot heroi anomenat a l'app és del roster ─────────────────────────
 /* Es miren les dues llistes que anomenen herois: les pantalles amb frase
    (`HERO_SCREENS`) i els fundadors lligats al panteó (`COMANDO_FOUNDERS`). */
@@ -195,6 +228,13 @@ if (!repFails) ok(`${repTotal} mencions d'heroi a les pàgines que en reparteixe
    sabent quins eren. Quan un nom canviï, s'afegeix aquí el vell. */
 const VELLS = ['Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
   'Pigmentona', 'La Anguila', 'Medusa Andalusa',
+  /* El supervilà va viure amb dues grafies molt de temps: les dades deien
+     «Mc Greggor» i el text dels còmics «McGragor». Ningú les mirava juntes
+     perquè aquesta guarda vigilava els noms d'heroi i **no els dels vilans**
+     —el mateix defecte de la veda 109, un pis més avall i en un personatge que
+     surt al joc, al blog, al codex i al panteó. L'autor ha dit que la bona és
+     la de l'obra, Mr. McGragor. La vella queda prohibida aquí. */
+  'Mc Greggor', 'Mc Gregor', 'McGreggor',
   /* «Horacio Motomachi» va sortir d'aquesta llista el dia que va arribar el
      tema que porta aquest títol. No hi era per cap error trobat: la vaig posar
      jo per si de cas, i no ha existit mai a cap pàgina. Una llista negra

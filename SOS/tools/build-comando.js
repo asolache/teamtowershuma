@@ -117,30 +117,74 @@ const DECORAT = { href: 'molekulandia.html', t: 'Molekulandia',
 
    `qui` ha de ser un nom del roster quan la mena és `personatge`: la guarda ho
    comprova contra `CANONICAL_HEROES`, que és la mateixa regla de la veda 109. */
+/* `qui` és una **llista de noms**, no un nom: a «La Bomba Disco» hi surten dos
+   personatges, i amb un sol camp un dels dos s'hauria perdut. Tot nom que hi
+   entri ha de ser del roster, dels aliats o dels vilans —la mateixa regla de la
+   veda 109, ara aplicada al catàleg de vídeos, que és per on entraria el
+   proper nom mal escrit.
+
+   `mena` diu què és la peça i no com de bona és:
+     · `llista`     — la sèrie sencera. N'hi ha d'haver una i ha de tenir adreça.
+     · `videoclip`  — un capítol o un clip amb personatge.
+     · `tema`       — la cançó, sense imatge o amb imatge que no és el capítol.
+     · `directe`    — enregistrament d'una actuació o d'una sessió.
+
+   Els URL van sense el `?si=…` amb què els comparteix YouTube: és un
+   identificador de qui ha compartit l'enllaç i no fa cap falta per veure el
+   vídeo. */
 const VIDEOS = [
-  /* La llista sencera. És l'única porta d'aquesta secció que obre de debò cap
-     als capítols, i per això va primera: mentre els vídeos no tinguin l'adreça
-     d'un en un, qui vulgui veure'ls els té tots aquí. */
-  { id: 'capitols', mena: 'llista', qui: null, titol: 'Els capítols del Comando',
+  { id: 'capitols', mena: 'llista', qui: [], titol: 'Els capítols del Comando',
     d: 'La sèrie sencera. A cada capítol es presenta un superheroi i un supervilà del Mundo Muerto.',
     url: 'https://youtube.com/playlist?list=PLMB33ApQeOYWbPLQRbf9B5gMpgs0cL5NB' },
-  { id: 'horacio', mena: 'tema', qui: 'Horacio Motomachi', titol: 'El tema d\'Horacio Motomachi',
-    d: 'La cançó sencera. Sona també a la intro; el videoclip és a la llista de capítols.',
-    url: 'media/comando-horacio.mp3' },
-  /* Els d'un en un. Tenen capítol i és a la llista de dalt; el que falta és
-     **l'adreça de cadascun**, i fins que no hi sigui no es pinten com una
-     porta: enviar algú a la llista sencera quan li has promès el capítol d'un
-     personatge concret és la mateixa mentida amable que un «pròximament».
-     Quan arribin, es posa l'URL aquí i prou. */
-  { id: 'reciclator', mena: 'personatge', qui: 'Reciclator', titol: 'Reciclator · el taller',
-    d: 'Construeix les superarmes de la banda amb el que els altres han llençat: d\'allà en surten la Bomba Amor i el Rato Cagón.', url: null },
-  { id: 'supergerminador', mena: 'personatge', qui: 'Supergerminador', titol: 'Supergerminador · germinar',
-    d: 'Ensenya a germinar per menjar superaliments, i canta amb la seva rialla.', url: null },
-  { id: 'fraktalman', mena: 'personatge', qui: 'Fraktalman', titol: 'Fraktalman · el tema',
+
+  /* ── Videoclips de personatge ─────────────────────────────────────────── */
+  { id: 'horacio-clip', mena: 'videoclip', qui: ['Horacio Motomachi'],
+    titol: 'Horacio Motomachi', d: 'El videoclip del tema que obre la intro.',
+    url: 'https://youtu.be/3Kf36tpHk98' },
+  { id: 'reciclator', mena: 'videoclip', qui: ['Reciclator'], titol: 'Reciclator',
+    d: 'Construeix les superarmes de la banda amb el que els altres han llençat: d\'allà en surten la Bomba Amor i el Rayo Cagón.',
+    url: 'https://youtu.be/Py44l1WsSO4' },
+  { id: 'supergerminador', mena: 'videoclip', qui: ['Supergerminador'], titol: 'Supergerminador',
+    d: 'Ensenya a germinar per menjar superaliments, i canta amb la seva rialla.',
+    url: 'https://youtu.be/RyAkyIp6P10' },
+  { id: 'medusa', mena: 'videoclip', qui: ['La Medusa Andaluza'], titol: 'La Medusa Andaluza',
+    d: 'El node central que creua informació entre parts que no es parlaven.',
+    url: 'https://youtu.be/5FAvOvi2P30' },
+  { id: 'bomba-disco', mena: 'videoclip', qui: ['Guiri-Guay', 'Flying Frog'], titol: 'La Bomba Disco',
+    d: 'El tema que trenca la cuirassa d\'Afrodito, per Guiri-Guay i Flying Frog.',
+    url: 'https://youtu.be/JsEAeiQ-fc0' },
+  { id: 'flying-frog', mena: 'videoclip', qui: ['Flying Frog'], titol: 'Flying Frog',
+    d: 'La que posa el color al còmic del Comando.', url: 'https://youtu.be/WfpclzQod2g' },
+  { id: 'formiga', mena: 'videoclip', qui: ['Formiga Atòmica'], titol: 'La Formiga Atòmica',
+    d: 'Modista, amb la superarma Pistola Amor.', url: 'https://youtu.be/yjQ5WnGChh0' },
+  { id: 'risitas-bekelar', mena: 'videoclip', qui: ['El Risitas', 'Príncep de Bekelar'],
+    titol: 'El Risitas i el Príncep de Bekelar', d: 'El nòvio de la Formiga Atòmica, i el Príncep.',
+    url: 'https://youtu.be/bg4N48q_dtI' },
+  { id: 'mcgreggor', mena: 'videoclip', qui: ['Mr. McGragor'], titol: 'Mr. McGragor',
+    d: 'El supervilà que ofereix en comptes d\'atacar. L\'autor el llegeix com a premonitori de l\'actualitat.',
+    url: 'https://youtu.be/C6-7B2O5dDY' },
+
+  /* ── Temes ────────────────────────────────────────────────────────────── */
+  { id: 'horacio-tema', mena: 'tema', qui: ['Horacio Motomachi'], titol: 'El tema d\'Horacio Motomachi',
+    d: 'La cançó sencera, allotjada aquí. Sona també a la intro.', url: 'media/comando-horacio.mp3' },
+  { id: 'guiriguay-tema', mena: 'tema', qui: ['Guiri-Guay'], titol: 'El tema del Guiri-Guay',
+    d: 'Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup.',
+    url: 'https://youtu.be/Q15My_6qb4A' },
+
+  /* ── Directes ─────────────────────────────────────────────────────────── */
+  { id: 'directe-floresta', mena: 'directe', qui: [], titol: 'La Bomba Disco, a la Floresta',
+    d: 'La banda del Comando en directe. És la prova que això no és una marca: hi ha gent que hi puja.',
+    url: 'https://youtu.be/PNFy7V8UbQs' },
+
+  /* ── El que l'autor ha nomenat i encara no té adreça ──────────────────── */
+  { id: 'pigmenton', mena: 'videoclip', qui: ['Pigmentón'], titol: 'Pigmentón',
+    d: 'Qui dibuixa la xarxa i dona a cadascú el color que li toca perquè pugui operar.', url: null },
+  { id: 'fraktalman', mena: 'tema', qui: ['Fraktalman'], titol: 'Fraktalman',
     d: 'La forma que es repeteix a totes les escales, convertida en cançó.', url: null },
-  { id: 'directe-banda', mena: 'directe', qui: null, titol: 'La banda en directe',
-    d: 'El Comando tocant. És la prova que això no és una marca: hi ha gent que hi puja.', url: null },
-  { id: 'directe-taller', mena: 'directe', qui: null, titol: 'Un taller, filmat',
+  { id: 'tekno-kartoffeln', mena: 'tema', qui: [], titol: 'Tekno Kartoffeln',
+    d: 'El tema que enceta la saga del tercer còmic: el punxi per rematar la fauna i trobar els que falten.',
+    url: null },
+  { id: 'directe-taller', mena: 'directe', qui: [], titol: 'Un taller, filmat',
     d: 'Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.', url: null }
 ];
 
@@ -193,10 +237,25 @@ if (!HEROIS.length || !OBJECTIU) {
 let fails = 0;
 const bad = m => { fails++; console.log('  ✗ ' + m); };
 
-const noms = new Set(HEROIS.map(h => h.name));
-VIDEOS.filter(v => v.mena === 'personatge').forEach(v => {
-  if (!noms.has(v.qui)) bad(`el vídeo «${v.titol}» diu que és de ${v.qui}, que no és al roster`);
+/* Tots els noms que el relat reconeix: el nucli, els aliats i els vilans. El
+   catàleg de vídeos només pot anomenar gent d'aquí — és la veda 109 aplicada al
+   lloc per on entraria el proper nom mal escrit, perquè un vídeo nou s'afegeix
+   amb pressa i copiant un títol de YouTube. */
+const nom1 = re => [...(APP.match(re) || [''])[0].matchAll(/name:'((?:[^'\\]|\\.)*)'/g)]
+  .map(m => m[1].replace(/\\'/g, "'"));
+const ALIATS = nom1(/^const COMANDO_ALLIES=\[[\s\S]*?\n\];/m);
+const VILANS = nom1(/^const COMANDO_VILLAINS=\[[\s\S]*?\n\];/m);
+const noms = new Set(HEROIS.map(h => h.name).concat(ALIATS, VILANS));
+if (!ALIATS.length || !VILANS.length) bad('no es poden llegir COMANDO_ALLIES o COMANDO_VILLAINS');
+VIDEOS.forEach(v => {
+  if (!Array.isArray(v.qui)) { bad(`el vídeo «${v.titol}» no declara \`qui\` com a llista`); return; }
+  v.qui.filter(n => !noms.has(n)).forEach(n =>
+    bad(`el vídeo «${v.titol}» anomena ${n}, que no és ni al roster, ni als aliats, ni als vilans`));
 });
+/* Cap id repetit: dos vídeos amb el mateix id es trepitgen a la pàgina i el
+   segon no es veu, que és el defecte que no acusa mai ningú. */
+const dupsId = VIDEOS.map(v => v.id).filter((x, i, a) => a.indexOf(x) !== i);
+if (dupsId.length) bad(`ids de vídeo repetits: ${[...new Set(dupsId)].join(', ')}`);
 VIDEOS.filter(v => v.url && !/^https?:/.test(v.url)).forEach(v => {
   if (!existsSync(join(SOS, v.url))) bad(`el vídeo «${v.titol}» apunta a ${v.url}, que no existeix`);
 });
@@ -241,7 +300,7 @@ const htmlPassos = () =>
   `<span><strong>I el poble on passa és ${esc(DECORAT.t)}.</strong> ${esc(DECORAT.d)}</span>` +
   `<span class="dec-fl">→</span></a>`;
 
-const MENA_LBL = { llista: 'La sèrie', personatge: 'Personatge', directe: 'Directe', tema: 'Tema' };
+const MENA_LBL = { llista: 'La sèrie', videoclip: 'Videoclip', tema: 'Tema', directe: 'Directe' };
 const htmlVideos = () => {
   const fitxa = v => {
     const cap = `<div class="vid-mena">${MENA_LBL[v.mena] || esc(v.mena)}</div>` +
@@ -280,7 +339,11 @@ const hue = nom => { let h = 0; for (const c of nom) h = (h * 31 + c.charCodeAt(
 const inicials = nom => nom.split(/[\s-]+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
 
 const htmlHerois = () => {
-  const vidDe = n => VIDEOS.find(v => v.qui === n && v.url);
+  /* La peça que s'ensenya a la fitxa d'un heroi: el seu videoclip si en té,
+     i si no, el seu tema. Amb `find` a seques sortia la primera declarada,
+     que no és la que la gent busca quan mira un personatge. */
+  const vidDe = n => VIDEOS.find(v => v.url && v.mena === 'videoclip' && v.qui.includes(n))
+    || VIDEOS.find(v => v.url && v.qui.includes(n));
   return `<div class="heroes" style="text-align:left">\n` + HEROIS.map(h => {
     const v = vidDe(h.name);
     return `<div class="hcard">\n` +
@@ -353,7 +416,7 @@ ${HEROIS.map(h => `- **${h.name}** · ${h.role} — ${h.vna} _(${h.on})_`).join(
 
 | Peça | Mena | Qui | Estat |
 |---|---|---|---|
-${VIDEOS.map(v => `| ${v.titol} | ${MENA_LBL[v.mena] || v.mena} | ${v.qui || '—'} | ${v.url ? '`' + v.url + '`' : '**falta l\'enllaç**'} |`).join('\n')}
+${VIDEOS.map(v => `| ${v.titol} | ${MENA_LBL[v.mena] || v.mena} | ${v.qui.join(', ') || '—'} | ${v.url ? '`' + v.url + '`' : '**falta l\'enllaç**'} |`).join('\n')}
 
 ${VIDEOS.filter(v => !v.url).length
     ? `**Pendent d'enllaç:** ${VIDEOS.filter(v => !v.url).map(v => v.titol).join(', ')}. ` +

@@ -147,7 +147,7 @@ altre senyal simbòlic. Un sistema que digui a algú qui és a partir de la seva
 data de naixement per sobre del que ha fet, trairia tot el model.
 
 Els dotze fundadors del Comando encarnen un arquetip cadascun; els tres
-supervilans (Max Miedox, Mala Yerbax, Mc Greggor) són **els tres modes de
+supervilans (Max Miedox, Mala Yerbax, Mr. McGragor) són **els tres modes de
 fallida** d'una comunitat: la por que paralitza, el rumor que corroeix i
 l'extracció que buida. Serveixen alhora de narrativa i de diagnòstic.
 
@@ -703,6 +703,45 @@ Tres conseqüències que no són negociables:
 I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
+
+## Veda 148 — Reservar un nom no és tenir-lo, i s'ha de dir a la cara
+
+L'encàrrec era «crea els usuaris al directori de tots els fundadors del
+Comando». Fet literalment, seria publicar dotze fitxes a nom de dotze persones
+reals que no ho han demanat, **firmades per una clau que no és la seva**. Això
+trenca la sola cosa que fa que aquest directori valgui res: cada fitxa la signa
+qui la fa, i qui l'allotja no hi pot escriure.
+
+La sortida no és fer-ho una mica menys: és fer-ho al revés.
+
+- **La reserva** diu quin `@nick` es guarda per a qui. És pública, és al
+  repositori, i **no publica cap fitxa**.
+- **El convit** és un codi que obre el directori amb el nick posat i un cartell
+  que explica d'on surt. Al repositori hi ha **el hash del codi i no el codi**:
+  un codi públic no identifica ningú.
+- **L'alta** la fa la persona: es fa la clau al seu navegador i publica la
+  **seva** fitxa. Fins aquí no existeix res al seu nom.
+
+I la part que costa més d'escriure i és la que ha d'anar més gran: **reservar
+no bloqueja el nick a ningú.** No pot. No hi ha registre de noms i no n'hi pot
+haver —qui reparteix noms mana, i aquesta xarxa no té ningú que mani. La reserva
+és una declaració pública de l'autor, comprovable perquè és al repositori. El
+cartell ho diu amb aquestes paraules, i el camp del nick **no es bloqueja**: un
+camp bloquejat convertiria una invitació en una assignació, i qui rep un convit
+ha de poder dir que no el vol.
+
+Dues coses tècniques que se n'aprenen:
+
+- **Una funció copiada es vigila comparant què fa, no com està escrita.** La
+  normalització del nick viu al directori i el generador n'hi té una còpia.
+  Comparar-ne el text va acusar de divergència una diferència que no ho era —el
+  rang d'accents escrit literal contra escapat—, i una guarda que acusa el que
+  no és s'acaba silenciant. Ara es construeix la funció del directori del seu
+  propi codi font i totes dues passen les mateixes tretze proves.
+- **El cas buit ha de fallar sol.** Una reserva sense codi encunyat té el hash
+  buit; si la cerca no ho comprova, un codi buit obre **totes** les reserves que
+  encara no en tenen. És una porta que s'obre precisament perquè encara no
+  s'havia acabat de tancar.
 
 ## Veda 147 — Una porta que convida i una sala que no t'espera
 

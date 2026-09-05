@@ -125,7 +125,7 @@ arribin els perfils complets dels còmics.
 |---|---|
 | Max Miedox | La por que paralitza abans de començar |
 | Mala Yerbax | El rumor que corroeix la confiança |
-| Mc Greggor | L'extracció que buida el territori |
+| Mr. McGragor | L'extracció que buida el territori |
 
 Els tres supervilans no són dolents de còmic: són **els tres modes de fallida**
 d'una comunitat. Per això funcionen com a narrativa i com a diagnòstic alhora.

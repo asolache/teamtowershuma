@@ -48,14 +48,24 @@ I el decorat és **Molekulandia** (`molekulandia.html`).
 | Peça | Mena | Qui | Estat |
 |---|---|---|---|
 | Els capítols del Comando | La sèrie | — | `https://youtube.com/playlist?list=PLMB33ApQeOYWbPLQRbf9B5gMpgs0cL5NB` |
+| Horacio Motomachi | Videoclip | Horacio Motomachi | `https://youtu.be/3Kf36tpHk98` |
+| Reciclator | Videoclip | Reciclator | `https://youtu.be/Py44l1WsSO4` |
+| Supergerminador | Videoclip | Supergerminador | `https://youtu.be/RyAkyIp6P10` |
+| La Medusa Andaluza | Videoclip | La Medusa Andaluza | `https://youtu.be/5FAvOvi2P30` |
+| La Bomba Disco | Videoclip | Guiri-Guay, Flying Frog | `https://youtu.be/JsEAeiQ-fc0` |
+| Flying Frog | Videoclip | Flying Frog | `https://youtu.be/WfpclzQod2g` |
+| La Formiga Atòmica | Videoclip | Formiga Atòmica | `https://youtu.be/yjQ5WnGChh0` |
+| El Risitas i el Príncep de Bekelar | Videoclip | El Risitas, Príncep de Bekelar | `https://youtu.be/bg4N48q_dtI` |
+| Mr. McGragor | Videoclip | Mr. McGragor | `https://youtu.be/C6-7B2O5dDY` |
 | El tema d'Horacio Motomachi | Tema | Horacio Motomachi | `media/comando-horacio.mp3` |
-| Reciclator · el taller | Personatge | Reciclator | **falta l'enllaç** |
-| Supergerminador · germinar | Personatge | Supergerminador | **falta l'enllaç** |
-| Fraktalman · el tema | Personatge | Fraktalman | **falta l'enllaç** |
-| La banda en directe | Directe | — | **falta l'enllaç** |
+| El tema del Guiri-Guay | Tema | Guiri-Guay | `https://youtu.be/Q15My_6qb4A` |
+| La Bomba Disco, a la Floresta | Directe | — | `https://youtu.be/PNFy7V8UbQs` |
+| Pigmentón | Videoclip | Pigmentón | **falta l'enllaç** |
+| Fraktalman | Tema | Fraktalman | **falta l'enllaç** |
+| Tekno Kartoffeln | Tema | — | **falta l'enllaç** |
 | Un taller, filmat | Directe | — | **falta l'enllaç** |
 
-**Pendent d'enllaç:** Reciclator · el taller, Supergerminador · germinar, Fraktalman · el tema, La banda en directe, Un taller, filmat. Mentre no hi siguin, la pàgina els ensenya dient que encara no hi són — no com una porta tancada.
+**Pendent d'enllaç:** Pigmentón, Fraktalman, Tekno Kartoffeln, Un taller, filmat. Mentre no hi siguin, la pàgina els ensenya dient que encara no hi són — no com una porta tancada.
 
 ## El blog del Comando
 

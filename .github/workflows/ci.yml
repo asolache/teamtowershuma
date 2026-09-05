@@ -245,6 +245,13 @@ jobs:
       - name: El Comando surt de les llistes declarades
         run: node SOS/tools/build-comando.js --check
 
+      # Els nicks reservats per als fundadors. La guarda mira, sobretot, que la
+      # normalització del nick d'aquí faci el mateix que la del directori: si
+      # divergissin, el convit obriria el formulari amb un nick que no és el
+      # reservat i tothom veuria un nom que hi és, només que un altre.
+      - name: Les reserves de nick del Comando
+        run: node SOS/tools/build-convits.js --check
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests

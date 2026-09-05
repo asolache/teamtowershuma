@@ -19,6 +19,7 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', 'joc.html');
 let pass = 0, fail = 0;
@@ -176,8 +177,19 @@ console.log('\n6 · Els tres del còmic, amb el seu poder');
       paralitza: !!J.VILANS.por, rapid: J.VILANS.rumor.vel > J.VILANS.por.vel,
       roba: J.VILANS.extraccio.roba > 0, dur: J.VILANS.extraccio.vida > J.VILANS.rumor.vida };
   });
-  ok(r.noms.includes('Max Miedox') && r.noms.includes('Mala Yerbax') && r.noms.includes('Mc Greggor'),
-    'són els tres supervilans del còmic: ' + r.noms.join(', '));
+  /* Els noms es llegeixen de `COMANDO_VILLAINS`, que és d'on els llegeix l'app,
+     i no s'escriuen aquí. Escrits a mà eren una quarta còpia del mateix nom, i
+     va passar el que havia de passar: el supervilà va viure amb dues grafies
+     —«Mc Greggor» a les dades i «McGragor» al text dels còmics— i aquest test
+     defensava la vella. Una prova que copia el que hauria de comprovar dona
+     verd el dia que la font canvia i vermell el dia que es corregeix. */
+  const APP_SRC = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'index.html'), 'utf8');
+  const canonics = [...(APP_SRC.match(/^const COMANDO_VILLAINS=\[[\s\S]*?\n\];/m) || [''])[0]
+    .matchAll(/name:'((?:[^'\\]|\\.)*)'/g)].map(m => m[1].replace(/\\'/g, "'"));
+  const falten = canonics.filter(n => !r.noms.includes(n));
+  ok(canonics.length === 3 && !falten.length,
+    'són els tres supervilans que declara l\'app: ' + r.noms.join(', ')
+    + (falten.length ? ' — hi falta ' + falten.join(', ') : ''));
   ok(r.rapid, 'el rumor va més de pressa que la por');
   ok(r.roba && r.dur, 'i l\'extracció et pren hores mentre camina, i costa més de tombar');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));

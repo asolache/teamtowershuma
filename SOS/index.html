@@ -3554,11 +3554,21 @@ const COMANDO_FOUNDERS=[
   {hero:'Reciclator',god:'hebe',why:'Renova recursos i energia · intendència'},
   {hero:'Supergerminador',god:'demeter',why:'Germina i replica · pol·linització del valor'}
 ];
-const COMANDO_ALLIES=[{name:'Formiga Atòmica',role:'Aliada'}];
+/* Els aliats. No són del nucli i per això no van a `CANONICAL_HEROES` —allà cada
+   fitxa ha de dir poder i equivalència a un equip, i inventar-los seria fer
+   passar per obra el que no ho és.
+   `previ:true` vol dir que l'autor n'ha dit el nom i encara no ha dit què són:
+   surten a un capítol, i de quin bàndol i amb quin paper ho diu ell. */
+const COMANDO_ALLIES=[
+  {name:'Formiga Atòmica',role:'Aliada',what:'Modista. La seva superarma és la Pistola Amor'},
+  {name:'Flying Frog',role:'Aliada',what:'Posa el color al còmic del Comando'},
+  {name:'El Risitas',role:'Aliat',previ:true,what:'El nòvio de la Formiga Atòmica'},
+  {name:'Príncep de Bekelar',role:'Aliat',previ:true,what:'Surt al mateix capítol que el Risitas'}
+];
 const COMANDO_VILLAINS=[
   {name:'Max Miedox',role:'Supervilà',what:'La por que paralitza abans de començar'},
   {name:'Mala Yerbax',role:'Supervilà',what:'El rumor que corroeix la confiança'},
-  {name:'Mc Greggor',role:'Supervilà',what:'L\'extracció que buida el territori'}
+  {name:'Mr. McGragor',role:'Supervilà',what:'L\'extracció que buida el territori'}
 ];
 // Escala de reputació del Comando dins del SOS: es puja amb evidència, no amb temps.
 const COMANDO_RANKS=[
@@ -7339,7 +7349,7 @@ const MOLEKULON_LINKS={
    comentari enmig les fon i el roster es queda curt sense que peti res. El que
    s'hagi de dir d'un personatge concret es diu aquí dalt.
 
-   **La Bomba Amor i el Rato Cagón** són superarmes que surten del capítol en
+   **La Bomba Amor i el Rayo Cagón** són superarmes que surten del capítol en
    vídeo de Reciclator, dites per l'autor. No són del còmic. Van al seu taller i
    no a la mà de ningú, perquè el que se sap és que d'allà en surten; quin heroi
    les porta ho diu l'obra i no aquesta llista.
@@ -7403,7 +7413,7 @@ const CANONICAL_HEROES=[
    vna:'L\'estabilitat estructural. Qui no es mou quan tot es mou és el que evita la caiguda'},
   {name:'Reciclator',role:'Fabricant de superarmes',on:'Vídeo',
    power:'Construeix les superarmes de la banda a partir del que els altres han llençat',
-   arma:'El taller: el que ja existeix i ningú volia. D\'allà en surten la Bomba Amor i el Rato Cagón',
+   arma:'El taller: el que ja existeix i ningú volia. D\'allà en surten la Bomba Amor i el Rayo Cagón',
    vna:'Qui fa que no calgui comprar res nou perquè ja hi és, en un altre lloc i amb una altra forma'},
   {name:'Supergerminador',role:'Mestre del germinat',on:'Vídeo i web pròpia',
    power:'Ensenya a germinar per menjar superaliments. I canta amb la seva rialla',

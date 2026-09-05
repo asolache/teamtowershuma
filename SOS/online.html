@@ -116,6 +116,12 @@ textarea{min-height:70px;resize:vertical}
 .nick-camp .nick-at{padding:0 .1rem 0 .7rem;color:var(--muted);font-family:var(--mono)}
 .nick-camp input{border:0;background:transparent;flex:1;font-family:var(--mono)}
 .nick-camp:focus-within{border-color:var(--indigo)}
+/* El cartell del convit. Va destacat perquè és una cosa que li ha passat a qui
+   obre la pàgina i que no ha demanat: ha de poder llegir de què va abans de
+   posar-hi res. */
+.convit-avis{margin:.5rem 0 0;padding:.7rem .85rem;font-size:.82rem;line-height:1.6;
+  border-left:2px solid var(--purple);background:rgba(224,64,251,.07);border-radius:0 8px 8px 0}
+.convit-avis b{color:var(--text)}
 
 /* La previsualització: el que sortirà, tal com sortirà. */
 .previ{border:1px solid var(--green);border-radius:10px;background:rgba(0,230,118,.05);padding:1rem;margin-top:.4rem}
@@ -290,6 +296,9 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
         <input type="text" id="fNick" maxlength="20" placeholder="marta-vidal" autocapitalize="none" autocorrect="off" spellcheck="false">
       </div>
       <p class="mini" id="nickAvis" aria-live="polite">Lletres, números i guions. Serveix perquè la gent et pugui anomenar; qui t'identifica de debò és la teva firma.</p>
+      <!-- Només surt si s'ha entrat amb un convit del Comando. Va aquí, enganxat
+           al camp del nick, perquè és el camp del qual parla. -->
+      <p class="convit-avis" id="convitAvis" hidden></p>
 
       <label for="fPais">On ets</label>
       <select id="fPais">
@@ -761,6 +770,29 @@ function normNick(s){
   return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/[^a-z0-9-]+/g,'-').replace(/-+/g,'-').replace(/^-+|-+$/g,'').slice(0,20);
 }
+/*CONVITS*/
+/* Els nicks que el Comando es guarda per als seus fundadors. Generat per
+   SOS/tools/build-convits.js · no s'edita a mà.
+   `h` és el sha256 del codi d'invitació; el codi no és aquí i no hi pot ser.
+   `h` buit vol dir que la reserva existeix i el codi encara no s'ha encunyat.
+   Reservar **no bloqueja el nick a ningú**: no hi ha registre de noms. És una
+   declaració pública de l'autor de l'obra, i es pot comprovar perquè és al
+   repositori. */
+const CONVITS=[
+  {nick:'mazinguer',heroi:'Mazinguer',h:''},
+  {nick:'horacio',heroi:'Horacio Motomachi',h:''},
+  {nick:'guiriguay',heroi:'Guiri-Guay',h:''},
+  {nick:'purpleman',heroi:'Purpleman',h:''},
+  {nick:'medusa',heroi:'La Medusa Andaluza',h:''},
+  {nick:'barbamuda',heroi:'Barbamuda',h:''},
+  {nick:'aviador',heroi:'El Aviador',h:''},
+  {nick:'afrodito',heroi:'Afrodito',h:''},
+  {nick:'electroplasman',heroi:'Electroplasman',h:''},
+  {nick:'pigmenton',heroi:'Pigmentón',h:''},
+  {nick:'reciclator',heroi:'Reciclator',h:''},
+  {nick:'supergerminador',heroi:'Supergerminador',h:''}
+];
+/*/CONVITS*/
 function bastirFitxa({nom,nick,municipi,pais,ofereix,busca,retirada,did,exPub}){
   const neteja=l=>(l||[]).slice(0,12).map(x=>({
     cat:CAT[x.cat]?x.cat:'altres',
@@ -1409,9 +1441,52 @@ async function carrega(){
 
    El que **no** fa aquest camí, i és el que el fa acceptable: no publica res.
    S'obre el formulari, s'omple i es veu la previsualització. Veda 47. */
+/* ── El convit ───────────────────────────────────────────────────────────────
+   Un fundador del Comando rep un codi. L'obre, i el que passa és **només**
+   això: se li obre el formulari amb el seu nick posat i un cartell que li diu
+   d'on surt. La fitxa la publica ell, signada amb la clau que li fa el seu
+   navegador.
+
+   El que el convit deliberadament **no** fa, i és tot el disseny:
+
+   · **No publica res.** Ningú té una fitxa al directori fins que la signa. Una
+     fitxa firmada per l'autor a nom d'un altre trencaria l'única cosa que fa
+     que aquest directori valgui: que qui l'allotja no hi pot escriure.
+   · **No bloqueja el nick.** No hi ha registre de noms i no n'hi pot haver.
+     Reservar és una declaració pública, i el cartell ho diu amb aquestes
+     paraules perquè ningú se'n vagi pensant que té un cadenat.
+   · **No identifica ningú.** Qui tingui el codi el pot fer servir. Identifica
+     el `did` que firmi la fitxa, com sempre. */
+async function convitDe(codi){
+  const c=String(codi||'').trim().toLowerCase();
+  if(!/^[0-9a-f]{8,64}$/.test(c))return null;
+  const h=await sha256hex(c);
+  return (typeof CONVITS!=='undefined'?CONVITS:[]).find(x=>x.h&&x.h===h)||null;
+}
+function pintaConvit(c){
+  const el=$('#convitAvis');if(!el)return;
+  if(!c){el.hidden=true;return;}
+  el.hidden=false;
+  el.innerHTML='<b>Convit del Comando Molekulon</b> · el nick <b>@'+esc(c.nick)+'</b> està reservat per a '+
+    esc(c.heroi)+'. <b>Aquí no hi havia cap fitxa teva</b>: la que publiquis la firmarà la clau que t\'acaba '+
+    'de fer el navegador, i serà teva. Reservar un nick no el bloqueja a ningú —aquí no hi ha registre de '+
+    'noms—: és una declaració pública, i pots posar-te el que vulguis.';
+}
 async function entradaPerHash(){
   const h=(location.hash||'').replace('#','');
+  const conv=h.startsWith('convit=')?await convitDe(h.slice(7)):null;
+  if(conv){
+    obreAlta();
+    /* El nick es posa i **no es bloqueja el camp**: qui rep el convit ha de
+       poder dir que no el vol. Un camp bloquejat convertiria una invitació en
+       una assignació. */
+    $('#fNick').value=conv.nick;
+    pintaConvit(conv);
+    avisNick();
+    return;
+  }
   if(h!=='alta'&&h!=='alta-sos')return;
+  pintaConvit(null);
   obreAlta();
   /* `#alta-sos` és el que fa servir l'app: obre i porta el perfil. `#alta` sec
      només obre, per a qui es desa l'adreça del formulari. */
@@ -1547,7 +1622,7 @@ async function init(){
    codi de debò, no amb una còpia. */
 window.__ONLINE={S,CATS,CAT,catMeta,FITXA_TIPUS,CAMPS,bastirFitxa,fitxaValida,verifyRecord,signRecord,
   normNick,comarcaDe,paisActual,avisNick,pintaMunicipis,omplirPaisos,GEO_CAT,GEO_EUS,PAISOS,
-  relayWsUrl,relayObre,relayEnvia,relayTanca,entradaPerHash,
+  relayWsUrl,relayObre,relayEnvia,relayTanca,entradaPerHash,convitDe,pintaConvit,CONVITS,
   getIdentity,tamisar,filtrar,textCercable,salaEntre,clauEntre,xifra,desxifra,configurat,
   pintaFitxes,pintaPrevi,pintaEstat,carrega,obreAlta,publica,_canon,_didFromJwk,sha256,sha256hex,
   dbGet,dbPut,dbGetAll,perfilDelSOS,portaPerfil,IDENTITY_BACKUP_TYPE,exportaIdentitat,entraAmbIdentitat};
