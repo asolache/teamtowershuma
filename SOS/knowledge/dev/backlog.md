@@ -44,6 +44,31 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### Els nicks reservats dels fundadors del Comando · fet
+
+L'encàrrec deia «crea els usuaris al directori de tots els fundadors». Fet
+literalment seria publicar dotze fitxes a nom de dotze persones reals, firmades
+per una clau que no és la seva. Fet a l'inrevés: **reserva pública + convit +
+alta signada per la persona.** Veda 148.
+
+- `SOS/tools/build-convits.js` declara les dotze reserves (nick ↔ fundador de
+  `COMANDO_FOUNDERS`) i escriu `CONVITS` a `online.html`. Al repositori hi ha
+  **el hash del codi i no el codi**: `--nou <nick>` l'encunya, l'ensenya un sol
+  cop amb l'enllaç fet, i dona la línia per enganxar.
+- `online.html#convit=<codi>` obre l'alta amb el nick posat i un cartell que
+  diu tres coses: aquí no hi havia cap fitxa teva, la que publiquis la firmarà
+  la teva clau, i **reservar no bloqueja el nick a ningú**. El camp no es
+  bloqueja: un convit no és una assignació.
+- `test-convit.mjs` (19 assercions) prova sobretot el que **no** passa: no es
+  publica res, un codi que no és no obre res, una reserva sense codi encunyat no
+  s'obre amb un codi buit, i una fitxa amb el nick reservat i el did d'un altre
+  no passa la validació.
+
+**El que queda i és de l'autor:** encunyar els dotze codis i donar-los. La
+pàgina i el document ja diuen quantes reserves tenen codi i quantes no.
+
+---
+
 **P0 · Les dues dinàmiques fundacionals no tenen pàgina** — pendent
 
 De les dotze dinàmiques del catàleg, sis ja tenen la seva pàgina pública —La
