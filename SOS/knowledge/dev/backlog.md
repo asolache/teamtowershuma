@@ -44,13 +44,29 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
-**P0 · El repte, dit per als dos sectors · i el mapa de valor privat** — pendent
+**P0 · El repte, dit per als dos sectors · i el mapa de valor privat** — (a) fet, (b) pendent
 
 Dues coses que van juntes perquè totes dues surten del mateix: **la
 metodologia és una i els productes són dos**, i avui la portada només explica
 el repte d'un dels dos.
 
-### (a) `#enfoc` i la resta de seccions: un sol repte, dos sectors
+### (a) `#enfoc` i la resta de seccions: un sol repte, dos sectors — **fet**
+
+> **Fet**: `#enfoc` reescrit amb les dues bandes de costat i les mateixes tres
+> preguntes, la frase pont, dues portes noves al catàleg que filtren de debò
+> (el selector del filtre ja no depèn d'un contenidor), `#relat` amb la
+> trajectòria corporativa que ja teníem documentada, `#fentpinya` dient que va
+> néixer per a equips d'empresa, `#cost` dient que el sostre de 5.000 € és una
+> regla de l'administració i no una tarifa, i dues objeccions noves —com es
+> contracta des d'una empresa, i què passa amb el que el mapa revela sobre
+> persones. Cinc regles noves a `check-landing.js`, totes provades trencant-les,
+> i les seccions 9 i 10 de `test-portada.mjs`. Veda 147.
+>
+> **El que queda d'aquesta part**: els formularis. `diagnostic.html` i
+> `pressupost.html` ja pregunten quina mena d'entitat ets (`ORGS` amb el seu
+> `sector`) i el text del voltant encara no canvia amb la resposta.
+
+El diagnòstic original, que és el que això venia a arreglar:
 
 El hero ja obre dues portes —empreses i cooperatives / ajuntaments, consells i
 entitats— i el catàleg ja filtra per sector. **La secció del repte, no.** Diu:
