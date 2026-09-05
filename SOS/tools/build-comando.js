@@ -160,7 +160,7 @@ const VIDEOS = [
   { id: 'risitas-bekelar', mena: 'videoclip', qui: ['El Risitas', 'Príncep de Bekelar'],
     titol: 'El Risitas i el Príncep de Bekelar', d: 'El nòvio de la Formiga Atòmica, i el Príncep.',
     url: 'https://youtu.be/bg4N48q_dtI' },
-  { id: 'mcgreggor', mena: 'videoclip', qui: ['Mc Greggor'], titol: 'Mc Greggor',
+  { id: 'mcgreggor', mena: 'videoclip', qui: ['Mr. McGragor'], titol: 'Mr. McGragor',
     d: 'El supervilà que ofereix en comptes d\'atacar. L\'autor el llegeix com a premonitori de l\'actualitat.',
     url: 'https://youtu.be/C6-7B2O5dDY' },
 

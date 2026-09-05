@@ -1348,13 +1348,14 @@ quin paper hi fan. Cap dels quatre entra a `CANONICAL_HEROES`, que exigeix
 poder i equivalència a un equip: inventar-los seria fer passar per obra el que
 no ho és.
 
-> **Defecte obert, i el decideix l'autor.** El supervilà té **dues grafies** al
-> repositori: `COMANDO_VILLAINS` diu `Mc Greggor` i el text dels còmics —a
-> `comando.html`, al blog, al codex i a la funció `ofereixMcGragor` de
-> `joc.html`— diu **McGragor**. És exactament el defecte de la veda 109 un pis
-> més avall: la guarda del relat vigila els noms d'heroi i **no els dels
-> vilans**. Quan l'autor digui quina és la bona, s'unifica a tot arreu i la
-> guarda s'estén als vilans i als aliats.
+> **Defecte trobat i tancat.** El supervilà tenia **dues grafies**: les dades
+> deien `Mc Greggor` i el text dels còmics —`comando.html`, el blog, el codex i
+> la funció `ofereixMcGragor` del joc— deia **McGragor**. Era el defecte de la
+> veda 109 un pis més avall: la guarda del relat vigilava els noms d'heroi i no
+> els dels vilans ni els dels aliats. L'autor ha dit que la bona és la de
+> l'obra: **Mr. McGragor**. Unificat a les cinc fitxes que deien l'altra, i la
+> guarda s'estén ara als vilans i als aliats amb la grafia vella a la llista
+> negra.
 
 **El que sí que ha entrat del contingut dels vídeos:** al capítol de Reciclator
 s'hi parla de dues superarmes, la **Bomba Amor** i el **Rayo Cagón**. Van a la

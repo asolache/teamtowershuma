@@ -147,7 +147,7 @@ altre senyal simbòlic. Un sistema que digui a algú qui és a partir de la seva
 data de naixement per sobre del que ha fet, trairia tot el model.
 
 Els dotze fundadors del Comando encarnen un arquetip cadascun; els tres
-supervilans (Max Miedox, Mala Yerbax, Mc Greggor) són **els tres modes de
+supervilans (Max Miedox, Mala Yerbax, Mr. McGragor) són **els tres modes de
 fallida** d'una comunitat: la por que paralitza, el rumor que corroeix i
 l'extracció que buida. Serveixen alhora de narrativa i de diagnòstic.
 
