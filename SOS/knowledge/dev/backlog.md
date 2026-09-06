@@ -44,6 +44,35 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### La intro del Comando · esborrany de guió fet, rodatge pendent
+
+`SOS/intro.html` explica el SOS —el problema dels projectes ciutadans i l'eina
+que hi posa esquelet— i feia de portada del Comando perquè no n'hi havia cap
+altra. Una intro que explica l'eina no presenta la història (veda 150).
+
+**Fet:** el guió d'una intro pròpia del Comando, declarat a `build-comando.js` i
+escrit a `knowledge/vision/comando-intro.md`. Dotze plans, 1:30, tall de 30 s, i
+acaba en dues portes: `index.html#/alta` per a qui vol fer-se el personatge ara i
+`uneix-te.html` per a qui només vol dir què fa al barri.
+
+**Pendent, i no és de codi:**
+
+- **Que l'autor el corregeixi.** La veu en off és una proposta. Els noms, l'ordre
+  i el to els sap ell.
+- **Vuit plans per filmar**, dels quals dos són captura de pantalla de l'app
+  (10 i 11) i sis són rodatge. Els altres quatre surten de material que ja
+  existeix: el directe de la Floresta, el Reciclator, el Supergerminador i
+  Mr. McGragor.
+- **Si es munta, on va.** Avui `intro.html` és al menú com «La intro». Amb dues
+  intros s'ha de decidir si la del Comando viu a `comando.html`, si té pàgina
+  pròpia, o si `intro.html` es reparteix en dues. No s'ha decidit i no s'ha de
+  decidir des del codi.
+
+El final de la història **no** és al guió ni hi ha d'entrar: no és en aquest
+repositori.
+
+---
+
 ### Els nicks reservats dels fundadors del Comando · fet
 
 L'encàrrec deia «crea els usuaris al directori de tots els fundadors». Fet

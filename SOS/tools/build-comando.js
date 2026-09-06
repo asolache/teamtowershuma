@@ -205,6 +205,93 @@ const POSTS = [
     d: 'Ja no cal triar de quina cosa ets: ets una persona amb una reputació que travessa totes les capes.' }
 ];
 
+/* ══ LA INTRO DEL COMANDO · esborrany de guió ════════════════════════════════
+   `SOS/intro.html` és una pel·lícula de setze plans que ja existeix i està bé,
+   però **explica el SOS**: el problema dels projectes ciutadans, l'esquelet que
+   els falta i l'eina que el posa. Servia de portada del Comando per manca d'una
+   altra, i una intro que explica l'eina no presenta la història (veda 150).
+
+   Això és el guió de la que sí que el presenta. Es declara aquí i no en un
+   document a mà pel mateix motiu que la resta de la pàgina: anomena
+   personatges i peces filmades, i els noms mal escrits entren per on s'escriu
+   de pressa. La guarda comprova que tot nom sigui del relat i que tota peça
+   citada existeixi a `VIDEOS`.
+
+   Tres decisions que no són òbvies:
+
+   · **Cada pla diu d'on surt la imatge.** `de` és l'id d'una peça de `VIDEOS`
+     quan el material ja està filmat, i `null` quan s'ha de fer. Un guió que no
+     distingeix les dues coses sembla més a prop d'estar fet del que està, i el
+     document acaba servint per decidir un pressupost.
+   · **El tall de 30 s no és un guió a part**, és una tria de plans d'aquest.
+     Dos guions divergeixen la primera vegada que se'n canvia un.
+   · **Acaba en dues portes i no en una**: fer-se el personatge (`#/alta`) per a
+     qui vol entrar-hi ara, i `uneix-te.html` per a qui només vol dir què fa.
+     Una sola crida deixa fora la meitat de qui ha arribat fins al final.
+
+   El que aquesta intro **no** diu: com acaba. El final del Comando no és en
+   aquest repositori i no hi ha d'entrar per un guió. */
+const INTRO = {
+  durada: 90,
+  tall: 30,
+  cta: {
+    principal: { ruta: 'alta', t: 'Fes el teu personatge',
+      d: 'Nom, població, cinc superpoders i les teves superarmes. Es queda al teu aparell.' },
+    segona: { href: 'uneix-te.html', t: 'Apunta-t\'hi',
+      d: 'Per a qui encara no vol crear res: dir què fa al barri i que consti.' }
+  },
+  plans: [
+    { n: 1, s: 7, titol: 'El Mundo Muerto', de: null, qui: [], tall: true,
+      img: 'Carrer gris a primera hora. Deu persones passant en direccions diferents; cap es mira. Trànsit, sense música.',
+      veu: 'Al Mundo Muerto cadascú aguanta el seu tros. I quan un cau, cau sol.',
+      retol: 'MUNDO MUERTO' },
+    { n: 2, s: 6, titol: 'No és ciència-ficció', de: null, qui: [], tall: false,
+      img: 'El mateix pla, aturat. A sobre hi apareix el nom del poble de qui mira.',
+      veu: 'No és un futur. És dimarts, i és aquí.', retol: null },
+    { n: 3, s: 8, titol: 'L\'encàrrec', de: null, qui: ['Mazinguer', 'Horacio Motomachi'], tall: false,
+      diu: { objectiu: 150000 },
+      img: 'Vinyeta del còmic 1: el Gran Molekulon dona l\'encàrrec, i dos baixen a buscar-los.',
+      veu: 'Fa dos còmics, dos d\'aquests van rebre un encàrrec: baixar i trobar-ne cent cinquanta mil.',
+      retol: null },
+    { n: 4, s: 7, titol: 'La banda existeix', de: 'directe-floresta', qui: [], tall: true,
+      img: 'La Bomba Disco en directe a la Floresta. Gent que salta, no figurants.',
+      veu: 'El Comando no és una idea. Té banda, i toca.', retol: null },
+    { n: 5, s: 8, titol: 'Les superarmes surten de les deixalles', de: 'reciclator', qui: ['Reciclator'], tall: false,
+      img: 'El taller del Reciclator: el que ja existeix i ningú volia.',
+      veu: 'Les superarmes no es compren. Es fan amb el que uns altres han llençat: d\'allà surten la Bomba Amor i el Rayo Cagón.',
+      retol: null },
+    { n: 6, s: 7, titol: 'I cadascú fa una cosa que fa falta', de: 'supergerminador',
+      qui: ['Supergerminador', 'La Medusa Andaluza', 'Flying Frog'], tall: false,
+      img: 'Muntatge curt: qui ensenya a germinar, qui creua la informació, qui hi posa el color.',
+      veu: 'Un ensenya a germinar. Una altra connecta els qui no es parlaven. Una altra hi posa el color.',
+      retol: null },
+    { n: 7, s: 7, titol: 'El vilà no crida', de: 'mcgreggor', qui: ['Mr. McGragor'], tall: false,
+      img: 'Mr. McGragor, amable, oferint. Pla llarg i quiet.',
+      veu: 'I el vilà no ataca: ofereix. Per això costa tant de veure\'l.', retol: null },
+    { n: 8, s: 8, titol: 'La teva superarma ja la tens', de: null, qui: [], tall: true,
+      img: 'Tres mans, tres plans curts: una escala que passa a un veí, un tupper, una bici que es torna a moure.',
+      veu: 'La teva superarma no te l\'has d\'inventar. És el que ja saps fer i el que ja deixes.',
+      retol: null },
+    { n: 9, s: 7, titol: 'Els que falten', de: null, qui: [], tall: false,
+      diu: { herois: 14, objectiu: 150000 },
+      img: 'Els catorze cromos dels herois canònics, i darrere seu el comptador que segueix.',
+      veu: 'Els herois canònics són catorze. La pel·lícula en necessita cent cinquanta mil.',
+      retol: null },
+    { n: 10, s: 9, titol: 'Com hi entres', de: null, qui: [], tall: false,
+      img: 'Pantalla d\'alta, filmada de debò: nom, població, superpoders, superarmes.',
+      veu: 'Fas el teu personatge amb el que ja fas al barri. Es queda al teu aparell i no puja enlloc.',
+      retol: null },
+    { n: 11, s: 8, titol: 'Els crèdits són el registre', de: null, qui: [], tall: false,
+      img: 'El registre públic passant, amb noms i dates de veritat.',
+      veu: 'Cada cosa que fas i que algú altre confirma va als crèdits, amb el teu nom i la seva data. Aquí no hi ha figurants.',
+      retol: null },
+    { n: 12, s: 8, titol: 'Les dues portes', de: null, qui: [], tall: true, cta: true,
+      img: 'Negre. El nom del Comando, i a sota les dues portes.',
+      veu: 'Si el que has vist ja ho fas, ja hi ets. Només falta que consti.',
+      retol: 'COMANDO MOLEKULON' }
+  ]
+};
+
 /* ══ LECTURA DE LES FONTS ════════════════════════════════════════════════════ */
 const APP = readFileSync(join(SOS, 'index.html'), 'utf8');
 
@@ -277,7 +364,50 @@ EIXOS.forEach(e => {
   const r = d.split('#/')[1];
   if (r && !RUTES.has(r)) bad(`l'eix «${e.nom}» obre la ruta «${r}», que no és a MODAL_ROUTES`);
 });
-if (fails) { console.log(`\n❌ ${fails} problema${fails === 1 ? '' : 's'} a la declaració del Comando.`); process.exit(1); }
+/* ── El guió de la intro ────────────────────────────────────────────────────
+   Les mateixes regles que la resta, més dues que només valen per a un guió:
+   que els segons quadrin —un guió que diu que dura un minut i mig i en dura
+   dos no serveix per encarregar-lo— i que la peça citada a `de` existeixi de
+   debò, perquè «ja ho tenim filmat» és la frase que fa que després no es
+   filmi. */
+const idsVideo = new Set(VIDEOS.map(v => v.id));
+INTRO.plans.forEach(p => {
+  p.qui.filter(n => !noms.has(n)).forEach(n =>
+    bad(`el pla ${p.n} de la intro anomena ${n}, que no és ni al roster, ni als aliats, ni als vilans`));
+  if (p.de && !idsVideo.has(p.de)) bad(`el pla ${p.n} de la intro surt de «${p.de}», que no és cap peça de VIDEOS`);
+  /* Una peça sense enllaç no pot fer de material existent: seria dir que un pla
+     està resolt quan el que hi ha és el nom d'una cosa que encara no s'ha fet. */
+  if (p.de) {
+    const v = VIDEOS.find(x => x.id === p.de);
+    if (v && !v.url) bad(`el pla ${p.n} surt de «${v.titol}», que encara no té enllaç: no pot fer de material existent`);
+  }
+  if (p.retol && /[!¡]/.test(p.retol)) bad(`el rètol del pla ${p.n} porta exclamació, i la guia de marca no en vol als titulars`);
+  /* La veu en off diu xifres amb lletra —«catorze», «cent cinquanta mil»— i una
+     xifra amb lletra no la troba cap cerca ni cap altra guarda. `diu` és la
+     mateixa xifra en número perquè es pugui comparar amb la font: el dia que
+     l'objectiu o el roster canviïn, això peta i el guió es corregeix. Sense
+     això, el text seguiria dient el número vell amb tota la naturalitat. */
+  if (p.diu && p.diu.herois !== undefined && p.diu.herois !== HEROIS.length)
+    bad(`el pla ${p.n} diu ${p.diu.herois} herois canònics i n'hi ha ${HEROIS.length}`);
+  if (p.diu && p.diu.objectiu !== undefined && p.diu.objectiu !== OBJECTIU)
+    bad(`el pla ${p.n} diu un objectiu de ${p.diu.objectiu} i COMANDO_TARGET és ${OBJECTIU}`);
+});
+const segons = INTRO.plans.reduce((a, p) => a + p.s, 0);
+if (segons !== INTRO.durada) bad(`la intro diu que dura ${INTRO.durada} s i els plans en sumen ${segons}`);
+const segonsTall = INTRO.plans.filter(p => p.tall).reduce((a, p) => a + p.s, 0);
+if (segonsTall !== INTRO.tall) bad(`el tall diu que dura ${INTRO.tall} s i els plans triats en sumen ${segonsTall}`);
+const ctes = INTRO.plans.filter(p => p.cta);
+if (ctes.length !== 1) bad(`la intro té ${ctes.length} plans de crida i n'ha de tenir un`);
+else if (ctes[0] !== INTRO.plans[INTRO.plans.length - 1]) bad('el pla de crida de la intro no és l\'últim');
+/* El tall ha d'acabar on acaba la intro: una versió curta que es queda sense
+   la crida és un anunci que no diu què fer després. */
+if (ctes.length === 1 && !ctes[0].tall) bad('el tall de 30 s es queda sense el pla de crida');
+if (!RUTES.has(INTRO.cta.principal.ruta))
+  bad(`la crida de la intro obre la ruta «${INTRO.cta.principal.ruta}», que no és a MODAL_ROUTES`);
+if (!existsSync(join(SOS, INTRO.cta.segona.href)))
+  bad(`la segona crida de la intro apunta a ${INTRO.cta.segona.href}, que no existeix`);
+
+if (fails) { console.log(`\n❌ ${fails} ${fails === 1 ? 'problema' : 'problemes'} a la declaració del Comando.`); process.exit(1); }
 
 /* ══ L'HTML ══════════════════════════════════════════════════════════════════ */
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -428,8 +558,79 @@ ${VIDEOS.filter(v => !v.url).length
 ${POSTS.map(p => `- [${p.t}](../blog.html#${p.anc}) — ${p.d}`).join('\n')}
 `;
 
+/* L'esborrany del guió. És un document i no una pàgina a posta: el que ha de
+   passar ara és que l'autor el corregeixi, i un text que es llegeix sencer en
+   dos minuts es corregeix; una pantalla amb el guió a dins, no.
+
+   Els codis de temps no s'escriuen: es compten. Escrits a mà, el dia que un pla
+   creixi dos segons quedaran onze codis dient una altra cosa i ningú ho veurà
+   fins que algú intenti muntar-ho. */
+const mmss = t => `${t / 60 | 0}:${String(t % 60).padStart(2, '0')}`;
+const mdIntro = () => {
+  let t = 0;
+  const files = INTRO.plans.map(p => {
+    const de = t; t += p.s;
+    const font = p.de ? `[${(VIDEOS.find(v => v.id === p.de) || {}).titol}](${(VIDEOS.find(v => v.id === p.de) || {}).url})` : '**a filmar**';
+    return `| ${p.n} | ${mmss(de)}–${mmss(t)} | ${p.titol} | ${p.img} | «${p.veu}» | ${p.retol || '—'} | ${font} |`;
+  });
+  const aFilmar = INTRO.plans.filter(p => !p.de);
+  const teniu = INTRO.plans.filter(p => p.de);
+  return `# Comando Molekulon · la intro · **esborrany de guió**
+
+> Generat per \`SOS/tools/build-comando.js\`. No l'editis a mà: edita el generador.
+>
+> **Això és un esborrany.** La veu en off, els noms i l'ordre són una proposta
+> per corregir, no un guió tancat. El que hi falta ho sap l'autor i no el codi.
+
+## Per què una intro pròpia
+
+\`SOS/intro.html\` és una pel·lícula de setze plans que ja existeix i està bé,
+però **explica el SOS**: el problema dels projectes ciutadans i l'eina que hi
+posa esquelet. Feia de portada del Comando per manca d'una altra. Una intro que
+explica l'eina no presenta la història.
+
+Aquesta presenta el Comando i acaba demanant una cosa concreta.
+
+## El guió · ${INTRO.plans.length} plans, ${mmss(INTRO.durada)}
+
+| # | Temps | Pla | Imatge | Veu en off | Rètol | D'on surt |
+|---|---|---|---|---|---|---|
+${files.join('\n')}
+
+## Què hi ha filmat i què s'ha de filmar
+
+- **${teniu.length} plans surten de material que ja existeix**: ${teniu.map(p => `pla ${p.n} (${(VIDEOS.find(v => v.id === p.de) || {}).titol})`).join(', ')}.
+- **${aFilmar.length} plans s'han de fer**: ${aFilmar.map(p => `${p.n} · ${p.titol}`).join(' · ')}.
+
+Dels que s'han de fer, els plans 10 i 11 són captura de pantalla de l'aplicació
+—es poden gravar avui— i la resta són rodatge de carrer.
+
+## El tall de ${INTRO.tall} s
+
+No és un guió a part: és una tria de plans d'aquest —els ${INTRO.plans.filter(p => p.tall).map(p => p.n).join(', ')}—
+i acaba igual, amb la crida. Una versió curta que es queda sense dir què fer
+després és un anunci de res.
+
+## Com acaba: les dues portes
+
+| Porta | On va | Per a qui |
+|---|---|---|
+| **${INTRO.cta.principal.t}** | \`index.html#/${INTRO.cta.principal.ruta}\` | ${INTRO.cta.principal.d} |
+| **${INTRO.cta.segona.t}** | \`${INTRO.cta.segona.href}\` | ${INTRO.cta.segona.d} |
+
+Dues i no una: qui arriba al final d'una intro de minut i mig no hi arriba amb
+les mateixes ganes, i una sola crida deixa fora la meitat.
+
+## El que aquesta intro no diu
+
+**Com acaba la història.** El final del Comando no és en aquest repositori i no
+hi ha d'entrar per un guió.
+`;
+};
+
 const fPag = join(SOS, 'comando.html');
 const fMd = join(SOS, 'knowledge', 'vision', 'comando-peli.md');
+const fIntro = join(SOS, 'knowledge', 'vision', 'comando-intro.md');
 
 if (CHECK) {
   console.log('\nGuarda del Comando · la pàgina surt de les llistes declarades');
@@ -442,7 +643,10 @@ if (CHECK) {
   if (!existsSync(fMd) || readFileSync(fMd, 'utf8') !== md()) {
     mal++; console.log('  ✗ knowledge/vision/comando-peli.md està vell: corre `node SOS/tools/build-comando.js`');
   } else console.log('  ✓ i el document del projecte també');
-  console.log(mal ? `\n❌ ${mal} problema${mal === 1 ? '' : 's'}.` : '\n✅ El Comando quadra.');
+  if (!existsSync(fIntro) || readFileSync(fIntro, 'utf8') !== mdIntro()) {
+    mal++; console.log('  ✗ knowledge/vision/comando-intro.md està vell: corre `node SOS/tools/build-comando.js`');
+  } else console.log(`  ✓ i el guió de la intro (${INTRO.plans.length} plans, ${mmss(INTRO.durada)})`);
+  console.log(mal ? `\n❌ ${mal} ${mal === 1 ? 'problema' : 'problemes'}.` : '\n✅ El Comando quadra.');
   process.exit(mal ? 1 : 0);
 }
 
@@ -451,7 +655,10 @@ const r = posa(pagina);
 if (r.err) { console.log(`✗ a comando.html ${r.err}`); process.exit(1); }
 if (r.html !== pagina) writeFileSync(fPag, r.html);
 writeFileSync(fMd, md());
+writeFileSync(fIntro, mdIntro());
 console.log(`✅ Comando escrit · ${BLOCS.length} blocs, ${HEROIS.length} herois, ${EIXOS.length} eixos, ` +
   `${PASSOS.length} passos, ${VIDEOS.length} peces (${VIDEOS.filter(v => !v.url).length} sense enllaç) i ${POSTS.length} entrades del blog`);
+console.log(`   i el guió de la intro · ${INTRO.plans.length} plans, ${mmss(INTRO.durada)}, ` +
+  `${INTRO.plans.filter(p => !p.de).length} per filmar`);
 
-module.exports = { TESI, EIXOS, PASSOS, VIDEOS, POSTS, DECORAT };
+module.exports = { TESI, EIXOS, PASSOS, VIDEOS, POSTS, DECORAT, INTRO };
