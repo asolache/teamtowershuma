@@ -96,23 +96,43 @@ Només després ve `submitEntry`, que ja hi és i ja funciona.
 
 #### La conversa
 
-La proposta és **no fer una missatgeria nova**, sinó **fil per assumpte**: cada
-acord obre el seu fil, i el xat del node segueix sent el mur. Un fil sap de què
-parla —cita l'oferta, la tasca o l'objecte amb `CHAT_REFS`, que ja existeix— i
-per això pot tancar-se sol quan l'apunt es confirma. Una safata de missatges
-sense assumpte torna a ser un WhatsApp, i el WhatsApp ja el tenen.
+**No es fa una missatgeria nova.** Cada acord obre **el seu fil, penjat del
+context**, i el xat del node segueix sent el mur. Una safata de missatges sense
+assumpte torna a ser un WhatsApp, i el WhatsApp ja el tenen.
 
-Dues coses per decidir, i són decisions i no codi:
+#### Les dues decisions, preses
 
-- **On viu el fil quan les dues persones són de nodes diferents.** Avui el 1 a 1
-  xifrat és a `online.html`, sobre el relé; les tasques i les ofertes són a
-  l'app. O el fil baixa a l'app amb el mateix transport, o l'app aprèn a obrir el
-  fil del directori amb el context a dins.
-- **Què es publica d'un acord.** Un apunt confirmat és públic per disseny. Un
-  acord que encara no s'ha complert **no ho ha de ser**: dir en obert qui ha
-  promès què i no ho ha fet és una llista de deutors, i això no és aquesta eina.
-  Per defecte, l'acord el veuen només les dues parts fins que es converteix en
-  apunt.
+**1 · El fil penja del context, no de les persones.** Del subnode, del projecte
+o de la iniciativa a la MATRIU, de l'objecte, de l'oferta o del flux
+d'intercanvi. No hi ha safata de missatges directes.
+
+És la decisió correcta i val la pena dir per què, perquè és el que evita el
+projecte que ningú vol: **una missatgeria.** Un fil que penja d'una cosa sap de
+què parla, es pot tancar sol quan aquella cosa es resol, apareix on és útil —a
+sota de la tasca, no en una safata a part— i no genera la obligació d'estar
+disponible que té un xat obert. `CHAT_REFS` ja té les sis menes de context i
+`chatRefsFor` només ofereix les que existeixen de debò al node: la meitat de la
+feina està feta.
+
+Tres coses que la decisió arrossega i que s'han de resoldre en implementar-la:
+
+- **La visibilitat del fil no és la del context.** Un objecte o una tasca són del
+  node i els veu tot el node; el fil d'un acord entre dues persones, no. El fil
+  **penja** del context i **es veu** només qui hi és, fins que es converteix en
+  apunt. Si s'hereta la visibilitat del context, la decisió 2 queda desfeta el
+  primer dia.
+- **Un context pot ser de dos nodes.** Una coincidència entre nodes veïns no
+  penja d'un node sol. La sortida barata: el fil viu al node de qui l'obre i
+  l'altra part hi entra pel `did`, que és com ja funciona la resta.
+- **Quan el context desapareix, el fil no.** `chatRefAlive` ja resol això per als
+  missatges del mur: una referència que ja no existeix es marca de morta, no
+  s'amaga. El fil ha de fer igual —una conversa sobre una oferta retirada segueix
+  sent la prova del que es va acordar.
+
+**2 · Un acord que encara no s'ha complert no és públic.** Un apunt confirmat sí
+que ho és, per disseny. Un acord, no: dir en obert qui ha promès què i no ho ha
+fet és una llista de deutors, i això no és aquesta eina. El veuen les dues parts
+fins que es converteix en apunt.
 
 #### La pantalla de tasques com a lloc principal
 
