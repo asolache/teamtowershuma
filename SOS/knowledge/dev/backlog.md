@@ -44,6 +44,178 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### Els fluxos de comunicació entre persones · anàlisi, i el forat que hi ha al mig
+
+**El defecte, dit en una frase: el SOS sap registrar un fet que ja ha passat i
+sap confirmar-lo, però no té cap estat per a un fet que s'està acordant.** Entre
+«algú ofereix» i «queda apuntat al registre» hi ha una conversa, un compromís i
+una feina, i ara mateix aquestes tres coses passen fora de l'eina —al WhatsApp
+del grup, al carrer— i tornen al SOS quan ja estan fetes.
+
+Es nota en dos llocs, i el segon és el que va fer saltar això:
+
+- **Des d'una coincidència** (`supplyMatches`), el disseny actual «tanca
+  l'intercanvi directament» des del resultat. No hi ha cap pas de «m'interessa».
+  Qui troba la coincidència ha d'anar a buscar l'altra persona pel seu compte.
+- **Des d'una tasca** (`lesMevesTasques`), dir «m'hi poso» obre la pantalla
+  d'apuntar l'intercanvi. Però si encara no l'has fet, aquella pantalla et demana
+  que declaris una cosa que no ha passat. **El botó és correcte i la pantalla que
+  obre no.**
+
+#### Què hi ha avui, per no reinventar-ho
+
+| Peça | Què fa | Què no fa |
+|---|---|---|
+| `chatOf(node)`, `postChat`, `renderXat`, `chatInbox` | **Un mur per node.** Tothom del node el llegeix | No hi ha fil entre dues persones, ni fil per assumpte |
+| `CHAT_REFS` | Un missatge **pot citar** un flux, un apunt, una tasca, una iniciativa, un objecte o una oferta | Res del citat apunta cap enrere al missatge: la conversa és un cul-de-sac |
+| El xat d'`online.html` | 1 a 1 de veritat, xifrat, entre dos `did`, pel relé | Viu **al directori i no a l'app**, i no sap res de tasques ni d'ofertes |
+| `supplyMatches` / `openMatchesModal` | Troba parells oferta ↔ demanda, fins i tot entre nodes veïns | No obre conversa: o tanques l'intercanvi o no passa res |
+| `submitEntry` → `pendingInbox` → `confirmPending` | **La meitat de després funciona bé**: un apunt no compta fins que l'altra part el confirma | Només serveix per a fets consumats |
+| `reserveObject` | **El precedent que ja existeix**: un objecte es pot reservar abans de prestar-se, amb llista d'espera | Només per a objectes. Una hora o un coneixement no es poden reservar |
+
+Aquesta última fila és la pista: **per als objectes, l'estat intermedi ja el vam
+necessitar i el vam fer.** Per a les hores i el coneixement, no — i són la major
+part del que es mou.
+
+#### Els estats que falten
+
+Avui n'hi ha dos: *no existeix* → *apuntat i pendent de confirmar* → *confirmat*.
+En falten tres al mig, i cadascun ha de poder-se deixar a mitges sense embrutar
+el registre:
+
+1. **Interès** — «això em serveix» / «m'hi poso». No compromet ningú i no toca el
+   registre. És el que hauria d'obrir el botó de la tasca, en comptes de la
+   pantalla d'apuntar.
+2. **Acord** — les dues parts diuen què, qui, quan i quant. Aquí sí que hi ha dos
+   noms i una data. **No és un apunt**: és una promesa, i una promesa que no es
+   compleix s'ha de poder tancar dient-ho, no esborrant-la.
+3. **Fet, i encara no apuntat** — la feina està feta i falta escriure-la. És
+   l'estat on avui la gent es queda i des d'on es perden les hores.
+
+Només després ve `submitEntry`, que ja hi és i ja funciona.
+
+#### La conversa
+
+**No es fa una missatgeria nova.** Cada acord obre **el seu fil, penjat del
+context**, i el xat del node segueix sent el mur. Una safata de missatges sense
+assumpte torna a ser un WhatsApp, i el WhatsApp ja el tenen.
+
+#### Les dues decisions, preses
+
+**1 · El fil penja del context, no de les persones.** Del subnode, del projecte
+o de la iniciativa a la MATRIU, de l'objecte, de l'oferta o del flux
+d'intercanvi. No hi ha safata de missatges directes.
+
+És la decisió correcta i val la pena dir per què, perquè és el que evita el
+projecte que ningú vol: **una missatgeria.** Un fil que penja d'una cosa sap de
+què parla, es pot tancar sol quan aquella cosa es resol, apareix on és útil —a
+sota de la tasca, no en una safata a part— i no genera la obligació d'estar
+disponible que té un xat obert. `CHAT_REFS` ja té les sis menes de context i
+`chatRefsFor` només ofereix les que existeixen de debò al node: la meitat de la
+feina està feta.
+
+Tres coses que la decisió arrossega i que s'han de resoldre en implementar-la:
+
+- **La visibilitat del fil no és la del context.** Un objecte o una tasca són del
+  node i els veu tot el node; el fil d'un acord entre dues persones, no. El fil
+  **penja** del context i **es veu** només qui hi és, fins que es converteix en
+  apunt. Si s'hereta la visibilitat del context, la decisió 2 queda desfeta el
+  primer dia.
+- **Un context pot ser de dos nodes.** Una coincidència entre nodes veïns no
+  penja d'un node sol. La sortida barata: el fil viu al node de qui l'obre i
+  l'altra part hi entra pel `did`, que és com ja funciona la resta.
+- **Quan el context desapareix, el fil no.** `chatRefAlive` ja resol això per als
+  missatges del mur: una referència que ja no existeix es marca de morta, no
+  s'amaga. El fil ha de fer igual —una conversa sobre una oferta retirada segueix
+  sent la prova del que es va acordar.
+
+**2 · Un acord que encara no s'ha complert no és públic.** Un apunt confirmat sí
+que ho és, per disseny. Un acord, no: dir en obert qui ha promès què i no ho ha
+fet és una llista de deutors, i això no és aquesta eina. El veuen les dues parts
+fins que es converteix en apunt.
+
+#### La pantalla de tasques com a lloc principal
+
+L'encàrrec és que `lesMevesTasques` passi de ser una pestanya a ser **la
+pantalla per defecte**, amb la planificació a la vista i el botó que et posa a la
+feina. Tres coses concretes:
+
+- **Veure el planning, no només la llista.** Les tasques ja porten columna
+  (`tascaCol`) i flux del mapa (`fluxDeTasca`); falta l'eix del temps, que ja
+  existeix als sprints (`sprintsOf`, `sprintProgress`) i que la pantalla de
+  tasques encara no llegeix.
+- **«M'hi poso» ha de portar a l'estat 1, no al registre.** És el canvi més petit
+  de tots i el que arregla el que es va notar.
+- **Un botó per tasca que sigui el següent pas de debò**, que segons la tasca és
+  obrir el fil, reservar, o apuntar — i no sempre apuntar.
+
+I el sostre: `SOS/index.html` va molt just de mida (`check-kiss.js`). Això no és
+una miniapp més, és treure passos de sobre; però si cal pujar el sostre, es puja
+amb el motiu escrit al commit, com diu el CI.
+
+**Res d'això s'ha implementat.** És l'anàlisi que es va demanar, per poder
+decidir l'ordre; el primer pas barat i aïllat és el botó de la tasca.
+
+---
+
+### La intro del Comando · esborrany de guió fet, rodatge pendent
+
+`SOS/intro.html` explica el SOS —el problema dels projectes ciutadans i l'eina
+que hi posa esquelet— i feia de portada del Comando perquè no n'hi havia cap
+altra. Una intro que explica l'eina no presenta la història (veda 150).
+
+**Fet:** el guió d'una intro pròpia del Comando, declarat a `build-comando.js` i
+escrit a `knowledge/vision/comando-intro.md`. Catorze plans, 1:45, tall de 30 s.
+**És la història dels dos còmics publicats**, en el seu ordre: els dos-cents
+milions → el mandat del Gran Molekulon → Purpleman i l'aire → l'abric de cuir
+d'Afrodito → el bajón de l'Omni Turd 6300 → el col·lapse de Matadeón → el paper
+higiènic de Mr. McGragor → el forat de cuc → el páramo i la llavor → l'acte III.
+Acaba amb la pregunta «i tu, t'hi apuntes?» i dues portes: `index.html#/alta` per
+a qui vol fer-se el personatge ara i `uneix-te.html` per a qui només vol dir què
+fa al barri.
+
+Onze dels catorze plans citen un tros de la història publicada a `comando.html` i
+el generador comprova que hi sigui: un guió que resumeix una història s'equivoca
+inventant-se un detall que sona bé, i això no peta mai sol.
+
+**Trobat revisant-ho, i no arreglat aquí:** dels tres supervilans de
+`COMANDO_VILLAINS`, només **Mr. McGragor** surt a `comando.html`. **Max Miedox**
+(la por que paralitza abans de començar) i **Mala Yerbax** (el rumor que corroeix
+la confiança) viuen només dins de l'app, i són els dos que més se semblen al que
+mata un projecte ciutadà de debò. La pàgina té secció d'herois i no en té de
+vilans. No s'ha fet aquí perquè seria eixamplar un encàrrec de guió a una secció
+nova de la pàgina, però és una pantalla que falta.
+
+**Comprovat, perquè era la por raonable:** no dupliquem l'alta. Hi ha **un sol
+registre** (`openSuperheroiOnboarding`, ruta `#/alta`), i tant `comando.html` com
+`uneix-te.html` només hi porten: cap de les dues té formulari propi. El
+vocabulari tampoc està partit —el formulari ja demana «superpoders» i
+«superarmes». Ara hi ha guarda que ho manté així (veda 151).
+
+**Pendent, i no és de codi:**
+
+- **Que l'autor el corregeixi.** La veu en off és una proposta. Els noms, l'ordre
+  i el to els sap ell.
+- **Les imatges del còmic.** Vuit plans necessiten vinyetes que ja estan
+  dibuixades (1, 2, 3, 4, 7, 8, 11, 12) i el guió les demana una per una. Dos
+  plans són captura de pantalla de l'app i es poden gravar avui; dos són rodatge
+  curt de carrer. Tres surten de material que ja existeix: la Bomba Disco, el
+  directe de la Floresta i Mr. McGragor. Van a `SOS/media/`.
+- **Un nom que no he pogut identificar.** A la conversa hi va sortir un
+  supervilà que a la transcripció es llegeix «Dalgaltras», i no és a
+  `COMANDO_VILLAINS` ni surt enlloc del repositori. No l'he inventat ni l'he
+  desat: si existeix, cal el nom ben escrit i què fa. Els que sí que hi són:
+  Max Miedox, Mala Yerbax i Mr. McGragor.
+- **Si es munta, on va.** Avui `intro.html` és al menú com «La intro». Amb dues
+  intros s'ha de decidir si la del Comando viu a `comando.html`, si té pàgina
+  pròpia, o si `intro.html` es reparteix en dues. No s'ha decidit i no s'ha de
+  decidir des del codi.
+
+El final de la història **no** és al guió ni hi ha d'entrar: no és en aquest
+repositori.
+
+---
+
 ### Els nicks reservats dels fundadors del Comando · fet
 
 L'encàrrec deia «crea els usuaris al directori de tots els fundadors». Fet

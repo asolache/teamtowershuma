@@ -704,6 +704,56 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 151 — Dues entrades són bones; dos registres, no. I només se sap quina tens quan ja és tard
+
+El Comando i el SOS conviden la mateixa persona a fer la mateixa cosa amb dues
+històries diferents: un per la pel·lícula, l'altre pel barri. Tenir-ne dues és
+**correcte i necessari** —qui ve pel còmic no vol llegir sobre governança i qui
+ve pel barri no vol fer-se un personatge—, i el guió de la intro va estar a punt
+de dir-ho com «dues portes».
+
+No ho són. **La porta és una i el que canvia és el camí.** L'alta viu a un sol
+lloc (`openSuperheroiOnboarding`, ruta `#/alta`) i les dues pàgines que hi
+conviden no fan res més que dur-hi. La diferència entre les dues coses no es veu
+el dia que es fan: es veu mesos després, quan hi ha dues fitxes de la mateixa
+persona amb dades diferents i ningú sap quina és la bona.
+
+Per això la regla té dues meitats, i les dues han de ser certes alhora:
+
+- **Tota pàgina que convida ha de dur a l'alta única.** Si no hi porta, no és un
+  camí: és un fullet.
+- **Cap pàgina que convida pot tenir formulari propi.** Un segon formulari no
+  peta mai —recull el mateix amb altres noms— i per això no el troba ningú.
+
+I una conseqüència de vocabulari que va en el mateix sentit: **el mateix camp es
+diu igual a tot arreu**. El formulari demana «superpoders» i «superarmes», no
+«skills» i «recursos» segons per on hagis entrat. Dos noms per al mateix camp són
+el primer pas cap a dos camps.
+
+## Veda 150 — Una intro explica una cosa sola, i la de l'eina no presenta la història
+
+`SOS/intro.html` és una pel·lícula de setze plans, ben feta, amb el seu tall de
+30 s i les seves dues llengües. Feia de porta d'entrada al Comando Molekulon
+perquè era l'única que hi havia. I explica una altra cosa: el problema dels
+projectes ciutadans, l'esquelet que els falta i l'eina que l'hi posa.
+
+Les dues coses són bones i no són la mateixa. **El SOS és una eina i el Comando
+és una història**, i una peça audiovisual no pot presentar-ne dues: qui vingui
+pel còmic surt sabent què és un mapa de valor, i qui vingui per l'eina surt
+pensant que ha de dibuixar. Una intro compartida sembla estalvi i el que estalvia
+és haver de decidir què s'explica.
+
+La regla general: **una peça de comunicació té un subjecte, i quan se n'hi posen
+dos el segon sempre és el que es perd.** Es reconeix mirant el final — el que
+demana una intro diu de qui és. Si l'única crida és «obre l'eina», l'eina n'és el
+subjecte, per molt que la primera meitat parli d'una altra cosa.
+
+I una conseqüència sobre les crides: **el final d'una intro té dues portes, no
+una.** Qui arriba al minut i mig no hi arriba tothom amb les mateixes ganes —n'hi
+ha que volen fer-se el personatge ara i n'hi ha que només volen dir què fan al
+barri. Amb una sola porta, la meitat dels qui han aguantat fins al final no en
+troben cap.
+
 ## Veda 149 — El que qualsevol entén és el que queda pitjor explicat
 
 De les dotze dinàmiques del catàleg, sis tenien pàgina pròpia: La Compra,
