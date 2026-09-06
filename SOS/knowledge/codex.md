@@ -704,6 +704,32 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 151 — Dues entrades són bones; dos registres, no. I només se sap quina tens quan ja és tard
+
+El Comando i el SOS conviden la mateixa persona a fer la mateixa cosa amb dues
+històries diferents: un per la pel·lícula, l'altre pel barri. Tenir-ne dues és
+**correcte i necessari** —qui ve pel còmic no vol llegir sobre governança i qui
+ve pel barri no vol fer-se un personatge—, i el guió de la intro va estar a punt
+de dir-ho com «dues portes».
+
+No ho són. **La porta és una i el que canvia és el camí.** L'alta viu a un sol
+lloc (`openSuperheroiOnboarding`, ruta `#/alta`) i les dues pàgines que hi
+conviden no fan res més que dur-hi. La diferència entre les dues coses no es veu
+el dia que es fan: es veu mesos després, quan hi ha dues fitxes de la mateixa
+persona amb dades diferents i ningú sap quina és la bona.
+
+Per això la regla té dues meitats, i les dues han de ser certes alhora:
+
+- **Tota pàgina que convida ha de dur a l'alta única.** Si no hi porta, no és un
+  camí: és un fullet.
+- **Cap pàgina que convida pot tenir formulari propi.** Un segon formulari no
+  peta mai —recull el mateix amb altres noms— i per això no el troba ningú.
+
+I una conseqüència de vocabulari que va en el mateix sentit: **el mateix camp es
+diu igual a tot arreu**. El formulari demana «superpoders» i «superarmes», no
+«skills» i «recursos» segons per on hagis entrat. Dos noms per al mateix camp són
+el primer pas cap a dos camps.
+
 ## Veda 150 — Una intro explica una cosa sola, i la de l'eina no presenta la història
 
 `SOS/intro.html` és una pel·lícula de setze plans, ben feta, amb el seu tall de

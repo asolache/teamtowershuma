@@ -243,13 +243,28 @@ const POSTS = [
    la pàgina —«el final està escrit i encara no es diu»— i això és part del
    ganxo, no una omissió. */
 const INTRO = {
-  durada: 105,
+  durada: 115,
   tall: 30,
+  /* **Una porta, no dues.** Això va estar a punt de ser un error: dues crides
+     semblaven dues entrades, i dues entrades acaben sent dos formularis d'alta
+     que recullen el mateix amb dos noms. No ho són. L'alta és una —
+     `openSuperheroiOnboarding`, la ruta `#/alta`— i el que canvia és **per on
+     s'hi arriba**: qui ve per la història entra per `comando.html` i qui ve pel
+     barri entra per `uneix-te.html`, i totes dues pàgines porten al mateix lloc.
+     La mateixa porta, pintada de dos colors.
+
+     La guarda ho comprova: cada camí ha de dur a la ruta d'alta i **no pot tenir
+     formulari propi**. El dia que algú n'hi posi un, hi haurà dos registres i
+     ningú se n'adonarà fins que dues fitxes de la mateixa persona no lliguin. */
   cta: {
-    principal: { ruta: 'alta', t: 'Fes el teu personatge',
-      d: 'Nom, població, cinc superpoders i les teves superarmes. Es queda al teu aparell.' },
-    segona: { href: 'uneix-te.html', t: 'Apunta-t\'hi',
-      d: 'Per a qui encara no vol crear res: dir què fa al barri i que consti.' }
+    porta: { ruta: 'alta', t: 'Fes el teu personatge',
+      d: 'Nom, població, fins a cinc superpoders i les teves superarmes. Es queda al teu aparell.' },
+    camins: [
+      { href: 'comando.html', t: 'Vinc per la història',
+        d: 'Els còmics, la banda i els personatges. La mateixa alta, explicada com el que és: entrar al repartiment.' },
+      { href: 'uneix-te.html', t: 'Vinc pel meu barri',
+        d: 'El que ja fas, comptat. La mateixa alta, explicada sense superherois.' }
+    ]
   },
   plans: [
     { n: 1, s: 8, titol: 'Dos-cents milions', de: null, qui: [], tall: true,
@@ -312,11 +327,16 @@ const INTRO = {
       veu: 'Resisteixen cantant els seus propis noms, recordant qui són. El talent adormit no és talent perdut.',
       retol: null },
     { n: 13, s: 7, titol: 'Acte III · s\'està rodant ara', de: null, qui: [], tall: true,
-      canon: 'El final està escrit', diu: { objectiu: 150000 },
+      canon: 'El final està escrit', diu: { objectiu: 150000 }, pantalla: true,
       img: 'La pàgina del Comando amb els comptadors reals corrent.',
       veu: 'El tercer acte no està publicat. El final està escrit i encara no es diu. El que sí que es diu és el mecanisme: cada persona que hi entra i aporta de debò és un node més, i la xarxa és el que fa la força.',
       retol: null },
-    { n: 14, s: 7, titol: 'I tu, t\'hi apuntes?', de: null, qui: [], tall: true, cta: true,
+    { n: 14, s: 10, titol: 'Com es fa un superheroi', de: null, qui: [], tall: false,
+      canon: 'no tenen manera de veure', pantalla: true,
+      img: 'Tres imatges: una aula de la Fàbrica de Superherois, un cromo que s\'omple, i el kit narratiu escrivint una sinopsi.',
+      veu: 'Un superheroi són dues coses: saber què saps fer, i posar-ho on serveixi a algú altre. Si encara no saps què saps, per això hi ha escola. I si no tens la creativitat, te la posa una màquina.',
+      retol: null },
+    { n: 15, s: 7, titol: 'I tu, t\'hi apuntes?', de: null, qui: [], tall: true, cta: true,
       canon: null, diu: { objectiu: 150000 },
       img: 'Negre. El nom del Comando, i a sota les dues portes.',
       veu: 'Tu ja vas guanyar una cursa de dos-cents milions. En falten cent cinquanta mil com tu. I tu, t\'hi apuntes?',
@@ -452,10 +472,23 @@ else if (ctes[0] !== INTRO.plans[INTRO.plans.length - 1]) bad('el pla de crida d
 /* El tall ha d'acabar on acaba la intro: una versió curta que es queda sense
    la crida és un anunci que no diu què fer després. */
 if (ctes.length === 1 && !ctes[0].tall) bad('el tall de 30 s es queda sense el pla de crida');
-if (!RUTES.has(INTRO.cta.principal.ruta))
-  bad(`la crida de la intro obre la ruta «${INTRO.cta.principal.ruta}», que no és a MODAL_ROUTES`);
-if (!existsSync(join(SOS, INTRO.cta.segona.href)))
-  bad(`la segona crida de la intro apunta a ${INTRO.cta.segona.href}, que no existeix`);
+if (!RUTES.has(INTRO.cta.porta.ruta))
+  bad(`la crida de la intro obre la ruta «${INTRO.cta.porta.ruta}», que no és a MODAL_ROUTES`);
+/* **L'alta és una.** Cada camí és una pàgina que convida, i el que ha de fer una
+   pàgina que convida és **dur a l'única alta que hi ha**. Les dues comprovacions
+   que segueixen són la mateixa preocupació dita per les dues bandes: que hi
+   porti, i que no en tingui una de pròpia. Un segon formulari d'alta no peta
+   mai: recull el mateix amb altres noms, i el defecte apareix mesos després,
+   quan dues fitxes de la mateixa persona no lliguen i ja no se sap quina és. */
+INTRO.cta.camins.forEach(c => {
+  const f = join(SOS, c.href);
+  if (!existsSync(f)) { bad(`el camí «${c.t}» apunta a ${c.href}, que no existeix`); return; }
+  const txt = readFileSync(f, 'utf8');
+  if (!txt.includes(`index.html#/${INTRO.cta.porta.ruta}`))
+    bad(`${c.href} convida a entrar i no porta a index.html#/${INTRO.cta.porta.ruta}: o hi porta, o no és un camí`);
+  if (/<form|<input/.test(txt))
+    bad(`${c.href} té formulari propi: l'alta és una sola i viu a l'app, no a les pàgines que hi conviden`);
+});
 
 if (fails) { console.log(`\n❌ ${fails} ${fails === 1 ? 'problema' : 'problemes'} a la declaració del Comando.`); process.exit(1); }
 
@@ -642,6 +675,25 @@ explica l'eina no presenta la història.
 Aquesta presenta el Comando —la història dels dos còmics publicats— i acaba amb
 una pregunta.
 
+## El mètode que hi ha a sota
+
+La història no és decoració. El que el Comando ensenya, dit sense personatges, és
+que **un superheroi és dues coses alhora**:
+
+1. **Sap què sap fer.** El còmic ho diu a la primera escena: el talent ja hi és
+   —«els 150.000 ja són a la Terra»—, i el problema és que ningú té manera de
+   veure'l. Qui encara no sap quins són els seus, no li falta talent: li falta
+   on descobrir-lo. Per això hi ha escola (\`escola.html\`, i els setze mòduls de
+   \`formacio.html\`).
+2. **Ho posa on serveixi a algú altre.** Un talent que no surt de casa no és un
+   superpoder. Aportar-lo, i que algú altre ho confirmi, és el que fa la fitxa.
+
+I la tercera peça, que és la que fa que això no sigui només per a artistes: **si
+no tens la creativitat, te la posa una màquina**. El kit narratiu (\`#/kit\`)
+converteix el que has fet de debò en sinopsi, himne i escena. Per això el Comando
+i la IA van junts i no és una moda: sense això, un projecte que demana crear un
+personatge només deixa entrar qui ja en sap.
+
 ## El SOS i el Comando són la mateixa cosa dita dues vegades
 
 Val la pena tenir-ho clar abans de llegir el guió, perquè decideix el to. **El
@@ -652,7 +704,8 @@ còmic, la banda i la pel·lícula que es farà amb els qui hi entrin.
 El mecanisme és idèntic —una persona aporta, algú altre ho confirma, queda
 registrat— i el que canvia és per on s'hi arriba: n'hi ha que hi entren perquè
 volen que el seu poble funcioni, i n'hi ha que hi entren perquè volen sortir a la
-pel·lícula. Per això el final té dues portes i no una.
+pel·lícula. Per això el final no té dues portes: té **una porta i dos camins**,
+que no és el mateix i es veu més avall.
 
 ## El guió · ${INTRO.plans.length} plans, ${mmss(INTRO.durada)}
 
@@ -666,8 +719,9 @@ ${files.join('\n')}
 - **${aFilmar.length} plans s'han de fer**: ${aFilmar.map(p => `${p.n} · ${p.titol}`).join(' · ')}.
 
 La major part del que falta és **material del còmic**: vinyetes que ja estan
-dibuixades i que s'han d'animar o moure. Només el pla 13 és captura de pantalla
-—la pàgina del Comando amb els comptadors reals corrent— i es pot gravar avui.
+dibuixades i que s'han d'animar o moure, no rodatge nou. Dos plans són captura de
+pantalla de l'aplicació i es poden gravar avui. La llista, demanada un per un, és
+més avall.
 
 ## D'on surt cada cosa
 
@@ -682,21 +736,47 @@ publicats, i la pregunta del final.
 |---|---|
 ${INTRO.plans.filter(p => p.canon).map(p => `| ${p.n} · ${p.titol} | «${p.canon}» |`).join('\n')}
 
+## Les imatges que falten, demanades una per una
+
+El material que falta és **del còmic**, i el còmic el tens tu. Aquesta és la
+llista, per pla, del que caldria per poder muntar-ho amb imatge pròpia del
+Comando i no amb res manllevat:
+
+${INTRO.plans.filter(p => !p.de && !p.pantalla && p.canon).map(p => `- **Pla ${p.n} · ${p.titol}** — ${p.img}`).join('\n')}
+
+Els altres que falten no els has de buscar: els plans ${INTRO.plans.filter(p => !p.de && p.pantalla).map(p => p.n).join(' i ')} són captura de
+pantalla de l'aplicació i es poden gravar avui, i els plans ${INTRO.plans.filter(p => !p.de && !p.pantalla && !p.canon).map(p => p.n).join(' i ')} són rodatge
+curt de carrer.
+
+Format: el que tinguis. Si són pàgines senceres escanejades, millor —d'una pàgina
+se'n retalla una vinyeta, i d'una vinyeta no se'n treu una pàgina. Van a
+\`SOS/media/\`, que és on ja viu el tema d'Horacio, i llavors el guió pot deixar
+de dir «a filmar» i dir el fitxer.
+
 ## El tall de ${INTRO.tall} s
 
 No és un guió a part: és una tria de plans d'aquest —els ${INTRO.plans.filter(p => p.tall).map(p => p.n).join(', ')}—
 i acaba igual, amb la crida. Una versió curta que es queda sense dir què fer
 després és un anunci de res.
 
-## Com acaba: les dues portes
+## Com acaba: una porta, pintada de dos colors
 
-| Porta | On va | Per a qui |
+L'alta és **una**: \`index.html#/${INTRO.cta.porta.ruta}\`, que obre
+\`openSuperheroiOnboarding\`. ${INTRO.cta.porta.d} El vocabulari ja
+és el del Comando dins de l'aplicació: el formulari demana **superpoders** i
+**superarmes**, no «skills» i «recursos». No hi ha res a unificar perquè mai no
+es va partir.
+
+El que canvia és **per on s'hi arriba**:
+
+| Camí | Pàgina | Qui hi ve |
 |---|---|---|
-| **${INTRO.cta.principal.t}** | \`index.html#/${INTRO.cta.principal.ruta}\` | ${INTRO.cta.principal.d} |
-| **${INTRO.cta.segona.t}** | \`${INTRO.cta.segona.href}\` | ${INTRO.cta.segona.d} |
+${INTRO.cta.camins.map(c => `| **${c.t}** | \`${c.href}\` | ${c.d} |`).join('\n')}
 
-Dues i no una: qui arriba al final d'una intro de ${mmss(INTRO.durada)} no hi arriba amb
-les mateixes ganes, i una sola crida deixa fora la meitat.
+Totes dues pàgines porten a la mateixa ruta i **cap de les dues té formulari
+propi**; el generador ho comprova. És la diferència entre dues entrades i dos
+registres, i només se sap quina de les dues coses tens el dia que dues fitxes de
+la mateixa persona no lliguen.
 
 ## El que aquesta intro no diu
 

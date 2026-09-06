@@ -72,14 +72,26 @@ mata un projecte ciutadà de debò. La pàgina té secció d'herois i no en té 
 vilans. No s'ha fet aquí perquè seria eixamplar un encàrrec de guió a una secció
 nova de la pàgina, però és una pantalla que falta.
 
+**Comprovat, perquè era la por raonable:** no dupliquem l'alta. Hi ha **un sol
+registre** (`openSuperheroiOnboarding`, ruta `#/alta`), i tant `comando.html` com
+`uneix-te.html` només hi porten: cap de les dues té formulari propi. El
+vocabulari tampoc està partit —el formulari ja demana «superpoders» i
+«superarmes». Ara hi ha guarda que ho manté així (veda 151).
+
 **Pendent, i no és de codi:**
 
 - **Que l'autor el corregeixi.** La veu en off és una proposta. Els noms, l'ordre
   i el to els sap ell.
-- **Onze plans per fer**, i la major part és **material del còmic** —vinyetes ja
-  dibuixades que s'han d'animar o moure—, no rodatge nou. Només el pla 13 és
-  captura de pantalla i es pot gravar avui. Tres plans surten de material que ja
-  existeix: la Bomba Disco, el directe de la Floresta i Mr. McGragor.
+- **Les imatges del còmic.** Vuit plans necessiten vinyetes que ja estan
+  dibuixades (1, 2, 3, 4, 7, 8, 11, 12) i el guió les demana una per una. Dos
+  plans són captura de pantalla de l'app i es poden gravar avui; dos són rodatge
+  curt de carrer. Tres surten de material que ja existeix: la Bomba Disco, el
+  directe de la Floresta i Mr. McGragor. Van a `SOS/media/`.
+- **Un nom que no he pogut identificar.** A la conversa hi va sortir un
+  supervilà que a la transcripció es llegeix «Dalgaltras», i no és a
+  `COMANDO_VILLAINS` ni surt enlloc del repositori. No l'he inventat ni l'he
+  desat: si existeix, cal el nom ben escrit i què fa. Els que sí que hi són:
+  Max Miedox, Mala Yerbax i Mr. McGragor.
 - **Si es munta, on va.** Avui `intro.html` és al menú com «La intro». Amb dues
   intros s'ha de decidir si la del Comando viu a `comando.html`, si té pàgina
   pròpia, o si `intro.html` es reparteix en dues. No s'ha decidit i no s'ha de
