@@ -52,6 +52,8 @@ const GRUPS = [
     ['compra.html', 'La Compra', 'Grup de consum i compra col·lectiva'],
     ['energia.html', 'L\'Energia', 'Comunitat energètica i autoconsum compartit'],
     ['habitatge.html', 'L\'Habitatge', 'Cessió d\'ús: quota, entrada i sortida'],
+    ['banc-temps.html', 'El Banc de Temps', 'Una hora val una hora, i el saldo que ho diu'],
+    ['biblioteca.html', 'La Biblioteca de les Coses', 'Donar o deixar, i què val cada préstec'],
     ['molekulandia.html', 'Molekulandia', 'El poble sencer i les nou professions'],
     ['joc.html', 'El joc', 'La plaça, a ritme']
   ] },
@@ -72,7 +74,7 @@ const MARCA = ['../index.html', 'TeamTowers', 'Humà'];
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
-const PAGINES = ['blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
+const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'online.html', 'pressupost.html',
   'uneix-te.html', 'vedes.html', 'vna.html'];
@@ -102,8 +104,8 @@ const FORA_DEL_MENU = {
    Dues còpies d'aquesta taula divergirien el dia que una dinàmica estrenés
    eina, i no petaria res: senzillament, un dels dos llocs no l'oferiria. */
 const EINES = {
-  banc_temps: ['index.html', 'A dins de l\'app'],
-  biblioteca_coses: ['index.html', 'A dins de l\'app'],
+  banc_temps: ['banc-temps.html', 'El Banc de Temps'],
+  biblioteca_coses: ['biblioteca.html', 'La Biblioteca de les Coses'],
   suport_mutu: ['index.html', 'A dins de l\'app'],
   matriu: ['matriu.html', 'La MATRIU'],
   mapeig_vna: ['vna.html', 'Mapa de valor'],

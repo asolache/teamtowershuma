@@ -103,7 +103,7 @@ console.log('\n3 · Des d\'un projecte, l\'eina del seu tipus');
     };
     const out = {};
     for (const d of ['comunitat_energetica', 'habitatge_cessio', 'consum_agroecologic',
-      'matriu', 'banc_temps', 'suport_mutu']) out[d] = await mira(d);
+      'matriu', 'banc_temps', 'biblioteca_coses', 'suport_mutu']) out[d] = await mira(d);
     return out;
   });
   ok(r.comunitat_energetica.h === 'energia.html' && /L'Energia/.test(r.comunitat_energetica.txt),
@@ -113,11 +113,17 @@ console.log('\n3 · Des d\'un projecte, l\'eina del seu tipus');
     'i cada tipus la seva: habitatge → L\'Habitatge, consum → La Compra, matriu → La MATRIU');
   ok(r.comunitat_energetica.target === '_blank' && r.comunitat_energetica.nota,
     's\'obre en una pestanya nova i la fitxa diu que el que hi calculis no torna sol');
+  /* El banc de temps i la biblioteca ja tenen la seva pàgina. Abans no en
+     tenien i la taula els enviava a `index.html`, que des de l'app és un
+     enllaç a un mateix: l'app el suprimia, i era correcte. Ara la porta va a un
+     lloc que existeix. */
+  ok(r.banc_temps.h === 'banc-temps.html' && /Banc de Temps/i.test(r.banc_temps.txt),
+    `el banc de temps ofereix la seva pàgina: «${r.banc_temps.txt}»`);
   /* On NO ha de sortir, que és la meitat del disseny. */
-  ok(r.banc_temps.h === null,
-    'el banc de temps no n\'ofereix cap: es fa dins de l\'app i un enllaç a l\'app des de l\'app no porta enlloc');
   ok(r.suport_mutu.h === null,
-    'i el suport mutu tampoc: encara no té eina, i inventar-li una porta seria pitjor que no tenir-ne');
+    'i el suport mutu no n\'ofereix cap: encara no té pàgina, i inventar-li una porta seria pitjor que no tenir-ne');
+  ok(r.biblioteca_coses.h === 'biblioteca.html' && /Biblioteca/i.test(r.biblioteca_coses.txt),
+    `i la biblioteca de les coses la seva: «${r.biblioteca_coses.txt}»`);
   ok(r.comunitat_energetica.recursos,
     'i els recursos externs del catàleg segueixen sortint al costat, com abans');
 }

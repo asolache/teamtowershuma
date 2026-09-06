@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La Biblioteca de les Coses · tenir accés val més que posseir</title>
+<meta name="description" content="Com es munta una biblioteca de les coses que duri: la diferència entre donar i posar a disposició, què val de debò un préstec per a qui deixa l'objecte, i què passa el dia que una cosa es trenca o no torna.">
+<meta property="og:title" content="La Biblioteca de les Coses · tenir accés val més que posseir">
+<meta property="og:description" content="Deixar una eina no val el que val l'eina: val el desgast i el risc de cada préstec. Amb la calculadora, i amb la part que ningú escriu — què es fa quan una cosa es trenca.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+nav.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.7rem 1.2rem;background:rgba(11,11,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text)}
+nav.top .brand span{color:var(--green)}
+nav.top .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto;font-size:.85rem}
+nav.top .links a{color:var(--light);text-decoration:none}
+nav.top .links a:hover{color:var(--text)}
+
+.hero{padding:3.4rem 1.5rem 2.2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(255,145,0,.15),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(0,230,118,.12),transparent 55%),var(--bg)}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:rgba(255,145,0,.14);color:var(--orange);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#ff9100,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:700px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:860px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--orange);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+section.box .lead strong{color:var(--text)}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+
+input,select,button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .55rem}
+input[type=number]{width:80px;text-align:right;font-family:var(--mono)}
+input:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
+button.b{cursor:pointer}
+button.b:hover{border-color:var(--indigo)}
+.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+.nota{font-size:.78rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.5rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+
+.capes{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin:.8rem 0}
+.capa{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem}
+.capa .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.capa .v{font-size:1.35rem;font-weight:800;margin:.15rem 0}
+.capa .d{font-size:.74rem;color:var(--light);line-height:1.45}
+.capa.bo .v{color:var(--green)} .capa.av .v{color:var(--orange)} .capa.mal .v{color:var(--red)}
+
+/* Els dos modes, de costat. Van així a posta: la diferència entre donar i
+   deixar només es veu comparant-les, i és la decisió que més es confon. */
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;margin-top:.8rem}
+.mode{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem}
+.mode.disposicio{border-top:2px solid var(--blue)}
+.mode.donacio{border-top:2px solid var(--green)}
+.mode .ic{font-size:1.6rem;line-height:1}
+.mode h4{font-size:1rem;margin:.4rem 0 .3rem}
+.mode .one{font-size:.83rem;color:var(--light);margin:0 0 .7rem}
+.mode dl{margin:0;font-size:.8rem}
+.mode dt{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mode dd{margin:.1rem 0 .6rem;color:var(--light)}
+
+.calc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:.7rem}
+.calc .form{font-family:var(--mono);font-size:.86rem;color:var(--light);line-height:1.9;
+  border-left:2px solid var(--indigo);padding-left:.8rem;margin:.7rem 0}
+.calc .form b{color:var(--text)}
+.calc .res{font-size:1.9rem;font-weight:800;color:var(--green);margin:.3rem 0 0}
+
+.passos{counter-reset:p;display:grid;gap:.6rem;margin-top:.6rem}
+.pas{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem .75rem 2.6rem;position:relative}
+.pas::before{counter-increment:p;content:counter(p);position:absolute;left:.85rem;top:.75rem;
+  width:1.35rem;height:1.35rem;border-radius:50%;background:var(--indigo);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700}
+.pas b{display:block;font-size:.92rem}
+.pas span{font-size:.8rem;color:var(--light)}
+
+.morts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;margin-top:.8rem}
+.mort{background:var(--card);border:1px solid var(--border);border-top:2px solid var(--red);
+  border-radius:10px;padding:.9rem 1rem}
+.mort h4{font-size:.95rem;margin-bottom:.35rem}
+.mort p{margin:0 0 .5rem;font-size:.84rem;color:var(--light)}
+.mort .fa{font-size:.8rem;color:var(--green)}
+
+footer{border-top:1px solid var(--border);padding:2rem 1.2rem 3rem;text-align:center;color:var(--muted);font-size:.82rem}
+footer a{color:var(--light)}
+</style>
+</head>
+<body>
+
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html" aria-current="page"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="tag">🧰 Dinàmica del SOS</span>
+    <h1>Tenir accés val més que <em>posseir</em></h1>
+    <p class="sub">Una escala, una màquina de cosir, una paella de setze racions. Coses que fas
+    servir <strong>dos cops l'any</strong> i que ocupen tot l'any. Una biblioteca de les coses les
+    posa a circular: menys traster, menys residus i una excusa per trobar-se.</p>
+    <div class="avis"><strong>El que aquesta pàgina explica i quasi ningú explica:</strong> què val
+    de debò deixar una cosa —que no és el que val la cosa— i <strong>què passa el dia que una eina
+    torna trencada o no torna</strong>. Les biblioteques no moren per falta d'objectes: moren el dia
+    que algú se sent estafat i ningú havia escrit què s'havia de fer.</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="que" class="on">1 · Què és</button>
+  <button data-p="modes">2 · Donar o deixar</button>
+  <button data-p="valor">3 · Què val un préstec</button>
+  <button data-p="trenca">4 · Quan es trenca o no torna</button>
+  <button data-p="zero">5 · Començar de zero</button>
+  <button data-p="moren">6 · Per què moren</button>
+  <button data-p="mapa">7 · El mapa de valor</button>
+</div>
+
+<!-- ══ 1 · QUÈ ÉS ═══════════════════════════════════════════════════════ -->
+<div class="pan on" id="pQue">
+  <section class="box">
+    <h3>Una biblioteca, però de coses</h3>
+    <p class="lead">Funciona com la de llibres: hi ha un inventari, un préstec amb data de retorn i
+    algú que obre. El que canvia és que <strong>les coses es fan malbé amb l'ús</strong>, i això és
+    tot el que aquesta pàgina explica que la de llibres no ha d'explicar mai.</p>
+    <div class="capes">
+      <div class="capa"><div class="k">L'objecte típic</div><div class="v" style="font-size:1rem">2 usos l'any</div>
+        <div class="d">Si es fa servir cada setmana, no és per a la biblioteca: és per a casa.</div></div>
+      <div class="capa"><div class="k">El que la sosté</div><div class="v" style="font-size:1rem">Un lloc físic</div>
+        <div class="d">Sense un lloc on siguin les coses, és un grup de WhatsApp que s'apaga al tercer mes.</div></div>
+      <div class="capa"><div class="k">El que la mata</div><div class="v" style="font-size:1rem">Un conflicte</div>
+        <div class="d">Una eina trencada sense norma escrita fa més mal que trenta objectes que falten.</div></div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h3>La fita declarada, i per què és aquesta</h3>
+    <!--BIB-OBJ-->
+<p class="lead">Compartir objectes d'ús ocasional per estalviar, reduir residus i crear trobada al barri.</p>
+<div class="capes">
+  <div class="capa"><div class="k">Fita 1</div><div class="v" style="font-size:1rem">150 objectes en circulació</div></div>
+  <div class="capa"><div class="k">Fita 2</div><div class="v" style="font-size:1rem">60% amb ús mensual</div></div>
+  <div class="capa"><div class="k">Fita 3</div><div class="v" style="font-size:1rem">estalvi i residus evitats mesurats i publicats.</div></div>
+</div>
+<p class="nota bo"><strong>On va això:</strong> Un barri on tenir accés val més que posseir: menys traster, menys residus i més trobada.</p>
+<!--/BIB-OBJ-->
+  </section>
+</div>
+
+<!-- ══ 2 · DONAR O DEIXAR ═══════════════════════════════════════════════ -->
+<div class="pan" id="pModes">
+  <section class="box">
+    <h3>Dues coses que es confonen i no són la mateixa</h3>
+    <p class="lead">Quan algú porta una cosa a la biblioteca està fent <strong>una de dues coses
+    ben diferents</strong>, i el valor que aporta i el que se li deu no s'assemblen gens.</p>
+    <!--BIB-MODES-->
+<div class="modes">
+  <div class="mode disposicio"><div class="ic">🤝</div><h4>El poso a disposició</h4><p class="one">segueix sent teu · el valor és el risc i el desgast de cada préstec</p><dl><dt>De qui és</dt><dd>Segueix sent teu. El pots reclamar quan vulguis.</dd><dt>Què val</dt><dd>El desgast i el risc, <strong>a cada préstec</strong>.</dd><dt>Qui l'arregla</dt><dd>S'acorda abans, i per això aquesta pàgina té la pestanya 4.</dd></dl></div>
+  <div class="mode donacio"><div class="ic">🎁</div><h4>El dono al comú</h4><p class="one">passa a ser de la comunitat · el valor és el bé cedit, una vegada</p><dl><dt>De qui és</dt><dd>De la comunitat, des del primer dia.</dd><dt>Què val</dt><dd>El bé cedit, <strong>una vegada</strong>.</dd><dt>Qui l'arregla</dt><dd>La biblioteca, amb el seu fons de manteniment.</dd></dl></div>
+</div>
+<!--/BIB-MODES-->
+    <p class="nota avis">Confondre-les té una conseqüència pràctica lletja: si una posada a
+    disposició s'apunta com una donació, <strong>la persona ha perdut l'objecte sense saber-ho</strong>
+    i se n'assabenta el dia que el vol per a ella. Al SOS són dos modes diferents des del primer
+    dia, i la fitxa de cada objecte diu quin és.</p>
+  </section>
+
+  <section class="box">
+    <h3>Per què el valor d'una donació es compta un sol cop</h3>
+    <p class="lead">Qui dona una escala de 80 € ha aportat 80 €. <strong>Una vegada.</strong> No
+    aporta 80 € cada cop que algú l'agafa: l'escala ja és del comú.</p>
+    <p>Qui la <em>posa a disposició</em>, en canvi, aporta alguna cosa <strong>a cada
+    préstec</strong>: assumeix que li tornin ratllada, que se li desgasti i que un dia se li trenqui.
+    Per això el que se li reconeix no és el valor de l'escala sinó el <strong>desgast i el risc</strong>
+    de cada vegada — i això sí que es repeteix.</p>
+    <p class="nota bo">És la mateixa distinció que fa el SOS al registre: <span class="mono">donació</span>
+    i <span class="mono">desgast</span> són dos tipus d'apunt diferents, i el fons cooperatiu els
+    suma per separat.</p>
+  </section>
+</div>
+
+<!-- ══ 3 · QUÈ VAL UN PRÉSTEC ═══════════════════════════════════════════ -->
+<div class="pan" id="pValor">
+  <section class="box">
+    <h3>La calculadora, amb la fórmula a la vista</h3>
+    <p class="lead">El valor d'un préstec per a qui ha posat l'objecte a disposició. La taula de
+    valors i la de desgast <strong>són les mateixes que fa servir l'eina</strong>, i es poden
+    canviar al teu node si al teu barri les coses valen una altra cosa.</p>
+    <div class="calc">
+      <div class="fila">
+        <label>Tipologia <select id="inTip"></select></label>
+        <label>Anys que té <input id="inAnys" type="number" min="0" max="30" step="1" value="3"></label>
+        <label>Valor base <input id="inBase" type="number" min="0" max="9999" step="5"></label>
+        <span class="mut" id="baseAvis"></span>
+      </div>
+      <div class="form" id="formula"></div>
+      <div class="res" id="res"></div>
+      <p class="mut" id="resDiu"></p>
+    </div>
+    <p class="nota">La depreciació per anys té terra: <strong>un objecte vell no val zero</strong>.
+    Es queda al 30 % del valor de nou per molts anys que tingui, perquè una eina de vint anys que
+    encara funciona segueix estalviant una compra a qui la fa servir.</p>
+  </section>
+
+  <section class="box">
+    <h3>Quant s'estalvia el barri, i què no demostra això</h3>
+    <p class="lead">Es calcula sol: els objectes que hi ha, pel que costarien comprats, per la gent
+    que se'ls ha endut. Serveix per a la memòria de la subvenció i per explicar-ho a fora.</p>
+    <div class="fila">
+      <label>Objectes <input id="inNobj" type="number" min="1" max="2000" step="10" value="150"></label>
+      <label>Valor mitjà € <input id="inVmig" type="number" min="5" max="1000" step="5" value="70"></label>
+      <label>Préstecs l'any <input id="inPrest" type="number" min="0" max="20" step="1" value="4"></label>
+    </div>
+    <div class="capes" id="capesEstalvi"></div>
+    <p class="nota avis"><strong>El que això no demostra.</strong> Que algú s'endugui una eina no
+    vol dir que li hagi estalviat comprar-la: potser no l'hauria comprada mai. La xifra és
+    <strong>el valor de l'accés, no una compra evitada</strong>, i dir-ho és el que fa que una
+    tècnica municipal se la pugui creure. Qui presenti «hem estalviat X €» sense aquesta frase està
+    inflant la memòria.</p>
+  </section>
+</div>
+
+<!-- ══ 4 · QUAN ES TRENCA O NO TORNA ════════════════════════════════════ -->
+<div class="pan" id="pTrenca">
+  <section class="box">
+    <h3>La part que ningú escriu, i és la que fa petar les biblioteques</h3>
+    <p class="lead">Passarà. No és una possibilitat remota: amb cent cinquanta objectes i quatre
+    préstecs l'any cadascun, <strong>alguna cosa es trencarà aquest trimestre</strong>. La pregunta
+    no és si passarà sinó si estarà escrit què es fa.</p>
+    <div class="passos">
+      <div class="pas"><b>El desgast normal no és culpa de ningú</b>
+        <span>Una fulla que perd fil, una corretja que es gasta. Va al fons de manteniment i no es demana res a qui l'ha fet servir. Si es demanés, ningú tornaria a agafar res.</span></div>
+      <div class="pas"><b>El que es trenca es diu, i es diu de seguida</b>
+        <span>La norma no és «no ho trenquis»: és <strong>«si es trenca, avisa'n el mateix dia»</strong>. El que fa mal a la confiança no és l'eina trencada, és tornar-la sense dir-ho i que ho descobreixi el següent.</span></div>
+      <div class="pas"><b>Es mira si es pot reparar abans de reposar</b>
+        <span>Reparar és la meitat del sentit d'això. Una reparació apuntada és valor per a la comunitat i és una hora que algú ha ensenyat a algú altre.</span></div>
+      <div class="pas"><b>Si s'ha de reposar, es diu qui i com abans de començar</b>
+        <span>Reposició compartida, fons de manteniment o a càrrec de qui ho tenia: qualsevol de les tres serveix. <strong>La que no serveix és decidir-ho el dia que passa</strong>, perquè aleshores sempre sembla arbitrària.</span></div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h3>El que no torna</h3>
+    <p class="lead">L'eina ja té la data de retorn i avisa: <strong>a tres dies vista</strong> diu
+    que venç, i passada la data diu quants dies fa que hauria d'haver tornat.</p>
+    <div class="capes">
+      <div class="capa"><div class="k">Falten ≤ 3 dies</div><div class="v" style="font-size:1rem">Un avís</div>
+        <div class="d">Un recordatori amable, i prou. La majoria de retards són despistes.</div></div>
+      <div class="capa av"><div class="k">Passada la data</div><div class="v" style="font-size:1rem">Es diu els dies</div>
+        <div class="d">«Vençut fa 12 dies» és un fet. «Sempre torna tard» és una etiqueta, i les etiquetes fan marxar la gent.</div></div>
+      <div class="capa mal"><div class="k">No torna</div><div class="v" style="font-size:1rem">Es tanca</div>
+        <div class="d">Es dona per perdut, s'apunta i s'acaba. Un objecte obert per sempre embruta l'inventari i desanima qui el manté.</div></div>
+    </div>
+    <p class="nota">Sobre les fiances: funcionen i tenen un cost que no es veu — <strong>deixen fora
+    qui no té els vint euros</strong>, que sovint és precisament qui més necessita no haver de
+    comprar l'eina. Si se'n posen, que sigui una decisió discutida, no la primera cosa que es copia.</p>
+  </section>
+</div>
+
+<!-- ══ 5 · COMENÇAR DE ZERO ═════════════════════════════════════════════ -->
+<div class="pan" id="pZero">
+  <section class="box">
+    <h3>El camí, tal com el proposa l'eina</h3>
+    <p class="lead">Aquests cinc passos són <strong>el tauler que el SOS et deixa fet</strong> quan
+    obres una biblioteca de les coses.</p>
+    <!--BIB-KANBAN-->
+<div class="passos">
+  <div class="pas"><b>Inventari inicial d'objectes</b></div>
+  <div class="pas"><b>Sistema de préstec i fitxes</b></div>
+  <div class="pas"><b>Trobar punt físic</b></div>
+  <div class="pas"><b>Normes i fiances</b></div>
+  <div class="pas"><b>Inauguració</b></div>
+</div>
+<!--/BIB-KANBAN-->
+  </section>
+
+  <section class="box">
+    <h3>Amb què s'omple el primer prestatge</h3>
+    <p class="lead">No amb una campanya de donacions oberta. Una campanya oberta omple el local de
+    coses que ningú vol i que després no es poden llençar sense ofendre qui les va portar.</p>
+    <div class="capes">
+      <div class="capa bo"><div class="k">Sí</div><div class="v" style="font-size:1rem">Una llista</div>
+        <div class="d">Es demana el que s'ha decidit que hi ha d'haver: trenta objectes concrets, per nom.</div></div>
+      <div class="capa"><div class="k">Sí</div><div class="v" style="font-size:1rem">Posades a disposició</div>
+        <div class="d">Molta gent deixa una cosa que no donaria. És la manera d'arrencar sense demanar sacrificis.</div></div>
+      <div class="capa mal"><div class="k">No</div><div class="v" style="font-size:1rem">«Porteu el que tingueu»</div>
+        <div class="d">Surt un magatzem de trastos, i llavors la biblioteca és un lloc lleig on no ve ningú.</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ 6 · PER QUÈ MOREN ════════════════════════════════════════════════ -->
+<div class="pan" id="pMoren">
+  <section class="box">
+    <h3>Les tres maneres, i què les atura</h3>
+    <div class="morts">
+      <div class="mort">
+        <h4>El conflicte sense norma</h4>
+        <p>Es trenca una cosa caríssima i no hi ha res escrit. Es decideix sobre la marxa, algú
+        se sent injustament tractat i marxa amb tres persones més.</p>
+        <p class="fa">→ Les quatre regles de dalt, escrites i votades <strong>abans</strong> del
+        primer préstec.</p>
+      </div>
+      <div class="mort">
+        <h4>L'inventari que menteix</h4>
+        <p>La llista diu que hi ha una desbrossadora i fa vuit mesos que no hi és. Qui ve
+        expressament a buscar-la no torna mai més.</p>
+        <p class="fa">→ Es tanquen els préstecs vençuts. Un objecte perdut apuntat com a perdut és
+        millor que un objecte fantasma.</p>
+      </div>
+      <div class="mort">
+        <h4>El local que només obre una persona</h4>
+        <p>Els horaris depenen de qui té la clau. Quan aquella persona té una mala temporada, la
+        biblioteca tanca sense que ningú ho hagi decidit.</p>
+        <p class="fa">→ Torns d'obertura des del principi, i dues claus com a mínim.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h3>La xifra que ho resumeix</h3>
+    <p class="lead">Si només es pot mirar una cosa cada trimestre: <strong>quin percentatge de
+    l'inventari s'ha mogut</strong>.</p>
+    <p>No el nombre d'objectes —que només puja, perquè entrar-ne és fàcil i treure'n costa. Si de
+    cent cinquanta objectes se n'han mogut vint, no tens una biblioteca de cent cinquanta: en tens
+    una de vint i un magatzem de cent trenta.</p>
+  </section>
+</div>
+
+<!-- ══ 7 · EL MAPA DE VALOR ═════════════════════════════════════════════ -->
+<div class="pan" id="pMapa">
+  <section class="box">
+    <h3>Qui dona què a qui</h3>
+    <p class="lead">El mapa de valor de la biblioteca, tal com el crea el SOS. Fixa't en el servei
+    de reparació: <strong>és qui més intangibles mou</strong> i és el que sempre es queda fora quan
+    això es planteja com un magatzem.</p>
+    <!--BIB-MAPA-->
+<p class="mut">7 rols · 11 intercanvis, <strong>8 amb alguna cosa intangible</strong>.</p>
+<div class="taula"><table class="parells">
+<thead><tr><th>De qui, a qui</th><th>Mena</th><th>Què li dona</th><th>Mena</th><th>Què li torna</th></tr></thead>
+<tbody>
+  <tr><td>Donants → Nucli gestor</td><td>tangible</td><td>objectes cedits</td><td>intangible</td><td>agraïment i rastre del que han donat</td></tr>
+  <tr><td>Nucli gestor → Persones sòcies</td><td>tangible</td><td>préstecs i formació d'ús</td><td>tangible</td><td>quotes, fiances i retorns</td></tr>
+  <tr><td>Servei de reparació → Nucli gestor</td><td>tangible</td><td>manteniment i reparacions</td><td>intangible</td><td>casos reals i visibilitat</td></tr>
+  <tr><td>Servei de reparació → Persones sòcies</td><td>intangible</td><td>aprendre a reparar</td><td>intangible</td><td>encàrrecs i peces noves</td></tr>
+  <tr><td>Ajuntament → Nucli gestor</td><td>tangible</td><td>cessió de local</td><td>tangible</td><td>dades d'estalvi i residus evitats</td></tr>
+  <tr><td>Comerç col·laborador → Nucli gestor</td><td>tangible</td><td>objectes i descomptes</td><td>intangible</td><td>visibilitat i clientela</td></tr>
+  <tr><td>Comerç col·laborador → Comunitat del barri</td><td>tangible</td><td>ofertes de proximitat</td><td>tangible</td><td>compres locals</td></tr>
+  <tr><td>Persones sòcies → Comunitat del barri</td><td>intangible</td><td>cultura de compartir</td><td>intangible</td><td>noves sòcies</td></tr>
+  <tr><td>Donants → Comunitat del barri</td><td>intangible</td><td>generositat i exemple</td><td>intangible</td><td>reconeixement veïnal</td></tr>
+  <tr><td>Nucli gestor → Comunitat del barri</td><td>intangible</td><td>inventari obert i confiança</td><td>intangible</td><td>propostes i demandes</td></tr>
+  <tr><td>Ajuntament → Comunitat del barri</td><td>tangible</td><td>difusió pública</td><td>intangible</td><td>legitimitat i ús</td></tr>
+</tbody></table></div>
+<!--/BIB-MAPA-->
+    <p class="nota">Vols el mateix per al teu cas? <a href="vna.html">El mapa de valor, pas a
+    pas</a> · o <a href="index.html">obre el SOS</a> i el tindràs fet amb el teu nom a dins.</p>
+  </section>
+
+  <section class="box">
+    <h3>Com es governa</h3>
+    <!--BIB-GOV-->
+<p class="lead">Transparència d'inventari · normes clares de préstec i cura · rotació de torns d'obertura.</p>
+<p class="mut">On mirar-ne de fetes: <a href="https://pamapam.cat" target="_blank" rel="noopener">Pam a Pam</a> · <a href="https://opcions.org" target="_blank" rel="noopener">Opcions</a></p>
+<!--/BIB-GOV-->
+  </section>
+</div>
+
+</main>
+
+<footer>
+La Biblioteca de les Coses · una dinàmica del <a href="index.html">SOS</a> ·
+<a href="banc-temps.html">El Banc de Temps</a> ·
+<a href="molekulandia.html">Molekulandia</a> ·
+<a href="../index.html">TeamTowers Humà</a>
+</footer>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/*BIB-TAULES*/
+/* Les dues taules que decideixen què val un préstec, i els noms de les
+   tipologies. Surten de SOS/index.html —`ORACLE_OBJECT_DEFAULTS`,
+   `WEAR_RATES` i `LIBRARY_TYPES`— i les escriu SOS/tools/build-comuns.js.
+   No s'editen aquí: si al teu barri les coses valen una altra cosa, es
+   canvien al teu node des de l'eina, que és on la xifra té efecte.
+   Nota: jocs no té valor propi a la taula de l'app i
+   cau al d'«altres»; aquí hi va el valor efectiu.
+*/
+const VALORS={bricolatge:80,cuina:60,jardineria:120,neteja:90,festes:150,electronica:200,esport:180,infancia:100,costura:100,salut:40,jocs:70,altres:70};
+const DESGAST={bricolatge:0.05,cuina:0.035,jardineria:0.045,neteja:0.03,festes:0.02,electronica:0.05,esport:0.025,infancia:0.03,costura:0.03,salut:0.02,jocs:0.015,altres:0.03};
+const TIP_NOM={bricolatge:'🧰 Bricolatge i eines',cuina:'🍳 Cuina i càtering',jardineria:'🌿 Jardineria',neteja:'🧽 Neteja',festes:'🎉 Festes i esdeveniments',electronica:'🔌 Electrònica i AV',esport:'⛺ Esport i lleure',infancia:'🧸 Infància',costura:'🧵 Costura i manualitats',salut:'♿ Salut i mobilitat',jocs:'🎲 Jocs i llibres',altres:'◦ Altres'};
+/*/BIB-TAULES*/
+
+/* ── El valor d'un préstec ───────────────────────────────────────────────────
+   Les tres línies següents són la mateixa aritmètica que `oracleObjectValue` i
+   `loanValue` de l'app, i el generador comprova que les taules d'aquí siguin
+   les d'allà. Si divergissin, aquesta pàgina ensenyaria una xifra i l'eina en
+   registraria una altra —i qui hagués fet servir la pàgina per acordar les
+   normes s'ho trobaria el primer dia. */
+function valorObjecte(tip,anys){
+  const base=VALORS[tip]!==undefined?VALORS[tip]:VALORS.altres;
+  return Math.round(base*Math.max(0.3,1-0.1*(Number(anys)||0)));
+}
+function taxaDesgast(tip){return DESGAST[tip]!==undefined?DESGAST[tip]:DESGAST.altres;}
+function valorPrestec(tip,anys,baseManual){
+  const base=baseManual!==undefined&&baseManual!==null&&baseManual!==''
+    ? Math.max(0,Number(baseManual)||0) : valorObjecte(tip,anys);
+  const rate=taxaDesgast(tip);
+  return{eur:Math.round(base*rate*100)/100,base,rate,pct:Math.round(rate*1000)/10};
+}
+
+/* L'estalvi del conjunt. Es diu «valor d'accés» i no «estalvi» a posta: no
+   sabem si qui s'endú una eina l'hauria comprada, i dir que sí és el que infla
+   les memòries de subvenció. */
+function valorAcces(nobj,vmig,prestecs){
+  const n=Math.max(0,Number(nobj)||0),v=Math.max(0,Number(vmig)||0),p=Math.max(0,Number(prestecs)||0);
+  const patrimoni=n*v;
+  const usos=n*p;
+  /* Un préstec no val l'objecte sencer: val el que costaria llogar-lo o la part
+     de la compra que substitueix. Es pren una desena part del valor, que és
+     conservador i es diu que ho és. */
+  const acces=Math.round(patrimoni*p*0.1);
+  return{patrimoni,usos,acces,perUs:usos?Math.round(acces/usos*100)/100:0};
+}
+
+function pintaCalc(){
+  const tip=$('#inTip').value,anys=$('#inAnys').value;
+  const auto=valorObjecte(tip,anys);
+  const manual=$('#inBase').value;
+  const r=valorPrestec(tip,anys,manual);
+  $('#baseAvis').textContent=manual===''?'per defecte '+auto+' €':'(el per defecte seria '+auto+' €)';
+  $('#formula').innerHTML=
+    '<b>'+r.base+' €</b> valor estimat<br>'+
+    '× <b>'+r.pct+' %</b> de desgast, risc i revisió<br>'+
+    '= el que val cada préstec a qui l\'ha posat a disposició';
+  $('#res').textContent=r.eur.toFixed(2)+' € per préstec';
+  const cops=r.eur>0?Math.ceil(r.base/r.eur):0;
+  $('#resDiu').textContent=cops
+    ? 'Amb '+cops+' préstecs, el que se li ha reconegut iguala el valor de l\'objecte. '+
+      'No vol dir que l\'objecte s\'hagi acabat: vol dir que ja ha aportat el seu valor sencer, i segueix aportant.'
+    : '';
+}
+function pintaEstalvi(){
+  const r=valorAcces($('#inNobj').value,$('#inVmig').value,$('#inPrest').value);
+  const eu=n=>n.toLocaleString('ca-ES');
+  $('#capesEstalvi').innerHTML=
+    '<div class="capa"><div class="k">Patrimoni al prestatge</div><div class="v">'+eu(r.patrimoni)+' €</div>'+
+    '<div class="d">El que costaria comprar-ho tot de nou. És el que hi ha, no el que s\'estalvia.</div></div>'+
+    '<div class="capa"><div class="k">Usos l\'any</div><div class="v">'+eu(r.usos)+'</div>'+
+    '<div class="d">Cada ús és una compra que algú no ha hagut de plantejar-se.</div></div>'+
+    '<div class="capa bo"><div class="k">Valor d\'accés</div><div class="v">'+eu(r.acces)+' €</div>'+
+    '<div class="d">Una desena part del valor per ús, que és conservador. <strong>No és una compra evitada.</strong></div></div>'+
+    '<div class="capa"><div class="k">Per ús</div><div class="v">'+r.perUs.toFixed(2)+' €</div>'+
+    '<div class="d">El que val cada vegada que algú se n\'endú una.</div></div>';
+}
+
+/* ── Pestanyes ───────────────────────────────────────────────────────────── */
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-p]');if(!b)return;
+  $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $$('.pan').forEach(p=>p.classList.remove('on'));
+  const id='#p'+b.dataset.p.charAt(0).toUpperCase()+b.dataset.p.slice(1);
+  const pan=$(id);if(pan)pan.classList.add('on');
+});
+
+$('#inTip').innerHTML=Object.keys(VALORS).map(k=>
+  '<option value="'+k+'">'+esc(TIP_NOM[k]||k)+'</option>').join('');
+$('#inTip').value='bricolatge';
+['#inTip','#inAnys','#inBase'].forEach(s=>$(s).addEventListener('input',pintaCalc));
+['#inNobj','#inVmig','#inPrest'].forEach(s=>$(s).addEventListener('input',pintaEstalvi));
+pintaCalc();pintaEstalvi();
+
+/* Hook de proves: les proves parlen amb la pàgina de debò, no amb una còpia. */
+window.__BIB={VALORS,DESGAST,TIP_NOM,valorObjecte,taxaDesgast,valorPrestec,valorAcces,pintaCalc,pintaEstalvi};
+</script>
+</body>
+</html>

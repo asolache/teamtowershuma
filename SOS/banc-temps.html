@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>El Banc de Temps · una hora val una hora</title>
+<meta name="description" content="Com es munta un banc de temps que duri: què compta com una hora, qui la confirma, i per què un saldo molt positiu no és una medalla sinó un avís. Amb la calculadora de reciprocitat i les tres maneres com moren.">
+<meta property="og:title" content="El Banc de Temps · una hora val una hora">
+<meta property="og:description" content="Qui només dona es crema i qui només rep marxa. El que fa durar un banc de temps no és la bona voluntat: és mirar el saldo de tothom i actuar abans que se'n vagi ningú.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+nav.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.7rem 1.2rem;background:rgba(11,11,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+nav.top .brand{font-weight:700;text-decoration:none;color:var(--text)}
+nav.top .brand span{color:var(--green)}
+nav.top .links{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto;font-size:.85rem}
+nav.top .links a{color:var(--light);text-decoration:none}
+nav.top .links a:hover{color:var(--text)}
+
+.hero{padding:3.4rem 1.5rem 2.2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(0,230,118,.16),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(99,102,241,.12),transparent 55%),var(--bg)}
+.hero-inner{max-width:860px;margin:0 auto}
+.tag{display:inline-block;background:rgba(0,230,118,.14);color:var(--green);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#00e676,#6366f1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:700px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:860px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--orange);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+section.box .lead strong{color:var(--text)}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+
+input,select,button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:.4rem .55rem}
+input[type=number]{width:80px;text-align:right;font-family:var(--mono)}
+input:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
+button.b{cursor:pointer}
+button.b:hover{border-color:var(--indigo)}
+.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+.nota{font-size:.78rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.5rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+
+/* Les fitxes de resultat: el número gros i, a sota, què vol dir. Un número sol
+   no diu res i és exactament el que fa que la gent es cregui qualsevol xifra. */
+.capes{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin:.8rem 0}
+.capa{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem}
+.capa .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.capa .v{font-size:1.35rem;font-weight:800;margin:.15rem 0}
+.capa .d{font-size:.74rem;color:var(--light);line-height:1.45}
+.capa.bo .v{color:var(--green)} .capa.av .v{color:var(--orange)} .capa.mal .v{color:var(--red)}
+
+/* Les persones del simulador, amb la seva barra de saldo. La barra va del
+   centre cap als dos costats: el zero és el lloc bo, i es veu de reüll. */
+.bar{position:relative;height:8px;background:var(--card);border-radius:4px;overflow:hidden;min-width:120px}
+.bar i{position:absolute;top:0;bottom:0;display:block}
+.bar .zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--muted);opacity:.6}
+
+.passos{counter-reset:p;display:grid;gap:.6rem;margin-top:.6rem}
+.pas{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem .75rem 2.6rem;position:relative}
+.pas::before{counter-increment:p;content:counter(p);position:absolute;left:.85rem;top:.75rem;
+  width:1.35rem;height:1.35rem;border-radius:50%;background:var(--indigo);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700}
+.pas b{display:block;font-size:.92rem}
+.pas span{font-size:.8rem;color:var(--light)}
+
+.morts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;margin-top:.8rem}
+.mort{background:var(--card);border:1px solid var(--border);border-top:2px solid var(--red);
+  border-radius:10px;padding:.9rem 1rem}
+.mort h4{font-size:.95rem;margin-bottom:.35rem}
+.mort p{margin:0 0 .5rem;font-size:.84rem;color:var(--light)}
+.mort .fa{font-size:.8rem;color:var(--green)}
+
+.parells{font-size:.82rem}
+.parells td:nth-child(2){color:var(--muted);font-family:var(--mono);font-size:.72rem}
+
+footer{border-top:1px solid var(--border);padding:2rem 1.2rem 3rem;text-align:center;color:var(--muted);font-size:.82rem}
+footer a{color:var(--light)}
+</style>
+</head>
+<body>
+
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html" aria-current="page"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="tag">⏳ Dinàmica del SOS</span>
+    <h1>Una hora val <em>una hora</em></h1>
+    <p class="sub">Sigui qui sigui qui la fa i sigui el que sigui que fa. Un banc de temps no és
+    voluntariat ni una moneda: és <strong>un registre d'hores intercanviades</strong> entre veïnes,
+    on demanar ajuda és tan normal com oferir-la.</p>
+    <div class="avis"><strong>El que aquesta pàgina explica i quasi ningú explica:</strong> els bancs
+    de temps no moren per falta de gent. Moren perquè <strong>el saldo es desequilibra i ningú
+    mira</strong> — les que només donen es cremen i les que només reben marxen per vergonya. Aquí hi
+    ha la calculadora que ho fa visible abans que passi.</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="que" class="on">1 · Què és</button>
+  <button data-p="saldo">2 · El saldo</button>
+  <button data-p="hora">3 · Una hora, i qui la confirma</button>
+  <button data-p="zero">4 · Començar de zero</button>
+  <button data-p="moren">5 · Per què moren</button>
+  <button data-p="mapa">6 · El mapa de valor</button>
+</div>
+
+<!-- ══ 1 · QUÈ ÉS ═══════════════════════════════════════════════════════ -->
+<div class="pan on" id="pQue">
+  <section class="box">
+    <h3>La regla d'or, i el que se'n desprèn</h3>
+    <p class="lead"><strong>Una hora val una hora.</strong> L'hora de qui fa una declaració de la
+    renda i l'hora de qui acompanya algú al metge valen exactament el mateix. No és un descuit ni
+    una simplificació: és <strong>la decisió política de tota la dinàmica</strong>, i és el que
+    permet que hi participi gent que al mercat de treball no s'hi trobaria mai.</p>
+    <p class="nota bo">Si algun dia algú proposa que unes hores valguin més que unes altres, ja no
+    és un banc de temps: és un mercat amb una moneda pròpia. Pot ser una cosa bona, però és una
+    altra cosa i s'ha de dir.</p>
+  </section>
+
+  <section class="box">
+    <h3>Què no és</h3>
+    <div class="capes">
+      <div class="capa"><div class="k">No és</div><div class="v" style="font-size:1rem">Voluntariat</div>
+        <div class="d">Al voluntariat dones i no reps. Aquí <strong>reps</strong>, i rebre és la meitat de la feina.</div></div>
+      <div class="capa"><div class="k">No és</div><div class="v" style="font-size:1rem">Una moneda</div>
+        <div class="d">Les hores no es canvien per diners, no es venen i no s'acumulen per invertir-les.</div></div>
+      <div class="capa"><div class="k">No és</div><div class="v" style="font-size:1rem">Un servei social</div>
+        <div class="d">No hi ha qui atén i qui és atès: tothom hi és a les dues bandes.</div></div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h3>La fita declarada, i per què és aquesta</h3>
+    <!--BDT-OBJ-->
+<p class="lead">Teixir suport mutu al veïnat intercanviant temps i habilitats en igualtat: una hora val una hora.</p>
+<div class="capes">
+  <div class="capa"><div class="k">Fita 1</div><div class="v" style="font-size:1rem">30 sòcies actives el primer any</div></div>
+  <div class="capa"><div class="k">Fita 2</div><div class="v" style="font-size:1rem">80% amb almenys un intercanvi</div></div>
+  <div class="capa"><div class="k">Fita 3</div><div class="v" style="font-size:1rem">saldo mitjà proper a zero (reciprocitat sana).</div></div>
+</div>
+<p class="nota bo"><strong>On va això:</strong> Un barri on ningú està sol: el temps de cadascú és un bé comú i demanar ajuda és tan normal com oferir-la.</p>
+<!--/BDT-OBJ-->
+  </section>
+</div>
+
+<!-- ══ 2 · EL SALDO ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pSaldo">
+  <section class="box">
+    <h3>El saldo de cadascú, i el del grup</h3>
+    <p class="lead">El saldo és <span class="mono">hores donades − hores rebudes</span>. Posa-hi la
+    gent que tens o inventa-te-la: el que interessa no és el número de ningú, és
+    <strong>la forma del conjunt</strong>.</p>
+    <div class="fila">
+      <input id="inNom" placeholder="Nom" maxlength="20">
+      <label>Donades <input id="inDon" type="number" min="0" max="999" step="1" value="0"></label>
+      <label>Rebudes <input id="inRec" type="number" min="0" max="999" step="1" value="0"></label>
+      <button class="b b-pri" id="btnAlta">Afegeix-la</button>
+      <button class="b" id="btnExemple">Posa'm un exemple</button>
+    </div>
+    <p class="mut" id="altaAvis"></p>
+    <div class="capes" id="capes"></div>
+    <div class="taula"><table id="tGent"></table></div>
+    <p class="nota" id="diu"></p>
+  </section>
+
+  <section class="box">
+    <h3>Per què un saldo molt positiu és un avís i no una medalla</h3>
+    <p class="lead">La intuïció diu que qui ha donat vint hores i no n'ha rebut cap és la millor
+    sòcia del banc. És al revés: <strong>és la primera que plegarà.</strong></p>
+    <p>Donar sense rebre mai no és generositat sostinguda, és una relació que no s'ha tancat. Al cap
+    d'uns mesos la persona conclou —sense dir-ho— que allò va en una direcció, i deixa de venir. I
+    quan marxa se'n va amb ella la meitat de l'oferta del banc.</p>
+    <p class="nota avis">L'altra cara és igual de real i encara més silenciosa: qui ha rebut sense
+    donar mai sovint <strong>no torna per vergonya</strong>. La feina del nucli gestor no és animar
+    a donar més: és <strong>buscar-li alguna cosa que pugui oferir</strong>, per petita que sigui, i
+    demanar-la-hi de debò.</p>
+  </section>
+</div>
+
+<!-- ══ 3 · UNA HORA, I QUI LA CONFIRMA ══════════════════════════════════ -->
+<div class="pan" id="pHora">
+  <section class="box">
+    <h3>Qui apunta l'hora no és qui la fa</h3>
+    <p class="lead">Una hora entra al registre quan <strong>la persona que l'ha rebuda ho
+    confirma</strong>. No és desconfiança: és el que fa que el saldo signifiqui alguna cosa i que
+    qui el mira s'ho pugui creure sense conèixer ningú.</p>
+    <div class="passos">
+      <div class="pas"><b>Es fa el servei</b><span>Dues persones, una estona. Encara no hi ha res apuntat.</span></div>
+      <div class="pas"><b>Qui l'ha fet ho proposa</b><span>Diu quantes hores i a qui. Queda pendent, i es veu que ho està.</span></div>
+      <div class="pas"><b>Qui l'ha rebuda ho confirma</b><span>Fins aquí l'apunt no compta a cap saldo. Si no es confirma, no existeix.</span></div>
+      <div class="pas"><b>Queda signat i amb data</b><span>La data és la del servei, no la de la confirmació: el que va passar va passar quan va passar.</span></div>
+    </div>
+    <p class="nota bo">Al SOS això és la <strong>safata de vistiplaus</strong>, i funciona igual per
+    a les hores, els objectes i les cures. <a href="index.html#/alta">Obre l'eina</a> i ho veuràs a la
+    primera aportació que registris.</p>
+  </section>
+
+  <section class="box">
+    <h3>Què compta i què no</h3>
+    <div class="taula"><table>
+      <thead><tr><th>Compta com una hora</th><th>No compta</th></tr></thead>
+      <tbody>
+        <tr><td>El temps que has estat fent-ho, arrodonit a quarts.</td>
+            <td>El temps de desplaçament, si no s'ha acordat abans.</td></tr>
+        <tr><td>Una hora de dues persones fent la mateixa feina = dues hores.</td>
+            <td>Les hores d'organitzar el banc: van al registre com el que són, gestió.</td></tr>
+        <tr><td>El que has fet a casa teva per a algú altre (cuinar, cosir, reparar).</td>
+            <td>Els materials. Es paguen a part i es diu quant.</td></tr>
+        <tr><td>Acompanyar, escoltar, fer companyia. És la meitat del que es demana.</td>
+            <td>Una promesa de fer-ho. Fins que no s'ha fet, no hi ha hora.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="nota">Els materials fora de l'hora és la regla que evita la discussió lletja: si algú
+    cus un vestit amb la seva tela, l'hora és una hora i la tela es paga o es porta.</p>
+  </section>
+</div>
+
+<!-- ══ 4 · COMENÇAR DE ZERO ═════════════════════════════════════════════ -->
+<div class="pan" id="pZero">
+  <section class="box">
+    <h3>El camí, tal com el proposa l'eina</h3>
+    <p class="lead">Aquests cinc passos no els hem inventat per a aquesta pàgina: són
+    <strong>el tauler que el SOS et deixa fet</strong> quan obres un banc de temps.</p>
+    <!--BDT-KANBAN-->
+<div class="passos">
+  <div class="pas"><b>Definir catàleg d'ofertes i demandes</b></div>
+  <div class="pas"><b>Captar les 10 primeres persones</b></div>
+  <div class="pas"><b>Sessió inaugural</b></div>
+  <div class="pas"><b>Protocol de registre d'hores</b></div>
+  <div class="pas"><b>Primera ronda d'intercanvis</b></div>
+</div>
+<!--/BDT-KANBAN-->
+  </section>
+
+  <section class="box">
+    <h3>El primer dia i el sisè mes</h3>
+    <div class="capes">
+      <div class="capa"><div class="k">Dia 1</div><div class="v" style="font-size:1rem">Deu persones</div>
+        <div class="d">Amb menys, els primers intercanvis no es troben. Amb molt més, la sessió inaugural es fa impersonal.</div></div>
+      <div class="capa"><div class="k">Mes 1</div><div class="v" style="font-size:1rem">El primer intercanvi</div>
+        <div class="d">Si al cap d'un mes no n'hi ha hagut cap, el problema no és la difusió: és que ningú s'atreveix a demanar.</div></div>
+      <div class="capa av"><div class="k">Mes 6</div><div class="v" style="font-size:1rem">La prova de veritat</div>
+        <div class="d">Qui sosté el registre, ho fa sol? Si sí, el banc té una sola persona i es nota al mes set.</div></div>
+    </div>
+    <p class="nota avis">La trampa del mes sis: el banc funciona i per això ningú mira qui el
+    sosté. <strong>El moment de repartir la gestió és quan encara va bé</strong>, no quan la persona
+    que la porta avisa que plega.</p>
+  </section>
+</div>
+
+<!-- ══ 5 · PER QUÈ MOREN ════════════════════════════════════════════════ -->
+<div class="pan" id="pMoren">
+  <section class="box">
+    <h3>Les tres maneres, i què les atura</h3>
+    <p class="lead">Cap de les tres és falta d'il·lusió. Totes tres es veuen venir amb mesos
+    d'antelació <strong>si algú mira les dades</strong>, i cap es veu si no es miren.</p>
+    <div class="morts">
+      <div class="mort">
+        <h4>El saldo que no torna</h4>
+        <p>Un grup petit dona molt i no rep mai. Es cremen i pleguen tots alhora, perquè són els
+        mateixos que es coneixen entre ells.</p>
+        <p class="fa">→ Es mira el saldo mitjà i qui té saldo alt fa mesos. Se'ls demana una cosa
+        que necessitin de debò.</p>
+      </div>
+      <div class="mort">
+        <h4>La gestió d'una sola persona</h4>
+        <p>Algú manté el registre, obre el local i escriu els correus. Quan es cansa, no hi ha
+        traspàs perquè mai ha calgut.</p>
+        <p class="fa">→ Dues persones al registre des del primer dia, encara que en sobri una.</p>
+      </div>
+      <div class="mort">
+        <h4>El catàleg que no es creua</h4>
+        <p>Tothom ofereix classes de repàs i ningú n'ofereix bricolatge. El que es demana no hi és,
+        i qui demana se'n va.</p>
+        <p class="fa">→ Es mira què es busca i no es troba. És la llista de què cal captar, i és
+        més útil que un cartell.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h3>La xifra que ho resumeix</h3>
+    <p class="lead">Si només es pot mirar una cosa cada trimestre, que sigui aquesta:
+    <strong>quantes persones han fet almenys un intercanvi en els últims tres mesos</strong>.</p>
+    <p>No el nombre de sòcies —que només puja— ni el total d'hores —que tampoc baixa mai. Les
+    persones actives és l'única que cau quan el banc s'apaga, i cau abans que ho noti ningú.</p>
+  </section>
+</div>
+
+<!-- ══ 6 · EL MAPA DE VALOR ═════════════════════════════════════════════ -->
+<div class="pan" id="pMapa">
+  <section class="box">
+    <h3>Qui dona què a qui</h3>
+    <p class="lead">El mapa de valor del banc de temps, tal com el crea el SOS. Els intercanvis
+    <span class="mono">intangibles</span> són els que no apunta ningú i els que decideixen si allò
+    dura.</p>
+    <!--BDT-MAPA-->
+<p class="mut">7 rols · 12 intercanvis, <strong>8 amb alguna cosa intangible</strong>.</p>
+<div class="taula"><table class="parells">
+<thead><tr><th>De qui, a qui</th><th>Mena</th><th>Què li dona</th><th>Mena</th><th>Què li torna</th></tr></thead>
+<tbody>
+  <tr><td>Sòcies oferents → Sòcies demandants</td><td>tangible</td><td>hores de servei</td><td>intangible</td><td>reciprocitat i gratitud</td></tr>
+  <tr><td>Sòcies oferents → Registre d'hores</td><td>tangible</td><td>hores declarades</td><td>tangible</td><td>saldo validat</td></tr>
+  <tr><td>Sòcies demandants → Registre d'hores</td><td>tangible</td><td>confirmació del servei rebut</td><td>tangible</td><td>saldo i historial</td></tr>
+  <tr><td>Nucli gestor → Registre d'hores</td><td>tangible</td><td>protocol i manteniment</td><td>tangible</td><td>dades d'activitat</td></tr>
+  <tr><td>Nucli gestor → Sòcies oferents</td><td>intangible</td><td>acollida i formació</td><td>intangible</td><td>disponibilitat i compromís</td></tr>
+  <tr><td>Nucli gestor → Sòcies demandants</td><td>intangible</td><td>acompanyament per demanar sense vergonya</td><td>intangible</td><td>necessitats detectades</td></tr>
+  <tr><td>Entitat amfitriona → Nucli gestor</td><td>tangible</td><td>seu i logística</td><td>intangible</td><td>activitat i vida al local</td></tr>
+  <tr><td>Ajuntament → Entitat amfitriona</td><td>tangible</td><td>cessió d'espai i suport</td><td>intangible</td><td>ús social de l'equipament</td></tr>
+  <tr><td>Nucli gestor → Ajuntament</td><td>tangible</td><td>memòria i dades d'impacte</td><td>tangible</td><td>difusió i finançament</td></tr>
+  <tr><td>Comunitat veïnal → Nucli gestor</td><td>intangible</td><td>captació i legitimitat</td><td>intangible</td><td>reconeixement i pertinença</td></tr>
+  <tr><td>Sòcies oferents → Comunitat veïnal</td><td>intangible</td><td>confiança i vincle</td><td>intangible</td><td>prestigi i noves demandes</td></tr>
+  <tr><td>Sòcies demandants → Comunitat veïnal</td><td>intangible</td><td>normalitzar demanar ajuda</td><td>intangible</td><td>xarxa de suport</td></tr>
+</tbody></table></div>
+<!--/BDT-MAPA-->
+    <p class="nota">Vols el mateix per al teu cas? <a href="vna.html">El mapa de valor, pas a
+    pas</a> · o <a href="index.html">obre el SOS</a> i el tindràs fet amb el teu nom a dins.</p>
+  </section>
+
+  <section class="box">
+    <h3>Com es governa</h3>
+    <!--BDT-GOV-->
+<p class="lead">Assemblea oberta · una hora val el mateix sigui quin servei sigui · rotació de la coordinació.</p>
+<p class="mut">On mirar-ne de fetes: <a href="https://www.bancdeltemps.org" target="_blank" rel="noopener">Banc del Temps · Salut i Família</a></p>
+<!--/BDT-GOV-->
+  </section>
+</div>
+
+</main>
+
+<footer>
+El Banc de Temps · una dinàmica del <a href="index.html">SOS</a> ·
+<a href="biblioteca.html">La Biblioteca de les Coses</a> ·
+<a href="molekulandia.html">Molekulandia</a> ·
+<a href="../index.html">TeamTowers Humà</a>
+</footer>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const CLAU='tt.bdt.gent';
+
+/* ── Les persones del simulador ─────────────────────────────────────────────
+   Viuen al navegador i enlloc més. És un simulador per pensar, no un registre:
+   el registre de debò és el del SOS, i allà cada hora va signada. */
+let G=[];
+
+/* El saldo, calculat exactament com el calcula l'app (`memberBalance`): hores
+   donades menys hores rebudes. Ni ponderacions ni correccions —la gràcia de la
+   dinàmica és que no n'hi ha. */
+function saldo(p){return (Number(p.don)||0)-(Number(p.rec)||0);}
+
+/* La salut del conjunt. La fita declarada de la dinàmica és «saldo mitjà proper
+   a zero», i el que la fa comprovable és mirar el **valor absolut**: si una
+   persona té +20 i una altra −20, la mitjana amb signe és zero i el banc està
+   trencat. Aquesta és la confusió que fa que un grup es pensi que va bé. */
+function salut(gent){
+  const n=gent.length;
+  if(!n)return{n:0};
+  const saldos=gent.map(saldo);
+  const absMitja=saldos.reduce((a,s)=>a+Math.abs(s),0)/n;
+  const ambSigne=saldos.reduce((a,s)=>a+s,0)/n;
+  const total=gent.reduce((a,p)=>a+(Number(p.don)||0),0);
+  const totalRec=gent.reduce((a,p)=>a+(Number(p.rec)||0),0);
+  /* En un registre de debò les dues sumes són **iguals**: cada hora té dues
+     bandes, i el registre les apunta totes dues. Aquí es poden escriure números
+     que no quadren, i si no quadren vol dir que no surten d'intercanvis reals
+     —o que en falta la meitat. Val més dir-ho que deixar que algú tregui
+     conclusions d'una taula que no lliga. */
+  const quadra=total===totalRec;
+  /* Actives = les que han donat o rebut alguna cosa. Comptar-hi les que no han
+     fet res encara les faria passar per participants, que és la manera més
+     habitual de fer-se trampes al solitari. */
+  const actives=gent.filter(p=>saldo(p)!==0||(Number(p.don)||0)>0||(Number(p.rec)||0)>0).length;
+  const extrems=gent.filter(p=>Math.abs(saldo(p))>=10);
+  const nomesDonen=gent.filter(p=>(Number(p.don)||0)>0&&(Number(p.rec)||0)===0);
+  const nomesReben=gent.filter(p=>(Number(p.rec)||0)>0&&(Number(p.don)||0)===0);
+  return{n,absMitja,ambSigne,total,totalRec,quadra,actives,pctActives:n?actives*100/n:0,
+    extrems,nomesDonen,nomesReben,max:Math.max(1,...saldos.map(Math.abs))};
+}
+
+function desa(){try{localStorage.setItem(CLAU,JSON.stringify(G));}catch(e){}}
+function carrega(){try{const r=localStorage.getItem(CLAU);if(!r)return false;const v=JSON.parse(r);
+  if(!Array.isArray(v))return false;G=v;return true;}catch(e){return false;}}
+
+function exemple(){
+  /* Un grup que **sembla** sa: la mitjana amb signe és zero. Mirant-lo un per
+     un, dues persones sostenen el banc i dues no han tornat mai res. És el cas
+     que aquesta pàgina existeix per ensenyar. */
+  G=[{nom:'Marta',don:24,rec:2},{nom:'Jordi',don:18,rec:1},{nom:'Aixa',don:2,rec:16},
+     {nom:'Pere',don:0,rec:19},{nom:'Nur',don:6,rec:7},{nom:'Toni',don:5,rec:5},
+     {nom:'Lluïsa',don:0,rec:5}];
+  desa();
+}
+
+function afegeix(nom,don,rec){
+  const n=String(nom||'').trim().slice(0,20);
+  if(!n)return{err:'Posa-li un nom.'};
+  if(G.some(p=>p.nom.toLowerCase()===n.toLowerCase()))return{err:'Aquest nom ja hi és.'};
+  if(G.length>=40)return{err:'Quaranta persones són prou per veure la forma.'};
+  G.push({nom:n,don:Math.max(0,Number(don)||0),rec:Math.max(0,Number(rec)||0)});
+  desa();return{ok:true};
+}
+function treu(nom){G=G.filter(p=>p.nom!==nom);desa();}
+
+function pinta(){
+  const s=salut(G);
+  const cap=(k,v,d,cls)=>'<div class="capa'+(cls?' '+cls:'')+'"><div class="k">'+k+'</div>'+
+    '<div class="v">'+v+'</div><div class="d">'+d+'</div></div>';
+  if(!s.n){
+    $('#capes').innerHTML='';
+    $('#tGent').innerHTML='';
+    $('#diu').textContent='Afegeix-hi gent, o posa\'t l\'exemple.';
+    return;
+  }
+  const equilibrat=s.absMitja<=3;
+  $('#capes').innerHTML=
+    cap('Saldo mitjà (absolut)',s.absMitja.toFixed(1)+' h',
+      'La distància mitjana al zero. És la fita de la dinàmica i és la que compta.',
+      equilibrat?'bo':(s.absMitja<=8?'av':'mal'))+
+    cap('Mitjana amb signe',(s.ambSigne>=0?'+':'')+s.ambSigne.toFixed(1)+' h',
+      s.quadra
+        ? 'Zero, i sempre ho serà si les hores surten d\'intercanvis: cada hora donada és una hora rebuda. <strong>Per això no mesura res.</strong>'
+        : '<strong>No quadra:</strong> '+s.total+' h donades i '+s.totalRec+' h rebudes. En un registre de debò serien iguals.',
+      s.quadra?'':'av')+
+    cap('Han intercanviat',Math.round(s.pctActives)+' %',
+      s.actives+' de '+s.n+' persones. Si baixa, el banc s\'està apagant.',
+      s.pctActives>=80?'bo':(s.pctActives>=50?'av':'mal'))+
+    cap('Hores mogudes',s.total+' h','Puja sempre. Serveix per explicar-ho a fora, no per saber com esteu.');
+
+  const files=G.slice().sort((a,b)=>saldo(b)-saldo(a)).map(p=>{
+    const v=saldo(p),ample=Math.min(50,Math.abs(v)/s.max*50);
+    const col=v>0?'var(--orange)':(v<0?'var(--blue)':'var(--green)');
+    const barra='<div class="bar"><span class="zero"></span><i style="background:'+col+';'+
+      (v>=0?'left:50%;':'right:50%;')+'width:'+ample+'%"></i></div>';
+    let diu='';
+    if(v>=10)diu='<span style="color:var(--orange)">dona i no rep · candidata a cremar-se</span>';
+    else if(v<=-10)diu='<span style="color:var(--blue)">rep i no dona · busca-li què pot oferir</span>';
+    else if((Number(p.don)||0)===0&&(Number(p.rec)||0)===0)diu='<span class="mut">encara no ha intercanviat</span>';
+    return '<tr><td>'+esc(p.nom)+'</td><td class="n">'+p.don+'</td><td class="n">'+p.rec+'</td>'+
+      '<td class="n" style="color:'+col+'">'+(v>0?'+':'')+v+'</td><td>'+barra+'</td><td>'+diu+'</td>'+
+      '<td><button class="b" data-fora="'+esc(p.nom)+'" aria-label="Treu '+esc(p.nom)+'">×</button></td></tr>';
+  }).join('');
+  $('#tGent').innerHTML='<thead><tr><th>Persona</th><th class="n">Dona</th><th class="n">Rep</th>'+
+    '<th class="n">Saldo</th><th>Distància al zero</th><th>Què diu</th><th></th></tr></thead><tbody>'+files+'</tbody>';
+
+  const parts=[];
+  if(!s.quadra)parts.push('<strong>Els números no quadren</strong> ('+s.total+' h donades contra '+
+    s.totalRec+' h rebudes): en un registre de debò cada hora té dues bandes. Repassa-ho abans de treure\'n res.');
+  if(equilibrat)parts.push('El saldo mitjà absolut és de '+s.absMitja.toFixed(1)+' h: <strong>això és un banc sa</strong>.');
+  else parts.push('El saldo mitjà absolut és de '+s.absMitja.toFixed(1)+' h. La fita és estar per sota de 3.');
+  if(s.nomesDonen.length)parts.push('<strong>'+s.nomesDonen.length+'</strong> '+
+    (s.nomesDonen.length===1?'persona dona i no ha rebut mai res':'persones donen i no han rebut mai res')+
+    ' ('+s.nomesDonen.map(p=>esc(p.nom)).join(', ')+'). Són les primeres que plegaran.');
+  if(s.nomesReben.length)parts.push('<strong>'+s.nomesReben.length+'</strong> '+
+    (s.nomesReben.length===1?'persona rep i no ha donat mai res':'persones reben i no han donat mai res')+
+    ' ('+s.nomesReben.map(p=>esc(p.nom)).join(', ')+'). No cal animar-les a donar: cal demanar-los alguna cosa.');
+  $('#diu').innerHTML=parts.join(' ');
+  $('#diu').className='nota '+(equilibrat&&!s.nomesDonen.length?'bo':(s.absMitja>8?'mal':'avis'));
+}
+
+/* ── Pestanyes ───────────────────────────────────────────────────────────── */
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-p]');if(!b)return;
+  $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $$('.pan').forEach(p=>p.classList.remove('on'));
+  const id='#p'+b.dataset.p.charAt(0).toUpperCase()+b.dataset.p.slice(1);
+  const pan=$(id);if(pan)pan.classList.add('on');
+});
+
+$('#btnAlta').addEventListener('click',()=>{
+  const r=afegeix($('#inNom').value,$('#inDon').value,$('#inRec').value);
+  if(r.err){$('#altaAvis').textContent=r.err;return;}
+  $('#altaAvis').textContent='';$('#inNom').value='';$('#inDon').value='0';$('#inRec').value='0';
+  pinta();
+});
+$('#btnExemple').addEventListener('click',()=>{exemple();pinta();});
+$('#tGent').addEventListener('click',e=>{
+  const b=e.target.closest('[data-fora]');if(!b)return;
+  treu(b.dataset.fora);pinta();
+});
+
+if(!carrega())exemple();
+pinta();
+
+/* Hook de proves: les proves parlen amb la pàgina de debò, no amb una còpia. */
+window.__BDT={saldo,salut,afegeix,treu,exemple,desa,carrega,pinta,CLAU,estat:()=>G};
+</script>
+</body>
+</html>

@@ -704,6 +704,46 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 149 — El que qualsevol entén és el que queda pitjor explicat
+
+De les dotze dinàmiques del catàleg, sis tenien pàgina pròpia: La Compra,
+L'Energia, L'Habitatge, la MATRIU, el mapa de valor i Molekulandia. Les dues
+**per on comença tothom** —el banc de temps i la biblioteca de les coses— no en
+tenien cap.
+
+No és casualitat i el mecanisme val per a qualsevol projecte: **s'escriu el que
+costa d'explicar.** Una comunitat energètica obliga a fer una pàgina perquè
+sense ella ningú entén els coeficients; un banc de temps l'entén tothom a la
+primera frase, i per això ningú s'hi posa. El resultat és que la persona que
+arriba i pregunta «i què és un banc de temps?» ha d'obrir l'aplicació sencera:
+se li demana una decisió abans de respondre-li la pregunta.
+
+I una pàgina d'una cosa fàcil té un perill propi: **surt bonica i no serveix de
+res.** Què és, que bonic, apunta't. El que la fa útil és la part que no
+s'explica mai, i que en aquestes dues és molt concreta:
+
+- **Un saldo molt positiu és un avís, no una medalla.** Qui ha donat vint hores
+  i no n'ha rebut cap és la primera que plegarà, i qui ha rebut sense donar
+  sovint no torna per vergonya. La feina no és animar a donar més: és
+  buscar-li a algú alguna cosa que pugui oferir i demanar-la-hi de debò.
+- **Què es fa el dia que una cosa es trenca o no torna.** Passarà, i les
+  biblioteques no moren per falta d'objectes: moren el dia que algú se sent
+  estafat i ningú havia escrit què s'havia de fer. La norma s'acorda abans del
+  primer préstec, perquè decidida el dia que passa sempre sembla arbitrària.
+
+Dues coses de mètode que en surten:
+
+- **Una xifra amb la fórmula al costat.** El valor d'un préstec és
+  «valor estimat × taxa de desgast», i les dues taules són les de l'app, no una
+  còpia: si divergissin, algú acordaria les normes del seu barri amb una xifra i
+  l'eina en registraria una altra. La guarda no compara el text de les taules,
+  compara **el que calculen**.
+- **La mitjana que no mesura res.** El saldo mitjà amb signe d'un banc de temps
+  és zero sempre, perquè cada hora donada és una hora rebuda. Un grup on dues
+  persones sostenen tot i dues no han tornat mai res té mitjana zero exacta i
+  està trencat. El que compta és **la distància mitjana al zero**, i confondre
+  les dues és com un grup es convenç que va bé.
+
 ## Veda 148 — Reservar un nom no és tenir-lo, i s'ha de dir a la cara
 
 L'encàrrec era «crea els usuaris al directori de tots els fundadors del
