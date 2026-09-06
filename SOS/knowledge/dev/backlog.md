@@ -69,7 +69,26 @@ pàgina i el document ja diuen quantes reserves tenen codi i quantes no.
 
 ---
 
-**P0 · Les dues dinàmiques fundacionals no tenen pàgina** — pendent
+**P0 · Les dues dinàmiques fundacionals no tenen pàgina** — **fet**
+
+> **Fet**: `SOS/banc-temps.html` i `SOS/biblioteca.html`, amb `build-comuns.js`
+> (la fita, el tauler, el mapa de valor, la governança, els dos modes d'objecte
+> i les dues taules de valor, tot llegit de `DYNAMICS`, `ORACLE_OBJECT_DEFAULTS`,
+> `WEAR_RATES`, `LIBRARY_TYPES` i `OBJECT_MODES`), `check-comuns.js` amb sis
+> regles provades trencant-les, `test-comuns.mjs` (23 assercions) i les dues
+> entrades a `EINES` de `build-nav.js`, que ja no apunten a l'app. Veda 149.
+>
+> **Troballa pel camí**: `LIBRARY_TYPES` declara dotze tipologies i
+> `ORACLE_OBJECT_DEFAULTS` només en té onze — **`jocs` no té valor base** i cau
+> a «altres» (70 €). No és un error de càlcul, l'app fa exactament això, però és
+> una taula incompleta que no havia mirat ningú. El generador ho diu cada
+> vegada que corre. **Queda decidir quant val de debò un joc de taula**, que ho
+> diu qui coneix el fons, no el codi.
+>
+> **El que queda d'aquesta part**: el suport mutu i les cures segueixen sense
+> pàgina, i és la tercera dinàmica d'entrada fàcil. La seva té un problema
+> propi que les altres dues no tenen —els noms de qui rep cura no poden sortir
+> de la sala— i per això no s'ha fet de passada.
 
 De les dotze dinàmiques del catàleg, sis ja tenen la seva pàgina pública —La
 Compra, L'Energia, L'Habitatge, la MATRIU, el mapa de valor i Molekulandia— i

@@ -252,6 +252,19 @@ jobs:
       - name: Les reserves de nick del Comando
         run: node SOS/tools/build-convits.js --check
 
+      # Les dues dinàmiques per on comença tothom. La pàgina de la biblioteca
+      # calcula què val un préstec amb les taules de l'app: si divergissin, algú
+      # acordaria les normes del seu barri amb una xifra i l'eina en registraria
+      # una altra.
+      - name: El banc de temps i la biblioteca surten de les taules de l'app
+        run: node SOS/tools/build-comuns.js --check
+
+      # I que no se n'hi vagi la part incòmoda: el saldo que és un avís, qui
+      # confirma l'hora, què es fa quan una cosa es trenca, i que el valor
+      # d'accés no és una compra evitada.
+      - name: La part incòmoda de les dues dinàmiques
+        run: node SOS/tools/check-comuns.js
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests

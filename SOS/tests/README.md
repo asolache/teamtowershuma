@@ -81,6 +81,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-registre.mjs` | V72 | El registre públic: que surtin hashes i mai files, i que puguis demostrar que hi ets |
 | `test-peli.mjs` | veda 146 | El Comando com a projecte: que els quatre mòduls del SOS **obrin el que prometen** —s'hi va per la ruta i es mira quin modal surt—, que els herois de la pàgina siguin els de l'app un per un, que les entrades del blog caiguin sobre un article que hi és, i que les peces de vídeo que encara no tenen enllaç ho diguin sense ser clicables |
 | `test-convit.mjs` | veda 148 | Els nicks reservats dels fundadors: que obrir un convit **no publiqui res**, que el camp del nick no es bloquegi —un convit no és una assignació—, que un codi que no és no obri res, que una reserva sense codi encunyat no s'obri amb un codi buit, i que una fitxa amb el nick reservat i el did d'un altre no passi la validació |
+| `test-comuns.mjs` | veda 149 | Les dues dinàmiques d'entrada fàcil: que la mitjana amb signe del saldo **no mesuri res** —surt zero tant en un banc sa com en un de trencat— i que la que compti sigui la distància al zero; que uns números que no lliguen es diguin en comptes de calcular-se igual; i que el valor d'un préstec sigui exactament el que calcularia l'eina, amb el terra del 30 % per a un objecte vell |
 
 `relay-mock.mjs` és un WebSocket a pèl que respon com Supabase Realtime (join,
 heartbeat, presència i broadcast). Guarda a `messages` tot el que li arriba, que
