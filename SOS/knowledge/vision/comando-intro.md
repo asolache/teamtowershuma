@@ -12,36 +12,75 @@ però **explica el SOS**: el problema dels projectes ciutadans i l'eina que hi
 posa esquelet. Feia de portada del Comando per manca d'una altra. Una intro que
 explica l'eina no presenta la història.
 
-Aquesta presenta el Comando i acaba demanant una cosa concreta.
+Aquesta presenta el Comando —la història dels dos còmics publicats— i acaba amb
+una pregunta.
 
-## El guió · 12 plans, 1:30
+## El SOS i el Comando són la mateixa cosa dita dues vegades
+
+Val la pena tenir-ho clar abans de llegir el guió, perquè decideix el to. **El
+SOS és la versió comunitària**: l'eina amb què un barri compta el que aporta
+cadascú. **El Comando és la versió col·laborativa i narrativa** del mateix: el
+còmic, la banda i la pel·lícula que es farà amb els qui hi entrin.
+
+El mecanisme és idèntic —una persona aporta, algú altre ho confirma, queda
+registrat— i el que canvia és per on s'hi arriba: n'hi ha que hi entren perquè
+volen que el seu poble funcioni, i n'hi ha que hi entren perquè volen sortir a la
+pel·lícula. Per això el final té dues portes i no una.
+
+## El guió · 14 plans, 1:45
 
 | # | Temps | Pla | Imatge | Veu en off | Rètol | D'on surt |
 |---|---|---|---|---|---|---|
-| 1 | 0:00–0:07 | El Mundo Muerto | Carrer gris a primera hora. Deu persones passant en direccions diferents; cap es mira. Trànsit, sense música. | «Al Mundo Muerto cadascú aguanta el seu tros. I quan un cau, cau sol.» | MUNDO MUERTO | **a filmar** |
-| 2 | 0:07–0:13 | No és ciència-ficció | El mateix pla, aturat. A sobre hi apareix el nom del poble de qui mira. | «No és un futur. És dimarts, i és aquí.» | — | **a filmar** |
-| 3 | 0:13–0:21 | L'encàrrec | Vinyeta del còmic 1: el Gran Molekulon dona l'encàrrec, i dos baixen a buscar-los. | «Fa dos còmics, dos d'aquests van rebre un encàrrec: baixar i trobar-ne cent cinquanta mil.» | — | **a filmar** |
-| 4 | 0:21–0:28 | La banda existeix | La Bomba Disco en directe a la Floresta. Gent que salta, no figurants. | «El Comando no és una idea. Té banda, i toca.» | — | [La Bomba Disco, a la Floresta](https://youtu.be/PNFy7V8UbQs) |
-| 5 | 0:28–0:36 | Les superarmes surten de les deixalles | El taller del Reciclator: el que ja existeix i ningú volia. | «Les superarmes no es compren. Es fan amb el que uns altres han llençat: d'allà surten la Bomba Amor i el Rayo Cagón.» | — | [Reciclator](https://youtu.be/Py44l1WsSO4) |
-| 6 | 0:36–0:43 | I cadascú fa una cosa que fa falta | Muntatge curt: qui ensenya a germinar, qui creua la informació, qui hi posa el color. | «Un ensenya a germinar. Una altra connecta els qui no es parlaven. Una altra hi posa el color.» | — | [Supergerminador](https://youtu.be/RyAkyIp6P10) |
-| 7 | 0:43–0:50 | El vilà no crida | Mr. McGragor, amable, oferint. Pla llarg i quiet. | «I el vilà no ataca: ofereix. Per això costa tant de veure'l.» | — | [Mr. McGragor](https://youtu.be/C6-7B2O5dDY) |
-| 8 | 0:50–0:58 | La teva superarma ja la tens | Tres mans, tres plans curts: una escala que passa a un veí, un tupper, una bici que es torna a moure. | «La teva superarma no te l'has d'inventar. És el que ja saps fer i el que ja deixes.» | — | **a filmar** |
-| 9 | 0:58–1:05 | Els que falten | Els catorze cromos dels herois canònics, i darrere seu el comptador que segueix. | «Els herois canònics són catorze. La pel·lícula en necessita cent cinquanta mil.» | — | **a filmar** |
-| 10 | 1:05–1:14 | Com hi entres | Pantalla d'alta, filmada de debò: nom, població, superpoders, superarmes. | «Fas el teu personatge amb el que ja fas al barri. Es queda al teu aparell i no puja enlloc.» | — | **a filmar** |
-| 11 | 1:14–1:22 | Els crèdits són el registre | El registre públic passant, amb noms i dates de veritat. | «Cada cosa que fas i que algú altre confirma va als crèdits, amb el teu nom i la seva data. Aquí no hi ha figurants.» | — | **a filmar** |
-| 12 | 1:22–1:30 | Les dues portes | Negre. El nom del Comando, i a sota les dues portes. | «Si el que has vist ja ho fas, ja hi ets. Només falta que consti.» | COMANDO MOLEKULON | **a filmar** |
+| 1 | 0:00–0:08 | Dos-cents milions | Fosca. Milions de punts de llum travessant tenebres i obstacles en la mateixa direcció. N'arriba un. | «Vas travessar tenebres i obstacles per fer el miracle de ser aquí. Vas guanyar una cursa de dos-cents milions. Néixer ja va ser la teva primera gesta.» | — | **a filmar** |
+| 2 | 0:08–0:16 | El Gran Molekulon mira la Terra | El Gran Molekulon des de dalt: el soroll, les guerres, la crisi. | «El Gran Molekulon mira la Terra i decideix que el que cal canviar no és el món. És la banda sonora.» | MUNDO MUERTO | **a filmar** |
+| 3 | 0:16–0:24 | El mandat | Dona autoritat a dos deixebles. Baixen. | «Els envia a reclutar els cent cinquanta mil superherois que ja hi han nascut. No cal fabricar-los: ja hi són, escampats, fent coses més petites del que saben fer.» | — | **a filmar** |
+| 4 | 0:24–0:31 | Algú s'ha d'encarregar de l'aire | Purpleman sortint d'entre nebuloses i gasos tòxics. | «Purpleman surt dels gasos tòxics amb el seu raig eliminador, i allò passa a fer olor de flor i d'amor.» | — | **a filmar** |
+| 5 | 0:31–0:39 | L'abric de cuir | El Bar Andrés. Afrodito sota un abric pesat. Sona la Bomba Disco i la cuirassa es trenca. | «Afrodito s'amaga sota un abric de cuir per protegir-se del Mundo Muerto. Fins que sona la Bomba Disco. El que el destapa no és una xerrada: és un fet.» | — | [La Bomba Disco](https://youtu.be/JsEAeiQ-fc0) |
+| 6 | 0:39–0:45 | I la banda toca de debò | Salt del dibuix al directe de la Floresta. Gent que salta, no figurants. | «Això no és només dibuix.» | — | [La Bomba Disco, a la Floresta](https://youtu.be/PNFy7V8UbQs) |
+| 7 | 0:45–0:52 | El bajón | L'Omni Turd 6300 perdent altura. Algú baixa per una escala-piano a demanar papeo. | «Còmic dos. La nau perd altura. No s'han quedat sense ganes: s'han quedat sense combustible.» | — | **a filmar** |
+| 8 | 0:52–1:00 | Matadeón | Llaminadures per a tothom, aniversari cada dia, vacances eternes. La Constitució crema i el caos multicolor se'n du la república. | «Arriben a una utopia de gaudi absolut. Dura el que dura: un grup sense regles clares d'intercanvi col·lapsa pel seu propi pes.» | — | **a filmar** |
+| 9 | 1:00–1:09 | El paper higiènic | Un àbac, una pissarra i un somriure. Després: picant pedra darrere un filat d'espines. | «I enmig del caos apareix ell, oferint un paper higiènic molt més suau. Val diners, i ells no saben què és això. Acaben picant pedra per pagar-lo. Primer et creen la necessitat; després te la cobren.» | — | [Mr. McGragor](https://youtu.be/C6-7B2O5dDY) |
+| 10 | 1:09–1:15 | I els que no calen de fora | Dos plans curts, sense diàleg: una sala on ningú comença, i una conversa que es gira quan algú marxa. | «No tots els vilans vénen de fora. La por que paralitza abans de començar i el rumor que corroeix la confiança ja hi són.» | — | **a filmar** |
+| 11 | 1:15–1:23 | El forat de cuc | Encadenats i empesos per un fuet cap a una espiral en blanc i negre: la Maldita Realitat, perquè assentin el cap. | «Encadenats cap a la Maldita Realitat, perquè assentin el cap. I ell contesta: "I play music and paint pictures. I don't need reality." Qui imagina i qui executa es veuen com un destorb, i cap dels dos aguanta res sol.» | — | **a filmar** |
+| 12 | 1:23–1:31 | El páramo i la llavor | Anys de gris. Sota els peus, sense que ho vegi ningú, creixen plantes psicodèliques, flors alienígenes i música. | «Resisteixen cantant els seus propis noms, recordant qui són. El talent adormit no és talent perdut.» | — | **a filmar** |
+| 13 | 1:31–1:38 | Acte III · s'està rodant ara | La pàgina del Comando amb els comptadors reals corrent. | «El tercer acte no està publicat. El final està escrit i encara no es diu. El que sí que es diu és el mecanisme: cada persona que hi entra i aporta de debò és un node més, i la xarxa és el que fa la força.» | — | **a filmar** |
+| 14 | 1:38–1:45 | I tu, t'hi apuntes? | Negre. El nom del Comando, i a sota les dues portes. | «Tu ja vas guanyar una cursa de dos-cents milions. En falten cent cinquanta mil com tu. I tu, t'hi apuntes?» | COMANDO MOLEKULON | **a filmar** |
 
 ## Què hi ha filmat i què s'ha de filmar
 
-- **4 plans surten de material que ja existeix**: pla 4 (La Bomba Disco, a la Floresta), pla 5 (Reciclator), pla 6 (Supergerminador), pla 7 (Mr. McGragor).
-- **8 plans s'han de fer**: 1 · El Mundo Muerto · 2 · No és ciència-ficció · 3 · L'encàrrec · 8 · La teva superarma ja la tens · 9 · Els que falten · 10 · Com hi entres · 11 · Els crèdits són el registre · 12 · Les dues portes.
+- **3 plans surten de material que ja existeix**: pla 5 (La Bomba Disco), pla 6 (La Bomba Disco, a la Floresta), pla 9 (Mr. McGragor).
+- **11 plans s'han de fer**: 1 · Dos-cents milions · 2 · El Gran Molekulon mira la Terra · 3 · El mandat · 4 · Algú s'ha d'encarregar de l'aire · 7 · El bajón · 8 · Matadeón · 10 · I els que no calen de fora · 11 · El forat de cuc · 12 · El páramo i la llavor · 13 · Acte III · s'està rodant ara · 14 · I tu, t'hi apuntes?.
 
-Dels que s'han de fer, els plans 10 i 11 són captura de pantalla de l'aplicació
-—es poden gravar avui— i la resta són rodatge de carrer.
+La major part del que falta és **material del còmic**: vinyetes que ja estan
+dibuixades i que s'han d'animar o moure. Només el pla 13 és captura de pantalla
+—la pàgina del Comando amb els comptadors reals corrent— i es pot gravar avui.
+
+## D'on surt cada cosa
+
+11 dels 14 plans citen un tros de la història publicada a
+`comando.html`, i el generador comprova que hi sigui. No és burocràcia: un guió
+que resumeix una història té una manera d'equivocar-se que no peta mai, que és
+inventar-se un detall que sona bé. Els plans sense ancoratge són els tres que no
+són història —el directe de la banda, els dos vilans que no surten als còmics
+publicats, i la pregunta del final.
+
+| Pla | Surt de |
+|---|---|
+| 1 · Dos-cents milions | «200.000.000» |
+| 2 · El Gran Molekulon mira la Terra | «banda sonora» |
+| 3 · El mandat | «150.000 superherois que ja hi han nascut» |
+| 4 · Algú s'ha d'encarregar de l'aire | «raig eliminador» |
+| 5 · L'abric de cuir | «abric de cuir» |
+| 7 · El bajón | «Omni Turd 6300» |
+| 8 · Matadeón | «Matadeón» |
+| 9 · El paper higiènic | «paper higiènic» |
+| 11 · El forat de cuc | «forat de cuc» |
+| 12 · El páramo i la llavor | «cantant els seus propis noms» |
+| 13 · Acte III · s'està rodant ara | «El final està escrit» |
 
 ## El tall de 30 s
 
-No és un guió a part: és una tria de plans d'aquest —els 1, 4, 8, 12—
+No és un guió a part: és una tria de plans d'aquest —els 1, 5, 13, 14—
 i acaba igual, amb la crida. Una versió curta que es queda sense dir què fer
 després és un anunci de res.
 
@@ -52,7 +91,7 @@ després és un anunci de res.
 | **Fes el teu personatge** | `index.html#/alta` | Nom, població, cinc superpoders i les teves superarmes. Es queda al teu aparell. |
 | **Apunta-t'hi** | `uneix-te.html` | Per a qui encara no vol crear res: dir què fa al barri i que consti. |
 
-Dues i no una: qui arriba al final d'una intro de minut i mig no hi arriba amb
+Dues i no una: qui arriba al final d'una intro de 1:45 no hi arriba amb
 les mateixes ganes, i una sola crida deixa fora la meitat.
 
 ## El que aquesta intro no diu

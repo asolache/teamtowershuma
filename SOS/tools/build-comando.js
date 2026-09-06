@@ -217,22 +217,33 @@ const POSTS = [
    de pressa. La guarda comprova que tot nom sigui del relat i que tota peça
    citada existeixi a `VIDEOS`.
 
-   Tres decisions que no són òbvies:
+   Quatre decisions que no són òbvies:
 
+   · **El guió és la història dels dos còmics, i no un resum del projecte.** Cada
+     pla narratiu porta `canon`: un tros de text que ha de sortir a `comando.html`,
+     que és on la història està publicada. Si un pla no es pot ancorar a la
+     pàgina, és que me l'he inventat, i la guarda ho diu. Els dos còmics es
+     resumeixen sols si es respecta l'ordre: dos-cents milions → el mandat → el
+     reclutament → la gira → el col·lapse → McGragor → el páramo → l'acte III.
    · **Cada pla diu d'on surt la imatge.** `de` és l'id d'una peça de `VIDEOS`
      quan el material ja està filmat, i `null` quan s'ha de fer. Un guió que no
      distingeix les dues coses sembla més a prop d'estar fet del que està, i el
      document acaba servint per decidir un pressupost.
    · **El tall de 30 s no és un guió a part**, és una tria de plans d'aquest.
      Dos guions divergeixen la primera vegada que se'n canvia un.
-   · **Acaba en dues portes i no en una**: fer-se el personatge (`#/alta`) per a
-     qui vol entrar-hi ara, i `uneix-te.html` per a qui només vol dir què fa.
-     Una sola crida deixa fora la meitat de qui ha arribat fins al final.
+   · **Acaba amb una pregunta i dues portes.** La pregunta és «i tu, t'hi
+     apuntes?», i només es pot fer perquè el primer pla ja ha dit al qui mira que
+     va guanyar una cursa de dos-cents milions: la pregunta del final és el cobrament
+     de la promesa del principi. Les portes són dues —fer-se el personatge
+     (`#/alta`) i `uneix-te.html`— perquè una de sola deixa fora la meitat de qui
+     ha arribat fins aquí.
 
    El que aquesta intro **no** diu: com acaba. El final del Comando no és en
-   aquest repositori i no hi ha d'entrar per un guió. */
+   aquest repositori i no hi ha d'entrar per un guió. La intro ho diu com ho diu
+   la pàgina —«el final està escrit i encara no es diu»— i això és part del
+   ganxo, no una omissió. */
 const INTRO = {
-  durada: 90,
+  durada: 105,
   tall: 30,
   cta: {
     principal: { ruta: 'alta', t: 'Fes el teu personatge',
@@ -241,53 +252,74 @@ const INTRO = {
       d: 'Per a qui encara no vol crear res: dir què fa al barri i que consti.' }
   },
   plans: [
-    { n: 1, s: 7, titol: 'El Mundo Muerto', de: null, qui: [], tall: true,
-      img: 'Carrer gris a primera hora. Deu persones passant en direccions diferents; cap es mira. Trànsit, sense música.',
-      veu: 'Al Mundo Muerto cadascú aguanta el seu tros. I quan un cau, cau sol.',
+    { n: 1, s: 8, titol: 'Dos-cents milions', de: null, qui: [], tall: true,
+      canon: '200.000.000',
+      img: 'Fosca. Milions de punts de llum travessant tenebres i obstacles en la mateixa direcció. N\'arriba un.',
+      veu: 'Vas travessar tenebres i obstacles per fer el miracle de ser aquí. Vas guanyar una cursa de dos-cents milions. Néixer ja va ser la teva primera gesta.',
+      retol: null },
+    { n: 2, s: 8, titol: 'El Gran Molekulon mira la Terra', de: null, qui: [], tall: false,
+      canon: 'banda sonora',
+      img: 'El Gran Molekulon des de dalt: el soroll, les guerres, la crisi.',
+      veu: 'El Gran Molekulon mira la Terra i decideix que el que cal canviar no és el món. És la banda sonora.',
       retol: 'MUNDO MUERTO' },
-    { n: 2, s: 6, titol: 'No és ciència-ficció', de: null, qui: [], tall: false,
-      img: 'El mateix pla, aturat. A sobre hi apareix el nom del poble de qui mira.',
-      veu: 'No és un futur. És dimarts, i és aquí.', retol: null },
-    { n: 3, s: 8, titol: 'L\'encàrrec', de: null, qui: ['Mazinguer', 'Horacio Motomachi'], tall: false,
-      diu: { objectiu: 150000 },
-      img: 'Vinyeta del còmic 1: el Gran Molekulon dona l\'encàrrec, i dos baixen a buscar-los.',
-      veu: 'Fa dos còmics, dos d\'aquests van rebre un encàrrec: baixar i trobar-ne cent cinquanta mil.',
+    { n: 3, s: 8, titol: 'El mandat', de: null, qui: ['Mazinguer', 'Horacio Motomachi'], tall: false,
+      canon: '150.000 superherois que ja hi han nascut', diu: { objectiu: 150000 },
+      img: 'Dona autoritat a dos deixebles. Baixen.',
+      veu: 'Els envia a reclutar els cent cinquanta mil superherois que ja hi han nascut. No cal fabricar-los: ja hi són, escampats, fent coses més petites del que saben fer.',
       retol: null },
-    { n: 4, s: 7, titol: 'La banda existeix', de: 'directe-floresta', qui: [], tall: true,
-      img: 'La Bomba Disco en directe a la Floresta. Gent que salta, no figurants.',
-      veu: 'El Comando no és una idea. Té banda, i toca.', retol: null },
-    { n: 5, s: 8, titol: 'Les superarmes surten de les deixalles', de: 'reciclator', qui: ['Reciclator'], tall: false,
-      img: 'El taller del Reciclator: el que ja existeix i ningú volia.',
-      veu: 'Les superarmes no es compren. Es fan amb el que uns altres han llençat: d\'allà surten la Bomba Amor i el Rayo Cagón.',
+    { n: 4, s: 7, titol: 'Algú s\'ha d\'encarregar de l\'aire', de: null, qui: ['Purpleman'], tall: false,
+      canon: 'raig eliminador',
+      img: 'Purpleman sortint d\'entre nebuloses i gasos tòxics.',
+      veu: 'Purpleman surt dels gasos tòxics amb el seu raig eliminador, i allò passa a fer olor de flor i d\'amor.',
       retol: null },
-    { n: 6, s: 7, titol: 'I cadascú fa una cosa que fa falta', de: 'supergerminador',
-      qui: ['Supergerminador', 'La Medusa Andaluza', 'Flying Frog'], tall: false,
-      img: 'Muntatge curt: qui ensenya a germinar, qui creua la informació, qui hi posa el color.',
-      veu: 'Un ensenya a germinar. Una altra connecta els qui no es parlaven. Una altra hi posa el color.',
+    { n: 5, s: 8, titol: 'L\'abric de cuir', de: 'bomba-disco', qui: ['Afrodito', 'Guiri-Guay', 'Flying Frog'], tall: true,
+      canon: 'abric de cuir',
+      img: 'El Bar Andrés. Afrodito sota un abric pesat. Sona la Bomba Disco i la cuirassa es trenca.',
+      veu: 'Afrodito s\'amaga sota un abric de cuir per protegir-se del Mundo Muerto. Fins que sona la Bomba Disco. El que el destapa no és una xerrada: és un fet.',
       retol: null },
-    { n: 7, s: 7, titol: 'El vilà no crida', de: 'mcgreggor', qui: ['Mr. McGragor'], tall: false,
-      img: 'Mr. McGragor, amable, oferint. Pla llarg i quiet.',
-      veu: 'I el vilà no ataca: ofereix. Per això costa tant de veure\'l.', retol: null },
-    { n: 8, s: 8, titol: 'La teva superarma ja la tens', de: null, qui: [], tall: true,
-      img: 'Tres mans, tres plans curts: una escala que passa a un veí, un tupper, una bici que es torna a moure.',
-      veu: 'La teva superarma no te l\'has d\'inventar. És el que ja saps fer i el que ja deixes.',
+    { n: 6, s: 6, titol: 'I la banda toca de debò', de: 'directe-floresta', qui: [], tall: false,
+      canon: null,
+      img: 'Salt del dibuix al directe de la Floresta. Gent que salta, no figurants.',
+      veu: 'Això no és només dibuix.', retol: null },
+    { n: 7, s: 7, titol: 'El bajón', de: null, qui: [], tall: false,
+      canon: 'Omni Turd 6300',
+      img: 'L\'Omni Turd 6300 perdent altura. Algú baixa per una escala-piano a demanar papeo.',
+      veu: 'Còmic dos. La nau perd altura. No s\'han quedat sense ganes: s\'han quedat sense combustible.',
       retol: null },
-    { n: 9, s: 7, titol: 'Els que falten', de: null, qui: [], tall: false,
-      diu: { herois: 14, objectiu: 150000 },
-      img: 'Els catorze cromos dels herois canònics, i darrere seu el comptador que segueix.',
-      veu: 'Els herois canònics són catorze. La pel·lícula en necessita cent cinquanta mil.',
+    { n: 8, s: 8, titol: 'Matadeón', de: null, qui: [], tall: false,
+      canon: 'Matadeón',
+      img: 'Llaminadures per a tothom, aniversari cada dia, vacances eternes. La Constitució crema i el caos multicolor se\'n du la república.',
+      veu: 'Arriben a una utopia de gaudi absolut. Dura el que dura: un grup sense regles clares d\'intercanvi col·lapsa pel seu propi pes.',
       retol: null },
-    { n: 10, s: 9, titol: 'Com hi entres', de: null, qui: [], tall: false,
-      img: 'Pantalla d\'alta, filmada de debò: nom, població, superpoders, superarmes.',
-      veu: 'Fas el teu personatge amb el que ja fas al barri. Es queda al teu aparell i no puja enlloc.',
+    { n: 9, s: 9, titol: 'El paper higiènic', de: 'mcgreggor', qui: ['Mr. McGragor'], tall: false,
+      canon: 'paper higiènic',
+      img: 'Un àbac, una pissarra i un somriure. Després: picant pedra darrere un filat d\'espines.',
+      veu: 'I enmig del caos apareix ell, oferint un paper higiènic molt més suau. Val diners, i ells no saben què és això. Acaben picant pedra per pagar-lo. Primer et creen la necessitat; després te la cobren.',
       retol: null },
-    { n: 11, s: 8, titol: 'Els crèdits són el registre', de: null, qui: [], tall: false,
-      img: 'El registre públic passant, amb noms i dates de veritat.',
-      veu: 'Cada cosa que fas i que algú altre confirma va als crèdits, amb el teu nom i la seva data. Aquí no hi ha figurants.',
+    { n: 10, s: 6, titol: 'I els que no calen de fora', de: null, qui: ['Max Miedox', 'Mala Yerbax'], tall: false,
+      canon: null,
+      img: 'Dos plans curts, sense diàleg: una sala on ningú comença, i una conversa que es gira quan algú marxa.',
+      veu: 'No tots els vilans vénen de fora. La por que paralitza abans de començar i el rumor que corroeix la confiança ja hi són.',
       retol: null },
-    { n: 12, s: 8, titol: 'Les dues portes', de: null, qui: [], tall: true, cta: true,
+    { n: 11, s: 8, titol: 'El forat de cuc', de: null, qui: [], tall: false,
+      canon: 'forat de cuc',
+      img: 'Encadenats i empesos per un fuet cap a una espiral en blanc i negre: la Maldita Realitat, perquè assentin el cap.',
+      veu: 'Encadenats cap a la Maldita Realitat, perquè assentin el cap. I ell contesta: "I play music and paint pictures. I don\'t need reality." Qui imagina i qui executa es veuen com un destorb, i cap dels dos aguanta res sol.',
+      retol: null },
+    { n: 12, s: 8, titol: 'El páramo i la llavor', de: null, qui: [], tall: false,
+      canon: 'cantant els seus propis noms',
+      img: 'Anys de gris. Sota els peus, sense que ho vegi ningú, creixen plantes psicodèliques, flors alienígenes i música.',
+      veu: 'Resisteixen cantant els seus propis noms, recordant qui són. El talent adormit no és talent perdut.',
+      retol: null },
+    { n: 13, s: 7, titol: 'Acte III · s\'està rodant ara', de: null, qui: [], tall: true,
+      canon: 'El final està escrit', diu: { objectiu: 150000 },
+      img: 'La pàgina del Comando amb els comptadors reals corrent.',
+      veu: 'El tercer acte no està publicat. El final està escrit i encara no es diu. El que sí que es diu és el mecanisme: cada persona que hi entra i aporta de debò és un node més, i la xarxa és el que fa la força.',
+      retol: null },
+    { n: 14, s: 7, titol: 'I tu, t\'hi apuntes?', de: null, qui: [], tall: true, cta: true,
+      canon: null, diu: { objectiu: 150000 },
       img: 'Negre. El nom del Comando, i a sota les dues portes.',
-      veu: 'Si el que has vist ja ho fas, ja hi ets. Només falta que consti.',
+      veu: 'Tu ja vas guanyar una cursa de dos-cents milions. En falten cent cinquanta mil com tu. I tu, t\'hi apuntes?',
       retol: 'COMANDO MOLEKULON' }
   ]
 };
@@ -371,7 +403,18 @@ EIXOS.forEach(e => {
    debò, perquè «ja ho tenim filmat» és la frase que fa que després no es
    filmi. */
 const idsVideo = new Set(VIDEOS.map(v => v.id));
+/* La pàgina, sense marcatge: és on la història dels dos còmics està publicada,
+   i per tant l'única font contra la qual es pot comprovar que un pla del guió
+   surt del relat i no de la imaginació de qui escriu el guió. */
+const HIST = readFileSync(join(SOS, 'comando.html'), 'utf8').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
 INTRO.plans.forEach(p => {
+  /* L'ancoratge al canon. Un guió que resumeix una història té una manera
+     d'equivocar-se que no peta mai: inventar-se un detall que sona bé. `canon`
+     és un tros de la història publicada que el pla ha de poder citar; si no hi
+     és a `comando.html`, o el detall no és del relat o el relat no està
+     publicat, i les dues coses s'han de saber abans de gravar res. */
+  if (p.canon && !HIST.includes(p.canon))
+    bad(`el pla ${p.n} diu que surt de «${p.canon}», i això no és a la història publicada a comando.html`);
   p.qui.filter(n => !noms.has(n)).forEach(n =>
     bad(`el pla ${p.n} de la intro anomena ${n}, que no és ni al roster, ni als aliats, ni als vilans`));
   if (p.de && !idsVideo.has(p.de)) bad(`el pla ${p.n} de la intro surt de «${p.de}», que no és cap peça de VIDEOS`);
@@ -392,6 +435,13 @@ INTRO.plans.forEach(p => {
   if (p.diu && p.diu.objectiu !== undefined && p.diu.objectiu !== OBJECTIU)
     bad(`el pla ${p.n} diu un objectiu de ${p.diu.objectiu} i COMANDO_TARGET és ${OBJECTIU}`);
 });
+/* I que la majoria del guió sigui la història, no el projecte. Sense aquest
+   mínim, el guió pot anar derivant cap a un anunci de l'eina pla a pla sense
+   que cap regla se n'adoni — que és exactament com `intro.html` va acabar sent
+   la intro del Comando (veda 150). */
+const ancorats = INTRO.plans.filter(p => p.canon).length;
+if (ancorats * 2 <= INTRO.plans.length)
+  bad(`només ${ancorats} dels ${INTRO.plans.length} plans surten de la història publicada: això ja no és una intro de la història`);
 const segons = INTRO.plans.reduce((a, p) => a + p.s, 0);
 if (segons !== INTRO.durada) bad(`la intro diu que dura ${INTRO.durada} s i els plans en sumen ${segons}`);
 const segonsTall = INTRO.plans.filter(p => p.tall).reduce((a, p) => a + p.s, 0);
@@ -589,7 +639,20 @@ però **explica el SOS**: el problema dels projectes ciutadans i l'eina que hi
 posa esquelet. Feia de portada del Comando per manca d'una altra. Una intro que
 explica l'eina no presenta la història.
 
-Aquesta presenta el Comando i acaba demanant una cosa concreta.
+Aquesta presenta el Comando —la història dels dos còmics publicats— i acaba amb
+una pregunta.
+
+## El SOS i el Comando són la mateixa cosa dita dues vegades
+
+Val la pena tenir-ho clar abans de llegir el guió, perquè decideix el to. **El
+SOS és la versió comunitària**: l'eina amb què un barri compta el que aporta
+cadascú. **El Comando és la versió col·laborativa i narrativa** del mateix: el
+còmic, la banda i la pel·lícula que es farà amb els qui hi entrin.
+
+El mecanisme és idèntic —una persona aporta, algú altre ho confirma, queda
+registrat— i el que canvia és per on s'hi arriba: n'hi ha que hi entren perquè
+volen que el seu poble funcioni, i n'hi ha que hi entren perquè volen sortir a la
+pel·lícula. Per això el final té dues portes i no una.
 
 ## El guió · ${INTRO.plans.length} plans, ${mmss(INTRO.durada)}
 
@@ -602,8 +665,22 @@ ${files.join('\n')}
 - **${teniu.length} plans surten de material que ja existeix**: ${teniu.map(p => `pla ${p.n} (${(VIDEOS.find(v => v.id === p.de) || {}).titol})`).join(', ')}.
 - **${aFilmar.length} plans s'han de fer**: ${aFilmar.map(p => `${p.n} · ${p.titol}`).join(' · ')}.
 
-Dels que s'han de fer, els plans 10 i 11 són captura de pantalla de l'aplicació
-—es poden gravar avui— i la resta són rodatge de carrer.
+La major part del que falta és **material del còmic**: vinyetes que ja estan
+dibuixades i que s'han d'animar o moure. Només el pla 13 és captura de pantalla
+—la pàgina del Comando amb els comptadors reals corrent— i es pot gravar avui.
+
+## D'on surt cada cosa
+
+${ancorats} dels ${INTRO.plans.length} plans citen un tros de la història publicada a
+\`comando.html\`, i el generador comprova que hi sigui. No és burocràcia: un guió
+que resumeix una història té una manera d'equivocar-se que no peta mai, que és
+inventar-se un detall que sona bé. Els plans sense ancoratge són els tres que no
+són història —el directe de la banda, els dos vilans que no surten als còmics
+publicats, i la pregunta del final.
+
+| Pla | Surt de |
+|---|---|
+${INTRO.plans.filter(p => p.canon).map(p => `| ${p.n} · ${p.titol} | «${p.canon}» |`).join('\n')}
 
 ## El tall de ${INTRO.tall} s
 
@@ -618,7 +695,7 @@ després és un anunci de res.
 | **${INTRO.cta.principal.t}** | \`index.html#/${INTRO.cta.principal.ruta}\` | ${INTRO.cta.principal.d} |
 | **${INTRO.cta.segona.t}** | \`${INTRO.cta.segona.href}\` | ${INTRO.cta.segona.d} |
 
-Dues i no una: qui arriba al final d'una intro de minut i mig no hi arriba amb
+Dues i no una: qui arriba al final d'una intro de ${mmss(INTRO.durada)} no hi arriba amb
 les mateixes ganes, i una sola crida deixa fora la meitat.
 
 ## El que aquesta intro no diu

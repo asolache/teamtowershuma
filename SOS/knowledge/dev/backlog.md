@@ -51,18 +51,35 @@ que hi posa esquelet— i feia de portada del Comando perquè no n'hi havia cap
 altra. Una intro que explica l'eina no presenta la història (veda 150).
 
 **Fet:** el guió d'una intro pròpia del Comando, declarat a `build-comando.js` i
-escrit a `knowledge/vision/comando-intro.md`. Dotze plans, 1:30, tall de 30 s, i
-acaba en dues portes: `index.html#/alta` per a qui vol fer-se el personatge ara i
-`uneix-te.html` per a qui només vol dir què fa al barri.
+escrit a `knowledge/vision/comando-intro.md`. Catorze plans, 1:45, tall de 30 s.
+**És la història dels dos còmics publicats**, en el seu ordre: els dos-cents
+milions → el mandat del Gran Molekulon → Purpleman i l'aire → l'abric de cuir
+d'Afrodito → el bajón de l'Omni Turd 6300 → el col·lapse de Matadeón → el paper
+higiènic de Mr. McGragor → el forat de cuc → el páramo i la llavor → l'acte III.
+Acaba amb la pregunta «i tu, t'hi apuntes?» i dues portes: `index.html#/alta` per
+a qui vol fer-se el personatge ara i `uneix-te.html` per a qui només vol dir què
+fa al barri.
+
+Onze dels catorze plans citen un tros de la història publicada a `comando.html` i
+el generador comprova que hi sigui: un guió que resumeix una història s'equivoca
+inventant-se un detall que sona bé, i això no peta mai sol.
+
+**Trobat revisant-ho, i no arreglat aquí:** dels tres supervilans de
+`COMANDO_VILLAINS`, només **Mr. McGragor** surt a `comando.html`. **Max Miedox**
+(la por que paralitza abans de començar) i **Mala Yerbax** (el rumor que corroeix
+la confiança) viuen només dins de l'app, i són els dos que més se semblen al que
+mata un projecte ciutadà de debò. La pàgina té secció d'herois i no en té de
+vilans. No s'ha fet aquí perquè seria eixamplar un encàrrec de guió a una secció
+nova de la pàgina, però és una pantalla que falta.
 
 **Pendent, i no és de codi:**
 
 - **Que l'autor el corregeixi.** La veu en off és una proposta. Els noms, l'ordre
   i el to els sap ell.
-- **Vuit plans per filmar**, dels quals dos són captura de pantalla de l'app
-  (10 i 11) i sis són rodatge. Els altres quatre surten de material que ja
-  existeix: el directe de la Floresta, el Reciclator, el Supergerminador i
-  Mr. McGragor.
+- **Onze plans per fer**, i la major part és **material del còmic** —vinyetes ja
+  dibuixades que s'han d'animar o moure—, no rodatge nou. Només el pla 13 és
+  captura de pantalla i es pot gravar avui. Tres plans surten de material que ja
+  existeix: la Bomba Disco, el directe de la Floresta i Mr. McGragor.
 - **Si es munta, on va.** Avui `intro.html` és al menú com «La intro». Amb dues
   intros s'ha de decidir si la del Comando viu a `comando.html`, si té pàgina
   pròpia, o si `intro.html` es reparteix en dues. No s'ha decidit i no s'ha de
