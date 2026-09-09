@@ -181,6 +181,29 @@
         .hero-finan { font-size:.88rem; color:var(--light); line-height:1.6; margin:0 0 1.6rem;
             border-left:2px solid var(--accent-green); padding:.15rem 0 .15rem .9rem; max-width:480px; }
         .hero-finan strong { color:var(--accent-green); font-weight:600; }
+        /* La prova al costat de la primera crida: tres xifres en una línia,
+           amb el número gran i el que vol dir a sota, en petit. */
+        .hero-proves { list-style:none; padding:.9rem 0 0; margin:.4rem 0 1.2rem; display:flex; flex-wrap:wrap; gap:1rem 1.6rem; border-top:1px solid var(--border); }
+        .hero-proves li { display:flex; flex-direction:column; gap:.1rem; flex:1 1 120px; }
+        .hero-proves b { font-family:var(--mono); font-size:1.15rem; font-weight:700; color:var(--accent-green); line-height:1.2; }
+        .hero-proves span { font-size:.72rem; color:var(--muted); line-height:1.4; max-width:150px; }
+        /* Les crides repetides enmig de la pàgina. Una franja i no una secció:
+           no té titular perquè no explica res nou, només torna a obrir la porta. */
+        .cta-band { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-panel); }
+        /* Només l'alçada: el `padding` lateral el posa `.container`, i una
+           declaració curta de `padding` aquí el tornaria a zero. */
+        .cta-band-inner { display:flex; align-items:center; justify-content:space-between; gap:2rem; padding-top:2rem; padding-bottom:2rem; flex-wrap:wrap; }
+        .cta-band p { margin:0; font-size:1rem; color:var(--light); line-height:1.6; max-width:620px; }
+        /* La barra fixa de mòbil. Només existeix per sota de 768 px i només
+           mentre la crida del hero no és a pantalla. */
+        .cta-sticky { display:none; }
+        @media (max-width:768px) {
+            .cta-sticky { display:block; position:fixed; left:0; right:0; bottom:0; z-index:90; padding:.6rem 1rem calc(.6rem + env(safe-area-inset-bottom)); background:rgba(5,5,7,.94); backdrop-filter:blur(12px); border-top:1px solid var(--border); }
+            .cta-sticky[hidden] { display:none; }
+            .cta-sticky .btn-primary { display:block; text-align:center; width:100%; }
+            .cta-band-inner { padding-top:1.6rem; padding-bottom:1.6rem; }
+            .cta-band .btn-primary { display:block; width:100%; box-sizing:border-box; text-align:center; }
+        }
 
         /* SECTION HEADERS */
         .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
@@ -741,7 +764,6 @@
                      —què fem— però sense poder-hi anar, i afegir-les a sobre
                      empenyia el botó de diagnòstic per sota del plec. Una llista
                      del que fas val menys que una porta cap a on és. -->
-                <p class="hero-finan fade-up" style="animation-delay:.24s" data-i18n-html="hero.finan"><strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l'empresa amb el pressupost de formació o d'esdeveniments. En tots dos casos el pressupost s'ensenya desglossat.</p>
                 <ul class="hero-pains fade-up" style="animation-delay:.25s">
                     <li data-i18n="hero.pain1">«Sempre tirem els mateixos quatre.»</li>
                     <li data-i18n="hero.pain2">«Ningú sap què fem ni quant val.»</li>
@@ -752,6 +774,17 @@
                     <a href="/SOS/pressupost.html" target="_blank" rel="noopener" class="btn-ghost" data-i18n="hero.cta2">Demana pressupost →</a>
                 </div>
                 <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Te'n vas amb el diagnòstic fet, l'enviïs o no. Sense registre ni compte.</p>
+                <!-- La prova, al costat de la primera crida i no al peu. Les tres
+                     xifres són les mateixes del final —una data, un recompte amb
+                     any d'inici i un percentatge que es pot comprovar—, i aquí
+                     hi són perquè qui decideix si clica ho fa en aquesta pantalla,
+                     no a l'última. -->
+                <ul class="hero-proves fade-up" style="animation-delay:.38s">
+                    <li><b>2009</b><span data-i18n="hero.pr1">primer banc de temps de León</span></li>
+                    <li><b>60.000+</b><span data-i18n="hero.pr2">persones formades des del 1996</span></li>
+                    <li><b>100 %</b><span data-i18n="hero.pr3">de l'eina és oberta i gratuïta</span></li>
+                </ul>
+                <p class="hero-finan fade-up" style="animation-delay:.42s" data-i18n-html="hero.finan"><strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l'empresa amb el pressupost de formació o d'esdeveniments. En tots dos casos el pressupost s'ensenya desglossat.</p>
             </div>
             <div class="hero-visual fade-up" style="animation-delay:.4s">
                 <!-- Dos castells, el mateix de dalt i dues bases. La tesi del negoci sense
@@ -917,6 +950,38 @@
     </div>
 </section>
 
+<!-- BENEFICIS I ESTALVI -->
+<section class="beneficis" id="beneficis">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="ben.eyebrow">Per què val la pena</div>
+            <h2 data-i18n-html="ben.h2">Beneficis <em>psicosocials i econòmics</em></h2>
+            <p data-i18n="ben.intro">Teixir comunitat no és només bonic: millora la salut de les persones i estalvia diners reals als pobles i barris.</p>
+        </div>
+        <div class="ben-grid fade-up">
+            <div class="ben-col">
+                <div class="ben-col-lbl" data-i18n="ben.psico">Psicosocials</div>
+                <ul class="ben-list">
+                    <li><strong data-i18n="ben.ps1.t">Menys soledat i aïllament.</strong> <span data-i18n="ben.ps1.d">El suport mutu i la trobada regular protegeixen la salut mental, sobretot de la gent gran.</span></li>
+                    <li><strong data-i18n="ben.ps2.t">Més confiança i pertinença.</strong> <span data-i18n="ben.ps2.d">Les xarxes denses de reciprocitat generen seguretat, identitat compartida i capital social.</span></li>
+                    <li><strong data-i18n="ben.ps3.t">Participació i relleu.</strong> <span data-i18n="ben.ps3.d">Rols clars i governança faciliten que entri gent nova i el projecte no depengui de 2-3 persones sobrecarregades.</span></li>
+                    <li><strong data-i18n="ben.ps4.t">Salut i resiliència.</strong> <span data-i18n="ben.ps4.d">Les comunitats cohesionades mostren millors indicadors de benestar i aguanten millor les crisis.</span></li>
+                </ul>
+            </div>
+            <div class="ben-col">
+                <div class="ben-col-lbl" data-i18n="ben.econ">Econòmics · casos d'estalvi</div>
+                <ul class="ben-list">
+                    <li><strong data-i18n="ben.ec1.t">Banc de temps.</strong> <span data-i18n="ben.ec1.d">Accés a serveis sense diners: cada hora rebuda és una hora que no es paga al mercat.</span></li>
+                    <li><strong data-i18n="ben.ec2.t">Biblioteca de les coses.</strong> <span data-i18n="ben.ec2.d">Compartir eines i objectes d'ús ocasional estalvia centenars d'euros per llar i redueix residus.</span></li>
+                    <li><strong data-i18n="ben.ec3.t">Compra col·lectiva i energia.</strong> <span data-i18n="ben.ec3.d">Agregar demanda i produir energia en cooperativa abarateix la factura de llum, materials o assegurances.</span></li>
+                    <li><strong data-i18n="ben.ec4.t">Habitatge en cessió d'ús.</strong> <span data-i18n="ben.ec4.d">Quota d'ús per sota del mercat i sense especulació: accés estable a l'habitatge a llarg termini.</span></li>
+                </ul>
+            </div>
+        </div>
+        <p class="ben-note fade-up" data-i18n-html="ben.note"><span>→</span> Evidència qualitativa i xifres orientatives; l'estalvi real depèn de cada projecte. Ens basem en la literatura d'acció comunitària i en experiències pròpies com el Banc de Temps de León (2009) i Comunitats.org.</p>
+    </div>
+</section>
+
 <!-- PARLEM CLAR · GLOSSARI -->
 <!-- Va abans de la metodologia i no al peu, perquè és la metodologia la que
      introdueix les paraules. Un glossari col·locat després del text que
@@ -1004,6 +1069,27 @@
     </div>
 </section>
 
+<!-- SOBRE EL FACILITADOR -->
+<section class="facilitador" id="facilitador">
+    <div class="container">
+        <div class="facilitador-inner fade-up">
+            <div class="section-eyebrow" data-i18n="fac.eyebrow">Qui hi ha darrere</div>
+            <h3>Álvaro Solache</h3>
+            <div class="facilitador-role" data-i18n="fac.role">Psicòleg social · Consultor estratègic sistèmic</div>
+            <p data-i18n-html="fac.p1">Arrelat al Penedès. Va ser <strong>responsable de recursos humans d'InfoJobs</strong> l'any 2000 i va dirigir la formació a la <strong>UOC – GEC</strong>. Al Fòrum de RRHH de <strong>Foment del Treball</strong> va dinamitzar el grup de benchmarking entre direccions de persones d'empreses catalanes.</p>
+            <p data-i18n-html="fac.p2">Com a consultor treballa amb <strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible d'una organització o d'un territori. Va participar en la cocreació i el prototipatge de <strong>Pantheon Work</strong> com a beta-tester i coach de la metodologia.</p>
+            <p data-i18n-html="fac.p3">Com a emprenedor social va cofundar <strong>comunitats.org</strong>, una xarxa d'intercanvi de coneixement per temps amb què va treballar amb la UOC, La Salle, la Universitat de Lleó i l'Agència de Desenvolupament Econòmic de la Junta de Castella i Lleó. Ha dirigit desenvolupament de programari, i aquella experiència és la que avui sosté el SOS.</p>
+            <p data-i18n-html="fac.p4">És CEO i dinamitzador de <strong>TeamTowers</strong> i del taller <strong>Fent Pinya</strong>, creat a Vilafranca pel seu soci <strong>Fèlix Miret</strong>. I com a emprenedor artístic ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, una tribu creativa oberta pensada per als 27 pobles de l'Alt Penedès i els 6 del Garraf.</p>
+            <div class="facilitador-tags">
+                <span data-i18n="fac.tag1">Psicologia social i comunitària</span>
+                <span data-i18n="fac.tag2">Value Network Analysis</span>
+                <span data-i18n="fac.tag3">Direcció de persones</span>
+                <span data-i18n="fac.tag4">Facilitació Fent Pinya</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- COM FUNCIONA -->
 <!-- L'estructura de pàgina de venda de la guia d'estil demana un «com» de 3-4
      passos, i era l'únic bloc que hi faltava. Sense ell, qui ha de defensar la
@@ -1044,6 +1130,17 @@
         </div>
     </div>
 </section>
+
+<!-- Crida repetida. En una pàgina de quinze pantalles, la crida del principi
+     i la del final estan a més de deu pantalles l'una de l'altra, i qui s'ha
+     convençut a mig camí no té on clicar. La mateixa acció principal, ni més
+     ni diferent: una acció per pantalla. -->
+<div class="cta-band fade-up">
+    <div class="container cta-band-inner">
+        <p data-i18n="band.t">Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t'ho diu en tres minuts i te l'endús, l'enviïs o no.</p>
+        <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="band.btn">Fes el diagnòstic en 3 min →</a>
+    </div>
+</div>
 
 <!-- FENT PINYA EN DETALL -->
 <section class="fentpinya" id="fentpinya">
@@ -1771,6 +1868,17 @@
     </div>
 </section>
 
+<!-- Crida repetida. En una pàgina de quinze pantalles, la crida del principi
+     i la del final estan a més de deu pantalles l'una de l'altra, i qui s'ha
+     convençut a mig camí no té on clicar. La mateixa acció principal, ni més
+     ni diferent: una acció per pantalla. -->
+<div class="cta-band fade-up">
+    <div class="container cta-band-inner">
+        <p data-i18n="band2.t">Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.</p>
+        <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="band.btn">Fes el diagnòstic en 3 min →</a>
+    </div>
+</div>
+
 <!-- EL SOS, PROJECTE PER SI SOL ─────────────────────────────────────────────
      No és una família del catàleg: és el projecte, i és lliure. Aquí es diu
      què és i què sí que es contracta al seu voltant. -->
@@ -1845,59 +1953,6 @@
 
 <!--/TT-SOS-->
         <p class="pk-nota" data-i18n-html="sosp.peu"><strong>El que encara no hi és, es diu.</strong> Els contractes intel·ligents no estan construïts al SOS: per això es ven l'estudi de si val la pena, i no una eina que no existeix. La regla d'aquesta casa és que cap porta apunti a un lloc que no hi és.</p>
-    </div>
-</section>
-
-<!-- BENEFICIS I ESTALVI -->
-<section class="beneficis" id="beneficis">
-    <div class="container">
-        <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="ben.eyebrow">Per què val la pena</div>
-            <h2 data-i18n-html="ben.h2">Beneficis <em>psicosocials i econòmics</em></h2>
-            <p data-i18n="ben.intro">Teixir comunitat no és només bonic: millora la salut de les persones i estalvia diners reals als pobles i barris.</p>
-        </div>
-        <div class="ben-grid fade-up">
-            <div class="ben-col">
-                <div class="ben-col-lbl" data-i18n="ben.psico">Psicosocials</div>
-                <ul class="ben-list">
-                    <li><strong data-i18n="ben.ps1.t">Menys soledat i aïllament.</strong> <span data-i18n="ben.ps1.d">El suport mutu i la trobada regular protegeixen la salut mental, sobretot de la gent gran.</span></li>
-                    <li><strong data-i18n="ben.ps2.t">Més confiança i pertinença.</strong> <span data-i18n="ben.ps2.d">Les xarxes denses de reciprocitat generen seguretat, identitat compartida i capital social.</span></li>
-                    <li><strong data-i18n="ben.ps3.t">Participació i relleu.</strong> <span data-i18n="ben.ps3.d">Rols clars i governança faciliten que entri gent nova i el projecte no depengui de 2-3 persones sobrecarregades.</span></li>
-                    <li><strong data-i18n="ben.ps4.t">Salut i resiliència.</strong> <span data-i18n="ben.ps4.d">Les comunitats cohesionades mostren millors indicadors de benestar i aguanten millor les crisis.</span></li>
-                </ul>
-            </div>
-            <div class="ben-col">
-                <div class="ben-col-lbl" data-i18n="ben.econ">Econòmics · casos d'estalvi</div>
-                <ul class="ben-list">
-                    <li><strong data-i18n="ben.ec1.t">Banc de temps.</strong> <span data-i18n="ben.ec1.d">Accés a serveis sense diners: cada hora rebuda és una hora que no es paga al mercat.</span></li>
-                    <li><strong data-i18n="ben.ec2.t">Biblioteca de les coses.</strong> <span data-i18n="ben.ec2.d">Compartir eines i objectes d'ús ocasional estalvia centenars d'euros per llar i redueix residus.</span></li>
-                    <li><strong data-i18n="ben.ec3.t">Compra col·lectiva i energia.</strong> <span data-i18n="ben.ec3.d">Agregar demanda i produir energia en cooperativa abarateix la factura de llum, materials o assegurances.</span></li>
-                    <li><strong data-i18n="ben.ec4.t">Habitatge en cessió d'ús.</strong> <span data-i18n="ben.ec4.d">Quota d'ús per sota del mercat i sense especulació: accés estable a l'habitatge a llarg termini.</span></li>
-                </ul>
-            </div>
-        </div>
-        <p class="ben-note fade-up" data-i18n-html="ben.note"><span>→</span> Evidència qualitativa i xifres orientatives; l'estalvi real depèn de cada projecte. Ens basem en la literatura d'acció comunitària i en experiències pròpies com el Banc de Temps de León (2009) i Comunitats.org.</p>
-    </div>
-</section>
-
-<!-- SOBRE EL FACILITADOR -->
-<section class="facilitador" id="facilitador">
-    <div class="container">
-        <div class="facilitador-inner fade-up">
-            <div class="section-eyebrow" data-i18n="fac.eyebrow">Qui hi ha darrere</div>
-            <h3>Álvaro Solache</h3>
-            <div class="facilitador-role" data-i18n="fac.role">Psicòleg social · Consultor estratègic sistèmic</div>
-            <p data-i18n-html="fac.p1">Arrelat al Penedès. Va ser <strong>responsable de recursos humans d'InfoJobs</strong> l'any 2000 i va dirigir la formació a la <strong>UOC – GEC</strong>. Al Fòrum de RRHH de <strong>Foment del Treball</strong> va dinamitzar el grup de benchmarking entre direccions de persones d'empreses catalanes.</p>
-            <p data-i18n-html="fac.p2">Com a consultor treballa amb <strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible d'una organització o d'un territori. Va participar en la cocreació i el prototipatge de <strong>Pantheon Work</strong> com a beta-tester i coach de la metodologia.</p>
-            <p data-i18n-html="fac.p3">Com a emprenedor social va cofundar <strong>comunitats.org</strong>, una xarxa d'intercanvi de coneixement per temps amb què va treballar amb la UOC, La Salle, la Universitat de Lleó i l'Agència de Desenvolupament Econòmic de la Junta de Castella i Lleó. Ha dirigit desenvolupament de programari, i aquella experiència és la que avui sosté el SOS.</p>
-            <p data-i18n-html="fac.p4">És CEO i dinamitzador de <strong>TeamTowers</strong> i del taller <strong>Fent Pinya</strong>, creat a Vilafranca pel seu soci <strong>Fèlix Miret</strong>. I com a emprenedor artístic ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, una tribu creativa oberta pensada per als 27 pobles de l'Alt Penedès i els 6 del Garraf.</p>
-            <div class="facilitador-tags">
-                <span data-i18n="fac.tag1">Psicologia social i comunitària</span>
-                <span data-i18n="fac.tag2">Value Network Analysis</span>
-                <span data-i18n="fac.tag3">Direcció de persones</span>
-                <span data-i18n="fac.tag4">Facilitació Fent Pinya</span>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -2033,6 +2088,14 @@
         <p class="cta-mail fade-up" style="animation-delay:.3s" data-i18n-html="cta.mail">O escriu directament a <a id="ctaMail" href="#">l'Álvaro</a> i ho valorem junts. Sense compromís.</p>
     </div>
 </section>
+
+<!-- A mòbil, la crida principal sempre a l'abast. Apareix quan els botons
+     del hero surten de pantalla i desapareix quan hi tornen o quan la crida
+     final ja és a la vista: dues crides iguals a la mateixa pantalla és no
+     tenir-ne cap. -->
+<div class="cta-sticky" id="ctaSticky" hidden>
+    <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="sticky.btn">Diagnòstic · 3 min →</a>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -2251,7 +2314,7 @@ ca: {
   'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
-  'hero.cta1':'Diagnostica la teva organització · 3 min','hero.cta2':'Demana pressupost →','hero.pain1':'«Sempre tirem els mateixos quatre.»','hero.pain2':'«Ningú sap què fem ni quant val.»','hero.pain3':'«Quan marxa qui ho sostenia, allò es mor.»','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
+  'hero.cta1':'Diagnostica la teva organització · 3 min','hero.cta2':'Demana pressupost →','hero.pain1':'«Sempre tirem els mateixos quatre.»','hero.pain2':'«Ningú sap què fem ni quant val.»','hero.pain3':'«Quan marxa qui ho sostenia, allò es mor.»','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Diagnòstic · 3 min →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El repte',
   'enfoc.h3':'Moltes ganes. <em>Poca estructura.</em>',
   'enfoc.p1':'Un projecte ciutadà —banc de temps, comunitat energètica, hort comunitari— neix amb una empenta enorme i s\'apaga igual de ràpid: no per falta d\'il·lusió, sinó per falta de governança, rols clars i relleu. En una empresa o una cooperativa és la mateixa escena amb un altre vocabulari: un equip que arrenca amb ganes i acaba depenent de dues persones que ho saben tot.',
@@ -2601,7 +2664,7 @@ es: {
   'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
-  'hero.cta1':'Diagnostica tu organización · 3 min','hero.cta2':'Pide presupuesto →','hero.pain1':'«Siempre tiramos los mismos cuatro.»','hero.pain2':'«Nadie sabe qué hacemos ni cuánto vale.»','hero.pain3':'«Cuando se va quien lo sostenía, aquello se muere.»','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
+  'hero.cta1':'Diagnostica tu organización · 3 min','hero.cta2':'Pide presupuesto →','hero.pain1':'«Siempre tiramos los mismos cuatro.»','hero.pain2':'«Nadie sabe qué hacemos ni cuánto vale.»','hero.pain3':'«Cuando se va quien lo sostenía, aquello se muere.»','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Diagnóstico · 3 min →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El reto',
   'enfoc.h3':'Muchas ganas. <em>Poca estructura.</em>',
   'enfoc.p1':'Un proyecto ciudadano —banco de tiempo, comunidad energética, huerto comunitario— nace con un empujón enorme y se apaga igual de rápido: no por falta de ilusión, sino por falta de gobernanza, roles claros y relevo. En una empresa o una cooperativa es la misma escena con otro vocabulario: un equipo que arranca con ganas y acaba dependiendo de dos personas que lo saben todo.',
@@ -2946,6 +3009,24 @@ if ('IntersectionObserver' in window) {
         });
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-up').forEach(function(el){ io.observe(el); });
+    /* La barra fixa de mòbil: surt quan la crida del hero ja no es veu i
+       s'amaga quan la crida final entra a pantalla, perquè no hi hagi mai dues
+       crides iguals a la vista alhora. */
+    var sticky = document.getElementById('ctaSticky');
+    var heroActs = document.querySelector('.hero-actions');
+    var finalActs = document.querySelector('.cta-final .actions');
+    if (sticky && heroActs && finalActs) {
+        /* Qualsevol crida que ja sigui a pantalla —la del hero, les franges
+           del mig o la final— amaga la barra: mai dues iguals a la vista. */
+        var crides = [heroActs, finalActs].concat([].slice.call(document.querySelectorAll('.cta-band')));
+        var aLaVista = new Set();
+        var pinta = function(){ sticky.hidden = aLaVista.size > 0; };
+        var cio = new IntersectionObserver(function(es){
+            es.forEach(function(e){ if (e.isIntersecting) aLaVista.add(e.target); else aLaVista.delete(e.target); });
+            pinta();
+        });
+        crides.forEach(function(el){ cio.observe(el); });
+    }
 } else {
     document.querySelectorAll('.fade-up').forEach(function(el){ el.classList.add('visible'); });
 }
