@@ -44,6 +44,39 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### El dibuix de la colla i el graf declarat no diuen el mateix
+
+Arreglat el cas que es va veure —**les mans i els laterals sortien com a dos
+cercles solts** a la portada, quan són el primer cordó i qui aguanta els
+segons—, i posada la guarda que llegeix el dibuix i no només les dades
+(`check-vna.js`, regla 5).
+
+Però mirant-ho de prop, **el dibuix de la portada i els `FLUXOS` de `vna.html`
+divergeixen en més coses**, i no s'han tocat perquè cadascuna és una decisió
+sobre castells i no sobre codi:
+
+| Al dibuix | Al graf declarat |
+|---|---|
+| `musics → baixos` pintat d'intangible (taronja, discontínua) | Declarat **tangible**: «la melodia diu on és l'Enxaneta» |
+| `enxaneta → cap` pintat d'intangible | Declarat **tangible**: «l'aleta valida la càrrega» |
+| Fletxa cap a les **crosses** des dels baixos | Declarat al revés: `crosses → baixos` |
+| `cap → terços` i `cap → enxaneta` dibuixats | **No existeixen** a `FLUXOS` |
+| `musics → segons` dibuixat | **No existeix** a `FLUXOS` |
+
+Dues sortides, i s'ha de triar:
+
+1. **El dibuix passa a generar-se del graf.** És el patró de la casa i acaba amb
+   la divergència per sempre, però un mapa de castell col·locat automàticament
+   queda pitjor que el que hi ha, que està posat a ull i es llegeix bé.
+2. **Les arestes del dibuix porten `data-de` i `data-a`**, i la guarda compara
+   una per una contra `FLUXOS`. Més barat, i deixa el dibuix tal com està.
+
+La segona sembla la bona, però obliga a decidir abans **quina de les dues
+versions és la correcta** a cada fila de la taula —i això ho sap qui sap de
+castells, no el codi.
+
+---
+
 ### Els fluxos de comunicació entre persones · anàlisi, i el forat que hi ha al mig
 
 **El defecte, dit en una frase: el SOS sap registrar un fet que ja ha passat i

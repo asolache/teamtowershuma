@@ -1301,6 +1301,18 @@
                     <path d="M180,82 L180,72" fill="none" stroke="#00e676" stroke-width="2" stroke-opacity=".9" marker-end="url(#arr)"/>
                     <path d="M120,400 L152,415" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
                     <path d="M240,400 L208,415" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
+                    <!-- Les mans i els laterals del primer cordó **no van als
+                         baixos: van als segons**. Són qui els aguanta. Al
+                         dibuix sortien com dos cercles solts, sense cap línia,
+                         i `vna.html` sí que declarava els quatre lliuraments
+                         (`mans→segons` i `laterals→segons`, tangible i
+                         intangible). O sigui que la pàgina ensenyava com a
+                         decoració la peça que sosté el segon pis.
+
+                         Les corbes van per fora de crosses i contraforts a
+                         posta: la força passa per sobre d'ells, no a través. -->
+                    <path d="M60,444 Q26,330 152,266" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
+                    <path d="M300,444 Q334,330 208,266" fill="none" stroke="#00e676" stroke-width="1" stroke-opacity=".5" marker-end="url(#arr)"/>
 
                     <!-- ARISTAS INTANGIBLES (taronja) -->
                     <path d="M74,290 Q120,260 154,260" fill="none" stroke="#ff9100" stroke-width="1" stroke-dasharray="4,4" stroke-opacity=".6" marker-end="url(#arr)"/>
@@ -2035,7 +2047,12 @@
             </div>
             <div>
                 <div class="cl-group-lbl" data-i18n="cl.g3">Empreses</div>
-                <div class="cl-logos"><span>InfoJobs</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
+                <!-- Els noms d'empresa surten de l'Álvaro i de ningú altre, i
+                     queden anotats amb la data a `knowledge/negoci/trajectoria.md`:
+                     un nom de client en una web comercial és una afirmació sobre
+                     un tercer, i el dia que algú pregunti «d'on ho heu tret»
+                     s'ha de poder respondre sense fer memòria. -->
+                <div class="cl-logos"><span>IKEA</span><span>InfoJobs</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
             </div>
         </div>
         <div class="cl-projects fade-up">
