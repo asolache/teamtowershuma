@@ -124,5 +124,36 @@ funciona i que no teníem:
 | Fèlix Miret com a creador del Fent Pinya | `index.html` · `#facilitador` |
 | 27 + 6 pobles del Comando | `index.html` · `#facilitador` |
 | 60.000 participants · 150 organitzacions · des del 2005 | `index.html` · `#trajectoria` i `README.md` |
-| L'article d'*El Periódico* (2007) | **encara no** — falta decidir on |
+| L'article d'*El Periódico* (2007) | `index.html` · `#facilitador`, a la franja «Comprova-ho» |
+| La pàgina professional i el LinkedIn | `index.html` · `#facilitador`, a la mateixa franja |
 | Els itineraris d'inserció com a paquet | **encara no** — no existeix |
+
+---
+
+## 5 · Com es diu això a la portada, i per què així
+
+El `#facilitador` va ser durant mesos **quatre paràgrafs de currículum en prosa
+i cap enllaç a fora**. El defecte no petava i no es veia: es llegia bé i semblava
+complet. Però és l'única secció de la pàgina que demana confiar en **una
+persona**, i no en donava cap manera de comprovar-ho.
+
+Ara té quatre parts, i cadascuna fa una feina:
+
+1. **La frase de posició** — el que fa per qui llegeix, no on ha treballat. Surt
+   del §1: quatre trams que són *«el mateix ofici mirat des de quatre llocs»*,
+   i el que ven és haver-se assegut **al mateix costat de la taula**.
+2. **Els quatre trams en graella**, els del §1 i amb els mateixos fets. En
+   graella i no en prosa: qui decideix escaneja, i quatre paràgrafs seguits no
+   es llegeixen mai.
+3. **«Comprova-ho»** — pàgina professional, LinkedIn i l'article d'*El
+   Periódico*. És el que el §2 ja tenia localitzat i no arribava a cap pantalla.
+4. **Una sortida per escriure-li.** El punt de més confiança de tota la pàgina
+   acabava en un cul-de-sac.
+
+`check-landing.js` guarda les tres coses que es perdrien primer: **almenys dos
+destins verificables**, **una manera de contactar** i **`rel="noopener"`** a tot
+enllaç que s'obre a fora.
+
+> **El que segueix pendent i no és de codi:** no hi ha **fotografia**. En una
+> secció que va de fiar-se d'una persona, una cara fa més que un paràgraf, i és
+> l'única peça que aquí no es pot inventar.

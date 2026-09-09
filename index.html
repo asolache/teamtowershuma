@@ -517,6 +517,26 @@
         .facilitador-inner h3 { font-family:var(--sans); font-size:2rem; font-weight:700; margin-bottom:.5rem; }
         .facilitador-role { font-family:var(--mono); font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:2rem; }
         .facilitador-inner p { color:var(--light); line-height:1.85; font-size:1rem; margin-bottom:1.25rem; }
+        /* La frase de posició: més gran que el cos i alineada al centre, perquè
+           és l'única cosa d'aquesta secció que es llegeix sempre. */
+        .facilitador-inner .fac-lead { font-size:1.15rem; line-height:1.7; color:var(--white); max-width:700px; margin:0 auto 2.5rem; }
+        .facilitador-inner .fac-lead strong { color:var(--accent-blue); font-weight:600; }
+        .fac-trams { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); text-align:left; }
+        .fac-tram { background:var(--bg-panel); padding:1.5rem 1.4rem; }
+        .fac-tram-k { font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:.7rem; }
+        .facilitador-inner .fac-tram p { font-size:.88rem; line-height:1.7; margin:0; }
+        /* L'enllaç del Comando quedava blau fosc sobre fons fosc i no es veia:
+           un enllaç que ningú distingeix del text és un enllaç que no existeix. */
+        .fac-tram a { color:var(--accent-blue); text-decoration:none; border-bottom:1px solid rgba(0,176,255,.4); }
+        .fac-tram a:hover { border-color:var(--accent-blue); }
+        /* La franja de comprovació. Els enllaços són el contingut, no un adorn:
+           es marquen amb subratllat perquè es vegi que se'n pot tirar. */
+        .fac-prova { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:.5rem 1.2rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border); }
+        .fac-prova span { font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
+        .fac-prova a { font-size:.82rem; color:var(--light); text-decoration:none; border-bottom:1px solid rgba(99,102,241,.45); padding-bottom:1px; transition:color .2s,border-color .2s; }
+        .fac-prova a:hover { color:var(--accent-blue); border-color:var(--accent-blue); }
+        .facilitador-inner .fac-cta { font-size:.9rem; color:var(--muted); margin:1.6rem 0 0; }
+        .fac-cta a { color:var(--accent-blue); text-decoration:none; border-bottom:1px solid currentColor; }
         .facilitador-tags { display:flex; justify-content:center; flex-wrap:wrap; gap:.6rem; margin-top:1.5rem; }
         .facilitador-tags span { font-size:.72rem; font-family:var(--mono); padding:.4rem .9rem; border-radius:20px; background:var(--indigo-dim); color:var(--accent-indigo); border:1px solid rgba(99,102,241,0.25); }
 
@@ -1075,17 +1095,51 @@
         <div class="facilitador-inner fade-up">
             <div class="section-eyebrow" data-i18n="fac.eyebrow">Qui hi ha darrere</div>
             <h3>Álvaro Solache</h3>
-            <div class="facilitador-role" data-i18n="fac.role">Psicòleg social · Consultor estratègic sistèmic</div>
-            <p data-i18n-html="fac.p1">Arrelat al Penedès. Va ser <strong>responsable de recursos humans d'InfoJobs</strong> l'any 2000 i va dirigir la formació a la <strong>UOC – GEC</strong>. Al Fòrum de RRHH de <strong>Foment del Treball</strong> va dinamitzar el grup de benchmarking entre direccions de persones d'empreses catalanes.</p>
-            <p data-i18n-html="fac.p2">Com a consultor treballa amb <strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible d'una organització o d'un territori. Va participar en la cocreació i el prototipatge de <strong>Pantheon Work</strong> com a beta-tester i coach de la metodologia.</p>
-            <p data-i18n-html="fac.p3">Com a emprenedor social va cofundar <strong>comunitats.org</strong>, una xarxa d'intercanvi de coneixement per temps amb què va treballar amb la UOC, La Salle, la Universitat de Lleó i l'Agència de Desenvolupament Econòmic de la Junta de Castella i Lleó. Ha dirigit desenvolupament de programari, i aquella experiència és la que avui sosté el SOS.</p>
-            <p data-i18n-html="fac.p4">És CEO i dinamitzador de <strong>TeamTowers</strong> i del taller <strong>Fent Pinya</strong>, creat a Vilafranca pel seu soci <strong>Fèlix Miret</strong>. I com a emprenedor artístic ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, una tribu creativa oberta pensada per als 27 pobles de l'Alt Penedès i els 6 del Garraf.</p>
+            <div class="facilitador-role" data-i18n="fac.role">Psicòleg social · Consultor estratègic sistèmic · Penedès</div>
+            <!-- La frase de posició, i no la primera línia del currículum. Qui
+                 llegeix aquesta secció no ve a saber on ha treballat: ve a
+                 decidir si se'n pot refiar per al seu problema. La frase ha de
+                 respondre això i la resta ha de ser comprovable. -->
+            <p class="fac-lead" data-i18n-html="fac.lead">No arriba de fora a explicar-vos com organitzar-vos. <strong>S'ha assegut al vostre costat de la taula</strong>: dirigint persones dins d'una empresa, mapant fluxos de valor com a consultor i muntant projectes comunitaris que encara funcionen.</p>
+            <!-- Quatre trams i no quatre feines: el mateix ofici mirat des de
+                 quatre llocs. En graella i no en prosa perquè qui decideix
+                 escaneja, i quatre paràgrafs seguits no es llegeixen mai. -->
+            <div class="fac-trams">
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t1.k">Direcció de persones · des del 2000</div>
+                    <p data-i18n-html="fac.t1.d">Responsable de RRHH d'<strong>InfoJobs</strong>. Va dirigir la formació a la <strong>UOC – GEC</strong>. Al Fòrum de RRHH de <strong>Foment del Treball</strong>, va dinamitzar el grup de benchmarking entre direccions de persones d'empreses catalanes.</p>
+                </div>
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t2.k">Consultoria sistèmica</div>
+                    <p data-i18n-html="fac.t2.d"><strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. Beta-tester i coach de la metodologia a la cocreació i el prototipatge de <strong>Pantheon Work</strong>.</p>
+                </div>
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t3.k">Emprenedoria social</div>
+                    <p data-i18n-html="fac.t3.d">Cofundador de <strong>comunitats.org</strong>, xarxa d'intercanvi de coneixement per temps, amb la UOC, La Salle, la Universitat de Lleó i l'Agència de Desenvolupament Econòmic de Castella i Lleó. Ha dirigit desenvolupament de programari: és el que avui sosté el SOS.</p>
+                </div>
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t4.k">TeamTowers i Fent Pinya · 20 anys</div>
+                    <p data-i18n-html="fac.t4.d">CEO i dinamitzador. El taller <strong>el va crear el seu soci Fèlix Miret</strong> a Vilafranca; junts l'han portat a més de <strong>150 organitzacions</strong> i <strong>60.000 participants</strong>. I ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, per als 27 pobles de l'Alt Penedès i els 6 del Garraf.</p>
+                </div>
+            </div>
             <div class="facilitador-tags">
                 <span data-i18n="fac.tag1">Psicologia social i comunitària</span>
                 <span data-i18n="fac.tag2">Value Network Analysis</span>
                 <span data-i18n="fac.tag3">Direcció de persones</span>
                 <span data-i18n="fac.tag4">Facilitació Fent Pinya</span>
             </div>
+            <!-- El que faltava de debò: una manera de comprovar-ho. Una secció
+                 «qui hi ha darrere» sense cap enllaç a fora demana confiança i
+                 no en dona cap prova, i la portada no enllaçava enlloc la seva
+                 pàgina professional. L'article d'*El Periódico* és prova social
+                 amb data i mitjà, que val més que un testimoni sense nom. -->
+            <div class="fac-prova">
+                <span data-i18n="fac.prova.k">Comprova-ho</span>
+                <a href="https://alvarosolache.netlify.app/" target="_blank" rel="noopener" data-i18n="fac.prova.web">Pàgina professional</a>
+                <a href="https://linkedin.com/in/alvarosolache" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="https://www.elperiodico.com/es/sociedad/20070121/castells-integradores-5420703" target="_blank" rel="noopener" data-i18n="fac.prova.premsa">«Castells integradors» · El Periódico, 2007</a>
+            </div>
+            <p class="fac-cta" data-i18n-html="fac.cta">Si el que has llegit encaixa amb el que tens sobre la taula, <a id="facMail" class="js-mail" href="#">escriu-li directament</a>. Contesta ell.</p>
         </div>
     </div>
 </section>
@@ -2380,11 +2434,18 @@ ca: {
   
   
   'fac.eyebrow':'Qui hi ha darrere',
-  'fac.role':'Psicòleg social · Consultor estratègic sistèmic',
-  'fac.p1':'Arrelat al Penedès. Va ser <strong>responsable de recursos humans d\'InfoJobs</strong> l\'any 2000 i va dirigir la formació a la <strong>UOC – GEC</strong>. Al Fòrum de RRHH de <strong>Foment del Treball</strong> va dinamitzar el grup de benchmarking entre direccions de persones d\'empreses catalanes.',
-  'fac.p2':'Com a consultor treballa amb <strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible d\'una organització o d\'un territori. Va participar en la cocreació i el prototipatge de <strong>Pantheon Work</strong> com a beta-tester i coach de la metodologia.',
-  'fac.p3':'Com a emprenedor social va cofundar <strong>comunitats.org</strong>, una xarxa d\'intercanvi de coneixement per temps amb què va treballar amb la UOC, La Salle, la Universitat de Lleó i l\'Agència de Desenvolupament Econòmic de la Junta de Castella i Lleó. Ha dirigit desenvolupament de programari, i aquella experiència és la que avui sosté el SOS.',
-  'fac.p4':'És CEO i dinamitzador de <strong>TeamTowers</strong> i del taller <strong>Fent Pinya</strong>, creat a Vilafranca pel seu soci <strong>Fèlix Miret</strong>. I com a emprenedor artístic ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, una tribu creativa oberta pensada per als 27 pobles de l\'Alt Penedès i els 6 del Garraf.',
+  'fac.role':'Psicòleg social · Consultor estratègic sistèmic · Penedès',
+  'fac.lead':'No arriba de fora a explicar-vos com organitzar-vos. <strong>S\'ha assegut al vostre costat de la taula</strong>: dirigint persones dins d\'una empresa, mapant fluxos de valor com a consultor i muntant projectes comunitaris que encara funcionen.',
+  'fac.t1.k':'Direcció de persones · des del 2000',
+  'fac.t1.d':'Responsable de RRHH d\'<strong>InfoJobs</strong>. Va dirigir la formació a la <strong>UOC – GEC</strong>. Al Fòrum de RRHH de <strong>Foment del Treball</strong>, va dinamitzar el grup de benchmarking entre direccions de persones d\'empreses catalanes.',
+  'fac.t2.k':'Consultoria sistèmica',
+  'fac.t2.d':'<strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. Beta-tester i coach de la metodologia a la cocreació i el prototipatge de <strong>Pantheon Work</strong>.',
+  'fac.t3.k':'Emprenedoria social',
+  'fac.t3.d':'Cofundador de <strong>comunitats.org</strong>, xarxa d\'intercanvi de coneixement per temps, amb la UOC, La Salle, la Universitat de Lleó i l\'Agència de Desenvolupament Econòmic de Castella i Lleó. Ha dirigit desenvolupament de programari: és el que avui sosté el SOS.',
+  'fac.t4.k':'TeamTowers i Fent Pinya · 20 anys',
+  'fac.t4.d':'CEO i dinamitzador. El taller <strong>el va crear el seu soci Fèlix Miret</strong> a Vilafranca; junts l\'han portat a més de <strong>150 organitzacions</strong> i <strong>60.000 participants</strong>. I ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, per als 27 pobles de l\'Alt Penedès i els 6 del Garraf.',
+  'fac.prova.k':'Comprova-ho','fac.prova.web':'Pàgina professional','fac.prova.premsa':'«Castells integradors» · El Periódico, 2007',
+  'fac.cta':'Si el que has llegit encaixa amb el que tens sobre la taula, <a id="facMail" class="js-mail" href="#">escriu-li directament</a>. Contesta ell.',
   'fac.tag1':'Psicologia social i comunitària','fac.tag2':'Value Network Analysis','fac.tag3':'Direcció de persones','fac.tag4':'Facilitació Fent Pinya',
   'cl.eyebrow':'Trajectòria i confiança',
   'cl.h2':'20 anys teixint <em>equips i comunitats</em>',
@@ -2730,11 +2791,18 @@ es: {
   
   
   'fac.eyebrow':'Quién hay detrás',
-  'fac.role':'Psicólogo social · Consultor estratégico sistémico',
-  'fac.p1':'Arraigado en el Penedès. Fue <strong>responsable de recursos humanos de InfoJobs</strong> en el año 2000 y dirigió la formación en la <strong>UOC – GEC</strong>. En el Foro de RRHH de <strong>Foment del Treball</strong> dinamizó el grupo de benchmarking entre direcciones de personas de empresas catalanas.',
-  'fac.p2':'Como consultor trabaja con <strong>Value Network Analysis</strong>, el método de Verna Allee para hacer visibles los flujos de valor tangible e intangible de una organización o de un territorio. Participó en la cocreación y el prototipado de <strong>Pantheon Work</strong> como beta-tester y coach de la metodología.',
-  'fac.p3':'Como emprendedor social cofundó <strong>comunitats.org</strong>, una red de intercambio de conocimiento por tiempo con la que trabajó con la UOC, La Salle, la Universidad de León y la Agencia de Desarrollo Económico de la Junta de Castilla y León. Ha dirigido desarrollo de software, y aquella experiencia es la que hoy sostiene el SOS.',
-  'fac.p4':'Es CEO y dinamizador de <strong>TeamTowers</strong> y del taller <strong>Fent Pinya</strong>, creado en Vilafranca por su socio <strong>Fèlix Miret</strong>. Y como emprendedor artístico ha creado el <a href="/SOS/comando.html">Comando Molekulon</a>, una tribu creativa abierta pensada para los 27 pueblos del Alt Penedès y los 6 del Garraf.',
+  'fac.role':'Psicólogo social · Consultor estratégico sistémico · Penedès',
+  'fac.lead':'No llega de fuera a explicaros cómo organizaros. <strong>Se ha sentado a vuestro lado de la mesa</strong>: dirigiendo personas dentro de una empresa, mapeando flujos de valor como consultor y montando proyectos comunitarios que todavía funcionan.',
+  'fac.t1.k':'Dirección de personas · desde 2000',
+  'fac.t1.d':'Responsable de RRHH de <strong>InfoJobs</strong>. Dirigió la formación en la <strong>UOC – GEC</strong>. En el Foro de RRHH de <strong>Foment del Treball</strong>, dinamizó el grupo de benchmarking entre direcciones de personas de empresas catalanas.',
+  'fac.t2.k':'Consultoría sistémica',
+  'fac.t2.d':'<strong>Value Network Analysis</strong>, el método de Verna Allee para hacer visibles los flujos de valor tangible e intangible. Beta-tester y coach de la metodología en la cocreación y el prototipado de <strong>Pantheon Work</strong>.',
+  'fac.t3.k':'Emprendimiento social',
+  'fac.t3.d':'Cofundador de <strong>comunitats.org</strong>, red de intercambio de conocimiento por tiempo, con la UOC, La Salle, la Universidad de León y la Agencia de Desarrollo Económico de Castilla y León. Ha dirigido desarrollo de software: es lo que hoy sostiene el SOS.',
+  'fac.t4.k':'TeamTowers y Fent Pinya · 20 años',
+  'fac.t4.d':'CEO y dinamizador. El taller <strong>lo creó su socio Fèlix Miret</strong> en Vilafranca; juntos lo han llevado a más de <strong>150 organizaciones</strong> y <strong>60.000 participantes</strong>. Y ha creado el <a href="/SOS/comando.html">Comando Molekulon</a>, para los 27 pueblos del Alt Penedès y los 6 del Garraf.',
+  'fac.prova.k':'Compruébalo','fac.prova.web':'Página profesional','fac.prova.premsa':'«Castells integradors» · El Periódico, 2007',
+  'fac.cta':'Si lo que has leído encaja con lo que tienes sobre la mesa, <a id="facMail" class="js-mail" href="#">escríbele directamente</a>. Contesta él.',
   'fac.tag1':'Psicología social y comunitaria','fac.tag2':'Value Network Analysis','fac.tag3':'Dirección de personas','fac.tag4':'Facilitación Fent Pinya',
   'cl.eyebrow':'Trayectoria y confianza',
   'cl.h2':'20 años tejiendo <em>equipos y comunidades</em>',
@@ -2951,9 +3019,13 @@ applyLang(currentLang);
 (function () {
     var u = 'asolache', d = 'mac' + '.' + 'com';
     function wire() {
-        var a = document.getElementById('ctaMail');
-        if (a) a.href = 'mailto:' + u + '@' + d + '?subject=' +
-            encodeURIComponent('Repte comunitari — parlem-ne');
+        /* Dos enllaços de correu i pujant: el de la crida final i el del perfil.
+           Amb `getElementById` el segon es quedava amb `href="#"` i no obria
+           res — un enllaç que no fa res al lloc on algú ja s'ha convençut. */
+        document.querySelectorAll('.js-mail, #ctaMail').forEach(function (a) {
+            a.href = 'mailto:' + u + '@' + d + '?subject=' +
+                encodeURIComponent('Repte comunitari — parlem-ne');
+        });
     }
     wire();
     // applyLang reescriu el bloc: cal tornar-hi després de cada canvi d'idioma.
