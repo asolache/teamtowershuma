@@ -282,6 +282,39 @@ else {
     + 'qui hi arriba des d\'aquella porta no en troba ni una que sigui la seva');
 }
 
+/* ── 7b · «Qui hi ha darrere» s'ha de poder comprovar ─────────────────────
+   Aquesta secció és l'única de la pàgina que demana confiar en **una persona**,
+   i durant mesos va demanar-ho sense donar cap manera de comprovar-ho: quatre
+   paràgrafs de currículum i ni un enllaç a fora. Ni la seva pàgina
+   professional, ni el seu perfil, ni l'article de premsa que ja teníem
+   localitzat a `knowledge/negoci/trajectoria.md`.
+
+   El defecte no peta i no es veu: la secció es llegeix bé i sembla completa.
+   Per això té guarda. Dues coses, i les dues han de ser certes:
+     · **almenys dos destins externs** on algú pugui anar a mirar-ho, i
+     · **una sortida per contactar** des d'aquí mateix, que és on la confiança
+       és més alta de tota la pàgina i on abans no hi havia res. */
+const fac = (cos.match(/<section class="facilitador"[\s\S]*?<\/section>/) || [''])[0];
+if (!fac) bad('no es troba la secció de qui hi ha darrere');
+else {
+  const fora = [...new Set([...fac.matchAll(/href="(https?:\/\/[^"]+)"/g)].map(m => m[1]))];
+  if (fora.length >= 2) ok(`el perfil es pot comprovar a fora: ${fora.length} destins verificables`);
+  else bad(`el perfil només porta ${fora.length} enllaç extern: demana confiar en una persona `
+    + 'i no dona cap manera de comprovar-ho');
+  /* El correu es munta amb JavaScript per no publicar-lo en clar, així que el
+     que es comprova és que l'ham hi sigui, no el `mailto:`. */
+  if (/class="js-mail"|id="facMail"/.test(fac)) ok('i des d\'aquí es pot escriure directament');
+  else bad('el perfil no ofereix cap manera de contactar: és el punt de més confiança de la pàgina '
+    + 'i acaba en un cul-de-sac');
+  /* Un enllaç extern que s'obre en una pestanya nova sense `rel` exposa la
+     pàgina a reverse tabnabbing. La guia de marca ja el llista com a error
+     comès i corregit; aquí es queda tancat. */
+  const nus = [...fac.matchAll(/<a\s[^>]*href="https?:[^"]*"[^>]*>/g)]
+    .map(m => m[0]).filter(a => /target="_blank"/.test(a) && !/rel="[^"]*noopener/.test(a));
+  if (!nus.length) ok('i tots els enllaços de fora porten rel="noopener"');
+  else bad(`${pl(nus.length, 'enllaç extern', 'enllaços externs')} sense rel="noopener" al perfil`);
+}
+
 // ── 8 · Informatiu ───────────────────────────────────────────────────────
 const seccions = (cos.match(/<section/g) || []).length;
 const detalls = (cos.match(/<details class="faq-item"/g) || []).length;
