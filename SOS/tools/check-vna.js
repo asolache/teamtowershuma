@@ -100,6 +100,44 @@ else {
   else bad('falta una de les dues menes de lliurament: el mapa deixa de ser un VNA');
 }
 
+/* ── 5 · El dibuix de la portada, i no només les seves dades ──────────────
+   La regla 4 mira el graf **declarat a `vna.html`** i diu que cap rol s'hi
+   queda sol. Era certa, i la portada ensenyava igualment dos cercles solts:
+   les **mans** i els **laterals**, dibuixats sense cap línia. `vna.html`
+   declarava els seus quatre lliuraments cap als segons —són qui els aguanta,
+   el primer cordó de la pinya— i el dibuix no en pintava cap.
+
+   El defecte és el de sempre en aquesta casa: **una guarda que mira les dades
+   no veu el dibuix.** Un node sense cap aresta no peta, no desquadra cap
+   comptador i es llegeix com una decoració — que és exactament el contrari del
+   que aquest mapa vol demostrar.
+
+   Es comprova per geometria i no per etiquetes perquè les arestes són `<path>`
+   sense identificador: de cada node se'n treu el centre i el radi, de cada
+   camí els seus extrems, i es demana que **cada node tingui algun extrem a
+   tocar**. No diu si l'aresta va on toca —això ho sap qui sap de castells—,
+   però sí que no n'hi falta cap. */
+const svg = (PORTADA.match(/<svg id="collaSvg"[\s\S]*?<\/svg>/) || [''])[0];
+if (!svg) bad('no es troba el dibuix de la colla a la portada: aquesta comprovació no pot mirar res');
+else {
+  const nodes = [...svg.matchAll(/data-id="(\w+)"[\s\S]{0,160}?<circle cx="(\d+)"\s+cy="(\d+)" r="(\d+)"/g)]
+    .map(m => ({ id: m[1], x: +m[2], y: +m[3], r: +m[4] }));
+  /* Els extrems de cada camí: el primer `M` i l'últim parell de coordenades.
+     Val tant per a rectes (`L`) com per a corbes (`Q`), que és el que hi ha. */
+  const punts = [];
+  [...svg.matchAll(/<path d="M([\d.]+),([\d.]+)[^"]*?([\d.]+),([\d.]+)"/g)].forEach(m => {
+    punts.push([+m[1], +m[2]], [+m[3], +m[4]]);
+  });
+  if (!nodes.length || !punts.length) bad('no s\'han pogut llegir els nodes o les arestes del dibuix de la portada');
+  else {
+    const aprop = n => punts.some(p => Math.hypot(p[0] - n.x, p[1] - n.y) <= n.r + 14);
+    const solts = nodes.filter(n => !aprop(n));
+    if (!solts.length) ok(`i al dibuix de la portada els ${nodes.length} rols tenen alguna línia que hi arriba`);
+    else bad(`${pl(solts.length, 'rol dibuixat sense cap línia', 'rols dibuixats sense cap línia')} a la portada: `
+      + solts.map(n => n.id).join(', ') + ' — al dibuix són decoració, encara que les dades diguin que no ho són');
+  }
+}
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} al mapa de valor.`
   : '\n✅ El mapa de valor i la portada diuen el mateix.');
 process.exit(fails ? 1 : 0);

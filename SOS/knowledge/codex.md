@@ -704,6 +704,34 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 152 — Una guarda que mira les dades no veu el dibuix
+
+El mapa de valor de la colla viu a dos llocs, i `check-vna.js` existeix
+precisament per això. Comprovava quatre coses i totes eren certes: els dotze
+rols són els mateixos, diuen el mateix paraula per paraula, els vint-i-quatre
+lliuraments van entre rols que existeixen, i **cap rol es queda sense
+lliuraments**.
+
+I la portada ensenyava igualment **dos cercles solts**: les mans i els laterals,
+dibuixats sense cap línia que hi arribés. `vna.html` declarava els seus quatre
+lliuraments cap als segons —són el primer cordó, els qui aguanten el segon pis—
+i el dibuix no en pintava cap. La guarda mirava **el graf declarat**; el defecte
+era **al dibuix**.
+
+La regla general: **quan una cosa es declara en dades i es pinta a mà, la guarda
+ha de llegir el dibuix.** Comparar les dades amb elles mateixes sempre surt bé.
+
+I el motiu pel qual aquest defecte concret no el troba ningú: **un node sense
+arestes no peta, no desquadra cap comptador i es llegeix com una decoració.** En
+un mapa que existeix per demostrar que tothom hi és necessari, deixar dos rols
+com a adorn diu exactament el contrari del que la pàgina afirma —i ho diu en
+silenci.
+
+Es comprova per geometria i no per etiquetes quan les arestes no en porten: de
+cada node, el centre i el radi; de cada camí, els extrems; i es demana que cada
+node tingui algun extrem a tocar. No diu si l'aresta va on toca —això ho sap qui
+sap de castells—, però sí que no n'hi falta cap.
+
 ## Veda 151 — Dues entrades són bones; dos registres, no. I només se sap quina tens quan ja és tard
 
 El Comando i el SOS conviden la mateixa persona a fer la mateixa cosa amb dues

@@ -75,6 +75,25 @@ dins d'una comunitat, i de dins d'una empresa que la ven.
 
 ---
 
+## 1 bis · Clients anomenats, i d'on surt cada nom
+
+Un nom de client en una web comercial és **una afirmació sobre un tercer**. Es
+pot dir, però ha de tenir font i data: el dia que algú pregunti d'on ho hem
+tret, s'ha de poder respondre sense fer memòria.
+
+| Client | On es diu | Font |
+|---|---|---|
+| InfoJobs | `#trajectoria` i `#facilitador` | Correu de presentació de l'Álvaro, setembre 2026. Hi va ser responsable de RRHH |
+| IKEA | `#trajectoria`, grup «Empreses» | **L'Álvaro, 9 de setembre de 2026**, en conversa. El va donar com a exemple de client de Value Network Analysis |
+| UB · UOC · UAB · UPC · La Salle · Universidad de León | `#trajectoria`, grup «Universitats» | Ja hi eren abans d'aquest document |
+| Diputació de Barcelona · Ajuntament de Vilafranca · Junta de Castilla y León | `#trajectoria`, grup «Sector públic» | Ja hi eren abans d'aquest document |
+
+> **Pendent, i només ho pot dir ell:** la resta de clients d'empresa. La llista
+> diu «i +150 empreses» i només en nomena dues; cada nom que s'hi pugui afegir
+> val més que la xifra. I d'IKEA falta precisar **quina línia de treball va ser**
+> —VNA, cohesió d'equips o formació—, perquè posar-ho a la línia equivocada és
+> una imprecisió sobre un tercer, no sobre nosaltres.
+
 ## 2 · Referències externes que es poden enllaçar
 
 | Què | On |
