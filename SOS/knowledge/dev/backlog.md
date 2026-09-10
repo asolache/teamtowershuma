@@ -32,6 +32,11 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 
 ## Bloc pendent (prioritzat)
 
+> **Pla de millora del SOS, mesurat (10/09/2026):** `pla-millora-sos.md`. Deu
+> punts amb evidència, cost i com es comprova cadascun; els tres primers són
+> barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
+
+
 ### Ordre recomanat · la meva prioritització
 
 **Criteri**, dit abans de la llista perquè es pugui discutir l'ordre sense
