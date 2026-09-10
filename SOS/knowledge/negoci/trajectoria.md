@@ -95,7 +95,8 @@ en una línia sota els logos.
 | Telefónica · Vodafone · BBVA · Novartis · Porsche · Mercedes · John Deere · La Caixa | `#trajectoria`, grup «Empreses» | Clients de TeamTowers. **No consta quina entrega concreta** va ser cadascun dins d'aquesta línia |
 | **InfoJobs** | `#trajectoria` · `#facilitador` | **Les dues coses**, i per això surt dos cops: hi va ser manager de RRHH (2000–2001) **i després va ser client de Fent Pinya**. Precisat per ell el 10/09/2026 |
 | **Softonic** | `#trajectoria`, grup «Empreses» | Client de Fent Pinya. L'Álvaro, 10/09/2026 |
-| ESADE · IESE · EADA | `#trajectoria`, grup «Universitats i escoles de negoci» | Del CV, secció «Clientes Destacados» |
+| ESADE · IESE | `#trajectoria`, grup «Universitats i escoles de negoci» | Del CV, secció «Clientes Destacados» |
+| **EADA** | mateix grup · i `#facilitador`, tram de TeamTowers | **Les dues coses**: client del CV **i escola on ha fet classe**. Precisat per ell el 10/09/2026. *Falta l'any i la matèria* |
 | UB · UOC · UAB · UPC · La Salle · Universidad de León | mateix grup | Ja hi eren abans d'aquest document. La UOC, La Salle i Lleó vénen del recorregut de **comunitats.org** (§1), no de TeamTowers |
 | Diputació de Barcelona · Ajuntament de Vilafranca · Junta de Castilla y León | `#trajectoria`, grup «Sector públic» | Ja hi eren abans. La Junta ve de comunitats.org |
 
@@ -114,6 +115,12 @@ client de Fent Pinya**, anys després d'haver-hi treballat. Torna a ser als dos
 llocs, i ara amb el motiu escrit. La lliçó no és que el criteri fos dolent: és
 que **«no és un client» era una deducció meva i no un fet**, i les deduccions
 sobre la biografia d'algú les ha de confirmar aquell algú.
+
+**Tres dels vint-i-tres són les dues coses alhora** —IKEA (client i VNA),
+InfoJobs (empleador i client) i EADA (client i escola on ha fet classe)—, i cap
+de les tres ho hauria endevinat ningú mirant un logo. És el motiu pel qual
+aquesta taula existeix: **un nom sol no diu quina relació hi ha, i la relació és
+el que fa que el nom valgui alguna cosa.**
 
 > **La regla, perquè no s'oblidi:** un nom de client no entra a la web si no és
 > en aquesta taula amb la seva font. `check-landing.js` ho comprova.
