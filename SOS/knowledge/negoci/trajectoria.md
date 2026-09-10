@@ -81,18 +81,56 @@ Un nom de client en una web comercial és **una afirmació sobre un tercer**. Es
 pot dir, però ha de tenir font i data: el dia que algú pregunti d'on ho hem
 tret, s'ha de poder respondre sense fer memòria.
 
-| Client | On es diu | Font |
+**Font de la llista: el CV de l'Álvaro, lliurat el 10 de setembre de 2026**, secció
+«Clientes Destacados». Cap nom d'aquesta taula surt d'enlloc més.
+
+| Client | On es diu | Nota |
 |---|---|---|
-| InfoJobs | `#trajectoria` i `#facilitador` | Correu de presentació de l'Álvaro, setembre 2026. Hi va ser responsable de RRHH |
-| IKEA | `#trajectoria`, grup «Empreses» | **L'Álvaro, 9 de setembre de 2026**, en conversa. El va donar com a exemple de client de Value Network Analysis |
-| UB · UOC · UAB · UPC · La Salle · Universidad de León | `#trajectoria`, grup «Universitats» | Ja hi eren abans d'aquest document |
+| **IKEA** | `#trajectoria` · `#facilitador`, tram de consultoria | **Value Network Analysis, dues vegades.** Ho va precisar ell el 10/09/2026. És l'única entrega de VNA amb client anomenat que tenim, i per això surt també al perfil: fa que el mètode deixi de ser una idea |
+| Telefónica · Vodafone · BBVA · Novartis · Porsche · Mercedes · John Deere · La Caixa | `#trajectoria`, grup «Empreses» | Del CV. **No consta de quina línia de treball** és cadascun; a la pàgina surten com a empreses amb qui s'ha treballat, sense atribuir-los cap servei concret |
+| InfoJobs | `#trajectoria` i `#facilitador` | Hi va ser manager de RRHH (2000–2001). No és un client: és una casa on va treballar, i per això al perfil surt al tram de direcció de persones |
+| ESADE · IESE · EADA | `#trajectoria`, grup «Universitats i escoles de negoci» | Del CV |
+| Mondragon Team Academy | mateix grup | Del CV: hi va ser **team coach i professor** (TeamLabs, 2016–2017) |
+| UB · UOC · UAB · UPC · La Salle · Universidad de León | mateix grup | Ja hi eren abans d'aquest document |
 | Diputació de Barcelona · Ajuntament de Vilafranca · Junta de Castilla y León | `#trajectoria`, grup «Sector públic» | Ja hi eren abans d'aquest document |
 
-> **Pendent, i només ho pot dir ell:** la resta de clients d'empresa. La llista
-> diu «i +150 empreses» i només en nomena dues; cada nom que s'hi pugui afegir
-> val més que la xifra. I d'IKEA falta precisar **quina línia de treball va ser**
-> —VNA, cohesió d'equips o formació—, perquè posar-ho a la línia equivocada és
-> una imprecisió sobre un tercer, no sobre nosaltres.
+> **La regla, perquè no s'oblidi:** un nom de client no entra a la web si no és
+> en aquesta taula amb la seva font. `check-landing.js` ho comprova.
+
+---
+
+## 1 ter · La cronologia sencera, del CV
+
+Lliurat per ell el **10 de setembre de 2026**. És la font més completa que tenim
+i **corregeix** el que hi havia:
+
+| Anys | On | Què |
+|---|---|---|
+| 1996 – 1997 | Manpower | Recruiting manager · empresa de treball temporal |
+| 1997 | Euromanager | Consultor de RRHH · cerca de directius |
+| 1997 – 1999 | Myrurgia | Manager de RRHH · multinacional de perfumeria i cosmètica |
+| 2000 – 2001 | InfoJobs + Intercom | Manager de RRHH |
+| 2001 | Foment del Treball | Community manager del Fòrum de RRHH |
+| 2001 – 2002 | Adbraintage | Manager de RRHH · enginyeria |
+| 2002 – 2005 | GEC – UOC | **Director de RRHH** · consultoria d'e-learning i gestió del coneixement |
+| **2005 – avui** | **TeamTowers** | CEO i fundador. Formació en valors d'equip, consultoria de persones i equips, producció d'esdeveniments |
+| 2012 – 2014 | Comunitats | Cofundador i product owner · startup social |
+| 2016 – 2017 | TeamLabs · Mondragon Team Academy | Team coach i professor universitari |
+
+**Formació:** llicenciat en Psicologia Social per la UB (1996); postgrau en eines
+telemàtiques per a la cooperació (UB, 1996); postgrau en gestió de la formació a
+les organitzacions (UB, 1999).
+
+**Idiomes:** castellà i català natius, anglès avançat, francès mitjà.
+
+> **Una divergència que ell ha de tancar.** El correu de setembre deia que a
+> **GEC–UOC** «va dirigir la formació»; el CV diu **Director de RRHH**. No són el
+> mateix càrrec. La web fa servir el del CV, que és la font més recent i més
+> precisa, però convé que ho confirmi.
+
+> **El que el CV afegeix i la web encara no diu enlloc:** Euromanager,
+> Adbraintage i els idiomes. No hi són perquè una portada comercial no és un
+> currículum: hi entra el que fa decidir, no tot el que és cert.
 
 ## 2 · Referències externes que es poden enllaçar
 

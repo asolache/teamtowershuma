@@ -315,6 +315,33 @@ else {
   else bad(`${pl(nus.length, 'enllaç extern', 'enllaços externs')} sense rel="noopener" al perfil`);
 }
 
+/* ── 7c · Cap nom de client sense font escrita ────────────────────────────
+   Un nom d'empresa a `#trajectoria` és **una afirmació sobre un tercer**:
+   IKEA, BBVA o Novartis no han signat res que digui que es poden fer servir de
+   referència, i el dia que un d'ells ho pregunti la resposta no pot ser «ho
+   vam posar perquè ens sonava».
+
+   Per això tot nom que surti als logos ha de ser també a
+   `knowledge/negoci/trajectoria.md`, on cada fila diu d'on surt i amb quina
+   data. La guarda no comprova que sigui veritat —això no ho pot saber— sinó
+   que **hi hagi algú que ho hagi dit i quan**, que és l'única cosa que un
+   fitxer pot garantir. */
+const TRAJ = join(__dirname, '..', 'knowledge', 'negoci', 'trajectoria.md');
+if (!existsSync(TRAJ)) bad('no hi ha `knowledge/negoci/trajectoria.md`: els noms de client es queden sense font');
+else {
+  const font = readFileSync(TRAJ, 'utf8');
+  const noms = [...new Set([...cos.matchAll(/<div class="cl-logos">([\s\S]*?)<\/div>/g)]
+    .flatMap(m => [...m[1].matchAll(/<span(?: class="muted"[^>]*)?>([^<]+)<\/span>/g)]
+      .map(x => x[1].trim())))]
+    /* El «i +150 empreses…» no és un nom: és la xifra que els resumeix. */
+    .filter(n => !/^i \+|^y \+/.test(n));
+  const orfes = noms.filter(n => !font.includes(n));
+  if (!noms.length) bad('no es troba cap nom de client a la portada: aquesta guarda no pot comprovar res');
+  else if (!orfes.length) ok(`els ${noms.length} clients anomenats tenen font escrita a trajectoria.md`);
+  else bad(`${pl(orfes.length, 'nom de client', 'noms de client')} a la portada sense font al coneixement: `
+    + orfes.join(', ') + ' — un nom d\'empresa és una afirmació sobre un tercer i ha de dir qui ho ha dit i quan');
+}
+
 // ── 8 · Informatiu ───────────────────────────────────────────────────────
 const seccions = (cos.match(/<section/g) || []).length;
 const detalls = (cos.match(/<details class="faq-item"/g) || []).length;
