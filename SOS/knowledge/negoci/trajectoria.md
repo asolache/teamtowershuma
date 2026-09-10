@@ -93,21 +93,34 @@ en una línia sota els logos.
 |---|---|---|
 | **IKEA** | `#trajectoria` · `#facilitador`, tram de consultoria | **Les dues coses**: Fent Pinya amb TeamTowers **i Value Network Analysis, dues vegades**. És l'única entrega de VNA amb client anomenat que tenim, i per això surt també al perfil: fa que el mètode deixi de ser una idea |
 | Telefónica · Vodafone · BBVA · Novartis · Porsche · Mercedes · John Deere · La Caixa | `#trajectoria`, grup «Empreses» | Clients de TeamTowers. **No consta quina entrega concreta** va ser cadascun dins d'aquesta línia |
-| ESADE · IESE · EADA | `#trajectoria`, grup «Universitats i escoles de negoci» | Del CV, secció «Clientes Destacados» |
+| **InfoJobs** | `#trajectoria` · `#facilitador` | **Les dues coses**, i per això surt dos cops: hi va ser manager de RRHH (2000–2001) **i després va ser client de Fent Pinya**. Precisat per ell el 10/09/2026 |
+| **Softonic** | `#trajectoria`, grup «Empreses» | Client de Fent Pinya. L'Álvaro, 10/09/2026 |
+| ESADE · IESE | `#trajectoria`, grup «Universitats i escoles de negoci» | Del CV, secció «Clientes Destacados» |
+| **EADA** | mateix grup · i `#facilitador`, tram de TeamTowers | **Les dues coses**: client del CV **i escola on ha fet classe**. Precisat per ell el 10/09/2026. *Falta l'any i la matèria* |
 | UB · UOC · UAB · UPC · La Salle · Universidad de León | mateix grup | Ja hi eren abans d'aquest document. La UOC, La Salle i Lleó vénen del recorregut de **comunitats.org** (§1), no de TeamTowers |
 | Diputació de Barcelona · Ajuntament de Vilafranca · Junta de Castilla y León | `#trajectoria`, grup «Sector públic» | Ja hi eren abans. La Junta ve de comunitats.org |
 
-**Dos noms que van sortir de la llista de clients i per què:**
+**Un nom que va sortir de la llista de clients i per què:**
 
-- **InfoJobs** no és un client: és una casa on va ser manager de RRHH
-  (2000–2001). Surt al `#facilitador`, al tram de direcció de persones, que és
-  on li toca.
-- **Mondragon Team Academy** tampoc: hi va fer de team coach i professor
-  (TeamLabs, 2016–2017). Surt al perfil, al tram de TeamTowers.
+- **Mondragon Team Academy** no és un client: hi va fer de team coach i professor
+  (TeamLabs, 2016–2017). Surt al perfil, al tram de TeamTowers, que és on li toca.
 
-Tenir un empleador o una universitat on has fet classe dins d'una llista titulada
-«clients» no és una exageració deliberada, però ho sembla el dia que algú s'hi
-fixa — i és el mateix dia que deixa de creure's la resta de la llista.
+Tenir una universitat on has fet classe dins d'una llista titulada «clients» no
+és una exageració deliberada, però ho sembla el dia que algú s'hi fixa — i és el
+mateix dia que deixa de creure's la resta de la llista.
+
+**I un que hi va tornar:** l'**InfoJobs** en va sortir el 10 de setembre per
+aquest mateix criteri, i el mateix dia l'Álvaro va precisar que **també va ser
+client de Fent Pinya**, anys després d'haver-hi treballat. Torna a ser als dos
+llocs, i ara amb el motiu escrit. La lliçó no és que el criteri fos dolent: és
+que **«no és un client» era una deducció meva i no un fet**, i les deduccions
+sobre la biografia d'algú les ha de confirmar aquell algú.
+
+**Tres dels vint-i-tres són les dues coses alhora** —IKEA (client i VNA),
+InfoJobs (empleador i client) i EADA (client i escola on ha fet classe)—, i cap
+de les tres ho hauria endevinat ningú mirant un logo. És el motiu pel qual
+aquesta taula existeix: **un nom sol no diu quina relació hi ha, i la relació és
+el que fa que el nom valgui alguna cosa.**
 
 > **La regla, perquè no s'oblidi:** un nom de client no entra a la web si no és
 > en aquesta taula amb la seva font. `check-landing.js` ho comprova.
@@ -138,10 +151,10 @@ les organitzacions (UB, 1999).
 
 **Idiomes:** castellà i català natius, anglès avançat, francès mitjà.
 
-> **Una divergència que ell ha de tancar.** El correu de setembre deia que a
-> **GEC–UOC** «va dirigir la formació»; el CV diu **Director de RRHH**. No són el
-> mateix càrrec. La web fa servir el del CV, que és la font més recent i més
-> precisa, però convé que ho confirmi.
+> **Divergència tancada.** El correu de setembre deia que a **GEC–UOC** «va
+> dirigir la formació» i el CV deia **Director de RRHH**. L'Álvaro ho va
+> confirmar el **10 de setembre de 2026**: **Director de RRHH**. És el que diu
+> la web.
 
 > **El que el CV afegeix i la web encara no diu enlloc:** Euromanager,
 > Adbraintage i els idiomes. No hi són perquè una portada comercial no és un
