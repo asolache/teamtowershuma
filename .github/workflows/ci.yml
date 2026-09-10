@@ -265,6 +265,13 @@ jobs:
       - name: La part incòmoda de les dues dinàmiques
         run: node SOS/tools/check-comuns.js
 
+      # La proposta de portada nova. Encara no substitueix res, però ja porta
+      # dotze enllaços a pàgines del SOS: un enllaç mort a una pàgina d'entrada
+      # és el pitjor lloc possible per tenir-lo, i el dia que s'aprovi ja hi
+      # arribarà comprovada.
+      - name: La vitrina (proposta de portada) apunta a pàgines que existeixen
+        run: node SOS/tools/build-vitrina.js --check
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests
