@@ -81,18 +81,33 @@ Un nom de client en una web comercial és **una afirmació sobre un tercer**. Es
 pot dir, però ha de tenir font i data: el dia que algú pregunti d'on ho hem
 tret, s'ha de poder respondre sense fer memòria.
 
-**Font de la llista: el CV de l'Álvaro, lliurat el 10 de setembre de 2026**, secció
-«Clientes Destacados». Cap nom d'aquesta taula surt d'enlloc més.
+**Font de la llista: el CV de l'Álvaro**, lliurat el 10 de setembre de 2026,
+secció «Clientes Destacados», i **precisat per ell el mateix dia**: tots aquests
+clients són **del recorregut de TeamTowers** —formació en valors d'equip i
+cohesió—, no de l'etapa anterior de direcció de persones. Això no és un matís:
+una llista de multinacionals sota el nom d'un consultor es llegeix com el lector
+vulgui, i el que es llegeixi sempre serà més del que hem dit. La pàgina ho diu
+en una línia sota els logos.
 
 | Client | On es diu | Nota |
 |---|---|---|
-| **IKEA** | `#trajectoria` · `#facilitador`, tram de consultoria | **Value Network Analysis, dues vegades.** Ho va precisar ell el 10/09/2026. És l'única entrega de VNA amb client anomenat que tenim, i per això surt també al perfil: fa que el mètode deixi de ser una idea |
-| Telefónica · Vodafone · BBVA · Novartis · Porsche · Mercedes · John Deere · La Caixa | `#trajectoria`, grup «Empreses» | Del CV. **No consta de quina línia de treball** és cadascun; a la pàgina surten com a empreses amb qui s'ha treballat, sense atribuir-los cap servei concret |
-| InfoJobs | `#trajectoria` i `#facilitador` | Hi va ser manager de RRHH (2000–2001). No és un client: és una casa on va treballar, i per això al perfil surt al tram de direcció de persones |
-| ESADE · IESE · EADA | `#trajectoria`, grup «Universitats i escoles de negoci» | Del CV |
-| Mondragon Team Academy | mateix grup | Del CV: hi va ser **team coach i professor** (TeamLabs, 2016–2017) |
-| UB · UOC · UAB · UPC · La Salle · Universidad de León | mateix grup | Ja hi eren abans d'aquest document |
-| Diputació de Barcelona · Ajuntament de Vilafranca · Junta de Castilla y León | `#trajectoria`, grup «Sector públic» | Ja hi eren abans d'aquest document |
+| **IKEA** | `#trajectoria` · `#facilitador`, tram de consultoria | **Les dues coses**: Fent Pinya amb TeamTowers **i Value Network Analysis, dues vegades**. És l'única entrega de VNA amb client anomenat que tenim, i per això surt també al perfil: fa que el mètode deixi de ser una idea |
+| Telefónica · Vodafone · BBVA · Novartis · Porsche · Mercedes · John Deere · La Caixa | `#trajectoria`, grup «Empreses» | Clients de TeamTowers. **No consta quina entrega concreta** va ser cadascun dins d'aquesta línia |
+| ESADE · IESE · EADA | `#trajectoria`, grup «Universitats i escoles de negoci» | Del CV, secció «Clientes Destacados» |
+| UB · UOC · UAB · UPC · La Salle · Universidad de León | mateix grup | Ja hi eren abans d'aquest document. La UOC, La Salle i Lleó vénen del recorregut de **comunitats.org** (§1), no de TeamTowers |
+| Diputació de Barcelona · Ajuntament de Vilafranca · Junta de Castilla y León | `#trajectoria`, grup «Sector públic» | Ja hi eren abans. La Junta ve de comunitats.org |
+
+**Dos noms que van sortir de la llista de clients i per què:**
+
+- **InfoJobs** no és un client: és una casa on va ser manager de RRHH
+  (2000–2001). Surt al `#facilitador`, al tram de direcció de persones, que és
+  on li toca.
+- **Mondragon Team Academy** tampoc: hi va fer de team coach i professor
+  (TeamLabs, 2016–2017). Surt al perfil, al tram de TeamTowers.
+
+Tenir un empleador o una universitat on has fet classe dins d'una llista titulada
+«clients» no és una exageració deliberada, però ho sembla el dia que algú s'hi
+fixa — i és el mateix dia que deixa de creure's la resta de la llista.
 
 > **La regla, perquè no s'oblidi:** un nom de client no entra a la web si no és
 > en aquesta taula amb la seva font. `check-landing.js` ho comprova.

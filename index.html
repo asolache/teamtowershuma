@@ -535,6 +535,9 @@
         .fac-prova span { font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
         .fac-prova a { font-size:.82rem; color:var(--light); text-decoration:none; border-bottom:1px solid rgba(99,102,241,.45); padding-bottom:1px; transition:color .2s,border-color .2s; }
         .fac-prova a:hover { color:var(--accent-blue); border-color:var(--accent-blue); }
+        .cl-font { font-size:.78rem; color:var(--muted); line-height:1.6; margin:.7rem 0 0; max-width:640px; }
+        .cl-font strong { color:var(--light); font-weight:600; }
+        .cl-font a { color:var(--accent-blue); text-decoration:none; border-bottom:1px solid rgba(0,176,255,.35); }
         .facilitador-inner .fac-titol { font-size:.85rem; color:var(--muted); line-height:1.7; margin:1.5rem auto 0; max-width:640px; }
         .fac-titol strong { color:var(--light); font-weight:600; }
         .facilitador-inner .fac-cta { font-size:.9rem; color:var(--muted); margin:1.6rem 0 0; }
@@ -1113,7 +1116,7 @@
                 </div>
                 <div class="fac-tram">
                     <div class="fac-tram-k" data-i18n="fac.t2.k">Consultoria sistèmica</div>
-                    <p data-i18n-html="fac.t2.d"><strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. Beta-tester i coach de la metodologia a la cocreació de <strong>Pantheon Work</strong>. <strong>A IKEA s'hi ha aplicat dues vegades</strong>: el mètode que ven aquesta pàgina no és una idea, és una entrega repetida.</p>
+                    <p data-i18n-html="fac.t2.d"><strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. Beta-tester i coach de la metodologia a la cocreació de <strong>Pantheon Work</strong>. <strong>A IKEA, dues vegades</strong> —la mateixa casa que ja havia fet Fent Pinya—: el mètode que ven aquesta pàgina no és una idea, és una entrega repetida.</p>
                 </div>
                 <div class="fac-tram">
                     <div class="fac-tram-k" data-i18n="fac.t3.k">Emprenedoria social</div>
@@ -2047,7 +2050,7 @@
         <div class="cl-groups fade-up">
             <div>
                 <div class="cl-group-lbl" data-i18n="cl.g1">Universitats i escoles de negoci</div>
-                <div class="cl-logos"><span>UB</span><span>UOC</span><span>UAB</span><span>UPC</span><span>ESADE</span><span>IESE</span><span>EADA</span><span>La Salle</span><span>Universidad de León</span><span>Mondragon Team Academy</span></div>
+                <div class="cl-logos"><span>UB</span><span>UOC</span><span>UAB</span><span>UPC</span><span>ESADE</span><span>IESE</span><span>EADA</span><span>La Salle</span><span>Universidad de León</span></div>
             </div>
             <div>
                 <div class="cl-group-lbl" data-i18n="cl.g2">Sector públic</div>
@@ -2060,7 +2063,13 @@
                      un nom de client en una web comercial és una afirmació sobre
                      un tercer, i el dia que algú pregunti «d'on ho heu tret»
                      s'ha de poder respondre sense fer memòria. -->
-                <div class="cl-logos"><span>IKEA</span><span>Telefónica</span><span>Vodafone</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>Mercedes</span><span>John Deere</span><span>La Caixa</span><span>InfoJobs</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
+                <div class="cl-logos"><span>IKEA</span><span>Telefónica</span><span>Vodafone</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>Mercedes</span><span>John Deere</span><span>La Caixa</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
+                <!-- De qui són aquests clients importa tant com els noms: són
+                     del recorregut de TeamTowers, no de la carrera de RRHH
+                     anterior. Sense aquesta línia, una llista de multinacionals
+                     sota el nom d'un consultor es llegeix com el lector vulgui,
+                     i el que es llegeixi sempre serà més del que hem dit. -->
+                <p class="cl-font" data-i18n-html="cl.font">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong></p>
             </div>
         </div>
         <div class="cl-projects fade-up">
@@ -2464,7 +2473,7 @@ ca: {
   'fac.t1.k':'Direcció de persones · 1996–2005',
   'fac.t1.d':'Nou anys dins de direccions de persones abans de vendre\'n res: <strong>Manpower</strong>, <strong>Myrurgia</strong>, <strong>InfoJobs</strong>, <strong>Foment del Treball</strong> —on va portar el grup de benchmarking del Fòrum de RRHH— i <strong>GEC–UOC</strong>.',
   'fac.t2.k':'Consultoria sistèmica',
-  'fac.t2.d':'<strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. Beta-tester i coach de la metodologia a la cocreació de <strong>Pantheon Work</strong>. <strong>A IKEA s\'hi ha aplicat dues vegades</strong>: el mètode que ven aquesta pàgina no és una idea, és una entrega repetida.',
+  'fac.t2.d':'<strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. Beta-tester i coach de la metodologia a la cocreació de <strong>Pantheon Work</strong>. <strong>A IKEA, dues vegades</strong> —la mateixa casa que ja havia fet Fent Pinya—: el mètode que ven aquesta pàgina no és una idea, és una entrega repetida.',
   'fac.t3.k':'Emprenedoria social',
   'fac.t3.d':'Cofundador i product owner de <strong>comunitats.org</strong> (2012–2014), xarxa d\'intercanvi de coneixement per temps, amb la UOC, La Salle, la Universitat de Lleó i l\'Agència de Desenvolupament Econòmic de Castella i Lleó. Ha dirigit desenvolupament de programari: és el que avui sosté el SOS.',
   'fac.t4.k':'TeamTowers i Fent Pinya · des del 2005',
@@ -2479,6 +2488,7 @@ ca: {
   'cl.s1':'TeamTowers · experiències castelleres des de','cl.s2':'Persones que han passat pel taller Fent Pinya','cl.s3':'Empreses i organitzacions acompanyades','cl.s4':'Primer banc de temps de la ciutat de León',
   'cl.g1':'Universitats i escoles de negoci','cl.g2':'Sector públic','cl.g3':'Empreses',
   'cl.emp':'i +150 empreses en formació i cohesió d\'equips',
+  'cl.font':'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong>',
   'cl.p1.tag':'Software comunitari','cl.p1.d':'Banc de temps i xarxa de coneixement. Una plataforma que empreses i organitzacions lloguen per crear la seva pròpia economia del temps i dinamitzar la seva comunitat.',
   'cl.p2.tag':'Projecte pioner · 2009','cl.p2.n':'Banc de Temps de León','cl.p2.d':'El primer banc de temps de la ciutat: intercanvi de serveis mesurat en hores, sense diners, teixint confiança i suport mutu entre veïns.',
   'cl.p3.tag':'Desenvolupament comunitari','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d\'ajuntaments, cooperatives i ateneus del territori.',
@@ -2822,7 +2832,7 @@ es: {
   'fac.t1.k':'Dirección de personas · 1996–2005',
   'fac.t1.d':'Nueve años dentro de direcciones de personas antes de vender nada: <strong>Manpower</strong>, <strong>Myrurgia</strong>, <strong>InfoJobs</strong>, <strong>Foment del Treball</strong> —donde llevó el grupo de benchmarking del Foro de RRHH— y <strong>GEC–UOC</strong>.',
   'fac.t2.k':'Consultoría sistémica',
-  'fac.t2.d':'<strong>Value Network Analysis</strong>, el método de Verna Allee para hacer visibles los flujos de valor tangible e intangible. Beta-tester y coach de la metodología en la cocreación de <strong>Pantheon Work</strong>. <strong>En IKEA se ha aplicado dos veces</strong>: el método que vende esta página no es una idea, es una entrega repetida.',
+  'fac.t2.d':'<strong>Value Network Analysis</strong>, el método de Verna Allee para hacer visibles los flujos de valor tangible e intangible. Beta-tester y coach de la metodología en la cocreación de <strong>Pantheon Work</strong>. <strong>En IKEA, dos veces</strong> —la misma casa que ya había hecho Fent Pinya—: el método que vende esta página no es una idea, es una entrega repetida.',
   'fac.t3.k':'Emprendimiento social',
   'fac.t3.d':'Cofundador y product owner de <strong>comunitats.org</strong> (2012–2014), red de intercambio de conocimiento por tiempo, con la UOC, La Salle, la Universidad de León y la Agencia de Desarrollo Económico de Castilla y León. Ha dirigido desarrollo de software: es lo que hoy sostiene el SOS.',
   'fac.t4.k':'TeamTowers y Fent Pinya · desde 2005',
@@ -2837,6 +2847,7 @@ es: {
   'cl.s1':'TeamTowers · experiencias castelleras desde','cl.s2':'Personas que han pasado por el taller Fent Pinya','cl.s3':'Empresas y organizaciones acompañadas','cl.s4':'Primer banco de tiempo de la ciudad de León',
   'cl.g1':'Universidades y escuelas de negocio','cl.g2':'Sector público','cl.g3':'Empresas',
   'cl.emp':'y +150 empresas en formación y cohesión de equipos',
+  'cl.font':'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos aplicaciones de Value Network Analysis.</strong>',
   'cl.p1.tag':'Software comunitario','cl.p1.d':'Banco de tiempo y red de conocimiento. Una plataforma que empresas y organizaciones alquilan para crear su propia economía del tiempo y dinamizar su comunidad.',
   'cl.p2.tag':'Proyecto pionero · 2009','cl.p2.n':'Banco de Tiempo de León','cl.p2.d':'El primer banco de tiempo de la ciudad: intercambio de servicios medido en horas, sin dinero, tejiendo confianza y apoyo mutuo entre vecinos.',
   'cl.p3.tag':'Desarrollo comunitario','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodología propia de cohesión castellera y mapeo de redes de valor, hoy al servicio de ayuntamientos, cooperativas y ateneos del territorio.',
