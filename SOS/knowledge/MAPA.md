@@ -44,7 +44,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 1 · 5 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 22 KB |
-| `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 5 · 59 KB |
+| `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 5 · 60 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 2 · 9 KB |
 | `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 11 · 100 KB |
 | `SOS/prompts/` | Un fitxer per intent d'IA: el que se li demana, versionat | 8 · 8 KB |
