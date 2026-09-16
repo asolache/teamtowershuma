@@ -96,6 +96,15 @@ jobs:
       - name: Guarda de Molekulandia (no és un pòster)
         run: node SOS/tools/check-molekulandia.js
 
+      # Molekulon és Molekulandia com a model de país del SOS: un fork del
+      # model, no del codi. La pàgina en diu set federacions, onze cases, tres
+      # mapes de valor i un esquelet més petit que el d'un estat sòlid — i les
+      # quatre coses les calcula el generador llegint MOLEKULANDIA_MODEL. Si un
+      # dia el model creix més que Catalunya, la pàgina estaria dient una cosa
+      # falsa amb números i aquí peta.
+      - name: Guarda de Molekulon (l'estat líquid quadra amb el model)
+        run: node SOS/tools/build-molekulon.js --check
+
       # La pestanya de cures és l'única del SOS on el que s'apunta és qui
       # necessita ajuda i qui l'hi dona. Dos errors farien mal de debò i cap
       # dels dos peta: que hi entri informació de salut —una casella de text

@@ -1098,7 +1098,7 @@ a{color:var(--blue);text-decoration:none}
 
 <!--SOS-EINES-->
 <script id="sos-eines" type="application/json">
-{"grups":[{"lbl":"Comença","ic":"🧭","links":[{"h":"diagnostic.html","t":"Diagnòstic","d":"On ets i què et falta, en 3 minuts"},{"h":"pressupost.html","t":"Demana pressupost","d":"Tria què vols i en surt la proposta"},{"h":"intro.html","t":"La intro","d":"De què va tot això"},{"h":"uneix-te.html","t":"Uneix-t'hi","d":"El que ja fas al barri, comptat"}]},{"lbl":"Eines","ic":"🛠","links":[{"h":"vna.html","t":"Mapa de valor","d":"Rols i intercanvis d'un projecte"},{"h":"matriu.html","t":"La MATRIU","d":"La incubadora: etapes, portes i propietat"},{"h":"compra.html","t":"La Compra","d":"Grup de consum i compra col·lectiva"},{"h":"energia.html","t":"L'Energia","d":"Comunitat energètica i autoconsum compartit"},{"h":"habitatge.html","t":"L'Habitatge","d":"Cessió d'ús: quota, entrada i sortida"},{"h":"banc-temps.html","t":"El Banc de Temps","d":"Una hora val una hora, i el saldo que ho diu"},{"h":"biblioteca.html","t":"La Biblioteca de les Coses","d":"Donar o deixar, i què val cada préstec"},{"h":"molekulandia.html","t":"Molekulandia","d":"El poble sencer i les nou professions"},{"h":"joc.html","t":"El joc","d":"La plaça, a ritme"}]},{"lbl":"Aprèn","ic":"🎓","links":[{"h":"formacio.html","t":"Formació","d":"16 mòduls, de N0 a N3"},{"h":"ia.html","t":"Fluxos amb IA","d":"Automatitzar el tangible, valorar l'intangible"},{"h":"escola.html","t":"Escoles","d":"El SOS a mida d'aula"},{"h":"vedes.html","t":"Les vedes","d":"Les regles, amb el motiu al costat"},{"h":"blog.html","t":"Blog","d":"Cada capacitat, explicada"}]},{"lbl":"Xarxa","ic":"🏘","links":[{"h":"comando.html","t":"El Comando","d":"La pel·lícula que farem 150.000"},{"h":"online.html","t":"Directori","d":"Qui hi ha, per territori"}]}],"eines":{"banc_temps":["banc-temps.html","El Banc de Temps"],"biblioteca_coses":["biblioteca.html","La Biblioteca de les Coses"],"suport_mutu":["index.html","A dins de l'app"],"matriu":["matriu.html","La MATRIU"],"mapeig_vna":["vna.html","Mapa de valor"],"comunitat_energetica":["energia.html","L'Energia"],"habitatge_cessio":["habitatge.html","L'Habitatge"],"consum_agroecologic":["compra.html","La Compra"],"compra_collectiva":["compra.html","La Compra"],"cens_entitats":["online.html","El directori"]}}
+{"grups":[{"lbl":"Comença","ic":"🧭","links":[{"h":"diagnostic.html","t":"Diagnòstic","d":"On ets i què et falta, en 3 minuts"},{"h":"pressupost.html","t":"Demana pressupost","d":"Tria què vols i en surt la proposta"},{"h":"intro.html","t":"La intro","d":"De què va tot això"},{"h":"uneix-te.html","t":"Uneix-t'hi","d":"El que ja fas al barri, comptat"}]},{"lbl":"Eines","ic":"🛠","links":[{"h":"vna.html","t":"Mapa de valor","d":"Rols i intercanvis d'un projecte"},{"h":"matriu.html","t":"La MATRIU","d":"La incubadora: etapes, portes i propietat"},{"h":"compra.html","t":"La Compra","d":"Grup de consum i compra col·lectiva"},{"h":"energia.html","t":"L'Energia","d":"Comunitat energètica i autoconsum compartit"},{"h":"habitatge.html","t":"L'Habitatge","d":"Cessió d'ús: quota, entrada i sortida"},{"h":"banc-temps.html","t":"El Banc de Temps","d":"Una hora val una hora, i el saldo que ho diu"},{"h":"biblioteca.html","t":"La Biblioteca de les Coses","d":"Donar o deixar, i què val cada préstec"},{"h":"molekulandia.html","t":"Molekulandia","d":"El poble sencer i les nou professions"},{"h":"joc.html","t":"El joc","d":"La plaça, a ritme"}]},{"lbl":"Aprèn","ic":"🎓","links":[{"h":"formacio.html","t":"Formació","d":"16 mòduls, de N0 a N3"},{"h":"ia.html","t":"Fluxos amb IA","d":"Automatitzar el tangible, valorar l'intangible"},{"h":"escola.html","t":"Escoles","d":"El SOS a mida d'aula"},{"h":"vedes.html","t":"Les vedes","d":"Les regles, amb el motiu al costat"},{"h":"blog.html","t":"Blog","d":"Cada capacitat, explicada"}]},{"lbl":"Xarxa","ic":"🏘","links":[{"h":"comando.html","t":"El Comando","d":"La pel·lícula que farem 150.000"},{"h":"molekulon.html","t":"Molekulon","d":"Molekulandia, un estat líquid"},{"h":"online.html","t":"Directori","d":"Qui hi ha, per territori"}]}],"eines":{"banc_temps":["banc-temps.html","El Banc de Temps"],"biblioteca_coses":["biblioteca.html","La Biblioteca de les Coses"],"suport_mutu":["index.html","A dins de l'app"],"matriu":["matriu.html","La MATRIU"],"mapeig_vna":["vna.html","Mapa de valor"],"comunitat_energetica":["energia.html","L'Energia"],"habitatge_cessio":["habitatge.html","L'Habitatge"],"consum_agroecologic":["compra.html","La Compra"],"compra_collectiva":["compra.html","La Compra"],"cens_entitats":["online.html","El directori"]}}
 </script>
 <!--/SOS-EINES-->
 
@@ -1510,7 +1510,100 @@ const EUSKADI_MODEL={
     comarca:[['quadrilla','Quadrilla / mancomunitat','🏛'],['garapen','Agència de desenvolupament','🌾'],['federacio','Federació d\'entitats','🕸'],['coop2','Cooperativa de 2n grau','⬡'],['banc_temps','Banc de temps','⏱'],['altre','Altre','◦']]
   }
 };
-const BUILTIN_MODELS=[CATALUNYA_MODEL,EUSKADI_MODEL];
+/* ═══════════ MODEL DE MOLEKULANDIA · l'estat líquid, i per què és fictici ═══
+   Tercer model de referència, i el primer que **no és un país**. Catalunya i
+   Euskadi són dos estats sòlids: el nivell del mig és un tros de terra —una
+   província, un territori històric— i qui hi viu hi pertany sense haver-ho
+   triat. Molekulandia és el contraexemple: **el nivell del mig és un tema**.
+
+   Et federes quan et vincules a una cosa que t'importa, no quan neixes en un
+   lloc. És la tesi de l'estat líquid que el backlog porta anotada des de fa
+   mesos («federacions per tema, no només per territori»), i aquí es pot fer
+   perquè Molekulandia **és inventada**: es poden dibuixar nivells que no són
+   territorials sense afirmar res fals sobre cap poble real.
+
+   Es veu en una xifra. L'esquelet de Catalunya són 49 nodes d'administració
+   pura abans que ningú hi faci res; el de Molekulandia en són 19, i la resta
+   —les colles i les taules— no existeix fins que algú s'hi posa. Un estat sòlid
+   neix ple d'estructura buida; un de líquid neix gairebé buit i s'omple del que
+   la gent sosté. Aquesta diferència no és una metàfora: és l'arbre de nodes.
+
+   Els noms surten de `molekulandia.html`, que ja tenia els onze edificis i les
+   nou professions. No s'inventa un segon poble: es declara el que ja hi havia
+   dibuixat, en la forma que l'app sap llegir. */
+const MOL_GEO={
+  pais:[{n:'Molekulandia'}],
+  /* Les set federacions. El criteri és **què sosté la gent**, no on viu. */
+  provincia:[{n:'Les Cures',p:'Molekulandia'},{n:'Les Coses',p:'Molekulandia'},
+    {n:'L\'Aliment',p:'Molekulandia'},{n:'L\'Energia',p:'Molekulandia'},
+    {n:'El Sostre',p:'Molekulandia'},{n:'La Feina',p:'Molekulandia'},
+    {n:'El Saber',p:'Molekulandia'}],
+  /* Els onze edificis del poble, cadascun sota el tema que sosté. */
+  comarca:[
+    {n:'El bar',p:'Les Cures'},{n:'El casal',p:'Les Cures'},
+    {n:'La ferreteria',p:'Les Coses'},{n:'El magatzem',p:'Les Coses'},
+    {n:'El mercat',p:'L\'Aliment'},
+    {n:'La central',p:'L\'Energia'},
+    {n:'Les cases',p:'El Sostre'},
+    {n:'El taller',p:'La Feina'},{n:'El viver',p:'La Feina'},
+    {n:'L\'arxiu',p:'El Saber'},{n:'La sala de plànols',p:'El Saber'}]
+};
+/* Els mapes de valor dels tres nivells. Cap rol és un càrrec: en un estat
+   líquid no hi ha institucions permanents, hi ha **funcions que algú fa
+   mentre les fa**. Per això els rols es diuen «qui obre la casa» i no
+   «director»: el dia que ho faci un altre, el mapa no s'ha de reescriure. */
+const MOL_MAPS={
+  pais:{
+    roles:['Les persones','Les colles','Les federacions temàtiques','L\'assemblea',
+      'El fons comú','El registre públic','Qui acompanya'],
+    pairs:[
+      ['Les persones','Les federacions temàtiques','intangible','vincular-se a un tema','intangible','trobar qui ja hi és fent el mateix'],
+      ['Les persones','Les colles','tangible','hores, objectes i sabers','intangible','pertinença i un lloc on allò compta'],
+      ['Les colles','Les federacions temàtiques','tangible','el que sostenen, comptat','tangible','coordinació i massa crítica'],
+      ['Les federacions temàtiques','L\'assemblea','tangible','pes segons qui sosté, no segons qui és','tangible','decisions que valen per a totes'],
+      ['L\'assemblea','El fons comú','tangible','on va el que hi ha','intangible','legitimitat de cada despesa'],
+      ['El fons comú','Les colles','tangible','diners quan calen','tangible','projectes que passen de la idea'],
+      ['Les colles','El registre públic','tangible','apunts signats','tangible','prova que no depèn de ningú'],
+      ['El registre públic','Les persones','intangible','que el que has donat consti','intangible','confiança per tornar-hi'],
+      ['Qui acompanya','Les colles','intangible','mètode, formació i relleu','intangible','casos reals que validen el mètode']]
+  },
+  provincia:{
+    roles:['Qui es vincula','Les colles','Les cases','L\'assemblea del tema',
+      'Les altres federacions','El fons comú'],
+    pairs:[
+      ['Qui es vincula','Les colles','intangible','declarar què li importa','intangible','la gent que ja hi era'],
+      ['Les colles','Les cases','tangible','les hores que les mantenen obertes','tangible','un lloc on passa alguna cosa'],
+      ['Les cases','Qui es vincula','tangible','el servei: hores, coses, energia, sostre','tangible','ús i aportacions'],
+      ['Les colles','L\'assemblea del tema','tangible','el que han sostingut, comptat','tangible','prioritats i repartiment'],
+      ['L\'assemblea del tema','El fons comú','tangible','la petició del tema, justificada','tangible','el que se li assigna'],
+      ['Les altres federacions','L\'assemblea del tema','intangible','el que ja han provat i els ha fallat','intangible','el que s\'aprèn aquí'],
+      ['L\'assemblea del tema','Les colles','intangible','una decisió presa i escrita','intangible','que no calgui tornar-hi cada mes']]
+  },
+  comarca:{
+    roles:['Qui obre la casa','Qui hi aporta','Qui la fa servir','Qui confirma','La colla del tema'],
+    pairs:[
+      ['Qui obre la casa','Qui hi aporta','intangible','acollida i un protocol clar','tangible','hores, objectes o diners'],
+      ['Qui hi aporta','Qui la fa servir','tangible','el que la casa dona','intangible','que allò segueixi valent la pena'],
+      ['Qui la fa servir','Qui confirma','tangible','dir que ho ha rebut','tangible','l\'apunt que val'],
+      ['Qui confirma','Qui hi aporta','tangible','el vistiplau signat','intangible','que el que apuntes no sigui la teva paraula sola'],
+      ['Qui obre la casa','La colla del tema','tangible','el que s\'hi ha mogut','tangible','relleu quan es cansa'],
+      ['La colla del tema','Qui obre la casa','intangible','que no ho porti sol','intangible','una casa que no depèn d\'una persona']]
+  }
+};
+const MOLEKULANDIA_MODEL={
+  id:'molekulandia',name:'Molekulandia',flag:'🌀',ref:true,
+  one:'Estat líquid: el nivell del mig no és un tros de terra, és un tema. Set federacions, onze cases i un esquelet de 19 nodes — la resta la fa qui s\'hi posa.',
+  source:'Món de ficció del Comando Molekulon · els onze edificis i les nou professions de molekulandia.html',
+  levels:[{id:'pais',label:'Món'},{id:'provincia',label:'Federació'},
+    {id:'comarca',label:'Casa'},{id:'municipi',label:'Colla'},{id:'barri',label:'Taula'}],
+  geo:MOL_GEO,institutions:MOL_MAPS,
+  entityTypes:{
+    pais:[['federacio','Federació temàtica','🕸'],['assemblea','Assemblea','⚖'],['fons','Fons comú','🏦'],['colla','Colla','👥'],['altre','Altre','◦']],
+    provincia:[['casa','Casa','🏠'],['colla','Colla','👥'],['assemblea','Assemblea del tema','⚖'],['altre','Altre','◦']],
+    comarca:[['nucli','Nucli que l\'obre','🔑'],['amfitriona','Entitat amfitriona','🏛'],['colla','Colla','👥'],['altre','Altre','◦']]
+  }
+};
+const BUILTIN_MODELS=[CATALUNYA_MODEL,EUSKADI_MODEL,MOLEKULANDIA_MODEL];
 const isBuiltinModel=id=>BUILTIN_MODELS.some(m=>m.id===id);
 const customModels=()=>(state.models||[]);
 const countryModels=()=>BUILTIN_MODELS.concat(customModels());
