@@ -14,7 +14,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 186 · 14332 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 191 · 14460 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
@@ -29,9 +29,9 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 21 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 81 · 898 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 34 · 504 KB |
+| `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 22 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 81 · 902 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 36 · 552 KB |
 
 ## saber
 
@@ -39,14 +39,14 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 28 · 620 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 2 · 119 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 30 · 647 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 3 · 136 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 1 · 5 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 22 KB |
 | `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 5 · 60 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 2 · 9 KB |
-| `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 11 · 100 KB |
+| `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 12 · 109 KB |
 | `SOS/prompts/` | Un fitxer per intent d'IA: el que se li demana, versionat | 8 · 8 KB |
 
 ## arxiu
@@ -70,7 +70,7 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 
 ## arrel · pàgines soltes
 
-24 pàgines HTML a l'arrel del repositori (`app.html`, `app_coops.html`, `clients.html`, `colla.html`…).
+25 pàgines HTML a l'arrel del repositori (`app.html`, `app_coops.html`, `clients.html`, `colla.html`…).
 Són **arxiu**: el web anterior a `SOS/`, encara servit per `_redirects`.
 No són referència de com es fan les coses ara.
 

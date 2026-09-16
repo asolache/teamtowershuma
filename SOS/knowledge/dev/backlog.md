@@ -32,6 +32,32 @@ Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc
 
 ## Bloc pendent (prioritzat)
 
+> **Pla de millora del SOS, mesurat (10/09/2026):** `pla-millora-sos.md`. Deu
+> punts amb evidència, cost i com es comprova cadascun; els tres primers són
+> barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
+
+
+### Molekulon · fet, i el cap solt que queda
+
+**Fet (16/09/2026):** Molekulandia és el tercer model de sèrie del SOS
+(`MOLEKULANDIA_MODEL`), té pàgina pròpia a `/molekulon` i la decisió
+d'arquitectura és escrita a `vision/molekulon-estat-liquid.md`: **fork del
+model, no del codi** (veda 153). Esquelet de 19 nodes contra els 47 de
+Catalunya; guarda `build-molekulon.js --check` amb vuit regles.
+
+**Queda una cosa, i no és de codi:** el subdomini
+`molekulon.teamtowershuma.com` necessita un *domain alias* a Netlify i un CNAME
+al DNS de `teamtowershuma.com`. Mentre no hi sigui, l'adreça canònica és
+`/molekulon` i la pàgina ho diu així —no promet un subdomini que no respon. Quan
+hi sigui, caldrà una regla més a `_redirects` per portar l'arrel d'aquest
+amfitrió a `/SOS/molekulon.html`.
+
+**I una cosa que s'ha decidit no fer:** catàleg de colles i de taules. Els dos
+nivells de baix de `MOL_GEO` són buits a posta —una llista tancada de colles
+seria estructura sòlida entrant per la porta del darrere.
+
+---
+
 ### Ordre recomanat · la meva prioritització
 
 **Criteri**, dit abans de la llista perquè es pugui discutir l'ordre sense

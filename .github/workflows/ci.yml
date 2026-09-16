@@ -96,6 +96,15 @@ jobs:
       - name: Guarda de Molekulandia (no és un pòster)
         run: node SOS/tools/check-molekulandia.js
 
+      # Molekulon és Molekulandia com a model de país del SOS: un fork del
+      # model, no del codi. La pàgina en diu set federacions, onze cases, tres
+      # mapes de valor i un esquelet més petit que el d'un estat sòlid — i les
+      # quatre coses les calcula el generador llegint MOLEKULANDIA_MODEL. Si un
+      # dia el model creix més que Catalunya, la pàgina estaria dient una cosa
+      # falsa amb números i aquí peta.
+      - name: Guarda de Molekulon (l'estat líquid quadra amb el model)
+        run: node SOS/tools/build-molekulon.js --check
+
       # La pestanya de cures és l'única del SOS on el que s'apunta és qui
       # necessita ajuda i qui l'hi dona. Dos errors farien mal de debò i cap
       # dels dos peta: que hi entri informació de salut —una casella de text
@@ -264,6 +273,13 @@ jobs:
       # d'accés no és una compra evitada.
       - name: La part incòmoda de les dues dinàmiques
         run: node SOS/tools/check-comuns.js
+
+      # La proposta de portada nova. Encara no substitueix res, però ja porta
+      # dotze enllaços a pàgines del SOS: un enllaç mort a una pàgina d'entrada
+      # és el pitjor lloc possible per tenir-lo, i el dia que s'aprovi ja hi
+      # arribarà comprovada.
+      - name: La vitrina (proposta de portada) apunta a pàgines que existeixen
+        run: node SOS/tools/build-vitrina.js --check
 
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi

@@ -704,6 +704,35 @@ I una que se sol oblidar: **un `did` sense reclamació signada no dona dret a
 res**. Copiar un did a un camp no és reclamar una fitxa —si ho fos, la protecció
 la podria activar qualsevol contra qualsevol.
 
+## Veda 153 — Un món nou es forkeja de les dades, no del programa
+
+«Fes un fork del SOS per a Molekulon» té dues lectures, i la fàcil és la
+dolenta: copiar `SOS/index.html` —1,6 MB— a un segon fitxer i pintar-lo d'un
+altre color. Sembla feina feta el primer dia i és una hipoteca a partir del
+segon: la còpia s'endarrereix, cada guarda del repositori s'ha de duplicar i
+ningú manté la duplicada, i acabes amb **dos registres on un apunt d'un costat
+no val a l'altre**.
+
+Però el que fa que sigui una veda i no una preferència és una altra cosa: **un
+fork de codi hauria demostrat el contrari del que el projecte afirma.** El SOS
+diu que el territori és configuració. Si per canviar de món cal canviar el
+programa, això era mentida i el fork n'hauria estat la prova.
+
+La regla: **abans de copiar un programa per fer-hi un cas nou, mira si el que
+canvia és una dada.** A Molekulandia el que canviava eren les etiquetes dels
+nivells, un catàleg de llocs i tres mapes de valor — o sigui, un model de país,
+i el mecanisme (`BUILTIN_MODELS`, `forkModel`, `loadModelSkeleton`) ja hi era
+des de Catalunya i Euskadi. Un món sencer ha costat tres constants de dades i
+cap funció nova.
+
+I el corol·lari, que val per a qualsevol model que entri: **els identificadors
+dels nivells no es toquen.** Molekulandia diu Món, Federació, Casa, Colla i
+Taula, però per sota segueixen sent `pais`, `provincia`, `comarca`, `municipi` i
+`barri`. És el que fa que un apunt d'hores de la ficció i un de Terrassa siguin
+el mateix tipus d'apunt i que `consolidate`, `rollup` i `ancestors` no s'hagin
+d'assabentar de res. Un nivell inventat no peta el dia que s'escriu: peta molt
+més tard, i llavors ja hi ha dades a sobre.
+
 ## Veda 152 — Una guarda que mira les dades no veu el dibuix
 
 El mapa de valor de la colla viu a dos llocs, i `check-vna.js` existeix

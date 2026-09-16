@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Molekulon · Molekulandia, un estat líquid</title>
+<meta name="description" content="Un cas d'ús del SOS: Molekulandia com a estat líquid, on el nivell del mig no és un tros de terra sinó un tema que algú sosté. Set federacions, onze cases i un esquelet de 19 nodes contra els 47 d'un país sòlid.">
+<meta property="og:title" content="Molekulon · Molekulandia, un estat líquid">
+<meta property="og:description" content="Un estat sòlid neix ple d'estructura buida. Un estat líquid neix gairebé buit i s'omple del que la gent sosté. La diferència no és una metàfora: és el nombre de nodes.">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;
+  --indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700;
+  --border:rgba(255,255,255,.09);--mono:'SF Mono',Monaco,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+img{max-width:100%}
+a{color:var(--blue)}
+h1,h2,h3,h4{line-height:1.2;margin:0}
+
+.hero{padding:3.4rem 1.5rem 2.2rem;text-align:center;
+  background:radial-gradient(ellipse at top,rgba(224,64,251,.16),transparent 60%),
+             radial-gradient(ellipse at bottom right,rgba(0,176,255,.13),transparent 55%),var(--bg)}
+.hero-inner{max-width:880px;margin:0 auto}
+.tag{display:inline-block;background:rgba(224,64,251,.14);color:var(--purple);padding:.3rem .8rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);margin:0 0 .9rem;font-weight:800;line-height:1.06}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#e040fb,#00b0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--light);max-width:720px;margin:0 auto}
+.hero .sub strong{color:var(--text)}
+.hero .acts{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:1.4rem}
+.hero .acts a{text-decoration:none;font-size:.88rem;font-weight:600;padding:.6rem 1.1rem;border-radius:10px;
+  border:1px solid var(--border);background:var(--card);color:var(--text)}
+.hero .acts a.pri{background:var(--purple);border-color:var(--purple);color:#0b0b12}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.2rem 4rem}
+.avis{max-width:880px;margin:1.4rem auto 0;padding:.7rem 1rem;border:1px solid var(--border);
+  border-left:3px solid var(--orange);border-radius:8px;background:var(--panel);
+  font-size:.82rem;color:var(--light);text-align:left}
+.avis strong{color:var(--text)}
+
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
+.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--light)}
+.tabs button.on{background:var(--purple);border-color:var(--purple);color:#0b0b12;font-weight:700}
+.pan{display:none} .pan.on{display:block}
+
+section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+section.box h3{font-size:1.02rem;margin-bottom:.5rem}
+section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
+section.box .lead strong,section.box .lead b{color:var(--text)}
+.mut{color:var(--muted);font-size:.78rem}
+.mono{font-family:var(--mono)}
+p.d,td.d{color:var(--light);font-size:.83rem}
+
+.taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+tr.liq td{background:rgba(224,64,251,.07)}
+.nota{font-size:.82rem;color:var(--light);border-left:2px solid var(--border);padding-left:.6rem;margin:.7rem 0}
+.nota.bo{border-color:var(--green)} .nota.avis{border-color:var(--orange)} .nota.mal{border-color:var(--red)}
+.nota b{color:var(--text)}
+
+.est{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:.13rem .45rem;border-radius:20px}
+.est.s{background:rgba(130,130,141,.18);color:var(--muted)}
+.est.l{background:rgba(224,64,251,.18);color:var(--purple)}
+
+/* Les set federacions. No són territoris i per això no es dibuixen en un mapa:
+   es dibuixen com el que són, set columnes de temes amb el que hi penja. */
+.feds{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem;margin:.9rem 0}
+.fed{background:var(--card);border:1px solid var(--border);border-top:2px solid var(--purple);
+  border-radius:10px;padding:.7rem .8rem}
+.fed h4{font-size:.95rem}
+.fed .k{font-family:var(--mono);font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:.2rem 0 .4rem}
+.fed ul{margin:0;padding-left:1.05rem;font-size:.82rem;color:var(--light)}
+.fed li{margin:.15rem 0}
+
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.6rem;margin:.9rem 0}
+.casa{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;
+  display:flex;flex-direction:column;gap:.35rem}
+.casa .ct{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.casa .ct .ic{font-size:1.15rem}
+.casa .ct .tema{margin-left:auto;font-size:.68rem;color:var(--purple);
+  background:rgba(224,64,251,.13);padding:.1rem .45rem;border-radius:20px}
+.casa .d{margin:0;flex:1}
+.casa .porta{font-size:.8rem;font-weight:600;text-decoration:none;color:var(--green)}
+.casa .sense{font-size:.76rem;color:var(--muted)}
+
+.rols{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 .8rem}
+.rols span{font-size:.75rem;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:.18rem .6rem;color:var(--light)}
+.kd{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;
+  padding:.08rem .35rem;border-radius:4px;margin-right:.25rem}
+.kd.tg{background:rgba(0,230,118,.14);color:var(--green)}
+.kd.in{background:rgba(99,102,241,.18);color:#a5a7f5}
+
+ol.passos{counter-reset:p;list-style:none;padding:0;margin:.8rem 0 0}
+ol.passos li{counter-increment:p;position:relative;padding:.55rem 0 .55rem 2.2rem;
+  border-bottom:1px solid var(--border);font-size:.88rem;color:var(--light)}
+ol.passos li:last-child{border-bottom:0}
+ol.passos li::before{content:counter(p);position:absolute;left:0;top:.5rem;width:1.5rem;height:1.5rem;
+  border-radius:50%;background:var(--purple);color:#0b0b12;font-weight:800;font-size:.76rem;
+  display:grid;place-items:center}
+ol.passos li b{color:var(--text)}
+
+footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem 3rem;text-align:center;
+  color:var(--muted);font-size:.82rem}
+</style>
+</head>
+<body>
+
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g sn-here"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html" aria-current="page"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="tag">🌀 Cas d'ús del SOS</span>
+    <h1>Molekulandia, un <em>estat líquid</em></h1>
+    <p class="sub">Un estat sòlid neix ple d'estructura buida: els territoris hi són tant si hi ha
+    algú com si no. Un estat líquid neix gairebé buit i <strong>s'omple del que la gent sosté</strong>.
+    Molekulandia és el segon, i es pot obrir al SOS tal com s'obre Catalunya.</p>
+    <div class="acts">
+      <a class="pri" href="index.html#/paisos">Obre'l al SOS →</a>
+      <a href="comando.html">El Comando Molekulon</a>
+      <a href="molekulandia.html">El poble, edifici per edifici</a>
+    </div>
+    <div class="avis"><strong>Això no és una segona aplicació.</strong> Molekulon no és una còpia
+    del SOS amb un altre color: és <strong>el mateix SOS amb un altre món a dins</strong>. Mateix
+    registre, mateixes vedes, mateixos apunts signats. El que canvia és el mapa, i el mapa és una
+    dada — per això aquesta pàgina existeix i un segon programa, no.</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="tabs" id="tabs">
+  <button data-p="liquid" class="on">1 · Sòlid i líquid</button>
+  <button data-p="mon">2 · El món</button>
+  <button data-p="mapes">3 · Els tres mapes</button>
+  <button data-p="provar">4 · Provar-ho</button>
+  <button data-p="fork">5 · El fork, i el que no és</button>
+</div>
+
+<!-- ══ 1 · SÒLID I LÍQUID ═══════════════════════════════════════════════ -->
+<div class="pan on" id="pLiquid">
+  <section class="box">
+    <h3>La diferència, en nodes</h3>
+    <p class="lead">Un model de país al SOS porta un <b>esquelet</b>: els nodes que es creen el
+    primer dia, abans que hi hagi cap persona, cap hora i cap objecte. És la manera més neta de
+    veure què dona per suposat cada model.</p>
+<!--MK-ESQUELET-->
+<div class="taula"><table><thead><tr><th>Món</th><th>Estat</th><th>El nivell del mig</th><th class="n">Nodes en néixer</th><th>Què vol dir</th></tr></thead><tbody>
+<tr><td><b>🏴 Catalunya</b></td><td><span class="est s">Sòlid</span></td><td>Comarca</td><td class="n">47</td><td class="d">El nivell del mig és un tros de terra. Hi és tant si hi viu algú que s'hi vulgui posar com si no.</td></tr>
+<tr><td><b>🏴 Euskadi</b></td><td><span class="est s">Sòlid</span></td><td>Eskualdea</td><td class="n">25</td><td class="d">Mateixa forma, uns altres noms. Un model sòlid es tradueix; no canvia de naturalesa.</td></tr>
+<tr class="liq"><td><b>🌀 Molekulandia</b></td><td><span class="est l">Líquid</span></td><td>Federació</td><td class="n">19</td><td class="d">El nivell del mig és un tema. Existeix perquè algú el sosté, i el dia que ningú el sostingui, es buida.</td></tr>
+</tbody></table></div>
+<p class="nota bo"><b>47 contra 19.</b> Obrir Catalunya al SOS crea 47 nodes abans que hi hagi ni una persona: 46 territoris que existeixen perquè existeixen. Obrir Molekulandia en crea 19, i cap d'ells és un tros de terra — són 7 temes i 11 cases. La resta del món <b>no existeix fins que algú s'hi posa</b>.</p>
+<!--/MK-ESQUELET-->
+    <p class="nota avis"><b>Cap dels dos és millor.</b> Un estat sòlid serveix per al que ja està
+    repartit: una comarca existeix encara que ningú la miri, i això és útil quan el que fas és
+    administrar el que hi ha. Un estat líquid serveix per al que encara s'ha de sostenir. El que
+    no es pot fer és <b>dibuixar-ne un de sòlid i esperar-ne comportament líquid</b>, que és el que
+    passa cada vegada que es crea una estructura i després es busca qui la vulgui.</p>
+  </section>
+
+  <section class="box">
+    <h3>Els mateixos cinc nivells, dits d'una altra manera</h3>
+    <p class="lead">El SOS té cinc nivells i Molekulandia no se n'inventa cap. Els <b>reetiqueta</b>:
+    el que a Catalunya és una comarca, aquí és una casa; el que és una província, aquí és un tema.</p>
+<!--MK-NIVELLS-->
+<div class="taula"><table><thead><tr><th>Nivell del SOS</th><th>A un estat sòlid</th><th>A Molekulandia</th><th>Què hi ha, de debò</th></tr></thead><tbody>
+<tr><td class="mono mut">pais</td><td class="mut">País</td><td><b>Món</b></td><td class="d">El món sencer. Un de sol.</td></tr>
+<tr><td class="mono mut">provincia</td><td class="mut">Província</td><td><b>Federació</b></td><td class="d">Un tema que algú sosté: les cures, l'aliment, l'energia. No té fronteres.</td></tr>
+<tr><td class="mono mut">comarca</td><td class="mut">Comarca</td><td><b>Casa</b></td><td class="d">Un edifici del poble. És on passa la cosa.</td></tr>
+<tr><td class="mono mut">municipi</td><td class="mut">Municipi</td><td><b>Colla</b></td><td class="d">La gent que manté una casa oberta. Es fa i es desfà.</td></tr>
+<tr><td class="mono mut">barri</td><td class="mut">Barri</td><td><b>Taula</b></td><td class="d">Una taula concreta: un projecte, una compra, una setmana.</td></tr>
+</tbody></table></div>
+<p class="nota">Els <b>identificadors no canvien</b> —segueixen sent <span class="mono">pais</span>, <span class="mono">provincia</span>, <span class="mono">comarca</span>—, només canvia com es diuen a la pantalla. És el que fa que un apunt d'hores de Molekulandia i un de Terrassa siguin <b>el mateix tipus d'apunt</b>, i que el registre no s'hagi de partir en dos.</p>
+<!--/MK-NIVELLS-->
+  </section>
+
+  <section class="box">
+    <h3>Què vol dir «líquid», operativament</h3>
+    <p class="lead">No és una manera de parlar. Són tres conseqüències que es noten el primer dia:</p>
+    <ol class="passos">
+      <li><b>Et vincules a un tema, no a una adreça.</b> A un estat sòlid el teu lloc te'l dona el
+      padró. Aquí te'l dona el que sostens: si el que fas són cures, ets a Les Cures, visquis on
+      visquis.</li>
+      <li><b>Un nivell buit desapareix.</b> Una comarca sense ningú segueix sent una comarca. Una
+      federació sense ningú que la sostingui no és res, i el model no fa veure que ho sigui.</li>
+      <li><b>La frontera és el tema, i els temes se solapen.</b> Qui sosté l'aliment i l'energia és
+      a dues federacions a la vegada. En un estat sòlid, viure a dos municipis alhora és un error
+      de dades; aquí és el cas normal.</li>
+    </ol>
+    <p class="nota">El SOS ja tenia la peça que això necessita: les <a href="index.html#/federacions">federacions
+    temàtiques</a>, que agrupen nodes pel que fan i no per on són. Molekulandia no les inventa —
+    les posa al mig del model en comptes de al costat.</p>
+  </section>
+</div>
+
+<!-- ══ 2 · EL MÓN ══════════════════════════════════════════════════════ -->
+<div class="pan" id="pMon">
+  <section class="box">
+    <h3>Les federacions: el nivell del mig és un tema</h3>
+    <p class="lead">El criteri de cadascuna és <b>què sosté la gent</b>, no on viu. Els noms i el
+    repartiment de cases surten del model de l'aplicació, no d'aquesta pàgina.</p>
+<!--MK-FEDERACIONS-->
+<div class="feds">
+<div class="fed">
+<h4>Les Cures</h4>
+<div class="k">2 cases</div>
+<ul><li>🍺 El bar</li><li>🤝 El casal</li></ul>
+</div>
+<div class="fed">
+<h4>Les Coses</h4>
+<div class="k">2 cases</div>
+<ul><li>🔧 La ferreteria</li><li>🛒 El magatzem</li></ul>
+</div>
+<div class="fed">
+<h4>L'Aliment</h4>
+<div class="k">1 casa</div>
+<ul><li>🥬 El mercat</li></ul>
+</div>
+<div class="fed">
+<h4>L'Energia</h4>
+<div class="k">1 casa</div>
+<ul><li>⚡ La central</li></ul>
+</div>
+<div class="fed">
+<h4>El Sostre</h4>
+<div class="k">1 casa</div>
+<ul><li>🏘️ Les cases</li></ul>
+</div>
+<div class="fed">
+<h4>La Feina</h4>
+<div class="k">2 cases</div>
+<ul><li>🛠️ El taller</li><li>🌱 El viver</li></ul>
+</div>
+<div class="fed">
+<h4>El Saber</h4>
+<div class="k">2 cases</div>
+<ul><li>🗂️ L'arxiu</li><li>🕸️ La sala de plànols</li></ul>
+</div>
+</div>
+<!--/MK-FEDERACIONS-->
+  </section>
+
+  <section class="box">
+    <h3>Les cases: on passa la cosa</h3>
+    <p class="lead">Són els edificis del poble de <a href="molekulandia.html">Molekulandia</a>,
+    cadascun sota el tema que sosté. La majoria tenen una eina del SOS al darrere que es pot obrir
+    ara mateix; les que no, es diuen.</p>
+<!--MK-CASES-->
+<div class="cases">
+<div class="casa">
+<div class="ct"><span class="ic">🍺</span><b>El bar</b><span class="tema">Les Cures</span></div>
+<p class="d">On es paga amb el temps de cadascú i tothom sap qui deu una ronda.</p>
+<a class="porta" href="banc-temps.html">El Banc de Temps →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🤝</span><b>El casal</b><span class="tema">Les Cures</span></div>
+<p class="d">On es porta la cura del carrer, que és la feina que no fa ningú i la fa tothom.</p>
+<a class="porta" href="index.html">A dins de l'app →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🔧</span><b>La ferreteria</b><span class="tema">Les Coses</span></div>
+<p class="d">On es va a buscar el trepant que fas servir dos cops l'any.</p>
+<a class="porta" href="biblioteca.html">La Biblioteca de les Coses →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🛒</span><b>El magatzem</b><span class="tema">Les Coses</span></div>
+<p class="d">On es compra junt el que sol comprar-se car i sol.</p>
+<a class="porta" href="compra.html">La Compra →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🥬</span><b>El mercat</b><span class="tema">L'Aliment</span></div>
+<p class="d">On el que menges té nom de qui ho ha fet i el preu el pacten tots dos.</p>
+<a class="porta" href="compra.html">La Compra →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">⚡</span><b>La central</b><span class="tema">L'Energia</span></div>
+<p class="d">La teulada del poble, que és de qui hi viu i no de qui la ven.</p>
+<a class="porta" href="energia.html">L'Energia →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🏘️</span><b>Les cases</b><span class="tema">El Sostre</span></div>
+<p class="d">On es viu sense comprar ni llogar: la casa és de totes i l'ús és teu.</p>
+<a class="porta" href="habitatge.html">L'Habitatge →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🛠️</span><b>El taller</b><span class="tema">La Feina</span></div>
+<p class="d">On es treballa sense amo i el que es reparteix és el que s'ha aportat.</p>
+<span class="sense">Encara no hi ha cap eina pròpia: es fa des de dins de l'app.</span>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🌱</span><b>El viver</b><span class="tema">La Feina</span></div>
+<p class="d">On una idea passa a projecte, i on es diu quan encara no ho és.</p>
+<a class="porta" href="matriu.html">La MATRIU →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🗂️</span><b>L'arxiu</b><span class="tema">El Saber</span></div>
+<p class="d">On consta qui hi ha al poble, què fa i com se'l troba.</p>
+<a class="porta" href="online.html">El directori →</a>
+</div>
+<div class="casa">
+<div class="ct"><span class="ic">🕸️</span><b>La sala de plànols</b><span class="tema">El Saber</span></div>
+<p class="d">Al mig de la plaça: el mapa de qui dona què a qui. És el pas que va abans de tots.</p>
+<a class="porta" href="vna.html">Mapa de valor →</a>
+</div>
+</div>
+<!--/MK-CASES-->
+    <p class="nota bo">Una casa sense porta no és un descuit amagat: és el que hi ha. Prometre una
+    eina que no s'obre seria pitjor que dir que encara no existeix.</p>
+  </section>
+</div>
+
+<!-- ══ 3 · ELS TRES MAPES ══════════════════════════════════════════════ -->
+<div class="pan" id="pMapes">
+  <section class="box">
+    <h3>Rols que són funcions, no càrrecs</h3>
+    <p class="lead">Cada nivell porta el seu mapa de valor: qui dona què a qui. En un estat líquid
+    no hi ha institucions permanents, hi ha <b>funcions que algú fa mentre les fa</b> — i per això
+    els rols es diuen «qui obre la casa» i no «director». El dia que ho faci un altre, el mapa no
+    s'ha de reescriure.</p>
+    <p class="nota">Quan obris un node d'aquests nivells al SOS, aquests rols i aquests intercanvis
+    ja hi seran dibuixats. No és una il·lustració d'aquesta pàgina: és el que carrega l'app.</p>
+  </section>
+<!--MK-MAPES-->
+<section class="box">
+<h3>Món <span class="mut mono">pais</span></h3>
+<p class="lead">7 rols i 9 intercanvis. Cap rol és un càrrec: són <b>funcions que algú fa mentre les fa</b>.</p>
+<div class="rols"><span>Les persones</span><span>Les colles</span><span>Les federacions temàtiques</span><span>L'assemblea</span><span>El fons comú</span><span>El registre públic</span><span>Qui acompanya</span></div>
+<div class="taula"><table><thead><tr><th>De</th><th>Dona</th><th>A</th><th>I en rep</th></tr></thead><tbody>
+<tr><td><b>Les persones</b></td><td class="d"><span class="kd in">intangible</span> vincular-se a un tema</td><td><b>Les federacions temàtiques</b></td><td class="d"><span class="kd in">intangible</span> trobar qui ja hi és fent el mateix</td></tr>
+<tr><td><b>Les persones</b></td><td class="d"><span class="kd tg">tangible</span> hores, objectes i sabers</td><td><b>Les colles</b></td><td class="d"><span class="kd in">intangible</span> pertinença i un lloc on allò compta</td></tr>
+<tr><td><b>Les colles</b></td><td class="d"><span class="kd tg">tangible</span> el que sostenen, comptat</td><td><b>Les federacions temàtiques</b></td><td class="d"><span class="kd tg">tangible</span> coordinació i massa crítica</td></tr>
+<tr><td><b>Les federacions temàtiques</b></td><td class="d"><span class="kd tg">tangible</span> pes segons qui sosté, no segons qui és</td><td><b>L'assemblea</b></td><td class="d"><span class="kd tg">tangible</span> decisions que valen per a totes</td></tr>
+<tr><td><b>L'assemblea</b></td><td class="d"><span class="kd tg">tangible</span> on va el que hi ha</td><td><b>El fons comú</b></td><td class="d"><span class="kd in">intangible</span> legitimitat de cada despesa</td></tr>
+<tr><td><b>El fons comú</b></td><td class="d"><span class="kd tg">tangible</span> diners quan calen</td><td><b>Les colles</b></td><td class="d"><span class="kd tg">tangible</span> projectes que passen de la idea</td></tr>
+<tr><td><b>Les colles</b></td><td class="d"><span class="kd tg">tangible</span> apunts signats</td><td><b>El registre públic</b></td><td class="d"><span class="kd tg">tangible</span> prova que no depèn de ningú</td></tr>
+<tr><td><b>El registre públic</b></td><td class="d"><span class="kd in">intangible</span> que el que has donat consti</td><td><b>Les persones</b></td><td class="d"><span class="kd in">intangible</span> confiança per tornar-hi</td></tr>
+<tr><td><b>Qui acompanya</b></td><td class="d"><span class="kd in">intangible</span> mètode, formació i relleu</td><td><b>Les colles</b></td><td class="d"><span class="kd in">intangible</span> casos reals que validen el mètode</td></tr>
+</tbody></table></div>
+</section>
+<section class="box">
+<h3>Federació <span class="mut mono">provincia</span></h3>
+<p class="lead">6 rols i 7 intercanvis. Cap rol és un càrrec: són <b>funcions que algú fa mentre les fa</b>.</p>
+<div class="rols"><span>Qui es vincula</span><span>Les colles</span><span>Les cases</span><span>L'assemblea del tema</span><span>Les altres federacions</span><span>El fons comú</span></div>
+<div class="taula"><table><thead><tr><th>De</th><th>Dona</th><th>A</th><th>I en rep</th></tr></thead><tbody>
+<tr><td><b>Qui es vincula</b></td><td class="d"><span class="kd in">intangible</span> declarar què li importa</td><td><b>Les colles</b></td><td class="d"><span class="kd in">intangible</span> la gent que ja hi era</td></tr>
+<tr><td><b>Les colles</b></td><td class="d"><span class="kd tg">tangible</span> les hores que les mantenen obertes</td><td><b>Les cases</b></td><td class="d"><span class="kd tg">tangible</span> un lloc on passa alguna cosa</td></tr>
+<tr><td><b>Les cases</b></td><td class="d"><span class="kd tg">tangible</span> el servei: hores, coses, energia, sostre</td><td><b>Qui es vincula</b></td><td class="d"><span class="kd tg">tangible</span> ús i aportacions</td></tr>
+<tr><td><b>Les colles</b></td><td class="d"><span class="kd tg">tangible</span> el que han sostingut, comptat</td><td><b>L'assemblea del tema</b></td><td class="d"><span class="kd tg">tangible</span> prioritats i repartiment</td></tr>
+<tr><td><b>L'assemblea del tema</b></td><td class="d"><span class="kd tg">tangible</span> la petició del tema, justificada</td><td><b>El fons comú</b></td><td class="d"><span class="kd tg">tangible</span> el que se li assigna</td></tr>
+<tr><td><b>Les altres federacions</b></td><td class="d"><span class="kd in">intangible</span> el que ja han provat i els ha fallat</td><td><b>L'assemblea del tema</b></td><td class="d"><span class="kd in">intangible</span> el que s'aprèn aquí</td></tr>
+<tr><td><b>L'assemblea del tema</b></td><td class="d"><span class="kd in">intangible</span> una decisió presa i escrita</td><td><b>Les colles</b></td><td class="d"><span class="kd in">intangible</span> que no calgui tornar-hi cada mes</td></tr>
+</tbody></table></div>
+</section>
+<section class="box">
+<h3>Casa <span class="mut mono">comarca</span></h3>
+<p class="lead">5 rols i 6 intercanvis. Cap rol és un càrrec: són <b>funcions que algú fa mentre les fa</b>.</p>
+<div class="rols"><span>Qui obre la casa</span><span>Qui hi aporta</span><span>Qui la fa servir</span><span>Qui confirma</span><span>La colla del tema</span></div>
+<div class="taula"><table><thead><tr><th>De</th><th>Dona</th><th>A</th><th>I en rep</th></tr></thead><tbody>
+<tr><td><b>Qui obre la casa</b></td><td class="d"><span class="kd in">intangible</span> acollida i un protocol clar</td><td><b>Qui hi aporta</b></td><td class="d"><span class="kd tg">tangible</span> hores, objectes o diners</td></tr>
+<tr><td><b>Qui hi aporta</b></td><td class="d"><span class="kd tg">tangible</span> el que la casa dona</td><td><b>Qui la fa servir</b></td><td class="d"><span class="kd in">intangible</span> que allò segueixi valent la pena</td></tr>
+<tr><td><b>Qui la fa servir</b></td><td class="d"><span class="kd tg">tangible</span> dir que ho ha rebut</td><td><b>Qui confirma</b></td><td class="d"><span class="kd tg">tangible</span> l'apunt que val</td></tr>
+<tr><td><b>Qui confirma</b></td><td class="d"><span class="kd tg">tangible</span> el vistiplau signat</td><td><b>Qui hi aporta</b></td><td class="d"><span class="kd in">intangible</span> que el que apuntes no sigui la teva paraula sola</td></tr>
+<tr><td><b>Qui obre la casa</b></td><td class="d"><span class="kd tg">tangible</span> el que s'hi ha mogut</td><td><b>La colla del tema</b></td><td class="d"><span class="kd tg">tangible</span> relleu quan es cansa</td></tr>
+<tr><td><b>La colla del tema</b></td><td class="d"><span class="kd in">intangible</span> que no ho porti sol</td><td><b>Qui obre la casa</b></td><td class="d"><span class="kd in">intangible</span> una casa que no depèn d'una persona</td></tr>
+</tbody></table></div>
+</section>
+<!--/MK-MAPES-->
+</div>
+
+<!-- ══ 4 · PROVAR-HO ═══════════════════════════════════════════════════ -->
+<div class="pan" id="pProvar">
+  <section class="box">
+    <h3>Obrir Molekulandia, en quatre passos</h3>
+    <ol class="passos">
+      <li>Obre <a href="index.html#/paisos">els models de país</a> del SOS.</li>
+      <li>Tria <b>🌀 Molekulandia</b>. Abans de crear res, el SOS et dirà <b>quants nodes</b> et
+      crearà — és la mateixa xifra de la primera pestanya.</li>
+      <li>Et surt el món amb les seves federacions i les seves cases. <b>Ni una persona, ni una
+      hora, ni un objecte</b>: això el poses tu.</li>
+      <li>Entra a una casa i obre-hi una dinàmica. A partir d'aquí és el SOS de sempre: els apunts
+      es confirmen, se signen i van al registre igual que a qualsevol altre node.</li>
+    </ol>
+    <p class="nota avis"><b>És un món de ficció, i es diu al model.</b> Molekulandia surt del
+    Comando Molekulon i no és cap territori real. Serveix per <b>provar el mètode sense
+    comprometre ningú</b>: es pot trencar, refer i tornar a començar sense que això afecti cap dada
+    de cap poble. El que no s'hi ha de fer és apuntar-hi hores reals de gent real i esperar que
+    valguin com a registre d'enlloc.</p>
+  </section>
+
+  <section class="box">
+    <h3>Per a què serveix de debò</h3>
+    <p class="lead">Tres usos, i els tres són el motiu pel qual val la pena tenir un món de mentida
+    dins d'una eina de veritat:</p>
+    <ol class="passos">
+      <li><b>Ensenyar el SOS sense dades de ningú.</b> A una formació o a una aula, Molekulandia
+      deixa fer tot el recorregut —mapa de valor, apunts, vistiplaus, registre— sense que ningú
+      hagi de posar-hi el seu nom.</li>
+      <li><b>Provar un model abans d'aplicar-lo.</b> Una federació temàtica és una decisió difícil
+      de desfer en un territori real. Aquí es pot muntar, veure com queda i llençar-la.</li>
+      <li><b>Mostrar que el model és una dada.</b> Si un món de ficció hi cap sense tocar el codi,
+      un país de debò que no sigui Catalunya també — que és l'argument de fons.</li>
+    </ol>
+    <p class="nota">Hi ha una <a href="escola.html">versió d'aula</a> d'aquest recorregut, i les
+    regles que la protegeixen són les mateixes: cap nom real de cap criatura, enlloc.</p>
+  </section>
+</div>
+
+<!-- ══ 5 · EL FORK ═════════════════════════════════════════════════════ -->
+<div class="pan" id="pFork">
+  <section class="box">
+    <h3>És un fork del model, no del codi</h3>
+    <p class="lead">L'encàrrec era «Molekulon com a fork del SOS». La decisió d'implementació ha
+    estat fer-lo <b>fork del model i no del programa</b>, i val la pena dir per què, perquè és
+    l'única part d'això que no es pot canviar d'opinió fàcilment.</p>
+    <div class="taula"><table><thead><tr><th>Si fos un fork de codi</th><th>Sent un fork de model</th></tr></thead>
+    <tbody>
+      <tr><td class="d">Una segona còpia de l'aplicació sencera, que divergeix la primera setmana i
+      no torna a convergir mai.</td><td class="d">Un model més a la llista. Tot el que millori al
+      SOS, Molekulandia ho té el mateix dia.</td></tr>
+      <tr><td class="d">Dos registres, dues identitats, dos jocs de vedes. Un apunt d'un costat no
+      val a l'altre.</td><td class="d">Un sol registre i unes soles vedes. Un apunt és un apunt,
+      vingui del món que vingui.</td></tr>
+      <tr><td class="d">Cada guarda del repositori, duplicada — i la còpia, sense mantenir.</td>
+      <td class="d">Les guardes de sempre, i una de nova que vigila que el model quadri.</td></tr>
+      <tr><td class="d">Demostraria que per canviar de món cal canviar el programa, que és
+      exactament el contrari del que el SOS defensa.</td><td class="d">Demostra que el món és una
+      dada. És l'argument, i el fork n'és la prova.</td></tr>
+    </tbody></table></div>
+    <p class="nota bo">El SOS ja tenia el mecanisme: <span class="mono">BUILTIN_MODELS</span> i
+    <span class="mono">forkModel</span> existien per a Catalunya i Euskadi. Molekulandia s'hi ha
+    posat com a tercer. <b>No s'ha escrit cap programa nou</b> — s'ha declarat un món.</p>
+  </section>
+
+  <section class="box">
+    <h3>Què es podria fer després, i què no</h3>
+    <p class="lead">Dues coses que aquesta pàgina no fa, dites perquè no semblin oblits:</p>
+    <ol class="passos">
+      <li><b>Un subdomini propi</b> (<span class="mono">molekulon.teamtowershuma.com</span>) és
+      possible i no depèn del codi: és un àlies de domini i un registre DNS. Mentre no hi sigui,
+      l'adreça curta és <span class="mono">/molekulon</span>, que ja funciona.</li>
+      <li><b>Els nivells de baix</b> —colles i taules— <b>no porten catàleg</b>, i és a posta. Una
+      llista tancada de colles seria estructura sòlida entrant per la porta del darrere: les colles
+      les fa qui s'hi posa, i per això el model no en porta cap.</li>
+    </ol>
+    <p class="nota">La declaració sencera del model, amb el perquè de cada decisió, és a
+    <span class="mono">SOS/knowledge/vision/molekulon-estat-liquid.md</span> del repositori.</p>
+  </section>
+</div>
+
+</main>
+
+<footer>
+Molekulon · un cas d'ús del <a href="index.html">SOS</a> ·
+<a href="comando.html">El Comando</a> ·
+<a href="molekulandia.html">Molekulandia</a> ·
+<a href="../index.html">TeamTowers Humà</a>
+</footer>
+
+<script>
+'use strict';
+/* Les pestanyes, i res més. Tot el contingut d'aquesta pàgina és HTML estàtic
+   generat per `build-molekulon.js`: si el JavaScript falla, la primera pestanya
+   segueix llegint-se i el cercador ho indexa tot igual. */
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+  const id = 'p' + b.dataset.p.charAt(0).toUpperCase() + b.dataset.p.slice(1);
+  document.querySelectorAll('.pan').forEach(p => p.classList.toggle('on', p.id === id));
+  history.replaceState(null, '', '#' + b.dataset.p);
+});
+/* Qui arriba amb una àncora ha de caure a la seva pestanya: els enllaços
+   d'aquesta pàgina es passen de viva veu i acaben en un missatge. */
+(() => {
+  const h = (location.hash || '').replace('#', '');
+  const b = h && document.querySelector('#tabs button[data-p="' + h.replace(/"/g, '') + '"]');
+  if (b) b.click();
+})();
+</script>
+</body>
+</html>

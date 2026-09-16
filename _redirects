@@ -58,6 +58,18 @@
 /sos/uneix-te /SOS/uneix-te.html    200
 /uneix-te /SOS/uneix-te.html    200
 
+# Molekulon té adreça pròpia i curta perquè és una porta d'entrada per si sola:
+# s'enllaça des de fora del SOS —del còmic, d'una formació, d'una xerrada— i qui
+# hi arriba no ve a gestionar res, ve a veure què és un estat líquid. Mentre no
+# hi hagi subdomini, /molekulon és l'adreça canònica.
+/SOS/molekulon /SOS/molekulon.html    200
+/sos/molekulon /SOS/molekulon.html    200
+/molekulon /SOS/molekulon.html    200
+
+/SOS/molekulandia /SOS/molekulandia.html    200
+/sos/molekulandia /SOS/molekulandia.html    200
+/molekulandia /SOS/molekulandia.html    200
+
 # L'aplicació mateixa, en minúscules.
 /sos /SOS/    200
 /sos/ /SOS/    200

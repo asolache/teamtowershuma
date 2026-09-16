@@ -66,6 +66,7 @@ const GRUPS = [
   ] },
   { id: 'xarxa', lbl: 'Xarxa', ic: '🏘', links: [
     ['comando.html', 'El Comando', 'La pel·lícula que farem 150.000'],
+    ['molekulon.html', 'Molekulon', 'Molekulandia, un estat líquid'],
     ['online.html', 'Directori', 'Qui hi ha, per territori']
   ] }
 ];
@@ -76,7 +77,7 @@ const MARCA = ['../index.html', 'TeamTowers', 'Humà'];
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
 const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
-  'matriu.html', 'molekulandia.html', 'online.html', 'pressupost.html',
+  'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
   'uneix-te.html', 'vedes.html', 'vna.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit

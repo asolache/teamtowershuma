@@ -115,7 +115,7 @@ const two = await page.evaluate(async () => {
 ok(two.eusRoot === 'Herrialdea' && two.eusChild === 'Lurraldea', 'l\'arbre d\'Euskadi parla en basc');
 ok(two.catRoot === 'País' && two.catChild === 'Província', 'i el de Catalunya segueix en català, al mateix SOS');
 ok(two.eusNext === 'municipi' && two.catNext === 'comarca', 'cada arbre segueix la seva pròpia cadena de nivells');
-ok(two.inList === 3, 'el model guardat surt al catàleg al costat dels dos de referència');
+ok(two.inList === 4, 'el model guardat surt al catàleg al costat dels tres de referència');
 
 console.log('\n5 · La cadena territorial ja no diu «Catalunya» a pinyó');
 const chain = await page.evaluate(() => {
@@ -193,7 +193,7 @@ const del = await page.evaluate(async () => {
 });
 ok(del.nodesKept, 'els nodes segueixen tots on eren');
 ok(del.fallback === 'País', 'i el país torna als noms de nivell per defecte en comptes de petar');
-ok(del.modelsLeft === 2, 'els models de referència no es poden eliminar: sempre hi queden');
+ok(del.modelsLeft === 3, 'els models de referència no es poden eliminar: sempre hi queden');
 
 console.log('\n9 · Euskadi ve de sèrie, amb estructura foral');
 const eus = await page.evaluate(() => {
@@ -214,7 +214,7 @@ const eus = await page.evaluate(() => {
     orphanMuni: S.geoFor('municipi', null, E).filter(m => !S.geoFor('comarca', null, E).some(c => c.n === m.p)).map(m => m.n)
   };
 });
-ok(eus.inList.join(',') === 'catalunya,euskadi', 'els dos models de referència hi són de sèrie');
+ok(eus.inList.join(',') === 'catalunya,euskadi,molekulandia', 'els tres models de referència hi són de sèrie');
 ok(eus.ref === true, 'Euskadi també és de només lectura');
 ok(eus.labels[1] === 'Territori Històric', 'el nivell intermedi no és una província: és un Territori Històric');
 ok(eus.labels[2] === 'Comarca / Quadrilla', 'i el de sota admet les dues coses, perquè a Araba són quadrilles');
@@ -320,7 +320,72 @@ const guard = await page.evaluate(async () => {
 });
 ok(guard.stored.join(',') === 'propi-x', 'desar un model amb l\'id d\'un de referència no l\'escriu');
 ok(guard.eus === 'Euskadi' && guard.cat === 'Catalunya', 'i els de referència segueixen sent els seus');
-ok(guard.total === 3, 'els dos de sèrie més el propi');
+ok(guard.total === 4, 'els tres de sèrie més el propi');
+
+/* Molekulandia és el tercer model de sèrie i el primer que no és un país: és
+   un estat líquid, on el nivell del mig no és un tros de terra sinó un tema.
+   Això no és una etiqueta bonica —si ho fos, no caldria provar-ho—: és que
+   l'esquelet que es crea el primer dia és molt més petit, i que els nivells
+   segueixen sent els cinc del SOS perquè el registre no s'hagi de partir. */
+console.log('\n14 · Molekulandia, un estat líquid');
+const mol = await page.evaluate(() => {
+  const S = window.__SOS;
+  const M = S.modelById('molekulandia');
+  const lv = S.levelsOf(M);
+  const fed = S.geoFor('provincia', null, M).map(x => x.n);
+  const cases = S.geoFor('comarca', null, M);
+  return {
+    esRef: M.ref === true,
+    ids: lv.map(l => l.id).join(','),
+    labels: lv.map(l => l.label).join(','),
+    nFed: fed.length, nCases: cases.length,
+    nColles: S.geoFor('municipi', null, M).length,
+    size: S.skeletonSize(M),
+    catSize: S.skeletonSize(S.CATALUNYA_MODEL),
+    orfes: cases.filter(c => !fed.includes(c.p)).map(c => c.n),
+    curesCases: S.geoFor('comarca', 'Les Cures', M).map(x => x.n),
+    rolsCasa: S.institutionsFor(M, 'comarca'),
+    fluxosCasa: S.institutionFlowsFor(M, 'comarca').length,
+    diuFiccio: /ficci/i.test(M.source || '')
+  };
+});
+ok(mol.esRef, 'Molekulandia ve de sèrie i és de només lectura, com els altres dos');
+ok(mol.ids === 'pais,provincia,comarca,municipi,barri', 'no s\'inventa cap nivell: són els cinc del SOS');
+ok(mol.labels === 'Món,Federació,Casa,Colla,Taula', 'el que canvia són les etiquetes, no els identificadors');
+ok(mol.nFed === 7 && mol.nCases === 11, 'set federacions temàtiques i onze cases');
+ok(!mol.orfes.length, 'cap casa penja d\'una federació que no existeix: ' + mol.orfes.join(', '));
+ok(mol.curesCases.join(',') === 'El bar,El casal', 'les cases es reparteixen pel tema que sostenen, no per on són');
+ok(mol.nColles === 0, 'els nivells de baix no porten catàleg: les colles les fa qui s\'hi posa');
+ok(mol.size === 1 + 7 + 11, 'l\'esquelet líquid són 19 nodes, i es diuen abans de crear-los');
+ok(mol.size < mol.catSize, 'i és més petit que el d\'un estat sòlid: ' + mol.size + ' contra ' + mol.catSize);
+ok(mol.rolsCasa.includes('Qui obre la casa') && !mol.rolsCasa.some(r => /director|president/i.test(r)),
+  'els rols són funcions que algú fa, no càrrecs');
+ok(mol.fluxosCasa === 12, 'sis parells d\'intercanvi expandits en les dues direccions');
+ok(mol.diuFiccio, 'el model diu que és ficció: no es pot confondre amb cap territori real');
+
+console.log('\n15 · Obrir Molekulandia crea el món i res més');
+const molBuilt = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const M = S.modelById('molekulandia');
+  const before = S.state.nodes.length;
+  const r = await S.loadModelSkeleton(M, 'Molekulandia');
+  const feds = S.children(r.root.id);
+  const cures = feds.find(f => f.name === 'Les Cures');
+  return {
+    created: r.created, grew: S.state.nodes.length - before,
+    nFed: feds.length,
+    rootLabel: S.metaOf(r.root).label,
+    fedLabel: feds.length ? S.metaOf(feds[0]).label : null,
+    casaLabel: cures ? S.metaOf(S.children(cures.id)[0]).label : null,
+    cap: S.state.nodes.filter(n => S.rootOf(n).id === r.root.id)
+      .reduce((a, n) => a + S.membersOf(n).length + S.offersOf(n).length + S.objectsOf(n).length, 0)
+  };
+});
+ok(molBuilt.created === 19 && molBuilt.grew === 19, 'es creen exactament els 19 nodes de l\'esquelet, ni un més');
+ok(molBuilt.rootLabel === 'Món' && molBuilt.fedLabel === 'Federació' && molBuilt.casaLabel === 'Casa',
+  'l\'arbre parla en molekulandès: món, federació, casa');
+ok(molBuilt.nFed === 7, 'les set federacions pengen del món');
+ok(molBuilt.cap === 0, 'i no hi ha ni una persona, ni una hora ni un objecte: això ho posa qui hi entri');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
