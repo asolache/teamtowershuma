@@ -1,0 +1,668 @@
+{
+  "_": "Generat per SOS/tools/build-comando.js. No s'edita a mà: edita el generador.",
+  "font": "https://github.com/asolache/teamtowershuma",
+  "objectiu": 150000,
+  "tesi": {
+    "titol": "La primera pel·lícula que farem 150.000 persones",
+    "entrada": "Projecte obert · art, ficció i comunitat",
+    "sub": "El <strong>Comando Molekulon</strong> és un còmic, una banda i una pel·lícula que encara no existeix. Es farà amb <strong>150.000 superherois reals</strong>: gent que aporta hores, objectes i coneixement al seu barri i que ho registra al SOS. El teu personatge no és un avatar inventat — és el que ja fas, amb nom i amb superarma. I el poble on passa tot plegat és <a href=\"molekulandia.html\">Molekulandia</a>."
+  },
+  "eixos": [
+    {
+      "id": "art",
+      "ic": "🎨",
+      "nom": "Art",
+      "que": "El còmic, la música i el dibuix no il·lustren el projecte: en són la matèria. Cada personatge té la seva superarma, el seu vers i el seu tema.",
+      "on": [
+        "La història",
+        "#historia"
+      ]
+    },
+    {
+      "id": "ficcio",
+      "ic": "📖",
+      "nom": "Ficció",
+      "que": "Una història inventada és el permís per dir en veu alta el que passa de debò a la teva feina i al teu barri. El Mundo Muerto no és una metàfora amable.",
+      "on": [
+        "Els herois canònics",
+        "#herois"
+      ]
+    },
+    {
+      "id": "educacio",
+      "ic": "🎓",
+      "nom": "Educació",
+      "que": "El mateix relat és material d'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.",
+      "on": [
+        "A l'escola",
+        "escola.html"
+      ]
+    },
+    {
+      "id": "inspiracio",
+      "ic": "✨",
+      "nom": "Inspiració",
+      "que": "Ningú es mou per un informe. Es mou perquè algú altre s'ha mogut i ho ha explicat prou bé perquè es vegi que es podia.",
+      "on": [
+        "El blog del Comando",
+        "#blog"
+      ]
+    },
+    {
+      "id": "poder",
+      "ic": "💪",
+      "nom": "Empoderament de les comunitats",
+      "que": "Poder concret i comprovable: qui té les claus, qui decideix i qui cobra el que aporta. Cada aportació va signada i el registre és públic.",
+      "on": [
+        "El registre públic",
+        "index.html#/registre"
+      ]
+    },
+    {
+      "id": "autonomia",
+      "ic": "🕊",
+      "nom": "Autonomia",
+      "que": "Sense compte, sense contrasenya i sense demanar permís. La clau te la fa el navegador i no surt del teu aparell; si te'n vas, t'ho endús tot.",
+      "on": [
+        "El teu perfil és teu",
+        "#perfil"
+      ]
+    }
+  ],
+  "passos": [
+    {
+      "n": 1,
+      "ic": "🦸",
+      "t": "Fes el teu personatge",
+      "ruta": "alta",
+      "d": "Nom, població, fins a <strong>cinc superpoders</strong> i les teves <strong>superarmes</strong> — el que saps fer i el que pots deixar. Es fa al navegador i no puja enlloc.",
+      "cta": "Crea el meu perfil"
+    },
+    {
+      "n": 2,
+      "ic": "🎬",
+      "t": "Escriu la teva història amb IA",
+      "ruta": "kit",
+      "d": "El kit narratiu en treu sinopsi de còmic, himne i escena performativa a partir del que has fet <strong>de debò</strong>. La clau de la IA la poses tu i cap dada de ningú hi entra sense confirmar-ho.",
+      "cta": "Obre el kit narratiu"
+    },
+    {
+      "n": 3,
+      "ic": "🌌",
+      "t": "Entra al multivers",
+      "ruta": "multivers",
+      "d": "Cada història desada s'apila amb les altres. El multivers <strong>és el guió</strong>: no l'escriu ningú a soles, es va omplint.",
+      "cta": "Mira el multivers"
+    },
+    {
+      "n": 4,
+      "ic": "🎞",
+      "t": "Els crèdits són el registre",
+      "ruta": "comando",
+      "d": "Cada aportació signada surt als crèdits amb el seu nom i la seva data. <strong>Aquí no hi ha figurants</strong>: qui hi surt és perquè ha fet alguna cosa i algú altre ho ha confirmat.",
+      "cta": "Obre el Comando a l'app"
+    }
+  ],
+  "decorat": {
+    "href": "molekulandia.html",
+    "t": "Molekulandia",
+    "d": "El poble sencer: onze edificis on entrar i nou professions. El bar és el banc de temps i la ferreteria és la biblioteca de les coses."
+  },
+  "herois": [
+    {
+      "name": "Mazinguer",
+      "role": "Líder estratega i DJ",
+      "on": "Còmic 1",
+      "power": "Coneix el pla i guia la banda. Sense superpoder aparent: l'ego perdut és el seu poder",
+      "arma": "La Bomba Disco i els plats de DJ",
+      "lletra": "«Mazinguer: aunque no lo parecía siempre sabía lo que hay que hacer.»",
+      "vna": "Qui munta la plataforma i atrau els primers nodes. El cap de colla"
+    },
+    {
+      "name": "Horacio Motomachi",
+      "role": "El savi que rep el mandat",
+      "on": "Còmic 1",
+      "power": "Coprotagonista de l'encàrrec original. Converteix l'experiència en relat",
+      "arma": "La Bomba Disco i els plats de DJ",
+      "lletra": "«Horacio: muy sabio, buena onda y tener un palacio.»",
+      "vna": "La visió de conjunt: qui sap explicar cap on va tot plegat"
+    },
+    {
+      "name": "Guiri-Guay",
+      "role": "Cuidador i sanador",
+      "on": "Còmic 1",
+      "power": "Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup",
+      "arma": "Guitarra acústica country",
+      "lletra": "«Con mi guitarra curo heridas, bailando se mueven las neuronas.»",
+      "vna": "Qui té cura de l'equip: sosté la moral i cura les friccions abans que es podreixin"
+    },
+    {
+      "name": "Purpleman",
+      "role": "Transmutador",
+      "on": "Còmic 1",
+      "power": "Entra a les tenebres i els gasos tòxics i els torna benestar immediat",
+      "arma": "El Rayo Eliminador",
+      "lletra": "«Elimino a los malos olores con mi rayo eliminador y huele todo a flor y amor.»",
+      "vna": "Qui absorbeix la toxicitat de l'ambient i la torna clima. Si no té nom, no ho fa ningú"
+    },
+    {
+      "name": "Afrodito",
+      "role": "Motor passional",
+      "on": "Còmic 1",
+      "power": "Holometabolisme: la seva identitat musical li trenca l'armadura que el mantenia alienat",
+      "arma": "El ritme Soul Train",
+      "lletra": "«Sexy motherfunky mito. Piensa con el corazón.»",
+      "vna": "El talent amagat. Passió en cru que només necessita un lloc segur per treure's la cuirassa"
+    },
+    {
+      "name": "El Aviador",
+      "role": "Suport tàctic",
+      "on": "Còmic 1",
+      "power": "Orientació i rescat in extremis: apareix del cel quan l'equip s'ha perdut",
+      "arma": "El Bajo Volador",
+      "lletra": "«No tiene mojo, no tiene duende, no tiene don, pero tiene un bajo volador.»",
+      "vna": "L'executor hiperespecialitzat. Ni el més carismàtic ni el líder: el que desencalla projectes"
+    },
+    {
+      "name": "Pigmentón",
+      "role": "Mapador i dissenyador",
+      "on": "Còmic 1",
+      "power": "Assigna identitats. Capaç d'il·luminar fins i tot els forats negres",
+      "arma": "El Güengüentón i el pinzell creador",
+      "lletra": "«De colores pintó el maestro Pigmentón el mundo para que todo pueda tener el color que le corresponda.»",
+      "vna": "Qui dibuixa la xarxa i dona a cadascú el color que li toca perquè pugui operar"
+    },
+    {
+      "name": "La Medusa Andaluza",
+      "role": "Connectora · el hub",
+      "on": "Còmic 1",
+      "power": "Sincronització i fusió cultural. És qui dona llum interconnectant tot el grup",
+      "arma": "Cables connectors i una ampolla de Jack Daniel's",
+      "lletra": "«En mi cabeza se cruzan los cables ¿Te echo uno tío? Pa' que conectes con mi són.»",
+      "vna": "El node central que creua informació entre parts que no es parlaven"
+    },
+    {
+      "name": "Electroplasman",
+      "role": "Impulsor de recursos",
+      "on": "Còmic 1",
+      "power": "Injecta liquiditat al sistema nerviós central del comando i a les naus que no enlairaven",
+      "arma": "La viola · violí electrònic",
+      "lletra": "«Parecía muy tranquilo pero era un volcán. Toca Shostakovich como el gasgas.»",
+      "vna": "Qui porta el capital —diners o energia— que fa passar un projecte de aturat a enlairat"
+    },
+    {
+      "name": "El Anguila",
+      "role": "Bateria",
+      "on": "Còmic 1",
+      "power": "S'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l'escletxa",
+      "arma": "La bateria i la percussió",
+      "lletra": "«El Anguila: con un buen groove y una birra se espabila.»",
+      "vna": "Qui marca el ritme operatiu. La pinya no aguanta sense un compàs"
+    },
+    {
+      "name": "Barbamuda",
+      "role": "Segona baixista",
+      "on": "Còmic",
+      "power": "Fa supertratges i ensenya des del silenci. No explica: deixa que ho vegis",
+      "arma": "El baix i el silenci tàctic",
+      "lletra": "«Barbamuda: que habla solo cuando debe y todo se la suda.»",
+      "vna": "L'estabilitat estructural. Qui no es mou quan tot es mou és el que evita la caiguda"
+    },
+    {
+      "name": "Reciclator",
+      "role": "Fabricant de superarmes",
+      "on": "Vídeo",
+      "power": "Construeix les superarmes de la banda a partir del que els altres han llençat",
+      "arma": "El taller: el que ja existeix i ningú volia. D'allà en surten la Bomba Amor i el Rayo Cagón",
+      "lletra": "",
+      "vna": "Qui fa que no calgui comprar res nou perquè ja hi és, en un altre lloc i amb una altra forma"
+    },
+    {
+      "name": "Supergerminador",
+      "role": "Mestre del germinat",
+      "on": "Vídeo i web pròpia",
+      "power": "Ensenya a germinar per menjar superaliments. I canta amb la seva rialla",
+      "arma": "Les llavors, i la pròpia rialla",
+      "lletra": "",
+      "vna": "Qui ensenya el mètode en comptes de fer la feina: el que ensenya es replica sol i no cal tornar-lo a comprar"
+    },
+    {
+      "name": "Fraktalman",
+      "role": "Ordre a partir del caos",
+      "on": "Té tema propi",
+      "power": "Converteix el caos en ordre sense aplanar-lo",
+      "arma": "La forma que es repeteix a totes les escales",
+      "lletra": "«Es uno y son mil millones… convierte el caos en orden.»",
+      "vna": "El que funciona en un lloc té la mateixa forma en un altre. Replicar sense uniformar"
+    }
+  ],
+  "videos": [
+    {
+      "id": "capitols",
+      "mena": "llista",
+      "qui": [],
+      "titol": "Els capítols del Comando",
+      "d": "La sèrie sencera. A cada capítol es presenta un superheroi i un supervilà del Mundo Muerto.",
+      "url": "https://youtube.com/playlist?list=PLMB33ApQeOYWbPLQRbf9B5gMpgs0cL5NB"
+    },
+    {
+      "id": "horacio-clip",
+      "mena": "videoclip",
+      "qui": [
+        "Horacio Motomachi"
+      ],
+      "titol": "Horacio Motomachi",
+      "d": "El videoclip del tema que obre la intro.",
+      "url": "https://youtu.be/3Kf36tpHk98"
+    },
+    {
+      "id": "reciclator",
+      "mena": "videoclip",
+      "qui": [
+        "Reciclator"
+      ],
+      "titol": "Reciclator",
+      "d": "Construeix les superarmes de la banda amb el que els altres han llençat: d'allà en surten la Bomba Amor i el Rayo Cagón.",
+      "url": "https://youtu.be/Py44l1WsSO4"
+    },
+    {
+      "id": "supergerminador",
+      "mena": "videoclip",
+      "qui": [
+        "Supergerminador"
+      ],
+      "titol": "Supergerminador",
+      "d": "Ensenya a germinar per menjar superaliments, i canta amb la seva rialla.",
+      "url": "https://youtu.be/RyAkyIp6P10"
+    },
+    {
+      "id": "medusa",
+      "mena": "videoclip",
+      "qui": [
+        "La Medusa Andaluza"
+      ],
+      "titol": "La Medusa Andaluza",
+      "d": "El node central que creua informació entre parts que no es parlaven.",
+      "url": "https://youtu.be/5FAvOvi2P30"
+    },
+    {
+      "id": "bomba-disco",
+      "mena": "videoclip",
+      "qui": [
+        "Guiri-Guay",
+        "Flying Frog"
+      ],
+      "titol": "La Bomba Disco",
+      "d": "El tema que trenca la cuirassa d'Afrodito, per Guiri-Guay i Flying Frog.",
+      "url": "https://youtu.be/JsEAeiQ-fc0"
+    },
+    {
+      "id": "flying-frog",
+      "mena": "videoclip",
+      "qui": [
+        "Flying Frog"
+      ],
+      "titol": "Flying Frog",
+      "d": "La que posa el color al còmic del Comando.",
+      "url": "https://youtu.be/WfpclzQod2g"
+    },
+    {
+      "id": "formiga",
+      "mena": "videoclip",
+      "qui": [
+        "Formiga Atòmica"
+      ],
+      "titol": "La Formiga Atòmica",
+      "d": "Modista, amb la superarma Pistola Amor.",
+      "url": "https://youtu.be/yjQ5WnGChh0"
+    },
+    {
+      "id": "risitas-bekelar",
+      "mena": "videoclip",
+      "qui": [
+        "El Risitas",
+        "Príncep de Bekelar"
+      ],
+      "titol": "El Risitas i el Príncep de Bekelar",
+      "d": "El nòvio de la Formiga Atòmica, i el Príncep.",
+      "url": "https://youtu.be/bg4N48q_dtI"
+    },
+    {
+      "id": "mcgreggor",
+      "mena": "videoclip",
+      "qui": [
+        "Mr. McGragor"
+      ],
+      "titol": "Mr. McGragor",
+      "d": "El supervilà que ofereix en comptes d'atacar. L'autor el llegeix com a premonitori de l'actualitat.",
+      "url": "https://youtu.be/C6-7B2O5dDY"
+    },
+    {
+      "id": "horacio-tema",
+      "mena": "tema",
+      "qui": [
+        "Horacio Motomachi"
+      ],
+      "titol": "El tema d'Horacio Motomachi",
+      "d": "La cançó sencera, allotjada aquí. Sona també a la intro.",
+      "url": "media/comando-horacio.mp3"
+    },
+    {
+      "id": "guiriguay-tema",
+      "mena": "tema",
+      "qui": [
+        "Guiri-Guay"
+      ],
+      "titol": "El tema del Guiri-Guay",
+      "d": "Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup.",
+      "url": "https://youtu.be/Q15My_6qb4A"
+    },
+    {
+      "id": "directe-floresta",
+      "mena": "directe",
+      "qui": [],
+      "titol": "La Bomba Disco, a la Floresta",
+      "d": "La banda del Comando en directe. És la prova que això no és una marca: hi ha gent que hi puja.",
+      "url": "https://youtu.be/PNFy7V8UbQs"
+    },
+    {
+      "id": "pigmenton",
+      "mena": "videoclip",
+      "qui": [
+        "Pigmentón"
+      ],
+      "titol": "Pigmentón",
+      "d": "Qui dibuixa la xarxa i dona a cadascú el color que li toca perquè pugui operar.",
+      "url": null
+    },
+    {
+      "id": "fraktalman",
+      "mena": "tema",
+      "qui": [
+        "Fraktalman"
+      ],
+      "titol": "Fraktalman",
+      "d": "La forma que es repeteix a totes les escales, convertida en cançó.",
+      "url": null
+    },
+    {
+      "id": "tekno-kartoffeln",
+      "mena": "tema",
+      "qui": [],
+      "titol": "Tekno Kartoffeln",
+      "d": "El tema que enceta la saga del tercer còmic: el punxi per rematar la fauna i trobar els que falten.",
+      "url": null
+    },
+    {
+      "id": "directe-taller",
+      "mena": "directe",
+      "qui": [],
+      "titol": "Un taller, filmat",
+      "d": "Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.",
+      "url": null
+    }
+  ],
+  "posts": [
+    {
+      "anc": "post-origen",
+      "ic": "🎬",
+      "t": "L'origen",
+      "d": "Mazinguer i Horacio Motomachi reben l'encàrrec del Gran Molekulon i baixen a buscar els 150.000."
+    },
+    {
+      "anc": "post-molekulon",
+      "ic": "🧬",
+      "t": "La síntesi, a peu de carrer",
+      "d": "Amb l'estructura i l'energia alhora, què fa el Comando quan toca de peus a terra."
+    },
+    {
+      "anc": "post-seny",
+      "ic": "🏛",
+      "t": "Seny",
+      "d": "L'estructura que sosté quan els reptes es tornen intensos. La pinya abans que els dosos."
+    },
+    {
+      "anc": "post-rauxa",
+      "ic": "🔥",
+      "t": "Rauxa",
+      "d": "L'energia que encén una vegada la matriu ja està armada. Sense pinya, és soroll."
+    },
+    {
+      "anc": "post-2",
+      "ic": "🦸",
+      "t": "El teu perfil és una xarxa neuronal creativa",
+      "d": "Ja no cal triar de quina cosa ets: ets una persona amb una reputació que travessa totes les capes."
+    }
+  ],
+  "intro": {
+    "durada": 115,
+    "tall": 30,
+    "cta": {
+      "porta": {
+        "ruta": "alta",
+        "t": "Fes el teu personatge",
+        "d": "Nom, població, fins a cinc superpoders i les teves superarmes. Es queda al teu aparell."
+      },
+      "camins": [
+        {
+          "href": "comando.html",
+          "t": "Vinc per la història",
+          "d": "Els còmics, la banda i els personatges. La mateixa alta, explicada com el que és: entrar al repartiment."
+        },
+        {
+          "href": "uneix-te.html",
+          "t": "Vinc pel meu barri",
+          "d": "El que ja fas, comptat. La mateixa alta, explicada sense superherois."
+        }
+      ]
+    },
+    "plans": [
+      {
+        "n": 1,
+        "s": 8,
+        "titol": "Dos-cents milions",
+        "de": null,
+        "qui": [],
+        "tall": true,
+        "canon": "200.000.000",
+        "img": "Fosca. Milions de punts de llum travessant tenebres i obstacles en la mateixa direcció. N'arriba un.",
+        "veu": "Vas travessar tenebres i obstacles per fer el miracle de ser aquí. Vas guanyar una cursa de dos-cents milions. Néixer ja va ser la teva primera gesta.",
+        "retol": null
+      },
+      {
+        "n": 2,
+        "s": 8,
+        "titol": "El Gran Molekulon mira la Terra",
+        "de": null,
+        "qui": [],
+        "tall": false,
+        "canon": "banda sonora",
+        "img": "El Gran Molekulon des de dalt: el soroll, les guerres, la crisi.",
+        "veu": "El Gran Molekulon mira la Terra i decideix que el que cal canviar no és el món. És la banda sonora.",
+        "retol": "MUNDO MUERTO"
+      },
+      {
+        "n": 3,
+        "s": 8,
+        "titol": "El mandat",
+        "de": null,
+        "qui": [
+          "Mazinguer",
+          "Horacio Motomachi"
+        ],
+        "tall": false,
+        "canon": "150.000 superherois que ja hi han nascut",
+        "diu": {
+          "objectiu": 150000
+        },
+        "img": "Dona autoritat a dos deixebles. Baixen.",
+        "veu": "Els envia a reclutar els cent cinquanta mil superherois que ja hi han nascut. No cal fabricar-los: ja hi són, escampats, fent coses més petites del que saben fer.",
+        "retol": null
+      },
+      {
+        "n": 4,
+        "s": 7,
+        "titol": "Algú s'ha d'encarregar de l'aire",
+        "de": null,
+        "qui": [
+          "Purpleman"
+        ],
+        "tall": false,
+        "canon": "raig eliminador",
+        "img": "Purpleman sortint d'entre nebuloses i gasos tòxics.",
+        "veu": "Purpleman surt dels gasos tòxics amb el seu raig eliminador, i allò passa a fer olor de flor i d'amor.",
+        "retol": null
+      },
+      {
+        "n": 5,
+        "s": 8,
+        "titol": "L'abric de cuir",
+        "de": "bomba-disco",
+        "qui": [
+          "Afrodito",
+          "Guiri-Guay",
+          "Flying Frog"
+        ],
+        "tall": true,
+        "canon": "abric de cuir",
+        "img": "El Bar Andrés. Afrodito sota un abric pesat. Sona la Bomba Disco i la cuirassa es trenca.",
+        "veu": "Afrodito s'amaga sota un abric de cuir per protegir-se del Mundo Muerto. Fins que sona la Bomba Disco. El que el destapa no és una xerrada: és un fet.",
+        "retol": null
+      },
+      {
+        "n": 6,
+        "s": 6,
+        "titol": "I la banda toca de debò",
+        "de": "directe-floresta",
+        "qui": [],
+        "tall": false,
+        "canon": null,
+        "img": "Salt del dibuix al directe de la Floresta. Gent que salta, no figurants.",
+        "veu": "Això no és només dibuix.",
+        "retol": null
+      },
+      {
+        "n": 7,
+        "s": 7,
+        "titol": "El bajón",
+        "de": null,
+        "qui": [],
+        "tall": false,
+        "canon": "Omni Turd 6300",
+        "img": "L'Omni Turd 6300 perdent altura. Algú baixa per una escala-piano a demanar papeo.",
+        "veu": "Còmic dos. La nau perd altura. No s'han quedat sense ganes: s'han quedat sense combustible.",
+        "retol": null
+      },
+      {
+        "n": 8,
+        "s": 8,
+        "titol": "Matadeón",
+        "de": null,
+        "qui": [],
+        "tall": false,
+        "canon": "Matadeón",
+        "img": "Llaminadures per a tothom, aniversari cada dia, vacances eternes. La Constitució crema i el caos multicolor se'n du la república.",
+        "veu": "Arriben a una utopia de gaudi absolut. Dura el que dura: un grup sense regles clares d'intercanvi col·lapsa pel seu propi pes.",
+        "retol": null
+      },
+      {
+        "n": 9,
+        "s": 9,
+        "titol": "El paper higiènic",
+        "de": "mcgreggor",
+        "qui": [
+          "Mr. McGragor"
+        ],
+        "tall": false,
+        "canon": "paper higiènic",
+        "img": "Un àbac, una pissarra i un somriure. Després: picant pedra darrere un filat d'espines.",
+        "veu": "I enmig del caos apareix ell, oferint un paper higiènic molt més suau. Val diners, i ells no saben què és això. Acaben picant pedra per pagar-lo. Primer et creen la necessitat; després te la cobren.",
+        "retol": null
+      },
+      {
+        "n": 10,
+        "s": 6,
+        "titol": "I els que no calen de fora",
+        "de": null,
+        "qui": [
+          "Max Miedox",
+          "Mala Yerbax"
+        ],
+        "tall": false,
+        "canon": null,
+        "img": "Dos plans curts, sense diàleg: una sala on ningú comença, i una conversa que es gira quan algú marxa.",
+        "veu": "No tots els vilans vénen de fora. La por que paralitza abans de començar i el rumor que corroeix la confiança ja hi són.",
+        "retol": null
+      },
+      {
+        "n": 11,
+        "s": 8,
+        "titol": "El forat de cuc",
+        "de": null,
+        "qui": [],
+        "tall": false,
+        "canon": "forat de cuc",
+        "img": "Encadenats i empesos per un fuet cap a una espiral en blanc i negre: la Maldita Realitat, perquè assentin el cap.",
+        "veu": "Encadenats cap a la Maldita Realitat, perquè assentin el cap. I ell contesta: \"I play music and paint pictures. I don't need reality.\" Qui imagina i qui executa es veuen com un destorb, i cap dels dos aguanta res sol.",
+        "retol": null
+      },
+      {
+        "n": 12,
+        "s": 8,
+        "titol": "El páramo i la llavor",
+        "de": null,
+        "qui": [],
+        "tall": false,
+        "canon": "cantant els seus propis noms",
+        "img": "Anys de gris. Sota els peus, sense que ho vegi ningú, creixen plantes psicodèliques, flors alienígenes i música.",
+        "veu": "Resisteixen cantant els seus propis noms, recordant qui són. El talent adormit no és talent perdut.",
+        "retol": null
+      },
+      {
+        "n": 13,
+        "s": 7,
+        "titol": "Acte III · s'està rodant ara",
+        "de": null,
+        "qui": [],
+        "tall": true,
+        "canon": "El final està escrit",
+        "diu": {
+          "objectiu": 150000
+        },
+        "pantalla": true,
+        "img": "La pàgina del Comando amb els comptadors reals corrent.",
+        "veu": "El tercer acte no està publicat. El final està escrit i encara no es diu. El que sí que es diu és el mecanisme: cada persona que hi entra i aporta de debò és un node més, i la xarxa és el que fa la força.",
+        "retol": null
+      },
+      {
+        "n": 14,
+        "s": 10,
+        "titol": "Com es fa un superheroi",
+        "de": null,
+        "qui": [],
+        "tall": false,
+        "canon": "no tenen manera de veure",
+        "pantalla": true,
+        "img": "Tres imatges: una aula de la Fàbrica de Superherois, un cromo que s'omple, i el kit narratiu escrivint una sinopsi.",
+        "veu": "Un superheroi són dues coses: saber què saps fer, i posar-ho on serveixi a algú altre. Si encara no saps què saps, per això hi ha escola. I si no tens la creativitat, te la posa una màquina.",
+        "retol": null
+      },
+      {
+        "n": 15,
+        "s": 7,
+        "titol": "I tu, t'hi apuntes?",
+        "de": null,
+        "qui": [],
+        "tall": true,
+        "cta": true,
+        "canon": null,
+        "diu": {
+          "objectiu": 150000
+        },
+        "img": "Negre. El nom del Comando, i a sota les dues portes.",
+        "veu": "Tu ja vas guanyar una cursa de dos-cents milions. En falten cent cinquanta mil com tu. I tu, t'hi apuntes?",
+        "retol": "COMANDO MOLEKULON"
+      }
+    ]
+  }
+}
