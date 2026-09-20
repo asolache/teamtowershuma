@@ -93,6 +93,23 @@ cases; el que canvia entre elles és **per on s'hi entra i a qui se li parla**.
 **Es fa A.** És reversible: el dia que molekulon.org tingui vida pròpia i càrrega
 suficient, passar a B és moure una carpeta i canviar un `base`.
 
+> **Actualització del 2026-09-20 · s'ha fet C, amb una condició.** L'autor ha
+> creat el repositori [`asolache/molekulonorg`](https://github.com/asolache/molekulonorg)
+> i la web viu allà. La decisió és seva i el pla s'hi adapta, però el motiu pel
+> qual aquest document desaconsellava un repositori a part —que una còpia
+> divergeix i no peta— s'ha tapat en comptes d'ignorar-lo:
+>
+> - El contingut **segueix declarant-se aquí**, a `build-comando.js`, que ara
+>   exporta `SOS/molekulon-data.json` i el vigila amb `--check`.
+> - L'altre repositori **no l'edita**: el baixa amb `tools/sync.js`, en compara
+>   la còpia cada dilluns i genera les pàgines amb `tools/build.js`.
+> - El que s'hi ha duplicat és **la presentació**, no les dades. Un fork de
+>   plantilla, no de model.
+>
+> El que això canvia de la resta del document: molekulon.org serà un **segon
+> lloc de Netlify** apuntant a aquell repositori, i per tant els punts de DNS de
+> §5.1bis apunten a aquell lloc i no a `teamtowershuma.netlify.app`.
+
 ### 2.3 · Què és canònic, i què és mirall
 
 Això decideix el SEO i s'ha de decidir **abans** d'escriure la primera pàgina, no
@@ -225,10 +242,12 @@ Ordenat per si bloqueja o no. **Els cinc primers bloquen el llançament.**
    s'hi posen aquests quatre, un per línia i sense punt final:
    `dns1.p09.nsone.net` · `dns2.p09.nsone.net` · `dns3.p09.nsone.net` ·
    `dns4.p09.nsone.net`.
-2. **Netlify** → el lloc `teamtowershuma.netlify.app` → *Domain management* →
-   *Add domain alias* → `molekulon.org`, i el mateix amb `www.molekulon.org`.
-   La zona de Netlify DNS i el lloc han de ser **del mateix equip**; si no, hi ha
-   zona i hi ha lloc, i no es troben.
+2. **Netlify** → *Add new site* → *Import from GitHub* → `asolache/molekulonorg`.
+   Sense ordre de build i amb `publish = "."`, que ja diu el `netlify.toml` del
+   repositori. Un cop desplegat: *Domain management* → *Add custom domain* →
+   `molekulon.org`, i el mateix amb `www.molekulon.org`. La zona de Netlify DNS i
+   el lloc han de ser **del mateix equip**; si no, hi ha zona i hi ha lloc, i no
+   es troben.
 3. Esperar la propagació: minuts en el cas normal i fins a 48 h en el pitjor,
    segons el TTL que tenia Porkbun. Es comprova amb `dig NS molekulon.org`: quan
    responguin els `nsone`, ja hi és.
@@ -243,8 +262,8 @@ No es toquen els NS. A Porkbun → *DNS Records*:
 
 | Tipus | Host | Valor |
 |---|---|---|
-| `ALIAS` | (buit: l'arrel) | `teamtowershuma.netlify.app` |
-| `CNAME` | `www` | `teamtowershuma.netlify.app` |
+| `ALIAS` | (buit: l'arrel) | el domini `*.netlify.app` del lloc nou |
+| `CNAME` | `www` | el mateix |
 
 Porkbun serveix `ALIAS` a l'arrel, i això permet **no clavar cap IP** al
 registre: una IP escrita a mà és una avaria ajornada al dia que Netlify la
