@@ -189,11 +189,16 @@ Ordenat per si bloqueja o no. **Els cinc primers bloquen el llançament.**
 
 ### Bloquegen
 
-1. **DNS de molekulon.org.** Accés al registrador o algú que hi toqui per mi.
-   Amb l'opció A cal: un registre `A` de l'arrel cap a la IP que digui el panell
-   de Netlify en afegir l'alias, i un `CNAME` de `www` al domini de Netlify del
-   lloc — o bé delegar els NS a Netlify, que ho fa sol. Cal dir-me també **si hi
-   haurà correu** al domini (si n'hi ha, els MX es conserven i no es delega res).
+1. **DNS de molekulon.org.** El domini és a **Porkbun** i ja té assignats els
+   quatre servidors de nom de **Netlify DNS** (`dns1..dns4.p09.nsone.net`): la
+   zona ja existeix al costat de Netlify i el que falta és **apuntar-hi el
+   registrador**. El procediment, pas a pas, a §5.1bis.
+
+   L'única dada que necessito abans de tocar-hi res: **si molekulon.org ha de
+   tenir correu**. Delegar els NS mou *tota* la zona a Netlify, i els `MX`, `SPF`
+   i `DKIM` que hi hagi a Porkbun deixen de servir-se el mateix moment en què el
+   canvi propaga. Si hi ha correu, o es recreen a Netlify DNS **abans** de
+   canviar els NS, o es fa la variant sense delegació.
 2. **Imatges.** És el forat gran: avui el repositori no en té cap.
    El mínim per obrir: **portada del còmic 1 i 2**, **6–10 vinyetes** en alta
    resolució amb permís de publicació, **14 retrats de personatge** (encara que
@@ -210,6 +215,46 @@ Ordenat per si bloqueja o no. **Els cinc primers bloquen el llançament.**
 5. **Els quatre enllaços que falten**: Pigmentón, Fraktalman, Tekno Kartoffeln i
    el taller filmat. Si encara no existeixen, es publiquen com a «encara no hi
    són» —que és el que fa la pàgina d'avui— però cal dir-ho tu, no endevinar-ho jo.
+
+### 5.1bis · El DNS, pas a pas
+
+**Via A · delegar a Netlify DNS** (la que toca, perquè els NS ja estan assignats)
+
+1. **Porkbun** → *Domain Management* → `molekulon.org` → *Authoritative
+   Nameservers* → *Edit*. S'esborren els quatre de Porkbun (`…ns.porkbun.com`) i
+   s'hi posen aquests quatre, un per línia i sense punt final:
+   `dns1.p09.nsone.net` · `dns2.p09.nsone.net` · `dns3.p09.nsone.net` ·
+   `dns4.p09.nsone.net`.
+2. **Netlify** → el lloc `teamtowershuma.netlify.app` → *Domain management* →
+   *Add domain alias* → `molekulon.org`, i el mateix amb `www.molekulon.org`.
+   La zona de Netlify DNS i el lloc han de ser **del mateix equip**; si no, hi ha
+   zona i hi ha lloc, i no es troben.
+3. Esperar la propagació: minuts en el cas normal i fins a 48 h en el pitjor,
+   segons el TTL que tenia Porkbun. Es comprova amb `dig NS molekulon.org`: quan
+   responguin els `nsone`, ja hi és.
+4. El certificat HTTPS (Let's Encrypt) el demana Netlify sol quan el domini
+   resol. Si no surt, *Domain management → HTTPS → Verify DNS configuration*.
+5. Llavors, i no abans, entren les regles de `_redirects` per amfitrió i els 301
+   des de teamtowershuma.com (§4.7).
+
+**Via B · deixar el DNS a Porkbun** (si hi ha correu al domini i no es vol moure)
+
+No es toquen els NS. A Porkbun → *DNS Records*:
+
+| Tipus | Host | Valor |
+|---|---|---|
+| `ALIAS` | (buit: l'arrel) | `teamtowershuma.netlify.app` |
+| `CNAME` | `www` | `teamtowershuma.netlify.app` |
+
+Porkbun serveix `ALIAS` a l'arrel, i això permet **no clavar cap IP** al
+registre: una IP escrita a mà és una avaria ajornada al dia que Netlify la
+canviï. A Netlify es fa igualment el pas 2. Els `MX` es queden on són i el correu
+no se n'assabenta.
+
+**Quina de les dues.** Si al domini no hi penja correu ni cap altre servei, la
+**A**: un sol lloc on mirar el dia que una cosa no resolgui. Si hi ha correu i no
+el vols moure avui, la **B**, que és reversible i no té cap desavantatge per a un
+lloc estàtic.
 
 ### No bloquegen, però decideixen la forma
 
