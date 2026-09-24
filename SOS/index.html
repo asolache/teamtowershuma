@@ -53,14 +53,26 @@ a{color:var(--blue);text-decoration:none}
 #onboarding h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:1.3rem}
 #onboarding h1 em{font-style:normal;color:var(--blue)}
 .ob-sub{font-size:1.05rem;color:var(--light);line-height:1.75;margin-bottom:2.5rem;max-width:560px;margin-left:auto;margin-right:auto}
-.ob-triad{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.75rem}
-.ob-chip{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;min-width:140px;text-align:left}
-.ob-chip .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem}
-.ob-chip.c1{border-top:2px solid var(--purple)}.ob-chip.c1 .lbl{color:var(--purple)}
-.ob-chip.c2{border-top:2px solid var(--blue)}.ob-chip.c2 .lbl{color:var(--blue)}
-.ob-chip.c3{border-top:2px solid var(--indigo)}.ob-chip.c3 .lbl{color:var(--indigo)}
-.ob-chip .nm{font-size:.95rem;font-weight:600}
-.ob-chip .ds{font-size:.75rem;color:var(--muted);margin-top:.2rem;line-height:1.4}
+/* Home · què hi guanya qui s'hi posa. Cada targeta acaba amb les seves xifres
+   en mono, separades del text: és el que es mira primer i el que s'ha de poder
+   comparar entre targetes sense llegir-les senceres. */
+.ob-benef{max-width:920px;margin:0 auto 2.5rem;text-align:left}
+.obb-cap{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:.9rem}
+.obb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+.obb{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.05rem;display:flex;flex-direction:column}
+.obb.b1{border-top:2px solid var(--green)}.obb.b2{border-top:2px solid var(--purple)}.obb.b3{border-top:2px solid var(--blue)}
+.obb-k{font-size:.95rem;font-weight:600;margin-bottom:.4rem}
+.obb.b1 .obb-k{color:var(--green)}.obb.b2 .obb-k{color:var(--purple)}.obb.b3 .obb-k{color:var(--blue)}
+.obb-d{font-size:.8rem;color:var(--light);line-height:1.55;margin:0 0 .7rem;flex:1}
+.obb-d b{color:var(--white);font-weight:600}
+.obb-n{display:flex;gap:.5rem;align-items:baseline;border-top:1px solid var(--border);padding-top:.4rem;margin-top:.35rem}
+.obb-n b{font-family:var(--mono);font-size:.85rem;color:var(--white);white-space:nowrap}
+.obb-n span{font-size:.7rem;color:var(--muted);line-height:1.4}
+.obb-rsc{font-size:.82rem;color:var(--light);line-height:1.6;margin:1rem 0 0;padding:.75rem .9rem;background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--indigo);border-radius:8px}
+.obb-rsc b{color:var(--white);font-weight:600}
+.obb-font{font-size:.72rem;color:var(--muted);line-height:1.55;margin:.6rem 0 0}
+.obb-font b{color:var(--light);font-weight:600}
+@media(max-width:860px){.obb-grid{grid-template-columns:1fr}}
 /* Home · dolors que curem */
 .ob-pains{display:flex;flex-direction:column;gap:.5rem;margin:0 auto 2.25rem;max-width:600px;text-align:left}
 .ob-pain{display:grid;grid-template-columns:auto 1fr;gap:.2rem .55rem;align-items:baseline;background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:8px;padding:.6rem .8rem;font-size:.86rem;color:var(--light)}
@@ -1005,17 +1017,54 @@ a{color:var(--blue);text-decoration:none}
   <div class="ob-inner">
     <div class="ob-eyebrow">Social Operating System · TeamTowers Humà</div>
     <h1>Converteix la voluntat veïnal<br>en <em>xarxes que duren.</em></h1>
-    <p class="ob-sub">Banc de temps, biblioteca de les coses, comunitat energètica, cooperativa… El SOS els dóna a tots <strong>el mateix esquelet</strong>: mapa de valor, tauler d'acció i comptabilitat signada. Sense servidor, sense quota, sense cedir dades — <strong>tot viu al teu navegador</strong>.</p>
+    <p class="ob-sub">Banc de temps, biblioteca de les coses, comunitat energètica, cooperativa… El SOS els dóna a tots <strong>el mateix esquelet</strong>: mapa de valor, tauler d'acció i comptabilitat signada. Serveix igual per a <strong>un barri, una organització o una xarxa d'entitats</strong>. Sense servidor, sense quota, sense cedir dades — <strong>tot viu al teu navegador</strong>.</p>
     <div class="ob-pains">
       <div class="ob-pain"><span class="px">✕</span><span>«Sempre tirem els mateixos quatre.»</span><span class="pv">→ el mapa de valor ensenya qui sosté què, i on cal rellevar</span></div>
       <div class="ob-pain"><span class="px">✕</span><span>«Ningú sap què fem ni quant val.»</span><span class="pv">→ comptabilitat de valor signada: hores, objectes, € i intangibles</span></div>
       <div class="ob-pain"><span class="px">✕</span><span>«Les decisions no queden enlloc.»</span><span class="pv">→ propostes votades i ancorades públicament, verificables</span></div>
     </div>
-    <div class="ob-triad">
-      <div class="ob-chip c1"><div class="lbl">Cohesió</div><div class="nm">Fent Pinya</div><div class="ds">Confiança i interdependència veïnal</div></div>
-      <div class="ob-chip c2"><div class="lbl">Diagnòstic</div><div class="nm">Mapa VNA</div><div class="ds">Els fluxos de valor, visibles</div></div>
-      <div class="ob-chip c3"><div class="lbl">Sostenibilitat</div><div class="nm">SOS</div><div class="ds">Autogestió justa i transparent</div></div>
+    <!-- QUÈ HI GUANYA QUI S'HI POSA ────────────────────────────────────────
+         Aquí hi havia la tríada —cohesió, diagnòstic, sostenibilitat— amb els
+         tres noms del mètode. Era correcta i deia **què és això**; qui hi
+         arriba, però, ha de decidir si s'hi posa, i per decidir-ho necessita
+         saber **què s'hi guanya**.
+
+         La resposta honesta d'una eina que compta valor és una xifra, i totes
+         les d'aquest bloc surten de les taules de l'app —l'oracle de l'hora i
+         de l'objecte, el desgast per préstec, la forquilla del fons, els
+         mòduls de formació—: les escriu `build-beneficis.js` llegint-les. Una
+         xifra de màrqueting no la comprova mai ningú; aquestes les comprova el
+         CI cada vegada.
+
+         La tríada no s'ha perdut: viu a la portada de teamtowershuma.com, que
+         és on es ven el mètode. Aquí es ven el que en surt. -->
+<!--SOS-BENEFICIS-->
+<div class="ob-benef">
+  <div class="obb-cap">Què hi guanya qui s'hi posa</div>
+  <div class="obb-grid">
+    <div class="obb b1">
+      <div class="obb-k">Un fons que ja teniu</div>
+      <p class="obb-d">Les hores, els objectes, el talent i els diners que ja es mouen, <b>comptats com un sol fons</b>: cada línia amb la seva quantitat, la seva tarifa i d'on surt. És el patrimoni que la comunitat té i no sortia a cap paper.</p>
+      <div class="obb-n"><b>20 €/h</b><span>de referència, i cada node pot canviar-la</span></div>
+      <div class="obb-n"><b>± 30 %</b><span>de forquilla: es publica com una estimació, no com una factura</span></div>
     </div>
+    <div class="obb b2">
+      <div class="obb-k">El que aprèn cada persona</div>
+      <p class="obb-d">Sostenir una dinàmica és un ofici, i aquí es pot aprendre i <b>acreditar</b>. El certificat el signa qui ha vist la feina i <b>és de la persona</b>: se l'endú encara que plegui del projecte.</p>
+      <div class="obb-n"><b>9 professions</b><span>sortides dels rols reals de les dinàmiques</span></div>
+      <div class="obb-n"><b>16 mòduls</b><span>de N0 a N3, i el que fas queda al teu registre</span></div>
+    </div>
+    <div class="obb b3">
+      <div class="obb-k">El que s'estalvia cada persona</div>
+      <p class="obb-d">Una hora rebuda és una hora que no es paga al mercat. I una eina que s'agafa prestada <b>costa el desgast, no el preu</b>: es paga l'ús, no la compra.</p>
+      <div class="obb-n"><b>12–35 €/h</b><span>segons l'ofici, de l'oracle del banc de temps</span></div>
+      <div class="obb-n"><b>10 €</b><span>costa un préstec d'una eina de electrònica de 200 €, que és el 5 % de desgast</span></div>
+    </div>
+  </div>
+  <p class="obb-rsc"><b>En una organització és el mateix esquelet amb un altre nom.</b> Una empresa, una cooperativa o una federació d'entitats hi pot muntar un programa de <b>responsabilitat social amb les seves persones</b> —banc de temps intern, biblioteca d'eines, voluntariat comptat, mentoria entre companys— i mesurar-lo amb les mateixes xifres. Amb una diferència que no és petita: <b>el que aporta cada persona queda al seu registre</b>, no al de l'empresa, i se'n va amb ella.</p>
+  <p class="obb-font">Les xifres són <b>els valors de referència que porta el SOS</b> i es poden canviar node per node. Es publiquen com el que són —estimacions amb forquilla— perquè un número inventat que sembli comptabilitat és pitjor que no tenir-lo.</p>
+</div>
+<!--/SOS-BENEFICIS-->
     <div class="ob-paths">
       <button class="ob-path p1" id="obHero">
         <span class="op-ic">🦸</span>

@@ -105,6 +105,15 @@ jobs:
       - name: Guarda de Molekulon (l'estat líquid quadra amb el model)
         run: node SOS/tools/build-molekulon.js --check
 
+      # La portada del SOS diu què s'hi guanya amb xifres, i les xifres ja
+      # existeixen dins de l'app: l'oracle de l'hora i de l'objecte, el desgast
+      # per préstec, la forquilla del fons, els mòduls de formació. Escrites a
+      # mà a la portada serien una segona còpia que el dia que canviï una
+      # tarifa seguiria dient la vella, i una xifra de màrqueting no la comprova
+      # mai ningú. Aquí es generen de les taules i es vigila que no divergeixin.
+      - name: Guarda dels beneficis (les xifres surten de l'app)
+        run: node SOS/tools/build-beneficis.js --check
+
       # La pestanya de cures és l'única del SOS on el que s'apunta és qui
       # necessita ajuda i qui l'hi dona. Dos errors farien mal de debò i cap
       # dels dos peta: que hi entri informació de salut —una casella de text
