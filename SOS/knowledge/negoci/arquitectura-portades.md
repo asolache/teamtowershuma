@@ -204,13 +204,27 @@ pàgina.
 
 ## 7 · Ordre de treball
 
-| | Què | Per què primer | Cost |
-|---|---|---|---|
-| 1 | **La portada del SOS es converteix en porta** (§5, blocs 2-4, generats) | Sense això, moure-hi contingut és moure'l a un lloc que no el pot rebre | mitjà |
-| 2 | **Moure `beneficis`, `aprenent` i `sos`** i partir el glossari (§3) | Ja hi ha on posar-ho | baix |
-| 3 | **Els tres paquets del SOS passen a `/sos/`** (§4) | És una decisió de negoci, no de disseny, i és barata | baix |
-| 4 | **`/serveis` amb el catàleg, i quatre targetes de família amb forquilla** (§4b) | És el lever gros de llargada, i el més fàcil de fer malament | mitjà |
-| 5 | **Guarda del pont** (§6) | Que no es pugui perdre el camí cap al SOS sense que peti | baix |
+| | Què | Per què primer | Cost | Estat |
+|---|---|---|---|---|
+| 1 | **La portada del SOS es converteix en porta** (§5, blocs 2-4, generats) | Sense això, moure-hi contingut és moure'l a un lloc que no el pot rebre | mitjà | **fet** |
+| 2 | **Moure `beneficis`, `aprenent` i `sos`** i partir el glossari (§3) | Ja hi ha on posar-ho | baix | **fet** |
+| 3 | **Els tres paquets del SOS passen a `/sos/`** (§4) | És una decisió de negoci, no de disseny, i és barata | baix | **fet** |
+| 4 | **`/serveis` amb el catàleg, i quatre targetes de família amb forquilla** (§4b) | És el lever gros de llargada, i el més fàcil de fer malament | mitjà | pendent |
+| 5 | **Guarda del pont** (§6) | Que no es pugui perdre el camí cap al SOS sense que peti | baix | **fet** (`check-landing.js` 7d) |
+
+### El que ha donat, mesurat igual que abans
+
+| | Abans | Després |
+|---|---:|---:|
+| Portada · pantalles de mòbil | 61,4 | **53,8** |
+| Portada · on comença el catàleg | 25,8 | **21,3** |
+| Portada · pantalles d'escriptori | 29,4 | **26,0** |
+| `/sos/` · pàgines anomenades | **0** | **17** |
+
+**La predicció del §3 era ~52 i el resultat és 53,8**, o sigui que l'estimació
+era bona i la conclusió també: **ordena el relat i no resol la llargada**. Qui
+vulgui la meitat de pàgina ha de fer el punt 4, i el punt 4 segueix pendent a
+posta —canvia la manera de vendre i val la pena mesurar-lo a part.
 
 Els punts 1-3 es poden fer i mesurar sense tocar el catàleg. **El punt 4 és el
 que canvia la manera de vendre**, i val la pena fer-lo a part per poder mesurar

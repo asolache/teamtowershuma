@@ -124,6 +124,15 @@ jobs:
       - name: Guarda del mapa de valor (el cas quadra i no inventa xifres)
         run: node SOS/tools/build-mapavalor.js --check
 
+      # /sos/ feia 6,3 KB davant d'1,1 MB de pàgines i no n'anomenava ni una:
+      # tres portes i una tira d'enllaços. Ara és la porta de les vint-i-una, i
+      # la guarda vigila el que no peta mai sol: que **cap pàgina del menú es
+      # quedi fora sense un motiu escrit**. Afegir una pàgina al SOS i oblidar
+      # -se de posar-la a la porta no trenca res, i el resultat és el que hi
+      # havia.
+      - name: Guarda de la porta del SOS (cap pàgina es queda fora en silenci)
+        run: node SOS/tools/build-portal.js --check
+
       # La pestanya de cures és l'única del SOS on el que s'apunta és qui
       # necessita ajuda i qui l'hi dona. Dos errors farien mal de debò i cap
       # dels dos peta: que hi entri informació de salut —una casella de text
