@@ -673,12 +673,6 @@ ${seus.map(fitxa).join('\n')}
   }).join('\n');
 }
 
-function blocSos() {
-  return `      <div class="pk-graella">
-${SOS_PAQUETS.map(fitxa).join('\n')}
-      </div>`;
-}
-
 /* ══ El filtre de sector ══════════════════════════════════════════════════
    Va generat i no escrit a mà per un motiu concret: el dia que s'afegeixi un
    sector, el botó ha de sortir sol. Un filtre escrit a mà que no coneix un
@@ -786,7 +780,10 @@ function diccionari(llengua) {
   files.push(`  ${q('cm.peu')}:${q(es
     ? 'Todos los precios de esta página son <strong>sin IVA</strong>. La escala es tarifa propuesta para 2026 y se revisa cada año. El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y no llevan precio cerrado publicado: lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia, y preferimos enseñar el desglose que comprometer una cifra que después haya que desdecir.'
     : "Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.")},`);
-  PAQUETS.concat(SOS_PAQUETS).forEach(p => {
+  /* Només els paquets de la portada. Els tres del SOS es pinten a `/sos/`,
+     que no passa pel diccionari: emetre'ls aquí serien claus que no tradueixen
+     res, i una clau òrfena fa creure que aquell text està cobert. */
+  PAQUETS.forEach(p => {
     files.push(`  ${q(k(p.id, 'n'))}:${q(es ? p.nomEs : p.nom)},` +
                `${q(k(p.id, 'e'))}:${q(es ? p.endusEs : p.endus)},`);
     files.push(`  ${q(k(p.id, 'q'))}:${q(es ? p.quiEs : p.qui)},` +
@@ -841,7 +838,6 @@ const MARQUES = [
   ['<!--TT-OFERTA-->', '<!--/TT-OFERTA-->', blocCataleg],
   ['<!--TT-FILTRE-->', '<!--/TT-FILTRE-->', blocFiltre],
   ['<!--TT-COST-->', '<!--/TT-COST-->', blocCost],
-  ['<!--TT-SOS-->', '<!--/TT-SOS-->', blocSos],
   ['/*TT-I18N-CA*/', '/*/TT-I18N-CA*/', () => diccionari('ca')],
   ['/*TT-I18N-ES*/', '/*/TT-I18N-ES*/', () => diccionari('es')]
 ];

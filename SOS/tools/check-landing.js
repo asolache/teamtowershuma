@@ -192,11 +192,29 @@ if (!blocMd) bad('no es troba el bloc del catàleg al README: aquesta comprovaci
 const enMd = [...blocMd.matchAll(/^\| \*\*([^*]+)\*\* \|/gm)].map(m => m[1].trim());
 if (!enMd.length) bad('el README no porta cap paquet: el catàleg no s\'hi ha generat');
 else {
+  /* Els paquets es reparteixen entre dues pantalles i la regla no canvia: **cap
+     paquet del README es pot quedar sense lloc on comprar-lo**. El que canvia
+     és on es busca cadascun.
+
+     Els tres del SOS es venen a `/sos/` i no a la portada, perquè es decideixen
+     quan algú ja és a dins de l'eina i no quan compara consultories. Mirar-los
+     només a la portada faria petar aquesta guarda per una decisió de negoci que
+     es va prendre a posta; no mirar-los enlloc els deixaria desaparèixer sense
+     que petés res, que és pitjor. Es miren als dos llocs. */
   const enHtml = [...src.matchAll(/'pk\.[a-z0-9-]+\.n':'((?:[^'\\]|\\.)*)'/g)]
     .map(m => m[1].replace(/\\'/g, "'"));
-  const orfesMd = enMd.filter(n => !enHtml.includes(n));
-  if (!orfesMd.length) ok(`els ${enMd.length} paquets del README són tots a la portada`);
-  else bad(`${pl(orfesMd.length, 'paquet del README no surt', 'paquets del README no surten')} a la portada (${mostra(orfesMd)}) — dos catàlegs són dues empreses`);
+  const APP_SOS = readFileSync(join(__dirname, '..', 'index.html'), 'utf8');
+  const enSos = [...APP_SOS.matchAll(/<div class="pq-h"><b>([^<]+)<\/b>/g)].map(m => m[1].trim());
+  /* El README és en castellà i `/sos/` és en català, que no passa pel
+     diccionari. Es tradueix el nom amb la declaració del catàleg —que és qui
+     sap les dues formes— en comptes de comparar dues llengües i concloure que
+     falta un paquet que hi és. */
+  const { SOS_PAQUETS } = require('./build-oferta.js');
+  const caDeEs = new Map(SOS_PAQUETS.map(p => [p.nomEs, p.nom]));
+  const esVen = n => enHtml.includes(n) || enSos.includes(n) || enSos.includes(caDeEs.get(n));
+  const orfesMd = enMd.filter(n => !esVen(n));
+  if (!orfesMd.length) ok(`els ${enMd.length} paquets del README es venen en algun lloc (${enHtml.length} a la portada, ${enSos.length} a /sos/)`);
+  else bad(`${pl(orfesMd.length, 'paquet del README no es ven', 'paquets del README no es venen')} enlloc (${mostra(orfesMd)}) — un paquet sense pantalla és un catàleg a mitges`);
 }
 
 /* ── 6 · Les paraules que la guia de marca prohibeix ───────────────────────
@@ -340,6 +358,34 @@ else {
   else if (!orfes.length) ok(`els ${noms.length} clients anomenats tenen font escrita a trajectoria.md`);
   else bad(`${pl(orfes.length, 'nom de client', 'noms de client')} a la portada sense font al coneixement: `
     + orfes.join(', ') + ' — un nom d\'empresa és una afirmació sobre un tercer i ha de dir qui ho ha dit i quan');
+}
+
+/* ── 7d · El pont cap al SOS no es pot perdre ──────────────────────────────
+   El contingut del SOS ha marxat d'aquesta portada cap a `/sos/`, i era la
+   decisió correcta: el que ajuda a **decidir una compra** es queda aquí i el
+   que ajuda a **fer servir el model** viu allà.
+
+   Però el SOS és la prova més forta que té la casa —el «100 % de l'eina és
+   oberta» és una de les tres xifres del hero, i «s'aprèn fent amb projectes
+   propis» és el que la distingeix d'una consultoria petita amb un mètode
+   bonic—. Si un dia algú escurça la portada una mica més i s'emporta els dos
+   ponts, el resultat serà una pàgina més curta **que ven pitjor**, i no petarà
+   res: una secció que desapareix no deixa cap error.
+
+   Per això es comprova el que ha de seguir sent cert: que hi hagi camí, i que
+   sigui a la primera meitat. Un enllaç al peu no és un pont: és una nota. */
+const camins = [...cos.matchAll(/href="\/SOS\/?"/g)].map(m => m.index);
+if (!camins.length) bad("la portada no porta enlloc al SOS — és la prova més forta que té la casa i s'hi ha de poder anar");
+else {
+  const primer = Math.min(...camins);
+  if (primer > cos.length / 2) bad("l'únic camí cap al SOS és a la segona meitat de la pàgina: un enllaç al peu és una nota, no un pont");
+  else ok(`${pl(camins.length, 'camí', 'camins')} cap al SOS, el primer a la primera meitat`);
+  /* I que els ponts segueixin dient què s'hi trobarà. Un botó que només diu
+     «obre el SOS» no és un pont tampoc: no dona cap motiu per travessar-lo. */
+  const diu = /encara que no ens contractis|sense contractar/i.test(cos)
+    && /(projecte de veritat|casos inventats)/i.test(cos);
+  if (diu) ok('i els ponts diuen per què val la pena travessar-los');
+  else bad("els ponts cap al SOS no diuen què s'hi troba: un botó sense motiu no el clica ningú");
 }
 
 // ── 8 · Informatiu ───────────────────────────────────────────────────────

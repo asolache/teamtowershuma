@@ -53,14 +53,81 @@ a{color:var(--blue);text-decoration:none}
 #onboarding h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:1.3rem}
 #onboarding h1 em{font-style:normal;color:var(--blue)}
 .ob-sub{font-size:1.05rem;color:var(--light);line-height:1.75;margin-bottom:2.5rem;max-width:560px;margin-left:auto;margin-right:auto}
-.ob-triad{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.75rem}
-.ob-chip{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;min-width:140px;text-align:left}
-.ob-chip .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem}
-.ob-chip.c1{border-top:2px solid var(--purple)}.ob-chip.c1 .lbl{color:var(--purple)}
-.ob-chip.c2{border-top:2px solid var(--blue)}.ob-chip.c2 .lbl{color:var(--blue)}
-.ob-chip.c3{border-top:2px solid var(--indigo)}.ob-chip.c3 .lbl{color:var(--indigo)}
-.ob-chip .nm{font-size:.95rem;font-weight:600}
-.ob-chip .ds{font-size:.75rem;color:var(--muted);margin-top:.2rem;line-height:1.4}
+/* ── LA PORTA · les vint-i-una pàgines, dites ────────────────────────────────
+   Les fitxes són enllaços i no targetes decoratives: tota la porta és
+   navegable amb teclat sense cap script, que és el que ha de passar en una
+   pàgina que existeix per portar a un altre lloc.
+
+   Cada fitxa diu tres coses en tres mides: el nom, què és, i què s'hi guanya.
+   Amb només les dues primeres, això seria el desplegable del menú amb un altre
+   disseny — i el desplegable ja hi és. */
+.ob-sec{max-width:980px;margin:0 auto 2.6rem;text-align:left}
+.ob-sec h2{font-size:1.25rem;margin:0 0 .35rem;font-weight:700}
+.ob-sub2{font-size:.88rem;color:var(--light);line-height:1.65;margin:0 0 1rem;max-width:70ch}
+.ob-sub2 b{color:var(--white);font-weight:600}
+.pg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.7rem}
+.pg{display:flex;flex-direction:column;gap:.18rem;background:var(--bg-panel);border:1px solid var(--border);
+  border-radius:10px;padding:.85rem .95rem;text-decoration:none;transition:border-color .15s,transform .15s}
+.pg:hover,.pg:focus-visible{transform:translateY(-2px)}
+.pg.m{border-top:2px solid var(--green)}.pg.m:hover{border-color:var(--green)}
+.pg.a{border-top:2px solid var(--purple)}.pg.a:hover{border-color:var(--purple)}
+.pg.w{border-top:2px solid var(--blue)}.pg.w:hover{border-color:var(--blue)}
+.pg-ic{font-size:1.1rem;line-height:1}
+.pg-n{font-size:.95rem;font-weight:600;color:var(--white)}
+.pg-q{font-family:var(--mono);font-size:.64rem;color:var(--muted);line-height:1.4}
+.pg-g{font-size:.78rem;color:var(--light);line-height:1.5;margin-top:.3rem}
+
+.ob-psico{margin-top:1rem;background:var(--bg-panel);border:1px solid var(--border);
+  border-left:2px solid var(--indigo);border-radius:10px;padding:.85rem .95rem}
+.ob-psico-k{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--indigo);margin-bottom:.5rem}
+.ob-psico ul{margin:0;padding-left:1.05rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.3rem .9rem}
+.ob-psico li{font-size:.78rem;color:var(--light);line-height:1.5}
+.ob-psico li b{color:var(--white);font-weight:600}
+.ob-psico-n{font-size:.7rem;color:var(--muted);line-height:1.5;margin:.6rem 0 0}
+
+.ob-mots{margin-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.7rem}
+.ob-mots-k{grid-column:1/-1;font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.ob-mot{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem}
+.ob-mot b{font-size:.9rem;color:var(--purple)}
+.ob-mot span{display:block;font-family:var(--mono);font-size:.62rem;color:var(--muted);margin:.1rem 0 .35rem}
+.ob-mot p{margin:0;font-size:.77rem;color:var(--light);line-height:1.5}
+
+.ob-pq{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.7rem}
+.pq{background:var(--bg-panel);border:1px solid var(--border);border-top:2px solid var(--gold,#ffd700);
+  border-radius:10px;padding:.85rem .95rem;display:flex;flex-direction:column}
+.pq-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem;margin-bottom:.35rem}
+.pq-h b{font-size:.95rem}
+.pq-d{font-family:var(--mono);font-size:.63rem;color:var(--muted)}
+.pq-e{margin:0 0 .6rem;font-size:.78rem;color:var(--light);line-height:1.5;flex:1}
+.pq-p{font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--green);
+  border-top:1px solid var(--border);padding-top:.4rem}
+.pq-p span{display:block;font-family:inherit;font-size:.7rem;font-weight:400;color:var(--muted);margin-top:.15rem}
+.ob-pq-n{font-size:.75rem;color:var(--muted);line-height:1.55;margin:.8rem 0 0}
+.ob-pq-n b{color:var(--light);font-weight:600}
+@media(max-width:620px){.ob-sec h2{font-size:1.1rem}}
+
+/* Home · què hi guanya qui s'hi posa. Cada targeta acaba amb les seves xifres
+   en mono, separades del text: és el que es mira primer i el que s'ha de poder
+   comparar entre targetes sense llegir-les senceres. */
+.ob-benef{max-width:920px;margin:0 auto 2.5rem;text-align:left}
+.obb-cap{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:.9rem}
+.obb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+.obb{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.05rem;display:flex;flex-direction:column}
+.obb.b1{border-top:2px solid var(--green)}.obb.b2{border-top:2px solid var(--purple)}.obb.b3{border-top:2px solid var(--blue)}
+.obb-k{font-size:.95rem;font-weight:600;margin-bottom:.4rem}
+.obb.b1 .obb-k{color:var(--green)}.obb.b2 .obb-k{color:var(--purple)}.obb.b3 .obb-k{color:var(--blue)}
+.obb-d{font-size:.8rem;color:var(--light);line-height:1.55;margin:0 0 .7rem;flex:1}
+.obb-d b{color:var(--white);font-weight:600}
+.obb-n{display:flex;gap:.5rem;align-items:baseline;border-top:1px solid var(--border);padding-top:.4rem;margin-top:.35rem}
+.obb-n b{font-family:var(--mono);font-size:.85rem;color:var(--white);white-space:nowrap}
+.obb-n span{font-size:.7rem;color:var(--muted);line-height:1.4}
+.obb-rsc{font-size:.82rem;color:var(--light);line-height:1.6;margin:1rem 0 0;padding:.75rem .9rem;background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--indigo);border-radius:8px}
+.obb-rsc b{color:var(--white);font-weight:600}
+.obb-font{font-size:.72rem;color:var(--muted);line-height:1.55;margin:.6rem 0 0}
+.obb-font b{color:var(--light);font-weight:600}
+@media(max-width:860px){.obb-grid{grid-template-columns:1fr}}
 /* Home · dolors que curem */
 .ob-pains{display:flex;flex-direction:column;gap:.5rem;margin:0 auto 2.25rem;max-width:600px;text-align:left}
 .ob-pain{display:grid;grid-template-columns:auto 1fr;gap:.2rem .55rem;align-items:baseline;background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:8px;padding:.6rem .8rem;font-size:.86rem;color:var(--light)}
@@ -1005,17 +1072,54 @@ a{color:var(--blue);text-decoration:none}
   <div class="ob-inner">
     <div class="ob-eyebrow">Social Operating System · TeamTowers Humà</div>
     <h1>Converteix la voluntat veïnal<br>en <em>xarxes que duren.</em></h1>
-    <p class="ob-sub">Banc de temps, biblioteca de les coses, comunitat energètica, cooperativa… El SOS els dóna a tots <strong>el mateix esquelet</strong>: mapa de valor, tauler d'acció i comptabilitat signada. Sense servidor, sense quota, sense cedir dades — <strong>tot viu al teu navegador</strong>.</p>
+    <p class="ob-sub">Banc de temps, biblioteca de les coses, comunitat energètica, cooperativa… El SOS els dóna a tots <strong>el mateix esquelet</strong>: mapa de valor, tauler d'acció i comptabilitat signada. Serveix igual per a <strong>un barri, una organització o una xarxa d'entitats</strong>. Sense servidor, sense quota, sense cedir dades — <strong>tot viu al teu navegador</strong>.</p>
     <div class="ob-pains">
       <div class="ob-pain"><span class="px">✕</span><span>«Sempre tirem els mateixos quatre.»</span><span class="pv">→ el mapa de valor ensenya qui sosté què, i on cal rellevar</span></div>
       <div class="ob-pain"><span class="px">✕</span><span>«Ningú sap què fem ni quant val.»</span><span class="pv">→ comptabilitat de valor signada: hores, objectes, € i intangibles</span></div>
       <div class="ob-pain"><span class="px">✕</span><span>«Les decisions no queden enlloc.»</span><span class="pv">→ propostes votades i ancorades públicament, verificables</span></div>
     </div>
-    <div class="ob-triad">
-      <div class="ob-chip c1"><div class="lbl">Cohesió</div><div class="nm">Fent Pinya</div><div class="ds">Confiança i interdependència veïnal</div></div>
-      <div class="ob-chip c2"><div class="lbl">Diagnòstic</div><div class="nm">Mapa VNA</div><div class="ds">Els fluxos de valor, visibles</div></div>
-      <div class="ob-chip c3"><div class="lbl">Sostenibilitat</div><div class="nm">SOS</div><div class="ds">Autogestió justa i transparent</div></div>
+    <!-- QUÈ HI GUANYA QUI S'HI POSA ────────────────────────────────────────
+         Aquí hi havia la tríada —cohesió, diagnòstic, sostenibilitat— amb els
+         tres noms del mètode. Era correcta i deia **què és això**; qui hi
+         arriba, però, ha de decidir si s'hi posa, i per decidir-ho necessita
+         saber **què s'hi guanya**.
+
+         La resposta honesta d'una eina que compta valor és una xifra, i totes
+         les d'aquest bloc surten de les taules de l'app —l'oracle de l'hora i
+         de l'objecte, el desgast per préstec, la forquilla del fons, els
+         mòduls de formació—: les escriu `build-beneficis.js` llegint-les. Una
+         xifra de màrqueting no la comprova mai ningú; aquestes les comprova el
+         CI cada vegada.
+
+         La tríada no s'ha perdut: viu a la portada de teamtowershuma.com, que
+         és on es ven el mètode. Aquí es ven el que en surt. -->
+<!--SOS-BENEFICIS-->
+<div class="ob-benef">
+  <div class="obb-cap">Què hi guanya qui s'hi posa</div>
+  <div class="obb-grid">
+    <div class="obb b1">
+      <div class="obb-k">Un fons que ja teniu</div>
+      <p class="obb-d">Les hores, els objectes, el talent i els diners que ja es mouen, <b>comptats com un sol fons</b>: cada línia amb la seva quantitat, la seva tarifa i d'on surt. És el patrimoni que la comunitat té i no sortia a cap paper.</p>
+      <div class="obb-n"><b>20 €/h</b><span>de referència, i cada node pot canviar-la</span></div>
+      <div class="obb-n"><b>± 30 %</b><span>de forquilla: es publica com una estimació, no com una factura</span></div>
     </div>
+    <div class="obb b2">
+      <div class="obb-k">El que aprèn cada persona</div>
+      <p class="obb-d">Sostenir una dinàmica és un ofici, i aquí es pot aprendre i <b>acreditar</b>. El certificat el signa qui ha vist la feina i <b>és de la persona</b>: se l'endú encara que plegui del projecte.</p>
+      <div class="obb-n"><b>9 professions</b><span>sortides dels rols reals de les dinàmiques</span></div>
+      <div class="obb-n"><b>16 mòduls</b><span>de N0 a N3, i el que fas queda al teu registre</span></div>
+    </div>
+    <div class="obb b3">
+      <div class="obb-k">El que s'estalvia cada persona</div>
+      <p class="obb-d">Una hora rebuda és una hora que no es paga al mercat. I una eina que s'agafa prestada <b>costa el desgast, no el preu</b>: es paga l'ús, no la compra.</p>
+      <div class="obb-n"><b>12–35 €/h</b><span>segons l'ofici, de l'oracle del banc de temps</span></div>
+      <div class="obb-n"><b>10 €</b><span>costa un préstec d'una eina de electrònica de 200 €, que és el 5 % de desgast</span></div>
+    </div>
+  </div>
+  <p class="obb-rsc"><b>En una organització és el mateix esquelet amb un altre nom.</b> Una empresa, una cooperativa o una federació d'entitats hi pot muntar un programa de <b>responsabilitat social amb les seves persones</b> —banc de temps intern, biblioteca d'eines, voluntariat comptat, mentoria entre companys— i mesurar-lo amb les mateixes xifres. Amb una diferència que no és petita: <b>el que aporta cada persona queda al seu registre</b>, no al de l'empresa, i se'n va amb ella.</p>
+  <p class="obb-font">Les xifres són <b>els valors de referència que porta el SOS</b> i es poden canviar node per node. Es publiquen com el que són —estimacions amb forquilla— perquè un número inventat que sembli comptabilitat és pitjor que no tenir-lo.</p>
+</div>
+<!--/SOS-BENEFICIS-->
     <div class="ob-paths">
       <button class="ob-path p1" id="obHero">
         <span class="op-ic">🦸</span>
@@ -1036,6 +1140,56 @@ a{color:var(--blue);text-decoration:none}
         <span class="op-cta">Explora Catalunya →</span>
       </button>
     </div>
+    <!-- LA PORTA ────────────────────────────────────────────────────────
+         Això és el que faltava. `/sos/` feia 6,3 KB davant d'1,1 MB de
+         pàgines i no n'anomenava ni una: tres portes i una tira d'enllaços,
+         i l'única manera de saber que existeix La Compra o L'Habitatge era
+         obrir el desplegable del menú. Una porta que no diu on porta és una
+         paret amb un pany.
+
+         Els quatre blocs els genera `SOS/tools/build-portal.js` del menú
+         declarat a `build-nav.js` i dels paquets de `build-oferta.js`. El que
+         s'hi declara de nou és només **què s'hi guanya** a cada pàgina, que
+         és l'única cosa que no existia enlloc. -->
+<!--SOS-MUNTAR-->
+<section class="ob-sec">
+<h2>Què hi pots muntar</h2>
+<p class="ob-sub2">Set dinàmiques, cadascuna amb la seva pàgina i el seu full de ruta. No cal fer-les totes ni fer-les en ordre: la majoria de pobles en comencen una i les altres arriben soles.</p>
+<div class="pg-grid"><a class="pg m" href="banc-temps.html"><span class="pg-ic">⏳</span><span class="pg-n">El Banc de Temps</span><span class="pg-q">Una hora val una hora, i el saldo que ho diu</span><span class="pg-g">Accés a serveis sense diners: cada hora rebuda és una hora que no es paga al mercat. I el saldo de tothom a la vista, que és el que evita que les de sempre es cremin.</span></a><a class="pg m" href="biblioteca.html"><span class="pg-ic">🔧</span><span class="pg-n">La Biblioteca de les Coses</span><span class="pg-q">Donar o deixar, i què val cada préstec</span><span class="pg-g">Compartir el que es fa servir dos cops l'any estalvia centenars d'euros per llar i treu residus. Cada préstec val el desgast, no el preu.</span></a><a class="pg m" href="compra.html"><span class="pg-ic">🛒</span><span class="pg-n">La Compra</span><span class="pg-q">Grup de consum i compra col·lectiva</span><span class="pg-g">Agregar la demanda abarateix el que sol comprar-se car i sol, i deixa el marge al poble en comptes de al camió.</span></a><a class="pg m" href="energia.html"><span class="pg-ic">⚡</span><span class="pg-n">L'Energia</span><span class="pg-q">Comunitat energètica i autoconsum compartit</span><span class="pg-g">La teulada és de qui hi viu. Es reparteix l'excedent, es veu qui hi ha posat què i la factura deixa de decidir-la un altre.</span></a><a class="pg m" href="habitatge.html"><span class="pg-ic">🏘</span><span class="pg-n">L'Habitatge</span><span class="pg-q">Cessió d'ús: quota, entrada i sortida</span><span class="pg-g">Quota d'ús per sota del mercat i sense especulació: accés estable i llarg, amb l'entrada i la sortida escrites abans de necessitar-les.</span></a><a class="pg m" href="matriu.html"><span class="pg-ic">🌱</span><span class="pg-n">La MATRIU</span><span class="pg-q">La incubadora: etapes, portes i propietat</span><span class="pg-g">Una idea sap en quina etapa és i què li falta per passar a la següent, en comptes d'anar fent fins que s'encalla.</span></a><a class="pg m" href="vna.html"><span class="pg-ic">🕸</span><span class="pg-n">Mapa de valor</span><span class="pg-q">Rols i intercanvis d'un projecte</span><span class="pg-g">El mapa de qui sosté què, amb els favors i la confiança que no compta ningú. És el pas que va abans de tots els altres.</span></a></div>
+<div class="ob-psico"><div class="ob-psico-k">I el que no surt a cap factura</div><ul><li><b>Menys soledat.</b> El suport mutu i la trobada regular protegeixen la salut mental, sobretot de la gent gran.</li><li><b>Més pertinença.</b> Les xarxes denses de reciprocitat generen seguretat i identitat compartida.</li><li><b>Relleu.</b> Rols clars i governança fan que entri gent nova i que allò no depengui de dues o tres persones.</li><li><b>Resiliència.</b> Les comunitats cohesionades aguanten millor les crisis i ho noten als seus indicadors de benestar.</li></ul><p class="ob-psico-n">Evidència qualitativa de la literatura d'acció comunitària i d'experiències pròpies. Es diu com el que és: no hi ha cap xifra tancada darrere.</p></div>
+</section>
+<!--/SOS-MUNTAR-->
+
+<!--SOS-APREN-->
+<section class="ob-sec">
+<h2>Com s'aprèn</h2>
+<p class="ob-sub2">No hi ha cursos sobre casos inventats: s'aprèn portant un projecte de veritat. Tot això és obert i es pot mirar per dins abans de contractar res.</p>
+<div class="pg-grid"><a class="pg a" href="formacio.html"><span class="pg-ic">🎓</span><span class="pg-n">Formació</span><span class="pg-q">16 mòduls, de N0 a N3</span><span class="pg-g">De N0 a N3. El que fas queda al teu registre i el certificat és teu, no del projecte.</span></a><a class="pg a" href="escola.html"><span class="pg-ic">🏫</span><span class="pg-n">Escoles</span><span class="pg-q">El SOS a mida d'aula</span><span class="pg-g">El mateix a l'aula, amb una regla que no es toca: cap nom real de cap criatura, enlloc.</span></a><a class="pg a" href="ia.html"><span class="pg-ic">🤖</span><span class="pg-n">Fluxos amb IA</span><span class="pg-q">Automatitzar el tangible, valorar l'intangible</span><span class="pg-g">Automatitzar el tangible i valorar l'intangible, amb IA que proposa i mai decideix.</span></a><a class="pg a" href="vedes.html"><span class="pg-ic">⛔</span><span class="pg-n">Les vedes</span><span class="pg-q">Les regles, amb el motiu al costat</span><span class="pg-g">Cada regla amb el motiu escrit al costat. És el que evita repetir un error que ja va sortir car.</span></a><a class="pg a" href="blog.html"><span class="pg-ic">📝</span><span class="pg-n">Blog</span><span class="pg-q">Cada capacitat, explicada</span><span class="pg-g">Cada capacitat explicada a part, per si vols entendre-la abans de fer-la servir.</span></a></div>
+<div class="ob-mots"><div class="ob-mots-k">Tres paraules que farem servir</div><div class="ob-mot"><b>SOS</b><span>Social Operating System</span><p>Qui hi és, qui fa què, qui ha aportat quantes hores i què s'ha decidit. S'obre com una pàgina web, sense compte, i les dades es queden al teu aparell.</p></div><div class="ob-mot"><b>MATRIU</b><span>El camí d'una idea fins que se sosté sola</span><p>Vuit etapes, de «se'ns ha acudit això» fins a un projecte amb comptes, rols i relleu. Serveix per saber en quina ets.</p></div><div class="ob-mot"><b>Slicing Pie</b><span>Repartir segons el que hi ha posat cadascú</span><p>En comptes de pactar percentatges el primer dia —quan ningú sap qui aguantarà—, s'anota el que aporta cadascú i el repartiment surt d'allà.</p></div></div>
+</section>
+<!--/SOS-APREN-->
+
+<!--SOS-MON-->
+<section class="ob-sec">
+<h2>El món</h2>
+<p class="ob-sub2">El SOS no és només una eina de gestió: porta un món al darrere, i el món és el que fa que la gent hi torni. Tot obert i tot visitable ara mateix.</p>
+<div class="pg-grid"><a class="pg w" href="comando.html"><span class="pg-ic">🎬</span><span class="pg-n">El Comando</span><span class="pg-q">La pel·lícula que farem 150.000</span><span class="pg-g">Catorze personatges canònics i el teu és el que ja fas al barri. Els crèdits surten del registre signat.</span></a><a class="pg w" href="molekulandia.html"><span class="pg-ic">🏘</span><span class="pg-n">Molekulandia</span><span class="pg-q">El poble sencer i les nou professions</span><span class="pg-g">El poble sencer en una pantalla: cada edifici és un tipus de projecte i de cadascun s'entra a l'eina que el porta.</span></a><a class="pg w" href="molekulon.html"><span class="pg-ic">🌀</span><span class="pg-n">Molekulon</span><span class="pg-q">Molekulandia, un estat líquid</span><span class="pg-g">El mateix SOS amb un món diferent a dins: un estat líquid on el nivell del mig és un tema i no un tros de terra.</span></a><a class="pg w" href="joc.html"><span class="pg-ic">🎮</span><span class="pg-n">El joc</span><span class="pg-q">La plaça, a ritme</span><span class="pg-g">La plaça a ritme. La manera més curta d'entendre per què un castell no l'aguanta qui hi puja.</span></a><a class="pg w" href="online.html"><span class="pg-ic">🌐</span><span class="pg-n">Directori</span><span class="pg-q">Qui hi ha, per territori</span><span class="pg-g">Qui hi ha al territori, què ofereix i què busca. Cadascú signa la seva fitxa: ningú publica en nom d'un altre.</span></a></div>
+</section>
+<!--/SOS-MON-->
+
+<!--SOS-PAQUETS-->
+<section class="ob-sec">
+<h2>I si voleu que us hi acompanyem</h2>
+<p class="ob-sub2">L'eina és lliure i funciona sense nosaltres: això no és una versió de prova. El que es paga és <b>no haver de descobrir sol com es munta</b>. Tres coses, amb el preu escrit.</p>
+<div class="ob-pq">
+<div class="pq"><div class="pq-h"><b>Implantació i suport</b><span class="pq-d">3 setmanes</span></div><p class="pq-e">L'eina amb el vostre cas a dins, la sincronització entre aparells resolta i la gent sabent-la fer servir. Les dades es queden al vostre navegador.</p><div class="pq-p">De 800 a 2500 €<span>Ajuntaments, consells comarcals i Ateneus</span></div></div>
+<div class="pq"><div class="pq-h"><b>IA amb frens · sessió de viabilitat</b><span class="pq-d">1 sessió + informe · 2 setmanes</span></div><p class="pq-e">Què es pot automatitzar amb garanties i què no, amb el criteri escrit: la màquina proposa, res entra sense que una persona ho hagi comprovat, i sempre es diu d'on ho ha tret.</p><div class="pq-p">De 600 a 1500 €<span>Qui es plantegi fer servir IA amb dades de persones</span></div></div>
+<div class="pq"><div class="pq-h"><b>Contractes intel·ligents · estudi de viabilitat</b><span class="pq-d">3 setmanes</span></div><p class="pq-e">Un informe de si val la pena, què costaria i quins riscos té. Es ven l'estudi i no l'eina: al SOS això encara no està construït, i l'informe ho diu.</p><div class="pq-p">De 1200 a 2500 €<span>Cooperatives i administracions que vulguin automatitzar acords</span></div></div>
+</div>
+<p class="ob-pq-n">El catàleg sencer —consultoria, formació, producció i dinamització— és a <a href="../index.html#cataleg">teamtowershuma.com</a>, amb la forquilla de cada paquet i d'on surt el número. Aquí hi ha només el que es contracta <b>al voltant de l'eina</b>.</p>
+</section>
+<!--/SOS-PAQUETS-->
+
     <div class="ob-secondary">
       <button class="ob-link" id="obDir">🌐 Directori d'entitats</button>
       <a class="ob-link" href="diagnostic.html">🔍 Diagnòstic en 3 min</a>
