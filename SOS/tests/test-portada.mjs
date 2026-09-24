@@ -160,7 +160,17 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   const r = await p.evaluate(() => {
     const hero = document.querySelector('.hero');
     return {
-      dolor: hero.querySelectorAll('.hero-pains li').length,
+      /* Les tres veus eren al hero i ara són a «El repte», que és la secció
+         del problema. El que ha de ser cert no és on viuen: és que no s'hagin
+         perdut pel camí en moure-les, que és el que passa sempre. */
+      dolor: document.querySelectorAll('#enfoc .repte-veus li').length,
+      /* I el que el hero diu ara al seu lloc: d'on ve la casa. Sense els dos
+         noms i el recorregut entre ells, «flux de valor» és una promesa com
+         qualsevol altra i el motiu per triar aquesta consultoria no surt fins
+         a la vuitena pantalla. */
+      evo: hero.querySelectorAll('.hero-evo li').length,
+      llinatge: /TeamTowers Humà/.test(hero.textContent) && /2005/.test(hero.textContent),
+      flux: /flux de valor/i.test(hero.textContent),
       diag: !!hero.querySelector('a[href*="diagnostic"]'),
       /* La segona sortida era «veure el SOS en viu» i ara és demanar
          pressupost. Les dues tornen alguna cosa sense demanar res a canvi, que
@@ -174,6 +184,9 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
     };
   });
   ok(r.dolor === 3, 'els tres dolors del principi no s\'han perdut pel camí');
+  ok(r.evo === 3, 'el hero explica d\'on ve la casa en tres passos');
+  ok(r.llinatge, 'i nomena les dues cases i l\'any: TeamTowers → TeamTowers Humà');
+  ok(r.flux, 'i diu què es mesura, que és el que es contracta');
   ok(r.diag && r.segona, 'els dos camins de sortida segueixen a la primera pantalla');
   ok(r.sosAlMenu, 'i el SOS és a un clic des de la barra de dalt');
   ok(r.finan, 'i la línia que diu qui ho paga, que és la primera pregunta d\'un ajuntament');
