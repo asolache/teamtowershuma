@@ -197,7 +197,12 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   /* `cost` va just després del catàleg i no abans: primer es veu què es ven i
      amb quina forquilla, i llavors d'on surt el número. A l'inrevés seria
      explicar una comptabilitat a algú que encara no sap què li ofereixes. */
-  const ESPINA = ['enfoc', 'glossari', 'relat', 'com', 'fentpinya',
+  /* `fentpinya` i `mapaval` han pujat al davant de tot. El que la pàgina ven
+     és el mapa de valor, i qui acaba de llegir al hero que això va «dels
+     castells al flux de valor» ha de poder veure què és un flux de valor a la
+     pantalla següent — no tres pantalles de problema abans. Van en parella i en
+     aquest ordre: el castell diu QUÈ ÉS un mapa i el celler QUÈ S'HI TROBA. */
+  const ESPINA = ['fentpinya', 'mapaval', 'enfoc', 'glossari', 'relat', 'com',
                   'aprenent', 'cataleg', 'cost', 'sos', 'trajectoria', 'objeccions'];
   const pos = id => r.ordre.indexOf(id);
   const falten = ESPINA.filter(id => pos(id) < 0);

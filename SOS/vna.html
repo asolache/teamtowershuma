@@ -93,6 +93,93 @@ button[disabled]{opacity:.35;cursor:default}
 .compt b{font-family:var(--mono);font-size:1.15rem;display:block;color:var(--text)}
 .compt .t b{color:var(--tang)} .compt .i b{color:var(--intang)}
 
+/* ══ COM ES FA UN MAPA · la notació, el procés i el cas ══════════════════════
+   Tot això va **després** del castell i no abans: la colla explica la idea en
+   trenta segons i aquí comença la feina. Qui només volia entendre-ho ja se'n
+   pot anar per amunt, i qui ho ha de contractar continua llegint.
+
+   Les dues menes de transacció es distingeixen pel traç i no només pel color,
+   igual que a la portada: un mapa que només es pot llegir distingint el blau
+   del magenta deixa fora precisament qui més necessita que el dibuix sigui
+   clar. */
+.mv-sec{margin-top:3rem;border-top:1px solid var(--vora);padding-top:1.8rem}
+.mv-sec h2{font-size:clamp(1.25rem,2.6vw,1.7rem);margin:0 0 .5rem;line-height:1.18}
+.mv-sec .mv-sub{color:var(--clar);font-size:.92rem;line-height:1.7;margin:0 0 1.2rem;max-width:74ch}
+.mv-sec .mv-sub b,.mv-sec p b{color:var(--text);font-weight:600}
+.mv-h3{font-size:1rem;margin:1.6rem 0 .7rem;color:var(--clar)}
+
+.mv-not{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:.7rem}
+.mv-nt{background:var(--pla);border:1px solid var(--vora);border-radius:10px;padding:.8rem .9rem}
+.mv-nt-h{display:flex;flex-direction:column;gap:.1rem;margin-bottom:.4rem}
+.mv-nt-h b{font-size:.95rem}
+.mv-nt-h span{font-family:var(--mono);font-size:.64rem;color:var(--apagat)}
+.mv-nt p{margin:0;font-size:.78rem;color:var(--clar);line-height:1.55}
+.mv-nt.node{border-left:2px solid var(--clar)}
+.mv-nt.trans{border-left:2px solid var(--apagat)}
+.mv-nt.tang{border-left:2px solid var(--tang)}
+.mv-nt.tang .mv-nt-h b{color:var(--tang)}
+.mv-nt.intang{border-left:2px dashed var(--intang)}
+.mv-nt.intang .mv-nt-h b{color:var(--intang)}
+.mv-nt.entrega{border-left:2px solid #00e676}
+.mv-nt.entrega .mv-nt-h b{color:#00e676}
+
+/* Els nou passos. Els tres d'anàlisi van marcats perquè són el mètode: la
+   resta és dibuixar i decidir, que ho sap fer qualsevol sala ben portada. */
+.mv-pas{list-style:none;counter-reset:mp;padding:0;margin:0;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.7rem}
+.mv-pas li{counter-increment:mp;position:relative;background:var(--pla);border:1px solid var(--vora);
+  border-radius:10px;padding:.8rem .9rem .8rem 2.4rem}
+.mv-pas li::before{content:counter(mp);position:absolute;left:.75rem;top:.85rem;width:1.15rem;height:1.15rem;
+  border-radius:50%;background:var(--vora);color:var(--clar);font-family:var(--mono);font-size:.64rem;
+  display:grid;place-items:center}
+.mv-pas li.allee{border-color:rgba(224,64,251,.45)}
+.mv-pas li.allee::before{background:var(--intang);color:#07070d;font-weight:700}
+.mv-pas li b{display:block;font-size:.92rem;margin:.05rem 0 .3rem}
+.mv-pas li p{margin:0;font-size:.78rem;color:var(--clar);line-height:1.55}
+.mv-pk{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--apagat)}
+.mv-pas li.allee .mv-pk{color:var(--intang)}
+
+.mv-ent{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:.7rem}
+.mv-e{background:var(--pla);border:1px solid var(--vora);border-top:2px solid #00e676;border-radius:10px;padding:.8rem .9rem}
+.mv-e b{font-size:.92rem}
+.mv-e p{margin:.3rem 0 0;font-size:.78rem;color:var(--clar);line-height:1.55}
+.mv-nota{font-size:.82rem;color:var(--apagat);line-height:1.65;margin:1rem 0 0;
+  border-left:2px solid var(--vora);padding-left:.8rem}
+
+.mv-viz{margin:0 0 1rem}
+.mv-viz.gran{max-width:760px}
+.mv-svg{width:100%;height:auto;display:block}
+.mv-leg{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-top:.5rem;
+  font-family:var(--mono);font-size:.66rem;color:var(--apagat)}
+.mv-lt{color:var(--tang)}.mv-li{color:var(--intang)}.mv-lc{margin-left:auto}
+
+.mv-nodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:.7rem}
+.mv-nd{background:var(--pla);border:1px solid var(--vora);border-radius:10px;padding:.8rem .9rem}
+.mv-nd.c-canal{border-top:2px solid var(--apagat)}
+.mv-nd.c-visitant{border-top:2px solid #00e676}
+.mv-nd.c-tots{border-top:2px solid #6366f1}
+.mv-nd b{font-size:.92rem}
+.mv-nd p{margin:.3rem 0 .4rem;font-size:.78rem;color:var(--clar);line-height:1.5}
+.mv-nq{font-family:var(--mono);font-size:.64rem;color:var(--apagat)}
+
+.mv-taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mv-taula table{width:100%;border-collapse:collapse;font-size:.8rem}
+.mv-taula th,.mv-taula td{padding:.4rem .5rem;border-bottom:1px solid var(--vora);text-align:left;vertical-align:top}
+.mv-taula th{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--apagat)}
+.mv-taula td{color:var(--clar)}
+.mv-k{font-family:var(--mono);font-size:.6rem;padding:.1rem .35rem;border-radius:4px}
+.mv-k.t{background:rgba(0,176,255,.16);color:var(--tang)}
+.mv-k.i{background:rgba(224,64,251,.16);color:var(--intang)}
+
+.mv-tro{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.7rem}
+.mv-t{background:var(--pla);border:1px solid var(--vora);border-radius:10px;padding:.8rem .9rem}
+.mv-tn{font-family:var(--mono);font-size:.64rem;color:var(--intang);display:block;margin-bottom:.2rem}
+.mv-t b{font-size:.92rem;display:block;margin-bottom:.3rem}
+.mv-t p{margin:0;font-size:.78rem;color:var(--clar);line-height:1.55}
+.mv-tesi{font-size:.9rem;color:var(--clar);line-height:1.65;margin:1.1rem 0 .6rem;
+  border-left:2px solid #00e676;padding-left:.9rem}
+.mv-avis{font-size:.78rem;color:var(--apagat);line-height:1.6;margin:0}
+.mv-avis b{color:var(--clar);font-weight:600}
 .peu{margin-top:2rem;border-top:1px solid var(--vora);padding-top:1.4rem;color:var(--apagat);
   font-size:.85rem;line-height:1.7;max-width:76ch}
 .peu strong{color:var(--clar);font-weight:600}
@@ -200,6 +287,105 @@ posar-t'hi tu.</p>
   <div id="perfil"></div>
   <div id="encaixos"></div>
 </div>
+
+<!-- COM ES FA UN MAPA ───────────────────────────────────────────────────────
+     El castell de dalt ensenya la idea i no ensenya la feina. Això és el que
+     hi faltava: la notació que fa el dibuix llegible, el procés amb les tres
+     anàlisis de Verna Allee pel seu nom —la pàgina ja en feia dues sense
+     anomenar-les— i què s'endú la casa quan acaba.
+
+     Tot generat per `SOS/tools/build-mapavalor.js`, que ho declara un sol cop
+     i també ho escriu a la portada. La durada i l'entregable els llegeix del
+     catàleg: si `build-oferta.js` diu tres sessions i aquí en diguéssim dues,
+     la que mentiria seria aquesta pàgina. -->
+<!--VNA-PROCES-->
+<section class="mv-sec">
+<h2>Com es llegeix un mapa</h2>
+<p class="mv-sub">Quatre paraules. Un mapa de valor amb quinze símbols no el llegeix ningú a una sala, i a la sala és on s'ha de llegir.</p>
+<div class="mv-not">
+<div class="mv-nt node"><div class="mv-nt-h"><b>Node</b><span>un rol, no una persona</span></div><p>El que algú fa, no com es diu al organigrama. Una persona pot ocupar dos nodes i un node el poden ocupar dues persones. Aquest canvi de mirada és tot el mètode.</p></div>
+<div class="mv-nt trans"><div class="mv-nt-h"><b>Transacció</b><span>una fletxa, d'un node a un altre</span></div><p>Alguna cosa que un node lliura a un altre. Té direcció: A dona a B no és el mateix que B dona a A, i dibuixar-ho amb una ratlla sense punta amaga justament el que es vol veure.</p></div>
+<div class="mv-nt tang"><div class="mv-nt-h"><b>Tangible</b><span>línia plena</span></div><p>El que es podria facturar o consta en un contracte: producte, hores, diners, un local, un informe. És el que ja surt als comptes.</p></div>
+<div class="mv-nt intang"><div class="mv-nt-h"><b>Intangible</b><span>línia discontínua</span></div><p>El que no consta enlloc i sense el qual res funciona: confiança, coneixement que no és a cap manual, reputació, accés, que et tornin el favor. Va discontínua perquè és el que es trenca sense avisar.</p></div>
+<div class="mv-nt entrega"><div class="mv-nt-h"><b>Entregable</b><span>el que queda quan marxem</span></div><p>El mapa no és l'entregable: el mapa és l'eina. L'entregable és el que se'n decideix — què es pot cobrar, què s'ha de repartir i quin vincle s'ha de reparar abans que caigui.</p></div>
+</div>
+</section>
+<section class="mv-sec">
+<h2>Com es fa</h2>
+<p class="mv-sub">Nou passos en 3 sessions · 4-6 setmanes. Els tres del mig marcats són <b>les tres anàlisis de Verna Allee</b>, que són el mètode i no una manera nostra de mirar-ho.</p>
+<ol class="mv-pas">
+<li class="preparació"><span class="mv-pk">preparació</span><b>Qui hi ha a la sala</b><p>El mapa el dibuixa qui hi és, no el consultor. Si falta un rol a la sala, el seu tros de mapa serà el que algú altre creu que fa — i aquest és el tros que sempre surt malament.</p></li>
+<li class="dibuix"><span class="mv-pk">dibuix</span><b>Els nodes: rols, no càrrecs</b><p>Es llisten les funcions que algú fa de debò. Surten sempre rols que no consten a cap lloc: qui desencalla, qui recorda com es feia, qui truca quan ningú vol trucar.</p></li>
+<li class="dibuix"><span class="mv-pk">dibuix</span><b>Les transaccions tangibles</b><p>Qui lliura què a qui, del que es podria facturar. És la part fàcil i la que tothom ja sap, i encara no explica per què la casa funciona.</p></li>
+<li class="dibuix"><span class="mv-pk">dibuix</span><b>Les transaccions intangibles</b><p>La mateixa pregunta per al que no consta. Aquí és on apareix la meitat del mapa que no havia vist mai ningú junta.</p></li>
+<li class="anàlisi allee"><span class="mv-pk">anàlisi</span><b>Anàlisi d'intercanvi</b><p>Es mira el patró sencer: qui dona i no rep, quins vincles van en un sol sentit, quins nodes estan carregats de més. Un rol amb totes les fletxes sortint no és generós: és el que es cremarà primer.</p></li>
+<li class="anàlisi allee"><span class="mv-pk">anàlisi</span><b>Anàlisi d'impacte</b><p>Node per node: què rep, què li costa rebre-ho i què hi guanya. És la que ensenya si a algú li surt a compte seguir-hi, i la que explica per què hi ha gent que se'n va sense queixar-se.</p></li>
+<li class="anàlisi allee"><span class="mv-pk">anàlisi</span><b>Anàlisi de creació de valor</b><p>Què aporta cada node i què costaria no tenir-lo. És la que troba el valor que ja es produeix i no es cobra — i la que troba la feina que es fa i no aprofita ningú.</p></li>
+<li class="decisió"><span class="mv-pk">decisió</span><b>Els moviments</b><p>Tres llistes curtes: què es pot començar a cobrar, què s'ha de repartir perquè no depengui d'una persona, i quin vincle s'ha de reparar abans que caigui. Amb nom i data, o no és una decisió.</p></li>
+<li class="decisió"><span class="mv-pk">decisió</span><b>El mapa queda viu</b><p>Es carrega al SOS i és de la casa. Un mapa en un PDF caduca el primer dia que algú canvia de rol; un mapa que es pot editar es torna a mirar d'aquí a sis mesos.</p></li>
+</ol>
+</section>
+<section class="mv-sec">
+<h2>Què s'endú la casa</h2>
+<p class="mv-sub">El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.</p>
+<div class="mv-ent">
+<div class="mv-e"><b>El mapa dibuixat</b><p>Nodes, transaccions i les dues menes, amb els noms reals de la casa. En paper per a la sala i al SOS per continuar.</p></div>
+<div class="mv-e"><b>Les tres anàlisis</b><p>Intercanvi, impacte i creació de valor, escrites: què hi ha, no què n'opinem.</p></div>
+<div class="mv-e"><b>Els tres moviments</b><p>Què es pot cobrar, què s'ha de repartir i quin vincle s'ha de reparar. Amb nom i data.</p></div>
+<div class="mv-e"><b>El mapa viu</b><p>Carregat al SOS, editable per la casa i sense dependre de nosaltres per tornar-lo a mirar.</p></div>
+</div>
+<p class="mv-nota">El mapa no és l'entregable: el mapa és l'eina. L'entregable és <b>el que se'n decideix</b>. Un mapa preciós del qual no surt cap moviment és una feina ben feta que no ha servit de res.</p>
+</section>
+<!--/VNA-PROCES-->
+
+<!--VNA-EXEMPLE-->
+<section class="mv-sec">
+<h2>Un celler del Penedès que mira el turisme de luxe</h2>
+<p class="mv-sub">El mateix vi, el mateix poble i la mateixa família. El que canvia és qui rep què — i sobretot, quins lliuraments es paguen. El castell de dalt ensenya <b>què és</b> un mapa de valor; aquest ensenya <b>què s'hi troba</b> quan es fa sobre una casa que ven alguna cosa.</p>
+<div class="mv-viz gran">
+<svg id="mvCellerVna" class="mv-svg" viewBox="0 0 640 430" role="img" aria-labelledby="mvCellerVnaT mvCellerVnaD"><title id="mvCellerVnaT">Mapa de valor d'un celler del Penedès</title><desc id="mvCellerVnaD">Set rols i setze lliuraments. A l'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l'operador de luxe i el visitant, on la meitat del que es lliura és intangible.</desc><defs><marker id="mvT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00b0ff"/></marker><marker id="mvI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e040fb"/></marker></defs><path d="M320.0 104.0 Q309.0 127.0 320.0 150.0" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → Qui rep i explica: el vi, la verema i el celler obert (tangible)</title></path><path d="M320.0 154.0 Q309.0 131.0 320.0 108.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>Qui rep i explica → Qui fa el vi: saber què pregunta i què paga qui ve (intangible)</title></path><path d="M361.9 219.0 Q441.8 219.2 494.5 279.3" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>Qui rep i explica → El visitant: el relat de la casa: qui poda, per què aquell vessant (intangible)</title></path><path d="M498.1 281.0 Q445.4 220.9 365.5 220.7" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → Qui rep i explica: el que paga per l'experiència, no per l'ampolla (tangible)</title></path><path d="M496.3 142.3 Q441.4 192.5 367.5 184.4" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>L'operador de luxe → Qui rep i explica: la confiança del seu client, que és el que de debò ven (intangible)</title></path><path d="M363.7 185.7 Q437.6 193.8 492.5 143.6" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui rep i explica → L'operador de luxe: una experiència exclusiva i hores reservades (tangible)</title></path><path d="M540.0 254.0 Q557.6 216.0 540.0 178.0" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → L'operador de luxe: el que paga pel viatge sencer (tangible)</title></path><path d="M540.0 174.0 Q557.6 212.0 540.0 250.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>L'operador de luxe → El visitant: que algú hagi triat per ell i no s'hagi d'equivocar (intangible)</title></path><path d="M363.7 357.7 Q437.6 365.8 492.5 315.6" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El poble → El visitant: taula, llit i ofici obert (tangible)</title></path><path d="M496.3 314.3 Q422.4 306.2 367.5 356.4" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → El poble: despesa que es queda al municipi (tangible)</title></path><path d="M276.1 71.7 Q200.5 62.4 143.7 113.1" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → El distribuïdor: volum a preu de canal (tangible)</title></path><path d="M139.9 114.3 Q215.5 123.6 272.3 72.9" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El distribuïdor → Qui fa el vi: arribar on el celler no arriba (tangible)</title></path><path d="M127.2 266.2 Q181.7 157.4 286.0 94.7" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>La vinya i el veïnat → Qui fa el vi: el lloc que fa que aquell vi sigui d'allà (intangible)</title></path><path d="M288.8 91.8 Q184.4 154.4 130.0 263.3" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → La vinya i el veïnat: vinya treballada i camins oberts (tangible)</title></path><path d="M320.0 246.0 Q337.6 284.0 320.0 322.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>Qui rep i explica → El poble: visitants amb temps i ganes de quedar-se (intangible)</title></path><path d="M320.0 326.0 Q302.4 288.0 320.0 250.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>El poble → Qui rep i explica: que el poble els tracti com la casa ha promès (intangible)</title></path><g class="mv-n" data-id="vi"><circle cx="320" cy="58" r="46" fill="#141420" stroke="#6366f1" stroke-width="1.6"/><text x="320" y="58" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">Qui fa el vi</text></g><g class="mv-n" data-id="acollida"><circle cx="320" cy="200" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="320" y="194" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">Qui rep i</text><text x="320" y="206.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">explica</text></g><g class="mv-n" data-id="operador"><circle cx="540" cy="128" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="540" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">L'operador de</text><text x="540" y="134.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">luxe</text></g><g class="mv-n" data-id="visitant"><circle cx="540" cy="300" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="540" y="300" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El visitant</text></g><g class="mv-n" data-id="poble"><circle cx="320" cy="372" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="320" y="372" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El poble</text></g><g class="mv-n" data-id="canal"><circle cx="96" cy="128" r="46" fill="#141420" stroke="#82828d" stroke-width="1.6"/><text x="96" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El</text><text x="96" y="134.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">distribuïdor</text></g><g class="mv-n" data-id="terra"><circle cx="96" cy="300" r="46" fill="#141420" stroke="#6366f1" stroke-width="1.6"/><text x="96" y="294" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">La vinya i el</text><text x="96" y="306.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">veïnat</text></g></svg>
+<div class="mv-leg"><span class="mv-lt">— tangible</span><span class="mv-li">- - intangible</span><span class="mv-lc">7 nodes · 16 transaccions · 7 intangibles</span></div>
+</div>
+<h3 class="mv-h3">Els nodes</h3>
+<div class="mv-nodes">
+<div class="mv-nd c-tots"><b>Qui fa el vi</b><p>Vinya, verema i celler. Produeix el tangible que tothom veu i, de passada, tot el que després es podrà explicar.</p><span class="mv-nq">dona 3 lliuraments · rep 3</span></div>
+<div class="mv-nd c-visitant"><b>Qui rep i explica</b><p>Obre la porta, ensenya la casa i posa nom a les coses. És el node que avui sovint no existeix com a rol, i el fa qui pot quan truquen.</p><span class="mv-nq">dona 4 lliuraments · rep 4</span></div>
+<div class="mv-nd c-visitant"><b>L'operador de luxe</b><p>Conserge d'hotel, agència especialitzada o qui tria el viatge d'algú altre. No compra vi: compra no equivocar-se.</p><span class="mv-nq">dona 2 lliuraments · rep 2</span></div>
+<div class="mv-nd c-visitant"><b>El visitant</b><p>Ve amb temps i amb ganes de quedar-se. Paga per haver-hi estat, i s'endú ampolles perquè ha estat allà, no al revés.</p><span class="mv-nq">dona 3 lliuraments · rep 3</span></div>
+<div class="mv-nd c-visitant"><b>El poble</b><p>Restaurants, allotjament i oficis. No és decorat: és el que fa que la visita duri dos dies en comptes d'una hora.</p><span class="mv-nq">dona 2 lliuraments · rep 2</span></div>
+<div class="mv-nd c-canal"><b>El distribuïdor</b><p>Arriba on el celler no arriba. És una relació sana i necessària, i té una particularitat que el mapa ensenya de seguida.</p><span class="mv-nq">dona 1 lliurament · rep 1</span></div>
+<div class="mv-nd c-tots"><b>La vinya i el veïnat</b><p>El paisatge, el camí, la gent que hi viu. És el que fa que aquell vi sigui d'allà i no de qualsevol lloc, i no cobra per això.</p><span class="mv-nq">dona 1 lliurament · rep 1</span></div>
+</div>
+<h3 class="mv-h3">Les transaccions, una per una</h3>
+<div class="mv-taula"><table><thead><tr><th>De</th><th>A</th><th>Mena</th><th>Què</th></tr></thead><tbody>
+<tr><td>Qui fa el vi</td><td>Qui rep i explica</td><td><span class="mv-k t">tangible</span></td><td>el vi, la verema i el celler obert</td></tr>
+<tr><td>Qui rep i explica</td><td>Qui fa el vi</td><td><span class="mv-k i">intangible</span></td><td>saber què pregunta i què paga qui ve</td></tr>
+<tr><td>Qui rep i explica</td><td>El visitant</td><td><span class="mv-k i">intangible</span></td><td>el relat de la casa: qui poda, per què aquell vessant</td></tr>
+<tr><td>El visitant</td><td>Qui rep i explica</td><td><span class="mv-k t">tangible</span></td><td>el que paga per l'experiència, no per l'ampolla</td></tr>
+<tr><td>L'operador de luxe</td><td>Qui rep i explica</td><td><span class="mv-k i">intangible</span></td><td>la confiança del seu client, que és el que de debò ven</td></tr>
+<tr><td>Qui rep i explica</td><td>L'operador de luxe</td><td><span class="mv-k t">tangible</span></td><td>una experiència exclusiva i hores reservades</td></tr>
+<tr><td>El visitant</td><td>L'operador de luxe</td><td><span class="mv-k t">tangible</span></td><td>el que paga pel viatge sencer</td></tr>
+<tr><td>L'operador de luxe</td><td>El visitant</td><td><span class="mv-k i">intangible</span></td><td>que algú hagi triat per ell i no s'hagi d'equivocar</td></tr>
+<tr><td>El poble</td><td>El visitant</td><td><span class="mv-k t">tangible</span></td><td>taula, llit i ofici obert</td></tr>
+<tr><td>El visitant</td><td>El poble</td><td><span class="mv-k t">tangible</span></td><td>despesa que es queda al municipi</td></tr>
+<tr><td>Qui fa el vi</td><td>El distribuïdor</td><td><span class="mv-k t">tangible</span></td><td>volum a preu de canal</td></tr>
+<tr><td>El distribuïdor</td><td>Qui fa el vi</td><td><span class="mv-k t">tangible</span></td><td>arribar on el celler no arriba</td></tr>
+<tr><td>La vinya i el veïnat</td><td>Qui fa el vi</td><td><span class="mv-k i">intangible</span></td><td>el lloc que fa que aquell vi sigui d'allà</td></tr>
+<tr><td>Qui fa el vi</td><td>La vinya i el veïnat</td><td><span class="mv-k t">tangible</span></td><td>vinya treballada i camins oberts</td></tr>
+<tr><td>Qui rep i explica</td><td>El poble</td><td><span class="mv-k i">intangible</span></td><td>visitants amb temps i ganes de quedar-se</td></tr>
+<tr><td>El poble</td><td>Qui rep i explica</td><td><span class="mv-k i">intangible</span></td><td>que el poble els tracti com la casa ha promès</td></tr>
+</tbody></table></div>
+<h3 class="mv-h3">Què hi ensenya l'anàlisi</h3>
+<div class="mv-tro">
+<div class="mv-t"><span class="mv-tn">01</span><b>El canal no compra res que no es pugui facturar</b><p>Tots els lliuraments amb el distribuïdor són tangibles. No és un retret —és la seva feina—, però vol dir que <b>tot el que la casa produeix i no es pot facturar, per aquí se'n va de franc</b>: el relat, el lloc, la família, el vessant.</p></div>
+<div class="mv-t"><span class="mv-tn">02</span><b>El camí del visitant sí que els paga</b><p>Aquí els intangibles no són un extra: <b>són el producte</b>. L'operador no ven vi, ven no equivocar-se; el visitant no paga l'ampolla, paga haver-hi estat. I això la casa ja ho produeix cada dia sense cobrar-ho.</p></div>
+<div class="mv-t"><span class="mv-tn">03</span><b>Hi ha un node que no existeix com a rol</b><p>«Qui rep i explica» avui sol ser qui pot quan truquen. <b>És el node que sosté tot el camí de la dreta</b>, i mentre no sigui el rol d'algú amb temps assignat, el marge que hi ha a la dreta no s'hi arriba.</p></div>
+<div class="mv-t"><span class="mv-tn">04</span><b>La vinya i el veïnat donen i no reben prou</b><p>Reben feina i camins; donen el que fa que allò sigui únic i irrepetible. <b>És el vincle que es trenca sense avisar</b> —un poble que es cansa dels visitants—, i és barat de cuidar mentre encara es pot.</p></div>
+</div>
+<p class="mv-tesi"><b>El marge no surt d'apujar el preu de l'ampolla.</b> Surt de cobrar els intangibles que la casa ja produeix i que pel canal se'n van de franc. Pel distribuïdor hi ha 2 lliuraments i cap intangibles; pel camí del visitant n'hi ha 8 i 3 són intangibles.</p>
+<p class="mv-avis">Aquest mapa és un exemple treballat, no el d'un celler concret, i no porta cap xifra: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és <b>on mirar</b>, i quins lliuraments avui se'n van sense cobrar.</p>
+</section>
+<!--/VNA-EXEMPLE-->
 
 <div class="peu">
 <p><strong>D'on surt això.</strong> És l'anàlisi de xarxes de valor de <strong>Verna Allee</strong>:

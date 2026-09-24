@@ -114,6 +114,16 @@ jobs:
       - name: Guarda dels beneficis (les xifres surten de l'app)
         run: node SOS/tools/build-beneficis.js --check
 
+      # La casa ven «mapa de valor» i fins ara qui volia saber què és en tenia
+      # una colla castellera: la millor manera d'entendre'n la idea i una mala
+      # manera d'entendre'n la feina. El cas del celler es declara un sol cop i
+      # s'escriu a la portada i a /SOS/vna: dues còpies del mateix mapa
+      # divergirien a la primera correcció i un mapa dibuixat no peta mai.
+      # La guarda vigila sobretot dues coses: que el contrast que el cas afirma
+      # sigui cert al graf, i que no hi entri cap xifra d'euros inventada.
+      - name: Guarda del mapa de valor (el cas quadra i no inventa xifres)
+        run: node SOS/tools/build-mapavalor.js --check
+
       # La pestanya de cures és l'única del SOS on el que s'apunta és qui
       # necessita ajuda i qui l'hi dona. Dos errors farien mal de debò i cap
       # dels dos peta: que hi entri informació de salut —una casella de text
