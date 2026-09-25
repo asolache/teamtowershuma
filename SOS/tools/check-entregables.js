@@ -218,6 +218,32 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   else ok('i el cost es diu abans de cridar, no després');
 })();
 
+/* 10 · Que s'hi pugui arribar. Una funció escrita i no connectada a cap botó
+        és el defecte més silenciós de tots: el codi és correcte, les proves
+        passen perquè la criden directament, i a la pantalla no hi ha res. Va
+        passar exactament això amb `openPreparaEntregable` —escrita, provada i
+        inabastable— i només es va veure quan algú va preguntar on es feia
+        servir. Aquesta guarda és perquè no calgui que ho pregunti ningú. */
+(() => {
+  const arriba = (fn) => {
+    const crides = [...APP.matchAll(new RegExp('\\b' + fn + '\\(', 'g'))].map(m => m.index);
+    const def = APP.indexOf('function ' + fn + '(');
+    const hook = APP.indexOf('window.__SOS=');
+    // Es descarta la seva pròpia definició i el hook de proves: cap de les dues
+    // és una manera que hi arribi una persona.
+    /* Després de descartar la seva pròpia definició i el hook de proves, n'hi
+       ha d'haver **almenys una**. La primera versió demanava més d'una i
+       acusava el codi correcte: un error de comptatge en una guarda és pitjor
+       que no tenir-la, perquè ensenya a desconfiar-ne. */
+    return crides.filter(i => i !== def + 'function '.length && (hook < 0 || i < hook)).length >= 1;
+  };
+  const pantalles = ['openPreparaEntregable', 'openDesviacioMapa'];
+  const soles = pantalles.filter(f => !arriba(f));
+  if (soles.length) bad('pantalles escrites i sense cap botó que hi porti: ' + soles.join(', ')
+    + ' — el codi és correcte, les proves passen i a la pantalla no hi ha res');
+  else ok(`${pantalles.length} pantalles, totes amb un botó que hi porta`);
+})();
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la taxonomia d'entregables.`
   : '\n✅ La taxonomia quadra i la màquina no pot tocar cap intangible.');
 process.exit(fails ? 1 : 0);

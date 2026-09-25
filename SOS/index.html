@@ -665,6 +665,12 @@ a{color:var(--blue);text-decoration:none}
 /* L'esborrany. Els buits van a dalt i en taronja perquè és el primer que s'ha
    de llegir: el valor d'aquesta pantalla no és el text bonic, és saber què hi
    falta abans d'acceptar-lo. */
+.fl-qui{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.5rem;
+  padding-top:.45rem;border-top:1px dashed var(--border)}
+.fl-qui-t{font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;color:var(--muted)}
+.fl-qui.pot .fl-qui-t{color:var(--green)}
+.fl-qui.pers .fl-qui-t{color:var(--purple)}
+.fl-qui .btn{margin-left:auto}
 .eb-cost{font-size:.76rem;color:var(--light);background:var(--bg-panel);border:1px solid var(--border);
   border-left:2px solid var(--green);border-radius:8px;padding:.55rem .7rem;margin:.5rem 0;line-height:1.5}
 .eb-cost b{color:var(--white)}
@@ -10235,6 +10241,24 @@ function buildFlowLedger(node){
       empty.appendChild(b);
       c.appendChild(empty);
     }
+    /* QUI FA AQUEST FLUX · el repartiment, flux per flux i no només en total.
+       Aquesta llista és el lloc: ja llegeix cada flux com una frase i és on es
+       mira quan es vol fer alguna cosa amb ell. La barra de salut en dona el
+       recompte; aquí es veu **quin** és quin, que és el que permet actuar.
+
+       Els tres casos porten botó i no només el primer. Un intangible sense res
+       al costat es llegiria com un oblit, i el que ha de quedar clar és el
+       contrari: que és de persona a posta i que el sistema no té manera de
+       fer-ho d'una altra manera. La pantalla ho explica en obrir-la. */
+    const au=fluxAutomatitzable(r.flow),et=au.tipus?entregableMeta(au.tipus):null;
+    const peu=el('div','fl-qui'+(au.pot?' pot':(au.motiu==='intangible'?' pers':' sense')));
+    peu.appendChild(el('span','fl-qui-t',
+      au.pot?(et.ic+' '+et.nom):(au.motiu==='intangible'?'👤 De persona, sempre':'◇ Sense entregable declarat')));
+    const pb=el('button','btn btn-ghost btn-sm',
+      au.pot?'🤖 Prepara l\'esborrany':(au.motiu==='intangible'?'Per què?':'Quin entregable és?'));
+    pb.onclick=()=>openPreparaEntregable(node,r.flow);
+    peu.appendChild(pb);
+    c.appendChild(peu);
     box.appendChild(c);
   });
   if(fl.loose.length){
