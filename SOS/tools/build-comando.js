@@ -788,6 +788,24 @@ hi ha d'entrar per un guió.
 const fPag = join(SOS, 'comando.html');
 const fMd = join(SOS, 'knowledge', 'vision', 'comando-peli.md');
 const fIntro = join(SOS, 'knowledge', 'vision', 'comando-intro.md');
+/* ══ L'EXPORT PER A molekulon.org ════════════════════════════════════════════
+   La web pública del Comando viu a un altre repositori (`molekulonorg`) i s'ha
+   de fer d'aquestes mateixes llistes, no d'una còpia. Una còpia enganxada a mà
+   hi divergiria la primera setmana i **no petaria res**: senzillament, un dia
+   la web diria catorze herois i l'app en tindria quinze.
+
+   Per això aquí surt un JSON, i `--check` el vigila com vigila la pàgina. El
+   consumeix el generador de l'altre repositori, que el baixa d'aquest i falla si
+   el que té a casa no és el que hi ha aquí. Un sol lloc on s'edita; dos llocs
+   on es llegeix. */
+const fJson = join(SOS, 'molekulon-data.json');
+const dataJson = () => JSON.stringify({
+  _: 'Generat per SOS/tools/build-comando.js. No s\'edita a mà: edita el generador.',
+  font: 'https://github.com/asolache/teamtowershuma',
+  objectiu: OBJECTIU,
+  tesi: TESI, eixos: EIXOS, passos: PASSOS, decorat: DECORAT,
+  herois: HEROIS, videos: VIDEOS, posts: POSTS, intro: INTRO
+}, null, 2) + '\n';
 
 if (CHECK) {
   console.log('\nGuarda del Comando · la pàgina surt de les llistes declarades');
@@ -803,6 +821,9 @@ if (CHECK) {
   if (!existsSync(fIntro) || readFileSync(fIntro, 'utf8') !== mdIntro()) {
     mal++; console.log('  ✗ knowledge/vision/comando-intro.md està vell: corre `node SOS/tools/build-comando.js`');
   } else console.log(`  ✓ i el guió de la intro (${INTRO.plans.length} plans, ${mmss(INTRO.durada)})`);
+  if (!existsSync(fJson) || readFileSync(fJson, 'utf8') !== dataJson()) {
+    mal++; console.log('  ✗ molekulon-data.json està vell: corre `node SOS/tools/build-comando.js`');
+  } else console.log('  ✓ i l\'export que llegeix molekulon.org');
   console.log(mal ? `\n❌ ${mal} ${mal === 1 ? 'problema' : 'problemes'}.` : '\n✅ El Comando quadra.');
   process.exit(mal ? 1 : 0);
 }
@@ -813,6 +834,7 @@ if (r.err) { console.log(`✗ a comando.html ${r.err}`); process.exit(1); }
 if (r.html !== pagina) writeFileSync(fPag, r.html);
 writeFileSync(fMd, md());
 writeFileSync(fIntro, mdIntro());
+writeFileSync(fJson, dataJson());
 console.log(`✅ Comando escrit · ${BLOCS.length} blocs, ${HEROIS.length} herois, ${EIXOS.length} eixos, ` +
   `${PASSOS.length} passos, ${VIDEOS.length} peces (${VIDEOS.filter(v => !v.url).length} sense enllaç) i ${POSTS.length} entrades del blog`);
 console.log(`   i el guió de la intro · ${INTRO.plans.length} plans, ${mmss(INTRO.durada)}, ` +
