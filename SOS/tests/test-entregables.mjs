@@ -308,6 +308,83 @@ ok(/TAULA DE DESPESA/.test(ju.text) && /cal factura/.test(ju.text),
   'i el text pla porta cada concepte amb el document que caldrà');
 ok(/convocatòria/i.test(ju.demana), 'la pantalla demana enganxar la convocatòria: sense això el document no té forma');
 
+console.log('\n15 · Classificar un flux a mà: la sortida existeix de debò');
+const cl = await page.evaluate(() => {
+  const S = window.__SOS;
+  const node = { id: 'ncl', name: 'Ateneu', ledger: [], ventures: [], kanban: { cards: [] }, vna: {
+    roles: [{ id: 'r1', name: 'Junta' }, { id: 'r2', name: 'Sòcies' }],
+    exchanges: [{ id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'el paperot de cada mes' }] } };
+  const x = node.vna.exchanges[0];
+  const abans = S.fluxAutomatitzable(x);
+  // El que fa la pantalla en desar: escriure el tipus a mà.
+  x.entregable = 'informe';
+  const despres = S.fluxAutomatitzable(x);
+  // I treure'l torna a deixar que mani l'etiqueta.
+  delete x.entregable;
+  const tornat = S.fluxAutomatitzable(x);
+  // Un tipus inventat no pot colar-se per aquesta porta.
+  x.entregable = 'no-existeix';
+  const fals = S.fluxAutomatitzable(x);
+  // Ni pot fer automatitzable un intangible.
+  const inta = S.fluxAutomatitzable({ kind: 'intangible', label: 'confiança', entregable: 'acta' });
+  return { abans: abans.motiu, despres, tornat: tornat.motiu, fals: fals.motiu, inta };
+});
+ok(cl.abans === 'sense entregable declarat', 'una etiqueta que no diu res deixa el flux sense classificar');
+ok(cl.despres.pot === true && cl.despres.tipus === 'informe', 'escriure el tipus a mà el fa automatitzable');
+ok(cl.tornat === 'sense entregable declarat', 'i treure\'l el torna a deixar com estava: la classificació es pot desfer');
+ok(cl.fals === 'sense entregable declarat', 'un tipus inventat no classifica res: la taxonomia segueix tancada');
+ok(cl.inta.pot === false && cl.inta.motiu === 'intangible', 'i escriure un tipus a un intangible no obre cap porta');
+
+console.log('\n16 · I la pantalla de classificar es pinta i desa');
+const cp = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const node = { id: 'ncl2', name: 'Ateneu', ledger: [], ventures: [], kanban: { cards: [] }, vna: {
+    roles: [{ id: 'r1', name: 'Junta' }, { id: 'r2', name: 'Sòcies' }],
+    exchanges: [{ id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'el paperot de cada mes' }] } };
+  const x = node.vna.exchanges[0];
+  const bg = S.openTipusEntregable(node, x);
+  const ops = [...bg.querySelectorAll('.te-op')].length;
+  const maq = [...bg.querySelectorAll('.te-op:not(.te-pers):not(.te-cap)')].length;
+  const pers = [...bg.querySelectorAll('.te-op.te-pers')].length;
+  // Tria «comanda» i desa amb el botó de la pantalla.
+  bg.querySelector('input[value="comanda"]').checked = true;
+  [...bg.querySelectorAll('button')].find(b => /Desa la classificació/.test(b.textContent)).click();
+  await new Promise(r => setTimeout(r, 60));
+  return { ops, maq, pers, desat: x.entregable, pot: S.fluxAutomatitzable(x).pot };
+});
+ok(cp.ops === 9, `${cp.ops} opcions: els vuit tipus i «cap»`);
+ok(cp.maq === 7 && cp.pers === 1, 'i es veu quins surten d\'una màquina i quin no');
+ok(cp.desat === 'comanda' && cp.pot === true, 'triar i desar deixa el flux classificat i preparable');
+
+console.log('\n17 · Les pantalles s\'obren amb botons que es poden prémer');
+/* La prova que hauria calgut abans: obrir-les de debò i comptar què hi ha per
+   clicar. Les altres criden les funcions directament i per això no van veure
+   que `modal` es menjava la llista de botons. */
+const bt = await page.evaluate(() => {
+  const S = window.__SOS;
+  const mk = () => ({ id: 'nb', name: 'A', ledger: [], ventures: [], kanban: { cards: [] }, vna: {
+    roles: [{ id: 'r1', name: 'Junta' }, { id: 'r2', name: 'Sòcies' }],
+    exchanges: [
+      { id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'acta de la reunió' },
+      { id: 'x2', from: 'r2', to: 'r1', kind: 'tangible', label: 'el paperot' },
+      { id: 'x3', from: 'r1', to: 'r2', kind: 'intangible', label: 'confiança' }] } });
+  const txt = () => [...document.querySelectorAll('#modalRoot .modal .modal-actions button')]
+    .map(b => b.textContent.trim());
+  const out = {};
+  let n = mk(); S.openPreparaEntregable(n, n.vna.exchanges[0]); out.prepara = txt();
+  n = mk(); S.openPreparaEntregable(n, n.vna.exchanges[2]); out.intangible = txt();
+  n = mk(); S.openTipusEntregable(n, n.vna.exchanges[1]); out.tipus = txt();
+  n = mk(); n.vna.exchanges[0].entregables = [{ tipus: 'acta', editat: false, quan: Date.now(), text: 'x' }];
+  S.openEntregableAcceptat(n, n.vna.exchanges[0], 0); out.llegir = txt();
+  S.closeModal();
+  return out;
+});
+ok(bt.prepara.some(t => /Prepara l'esborrany/.test(t)) && bt.prepara.some(t => /Tanca/.test(t)),
+  'preparar un entregable: hi ha el botó que el prepara i el de tancar · ' + bt.prepara.join(' / '));
+ok(bt.intangible.length === 1, 'l\'explicació d\'un intangible té la seva sortida');
+ok(bt.tipus.some(t => /Desa la classificació/.test(t)), 'classificar un flux: hi ha el botó de desar');
+ok(bt.llegir.length === 1, 'i llegir un entregable acceptat es pot tancar');
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

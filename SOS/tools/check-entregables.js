@@ -237,7 +237,7 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
        que no tenir-la, perquè ensenya a desconfiar-ne. */
     return crides.filter(i => i !== def + 'function '.length && (hook < 0 || i < hook)).length >= 1;
   };
-  const pantalles = ['openPreparaEntregable', 'openDesviacioMapa', 'openEntregableAcceptat'];
+  const pantalles = ['openPreparaEntregable', 'openDesviacioMapa', 'openEntregableAcceptat', 'openTipusEntregable'];
   const soles = pantalles.filter(f => !arriba(f));
   if (soles.length) bad('pantalles escrites i sense cap botó que hi porti: ' + soles.join(', ')
     + ' — el codi és correcte, les proves passen i a la pantalla no hi ha res');
@@ -347,6 +347,62 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   if (!/\|\|'\[a completar\]'/.test(lin))
     bad('un import buit no es força a «[a completar]», i dins d\'una taula de despesa es llegeix com un zero');
   else ok('i un import que torni buit queda marcat, no en blanc');
+})();
+
+/* 14 · Cap sortida cap a una porta pintada. `entregableDe` llegeix
+        `x.entregable` des del primer dia i durant mesos **res no l'escrivia**:
+        la deducció per etiqueta funcionava, i quan no encertava la pantalla
+        deia «posa-li una etiqueta que ho digui» —una cosa que no es podia fer,
+        perquè l'etiqueta d'un intercanvi només s'escriu en crear-lo.
+
+        Es va veure quan algú va preguntar «com i on ho faig?». La guarda és
+        perquè no calgui que ho pregunti ningú: si un camp es llegeix per
+        decidir alguna cosa, ha d'haver-hi una pantalla que l'escrigui. */
+(() => {
+  const llegit = /entregableDe\s*=\s*x\s*=>/.test(APP) || APP.includes('x.entregable&&entregableMeta');
+  if (!llegit) { ok('`x.entregable` no es llegeix enlloc, res a comprovar'); return; }
+  // Escriptures reals, descartant la lectura dins de `entregableDe`.
+  const escriu = [...APP.matchAll(/\b\w+\.entregable\s*=(?!=)/g)].length
+    + [...APP.matchAll(/delete\s+\w+\.entregable\b/g)].length;
+  if (!escriu) bad('`x.entregable` es llegeix per decidir si un flux és automatitzable i cap pantalla l\'escriu: la sortida que la pantalla proposa no existeix');
+  else ok(`\`x.entregable\` es llegeix, i ${pl(escriu, 'escriptura el fixa', 'escriptures el fixen')} des d'una pantalla`);
+
+  // I que la classificació no visqui dins de la pantalla de l'esborrany: són
+  // decisions diferents, i barrejar-les faria saltar la guarda 9 amb raó.
+  const i = APP.indexOf('function openPreparaEntregable(');
+  const cos = APP.slice(i, APP.indexOf('\n}\n', i));
+  if (/\.entregable\s*=(?!=)/.test(cos))
+    bad('la pantalla de l\'esborrany escriu la classificació: desar-hi abans d\'acceptar és el que la guarda 9 prohibeix');
+  else ok('i classificar un flux viu a part d\'acceptar un esborrany');
+})();
+
+/* 15 · Que els botons hi siguin de debò. `modal(html, botons)` va néixer
+        ignorant el segon argument: sis pantalles es van escriure passant-li
+        una llista de botons i **cap n'ha pintat mai cap**. Tot el contingut hi
+        era, ben maquetat, i no hi havia manera de prémer res.
+        No peta, no avisa i es veu bé. Per això aquesta guarda mira les dues
+        puntes: que `modal` pinti el que li donen, i que cada pantalla d'aquesta
+        línia li doni alguna cosa. */
+(() => {
+  const i = APP.indexOf('function modal(');
+  if (i < 0) { bad('no es troba `modal`'); return; }
+  const cos = APP.slice(i, APP.indexOf('\n}', i));
+  if (!/function modal\(html\s*,\s*\w+\)/.test(APP.slice(i, i + 60)))
+    bad('`modal` no accepta botons, i sis pantalles n\'hi passen');
+  else if (!/modal-actions/.test(cos) || !/appendChild\(acts\)/.test(cos))
+    bad('`modal` accepta botons i no els pinta: la pantalla s\'obre sense res per prémer');
+  else ok('`modal` pinta els botons que li donen');
+
+  const pantalles = ['openPreparaEntregable', 'openEntregableAcceptat',
+    'openTipusEntregable', 'openDesviacioMapa'];
+  const mudes = pantalles.filter(fn => {
+    const j = APP.indexOf('function ' + fn + '(');
+    if (j < 0) return true;
+    const c = APP.slice(j, APP.indexOf('\n}\n', j));
+    return !/\[\s*\{\s*txt:/.test(c) && !/modal-actions/.test(c);
+  });
+  if (mudes.length) bad('pantalles que s\'obren sense cap botó: ' + mudes.join(', '));
+  else ok(`${pantalles.length} pantalles, totes amb botons per prémer`);
 })();
 
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la taxonomia d'entregables.`
