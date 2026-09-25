@@ -285,6 +285,70 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   }
 })();
 
+/* 12 · El context arriba de debò. Un intent pot declarar a les seves
+        instruccions que llegirà el registre i rebre sempre una llista buida:
+        no peta, no avisa, i torna un document genèric i versemblant. Va passar
+        exactament això —`xifres:[]` escrit literalment a la crida mentre
+        `entregable_informe` deia «les xifres són les que et donin»— i va
+        sobreviure tres commits perquè el resultat seguia semblant raonable. */
+(() => {
+  const i = APP.indexOf('function openPreparaEntregable(');
+  const cos = APP.slice(i, APP.indexOf('\n}\n', i));
+  if (/xifres:\s*\[\s*\]/.test(cos)) {
+    bad('la pantalla passa `xifres: []` literal: l\'intent diu que llegeix el registre i no li arriba res');
+  } else if (!/contextEntregable\(/.test(cos)) {
+    bad('la pantalla no construeix cap context: l\'esborrany sortirà genèric');
+  } else ok('el context surt del node i del registre, no d\'una llista buida');
+
+  const ci = APP.indexOf('function contextEntregable(');
+  if (ci < 0) { bad('no es troba `contextEntregable`'); return; }
+  const cc = APP.slice(ci, APP.indexOf('\n}', ci));
+  /* I que les xifres viatgin etiquetades. Al SOS són estimacions amb forquilla;
+     un número que arriba a un document sense l'etiqueta la perd per sempre. */
+  /* No n'hi ha prou amb una menció: es comprova **cada** xifra estimada per
+     separat. Una sola comprovació de «surt la paraula ESTIMACIÓ enlloc» deixa
+     passar que se li tregui a dues de tres, que és com es perden aquestes
+     etiquetes a la pràctica —d'una en una. */
+  const estimades = ['t.hores', 't.euros', 't.objectes'];
+  const sense = estimades.filter(camp => {
+    const l = cc.split('\n').find(x => x.includes('xifres.push') && x.includes(camp));
+    return !l || !/ESTIMACI/.test(l);
+  });
+  if (!/FUND_UNCERTAINTY/.test(cc)) bad('les xifres estimades viatgen sense la forquilla');
+  else if (sense.length) bad('xifres estimades que no diuen que ho són: ' + sense.join(', '));
+  else ok(`les ${estimades.length} xifres estimades diuen que ho són, amb la forquilla al costat`);
+})();
+
+/* 13 · LA LÍNIA COMPTABLE · una estimació no entra mai en una taula de despesa.
+        La justificació de subvenció és l'entregable que més estalvia i el que
+        més mal fa si falla: un import inventat no el detecta ningú fins que el
+        detecta qui revisa l'expedient, i llavors no és una correcció sinó un
+        reintegrament. Per això aquest intent té una regla que els altres no
+        tenen, i per això té guarda pròpia: és la que una simplificació futura
+        («ja que tenim les xifres, omple-la») s'enduria sencera. */
+(() => {
+  const j = APP.indexOf('  entregable_justificacio:{');
+  if (j < 0) { ok('no hi ha intent de justificació, res a comprovar'); return; }
+  const cos = APP.slice(j, APP.indexOf('\n  },', j));
+  const sys = (cos.match(/system:'((?:[^'\\]|\\.)*)'/) || [])[1] || '';
+  if (!/TAULA DE DESPESA NO HI CABEN MAI|taula de despesa.{0,40}no/i.test(sys))
+    bad('`entregable_justificacio`: no prohibeix posar estimacions a la taula de despesa');
+  else if (!/ESTIMACIONS|estimacions/.test(sys))
+    bad('`entregable_justificacio`: no diu que les xifres del SOS són estimacions');
+  else if (!/factur/i.test(sys))
+    bad('`entregable_justificacio`: no diu amb què es contrasta una despesa');
+  else ok('`entregable_justificacio`: la taula de despesa no admet cap estimació, i es diu per què');
+  /* I que un import buit no passi per zero: el `coerce` l'ha de forçar a
+     marcar. Es mira **la línia de l'import** i no el bloc sencer: buscant-ho a
+     tot el bloc, `ctx.periode||'[a completar]'` del `build` ja el feia passar
+     encara que la taula de despesa hagués quedat sense xarxa. Es va veure
+     trencant la línia a posta i comprovant que la guarda seguia verda. */
+  const lin = cos.split('\n').find(l => /import:\(d\.import/.test(l)) || '';
+  if (!/\|\|'\[a completar\]'/.test(lin))
+    bad('un import buit no es força a «[a completar]», i dins d\'una taula de despesa es llegeix com un zero');
+  else ok('i un import que torni buit queda marcat, no en blanc');
+})();
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la taxonomia d'entregables.`
   : '\n✅ La taxonomia quadra i la màquina no pot tocar cap intangible.');
 process.exit(fails ? 1 : 0);

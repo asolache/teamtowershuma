@@ -185,7 +185,7 @@ const it = await page.evaluate(() => {
       buits: d ? JSON.stringify(d.tool.input_schema.required).includes('buits') : false };
   });
 });
-ok(it.length === 3, `${it.length} tipus tenen eina — tres, no vuit: es fan un per un`);
+ok(it.length === 4, `${it.length} tipus tenen eina — quatre, no vuit: es fan un per un`);
 it.forEach(x => {
   ok(x.hi && x.cost > 0, `\`${x.i}\` existeix i declara el seu cost (${x.cost} tokens)`);
   ok(/\[a completar\]/.test(x.sys), `\`${x.i}\` sap com marcar el que falta`);
@@ -264,6 +264,49 @@ const ui = await page.evaluate(() => {
 ok(/50%/.test(ui.mesura), 'el percentatge d\'acceptació es pinta a la llista de fluxos');
 ok(ui.docs === 2 && ui.corregits === 1, 'els dos entregables acceptats hi són, i el corregit va marcat');
 ok(ui.qui.includes('👤 De persona, sempre'), 'i l\'intangible segueix dient que és de persona, sempre');
+
+console.log('\n13 · El context arriba, i les xifres diuen que són estimacions');
+const ctx = await page.evaluate(() => {
+  const S = window.__SOS;
+  const node = { id: 'n1', name: 'Ateneu', vna: {
+    roles: [{ id: 'r1', name: 'Junta' }, { id: 'r2', name: 'Sòcies' }],
+    exchanges: [{ id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'acta mensual' }] },
+    ledger: [{ id: 'e1', type: 'hores', value: 12, flowId: 'x1', personKey: 'p1', signed: true },
+             { id: 'e2', type: 'moneda', value: 300, flowId: 'x1', personKey: 'p2' }],
+    ventures: [] };
+  const c = S.contextEntregable(node, node.vna.exchanges[0]);
+  const prompt = S.AI.intents.entregable_justificacio.build(Object.assign({}, c, { notes: '' }));
+  return { xifres: c.xifres, flux: c.flux, rols: c.rols, activitat: c.activitat, prompt };
+});
+ok(ctx.xifres.length > 0, `el context porta ${ctx.xifres.length} xifres del registre, no una llista buida`);
+ok(ctx.xifres.filter(x => /ESTIMACIÓ/.test(x)).length === 2, 'les hores i els euros van etiquetats com a estimació');
+ok(ctx.xifres.some(x => /apunts al registre.*exacte/.test(x)), 'i el que sí que és exacte —el recompte d\'apunts— ho diu també');
+ok(ctx.flux === 'Junta → Sòcies · acta mensual', 'el flux es llegeix com una frase');
+ok(ctx.activitat.length === 1, 'i l\'activitat registrada hi entra per al text de la memòria');
+ok(/ESTIMACIÓ/.test(ctx.prompt) && /taula de despesa/.test(ctx.prompt),
+  'el prompt de la justificació avisa que les estimacions no van a la taula de despesa');
+ok(/no s’ha enganxat la convocatòria|No s'ha enganxat la convocatòria/i.test(ctx.prompt),
+  'i sense la convocatòria enganxada ho diu com el primer que falta');
+
+console.log('\n14 · La justificació: memòria sí, taula de despesa no');
+const ju = await page.evaluate(() => {
+  const S = window.__SOS;
+  const r = S.AI.intents.entregable_justificacio.coerce({
+    titol: 'Justificació 2026', memoria: 'S\'han fet dotze trobades.',
+    activitats: [{ que: 'Trobada mensual', quan: 'gener–desembre', indicador: '12 sessions' }],
+    despeses: [{ concepte: 'Material fungible', import: '', document: 'factura' },
+               { concepte: 'Lloguer del local', import: '450 €', document: 'rebut' }],
+    avisos: ['El termini acaba el 31 de gener'], buits: ['import del material'] });
+  return { r, html: S.esborranyHTML('justificacio', r), text: S.esborranyText('justificacio', r),
+    demana: S.EB_DEMANA.justificacio };
+});
+ok(ju.r.despeses[0].import === '[a completar]', 'un import buit es força a «[a completar]»: en blanc es llegiria com un zero');
+ok(ju.r.despeses[1].import === '450 €', 'i el que et donen es respecta tal com és');
+ok(/els imports els poses tu/i.test(ju.html) && /estimacions/i.test(ju.html),
+  'la pantalla diu que la taula de despesa no la omple la màquina, i per què');
+ok(/TAULA DE DESPESA/.test(ju.text) && /cal factura/.test(ju.text),
+  'i el text pla porta cada concepte amb el document que caldrà');
+ok(/convocatòria/i.test(ju.demana), 'la pantalla demana enganxar la convocatòria: sense això el document no té forma');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));

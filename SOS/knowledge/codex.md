@@ -4956,6 +4956,28 @@ La regla: **tota guarda es prova trencant el que vigila, abans de donar-la per
 bona.** Si en trencar-ho segueix verda, la guarda és pitjor que no tenir-ne cap,
 perquè ensenya a confiar en un número que no mira res.
 
+## Veda 156 — Una estimació no entra mai en una casella de comptabilitat
+
+Al SOS gairebé tot valor és una estimació amb forquilla: és honest, està escrit
+i és el que fa que el mapa serveixi per decidir. Però hi ha caselles que no
+admeten una estimació de cap manera —la taula de despesa d'una justificació de
+subvenció, un rebut, una liquidació— perquè es contrasten amb factures i el que
+hi va s'hi compara número a número.
+
+La regla té dues meitats i les dues són necessàries:
+
+- **L'etiqueta viatja amb el número.** Una xifra que surt del SOS cap a un
+  document ha de dur al costat si és un recompte exacte o una estimació, i amb
+  quina forquilla. Si l'etiqueta es queda a la pantalla d'origen, el document
+  que en surt la perd i ningú sabrà mai que allò era aproximat.
+- **Davant d'una casella comptable, l'eina s'atura i ho diu.** No perquè no
+  sàpiga, sinó **perquè sap que el que sap no serveix per a aquella casella**.
+  Deixa el concepte, deixa quin paper caldrà, i deixa l'import a «[a completar]».
+
+I el corol·lari operatiu: **un import en blanc no és un import buit, és un
+zero**. Dins d'una taula ningú el llegeix com «falta»; el llegeixen com «no hi
+ha hagut despesa». El que torni buit es força a marcar.
+
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.
 - `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).

@@ -194,7 +194,32 @@ Per ordre, i els tres primers no depenen de ningú.
 | **4** | **Dos intents d'IA, no vuit**: `acta` i `informe-periodic`. Els més repetitius i els menys arriscats | Provar el patró amb dos abans de declarar-ne vuit | mitjà | **fet** |
 | **5** | **Acceptació i traçabilitat** — el flux proposa → persona accepta → va al registre signat | El que fa defensable l'entregable davant d'una junta | mitjà | **fet** (`openPreparaEntregable`) |
 | **6** | **La mesura**: l'esborrany es pot corregir abans d'acceptar-lo, i queda desat el text acceptat, l'original de la màquina i si es va tocar | Sense poder corregir, «acceptat» volia dir «no m'hi barallo»: el número no mesurava res | baix | **fet** (`acceptacioEntregables`) |
-| **7** | **Els altres cinc intents**, un per un, mirant el percentatge abans d'afegir el següent | Si el que es mesura és baix, el problema és el mapa, no la IA | alt | en curs · `convocatoria` fet, queden `justificacio`, `inventari`, `comanda`, `fitxa` |
+| **7** | **Els altres cinc intents**, un per un, mirant el percentatge abans d'afegir el següent | Si el que es mesura és baix, el problema és el mapa, no la IA | alt | en curs · `convocatoria` i `justificacio` fets, queden `inventari`, `comanda`, `fitxa` |
+
+### La línia comptable · el que la justificació de subvenció no fa
+
+La justificació és l'entregable que **més estalvia** —són hores d'enganxar
+dades— i el que **més mal fa si falla**: un import equivocat no el veu ningú
+fins que el veu qui revisa l'expedient, i llavors no és una correcció sinó un
+reintegrament.
+
+Les xifres del SOS són **estimacions amb forquilla de ±30 %** (`FUND_UNCERTAINTY`).
+Una memòria d'activitat admet una estimació **dita com a tal**; una taula de
+despesa no admet res que no surti d'una factura. Per això aquest intent té una
+regla que els altres tres no tenen:
+
+> **Escriu la memòria i no omple la taula de despesa.** La taula surt igualment
+> —amb els conceptes i amb el document que caldrà per a cadascun, que és feina
+> feta— però els imports els hi posa una persona amb els papers a la mà.
+
+I una cosa que es va arreglar pel camí: **la pantalla passava `xifres: []`
+literal**. L'informe declarava a les seves instruccions que llegiria el registre
+i no li arribava mai res. No petava i no es notava, perquè tornava un informe
+genèric i versemblant —que és com sobreviuen aquests defectes. Ara el context
+surt de `contextEntregable`, i **cada xifra viatja etiquetada**: el recompte
+d'apunts diu «exacte» i les hores i els euros diuen «ESTIMACIÓ», amb la
+forquilla al costat. Si l'etiqueta no viatja amb el número, el document que en
+surt la perd.
 
 **Per què la convocatòria va abans que la justificació**, que és la que més
 estalvia: perquè una convocatòria **s'equivoca a la vista de tothom** —la gent
