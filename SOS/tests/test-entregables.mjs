@@ -147,6 +147,59 @@ ok(sp.ambTipus === 1, 'i només la tangible porta tipus d\'entregable');
 ok(/Acta de reunió/.test(sp.titolAuto), 'la carta automatitzable diu què s\'ha de produir: «' + sp.titolAuto + '»');
 ok(sp.intangAuto === 0, 'i cap carta intangible ha quedat marcada per a la màquina');
 
+console.log('\n7 · Preparar un entregable: la màquina proposa, ningú ha acceptat encara');
+const pr = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const node = S.newNode('Prova entregable', 'barri', null);
+  S.state.nodes.push(node);
+  node.vna = { roles: [{ id: 'r1', name: 'Nucli gestor' }, { id: 'r2', name: 'Veïnat' }],
+    exchanges: [
+      { id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'acta de la trobada' },
+      { id: 'x2', from: 'r2', to: 'r1', kind: 'intangible', label: 'confiança' },
+      { id: 'x3', from: 'r1', to: 'r2', kind: 'tangible', label: 'una cosa sense nom conegut' }
+    ] };
+  const obre = x => { S.openPreparaEntregable(node, x); const t = document.querySelector('.modal').innerText; S.closeModal(); return t; };
+  const auto = obre(node.vna.exchanges[0]);
+  const intang = obre(node.vna.exchanges[1]);
+  const sense = obre(node.vna.exchanges[2]);
+  return { auto, intang, sense,
+    /* Cap dels tres ha escrit res: obrir la pantalla no és acceptar. */
+    entregables: node.vna.exchanges.reduce((a, x) => a + ((x.entregables || []).length), 0) };
+});
+ok(/Acta de reunió/.test(pr.auto) && /esborrany/i.test(pr.auto),
+  'un flux automatitzable ofereix preparar un esborrany');
+ok(/tokens/.test(pr.auto), 'i diu el cost abans de cridar');
+ok(/intangible/i.test(pr.intang) && !/esborrany/i.test(pr.intang),
+  'un intangible no ofereix res: diu per què i prou');
+ok(/encara no sabem quin entregable/i.test(pr.sense),
+  'i un tangible sense tipus demana posar-li nom en comptes de provar-ho igualment');
+ok(pr.entregables === 0, 'i obrir les tres pantalles no ha escrit res enlloc');
+
+console.log('\n8 · Els dos intents existeixen i porten els frens a les instruccions');
+const it = await page.evaluate(() => {
+  const S = window.__SOS;
+  const els = Object.keys(S.INTENT_ENTREGABLE).map(t => ({ t, i: S.INTENT_ENTREGABLE[t] }));
+  return els.map(({ t, i }) => {
+    const d = S.AI.intents[i];
+    return { t, i, hi: !!d, sys: d ? d.system : '', cost: d ? d.max_tokens : 0,
+      buits: d ? JSON.stringify(d.tool.input_schema.required).includes('buits') : false };
+  });
+});
+ok(it.length === 2, `${it.length} tipus tenen eina — dos, no vuit`);
+it.forEach(x => {
+  ok(x.hi && x.cost > 0, `\`${x.i}\` existeix i declara el seu cost (${x.cost} tokens)`);
+  ok(/\[a completar\]/.test(x.sys), `\`${x.i}\` sap com marcar el que falta`);
+  ok(x.buits, `\`${x.i}\` està obligat a retornar els buits, no és opcional`);
+});
+
+console.log('\n9 · L\'app funciona igual sense clau d\'IA');
+const senseClau = await page.evaluate(async () => {
+  const S = window.__SOS;
+  try { await S.AI.call('entregable_acta', { node: 'x', flux: 'y' }); return 'ha cridat'; }
+  catch (e) { return e.noKey ? 'demana clau' : 'error: ' + (e.msg || ''); }
+});
+ok(senseClau === 'demana clau', 'sense clau demana clau i no peta: l\'automatització és una comoditat, no un requisit');
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

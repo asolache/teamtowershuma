@@ -153,6 +153,71 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   else bad('el tipus declarat a l\'intercanvi es llegeix abans de descartar l\'intangible');
 })();
 
+/* 8 · Els intents que preparen un entregable. Dos, no vuit — i el que importa
+       no és quants n'hi ha: és què tenen escrit a les instruccions.
+
+       Un model que no sap una dada l'omple amb una de versemblant si ningú li
+       diu el contrari, i una xifra versemblant dins d'un informe de justificació
+       no la detecta ningú fins que la detecta qui no toca. Per això es comprova
+       que les instruccions ho prohibeixin explícitament i que l'esquema tingui
+       on posar el que falta. */
+(() => {
+  const i = APP.indexOf('const INTENT_ENTREGABLE=');
+  if (i < 0) { bad('no es troba `INTENT_ENTREGABLE`'); return; }
+  const mapa = APP.slice(i, APP.indexOf(';', i));
+  const intents = [...mapa.matchAll(/(\w+):'(\w+)'/g)].map(m => ({ tipus: m[1], intent: m[2] }));
+  if (!intents.length) { bad('cap tipus té eina que el prepari'); return; }
+
+  // El tipus ha d'existir a la taxonomia i ha de ser dels que surten d'una màquina.
+  const ids = TIPUS.filter(t => t.maquina).map(t => t.id);
+  const mal = intents.filter(x => !ids.includes(x.tipus));
+  if (mal.length) bad('hi ha eina per a tipus que no són automatitzables: ' + mal.map(x => x.tipus).join(', '));
+  else ok(`${intents.length} tipus tenen eina, i tots són dels que surten d'una màquina`);
+
+  intents.forEach(({ intent }) => {
+    const j = APP.indexOf('  ' + intent + ':{');
+    if (j < 0) { bad(`l'intent \`${intent}\` no està declarat a AI_INTENTS`); return; }
+    const cos = APP.slice(j, APP.indexOf('\n  },', j));
+    const sys = (cos.match(/system:'((?:[^'\\]|\\.)*)'/) || [])[1] || '';
+    if (!/MAI te.{0,3}la inventis|no arrodoneixis|cap m\\?és/i.test(sys))
+      bad(`\`${intent}\`: les instruccions no prohibeixen inventar-se el que falta`);
+    else if (!/\[a completar\]/.test(sys))
+      bad(`\`${intent}\`: no diu com marcar el que falta, i llavors la prohibició no té sortida`);
+    else if (!/no escriguis noms de persona|noms de persona: rols/i.test(sys))
+      bad(`\`${intent}\`: no prohibeix escriure noms de persona`);
+    else if (!/required:\[[^\]]*'buits'/.test(cos))
+      bad(`\`${intent}\`: l'esquema no obliga a retornar els buits, i llavors marcar-los és opcional`);
+    else ok(`\`${intent}\`: no pot inventar, ha de marcar els buits i no escriu noms`);
+  });
+})();
+
+/* 9 · LA SEGONA GUARDA QUE IMPORTA · res no existeix fins que algú ho accepta.
+       És el que fa defensable un entregable davant d'una junta, i és exactament
+       el que es perdria sense adonar-se'n el dia que algú «simplifiqui» la
+       pantalla desant el resultat de seguida. Es comprova que dins de
+       `openPreparaEntregable` **no hi hagi cap escriptura abans del botó
+       d'acceptar**. */
+(() => {
+  const i = APP.indexOf('function openPreparaEntregable(');
+  if (i < 0) { bad('no es troba `openPreparaEntregable`'); return; }
+  const cos = APP.slice(i, APP.indexOf('\n}\n', i));
+  const pAccepta = cos.indexOf('Accepto aquest esborrany');
+  if (pAccepta < 0) { bad('la pantalla no demana acceptar res: l\'esborrany es donaria per bo'); return; }
+  const abans = cos.slice(0, pAccepta);
+  const escriu = [['persist(', 'desa el node'], ['pushLedger', 'escriu al ledger'],
+    ['submitEntry', 'envia un apunt'], ['recordPublication', 'publica']]
+    .filter(([f]) => abans.includes(f)).map(([, q]) => q);
+  if (escriu.length) bad('la pantalla ' + escriu.join(' i ') + ' ABANS que ningú accepti l\'esborrany');
+  else ok('res no es desa abans que una persona accepti l\'esborrany');
+  // I que el que s'accepti quedi marcat com a preparat per una màquina.
+  if (!/maquina:true/.test(cos)) bad('l\'entregable acceptat no queda marcat com a preparat per una màquina');
+  else if (!/per:myDid/.test(cos)) bad('no queda escrit qui l\'ha acceptat');
+  else ok('i el que s\'accepta diu que l\'ha preparat una màquina i qui l\'ha acceptat');
+  // El cost, abans i no després.
+  if (!/max_tokens/.test(cos)) bad('no es diu què costarà la crida abans de fer-la');
+  else ok('i el cost es diu abans de cridar, no després');
+})();
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la taxonomia d'entregables.`
   : '\n✅ La taxonomia quadra i la màquina no pot tocar cap intangible.');
 process.exit(fails ? 1 : 0);
