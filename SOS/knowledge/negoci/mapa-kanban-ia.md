@@ -186,14 +186,30 @@ d'una junta.
 
 Per ordre, i els tres primers no depenen de ningú.
 
-| | Què | Per què aquí | Cost |
-|---|---|---|---|
-| **1** | **Desviació contra el mapa de referència** — diff de grafs contra `PROTOTYPE_MAPS`, amb rols i fluxos que falten, i els propis marcats com a propis | És l'entregable de consultoria, **es ven sol** i no necessita IA. Dona valor el primer dia | baix |
-| **2** | **Taxonomia d'entregables** (`ENTREGABLES`, vuit tipus) + `kind` a la carta del Kanban + `seedSprintPlanFromMap` que l'assigna | És el contracte que fa possible tota la resta. Sense això, la baula 3 no té on agafar-se | baix |
-| **3** | **La regla de repartiment**: tangible+tipus → candidata a màquina; intangible → a la persona del rol. Amb el **comptador**: «d'aquestes 34 cartes, 12 les pot fer la màquina» | **És l'argument de venda.** I és el que fa visible que un mapa millor val més | baix |
+| | Què | Per què aquí | Cost | Estat |
+|---|---|---|---|---|
+| **1** | **Desviació contra el mapa de referència** — diff de grafs contra `PROTOTYPE_MAPS`, amb rols i fluxos que falten, i els propis marcats com a propis | És l'entregable de consultoria, **es ven sol** i no necessita IA. Dona valor el primer dia | baix | **fet** (`desviacioMapa`, `openDesviacioMapa`) |
+| **2** | **Taxonomia d'entregables** (`ENTREGABLES`, vuit tipus) + `kind` a la carta del Kanban + `seedSprintPlanFromMap` que l'assigna | És el contracte que fa possible tota la resta. Sense això, la baula 3 no té on agafar-se | baix | **fet** |
+| **3** | **La regla de repartiment**: tangible+tipus → candidata a màquina; intangible → a la persona del rol. Amb el **comptador**: «d'aquestes 34 cartes, 12 les pot fer la màquina» | **És l'argument de venda.** I és el que fa visible que un mapa millor val més | baix | **fet** (`fluxAutomatitzable`, `repartimentMaquina`) |
 | **4** | **Dos intents d'IA, no vuit**: `acta` i `informe-periodic`. Els més repetitius i els menys arriscats | Provar el patró amb dos abans de declarar-ne vuit | mitjà |
 | **5** | **Acceptació i traçabilitat** — el flux proposa → persona accepta → va al registre signat | El que fa defensable l'entregable davant d'una junta | mitjà |
 | **6** | **Els altres sis intents**, un per un, mesurant quants s'accepten sense tocar | Si el primer que es mesura és baix, el problema és el mapa, no la IA | alt |
+
+### El que es va trobar construint-ho
+
+Dues coses que l'anàlisi no podia veure i la prova sí:
+
+- **`normKind` era fail-open.** Tractava com a **tangible** qualsevol valor que
+  no fos exactament `'I'` o `'intangible'`. Mentre només servia per pintar i
+  comptar era inofensiu; des que el tangible és el costat que toca la màquina,
+  una majúscula obria la porta. `test-entregables.mjs` ho va trobar provant
+  `kind:'Intangible'`. Ara la mena es normalitza, i a més
+  `fluxAutomatitzable` **exigeix que sigui explícitament tangible** en comptes
+  de descartar el que sap que és intangible: una mena desconeguda cau del
+  costat segur.
+- **El sostre del SOS és a 508 de 510 KB gzip.** La pròxima peça —el primer
+  intent d'IA— **no hi cabrà**. Abans del punt 4 cal decidir: pujar el sostre
+  amb el motiu escrit, o partir el fitxer. És una decisió, no un tràmit.
 
 **La mesura que ho governa tot**, i que s'ha de posar des del punt 4:
 **quin percentatge d'entregables generats s'accepta sense editar.** Si és alt, el

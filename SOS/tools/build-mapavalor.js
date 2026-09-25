@@ -173,6 +173,38 @@ const VISITA = flux.filter(f => toca(f, ['operador', 'visitant']));
 const compta = fs => ({ n: fs.length, i: fs.filter(f => f.mena === 'intangible').length });
 const cCanal = compta(CANAL), cVisita = compta(VISITA), cTot = compta(flux);
 
+/* ══ QUI FA CADA LLIURAMENT ══════════════════════════════════════════════════
+   La regla que el SOS aplica al Kanban, dita aquí sobre un cas que es pot
+   llegir: si el lliurament és **tangible i sabem quin entregable produeix**, el
+   pot preparar una màquina; si és **intangible**, és de persona i la màquina no
+   el toca mai.
+
+   Les pistes són les mateixes que `ENTREGABLE_HINTS` de l'aplicació. No es
+   requereix el fitxer —és HTML amb un `<script>` de 500 KB— i per això es
+   declaren aquí les que fan falta per al cas, amb una guarda que comprova que
+   totes existeixen a l'app. Dues llistes de pistes que divergissin farien que
+   la portada prometés un repartiment diferent del que després fa l'eina. */
+const PISTES = [
+  [/comanda|compra|paga|liquidaci|preu|volum/i, 'comanda'],
+  [/reserva|hores reservades|disponibilitat/i, 'inventari'],
+  [/despesa|factura/i, 'comanda']
+];
+const entregableDe = f => {
+  if (f.mena !== 'tangible') return null;
+  const h = PISTES.find(p => p[0].test(f.q));
+  return h ? h[1] : null;
+};
+const QUI = flux.map(f => {
+  if (f.mena === 'intangible') return { f, qui: 'persona', tipus: null };
+  const t = entregableDe(f);
+  return t ? { f, qui: 'maquina', tipus: t } : { f, qui: 'sense', tipus: null };
+});
+const cQui = {
+  maquina: QUI.filter(x => x.qui === 'maquina').length,
+  persona: QUI.filter(x => x.qui === 'persona').length,
+  sense: QUI.filter(x => x.qui === 'sense').length
+};
+
 /* ══ EL DIBUIX ═══════════════════════════════════════════════════════════════
    Generat de les posicions declarades. Es dibuixa amb les dues menes
    distingides per traç —plena i discontínua— i no per color sol: qui no
@@ -251,6 +283,15 @@ function blocPortada() {
   f.push(`      <div class="mv-c visita"><div class="mv-ck">Pel visitant i l'operador</div><div class="mv-cv">${cVisita.i} de ${cVisita.n}</div><div class="mv-cd">lliuraments intangibles. Aquí no són un extra: són el producte que es paga.</div></div>`);
   f.push('    </div>');
   f.push('    <p class="mv-tesi"><b>El marge no surt d\'apujar el preu de l\'ampolla.</b> Surt de <b>cobrar els intangibles que la casa ja produeix</b> —el relat, el lloc, la família, el vessant— i que avui se\'n van amb el camió. El mapa no els inventa: ensenya que hi són i que no es cobren.</p>');
+  /* I el que el mapa habilita després: saber què pot preparar una màquina.
+     Va aquí i no en una secció a part perquè és la conseqüència del mapa, no
+     un servei diferent — i perquè el número el dona el graf, no nosaltres. */
+  f.push('    <div class="mv-qui">');
+  f.push('      <div class="mv-qk">I després, qui fa cada lliurament</div>');
+  f.push(`      <div class="mv-qr"><b class="mq">${cQui.maquina}</b><span>els pot preparar una màquina: tangibles amb un entregable conegut —comandes, reserves, liquidacions—</span></div>`);
+  f.push(`      <div class="mv-qr"><b class="ms">${cQui.sense}</b><span>són tangibles però encara no sabem quin entregable produeixen</span></div>`);
+  f.push(`      <div class="mv-qr"><b class="mp">${cQui.persona}</b><span>són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera</span></div>`);
+  f.push('    </div>');
   f.push(`    <p class="mv-avis">${CELLER.avis}</p>`);
   f.push('    <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html">Com es fa un mapa, pas a pas →</a>' +
     '<a class="mv-cta" href="#cataleg" data-sec="privat">El paquet i el preu →</a></div>');
@@ -400,6 +441,25 @@ function blocExemple() {
   const falten = cal.filter(c => !k.includes(c));
   if (falten.length) bad('la notació no explica: ' + falten.join(', '));
   else ok('la notació explica node, transacció, les dues menes i l\'entregable');
+})();
+
+/* 9 · Les pistes d'entregable han de ser les de l'aplicació. Si la portada
+       classifica amb un vocabulari i el SOS amb un altre, el repartiment que es
+       promet no és el que després surt al Kanban — i això no peta mai. */
+(() => {
+  const app = readFileSync(join(SOS, 'index.html'), 'utf8');
+  const i = app.indexOf('const ENTREGABLE_HINTS=[');
+  if (i < 0) { bad('no es troba `ENTREGABLE_HINTS` a l\'app: el repartiment d\'aquest cas no es pot comprovar'); return; }
+  const cos = app.slice(i, app.indexOf('\n];', i));
+  const tipusApp = [...new Set([...cos.matchAll(/,'([\w-]+)'\]/g)].map(m => m[1]))];
+  const meus = [...new Set(PISTES.map(p => p[1]))];
+  const orfes = meus.filter(t => !tipusApp.includes(t));
+  if (orfes.length) bad('aquest cas classifica cap a tipus que l\'app no coneix: ' + orfes.join(', '));
+  else ok(`el repartiment fa servir ${meus.length} tipus, tots declarats a l'app`);
+  // I que el repartiment que es publica sigui el que surt del graf.
+  if (cQui.maquina + cQui.persona + cQui.sense !== flux.length) bad('el repartiment no suma els lliuraments del graf');
+  else if (cQui.persona !== cTot.i) bad('els de persona no coincideixen amb els intangibles: la regla no s\'està aplicant');
+  else ok(`repartiment: ${cQui.maquina} de màquina · ${cQui.sense} sense tipus · ${cQui.persona} de persona (= els ${cTot.i} intangibles)`);
 })();
 
 /* ══ ESCRIURE ════════════════════════════════════════════════════════════════ */
