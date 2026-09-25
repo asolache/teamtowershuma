@@ -70,6 +70,55 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### La UX del SOS com un Kanban sencer · assignar a una persona i documentar la transacció
+
+**Demanat per l'Àlvar (25/09/2026).** Que tot el que es planifica visqui en un
+sol Kanban; que una tasca **s'assigni a una persona** segons el context de la
+tasca i qui hi està implicat; i que hi hagi **documentació associada a les
+transaccions** d'un node o d'un projecte.
+
+**El que ja hi ha, perquè no es refaci:**
+
+| Peça | On és | Què fa avui |
+|---|---|---|
+| La safata única | `lesMevesTasques()` | Normalitza les onze fonts a una llista, amb filtres de territori i tema |
+| Les columnes | `KCOLS` (per fer / fent / fet) | Només les targetes de tauler es poden moure: són les úniques amb estat desat |
+| Mapa → carta | `seedSprintPlanFromMap` | Cada flux del mapa genera la seva carta, amb el tipus d'entregable al títol |
+| Qui pot fer-ho | `fluxAutomatitzable`, `repartimentMaquina` | Diu si la carta la pot preparar una màquina o va sempre a una persona |
+| Rols → persones | `roleOwner`, `assignRoleMember`, `suggestRoleMembers`, `rolesSobrecarrega` | Ja assigna **persones a rols**, amb proposta i avís de sobrecàrrega |
+| Documentació | `x.entregables[]` a l'intercanvi + `openEntregableAcceptat` | L'entregable acceptat penja del flux i es pot tornar a llegir |
+
+**El que falta de debò, i és menys del que sembla:**
+
+1. **La tasca no té persona, té rol.** El pont hi és a mitges: el flux diu quin
+   rol el porta i `roleOwner` diu qui porta el rol, però ningú els encadena.
+   L'assignació **hauria de derivar-se del mapa** (el rol que emet el flux) i
+   només caure a una tria manual quan el rol no té ningú o en té més d'un —i
+   llavors proposar amb `suggestRoleMembers`, que ja pondera càrrega i encaix.
+   *Assignar a dit el que el mapa ja diu és tornar a fer el mapa a mà.*
+2. **Les onze fonts no tenen totes estat.** Moure una missió o una alerta de
+   cures no es pot desar enlloc: o se'ls dona estat propi, o el Kanban ha de
+   dir clarament quines targetes es mouen i quines només s'obren. Avui ho fa
+   així i **és la decisió correcta**; el que falla és que no s'explica.
+3. **La documentació és només de l'entregable acceptat.** Un fitxer adjunt, un
+   enllaç o una nota lliure penjats de la transacció encara no hi caben.
+   `EVIDENCE_KINDS`/`evidenceOf` ja fan això per a les revisions: el més barat
+   és **estendre'ls a l'intercanvi**, no inventar-ne un segon magatzem.
+4. **El projecte no té la seva vista.** La documentació penja del flux; no hi ha
+   cap lloc que digui «tot el que s'ha produït en aquest projecte».
+
+**El que jo faria, i per què:** primer el punt 1 —és el que converteix el mapa
+en repartiment de feina i és el que es ven—, després el 3 amb `evidenceOf`, i
+deixar el 4 per al final: una vista de projecte sense res a dins no s'omple
+sola. El punt 2 no és feina de codi sinó d'una frase a la pantalla.
+
+**El sostre.** `check-kiss.js` és a 540 KB i l'app s'hi acosta. Això no cap
+sencer sense pujar-lo una altra vegada, i el criteri no canvia: **es puja amb el
+motiu escrit al commit, i només quan el que es compra és menys pantalles, no
+més.**
+
+---
+
 ### El dibuix de la colla i el graf declarat no diuen el mateix
 
 Arreglat el cas que es va veure —**les mans i els laterals sortien com a dos

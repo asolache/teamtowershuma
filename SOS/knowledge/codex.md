@@ -4925,6 +4925,59 @@ així que clicar-hi i posar-ho al camp de text hauria donat zero resultats. Es
 filtra pel que és —un xip d'àmbit que es pot treure—, no per un text que ho
 imita.
 
+## Veda 154 — «Acceptat» no vol dir res si no es podia corregir
+
+La promesa que ven aquest tram és que els entregables els prepara una màquina i
+**els accepta una persona**. Es va escriure així, i durant un temps l'esborrany
+no es podia tocar: hi havia un botó d'acceptar i prou. Amb aquella pantalla,
+acceptar només volia dir «no m'hi barallo», i el percentatge que en sortia no
+mesurava res —no distingia entre un text bo i un text que ningú tenia manera
+d'arreglar sense tornar a començar.
+
+La regla: **quan una pantalla demana que una persona validi el que ha fet una
+màquina, la persona hi ha de poder posar les mans allà mateix**, i el que es
+desa ha de dir si les hi ha posat. Si el que es guarda només és el resultat, la
+validació és un tràmit.
+
+I el corol·lari, que és el que la fa auditable: **es desa també l'original de la
+màquina.** Una correcció només vol dir alguna cosa si es pot comparar amb el que
+hi havia; sense l'original, «corregit» és una etiqueta sense contingut i ningú
+pot saber mai si el que es corregia era una coma o una xifra.
+
+## Veda 155 — Una guarda que es compta a si mateixa no comprova res
+
+`function acceptacioEntregables(` també conté `acceptacioEntregables(`. Una
+guarda que busca «hi ha alguna crida?» amb un `indexOf` troba la definició i
+diu que sí encara que no la cridi ningú. Va passar dues vegades seguides —a la
+guarda 10 i a la 11 de `check-entregables.js`— i la segona és la que la fa veda:
+si un error es repeteix amb el mateix codi davant, no era un descuit.
+
+La regla: **tota guarda es prova trencant el que vigila, abans de donar-la per
+bona.** Si en trencar-ho segueix verda, la guarda és pitjor que no tenir-ne cap,
+perquè ensenya a confiar en un número que no mira res.
+
+## Veda 156 — Una estimació no entra mai en una casella de comptabilitat
+
+Al SOS gairebé tot valor és una estimació amb forquilla: és honest, està escrit
+i és el que fa que el mapa serveixi per decidir. Però hi ha caselles que no
+admeten una estimació de cap manera —la taula de despesa d'una justificació de
+subvenció, un rebut, una liquidació— perquè es contrasten amb factures i el que
+hi va s'hi compara número a número.
+
+La regla té dues meitats i les dues són necessàries:
+
+- **L'etiqueta viatja amb el número.** Una xifra que surt del SOS cap a un
+  document ha de dur al costat si és un recompte exacte o una estimació, i amb
+  quina forquilla. Si l'etiqueta es queda a la pantalla d'origen, el document
+  que en surt la perd i ningú sabrà mai que allò era aproximat.
+- **Davant d'una casella comptable, l'eina s'atura i ho diu.** No perquè no
+  sàpiga, sinó **perquè sap que el que sap no serveix per a aquella casella**.
+  Deixa el concepte, deixa quin paper caldrà, i deixa l'import a «[a completar]».
+
+I el corol·lari operatiu: **un import en blanc no és un import buit, és un
+zero**. Dins d'una taula ningú el llegeix com «falta»; el llegeixen com «no hi
+ha hagut despesa». El que torni buit es força a marcar.
+
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.
 - `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).

@@ -480,6 +480,20 @@
         .mv-tesi b { color:var(--white); font-weight:600; }
         .mv-avis { font-size:.76rem; color:var(--muted); line-height:1.55; margin:0 0 1.2rem; }
         .mv-avis b { color:var(--light); font-weight:600; }
+        /* El repartiment del cas: qui fa cada lliurament. Tres línies i tres
+           colors, els mateixos que fa servir l'app a la barra de salut, perquè
+           qui vegi la portada i després obri el SOS reconegui el mateix. */
+        .mv-qui { border:1px solid var(--border); border-radius:10px; padding:.75rem .9rem; margin:0 0 1.2rem;
+            background:var(--bg-panel); }
+        .mv-qk { font-family:var(--mono); font-size:.62rem; letter-spacing:.09em; text-transform:uppercase;
+            color:var(--muted); margin-bottom:.45rem; }
+        .mv-qr { display:flex; gap:.5rem; align-items:baseline; font-size:.76rem; color:var(--light);
+            line-height:1.5; padding:.15rem 0; }
+        .mv-qr b { font-family:var(--mono); min-width:1.4rem; font-size:.9rem; }
+        .mv-qr b.mq { color:var(--accent-green); } .mv-qr b.ms { color:var(--muted); }
+        .mv-qr b.mp { color:var(--accent-purple); }
+        .mv-qr span b { font-family:inherit; font-size:inherit; min-width:0; color:var(--white); font-weight:600; }
+
         .mv-ctas { display:flex; gap:.7rem; flex-wrap:wrap; }
         .mv-cta { font-size:.84rem; font-weight:600; text-decoration:none; padding:.55rem .95rem;
             border-radius:9px; border:1px solid var(--border); background:var(--bg-card); color:var(--white); }
@@ -1239,6 +1253,12 @@
       <div class="mv-c visita"><div class="mv-ck">Pel visitant i l'operador</div><div class="mv-cv">3 de 8</div><div class="mv-cd">lliuraments intangibles. Aquí no són un extra: són el producte que es paga.</div></div>
     </div>
     <p class="mv-tesi"><b>El marge no surt d'apujar el preu de l'ampolla.</b> Surt de <b>cobrar els intangibles que la casa ja produeix</b> —el relat, el lloc, la família, el vessant— i que avui se'n van amb el camió. El mapa no els inventa: ensenya que hi són i que no es cobren.</p>
+    <div class="mv-qui">
+      <div class="mv-qk">I després, qui fa cada lliurament</div>
+      <div class="mv-qr"><b class="mq">5</b><span>els pot preparar una màquina: tangibles amb un entregable conegut —comandes, reserves, liquidacions—</span></div>
+      <div class="mv-qr"><b class="ms">4</b><span>són tangibles però encara no sabem quin entregable produeixen</span></div>
+      <div class="mv-qr"><b class="mp">7</b><span>són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera</span></div>
+    </div>
     <p class="mv-avis">Aquest mapa és un exemple treballat, no el d'un celler concret, i no porta cap xifra: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és <b>on mirar</b>, i quins lliuraments avui se'n van sense cobrar.</p>
     <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html">Com es fa un mapa, pas a pas →</a><a class="mv-cta" href="#cataleg" data-sec="privat">El paquet i el preu →</a></div>
   </div>

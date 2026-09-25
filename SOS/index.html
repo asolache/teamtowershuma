@@ -6,6 +6,7 @@
 <title>SOS · Social Operating System · TeamTowers Humà</title>
 <meta name="description" content="Sistema operatiu social per a xarxes de valor comunitàries. S'obre al navegador i el que s'hi escriu es queda al teu ordinador. Cada territori — país, comarca, municipi, barri — amb el seu mapa de valor, tauler i comptabilitat.">
 <meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -659,6 +660,82 @@ a{color:var(--blue);text-decoration:none}
 .ent-bar{display:flex;gap:.45rem;flex-wrap:wrap}
 .ent-grp-lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--indigo);margin:1.2rem 0 .5rem}
 .ent-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+/* La desviació contra el model. Dues columnes i dos colors: el que falta i el
+   que és teu. El que és teu no va en vermell a posta — no és un error. */
+/* L'esborrany. Els buits van a dalt i en taronja perquè és el primer que s'ha
+   de llegir: el valor d'aquesta pantalla no és el text bonic, és saber què hi
+   falta abans d'acceptar-lo. */
+.fl-qui{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.5rem;
+  padding-top:.45rem;border-top:1px dashed var(--border)}
+.fl-qui-t{font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;color:var(--muted)}
+.fl-qui.pot .fl-qui-t{color:var(--green)}
+.fl-qui.pers .fl-qui-t{color:var(--purple)}
+.fl-qui .btn{margin-left:auto}
+/* La documentació penjada de la transacció, i la mesura que diu si la màquina
+   encerta. Les dues viuen al flux perquè el flux és el que els dona sentit. */
+.fl-docs{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.45rem}
+.fl-doc{display:flex;flex-direction:column;gap:.1rem;text-align:left;cursor:pointer;
+  background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--green);
+  border-radius:8px;padding:.35rem .55rem;font-size:.72rem;color:var(--light)}
+.fl-doc.ed{border-left-color:var(--orange)}
+.fl-doc:hover{border-color:var(--green)}
+.fl-doc-q{font-family:var(--mono);font-size:.62rem;color:var(--muted)}
+.fl-mesura{display:flex;gap:.6rem;align-items:baseline;font-size:.74rem;line-height:1.5;color:var(--light);
+  background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--muted);
+  border-radius:8px;padding:.5rem .7rem;margin-bottom:.6rem}
+.fl-mesura>b{font-family:var(--mono);font-size:.95rem;color:var(--white)}
+.fl-mesura.bo{border-left-color:var(--green)}
+.fl-mesura.mig{border-left-color:var(--orange)}
+.fl-mesura.fluix{border-left-color:var(--red,#e05d5d)}
+.eb-edit{width:100%;margin-top:.6rem;font-family:var(--mono);font-size:.74rem;line-height:1.55}
+.eb-tocat{color:var(--orange)}
+.eb-pre{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:.74rem;line-height:1.6;
+  background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.8rem .9rem;margin-top:.6rem;color:var(--light)}
+.eb-orig{margin-top:.5rem;font-size:.74rem;color:var(--muted)}
+.eb-orig summary{cursor:pointer}
+.eb-cost{font-size:.76rem;color:var(--light);background:var(--bg-panel);border:1px solid var(--border);
+  border-left:2px solid var(--green);border-radius:8px;padding:.55rem .7rem;margin:.5rem 0;line-height:1.5}
+.eb-cost b{color:var(--white)}
+.eb{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-top:.6rem}
+.eb-t{font-size:1rem;margin:0 0 .2rem}
+.eb-m{font-size:.75rem;color:var(--muted);margin:.1rem 0 .5rem}
+.eb-r{font-size:.85rem;color:var(--light);line-height:1.6;margin:.3rem 0 .6rem}
+.eb-s{margin-top:.6rem;font-size:.82rem;color:var(--light)}
+.eb-s b{display:block;font-size:.68rem;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.eb-s ul,.eb-s ol{margin:0;padding-left:1.1rem;line-height:1.55}
+.eb-s li{margin:.15rem 0}
+.eb-s.eb-av b{color:var(--orange)}
+/* La taula de despesa va emmarcada i no en línia amb la resta: és l'única part
+   del document que la màquina no omple, i qui l'accepta ho ha de veure abans
+   de llegir res més. Dins del cos del text es llegiria com una secció més. */
+.eb-s.eb-desp{border:1px dashed var(--border);border-left:2px solid var(--orange);
+  border-radius:8px;padding:.55rem .7rem;background:var(--bg-panel)}
+.eb-s.eb-desp b{color:var(--orange)}
+.eb-s.eb-desp>p{font-size:.72rem;color:var(--muted);margin:0 0 .35rem;line-height:1.5}
+.eb-q{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.eb-buits{background:rgba(255,145,0,.08);border:1px solid rgba(255,145,0,.35);border-radius:8px;
+  padding:.6rem .75rem;margin-bottom:.7rem;font-size:.78rem;color:var(--light)}
+.eb-buits b{color:var(--orange);display:block;margin-bottom:.25rem}
+.eb-buits ul{margin:0 0 .35rem;padding-left:1.1rem;line-height:1.5}
+.eb-buits p{margin:0;font-size:.72rem;color:var(--muted);line-height:1.5}
+.eb-peu{font-size:.71rem;color:var(--muted);line-height:1.5;margin-top:.5rem}
+.eb-no{font-size:.83rem;color:var(--light);line-height:1.6;background:var(--bg-panel);
+  border:1px solid var(--border);border-left:2px solid var(--purple);border-radius:8px;padding:.7rem .85rem;margin-top:.5rem}
+.eb-no b{color:var(--white)}
+.dv-top{display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap;margin:.6rem 0 .8rem;font-size:.85rem}
+.dv-top .mut{color:var(--muted);font-size:.78rem}
+.dv-sc{margin-left:auto;text-align:right}
+.dv-sc b{font-family:var(--mono);font-size:1.3rem;color:var(--green);display:block;line-height:1}
+.dv-sc span{font-size:.66rem;color:var(--muted)}
+.dv-gr{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.dv-b{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem}
+.dv-k{font-family:var(--mono);font-size:.61rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;line-height:1.4}
+.dv-k.falta{color:var(--orange)}.dv-k.propi{color:var(--blue)}
+.dv-l{font-size:.76rem;color:var(--light);line-height:1.45;padding:.2rem 0;border-bottom:1px solid var(--border)}
+.dv-l:last-child{border-bottom:0}
+.dv-l b{color:var(--white);font-weight:600;display:block}
+.dv-l span{color:var(--muted);font-size:.7rem}
+@media(max-width:760px){.dv-gr{grid-template-columns:1fr}}
 .ent-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:.8rem .9rem;cursor:pointer;transition:border-color .12s,transform .12s;display:flex;flex-direction:column;gap:.4rem}
 .ent-card:hover{border-color:var(--indigo);transform:translateY(-2px)}
 .ent-nm{font-size:.9rem;font-weight:700;line-height:1.25}
@@ -8485,8 +8562,12 @@ function newSprint(v,{name,goal,weeks}={}){
   const sp={id:uid(),name:name||('Sprint '+(sprintsOf(v).length+1)),goal:goal||'',weeks:w,status:sprintsOf(v).length?'planned':'active',startsAt:new Date(starts).toISOString(),endsAt:new Date(ends).toISOString(),items:[]};
   sprintsOf(v).push(sp);return sp;
 }
-function addBacklogItem(sp,{title,kind,mapRef,ownerId,hours}={}){
-  const it={id:uid(),title:(title||'').trim()||'(sense títol)',kind:kind||'deliverable',mapRef:mapRef||null,ownerId:ownerId||null,hours:Number(hours)||0,done:false,doneAt:null};
+function addBacklogItem(sp,{title,kind,mapRef,ownerId,hours,entregable,auto}={}){
+  /* `entregable` és el tipus del que s'ha de produir i `auto` si la màquina el
+     pot preparar. Van a la carta i no es calculen en pintar-la perquè el mapa
+     pot canviar després: el que es va decidir quan es va crear la carta ha de
+     quedar escrit, com tot a la casa. */
+  const it={id:uid(),title:(title||'').trim()||'(sense títol)',kind:kind||'deliverable',mapRef:mapRef||null,ownerId:ownerId||null,hours:Number(hours)||0,entregable:entregable||null,auto:!!auto,done:false,doneAt:null};
   (sp.items||(sp.items=[])).push(it);return it;
 }
 function toggleBacklogItem(sp,itemId){
@@ -8508,7 +8589,15 @@ function seedSprintPlanFromMap(v){
   (v.vna.roles||[]).slice(0,7).forEach(r=>addBacklogItem(s1,{title:'Assignar owner al rol: '+r.name,kind:'role',mapRef:{type:'role',id:r.id}}));
   addBacklogItem(s1,{title:'Definir missió/visió/objectius de la venture',kind:'deliverable'});
   const s2=newSprint(v,{name:'S2 · Activació dels fluxos',goal:'Que cada intercanvi del mapa passi almenys 1 cop',weeks:2});
-  (v.vna.exchanges||[]).slice(0,8).forEach(x=>{const from=(v.vna.roles.find(r=>r.id===x.from)||{}).name||'?',to=(v.vna.roles.find(r=>r.id===x.to)||{}).name||'?';addBacklogItem(s2,{title:'Activar flux '+normKind(x.kind)+': '+from+' → '+to+(x.label?' ('+x.label+')':''),kind:'flow',mapRef:{type:'exchange',id:x.id}});});
+  /* Cada carta de flux diu **què s'ha de produir i qui ho pot fer**. Sense el
+     tipus d'entregable, «activar el flux X» és una nota per a una persona i cap
+     màquina la pot agafar; amb el tipus, la carta ja és un encàrrec.
+     L'intangible hi entra igual, però marcat com a de persona: és el que fa que
+     el repartiment es vegi al tauler i no només al diagnòstic. */
+  (v.vna.exchanges||[]).slice(0,8).forEach(x=>{const from=(v.vna.roles.find(r=>r.id===x.from)||{}).name||'?',to=(v.vna.roles.find(r=>r.id===x.to)||{}).name||'?';
+    const au=fluxAutomatitzable(x),et=au.tipus?entregableMeta(au.tipus):null;
+    addBacklogItem(s2,{title:(et?et.ic+' '+et.nom+' · ':'Activar flux '+normKind(x.kind)+': ')+from+' → '+to+(x.label?' ('+x.label+')':''),
+      kind:'flow',mapRef:{type:'exchange',id:x.id},entregable:au.tipus||null,auto:au.pot});});
   const s3=newSprint(v,{name:'S3 · MVP entregable',goal:'Un MVP funcional replicable — camí a la graduació',weeks:3});
   (v.kanbanSeed||[]).forEach(t=>addBacklogItem(s3,{title:t,kind:'deliverable'}));
   addBacklogItem(s3,{title:'Registrar 3 aportacions reals al ledger (Slicing Pie)',kind:'test'});
@@ -8606,7 +8695,16 @@ const prototypeMapMeta=id=>_pm[id];
 // Els fluxos VNA es desen canònicament com 'tangible' | 'intangible' (ho esperen buildHealth,
 // el render SVG i el wizard). Tolerant en lectura amb les abreviatures 'T'/'I' que van arribar
 // a persistir-se a IndexedDB abans de normalitzar l'escriptura.
-const normKind=k=>(k==='I'||k==='intangible')?'intangible':'tangible';
+/* La mena d'un intercanvi, normalitzada. Abans era una comparació exacta i
+   qualsevol cosa que no fos `'I'` o `'intangible'` queia del costat tangible.
+   Mentre només servia per pintar i per comptar, era inofensiu. Des que el
+   tangible és **el costat que una màquina pot tocar**, un valor mal escrit
+   —una majúscula, un espai— deixava de ser un detall i passava a ser una
+   porta. Ho va trobar `test-entregables.mjs` provant `kind:'Intangible'`. */
+const normKind=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+  return(m==='i'||m==='intangible')?'intangible':'tangible';};
+const menaExplicita=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+  return m==='t'||m==='tangible'||m==='i'||m==='intangible';};
 const isIntangible=k=>normKind(k)==='intangible';
 // Instanciar una venture des d'un prototip: converteix roles+flows en vna, hereta kanban, associa tipus.
 function newVentureFromPrototype(node,proto,{name,type}={}){
@@ -10141,6 +10239,18 @@ function buildFlowLedger(node){
   box.appendChild(hd);
   const help=el('p','ent-desc','Cada flux es llegeix com una frase: qui dona què a qui. A sota hi pengen els entregables comptabilitzats en aquell flux.');
   help.style.marginBottom='.5rem';box.appendChild(help);
+  /* La mesura, allà on es decideix si val la pena afegir el següent intent. Si
+     el percentatge és baix, el problema no és el prompt: és que el mapa no diu
+     prou coses per escriure el document —i això també és informació útil. */
+  const ac=acceptacioEntregables(node);
+  if(ac.total){
+    const cls=ac.pct>=70?'bo':(ac.pct>=40?'mig':'fluix');
+    const m=el('div','fl-mesura '+cls);
+    m.innerHTML='<b>'+ac.sensetocar+'/'+ac.total+'</b><span>entregables acceptats <b>sense tocar</b> ('+ac.pct+'%). '+
+      (ac.pct>=70?'La màquina encerta: el mapa li diu prou coses.'
+       :'Es corregeixen més dels que no. Sol voler dir que al mapa hi falten dades, no que el text estigui mal escrit.')+'</span>';
+    box.appendChild(m);
+  }
   fl.rows.forEach(r=>{
     const tang=!isIntangible(r.flow.kind);
     const c=el('div','flowl-row'+(tang?' t':' i'));
@@ -10171,6 +10281,42 @@ function buildFlowLedger(node){
       b.onclick=()=>openLedgerEntryModal(node,{flowId:r.flow.id,backTab:'map'});
       empty.appendChild(b);
       c.appendChild(empty);
+    }
+    /* QUI FA AQUEST FLUX · el repartiment, flux per flux i no només en total.
+       Aquesta llista és el lloc: ja llegeix cada flux com una frase i és on es
+       mira quan es vol fer alguna cosa amb ell. La barra de salut en dona el
+       recompte; aquí es veu **quin** és quin, que és el que permet actuar.
+
+       Els tres casos porten botó i no només el primer. Un intangible sense res
+       al costat es llegiria com un oblit, i el que ha de quedar clar és el
+       contrari: que és de persona a posta i que el sistema no té manera de
+       fer-ho d'una altra manera. La pantalla ho explica en obrir-la. */
+    const au=fluxAutomatitzable(r.flow),et=au.tipus?entregableMeta(au.tipus):null;
+    const peu=el('div','fl-qui'+(au.pot?' pot':(au.motiu==='intangible'?' pers':' sense')));
+    peu.appendChild(el('span','fl-qui-t',
+      au.pot?(et.ic+' '+et.nom):(au.motiu==='intangible'?'👤 De persona, sempre':'◇ Sense entregable declarat')));
+    const pb=el('button','btn btn-ghost btn-sm',
+      au.pot?'🤖 Prepara l\'esborrany':(au.motiu==='intangible'?'Per què?':'Quin entregable és?'));
+    pb.onclick=()=>openPreparaEntregable(node,r.flow);
+    peu.appendChild(pb);
+    c.appendChild(peu);
+    /* I la documentació que ja penja d'aquesta transacció. Fins ara s'acceptava
+       i no es tornava a veure enlloc: el mateix defecte que el botó que faltava,
+       una passa més enllà. */
+    const docs=entregablesDeFlux(r.flow);
+    if(docs.length){
+      const dl=el('div','fl-docs');
+      docs.slice(-6).forEach((a,k)=>{
+        const i=docs.length>6?docs.length-6+k:k;
+        const dm=entregableMeta(a.tipus)||{ic:'📄',nom:a.tipus||'entregable'};
+        const b=el('button','fl-doc'+(a.editat?' ed':''));
+        b.innerHTML='<span>'+esc(dm.ic+' '+dm.nom)+'</span>'+
+          '<span class="fl-doc-q">'+esc(new Date(a.quan||Date.now()).toLocaleDateString('ca-ES',{day:'numeric',month:'short'}))+
+          ' · '+(a.editat?'corregit':'sense tocar')+'</span>';
+        b.onclick=()=>openEntregableAcceptat(node,r.flow,i);
+        dl.appendChild(b);
+      });
+      c.appendChild(dl);
     }
     box.appendChild(c);
   });
@@ -10252,6 +10398,181 @@ function buildVNASvg(node){
   return svg;
 }
 
+/* ═══════════ ELS ENTREGABLES · el que fa que una carta es pugui automatitzar ═══════════
+   La cadena mapa → Kanban ja existia: `seedSprintPlanFromMap` converteix cada
+   rol i cada intercanvi en una carta. El que faltava és que la carta **sàpiga
+   què s'ha de produir**, perquè una màquina no pot fabricar «activar el flux
+   X»: pot fabricar una acta, un informe o una justificació.
+
+   ── La regla, que és alhora l'arquitectura i el que venem ──────────────────
+   Cada flux del mapa es converteix en una carta. Si el flux és **tangible** i
+   el seu entregable és **d'un tipus declarat**, la carta és candidata a la
+   màquina. Si és **intangible**, va a la persona que porta el rol i la màquina
+   no la toca mai.
+
+   Això té una conseqüència que val més que cap discurs: **l'intangible queda
+   protegit per construcció i no per bona voluntat.** No és que decidim no
+   automatitzar les cures; és que el sistema no en té manera.
+
+   ── Per què una taxonomia tancada i no un estàndard ───────────────────────
+   Per a aquest domini no hi ha cap estàndard internacional que serveixi tal
+   com és: ISO 9001 §7.5 és un marc i no llista tipus, BPMN és sobredimensionat
+   per a un poble, i l'estàndard real d'una justificació és la plantilla de la
+   convocatòria, que canvia cada any. El que fa possible automatitzar és un
+   **tipus tancat amb una forma de sortida declarada** —igual que `AI_INTENTS`
+   ja fa vuit vegades—, no un vocabulari obert.
+
+   `maquina:false` no vol dir «encara no»: vol dir que el que produeix aquell
+   entregable és el criteri d'algú, i que sortir-ne d'una màquina seria fer
+   veure que hi ha hagut una decisió que no hi ha hagut. */
+const ENTREGABLES=[
+  {id:'acta',nom:'Acta de reunió',ic:'📋',maquina:true,
+   que:'El que s\'ha decidit, qui hi era i què queda pendent, amb data.',
+   cal:['assistents','punts tractats','acords'],
+   surt:'Data, assistents, acords numerats i pendents amb responsable i termini.'},
+  {id:'informe',nom:'Informe periòdic',ic:'📊',maquina:true,
+   que:'El que s\'ha mogut en un període, amb les xifres que ja hi ha al registre.',
+   cal:['període','apunts del ledger','rols actius'],
+   surt:'Resum, taula d\'activitat, comparació amb el període anterior i avisos.'},
+  {id:'justificacio',nom:'Justificació de subvenció',ic:'🧾',maquina:true,
+   que:'El que demana la convocatòria, omplert amb el que consta al registre.',
+   cal:['convocatòria','despeses','activitat realitzada'],
+   surt:'Memòria d\'activitat i taula de despesa, en el format que demani la plantilla.'},
+  {id:'inventari',nom:'Inventari',ic:'📦',maquina:true,
+   que:'Què hi ha, de qui és, en quin estat i on para.',
+   cal:['objectes','estat','ubicació'],
+   surt:'Taula amb valor estimat, desgast acumulat i qui n\'és responsable.'},
+  {id:'convocatoria',nom:'Convocatòria',ic:'📣',maquina:true,
+   que:'Cridar la gent a una cosa concreta, amb tot el que cal saber per venir.',
+   cal:['què','quan','on','qui hi ha d\'anar'],
+   surt:'Text curt per als canals, amb data, lloc, ordre del dia i com confirmar.'},
+  {id:'comanda',nom:'Comanda o repartiment',ic:'🛒',maquina:true,
+   que:'Qui ha demanat què, quant costa i com es reparteix.',
+   cal:['peticions','preus','punt de repartiment'],
+   surt:'Full de comanda per llar, total per proveïdor i full de repartiment.'},
+  {id:'fitxa',nom:'Fitxa pública',ic:'🪪',maquina:true,
+   que:'Com s\'explica a fora el que fa un node o una dinàmica.',
+   cal:['què ofereix','a qui','com s\'hi arriba'],
+   surt:'Fitxa breu per al directori, sense cap dada personal.'},
+  /* L'únic de la llista que no pot sortir d'una màquina, i el motiu escrit.
+     Sense aquesta entrada, la taxonomia semblaria dir que tot és automatitzable
+     i que els que falten és que encara no els hem fet. */
+  {id:'acord',nom:'Acord o decisió',ic:'⚖️',maquina:false,
+   que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
+   cal:['debat','vots','qui ho sosté'],
+   surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'}
+];
+const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
+
+/* Quin entregable demana un flux, deduït de com està escrit. Mateix patró que
+   `RETURN_HINTS`: no s'inventa res, es proposa i es pot corregir a mà posant
+   `entregable` a l'intercanvi. Un flux sense tipus reconegut **no és
+   automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
+   s'ha de produir. */
+const ENTREGABLE_HINTS=[
+  [/acta|reuni|assemblea/i,'acta'],
+  [/informe|memòria|memoria|indicador|seguiment|retiment/i,'informe'],
+  [/justific|subvenc|convocatòria de subvenc|fons/i,'justificacio'],
+  [/inventari|estoc|material|objecte|eina|préstec|prestec/i,'inventari'],
+  [/convoc|difusió|difusio|crida|comunicat|butlletí|butlleti/i,'convocatoria'],
+  [/comanda|compra|cistell|repartiment|liquidació|liquidacio|factur|pagament|cobrament/i,'comanda'],
+  [/fitxa|directori|alta pública|alta publica|publicació|publicacio/i,'fitxa'],
+  [/acord|decisió|decisio|vot|aprovació|aprovacio/i,'acord']
+];
+const entregableDe=x=>{
+  if(x&&x.entregable&&entregableMeta(x.entregable))return x.entregable;
+  const h=ENTREGABLE_HINTS.find(e=>e[0].test((x&&x.label)||''));
+  return h?h[1]:null;
+};
+
+/* Qui ha de fer una carta: la màquina o una persona.
+   L'ordre de les comprovacions **és la regla**, i per això l'intangible va
+   primer: cap etiqueta, cap tipus i cap configuració el pot convertir en
+   candidat. Si algun dia aquesta condició es mou de lloc, el que es trencarà
+   no és una funció — és la promesa de la casa. */
+function fluxAutomatitzable(x){
+  if(!x)return{pot:false,motiu:'sense flux'};
+  /* Doble pany, i els dos abans de mirar cap tipus. El primer és la regla: un
+     intangible no s'automatitza mai. El segon és el que la fa sòlida: no n'hi
+     ha prou de descartar el que sabem que és intangible, cal **exigir que sigui
+     explícitament tangible**. Una mena desconeguda o mal escrita cau del costat
+     segur, que és el de la persona, i ho diu amb el seu nom en comptes de
+     fer-la passar per intangible. */
+  if(isIntangible(x.kind))return{pot:false,motiu:'intangible',tipus:null};
+  if(!menaExplicita(x.kind))return{pot:false,motiu:'mena desconeguda',tipus:null};
+  const t=entregableDe(x);
+  if(!t)return{pot:false,motiu:'sense entregable declarat',tipus:null};
+  const m=entregableMeta(t);
+  if(!m.maquina)return{pot:false,motiu:'el tipus no surt d\'una màquina',tipus:t};
+  return{pot:true,motiu:'',tipus:t};
+}
+
+/* El repartiment del mapa sencer. És **el número que ven**: un mapa millor
+   n'automatitza més, i això deixa de ser una opinió sobre la metodologia. */
+function repartimentMaquina(node){
+  const ex=(node.vna&&node.vna.exchanges)||[];
+  const r={total:ex.length,maquina:0,persona:0,senseTipus:0,perTipus:{}};
+  ex.forEach(x=>{
+    const a=fluxAutomatitzable(x);
+    if(a.pot){r.maquina++;r.perTipus[a.tipus]=(r.perTipus[a.tipus]||0)+1;}
+    else if(a.motiu==='intangible')r.persona++;
+    else r.senseTipus++;
+  });
+  r.pct=r.total?Math.round(r.maquina*100/r.total):0;
+  return r;
+}
+
+/* ═══════════ DESVIACIÓ · el teu mapa contra el de referència ═══════════
+   `vnaAudit` puntua contra criteris genèrics —reciprocitat, densitat— i això
+   diu si el mapa està ben fet, no si hi falta res. El que un client vol saber
+   és una altra cosa: **què tinc que el model no preveu, i què preveu el model
+   que jo no tinc.**
+
+   Els `PROTOTYPE_MAPS` ja són aquest model de referència. Això és una
+   diferència entre dos grafs amb els noms normalitzats.
+
+   La precaució que va escrita a la pantalla i no només aquí: **un prototip és
+   una referència, no una nota.** Un mapa que se n'aparta pot ser millor que el
+   model —de fet, si el projecte és bo, se n'ha d'apartar—. Per això es diu
+   «desviació» i mai «incompliment», i els fluxos propis es conten a part en
+   comptes de quedar fora del recompte com si sobressin. */
+const _norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+  .replace(/^(el|la|els|les|l'|un|una|d')\s*/,'').replace(/[^a-z0-9 ]/g,'').trim();
+function desviacioMapa(node,protoId){
+  const proto=PROTOTYPE_MAPS.find(p=>p.id===protoId)||PROTOTYPE_MAPS[0];
+  const meus=(node.vna&&node.vna.roles)||[],ex=(node.vna&&node.vna.exchanges)||[];
+  const nomDe=id=>((meus.find(r=>r.id===id)||{}).name)||'';
+  const meusN=new Set(meus.map(r=>_norm(r.name)));
+  const protoN=new Set((proto.roles||[]).map(_norm));
+  const rolsFalten=(proto.roles||[]).filter(r=>!meusN.has(_norm(r)));
+  const rolsPropis=meus.filter(r=>!protoN.has(_norm(r.name))).map(r=>r.name);
+  // Els fluxos es comparen per parella de rols, no per etiqueta: el que importa
+  // és que la relació existeixi, no que es digui igual.
+  const clau=(a,b)=>_norm(a)+'>'+_norm(b);
+  const meusF=new Set(ex.map(x=>clau(nomDe(x.from),nomDe(x.to))));
+  const protoF=mapFlowsOf(proto);
+  const fluxosFalten=protoF.filter(f=>!meusF.has(clau(f[0],f[1])))
+    .map(f=>({de:f[0],a:f[1],kind:f[2],que:f[3]||''}));
+  const protoK=new Set(protoF.map(f=>clau(f[0],f[1])));
+  const fluxosPropis=ex.filter(x=>!protoK.has(clau(nomDe(x.from),nomDe(x.to))))
+    .map(x=>({de:nomDe(x.from),a:nomDe(x.to),kind:x.kind,que:x.label||''}));
+  const cobertR=(proto.roles||[]).length?Math.round(((proto.roles.length-rolsFalten.length)*100)/proto.roles.length):0;
+  const cobertF=protoF.length?Math.round(((protoF.length-fluxosFalten.length)*100)/protoF.length):0;
+  return{proto,rolsFalten,rolsPropis,fluxosFalten,fluxosPropis,cobertR,cobertF,
+    cobert:Math.round((cobertR+cobertF)/2)};
+}
+// Quin prototip s'assembla més al que ja tens, per no obligar a triar a cegues.
+function protoSuggerit(node){
+  const meus=((node.vna&&node.vna.roles)||[]).map(r=>_norm(r.name));
+  if(!meus.length)return PROTOTYPE_MAPS[0];
+  let millor=PROTOTYPE_MAPS[0],max=-1;
+  PROTOTYPE_MAPS.forEach(p=>{
+    const n=(p.roles||[]).filter(r=>meus.includes(_norm(r))).length;
+    if(n>max){max=n;millor=p;}
+  });
+  return millor;
+}
+
 /* Diagnòstic VNA d'un mapa. Es calcula en un sol lloc perquè la barra de salut,
    el reforçador de reciprocitat i els tests mirin exactament el mateix. */
 function vnaAudit(node){
@@ -10301,7 +10622,317 @@ function buildHealth(node){
     const okd=el('p','','✓ Mapa recíproc: cada flux té el seu retorn i cap rol queda penjat.');
     okd.style.cssText='font-size:.72rem;color:var(--green);margin-top:.6rem;line-height:1.4';box.appendChild(okd);
   }
+  /* El repartiment. Va aquí i no en una pantalla a part perquè és **la
+     conseqüència de la salut del mapa**: un mapa millor n'automatitza més, i
+     posar-ho de costat és l'única manera que això es vegi. */
+  const rp=repartimentMaquina(node);
+  if(rp.total){
+    const sep=el('div');sep.style.cssText='border-top:1px solid var(--border);margin:.7rem 0 .5rem';box.appendChild(sep);
+    const t=el('div','','Qui fa cada flux');
+    t.style.cssText='font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem';
+    box.appendChild(t);
+    const bar=el('div');bar.style.cssText='display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--card);margin-bottom:.45rem';
+    const seg=(n,c)=>{if(!n)return;const i=el('i');i.style.cssText='flex:'+n+';background:'+c;bar.appendChild(i);};
+    seg(rp.maquina,'var(--green)');seg(rp.senseTipus,'var(--muted)');seg(rp.persona,'var(--purple)');
+    box.appendChild(bar);
+    const ln=(c,n,txt)=>{const r=el('div');r.style.cssText='display:flex;gap:.4rem;align-items:baseline;font-size:.72rem;color:var(--light);line-height:1.5';
+      const d=el('b',''.trim(),String(n));d.style.cssText='font-family:var(--mono);color:'+c+';min-width:1.4rem';
+      r.appendChild(d);r.appendChild(el('span','',txt));box.appendChild(r);};
+    ln('var(--green)',rp.maquina,'les pot preparar la màquina · tangibles amb entregable declarat');
+    if(rp.senseTipus)ln('var(--muted)',rp.senseTipus,'tangibles sense entregable: encara no sabem què s\'ha de produir');
+    ln('var(--purple)',rp.persona,'són de persona, sempre · la màquina no toca cap intangible');
+    const dv=el('button','btn btn-sm','🎯 Compara amb el mapa de referència');
+    dv.style.cssText='margin-top:.6rem;width:100%';
+    dv.onclick=()=>openDesviacioMapa(node);
+    box.appendChild(dv);
+  }
   return box;
+}
+
+/* ═══════════ PREPARAR UN ENTREGABLE · la màquina proposa, algú accepta ═══════════
+   Aquest és el primer tram de l'automatització, i tot el que decideix si és
+   defensable passa per aquí i no pel prompt.
+
+   · **Un esborrany no és un entregable.** El que torna la màquina es veu a la
+     pantalla i no existeix enlloc fins que algú prem acceptar. Mentre no ho
+     faci, no s'ha desat res, no s'ha publicat res i no consta enlloc.
+   · **Els buits es diuen a dalt, no s'amaguen a baix.** El que falta va en
+     vermell abans que el text: un forat marcat es corregeix i una invenció
+     versemblant no la troba ningú, i per això les dues eines tenen ordre de
+     deixar el forat.
+   · **L'entregable diu qui l'ha fet.** Acceptar-lo l'escriu al registre com el
+     que és: preparat per una màquina, amb quin intent, i acceptat per una
+     persona amb el seu `did`. Un document que no diu que l'ha escrit una
+     màquina és una mentida per omissió el dia que algú ho pregunti.
+   · **El cost es diu abans.** `max_tokens` ja és al catàleg d'intents: es
+     mostra la forquilla abans de cridar, no després de cobrar.
+   · **Es pot corregir abans d'acceptar, i la correcció es compta.** Sense poder
+     tocar el text, «acceptar» només volia dir «no m'hi barallo»: el número que
+     en sortia no mesurava res. Ara qui accepta pot reescriure, i el que queda
+     desat és **el text acceptat i també l'original de la màquina**, perquè una
+     correcció només vol dir alguna cosa si es pot comparar amb el que hi havia.
+
+   La promesa era fer-ne un per un **mesurant quants s'accepten sense tocar**.
+   `acceptacioEntregables` és aquesta mesura, i es mira abans d'afegir el
+   següent: si el percentatge és baix, el problema no és el prompt —és que el
+   mapa no diu prou coses per escriure el document. */
+const INTENT_ENTREGABLE={acta:'entregable_acta',informe:'entregable_informe',
+  convocatoria:'entregable_convocatoria',justificacio:'entregable_justificacio'};
+
+/* La mesura. Només compta els **acceptats**, que és l'únic que consta: un
+   esborrany descartat no es desa enlloc a posta, i comptar-lo obligaria a
+   escriure abans que ningú accepti res —exactament el que la casa no fa. */
+function acceptacioEntregables(node){
+  const per={},tot={acceptats:0,sensetocar:0};
+  (((node||{}).vna||{}).exchanges||[]).forEach(x=>(x.entregables||[]).forEach(a=>{
+    const k=a.tipus||'?';const p=per[k]||(per[k]={tipus:k,acceptats:0,sensetocar:0});
+    p.acceptats++;tot.acceptats++;
+    if(!a.editat){p.sensetocar++;tot.sensetocar++;}
+  }));
+  const pct=tot.acceptats?Math.round(tot.sensetocar*100/tot.acceptats):null;
+  return{per:Object.values(per),total:tot.acceptats,sensetocar:tot.sensetocar,pct};
+}
+const entregablesDeFlux=x=>((x||{}).entregables||[]);
+
+/* EL CONTEXT · el que se li dona, i com se li dona.
+   La pantalla passava `xifres:[]` sempre: l'informe declarava a les seves
+   instruccions que llegiria el registre i no li arribava mai res. No petava i
+   no es notava —tornava un informe genèric i versemblant—, que és exactament
+   la manera com aquest defecte sobreviu.
+
+   I la part que importa més que arreglar-ho: **les xifres van etiquetades com
+   el que són.** Al SOS són estimacions amb forquilla de ±30 %, no
+   comptabilitat, i la diferència no és acadèmica: en una memòria d'activitat
+   una estimació hi cap dita com a tal, i en una taula de despesa d'una
+   justificació de subvenció no hi cap de cap manera. Si l'etiqueta no viatja
+   amb el número, el document que en surt la perd. */
+function contextEntregable(node,x){
+  const tots=(node.ledger||[]).concat(...venturesOf(node).map(v=>v.ledger||[]));
+  const t=ledgerTotals(tots),pc='±'+Math.round(FUND_UNCERTAINTY*100)+'%';
+  const xifres=[];
+  if(t.total)xifres.push(t.total+' apunts al registre'+(t.persones?', de '+t.persones+' persones':'')+' (recompte exacte)');
+  if(t.hores)xifres.push(t.hores+' hores aportades (ESTIMACIÓ amb forquilla de '+pc+')');
+  if(t.euros)xifres.push(t.euros+' € moguts (ESTIMACIÓ amb forquilla de '+pc+')');
+  if(t.objectes)xifres.push(t.objectes+' € de valor en objectes (ESTIMACIÓ amb forquilla de '+pc+')');
+  if(t.signats)xifres.push(t.signats+' apunts signats criptogràficament (recompte exacte)');
+  const fl=flowLedger(node);
+  const activitat=fl.rows.filter(r=>r.items.length).slice(0,12)
+    .map(r=>r.from+' → '+r.to+(r.flow.label?' · '+r.flow.label:'')+' · '+r.items.length+' aportacions');
+  const nomDe=id=>((node.vna.roles||[]).find(r=>r.id===id)||{}).name||'?';
+  return{node:node.name,
+    flux:x?(nomDe(x.from)+' → '+nomDe(x.to)+(x.label?' · '+x.label:'')):'',
+    rols:(node.vna.roles||[]).map(r=>r.name),xifres,activitat};
+}
+
+/* Què se li demana a qui obre la pantalla, tipus per tipus. Una sola caixa amb
+   un text genèric feia que a la justificació no s'hi enganxés mai el que la
+   decideix —el que demana la convocatòria—, i sense allò el document és una
+   redacció bonica que no serveix per cobrar. */
+const EB_DEMANA={
+  acta:'El que s\'ha dit a la reunió, si en tens notes. Si ho deixes buit, marcarà com a [a completar] tot el que no pugui deduir.',
+  informe:'El període i el que vulguis destacar. Les xifres del registre ja les llegeix sol.',
+  convocatoria:'Data, hora, lloc i de què va. El que no hi posis quedarà marcat com a [a completar]: una convocatòria amb una hora inventada fa venir la gent quan no toca.',
+  justificacio:'Enganxa-hi el que demana la convocatòria: els apartats de la memòria, els conceptes de despesa i els indicadors que et demanen. Sense això no pot saber quina forma ha de tenir.'
+};
+
+function esborranyHTML(tipus,r){
+  const L=[];
+  if((r.buits||[]).length)L.push('<div class="eb-buits"><b>Falta per completar ('+r.buits.length+')</b><ul>'+
+    r.buits.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
+    '<p>Ho ha deixat marcat a posta. Un forat es corregeix; una dada inventada que sembli bona, no la troba ningú.</p></div>');
+  L.push('<h3 class="eb-t">'+esc(r.titol||'(sense títol)')+'</h3>');
+  if(r.data||r.periode)L.push('<p class="eb-m">'+esc(r.data||r.periode)+'</p>');
+  if(tipus==='acta'){
+    if((r.assistents||[]).length)L.push('<p class="eb-m">Hi eren: '+r.assistents.map(esc).join(' · ')+'</p>');
+    if((r.acords||[]).length)L.push('<div class="eb-s"><b>Acords</b><ol>'+r.acords.map(a=>
+      '<li>'+esc(a.que)+' <span class="eb-q">'+esc(a.qui||'[a completar]')+' · '+esc(a.quan||'[a completar]')+'</span></li>').join('')+'</ol></div>');
+    if((r.pendents||[]).length)L.push('<div class="eb-s"><b>Pendents</b><ul>'+r.pendents.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>');
+  }else if(tipus==='justificacio'){
+    if(r.convocatoria)L.push('<p class="eb-m">'+esc(r.convocatoria)+'</p>');
+    if(r.memoria)L.push('<div class="eb-s"><b>Memòria d\'activitat</b><p class="eb-r">'+esc(r.memoria)+'</p></div>');
+    if((r.activitats||[]).length)L.push('<div class="eb-s"><b>Activitats</b><ul>'+r.activitats.map(a=>
+      '<li>'+esc(a.que)+' <span class="eb-q">'+esc(a.quan||'[a completar]')+(a.indicador?' · '+esc(a.indicador):'')+'</span></li>').join('')+'</ul></div>');
+    /* La taula de despesa surt marcada i no barrejada amb la resta: és l'única
+       part d'aquest document que no pot omplir la màquina, i qui l'accepti ho
+       ha de veure abans de llegir res més. */
+    if((r.despeses||[]).length)L.push('<div class="eb-s eb-desp"><b>Taula de despesa · els imports els poses tu</b>'+
+      '<p>Les xifres del SOS són estimacions amb forquilla; això és comptabilitat i es contrasta amb factures.</p><ul>'+
+      r.despeses.map(d=>'<li>'+esc(d.concepte)+' <span class="eb-q">'+esc(d.import||'[a completar]')+
+      (d.document?' · cal '+esc(d.document):'')+'</span></li>').join('')+'</ul></div>');
+    if((r.avisos||[]).length)L.push('<div class="eb-s eb-av"><b>El que la faria tombar</b><ul>'+r.avisos.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>');
+  }else if(tipus==='convocatoria'){
+    if(r.quan||r.on)L.push('<p class="eb-m">'+esc([r.quan,r.on].filter(Boolean).join(' · '))+'</p>');
+    if(r.que)L.push('<p class="eb-r">'+esc(r.que)+'</p>');
+    if((r.ordre||[]).length)L.push('<div class="eb-s"><b>Ordre del dia</b><ol>'+r.ordre.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>');
+    if((r.qui||[]).length)L.push('<p class="eb-m">Hi ha d\'anar: '+r.qui.map(esc).join(' · ')+'</p>');
+    if(r.confirmar)L.push('<div class="eb-s"><b>Com es confirma</b><p>'+esc(r.confirmar)+'</p></div>');
+    if(r.canal)L.push('<div class="eb-s"><b>Text per als canals</b><p class="eb-r">'+esc(r.canal)+'</p></div>');
+  }else{
+    if(r.resum)L.push('<p class="eb-r">'+esc(r.resum)+'</p>');
+    if((r.fets||[]).length)L.push('<div class="eb-s"><b>El que ha passat</b><ul>'+r.fets.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>');
+    if((r.avisos||[]).length)L.push('<div class="eb-s eb-av"><b>El que reclama atenció</b><ul>'+r.avisos.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>');
+  }
+  return L.join('');
+}
+
+/* El mateix esborrany en text pla, que és el que es pot corregir i el que
+   s'acaba enganxant en un document. La vista bonica serveix per llegir-lo;
+   aquesta serveix per **tocar-lo**, i és la que decideix si «acceptat» vol dir
+   alguna cosa. Els buits no hi van: són un avís sobre el text, no el text. */
+function esborranyText(tipus,r){
+  const L=[];
+  L.push(r.titol||'(sense títol)');
+  if(r.data||r.periode)L.push(r.data||r.periode);
+  L.push('');
+  if(tipus==='acta'){
+    if((r.assistents||[]).length)L.push('Hi eren: '+r.assistents.join(', '),'');
+    if((r.acords||[]).length){L.push('ACORDS');
+      r.acords.forEach((a,i)=>L.push((i+1)+'. '+a.que+' — '+(a.qui||'[a completar]')+' · '+(a.quan||'[a completar]')));
+      L.push('');}
+    if((r.pendents||[]).length){L.push('PENDENTS');r.pendents.forEach(x=>L.push('· '+x));}
+  }else if(tipus==='justificacio'){
+    if(r.convocatoria)L.push(r.convocatoria,'');
+    if(r.memoria)L.push('MEMÒRIA D\'ACTIVITAT',r.memoria,'');
+    if((r.activitats||[]).length){L.push('ACTIVITATS');
+      r.activitats.forEach((a,i)=>L.push((i+1)+'. '+a.que+' — '+(a.quan||'[a completar]')+(a.indicador?' · '+a.indicador:'')));
+      L.push('');}
+    if((r.despeses||[]).length){L.push('TAULA DE DESPESA · els imports els poses tu, amb els papers a la mà');
+      r.despeses.forEach(d=>L.push('· '+d.concepte+' — '+(d.import||'[a completar]')+(d.document?' · cal '+d.document:'')));
+      L.push('');}
+    if((r.avisos||[]).length){L.push('EL QUE LA FARIA TOMBAR');r.avisos.forEach(x=>L.push('· '+x));}
+  }else if(tipus==='convocatoria'){
+    if(r.quan||r.on)L.push([r.quan,r.on].filter(Boolean).join(' · '),'');
+    if(r.que)L.push(r.que,'');
+    if((r.ordre||[]).length){L.push('ORDRE DEL DIA');r.ordre.forEach((x,i)=>L.push((i+1)+'. '+x));L.push('');}
+    if((r.qui||[]).length)L.push('Hi ha d\'anar: '+r.qui.join(', '),'');
+    if(r.confirmar)L.push('Com es confirma: '+r.confirmar,'');
+    if(r.canal)L.push('— Text per als canals —',r.canal);
+  }else{
+    if(r.resum)L.push(r.resum,'');
+    if((r.fets||[]).length){L.push('EL QUE HA PASSAT');r.fets.forEach(x=>L.push('· '+x));L.push('');}
+    if((r.avisos||[]).length){L.push('EL QUE RECLAMA ATENCIÓ');r.avisos.forEach(x=>L.push('· '+x));}
+  }
+  return L.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+
+function openPreparaEntregable(node,x){
+  const au=fluxAutomatitzable(x);
+  const nomDe=id=>((node.vna.roles||[]).find(r=>r.id===id)||{}).name||'?';
+  const flux=nomDe(x.from)+' → '+nomDe(x.to)+(x.label?' · '+x.label:'');
+  if(!au.pot){
+    const perque=au.motiu==='intangible'
+      ?'Aquest flux és <b>intangible</b>, i la màquina no en toca cap. El que es passa aquí —confiança, criteri, cura— el sosté una persona, i el sistema no té manera de fer-ho d\'una altra manera.'
+      :'Aquest flux és tangible però <b>encara no sabem quin entregable produeix</b>. Posa-li una etiqueta que ho digui —una acta, un informe, una comanda— i podrà preparar-se sol.';
+    modal('<h2>🤖 Preparar l\'entregable</h2><p class="m-sub">'+esc(flux)+'</p>'+
+      '<div class="eb-no">'+perque+'</div>',[{txt:'Entesos',cls:'btn',fn:closeModal}]);
+    return;
+  }
+  const meta=entregableMeta(au.tipus),intent=INTENT_ENTREGABLE[au.tipus];
+  if(!intent){
+    modal('<h2>'+meta.ic+' '+esc(meta.nom)+'</h2><p class="m-sub">'+esc(flux)+'</p>'+
+      '<div class="eb-no">Aquest tipus encara no té eina que el prepari. N\'hi ha '+
+      Object.keys(INTENT_ENTREGABLE).length+' de fetes —'+
+      Object.keys(INTENT_ENTREGABLE).map(k=>esc((entregableMeta(k)||{}).nom||k)).join(', ')+
+      '— i les altres s\'aniran fent <b>una per una, mesurant quantes s\'accepten sense tocar</b>. Declarar-les totes de cop seria prometre vuit coses i provar-ne zero.</div>',
+      [{txt:'Entesos',cls:'btn',fn:closeModal}]);
+    return;
+  }
+  const def=AI_INTENTS[intent],cost=def?def.max_tokens:0;
+  let esborrany=null;
+  const bg=modal('<h2>'+meta.ic+' '+esc(meta.nom)+'</h2>'+
+    '<p class="m-sub">'+esc(flux)+' · <b>'+esc(meta.surt)+'</b></p>'+
+    '<div class="eb-cost">Prepararà un <b>esborrany</b>. No es desa ni es publica res fins que l\'acceptis. '+
+    'Cost màxim d\'aquesta crida: <b>'+cost+' tokens</b> de sortida, amb la teva clau.</div>'+
+    '<textarea id="ebNotes" rows="'+(au.tipus==='justificacio'?6:3)+'" placeholder="'+esc(EB_DEMANA[au.tipus]||EB_DEMANA.acta)+'"></textarea>'+
+    '<div id="ebOut"></div>',
+    [{txt:'Prepara l\'esborrany',cls:'btn btn-primary',fn:async()=>{
+      const out=bg.querySelector('#ebOut');
+      out.innerHTML='<p class="eb-m">Preparant…</p>';
+      try{
+        esborrany=await AI.call(intent,Object.assign(contextEntregable(node,x),
+          {notes:bg.querySelector('#ebNotes').value.trim(),periode:''}));
+        /* L'original de la màquina es calcula aquí i ja no es torna a tocar:
+           és la referència contra la qual se sabrà si algú ho ha corregit. */
+        const original=esborranyText(au.tipus,esborrany);
+        out.innerHTML='<div class="eb">'+esborranyHTML(au.tipus,esborrany)+'</div>'+
+          '<div class="eb-peu">Preparat per una màquina amb l\'intent <span class="mono">'+esc(intent)+'</span>. '+
+          'En acceptar-lo quedarà escrit així, amb el teu identificador al costat.</div>'+
+          '<textarea id="ebEdit" rows="10" class="eb-edit" spellcheck="true"></textarea>'+
+          '<div class="eb-peu" id="ebEstat"></div>';
+        const ta=out.querySelector('#ebEdit'),est=out.querySelector('#ebEstat');
+        ta.value=original;
+        const estat=()=>{const tocat=ta.value.trim()!==original.trim();
+          est.textContent=tocat
+            ?'L\'has corregit. Quedarà desat el teu text, i també el que va escriure la màquina.'
+            :'Tal com l\'ha escrit la màquina. Corregeix-lo aquí mateix si cal: el que accepta ningú no el pot corregir després.';
+          est.className='eb-peu'+(tocat?' eb-tocat':'');};
+        estat();ta.oninput=estat;
+        const ac=document.createElement('button');ac.className='btn btn-primary';ac.style.cssText='width:100%;margin-top:.6rem';
+        ac.textContent='✓ Accepto aquest esborrany';
+        ac.onclick=()=>{
+          const text=ta.value.trim(),editat=text!==original.trim();
+          const acc={tipus:au.tipus,intent,flux,quan:now(),per:myDid&&myDid(),
+            maquina:true,editat,text,original,contingut:esborrany};
+          (x.entregables||(x.entregables=[])).push(acc);
+          node.updatedAt=now();persist(node);
+          toast(editat?'Acceptat amb correccions. Consta la teva versió i l\'original.'
+                      :'Acceptat sense tocar. Consta com a preparat per una màquina.');
+          closeModal();
+        };
+        out.appendChild(ac);
+      }catch(e){out.innerHTML='<div class="eb-no">'+esc(e.noKey?'Cal una clau d\'IA. L\'app funciona sencera sense: això és una comoditat, no un requisit.':(e.msg||'Error'))+'</div>';}
+      return false;
+    }},{txt:'Tanca',cls:'btn',fn:closeModal}]);
+}
+
+/* L'entregable acceptat, llegible · la documentació penjada de la transacció.
+   Un document acceptat que després no es pugui obrir enlloc no és documentació:
+   és un rebut. Viu al flux del mapa i no a una carpeta a part perquè el que li
+   dona sentit és **de quin intercanvi surt** —qui donava què a qui. */
+function openEntregableAcceptat(node,x,i){
+  const a=(x.entregables||[])[i];if(!a)return;
+  const m=entregableMeta(a.tipus)||{ic:'📄',nom:a.tipus||'entregable'};
+  const quan=new Date(a.quan||Date.now()).toLocaleDateString('ca-ES',{day:'numeric',month:'short',year:'numeric'});
+  const cos=a.text||esborranyText(a.tipus,a.contingut||{});
+  const dif=a.editat&&a.original&&a.original.trim()!==String(cos).trim();
+  const bg=modal('<h2>'+m.ic+' '+esc(m.nom)+'</h2>'+
+    '<p class="m-sub">'+esc(a.flux||'')+' · '+esc(quan)+'</p>'+
+    '<div class="eb-peu">'+(a.maquina?'Preparat per una màquina amb l\'intent <span class="mono">'+esc(a.intent||'?')+'</span>':'Escrit per una persona')+
+    (a.editat?' i <b>corregit</b> per qui el va acceptar.':' i acceptat <b>sense tocar</b>.')+
+    (a.per?' Acceptat per <span class="mono">'+esc(String(a.per).slice(0,22))+'…</span>':'')+'</div>'+
+    '<pre class="eb-pre">'+esc(cos)+'</pre>'+
+    (dif?'<details class="eb-orig"><summary>Veure què havia escrit la màquina</summary><pre class="eb-pre">'+esc(a.original)+'</pre></details>':''),
+    [{txt:'Tanca',cls:'btn',fn:closeModal}]);
+  return bg;
+}
+
+/* La desviació, a la pantalla. El botó viu al costat de la salut perquè són la
+   mateixa pregunta feta de dues maneres: «està ben fet?» i «hi falta res?». */
+function openDesviacioMapa(node){
+  const sug=protoSuggerit(node);
+  const pinta=pid=>{
+    const d=desviacioMapa(node,pid);
+    const llista=(tit,arr,cls,fn)=>arr.length
+      ? '<div class="dv-b"><div class="dv-k '+cls+'">'+tit+' · '+arr.length+'</div>'+arr.map(fn).join('')+'</div>'
+      : '<div class="dv-b"><div class="dv-k '+cls+'">'+tit+' · cap</div></div>';
+    return '<div class="dv-top"><div><b>'+esc(d.proto.icon||'')+' '+esc(d.proto.name)+'</b>'+
+      '<span class="mut"> · '+esc(d.proto.one)+'</span></div>'+
+      '<div class="dv-sc"><b>'+d.cobert+'%</b><span>del model de referència</span></div></div>'+
+      '<div class="dv-gr">'+
+      llista('Rols que el model preveu i no tens','rolsFalten' in d?d.rolsFalten:[],'falta',r=>'<div class="dv-l">'+esc(r)+'</div>')+
+      llista('Fluxos que el model preveu i no tens',d.fluxosFalten,'falta',
+        f=>'<div class="dv-l"><b>'+esc(f.de)+' → '+esc(f.a)+'</b><span>'+esc(f.que)+'</span></div>')+
+      llista('Rols teus que el model no preveu',d.rolsPropis,'propi',r=>'<div class="dv-l">'+esc(r)+'</div>')+
+      llista('Fluxos teus que el model no preveu',d.fluxosPropis,'propi',
+        f=>'<div class="dv-l"><b>'+esc(f.de)+' → '+esc(f.a)+'</b><span>'+esc(f.que)+'</span></div>')+
+      '</div>';
+  };
+  const bg=modal('<h2>🎯 Desviació respecte al model</h2>'+
+    '<p class="m-sub">Un prototip és <b>una referència, no una nota</b>. Un mapa que se n\'aparta pot ser millor que el model — de fet, si el projecte és bo, se n\'ha d\'apartar. Per això el que és teu es compta a part i no com si sobrés.</p>'+
+    '<div class="wz-key"><select id="dvSel">'+PROTOTYPE_MAPS.map(p=>'<option value="'+p.id+'"'+(p.id===sug.id?' selected':'')+'>'+esc(p.icon+' '+p.name)+'</option>').join('')+'</select></div>'+
+    '<div id="dvCos">'+pinta(sug.id)+'</div>',
+    [{txt:'Tanca',cls:'btn',fn:closeModal}]);
+  bg.querySelector('#dvSel').onchange=e=>{bg.querySelector('#dvCos').innerHTML=pinta(e.target.value);};
 }
 /* Reforçador de reciprocitat · el defecte més comú d'un mapa fet a mà és la fletxa
    que surt i no torna. Aquí es llisten totes i es proposa el retorn, amb l'etiqueta
@@ -12534,6 +13165,107 @@ const AI_INTENTS={
     tool:{name:'proposar_mapa_valor',description:'Retorna el mapa de valor VNA proposat.',input_schema:{type:'object',properties:{mission:{type:'string'},roles:{type:'array',items:{type:'string'}},exchanges:{type:'array',items:{type:'object',properties:{from:{type:'string'},to:{type:'string'},kind:{type:'string',enum:['tangible','intangible']},label:{type:'string'}},required:['from','to','kind','label']}}},required:['mission','roles','exchanges']}},
     build:ctx=>{const k=knowFor(ctx.level),meta=LEVEL_META[ctx.level];const picked=k.pains.filter(p=>ctx.painIds&&ctx.painIds.has(p.id)).map(p=>p.t+' — '+p.d);const txt=['Nivell: '+meta.label+(ctx.name?' · "'+ctx.name+'"':''),ctx.promptText?'Context de la comunitat: '+ctx.promptText:'',picked.length?'Reptes prioritzats: '+picked.join('; '):'','Rols de referència del nivell: '+k.roles.join(', ')].filter(Boolean).join('\n');return 'Proposa el mapa de valor per a aquesta comunitat:\n\n'+txt;},
     coerce:tu=>{const roles=[...new Set((tu.roles||[]).map(r=>String(r).trim()).filter(Boolean))];const rl=new Set(roles.map(r=>r.toLowerCase()));const exchanges=(tu.exchanges||[]).filter(x=>x&&x.from&&x.to&&rl.has(String(x.from).toLowerCase())&&rl.has(String(x.to).toLowerCase())).map(x=>({from:String(x.from).trim(),to:String(x.to).trim(),kind:x.kind==='intangible'?'intangible':'tangible',label:(x.label||'').trim()}));return{mission:(tu.mission||'').trim(),roles,exchanges};}
+  },
+  /* ═══════ ELS ENTREGABLES · dos, i no vuit ═══════
+     El pla deia de provar el patró amb dos abans de declarar-ne vuit, i aquests
+     són els dos: els més repetitius i els menys arriscats. Si el primer que es
+     mesura —quants s'accepten sense tocar— surt baix, el problema no és la IA:
+     és que el mapa no és prou bo, i això també és informació venedora.
+
+     Les tres regles que valen per als dos i que no es relaxen:
+
+     · **Es prepara un esborrany, no es publica res.** El que torna va a una
+       pantalla amb un botó d'acceptar, i fins que algú no el prem no existeix.
+     · **Només amb el que se li dona.** Si una dada no és al context, l'eina ha
+       de deixar el buit marcat i no omplir-lo: un forat visible es corregeix i
+       una invenció versemblant no la troba ningú.
+     · **Cap nom de persona.** El context porta rols i xifres, no qui és qui.
+       Un entregable amb noms el completa després qui l'accepta. */
+  entregable_acta:{
+    model:'claude-opus-4-8',max_tokens:1500,
+    system:'Ets qui pren acta a reunions de projectes comunitaris i cooperatius a Catalunya. Escrius en català, clar i curt, sense floritures.\n\nREGLES QUE NO POTS TRENCAR:\n1. Només pots escriure el que et donin. Si falta una dada (qui hi era, una xifra, una data), escriu-hi «[a completar]» i segueix. MAI te la inventis: un forat marcat es corregeix en deu segons i una dada versemblant inventada no la detecta ningú.\n2. No escriguis noms de persona encara que te\'n donin: fes servir el rol. Qui accepti l\'acta ja hi posarà els noms.\n3. Un acord sense responsable i sense data no és un acord: marca\'l com a pendent de concretar.\n\nRespon només cridant l\'eina.',
+    tool:{name:'acta',description:'Retorna l\'esborrany d\'acta.',input_schema:{type:'object',properties:{titol:{type:'string'},data:{type:'string'},assistents:{type:'array',items:{type:'string'},description:'Rols, mai noms.'},acords:{type:'array',items:{type:'object',properties:{que:{type:'string'},qui:{type:'string'},quan:{type:'string'}},required:['que','qui','quan']}},pendents:{type:'array',items:{type:'string'}},buits:{type:'array',items:{type:'string'},description:'El que falta i s\'ha marcat com a [a completar].'}},required:['titol','acords','buits']}},
+    build:ctx=>['Node: '+(ctx.node||''),'Flux del mapa: '+(ctx.flux||''),
+      ctx.rols?'Rols del mapa: '+ctx.rols.join(', '):'',
+      ctx.notes?'El que s\'ha dit:\n'+ctx.notes:'(No s\'han donat notes de la reunió: marca com a [a completar] tot el que no es pugui deduir del flux.)'
+      ].filter(Boolean).join('\n'),
+    coerce:tu=>({titol:(tu.titol||'').trim(),data:(tu.data||'').trim(),
+      assistents:(tu.assistents||[]).map(x=>String(x).trim()).filter(Boolean),
+      acords:(tu.acords||[]).map(a=>({que:(a.que||'').trim(),qui:(a.qui||'').trim(),quan:(a.quan||'').trim()})),
+      pendents:(tu.pendents||[]).map(x=>String(x).trim()).filter(Boolean),
+      buits:(tu.buits||[]).map(x=>String(x).trim()).filter(Boolean)})
+  },
+  entregable_informe:{
+    model:'claude-opus-4-8',max_tokens:2000,
+    system:'Ets qui redacta informes de seguiment de projectes comunitaris i cooperatius a Catalunya, per a juntes i per a justificacions. Català, clar, sense adjectius que no aportin res.\n\nREGLES QUE NO POTS TRENCAR:\n1. **Les xifres són les que et donin i cap més.** No arrodoneixis cap a dalt, no projectis, no estimis. Si et falta una xifra, escriu «[a completar]».\n2. Les xifres del SOS són estimacions amb forquilla, no comptabilitat: digues-ho quan en facis servir.\n3. No escriguis noms de persona: rols.\n4. Si les dades no donen per treure cap conclusió, digues-ho. Un informe que conclou de no res és pitjor que un informe curt.\n\nRespon només cridant l\'eina.',
+    tool:{name:'informe',description:'Retorna l\'esborrany d\'informe periòdic.',input_schema:{type:'object',properties:{titol:{type:'string'},periode:{type:'string'},resum:{type:'string'},fets:{type:'array',items:{type:'string'},description:'El que ha passat, amb la xifra al costat.'},avisos:{type:'array',items:{type:'string'},description:'El que reclama atenció.'},buits:{type:'array',items:{type:'string'}}},required:['titol','resum','fets','buits']}},
+    build:ctx=>['Node: '+(ctx.node||''),'Període: '+(ctx.periode||'[a completar]'),
+      'Flux del mapa: '+(ctx.flux||''),
+      ctx.xifres&&ctx.xifres.length?'Xifres del registre (estimacions amb forquilla):\n'+ctx.xifres.map(x=>'· '+x).join('\n'):'(Sense xifres al registre per a aquest període.)',
+      ctx.rols?'Rols del mapa: '+ctx.rols.join(', '):''
+      ].filter(Boolean).join('\n'),
+    coerce:tu=>({titol:(tu.titol||'').trim(),periode:(tu.periode||'').trim(),
+      resum:(tu.resum||'').trim(),
+      fets:(tu.fets||[]).map(x=>String(x).trim()).filter(Boolean),
+      avisos:(tu.avisos||[]).map(x=>String(x).trim()).filter(Boolean),
+      buits:(tu.buits||[]).map(x=>String(x).trim()).filter(Boolean)})
+  },
+  /* El tercer, i el més barat dels que quedaven: una convocatòria és curta, es
+     fa moltes vegades i **si s'equivoca es veu de seguida** —la gent no ve, o
+     ve on no toca. Aquesta és la raó per posar-lo abans que la justificació de
+     subvenció, que és el que més estalvia i alhora el que més mal fa si falla:
+     allà un error no el veu ningú fins que el veu qui no toca. */
+  entregable_convocatoria:{
+    model:'claude-opus-4-8',max_tokens:1200,
+    system:'Ets qui escriu convocatòries de reunions i activitats per a projectes comunitaris i cooperatius a Catalunya. Català planer, frases curtes, res de retòrica. La gent ho llegirà al mòbil i en deu segons.\n\nREGLES QUE NO POTS TRENCAR:\n1. Només pots escriure el que et donin. Si no saps la data, l\'hora o el lloc, escriu «[a completar]». MAI te la inventis: una convocatòria amb una hora inventada fa que la gent es presenti quan no toca, i això no es pot desfer.\n2. No escriguis noms de persona: digues el rol. Qui accepti la convocatòria ja hi posarà els noms.\n3. No prometis res que no et diguin: ni àpat, ni transport, ni servei de canalla, ni que hi haurà ningú en concret.\n4. El text per als canals ha de cabre en un missatge curt i ha de dir què, quan i on a la primera línia.\n\nRespon només cridant l\'eina.',
+    tool:{name:'convocatoria',description:'Retorna l\'esborrany de convocatòria.',input_schema:{type:'object',properties:{titol:{type:'string'},que:{type:'string',description:'De què va, en una o dues frases.'},quan:{type:'string'},on:{type:'string'},ordre:{type:'array',items:{type:'string'},description:'Ordre del dia, punt per punt.'},qui:{type:'array',items:{type:'string'},description:'Rols convocats, mai noms.'},confirmar:{type:'string',description:'Com es confirma l\'assistència.'},canal:{type:'string',description:'Text curt per enviar pels canals.'},buits:{type:'array',items:{type:'string'},description:'El que falta i s\'ha marcat com a [a completar].'}},required:['titol','que','ordre','canal','buits']}},
+    build:ctx=>['Node: '+(ctx.node||''),'Flux del mapa: '+(ctx.flux||''),
+      ctx.rols?'Rols del mapa (els convocables): '+ctx.rols.join(', '):'',
+      ctx.notes?'El que se sap de la trobada:\n'+ctx.notes:'(No s\'ha donat cap detall: marca com a [a completar] la data, l\'hora i el lloc, i deriva l\'ordre del dia del flux.)'
+      ].filter(Boolean).join('\n'),
+    coerce:tu=>({titol:(tu.titol||'').trim(),que:(tu.que||'').trim(),
+      quan:(tu.quan||'').trim(),on:(tu.on||'').trim(),
+      ordre:(tu.ordre||[]).map(x=>String(x).trim()).filter(Boolean),
+      qui:(tu.qui||[]).map(x=>String(x).trim()).filter(Boolean),
+      confirmar:(tu.confirmar||'').trim(),canal:(tu.canal||'').trim(),
+      buits:(tu.buits||[]).map(x=>String(x).trim()).filter(Boolean)})
+  },
+  /* El quart, i el que decideix si aquesta línia és seriosa. És el que més
+     estalvia —una justificació són hores de feina enganxant dades— i alhora el
+     que més mal fa si falla: un error aquí no el veu ningú fins que el veu qui
+     revisa l'expedient, i llavors ja no és una correcció sinó un reintegrament.
+
+     Per això aquest intent té una línia que els altres tres no tenen: **escriu
+     la memòria d'activitat i NO omple la taula de despesa**. Les xifres del
+     SOS són estimacions amb forquilla de ±30 % (`FUND_UNCERTAINTY`); una
+     memòria admet una estimació dita com a tal i una taula de despesa no admet
+     res que no surti d'una factura. La taula surt igualment, amb els conceptes
+     i amb els imports a «[a completar]» i el document que caldrà per a
+     cadascun —que és feina feta— però els números els hi posa una persona amb
+     els papers a la mà.
+
+     Dit d'una altra manera: aquí la màquina no s'atura perquè no sàpiga, sinó
+     perquè **sap que el que sap no serveix per a aquesta casella**. */
+  entregable_justificacio:{
+    model:'claude-opus-4-8',max_tokens:2600,
+    system:'Ets qui redacta justificacions de subvenció per a entitats comunitàries i cooperatives a Catalunya. Català, sec i ordenat: això ho llegeix qui revisa expedients, no qui vol emocionar-se.\n\nLA REGLA QUE NO POTS TRENCAR DE CAP MANERA:\nLes xifres del SOS són ESTIMACIONS amb forquilla de ±30 %, no comptabilitat. En una memòria d\'activitat hi caben dites com el que són —«estimació», amb la forquilla al costat. A LA TAULA DE DESPESA NO HI CABEN MAI: aquella taula és comptabilitat i es contrasta amb factures. Cada línia de despesa que no et donin explícitament l\'has de deixar amb l\'import «[a completar]» i dir quin document caldrà (factura, nòmina, rebut). Posar-hi una estimació és el pitjor error possible d\'aquest document: no el detecta ningú fins que el detecta qui revisa, i llavors ja és un reintegrament.\n\nLES ALTRES REGLES:\n1. Només pots escriure el que et donin. Si falta una dada, «[a completar]». MAI te la inventis.\n2. No escriguis noms de persona: rols. Qui accepti la justificació ja hi posarà els noms.\n3. La forma la mana la convocatòria, no tu. Si et diuen quins apartats demana, fes aquells i en aquell ordre. Si no te\'ls diuen, digues-ho als buits: sense la convocatòria el document no es pot donar per bo.\n4. Als avisos hi va el que faria que la justificació es tombi: terminis, documents que falten, despeses sense factura.\n\nRespon només cridant l\'eina.',
+    tool:{name:'justificacio',description:'Retorna l\'esborrany de justificació.',input_schema:{type:'object',properties:{titol:{type:'string'},convocatoria:{type:'string',description:'Quina convocatòria justifica.'},periode:{type:'string'},memoria:{type:'string',description:'Memòria d\'activitat, en prosa. Les estimacions van dites com a estimacions.'},activitats:{type:'array',items:{type:'object',properties:{que:{type:'string'},quan:{type:'string'},indicador:{type:'string'}},required:['que','quan']}},despeses:{type:'array',items:{type:'object',properties:{concepte:{type:'string'},import:{type:'string',description:'Només si te\'l donen. Si no, «[a completar]».'},document:{type:'string',description:'Quin paper caldrà per justificar-lo.'}},required:['concepte','import','document']}},avisos:{type:'array',items:{type:'string'},description:'El que faria que la justificació es tombi.'},buits:{type:'array',items:{type:'string'}}},required:['titol','memoria','despeses','avisos','buits']}},
+    build:ctx=>['Node: '+(ctx.node||''),'Període: '+(ctx.periode||'[a completar]'),
+      ctx.flux?'Flux del mapa: '+ctx.flux:'',
+      ctx.activitat&&ctx.activitat.length?'Activitat registrada (per al text de la memòria):\n'+ctx.activitat.map(x=>'· '+x).join('\n'):'(Sense activitat registrada: la memòria no es pot escriure sola, digues-ho als buits.)',
+      ctx.xifres&&ctx.xifres.length?'Xifres del SOS. Fixa\'t en quines diuen ESTIMACIÓ: aquelles no poden anar a la taula de despesa.\n'+ctx.xifres.map(x=>'· '+x).join('\n'):'(Cap xifra al registre.)',
+      ctx.rols?'Rols del mapa: '+ctx.rols.join(', '):'',
+      ctx.notes?'El que demana la convocatòria:\n'+ctx.notes:'(No s\'ha enganxat la convocatòria: no en saps la forma. Digues-ho als buits com el primer que falta.)'
+      ].filter(Boolean).join('\n'),
+    coerce:tu=>({titol:(tu.titol||'').trim(),convocatoria:(tu.convocatoria||'').trim(),
+      periode:(tu.periode||'').trim(),memoria:(tu.memoria||'').trim(),
+      activitats:(tu.activitats||[]).map(a=>({que:(a.que||'').trim(),quan:(a.quan||'').trim(),indicador:(a.indicador||'').trim()})),
+      despeses:(tu.despeses||[]).map(d=>({concepte:(d.concepte||'').trim(),
+        /* Si torna un import buit, es força el marcatge: un import en blanc
+           dins d'una taula de despesa es llegeix com un zero. */
+        import:(d.import||'').trim()||'[a completar]',document:(d.document||'').trim()})),
+      avisos:(tu.avisos||[]).map(x=>String(x).trim()).filter(Boolean),
+      buits:(tu.buits||[]).map(x=>String(x).trim()).filter(Boolean)})
   },
   molekulon_invite:{
     model:'claude-opus-4-8',max_tokens:1500,
@@ -21015,7 +21747,43 @@ state.nodes=all.filter(n=>n.id!=='__tombstones'&&!PRIVATE_DB_TYPES.has(n.type)&&
   // La safata del vistiplau depèn de saber qui sóc: fins que la identitat no és
   // carregada no es pot dir de qui són les fitxes, i la pastilla mentiria.
   try{await getIdentity();updatePendingBadge();}catch(e){}
-  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,lesMevesTasques,tascaCol,ambitTasca,fluxDeTasca,ambitsAmbTasques,POMO_ID,POMO_MIN,pomoLlegeix,pomoDesa,pomoResta,pomoRellotge,pomoComenca,pomoPara,renderPomo,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,COPIA_ID,COPIA_DIES,COPIA_APUNTS,copiaEstat,copiaMarca,copiaRecorda,updateCopiaBadge,openCopiaAvis,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,ALTA_V,ALTA_LLARG,ARWEAVE,altaCommitment,primeresAltes,altesNoves,altesPublicades,numeroDe,altaDe,elMeuNumero,pesRegistre,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,EINES_SOS,einaDe,einesFora,openEines,FORQUILLA_MAX,ritmeLlesques,dilucio,horesPer,forquilla,renderLlesca,curesOf,CURES_QUE,CURES_CADA,CURES_LLINDAR,curesQueMeta,curesCadaMeta,newCura,curaHores,curesActives,carregaCures,sobrecarregades,coberturaCures,fragilsCures,siPlega,curesResum,renderCures,openCuraForm,REBUT_TYPE,REBUT_CAMPS,buildRebut,verifyRebut,rebutAlRegistre,downloadRebut,openRebut,_canon,_canonAll}; // hook per a tests
+/* ═══════════ LA CÒPIA LOCAL ═══════════
+   El SOS es baixava sencer a cada visita: 508 KB, que a la xarxa d'un poble
+   són 10 segons amb 3G lent i són 10 segons **cada cop**. Amb `sw.js` es baixa
+   un cop i després s'obre a l'instant, també sense cobertura.
+
+   Tres coses que no fa, i que val la pena tenir escrites aquí i no només al
+   `sw.js`: no toca cap dada —el registre viu a IndexedDB i això és una còpia
+   de fitxers—, no intercepta res que vagi a fora, i **si no es pot registrar,
+   l'app funciona exactament igual**. Des de `file://` no es registra mai, que
+   és com corren les proves.
+
+   L'avís de versió nova és la contrapartida honesta de servir la còpia primer:
+   qui té la pestanya oberta amb codi d'ahir ha de poder saber-ho. */
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  /* Aquest bloc viu dins de l'arrencada, que és `async` i espera la base de
+     dades: quan hi arriba, l'esdeveniment `load` **ja ha passat fa estona** i
+     un listener afegit aquí no s'executa mai. Es va registrar sol al primer
+     intent i va costar de veure perquè no dona cap error: simplement no passa
+     res. Per això es mira l'estat del document en comptes de confiar-hi. */
+  const _reg=()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});};
+  if(document.readyState==='complete')_reg();else addEventListener('load',_reg);
+  navigator.serviceWorker.addEventListener('message',e=>{
+    if(!e.data||e.data.sos!=='versio-nova'||document.getElementById('swNou'))return;
+    const b=document.createElement('div');b.id='swNou';
+    b.style.cssText='position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:9999;'+
+      'background:var(--bg-panel);border:1px solid var(--green);border-radius:10px;padding:.6rem .9rem;'+
+      'font-size:.82rem;color:var(--light);display:flex;gap:.7rem;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.5)';
+    b.innerHTML='<span>Hi ha una versió nova del SOS.</span>';
+    const r=document.createElement('button');r.className='btn btn-primary btn-sm';r.textContent='Recarrega';
+    r.onclick=()=>location.reload();b.appendChild(r);
+    const x=document.createElement('button');x.className='btn btn-sm';x.textContent='Ara no';
+    x.onclick=()=>b.remove();b.appendChild(x);
+    document.body.appendChild(b);
+  });
+}
+
+  window.__SOS={state,byId,children,descendants,syncCreateOffer,syncAcceptOffer,syncAcceptAnswer,mergeIncoming,AI,aiSuggestMap,mergeAiIntoWizard,loadAiKey,saveAiKey,getIdentity,signRecord,verifyRecord,chainLedger,verifyChain,signAndChainEntry,pushLedger,verifyLedger,sha256,govOf,proposalsOf,claimNode,roleOf,canWrite,proposeChange,voteProposal,applyIfQuorum,openGovernanceModal,generateNodeKey,exportNodeKey,importNodeKey,encryptWithKey,decryptWithKey,wrapKeyWithPass,unwrapKeyWithPass,myExchangeCard,wrapNodeKeyForMember,unwrapNodeKeyFromEnvelope,shareNodeKeyWithMember,myEnvelopeFor,getMyNodeKey,envelopesOf,federativeWeight,giniOfWeights,equityAdjust,tallyFederation,openFederationModal,openCreateModal,openSettingsModal,newEntity,entityId,persistEntity,byEnt,entitiesFor,toPublicPack,mergePack,updateAtles,SUPPLY_PACK_TYPE,PUBLIC_SUPPLY_FIELDS,PUBS_ID,publicationCid,loadPublications,savePublications,recordPublication,publicationDiff,pubStatus,setAutoPublish,loadAutoPublish,autoPublishTick,schedulePublish,rollbackPublication,openPublicationHistory,publishScopeOf,publishesAnything,setPublishScope,supplyPublicPack,verifyNoLeak,readSupplyPack,openPublishSupply,openReadSupplyPack,aiDiscoverEntities,openEntityForm,openDiscoverEntities,openProjectWizard,mergeEntityInto,stampFields,mergeDuplicateGroup,openRoleBind,entitiesForContext,persist,normalizeNode,openDirectory,membersOf,objectsOf,offersOf,memberBalance,newMember,newObject,newOffer,openMemberForm,openObjectForm,openOfferForm,lendObject,reserveObject,dueStatus,exchangeHours,seedDemo,selectNode,render,venturesOf,linksOf,equityCfg,newVenture,computeEquity,computeVentureEquity,nameAttribution,unattributedEntries,ventureLedger,buildEquityWrap,openContributionModal,ecosystemResources,graduateVenture,openActivityGallery,openVentureDetail,allocationsOf,cooperationsOf,transferBetweenVentures,cooperationSummary,openCooperationModal,fundRollup,fundValue,sprintsOf,newSprint,addBacklogItem,toggleBacklogItem,sprintProgress,advanceSprint,seedSprintPlanFromMap,ventureReadiness,stageGate,advanceStage,STAGE_LABELS,VENTURE_STAGES,normKind,isIntangible,buildHealth,PROJECT_TYPES,projectTypeMeta,PROTOTYPE_MAPS,prototypeMapMeta,newVentureFromPrototype,comandoOf,newProjectComando,comandoAssignRole,comandoRemoveMember,openProjectComando,aiPlanValueFlows,entityComandoOf,newEntityComando,entityComandoAssign,entityComandoRemove,openEntityComando,matriuPsychoImpact,characterSheetOf,PANTHEON12,COMANDO_FOUNDERS,COMANDO_ALLIES,COMANDO_VILLAINS,COMANDO_RANKS,founderOf,zodiacOf,chineseZodiacOf,archetypeAffinity,elementOf,welcomeEvent,openWelcomeModal,openElementModal,CAPABILITIES,dashboardAttention,buildDashboard,renderDashboard,ACTIVITY_KINDS,activityFeed,activityStats,relTime,openActivityLog,openLocateWizard,FORMACIO_MODULES,moduleMeta,moduleUrl,SOS_LEVELS,levelMeta,levelOfPerson,roleOfPerson,aiPrepareMentoring,openMentoringPlan,MISSION_KINDS,missions,networkMissions,renderMissions,lesMevesTasques,tascaCol,ambitTasca,fluxDeTasca,ambitsAmbTasques,POMO_ID,POMO_MIN,pomoLlegeix,pomoDesa,pomoResta,pomoRellotge,pomoComenca,pomoPara,renderPomo,nextLevelGap,renderProgres,ikigaiQuadrants,ikigaiCenter,missionAffinity,missionsNear,renderIkigaiStrip,homeBackBtn,MODAL_ROUTES,buildRoute,parseRoute,syncRoute,applyRoute,routeTo,oracleOf,oracleFmv,oracleObjectValue,ORACLE_FMV_DEFAULTS,ORACLE_OBJECT_DEFAULTS,OBJECT_MODES,objectModeMeta,WEAR_RATES,wearRate,loanValue,recordDonation,recordLoanWear,logRepair,circularStats,openRepairForm,memberById,personProfile,openPersonProfile,personKey,reputationOf,molekulonAffinity,ARCHETYPES,ARCHETYPE_SETS,archetypesFor,archetypeByKey,SKILL_POLARITY,openValuationAssistant,openSuperheroiOnboarding,profileSnapshot,hasProfile,heroCta,openMultiverse,openComandoView,superheroCromo,cromoAvatar,comandoRoster,directorFilter,cromoTier,COMANDO_TARGET,CROMO_TIERS,CANONICAL_HEROES,MOLEKULON_LINKS,HERO_CHALLENGES,heroLevel,CORE_PROJECTS,isCoreProject,coreProjectsFor,SOS_ROLES,ROLE_WEIGHT,ROLE_ACCES,ROLS_ASSIGNABLES,rolesDisponibles,rolesMapaHTML,rolesOfPersonIn,rolesOfPerson,primaryRole,roleIn,setLensRole,loadLensRole,FOUNDER_MAP,openFounderMap,openAssemblyModal,openPublicDecisionsModal,loadActivePersona,setActivePersona,updatePersonaBadge,evaluateChallenges,openLauncher,openSearchPalette,openOnboardingTour,richText,markOnboardingDone,shouldRunOnboarding,findMatches,matchesForPerson,openMatchesModal,NOSTR_RELAYS_DEFAULT,nostrRelays,setNostrRelays,nostrHasSigner,nostrBuildAnchor,nostrSignAnchor,nostrPublish,nostrPublishAnchor,openNostrModal,buildAnchorPack,verifyAnchorPack,downloadAnchorPack,openAnchorPackModal,openIdentityDashboard,bindPasskey,hasPasskey,unbindPasskey,exportIdentity,importIdentity,openIdentityBackup,SOS_BACKUP_TYPE,exportBackup,importBackup,backupSummary,openBackup,COPIA_ID,COPIA_DIES,COPIA_APUNTS,copiaEstat,copiaMarca,copiaRecorda,updateCopiaBadge,openCopiaAvis,buildRegisterPack,verifyRegisterPack,openRegisterPackModal,ALTA_V,ALTA_LLARG,ARWEAVE,altaCommitment,primeresAltes,altesNoves,altesPublicades,numeroDe,altaDe,elMeuNumero,pesRegistre,downloadText,loadAnchors,saveAnchors,rememberAnchor,setAnchorLocation,forgetAnchor,compareAnchor,verifyPack,openAnchors,openVerifier,IDENTITY_BACKUP_TYPE,saveNarrative,loadNarrativesOf,loadAllNarratives,dossierOf,saveDossier,loadAllDossiers,deleteDossier,emptyDossier,dossierCompleteness,DOSSIER_PARTS,PRIVATE_DB_TYPES,parseCVLocal,readCVFile,CV_SKILL_HINTS,CV_RESOURCE_HINTS,characterContext,aiBuildCharacter,openDossierEditor,publishDossierResources,dossierBlocksHTML,knowFor,LEVEL_KNOWLEDGE,expandPairs,mapFlowsOf,suggestMap,APORTS,PES,PERFIL_CLAU,aport,encaix,llegeixPerfil,memberAports,setMemberAports,roleCal,setRoleCal,roleOwner,assignRoleMember,roleDelivers,PENAL_ROLS,suggestRoleMembers,autoAssignRoles,rolesSobrecarrega,openRolePerson,NODE_ACTIONS,actionsFor,nodePulse,openQuickAct,ledgerIndex,searchActions,ledgerTotals,verifyActions,myLedger,actionsCSV,openMyLedger,openPublicRegister,buildActionsView,aliasesOf,resolveMemberId,memberIdsOf,knownPersons,personsNotIn,findKnownPersons,claimMember,releaseMember,verifyClaim,myMemberFiles,mergeMembers,duplicateMembers,openMergeMembers,MEMBER_CLAIM_TYPE,RISK_LEVELS,riskWeight,risksOf,blocksOf,addRisk,closeRisk,addBlock,closeBlock,blockDays,ventureLight,LIGHT_META,matriuLights,openRiskForm,openBlockForm,modalOpen,mapHealthScore,cohortRow,cohortTable,cohortFunnel,cohortCSV,COHORT_COLS,cohortCol,renderMatriuCohort,REVENUE_KINDS,COST_KINDS,revKindMeta,revenuesOf,costsOf,addRevenue,addCost,removeRevenue,removeCost,ventureEconomics,ECON_META,econMeta,fundRunway,viabilitySummary,openRevenueForm,openCostForm,MENTOR_SCOPES,scopeMeta,mentorsOf,sessionsOf,addMentor,removeMentor,logSession,ventureSilence,SILENCE_LABEL,silentVentures,mentoringSummary,openSessionForm,subtreeIds,scopeIds,measure,consolidate,consolidateSet,rollup,buildConsolidation,ancestors,geoPath,haversineKm,coordsOf,proximity,PROXIMITY,parseCoordText,applyCoords,coordCoverage,openCoords,supplyAction,supplyIndex,searchSupply,supplyMatches,supplyThing,thingLabel,myPlace,openSupplySearch,SUPPLY_KINDS,SUPPLY_DIRS,SUPPLY_SORTS,kindMeta,dirMeta,SUPPLY_DOMAINS,domainOf,domainMeta,bridgedDomains,bridgedCats,themesOf,themeSlug,THEME_SUGGEST,allThemes,themeBySlug,themeFederation,themeNeighbours,setThemes,openNodeThemes,openFederations,openTheme,molekulonEvidence,joinNode,actMeta,flowLedger,buildFlowLedger,personStory,STORY_KINDS,closeModal,valueSnapshot,valueDelta,showValueReturn,matchesForNode,openLedgerEntryModal,vnaAudit,suggestReturn,openReciprocityFixer,ENTREGABLES,entregableMeta,entregableDe,fluxAutomatitzable,repartimentMaquina,INTENT_ENTREGABLE,esborranyHTML,esborranyText,contextEntregable,EB_DEMANA,acceptacioEntregables,entregablesDeFlux,openEntregableAcceptat,openPreparaEntregable,desviacioMapa,protoSuggerit,openDesviacioMapa,CONTEXT_GUIDES,ROLE_JOURNEYS,contextGuide,journeyProgress,activeRoleId,openGuide,buildContextGuide,SKILL_TOP20,OBJECT_TOP20,CAT_GEO,geoFor,simulateImpact,openImpactSimulator,IMPACT_DEFAULTS,GH,reviewPRWithAI,openPRReviewModal,openNarrativeKit,ghSaveToken,ghLoadToken,renderEquity,CRITICAL_ACTIVITIES,REVIEW_MONTHS,reviewsOf,graduatedNodeOf,postGradReviews,addReview,survivalRate,EVIDENCE_KINDS,evidenceOf,addEvidence,removeEvidence,loadEvidenceBlob,evidenceCoverage,openReviewForm,openEvidenceForm,FUNDING_STATES,FUNDING_KINDS,fundingStateMeta,fundingOf,addFunding,setFundingState,removeFunding,fundingSummary,fundingAlerts,LEGAL_STEPS,legalChecklist,toggleLegalStep,STAGE_MODULE,stageModule,markTraining,stageTraining,openFundingForm,syncBroadcast,syncSessions,syncPeers,syncDisconnect,SYNC_PROTO,nodeHasSubstance,syncIndex,syncWant,syncGive,syncStub,expandStub,STUB_FIELDS,seedFromDynamic,dynById,DYNAMICS,gz,ungz,_enc,_dec,packSDP,unpackSDP,qrCapabilities,decodeQR,openQRScanner,inviteLink,openSyncModal,openSyncConnected,lastPeer,rememberPeer,CONFIRM_TYPE,PENDING_TYPE,pendingOf,confirmersFor,submitEntry,submitLoan,pendingLabel,meIn,myDid,pendingWaitsFor,confirmPending,rejectPending,pendingInbox,pendingSent,openPendingInbox,updatePendingBadge,updateTaulerBtn,paintRenderError,renderWorkspace,BASE_LEVELS,CATALUNYA_MODEL,COUNTRY_REF,countryModels,customModels,modelById,levelsOf,rootOf,modelOf,metaOf,nextLevelOf,rootLevelOf,saveModels,loadModels,forkModel,institutionsFor,geoRootName,loadModelSkeleton,skeletonSize,loadCatalunyaSkeleton,openCountryWizard,openCountryModels,resolveChainFromMunicipi,resolveChainFromComarca,LEVEL_META,newNode,uid,ensureNode,FUND_UNCERTAINTY,fundFmv,networkFund,fundPlan,parseKpiNum,renderFons,countryCoverage,buildCountryCockpit,EUSKADI_MODEL,EUS_GEO,EUS_MAPS,BUILTIN_MODELS,isBuiltinModel,mapDefFor,institutionFlowsFor,entityTypesFor,entTypeMeta,registerEntityTypes,RANK_HALFLIFE_DAYS,RANK_MIN_PERSONES,rankingScope,rankingScopes,RANK_W,rankDecay,reciprocityFactor,activityRanking,presenceState,renderGent,chatOf,CHAT_MAX,CHAT_REFS,chatRefMeta,chatRefsFor,chatRefAlive,postChat,chatMessages,mergeChat,chatInbox,renderXat,RELAY_ID,relayState,relayPeers,loadRelay,saveRelay,relayCfg,relayReady,relayWsUrl,relayTopic,relayConnect,relayDisconnect,relaySendChat,setRelayOn,openRelayModal,RELAY_STATE_LBL,identityIndex,canonKeyOf,canonKeyOfName,namesOfCanon,SUPPLY_BASE,COMMON_SUPPLY_ID,ORIGINS_ID,ORIGIN_HOME,originsList,loadOrigins,saveOrigins,addOrigin,removeOrigin,fetchFromOrigins,originAge,ORIGIN_ANNOUNCE_D,indexHash,nostrBuildOriginAnnounce,publishOriginAnnounce,nostrQuery,discoverOrigins,checkAnnounced,ORIGIN_MANIFEST,buildOriginBundle,originBundleCheck,downloadOriginBundle,openOrigins,loadCommonSupply,saveCommonSupply,sanitizeSupplyRow,updateCommonSupply,commonSupplyMatches,KEY_LINK_TYPE,sha256hex,nostrEventId,buildKeyLink,verifyKeyLink,publishKeyLink,entryAuthor,APPEND_ONLY,mergeAppendOnly,CUSTODY_PACK_TYPE,custodiansOf,setCustodian,custodyStatus,buildCustodyPack,markCustodyDelivered,restoreFromCustodyPack,SOS_VERSION,noteError,incidentContext,buildIncident,incidentMarkdown,openIncidentReport,ROLE_TABS,visibleTabs,newMergeReport,overwrittenFields,mergeReportText,mergeReportHTML,openMergeReport,MERGE_IGNORE,setShowAllTabs,loadShowAllTabs,HERO_SCREENS,comandoUnlocked,openComandoLens,heroFor,setComandoLens,loadComandoLens,CROMO_DECK,cromoVerified,cromoCollection,cromoSwaps,CROMO_CARD_FIELDS,cromoCardData,cromoImage,downloadCromo,openCromoModal,opsState,renderOps,publishCost,canPublish,publishWithCredit,openPublishHub,publishPlaces,publishHomeName,ensurePublishPlace,COOP_UNIT_DEFAULT,coopCfg,TPV_PROVIDERS,tpvStatus,coopSplit,CARREGA_TYPE,carregesOf,newTopUp,newFunding,confirmTopUp,walletBalance,openCoopWallet,openCoopConfig,DAO_OPERATORS,daoOperator,DAO_DECISION,daoDecisionsOf,daoCfg,daoBudget,canSpend,daoSpend,daoDecide,openDaoCaixa,BOMBA_DIES,nodeSilence,fadedPeople,unusedMatches,neighbourSupply,bombaDisco,openBombaDisco,CERT_TYPE,CERT_NO_ES,certRole,certEvidence,certDays,certBody,signCertificate,buildCertificate,verifyCertificate,confirmCertificate,certificateText,openCertificate,communityStatus,isDescendantOf,linkCandidates,REGISTRE_BASE,REGISTER_PACK_TYPE,registerIndex,registerPublicPack,registerFileName,publishRegisterPack,PIN_TARGETS,pinTarget,markPinned,nostrBuildRegisterAnchor,anchorRegisterPack,proveInclusion,HOME_VIEWS,HOME_SECTIONS,HOME_ALL,HOME_LABEL,homeSections,setShowAllHome,loadShowAllHome,homeNextSteps,setTreeOpen,loadTreeOpen,paintTree,setFlux,loadFlux,logValuePlaces,openLogValue,LANGS,I18N,t,setLang,loadLang,langCoverage,openLangModal,sealPack,openPack,signedReceipts,PATCH_TYPE,buildPatch,relaySendPatch,schedulePatch,relayContribution,_rlOnPatch,CHANNEL_BASE,CHANNEL_PACK_TYPE,channelSlug,buildChannelPack,verifyChannelPack,readChannelPack,channelIndex,pullChannel,channelFileName,publishChannelPack,EINES_SOS,einaDe,einesFora,openEines,FORQUILLA_MAX,ritmeLlesques,dilucio,horesPer,forquilla,renderLlesca,curesOf,CURES_QUE,CURES_CADA,CURES_LLINDAR,curesQueMeta,curesCadaMeta,newCura,curaHores,curesActives,carregaCures,sobrecarregades,coberturaCures,fragilsCures,siPlega,curesResum,renderCures,openCuraForm,REBUT_TYPE,REBUT_CAMPS,buildRebut,verifyRebut,rebutAlRegistre,downloadRebut,openRebut,_canon,_canonAll}; // hook per a tests
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}

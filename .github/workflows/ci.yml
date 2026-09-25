@@ -133,6 +133,17 @@ jobs:
       - name: Guarda de la porta del SOS (cap pàgina es queda fora en silenci)
         run: node SOS/tools/build-portal.js --check
 
+      # La regla que fa venedora tota la proposta d'automatització: si el flux
+      # és tangible i el seu entregable és d'un tipus declarat, el pot preparar
+      # una màquina; si és intangible, va a la persona que porta el rol i la
+      # màquina no el toca mai. El valor d'això depèn sencer que la segona
+      # meitat sigui certa, i un dia algú pot moure la comprovació de lloc o
+      # afegir-hi una excepció «només per a aquest cas»: el resultat seguiria
+      # semblant raonable i no ho veuria ningú. Per això la guarda comprova
+      # l'ORDRE DEL CODI i no el resultat.
+      - name: Guarda dels entregables (la màquina no toca cap intangible)
+        run: node SOS/tools/check-entregables.js
+
       # La pestanya de cures és l'única del SOS on el que s'apunta és qui
       # necessita ajuda i qui l'hi dona. Dos errors farien mal de debò i cap
       # dels dos peta: que hi entri informació de salut —una casella de text
