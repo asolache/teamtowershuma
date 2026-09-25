@@ -160,7 +160,17 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   const r = await p.evaluate(() => {
     const hero = document.querySelector('.hero');
     return {
-      dolor: hero.querySelectorAll('.hero-pains li').length,
+      /* Les tres veus eren al hero i ara són a «El repte», que és la secció
+         del problema. El que ha de ser cert no és on viuen: és que no s'hagin
+         perdut pel camí en moure-les, que és el que passa sempre. */
+      dolor: document.querySelectorAll('#enfoc .repte-veus li').length,
+      /* I el que el hero diu ara al seu lloc: d'on ve la casa. Sense els dos
+         noms i el recorregut entre ells, «flux de valor» és una promesa com
+         qualsevol altra i el motiu per triar aquesta consultoria no surt fins
+         a la vuitena pantalla. */
+      evo: hero.querySelectorAll('.hero-evo li').length,
+      llinatge: /TeamTowers Humà/.test(hero.textContent) && /2005/.test(hero.textContent),
+      flux: /flux de valor/i.test(hero.textContent),
       diag: !!hero.querySelector('a[href*="diagnostic"]'),
       /* La segona sortida era «veure el SOS en viu» i ara és demanar
          pressupost. Les dues tornen alguna cosa sense demanar res a canvi, que
@@ -174,6 +184,9 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
     };
   });
   ok(r.dolor === 3, 'els tres dolors del principi no s\'han perdut pel camí');
+  ok(r.evo === 3, 'el hero explica d\'on ve la casa en tres passos');
+  ok(r.llinatge, 'i nomena les dues cases i l\'any: TeamTowers → TeamTowers Humà');
+  ok(r.flux, 'i diu què es mesura, que és el que es contracta');
   ok(r.diag && r.segona, 'els dos camins de sortida segueixen a la primera pantalla');
   ok(r.sosAlMenu, 'i el SOS és a un clic des de la barra de dalt');
   ok(r.finan, 'i la línia que diu qui ho paga, que és la primera pregunta d\'un ajuntament');
@@ -184,7 +197,17 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   /* `cost` va just després del catàleg i no abans: primer es veu què es ven i
      amb quina forquilla, i llavors d'on surt el número. A l'inrevés seria
      explicar una comptabilitat a algú que encara no sap què li ofereixes. */
-  const ESPINA = ['enfoc', 'glossari', 'relat', 'com', 'fentpinya',
+  /* `fentpinya` i `mapaval` han pujat al davant de tot. El que la pàgina ven
+     és el mapa de valor, i qui acaba de llegir al hero que això va «dels
+     castells al flux de valor» ha de poder veure què és un flux de valor a la
+     pantalla següent — no tres pantalles de problema abans. Van en parella i en
+     aquest ordre: el castell diu QUÈ ÉS un mapa i el celler QUÈ S'HI TROBA. */
+  /* `beneficis` ha marxat a /sos/ sencer, i `aprenent` i `sos` s'hi han quedat
+     com a ponts: el que ajuda a decidir una compra es queda a la portada i el
+     que ajuda a fer servir el model viu a l'app. Els dos ponts segueixen a
+     l'espina perquè el camí cap al SOS no es pugui perdre —això ho vigila
+     `check-landing.js` regla 7d—, però ja no són seccions de contingut. */
+  const ESPINA = ['fentpinya', 'mapaval', 'enfoc', 'glossari', 'relat', 'com',
                   'aprenent', 'cataleg', 'cost', 'sos', 'trajectoria', 'objeccions'];
   const pos = id => r.ordre.indexOf(id);
   const falten = ESPINA.filter(id => pos(id) < 0);
@@ -280,19 +303,29 @@ console.log('\n8 · El que encara no existeix, es diu');
   const { ctx, p } = await nova();
   const r = await p.evaluate(() => {
     const sos = document.querySelector('#sos');
-    const contractes = document.querySelector('#pk-contractes');
     return {
       txtSos: sos ? sos.textContent.replace(/\s+/g, ' ') : '',
-      contractes: contractes ? contractes.textContent.replace(/\s+/g, ' ') : '',
       lliure: sos ? /gratu|lliure/i.test(sos.textContent) : false,
       cos: document.body.textContent.replace(/\s+/g, ' ')
     };
   });
-  ok(/estudi de viabilitat/i.test(r.contractes),
+  /* Els tres paquets del SOS s'han mogut a `/sos/`, que és on es decideixen: es
+     contracten quan algú ja és a dins de l'eina i no quan compara consultories.
+     La regla no canvia de lloc perquè el paquet sí —el que no està construït
+     s'ha de seguir dient—, i per això es comprova allà on ara viu. */
+  const p2 = await ctx.newPage();
+  await p2.goto(APP.replace(/index\.html$/, 'SOS/index.html'));
+  const c = await p2.evaluate(() => {
+    const pq = [...document.querySelectorAll('.ob-pq .pq')]
+      .find(x => /contractes/i.test(x.textContent));
+    return pq ? pq.textContent.replace(/\s+/g, ' ') : '';
+  });
+  await p2.close();
+  ok(/estudi de viabilitat/i.test(c),
     'els contractes intel·ligents es venen com a estudi, no com a eina');
-  ok(/no est(à|an) constru/i.test(r.txtSos) || /encara no/i.test(r.contractes),
+  ok(/encara no|no est(à|an) constru/i.test(c),
     'i es diu obertament que encara no estan construïts');
-  ok(r.lliure, 'la secció del SOS diu que l\'eina és lliure i funciona sense contractar res');
+  ok(r.lliure, 'la banda del SOS diu que l\'eina és lliure i funciona sense contractar res');
   ok(!/qu[àa]ntic/i.test(r.cos), 'i no es promet res de seguretat quàntica, que no existeix aquí');
   /* La guia de marca prohibeix aquestes: no diuen res i sonen a fullet. */
   const prohibides = ['disruptiu', 'disruptiva', 'solucions innovadores', 'ecosistema disruptiu'];

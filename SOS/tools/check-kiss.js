@@ -79,8 +79,39 @@ const src = readFileSync(APP, 'utf8');
    El preu mesurat és de 5 KB gzip (483 → 488). El sostre puja a 510 perquè un
    marge de 2 KB no és un marge: obliga a decidir en cada línia si val la pena
    escriure el comentari que la justifica, i aquest repositori es defensa amb
-   els comentaris. */
-const MAX_GZIP_KB = 510;   // el que es descarrega d'un cop, amb dades mòbils d'un poble
+   els comentaris.
+
+   ── Quarta pujada · 510 → 540, i el que la paga ────────────────────────────
+   Aquesta vegada es va mesurar **què vol dir el sostre de debò** abans de
+   tocar-lo, perquè el comentari d'aquí dalt sempre havia dit «el que es
+   descarrega d'un cop, amb dades mòbils d'un poble» i ningú havia comprovat
+   què costava això:
+
+   | | |
+   |---|---|
+   | 3G lent (400 kbps) | **10,2 s** |
+   | 3G (1,6 Mbps) | 2,5 s |
+   | 4G rural (4 Mbps) | 1,0 s |
+   | Analitzar i arrencar (local) | 465–654 ms · 10 MB de heap |
+
+   I la troballa que ho decideix tot: **eren 10 segons a cada visita, no el
+   primer dia.** L'app no tenia service worker, o sigui que es tornava a baixar
+   sencera cada cop que algú l'obria.
+
+   Per això el que paga aquesta pujada no és un argument, és `SOS/sw.js`: amb
+   la còpia local, el fitxer es baixa **un cop** i després s'obre a l'instant i
+   també sense cobertura. I això canvia el sentit del número: mentre es baixava
+   sempre, cada KB sortia de la tarifa de dades de qui l'obria; ara el pes és
+   una qüestió de **claredat del codi** —els comentaris segueixen sent el 18 %
+   del gzip, 90 KB, i segueixen valent el que valen— i no de la butxaca de
+   ningú.
+
+   Els 30 KB nous es gasten en el primer tram de l'automatització amb frens:
+   els intents d'IA que preparen un entregable a partir del flux del mapa. Es
+   puja a 540 i no a 600 perquè el sostre ha de seguir fent la seva feina —
+   forçar la mesura i la conversa—, i un sostre que no s'acosta mai no força
+   res. Si la pròxima tanda hi torna a tocar, tocarà tornar a mesurar. */
+const MAX_GZIP_KB = 540;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;
