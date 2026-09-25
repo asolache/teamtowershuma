@@ -193,7 +193,19 @@ Per ordre, i els tres primers no depenen de ningú.
 | **3** | **La regla de repartiment**: tangible+tipus → candidata a màquina; intangible → a la persona del rol. Amb el **comptador**: «d'aquestes 34 cartes, 12 les pot fer la màquina» | **És l'argument de venda.** I és el que fa visible que un mapa millor val més | baix | **fet** (`fluxAutomatitzable`, `repartimentMaquina`) |
 | **4** | **Dos intents d'IA, no vuit**: `acta` i `informe-periodic`. Els més repetitius i els menys arriscats | Provar el patró amb dos abans de declarar-ne vuit | mitjà | **fet** |
 | **5** | **Acceptació i traçabilitat** — el flux proposa → persona accepta → va al registre signat | El que fa defensable l'entregable davant d'una junta | mitjà | **fet** (`openPreparaEntregable`) |
-| **6** | **Els altres sis intents**, un per un, mesurant quants s'accepten sense tocar | Si el primer que es mesura és baix, el problema és el mapa, no la IA | alt | pendent |
+| **6** | **La mesura**: l'esborrany es pot corregir abans d'acceptar-lo, i queda desat el text acceptat, l'original de la màquina i si es va tocar | Sense poder corregir, «acceptat» volia dir «no m'hi barallo»: el número no mesurava res | baix | **fet** (`acceptacioEntregables`) |
+| **7** | **Els altres cinc intents**, un per un, mirant el percentatge abans d'afegir el següent | Si el que es mesura és baix, el problema és el mapa, no la IA | alt | en curs · `convocatoria` fet, queden `justificacio`, `inventari`, `comanda`, `fitxa` |
+
+**Per què la convocatòria va abans que la justificació**, que és la que més
+estalvia: perquè una convocatòria **s'equivoca a la vista de tothom** —la gent
+no ve, o ve on no toca— i una justificació de subvenció mal feta no la veu
+ningú fins que la veu qui no toca. Els intents es proven per ordre de *com de
+ràpid es nota l'error*, no per ordre de quant valen.
+
+**Vuit tipus, set automatitzables, cinc pendents.** `acord` no surt d'una
+màquina i està escrit a la taula amb el motiu: sense aquella entrada la
+taxonomia semblaria dir que tot és automatitzable i que els que falten és que
+encara no els hem fet.
 
 ### El que es va trobar construint-ho
 

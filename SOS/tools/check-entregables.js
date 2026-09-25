@@ -237,11 +237,52 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
        que no tenir-la, perquè ensenya a desconfiar-ne. */
     return crides.filter(i => i !== def + 'function '.length && (hook < 0 || i < hook)).length >= 1;
   };
-  const pantalles = ['openPreparaEntregable', 'openDesviacioMapa'];
+  const pantalles = ['openPreparaEntregable', 'openDesviacioMapa', 'openEntregableAcceptat'];
   const soles = pantalles.filter(f => !arriba(f));
   if (soles.length) bad('pantalles escrites i sense cap botó que hi porti: ' + soles.join(', ')
     + ' — el codi és correcte, les proves passen i a la pantalla no hi ha res');
   else ok(`${pantalles.length} pantalles, totes amb un botó que hi porta`);
+})();
+
+/* 11 · LA TERCERA GUARDA QUE IMPORTA · que «acceptat» vulgui dir alguna cosa.
+        La promesa escrita al PR era afegir els intents **un per un, mesurant
+        quants s'accepten sense tocar**. Mentre l'esborrany no es podia tocar,
+        aquell número no mesurava res: acceptar volia dir «no m'hi barallo».
+        Aquesta guarda comprova les tres peces que el fan real —es pot corregir,
+        es desa si s'ha corregit, i es guarda també l'original— perquè és
+        exactament el tipus de cosa que una simplificació futura s'enduria
+        sencera sense que el resultat semblés pitjor. */
+(() => {
+  const i = APP.indexOf('function openPreparaEntregable(');
+  const cos = APP.slice(i, APP.indexOf('\n}\n', i));
+  const falta = [];
+  if (!/id="ebEdit"/.test(cos)) falta.push('no es pot corregir l\'esborrany abans d\'acceptar-lo');
+  if (!/editat[:,]/.test(cos)) falta.push('no es desa si s\'ha corregit o no');
+  if (!/original[:,]/.test(cos)) falta.push('no es desa el que havia escrit la màquina');
+  if (falta.length) bad('«acceptat» no mesura res: ' + falta.join(' · '));
+  else ok('l\'esborrany es pot corregir, i queda desat el text acceptat, l\'original i si es va tocar');
+
+  // I que la mesura existeixi i arribi a una pantalla: un número que no es mira
+  // no corregeix res, i era tot el sentit de fer-los un per un.
+  /* Es busca la crida DINS de `buildFlowLedger` i es descarta la definició,
+     que és el mateix parany on ja va caure la guarda 10: `function foo(` també
+     conté `foo(`, i una guarda que es compta a si mateixa no comprova res.
+     Aquesta hi va tornar a caure, i es va veure trencant el codi a posta. */
+  const bi = APP.indexOf('function buildFlowLedger(');
+  const bc = bi < 0 ? '' : APP.slice(bi, APP.indexOf('\n}\n', bi));
+  if (APP.indexOf('function acceptacioEntregables(') < 0) bad('no hi ha la mesura `acceptacioEntregables`');
+  else if (!/(?<!function )acceptacioEntregables\(/.test(bc))
+    bad('la mesura existeix i no es pinta enlloc');
+  else ok('i el percentatge d\'acceptació sense tocar es veu a la llista de fluxos');
+
+  // L'ordre honest: només es compten els acceptats, perquè un esborrany
+  // descartat no es desa —comptar-lo obligaria a escriure abans d'acceptar.
+  const mi = APP.indexOf('function acceptacioEntregables(');
+  if (mi > 0) {
+    const mc = APP.slice(mi, APP.indexOf('\n}', mi));
+    if (/persist\(|pushLedger/.test(mc)) bad('la mesura escriu: comptar no pot desar res');
+    else ok('i la mesura no escriu res: només llegeix el que ja consta');
+  }
 })();
 
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la taxonomia d'entregables.`

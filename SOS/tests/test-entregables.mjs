@@ -175,7 +175,7 @@ ok(/encara no sabem quin entregable/i.test(pr.sense),
   'i un tangible sense tipus demana posar-li nom en comptes de provar-ho igualment');
 ok(pr.entregables === 0, 'i obrir les tres pantalles no ha escrit res enlloc');
 
-console.log('\n8 · Els dos intents existeixen i porten els frens a les instruccions');
+console.log('\n8 · Els intents existeixen i porten els frens a les instruccions');
 const it = await page.evaluate(() => {
   const S = window.__SOS;
   const els = Object.keys(S.INTENT_ENTREGABLE).map(t => ({ t, i: S.INTENT_ENTREGABLE[t] }));
@@ -185,7 +185,7 @@ const it = await page.evaluate(() => {
       buits: d ? JSON.stringify(d.tool.input_schema.required).includes('buits') : false };
   });
 });
-ok(it.length === 2, `${it.length} tipus tenen eina — dos, no vuit`);
+ok(it.length === 3, `${it.length} tipus tenen eina — tres, no vuit: es fan un per un`);
 it.forEach(x => {
   ok(x.hi && x.cost > 0, `\`${x.i}\` existeix i declara el seu cost (${x.cost} tokens)`);
   ok(/\[a completar\]/.test(x.sys), `\`${x.i}\` sap com marcar el que falta`);
@@ -199,6 +199,71 @@ const senseClau = await page.evaluate(async () => {
   catch (e) { return e.noKey ? 'demana clau' : 'error: ' + (e.msg || ''); }
 });
 ok(senseClau === 'demana clau', 'sense clau demana clau i no peta: l\'automatització és una comoditat, no un requisit');
+
+console.log('\n10 · «Acceptat» vol dir alguna cosa: la mesura');
+const me = await page.evaluate(() => {
+  const S = window.__SOS;
+  /* Un node de mentida amb tres entregables acceptats: dos sense tocar i un
+     corregit. Si la mesura comptés els descartats —que no es desen enlloc—
+     aquest número no es podria calcular, i per això només compta els acceptats. */
+  const node = { vna: { roles: [], exchanges: [
+    { id: 'a', entregables: [{ tipus: 'acta', editat: false }, { tipus: 'acta', editat: true }] },
+    { id: 'b', entregables: [{ tipus: 'convocatoria', editat: false }] },
+    { id: 'c' }
+  ] } };
+  const r = S.acceptacioEntregables(node);
+  const buit = S.acceptacioEntregables({ vna: { exchanges: [] } });
+  return { total: r.total, sense: r.sensetocar, pct: r.pct, tipus: r.per.length,
+    acta: (r.per.find(x => x.tipus === 'acta') || {}).sensetocar,
+    buitTotal: buit.total, buitPct: buit.pct,
+    docs: S.entregablesDeFlux(node.vna.exchanges[0]).length,
+    cap: S.entregablesDeFlux(node.vna.exchanges[2]).length };
+});
+ok(me.total === 3 && me.sense === 2 && me.pct === 67, `3 acceptats, 2 sense tocar, ${me.pct}%`);
+ok(me.tipus === 2 && me.acta === 1, 'i el desglossament per tipus quadra');
+ok(me.buitTotal === 0 && me.buitPct === null, 'sense cap acceptat el percentatge és null i no 0: zero de zero no és zero per cent');
+ok(me.docs === 2 && me.cap === 0, 'la documentació penja de la transacció, i un flux sense cap no peta');
+
+console.log('\n11 · El text pla és el que es corregeix, i es pot comparar');
+const tx = await page.evaluate(() => {
+  const S = window.__SOS;
+  const acta = S.esborranyText('acta', { titol: 'Reunió', data: '3 de març',
+    assistents: ['Tresoreria'], acords: [{ que: 'Comprar gerros', qui: 'Logística', quan: 'abril' }],
+    pendents: ['Demanar pressupost'], buits: ['hora'] });
+  const conv = S.esborranyText('convocatoria', { titol: 'Assemblea', que: 'Aprovar comptes',
+    quan: '[a completar]', on: 'Local', ordre: ['Comptes', 'Precs'], qui: ['Sòcies'],
+    confirmar: 'Respon al grup', canal: 'Assemblea dijous al local.', buits: ['hora'] });
+  return { acta, conv, iguals: S.esborranyText('acta', { titol: 'X' }) === S.esborranyText('acta', { titol: 'X' }) };
+});
+ok(tx.acta.includes('Comprar gerros') && tx.acta.includes('Logística'), 'l\'acta en text pla porta els acords amb el seu responsable');
+ok(!tx.acta.includes('hora'), 'i els buits no hi entren: són un avís sobre el text, no el text');
+ok(tx.conv.includes('ORDRE DEL DIA') && tx.conv.includes('Assemblea dijous al local.'), 'la convocatòria porta ordre del dia i text per als canals');
+ok(tx.conv.includes('[a completar]'), 'i el que no se sap queda marcat i no inventat');
+ok(tx.iguals, 'el mateix esborrany dona el mateix text: si no, tot es llegiria com a corregit');
+
+console.log('\n12 · I que es vegi a la pantalla, no només al codi');
+/* La guarda llegeix el codi; aquesta prova el **pinta**. Són coses diferents:
+   el botó que faltava existia al codi i no es veia enlloc, i per això aquí es
+   construeix la llista de fluxos de debò i es compta el que en surt. */
+const ui = await page.evaluate(() => {
+  const S = window.__SOS;
+  const node = { id: 'n1', name: 'Prova', ledger: [], ventures: [], vna: {
+    roles: [{ id: 'r1', name: 'Junta' }, { id: 'r2', name: 'Sòcies' }],
+    exchanges: [
+      { id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'acta de la reunió mensual',
+        entregables: [
+          { tipus: 'acta', editat: false, quan: Date.now(), text: 'A', original: 'A' },
+          { tipus: 'acta', editat: true, quan: Date.now(), text: 'B', original: 'A' }] },
+      { id: 'x2', from: 'r2', to: 'r1', kind: 'intangible', label: 'confiança' }] } };
+  const box = S.buildFlowLedger(node);
+  return { mesura: (box.querySelector('.fl-mesura') || {}).textContent || '',
+    docs: box.querySelectorAll('.fl-doc').length,
+    corregits: box.querySelectorAll('.fl-doc.ed').length,
+    qui: [...box.querySelectorAll('.fl-qui-t')].map(e => e.textContent) };
+});
+ok(/50%/.test(ui.mesura), 'el percentatge d\'acceptació es pinta a la llista de fluxos');
+ok(ui.docs === 2 && ui.corregits === 1, 'els dos entregables acceptats hi són, i el corregit va marcat');
+ok(ui.qui.includes('👤 De persona, sempre'), 'i l\'intangible segueix dient que és de persona, sempre');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
