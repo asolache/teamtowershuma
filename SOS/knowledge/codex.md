@@ -4978,6 +4978,33 @@ I el corol·lari operatiu: **un import en blanc no és un import buit, és un
 zero**. Dins d'una taula ningú el llegeix com «falta»; el llegeixen com «no hi
 ha hagut despesa». El que torni buit es força a marcar.
 
+## Veda 157 — Una pantalla que no es pot prémer és una pantalla que no existeix
+
+Tres defectes seguits de la mateixa família, i tots tres van sortir d'una
+pregunta d'algú que volia fer servir això:
+
+1. **`openPreparaEntregable` no la cridava cap botó.** Escrita, provada,
+   inabastable. → «Donde trasteo la IA».
+2. **`modal(html, botons)` ignorava el segon argument.** Sis pantalles li
+   passaven una llista de botons i **cap n'ha pintat mai cap**: el contingut hi
+   era, ben maquetat, i no hi havia res per prémer.
+3. **`x.entregable` es llegia i no l'escrivia ningú.** La sortida que la
+   pantalla proposava —«posa-li una etiqueta que ho digui»— era una porta
+   pintada a la paret. → «com i on ho faig?».
+
+Els tres tenen la mateixa forma i és la pitjor que hi ha: **el codi és
+correcte, les proves passen i a la pantalla no es pot fer res.** Les proves
+criden les funcions directament, així que no toquen mai el camí que fa servir
+una persona.
+
+La regla: **una funció no està feta fins que s'ha obert des d'on l'obrirà
+algú.** I la seva prova tampoc: si la prova crida la funció i no clica el botó,
+prova la meitat que no falla.
+
+I el corol·lari que val per a tota sortida escrita a la interfície: **si una
+pantalla diu «fes això», ha d'haver-hi un lloc on fer-ho.** Un consell que no
+es pot seguir és pitjor que no dir res, perquè fa perdre l'estona buscant-lo.
+
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.
 - `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).
