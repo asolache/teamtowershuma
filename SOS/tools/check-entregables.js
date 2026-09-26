@@ -183,7 +183,11 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
       bad(`\`${intent}\`: les instruccions no prohibeixen inventar-se el que falta`);
     else if (!/\[a completar\]/.test(sys))
       bad(`\`${intent}\`: no diu com marcar el que falta, i llavors la prohibició no té sortida`);
-    else if (!/no escriguis noms de persona|noms de persona: rols/i.test(sys))
+    /* La prohibició es pot escriure de més d'una manera i una de les set és
+       més estricta que la fórmula original («no escriguis MAI cap nom de
+       persona»). La guarda accepta les dues formes i cap absència: el que
+       comprova és que la prohibició hi sigui, no que estigui copiada. */
+    else if (!/no escriguis( mai)?( cap)? noms? de persona|noms de persona: rols/i.test(sys))
       bad(`\`${intent}\`: no prohibeix escriure noms de persona`);
     else if (!/required:\[[^\]]*'buits'/.test(cos))
       bad(`\`${intent}\`: l'esquema no obliga a retornar els buits, i llavors marcar-los és opcional`);
@@ -403,6 +407,73 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   });
   if (mudes.length) bad('pantalles que s\'obren sense cap botó: ' + mudes.join(', '));
   else ok(`${pantalles.length} pantalles, totes amb botons per prémer`);
+})();
+
+/* 16 · LA LÍNIA DEL MODEL QUE NO SUMA. Un model que suma una llista de la
+        compra encerta gairebé sempre, i ningú repassa un total. «Gairebé
+        sempre» en una comanda vol dir que una vegada algú paga el que no toca.
+        Per això les sumes es fan al codi, i per això té guarda: la
+        simplificació temptadora («ja que el model té les línies, que en tregui
+        el total») s'enduria aquesta decisió sencera sense que res semblés
+        pitjor. I les dues vedes de diners de la casa hi valen igual: això no és
+        un cobrament ni demana cap targeta. */
+(() => {
+  const j = APP.indexOf('  entregable_comanda:{');
+  if (j < 0) { ok('no hi ha intent de comanda, res a comprovar'); return; }
+  const cos = APP.slice(j, APP.indexOf('\n  },', j));
+  const sys = (cos.match(/system:'((?:[^'\\]|\\.)*)'/) || [])[1] || '';
+  if (!/NO SUMIS RES|no sumis/i.test(sys)) bad('`entregable_comanda`: no prohibeix al model sumar');
+  else if (/total/i.test(JSON.stringify((cos.match(/input_schema:\{[\s\S]*?\}\}\},/) || [''])[0])))
+    bad('`entregable_comanda`: l\'esquema demana un total al model, i llavors la prohibició no serveix');
+  else ok('`entregable_comanda`: el model no suma, i l\'esquema no li demana cap total');
+  if (!/no.{0,30}cobrament|NO és un cobrament/i.test(sys) || !/targeta|manera de pagar/i.test(sys))
+    bad('`entregable_comanda`: no diu que això no és un cobrament ni una manera de pagar');
+  else ok('i diu que no és un cobrament: les vedes de diners de la casa hi valen');
+
+  // I que l'aritmètica existeixi al codi, i no s'empassi les línies sense preu.
+  const ti = APP.indexOf('function totalsComanda(');
+  if (ti < 0) { bad('no hi ha `totalsComanda`: algú ha de sumar'); return; }
+  const tc = APP.slice(ti, APP.indexOf('\n}', ti));
+  /* Es comprova l'ORDRE i no que hi surti la paraula: la primera versió
+     d'aquesta regla buscava «incompletes» al cos de la funció, i trencar la
+     línia que les recull la deixava verda perquè el mot seguia sortint al
+     `return`. Mirar que una paraula existeixi no comprova cap comportament.
+     El que ha de ser cert és que la validesa es miri ABANS d'acumular: una
+     línia sense preu no pot arribar mai al `total +=`. */
+  const pVal = tc.search(/Number\.isFinite/), pSum = tc.indexOf('total+=');
+  if (pVal < 0) bad('`totalsComanda` no comprova que el preu i la quantitat siguin números');
+  else if (pSum >= 0 && pVal > pSum)
+    bad('`totalsComanda` acumula ABANS de comprovar la línia: un preu que no és un número entraria al total');
+  else if (!/return;/.test(tc.slice(pVal, pSum < 0 ? undefined : pSum)))
+    bad('`totalsComanda` no descarta la línia invàlida: se l\'empassaria i el total seria una mentida arrodonida');
+  else if (!/parcial:/.test(tc))
+    bad('`totalsComanda` no diu que el total és parcial quan hi ha línies fora');
+  else ok('i una línia sense preu es descarta abans de sumar, i el total es declara parcial');
+})();
+
+/* 17 · EL SEDÀS DE LA FITXA. És l'únic dels set entregables que llegirà un
+        desconegut, i el que es publica no es pot desfer. Passa pel mateix
+        `verifyNoLeak` que una publicació, i una dada d'una persona **treu el
+        botó d'acceptar**: no és un avís, perquè un avís es clica amb pressa. */
+(() => {
+  const si = APP.indexOf('function sedasFitxa(');
+  if (si < 0) { bad('no hi ha `sedasFitxa`: la fitxa es publicaria sense passar cap sedàs'); return; }
+  const sc = APP.slice(si, APP.indexOf('\n}', si));
+  if (!/verifyNoLeak\(/.test(sc))
+    bad('`sedasFitxa` no fa servir `verifyNoLeak`: tindria un sedàs propi i divergiria del de publicar');
+  else if (!/bloqueja/.test(sc))
+    bad('`sedasFitxa` no distingeix el que bloqueja del que només avisa');
+  else ok('`sedasFitxa` passa pel mateix sedàs que una publicació');
+
+  const i = APP.indexOf('function openPreparaEntregable(');
+  const cos = APP.slice(i, APP.indexOf('\n}\n', i));
+  const pS = cos.indexOf('sedasFitxa('), pA = cos.indexOf('Accepto aquest esborrany');
+  if (pS < 0) bad('la pantalla no passa la fitxa pel sedàs');
+  else if (pA >= 0 && pS > pA)
+    bad('el sedàs es passa DESPRÉS de pintar el botó d\'acceptar: es podria acceptar una fitxa amb dades d\'una persona');
+  else if (!/if\(sd\.bloqueja\)\{[\s\S]{0,600}?return;/.test(cos))
+    bad('una fuita d\'una persona no atura la pantalla: un avís es clica amb pressa');
+  else ok('i una dada d\'una persona treu el botó d\'acceptar, no només avisa');
 })();
 
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la taxonomia d'entregables.`

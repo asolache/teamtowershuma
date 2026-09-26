@@ -185,7 +185,7 @@ const it = await page.evaluate(() => {
       buits: d ? JSON.stringify(d.tool.input_schema.required).includes('buits') : false };
   });
 });
-ok(it.length === 4, `${it.length} tipus tenen eina — quatre, no vuit: es fan un per un`);
+ok(it.length === 7, `${it.length} tipus tenen eina: tots els que surten d'una màquina`);
 it.forEach(x => {
   ok(x.hi && x.cost > 0, `\`${x.i}\` existeix i declara el seu cost (${x.cost} tokens)`);
   ok(/\[a completar\]/.test(x.sys), `\`${x.i}\` sap com marcar el que falta`);
@@ -384,6 +384,82 @@ ok(bt.prepara.some(t => /Prepara l'esborrany/.test(t)) && bt.prepara.some(t => /
 ok(bt.intangible.length === 1, 'l\'explicació d\'un intangible té la seva sortida');
 ok(bt.tipus.some(t => /Desa la classificació/.test(t)), 'classificar un flux: hi ha el botó de desar');
 ok(bt.llegir.length === 1, 'i llegir un entregable acceptat es pot tancar');
+
+console.log('\n18 · L\'inventari: la taula la té el node, i la màquina no hi pot afegir res');
+const inv = await page.evaluate(() => {
+  const S = window.__SOS;
+  const node = { id: 'ninv', name: 'Ateneu', ledger: [], ventures: [], kanban: { cards: [] },
+    members: [{ id: 'm1', name: 'Marta Vilà' }],
+    objects: [
+      { id: 'o1', name: 'Trepant', typology: 'bricolatge', mode: 'disposicio', ownerId: 'm1',
+        condition: 'la broca petita està trencada', status: 'prestat', dueDate: '2020-01-01',
+        loans: 4, repairs: 1, years: 2 },
+      { id: 'o2', name: 'Paella gran', typology: 'cuina', mode: 'donacio', ownerId: null,
+        condition: '', status: 'disponible', loans: 1, repairs: 0, years: 0 }],
+    vna: { roles: [{ id: 'r1', name: 'Junta' }, { id: 'r2', name: 'Sòcies' }],
+      exchanges: [{ id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'inventari del material' }] } };
+  const c = S.contextEntregable(node, node.vna.exchanges[0], 'inventari');
+  const prompt = S.AI.intents.entregable_inventari.build(Object.assign({}, c, { notes: '' }));
+  const buit = S.AI.intents.entregable_inventari.build({ node: 'X', objectes: [], notes: '' });
+  return { n: (c.objectes || []).length, resp: (c.objectes || []).map(o => o.responsable),
+    prompt, buit, valorNota: (c.objectes[0] || {}).valorNota, desgast: (c.objectes[0] || {}).desgast };
+});
+ok(inv.n === 2, 'el context porta els dos objectes del node, amb valor i desgast');
+ok(!/Marta/.test(inv.prompt) && inv.resp.every(r => /membre|comú/.test(r)),
+  'i cap nom de persona hi entra: el responsable és «un membre del node» o «el comú»');
+ok(/estimació/.test(inv.valorNota) && inv.desgast === 20, 'el valor va etiquetat com a estimació i el desgast surt dels préstecs (4 × 5 %)');
+ok(/no pots afegir-hi res/i.test(inv.prompt), 'el prompt diu que la llista és tancada');
+ok(/LA LLISTA D'OBJECTES ÉS BUIDA/.test(inv.buit), 'i sense objectes li diu que no inventi cap: un inventari inventat fa anar a buscar el que no hi és');
+
+console.log('\n19 · La comanda: el model no suma, i les línies sense preu no s\'empassen');
+const com = await page.evaluate(() => {
+  const S = window.__SOS;
+  const r = S.AI.intents.entregable_comanda.coerce({ titol: 'Comanda de gener',
+    linies: [
+      { que: 'Oli', qui: 'llar 1', proveidor: 'Cooperativa', quantitat: 3, preu: 12.5, unitat: 'L' },
+      { que: 'Arròs', qui: 'llar 2', proveidor: 'Cooperativa', quantitat: 2, preu: 4 },
+      { que: 'Melmelada', qui: 'llar 1', proveidor: 'Can Pere', quantitat: 1 },
+      { que: 'Pa', qui: 'llar 3', proveidor: 'Can Pere', quantitat: 0, preu: 0 }],
+    buits: ['preu de la melmelada'] });
+  const t = S.totalsComanda(r);
+  const sys = S.AI.intents.entregable_comanda.system;
+  const esq = JSON.stringify(S.AI.intents.entregable_comanda.tool.input_schema);
+  return { t, preuBuit: r.linies[2].preu, quantZero: r.linies[3].quantitat,
+    prohibeix: /NO SUMIS RES/.test(sys), cobra: /NO és un cobrament/.test(sys),
+    demanaTotal: /total/i.test(esq), text: S.esborranyText('comanda', r) };
+});
+ok(com.t.total === 45.5 && com.t.completes === 2, `el total el calcula el codi: 3×12,5 + 2×4 = ${com.t.total} €`);
+ok(com.t.parcial && com.t.incompletes.length === 2, 'les dues línies sense preu vàlid queden fora i comptades a part');
+ok(com.preuBuit === null && com.quantZero === null, 'un preu que falta i una quantitat zero es queden en null, no en zero: un zero es llegiria com «gratis»');
+ok(com.t.perProveidor.length === 1 && com.t.perProveidor[0].import === 45.5, 'i el desglossament per proveïdor només compta el que té preu');
+ok(com.prohibeix && !com.demanaTotal, 'el model té prohibit sumar i l\'esquema no li demana cap total');
+ok(com.cobra, 'i diu que això no és un cobrament: el SOS no en confirma mai cap');
+ok(/calculat per l'aplicació, no pel model/.test(com.text), 'el text diu qui ha fet la suma');
+
+console.log('\n20 · La fitxa: surt a fora i passa pel mateix sedàs que una publicació');
+const fit = await page.evaluate(() => {
+  const S = window.__SOS;
+  /* El sedàs mira els noms de TOTS els nodes de l'estat, així que la prova
+     n'afegeix un de debò i el treu al final. */
+  const nd = { id: 'nfit', name: 'Ateneu de prova', nodeLevel: 'municipi', ledger: [], ventures: [],
+    kanban: { cards: [] }, objects: [{ id: 'o1', name: 'Trepant Bosch', typology: 'bricolatge' }],
+    members: [{ id: 'm1', name: 'Marta Vilaseca', contact: { email: 'marta@exemple.cat' } }],
+    vna: { roles: [], exchanges: [] } };
+  S.state.nodes.push(nd);
+  const net = S.sedasFitxa({ titol: 'Ateneu', una: 'Un espai obert', com: 'Escriu al canal del node' });
+  const persona = S.sedasFitxa({ titol: 'Ateneu', una: 'Parla amb Marta Vilaseca' });
+  const correu = S.sedasFitxa({ titol: 'Ateneu', com: 'marta@exemple.cat' });
+  const objecte = S.sedasFitxa({ titol: 'Ateneu', que: 'Tenim un Trepant Bosch per prestar' });
+  S.state.nodes = S.state.nodes.filter(n => n.id !== 'nfit');
+  return { net: net.bloqueja, persona: persona.bloqueja, correu: correu.bloqueja,
+    objBloqueja: objecte.bloqueja, objAvisa: objecte.altres.length > 0,
+    sys: S.AI.intents.entregable_fitxa.system };
+});
+ok(fit.net === false, 'una fitxa neta passa');
+ok(fit.persona === true, 'un nom de persona la bloqueja: publicar-ho no es pot desfer i ningú ho ha consentit');
+ok(fit.correu === true, 'i un correu de contacte també');
+ok(fit.objBloqueja === false && fit.objAvisa, 'el nom d\'un objecte del node avisa i no bloqueja: no és dada de ningú, i decideix el node');
+ok(/AIXÒ ES PUBLICA/.test(fit.sys), 'i el prompt li diu que això es publica, abans de tota la resta');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));

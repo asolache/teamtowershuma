@@ -194,7 +194,46 @@ Per ordre, i els tres primers no depenen de ningú.
 | **4** | **Dos intents d'IA, no vuit**: `acta` i `informe-periodic`. Els més repetitius i els menys arriscats | Provar el patró amb dos abans de declarar-ne vuit | mitjà | **fet** |
 | **5** | **Acceptació i traçabilitat** — el flux proposa → persona accepta → va al registre signat | El que fa defensable l'entregable davant d'una junta | mitjà | **fet** (`openPreparaEntregable`) |
 | **6** | **La mesura**: l'esborrany es pot corregir abans d'acceptar-lo, i queda desat el text acceptat, l'original de la màquina i si es va tocar | Sense poder corregir, «acceptat» volia dir «no m'hi barallo»: el número no mesurava res | baix | **fet** (`acceptacioEntregables`) |
-| **7** | **Els altres cinc intents**, un per un, mirant el percentatge abans d'afegir el següent | Si el que es mesura és baix, el problema és el mapa, no la IA | alt | en curs · `convocatoria` i `justificacio` fets, queden `inventari`, `comanda`, `fitxa` |
+| **7** | **Els set intents**, un per un | Si el que es mesura és baix, el problema és el mapa, no la IA | alt | **fet** · acta, informe, convocatòria, justificació, inventari, comanda, fitxa |
+
+### Els set, i amb què topa cadascun
+
+El patró és el mateix per a tots —dona context, prohibeix inventar, marca els
+buits— i **el que els fa defensables és allò amb què topa cada un**:
+
+| Entregable | La seva línia |
+|---|---|
+| **Acta** | El que no es va dir no s'escriu: un acord sense responsable i sense data queda com a pendent de concretar |
+| **Informe** | Les xifres són les que et donin; les del SOS van dites com a estimacions amb forquilla |
+| **Convocatòria** | Res promès que no et diguin: ni àpat, ni transport, ni que hi haurà ningú en concret |
+| **Justificació** | Escriu la memòria i **no omple la taula de despesa**: una estimació no entra en una casella comptable |
+| **Inventari** | **La taula la té el node.** La màquina escriu la lectura i no pot afegir cap objecte |
+| **Comanda** | **El model no suma.** Posa preu unitari i quantitat; `totalsComanda` fa l'aritmètica al codi |
+| **Fitxa** | **Surt a fora.** Passa pel mateix `verifyNoLeak` que una publicació, i una dada d'una persona treu el botó d'acceptar |
+
+**Els tres últims no cabien al patró, i per això valen.**
+
+**L'inventari** és el que ho deixa més clar: nom, tipologia, estat, valor
+estimat, desgast acumulat i qui n'és responsable **ja són dades**. Demanar-li la
+taula seria demanar-li que copiés una base de dades —i una còpia pot
+equivocar-se mentre l'original no. El que no hi ha és la lectura: què cal
+arreglar, què no es troba, què sobra.
+
+**La comanda** toca diners, i les dues vedes de la casa hi valen (el SOS no
+confirma mai un cobrament i no demana mai una targeta). Però la seva línia
+pròpia és una altra: **un model que suma una llista de la compra encerta gairebé
+sempre, i ningú repassa un total.** «Gairebé sempre» en una comanda vol dir que
+una vegada algú paga el que no toca. I les línies sense preu **no es reparteixen
+en silenci**: surten comptades a part i el total es declara parcial.
+
+**La fitxa** és l'únic dels set que llegirà un desconegut, i té el fre més dur:
+si el sedàs hi troba una dada d'una persona, **no es pinta el botó d'acceptar**.
+No és un avís —un avís es clica amb pressa— i el que es publica no es pot
+desfer. La distinció que la fa utilitzable i no només estricta: **una dada d'una
+persona bloqueja; el nom d'un objecte de la biblioteca avisa i decideix el
+node**, perquè no és dada de ningú. Bloquejar-ho tot hauria semblat més segur i
+hauria fet la pantalla inservible —i una pantalla inservible acaba amb la fitxa
+escrita a mà i sense cap sedàs.
 
 ### La línia comptable · el que la justificació de subvenció no fa
 

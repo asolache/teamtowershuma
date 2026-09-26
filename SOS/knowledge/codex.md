@@ -5005,6 +5005,45 @@ I el corol·lari que val per a tota sortida escrita a la interfície: **si una
 pantalla diu «fes això», ha d'haver-hi un lloc on fer-ho.** Un consell que no
 es pot seguir és pitjor que no dir res, perquè fa perdre l'estona buscant-lo.
 
+## Veda 158 — Un model no suma, i una taula que ja tens no es demana
+
+Dues coses que una eina d'IA fa malament **no perquè sigui poc capaç, sinó
+perquè el resultat no es repassa**:
+
+- **Sumar.** Un model que suma una llista de la compra encerta gairebé sempre.
+  En una comanda, «gairebé sempre» vol dir que una vegada algú paga el que no
+  toca —i un total ningú no el torna a fer a mà. Les sumes es fan al codi: el
+  model posa preu unitari i quantitat, i l'aritmètica és aritmètica.
+- **Copiar una taula que ja tens.** Si el nom, l'estat, el valor i el
+  responsable de cada objecte ja consten al node, demanar-li la taula és
+  demanar-li que copiï una base de dades. **Una còpia pot equivocar-se mentre
+  l'original no.** El que se li demana és el que no hi ha: la lectura.
+
+I el corol·lari operatiu, que és el que fa el número honest: **una línia que no
+es pot comptar no es reparteix en silenci.** Un total que s'empassa les línies
+sense preu és una mentida arrodonida. Es descarta abans de sumar, es compta a
+part, i el total es declara parcial.
+
+## Veda 159 — El que surt a fora passa pel sedàs de sempre, i el bloqueja
+
+Un entregable que llegirà un desconegut no es tracta com els altres: **passa pel
+mateix `verifyNoLeak` que una publicació**, no per un sedàs propi —un segon
+sedàs divergeix del primer i el dia que divergeix ningú se n'adona.
+
+I la distinció que el fa utilitzable en comptes de només estricte:
+
+- **Una dada d'una persona bloqueja.** Nom, id de fitxa, identitat o contacte:
+  **no es pinta el botó d'acceptar.** No és un avís, perquè un avís es clica amb
+  pressa; i el que es publica no es pot desfer, i qui hi sortiria no ho ha
+  consentit.
+- **La resta avisa i decideix qui accepta.** El nom d'un objecte de la
+  biblioteca no és dada de ningú: si el node vol dir a fora que té un trepant,
+  és una decisió seva.
+
+Bloquejar-ho tot hauria semblat més segur i hauria fet la pantalla inservible —i
+una pantalla inservible acaba amb la fitxa escrita a mà, fora de l'eina i sense
+cap sedàs. **Un fre que no deixa treballar no protegeix: es desmunta.**
+
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.
 - `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).

@@ -1,8 +1,16 @@
 # Backlog de desenvolupament SOS
 
-Font única de veritat del desenvolupament. Cada PR mergejat es tanca; cada bloc pendent es prioritza.
+Font única de veritat del desenvolupament. Cada bloc pendent es prioritza, i el
+que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 
-## PRs mergejats (línia principal, més recents primer)
+> **Repàs del 26/09/2026.** La llista de PRs de sota **s'ha quedat al #57** i el
+> repositori va pel #163: hi falten un centenar d'entrades. No es reconstrueix a
+> posteriori —una llista de cent títols escrits de memòria seria pitjor que no
+> tenir-la, perquè semblaria un registre. El que val d'aquest document és **el
+> bloc pendent i les seccions tancades amb la seva mesura**; la llista de PRs és
+> històrica i es llegeix com el que és. L'historial de debò és `git log`.
+
+## PRs mergejats · històric fins al #57 (la llista no es manté; l'historial és `git log`)
 
 - **#57 · Xifratge multi-membre ECDH-P256** — envelope per membre, no cal passphrase compartida
 - **#56 · Cerca global ⌘K + Onboarding tour** — palette + tour de benvinguda de 4 pantalles
@@ -70,6 +78,47 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### Del mapa al Kanban que s'executa sol · fet, i què queda
+
+**Fet (25–26/09/2026), PRs #160, #161 i #163.** L'anàlisi sencera és a
+`../negoci/mapa-kanban-ia.md`; aquí només el que cal saber per no refer-ho.
+
+La regla, en una línia: **cada flux del mapa és una carta. Si és tangible i el
+seu entregable és d'un tipus declarat, la pot preparar una màquina. Si és
+intangible, va a la persona que porta el rol —i la màquina no la toca mai.**
+
+| Peça | Què fa |
+|---|---|
+| `ENTREGABLES` | Vuit tipus tancats. **Un diu que no surt d'una màquina**, amb el motiu escrit: sense aquella entrada la taula semblaria dir que tot és automatitzable |
+| `fluxAutomatitzable` | Exigeix que el flux sigui **explícitament tangible**; una mena desconeguda cau del costat segur |
+| `repartimentMaquina` | El número que ven, al costat del diagnòstic de salut |
+| `desviacioMapa` | Què preveu el model que no tens. Diu «desviació» i **mai «incompliment»** |
+| `openTipusEntregable` | Classificar un flux a mà, quan l'etiqueta no ho diu |
+| `openPreparaEntregable` | Prepara → **es pot corregir** → s'accepta. Res no existeix fins que algú ho prem |
+| `acceptacioEntregables` | **La mesura**: quants s'accepten sense tocar. Per sota del 70 % vol dir que falten dades al mapa |
+| `openEntregableAcceptat` | La documentació, penjada de la transacció |
+| `totalsComanda` | L'aritmètica de la comanda, **al codi i no al model** |
+| `sedasFitxa` | El sedàs de `verifyNoLeak` per al que surt a fora |
+
+**Els set intents hi són** (acta, informe, convocatòria, justificació, inventari,
+comanda, fitxa), **17 guardes** a `check-entregables.js` totes provades
+trencant-les, i 107 assercions a `test-entregables.mjs`.
+
+**El que queda d'aquesta línia, i no és codi:** **mirar el percentatge.** La
+mesura hi és i encara no té dades. Quan n'hi hagi, el número diu on cal actuar:
+si és alt, el mapa és bo i l'automatització val la pena; si és baix, el problema
+no és el prompt —és que el mapa no diu prou coses per escriure el document. **No
+s'afegeix res més d'aquesta línia sense haver-lo mirat**, que era tota la raó de
+fer-los un per un.
+
+**Vedes que en van sortir:** 154 (acceptat sense poder corregir no vol dir res) ·
+155 (una guarda que es compta a si mateixa) · 156 (una estimació no entra en una
+casella comptable) · 157 (una pantalla que no es pot prémer no existeix) ·
+158 (un model no suma, i una taula que ja tens no es demana) · 159 (el que surt a
+fora passa pel sedàs de sempre, i el bloqueja).
+
+---
+
 ### La UX del SOS com un Kanban sencer · assignar a una persona i documentar la transacció
 
 **Demanat per l'Àlvar (25/09/2026).** Que tot el que es planifica visqui en un
@@ -86,7 +135,8 @@ transaccions** d'un node o d'un projecte.
 | Mapa → carta | `seedSprintPlanFromMap` | Cada flux del mapa genera la seva carta, amb el tipus d'entregable al títol |
 | Qui pot fer-ho | `fluxAutomatitzable`, `repartimentMaquina` | Diu si la carta la pot preparar una màquina o va sempre a una persona |
 | Rols → persones | `roleOwner`, `assignRoleMember`, `suggestRoleMembers`, `rolesSobrecarrega` | Ja assigna **persones a rols**, amb proposta i avís de sobrecàrrega |
-| Documentació | `x.entregables[]` a l'intercanvi + `openEntregableAcceptat` | L'entregable acceptat penja del flux i es pot tornar a llegir |
+| Documentació | `x.entregables[]` a l'intercanvi + `openEntregableAcceptat` | L'entregable acceptat penja del flux, diu si es va corregir i guarda l'original de la màquina |
+| Classificació | `openTipusEntregable` | Dir a mà quin entregable produeix un flux, quan l'etiqueta no ho diu |
 
 **El que falta de debò, i és menys del que sembla:**
 
@@ -103,7 +153,10 @@ transaccions** d'un node o d'un projecte.
 3. **La documentació és només de l'entregable acceptat.** Un fitxer adjunt, un
    enllaç o una nota lliure penjats de la transacció encara no hi caben.
    `EVIDENCE_KINDS`/`evidenceOf` ja fan això per a les revisions: el més barat
-   és **estendre'ls a l'intercanvi**, no inventar-ne un segon magatzem.
+   és **estendre'ls a l'intercanvi**, no inventar-ne un segon magatzem. *(I quan
+   es faci, el que surti a fora ha de passar per `sedasFitxa` o pel seu
+   equivalent: un adjunt és la via més curta per publicar una dada de ningú
+   sense voler —veda 159.)*
 4. **El projecte no té la seva vista.** La documentació penja del flux; no hi ha
    cap lloc que digui «tot el que s'ha produït en aquest projecte».
 
@@ -836,12 +889,21 @@ demanen de debò.
    qualsevol. Panell visible al Resum del territori i a les accions ràpides del
    tauler. Veda V24. Prerequisit resolt per a les federacions temàtiques.
 
-**Següent, per ordre:**
-1. **F1 de la MATRIU · acompanyament** (mentors, sessions al ledger, alertes
-   d'abandó) — segueix sent la que fa que la MATRIU sigui un servei i no un
-   repositori d'estructures.
-2. **Federacions temàtiques** (model del.icio.us): vincular nodes a un tema,
-   veure qui més l'ha etiquetat i consolidar-ne el valor amb `consolidateSet`.
+**Següent, per ordre:** ~~F1 de la MATRIU~~ · ~~federacions temàtiques~~ —
+**les dues ja estan fetes, i aquest apartat contradiu la resta del document**
+(repàs del 26/09/2026):
+
+- **F1 · acompanyament** consta com a feta a la secció «MATRIU · pla de millora
+  èpic» d'aquest mateix fitxer (F1–F4 fetes, pendents F5–F8). Al codi hi són
+  `mentorsOf`, `sessionsOf`, `addMentor`, `logSession`, `ventureSilence`,
+  `silentVentures` i `mentoringSummary`.
+- **Federacions temàtiques** hi són: `themesOf`, `themeSlug`, `allThemes`,
+  `themeFederation`, `themeNeighbours`, `openFederations`, `openTheme` i
+  `openNodeThemes`, amb la consolidació per `consolidateSet`.
+
+Una llista de «següents» que ja s'han fet és pitjor que no tenir-ne: fa que qui
+la llegeixi desconfiï de tota la resta del document. **El següent de debò
+d'aquesta onada són F5–F8 de la MATRIU**, i estan on toca, a la seva secció.
 
 ### Onada actual — user acquisition + traction
 1. **Landing/onboarding més agressiu** — crear vista/pantalla dedicada a captació d'usuaris amb funcionalitats crítiques de tracció (CTA directe a crear perfil, comptador de superherois viu, testimonis).
@@ -1219,13 +1281,26 @@ bricolar» no és el títol de cap fitxa i posar-l'hi hauria donat zero resultat
   `measure` retorna `objectes` com a calaix propi i cap dels tres el barreja.
 
 
-- **El selector d'idioma de la landing és inabastable a 1280 px** · **obert, i
-  fora de l'abast d'aquesta línia**. A `index.html` (arrel), el botó
-  `.lang-btn[data-lang="es"]` queda a **x=1342 en una finestra de 1280 px**: surt
-  del viewport per la dreta. Vol dir que **ningú pot canviar a castellà en un
-  portàtil normal**. Ho ha destapat `test-landing`, que fallava per timeout en
-  clicar-lo —no per l'i18n, com semblava. No s'ha tocat perquè la landing és
-  explícitament fora d'abast; queda anotat per a qui hi entri.
+- ~~**El selector d'idioma de la landing és inabastable a 1280 px**~~ · **no es
+  reprodueix (mesurat el 26/09/2026)**, i val la pena dir per què, perquè
+  l'error era del diagnòstic i no del codi. Mesures d'ara mateix del botó
+  `.lang-btn[data-lang="es"]`:
+
+  | Finestra | x del botó | Dins del viewport | Scroll horitzontal |
+  |---|---:|---|---|
+  | 1280 px | 1146 | sí | no |
+  | 1440 px | **1342** | sí | no |
+  | 390 px | 256 | sí | no |
+
+  **El 1342 de l'apunt original és exactament la posició a 1440 px.** O sigui: la
+  mesura es va prendre en una finestra de 1440 i es va escriure com si fos de
+  1280, i d'aquí va sortir la conclusió que sortia del viewport. A cap de les
+  tres amplades surt, i a cap hi ha scroll horitzontal.
+
+  La lliçó, que és la que val més que el defecte: **una mesura sense l'amplada
+  al costat no és una mesura.** Un timeout en clicar un botó té moltes causes i
+  «està fora de pantalla» només és una; donar-la per bona sense comprovar-la va
+  deixar aquí un any un defecte que no existia.
 
 - ~~`updateAtles` no era idempotent~~ · **resolt (V41)**. Eren dues coses: el
   `catch` buit s'empassava els paquets que fallaven i deia «ja estava al dia», i
