@@ -131,7 +131,12 @@ const DECORAT = { href: 'molekulandia.html', t: 'Molekulandia',
 
    Els URL van sense el `?si=…` amb què els comparteix YouTube: és un
    identificador de qui ha compartit l'enllaç i no fa cap falta per veure el
-   vídeo. */
+   vídeo.
+
+   `soundcloud` és opcional i **no és un segon enllaç**: és la mateixa peça a
+   l'altra casa. Hi és perquè molekulon.org pugui reproduir-la sense treure el
+   visitant de la pàgina, cosa que un mp3 allotjat aquí ja fa i un vídeo de
+   YouTube també. Una peça pot tenir les dues adreces i seguir sent una. */
 const VIDEOS = [
   { id: 'capitols', mena: 'llista', qui: [], titol: 'Els capítols del Comando',
     d: 'La sèrie sencera. A cada capítol es presenta un superheroi i un supervilà del Mundo Muerto.',
@@ -166,7 +171,16 @@ const VIDEOS = [
 
   /* ── Temes ────────────────────────────────────────────────────────────── */
   { id: 'horacio-tema', mena: 'tema', qui: ['Horacio Motomachi'], titol: 'El tema d\'Horacio Motomachi',
-    d: 'La cançó sencera, allotjada aquí. Sona també a la intro.', url: 'media/comando-horacio.mp3' },
+    d: 'La cançó sencera, allotjada aquí. Sona també a la intro.', url: 'media/comando-horacio.mp3',
+    soundcloud: 'https://on.soundcloud.com/qc8BDojtp4X1P9jePM' },
+  /* La peça que dona el missatge del projecte: que qui es pensa que no és ningú
+     ja va guanyar una cursa de dos-cents milions abans de néixer. És el pla 1 de
+     la intro dit en cançó, i és el tema que sona a la pàgina on el còmic ho
+     explica. El títol és provisional —l'autor n'ha donat l'adreça i no el nom. */
+  { id: 'mazinguer-tema', mena: 'tema', qui: ['Mazinguer'], titol: 'El tema de Mazinguer',
+    d: 'El missatge que encén el Comando: ja vas guanyar una cursa de dos-cents milions, i per això ets aquí.',
+    url: 'https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx',
+    soundcloud: 'https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx' },
   { id: 'guiriguay-tema', mena: 'tema', qui: ['Guiri-Guay'], titol: 'El tema del Guiri-Guay',
     d: 'Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup.',
     url: 'https://youtu.be/Q15My_6qb4A' },
