@@ -363,3 +363,72 @@ publicar però no es pot ensenyar.
 - **El manteniment.** Dotze pàgines més són dotze pàgines que envelleixen. Per
   això van generades i amb guarda: perquè el dia que una xifra deixi de ser
   certa, peti el CI i no se n'assabenti primer un visitant.
+
+---
+
+## 9 · El trasllat, decidit · què va a molekulon.org i en quin ordre
+
+> Escrit el 2026-09-27, quan molekulon.org ja té cinc pàgines i el primer còmic
+> obert. Substitueix la llista de dotze del §3, que era una previsió; això és el
+> pla de **moure-ho tot**, que és el que s'ha demanat.
+
+### La regla que ho decideix tot
+
+Una sola pregunta per pàgina, i no cal discutir-ne cap:
+
+> **El relat va a molekulon.org. L'eina es queda a teamtowershuma.com.**
+
+Si una pàgina explica **la història** —qui són, què va passar, com s'hi entra—,
+se'n va. Si explica **com es fa servir una cosa** —un banc de temps, un mapa de
+valor, un pressupost—, es queda. Les dues cases s'enllacen i cap ven el que ven
+l'altra.
+
+### El que ja hi és
+
+| Pàgina | Estat |
+|---|---|
+| Portada, personatges, la pel·lícula, la banda | Fetes, generades de `molekulon-data.json` |
+| El còmic | Feta. Portada i set pàgines del primer número, amb el seu tema |
+
+### El que se'n va, per ordre
+
+L'ordre no és el de la importància: és el del **cost de moure-ho**, de menys a
+més, perquè cada pas deixi el següent més fàcil.
+
+| # | Què | D'on surt | Què cal fer-hi |
+|---|---|---|---|
+| 1 | **El blog del Comando** | Cinc entrades de `blog.html` | Separar-les de les del SOS. Són text: és el trasllat més barat i el que més omple |
+| 2 | **Molekulandia** | `build-molekulandia.js` | Exportar el poble a JSON, com es va fer amb el Comando, i generar la pàgina allà |
+| 3 | **L'estat líquid** | `build-molekulon.js` | Igual: el model ja és dades; la pàgina es torna a pintar amb l'estil de la casa nova |
+| 4 | **La Fàbrica de Superherois** | `escola.html` | La més delicada: ven a escoles i té dades d'infants. Va amb la seva pàgina de contacte i el seu material descarregable |
+| 5 | **Com s'hi entra** | `uneix-te.html`, el kit narratiu | Una porta pròpia a molekulon.org que acaba a l'app del SOS |
+| 6 | **El joc** | `joc.html` | Últim: és una pantalla completa i autònoma, i moure-la no desbloqueja res |
+
+### El que **no** es mou, i per què
+
+- **L'aplicació** (`SOS/index.html`). És l'eina, i és on viu el registre. Des de
+  molekulon.org s'hi entra per enllaç.
+- **El banc de temps i la biblioteca de les coses.** Són superpoders i superarmes
+  dins del relat, però com a pàgines expliquen un mecanisme de comunitat. S'hi
+  enllaça des del relat; no se'n van.
+- **El catàleg, el pressupost, el diagnòstic, el mapa de valor, la formació
+  professional.** Són la consultora.
+
+### La mecànica de cada trasllat
+
+Sempre la mateixa, i per això es pot repetir sense pensar-la:
+
+1. **Exportar** la font a `SOS/<cosa>-data.json` des del generador que ja la
+   declara, amb `--check` que el vigili.
+2. **Generar** la pàgina nova al repositori `molekulonorg` a partir d'aquell JSON.
+3. **301** des de l'adreça vella de teamtowershuma.com cap a la nova.
+4. **Canonical** a la pàgina nova, i treure la vella del `sitemap.xml` d'aquí.
+5. La pàgina vella **es conserva** fins que el 301 estigui provat; llavors es
+   buida i queda només la redirecció.
+
+### El que això obliga a decidir abans del pas 4
+
+La Fàbrica de Superherois és l'única peça amb comprador i calendari propis. Moure
+-la vol dir tenir a molekulon.org **un contacte que respongui** i **un avís legal
+amb responsable de dades**, perquè allà hi escriuen escoles. Fins que això no hi
+sigui, els passos 1, 2, 3, 5 i 6 es poden fer i el 4 no.

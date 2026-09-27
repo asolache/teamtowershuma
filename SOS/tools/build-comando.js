@@ -176,8 +176,8 @@ const VIDEOS = [
   /* La peça que dona el missatge del projecte: que qui es pensa que no és ningú
      ja va guanyar una cursa de dos-cents milions abans de néixer. És el pla 1 de
      la intro dit en cançó, i és el tema que sona a la pàgina on el còmic ho
-     explica. El títol és provisional —l'autor n'ha donat l'adreça i no el nom. */
-  { id: 'mazinguer-tema', mena: 'tema', qui: ['Mazinguer'], titol: 'El tema de Mazinguer',
+     explica —la cançó hi neix, a la vinyeta. */
+  { id: 'mazinguer-tema', mena: 'tema', qui: ['Mazinguer'], titol: 'Espermatozoide soy',
     d: 'El missatge que encén el Comando: ja vas guanyar una cursa de dos-cents milions, i per això ets aquí.',
     url: 'https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx',
     soundcloud: 'https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx' },

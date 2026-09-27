@@ -58,7 +58,7 @@ I el decorat és **Molekulandia** (`molekulandia.html`).
 | El Risitas i el Príncep de Bekelar | Videoclip | El Risitas, Príncep de Bekelar | `https://youtu.be/bg4N48q_dtI` |
 | Mr. McGragor | Videoclip | Mr. McGragor | `https://youtu.be/C6-7B2O5dDY` |
 | El tema d'Horacio Motomachi | Tema | Horacio Motomachi | `media/comando-horacio.mp3` |
-| El tema de Mazinguer | Tema | Mazinguer | `https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx` |
+| Espermatozoide soy | Tema | Mazinguer | `https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx` |
 | El tema del Guiri-Guay | Tema | Guiri-Guay | `https://youtu.be/Q15My_6qb4A` |
 | La Bomba Disco, a la Floresta | Directe | — | `https://youtu.be/PNFy7V8UbQs` |
 | Pigmentón | Videoclip | Pigmentón | **falta l'enllaç** |
