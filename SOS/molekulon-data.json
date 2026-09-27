@@ -345,7 +345,19 @@
       ],
       "titol": "El tema d'Horacio Motomachi",
       "d": "La cançó sencera, allotjada aquí. Sona també a la intro.",
-      "url": "media/comando-horacio.mp3"
+      "url": "media/comando-horacio.mp3",
+      "soundcloud": "https://on.soundcloud.com/qc8BDojtp4X1P9jePM"
+    },
+    {
+      "id": "mazinguer-tema",
+      "mena": "tema",
+      "qui": [
+        "Mazinguer"
+      ],
+      "titol": "El tema de Mazinguer",
+      "d": "El missatge que encén el Comando: ja vas guanyar una cursa de dos-cents milions, i per això ets aquí.",
+      "url": "https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx",
+      "soundcloud": "https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx"
     },
     {
       "id": "guiriguay-tema",
