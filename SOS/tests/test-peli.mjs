@@ -45,8 +45,11 @@ console.log('\n1 · La primera pantalla diu què és el projecte, no només qui 
   ok(/pel·lícula/i.test(r.titol), 'el titular diu que això és una pel·lícula: «' + r.titol + '»');
   ok(r.cta && r.cta.y <= 800,
     'i la crida principal cau dins de la primera pantalla (' + Math.round(r.cta.y) + 'px de 800)');
-  ok(r.cta && r.cta.href === 'index.html#/alta',
-    'que porta a fer-se el personatge, no a una portada genèrica');
+  /* La ruta porta d'on véns: `#/alta/comando` és la mateixa alta amb el pas
+     del cromo. El que ha de ser cert és que porti a fer-se el personatge i no
+     a una portada genèrica —no l'adreça literal. */
+  ok(r.cta && /^index\.html#\/alta(\/comando)?$/.test(r.cta.href || ''),
+    'que porta a fer-se el personatge, no a una portada genèrica (' + (r.cta || {}).href + ')');
 }
 
 console.log('\n2 · Els quatre mòduls del SOS obren el que prometen');
