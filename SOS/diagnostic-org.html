@@ -216,6 +216,10 @@ footer a{color:var(--indigo);text-decoration:none}
 </div>
 <div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
+<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+</div>
+<div class="grid2">
 <div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
 <div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
@@ -346,7 +350,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <form name="diagnostic-org" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="diagnostic-org">
   <input name="bot-field"><input name="nom"><input name="mail"><input name="tel"><input name="carrec">
-  <input name="rol"><input name="org"><input name="orgNom"><input name="municipi"><input name="persones">
+  <input name="rol"><input name="org"><input name="orgNom"><input name="web"><input name="dediqueu"><input name="municipi"><input name="persones">
   <input name="objectiu"><input name="termini"><input name="decideix"><textarea name="resum"></textarea>
 </form>
 
@@ -410,14 +414,15 @@ function desaPont(){
     nom:$('#nom').value.trim(),rol:$('#rol').value,mail:$('#mail').value.trim(),
     tel:$('#tel').value.trim(),carrec:$('#carrec').value.trim(),
     org:st.org,orgNom:$('#orgNom').value.trim(),
+    web:$('#web').value.trim(),dediqueu:$('#dediqueu').value.trim(),
     municipi:$('#municipi').value.trim(),comarca:$('#comarca').value.trim()}));}catch(e){}
 }
 function llegeixPont(){
   try{const r=localStorage.getItem(PONT);if(!r)return;const d=JSON.parse(r);
-    ['nom','rol','mail','tel','carrec','orgNom','municipi','comarca'].forEach(k=>{
+    ['nom','rol','mail','tel','carrec','orgNom','web','dediqueu','municipi','comarca'].forEach(k=>{
       const el=$('#'+k);if(el&&d[k])el.value=d[k];});
     if(d.org){const b=$$('#orgType .opt').find(x=>x.dataset.v===d.org);
-      if(b){b.classList.add('on');st.org=d.org;}}
+      if(b){b.classList.add('sel');st.org=d.org;}}
   }catch(e){}
 }
 
@@ -440,15 +445,19 @@ function validate(n){
   return true;
 }
 
+/* La classe és `sel` i no `on`: aquí `on` vol dir una altra cosa —la barra de
+   progrés i els missatges d'error— i el CSS d'aquesta casa pinta `.opt.sel`.
+   Amb `on` el botó quedava triat de debò i **no es veia**, que és la pitjor
+   manera de fallar: el formulari funcionava i semblava que no. */
 $$('#orgType .opt').forEach(b=>b.onclick=()=>{
-  $$('#orgType .opt').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');st.org=b.dataset.v;});
+  $$('#orgType .opt').forEach(x=>x.classList.toggle('sel',x===b));
+  st.org=b.dataset.v;});
 
 /* En triar objectiu s'obre el bloc que toca i es tanca l'altre. És l'única
    cosa que fa aquest pas, i és tot el que ha de fer. */
 $$('#objTipus .opt').forEach(b=>b.onclick=()=>{
-  $$('#objTipus .opt').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');st.obj=b.dataset.v;
+  $$('#objTipus .opt').forEach(x=>x.classList.toggle('sel',x===b));
+  st.obj=b.dataset.v;
   const preg=b.dataset.preg;
   $('#qFormat').hidden=preg!=='format';
   $('#qDolor').hidden=preg!=='dolor';
@@ -508,8 +517,9 @@ function buildSummary(d){
     'Nom: '+v('nom'),'Rol: '+(ROL_NOM[v('rol')]||v('rol')),'Càrrec: '+v('carrec'),
     'Correu: '+v('mail'),'Telèfon: '+v('tel'),'',
     '── D\'ON ──',
-    'Tipus: '+d.org,'Organització: '+v('orgNom'),'Municipi: '+v('municipi'),
-    'Comarca: '+v('comarca'),'Persones: '+v('persones'),'',
+    'Tipus: '+d.org,'Organització: '+v('orgNom'),'Web: '+v('web'),
+    'A què es dediquen: '+v('dediqueu'),
+    'Municipi: '+v('municipi'),'Comarca: '+v('comarca'),'Persones: '+v('persones'),'',
     '── QUÈ VOL ──',
     'Objectiu: '+d.O.t,
     'Paquets que hi encaixen: '+d.paq.map(p=>p.nom).join(', ')];
@@ -526,6 +536,7 @@ function buildJson(d){
   return{generatedAt:new Date().toISOString(),tipus:'organitzacio',
     persona:{nom:v('nom'),rol:v('rol'),carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
     organitzacio:{tipus:d.org,sector:ORG_SECTOR[d.org]||'',nom:v('orgNom'),
+      web:v('web'),dediqueu:v('dediqueu'),
       municipi:v('municipi'),comarca:v('comarca'),persones:v('persones')},
     vol:{objectiu:d.obj,objectiuNom:d.O.t,paquets:d.paq.map(p=>p.id),
       format:$('#qFormat').hidden?null:{participants:v('participants'),quan:v('quan'),lloc:v('lloc'),dins:v('dins')},
@@ -559,7 +570,8 @@ $('#bNet').onclick=async()=>{
   const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
   const dades={'form-name':'diagnostic-org','bot-field':'',
     nom:v('nom'),mail:v('mail'),tel:v('tel'),carrec:v('carrec'),rol:v('rol'),
-    org:current.org,orgNom:v('orgNom'),municipi:v('municipi'),persones:v('persones'),
+    org:current.org,orgNom:v('orgNom'),web:v('web'),dediqueu:v('dediqueu'),
+    municipi:v('municipi'),persones:v('persones'),
     objectiu:current.O.t,termini:current.termini,decideix:current.decideix,
     resum:buildSummary(current)};
   const cos=Object.keys(dades).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(dades[k])).join('&');

@@ -78,6 +78,64 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### Un CRM que s'actualitza sol · Zoho o el nostre, i què bloqueja cadascun
+
+**Demanat per l'Àlvar (28/09/2026):** «integra'm amb Zoho o tenir muntat un
+excel·lent CRM autoactualitzable en la seva màxima expressió», i **analitzar
+amb IA qui és el lead a partir del seu web** per segmentar-ne el potencial de
+venda.
+
+**Què ja hi és (fet el mateix dia):** el formulari demana **el web i a què es
+dediquen**, viatgen al resum, al JSON i al pont; i `crm.html` calcula el
+`potencial` —alt / mitjà / baix— **amb els motius escrits al costat**, perquè
+un número sol no diu si el truques per pressa o per tipus, i són dues trucades
+diferents.
+
+**El que falta, i el mur que hi ha al mig.** Les tres coses demanades
+—llegir el seu web, mantenir-se al dia sol, i parlar amb Zoho— **xoquen totes
+amb el mateix**: `crm.html` és una pàgina que s'obre al navegador i no té
+servidor.
+
+| El que es vol | Per què no es pot des d'aquí |
+|---|---|
+| Llegir el web del lead | El navegador **no pot llegir un altre domini** (CORS). I el model tampoc navega: si li passem una URL, el que en dirà serà inferit del nom, no llegit |
+| Actualitzar-se sol | Sense res corrent al servidor, només s'actualitza quan algú obre la pestanya |
+| Escriure a Zoho | La seva API demana un `client_secret` i un refresc de token. **Una clau dins d'un HTML públic és una clau regalada** |
+
+**La sortida, i és una de sola:** una **funció serverless a Netlify** —ja hi som
+allotjats— que faci les tres coses amb les claus al seu costat: rebre
+l'enviament del formulari, buscar el web, demanar a l'IA la lectura, i empènyer
+la fitxa cap a Zoho o cap al nostre magatzem.
+
+**Ordre que proposo**, i el primer és el que més val i menys costa:
+
+1. **Enriquiment amb IA a petició** (mig dia). Una funció que rep una URL, en
+   baixa el text visible i el passa a un intent com els set d'entregables, amb
+   els mateixos frens: no pot inventar, marca el que no ha trobat, i **diu
+   d'on ho ha tret**. Retorna sector, mida aparent i una lectura de potencial
+   **com a hipòtesi**, no com a dada. Al CRM, un botó per lead.
+2. **La ingesta automàtica** (mig dia). Avui el camí és enganxar el correu o el
+   JSON a mà. Netlify Forms ja rep l'enviament del diagnòstic: la mateixa funció
+   pot deixar-lo escrit sense que ningú enganxi res.
+3. **Zoho, o no** (un dia, i primer la decisió). Zoho aporta l'embut, les
+   plantilles i l'app de mòbil. Costa que les dades dels vostres leads passen
+   a viure a un tercer, que és exactament el contrari del que ven aquesta casa
+   a tota la resta de pantalles. **Això no ho decideix el codi.** Si la resposta
+   és Zoho, la funció escriu allà i `crm.html` passa a ser una vista; si és que
+   no, el que falta al nostre és poc: recordatoris, historial de converses i una
+   exportació que Zoho pugui llegir el dia que canviï la resposta.
+
+**Els dos frens que no es negocien**, i venen escrits d'abans:
+
+- **Cap clau al client.** Ni de Zoho ni de l'IA. Van a les variables d'entorn
+  de la funció (veda de sempre: el `service_role` no surt mai del servidor).
+- **El que la IA en digui és una hipòtesi i s'etiqueta com a tal.** Un
+  «potencial alt» inferit d'un domini, posat al costat d'un potencial calculat
+  de dades reals, es llegeix igual —i llavors ja no se sap què és què. Vedes
+  156 i 158: una estimació no entra mai on s'espera una dada.
+
+---
+
 ### El diagnòstic d'organització · fet (28/09/2026)
 
 **Demanat per l'Àlvar (28/09/2026).** `SOS/diagnostic.html` és el **diagnòstic

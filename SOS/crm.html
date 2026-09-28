@@ -52,6 +52,8 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--indigo)}
 .b-ok{color:var(--green);border-color:var(--green)}
 .l-body{font-size:.83rem;color:var(--light);line-height:1.5;margin:.4rem 0}
 .l-body em{color:var(--muted);font-style:normal}
+.l-body a{color:var(--indigo,#6366f1)}
+.pt-alt{color:#00e676}.pt-mitja{color:#ff9100}.pt-baix{color:#82828d}
 .l-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.5rem}
 .l-row select,.l-row input{flex:1;min-width:130px}
 .empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
@@ -231,6 +233,7 @@ function fromJson(o){
     mena:esOrg?'organitzacio':'territori',
     nom:p.nom||'',carrec:p.carrec||'',email:p.email||'',telefon:p.telefon||'',
     orgTipus:g.tipus||'',orgPerfil:g.perfil||'',orgNom:g.nom||'',municipi:g.municipi||'',comarca:g.comarca||'',
+    web:g.web||'',dediqueu:g.dediqueu||'',
     poblacio:g.poblacio||null,persones:g.persones||null,
     recursos:t.recursos||[],serveis:t.serveis||[],experiencia:t.experiencia||'',
     necessitats,repte,
@@ -280,25 +283,44 @@ function parseAny(txt){
 /* ── Prioritat · qui val la pena trucar primer ───────────────────────
    Molta necessitat i poc recorregut = més urgent. Amb pressupost o
    termini curt, encara més. No és una ciència: és un ordre de trucades. */
-function priority(l){
-  let p=0;
-  if(l.support!=null)p+=l.support/20;
-  if(l.maturity!=null)p+=(100-l.maturity)/25;
-  if(l.termini&&/urgent/i.test(l.termini))p+=3;
-  if(l.pressupost&&/(assignada|mitja|subvenci)/i.test(l.pressupost))p+=2;
-  if((l.necessitats||[]).length>=4)p+=1;
-  if(['ajuntament','comarcal','acompanyament'].includes(l.orgTipus))p+=1.5;
-  /* El diagnòstic d'organització no dona maduresa ni suport —no en calcula—,
-     així que puntuaria gairebé zero i quedaria al final de la llista. El que
-     sí que dona són les dues coses que més decideixen si això avança: si hi ha
-     data i si qui ho omple pot dir que sí. */
-  if(l.termini==='data')p+=3;
-  if(l.quiDecideix==='jo')p+=2.5;
-  else if(l.quiDecideix==='jojunt')p+=1.5;
-  else if(l.quiDecideix==='client')p+=1;
-  if((l.paquets||[]).length)p+=1;
-  return Math.round(p*10)/10;
+/* ══ EL POTENCIAL, I PER QUÈ ═════════════════════════════════════════════
+   Abans això tornava un número i prou. Un número sol no serveix per decidir a
+   qui truques primer: si diu 6,5 no saps si és perquè tenen pressa o perquè
+   són un ajuntament, i les dues coses demanen trucades diferents.
+
+   Ara torna els punts **i els motius**, i la pantalla els ensenya. La regla que
+   ho ordena: cada línia que suma ha de poder-se llegir en veu alta a algú que
+   pregunti «i per què l'has trucat a ell abans?».
+
+   El que NO puntua: la mida de l'organització ni el seu sector. Una pime amb
+   data i decisió avança més que una multinacional que està explorant, i
+   confondre gran amb probable és l'error més car d'un embut. */
+function potencial(l){
+  const per=[];let p=0;
+  const suma=(n,q)=>{p+=n;per.push(q);};
+  // El que ve del diagnòstic del territori: com de sol està i com de verd és.
+  if(l.support!=null&&l.support>=60)suma(l.support/20,'demana prou suport ('+l.support+')');
+  else if(l.support!=null)p+=l.support/20;
+  if(l.maturity!=null&&l.maturity<40)suma((100-l.maturity)/25,'encara molt verd ('+l.maturity+')');
+  else if(l.maturity!=null)p+=(100-l.maturity)/25;
+  // I el que ve del d'organització, que no calcula ni maduresa ni suport.
+  if(l.termini==='data'||/urgent/i.test(l.termini||''))suma(3,'ja té data');
+  else if(l.termini==='curs')suma(.5,'per a aquest curs');
+  if(l.quiDecideix==='jo')suma(2.5,'qui ho ha omplert pot dir que sí');
+  else if(l.quiDecideix==='jojunt')suma(1.5,'decideix amb una altra persona');
+  else if(l.quiDecideix==='client')suma(1,'ho revèn a un client seu');
+  else if(l.quiDecideix==='comite')suma(.5,'ho ha d\'aprovar un comitè');
+  if(l.pressupost&&/(assignada|mitja|subvenci)/i.test(l.pressupost))suma(2,'té d\'on treure els diners');
+  if((l.paquets||[]).length)suma(1,'ja sap què vol');
+  if((l.necessitats||[]).length>=4)suma(1,'té quatre coses o més obertes');
+  if(['ajuntament','comarcal','acompanyament'].includes(l.orgTipus))suma(1.5,'compra d\'aquest tipus sovint');
+  /* Saber qui són no puntua, però sí que es diu: és el que fa que la trucada
+     no comenci per «i vosaltres a què us dediqueu?». */
+  if(l.web||l.dediqueu)per.push('sabem qui són');
+  const punts=Math.round(p*10)/10;
+  return{punts,per,nivell:punts>=6?'alt':(punts>=3?'mitjà':'baix')};
 }
+function priority(l){return potencial(l).punts;}
 
 let LEADS=[],filter='',query='';
 
@@ -329,11 +351,11 @@ function paint(){
     return;
   }
   $('#list').innerHTML=rows.map(l=>{
-    const pr=priority(l);
+    const pt=potencial(l),pr=pt.punts;
     return '<div class="lead s-'+esc(l.stage)+'" data-id="'+esc(l.id)+'">'+
       '<div class="l-hd"><div><div class="l-nm">'+esc(l.nom||'(sense nom)')+(l.carrec?' <span class="l-org">· '+esc(l.carrec)+'</span>':'')+'</div>'+
         '<div class="l-org">'+esc(l.orgNom||l.orgPerfil||'—')+(l.municipi?' · '+esc(l.municipi):'')+(l.comarca?' ('+esc(l.comarca)+')':'')+'</div></div>'+
-        '<div class="l-meta">'+relTime(l.createdAt)+'<br>prioritat '+pr+'</div></div>'+
+        '<div class="l-meta">'+relTime(l.createdAt)+'<br>potencial <b class="pt-'+pt.nivell.replace('à','a')+'">'+pt.nivell+'</b> ('+pr+')</div></div>'+
       '<div class="l-badges">'+
         (l.maturity!=null?'<span class="b">partida '+l.maturity+'%</span>':'')+
         (l.support!=null?'<span class="b'+(l.support>=60?' b-hot':'')+'">suport '+l.support+'%</span>':'')+
@@ -342,6 +364,14 @@ function paint(){
         (l.email?'<span class="b b-ok">'+esc(l.email)+'</span>':'')+
         (l.telefon?'<span class="b">'+esc(l.telefon)+'</span>':'')+
       '</div>'+
+      ((l.web||l.dediqueu)?'<div class="l-body"><em>Qui són:</em> '+
+        (l.dediqueu?esc(l.dediqueu):'')+
+        (l.web?' <a href="'+esc(/^https?:/.test(l.web)?l.web:'https://'+l.web)+'" target="_blank" rel="noopener noreferrer">'+esc(l.web)+'</a>':'')+'</div>':'')+
+      /* Els motius del potencial, escrits. Un número sol no diu si el truques
+         perquè té pressa o perquè és d'un tipus que compra sovint, i són dues
+         trucades diferents. */
+      (pt.per.length?'<div class="l-body"><em>Per què:</em> '+pt.per.map(esc).join(' · ')+'</div>':'')+
+      (l.objectiuNom?'<div class="l-body"><em>Vol:</em> '+esc(l.objectiuNom)+'</div>':'')+
       (l.repte?'<div class="l-body">“'+esc(l.repte)+'”</div>':'')+
       (l.primerPas?'<div class="l-body"><em>Primer pas suggerit:</em> '+esc(l.primerPas)+'</div>':'')+
       ((l.itinerari||[]).length?'<div class="l-body"><em>Itinerari:</em> '+l.itinerari.map(m=>esc(String(m).toUpperCase())).join(' · ')+'</div>':'')+
@@ -413,8 +443,9 @@ $('#restoreInput').onchange=async e=>{
   }catch(err){say('#opMsg','No s\'ha pogut llegir la còpia.',false);}
 };
 $('#btnCsv').onclick=()=>{
-  const cols=['createdAt','mena','stage','nom','carrec','email','telefon','orgTipus','orgPerfil','orgNom','municipi','comarca','objectiuNom','paquets','quiDecideix','format','maturity','support','termini','pressupost','repte','assignat','proximaAccio','nota'];
-  const csv=[cols.join(',')].concat(LEADS.map(l=>cols.map(c=>'"'+String(l[c]==null?'':l[c]).replace(/"/g,'""')+'"').join(','))).join('\n');
+  const cols=['createdAt','mena','stage','nom','carrec','email','telefon','orgTipus','orgPerfil','orgNom','web','dediqueu','municipi','comarca','objectiuNom','paquets','quiDecideix','format','potencial','potencialPer','maturity','support','termini','pressupost','repte','assignat','proximaAccio','nota'];
+  const ampl=l=>{const t=potencial(l);return Object.assign({},l,{potencial:t.nivell+' ('+t.punts+')',potencialPer:t.per.join(' · ')});};
+  const csv=[cols.join(',')].concat(LEADS.map(ampl).map(l=>cols.map(c=>'"'+String(l[c]==null?'':l[c]).replace(/"/g,'""')+'"').join(','))).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='crm-teamtowers-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);say('#opMsg','CSV exportat.',true);
@@ -427,7 +458,7 @@ $('#btnWipe').onclick=async()=>{
 };
 
 load();
-window.__CRM={parseAny,fromJson,fromEmail,priority,STAGES,dbAll,dbPut,dbClear,load,get leads(){return LEADS;}};
+window.__CRM={parseAny,fromJson,fromEmail,priority,potencial,STAGES,dbAll,dbPut,dbClear,load,get leads(){return LEADS;}};
 </script>
 </body>
 </html>

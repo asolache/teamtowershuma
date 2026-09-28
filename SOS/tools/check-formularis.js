@@ -159,6 +159,35 @@ for (const [nom, src] of [['territori', dx], ['pressupost', pr], ['la tria', TRI
   else ok('i si falla es diu, i el diagnòstic es té igualment');
 })();
 
+/* ── 3c · El que es tria s'ha de VEURE que s'ha triat ─────────────────────
+   Un formulari on prems una casella i no passa res visible no sembla trencat:
+   sembla que no funciona. I és pitjor que trencat, perquè la tria sí que es
+   desa —la persona no ho sap i torna a prémer, o se'n va.
+
+   Va passar al diagnòstic d'organització: marcava amb `.on` i el CSS d'aquesta
+   casa pinta `.opt.sel` i `.chip.sel`. Cap prova ho veia, perquè totes miren
+   l'estat i no el color.
+
+   La guarda mira les dues puntes: quina classe posa el JavaScript en clicar, i
+   si aquella classe existeix al CSS de la mateixa pàgina. */
+for (const [nom, src] of FORMS) {
+  /* Es mira LA MATEIXA LÍNIA i no un tros de context: `on` també marca la
+     barra de progrés i els missatges d'error, i amb una finestra de dos-cents
+     caràcters aquelles crides es colaven i la guarda acusava codi correcte.
+     Una guarda que acusa el que està bé ensenya a desconfiar-ne. */
+  const marca = new Set();
+  src.split('\n').forEach(linia => {
+    if (!/\.(opt|chip)\b|#(orgType|objTipus|have|serveis|need)/.test(linia)) return;
+    for (const m of linia.matchAll(/classList\.(?:add|toggle)\('([\w-]+)'/g)) marca.add(m[1]);
+  });
+  const sensePintar = [...marca].filter(c =>
+    !new RegExp('\\.(opt|chip)\\.' + c + '\\b').test(src));
+  if (!marca.size) bad(`al ${nom} no es veu quina classe marca el que es tria`);
+  else if (sensePintar.length)
+    bad(`al ${nom} es marca amb «${sensePintar.join(', ')}» i el CSS no la pinta — la tria es desa i no es veu, que sembla que no funcioni`);
+  else ok(`al ${nom} el que es tria es marca amb «${[...marca].join(', ')}» i el CSS ho pinta`);
+}
+
 /* ── 4 · El pressupost no publica el que la portada amaga ─────────────────
    Els paquets sense xifra al catàleg no poden tenir-ne una al formulari: el que
    es decideix una vegada no es pot desfer des d'una altra pantalla. Veda 140. */

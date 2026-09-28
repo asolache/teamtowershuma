@@ -131,6 +131,30 @@ await p.close();
   await c.close();
 }
 
+/* ── 5b · El que es tria es VEU que s'ha triat ──────────────────────────── */
+console.log('\n5b · El que es tria es veu');
+{
+  const v = await b.newPage();
+  v.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+  await v.goto(url('diagnostic-org.html'));
+  await v.waitForFunction(() => window.__DXORG);
+  /* Es mira el COLOR i no la classe: el defecte era justament que la classe
+     hi era i el CSS no la pintava, i una prova que mirés l'estat hauria
+     passat igual mentre a la pantalla no passava res. */
+  const marca = await v.evaluate(() => {
+    const mir = sel => {
+      const e = document.querySelector(sel);
+      const abans = getComputedStyle(e).borderColor;
+      e.click();
+      return { canvia: getComputedStyle(e).borderColor !== abans, sel: e.classList.contains('sel') };
+    };
+    return { org: mir('#orgType .opt'), obj: mir('#objTipus .opt') };
+  });
+  ok(marca.org.canvia && marca.org.sel, 'el tipus d\'organització es marca i es veu');
+  ok(marca.obj.canvia && marca.obj.sel, 'i l\'objectiu també');
+  await v.close();
+}
+
 /* ── 6 · El text pla porta les seccions noves ───────────────────────────── */
 console.log('\n6 · El resum manté el contracte de seccions');
 ['── QUI ──', '── D\'ON ──', '── QUÈ VOL ──', '── QUI DECIDEIX ──', '── DIAGNÒSTIC ──']

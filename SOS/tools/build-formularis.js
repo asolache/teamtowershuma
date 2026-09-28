@@ -161,6 +161,10 @@ ${ops}
 </div>
 <div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
+<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+</div>
+<div class="grid2">
 <div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
 <div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
@@ -217,18 +221,47 @@ const PAQ_NOM={${noms}};`;
 /* Els camps que determinen el preu dels dos paquets sense xifra publicada.
    Es pregunten, no s'endevinen: són exactament les tres coses que el mapa de
    cost necessita i que una pàgina no pot saber. */
+/* ── El bloc de mida · cada pregunta diu de quin paquet és ───────────────
+   Fins ara sortien totes tres sempre, i «alçada de la demostració» demanava
+   de quants pisos el vols a qui havia marcat una formació d'equips. Una
+   pregunta que no ve a tomb no és només soroll: fa dubtar de si has triat bé
+   el que havies triat.
+
+   Cada camp declara a quins paquets serveix, i el formulari només ensenya els
+   que toquen. Els ids es comproven contra el catàleg, que si no, el dia que un
+   paquet canviï de nom el camp deixaria de sortir mai i ningú ho notaria. */
+const CAMPS_MIDA = [
+  { id: 'participants', per: ['fent-pinya', 'demos', 'produccio', 'comu-diada'] },
+  { id: 'alcada', per: ['demos'] },
+  { id: 'lloc', per: ['fent-pinya', 'demos', 'produccio', 'comu-diada'] }
+];
+const midaPer = id => (CAMPS_MIDA.find(c => c.id === id) || { per: [] }).per.join(' ');
+
 function blocMida() {
   return `<div class="grid2">
-<div class="f"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Per al taller «Fent Pinya». Marca la diferència més gran del pressupost.</div></div>
-<div class="f"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
-<option value="">— No en demano —</option>
+<div class="f" data-mida-per="${midaPer('participants')}"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Marca la diferència més gran del pressupost.</div></div>
+<div class="f" data-mida-per="${midaPer('alcada')}"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
+<option value="">— tria —</option>
 <option value="4">4 pisos</option>
 <option value="5">5 pisos</option>
 <option value="6">6 pisos</option>
 </select><div class="hint">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
 </div>
-<div class="f"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>`;
+<div class="f" data-mida-per="${midaPer('lloc')}"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
+<p class="hint" id="midaCap" hidden>Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>`;
 }
+
+/* La guarda va aquí i no a `check-formularis.js` perquè el que es comprova és
+   la declaració, i la declaració viu en aquest fitxer. */
+(() => {
+  const ids = PAQUETS.concat(SOS_PAQUETS).map(x => x.id);
+  const orfes = CAMPS_MIDA.flatMap(c => c.per.filter(x => ids.indexOf(x) < 0).map(x => c.id + ' → ' + x));
+  if (orfes.length) {
+    console.error('✗ camps de mida lligats a paquets que no existeixen: ' + orfes.join(', '));
+    console.error('  No petaria: el camp senzillament no sortiria mai.');
+    process.exit(1);
+  }
+})();
 
 const MARQUES = [
   ['<!--FORM-QUI-->', '<!--/FORM-QUI-->', blocQui],
