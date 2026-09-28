@@ -31,7 +31,7 @@ haver —qui reparteix noms mana, i aquesta xarxa no té ningú que mani. La res
 | `@medusa` | La Medusa Andaluza | **encara no** |
 | `@barbamuda` | Barbamuda | **encara no** |
 | `@aviador` | El Aviador | **encara no** |
-| `@afrodito` | Afrodito | **encara no** |
+| `@afrodita` | Afrodita | **encara no** |
 | `@electroplasman` | Electroplasman | **encara no** |
 | `@pigmenton` | Pigmentón | **encara no** |
 | `@reciclator` | Reciclator | **encara no** |

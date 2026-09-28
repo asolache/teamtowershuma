@@ -131,7 +131,12 @@ const DECORAT = { href: 'molekulandia.html', t: 'Molekulandia',
 
    Els URL van sense el `?si=…` amb què els comparteix YouTube: és un
    identificador de qui ha compartit l'enllaç i no fa cap falta per veure el
-   vídeo. */
+   vídeo.
+
+   `soundcloud` és opcional i **no és un segon enllaç**: és la mateixa peça a
+   l'altra casa. Hi és perquè molekulon.org pugui reproduir-la sense treure el
+   visitant de la pàgina, cosa que un mp3 allotjat aquí ja fa i un vídeo de
+   YouTube també. Una peça pot tenir les dues adreces i seguir sent una. */
 const VIDEOS = [
   { id: 'capitols', mena: 'llista', qui: [], titol: 'Els capítols del Comando',
     d: 'La sèrie sencera. A cada capítol es presenta un superheroi i un supervilà del Mundo Muerto.',
@@ -151,7 +156,7 @@ const VIDEOS = [
     d: 'El node central que creua informació entre parts que no es parlaven.',
     url: 'https://youtu.be/5FAvOvi2P30' },
   { id: 'bomba-disco', mena: 'videoclip', qui: ['Guiri-Guay', 'Flying Frog'], titol: 'La Bomba Disco',
-    d: 'El tema que trenca la cuirassa d\'Afrodito, per Guiri-Guay i Flying Frog.',
+    d: 'El tema que trenca la cuirassa d\'Afrodita, per Guiri-Guay i Flying Frog.',
     url: 'https://youtu.be/JsEAeiQ-fc0' },
   { id: 'flying-frog', mena: 'videoclip', qui: ['Flying Frog'], titol: 'Flying Frog',
     d: 'La que posa el color al còmic del Comando.', url: 'https://youtu.be/WfpclzQod2g' },
@@ -166,7 +171,16 @@ const VIDEOS = [
 
   /* ── Temes ────────────────────────────────────────────────────────────── */
   { id: 'horacio-tema', mena: 'tema', qui: ['Horacio Motomachi'], titol: 'El tema d\'Horacio Motomachi',
-    d: 'La cançó sencera, allotjada aquí. Sona també a la intro.', url: 'media/comando-horacio.mp3' },
+    d: 'La cançó sencera, allotjada aquí. Sona també a la intro.', url: 'media/comando-horacio.mp3',
+    soundcloud: 'https://on.soundcloud.com/qc8BDojtp4X1P9jePM' },
+  /* La peça que dona el missatge del projecte: que qui es pensa que no és ningú
+     ja va guanyar una cursa de dos-cents milions abans de néixer. És el pla 1 de
+     la intro dit en cançó, i és el tema que sona a la pàgina on el còmic ho
+     explica —la cançó hi neix, a la vinyeta. */
+  { id: 'mazinguer-tema', mena: 'tema', qui: ['Mazinguer'], titol: 'Espermatozoide soy',
+    d: 'El missatge que encén el Comando: ja vas guanyar una cursa de dos-cents milions, i per això ets aquí.',
+    url: 'https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx',
+    soundcloud: 'https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx' },
   { id: 'guiriguay-tema', mena: 'tema', qui: ['Guiri-Guay'], titol: 'El tema del Guiri-Guay',
     d: 'Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup.',
     url: 'https://youtu.be/Q15My_6qb4A' },
@@ -287,10 +301,10 @@ const INTRO = {
       img: 'Purpleman sortint d\'entre nebuloses i gasos tòxics.',
       veu: 'Purpleman surt dels gasos tòxics amb el seu raig eliminador, i allò passa a fer olor de flor i d\'amor.',
       retol: null },
-    { n: 5, s: 8, titol: 'L\'abric de cuir', de: 'bomba-disco', qui: ['Afrodito', 'Guiri-Guay', 'Flying Frog'], tall: true,
+    { n: 5, s: 8, titol: 'L\'abric de cuir', de: 'bomba-disco', qui: ['Afrodita', 'Guiri-Guay', 'Flying Frog'], tall: true,
       canon: 'abric de cuir',
-      img: 'El Bar Andrés. Afrodito sota un abric pesat. Sona la Bomba Disco i la cuirassa es trenca.',
-      veu: 'Afrodito s\'amaga sota un abric de cuir per protegir-se del Mundo Muerto. Fins que sona la Bomba Disco. El que el destapa no és una xerrada: és un fet.',
+      img: 'El Bar Andrés. Afrodita sota un abric pesat. Sona la Bomba Disco i la cuirassa es trenca.',
+      veu: 'Afrodita s\'amaga sota un abric de cuir per protegir-se del Mundo Muerto. Fins que sona la Bomba Disco. El que el destapa no és una xerrada: és un fet.',
       retol: null },
     { n: 6, s: 6, titol: 'I la banda toca de debò', de: 'directe-floresta', qui: [], tall: false,
       canon: null,

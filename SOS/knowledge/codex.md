@@ -83,7 +83,7 @@ gestió comunitària i no en un fullet a part).
 | **Horacio Motomachi** | Còmic 1 | Rep l'encàrrec i converteix l'experiència en relat | La visió de conjunt: qui sap explicar cap on va tot |
 | **Guiri-Guay** | Còmic 1 | Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup | Qui té cura de l'equip i cura les friccions abans que es podreixin |
 | **Purpleman** | Còmic 1 | Entra als gasos tòxics i els torna benestar; les males olors, flors | Qui absorbeix la toxicitat de l'ambient i la torna clima |
-| **Afrodito** | Còmic 1 | Holometabolisme: la música li trenca l'armadura que el mantenia alienat | El talent amagat que només necessita un lloc segur |
+| **Afrodita** | Còmic 1 | Holometabolisme: la música li trenca l'armadura que el mantenia alienat | El talent amagat que només necessita un lloc segur |
 | **El Aviador** | Còmic 1 | Orientació i rescat in extremis: apareix quan l'equip s'ha perdut | L'executor hiperespecialitzat que desencalla projectes |
 | **Pigmentón** | Còmic 1 | Assigna identitats; il·lumina fins i tot els forats negres | Qui dibuixa la xarxa i dona a cadascú el color que li toca |
 | **La Medusa Andaluza** | Còmic 1 | Sincronització i fusió cultural: dona llum interconnectant el grup | El node central que creua informació entre parts que no es parlaven |
@@ -2609,17 +2609,27 @@ Dues coses, doncs:
   propi: el camp `on`. Que un personatge visqui en un vídeo no el fa menys real
   (veda 109), però barrejar-ho tampoc.
 
-I la correcció que ho va destapar va anar i va tornar, que és el que la fa
-valer la pena escriure. El roster deia **Afrodito**; l'autor va demanar
-**Afrodita** i es va canviar a tot arreu i el nom vell va anar a la llista
-negra; després l'autor va tornar a **Afrodito**, i s'ha desfet.
+I la correcció que ho va destapar ha anat i ha tornat **tres vegades**, que és
+el que la fa valer la pena escriure. El roster deia «Afrodito»; l'autor va
+demanar «Afrodita» i es va canviar a tot arreu; després va tornar a «Afrodito»
+i es va desfer; i el 2026-09-28 l'autor ho ha tancat: **es diu Afrodita**, i
+la raó que abans semblava impedir-ho ell la desmunta en una frase —*«el de la
+llista del Comando és Afrodita, la deessa del panteó és Afrodita, són
+diferents»*.
 
-No és un anar i venir inútil. La passa intermèdia va deixar l'heroi i la deessa
-grega del panteó de 12 **amb el mateix nom**, i el codi els tenia com a dues
-llistes diferents. La «-o» final no és una grafia: és el que impedeix
-confondre'ls. I la conseqüència pràctica: **«Afrodita» no pot anar a la llista
-negra general**, perquè a l'app la deessa hi és amb tot el dret. Va a una llista
-a part, que només s'aplica a les pàgines públiques, on la deessa no hi pinta res.
+I té raó, i val la pena entendre per què. El que la passa intermèdia havia
+deixat no era una confusió del **programa**: `CANONICAL_HEROES` i el panteó de
+12 són dues llistes que el codi no creua mai, i el mapa heroi→déu
+(`hero:'Afrodita', god:'afrodita'`) és el pont explícit entre les dues i no un
+accident. La «-o» final servia per no confondre **una persona llegint**, i
+aquesta és una decisió d'autor i no de codi. La conseqüència pràctica s'ha
+girat: ara el nom vell és «Afrodito», que no té cap ús legítim enlloc i va a la
+llista negra general; i la llista a part que només mirava les pàgines públiques
+**s'ha pogut esborrar**, perquè existia només per aquesta excepció.
+
+El que això deixa escrit per al pròxim cop: **una guarda que protegeix una
+distinció que l'autor no vol, protegeix un error.** La consistència es pot
+automatitzar; quin nom és el bo, no.
 
 El que queda per damunt de tot és el de sempre: cap guarda pot dir si un nom és
 el bo. La consistència es pot automatitzar, la veritat no (veda 109). El que sí
