@@ -135,6 +135,10 @@ function blocObjectius() {
 
 function blocDades() {
   const objs = OBJECTIUS.map(o => `'${o.id}':{t:'${o.t.replace(/'/g, "\\'")}',preg:'${o.preguntes}',` +
+    /* `diu` és com ho diria qui truca. Va al resultat sota el títol quan no
+       ha escrit res al camp lliure: el diagnòstic ha de començar tornant-li
+       el que ens ha dit, i no repetint el titular. */
+    `diu:'${o.diu.replace(/'/g, "\\'")}',` +
     `paq:[${o.paquets.map(p => `'${p}'`).join(',')}],` +
     (o.despres ? `despres:[${o.despres.map(p => `'${p}'`).join(',')}],` : '') +
     `llegim:'${o.llegim.replace(/'/g, "\\'")}'}`).join(',\n  ');

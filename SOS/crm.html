@@ -228,7 +228,10 @@ function fromJson(o){
   /* El que a un li és «què necessita» a l'altre és «què vol que passi»: es
      guarda a la mateixa columna perquè la pantalla és una sola. */
   const necessitats=esOrg?(v.objectiuNom?[v.objectiuNom]:[]):(n.items||[]);
-  const repte=esOrg?[(v.dolor||{}).provat,(v.dolor||{}).soste].filter(Boolean).join(' · '):(n.repte||'');
+  /* El camp lliure va primer perquè és l'únic escrit amb les seves paraules:
+     les sis caselles són les nostres. Qui ve amb una barreja ho explica allà,
+     i si es perdés aquí el lead arribaria dient només l'etiqueta que va triar. */
+  const repte=esOrg?[v.ampliacio,(v.dolor||{}).provat,(v.dolor||{}).soste].filter(Boolean).join(' · '):(n.repte||'');
   return{id:uid(),createdAt:o.generatedAt||new Date().toISOString(),source:'json',
     mena:esOrg?'organitzacio':'territori',
     nom:p.nom||'',carrec:p.carrec||'',email:p.email||'',telefon:p.telefon||'',

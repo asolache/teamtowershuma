@@ -36,17 +36,37 @@
  * fonts de Google passen de llarg: una resposta d'IA guardada i servida més
  * tard seria una resposta a una pregunta que ja no es va fer.
  */
-const CAU = 'sos-v1';
+/* El nom de la còpia el genera `SOS/tools/build-sw.js` i és una empremta del
+   contingut de les pàgines. `activate` esborra tota còpia que no es digui com
+   aquesta, o sigui que canviar una pàgina caduca la còpia sencera sola.
+
+   Escrit a mà no es va tocar mai, i el resultat era el defecte pitjor d'aquest
+   fitxer: obrir una pàgina arreglada i seguir veient la trencada. */
+const CAU = 'sos-9feed85695';
 
 /* Només el que és nostre i és estàtic. Es demana de fons en instal·lar perquè
    la segona pàgina que obri algú ja hi sigui, i si alguna falla no es cancel·la
    la instal·lació: una pàgina que encara no existeix no ha de deixar l'app
    sense memòria cau. */
+/*SW-PORTA*/
 const PORTA = [
-  './', './index.html', './vna.html', './matriu.html', './diagnostic.html',
-  './banc-temps.html', './biblioteca.html', './compra.html', './energia.html',
-  './habitatge.html', './formacio.html', './intro.html', './molekulandia.html'
+  './',
+  './index.html',
+  './vna.html',
+  './matriu.html',
+  './diagnostic.html',
+  './diagnostic-org.html',
+  './diagnostic-territori.html',
+  './banc-temps.html',
+  './biblioteca.html',
+  './compra.html',
+  './energia.html',
+  './habitatge.html',
+  './formacio.html',
+  './intro.html',
+  './molekulandia.html'
 ];
+/*/SW-PORTA*/
 
 self.addEventListener('install', e => {
   self.skipWaiting();

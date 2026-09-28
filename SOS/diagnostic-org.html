@@ -242,6 +242,16 @@ footer a{color:var(--indigo);text-decoration:none}
 <button type="button" class="opt" data-v="produir" data-preg="format" style="--c:var(--orange)"><span class="o-t">🎪 Produir un esdeveniment sencer</span><span class="o-d">No volem una activitat dins d'un programa: volem que algú ens porti la jornada de cap a peus.</span></button>
 <!--/DX-OBJECTIUS-->
 </div>
+<!-- EL CAMP LLIURE. Les sis caselles són les sis maneres que tenim de
+     respondre, no les sis coses que li poden passar a una organització. Qui
+     ve amb una barreja, o amb un motiu que no hi és, fins ara havia de triar
+     la que menys li mentia i callar la resta.
+
+     Diu clarament que això no entra al càlcul: ho llegim nosaltres. Prometre
+     que un text lliure canvia la proposta seria mentir-li a qui l'escriu. -->
+<div class="f" style="margin-top:1rem"><label for="ampliacio">Amplia-ho, o digue'ns si el motiu és un altre</label>
+<textarea id="ampliacio" name="ampliacio" rows="3" placeholder="p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l'equip no s'ha refet de la fusió»"></textarea>
+<div class="hint">Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.</div></div>
 <p class="err" id="e3">Tria què vols que passi.</p>
 <div class="acts"><button type="button" class="btn btn-g" data-back="2">← Enrere</button><button type="button" class="btn" data-next="4">Següent →</button></div>
 </section>
@@ -256,7 +266,12 @@ footer a{color:var(--indigo);text-decoration:none}
 <div id="qFormat" hidden>
   <div class="grid2">
     <div class="f"><label for="participants">Quanta gent hi serà</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 80"></div>
-    <div class="f"><label for="quan">Quan</label><input type="text" id="quan" name="quan" placeholder="p.ex. 14 de març, o «segon trimestre»"></div>
+    <!-- LA DATA, amb el calendari del telèfon. En text lliure hi arribava «al
+     març», «2n trimestre» i «14/3» barrejats, i cap dels tres es pot comparar
+     amb l'agenda. Si encara no hi ha dia, es deixa en blanc i s'explica al
+     camp lliure del pas anterior: val més un buit honest que una data
+     inventada que després ningú es creu. -->
+<div class="f"><label for="quan">Quin dia</label><input type="date" id="quan" name="quan"><div class="hint">Si encara no està tancat, deixa-ho en blanc.</div></div>
   </div>
   <div class="f"><label for="lloc">On</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. hotel a Sitges, sala interior"><div class="hint">Si és a cobert, l'alçada del sostre decideix què s'hi pot fer.</div></div>
   <div class="f"><label for="dins">Dins d'una jornada o és la jornada</label>
@@ -269,7 +284,7 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <div id="qDolor" hidden>
   <div class="f"><label for="provat">Què heu provat que no va quedar</label><textarea id="provat" name="provat" rows="2" placeholder="p.ex. una formació que va agradar molt i al mes ja no la feia servir ningú"></textarea></div>
-  <div class="f"><label for="sosté">Qui sosté avui el que no és a cap procediment</label><input type="text" id="soste" name="soste" placeholder="p.ex. la responsable d'operacions i una persona de sistemes"><div class="hint">No cal cap nom: el rol n'hi ha prou.</div></div>
+  <div class="f"><label for="soste">Qui sosté avui el que no és a cap procediment</label><input type="text" id="soste" name="soste" placeholder="p.ex. la responsable d'operacions i una persona de sistemes"><div class="hint">No cal cap nom: el rol n'hi ha prou.</div></div>
   <div class="f"><label for="simarxa">I què passaria si aquesta persona marxés demà</label>
     <select id="simarxa" name="simarxa">
       <option value="">— tria —</option>
@@ -351,7 +366,8 @@ footer a{color:var(--indigo);text-decoration:none}
   <input type="hidden" name="form-name" value="diagnostic-org">
   <input name="bot-field"><input name="nom"><input name="mail"><input name="tel"><input name="carrec">
   <input name="rol"><input name="org"><input name="orgNom"><input name="web"><input name="dediqueu"><input name="municipi"><input name="persones">
-  <input name="objectiu"><input name="termini"><input name="decideix"><textarea name="resum"></textarea>
+  <input name="objectiu"><input name="termini"><input name="decideix">
+  <textarea name="ampliacio"></textarea><textarea name="resum"></textarea>
 </form>
 
 <script type="module">
@@ -368,12 +384,12 @@ const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció 
 /*DX-DADES*/
 // Generat per SOS/tools/build-diagnosi-org.js — no ho editis a mà.
 const OBJECTIUS={
-  'obrir':{t:'Obrir una jornada amb alguna cosa que es recordi',preg:'format',paq:['demos','fent-pinya'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on.'},
-  'cohesio':{t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',preg:'format',paq:['fent-pinya','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.'},
-  'mapa':{t:'Entendre com flueix el valor i de qui depenem de debò',preg:'dolor',paq:['mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.'},
-  'sostenir':{t:'Que l\'equip sostingui el que hem muntat quan marxem',preg:'dolor',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.'},
-  'direccio':{t:'Acompanyar la direcció en una decisió que costa',preg:'dolor',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.'},
-  'produir':{t:'Produir un esdeveniment sencer',preg:'format',paq:['produccio','demos'],despres:['transmedia'],llegim:'Producció vol dir guió, proveïdors, permisos i gent a peu de carrer. Es cotitza a mida perquè no hi ha dues jornades iguals.'}
+  'obrir':{t:'Obrir una jornada amb alguna cosa que es recordi',preg:'format',diu:'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.',paq:['demos','fent-pinya'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on.'},
+  'cohesio':{t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',preg:'format',diu:'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',paq:['fent-pinya','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.'},
+  'mapa':{t:'Entendre com flueix el valor i de qui depenem de debò',preg:'dolor',diu:'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',paq:['mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.'},
+  'sostenir':{t:'Que l\'equip sostingui el que hem muntat quan marxem',preg:'dolor',diu:'Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d\'una persona.',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.'},
+  'direccio':{t:'Acompanyar la direcció en una decisió que costa',preg:'dolor',diu:'Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.'},
+  'produir':{t:'Produir un esdeveniment sencer',preg:'format',diu:'No volem una activitat dins d\'un programa: volem que algú ens porti la jornada de cap a peus.',paq:['produccio','demos'],despres:['transmedia'],llegim:'Producció vol dir guió, proveïdors, permisos i gent a peu de carrer. Es cotitza a mida perquè no hi ha dues jornades iguals.'}
 };
 /* Nom, durada i què t'endús de cada paquet, copiats del catàleg pel generador.
    Sense preu a posta: aquest diagnòstic no en diu cap i el preu es parla. */
@@ -426,9 +442,22 @@ function llegeixPont(){
   }catch(e){}
 }
 
+/* ── QUINS PASSOS S'AMAGUEN, I QUIN NO ──────────────────────────────────
+   `$$('.step')` agafava **totes** les caixes amb classe `.step`, i el resultat
+   n'és una: com que no es diu `s1`..`s4`, quedava amagada des del primer
+   `showStep(1)` i no es tornava a ensenyar mai. El diagnòstic es calculava, es
+   pintava i `#result` es posava a `display:block` —amb el pare amagat a sobre.
+   Qui l'omplia arribava al final i no veia res.
+
+   La prova que hi havia mirava `style.display==='block'` i passava verda, que
+   és la manera de fallar que costa més de veure: mirava l'estat d'un element i
+   no si a la pantalla s'hi veia alguna cosa. Ara la prova recorre els passos
+   clicant i demana que el resultat tingui text i alçada de debò.
+
+   L'arreglo és dir de quins passos parlem: els del formulari. */
 function showStep(n){
   pas=n;
-  $$('.step').forEach(s=>s.hidden=s.id!=='s'+n);
+  $$('#dxForm .step').forEach(s=>s.hidden=s.id!=='s'+n);
   $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -485,15 +514,19 @@ function diagnose(){
   else if(dec==='comite')next='Si ho ha d\'aprovar un comitè, la proposta surt amb el que s\'endú cadascú i què en queda escrit, que és el que sol demanar-se a dins.';
   else next='El primer pas és una conversa de mitja hora amb el mapa a la mà. Se surt sabent què es faria i en quin ordre.';
   return{obj:st.obj,O,org:st.org,paq,despres,next,
+    ampliacio:$('#ampliacio').value.trim(),
     nota:ORG_NOTA[st.org]||'',
     termini:term,decideix:dec};
 }
 
 function renderDx(d){
-  const nomOrg=$('#orgNom').value.trim();
+  const nomOrg=$('#orgNom').value.trim(),mun=$('#municipi').value.trim();
   $('#rTitle').textContent=d.O.t;
-  $('#rSeg').textContent=(nomOrg||'La teva organització')+(d.municipi?' · '+d.municipi:'');
-  $('#rLead').textContent=d.O.t;
+  $('#rSeg').textContent=(nomOrg||'La teva organització')+(mun?' · '+mun:'');
+  /* El títol ja diu l'objectiu; repetir-lo aquí era una línia que no aportava.
+     El que hi va és com ho diria qui truca —les seves paraules si n'ha escrit,
+     i si no, les de la casella que ha triat. */
+  $('#rLead').textContent=d.ampliacio||d.O.diu||'';
   $('#rLlegim').textContent=d.O.llegim;
   $('#rNotaOrg').textContent=d.nota;
   $('#rNotaOrg').style.display=d.nota?'':'none';
@@ -505,6 +538,15 @@ function renderDx(d){
       +d.despres.map(p=>fila(p,true)).join(''):'');
   $('#rPreu').textContent='Aquí no hi ha cap xifra a posta: el preu depèn de la mida i del format, i es parla. Al pressupost hi ha la forquilla de cada paquet.';
   $('#rNext').textContent=d.next;
+}
+/* `<input type="date">` sempre torna 2026-03-14, hi posi el que hi posi el
+   calendari del país. Al correu i al resum hi va com es diu en veu alta. */
+function dataLlegible(v){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||'');
+  if(!m)return v||'';
+  const ME=['gener','febrer','març','abril','maig','juny','juliol','agost',
+    'setembre','octubre','novembre','desembre'];
+  return Number(m[3])+' de '+ME[Number(m[2])-1]+' de '+m[1];
 }
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
@@ -523,7 +565,8 @@ function buildSummary(d){
     '── QUÈ VOL ──',
     'Objectiu: '+d.O.t,
     'Paquets que hi encaixen: '+d.paq.map(p=>p.nom).join(', ')];
-  if(!$('#qFormat').hidden)L.push('Participants: '+v('participants'),'Quan: '+v('quan'),
+  if(d.ampliacio)L.push('Amb les seves paraules: '+d.ampliacio);
+  if(!$('#qFormat').hidden)L.push('Participants: '+v('participants'),'Quan: '+dataLlegible(v('quan')),
     'On: '+v('lloc'),'Format: '+v('dins'));
   else L.push('Què han provat: '+v('provat'),'Qui ho sosté: '+v('soste'),
     'Si marxa: '+v('simarxa'));
@@ -539,6 +582,7 @@ function buildJson(d){
       web:v('web'),dediqueu:v('dediqueu'),
       municipi:v('municipi'),comarca:v('comarca'),persones:v('persones')},
     vol:{objectiu:d.obj,objectiuNom:d.O.t,paquets:d.paq.map(p=>p.id),
+      ampliacio:d.ampliacio,
       format:$('#qFormat').hidden?null:{participants:v('participants'),quan:v('quan'),lloc:v('lloc'),dins:v('dins')},
       dolor:$('#qDolor').hidden?null:{provat:v('provat'),soste:v('soste'),simarxa:v('simarxa')}},
     decisio:{quiDecideix:d.decideix,termini:d.termini},
@@ -573,6 +617,7 @@ $('#bNet').onclick=async()=>{
     org:current.org,orgNom:v('orgNom'),web:v('web'),dediqueu:v('dediqueu'),
     municipi:v('municipi'),persones:v('persones'),
     objectiu:current.O.t,termini:current.termini,decideix:current.decideix,
+    ampliacio:current.ampliacio,
     resum:buildSummary(current)};
   const cos=Object.keys(dades).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(dades[k])).join('&');
   $('#bNet').disabled=true;$('#envKo').hidden=true;
@@ -601,7 +646,7 @@ $('#bAgain').onclick=()=>{location.reload();};
 
 llegeixPont();
 showStep(1);
-window.__DXORG={st,diagnose,buildSummary,buildJson,OBJECTIUS,PAQ,ORG_NOTA,showStep,validate};
+window.__DXORG={st,diagnose,buildSummary,buildJson,dataLlegible,OBJECTIUS,PAQ,ORG_NOTA,showStep,validate};
 </script>
 </body>
 </html>

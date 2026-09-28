@@ -89,21 +89,39 @@ ok(totsUn, 'cada objectiu obre un bloc de preguntes i només un');
 ok(branques.obrir.format && branques.mapa.dolor,
   'un acte pregunta pel format; una manera de treballar, pel dolor');
 
-/* ── 4 · Cap preu, i cap crida abans d'enviar ───────────────────────────── */
+/* ── 4 · Cap preu, i cap crida abans d'enviar ───────────────────────────────
+   Això s'omple **clicant els botons de Següent**, i no posant valors i cridant
+   `#doDx` com feia abans. La diferència no és cosmètica: `showStep()` amagava
+   totes les caixes `.step` —i el resultat n'és una—, així que qui omplia el
+   formulari de debò arribava al final i **no veia res**, mentre la prova, que
+   s'havia saltat els passos, passava verda.
+
+   I per això ara es mira l'alçada de debò i no `style.display`: l'element el
+   tenia a `block` amb el pare amagat a sobre. Un estat correcte i una pantalla
+   en blanc. */
 console.log('\n4 · El que promet la pantalla');
+await p.fill('#nom', 'Anna Prova'); await p.fill('#mail', 'anna@exemple.cat');
+await p.click('[data-next="2"]');
+await p.click('#orgType .opt[data-v="gran"]');
+await p.fill('#municipi', 'Barcelona');
+await p.click('[data-next="3"]');
+await p.click('#objTipus .opt[data-v="sostenir"]');
+await p.fill('#ampliacio', 'Som dues coses alhora i cap casella ho diu del tot.');
+await p.click('[data-next="4"]');
+await p.selectOption('#decideix', 'comite'); await p.selectOption('#termini', 'curs');
+await p.click('#doDx');
 const res = await p.evaluate(() => {
   const $ = s => document.querySelector(s);
-  $('#nom').value = 'Anna Prova'; $('#mail').value = 'anna@exemple.cat';
-  document.querySelector('#orgType .opt[data-v="gran"]').click();
-  $('#municipi').value = 'Barcelona';
-  document.querySelector('#objTipus .opt[data-v="sostenir"]').click();
-  $('#decideix').value = 'comite'; $('#termini').value = 'curs';
-  $('#doDx').click();
-  return { visible: $('#result').style.display === 'block',
+  return { alt: $('#result').getBoundingClientRect().height,
     text: ($('#result').innerText || ''),
+    formFora: $('#dxForm').style.display === 'none',
     mailto: ($('#bSend').getAttribute('href') || '').slice(0, 7) };
 });
-ok(res.visible, 'el diagnòstic es veu');
+ok(res.alt > 200 && res.text.length > 200,
+  `el diagnòstic es veu de debò · ${Math.round(res.alt)}px i ${res.text.length} caràcters de text`);
+ok(res.formFora, 'i el formulari s\'aparta');
+ok(res.text.includes('cap casella ho diu del tot'),
+  'el que ha escrit ell surt al diagnòstic, i no només l\'etiqueta que ha triat');
 ok(!/\d[\d.]*\s*€/.test(res.text), 'i no hi surt cap preu: la xifra es parla');
 ok(res.mailto === 'mailto:', 'el correu es prepara amb tot escrit');
 ok(xarxa.length === 0, `cap crida de xarxa fins aquí (${xarxa.length}): te l'endús, l'enviïs o no`);
@@ -153,6 +171,31 @@ console.log('\n5b · El que es tria es veu');
   ok(marca.org.canvia && marca.org.sel, 'el tipus d\'organització es marca i es veu');
   ok(marca.obj.canvia && marca.obj.sel, 'i l\'objectiu també');
   await v.close();
+}
+
+/* ── 5c · La data s'escull, i es llegeix ────────────────────────────────── */
+console.log('\n5c · La data');
+{
+  const d = await b.newPage();
+  d.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+  await d.goto(url('diagnostic-org.html'));
+  await d.waitForFunction(() => window.__DXORG);
+  const r = await d.evaluate(() => {
+    document.querySelector('#objTipus .opt[data-v="obrir"]').click();
+    const q = document.querySelector('#quan');
+    q.value = '2026-03-14';
+    return { tipus: q.type, obert: !document.querySelector('#qFormat').hidden,
+      escrit: window.__DXORG.dataLlegible('2026-03-14'),
+      buit: window.__DXORG.dataLlegible('') };
+  });
+  ok(r.tipus === 'date', 'el «quan» obre el calendari del telèfon · type=' + r.tipus);
+  ok(r.obert, 'i només surt quan l\'objectiu és un acte amb data');
+  /* Una data en text lliure arribava com «al març», «2n trimestre» o «14/3» i
+     cap de les tres es podia comparar amb l'agenda; una en ISO no es llegeix
+     en veu alta. Es guarda en ISO i es diu com es diu. */
+  ok(r.escrit === '14 de març de 2026', 'i al resum hi va escrita · ' + r.escrit);
+  ok(r.buit === '', 'sense data, no s\'inventa cap dia');
+  await d.close();
 }
 
 /* ── 6 · El text pla porta les seccions noves ───────────────────────────── */
