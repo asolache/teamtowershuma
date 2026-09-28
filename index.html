@@ -439,23 +439,58 @@
            Els noms vivien a la novena i qui decideix si segueix llegint ho fa
            a la primera. És una tira estreta a posta: no ha de competir amb el
            titular, només ha de dir que això ja s'ha fet amb gent que es coneix. */
-        .cl-banda { border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-            background:var(--bg-panel); padding:1.1rem 0; }
-        .clb-in { display:flex; flex-direction:column; gap:.45rem; }
-        .clb-lbl { font-family:var(--mono); font-size:.64rem; letter-spacing:.18em; text-transform:uppercase;
-            color:var(--muted); margin:0; }
-        .clb-noms { display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem 1.1rem; }
-        .clb-noms span { font-family:var(--sans); font-size:1.05rem; font-weight:700; letter-spacing:.02em;
-            color:var(--text); opacity:.82; }
-        .clb-mes { font-family:var(--mono); font-size:.7rem; color:var(--accent-green); text-decoration:none;
-            border-bottom:1px solid transparent; }
-        .clb-mes:hover { border-bottom-color:var(--accent-green); }
-        .clb-nota { font-size:.74rem; color:var(--muted); line-height:1.6; margin:.15rem 0 0; max-width:60ch; }
-        .clb-nota a { color:var(--muted); }
-        .clb-nota strong { color:var(--text); font-weight:600; }
+        /* ── LA PARET DE CLIENTS · segona pantalla ────────────────────────
+           Abans era una línia de noms separats per espais, i una línia de text
+           no és una prova: es llegeix com una frase i se salta com una frase.
+
+           Ara és una graella de fitxes amb el nom i a què es dedica cadascun,
+           agrupades i amb el color del grup. El que ha de veure's d'un cop no
+           és que siguin molts: és que són móns molt diferents —una
+           multinacional, una universitat, una agència, una diputació— i que el
+           mètode és el mateix a tots. Aquesta és la frase que ven.
+
+           A sota de 560 px la línia de sector s'amaga. Amb ella, trenta-dues
+           fitxes a dues columnes són pantalla i mitja de paret abans que ningú
+           arribi al contingut; sense ella, els noms hi caben tots i es
+           llegeixen igual de bé. El que es perd al mòbil és el matís, no la
+           prova. */
+        .cl-mur { border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+            background:var(--bg-panel); padding:2.6rem 0 2.2rem; }
+        .clm-lbl { font-family:var(--mono); font-size:.64rem; letter-spacing:.18em; text-transform:uppercase;
+            color:var(--accent-green); margin:0 0 .5rem; }
+        .clm-h2 { font-size:1.45rem; line-height:1.28; margin:0 0 1.7rem; font-weight:700; max-width:24ch; }
+        .clm-h2 em { font-style:normal; color:var(--accent-indigo); }
+        .clm-g { margin-bottom:1.5rem; }
+        .clm-g:last-of-type { margin-bottom:0; }
+        .clm-gl { font-family:var(--mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase;
+            color:var(--muted); margin:0 0 .55rem; display:flex; align-items:center; gap:.5rem; }
+        .clm-gl::before { content:''; width:14px; height:2px; border-radius:1px; background:var(--clc); }
+        .clm-g[data-g="empreses"] { --clc:var(--accent-indigo); }
+        .clm-g[data-g="universitats"] { --clc:var(--accent-green); }
+        .clm-g[data-g="escoles"] { --clc:var(--accent-purple); }
+        .clm-g[data-g="agencies"] { --clc:var(--accent-orange); }
+        .clm-g[data-g="public"] { --clc:var(--accent-blue); }
+        .clm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:.5rem; }
+        .clm-c { background:var(--bg-elevated,rgba(255,255,255,.025)); border:1px solid var(--border);
+            border-top:2px solid var(--clc); border-radius:8px; padding:.6rem .7rem .55rem;
+            display:flex; flex-direction:column; gap:.15rem; min-width:0; }
+        .clm-n { font-size:.93rem; font-weight:700; letter-spacing:.01em; color:var(--text);
+            overflow-wrap:anywhere; }
+        .clm-c.dest .clm-n { font-size:1.06rem; }
+        .clm-s { font-size:.66rem; line-height:1.4; color:var(--muted); }
+        .clm-nota { font-size:.74rem; color:var(--muted); line-height:1.6; margin:1.4rem 0 0; max-width:66ch; }
+        .clm-nota a { color:var(--muted); }
+        .clm-nota strong { color:var(--text); font-weight:600; }
         @media (max-width:768px) {
-            .cl-banda { padding:.9rem 0; }
-            .clb-noms span { font-size:.92rem; }
+            .cl-mur { padding:1.9rem 0 1.6rem; }
+            .clm-h2 { font-size:1.2rem; margin-bottom:1.3rem; }
+            .clm-grid { grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:.4rem; }
+            .clm-n { font-size:.84rem; }
+            .clm-c.dest .clm-n { font-size:.92rem; }
+        }
+        @media (max-width:560px) {
+            .clm-s { display:none; }
+            .clm-c { padding:.45rem .55rem; }
         }
         .hero-disc { font-family:var(--font-mono,monospace); font-size:.7rem; letter-spacing:.16em;
             text-transform:uppercase; color:var(--accent-green); margin:0 0 .5rem; font-weight:600; }
@@ -1097,18 +1132,73 @@
      que compra qui paga. Una sola de les dues no fa la feina: el castell tot
      sol es llegeix com una metàfora bonica, i el celler tot sol es llegeix com
      una consultoria més. -->
-<!--TT-CLIENTS-BANDA-->
+<!--TT-CLIENTS-MUR-->
 <!-- GENERAT per SOS/tools/build-clients.js · no s'edita a mà -->
-<section class="cl-banda" aria-label="Clients">
+<section class="cl-mur" id="clients" aria-label="Clients">
   <div class="container">
-    <div class="clb-in">
-      <p class="clb-lbl" data-i18n="clb.lbl">Han estat clients</p>
-      <div class="clb-noms"><span>IKEA</span><span>Telefónica</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>ESADE</span><a href="#trajectoria" class="clb-mes" data-i18n="clb.mes">i 17 més →</a></div>
-      <p class="clb-nota" data-i18n-html="clb.nota">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong></p>
+    <p class="clm-lbl" data-i18n="clm.lbl">Han estat clients de TeamTowers</p>
+    <h2 class="clm-h2" data-i18n-html="clm.h2">Multinacionals, universitats i agències, <em>i el mateix mètode</em></h2>
+    <div class="clm-g" data-g="empreses">
+      <p class="clm-gl" data-i18n="cl.g.empreses">Empreses</p>
+      <div class="clm-grid">
+        <div class="clm-c dest"><span class="clm-n">IKEA</span><span class="clm-s" data-i18n="cl.s.ikea">Retail i sostenibilitat</span></div>
+        <div class="clm-c dest"><span class="clm-n">Telefónica</span><span class="clm-s" data-i18n="cl.s.telefonica">Comunicacions</span></div>
+        <div class="clm-c dest"><span class="clm-n">BBVA</span><span class="clm-s" data-i18n="cl.s.bbva">Banca digital</span></div>
+        <div class="clm-c dest"><span class="clm-n">Novartis</span><span class="clm-s" data-i18n="cl.s.novartis">Farmacèutica</span></div>
+        <div class="clm-c dest"><span class="clm-n">Porsche</span><span class="clm-s" data-i18n="cl.s.porsche">Automoció de luxe</span></div>
+        <div class="clm-c"><span class="clm-n">la Caixa</span><span class="clm-s" data-i18n="cl.s.la-caixa">Banca i finances</span></div>
+        <div class="clm-c"><span class="clm-n">Vodafone</span><span class="clm-s" data-i18n="cl.s.vodafone">Telecomunicacions</span></div>
+        <div class="clm-c"><span class="clm-n">Orange</span><span class="clm-s" data-i18n="cl.s.orange">Telecomunicacions</span></div>
+        <div class="clm-c"><span class="clm-n">Mercedes</span><span class="clm-s" data-i18n="cl.s.mercedes">Automoció premium</span></div>
+        <div class="clm-c"><span class="clm-n">Zurich</span><span class="clm-s" data-i18n="cl.s.zurich">Assegurances</span></div>
+        <div class="clm-c"><span class="clm-n">UPS</span><span class="clm-s" data-i18n="cl.s.ups">Logística</span></div>
+        <div class="clm-c"><span class="clm-n">InfoJobs</span><span class="clm-s" data-i18n="cl.s.infojobs">Tecnologia i ocupació</span></div>
+        <div class="clm-c"><span class="clm-n">John Deere</span><span class="clm-s" data-i18n="cl.s.john-deere">Maquinària agrícola</span></div>
+        <div class="clm-c"><span class="clm-n">Softonic</span><span class="clm-s" data-i18n="cl.s.softonic">Programari i internet</span></div>
+      </div>
     </div>
+    <div class="clm-g" data-g="universitats">
+      <p class="clm-gl" data-i18n="cl.g.universitats">Universitats</p>
+      <div class="clm-grid">
+        <div class="clm-c"><span class="clm-n">UB</span><span class="clm-s" data-i18n="cl.s.ub">Universitat de Barcelona</span></div>
+        <div class="clm-c"><span class="clm-n">UAB</span><span class="clm-s" data-i18n="cl.s.uab">Universitat Autònoma de Barcelona</span></div>
+        <div class="clm-c"><span class="clm-n">La Salle</span><span class="clm-s" data-i18n="cl.s.la-salle">Universitat Ramon Llull · també escola de negocis</span></div>
+        <div class="clm-c"><span class="clm-n">UOC</span><span class="clm-s" data-i18n="cl.s.uoc">Universitat Oberta de Catalunya</span></div>
+        <div class="clm-c"><span class="clm-n">UPC</span><span class="clm-s" data-i18n="cl.s.upc">Universitat Politècnica de Catalunya</span></div>
+        <div class="clm-c"><span class="clm-n">Universidad de León</span><span class="clm-s" data-i18n="cl.s.universidad-de-leon">Castella i Lleó</span></div>
+      </div>
+    </div>
+    <div class="clm-g" data-g="escoles">
+      <p class="clm-gl" data-i18n="cl.g.escoles">Escoles de negoci</p>
+      <div class="clm-grid">
+        <div class="clm-c dest"><span class="clm-n">ESADE</span><span class="clm-s" data-i18n="cl.s.esade">Escola de negocis</span></div>
+        <div class="clm-c"><span class="clm-n">IESE</span><span class="clm-s" data-i18n="cl.s.iese">Escola de negocis</span></div>
+        <div class="clm-c"><span class="clm-n">EADA</span><span class="clm-s" data-i18n="cl.s.eada">Escola de negocis</span></div>
+      </div>
+    </div>
+    <div class="clm-g" data-g="agencies">
+      <p class="clm-gl" data-i18n="cl.g.agencies">Agències i partners</p>
+      <div class="clm-grid">
+        <div class="clm-c"><span class="clm-n">Laeski</span><span class="clm-s" data-i18n="cl.s.laeski">Producció integral</span></div>
+        <div class="clm-c"><span class="clm-n">We Barcelona</span><span class="clm-s" data-i18n="cl.s.we-barcelona">Esdeveniments internacionals</span></div>
+        <div class="clm-c"><span class="clm-n">Kivicom</span><span class="clm-s" data-i18n="cl.s.kivicom">Gimcanes interactives</span></div>
+        <div class="clm-c"><span class="clm-n">Box de Ideas</span><span class="clm-s" data-i18n="cl.s.box-de-ideas">Innovació corporativa</span></div>
+        <div class="clm-c"><span class="clm-n">Voxel</span><span class="clm-s" data-i18n="cl.s.voxel">Tecnologia 3D</span></div>
+        <div class="clm-c"><span class="clm-n">Unit Elements</span><span class="clm-s" data-i18n="cl.s.unit-elements">Disseny industrial</span></div>
+      </div>
+    </div>
+    <div class="clm-g" data-g="public">
+      <p class="clm-gl" data-i18n="cl.g.public">Sector públic</p>
+      <div class="clm-grid">
+        <div class="clm-c"><span class="clm-n">Diputació de Barcelona</span><span class="clm-s" data-i18n="cl.s.diputacio-de-barcelona">Administració supramunicipal</span></div>
+        <div class="clm-c"><span class="clm-n">Ajuntament de Vilafranca</span><span class="clm-s" data-i18n="cl.s.ajuntament-de-vilafranca">Administració local</span></div>
+        <div class="clm-c"><span class="clm-n">Junta de Castilla y León</span><span class="clm-s" data-i18n="cl.s.junta-de-castilla-y-leon">Administració autonòmica</span></div>
+      </div>
+    </div>
+    <p class="clm-nota" data-i18n-html="clm.nota">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong></p>
   </div>
 </section>
-<!--/TT-CLIENTS-BANDA-->
+<!--/TT-CLIENTS-MUR-->
 
 <section class="fentpinya" id="fentpinya">
     <div class="container">
@@ -2205,16 +2295,24 @@
         <!-- GENERAT per SOS/tools/build-clients.js · no s'edita a mà -->
         <div class="cl-groups fade-up">
             <div>
-                <div class="cl-group-lbl" data-i18n="cl.g3">Empreses</div>
-                <div class="cl-logos"><span>IKEA</span><span>Telefónica</span><span>Vodafone</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>Mercedes</span><span>John Deere</span><span>La Caixa</span><span>InfoJobs</span><span>Softonic</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
+                <div class="cl-group-lbl" data-i18n="cl.g.empreses">Empreses</div>
+                <div class="cl-logos"><span>IKEA</span><span>Telefónica</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>la Caixa</span><span>Vodafone</span><span>Orange</span><span>Mercedes</span><span>Zurich</span><span>UPS</span><span>InfoJobs</span><span>John Deere</span><span>Softonic</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
                 <p class="cl-font" data-i18n-html="cl.font">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong></p>
             </div>
             <div>
-                <div class="cl-group-lbl" data-i18n="cl.g1">Universitats i escoles de negoci</div>
-                <div class="cl-logos"><span>UB</span><span>UOC</span><span>UAB</span><span>UPC</span><span>ESADE</span><span>IESE</span><span>EADA</span><span>La Salle</span><span>Universidad de León</span></div>
+                <div class="cl-group-lbl" data-i18n="cl.g.universitats">Universitats</div>
+                <div class="cl-logos"><span>UB</span><span>UAB</span><span>La Salle</span><span>UOC</span><span>UPC</span><span>Universidad de León</span></div>
             </div>
             <div>
-                <div class="cl-group-lbl" data-i18n="cl.g2">Sector públic</div>
+                <div class="cl-group-lbl" data-i18n="cl.g.escoles">Escoles de negoci</div>
+                <div class="cl-logos"><span>ESADE</span><span>IESE</span><span>EADA</span></div>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g.agencies">Agències i partners</div>
+                <div class="cl-logos"><span>Laeski</span><span>We Barcelona</span><span>Kivicom</span><span>Box de Ideas</span><span>Voxel</span><span>Unit Elements</span></div>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g.public">Sector públic</div>
                 <div class="cl-logos"><span>Diputació de Barcelona</span><span>Ajuntament de Vilafranca</span><span>Junta de Castilla y León</span></div>
             </div>
         </div>
@@ -2497,9 +2595,24 @@ ca: {
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
   'hero.evo3.k':'Avui · TeamTowers Humà','hero.evo3.d':'El mateix a empreses, ajuntaments i barris, amb una eina lliure que ho manté viu.',
-  'clb.lbl':'Han estat clients',
-  'clb.mes':'i 17 més →',
-  'clb.nota':'Del recorregut de <a href=\'https://teamtowers.eu\' target=\'_blank\' rel=\'noopener\'>TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong>',
+  /*TT-CL-I18N-CA*/
+  'clm.lbl':'Han estat clients de TeamTowers','clm.h2':'Multinacionals, universitats i agències, <em>i el mateix mètode</em>',
+  'clm.nota':'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong>',
+  'cl.font':'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong>',
+  'cl.emp':'i +150 empreses en formació i cohesió d\'equips',
+  'cl.g.empreses':'Empreses','cl.g.universitats':'Universitats','cl.g.escoles':'Escoles de negoci','cl.g.agencies':'Agències i partners','cl.g.public':'Sector públic',
+  'cl.s.ikea':'Retail i sostenibilitat','cl.s.telefonica':'Comunicacions','cl.s.bbva':'Banca digital',
+  'cl.s.novartis':'Farmacèutica','cl.s.porsche':'Automoció de luxe','cl.s.la-caixa':'Banca i finances',
+  'cl.s.vodafone':'Telecomunicacions','cl.s.orange':'Telecomunicacions','cl.s.mercedes':'Automoció premium',
+  'cl.s.zurich':'Assegurances','cl.s.ups':'Logística','cl.s.infojobs':'Tecnologia i ocupació',
+  'cl.s.john-deere':'Maquinària agrícola','cl.s.softonic':'Programari i internet','cl.s.ub':'Universitat de Barcelona',
+  'cl.s.uab':'Universitat Autònoma de Barcelona','cl.s.la-salle':'Universitat Ramon Llull · també escola de negocis','cl.s.uoc':'Universitat Oberta de Catalunya',
+  'cl.s.upc':'Universitat Politècnica de Catalunya','cl.s.universidad-de-leon':'Castella i Lleó','cl.s.esade':'Escola de negocis',
+  'cl.s.iese':'Escola de negocis','cl.s.eada':'Escola de negocis','cl.s.laeski':'Producció integral',
+  'cl.s.we-barcelona':'Esdeveniments internacionals','cl.s.kivicom':'Gimcanes interactives','cl.s.box-de-ideas':'Innovació corporativa',
+  'cl.s.voxel':'Tecnologia 3D','cl.s.unit-elements':'Disseny industrial','cl.s.diputacio-de-barcelona':'Administració supramunicipal',
+  'cl.s.ajuntament-de-vilafranca':'Administració local','cl.s.junta-de-castilla-y-leon':'Administració autonòmica',
+/*/TT-CL-I18N-CA*/
   'hero.disc':'Consultoria sistèmica i formació','hero.porta1':'Empreses i cooperatives','hero.porta2':'Ajuntaments, consells i entitats',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
   'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
@@ -2595,9 +2708,6 @@ ca: {
   'cl.h2':'20 anys teixint <em>equips i comunitats</em>',
   'cl.intro':'Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals. Les xifres de sota són del catàleg comercial de TeamTowers 2026, i cadascuna diu d\'on surt.',
   'cl.s1':'TeamTowers · experiències castelleres des de','cl.s2':'Persones que han passat pel taller Fent Pinya','cl.s3':'Empreses i organitzacions acompanyades','cl.s4':'Primer banc de temps de la ciutat de León',
-  'cl.g1':'Universitats i escoles de negoci','cl.g2':'Sector públic','cl.g3':'Empreses',
-  'cl.emp':'i +150 empreses en formació i cohesió d\'equips',
-  'cl.font':'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong>',
   'cl.p1.tag':'Software comunitari','cl.p1.d':'Banc de temps i xarxa de coneixement. Una plataforma que empreses i organitzacions lloguen per crear la seva pròpia economia del temps i dinamitzar la seva comunitat.',
   'cl.p2.tag':'Projecte pioner · 2009','cl.p2.n':'Banc de Temps de León','cl.p2.d':'El primer banc de temps de la ciutat: intercanvi de serveis mesurat en hores, sense diners, teixint confiança i suport mutu entre veïns.',
   'cl.p3.tag':'Desenvolupament comunitari','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d\'ajuntaments, cooperatives i ateneus del territori.',
@@ -2815,9 +2925,24 @@ es: {
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vive que el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
   'hero.evo3.k':'Hoy · TeamTowers Humà','hero.evo3.d':'Lo mismo en empresas, ayuntamientos y barrios, con una herramienta libre que lo mantiene vivo.',
-  'clb.lbl':'Han sido clientes',
-  'clb.mes':'y 17 más →',
-  'clb.nota':'Del recorrido de <a href=\'https://teamtowers.eu\' target=\'_blank\' rel=\'noopener\'>TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos aplicaciones de Value Network Analysis.</strong>',
+  /*TT-CL-I18N-ES*/
+  'clm.lbl':'Han sido clientes de TeamTowers','clm.h2':'Multinacionales, universidades y agencias, <em>y el mismo método</em>',
+  'clm.nota':'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos aplicaciones de Value Network Analysis.</strong>',
+  'cl.font':'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos aplicaciones de Value Network Analysis.</strong>',
+  'cl.emp':'y +150 empresas en formación y cohesión de equipos',
+  'cl.g.empreses':'Empresas','cl.g.universitats':'Universidades','cl.g.escoles':'Escuelas de negocio','cl.g.agencies':'Agencias y partners','cl.g.public':'Sector público',
+  'cl.s.ikea':'Retail y sostenibilidad','cl.s.telefonica':'Comunicaciones','cl.s.bbva':'Banca digital',
+  'cl.s.novartis':'Farmacéutica','cl.s.porsche':'Automoción de lujo','cl.s.la-caixa':'Banca y finanzas',
+  'cl.s.vodafone':'Telecomunicaciones','cl.s.orange':'Telecomunicaciones','cl.s.mercedes':'Automoción premium',
+  'cl.s.zurich':'Seguros','cl.s.ups':'Logística','cl.s.infojobs':'Tecnología y empleo',
+  'cl.s.john-deere':'Maquinaria agrícola','cl.s.softonic':'Software e internet','cl.s.ub':'Universidad de Barcelona',
+  'cl.s.uab':'Universidad Autónoma de Barcelona','cl.s.la-salle':'Universidad Ramon Llull · también escuela de negocios','cl.s.uoc':'Universitat Oberta de Catalunya',
+  'cl.s.upc':'Universidad Politécnica de Cataluña','cl.s.universidad-de-leon':'Castilla y León','cl.s.esade':'Escuela de negocios',
+  'cl.s.iese':'Escuela de negocios','cl.s.eada':'Escuela de negocios','cl.s.laeski':'Producción integral',
+  'cl.s.we-barcelona':'Eventos internacionales','cl.s.kivicom':'Gincanas interactivas','cl.s.box-de-ideas':'Innovación corporativa',
+  'cl.s.voxel':'Tecnología 3D','cl.s.unit-elements':'Diseño industrial','cl.s.diputacio-de-barcelona':'Administración supramunicipal',
+  'cl.s.ajuntament-de-vilafranca':'Administración local','cl.s.junta-de-castilla-y-leon':'Administración autonómica',
+/*/TT-CL-I18N-ES*/
   'hero.disc':'Consultoría sistémica y formación','hero.porta1':'Empresas y cooperativas','hero.porta2':'Ayuntamientos, consejos y entidades',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',
   'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
@@ -2913,9 +3038,6 @@ es: {
   'cl.h2':'20 años tejiendo <em>equipos y comunidades</em>',
   'cl.intro':'Del mundo corporativo a la innovación social: una metodología probada con universidades, administraciones públicas, empresas y proyectos comunitarios reales. Las cifras de abajo son del catálogo comercial de TeamTowers 2026, y cada una dice de dónde sale.',
   'cl.s1':'TeamTowers · experiencias castelleras desde','cl.s2':'Personas que han pasado por el taller Fent Pinya','cl.s3':'Empresas y organizaciones acompañadas','cl.s4':'Primer banco de tiempo de la ciudad de León',
-  'cl.g1':'Universidades y escuelas de negocio','cl.g2':'Sector público','cl.g3':'Empresas',
-  'cl.emp':'y +150 empresas en formación y cohesión de equipos',
-  'cl.font':'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos aplicaciones de Value Network Analysis.</strong>',
   'cl.p1.tag':'Software comunitario','cl.p1.d':'Banco de tiempo y red de conocimiento. Una plataforma que empresas y organizaciones alquilan para crear su propia economía del tiempo y dinamizar su comunidad.',
   'cl.p2.tag':'Proyecto pionero · 2009','cl.p2.n':'Banco de Tiempo de León','cl.p2.d':'El primer banco de tiempo de la ciudad: intercambio de servicios medido en horas, sin dinero, tejiendo confianza y apoyo mutuo entre vecinos.',
   'cl.p3.tag':'Desarrollo comunitario','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodología propia de cohesión castellera y mapeo de redes de valor, hoy al servicio de ayuntamientos, cooperativas y ateneos del territorio.',

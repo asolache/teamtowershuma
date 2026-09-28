@@ -99,6 +99,27 @@ en una línia sota els logos.
 | **EADA** | mateix grup · i `#facilitador`, tram de TeamTowers | **Les dues coses**: client del CV **i escola on ha fet classe**. Precisat per ell el 10/09/2026. *Falta l'any i la matèria* |
 | UB · UOC · UAB · UPC · La Salle · Universidad de León | mateix grup | Ja hi eren abans d'aquest document. La UOC, La Salle i Lleó vénen del recorregut de **comunitats.org** (§1), no de TeamTowers |
 | Diputació de Barcelona · Ajuntament de Vilafranca · Junta de Castilla y León | `#trajectoria`, grup «Sector públic» | Ja hi eren abans. La Junta ve de comunitats.org |
+| **Zurich · Orange · UPS**, i «la Caixa» amb la grafia de la casa | `#clients` · `#trajectoria`, grup «Empreses» | **De la pàgina de clients de TeamTowers**, `clients.html` d'aquest repositori, que és la mateixa llista publicada a `teamtowers.eu/#clientes`. Afegits el 28/09/2026 |
+| **Laeski · We Barcelona · Kivicom · Box de Ideas · Voxel · Unit Elements** | `#clients` · `#trajectoria`, grup «Agències i partners» | Mateixa font i mateixa data. **Són partners que revenen a un client seu**, no clients finals, i per això tenen grup propi i no es barregen amb les empreses |
+
+**Per què entra una font nova, i què no s'ha pogut comprovar (28/09/2026).** Fins
+avui la llista sortia del CV i del catàleg comercial. `clients.html` és la
+pàgina de clients de TeamTowers i porta, a més del nom, **a què es dedica
+cadascun** — que és el que fa que la paret de la portada deixi de ser un mur de
+logos. D'allà surten aquests deu noms i la separació entre universitat i escola
+de negocis.
+
+> ⚠ **No s'ha pogut obrir `teamtowers.eu` des d'aquí** (la política de xarxa de
+> l'entorn ho bloqueja), així que el que s'ha comparat és la còpia del
+> repositori, no la pàgina viva. Si la web s'ha tocat des que es va desar
+> aquesta còpia, **aquesta taula es queda enrere sense que res peti**. Val la
+> pena mirar-ho quan es pugui.
+
+**El grup que faltava i per què importa.** Les sis agències no hi eren, i són
+exactament el segment `agencia` del diagnòstic d'organització —«ho compres per a
+un client teu»—. Teníem la pantalla feta per a elles i cap prova que ja ens han
+contractat. Una pantalla que demana confiança a un públic i no n'hi ensenya cap
+de semblant és una pantalla coixa.
 
 **Un nom que va sortir de la llista de clients i per què:**
 
