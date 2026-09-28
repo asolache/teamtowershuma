@@ -32,7 +32,7 @@ I el decorat és **Molekulandia** (`molekulandia.html`).
 - **Horacio Motomachi** · El savi que rep el mandat — La visió de conjunt: qui sap explicar cap on va tot plegat _(Còmic 1)_
 - **Guiri-Guay** · Cuidador i sanador — Qui té cura de l'equip: sosté la moral i cura les friccions abans que es podreixin _(Còmic 1)_
 - **Purpleman** · Transmutador — Qui absorbeix la toxicitat de l'ambient i la torna clima. Si no té nom, no ho fa ningú _(Còmic 1)_
-- **Afrodito** · Motor passional — El talent amagat. Passió en cru que només necessita un lloc segur per treure's la cuirassa _(Còmic 1)_
+- **Afrodita** · Motor passional — El talent amagat. Passió en cru que només necessita un lloc segur per treure's la cuirassa _(Còmic 1)_
 - **El Aviador** · Suport tàctic — L'executor hiperespecialitzat. Ni el més carismàtic ni el líder: el que desencalla projectes _(Còmic 1)_
 - **Pigmentón** · Mapador i dissenyador — Qui dibuixa la xarxa i dona a cadascú el color que li toca perquè pugui operar _(Còmic 1)_
 - **La Medusa Andaluza** · Connectora · el hub — El node central que creua informació entre parts que no es parlaven _(Còmic 1)_
