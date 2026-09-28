@@ -228,6 +228,11 @@ if (!repFails) ok(`${repTotal} mencions d'heroi a les pàgines que en reparteixe
    sabent quins eren. Quan un nom canviï, s'afegeix aquí el vell. */
 const VELLS = ['Ectoplasman', 'Guiriguai', 'Guiriguay', 'GuiriGuay',
   'Pigmentona', 'La Anguila', 'Medusa Andalusa',
+  /* «Afrodito» va ser el nom de l'heroi durant dues de les tres voltes que ha
+     fet aquesta decisió. Ara la bona és «Afrodita» —la mateixa que la deessa
+     del panteó, i l'autor ho sap i ho vol—, i el nom antic queda prohibit a tot
+     arreu, com qualsevol altre. */
+  'Afrodito',
   /* El supervilà va viure amb dues grafies molt de temps: les dades deien
      «Mc Greggor» i el text dels còmics «McGragor». Ningú les mirava juntes
      perquè aquesta guarda vigilava els noms d'heroi i **no els dels vilans**
@@ -285,14 +290,17 @@ const DOCS = [
   { f: 'index.html', txt: senseComentaris(APP) }
 ];
 
-/* «Afrodita» només és un nom vell a les pàgines públiques, i no a l'app.
-   L'heroi és **Afrodito** i la deessa grega del panteó de 12 és **Afrodita**:
-   són dos noms de dues llistes diferents que es diferencien per una lletra.
-   Posar «Afrodita» a la llista de dalt faria fallar `index.html`, que la té
-   com a arquetip amb tot el dret —i una guarda que prohibeix una cosa certa
-   fa el contrari del que ha de fer (veda 115). Per això va en una llista a
-   part, que només s'aplica allà on la deessa no hi pinta res. */
-const VELLS_PAGINES = VELLS.concat(['Afrodita']);
+/* Aquí hi havia una llista a part, `VELLS_PAGINES`, que afegia «Afrodita» als
+   noms prohibits **només a les pàgines públiques**: l'heroi es deia «Afrodito»
+   i la deessa del panteó «Afrodita», i prohibir-la a l'app hauria fet fallar
+   una cosa certa.
+
+   S'ha esborrat perquè l'excepció ja no existeix. El 2026-09-28 l'autor ha
+   tancat que l'heroi **es diu Afrodita**, el mateix que la deessa, i que això
+   no és cap problema perquè són dues coses diferents a dues llistes que el codi
+   no creua. O sigui que el nom vell ara és «Afrodito», que no té ús legítim
+   enlloc i va a `VELLS` amb tots els altres, i aquí no cal cap excepció. */
+const VELLS_PAGINES = VELLS;
 let restes = 0;
 ALTRES.forEach(({ f, txt }) => {
   if (txt === null) return;   // la pàgina pot no existir: no és feina d'aquesta guarda

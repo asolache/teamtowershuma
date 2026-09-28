@@ -63,7 +63,7 @@ const RESERVES = [
   { heroi: 'La Medusa Andaluza', nick: 'medusa',      hash: '' },
   { heroi: 'Barbamuda',          nick: 'barbamuda',   hash: '' },
   { heroi: 'El Aviador',         nick: 'aviador',     hash: '' },
-  { heroi: 'Afrodito',           nick: 'afrodito',    hash: '' },
+  { heroi: 'Afrodita',           nick: 'afrodita',    hash: '' },
   { heroi: 'Electroplasman',     nick: 'electroplasman', hash: '' },
   { heroi: 'Pigmentón',          nick: 'pigmenton',   hash: '' },
   { heroi: 'Reciclator',         nick: 'reciclator',  hash: '' },
