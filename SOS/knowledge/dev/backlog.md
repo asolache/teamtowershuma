@@ -2175,6 +2175,145 @@ sessions de cohesió i «posada en marxa de dinàmiques», que en són trossos.
   ja vigila Molekulandia: si una fitxa promet una pàgina o una plantilla, ha
   d'existir.
 
+### El CRM amb pany, connectat, i cap on ha d'anar
+
+**Demanat per l'Àlvar (28/09/2026):** poder posar-li **una contrasenya** al CRM
+i tenir-lo com a CRM de debò; **millorar la integració amb el correu, els
+formularis i/o un CRM extern**; i que això acabi evolucionant cap a **un agent
+que ajudi en desenvolupament de negoci, planificació i operacions, automatitzant
+el que és tangible**. Continua l'entrada «Un CRM que s'actualitza sol» d'aquest
+mateix dia; això n'és la part de pany i de camí.
+
+**La contrasenya, i la trampa que té.** `crm.html` és un fitxer estàtic que
+qualsevol es pot baixar. Una comprovació de contrasenya escrita a dins **no és
+un pany: és un cartell**. Qui obri el codi font la veu, i qui obri la consola
+se la salta. I les dades tampoc hi són protegides: viuen al `localStorage`
+d'aquest navegador, així que avui **el pany real és el portàtil**.
+
+Tres sortides, i només dues són panys:
+
+| Camí | Què protegeix de debò | Cost |
+|---|---|---|
+| **Protecció de camí a Netlify** (`/SOS/crm*` amb contrasenya de lloc) | La pàgina no s'arriba a servir. Pany a la porta, no a dins | Minuts, però demana pla de pagament |
+| **Netlify Identity o un login davant d'una funció** | Pany real, i a més sap **qui** entra, que és el que cal si un dia hi mira més d'una persona | Un dia, i ja fa falta per a l'enriquiment amb IA |
+| Contrasenya dins de l'HTML | Res. Només fa que no s'obri sense voler | Una hora, i **mentiria** |
+
+**El que proposo:** la tercera **només si es diu el que és** —«això evita obrir-lo
+sense voler, no protegeix res»—; i que el pany de debò arribi amb la funció
+serverless que ja fa falta per llegir el web dels leads. Un pany i un servidor
+són la mateixa feina feta un cop.
+
+**La integració amb el correu i els formularis**, per ordre de guany:
+
+1. **Que el diagnòstic entri sol.** Netlify Forms ja rep l'enviament; avui algú
+   ha d'enganxar el correu o el JSON a `crm.html`. Un webhook cap a la funció i
+   el lead hi és abans que ningú obri res. *És el pas 2 de l'entrada anterior i
+   és el que més hores estalvia.*
+2. **Llegir el correu, no només rebre'l.** Gran part del que arriba no passa per
+   cap formulari: arriba a la bústia. Una lectura del fil que en tregui el
+   contacte, què demanen i quan, amb els mateixos frens dels entregables —no
+   inventa, marca el que no ha trobat, i diu d'on ho ha tret.
+3. **Respondre des d'allà**, amb esborrany i no amb enviament: el CRM prepara,
+   la persona prem. Mateixa regla que els entregables (veda 157).
+
+**I cap a on ha d'anar: un agent d'operacions, no un CRM més gran.** El que
+demana l'Àlvar no és una graella millor, és **que el treball tangible es faci
+sol**. El que ja hi és i s'hi pot enganxar directament: els set intents
+d'entregable (`INTENT_ENTREGABLE`), el repartiment màquina/persona
+(`fluxAutomatitzable`), i el Kanban. Un lead **és una transacció més**, i una
+proposta **és un entregable més** —amb la seva plantilla, la seva revisió
+humana i el seu acceptat.
+
+**Per això la primera passa no és tècnica:** portar el lead al mateix taulell
+que la resta de feina, en comptes de mantenir-li una pantalla a part. Quan un
+lead sigui una targeta, «prepara'm la proposta», «recorda'm de trucar dijous» i
+«fes-me el resum del mes» són tres coses que ja saben fer altres parts d'aquesta
+casa.
+
+**El que l'Àlvar diu que avui no fa des d'aquí, i és correcte:** *«no faig
+pressupostos des d'aquí perquè m'interessa parlar»*. El diagnòstic no diu preus
+**a posta**. Que l'agent prepari la conversa —qui són, què volen, què els
+proposaríem, què val a la forquilla— **no és el mateix** que enviar-los un preu,
+i la diferència s'ha de mantenir quan això s'automatitzi.
+
+---
+
+### Ensenyar l'Àlvar a treure'n el 100 % · un fil llarg, no una entrada
+
+**Demanat per l'Àlvar (28/09/2026):** «vull aprendre a treure't partit al 100 %
+en totes les meves operacions i negocis» i que li ho vagi ensenyant.
+
+**El que s'ha vist funcionar en aquest repositori**, i que val fora d'ell:
+
+- **Demanar el resultat, no els passos.** Les millors sessions d'aquí van
+  començar amb «vull que passi això» i no amb «fes aquest canvi».
+- **Declarar un cop i generar.** Tot el que hi ha en dos llocs divergeix, i
+  divergeix **en silenci**. Els 18 generadors d'aquesta casa existeixen per
+  això, i el patró és el mateix a un pressupost o a un catàleg de serveis.
+- **Una guarda per cada cosa que faria mal sense petar.** El defecte que costa
+  car no és el que peta: és el que segueix tornant una resposta raonable.
+- **Dir què no es pot.** El valor d'aquestes sessions no ha estat el codi: ha
+  estat saber quina d'aquestes coses no es pot fer des d'un HTML estàtic abans
+  de pagar per intentar-ho.
+
+**El format que proposo, i és barat:** un document viu
+—`knowledge/negoci/treure-partit-ia.md`— amb **un cas real per entrada**: què
+es va demanar, què va sortir, què no es va poder i quin és el patró que se'n
+pot repetir. Escrit a mesura que passa, no una guia teòrica escrita de cop.
+
+**I una cosa que jo miraria primer**, perquè és la que més hores mou fora del
+SOS: **les operacions que avui són a la bústia i al full de càlcul** —comandes,
+factures, seguiment de clients, planificació de temporada. Això ja té motor
+aquí dins (els set intents), i no s'ha fet servir mai fora del SOS.
+
+---
+
+### La UX del SOS, a l'Apple · ensenyar quan cal, i no abans
+
+**Demanat per l'Àlvar (28/09/2026):** simplificar la UX del SOS cap a **un
+Kanban**, i que **tot el contingut que acaba molestant es mostri quan es
+necessita**. I concretament: que **crear el perfil i entrar al tauler** millorin
+d'arquitectura de la informació, i que ensenyin **les missions que fas o que
+vols assignar**.
+
+Va **junt** amb l'entrada «La UX del SOS com un Kanban sencer» (25/09/2026):
+allà hi ha el què fa el Kanban, aquí el què s'ensenya i quan.
+
+**El diagnòstic, amb els números d'avui:** `check-kiss.js` compta **36 accions
+al llançador** (sostre 36, o sigui al límit), **106 modals**, 7 grups i 22.298
+línies. No és que falti contingut: és que **hi surt tot alhora i des del primer
+dia**, i qui entra per primera vegada no sap quina de les 36 és la seva.
+
+**El principi, escrit perquè es pugui comprovar:** *una pantalla ensenya el que
+es pot fer ara amb el que ja hi ha.* Una acció que necessita un mapa que encara
+no existeix no s'ensenya apagada amb un rètol: **no s'ensenya**, i apareix el
+dia que el mapa hi és. Això es pot vigilar amb una guarda —cada acció del
+llançador declara de què depèn— i llavors el sostre de 36 deixa de ser un
+problema, perquè ningú en veu 36.
+
+**Els tres moments, per ordre:**
+
+1. **Crear el perfil.** Avui demana abans de donar. Hauria de sortir-ne amb
+   **una cosa feta** —el cromo, que ja es pot crear amb foto— i amb **una sola
+   següent acció**, no amb un tauler de 36.
+2. **Entrar al tauler.** La primera pantalla ha de respondre tres preguntes en
+   aquest ordre: *què he de fer jo ara*, *què espera algú de mi*, *què passa al
+   node*. Avui respon la tercera primer.
+3. **Les missions.** Les que fas i les que vols assignar són la mateixa llista
+   vista des dels dos costats, i és exactament el pont rol→persona que ja és
+   al punt 1 de l'entrada del Kanban. **Fer aquell punt és fer aquest.**
+
+**El que NO s'ha de fer, i és temptador:** amagar coses darrere d'un menú
+«avançat». Això no és progressiu, és un calaix —el contingut segueix sent-hi,
+només que ara ningú el troba mai. La diferència és que **el que s'amaga ha de
+poder aparèixer sol** quan es compleix la condició que el fa útil.
+
+**El primer tall, si es vol una passa barata:** que el llançador **ordeni i
+agrupi per estat del node** en comptes de per família. Les mateixes 36, però la
+primera pantalla només ensenya les que el node d'avui pot fer servir.
+
+---
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.
