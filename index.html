@@ -38,7 +38,7 @@
       {"@type":"FAQPage","@id":"https://teamtowershuma.com/#faq","mainEntity":[
         {"@type":"Question","name":"Quant costa?","acceptedAnswer":{"@type":"Answer","text":"El programari és lliure i gratuït. El que es paga és l'acompanyament, i la majoria de casos es cobreixen amb fons ja existents: catàleg de la Diputació de Barcelona, Ateneus Cooperatius, fons Leader i Next Generation. Al diagnòstic surt quina via encaixa amb el teu cas."}},
         {"@type":"Question","name":"Quanta feina demana al personal tècnic?","acceptedAnswer":{"@type":"Answer","text":"Dues sessions per al mapa i una reunió de seguiment al mes. La feina de sostenir el projecte no ha de recaure sobre el tècnic: si hi recau, hem fallat."}},
-        {"@type":"Question","name":"On queden les dades del veïnat?","acceptedAnswer":{"@type":"Answer","text":"Al navegador de qui les escriu. L'eina no té servidor central ni demana crear cap compte, i el que es publica cap a fora és sempre agregat i sense noms."}},
+        {"@type":"Question","name":"On queden les dades de la gent?","acceptedAnswer":{"@type":"Answer","text":"Al navegador de qui les escriu. L'eina no té servidor central ni demana crear cap compte, i el que es publica cap a fora és sempre agregat i sense noms."}},
         {"@type":"Question","name":"Quedem lligats a vosaltres?","acceptedAnswer":{"@type":"Answer","text":"No. L'eina és gratuïta, oberta i funciona sense nosaltres; les dades s'exporten en un fitxer que és teu. L'objectiu de l'acompanyament és que deixi de caler."}},
         {"@type":"Question","name":"Ja tenim una aplicació de participació. Serveix?","acceptedAnswer":{"@type":"Answer","text":"Sovint sí. Les eines de participació recullen opinions i propostes; això altre sosté el dia a dia d'un projecte ja engegat. Si el que teniu ja ho fa, us ho direm."}}]}
     ]}
@@ -435,6 +435,28 @@
         /* L'eyebrow és alhora les dues portes: hereta mida, color i majúscules
            de `.hero-eyebrow` i només hi afegeix que els dos trams siguin
            clicables i es distingeixin en passar-hi per sobre. */
+        /* LA BANDA DE CLIENTS · la prova, a la primera pantalla.
+           Els noms vivien a la novena i qui decideix si segueix llegint ho fa
+           a la primera. És una tira estreta a posta: no ha de competir amb el
+           titular, només ha de dir que això ja s'ha fet amb gent que es coneix. */
+        .cl-banda { border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+            background:var(--bg-panel); padding:1.1rem 0; }
+        .clb-in { display:flex; flex-direction:column; gap:.45rem; }
+        .clb-lbl { font-family:var(--mono); font-size:.64rem; letter-spacing:.18em; text-transform:uppercase;
+            color:var(--muted); margin:0; }
+        .clb-noms { display:flex; flex-wrap:wrap; align-items:baseline; gap:.4rem 1.1rem; }
+        .clb-noms span { font-family:var(--sans); font-size:1.05rem; font-weight:700; letter-spacing:.02em;
+            color:var(--text); opacity:.82; }
+        .clb-mes { font-family:var(--mono); font-size:.7rem; color:var(--accent-green); text-decoration:none;
+            border-bottom:1px solid transparent; }
+        .clb-mes:hover { border-bottom-color:var(--accent-green); }
+        .clb-nota { font-size:.74rem; color:var(--muted); line-height:1.6; margin:.15rem 0 0; max-width:60ch; }
+        .clb-nota a { color:var(--muted); }
+        .clb-nota strong { color:var(--text); font-weight:600; }
+        @media (max-width:768px) {
+            .cl-banda { padding:.9rem 0; }
+            .clb-noms span { font-size:.92rem; }
+        }
         .hero-disc { font-family:var(--font-mono,monospace); font-size:.7rem; letter-spacing:.16em;
             text-transform:uppercase; color:var(--accent-green); margin:0 0 .5rem; font-weight:600; }
         /* A mòbil aquesta línia costa 26 px i el dibuix del hero ja hi cabia
@@ -1075,6 +1097,19 @@
      que compra qui paga. Una sola de les dues no fa la feina: el castell tot
      sol es llegeix com una metàfora bonica, i el celler tot sol es llegeix com
      una consultoria més. -->
+<!--TT-CLIENTS-BANDA-->
+<!-- GENERAT per SOS/tools/build-clients.js · no s'edita a mà -->
+<section class="cl-banda" aria-label="Clients">
+  <div class="container">
+    <div class="clb-in">
+      <p class="clb-lbl" data-i18n="clb.lbl">Han estat clients</p>
+      <div class="clb-noms"><span>IKEA</span><span>Telefónica</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>ESADE</span><a href="#trajectoria" class="clb-mes" data-i18n="clb.mes">i 17 més →</a></div>
+      <p class="clb-nota" data-i18n-html="clb.nota">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong></p>
+    </div>
+  </div>
+</section>
+<!--/TT-CLIENTS-BANDA-->
+
 <section class="fentpinya" id="fentpinya">
     <div class="container">
         <div class="section-header fade-up" style="margin-bottom:4rem;">
@@ -1391,7 +1426,7 @@
                 <div class="glos-item">
                 <div class="glos-t" data-i18n="glos.g1.t">VNA · Value Network Analysis</div>
                 <div class="glos-a" data-i18n="glos.g1.a">El mapa de qui es passa què amb qui</div>
-                <p class="glos-d" data-i18n-html="glos.g1.d">Dibuixem el poble com el que és: gent i entitats que s'intercanvien coses. Hores, diners i locals —que ja es compten— i també favors, informació i confiança, <strong>que no compta ningú i són els que aguanten el projecte</strong>. <em>La va formalitzar l'americana Verna Allee els anys 90 per a empreses; nosaltres l'apliquem a pobles i barris.</em></p>
+                <p class="glos-d" data-i18n-html="glos.g1.d">Dibuixem una organització o un territori com el que és: gent, equips i entitats que s'intercanvien coses. Hores, diners i locals —que ja es compten— i també favors, informació i confiança, <strong>que no compta ningú i són els que aguanten la feina</strong>. <em>La va formalitzar l'americana Verna Allee els anys 90 per a empreses; nosaltres l'apliquem als dos costats.</em></p>
             </div>
                 <div class="glos-item">
                 <div class="glos-t" data-i18n="glos.g2.t">Intangible</div>
@@ -1403,7 +1438,7 @@
                 <div class="glos-a" data-i18n="glos.g4.a">Aprendre a sostenir-se, com als castells</div>
                 <p class="glos-d" data-i18n="glos.g4.d">Sessions de mig matí on un grup viu físicament el que després necessitarà: repartir el pes, avisar abans de cedir i fiar-se de qui no veu. No és una xerrada sobre confiança; és una estona construint-la.</p>
             </div>
-        <p class="glos-nota fade-up" data-i18n-html="glos.nota"><span>→</span> Si en una reunió diem una paraula que no s'entén, atura'ns. Que el veïnat hagi d'aprendre el nostre vocabulari per participar del seu propi projecte seria justament el contrari del que venim a fer.</p>
+        <p class="glos-nota fade-up" data-i18n-html="glos.nota"><span>→</span> Si en una reunió diem una paraula que no s'entén, atura'ns. Que la gent hagi d'aprendre el nostre vocabulari per participar del seu propi projecte seria justament el contrari del que venim a fer.</span> Si en una reunió diem una paraula que no s'entén, atura'ns. Que el veïnat hagi d'aprendre el nostre vocabulari per participar del seu propi projecte seria justament el contrari del que venim a fer.</p>
     </div>
 </section>
 
@@ -1441,7 +1476,7 @@
             <div class="relat-card">
                 <span class="relat-num" data-i18n="relat.n4">04 · Al territori</span>
                 <h3 data-i18n="relat.t4">TeamTowers Humà</h3>
-                <p data-i18n="relat.p4">El mateix mètode portat al poble i al barri, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s'ha après.</p>
+                <p data-i18n="relat.p4">El mateix mètode portat a l'organització i al territori, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s'ha après.</p>
             </div>
         </div>
     </div>
@@ -1524,19 +1559,19 @@
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p1.n">Pas 01</div>
                 <h3 data-i18n="com.p1.h">Mires on ets</h3>
-                <p data-i18n="com.p1.p">Respons unes preguntes sobre el teu poble o entitat: què hi ha en marxa, qui hi és i què us falta. Ho pots fer ara mateix, sol i sense parlar amb ningú.</p>
+                <p data-i18n="com.p1.p">Respons unes preguntes sobre la teva organització: què hi ha en marxa, qui hi és i què us falta. Ho pots fer ara mateix, sol i sense parlar amb ningú.</p>
                 <div class="pas-meta"><span data-i18n="com.p1.m1">3 minuts</span><span data-i18n="com.p1.m2">Gratuït</span><span class="t-endus" data-i18n="com.p1.m3">T'endús: el diagnòstic</span></div>
             </div>
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p2.n">Pas 02</div>
                 <h3 data-i18n="com.p2.h">Dibuixem el mapa</h3>
-                <p data-i18n="com.p2.p">Dues sessions amb les persones i entitats que ja hi són. En surt el mapa de qui sosté què, on hi ha sobrecàrrega i per on val la pena començar. Sense enquestes al veïnat.</p>
+                <p data-i18n="com.p2.p">Dues sessions amb les persones i els equips que ja hi són. En surt el mapa de qui sosté què, on hi ha sobrecàrrega i per on val la pena començar. Sense enquestes massives.</p>
                 <div class="pas-meta"><span data-i18n="com.p2.m1">2 sessions</span><span data-i18n="com.p2.m2">3-4 setmanes</span><span class="t-endus" data-i18n="com.p2.m3">T'endús: l'informe</span></div>
             </div>
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p3.n">Pas 03</div>
                 <h3 data-i18n="com.p3.h">Ho poseu en marxa</h3>
-                <p data-i18n="com.p3.p">S'engega el que hàgiu triat —banc de temps, biblioteca de les coses, grup de consum— amb els rols repartits, les sessions de cohesió i l'eina ja preparada amb el vostre cas a dins.</p>
+                <p data-i18n="com.p3.p">S'engega el que hàgiu triat amb els rols repartits, les sessions de cohesió i l'eina ja preparada amb el vostre cas a dins.</p>
                 <div class="pas-meta"><span data-i18n="com.p3.m1">2-3 mesos</span><span data-i18n="com.p3.m2">1 reunió al mes</span><span class="t-endus" data-i18n="com.p3.m3">T'endús: el projecte obert</span></div>
             </div>
             <div class="pas pas-final">
@@ -2166,7 +2201,14 @@
             <div class="cl-stat"><div class="n">150+</div><div class="l" data-i18n="cl.s3">Empreses i organitzacions acompanyades</div></div>
             <div class="cl-stat"><div class="n">2009</div><div class="l" data-i18n="cl.s4">Primer banc de temps de la ciutat de León</div></div>
         </div>
+        <!--TT-CLIENTS-->
+        <!-- GENERAT per SOS/tools/build-clients.js · no s'edita a mà -->
         <div class="cl-groups fade-up">
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g3">Empreses</div>
+                <div class="cl-logos"><span>IKEA</span><span>Telefónica</span><span>Vodafone</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>Mercedes</span><span>John Deere</span><span>La Caixa</span><span>InfoJobs</span><span>Softonic</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
+                <p class="cl-font" data-i18n-html="cl.font">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong></p>
+            </div>
             <div>
                 <div class="cl-group-lbl" data-i18n="cl.g1">Universitats i escoles de negoci</div>
                 <div class="cl-logos"><span>UB</span><span>UOC</span><span>UAB</span><span>UPC</span><span>ESADE</span><span>IESE</span><span>EADA</span><span>La Salle</span><span>Universidad de León</span></div>
@@ -2175,22 +2217,9 @@
                 <div class="cl-group-lbl" data-i18n="cl.g2">Sector públic</div>
                 <div class="cl-logos"><span>Diputació de Barcelona</span><span>Ajuntament de Vilafranca</span><span>Junta de Castilla y León</span></div>
             </div>
-            <div>
-                <div class="cl-group-lbl" data-i18n="cl.g3">Empreses</div>
-                <!-- Els noms d'empresa surten de l'Álvaro i de ningú altre, i
-                     queden anotats amb la data a `knowledge/negoci/trajectoria.md`:
-                     un nom de client en una web comercial és una afirmació sobre
-                     un tercer, i el dia que algú pregunti «d'on ho heu tret»
-                     s'ha de poder respondre sense fer memòria. -->
-                <div class="cl-logos"><span>IKEA</span><span>Telefónica</span><span>Vodafone</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>Mercedes</span><span>John Deere</span><span>La Caixa</span><span>InfoJobs</span><span>Softonic</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
-                <!-- De qui són aquests clients importa tant com els noms: són
-                     del recorregut de TeamTowers, no de la carrera de RRHH
-                     anterior. Sense aquesta línia, una llista de multinacionals
-                     sota el nom d'un consultor es llegeix com el lector vulgui,
-                     i el que es llegeixi sempre serà més del que hem dit. -->
-                <p class="cl-font" data-i18n-html="cl.font">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong></p>
-            </div>
         </div>
+<!--/TT-CLIENTS-->
+        
         <div class="cl-projects fade-up">
             <div class="cl-proj">
                 <div class="pj-tag" data-i18n="cl.p1.tag">Software comunitari</div>
@@ -2239,7 +2268,7 @@
                 <div class="faq-a" data-i18n-html="faq.a2">Dues sessions per fer el mapa i <strong>una reunió al mes</strong> mentre allò camina. Res més. Si al final la feina de sostenir el projecte acaba sobre la taula del tècnic de participació, hem fallat: precisament veníem a evitar-ho.</div>
             </details>
             <details class="faq-item">
-                <summary data-i18n="faq.q3">On queden les dades del veïnat?</summary>
+                <summary data-i18n="faq.q3">On queden les dades de la gent?</summary>
                 <div class="faq-a" data-i18n-html="faq.a3">Al navegador de qui les escriu. <strong>L'eina no té cap servidor central nostre i no demana crear cap compte</strong>, així que no hi ha cap base de dades de veïns a casa d'un tercer. Quan un projecte vol ensenyar què fa cap enfora, el que surt és agregat i sense noms —«al poble hi ha 14 ofertes de cuina», mai qui les fa.</div>
             </details>
             <details class="faq-item">
@@ -2269,7 +2298,7 @@
                 <div class="faq-a" data-i18n-html="faq.a5">No, i sovint són compatibles. Les eines de participació serveixen per <strong>recollir</strong>: propostes, vots, pressupostos participatius. Això altre serveix per <strong>sostenir</strong> el dia a dia d'un projecte que ja s'ha decidit —qui fa què, qui hi ha posat hores, qui entra ara. Si el que ja teniu ho fa, t'ho direm i no et vendrem res.</div>
             </details>
         </div>
-        <p class="faq-nota fade-up" data-i18n-html="faq.nota"><span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn del poble, no de l'eina—, ni fem enquestes massives al veïnat. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</p>
+        <p class="faq-nota fade-up" data-i18n-html="faq.nota"><span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn de vosaltres, no de l'eina—, ni fem enquestes massives. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn del poble, no de l'eina—, ni fem enquestes massives al veïnat. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</p>
     </div>
 </section>
 
@@ -2444,7 +2473,7 @@ ca: {
   'relat.p3':'Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee, i va començar amb equips d\'empresa.',
   'relat.n4':'04 · Al territori',
   'relat.t4':'TeamTowers Humà',
-  'relat.p4':'El mateix mètode portat al poble i al barri, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s\'ha après.',
+  'relat.p4':'El mateix mètode portat a l\'organització i al territori, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s\'ha après.',
   'pk.eyebrow':'El catàleg',
   'pk.h2':'Propostes tancades. <em>Amb el preu escrit.</em>',
   'pk.intro':'Cada paquet diu per a qui és, quant dura, què t\'endús, què t\'aporta, quant costa i què fa moure el preu dins de la forquilla. Els que van a administració pública hi entren per sota dels 5.000 €, que és el que es contracta sense obrir un expedient llarg. Els que no porten xifra publicada diuen com es calculen, que és el que en fa falta per saber si encaixa.',
@@ -2468,6 +2497,9 @@ ca: {
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
   'hero.evo3.k':'Avui · TeamTowers Humà','hero.evo3.d':'El mateix a empreses, ajuntaments i barris, amb una eina lliure que ho manté viu.',
+  'clb.lbl':'Han estat clients',
+  'clb.mes':'i 17 més →',
+  'clb.nota':'Del recorregut de <a href=\'https://teamtowers.eu\' target=\'_blank\' rel=\'noopener\'>TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong>',
   'hero.disc':'Consultoria sistèmica i formació','hero.porta1':'Empreses i cooperatives','hero.porta2':'Ajuntaments, consells i entitats',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
   'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
@@ -2592,32 +2624,32 @@ ca: {
   'glos.intro':'Cap d\'aquestes paraules és imprescindible per treballar amb nosaltres. Les escrivim perquè les trobaràs en aquesta pàgina i en qualsevol memòria de subvenció, i perquè un mètode que només s\'entén de dins no és un mètode: és un gremi.',
   'glos.g1.t':'VNA · Value Network Analysis',
   'glos.g1.a':'El mapa de qui es passa què amb qui',
-  'glos.g1.d':'Dibuixem el poble com el que és: gent i entitats que s\'intercanvien coses. Hores, diners i locals —que ja es compten— i també favors, informació i confiança, <strong>que no compta ningú i són els que aguanten el projecte</strong>. <em>La va formalitzar l\'americana Verna Allee els anys 90 per a empreses; nosaltres l\'apliquem a pobles i barris.</em>',
+  'glos.g1.d':'Dibuixem una organització o un territori com el que és: gent, equips i entitats que s\'intercanvien coses. Hores, diners i locals —que ja es compten— i també favors, informació i confiança, <strong>que no compta ningú i són els que aguanten la feina</strong>. <em>La va formalitzar l\'americana Verna Allee els anys 90 per a empreses; nosaltres l\'apliquem als dos costats.</em>',
   'glos.g2.t':'Intangible',
   'glos.g2.a':'El que sosté i no surt a cap acta',
   'glos.g2.d':'Que la gent es fiï. Que algú recordi com es feia. Que et tornin el favor. Quan un projecte cau, gairebé mai és perquè faltaven diners: és perquè s\'ha trencat un d\'aquests i no ho mirava ningú.',
   'glos.g4.t':'Fent Pinya',
   'glos.g4.a':'Aprendre a sostenir-se, com als castells',
   'glos.g4.d':'Sessions de mig matí on un grup viu físicament el que després necessitarà: repartir el pes, avisar abans de cedir i fiar-se de qui no veu. No és una xerrada sobre confiança; és una estona construint-la.',
-  'glos.nota':'<span>→</span> Si en una reunió diem una paraula que no s\'entén, atura\'ns. Que el veïnat hagi d\'aprendre el nostre vocabulari per participar del seu propi projecte seria justament el contrari del que venim a fer.',
+  'glos.nota':'<span>→</span> Si en una reunió diem una paraula que no s\'entén, atura\'ns. Que la gent hagi d\'aprendre el nostre vocabulari per participar del seu propi projecte seria justament el contrari del que venim a fer.',
   'com.eyebrow':'Com funciona',
   'com.h2':'Quatre passos, i el quart <em>és que marxem</em>',
   'com.intro':'De mitjana, de la primera reunió a tenir el projecte caminant sol passen entre quatre i sis mesos. Pots parar en qualsevol pas i quedar-te el que portis fet.',
   'com.p1.n':'Pas 01',
   'com.p1.h':'Mires on ets',
-  'com.p1.p':'Respons unes preguntes sobre el teu poble o entitat: què hi ha en marxa, qui hi és i què us falta. Ho pots fer ara mateix, sol i sense parlar amb ningú.',
+  'com.p1.p':'Respons unes preguntes sobre la teva organització: què hi ha en marxa, qui hi és i què us falta. Ho pots fer ara mateix, sol i sense parlar amb ningú.',
   'com.p1.m1':'3 minuts',
   'com.p1.m2':'Gratuït',
   'com.p1.m3':'T\'endús: el diagnòstic',
   'com.p2.n':'Pas 02',
   'com.p2.h':'Dibuixem el mapa',
-  'com.p2.p':'Dues sessions amb les persones i entitats que ja hi són. En surt el mapa de qui sosté què, on hi ha sobrecàrrega i per on val la pena començar. Sense enquestes al veïnat.',
+  'com.p2.p':'Dues sessions amb les persones i els equips que ja hi són. En surt el mapa de qui sosté què, on hi ha sobrecàrrega i per on val la pena començar. Sense enquestes massives.',
   'com.p2.m1':'2 sessions',
   'com.p2.m2':'3-4 setmanes',
   'com.p2.m3':'T\'endús: l\'informe',
   'com.p3.n':'Pas 03',
   'com.p3.h':'Ho poseu en marxa',
-  'com.p3.p':'S\'engega el que hàgiu triat —banc de temps, biblioteca de les coses, grup de consum— amb els rols repartits, les sessions de cohesió i l\'eina ja preparada amb el vostre cas a dins.',
+  'com.p3.p':'S\'engega el que hàgiu triat amb els rols repartits, les sessions de cohesió i l\'eina ja preparada amb el vostre cas a dins.',
   'com.p3.m1':'2-3 mesos',
   'com.p3.m2':'1 reunió al mes',
   'com.p3.m3':'T\'endús: el projecte obert',
@@ -2634,13 +2666,13 @@ ca: {
   'faq.a1':'<strong>Cada paquet del catàleg porta el preu escrit</strong>, i l\'eina no en té: és gratuïta i te la pots endur. El que es paga és l\'acompanyament, i en la majoria de casos no surt del pressupost municipal sinó de fons que ja existeixen —el catàleg de la Diputació de Barcelona, els Ateneus Cooperatius, els fons Leader de desenvolupament rural o els Next Generation. Cada paquet diu quina via li encaixa. Al diagnòstic de 3 minuts ho concretem al teu cas, i si cap no encaixa, també t\'ho direm.',
   'faq.q2':'Quanta feina li caurà al personal tècnic?',
   'faq.a2':'Dues sessions per fer el mapa i <strong>una reunió al mes</strong> mentre allò camina. Res més. Si al final la feina de sostenir el projecte acaba sobre la taula del tècnic de participació, hem fallat: precisament veníem a evitar-ho.',
-  'faq.q3':'On queden les dades del veïnat?',
+  'faq.q3':'On queden les dades de la gent?',
   'faq.a3':'Al navegador de qui les escriu. <strong>L\'eina no té cap servidor central nostre i no demana crear cap compte</strong>, així que no hi ha cap base de dades de veïns a casa d\'un tercer. Quan un projecte vol ensenyar què fa cap enfora, el que surt és agregat i sense noms —«al poble hi ha 14 ofertes de cuina», mai qui les fa.',
   'faq.q4':'Quedem lligats a vosaltres?',
   'faq.a4':'No, i està fet expressament perquè no pugueu. El programa és obert i funciona sense nosaltres, les dades s\'exporten en un fitxer que és vostre, i el pas 4 del mètode és formar gent del poble perquè ho porti. <strong>Si al cap d\'un any encara ens necessiteu, la feina ha sortit malament.</strong>',
   'faq.q5':'Ja tenim una app de participació. Això no és el mateix?',
   'faq.a5':'No, i sovint són compatibles. Les eines de participació serveixen per <strong>recollir</strong>: propostes, vots, pressupostos participatius. Això altre serveix per <strong>sostenir</strong> el dia a dia d\'un projecte que ja s\'ha decidit —qui fa què, qui hi ha posat hores, qui entra ara. Si el que ja teniu ho fa, t\'ho direm i no et vendrem res.',
-  'faq.nota':'<span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn del poble, no de l\'eina—, ni fem enquestes massives al veïnat. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.',
+  'faq.nota':'<span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn de vosaltres, no de l\'eina—, ni fem enquestes massives. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.',
   'cta.pr1':'Primer banc de temps de la ciutat de León, engegat i encara explicable pas a pas',
   'cta.pr2':'Persones pel taller Fent Pinya des del 2005',
   'cta.pr3':'De l\'eina és gratuïta i oberta: es pot revisar abans de confiar-hi',
@@ -2759,7 +2791,7 @@ es: {
   'relat.p3':'Los castells como experiencia, y el mapa de red de valor como diagnóstico: dibujar quién da qué a quién, incluyendo los favores, la información y la confianza que no apunta nadie. Es el método VNA de Verna Allee, y empezó con equipos de empresa.',
   'relat.n4':'04 · En el territorio',
   'relat.t4':'TeamTowers Humà',
-  'relat.p4':'El mismo método llevado al pueblo y al barrio, con el catálogo entero: consultoría, formación, y producción y dinamización. Y una herramienta gratuita para que cuando nos vayamos no se vaya con nosotros lo aprendido.',
+  'relat.p4':'El mismo método llevado a la organización y al territorio, con el catálogo entero: consultoría, formación, y producción y dinamización. Y una herramienta gratuita para que cuando nos vayamos no se vaya con nosotros lo aprendido.',
   'pk.eyebrow':'El catálogo',
   'pk.h2':'Propuestas cerradas. <em>Con el precio escrito.</em>',
   'pk.intro':'Cada paquete dice para quién es, cuánto dura, qué te llevas, qué te aporta, cuánto cuesta y qué mueve el precio dentro de la horquilla. Los que van a administración pública entran por debajo de los 5.000 €, que es lo que se contrata sin abrir un expediente largo. Los que no llevan cifra publicada dicen cómo se calculan, que es lo que hace falta para saber si encaja.',
@@ -2783,6 +2815,9 @@ es: {
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vive que el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
   'hero.evo3.k':'Hoy · TeamTowers Humà','hero.evo3.d':'Lo mismo en empresas, ayuntamientos y barrios, con una herramienta libre que lo mantiene vivo.',
+  'clb.lbl':'Han sido clientes',
+  'clb.mes':'y 17 más →',
+  'clb.nota':'Del recorrido de <a href=\'https://teamtowers.eu\' target=\'_blank\' rel=\'noopener\'>TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos aplicaciones de Value Network Analysis.</strong>',
   'hero.disc':'Consultoría sistémica y formación','hero.porta1':'Empresas y cooperativas','hero.porta2':'Ayuntamientos, consejos y entidades',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',
   'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
@@ -2907,32 +2942,32 @@ es: {
   'glos.intro':'Ninguna de estas palabras hace falta para trabajar con nosotros. Las escribimos porque las vas a encontrar en esta página y en cualquier memoria de subvención, y porque un método que solo se entiende desde dentro no es un método: es un gremio.',
   'glos.g1.t':'VNA · Value Network Analysis',
   'glos.g1.a':'El mapa de quién se pasa qué con quién',
-  'glos.g1.d':'Dibujamos el pueblo como lo que es: gente y entidades que se intercambian cosas. Horas, dinero y locales —que ya se cuentan— y también favores, información y confianza, <strong>que no cuenta nadie y son los que sostienen el proyecto</strong>. <em>Lo formalizó la estadounidense Verna Allee en los años 90 para empresas; nosotros lo aplicamos a pueblos y barrios.</em>',
+  'glos.g1.d':'Dibujamos una organización o un territorio como lo que es: gente, equipos y entidades que se intercambian cosas. Horas, dinero y locales —que ya se cuentan— y también favores, información y confianza, <strong>que no cuenta nadie y son los que aguantan el trabajo</strong>. <em>La formalizó la americana Verna Allee en los años 90 para empresas; nosotros la aplicamos a los dos lados.</em>',
   'glos.g2.t':'Intangible',
   'glos.g2.a':'Lo que sostiene y no sale en ningún acta',
   'glos.g2.d':'Que la gente se fíe. Que alguien recuerde cómo se hacía. Que te devuelvan el favor. Cuando un proyecto cae, casi nunca es porque faltara dinero: es porque se ha roto uno de estos y no lo miraba nadie.',
   'glos.g4.t':'Fent Pinya',
   'glos.g4.a':'Aprender a sostenerse, como en los castells',
   'glos.g4.d':'Sesiones de media mañana donde un grupo vive físicamente lo que después va a necesitar: repartir el peso, avisar antes de ceder y fiarse de quien no ve. No es una charla sobre la confianza; es un rato construyéndola.',
-  'glos.nota':'<span>→</span> Si en una reunión decimos una palabra que no se entiende, párranos. Que el vecindario tenga que aprender nuestro vocabulario para participar de su propio proyecto sería justo lo contrario de lo que venimos a hacer.',
+  'glos.nota':'<span>→</span> Si en una reunión decimos una palabra que no se entiende, páranos. Que la gente tenga que aprender nuestro vocabulario para participar de su propio proyecto sería justamente lo contrario de lo que venimos a hacer.',
   'com.eyebrow':'Cómo funciona',
   'com.h2':'Cuatro pasos, y el cuarto <em>es que nos vamos</em>',
   'com.intro':'De media, de la primera reunión a tener el proyecto andando solo pasan entre cuatro y seis meses. Puedes parar en cualquier paso y quedarte lo que lleves hecho.',
   'com.p1.n':'Paso 01',
   'com.p1.h':'Miras dónde estás',
-  'com.p1.p':'Respondes unas preguntas sobre tu pueblo o entidad: qué hay en marcha, quién está y qué os falta. Lo puedes hacer ahora mismo, solo y sin hablar con nadie.',
+  'com.p1.p':'Respondes unas preguntas sobre tu organización: qué hay en marcha, quién está y qué os falta. Puedes hacerlo ahora mismo, solo y sin hablar con nadie.',
   'com.p1.m1':'3 minutos',
   'com.p1.m2':'Gratis',
   'com.p1.m3':'Te llevas: el diagnóstico',
   'com.p2.n':'Paso 02',
   'com.p2.h':'Dibujamos el mapa',
-  'com.p2.p':'Dos sesiones con las personas y entidades que ya están. Sale el mapa de quién sostiene qué, dónde hay sobrecarga y por dónde vale la pena empezar. Sin encuestas al vecindario.',
+  'com.p2.p':'Dos sesiones con las personas y los equipos que ya están. Sale el mapa de quién sostiene qué, dónde hay sobrecarga y por dónde vale la pena empezar. Sin encuestas masivas.',
   'com.p2.m1':'2 sesiones',
   'com.p2.m2':'3-4 semanas',
   'com.p2.m3':'Te llevas: el informe',
   'com.p3.n':'Paso 03',
   'com.p3.h':'Lo ponéis en marcha',
-  'com.p3.p':'Se arranca lo que hayáis elegido —banco de tiempo, biblioteca de las cosas, grupo de consumo— con los roles repartidos, las sesiones de cohesión y la herramienta ya preparada con vuestro caso dentro.',
+  'com.p3.p':'Se pone en marcha lo que hayáis elegido con los roles repartidos, las sesiones de cohesión y la herramienta ya preparada con vuestro caso dentro.',
   'com.p3.m1':'2-3 meses',
   'com.p3.m2':'1 reunión al mes',
   'com.p3.m3':'Te llevas: el proyecto abierto',
@@ -2949,13 +2984,13 @@ es: {
   'faq.a1':'<strong>Cada paquete del catálogo lleva el precio escrito</strong>, y la herramienta no tiene: es gratuita y te la puedes llevar. Lo que se paga es el acompañamiento, y en la mayoría de casos no sale del presupuesto municipal sino de fondos que ya existen —el catálogo de la Diputación de Barcelona, los Ateneus Cooperatius, los fondos Leader de desarrollo rural o los Next Generation. Cada paquete dice qué vía le encaja. En el diagnóstico de 3 minutos lo concretamos a tu caso, y si ninguna encaja, también te lo diremos.',
   'faq.q2':'¿Cuánto trabajo le va a caer al personal técnico?',
   'faq.a2':'Dos sesiones para hacer el mapa y <strong>una reunión al mes</strong> mientras aquello anda. Nada más. Si al final el trabajo de sostener el proyecto acaba sobre la mesa del técnico de participación, hemos fallado: precisamente veníamos a evitarlo.',
-  'faq.q3':'¿Dónde quedan los datos del vecindario?',
+  'faq.q3':'¿Dónde quedan los datos de la gente?',
   'faq.a3':'En el navegador de quien los escribe. <strong>La herramienta no tiene ningún servidor central nuestro y no pide crear ninguna cuenta</strong>, así que no hay ninguna base de datos de vecinos en casa de un tercero. Cuando un proyecto quiere enseñar qué hace hacia fuera, lo que sale es agregado y sin nombres —«en el pueblo hay 14 ofertas de cocina», nunca quién las hace.',
   'faq.q4':'¿Quedamos atados a vosotros?',
   'faq.a4':'No, y está hecho a propósito para que no podáis. El programa es abierto y funciona sin nosotros, los datos se exportan en un fichero que es vuestro, y el paso 4 del método es formar a gente del pueblo para que lo lleve. <strong>Si al cabo de un año todavía nos necesitáis, el trabajo ha salido mal.</strong>',
   'faq.q5':'Ya tenemos una app de participación. ¿No es lo mismo?',
   'faq.a5':'No, y a menudo son compatibles. Las herramientas de participación sirven para <strong>recoger</strong>: propuestas, votos, presupuestos participativos. Esto otro sirve para <strong>sostener</strong> el día a día de un proyecto que ya se ha decidido —quién hace qué, quién ha puesto horas, quién entra ahora. Si lo que ya tenéis lo hace, te lo diremos y no te venderemos nada.',
-  'faq.nota':'<span>→</span> Lo que <strong>no</strong> hacemos: ni gestionamos el proyecto por vosotros, ni garantizamos que la gente participe —eso depende del pueblo, no de la herramienta—, ni hacemos encuestas masivas al vecindario. Y no dinamizamos nada que no tenga al menos tres personas dispuestas a sostenerlo.',
+  'faq.nota':'<span>→</span> Lo que <strong>no</strong> hacemos: ni gestionamos el proyecto por vosotros, ni garantizamos que la gente participe —eso depende de vosotros, no de la herramienta—, ni hacemos encuestas masivas. Y no dinamizamos nada que no tenga al menos tres personas dispuestas a sostenerlo.',
   'cta.pr1':'Primer banco de tiempo de la ciudad de León, puesto en marcha y todavía explicable paso a paso',
   'cta.pr2':'Personas por el taller Fent Pinya desde 2005',
   'cta.pr3':'De la herramienta es gratuita y abierta: se puede revisar antes de confiar en ella',

@@ -78,6 +78,50 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### El diagnòstic d'organització · demanat, i per què no és el comunitari amb un altre nom
+
+**Demanat per l'Àlvar (28/09/2026).** `SOS/diagnostic.html` és el **diagnòstic
+comunitari**: pregunta pel teu municipi, per la població i pel teixit, i
+proposa un itinerari amb subvencions públiques. Serveix per a un ajuntament,
+un consell comarcal, una entitat o una cooperativa —i **no serveix per a una
+empresa que truca per un taller**.
+
+**El que es demana:** un formulari que ajudi a definir una **proposta de
+diagnòstic per a una organització**, i que de passada ens digui què vol
+comprar. Concretament:
+
+1. **L'objectiu de la consulta.** No és el mateix que et demanin un
+   *icebreaker* per a una jornada, un *teambuilding* d'un dia, o una millora
+   d'equip amb consultoria i formació en mapa de valor. Avui tot això cau al
+   mateix formulari de pressupost i s'ha de deduir del text lliure.
+2. **Quin producte del catàleg** encaixa: Fent Pinya, producció
+   d'esdeveniments, programa d'equip gestor, comunitats de pràctica…
+3. **Segmentar el tipus d'organització**, que canvia les preguntes: una
+   multinacional amb un departament de formació no es pregunta el mateix que
+   una cooperativa de vint persones.
+4. **Que serveixi als dos costats**: al lead, perquè se'n va amb una proposta
+   i no amb un «ja et direm»; i a nosaltres, per qualificar.
+
+**Per què no és el comunitari amb els noms canviats**, que és la temptació:
+el comunitari proposa **itinerari, durada i via de finançament pública** a
+partir del territori. L'organització no té subvenció municipal ni població;
+té **pressupost, calendari i un dolor concret**, i el que decideix la proposta
+és l'objectiu de la consulta, no el cens.
+
+**El que ja hi ha per aprofitar:** `PROFILES` i el motor de recomanació de
+`diagnostic.html`, el catàleg declarat a `build-oferta.js` amb el filtre de
+sector, i `pressupost.html`, que ja recull contacte i pressupost.
+
+**El que no s'ha de fer sense decidir-ho abans:** duplicar el motor. Si acaben
+sent dos formularis amb dues taules de recomanació, divergiran —i el dia que
+divergeixin ningú se n'adonarà, perquè tots dos seguiran tornant una proposta
+raonable.
+
+> **El pla de disseny és el següent pas** i està demanat com a tal: copys,
+> segmentació i preguntes. Fins que no hi sigui, no s'escriu cap formulari.
+
+---
+
 ### Del mapa al Kanban que s'executa sol · fet, i què queda
 
 **Fet (25–26/09/2026), PRs #160, #161 i #163.** L'anàlisi sencera és a
