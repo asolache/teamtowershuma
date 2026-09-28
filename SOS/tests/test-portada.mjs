@@ -17,8 +17,10 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
 
 const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'index.html');
+const { TOTS } = createRequire(import.meta.url)('../tools/build-clients.js');
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
 
@@ -151,6 +153,56 @@ console.log('\n5 · També en castellà');
   ok(r.pinya, 'la metàfora es tradueix i no es queda a mitges');
   ok(/sosteniendo/i.test(r.esq), 'els comptadors del dibuix també: «' + r.esq + '»');
   ok(!/En marxa/.test(r.btn), 'i el botó, que viu dins del dibuix: «' + r.btn + '»');
+  await ctx.close();
+}
+
+/* ── 5b · La paret de clients ──────────────────────────────────────────────
+   Era una línia de sis noms separats per espais i ara és la llista sencera,
+   maquetada, just sota del hero. Tres coses que només es veuen obrint-ho:
+
+   · **Que hi siguin tots.** El generador en declara trenta-dos; si la pàgina
+     en pinta menys, algú ha tocat el bloc a mà i el proper `--check` ho
+     desfarà sense avisar que la portada portava dies ensenyant-ne vint.
+   · **Que estiguin amunt.** Tota la gràcia és aquesta: si un dia una secció
+     nova se'ls posa al davant, la prova més forta que tenim torna a quedar
+     enterrada i no ho notaria ningú.
+   · **Que el castellà els tradueixi.** Les línies de sector són trenta-dues
+     claus noves de diccionari. Una que no hi fos deixaria aquell client en
+     català enmig de la pàgina castellana —i com que el nom no es tradueix,
+     es llegeix igual de bé i no es veu. */
+console.log('\n5b · Els clients, sencers i amunt');
+{
+  const { ctx, p } = await nova();
+  const r = await p.evaluate(() => {
+    const s = document.querySelector('#clients');
+    const seccions = [...document.querySelectorAll('section[id]')].map(x => x.id);
+    return { hi: !!s, fitxes: s ? s.querySelectorAll('.clm-c').length : 0,
+      grups: s ? s.querySelectorAll('.clm-g').length : 0,
+      posicio: seccions.indexOf('clients'), seccions: seccions.length,
+      ikea: s ? /IKEA/.test(s.textContent) : false,
+      agencies: s ? /Laeski|We Barcelona/.test(s.textContent) : false,
+      font: s ? /TeamTowers/.test((s.querySelector('.clm-nota') || {}).textContent || '') : false };
+  });
+  ok(r.hi && r.fitxes === 32, `els 32 clients hi són (${r.fitxes})`);
+  ok(r.grups === 5, `en 5 grups (${r.grups}): una multinacional i una diputació no es llegeixen igual`);
+  ok(r.posicio === 0, `i és la primera secció de la pàgina (${r.posicio} de ${r.seccions}): amunt o no serveix`);
+  ok(r.agencies, 'les agències i partners hi són, que és el segment que el diagnòstic sap atendre');
+  ok(r.font, 'i es diu de quin recorregut vénen els noms');
+  await ctx.close();
+}
+{
+  const { ctx, p } = await nova();
+  await p.click('.lang-btn[data-lang="es"]');
+  await p.waitForTimeout(200);
+  /* Es compara amb la declaració de debò i no amb una llista d'aquí: una còpia
+     escrita a la prova envelliria sola i donaria verd sobre el que ja no hi és. */
+  const esperat = TOTS.map(c => c.sec.es);
+  const secs = await p.evaluate(() =>
+    [...document.querySelectorAll('#clients .clm-s')].map(x => x.textContent.trim()));
+  const mal = secs.map((t, i) => t === esperat[i] ? null : `${TOTS[i].n}: «${t}»`).filter(Boolean);
+  ok(secs.length === esperat.length && !mal.length,
+    'en castellà es tradueixen totes les línies de sector'
+    + (mal.length ? ' — ' + mal.length + ' no: ' + mal.slice(0, 3).join(', ') : ''));
   await ctx.close();
 }
 
