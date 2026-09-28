@@ -110,8 +110,19 @@ else {
 }
 
 /* ── 4 · La pantalla és a dins de l'app, no una miniapp més ───────────────── */
-if (/HOME_VIEWS=\['tauler','mapa','missions'/.test(CODI))
-  ok('viu com una portada de l\'app i no com una pàgina a part');
+/* La regla era que la safata visqués dins de `HOME_VIEWS` i buscava l'ordre
+   literal `'tauler','mapa','missions'`. Ara la safata **és la primera**: la
+   portada per defecte. Reordenar no és sortir-ne, i la regla s'estreny en
+   comptes de relaxar-se —abans hi valia ser la tercera, ara ha de ser la
+   primera, perquè el que es protegeix ja no és que hi sigui sinó que sigui
+   el que veus en entrar. */
+const hv = (CODI.match(/const HOME_VIEWS=\[([^\]]*)\]/) || [, ''])[1]
+  .split(',').map(x => x.trim().replace(/'/g, ''));
+if (hv[0] === 'missions')
+  ok(`és la portada per defecte de l'app, no una pàgina a part (${hv.length} portades: ${hv.join(', ')})`);
+else if (hv.indexOf('missions') >= 0)
+  bad(`«les meves tasques» ja no és la primera portada sinó la ${hv.indexOf('missions') + 1}a: `
+    + 'qui entra torna a veure què passa al node abans de què ha de fer ell');
 else bad('«les meves tasques» ha sortit de `HOME_VIEWS`: una safata fora de l\'app seria la novena');
 
 /* ── 5 · Els noms de les cures no surten sense permís ─────────────────────── */

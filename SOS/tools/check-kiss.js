@@ -199,8 +199,12 @@ if (menu <= MAX_MENU_ITEMS) ok(`${menu} entrades al menú (sostre ${MAX_MENU_ITE
 else bad(`${menu} entrades al menú, sostre ${MAX_MENU_ITEMS}`);
 
 /* El llançador havia arribat a 32 accions en una llista plana i ningú ho havia
-   comptat mai. És la superfície on més fàcil és afegir sense pensar-hi. */
-const launcher = (src.match(/^function openLauncher\(\)\{[\s\S]*?\n  \];/m) || [''])[0];
+   comptat mai. És la superfície on més fàcil és afegir sense pensar-hi.
+
+   La llista va sortir de dins de `openLauncher()` el dia que la portada la va
+   haver de llegir també: tenir-ne dues seria tenir-ne dues que divergeixen. El
+   sostre segueix comptant el mateix, només que ara sobre `ACCIONS`. */
+const launcher = (src.match(/^const ACCIONS=\[[\s\S]*?\n\];/m) || [''])[0];
 const nLaunch = (launcher.match(/\{g:'[a-z]+',ic:/g) || []).length;
 const nUngrouped = (launcher.match(/\{ic:'/g) || []).length;
 if (nLaunch && nLaunch <= MAX_LAUNCHER) ok(`${nLaunch} accions al llançador (sostre ${MAX_LAUNCHER})`);

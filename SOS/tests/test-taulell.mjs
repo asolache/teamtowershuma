@@ -17,7 +17,14 @@ const page = await b.newPage({ viewport: { width: 1280, height: 900 } });
 page.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
 await page.goto(APP);
 await page.waitForFunction(() => window.__SOS && window.__SOS.opsState);
-await page.evaluate(async () => { await window.__SOS.markOnboardingDone(); });
+/* El panell d'operacions viu al tauler del node, que ja no és la portada per
+   defecte de l'app: ara ho és el teu tauler de tasques. Aquesta prova va
+   d'aquell panell, així que diu de quina pantalla parla en comptes de
+   confiar que l'app hi obri. */
+await page.evaluate(async () => {
+  await window.__SOS.markOnboardingDone();
+  window.__SOS.state.homeView = 'tauler';
+});
 
 console.log('\n1 · Amb nodes però sense ningú actiu, el taulell no fingeix');
 /* Amb zero nodes no es veu res de tot això —mana la pantalla d'entrada, i està
@@ -26,7 +33,7 @@ const buit = await page.evaluate(async () => {
   const S = window.__SOS;
   const n0 = S.newNode('Torrelles de Foix', 'municipi', null);
   S.state.nodes.push(n0); await S.persist(n0);
-  S.state.activePersona = null; S.render();
+  S.state.activePersona = null; S.state.homeView = 'tauler'; S.state.homeView = 'tauler'; S.render();
   const box = document.querySelector('#opsPanel');
   return { txt: box.textContent.replace(/\s+/g, ' '), botons: box.querySelectorAll('button').length };
 });

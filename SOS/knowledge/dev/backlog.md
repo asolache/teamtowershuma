@@ -2308,9 +2308,65 @@ problema, perquè ningú en veu 36.
 només que ara ningú el troba mai. La diferència és que **el que s'amaga ha de
 poder aparèixer sol** quan es compleix la condició que el fa útil.
 
-**El primer tall, si es vol una passa barata:** que el llançador **ordeni i
-agrupi per estat del node** en comptes de per família. Les mateixes 36, però la
-primera pantalla només ensenya les que el node d'avui pot fer servir.
+**FET (28/09/2026), i el que en queda.**
+
+La portada del SOS és el **teu Kanban**. `HOME_VIEWS` passa a
+`['missions','tauler','mapa','fons','gent']` —cinc, el sostre no s'ha tocat— i
+la primera mana. El tauler del node es queda com a portada, ara enllaçable a
+`#/tauler`, i els enllaços antics de `#/missions` segueixen obrint el mateix.
+
+**El perfil surt dels modals.** Una línia a la capçalera del Kanban: cromo,
+nom, graó i hores, que obre el perfil. Una línia i no una fitxa: el que ha
+d'omplir aquesta pantalla són les tasques.
+
+**El 80/20 es calcula.** `ACCIONS` puja fora de `openLauncher()` —la portada
+l'ha de llegir igual que el menú, i tenir-ne dues seria tenir-ne dues que
+divergeixen— i cada acció declara `quan(c)` i `pes`. `contextAccions()`
+**no inventa cap predicat**: ajunta els que ja hi havia escampats
+(`communityStatus`, `CAPABILITIES[].used`, `nodePulse`, `hasProfile`).
+
+I **una acció principal i prou**: la primera versió en posava cinc, i cinc
+botons del mateix pes són una barra d'eines —que torna a deixar la tria a qui
+acaba d'entrar, que és el problema que això venia a resoldre. A la pantalla es
+va veure de seguida: l'acció secundària «El meu dossier» deia el mateix que la
+primera targeta del tauler. **Una acció i el menú.**
+
+Amb l'estat buit la primera és fer-se el perfil; amb perfil i node, publicar;
+amb el node rodat, una altra. Mesurat: **8 accions de 36 amb l'estat buit, 35
+amb un node rodat**. A 390 px, la primera targeta de feina acaba a 748 px del
+plec de 844: **es veu una tasca sencera sense fer scroll**, que és el que abans
+no passava.
+
+**Dues portes tancades de més, i les va caçar una prova que ja hi era.**
+`test-home.mjs` comprova que el que es treu del tauler segueixi al llançador, i
+va fallar: havia posat «Què hi ha a prop» darrere de tenir perfil —quan mirar
+què hi ha és justament el que has de poder fer **abans** de donar el teu nom— i
+el «Registre públic» darrere del teu registre, quan és públic i de tothom. Les
+dues obertes.
+
+**El bloc d'adopció del tauler se'n va.** Era «què podries fer servir i encara
+no fas»: deu targetes de deures plegades dins d'un `details`. És el que ara diu
+la portada, amb la diferència que importa: allà en surt **una**, i surt perquè
+ara serveix.
+
+**Les guardes.** `check-accions.js`, cinc regles, les tres primeres provades
+trencant-les: cap acció sense `quan`/`pes`; cap pes fora de `PES_ORDRE`; ni
+totes serveixen sempre ni cap; la clau per veure les 36 a la mateixa pantalla;
+i la portada no pot demanar-ne més de quatre. `check-tasques.js` regla 4
+**s'estreny**: abans valia que la safata fos a `HOME_VIEWS`, ara ha de ser la
+primera.
+
+**El que queda, i és l'entrada del Kanban (punt 1):** les missions que assignes
+a algú altre. El pont rol→persona segueix sense encadenar-se, i fins que no ho
+estigui, «les que vols assignar» no es poden ensenyar.
+
+**El que NO s'ha fet i s'ha de mirar:** el pes és a **534 KB de 540** (99 %).
+La propera tanda que toqui `index.html` haurà de mesurar abans d'escriure.
+
+---
+
+**El primer tall, si es vol una passa barata:** ~~que el llançador ordeni i
+agrupi per estat del node~~ — fet, i millor: el llançador **filtra**.
 
 ---
 

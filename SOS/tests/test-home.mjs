@@ -98,10 +98,22 @@ const ui = await page.evaluate(async () => {
   if (more) { more.click(); await new Promise(r => setTimeout(r, 150)); }
   const seccions2 = document.querySelectorAll('#workspace .ent-grp-lbl').length;
   await S.setShowAllHome(false);
-  return { primaris, teMore: !!more, seccions, seccions2, teCov: !!cov, covObert };
+  const amb = S.accionsAra(3, { jo: true, nd: null, nodes: 1, gent: 1, ledger: 0, tasques: 0,
+    visible: false, codi: '', caps: { dossier: true }, pulse: null });
+  const sense = S.accionsAra(3, { jo: true, nd: null, nodes: 1, gent: 1, ledger: 0, tasques: 0,
+    visible: false, codi: '', caps: {}, pulse: null });
+  const capsLlegides = amb.map(a => a.t).join('|') !== sense.map(a => a.t).join('|');
+  return { primaris, teMore: !!more, seccions, seccions2, teCov: !!cov, covObert, capsLlegides };
 });
 ok(ui.primaris === 1, 'una sola acció primària a tota la home, no dues (' + ui.primaris + ')');
-ok(ui.teCov && ui.covObert === false, 'la graella d\'adopció hi és, però plegada');
+/* La graella d'adopció se n'ha anat del tauler. Era «què podries fer servir i
+   encara no fas» —deu targetes de deures plegades dins d'un `details`— i és
+   exactament el que ara diu la portada, amb la diferència que importa: allà en
+   surt **una**, i surt perquè ara serveix. `CAPABILITIES` no s'ha esborrat:
+   és una de les fonts de `contextAccions()`, i per això es comprova que el
+   càlcul segueixi llegint-la i no que la graella hi sigui. */
+ok(!ui.teCov, 'la graella d\'adopció ja no és al tauler: ho diu la portada, i d\'una en una');
+ok(ui.capsLlegides, 'i el que sabia segueix comptant: el 80/20 llegeix `CAPABILITIES`');
 ok(ui.teMore, 'es diu que hi ha seccions amagades');
 ok(ui.seccions2 > ui.seccions, 'i en clicar-ho apareixen: ' + ui.seccions + ' → ' + ui.seccions2);
 
