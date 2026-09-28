@@ -334,6 +334,13 @@ jobs:
       - name: El diagnòstic d'organització apunta a paquets que existeixen
         run: node SOS/tools/build-diagnosi-org.js --check
 
+      # Cada acció del llançador declara quan serveix. Una que no ho digui no
+      # sortiria mai a la portada i no petaria res: seguiria al menú sencer i
+      # semblaria que tot està bé. I si totes servissin sempre, la portada
+      # diria «això és el que ara serveix» ensenyant el de sempre.
+      - name: Les accions diuen quan serveixen
+        run: node SOS/tools/check-accions.js
+
       # El nom de la memòria cau del `sw.js` és una empremta de les pàgines.
       # Escrit a mà no es va tocar mai, i com que `activate` només esborra les
       # còpies que **no** es diuen com l'actual, la còpia vella no caducava:

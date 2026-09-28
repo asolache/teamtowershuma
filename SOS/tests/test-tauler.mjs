@@ -40,12 +40,21 @@ const seed = await page.evaluate(async () => {
 
 console.log('\n══ El que importa: des d\'un node, saber que el tauler t\'espera ══');
 
-console.log('\n1 · Al tauler, el botó del tauler no hi és (ja hi ets)');
+/* El botó porta on t'espera la feina, i això ha canviat de lloc: la portada
+   de l'app ja no és el tauler del node sinó el teu tauler de tasques. La
+   regla —un botó cap a on ja ets és soroll— no es toca; el que es comprova és
+   que s'amagui **a la portada**, sigui quina sigui. */
+console.log('\n1 · A la portada, el botó de la portada no hi és (ja hi ets)');
 const alTauler = await page.evaluate(() => {
+  const S = window.__SOS;
+  S.state.activeId = null; S.state.homeView = S.HOME_VIEWS[0]; S.render();
   const b2 = document.querySelector('#btnTauler');
-  return { hi: !!b2, amagat: b2.hidden };
+  const aca = { hi: !!b2, amagat: b2.hidden };
+  S.state.homeView = 'tauler'; S.render();
+  return { aca, foraAmagat: document.querySelector('#btnTauler').hidden };
 });
-ok(alTauler.hi && alTauler.amagat, 'existeix però està amagat: un botó cap a on ja ets és soroll');
+ok(alTauler.aca.hi && alTauler.aca.amagat, 'existeix però està amagat: un botó cap a on ja ets és soroll');
+ok(!alTauler.foraAmagat, 'i des de l\'altra portada sí que hi és, que és per a això');
 
 console.log('\n2 · Mirant un node, hi és i hi porta');
 const alNode = await page.evaluate(async (s) => {
@@ -57,12 +66,17 @@ const alNode = await page.evaluate(async (s) => {
   const visible = !b2.hidden;
   b2.click();
   await new Promise(r => setTimeout(r, 250));
-  return { visible, opsEnlloc, tornat: !S.state.activeId && S.state.homeView === 'tauler',
-    opsTornat: !!document.querySelector('#workspace #opsPanel') };
+  /* El botó porta on t'espera la feina, i això ha canviat de lloc: ara és el
+     teu tauler de tasques. El que compta no és que hi surti el panell
+     d'operacions sinó que **el que t'espera hi sigui**: els vistiplaus i les
+     atencions que el botó comptava són dues de les fonts de `missions()`, i
+     per tant hi arriben com a targetes. */
+  return { visible, opsEnlloc, tornat: !S.state.activeId && S.state.homeView === S.HOME_VIEWS[0],
+    taulerHi: !!document.querySelector('#workspace .tq-cols, #workspace .kcol, #workspace .ai-note') };
 }, seed);
 ok(alNode.visible, 'des d\'un node el botó apareix');
 ok(alNode.opsEnlloc, 'i el taulell NO es duplica al node: hi ha rastre, no còpia');
-ok(alNode.tornat && alNode.opsTornat, 'clicant-lo tornes al tauler i el taulell hi és');
+ok(alNode.tornat && alNode.taulerHi, 'clicant-lo vas al teu tauler i el que t\'espera hi és');
 
 console.log('\n3 · El botó diu QUANTES coses t\'esperen, no només que n\'hi ha');
 const compte = await page.evaluate(async (s) => {

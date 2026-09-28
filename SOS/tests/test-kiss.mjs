@@ -27,37 +27,58 @@ await page.evaluate(async () => {
 });
 
 console.log('\n1 · De cap portada es pot quedar ningú atrapat');
+const HOME = await page.evaluate(() => window.__SOS.HOME_VIEWS);
 const views = ['missions', 'fons', 'gent', 'mapa'];
 for (const v of views) {
   const back = await page.evaluate(async (view) => {
     const S = window.__SOS;
     S.state.activeId = null; S.state.homeView = view; S.render();
+    /* La regla és «de cap portada es pot quedar ningú atrapat», i el que es
+       busca és **una sortida**, no una paraula. Buscar el text literal
+       «vista de gestió» va deixar de trobar res el dia que la portada va
+       passar a ser el tauler de tasques i el botó va canviar de nom i de
+       destí: la regla es complia i la prova deia que no. Ara es mira que hi
+       hagi un botó que porti a una altra portada, que és el que protegeix. */
     const btns = [...document.querySelectorAll('#workspace button')]
-      .filter(x => /vista de gesti[óo]/i.test(x.textContent));
+      .filter(x => /el meu tauler|el node|vista de gesti[óo]/i.test(x.textContent));
     if (!btns.length) return { found: false };
     btns[0].click();
     await new Promise(r => setTimeout(r, 60));
     return { found: true, home: S.state.homeView, active: S.state.activeId };
   }, v);
-  ok(back.found, 'la portada «' + v + '» té la tornada');
-  if (back.found) ok(back.home === 'tauler' && back.active === null,
-    '  i porta al tauler de debò, no a mitges');
+  ok(back.found, 'la portada «' + v + '» té la sortida');
+  /* Abans totes tornaven al tauler i n'hi havia prou de mirar que hi
+     arribessin. Ara la portada per defecte és el tauler de tasques i la
+     sortida de cada pantalla porta a una altra pantalla, que és el que la
+     regla vol dir: **no quedar-te atrapat**, no anar sempre al mateix lloc. */
+  if (back.found) ok(back.active === null && back.home !== v && HOME.includes(back.home),
+    '  i porta a una altra portada de debò, no a mitges · ' + v + ' → ' + back.home);
 }
 
-console.log('\n2 · És la mateixa tornada, no quatre de diferents');
+/* Una funció, un text, un comportament. Amb la portada canviada n'hi ha
+   **dos** textos i és a posta: des de les portades secundàries se surt cap a
+   la portada (`homeBackBtn`), i des de la portada se surt cap al tauler del
+   node (`nodeViewBtn`). Dos destins diferents no poden dir el mateix sense
+   mentir. El que segueix valent: cada portada en té **una**, i les que fan
+   el mateix viatge diuen el mateix. */
+console.log('\n2 · Una sortida per portada, i les que fan el mateix diuen el mateix');
 const same = await page.evaluate(() => {
   const S = window.__SOS;
-  const labels = [];
+  const per = {};
   ['missions', 'fons', 'gent', 'mapa'].forEach(v => {
     S.state.activeId = null; S.state.homeView = v; S.render();
-    const b = [...document.querySelectorAll('#workspace button')]
-      .find(x => /vista de gesti[óo]/i.test(x.textContent));
-    if (b) labels.push(b.textContent.trim() + '|' + (b.title || ''));
+    per[v] = [...document.querySelectorAll('#workspace button')]
+      .filter(x => /el meu tauler|el node|vista de gesti[óo]/i.test(x.textContent))
+      .map(x => x.textContent.trim() + '|' + (x.title || ''));
   });
-  return { labels, unique: new Set(labels).size };
+  const sec = ['fons', 'gent', 'mapa'].map(v => per[v][0]);
+  return { totes: Object.keys(per).every(v => per[v].length === 1),
+    sec, unique: new Set(sec).size, portada: (per.missions || [])[0] };
 });
-ok(same.labels.length === 4, 'les quatre portades en tenen');
-ok(same.unique === 1, 'i totes diuen exactament el mateix: ' + same.labels[0]);
+ok(same.totes, 'cada portada en té exactament una, ni cap ni dues');
+ok(same.unique === 1, 'i les tres secundàries diuen exactament el mateix: ' + same.sec[0]);
+ok(!!same.portada && same.portada !== same.sec[0],
+  'la portada en té una altra, perquè porta a un altre lloc: ' + same.portada);
 
 console.log('\n3 · Cada pestanya sap explicar-se');
 const guides = await page.evaluate(() => {
@@ -94,8 +115,12 @@ const hook = await page.evaluate(() => {
 });
 ok(hook.n === hook.unique, hook.n + ' exports, cap repetit');
 
+/* `openLauncher(true)`: el llançador ara ensenya per defecte només el que ara
+   serveix, i el que aquí es mesura és que la llista **sencera** es pugui
+   recórrer amb la vista. Que el filtrat hi porti ho comprova
+   `test-tauler-persona.mjs`; que el sencer no sigui una llista plana, això. */
 console.log('\n6 · El llançador s\'ha de poder recórrer amb la vista');
-await page.evaluate(() => window.__SOS.openLauncher());
+await page.evaluate(() => window.__SOS.openLauncher(true));
 await page.waitForSelector('.modal #lchBody .lch-it');
 const lch = await page.evaluate(() => {
   const body = document.querySelector('.modal #lchBody');

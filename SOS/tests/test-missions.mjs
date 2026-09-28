@@ -168,7 +168,13 @@ const SETUP = `
     const S = window.__SOS;
     S.state.activeId = null; S.state.homeView = 'missions'; S.render();
     await new Promise(r => setTimeout(r, 300));
-    const toGest = [...document.querySelectorAll('#workspace button')].find(b => /gestió/i.test(b.innerText));
+    /* El botó es deia «vista de gestió» i ara es diu «El node»: el tauler del
+       node ha deixat de ser la portada de l'app i ha passat a ser una
+       destinació, i una destinació es diu pel seu nom. El que es prova segueix
+       sent el mateix —que s'hi arribi amb un clic i que es pugui tornar. */
+    const toGest = [...document.querySelectorAll('#workspace button')]
+      .find(b => /el node|gestió/i.test(b.innerText));
+    if (!toGest) return { view: S.state.homeView, isDashboard: false, backBtn: false, capBoto: true };
     toGest.click();
     await new Promise(r => setTimeout(r, 400));
     const dash = document.querySelector('#workspace').innerText;
