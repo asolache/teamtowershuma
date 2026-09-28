@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnòstic d'organització · SOS · TeamTowers Humà</title>
+<meta name="description" content="Digue'ns què vols que passi amb el teu equip i quina casa sou. En 3 minuts tindràs què t'està passant, què proposaríem i quant dura. Sense preu: el preu es parla.">
+<style>
+:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:#2a2a35;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--mono:'SF Mono',Monaco,'Cascadia Code',monospace}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b0b12,#12121c);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:800px;margin:0 auto;padding:2rem 1.2rem 4rem}
+header{padding:3rem 1.2rem 1.5rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.07)}
+header h1{font-size:2rem;margin:0 0 .6rem;background:linear-gradient(90deg,#6366f1,#00e676,#e040fb);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:var(--light);margin:0 auto;font-size:1.02rem;max-width:600px}
+nav{margin-top:1.2rem;font-size:.9rem}
+nav a{color:var(--indigo);text-decoration:none;margin:0 .5rem;white-space:nowrap}
+nav a:hover{text-decoration:underline}
+.prog{display:flex;gap:.35rem;margin:1.5rem 0 1.2rem}
+.prog-s{flex:1;height:4px;background:var(--border);border-radius:2px;transition:background .25s}
+.prog-s.on{background:linear-gradient(90deg,var(--indigo),var(--green))}
+.step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1rem}
+.step[hidden]{display:none}
+.step h2{margin:0 0 .3rem;font-size:1.3rem}
+.step .sub{color:var(--muted);font-size:.88rem;margin:0 0 1.2rem;line-height:1.55}
+.f{margin-bottom:1.1rem}
+.f label{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;color:var(--indigo);margin-bottom:.35rem}
+.f .hint{font-size:.76rem;color:var(--muted);margin-top:.25rem;line-height:1.45}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.6rem .75rem;font:inherit;font-size:.92rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--indigo)}
+textarea{min-height:88px;resize:vertical}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem}
+.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.opt:hover{border-color:var(--indigo)}
+.opt.sel{border-color:var(--c,var(--indigo));background:color-mix(in srgb,var(--c,var(--indigo)) 14%,transparent)}
+.opt .o-t{font-weight:600;font-size:.88rem}
+.opt .o-d{font-size:.74rem;color:var(--muted);line-height:1.4}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:.4rem .8rem;font:inherit;font-size:.83rem;color:var(--light);cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:36px}
+.chip:hover{border-color:var(--indigo);color:var(--text)}
+.chip.sel{background:rgba(99,102,241,.18);border-color:var(--indigo);color:var(--text);font-weight:600}
+.nav-btns{display:flex;gap:.6rem;justify-content:space-between;margin-top:1.4rem;flex-wrap:wrap}
+.btn{background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:.65rem 1.3rem;font:inherit;font-size:.92rem;cursor:pointer;transition:all .13s;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.btn:hover{border-color:var(--indigo)}
+.btn-primary{background:linear-gradient(90deg,var(--indigo),#7c7ef5);border-color:transparent;font-weight:600}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+/* Les portes: on continuar, ara i sense enviar res */
+.portes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem}
+.porta-c{display:block;text-decoration:none;background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:.75rem .85rem;transition:border-color .15s}
+.porta-c:hover{border-color:var(--indigo)}
+.porta-c .pt{display:block;font-weight:700;font-size:.92rem;color:var(--text)}
+.porta-c .pd{display:block;font-size:.79rem;color:var(--light);margin-top:.2rem;line-height:1.45}
+.porta-c .pq{display:block;font-size:.75rem;color:var(--green);margin-top:.35rem}
+/* Resultat */
+#result{display:none}
+.dx{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(0,230,118,.06));border:2px solid var(--indigo);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1.2rem}
+.dx h2{margin:0 0 .2rem;font-size:1.4rem}
+.dx .seg{font-family:var(--mono);font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--green)}
+.mt{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:1.1rem 0}
+.mt-t{background:rgba(0,0,0,.25);border-radius:9px;padding:.75rem;text-align:center}
+.mt-n{font-size:1.4rem;font-weight:700;line-height:1}
+.mt-l{font-family:var(--mono);font-size:.58rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.bar{height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin:.4rem 0 .2rem}
+.bar-f{height:100%;transition:width .5s}
+.sec{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem 1.6rem;margin-bottom:1rem}
+.sec h3{margin:0 0 .6rem;font-size:1.05rem;display:flex;align-items:center;gap:.45rem}
+.sec ul{margin:.3rem 0;padding-left:1.2rem;color:var(--light);font-size:.9rem;line-height:1.6}
+.sec ul li{margin:.3rem 0}
+.sec p{color:var(--light);font-size:.9rem;line-height:1.6;margin:.4rem 0}
+.mods{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+.mod{background:rgba(99,102,241,.14);border:1px solid var(--indigo);color:var(--text);border-radius:8px;padding:.3rem .6rem;font-size:.8rem;text-decoration:none;transition:all .12s}
+.mod:hover{background:rgba(99,102,241,.28)}
+.svc{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.svc:last-child{border-bottom:0}
+.svc-n{font-family:var(--mono);font-size:.68rem;color:var(--green);min-width:26px;padding-top:.15rem;font-weight:700}
+.svc-b{min-width:0}
+.svc-t{font-weight:600;font-size:.9rem}
+.svc-d{font-size:.79rem;color:var(--muted);line-height:1.45}
+.gapl li{color:var(--orange)}
+.havl li{color:var(--green)}
+.send{background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(99,102,241,.06));border:2px solid var(--green);border-radius:14px;padding:1.5rem 1.7rem;margin-top:1.2rem}
+.send h3{margin:0 0 .4rem;font-size:1.1rem}
+.send p{color:var(--light);font-size:.88rem;line-height:1.55;margin:.3rem 0 .9rem}
+.send-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.priv{font-size:.78rem;color:var(--muted);margin-top:.9rem;line-height:1.5;border-top:1px solid rgba(255,255,255,.07);padding-top:.7rem}
+.err{color:var(--red);font-size:.83rem;margin-top:.5rem;display:none}
+.err.on{display:block}
+footer{text-align:center;color:var(--muted);padding:2.5rem 1rem 3rem;font-size:.85rem;border-top:1px solid rgba(255,255,255,.05);margin-top:2rem}
+footer a{color:var(--indigo);text-decoration:none}
+
+/* ── El que és propi d'aquest diagnòstic ────────────────────────────────── */
+.opt[data-preg]{--c:var(--indigo)}
+.paq-r{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--indigo);
+  border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.6rem}
+.paq-r .pr-n{font-weight:700;font-size:1rem;color:var(--text)}
+.paq-r .pr-m{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin:.15rem 0 .4rem}
+.paq-r .pr-e{font-size:.86rem;color:var(--light);line-height:1.55}
+.paq-r.seg{border-left-color:var(--muted);opacity:.85}
+.dx-llegim{background:var(--panel);border:1px solid var(--border);border-left:2px solid var(--green);
+  border-radius:10px;padding:.9rem 1.1rem;margin:.8rem 0;font-size:.92rem;color:var(--light);line-height:1.65}
+.dx-nota-org{font-size:.86rem;color:var(--light);line-height:1.6;margin:.6rem 0 0;
+  padding-left:.8rem;border-left:2px solid var(--border)}
+.env{background:var(--panel);border:1px solid var(--border);border-radius:10px;
+  padding:.9rem 1.1rem;margin-top:1.2rem}
+.env-q{font-size:.8rem;color:var(--muted);line-height:1.6;margin:.5rem 0 0}
+.env-q b{color:var(--light)}
+.env-ok{color:var(--green);font-size:.86rem;margin:.5rem 0 0}
+.env-ko{color:var(--orange);font-size:.86rem;margin:.5rem 0 0}
+</style>
+</head>
+<body>
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
+.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
+.sos-nav .sn-here>summary{color:#f5f5f7}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
+  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
+.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
+.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
+.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
+.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
+.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
+  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{background:#4f46e5}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:.82rem}
+  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+<header>
+<h1>Diagnòstic d'organització</h1>
+<p>Digue'ns <strong>què vols que passi</strong> i quina casa sou. En <strong>3 minuts</strong> tindràs què t'està passant, què proposaríem i quant dura — <strong>l'enviïs o no</strong>.</p>
+<nav><a href="diagnostic.html">← L'altre diagnòstic</a> · <a href="pressupost.html">Demana pressupost</a> · <a href="index.html">Obre el SOS</a></nav>
+</header>
+
+<main class="wrap">
+
+<div class="prog" id="prog" aria-hidden="true">
+<div class="prog-s on"></div><div class="prog-s"></div><div class="prog-s"></div><div class="prog-s"></div>
+</div>
+
+<form id="dxForm" autocomplete="on">
+
+<section class="step" id="s1">
+<h2>1 · Qui ets</h2>
+<p class="sub">Per poder-te respondre. No es crea cap compte i no surt res d'aquest navegador si tu no ho prems.</p>
+<!--FORM-QUI-->
+<div class="grid2">
+<div class="f"><label for="nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio">Direcció general o gerència</option><option value="persones">Direcció de persones o RRHH</option><option value="innovacio">Innovació, estratègia o projectes</option><option value="organitzacio">Organització, processos o qualitat</option><option value="tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic">Càrrec electe o de confiança</option><option value="coordinacio">Coordinació d'equip o de programa</option><option value="altre">Una altra cosa</option></select></div>
+</div>
+<div class="grid2">
+<div class="f"><label for="mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+</div>
+<div class="f"><label for="carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<!--/FORM-QUI-->
+<p class="err" id="e1">Ens falta el nom i un correu que sembli un correu.</p>
+<div class="acts"><span></span><button type="button" class="btn" data-next="2">Següent →</button></div>
+</section>
+
+<section class="step" id="s2" hidden>
+<h2>2 · Quina casa sou</h2>
+<p class="sub">Això no canvia què et recomanem —això ho decideix el pas següent—: canvia què cal preguntar-te i com s'escriu la proposta.</p>
+<!--FORM-ORG-->
+<div class="f">
+<label>Tipus d'organització *</label>
+<div class="opts" id="orgType">
+<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🚀 Cooperativa o empresa</span><span class="o-d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="agencia" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🎪 Agència o DMC</span><span class="o-d">Ho compres per a un client teu</span></button>
+<button type="button" class="opt" data-v="gran" data-sector="privat" style="--c:var(--blue)"><span class="o-t">🏢 Empresa gran</span><span class="o-d">Amb departament de formació i pressupost anual</span></button>
+<button type="button" class="opt" data-v="pime" data-sector="privat" style="--c:var(--green)"><span class="o-t">🔧 Pime</span><span class="o-d">La decisió la pren qui la dirigeix</span></button>
+<button type="button" class="opt" data-v="escola" data-sector="privat" style="--c:var(--indigo)"><span class="o-t">🎓 Escola de negoci o universitat</span><span class="o-d">Programa, màster o claustre</span></button>
+</div>
+</div>
+<div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="grid2">
+<div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
+</div>
+<div class="f"><label for="persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" placeholder="p.ex. 45"><div class="hint">De tota l'organització, no només de l'equip que hi entraria.</div></div>
+<!--/FORM-ORG-->
+<p class="err" id="e2">Tria quin tipus d'organització sou i digues on sou.</p>
+<div class="acts"><button type="button" class="btn btn-g" data-back="1">← Enrere</button><button type="button" class="btn" data-next="3">Següent →</button></div>
+</section>
+
+<section class="step" id="s3" hidden>
+<h2>3 · Què vols que passi</h2>
+<p class="sub">És la pregunta que decideix tota la resta. Tria la que més s'assembli al que et va portar aquí.</p>
+<div class="opts" id="objTipus">
+<!--DX-OBJECTIUS-->
+<button type="button" class="opt" data-v="obrir" data-preg="format" style="--c:var(--orange)"><span class="o-t">🎬 Obrir una jornada amb alguna cosa que es recordi</span><span class="o-d">Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.</span></button>
+<button type="button" class="opt" data-v="cohesio" data-preg="format" style="--c:var(--green)"><span class="o-t">🤝 Cohesionar un equip que s'ha trencat o que no s'ha fet mai</span><span class="o-d">L'equip ha crescut de cop, o s'ha fusionat amb un altre, o fa temps que es treballa sense veure's.</span></button>
+<button type="button" class="opt" data-v="mapa" data-preg="dolor" style="--c:var(--indigo)"><span class="o-t">🕸️ Entendre com flueix el valor i de qui depenem de debò</span><span class="o-d">Sabem qui hi ha a l'organigrama i no sabem qui sosté què. Quan marxa algú, ens n'adonem del que feia.</span></button>
+<button type="button" class="opt" data-v="sostenir" data-preg="dolor" style="--c:var(--blue)"><span class="o-t">🧱 Que l'equip sostingui el que hem muntat quan marxem</span><span class="o-d">Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d'una persona.</span></button>
+<button type="button" class="opt" data-v="direccio" data-preg="dolor" style="--c:var(--purple)"><span class="o-t">🧭 Acompanyar la direcció en una decisió que costa</span><span class="o-d">Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.</span></button>
+<button type="button" class="opt" data-v="produir" data-preg="format" style="--c:var(--orange)"><span class="o-t">🎪 Produir un esdeveniment sencer</span><span class="o-d">No volem una activitat dins d'un programa: volem que algú ens porti la jornada de cap a peus.</span></button>
+<!--/DX-OBJECTIUS-->
+</div>
+<p class="err" id="e3">Tria què vols que passi.</p>
+<div class="acts"><button type="button" class="btn btn-g" data-back="2">← Enrere</button><button type="button" class="btn" data-next="4">Següent →</button></div>
+</section>
+
+<section class="step" id="s4" hidden>
+<h2>4 · El que falta per respondre't</h2>
+<p class="sub" id="s4sub"></p>
+
+<!-- LES DUES BRANQUES. Cap organització veu les dues: un acte amb data no té
+     el mateix problema que una manera de treballar que no se sosté, i
+     preguntar-ho tot faria un formulari llarg que no discrimina res. -->
+<div id="qFormat" hidden>
+  <div class="grid2">
+    <div class="f"><label for="participants">Quanta gent hi serà</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 80"></div>
+    <div class="f"><label for="quan">Quan</label><input type="text" id="quan" name="quan" placeholder="p.ex. 14 de març, o «segon trimestre»"></div>
+  </div>
+  <div class="f"><label for="lloc">On</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. hotel a Sitges, sala interior"><div class="hint">Si és a cobert, l'alçada del sostre decideix què s'hi pot fer.</div></div>
+  <div class="f"><label for="dins">Dins d'una jornada o és la jornada</label>
+    <select id="dins" name="dins">
+      <option value="dins">És una peça dins d'un programa més llarg</option>
+      <option value="sencera">És la jornada sencera</option>
+      <option value="perveure">Encara s'està decidint</option>
+    </select></div>
+</div>
+
+<div id="qDolor" hidden>
+  <div class="f"><label for="provat">Què heu provat que no va quedar</label><textarea id="provat" name="provat" rows="2" placeholder="p.ex. una formació que va agradar molt i al mes ja no la feia servir ningú"></textarea></div>
+  <div class="f"><label for="sosté">Qui sosté avui el que no és a cap procediment</label><input type="text" id="soste" name="soste" placeholder="p.ex. la responsable d'operacions i una persona de sistemes"><div class="hint">No cal cap nom: el rol n'hi ha prou.</div></div>
+  <div class="f"><label for="simarxa">I què passaria si aquesta persona marxés demà</label>
+    <select id="simarxa" name="simarxa">
+      <option value="">— tria —</option>
+      <option value="poc">Es notaria, però ens en sortiríem</option>
+      <option value="forca">Perdríem coses que ningú sap com es fan</option>
+      <option value="molt">Hi ha projectes que s'aturarien</option>
+    </select></div>
+</div>
+
+<div class="grid2">
+  <div class="f"><label for="termini">Per a quan</label>
+    <select id="termini" name="termini">
+      <option value="explorant">Estem explorant</option>
+      <option value="curs" selected>Aquest curs</option>
+      <option value="data">Ja tenim data</option>
+    </select></div>
+  <!-- LA PREGUNTA QUE MÉS QUALIFICA, i que avui no es fa enlloc. Qui pot dir
+       que sí canvia tant la proposta com el que fem nosaltres després. -->
+  <div class="f"><label for="decideix">Qui pot dir que sí</label>
+    <select id="decideix" name="decideix">
+      <option value="">— tria —</option>
+      <option value="jo">Jo mateix/a</option>
+      <option value="jojunt">Jo, amb una altra persona</option>
+      <option value="comite">Un comitè o una direcció</option>
+      <option value="client">El meu client</option>
+    </select></div>
+</div>
+
+<p class="err" id="e4">Digue'ns qui pot dir que sí: és el que ens permet preparar-ho bé.</p>
+<div class="acts"><button type="button" class="btn btn-g" data-back="3">← Enrere</button><button type="button" class="btn" id="doDx">Veure el diagnòstic →</button></div>
+</section>
+
+</form>
+
+<section id="result" style="display:none">
+<div class="step">
+<h2 id="rTitle"></h2>
+<p class="sub" id="rSeg"></p>
+<p id="rLead"></p>
+<div class="dx-llegim" id="rLlegim"></div>
+<p class="dx-nota-org" id="rNotaOrg"></p>
+
+<h3 style="margin:1.6rem 0 .6rem;font-size:1.05rem">El que proposaríem</h3>
+<div id="rPaq"></div>
+<p class="sub" id="rPreu"></p>
+
+<h3 style="margin:1.4rem 0 .6rem;font-size:1.05rem">El primer pas</h3>
+<p id="rNext"></p>
+
+<!-- L'ENVIAMENT · un acte a part, i dit.
+     El diagnòstic ja està calculat i ja el tens: fins aquí no ha sortit res
+     d'aquest navegador. Enviar-lo és una altra cosa i per això és un botó
+     propi que diu què s'envia i a on. -->
+<div class="env">
+  <b>Envia'ns-ho i et preparem la proposta</b>
+  <div class="acts" style="margin-top:.6rem">
+    <button type="button" class="btn" id="bNet">Envia'ns el diagnòstic</button>
+    <a class="btn btn-g" id="bSend" href="#">O per correu</a>
+  </div>
+  <p class="env-q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —el teu contacte, la teva organització, què vols que passi i el termini— al formulari del nostre allotjament (Netlify), des d'on ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
+  <p class="env-ok" id="envOk" hidden>Rebut. Et responem en un dia laborable.</p>
+  <p class="env-ko" id="envKo" hidden></p>
+</div>
+
+<div class="acts" style="margin-top:1rem">
+  <a class="btn btn-g" href="pressupost.html" id="bPressu">Demana pressupost →</a>
+  <button type="button" class="btn btn-g" id="bCopy">Copia'l</button>
+  <button type="button" class="btn btn-g" id="bJson">Descarrega'l</button>
+  <button type="button" class="btn btn-g" id="bAgain">Torna a començar</button>
+</div>
+</div>
+</section>
+
+</main>
+
+<!-- El formulari que Netlify ha de veure per donar-lo d'alta. No té `action`
+     i està amagat: no l'omple ningú, l'envia el botó de dalt amb un POST. -->
+<form name="diagnostic-org" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="diagnostic-org">
+  <input name="bot-field"><input name="nom"><input name="mail"><input name="tel"><input name="carrec">
+  <input name="rol"><input name="org"><input name="orgNom"><input name="municipi"><input name="persones">
+  <input name="objectiu"><input name="termini"><input name="decideix"><textarea name="resum"></textarea>
+</form>
+
+<script type="module">
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const _U='asolache',_D='mac'+'.'+'com';
+const mailAddr=()=>_U+'@'+_D;
+
+/*FORM-DADES*/
+// Generat per SOS/tools/build-formularis.js — no ho editis a mà.
+const ORG_SECTOR={'ajuntament':'public','comarcal':'public','entitat':'public','cooperativa':'privat','grup':'public','acompanyament':'privat','fundacio':'public','particular':'tots','agencia':'privat','gran':'privat','pime':'privat','escola':'privat'};
+const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció de persones o RRHH','innovacio':'Innovació, estratègia o projectes','organitzacio':'Organització, processos o qualitat','tecnic':'Tècnic/a de participació, promoció o serveis','politic':'Càrrec electe o de confiança','coordinacio':'Coordinació d\'equip o de programa','altre':'Una altra cosa'};
+/*/FORM-DADES*/
+
+/*DX-DADES*/
+// Generat per SOS/tools/build-diagnosi-org.js — no ho editis a mà.
+const OBJECTIUS={
+  'obrir':{t:'Obrir una jornada amb alguna cosa que es recordi',preg:'format',paq:['demos','fent-pinya'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on.'},
+  'cohesio':{t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',preg:'format',paq:['fent-pinya','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.'},
+  'mapa':{t:'Entendre com flueix el valor i de qui depenem de debò',preg:'dolor',paq:['mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.'},
+  'sostenir':{t:'Que l\'equip sostingui el que hem muntat quan marxem',preg:'dolor',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.'},
+  'direccio':{t:'Acompanyar la direcció en una decisió que costa',preg:'dolor',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.'},
+  'produir':{t:'Produir un esdeveniment sencer',preg:'format',paq:['produccio','demos'],despres:['transmedia'],llegim:'Producció vol dir guió, proveïdors, permisos i gent a peu de carrer. Es cotitza a mida perquè no hi ha dues jornades iguals.'}
+};
+/* Nom, durada i què t'endús de cada paquet, copiats del catàleg pel generador.
+   Sense preu a posta: aquest diagnòstic no en diu cap i el preu es parla. */
+const PAQ={
+  'mapa-organitzacio':{nom:'Mapa de valor d\'una organització',dura:'3 sessions · 4-6 setmanes',endus:'El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.'},
+  'persones-cultura':{nom:'Diagnòstic de persones i cultura',dura:'3 sessions · 6 setmanes',endus:'On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer.'},
+  'equip-gestor':{nom:'Programa d\'equip gestor',dura:'12 setmanes · 5 rols · ~34 h de mentoria',endus:'Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant.'},
+  'comunitats-practica':{nom:'Comunitats de pràctica',dura:'6 sessions en 3 mesos',endus:'El mapa del coneixement que ja teniu i un grup que el fa circular sol quan nosaltres marxem.'},
+  'formacio-equips':{nom:'Formació d\'equips',dura:'De mitja jornada a quatre sessions',endus:'Lideratge col·laboratiu i gestió del canvi amb metodologia castellera: repartir el pes, avisar abans de cedir i poder dir el que es pensa sense por.'},
+  'formar-formadors':{nom:'Formació de formadors',dura:'20 h + tutela de 2 casos',endus:'Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable.'},
+  'mentoria-directiva':{nom:'Mentoria per a equips directius',dura:'6 mesos · sessió quinzenal d\'1 h per persona',endus:'De tres a sis persones amb responsabilitat d\'equip, cadascuna amb el seu itinerari, treballant sobre un encàrrec real de la casa. Cada competència tanca amb una evidència comprovable, no amb un certificat d\'assistència.'},
+  'fent-pinya':{nom:'Taller de castells «Fent Pinya»',dura:'2 h + 30 min de reflexió',endus:'Un dinamitzador, un mínim de quatre monitors castellers i dos músics, faixes de lloguer, assegurança de responsabilitat civil i material didàctic. Es fa en qualsevol espai de 10×10×5 m, en castellà, català, anglès, alemany o francès.'},
+  'demos':{nom:'Demostració castellera',dura:'Fins a 4 castells per actuació',endus:'Una colla professional aixecant castells de fins a sis pisos: pilars, torres i tres de sis segons l\'alçada contractada.'},
+  'produccio':{nom:'Producció d\'esdeveniments',dura:'D\'una jornada a un festival de diversos dies',endus:'L\'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament.'},
+  'fluxos-ia':{nom:'Fluxos amb IA · consultoria i formació',dura:'4 sessions · 6-8 setmanes',endus:'El mapa dels vostres fluxos amb cadascun marcat: quins es repeteixen igual i es poden automatitzar, quins porten criteri i no s\'han de tocar, i quins són intangibles que no consten enlloc. Amb dos fluxos automatitzats de debò i el criteri de fre escrit.'},
+  'web-ia':{nom:'Web o eina feta amb IA',dura:'4-10 setmanes',endus:'La peça funcionant, els fitxers vostres i sense lligam amb ningú, i les guardes que comproven a cada canvi que segueix dient la veritat: un preu declarat un cop, cap enllaç mort, i les dues llengües sempre iguals.'},
+  'transmedia':{nom:'Projecte transmèdia',dura:'3-6 mesos',endus:'Història, personatges, joc i registre: el model del Comando Molekulon aplicat al vostre encàrrec, amb la condició que acabi en alguna cosa registrada i no en visites.'}
+};
+const ORG_NOTA={
+  'agencia':'Com que ho compres per a un client teu, la proposta surt amb els idiomes, l\'aforament i l\'espai que necessites per passar-la-hi, i sense res que hagis de traduir.',
+  'gran':'Amb departament de formació, el que sol caldre és que això encaixi amb un pla anual i que es pugui mesurar. Es diu què s\'endú cada persona i què en queda escrit.',
+  'pime':'Decideix qui dirigeix, i sol ser qui menys temps té. La proposta va al gra: què passa, quant dura i què canvia després.',
+  'cooperativa':'A una cooperativa el mapa de valor sol destapar el que ja se sospita: que la propietat i la feina no coincideixen. Es pot mirar, i no s\'ha de mirar el primer dia.',
+  'escola':'Per a un programa o un claustre, això entra com a mòdul amb els seus objectius d\'aprenentatge i la seva avaluació.',
+  'fundacio':'Qui finança sol voler saber què en surt i com es mesura. La proposta inclou què queda per escrit i qui ho pot comprovar.'
+};
+/*/DX-DADES*/
+
+const st={org:'',obj:''};
+let pas=1,current=null;
+
+/* El pont amb el pressupost. Mateixa clau que les altres dues pàgines: qui ve
+   d'aquí no ha de tornar a escriure com es diu. Dins d'un try perquè a finestra
+   privada llegir localStorage llança i s'emporta la pàgina sencera. */
+const PONT='tt.form.qui';
+function desaPont(){
+  try{localStorage.setItem(PONT,JSON.stringify({
+    nom:$('#nom').value.trim(),rol:$('#rol').value,mail:$('#mail').value.trim(),
+    tel:$('#tel').value.trim(),carrec:$('#carrec').value.trim(),
+    org:st.org,orgNom:$('#orgNom').value.trim(),
+    municipi:$('#municipi').value.trim(),comarca:$('#comarca').value.trim()}));}catch(e){}
+}
+function llegeixPont(){
+  try{const r=localStorage.getItem(PONT);if(!r)return;const d=JSON.parse(r);
+    ['nom','rol','mail','tel','carrec','orgNom','municipi','comarca'].forEach(k=>{
+      const el=$('#'+k);if(el&&d[k])el.value=d[k];});
+    if(d.org){const b=$$('#orgType .opt').find(x=>x.dataset.v===d.org);
+      if(b){b.classList.add('on');st.org=d.org;}}
+  }catch(e){}
+}
+
+function showStep(n){
+  pas=n;
+  $$('.step').forEach(s=>s.hidden=s.id!=='s'+n);
+  $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function validate(n){
+  if(n===1){
+    const ok=$('#nom').value.trim().length>1&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('#mail').value.trim());
+    $('#e1').classList.toggle('on',!ok);return ok;
+  }
+  if(n===2){
+    const ok=!!st.org&&$('#municipi').value.trim().length>1;
+    $('#e2').classList.toggle('on',!ok);return ok;
+  }
+  if(n===3){const ok=!!st.obj;$('#e3').classList.toggle('on',!ok);return ok;}
+  return true;
+}
+
+$$('#orgType .opt').forEach(b=>b.onclick=()=>{
+  $$('#orgType .opt').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');st.org=b.dataset.v;});
+
+/* En triar objectiu s'obre el bloc que toca i es tanca l'altre. És l'única
+   cosa que fa aquest pas, i és tot el que ha de fer. */
+$$('#objTipus .opt').forEach(b=>b.onclick=()=>{
+  $$('#objTipus .opt').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');st.obj=b.dataset.v;
+  const preg=b.dataset.preg;
+  $('#qFormat').hidden=preg!=='format';
+  $('#qDolor').hidden=preg!=='dolor';
+  $('#s4sub').textContent=preg==='format'
+    ?'Un acte té data, gent i espai, i són les tres coses que decideixen què es pot fer.'
+    :'Tres preguntes. Són les que fan que el diagnòstic parli de vosaltres i no en general.';
+});
+
+$$('[data-next]').forEach(b=>b.onclick=()=>{if(validate(pas))showStep(Number(b.dataset.next));});
+$$('[data-back]').forEach(b=>b.onclick=()=>showStep(Number(b.dataset.back)));
+
+/* ── EL MOTOR ─────────────────────────────────────────────────────────────
+   Entra l'estat, surt el que es pinta. L'objectiu mana els paquets; el tipus
+   d'organització només afegeix la nota de com es llegeix. Cap preu. */
+function diagnose(){
+  const O=OBJECTIUS[st.obj]||OBJECTIUS.mapa;
+  const paq=(O.paq||[]).map(id=>Object.assign({id},PAQ[id])).filter(p=>p.nom);
+  const despres=(O.despres||[]).map(id=>Object.assign({id},PAQ[id])).filter(p=>p.nom);
+  const dec=$('#decideix').value,term=$('#termini').value;
+  /* El primer pas depèn de qui pot dir que sí i de si hi ha data. No és
+     decoració: a qui ja té data li sobra un diagnòstic i li falta un calendari. */
+  let next;
+  if(term==='data')next='Teniu data. El primer pas és una trucada de vint minuts per veure si les dates encaixen abans de res més.';
+  else if(dec==='client')next='Com que decideix el vostre client, us passem la proposta escrita perquè la pugueu presentar tal com està.';
+  else if(dec==='comite')next='Si ho ha d\'aprovar un comitè, la proposta surt amb el que s\'endú cadascú i què en queda escrit, que és el que sol demanar-se a dins.';
+  else next='El primer pas és una conversa de mitja hora amb el mapa a la mà. Se surt sabent què es faria i en quin ordre.';
+  return{obj:st.obj,O,org:st.org,paq,despres,next,
+    nota:ORG_NOTA[st.org]||'',
+    termini:term,decideix:dec};
+}
+
+function renderDx(d){
+  const nomOrg=$('#orgNom').value.trim();
+  $('#rTitle').textContent=d.O.t;
+  $('#rSeg').textContent=(nomOrg||'La teva organització')+(d.municipi?' · '+d.municipi:'');
+  $('#rLead').textContent=d.O.t;
+  $('#rLlegim').textContent=d.O.llegim;
+  $('#rNotaOrg').textContent=d.nota;
+  $('#rNotaOrg').style.display=d.nota?'':'none';
+  const fila=(p,seg)=>'<div class="paq-r'+(seg?' seg':'')+'"><div class="pr-n">'+esc(p.nom)+'</div>'+
+    (p.dura?'<div class="pr-m">'+esc(p.dura)+'</div>':'')+
+    (p.endus?'<div class="pr-e">'+esc(p.endus)+'</div>':'')+'</div>';
+  $('#rPaq').innerHTML=d.paq.map(p=>fila(p,false)).join('')+
+    (d.despres.length?'<p class="sub" style="margin:.8rem 0 .4rem">I quan el mapa hi sigui, això s\'hi pot apilar:</p>'
+      +d.despres.map(p=>fila(p,true)).join(''):'');
+  $('#rPreu').textContent='Aquí no hi ha cap xifra a posta: el preu depèn de la mida i del format, i es parla. Al pressupost hi ha la forquilla de cada paquet.';
+  $('#rNext').textContent=d.next;
+}
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* El contracte de text. Els mateixos separadors que el diagnòstic del
+   territori perquè `crm.html` els sap llegir, i dues seccions noves. */
+function buildSummary(d){
+  const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
+  const L=['DIAGNÒSTIC D\'ORGANITZACIÓ · TEAMTOWERS HUMÀ','',
+    '── QUI ──',
+    'Nom: '+v('nom'),'Rol: '+(ROL_NOM[v('rol')]||v('rol')),'Càrrec: '+v('carrec'),
+    'Correu: '+v('mail'),'Telèfon: '+v('tel'),'',
+    '── D\'ON ──',
+    'Tipus: '+d.org,'Organització: '+v('orgNom'),'Municipi: '+v('municipi'),
+    'Comarca: '+v('comarca'),'Persones: '+v('persones'),'',
+    '── QUÈ VOL ──',
+    'Objectiu: '+d.O.t,
+    'Paquets que hi encaixen: '+d.paq.map(p=>p.nom).join(', ')];
+  if(!$('#qFormat').hidden)L.push('Participants: '+v('participants'),'Quan: '+v('quan'),
+    'On: '+v('lloc'),'Format: '+v('dins'));
+  else L.push('Què han provat: '+v('provat'),'Qui ho sosté: '+v('soste'),
+    'Si marxa: '+v('simarxa'));
+  L.push('','── QUI DECIDEIX ──','Decideix: '+d.decideix,'Termini: '+d.termini,'',
+    '── DIAGNÒSTIC ──','Primer pas: '+d.next);
+  return L.join('\n');
+}
+function buildJson(d){
+  const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
+  return{generatedAt:new Date().toISOString(),tipus:'organitzacio',
+    persona:{nom:v('nom'),rol:v('rol'),carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
+    organitzacio:{tipus:d.org,sector:ORG_SECTOR[d.org]||'',nom:v('orgNom'),
+      municipi:v('municipi'),comarca:v('comarca'),persones:v('persones')},
+    vol:{objectiu:d.obj,objectiuNom:d.O.t,paquets:d.paq.map(p=>p.id),
+      format:$('#qFormat').hidden?null:{participants:v('participants'),quan:v('quan'),lloc:v('lloc'),dins:v('dins')},
+      dolor:$('#qDolor').hidden?null:{provat:v('provat'),soste:v('soste'),simarxa:v('simarxa')}},
+    decisio:{quiDecideix:d.decideix,termini:d.termini},
+    diagnostic:{primerPas:d.next}};
+}
+
+$('#doDx').onclick=()=>{
+  if(!$('#decideix').value){$('#e4').classList.add('on');return;}
+  $('#e4').classList.remove('on');
+  if(!validate(1)){showStep(1);return;}
+  if(!validate(2)){showStep(2);return;}
+  if(!validate(3)){showStep(3);return;}
+  desaPont();
+  current=diagnose();
+  renderDx(current);
+  $('#dxForm').style.display='none';
+  $('#prog').style.display='none';
+  $('#result').style.display='block';
+  const subj='Diagnòstic d\'organització · '+($('#orgNom').value.trim()||$('#nom').value.trim());
+  $('#bSend').href='mailto:'+mailAddr()+'?subject='+encodeURIComponent(subj)+
+    '&body='+encodeURIComponent(buildSummary(current));
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+/* L'ENVIAMENT. Única crida de xarxa de tota la pàgina, i viu dins d'aquest
+   clic: fins que algú no el prem, d'aquí no surt res. */
+$('#bNet').onclick=async()=>{
+  if(!current)return;
+  const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
+  const dades={'form-name':'diagnostic-org','bot-field':'',
+    nom:v('nom'),mail:v('mail'),tel:v('tel'),carrec:v('carrec'),rol:v('rol'),
+    org:current.org,orgNom:v('orgNom'),municipi:v('municipi'),persones:v('persones'),
+    objectiu:current.O.t,termini:current.termini,decideix:current.decideix,
+    resum:buildSummary(current)};
+  const cos=Object.keys(dades).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(dades[k])).join('&');
+  $('#bNet').disabled=true;$('#envKo').hidden=true;
+  try{
+    const r=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:cos});
+    if(!r.ok)throw new Error(r.status);
+    $('#envOk').hidden=false;$('#bNet').textContent='Enviat ✓';
+  }catch(e){
+    $('#bNet').disabled=false;
+    $('#envKo').hidden=false;
+    $('#envKo').textContent='No s\'ha pogut enviar. Prova «O per correu», que obre el teu programa amb tot escrit — el diagnòstic el tens igualment.';
+  }
+};
+
+$('#bCopy').onclick=async()=>{
+  try{await navigator.clipboard.writeText(buildSummary(current));$('#bCopy').textContent='Copiat ✓';}
+  catch(e){$('#bCopy').textContent='No s\'ha pogut copiar';}
+};
+$('#bJson').onclick=()=>{
+  const b=new Blob([JSON.stringify(buildJson(current),null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='diagnostic-organitzacio-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
+};
+$('#bAgain').onclick=()=>{location.reload();};
+
+llegeixPont();
+showStep(1);
+window.__DXORG={st,diagnose,buildSummary,buildJson,OBJECTIUS,PAQ,ORG_NOTA,showStep,validate};
+</script>
+</body>
+</html>

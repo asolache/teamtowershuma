@@ -37,7 +37,7 @@
  * Ús:  node SOS/tools/build-formularis.js [--check]
  */
 'use strict';
-const { readFileSync, writeFileSync } = require('node:fs');
+const { readFileSync, writeFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
 const SOS = join(__dirname, '..');
@@ -50,24 +50,50 @@ const CHECK = process.argv.includes('--check');
 
    `sector` diu a quina meitat del catàleg mira aquesta casa. `particular` és
    l'únic sense sector clar i per això mira les dues: qui ve a títol personal
-   pot acabar comprant una formació per a ell o proposant-la a la seva feina. */
+   pot acabar comprant una formació per a ell o proposant-la a la seva feina.
+
+   `fam` diu a quin diagnòstic surt cada tipus. Són dos i pregunten coses
+   diferents: el del **territori** vol saber el municipi i a quanta gent
+   arribeu, i el de l'**organització** vol saber quantes persones sou i com
+   compreu. Dues llistes separades haurien divergit; una llista amb una
+   etiqueta, no.
+
+   Dos tipus són dels dos costats a posta —una cooperativa i una fundació
+   poden trucar per qualsevol dels dos motius— i això és el que fa que
+   `ORG_SECTOR` segueixi sent una sola taula. */
 const ORGS = [
-  { id: 'ajuntament',    ic: '🏛', c: 'indigo', sector: 'public',
+  { id: 'ajuntament',    ic: '🏛', c: 'indigo', sector: 'public', fam: ['territori'],
     t: 'Ajuntament',              d: 'Regidoria, àrea tècnica o servei municipal' },
-  { id: 'comarcal',      ic: '🗺', c: 'indigo', sector: 'public',
+  { id: 'comarcal',      ic: '🗺', c: 'indigo', sector: 'public', fam: ['territori'],
     t: 'Consell comarcal',        d: 'O mancomunitat de municipis' },
-  { id: 'entitat',       ic: '🤝', c: 'green',  sector: 'public',
+  { id: 'entitat',       ic: '🤝', c: 'green',  sector: 'public', fam: ['territori'],
     t: 'Entitat o associació',    d: 'AVV, ateneu, casal, banc de temps' },
-  { id: 'cooperativa',   ic: '🚀', c: 'orange', sector: 'privat',
+  { id: 'cooperativa',   ic: '🚀', c: 'orange', sector: 'privat', fam: ['territori', 'organitzacio'],
     t: 'Cooperativa o empresa',   d: 'SCCL, SL, projecte econòmic' },
-  { id: 'grup',          ic: '🌱', c: 'blue',   sector: 'public',
+  { id: 'grup',          ic: '🌱', c: 'blue',   sector: 'public', fam: ['territori'],
     t: 'Grup promotor',           d: 'Encara sense forma jurídica' },
-  { id: 'acompanyament', ic: '🎓', c: 'purple', sector: 'privat',
+  { id: 'acompanyament', ic: '🎓', c: 'purple', sector: 'privat', fam: ['territori'],
     t: 'Entitat d\'acompanyament', d: 'Ateneu Cooperatiu, consultoria ESS' },
-  { id: 'fundacio',      ic: '💛', c: '#fbbf24', sector: 'public',
+  { id: 'fundacio',      ic: '💛', c: '#fbbf24', sector: 'public', fam: ['territori', 'organitzacio'],
     t: 'Fundació o finançador',   d: 'Obra social, convocatòries' },
-  { id: 'particular',    ic: '👤', c: 'muted',  sector: 'tots',
-    t: 'A títol personal',        d: 'Professional o persona interessada' }
+  { id: 'particular',    ic: '👤', c: 'muted',  sector: 'tots', fam: ['territori'],
+    t: 'A títol personal',        d: 'Professional o persona interessada' },
+
+  /* ── Els del costat de l'organització ──────────────────────────────────
+     L'ordre torna a ser per com de sovint truquen, i el primer de la llista
+     és el que no existia: **una agència o DMC no decideix, revèn.** El
+     catàleg castellers del 2026 està escrit per a elles —format, aforament,
+     espai i idiomes— i el formulari d'avui no en té ni la casella, així que
+     acabaven triant «cooperativa o empresa» i el diagnòstic els parlava de
+     relleu i de governança. */
+  { id: 'agencia',       ic: '🎪', c: 'orange', sector: 'privat', fam: ['organitzacio'],
+    t: 'Agència o DMC',           d: 'Ho compres per a un client teu' },
+  { id: 'gran',          ic: '🏢', c: 'blue',   sector: 'privat', fam: ['organitzacio'],
+    t: 'Empresa gran',            d: 'Amb departament de formació i pressupost anual' },
+  { id: 'pime',          ic: '🔧', c: 'green',  sector: 'privat', fam: ['organitzacio'],
+    t: 'Pime',                    d: 'La decisió la pren qui la dirigeix' },
+  { id: 'escola',        ic: '🎓', c: 'indigo', sector: 'privat', fam: ['organitzacio'],
+    t: 'Escola de negoci o universitat', d: 'Programa, màster o claustre' }
 ];
 
 /* ══ ELS ROLS ═════════════════════════════════════════════════════════════
@@ -90,8 +116,15 @@ const ROLS = [
   { id: 'altre',      t: 'Una altra cosa' }
 ];
 
-/* ══ Les pàgines que porten cada bloc ════════════════════════════════════ */
-const PAGINES = ['diagnostic.html', 'pressupost.html'];
+/* ══ Les pàgines que porten cada bloc ════════════════════════════════════
+   `fam` decideix quins tipus d'organització i quins camps hi surten. El
+   pressupost és de família `tots` perquè hi arriba gent dels dos costats. */
+const PAGINES = [
+  { fitxer: 'diagnostic-territori.html', fam: 'territori' },
+  { fitxer: 'diagnostic-org.html', fam: 'organitzacio' },
+  { fitxer: 'pressupost.html', fam: 'tots' }
+];
+const orgsDe = fam => ORGS.filter(o => fam === 'tots' || o.fam.indexOf(fam) >= 0);
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
   .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -115,8 +148,8 @@ function blocQui() {
 }
 
 /* ── Bloc 2 · D'on véns ─────────────────────────────────────────────────── */
-function blocOrg() {
-  const ops = ORGS.map(o =>
+function blocOrg(fam) {
+  const ops = orgsDe(fam).map(o =>
     `<button type="button" class="opt" data-v="${o.id}" data-sector="${o.sector}" style="--c:${varCol(o.c)}">` +
     `<span class="o-t">${o.ic} ${esc(o.t)}</span><span class="o-d">${esc(o.d)}</span></button>`
   ).join('\n');
@@ -131,7 +164,9 @@ ${ops}
 <div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
 <div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
-<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>`;
+${fam === 'organitzacio'
+    ? `<div class="f"><label for="persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" placeholder="p.ex. 45"><div class="hint">De tota l'organització, no només de l'equip que hi entraria.</div></div>`
+    : `<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>`}`;
 }
 
 /* ── El sector de cada tipus, per al JavaScript de les dues pàgines ─────── */
@@ -209,17 +244,18 @@ const NOMES_PRESSU = [
 ];
 
 let desviats = [], faltaven = [];
-for (const pag of PAGINES) {
-  const cami = join(SOS, pag);
+for (const { fitxer, fam } of PAGINES) {
+  const cami = join(SOS, fitxer);
+  if (!existsSync(cami)) { faltaven.push(fitxer + ' → la pàgina no existeix'); continue; }
   const src = readFileSync(cami, 'utf8');
   let out = src;
-  const seves = MARQUES.concat(pag === 'pressupost.html' ? NOMES_PRESSU : []);
+  const seves = MARQUES.concat(fitxer === 'pressupost.html' ? NOMES_PRESSU : []);
   for (const [obre, tanca, fn] of seves) {
     const i = out.indexOf(obre), j = out.indexOf(tanca);
-    if (i < 0 || j < 0 || j < i) { faltaven.push(pag + ' → ' + obre); continue; }
-    out = out.slice(0, i + obre.length) + '\n' + fn() + '\n' + out.slice(j);
+    if (i < 0 || j < 0 || j < i) { faltaven.push(fitxer + ' → ' + obre); continue; }
+    out = out.slice(0, i + obre.length) + '\n' + fn(fam) + '\n' + out.slice(j);
   }
-  if (out !== src) { desviats.push(pag); if (!CHECK) writeFileSync(cami, out); }
+  if (out !== src) { desviats.push(fitxer); if (!CHECK) writeFileSync(cami, out); }
 }
 
 if (faltaven.length) {

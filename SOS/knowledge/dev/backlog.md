@@ -78,7 +78,7 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
-### El diagnòstic d'organització · demanat, i per què no és el comunitari amb un altre nom
+### El diagnòstic d'organització · fet (28/09/2026)
 
 **Demanat per l'Àlvar (28/09/2026).** `SOS/diagnostic.html` és el **diagnòstic
 comunitari**: pregunta pel teu municipi, per la població i pel teixit, i
@@ -117,8 +117,28 @@ sent dos formularis amb dues taules de recomanació, divergiran —i el dia que
 divergeixin ningú se n'adonarà, perquè tots dos seguiran tornant una proposta
 raonable.
 
-> **El pla de disseny és el següent pas** i està demanat com a tal: copys,
-> segmentació i preguntes. Fins que no hi sigui, no s'escriu cap formulari.
+**Com s'ha resolt.** `diagnostic.html` és ara **la tria**; el comunitari viu a
+`diagnostic-territori.html` i el nou a `diagnostic-org.html`. Els enllaços de la
+portada no s'han tocat.
+
+**L'eix no és qui ets, és què vols que passi.** Sis objectius declarats a
+`build-diagnosi-org.js`, cadascun amb els paquets del catàleg que hi encaixen
+**pels seus ids**, i el tipus d'organització només decideix quines preguntes
+s'obren —format o dolor— i com es llegeix la proposta.
+
+**El tipus que no existia és `agencia`**: una agència o un DMC no decideix,
+revèn. El catàleg castellers del 2026 està escrit per a elles i el formulari no
+en tenia ni la casella.
+
+**Sense preu a posta**: la xifra es parla i el pont és `pressupost.html`.
+
+**El motor no s'ha duplicat**, que era l'avís: el que es comparteix són els
+blocs generats de contacte i d'organització (`build-formularis.js`, ara amb
+`fam` per família), i cada branca té la seva taula.
+
+**Queda obert i no és de codi:** confirmar que el pla de Netlify d'aquest lloc
+inclou **Forms** i amb quin límit (el gratuït són 100 enviaments/mes). Si no hi
+fos, el `mailto:` segueix sent la sortida i només cal no pintar el botó.
 
 ---
 

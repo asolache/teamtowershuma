@@ -214,13 +214,33 @@ const relTime=ts=>{if(!ts)return'';const d=(Date.now()-new Date(ts))/1000;
    Dos formats: el JSON que genera el diagnòstic, i el cos del correu en
    text pla. El text pla es parseja pels encapçalaments que escriu
    diagnostic.html; si canvien allà, s'han de canviar aquí. */
+/* DOS DIAGNÒSTICS, UNA FITXA. El del territori porta `te`/`necessita`; el de
+   l'organització porta `vol`/`decisio` i `tipus:'organitzacio'`. Sense aquesta
+   branca el segon entrava **buit i sense avisar**: `fromJson` trobava
+   `persona`, donava la fitxa per bona, i l'objectiu i els paquets es perdien.
+   Un lead buit al CRM és pitjor que cap: sembla que has recollit alguna cosa. */
 function fromJson(o){
   const p=o.persona||{},g=o.organitzacio||{},t=o.te||{},n=o.necessita||{},d=o.diagnostic||{};
+  const v=o.vol||{},dec=o.decisio||{};
+  const esOrg=o.tipus==='organitzacio'||!!o.vol;
+  /* El que a un li és «què necessita» a l'altre és «què vol que passi»: es
+     guarda a la mateixa columna perquè la pantalla és una sola. */
+  const necessitats=esOrg?(v.objectiuNom?[v.objectiuNom]:[]):(n.items||[]);
+  const repte=esOrg?[(v.dolor||{}).provat,(v.dolor||{}).soste].filter(Boolean).join(' · '):(n.repte||'');
   return{id:uid(),createdAt:o.generatedAt||new Date().toISOString(),source:'json',
+    mena:esOrg?'organitzacio':'territori',
     nom:p.nom||'',carrec:p.carrec||'',email:p.email||'',telefon:p.telefon||'',
-    orgTipus:g.tipus||'',orgPerfil:g.perfil||'',orgNom:g.nom||'',municipi:g.municipi||'',comarca:g.comarca||'',poblacio:g.poblacio||null,
+    orgTipus:g.tipus||'',orgPerfil:g.perfil||'',orgNom:g.nom||'',municipi:g.municipi||'',comarca:g.comarca||'',
+    poblacio:g.poblacio||null,persones:g.persones||null,
     recursos:t.recursos||[],serveis:t.serveis||[],experiencia:t.experiencia||'',
-    necessitats:n.items||[],repte:n.repte||'',termini:n.termini||'',pressupost:n.pressupost||'',
+    necessitats,repte,
+    termini:esOrg?(dec.termini||''):(n.termini||''),
+    pressupost:esOrg?'':(n.pressupost||''),
+    objectiu:esOrg?(v.objectiu||''):'',
+    objectiuNom:esOrg?(v.objectiuNom||''):'',
+    paquets:esOrg?(v.paquets||[]):[],
+    quiDecideix:esOrg?(dec.quiDecideix||''):'',
+    format:esOrg&&v.format?[v.format.participants,v.format.quan,v.format.lloc].filter(Boolean).join(' · '):'',
     maturity:d.maturity!=null?d.maturity:null,support:d.support!=null?d.support:null,
     itinerari:d.itinerari||[],serveisSuggerits:d.serveis||[],primerPas:d.primerPas||'',
     stage:'nou',assignat:'',nota:'',proximaAccio:'',raw:null};
@@ -268,6 +288,15 @@ function priority(l){
   if(l.pressupost&&/(assignada|mitja|subvenci)/i.test(l.pressupost))p+=2;
   if((l.necessitats||[]).length>=4)p+=1;
   if(['ajuntament','comarcal','acompanyament'].includes(l.orgTipus))p+=1.5;
+  /* El diagnòstic d'organització no dona maduresa ni suport —no en calcula—,
+     així que puntuaria gairebé zero i quedaria al final de la llista. El que
+     sí que dona són les dues coses que més decideixen si això avança: si hi ha
+     data i si qui ho omple pot dir que sí. */
+  if(l.termini==='data')p+=3;
+  if(l.quiDecideix==='jo')p+=2.5;
+  else if(l.quiDecideix==='jojunt')p+=1.5;
+  else if(l.quiDecideix==='client')p+=1;
+  if((l.paquets||[]).length)p+=1;
   return Math.round(p*10)/10;
 }
 
@@ -384,7 +413,7 @@ $('#restoreInput').onchange=async e=>{
   }catch(err){say('#opMsg','No s\'ha pogut llegir la còpia.',false);}
 };
 $('#btnCsv').onclick=()=>{
-  const cols=['createdAt','stage','nom','carrec','email','telefon','orgPerfil','orgNom','municipi','comarca','maturity','support','termini','pressupost','repte','assignat','proximaAccio','nota'];
+  const cols=['createdAt','mena','stage','nom','carrec','email','telefon','orgTipus','orgPerfil','orgNom','municipi','comarca','objectiuNom','paquets','quiDecideix','format','maturity','support','termini','pressupost','repte','assignat','proximaAccio','nota'];
   const csv=[cols.join(',')].concat(LEADS.map(l=>cols.map(c=>'"'+String(l[c]==null?'':l[c]).replace(/"/g,'""')+'"').join(','))).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='crm-teamtowers-'+new Date().toISOString().slice(0,10)+'.csv';a.click();

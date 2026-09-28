@@ -217,7 +217,9 @@ console.log('\n7 · Qui diu que ja té projecte d\'habitatge hi arriba des del d
   const c2 = await b.newContext({ viewport: { width: 900, height: 1000 } });
   const p2 = await c2.newPage();
   const e2 = []; p2.on('pageerror', e => e2.push(e.message));
-  await p2.goto(F('diagnostic.html'));
+  // El diagnòstic comunitari viu a `diagnostic-territori.html` d'ençà que
+  // `diagnostic.html` és la tria entre les dues branques.
+  await p2.goto(F('diagnostic-territori.html'));
   await p2.waitForTimeout(300);
   const r = await p2.evaluate(async () => {
     const $ = s => document.querySelector(s);

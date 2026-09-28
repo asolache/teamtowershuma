@@ -65,7 +65,9 @@ console.log('\n1 · La MATRIU: el model, i que no promet res que l\'app no faci'
 
 console.log('\n2 · El diagnòstic porta a algun lloc, i diu per què hi porta');
 {
-  const { ctx, page, errs } = await obre('diagnostic.html', 900, 1000);
+  // `diagnostic.html` és ara la tria; el comunitari, que és el que aquesta
+  // prova recorre, viu a `diagnostic-territori.html`.
+  const { ctx, page, errs } = await obre('diagnostic-territori.html', 900, 1000);
   const r = await page.evaluate(async () => {
     const $ = s => document.querySelector(s);
     $('#nom').value = 'Anna Prova'; $('#mail').value = 'a@b.cat';
