@@ -36,8 +36,17 @@ const on = await page.evaluate(() => {
 ok(!!on, 'la portada porta el bloc de beneficis');
 ok(on && on.n === 3, 'amb tres beneficis: el fons, el que s\'aprèn i el que s\'estalvia');
 ok(on && on.xifres >= 5, `i ${on ? on.xifres : 0} xifres, no adjectius`);
-ok(on && on.ordre.join(',') === 'ob-pains,ob-benef,ob-paths',
-  'i va entre el dolor i les portes: primer per què, després per on s\'entra');
+/* L'ordre va canviar a posta el 28/09/2026, i val la pena dir per què: el
+   bloc de beneficis anava entre el dolor i les portes, i fa quatre pantalles
+   de mòbil. Qui obre això no ve a llegir-se un argumentari —ve a veure si hi
+   té lloc—, i les tres portes són justament la resposta. Ara van primer i
+   l'argumentari queda sencer per a qui el necessiti.
+
+   El que la prova segueix vigilant és el que no pot canviar: que el bloc
+   existeixi, que sigui DESPRÉS del dolor (un benefici abans de nomenar el
+   problema no vol dir res) i que les portes no quedin enterrades. */
+ok(on && on.ordre.join(',') === 'ob-pains,ob-paths,ob-benef',
+  'l\'ordre és dolor → portes → argumentari: primer per on s\'entra, i el perquè per a qui el vulgui');
 
 console.log('\n2 · Les xifres de la pantalla són les que l\'app calcula');
 const x = await page.evaluate(() => {

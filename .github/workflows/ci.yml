@@ -320,6 +320,28 @@ jobs:
       - name: La vitrina (proposta de portada) apunta a pàgines que existeixen
         run: node SOS/tools/build-vitrina.js --check
 
+      # Un nom de client a una web comercial és una afirmació sobre un tercer:
+      # no es pot inventar, no es pot arrodonir i ha de poder respondre's d'on
+      # surt. I ara la llista surt a dos llocs de la portada —la banda de la
+      # primera pantalla i la graella de la trajectòria—, així que escriure-la
+      # a mà seria escriure-la dues vegades.
+      - name: Els clients quadren, i cap nom sense font
+        run: node SOS/tools/build-clients.js --check
+
+      # Cada objectiu del diagnòstic d'organització apunta a paquets del catàleg
+      # pels seus ids. Una referència òrfena no peta: l'objectiu segueix tornant
+      # una proposta, només que més curta, i això no ho veu ningú.
+      - name: El diagnòstic d'organització apunta a paquets que existeixen
+        run: node SOS/tools/build-diagnosi-org.js --check
+
+      # El nom de la memòria cau del `sw.js` és una empremta de les pàgines.
+      # Escrit a mà no es va tocar mai, i com que `activate` només esborra les
+      # còpies que **no** es diuen com l'actual, la còpia vella no caducava:
+      # s'obria una pàgina arreglada i se seguia veient la trencada. Aquesta
+      # guarda va l'última perquè qualsevol canvi a un HTML mou l'empremta.
+      - name: La memòria cau caduca amb el contingut
+        run: node SOS/tools/build-sw.js --check
+
       - name: Install dependencies
         run: if [ -f package.json ]; then npm ci; fi
       - name: Run tests

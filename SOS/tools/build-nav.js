@@ -41,6 +41,9 @@ const CHECK = process.argv.includes('--check');
    eines, després aprendre'n, i al final la xarxa. */
 const GRUPS = [
   { id: 'comenca', lbl: 'Comença', ic: '🧭', links: [
+    /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
+       pregunta si ets una organització o un territori. Posar-hi els dos
+       diagnòstics obligaria a triar abans de saber què els distingeix. */
     ['diagnostic.html', 'Diagnòstic', 'On ets i què et falta, en 3 minuts'],
     ['pressupost.html', 'Demana pressupost', 'Tria què vols i en surt la proposta'],
     ['intro.html', 'La intro', 'De què va tot això'],
@@ -76,6 +79,7 @@ const MARCA = ['../index.html', 'TeamTowers', 'Humà'];
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
 const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
+  'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
   'uneix-te.html', 'vedes.html', 'vna.html'];
@@ -92,7 +96,14 @@ const EXCEPCIONS = {
    la guia de marca documenta, així que si n'hi ha una ha de ser a posta i amb
    el motiu escrit. */
 const FORA_DEL_MENU = {
-  'crm.html': 'És el CRM privat: hi ha contactes i converses de gent real, i no és una pàgina per passejar-hi. Qui l\'ha de fer servir hi va per l\'adreça.'
+  'crm.html': 'És el CRM privat: hi ha contactes i converses de gent real, i no és una pàgina per passejar-hi. Qui l\'ha de fer servir hi va per l\'adreça.',
+  /* Les dues branques del diagnòstic no són pàgines soltes: hi arriba tothom
+     per `diagnostic.html`, que és la que pregunta quina et toca. Posar-les al
+     menú obligaria a triar abans de llegir què les distingeix —i qui triés
+     malament acabaria dient el nombre d'habitants del seu municipi per
+     demanar un taller d'equip. */
+  'diagnostic-org.html': 'Branca del diagnòstic. S\'hi entra per la tria de `diagnostic.html`, que és qui explica quina et toca.',
+  'diagnostic-territori.html': 'Branca del diagnòstic. S\'hi entra per la tria de `diagnostic.html`, que és qui explica quina et toca.'
 };
 
 /* ══ QUINA EINA SERVEIX QUINA DINÀMICA ═══════════════════════════════════

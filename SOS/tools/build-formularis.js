@@ -37,7 +37,7 @@
  * Ús:  node SOS/tools/build-formularis.js [--check]
  */
 'use strict';
-const { readFileSync, writeFileSync } = require('node:fs');
+const { readFileSync, writeFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
 const SOS = join(__dirname, '..');
@@ -50,24 +50,50 @@ const CHECK = process.argv.includes('--check');
 
    `sector` diu a quina meitat del catàleg mira aquesta casa. `particular` és
    l'únic sense sector clar i per això mira les dues: qui ve a títol personal
-   pot acabar comprant una formació per a ell o proposant-la a la seva feina. */
+   pot acabar comprant una formació per a ell o proposant-la a la seva feina.
+
+   `fam` diu a quin diagnòstic surt cada tipus. Són dos i pregunten coses
+   diferents: el del **territori** vol saber el municipi i a quanta gent
+   arribeu, i el de l'**organització** vol saber quantes persones sou i com
+   compreu. Dues llistes separades haurien divergit; una llista amb una
+   etiqueta, no.
+
+   Dos tipus són dels dos costats a posta —una cooperativa i una fundació
+   poden trucar per qualsevol dels dos motius— i això és el que fa que
+   `ORG_SECTOR` segueixi sent una sola taula. */
 const ORGS = [
-  { id: 'ajuntament',    ic: '🏛', c: 'indigo', sector: 'public',
+  { id: 'ajuntament',    ic: '🏛', c: 'indigo', sector: 'public', fam: ['territori'],
     t: 'Ajuntament',              d: 'Regidoria, àrea tècnica o servei municipal' },
-  { id: 'comarcal',      ic: '🗺', c: 'indigo', sector: 'public',
+  { id: 'comarcal',      ic: '🗺', c: 'indigo', sector: 'public', fam: ['territori'],
     t: 'Consell comarcal',        d: 'O mancomunitat de municipis' },
-  { id: 'entitat',       ic: '🤝', c: 'green',  sector: 'public',
+  { id: 'entitat',       ic: '🤝', c: 'green',  sector: 'public', fam: ['territori'],
     t: 'Entitat o associació',    d: 'AVV, ateneu, casal, banc de temps' },
-  { id: 'cooperativa',   ic: '🚀', c: 'orange', sector: 'privat',
+  { id: 'cooperativa',   ic: '🚀', c: 'orange', sector: 'privat', fam: ['territori', 'organitzacio'],
     t: 'Cooperativa o empresa',   d: 'SCCL, SL, projecte econòmic' },
-  { id: 'grup',          ic: '🌱', c: 'blue',   sector: 'public',
+  { id: 'grup',          ic: '🌱', c: 'blue',   sector: 'public', fam: ['territori'],
     t: 'Grup promotor',           d: 'Encara sense forma jurídica' },
-  { id: 'acompanyament', ic: '🎓', c: 'purple', sector: 'privat',
+  { id: 'acompanyament', ic: '🎓', c: 'purple', sector: 'privat', fam: ['territori'],
     t: 'Entitat d\'acompanyament', d: 'Ateneu Cooperatiu, consultoria ESS' },
-  { id: 'fundacio',      ic: '💛', c: '#fbbf24', sector: 'public',
+  { id: 'fundacio',      ic: '💛', c: '#fbbf24', sector: 'public', fam: ['territori', 'organitzacio'],
     t: 'Fundació o finançador',   d: 'Obra social, convocatòries' },
-  { id: 'particular',    ic: '👤', c: 'muted',  sector: 'tots',
-    t: 'A títol personal',        d: 'Professional o persona interessada' }
+  { id: 'particular',    ic: '👤', c: 'muted',  sector: 'tots', fam: ['territori'],
+    t: 'A títol personal',        d: 'Professional o persona interessada' },
+
+  /* ── Els del costat de l'organització ──────────────────────────────────
+     L'ordre torna a ser per com de sovint truquen, i el primer de la llista
+     és el que no existia: **una agència o DMC no decideix, revèn.** El
+     catàleg castellers del 2026 està escrit per a elles —format, aforament,
+     espai i idiomes— i el formulari d'avui no en té ni la casella, així que
+     acabaven triant «cooperativa o empresa» i el diagnòstic els parlava de
+     relleu i de governança. */
+  { id: 'agencia',       ic: '🎪', c: 'orange', sector: 'privat', fam: ['organitzacio'],
+    t: 'Agència o DMC',           d: 'Ho compres per a un client teu' },
+  { id: 'gran',          ic: '🏢', c: 'blue',   sector: 'privat', fam: ['organitzacio'],
+    t: 'Empresa gran',            d: 'Amb departament de formació i pressupost anual' },
+  { id: 'pime',          ic: '🔧', c: 'green',  sector: 'privat', fam: ['organitzacio'],
+    t: 'Pime',                    d: 'La decisió la pren qui la dirigeix' },
+  { id: 'escola',        ic: '🎓', c: 'indigo', sector: 'privat', fam: ['organitzacio'],
+    t: 'Escola de negoci o universitat', d: 'Programa, màster o claustre' }
 ];
 
 /* ══ ELS ROLS ═════════════════════════════════════════════════════════════
@@ -90,8 +116,15 @@ const ROLS = [
   { id: 'altre',      t: 'Una altra cosa' }
 ];
 
-/* ══ Les pàgines que porten cada bloc ════════════════════════════════════ */
-const PAGINES = ['diagnostic.html', 'pressupost.html'];
+/* ══ Les pàgines que porten cada bloc ════════════════════════════════════
+   `fam` decideix quins tipus d'organització i quins camps hi surten. El
+   pressupost és de família `tots` perquè hi arriba gent dels dos costats. */
+const PAGINES = [
+  { fitxer: 'diagnostic-territori.html', fam: 'territori' },
+  { fitxer: 'diagnostic-org.html', fam: 'organitzacio' },
+  { fitxer: 'pressupost.html', fam: 'tots' }
+];
+const orgsDe = fam => ORGS.filter(o => fam === 'tots' || o.fam.indexOf(fam) >= 0);
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
   .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -115,8 +148,8 @@ function blocQui() {
 }
 
 /* ── Bloc 2 · D'on véns ─────────────────────────────────────────────────── */
-function blocOrg() {
-  const ops = ORGS.map(o =>
+function blocOrg(fam) {
+  const ops = orgsDe(fam).map(o =>
     `<button type="button" class="opt" data-v="${o.id}" data-sector="${o.sector}" style="--c:${varCol(o.c)}">` +
     `<span class="o-t">${o.ic} ${esc(o.t)}</span><span class="o-d">${esc(o.d)}</span></button>`
   ).join('\n');
@@ -128,10 +161,16 @@ ${ops}
 </div>
 <div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
+<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+</div>
+<div class="grid2">
 <div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
 <div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
-<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>`;
+${fam === 'organitzacio'
+    ? `<div class="f"><label for="persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" placeholder="p.ex. 45"><div class="hint">De tota l'organització, no només de l'equip que hi entraria.</div></div>`
+    : `<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>`}`;
 }
 
 /* ── El sector de cada tipus, per al JavaScript de les dues pàgines ─────── */
@@ -182,18 +221,47 @@ const PAQ_NOM={${noms}};`;
 /* Els camps que determinen el preu dels dos paquets sense xifra publicada.
    Es pregunten, no s'endevinen: són exactament les tres coses que el mapa de
    cost necessita i que una pàgina no pot saber. */
+/* ── El bloc de mida · cada pregunta diu de quin paquet és ───────────────
+   Fins ara sortien totes tres sempre, i «alçada de la demostració» demanava
+   de quants pisos el vols a qui havia marcat una formació d'equips. Una
+   pregunta que no ve a tomb no és només soroll: fa dubtar de si has triat bé
+   el que havies triat.
+
+   Cada camp declara a quins paquets serveix, i el formulari només ensenya els
+   que toquen. Els ids es comproven contra el catàleg, que si no, el dia que un
+   paquet canviï de nom el camp deixaria de sortir mai i ningú ho notaria. */
+const CAMPS_MIDA = [
+  { id: 'participants', per: ['fent-pinya', 'demos', 'produccio', 'comu-diada'] },
+  { id: 'alcada', per: ['demos'] },
+  { id: 'lloc', per: ['fent-pinya', 'demos', 'produccio', 'comu-diada'] }
+];
+const midaPer = id => (CAMPS_MIDA.find(c => c.id === id) || { per: [] }).per.join(' ');
+
 function blocMida() {
   return `<div class="grid2">
-<div class="f"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Per al taller «Fent Pinya». Marca la diferència més gran del pressupost.</div></div>
-<div class="f"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
-<option value="">— No en demano —</option>
+<div class="f" data-mida-per="${midaPer('participants')}"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Marca la diferència més gran del pressupost.</div></div>
+<div class="f" data-mida-per="${midaPer('alcada')}"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
+<option value="">— tria —</option>
 <option value="4">4 pisos</option>
 <option value="5">5 pisos</option>
 <option value="6">6 pisos</option>
 </select><div class="hint">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
 </div>
-<div class="f"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>`;
+<div class="f" data-mida-per="${midaPer('lloc')}"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
+<p class="hint" id="midaCap" hidden>Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>`;
 }
+
+/* La guarda va aquí i no a `check-formularis.js` perquè el que es comprova és
+   la declaració, i la declaració viu en aquest fitxer. */
+(() => {
+  const ids = PAQUETS.concat(SOS_PAQUETS).map(x => x.id);
+  const orfes = CAMPS_MIDA.flatMap(c => c.per.filter(x => ids.indexOf(x) < 0).map(x => c.id + ' → ' + x));
+  if (orfes.length) {
+    console.error('✗ camps de mida lligats a paquets que no existeixen: ' + orfes.join(', '));
+    console.error('  No petaria: el camp senzillament no sortiria mai.');
+    process.exit(1);
+  }
+})();
 
 const MARQUES = [
   ['<!--FORM-QUI-->', '<!--/FORM-QUI-->', blocQui],
@@ -209,17 +277,18 @@ const NOMES_PRESSU = [
 ];
 
 let desviats = [], faltaven = [];
-for (const pag of PAGINES) {
-  const cami = join(SOS, pag);
+for (const { fitxer, fam } of PAGINES) {
+  const cami = join(SOS, fitxer);
+  if (!existsSync(cami)) { faltaven.push(fitxer + ' → la pàgina no existeix'); continue; }
   const src = readFileSync(cami, 'utf8');
   let out = src;
-  const seves = MARQUES.concat(pag === 'pressupost.html' ? NOMES_PRESSU : []);
+  const seves = MARQUES.concat(fitxer === 'pressupost.html' ? NOMES_PRESSU : []);
   for (const [obre, tanca, fn] of seves) {
     const i = out.indexOf(obre), j = out.indexOf(tanca);
-    if (i < 0 || j < 0 || j < i) { faltaven.push(pag + ' → ' + obre); continue; }
-    out = out.slice(0, i + obre.length) + '\n' + fn() + '\n' + out.slice(j);
+    if (i < 0 || j < 0 || j < i) { faltaven.push(fitxer + ' → ' + obre); continue; }
+    out = out.slice(0, i + obre.length) + '\n' + fn(fam) + '\n' + out.slice(j);
   }
-  if (out !== src) { desviats.push(pag); if (!CHECK) writeFileSync(cami, out); }
+  if (out !== src) { desviats.push(fitxer); if (!CHECK) writeFileSync(cami, out); }
 }
 
 if (faltaven.length) {

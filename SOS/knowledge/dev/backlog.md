@@ -78,6 +78,128 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 ---
 
+### Un CRM que s'actualitza sol · Zoho o el nostre, i què bloqueja cadascun
+
+**Demanat per l'Àlvar (28/09/2026):** «integra'm amb Zoho o tenir muntat un
+excel·lent CRM autoactualitzable en la seva màxima expressió», i **analitzar
+amb IA qui és el lead a partir del seu web** per segmentar-ne el potencial de
+venda.
+
+**Què ja hi és (fet el mateix dia):** el formulari demana **el web i a què es
+dediquen**, viatgen al resum, al JSON i al pont; i `crm.html` calcula el
+`potencial` —alt / mitjà / baix— **amb els motius escrits al costat**, perquè
+un número sol no diu si el truques per pressa o per tipus, i són dues trucades
+diferents.
+
+**El que falta, i el mur que hi ha al mig.** Les tres coses demanades
+—llegir el seu web, mantenir-se al dia sol, i parlar amb Zoho— **xoquen totes
+amb el mateix**: `crm.html` és una pàgina que s'obre al navegador i no té
+servidor.
+
+| El que es vol | Per què no es pot des d'aquí |
+|---|---|
+| Llegir el web del lead | El navegador **no pot llegir un altre domini** (CORS). I el model tampoc navega: si li passem una URL, el que en dirà serà inferit del nom, no llegit |
+| Actualitzar-se sol | Sense res corrent al servidor, només s'actualitza quan algú obre la pestanya |
+| Escriure a Zoho | La seva API demana un `client_secret` i un refresc de token. **Una clau dins d'un HTML públic és una clau regalada** |
+
+**La sortida, i és una de sola:** una **funció serverless a Netlify** —ja hi som
+allotjats— que faci les tres coses amb les claus al seu costat: rebre
+l'enviament del formulari, buscar el web, demanar a l'IA la lectura, i empènyer
+la fitxa cap a Zoho o cap al nostre magatzem.
+
+**Ordre que proposo**, i el primer és el que més val i menys costa:
+
+1. **Enriquiment amb IA a petició** (mig dia). Una funció que rep una URL, en
+   baixa el text visible i el passa a un intent com els set d'entregables, amb
+   els mateixos frens: no pot inventar, marca el que no ha trobat, i **diu
+   d'on ho ha tret**. Retorna sector, mida aparent i una lectura de potencial
+   **com a hipòtesi**, no com a dada. Al CRM, un botó per lead.
+2. **La ingesta automàtica** (mig dia). Avui el camí és enganxar el correu o el
+   JSON a mà. Netlify Forms ja rep l'enviament del diagnòstic: la mateixa funció
+   pot deixar-lo escrit sense que ningú enganxi res.
+3. **Zoho, o no** (un dia, i primer la decisió). Zoho aporta l'embut, les
+   plantilles i l'app de mòbil. Costa que les dades dels vostres leads passen
+   a viure a un tercer, que és exactament el contrari del que ven aquesta casa
+   a tota la resta de pantalles. **Això no ho decideix el codi.** Si la resposta
+   és Zoho, la funció escriu allà i `crm.html` passa a ser una vista; si és que
+   no, el que falta al nostre és poc: recordatoris, historial de converses i una
+   exportació que Zoho pugui llegir el dia que canviï la resposta.
+
+**Els dos frens que no es negocien**, i venen escrits d'abans:
+
+- **Cap clau al client.** Ni de Zoho ni de l'IA. Van a les variables d'entorn
+  de la funció (veda de sempre: el `service_role` no surt mai del servidor).
+- **El que la IA en digui és una hipòtesi i s'etiqueta com a tal.** Un
+  «potencial alt» inferit d'un domini, posat al costat d'un potencial calculat
+  de dades reals, es llegeix igual —i llavors ja no se sap què és què. Vedes
+  156 i 158: una estimació no entra mai on s'espera una dada.
+
+---
+
+### El diagnòstic d'organització · fet (28/09/2026)
+
+**Demanat per l'Àlvar (28/09/2026).** `SOS/diagnostic.html` és el **diagnòstic
+comunitari**: pregunta pel teu municipi, per la població i pel teixit, i
+proposa un itinerari amb subvencions públiques. Serveix per a un ajuntament,
+un consell comarcal, una entitat o una cooperativa —i **no serveix per a una
+empresa que truca per un taller**.
+
+**El que es demana:** un formulari que ajudi a definir una **proposta de
+diagnòstic per a una organització**, i que de passada ens digui què vol
+comprar. Concretament:
+
+1. **L'objectiu de la consulta.** No és el mateix que et demanin un
+   *icebreaker* per a una jornada, un *teambuilding* d'un dia, o una millora
+   d'equip amb consultoria i formació en mapa de valor. Avui tot això cau al
+   mateix formulari de pressupost i s'ha de deduir del text lliure.
+2. **Quin producte del catàleg** encaixa: Fent Pinya, producció
+   d'esdeveniments, programa d'equip gestor, comunitats de pràctica…
+3. **Segmentar el tipus d'organització**, que canvia les preguntes: una
+   multinacional amb un departament de formació no es pregunta el mateix que
+   una cooperativa de vint persones.
+4. **Que serveixi als dos costats**: al lead, perquè se'n va amb una proposta
+   i no amb un «ja et direm»; i a nosaltres, per qualificar.
+
+**Per què no és el comunitari amb els noms canviats**, que és la temptació:
+el comunitari proposa **itinerari, durada i via de finançament pública** a
+partir del territori. L'organització no té subvenció municipal ni població;
+té **pressupost, calendari i un dolor concret**, i el que decideix la proposta
+és l'objectiu de la consulta, no el cens.
+
+**El que ja hi ha per aprofitar:** `PROFILES` i el motor de recomanació de
+`diagnostic.html`, el catàleg declarat a `build-oferta.js` amb el filtre de
+sector, i `pressupost.html`, que ja recull contacte i pressupost.
+
+**El que no s'ha de fer sense decidir-ho abans:** duplicar el motor. Si acaben
+sent dos formularis amb dues taules de recomanació, divergiran —i el dia que
+divergeixin ningú se n'adonarà, perquè tots dos seguiran tornant una proposta
+raonable.
+
+**Com s'ha resolt.** `diagnostic.html` és ara **la tria**; el comunitari viu a
+`diagnostic-territori.html` i el nou a `diagnostic-org.html`. Els enllaços de la
+portada no s'han tocat.
+
+**L'eix no és qui ets, és què vols que passi.** Sis objectius declarats a
+`build-diagnosi-org.js`, cadascun amb els paquets del catàleg que hi encaixen
+**pels seus ids**, i el tipus d'organització només decideix quines preguntes
+s'obren —format o dolor— i com es llegeix la proposta.
+
+**El tipus que no existia és `agencia`**: una agència o un DMC no decideix,
+revèn. El catàleg castellers del 2026 està escrit per a elles i el formulari no
+en tenia ni la casella.
+
+**Sense preu a posta**: la xifra es parla i el pont és `pressupost.html`.
+
+**El motor no s'ha duplicat**, que era l'avís: el que es comparteix són els
+blocs generats de contacte i d'organització (`build-formularis.js`, ara amb
+`fam` per família), i cada branca té la seva taula.
+
+**Queda obert i no és de codi:** confirmar que el pla de Netlify d'aquest lloc
+inclou **Forms** i amb quin límit (el gratuït són 100 enviaments/mes). Si no hi
+fos, el `mailto:` segueix sent la sortida i només cal no pintar el botó.
+
+---
+
 ### Del mapa al Kanban que s'executa sol · fet, i què queda
 
 **Fet (25–26/09/2026), PRs #160, #161 i #163.** L'anàlisi sencera és a
@@ -2052,6 +2174,145 @@ sessions de cohesió i «posada en marxa de dinàmiques», que en són trossos.
 - **Cap producte que apunti a una eina que no existeix.** És la mateixa regla que
   ja vigila Molekulandia: si una fitxa promet una pàgina o una plantilla, ha
   d'existir.
+
+### El CRM amb pany, connectat, i cap on ha d'anar
+
+**Demanat per l'Àlvar (28/09/2026):** poder posar-li **una contrasenya** al CRM
+i tenir-lo com a CRM de debò; **millorar la integració amb el correu, els
+formularis i/o un CRM extern**; i que això acabi evolucionant cap a **un agent
+que ajudi en desenvolupament de negoci, planificació i operacions, automatitzant
+el que és tangible**. Continua l'entrada «Un CRM que s'actualitza sol» d'aquest
+mateix dia; això n'és la part de pany i de camí.
+
+**La contrasenya, i la trampa que té.** `crm.html` és un fitxer estàtic que
+qualsevol es pot baixar. Una comprovació de contrasenya escrita a dins **no és
+un pany: és un cartell**. Qui obri el codi font la veu, i qui obri la consola
+se la salta. I les dades tampoc hi són protegides: viuen al `localStorage`
+d'aquest navegador, així que avui **el pany real és el portàtil**.
+
+Tres sortides, i només dues són panys:
+
+| Camí | Què protegeix de debò | Cost |
+|---|---|---|
+| **Protecció de camí a Netlify** (`/SOS/crm*` amb contrasenya de lloc) | La pàgina no s'arriba a servir. Pany a la porta, no a dins | Minuts, però demana pla de pagament |
+| **Netlify Identity o un login davant d'una funció** | Pany real, i a més sap **qui** entra, que és el que cal si un dia hi mira més d'una persona | Un dia, i ja fa falta per a l'enriquiment amb IA |
+| Contrasenya dins de l'HTML | Res. Només fa que no s'obri sense voler | Una hora, i **mentiria** |
+
+**El que proposo:** la tercera **només si es diu el que és** —«això evita obrir-lo
+sense voler, no protegeix res»—; i que el pany de debò arribi amb la funció
+serverless que ja fa falta per llegir el web dels leads. Un pany i un servidor
+són la mateixa feina feta un cop.
+
+**La integració amb el correu i els formularis**, per ordre de guany:
+
+1. **Que el diagnòstic entri sol.** Netlify Forms ja rep l'enviament; avui algú
+   ha d'enganxar el correu o el JSON a `crm.html`. Un webhook cap a la funció i
+   el lead hi és abans que ningú obri res. *És el pas 2 de l'entrada anterior i
+   és el que més hores estalvia.*
+2. **Llegir el correu, no només rebre'l.** Gran part del que arriba no passa per
+   cap formulari: arriba a la bústia. Una lectura del fil que en tregui el
+   contacte, què demanen i quan, amb els mateixos frens dels entregables —no
+   inventa, marca el que no ha trobat, i diu d'on ho ha tret.
+3. **Respondre des d'allà**, amb esborrany i no amb enviament: el CRM prepara,
+   la persona prem. Mateixa regla que els entregables (veda 157).
+
+**I cap a on ha d'anar: un agent d'operacions, no un CRM més gran.** El que
+demana l'Àlvar no és una graella millor, és **que el treball tangible es faci
+sol**. El que ja hi és i s'hi pot enganxar directament: els set intents
+d'entregable (`INTENT_ENTREGABLE`), el repartiment màquina/persona
+(`fluxAutomatitzable`), i el Kanban. Un lead **és una transacció més**, i una
+proposta **és un entregable més** —amb la seva plantilla, la seva revisió
+humana i el seu acceptat.
+
+**Per això la primera passa no és tècnica:** portar el lead al mateix taulell
+que la resta de feina, en comptes de mantenir-li una pantalla a part. Quan un
+lead sigui una targeta, «prepara'm la proposta», «recorda'm de trucar dijous» i
+«fes-me el resum del mes» són tres coses que ja saben fer altres parts d'aquesta
+casa.
+
+**El que l'Àlvar diu que avui no fa des d'aquí, i és correcte:** *«no faig
+pressupostos des d'aquí perquè m'interessa parlar»*. El diagnòstic no diu preus
+**a posta**. Que l'agent prepari la conversa —qui són, què volen, què els
+proposaríem, què val a la forquilla— **no és el mateix** que enviar-los un preu,
+i la diferència s'ha de mantenir quan això s'automatitzi.
+
+---
+
+### Ensenyar l'Àlvar a treure'n el 100 % · un fil llarg, no una entrada
+
+**Demanat per l'Àlvar (28/09/2026):** «vull aprendre a treure't partit al 100 %
+en totes les meves operacions i negocis» i que li ho vagi ensenyant.
+
+**El que s'ha vist funcionar en aquest repositori**, i que val fora d'ell:
+
+- **Demanar el resultat, no els passos.** Les millors sessions d'aquí van
+  començar amb «vull que passi això» i no amb «fes aquest canvi».
+- **Declarar un cop i generar.** Tot el que hi ha en dos llocs divergeix, i
+  divergeix **en silenci**. Els 18 generadors d'aquesta casa existeixen per
+  això, i el patró és el mateix a un pressupost o a un catàleg de serveis.
+- **Una guarda per cada cosa que faria mal sense petar.** El defecte que costa
+  car no és el que peta: és el que segueix tornant una resposta raonable.
+- **Dir què no es pot.** El valor d'aquestes sessions no ha estat el codi: ha
+  estat saber quina d'aquestes coses no es pot fer des d'un HTML estàtic abans
+  de pagar per intentar-ho.
+
+**El format que proposo, i és barat:** un document viu
+—`knowledge/negoci/treure-partit-ia.md`— amb **un cas real per entrada**: què
+es va demanar, què va sortir, què no es va poder i quin és el patró que se'n
+pot repetir. Escrit a mesura que passa, no una guia teòrica escrita de cop.
+
+**I una cosa que jo miraria primer**, perquè és la que més hores mou fora del
+SOS: **les operacions que avui són a la bústia i al full de càlcul** —comandes,
+factures, seguiment de clients, planificació de temporada. Això ja té motor
+aquí dins (els set intents), i no s'ha fet servir mai fora del SOS.
+
+---
+
+### La UX del SOS, a l'Apple · ensenyar quan cal, i no abans
+
+**Demanat per l'Àlvar (28/09/2026):** simplificar la UX del SOS cap a **un
+Kanban**, i que **tot el contingut que acaba molestant es mostri quan es
+necessita**. I concretament: que **crear el perfil i entrar al tauler** millorin
+d'arquitectura de la informació, i que ensenyin **les missions que fas o que
+vols assignar**.
+
+Va **junt** amb l'entrada «La UX del SOS com un Kanban sencer» (25/09/2026):
+allà hi ha el què fa el Kanban, aquí el què s'ensenya i quan.
+
+**El diagnòstic, amb els números d'avui:** `check-kiss.js` compta **36 accions
+al llançador** (sostre 36, o sigui al límit), **106 modals**, 7 grups i 22.298
+línies. No és que falti contingut: és que **hi surt tot alhora i des del primer
+dia**, i qui entra per primera vegada no sap quina de les 36 és la seva.
+
+**El principi, escrit perquè es pugui comprovar:** *una pantalla ensenya el que
+es pot fer ara amb el que ja hi ha.* Una acció que necessita un mapa que encara
+no existeix no s'ensenya apagada amb un rètol: **no s'ensenya**, i apareix el
+dia que el mapa hi és. Això es pot vigilar amb una guarda —cada acció del
+llançador declara de què depèn— i llavors el sostre de 36 deixa de ser un
+problema, perquè ningú en veu 36.
+
+**Els tres moments, per ordre:**
+
+1. **Crear el perfil.** Avui demana abans de donar. Hauria de sortir-ne amb
+   **una cosa feta** —el cromo, que ja es pot crear amb foto— i amb **una sola
+   següent acció**, no amb un tauler de 36.
+2. **Entrar al tauler.** La primera pantalla ha de respondre tres preguntes en
+   aquest ordre: *què he de fer jo ara*, *què espera algú de mi*, *què passa al
+   node*. Avui respon la tercera primer.
+3. **Les missions.** Les que fas i les que vols assignar són la mateixa llista
+   vista des dels dos costats, i és exactament el pont rol→persona que ja és
+   al punt 1 de l'entrada del Kanban. **Fer aquell punt és fer aquest.**
+
+**El que NO s'ha de fer, i és temptador:** amagar coses darrere d'un menú
+«avançat». Això no és progressiu, és un calaix —el contingut segueix sent-hi,
+només que ara ningú el troba mai. La diferència és que **el que s'amaga ha de
+poder aparèixer sol** quan es compleix la condició que el fa útil.
+
+**El primer tall, si es vol una passa barata:** que el llançador **ordeni i
+agrupi per estat del node** en comptes de per família. Les mateixes 36, però la
+primera pantalla només ensenya les que el node d'avui pot fer servir.
+
+---
 
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.

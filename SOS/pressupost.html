@@ -196,9 +196,17 @@ footer a{color:var(--light)}
 <button type="button" class="opt" data-v="acompanyament" data-sector="privat" style="--c:var(--purple)"><span class="o-t">🎓 Entitat d'acompanyament</span><span class="o-d">Ateneu Cooperatiu, consultoria ESS</span></button>
 <button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
 <button type="button" class="opt" data-v="particular" data-sector="tots" style="--c:var(--muted)"><span class="o-t">👤 A títol personal</span><span class="o-d">Professional o persona interessada</span></button>
+<button type="button" class="opt" data-v="agencia" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🎪 Agència o DMC</span><span class="o-d">Ho compres per a un client teu</span></button>
+<button type="button" class="opt" data-v="gran" data-sector="privat" style="--c:var(--blue)"><span class="o-t">🏢 Empresa gran</span><span class="o-d">Amb departament de formació i pressupost anual</span></button>
+<button type="button" class="opt" data-v="pime" data-sector="privat" style="--c:var(--green)"><span class="o-t">🔧 Pime</span><span class="o-d">La decisió la pren qui la dirigeix</span></button>
+<button type="button" class="opt" data-v="escola" data-sector="privat" style="--c:var(--indigo)"><span class="o-t">🎓 Escola de negoci o universitat</span><span class="o-d">Programa, màster o claustre</span></button>
 </div>
 </div>
 <div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="grid2">
+<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+</div>
 <div class="grid2">
 <div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
 <div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
@@ -296,15 +304,16 @@ footer a{color:var(--light)}
 
 <!--FORM-MIDA-->
 <div class="grid2">
-<div class="f"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Per al taller «Fent Pinya». Marca la diferència més gran del pressupost.</div></div>
-<div class="f"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
-<option value="">— No en demano —</option>
+<div class="f" data-mida-per="fent-pinya demos produccio comu-diada"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Marca la diferència més gran del pressupost.</div></div>
+<div class="f" data-mida-per="demos"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
+<option value="">— tria —</option>
 <option value="4">4 pisos</option>
 <option value="5">5 pisos</option>
 <option value="6">6 pisos</option>
 </select><div class="hint">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
 </div>
-<div class="f"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
+<div class="f" data-mida-per="fent-pinya demos produccio comu-diada"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
+<p class="hint" id="midaCap" hidden>Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>
 <!--/FORM-MIDA-->
 
 <div class="nav-btns"><button type="button" class="btn" data-go="3">← Enrere</button><button type="button" class="btn btn-primary" id="doProp">Veure la proposta →</button></div>
@@ -357,7 +366,7 @@ const mailAddr=()=>_U+'@'+_D;
 
 /*FORM-DADES*/
 // Generat per SOS/tools/build-formularis.js — no ho editis a mà.
-const ORG_SECTOR={'ajuntament':'public','comarcal':'public','entitat':'public','cooperativa':'privat','grup':'public','acompanyament':'privat','fundacio':'public','particular':'tots'};
+const ORG_SECTOR={'ajuntament':'public','comarcal':'public','entitat':'public','cooperativa':'privat','grup':'public','acompanyament':'privat','fundacio':'public','particular':'tots','agencia':'privat','gran':'privat','pime':'privat','escola':'privat'};
 const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció de persones o RRHH','innovacio':'Innovació, estratègia o projectes','organitzacio':'Organització, processos o qualitat','tecnic':'Tècnic/a de participació, promoció o serveis','politic':'Càrrec electe o de confiança','coordinacio':'Coordinació d\'equip o de programa','altre':'Una altra cosa'};
 /*/FORM-DADES*/
 
@@ -437,6 +446,30 @@ function totalHores(){
   return t;
 }
 $('#escBody').addEventListener('input',totalHores);
+
+/* ── LES PREGUNTES DE MIDA, NOMÉS QUAN TOQUEN ───────────────────────────────
+   «Alçada de la demostració» sortia sempre, i preguntava de quants pisos el
+   vols a qui havia marcat una formació d'equips. Una pregunta que no ve a tomb
+   no és només soroll: fa dubtar de si has triat bé el que havies triat.
+
+   Cada camp porta a l'HTML de quins paquets és (`data-mida-per`, generat des
+   del catàleg). Aquí només es mira si algun d'aquells està marcat. I el que
+   s'amaga **es buida**: un camp invisible amb un valor a dins acabaria al
+   pressupost sense que ningú l'hagi vist. */
+function actualitzaMida(){
+  const triats=new Set($$('input[name="paquet"]:checked').map(c=>c.value));
+  let cap=true;
+  $$('[data-mida-per]').forEach(f=>{
+    const per=(f.dataset.midaPer||'').split(/\s+/).filter(Boolean);
+    const cal=per.some(id=>triats.has(id));
+    f.hidden=!cal;
+    if(cal)cap=false;
+    else{const c=f.querySelector('input,select');if(c)c.value='';}
+  });
+  const avis=$('#midaCap');if(avis)avis.hidden=!cap;
+}
+$$('input[name="paquet"]').forEach(c=>c.addEventListener('change',actualitzaMida));
+actualitzaMida();
 
 /* ── Passos ── */
 let pas=1;

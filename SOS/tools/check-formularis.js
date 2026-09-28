@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /* Guarda dels formularis · el que els fa útils i el que els faria perillosos
  * ─────────────────────────────────────────────────────────────────────────
- * Hi ha dos formularis, el diagnòstic i el pressupost, i totes dues coses són
- * certes alhora: **comparteixen dos blocs** i **no envien res sols**. Aquesta
- * guarda vigila exactament aquestes dues coses, perquè totes dues es trenquen
- * en silenci.
+ * Hi ha tres formularis —el diagnòstic del territori, el de l'organització i
+ * el pressupost— i dues coses són certes alhora: **comparteixen blocs** i **no
+ * envien res sense que algú ho premi**. Aquesta guarda vigila exactament
+ * aquestes dues coses, perquè totes dues es trenquen en silenci.
  *
  * · Un bloc compartit que divergeix no peta res. Simplement, un formulari
  *   coneix un tipus d'organització que l'altre no, i qui ve del primer no
@@ -26,8 +26,12 @@ const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 
 const SOS = join(__dirname, '..');
-const dx = readFileSync(join(SOS, 'diagnostic.html'), 'utf8');
-const pr = readFileSync(join(SOS, 'pressupost.html'), 'utf8');
+const llegeix = f => readFileSync(join(SOS, f), 'utf8');
+const dx = llegeix('diagnostic-territori.html');
+const org = llegeix('diagnostic-org.html');
+const pr = llegeix('pressupost.html');
+const TRIA = llegeix('diagnostic.html');
+const FORMS = [['territori', dx], ['organització', org], ['pressupost', pr]];
 const { PAQUETS, SOS_PAQUETS, NIVELLS } = require('./build-oferta.js');
 
 let fails = 0;
@@ -35,7 +39,7 @@ const ok = m => console.log('  ✓ ' + m);
 const bad = m => { fails++; console.log('  ✗ ' + m); };
 const pl = (n, u, m) => `${n} ${n === 1 ? u : m}`;
 
-console.log('\nGuarda dels formularis · diagnòstic ↔ pressupost');
+console.log('\nGuarda dels formularis · territori ↔ organització ↔ pressupost');
 
 /* ── 1 · Els blocs compartits diuen el mateix ─────────────────────────────
    Es comparen els blocs generats, no el fitxer sencer: la resta de cada
@@ -44,23 +48,53 @@ const entre = (src, obre, tanca) => {
   const i = src.indexOf(obre), j = src.indexOf(tanca);
   return i < 0 || j < i ? null : src.slice(i + obre.length, j).trim();
 };
+/* Dos són idèntics als tres formularis. El d'organització NO ho és a posta:
+   cada família pregunta el que necessita —el territori vol el municipi i la
+   població, l'organització vol quantes persones sou— i obligar-los a ser
+   iguals hauria fet que una empresa hagués de dir els habitants del seu
+   municipi. El que sí que ha de ser cert és el que fa funcionar el pont. */
 const BLOCS = [
   ['<!--FORM-QUI-->', '<!--/FORM-QUI-->', 'qui ets'],
-  ['<!--FORM-ORG-->', '<!--/FORM-ORG-->', 'd\'on véns'],
   ['/*FORM-DADES*/', '/*/FORM-DADES*/', 'les dades compartides']
 ];
 for (const [o, t, nom] of BLOCS) {
-  const a = entre(dx, o, t), b = entre(pr, o, t);
-  if (a === null || b === null) bad(`el bloc «${nom}» no hi és als dos formularis — sense marques no es pot compartir res`);
-  else if (a !== b) bad(`el bloc «${nom}» diu coses diferents a cada formulari — qui ve d'un no es trobarà a l'altre`);
-  else if (!a.length) bad(`el bloc «${nom}» és buit als dos: el generador no hi ha escrit`);
-  else ok(`el bloc «${nom}» és idèntic als dos formularis`);
+  const trossos = FORMS.map(([n, src]) => [n, entre(src, o, t)]);
+  const falten = trossos.filter(([, v]) => v === null || !v.length).map(([n]) => n);
+  if (falten.length) bad(`el bloc «${nom}» no hi és o és buit a: ${falten.join(', ')} — sense marques no es pot compartir res`);
+  else if (new Set(trossos.map(([, v]) => v)).size > 1)
+    bad(`el bloc «${nom}» diu coses diferents a cada formulari — qui ve d'un no es trobarà a l'altre`);
+  else ok(`el bloc «${nom}» és idèntic als ${trossos.length} formularis`);
 }
+
+/* El bloc d'organització pot dir coses diferents, però els camps que el pont
+   es passa han de ser als tres: si un no hi és, qui ve d'un altre formulari es
+   troba un camp buit i el torna a escriure sense saber per què. */
+(() => {
+  const PONT_CAMPS = ['id="orgNom"', 'id="municipi"', 'id="comarca"', 'id="orgType"'];
+  const mal = [];
+  FORMS.forEach(([n, src]) => {
+    const b = entre(src, '<!--FORM-ORG-->', '<!--/FORM-ORG-->');
+    if (b === null) { mal.push(n + ' (no hi és)'); return; }
+    PONT_CAMPS.forEach(c => { if (b.indexOf(c) < 0) mal.push(n + ' → ' + c); });
+  });
+  if (mal.length) bad('camps del pont que falten al bloc d\'organització: ' + mal.join(', '));
+  else ok(`els ${PONT_CAMPS.length} camps que viatgen pel pont hi són als tres`);
+
+  /* I cada formulari només ofereix els tipus de la seva família: si el de
+     l'organització oferís «ajuntament», el diagnòstic li parlaria de
+     subvencions municipals a una empresa. */
+  const tipus = src => [...(entre(src, '<!--FORM-ORG-->', '<!--/FORM-ORG-->') || '')
+    .matchAll(/data-v="([\w-]+)"/g)].map(m => m[1]);
+  const tTerr = tipus(dx), tOrg = tipus(org);
+  const colats = tOrg.filter(x => ['ajuntament', 'comarcal', 'grup', 'acompanyament'].includes(x));
+  if (colats.length) bad('el diagnòstic d\'organització ofereix tipus del territori: ' + colats.join(', '));
+  else ok(`${tTerr.length} tipus al territori i ${tOrg.length} a l'organització, sense barrejar-se`);
+})();
 
 /* ── 2 · El pont existeix i és local ──────────────────────────────────────
    El que fa que no calgui tornar a escriure el nom. Si desapareix, el segon
    formulari torna a demanar-ho tot i ningú ho nota fins que algú abandona. */
-for (const [nom, src] of [['diagnòstic', dx], ['pressupost', pr]]) {
+for (const [nom, src] of FORMS) {
   const desa = /localStorage\.setItem\(\s*PONT/.test(src);
   const llegeix = /localStorage\.getItem\(\s*PONT/.test(src);
   if (desa && llegeix) ok(`el ${nom} desa i llegeix el pont entre formularis`);
@@ -83,10 +117,75 @@ const FUITES = [
   [/<form[^>]+action=/i, 'un <form> amb action'],
   [/googletagmanager|google-analytics|gtag\(/i, 'analítica']
 ];
-for (const [nom, src] of [['diagnòstic', dx], ['pressupost', pr]]) {
+for (const [nom, src] of [['territori', dx], ['pressupost', pr], ['la tria', TRIA]]) {
   const trobades = FUITES.filter(([re]) => re.test(src)).map(([, n]) => n);
   if (!trobades.length) ok(`el ${nom} no envia res sol: cap sortida de dades`);
   else bad(`el ${nom} té ${pl(trobades.length, 'sortida de dades', 'sortides de dades')} (${trobades.join(', ')}) — la pàgina promet que no envia res fins que tu ho premis`);
+}
+
+/* ── 3b · El diagnòstic d'organització SÍ que pot enviar, i només així ────
+   És l'únic que té un botó d'enviar-nos-ho, i la regla no es relaxa: s'estreny.
+   La promesa segueix sent la mateixa —«te l'endús, l'enviïs o no»— i el que la
+   fa certa és que el diagnòstic es calculi i es vegi **sense cap crida**, i que
+   enviar-lo sigui un acte a part que la persona prem.
+
+   Tres coses, i les tres han de ser certes alhora:
+     · exactament UNA crida de xarxa a tota la pàgina;
+     · que visqui dins d'un `onclick`, no a l'arrencada ni dins del càlcul;
+     · i que al costat hi hagi escrit què s'envia i a on. Un enviament que no
+       es diu és pitjor que no tenir-lo. */
+(() => {
+  const altres = FUITES.filter(([re, n]) => n !== 'fetch()' && re.test(org)).map(([, n]) => n);
+  if (altres.length) bad(`el diagnòstic d'organització té sortides que no toca (${altres.join(', ')})`);
+  else ok('el diagnòstic d\'organització no té cap sortida de dades fora del botó');
+
+  const crides = (org.match(/\bfetch\s*\(/g) || []).length;
+  if (crides !== 1) bad(`el diagnòstic d'organització té ${crides} crides de xarxa: n'ha de tenir exactament una, la del botó`);
+  else {
+    const i = org.search(/\bfetch\s*\(/);
+    const abans = org.slice(Math.max(0, i - 800), i);
+    if (!/onclick\s*=\s*async\s*\(\s*\)\s*=>/.test(abans))
+      bad('la crida de xarxa no penja d\'un clic: la pàgina enviaria sense que ningú ho premi');
+    else ok('la seva única crida de xarxa viu dins del botó d\'enviar');
+  }
+
+  if (!/S'envia/.test(org) || !/Netlify/.test(org))
+    bad('la pàgina no diu què s\'envia ni a on — un enviament que no es diu és pitjor que no tenir-lo');
+  else ok('i diu què s\'envia i a on, al costat del botó');
+
+  // El diagnòstic s'ha de poder veure encara que l'enviament falli.
+  if (!/catch\s*\(/.test(org.slice(org.search(/\bfetch\s*\(/))))
+    bad('si l\'enviament falla no ho recull ningú: la persona es quedaria sense saber-ho');
+  else ok('i si falla es diu, i el diagnòstic es té igualment');
+})();
+
+/* ── 3c · El que es tria s'ha de VEURE que s'ha triat ─────────────────────
+   Un formulari on prems una casella i no passa res visible no sembla trencat:
+   sembla que no funciona. I és pitjor que trencat, perquè la tria sí que es
+   desa —la persona no ho sap i torna a prémer, o se'n va.
+
+   Va passar al diagnòstic d'organització: marcava amb `.on` i el CSS d'aquesta
+   casa pinta `.opt.sel` i `.chip.sel`. Cap prova ho veia, perquè totes miren
+   l'estat i no el color.
+
+   La guarda mira les dues puntes: quina classe posa el JavaScript en clicar, i
+   si aquella classe existeix al CSS de la mateixa pàgina. */
+for (const [nom, src] of FORMS) {
+  /* Es mira LA MATEIXA LÍNIA i no un tros de context: `on` també marca la
+     barra de progrés i els missatges d'error, i amb una finestra de dos-cents
+     caràcters aquelles crides es colaven i la guarda acusava codi correcte.
+     Una guarda que acusa el que està bé ensenya a desconfiar-ne. */
+  const marca = new Set();
+  src.split('\n').forEach(linia => {
+    if (!/\.(opt|chip)\b|#(orgType|objTipus|have|serveis|need)/.test(linia)) return;
+    for (const m of linia.matchAll(/classList\.(?:add|toggle)\('([\w-]+)'/g)) marca.add(m[1]);
+  });
+  const sensePintar = [...marca].filter(c =>
+    !new RegExp('\\.(opt|chip)\\.' + c + '\\b').test(src));
+  if (!marca.size) bad(`al ${nom} no es veu quina classe marca el que es tria`);
+  else if (sensePintar.length)
+    bad(`al ${nom} es marca amb «${sensePintar.join(', ')}» i el CSS no la pinta — la tria es desa i no es veu, que sembla que no funcioni`);
+  else ok(`al ${nom} el que es tria es marca amb «${[...marca].join(', ')}» i el CSS ho pinta`);
 }
 
 /* ── 4 · El pressupost no publica el que la portada amaga ─────────────────
