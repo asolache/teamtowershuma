@@ -2404,10 +2404,30 @@ enfora. No es veu mirant un castell de front — es veu mirant la pinya **des de
 dalt**. Dir-li vertical es carregava justament el que fa que això valgui per a
 una organització.
 
-**L'anatomia, declarada (pendent de validar amb en Fèlix Miret).** Al voltant
-del tronc, una pinya de N baixos obre **quatre menes de línia radial**: N
-**rengles** (darrere de cada baix, per on baixa el pes de debò), N **laterals**
-(entre dues rengles) i 2N **vents** (entre una rengla i un lateral).
+**L'anatomia, ara amb font (01/10/2026).** La primera versió també tenia la
+composició mal repartida. El glossari de termes castellers i la descripció
+d'estructures diuen això, i **l'Àlvar ho havia dit abans de buscar-ho**:
+*«el vent va entre dues rengles i agafa una mà de cadascun dels segons»*.
+
+**Rengla** és el nom genèric de cada filera radial. N'hi ha de tres menes:
+
+| | quantes | on va i què agafa |
+|---|---|---|
+| **Primeres mans** | N | darrere el contrafort; subjecten el segon per darrere |
+| **Laterals** | **2N** | darrere les crosses; subjecten les cuixes dels segons pels costats |
+| **Vents** | **N** | entre crossa i crossa: **una mà a cada pilar** |
+
+**I el vent canvia la lectura sencera.** La primera versió el tractava de
+farciment —«omple i estabilitza, no és per carregar-hi»— i **és al revés del
+que importa**: és l'únic que agafa dues columnes alhora, i per tant l'únic que
+impedeix que se separin. Traduït: la primera mà sosté una àrea per darrere, el
+lateral la reforça pel costat, i **el vent és l'única persona que toca dues
+àrees a la vegada**.
+
+D'aquí surt el diagnòstic que abans no existia: **una planta amb els vents
+buits és una casa amb àrees que no es toquen** —silos, dit sense dir-ho—, i es
+veu de cop mirant-la des de dalt. Al cas dels àmbits es dibuixa exactament
+això: quatre primeres mans amb gent i els quatre vents buits.
 
 **D'aquí surt la regla que ho ordena tot: una pinya de N baixos obre 4N
 direccions.** Un 2 n'obre 8, un 3 dotze, **un 4 setze** i un 5 vint. Que un 4

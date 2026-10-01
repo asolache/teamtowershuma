@@ -137,7 +137,7 @@ console.log('\n4 · Sense moviment, la informació hi és igual');
 }
 
 /* ── 5 · Les plantes obren les direccions que els toca ───────────────────── */
-console.log('\n5 · Una pinya de N baixos obre 4N direccions');
+console.log('\n5 · Una pinya de N baixos obre 4N rengles');
 {
   const { ctx, p } = await nova();
   for (const f of FIGURES) {
@@ -145,16 +145,19 @@ console.log('\n5 · Una pinya de N baixos obre 4N direccions');
     const r = await p.evaluate(id => {
       const pan = document.querySelector('#ct-p-' + id);
       return { obert: !pan.hidden,
-        rengla: pan.querySelectorAll('.pl-rengla').length,
+        primera: pan.querySelectorAll('.pl-primera').length,
         lateral: pan.querySelectorAll('.pl-lateral').length,
         vent: pan.querySelectorAll('.pl-vent').length,
         total: pan.querySelectorAll('.pl-l').length,
         planta: !!pan.querySelector('.pl-svg'), alcat: !!pan.querySelector('.al-svg'),
         sols: [...document.querySelectorAll('.ct-pan:not(.ct-pv)')].filter(x => !x.hidden).length };
     }, f.id);
-    ok(r.obert && r.sols === 1 && r.rengla === f.baixos && r.lateral === f.baixos
-      && r.vent === 2 * f.baixos && r.total === 4 * f.baixos,
-      `${f.nom}: ${r.rengla} rengles + ${r.lateral} laterals + ${r.vent} vents = ${r.total}`);
+    /* La composició importa tant com el total: N primeres mans, N vents i 2N
+       laterals. Amb el repartiment canviat el total seguiria sent 4N i el
+       dibuix diria una pinya que no existeix. */
+    ok(r.obert && r.sols === 1 && r.primera === f.baixos && r.vent === f.baixos
+      && r.lateral === 2 * f.baixos && r.total === 4 * f.baixos,
+      `${f.nom}: ${r.primera} primeres mans + ${r.vent} vents + ${r.lateral} laterals = ${r.total}`);
     /* Les dues vistes han d'anar juntes: la planta no sap d'alçada i l'alçat
        no sap de direccions, i la lectura que es ven només surt creuant-les. */
     ok(r.planta && r.alcat, '  i hi són les dues vistes, de dalt i de costat');
@@ -181,9 +184,15 @@ console.log('\n6 · La mateixa planta, pintada per una altra cosa');
   /* LA LECTURA QUE NOMÉS EXISTEIX CREUANT LES DUES COSES: gruix sobre una
      línia fluixa. Amb la planta sola no es veu —la fondària es llegeix igual
      a tot arreu— i amb l'alçat sol tampoc, perquè no sap de direccions. */
-  const risc = await p.evaluate(() =>
-    (document.querySelector('#ct-v-setze .ct-risc') || {}).textContent || '');
-  ok(/vent/.test(risc), 'i avisa del gruix que cau sobre un vent · ' + risc.trim().slice(0, 60));
+  const risc = await p.evaluate(() => ({
+    setze: (document.querySelector('#ct-v-setze .ct-risc') || {}).textContent || '',
+    ambits: (document.querySelector('#ct-v-ambits .ct-risc') || {}).textContent || '' }));
+  ok(/vent/.test(risc.setze), 'als setze factors diu què ocupa els vents · ' + risc.setze.trim().slice(0, 56));
+  /* La lectura que només es pot fer des de dalt: un vent buit és un parell
+     d'àrees que no es toquen. Amb els àmbits sols a les primeres mans, els
+     quatre vents queden buits — i això és el diagnòstic, no un buit de dibuix. */
+  ok(/vents buits/.test(risc.ambits),
+    'i als àmbits avisa dels vents buits: àrees que no es toquen · ' + risc.ambits.trim().slice(0, 56));
   await ctx.close();
 }
 
@@ -192,7 +201,7 @@ console.log('\n7 · Per què un instrument de setze factors cap en un 4');
 {
   const q = FIGURES.find(x => 4 * x.baixos === 16);
   const v = VARIABLES.find(x => x.dims.length === 16);
-  ok(!!q && q.baixos === 4, 'un castell de 4 obre 16 direccions: 4 rengles, 4 laterals i 8 vents');
+  ok(!!q && q.baixos === 4, 'un castell de 4 obre 16 rengles: 4 primeres mans, 4 vents i 8 laterals');
   ok(!!v && v.fig === q.id, 'i la variable de setze dimensions hi va a sobre, sense forçar res');
   const { ctx, p } = await nova();
   await p.click('.ct-t[data-v="setze"]');
@@ -201,7 +210,7 @@ console.log('\n7 · Per què un instrument de setze factors cap en un 4');
     buides: [...document.querySelectorAll('#ct-v-setze .pl-l')]
       .filter(x => Number(x.getAttribute('opacity')) < .2).length }));
   ok(r.dirs === 16 && r.buides === 0,
-    `les setze direccions s'omplen i no en queda cap buida (${r.dirs}, ${r.buides} buides)`);
+    `les setze rengles s'omplen i no en queda cap buida (${r.dirs}, ${r.buides} buides)`);
   await ctx.close();
 }
 
