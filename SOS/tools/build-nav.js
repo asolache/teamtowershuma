@@ -80,7 +80,6 @@ const GRUPS = [
      decisió, no un oblit. */
   { id: 'casa', lbl: 'La casa', ic: '🏛', arrel: true, links: [
     ['clients.html', 'Els clients', 'Amb qui s\'ha treballat, i què s\'hi va fer'],
-    ['events.html', 'Esdeveniments al Penedès', 'Producció i dinamització de jornades i diades'],
     ['curs_vna.html', 'El laboratori de VNA', 'El curs d\'anàlisi de xarxes de valor'],
     ['premsa.html', 'Premsa', 'El que se n\'ha dit a fora']
   ] },
@@ -142,28 +141,23 @@ const FORA_DEL_MENU = {
 const FORA_DEL_MENU_ARREL = {
   'index.html': 'És la portada: té la seva pròpia barra i el desplegable sencer.',
   'home-nova.html': 'Esborrany de redisseny de portada, amb `noindex`. El genera `build-vitrina.js`.',
-  /* ── Generació anterior del lloc. Publicades i sense mantenir ───────── */
-  'app.html': 'Generació anterior: l\'app de VNA abans del SOS. La substitueix `/SOS/vna.html`.',
-  'app_coops.html': 'Generació anterior: comunitats de pràctica. Ho cobreix el catàleg.',
-  'colla.html': 'Generació anterior del «Sistema Integral».',
-  'lacolla.html': 'Generació anterior del «Sistema Integral».',
-  'comptabilitat.html': 'Generació anterior: comptabilitat de valor abans del registre del SOS.',
-  'comptabilitat_de_valor.html': 'Generació anterior: formació en comptabilitat de valor.',
-  'coops.html': 'Generació anterior: pàgina de servei de RRHH.',
-  'rrhh.html': 'Generació anterior: pàgina de servei de RRHH.',
-  'sistema_integral.html': 'Generació anterior: el producte «Sistema Integral».',
-  'valor.html': 'Generació anterior: VNA com a servei de RRHH. Ho cobreix el catàleg.',
-  'mapas.html': 'Generació anterior: mapes de valor. Ho cobreix `/SOS/vna.html`.',
-  'equip.html': 'Generació anterior: l\'equip. La portada ho diu a «Qui ho fa».',
-  'tokenomics.html': 'Generació anterior: tokenomics. No és oferta d\'avui.',
-  'tokenomics_config.html': 'Generació anterior: configurador de contractes. No és oferta d\'avui.',
-  /* ── Eines internes i proves ────────────────────────────────────────── */
+  /* ── Eines internes ─────────────────────────────────────────────────── */
   'finances.html': 'Eina interna de comptes. No és una pàgina per passejar-hi.',
-  'ia.html': 'Prova d\'assistent. La pàgina pública dels fluxos amb IA és `/SOS/ia.html`.',
-  'test.html': 'Prova d\'assistent. No és contingut.',
-  'dev.html': 'Redirecció de desenvolupament.',
-  'devs.html': 'Redirecció de desenvolupament.'
+  'ia.html': 'Prova d\'assistent. La pàgina pública dels fluxos amb IA és `/SOS/ia.html`.'
 };
+
+/* ⚠ **La generació anterior se n'ha anat (01/10/2026).** Aquí hi havia catorze
+   motius escrits per a catorze pàgines publicades i indexables —consultoria de
+   RRHH, «Sistema Integral», tokenomics, dues apps de VNA— que no s'enllaçaven
+   des de cap lloc i deien una altra cosa sobre el mateix que diu la portada.
+
+   Un registre d'orfes no és una solució: és una llista d'un problema, i
+   escriure-hi el motiu només el feia visible. Les pàgines s'han retirat i cada
+   adreça té la seva redirecció 301 a `_redirects`, cap a **on viu ara allò** i
+   no a la portada per defecte. L'historial de git les guarda senceres.
+
+   El registre es queda, i és el que impedeix que això torni a passar. */
+
 
 /* ══ QUINA EINA SERVEIX QUINA DINÀMICA ═══════════════════════════════════
    Set de les dotze dinàmiques del catàleg tenen una pàgina que fa la seva

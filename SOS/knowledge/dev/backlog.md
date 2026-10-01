@@ -379,6 +379,94 @@ VNA, la premsa— a les quals només hi arribava qui en sabia l'adreça.
 
 ---
 
+### L'arrel, neta (01/10/2026)
+
+**Decidit per l'Àlvar**, després que el registre d'orfes fes visible el
+problema: *«events quitala, fes neteja»*.
+
+Hi havia **25 fitxers HTML publicats a la raíz i 24 sense cap enllaç** des de
+la portada, el README o el menú. La majoria eren **una generació anterior del
+lloc** —consultoria de RRHH, «Sistema Integral», tokenomics, dues apps de VNA—
+indexables i dient una altra cosa sobre el mateix que diu la portada d'avui. Un
+lloc que diu dues coses no en diu cap.
+
+**Retirades (18):** `events.html`, i amb ella `app`, `app_coops`, `colla`,
+`lacolla`, `comptabilitat`, `comptabilitat_de_valor`, `coops`, `rrhh`,
+`sistema_integral`, `valor`, `mapas`, `equip`, `tokenomics`,
+`tokenomics_config`, més tres fitxers morts (`dev`, `devs`, `test`).
+
+**Queden 7:** `index.html`, `clients.html`, `curs_vna.html`, `premsa.html` (les
+tres últimes, al menú), `home-nova.html` (esborrany amb `noindex`),
+`finances.html` i `ia.html` (eines internes, amb el motiu escrit).
+
+**Cada adreça té la seva redirecció 301**, i cap va a la portada per defecte:
+`/valor` i `/mapas` → `/SOS/vna.html`, `/comptabilitat_de_valor` →
+`/SOS/formacio.html`, `/equip` → `/#facilitador`, `/events` i la resta →
+`/#cataleg`. *Una redirecció a l'arrel és una manera elegant de dir «ja no hi
+és»: qui buscava mapes de valor ha d'arribar als mapes de valor.*
+
+I els enllaços cap a `/events` que quedaven a les pàgines supervivents
+(`clients.html`, `premsa.html`) s'han tret: un enllaç mort dins d'una llista
+deixa un punt buit i no peta mai.
+
+**El registre `FORA_DEL_MENU_ARREL` es queda**, i és el que impedeix que això
+torni a passar: una pàgina publicada i no enllaçada ha de ser una decisió amb
+el motiu escrit. *Un registre d'orfes no era la solució —era la llista d'un
+problema—, però és el que el va fer visible.*
+
+⚠ **El que encara queda:** `clients.html`, `curs_vna.html` i `premsa.html`
+segueixen sent de la maqueta antiga i no han passat per la guia de marca. I els
+tres testimonis anònims eren a `events.html`, que ja no hi és.
+
+---
+
+### El zoom · primer tram fet (01/10/2026)
+
+**El gest ja hi és.** El mapa d'un node es dibuixava sol i el que hi ha a dins
+es navegava per l'arbre del costat: **un explorador de fitxers al costat d'un
+graf**, dues maneres d'ensenyar la mateixa jerarquia. Ara els llocs de dins
+surten **al centre del mapa** i clicar-hi el fa el mapa sencer.
+
+És **zoom semàntic** i no un llenç amb pinça i rodeta: 6 KB, cap llibreria, i
+el gest reusa `selectNode` i `ancestors`, que ja hi eren. Tres decisions:
+
+- **La forma distingeix.** Un rol és un cercle i un lloc un rectangle rodó. Si
+  tots dos fossin cercles, clicar-ne un faria dues coses diferents sense avisar.
+- **Cada lloc diu què hi trobaràs abans d'entrar** (`zoomDins`): quants rols,
+  quants intercanvis, quants llocs a dins — o «encara sense mapa». Entrar en un
+  lloc buit sense saber-ho és el que fa que la gent deixi de clicar.
+- **La molla de pa** (`vnaMolla`) va a sobre del llenç. Un zoom sense sortida és
+  un cul-de-sac, que és la veda 62.
+
+**I el cas que abans amagava el que hi havia:** un node amb llocs a dins i cap
+rol propi deia «afegeix rols» i **no ensenyava els llocs**. El mapa amagava
+justament el que hi havia.
+
+**El sostre: 540 → 546 KB**, amb el motiu escrit a `check-kiss.js`. El criteri
+no canvia —es puja quan es compren *menys* pantalles— i aquí és literalment
+això: l'arbre passa a ser una drecera, no l'única manera d'arribar enlloc.
+
+**La guarda, i com es va provar.** `check-vna.js` comprova que els fills
+arribin al llenç, que entrar-hi passi per `selectNode`, que cada lloc digui què
+té, que s'obrin amb teclat i que hi hagi camí de tornada. Provada traient la
+crida del dibuix — i **la primera versió de la guarda deia que tot anava bé**:
+`children()` seguia escrit i calculat, i no arribava a la pantalla. Es va haver
+d'estrènyer per exigir que s'enganxi, no només que es llegeixi. *Llegir-los no
+és pintar-los* — la mateixa classe de defecte que el marcatge viu amb el CSS a
+l'altra pàgina.
+
+`test-zoom.mjs` (20 assercions) hi afegeix la que la guarda no pot veure:
+**entrar pel mapa ha de moure l'arbre del costat**. Si no passés per
+`selectNode`, el graf canviaria i l'arbre es quedaria assenyalant el node
+anterior — i l'app quedaria en dos estats segons per on hi hagis entrat.
+
+**El que queda d'aquesta petició** (l'entrada de sota segueix sent vàlida):
+entrar als edificis que tenen pàgina pròpia (`einaDe` ja hi és i la icona ja
+surt, però el clic encara va al node i no a la pàgina), i la matriu com a
+pàgina que ho expliqui.
+
+---
+
 ### El zoom · «més intuïtiu que un paper i un llapis» (demanat 01/10/2026)
 
 **Demanat per l'Àlvar**, i és una petició de **model d'interacció**, no de

@@ -514,6 +514,23 @@ a{color:var(--blue);text-decoration:none}
 .vna-wrap{display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start}
 .vna-canvas{background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;position:relative;min-height:440px;overflow:hidden}
 .vna-canvas svg{width:100%;height:440px;display:block}
+/* El zoom. Un lloc és un rectangle rodó i un rol un cercle: la forma diu que
+   clicar-los fa dues coses diferents, i ho diu abans del clic. */
+.vna-zn{cursor:pointer}
+.vna-zn rect{transition:stroke-opacity .15s,fill .15s}
+.vna-zn:hover rect,.vna-zn:focus rect{stroke-opacity:1;fill:#1d1d2e}
+.vna-zn:focus{outline:none}
+.vna-zn:focus rect{stroke-width:2.2}
+/* La molla de pa va **a sobre** del llenç i no en una fila pròpia: el llenç ja
+   és `position:relative` i afegir-hi una fila canviava la graella de la vista
+   sencera. Un zoom sense sortida visible és un cul-de-sac —veda 62. */
+.vna-molla{position:absolute;top:.5rem;left:.6rem;right:.6rem;z-index:2;display:flex;
+  flex-wrap:wrap;align-items:center;gap:.25rem;font-family:var(--mono);font-size:.64rem}
+.vm-b{background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;
+  color:var(--muted);cursor:pointer;padding:.12rem .4rem;font-family:inherit;font-size:inherit}
+.vm-b:hover{color:var(--text);border-color:var(--indigo)}
+.vm-s{color:var(--muted);opacity:.5}
+.vm-ara{color:var(--text);padding:.12rem .2rem}
 .vna-side h3{font-size:.72rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
 .role-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.25rem}
 .role-item{display:flex;align-items:center;gap:.5rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:7px;padding:.5rem .65rem;font-size:.82rem}
@@ -10463,6 +10480,8 @@ function renderVNA(body,node){
   const wrap=el('div','vna-wrap');
   // canvas
   const canvas=el('div','vna-canvas');
+  const molla=vnaMolla(node);
+  if(molla)canvas.appendChild(molla);
   canvas.appendChild(buildVNASvg(node));
   wrap.appendChild(canvas);
   // side
@@ -10694,6 +10713,61 @@ function buildFlowLedger(node){
   return box;
 }
 
+/* ═══════════ EL ZOOM · un sol graf i un sol gest ═══════════
+   El mapa d'un node es dibuixava sol, i **el que hi ha a dins d'aquell node es
+   navegava per l'arbre del costat**: un explorador de fitxers al costat d'un
+   graf. Són la mateixa jerarquia ensenyada de dues maneres, i la que es
+   llegeix com un mapa és la del graf.
+
+   Això ho ajunta: **al centre del mapa hi ha el que hi ha a dins** —els
+   projectes, els edificis, els entorns— i clicar-hi el fa el mapa sencer. No
+   és un llenç amb pinça i rodeta: és **zoom semàntic**, i és el que de debò
+   demanava la petició («un grafo de todo tu mapa de valor y haces zoom en un
+   entorno/proyecto/edificio»). Costa unes línies en comptes d'una llibreria, i
+   el gest ja existeix a l'app: `selectNode`.
+
+   Les tres coses que el fan llegible, i cap és decorativa:
+
+   · **La forma distingeix**. Un rol és un cercle i un lloc és un rectangle
+     rodó. Si tots dos fossin cercles, clicar-ne un faria dues coses diferents
+     sense avisar: un obre un rol, l'altre canvia de mapa.
+   · **Cada lloc diu què hi trobaràs** —quants rols i quants intercanvis— o diu
+     que encara no té mapa. Entrar en un lloc buit sense saber-ho és el que fa
+     que la gent deixi de clicar.
+   · **El camí de tornada és a la vista** (`vnaMolla`, a sobre del llenç). Un
+     zoom sense sortida és un cul-de-sac, que és la veda 62. */
+const Z_MAX=6;
+
+/* Què hi ha a dins d'un lloc, comptat. Es diu abans d'entrar-hi perquè entrar
+   en un lloc buit i no saber-ho és el que fa que la gent deixi de clicar. */
+function zoomDins(n){
+  const r=(n.vna&&n.vna.roles||[]).length, x=(n.vna&&n.vna.exchanges||[]).length;
+  const f=children(n.id).length;
+  if(!r&&!f)return 'encara sense mapa';
+  const p=[];
+  if(r)p.push(r+(r===1?' rol':' rols'));
+  if(x)p.push(x+(x===1?' intercanvi':' intercanvis'));
+  if(f)p.push(f+(f===1?' lloc a dins':' llocs a dins'));
+  return p.join(' · ');
+}
+
+/* La molla de pa: el camí de tornada. `ancestors` ja existeix i ja torna la
+   cadena sencera des de l'arrel, o sigui que això no calcula res nou — només
+   fa clicable el que ja se sabia. */
+function vnaMolla(node){
+  const cam=ancestors(node.id);
+  if(cam.length<2)return null;
+  const b=el('div','vna-molla');
+  cam.forEach((n,i)=>{
+    const ultim=i===cam.length-1;
+    const a=el(ultim?'span':'button',ultim?'vm-ara':'vm-b',n.name);
+    if(!ultim){a.title='Torna a '+n.name;a.onclick=()=>selectNode(n.id);}
+    b.appendChild(a);
+    if(!ultim)b.appendChild(el('span','vm-s','›'));
+  });
+  return b;
+}
+
 function buildVNASvg(node){
   const roles=node.vna.roles, ex=node.vna.exchanges;
   const W=520,H=440,cx=W/2,cy=H/2,R=Math.min(W,H)/2-70;
@@ -10703,7 +10777,52 @@ function buildVNASvg(node){
   roles.forEach((r,i)=>{const a=(-Math.PI/2)+(i/roles.length)*Math.PI*2;pos[r.id]={x:cx+R*Math.cos(a),y:cy+R*Math.sin(a),c:ROLE_COLORS[i%ROLE_COLORS.length]};});
   const ns='http://www.w3.org/2000/svg';
   const mk=(t,at)=>{const e=document.createElementNS(ns,t);for(const k in at)e.setAttribute(k,at[k]);return e;};
-  if(roles.length===0){const tx=mk('text',{x:cx,y:cy,'text-anchor':'middle',fill:'#82828d','font-family':'JetBrains Mono','font-size':13});tx.textContent='Afegeix rols per veure el mapa →';svg.appendChild(tx);return svg;}
+  /* Els llocs de dins van al centre, i es dibuixen **abans** del cas sense
+     rols: un node amb tres projectes a dins i cap rol propi tenia un mapa que
+     deia «afegeix rols» i amagava els tres projectes. */
+  const fills=children(node.id);
+  const zoom=()=>{
+    const g=mk('g',{class:'vna-z'});
+    const q=fills.slice(0,Z_MAX), n=q.length;
+    const rz=n===1?0:(n<=3?34:46), aw=58, ah=26;
+    q.forEach((c,i)=>{
+      const a=(-Math.PI/2)+(i/n)*Math.PI*2;
+      const x=cx+rz*Math.cos(a), y=cy+rz*Math.sin(a);
+      const gi=mk('g',{class:'vna-zn',tabindex:0,role:'button'});
+      gi.appendChild(mk('rect',{x:x-aw/2,y:y-ah/2,width:aw,height:ah,rx:7,
+        fill:'#141420',stroke:'#e040fb','stroke-width':1.4,'stroke-opacity':.75}));
+      const ei=einaDe(c.dynamicType);
+      const nm=c.name.length>9?c.name.slice(0,8)+'…':c.name;
+      const t=mk('text',{x:x,y:y+3,'text-anchor':'middle',fill:'#f5f5f7',
+        'font-family':'Space Grotesk','font-size':8.5,'font-weight':600});
+      t.textContent=(ei?'⬚ ':'')+nm;
+      gi.appendChild(t);
+      const tt=mk('title',{});
+      tt.textContent='Entra a '+c.name+' · '+zoomDins(c)+(ei?' · té la seva pàgina: '+ei.nom:'');
+      gi.appendChild(tt);
+      const va=()=>selectNode(c.id);
+      gi.addEventListener('click',va);
+      gi.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();va();}});
+      g.appendChild(gi);
+    });
+    if(fills.length>n){
+      const t=mk('text',{x:cx,y:cy+rz+30,'text-anchor':'middle',fill:'#82828d',
+        'font-family':'JetBrains Mono','font-size':8.5});
+      t.textContent='+'+(fills.length-n)+' més a l\'arbre';
+      g.appendChild(t);
+    }
+    return g;
+  };
+  if(roles.length===0){
+    if(fills.length){
+      svg.appendChild(zoom());
+      const tx=mk('text',{x:cx,y:H-34,'text-anchor':'middle',fill:'#82828d','font-family':'JetBrains Mono','font-size':11});
+      tx.textContent='Aquí dins hi ha '+fills.length+(fills.length===1?' lloc. Entra-hi o afegeix rols.':' llocs. Entra-hi o afegeix rols.');
+      svg.appendChild(tx);
+      return svg;
+    }
+    const tx=mk('text',{x:cx,y:cy,'text-anchor':'middle',fill:'#82828d','font-family':'JetBrains Mono','font-size':13});tx.textContent='Afegeix rols per veure el mapa →';svg.appendChild(tx);return svg;
+  }
   /* Direcció visible. Un mapa VNA sense fletxes no es pot llegir: no se sap qui
      dona i qui rep, que és tota la gràcia. A més, quan A→B i B→A existeixen
      totes dues, es corben cap a bandes contràries perquè es vegin les dues. */
@@ -10732,6 +10851,7 @@ function buildVNASvg(node){
     svg.appendChild(path);
     if(e.label){const t=mk('text',{x:mx,y:my-3,'text-anchor':'middle',fill:tang?'#00e676':'#8b8df5','font-family':'JetBrains Mono','font-size':8.5,'opacity':.85});t.textContent=e.label;svg.appendChild(t);}
   });
+  if(fills.length)svg.appendChild(zoom());
   // nodes
   roles.forEach(r=>{const p=pos[r.id];
     svg.appendChild(mk('circle',{cx:p.x,cy:p.y,r:22,fill:'#0a0a0f',stroke:p.c,'stroke-width':2}));

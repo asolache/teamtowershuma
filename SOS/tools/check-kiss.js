@@ -111,7 +111,27 @@ const src = readFileSync(APP, 'utf8');
    puja a 540 i no a 600 perquè el sostre ha de seguir fent la seva feina —
    forçar la mesura i la conversa—, i un sostre que no s'acosta mai no força
    res. Si la pròxima tanda hi torna a tocar, tocarà tornar a mesurar. */
-const MAX_GZIP_KB = 540;   // baixat un cop i cachejat (sw.js), no a cada visita
+
+/* ── 540 → 546 KB (01/10/2026) · el zoom ────────────────────────────────────
+   «Si la pròxima tanda hi torna a tocar, tocarà tornar a mesurar»: hi ha
+   tornat a tocar. L'app era a 540 de 540 exactes i el zoom del mapa no hi
+   cabia.
+
+   El criteri d'aquest sostre no és el número, és **què es compra**: es puja
+   quan el que s'obté són *menys* pantalles, no més. I aquí el que es compra és
+   literalment això. Fins avui, el que hi ha dins d'un node es navegava per
+   l'arbre del costat —un explorador de fitxers— i el mapa només sabia dibuixar
+   un nivell. Eren **dues maneres d'ensenyar la mateixa jerarquia**, i la que es
+   llegeix com un mapa és la del graf.
+
+   El zoom les ajunta: els llocs de dins surten al centre del mapa i clicar-hi
+   el fa el mapa sencer. L'arbre es queda com a drecera, no com a única manera
+   d'arribar enlloc. Són 6 KB —el gest reusa `selectNode` i `ancestors`, que ja
+   hi eren— i no hi ha cap llibreria de llenç al mig: és zoom **semàntic**.
+
+   Es puja a 546 i no a 560 pel motiu de sempre: un sostre que no s'acosta mai
+   no força cap mesura. */
+const MAX_GZIP_KB = 546;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;

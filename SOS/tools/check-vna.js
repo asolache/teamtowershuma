@@ -138,6 +138,65 @@ else {
   }
 }
 
+/* ══ EL ZOOM · un sol graf i un sol gest ═════════════════════════════════════
+   El mapa d'un node es dibuixava sol i **el que hi ha a dins es navegava per
+   l'arbre del costat**: dues maneres d'ensenyar la mateixa jerarquia, i la que
+   es llegeix com un mapa és la del graf.
+
+   Tres coses han de seguir sent certes, i cap es veu mirant la pantalla:
+
+   1. **Els llocs de dins es dibuixen.** `children()` ha d'arribar al llenç. Si
+      un dia algú treu aquella crida, el mapa torna a ensenyar un sol nivell i
+      **no peta**: es llegeix igual de bé i simplement ja no s'hi pot entrar.
+   2. **Entrar-hi reusa `selectNode`.** Una segona manera de canviar de node
+      divergiria de la primera —l'arbre, les rutes, el `state.expanded`— i el
+      dia que passés, entrar per el mapa i entrar per l'arbre deixarien l'app en
+      dos estats diferents.
+   3. **Hi ha camí de tornada.** Un zoom sense sortida és un cul-de-sac, que és
+      la veda 62. La molla de pa surt d'`ancestors`, que ja hi era.
+
+   I una que és la lectura i no la mecànica: **cada lloc ha de dir què hi
+   trobaràs abans d'entrar-hi** (`zoomDins`). Entrar en un lloc buit sense
+   saber-ho és el que fa que la gent deixi de clicar. */
+{
+  const app = require('node:fs').readFileSync(
+    require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
+  const svg = (app.match(/function buildVNASvg\(node\)\{[\s\S]*?\n\}/) || [''])[0];
+  const molla = (app.match(/function vnaMolla\(node\)\{[\s\S]*?\n\}/) || [''])[0];
+  const li = [];
+  if (!svg) li.push('no es troba `buildVNASvg`');
+  else {
+    if (!/children\(node\.id\)/.test(svg)) li.push('el llenç no llegeix `children()`: el mapa torna a ensenyar un sol nivell');
+    /* Llegir-los no és pintar-los. Es va provar traient la crida que els penja
+       del dibuix i **la guarda deia que tot anava bé**: `children()` seguia
+       escrit, calculat i sense arribar a la pantalla. És la mateixa classe de
+       defecte que el marcatge viu amb el CSS a l'altra pàgina. */
+    if ((svg.match(/appendChild\(zoom\(\)\)/g) || []).length < 2)
+      li.push('`zoom()` es calcula i no s\'enganxa al dibuix als dos casos (amb rols i sense): '
+        + 'es llegirien els fills i no es veurien');
+    if (!/selectNode\(c\.id\)/.test(svg)) li.push('entrar en un lloc no passa per `selectNode`');
+    if (!/zoomDins\(c\)/.test(svg)) li.push('els llocs no diuen què hi trobaràs abans d\'entrar-hi');
+    /* La forma distingeix el que es pot clicar. Un lloc és un rectangle rodó i
+       un rol un cercle: si tots dos fossin cercles, clicar-ne un faria dues
+       coses diferents sense avisar. */
+    if (!/mk\('rect'/.test(svg)) li.push('els llocs es dibuixen amb la mateixa forma que els rols');
+    /* I amb teclat. Un `<g>` amb `onclick` i sense `tabindex` és un botó que
+       només existeix per a qui té ratolí, i no peta mai. */
+    if (!/tabindex/.test(svg) || !/keydown/.test(svg))
+      li.push('els llocs no s\'obren amb teclat: un `g` amb `onclick` i sense `tabindex` no és un botó');
+  }
+  if (!molla) li.push('no es troba `vnaMolla`: el zoom no tindria camí de tornada');
+  else if (!/ancestors\(node\.id\)/.test(molla)) li.push('la molla de pa no surt d\'`ancestors`');
+  else if (!/selectNode\(n\.id\)/.test(molla)) li.push('la molla de pa no torna enlloc');
+  /* L'estil ha d'existir a la pàgina, no només el marcatge. És el defecte que
+     ja va passar amb els polsos del mapa de valor: marcatge viu i CSS a l'altra
+     pàgina, i setze camins invisibles que no feien res. */
+  if (!/\.vna-molla\{/.test(app)) li.push('falta el CSS de `.vna-molla`: la molla existiria i no es veuria');
+  if (!/\.vna-zn\{cursor:pointer\}/.test(app)) li.push('falta el CSS de `.vna-zn`: els llocs no dirien que es poden clicar');
+  if (li.length) bad('el zoom del mapa: ' + li.join(' · '));
+  else ok('el zoom: els llocs de dins es dibuixen, diuen què hi trobaràs, s\'obren amb teclat i tenen camí de tornada');
+}
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} al mapa de valor.`
   : '\n✅ El mapa de valor i la portada diuen el mateix.');
 process.exit(fails ? 1 : 0);
