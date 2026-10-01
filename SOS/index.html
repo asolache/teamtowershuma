@@ -137,6 +137,37 @@ a{color:var(--blue);text-decoration:none}
 .ob-ap-btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(0,230,118,.3)}
 .ob-ap-n{font-size:.78rem;color:var(--muted);line-height:1.5;max-width:26rem}
 @media(max-width:560px){.ob-ap-btn{width:100%}}
+/* ── EL REPTE ──────────────────────────────────────────────────────────────
+   Ve de la portada de teamtowershuma.com. Les dues columnes fan servir el
+   mateix traç que el mapa de valor —plena per al que es veu, discontínua per
+   al que no— perquè després el graf s'entengui sense explicar-lo. */
+.ob-repte{max-width:720px;margin:0 auto 2.5rem;text-align:left}
+.obr-k{font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent-green);margin-bottom:.6rem}
+.obr-h{font-size:1.5rem;line-height:1.25;margin:0 0 1.1rem;font-weight:700}
+.obr-h em{font-style:normal;color:var(--accent-indigo)}
+.obr-p{font-size:.92rem;line-height:1.75;color:var(--light);margin:0 0 .9rem}
+.obr-p strong{color:var(--text)}
+.obr-q{margin:1.2rem 0 0;padding-left:.9rem;border-left:2px solid var(--accent-indigo);
+  font-size:.92rem;line-height:1.65;color:var(--text);font-style:italic}
+.obr-q.bis{margin-top:.7rem;border-left-color:var(--accent-green)}
+.obr-tx{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.6rem 0 0}
+.obr-c{background:var(--card,rgba(255,255,255,.03));border:1px solid var(--border);
+  border-radius:12px;padding:.9rem 1rem}
+.obr-c.veu{border-top:2px solid var(--accent-blue)}
+.obr-c.nov{border-top:2px dashed var(--accent-purple)}
+.obr-cl{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.4rem}
+.obr-c.veu .obr-cl{color:var(--accent-blue)}
+.obr-c.nov .obr-cl{color:var(--accent-purple)}
+.obr-c h3{font-size:.92rem;margin:0 0 .4rem;font-weight:700}
+.obr-c p{font-size:.8rem;line-height:1.6;color:var(--muted);margin:0}
+.obr-n{font-family:var(--mono);font-size:.74rem;line-height:1.7;color:var(--muted);
+  margin:1rem 0 0;padding:.9rem 1rem;background:var(--panel,rgba(255,255,255,.02));
+  border:1px solid var(--border);border-radius:12px}
+.obr-n span{color:var(--accent-indigo)}
+.obr-n strong{color:var(--light)}
+@media(max-width:720px){.obr-tx{grid-template-columns:1fr}.obr-h{font-size:1.25rem}}
 .ob-pains{display:flex;flex-direction:column;gap:.5rem;margin:0 auto 2.25rem;max-width:600px;text-align:left}
 .ob-pain{display:grid;grid-template-columns:auto 1fr;gap:.2rem .55rem;align-items:baseline;background:var(--bg-panel);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:8px;padding:.6rem .8rem;font-size:.86rem;color:var(--light)}
 .ob-pain .px{color:var(--red);font-weight:700;font-size:.8rem}
@@ -1274,6 +1305,41 @@ a{color:var(--blue);text-decoration:none}
 
          La tríada no s'ha perdut: viu a la portada de teamtowershuma.com, que
          és on es ven el mètode. Aquí es ven el que en surt. -->
+<!-- EL REPTE ──────────────────────────────────────────────────────────────
+     Ve de la portada de teamtowershuma.com, i ve aquí perquè és aquí on és
+     l'eina que el resol. A la portada el repte competia amb el que allà s'ha
+     de dir —què venem i d'on surt—; qui obre el SOS ja sap que té un
+     problema, i el que necessita és reconèixer-lo escrit.
+
+     Va DESPRÉS de les tres portes i no abans: qui obre això no ve a
+     llegir-se un argumentari, ve a veure si hi té lloc. L'ordre de la pàgina
+     és entra → mira per on entraries → i si encara dubtes, llegeix. -->
+<section class="ob-repte">
+  <div class="obr-k">El repte</div>
+  <h2 class="obr-h">Moltes ganes. <em>Poca estructura.</em></h2>
+  <p class="obr-p">Un equip arrenca amb ganes i acaba depenent de dues persones que ho saben tot. No és falta de talent ni d'hores: és que ningú ha escrit <strong>qui dona què a qui</strong>, i el que sosté la feina de debò —els favors, el criteri, la confiança— no consta enlloc ni es pot repartir.</p>
+  <p class="obr-p"><strong>Dues o tres persones ho sostenen tot fins que es cremen.</strong> Quan marxen, se'n va amb elles el que no era a cap procediment. El veiem igual en un comitè de direcció, en una cooperativa i en una àrea d'un ajuntament.</p>
+  <p class="obr-p">La mirada sistèmica no ve a posar més voluntat. Ve a posar <strong>l'esquelet que la voluntat necessita</strong> per no ensorrar-se: rols funcionals, ritme, relleu i dades reals sobre qui sosté què.</p>
+  <blockquote class="obr-q">Una organització no perd el talent quan algú marxa. El perd molt abans: el dia que va deixar de saber què sostenia.</blockquote>
+  <blockquote class="obr-q bis">Un equip no s'ensorra per falta de cor. S'ensorra per falta d'esquelet.</blockquote>
+  <!-- Les dues columnes són l'argument sencer en una imatge: el que es diu a
+       les reunions i el que ho sosté de debò. El traç de cada etiqueta és el
+       mateix que al mapa de valor —plena i discontínua—, que és el que fa que
+       després el graf s'entengui sense explicar-lo. -->
+  <div class="obr-tx">
+    <div class="obr-c veu">
+      <div class="obr-cl">Es veu ——</div>
+      <h3>El que es diu a les reunions</h3>
+      <p>Hores, pressupost, contractes, actes, indicadors. Visible sobre el paper. Necessari, però no suficient.</p>
+    </div>
+    <div class="obr-c nov">
+      <div class="obr-cl">No es veu - - -</div>
+      <h3>El que ho sosté de veritat</h3>
+      <p>Confiança veïnal, favors, coneixement acumulat, reputació. Cap acta ho recull — però decideix si el projecte aguanta.</p>
+    </div>
+  </div>
+  <p class="obr-n"><span>→</span> La diferència entre un projecte que dura i un que es col·lapsa gairebé mai és als processos formals. Està en els <strong>intangibles no mapats</strong>.</p>
+</section>
 <!--SOS-BENEFICIS-->
 <div class="ob-benef">
   <div class="obb-cap">Què hi guanya qui s'hi posa</div>

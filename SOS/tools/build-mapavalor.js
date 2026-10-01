@@ -327,15 +327,20 @@ function svgCeller(id) {
    Les xifres de la frase les compta el generador. Escrites a mà, el dia que
    s'afegís un lliurament el dibuix diria una cosa i la frase una altra, i la
    que es creuria el client seria la frase. */
-function blocPols() {
+function blocPols(svgId) {
   const n = nodeDe(ENC.node);
   const perduts = SENSE_REG.map(x => `${esc(x.n.nom)} (${x.perd} de ${x.total})`).join(' i ');
-  return ['<div class="mv-pols-ui">',
+  /* El bloc diu **a quin dibuix mana** amb `data-svg`, i el JavaScript de cada
+     pàgina recorre els blocs que hi hagi. Amb els identificadors escrits a mà,
+     el dia que la segona pàgina va rebre els polsos els botons van quedar
+     apuntant al dibuix de la primera —i la pàgina es va publicar amb setze
+     camins invisibles que no feien res. */
+  return [`<div class="mv-pols-ui" data-svg="${svgId}">`,
     '<div class="mv-pu-b">',
-    '<button type="button" class="mv-b" id="mvPausa" aria-pressed="false">⏸ Atura el pols</button>',
-    `<button type="button" class="mv-b" id="mvEnc" aria-pressed="false" aria-controls="mvCeller">🩺 I si «${esc(n.nom)}» s'encalla?</button>`,
+    `<button type="button" class="mv-b mv-pausa" aria-pressed="false" aria-controls="${svgId}">⏸ Atura el pols</button>`,
+    `<button type="button" class="mv-b mv-enc" aria-pressed="false" aria-controls="${svgId}">🩺 I si «${esc(n.nom)}» s'encalla?</button>`,
     '</div>',
-    `<p class="mv-pu-t" id="mvPolsTxt" data-sa="Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé." ` +
+    `<p class="mv-pu-t" data-sa="Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé." ` +
     `data-enc="${esc(ENC.per)} Amb aquest node aturat es paren <b>${FLUX_PARAT} dels ${cTot.n} lliuraments</b>, i ${perduts} perden la meitat del que els arriba. ${esc(ENC.diu)}">` +
     'Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l\'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé.</p>',
     '</div>'].join('');
@@ -354,7 +359,7 @@ function blocPortada() {
     '<span class="mv-li">- - intangible</span>' +
     `<span class="mv-lc">${cTot.n} lliuraments · ${cTot.i} intangibles</span>` +
     '</div>');
-  f.push('    ' + blocPols());
+  f.push('    ' + blocPols('mvCeller'));
   f.push('  </div>');
   f.push('  <div class="mv-txt">');
   f.push(`    <h3>${esc(CELLER.titol)}</h3>`);
@@ -426,6 +431,10 @@ function blocExemple() {
   f.push(svgCeller('mvCellerVna'));
   f.push('<div class="mv-leg"><span class="mv-lt">— tangible</span><span class="mv-li">- - intangible</span>' +
     `<span class="mv-lc">${CELLER.nodes.length} nodes · ${cTot.n} transaccions · ${cTot.i} intangibles</span></div>`);
+  /* El mateix pols que a la portada. Aquesta pàgina explica **com es fa** un
+     mapa, i mirar si allò circula és part del com: una radiografia es llegeix
+     quieta, un cos no. */
+  f.push(blocPols('mvCellerVna'));
   f.push('</div>');
 
   f.push('<h3 class="mv-h3">Els nodes</h3>');
@@ -572,6 +581,38 @@ DESTINS.forEach(d => {
   cache[d.f] = txt.slice(0, i) + nou + txt.slice(j + tanca.length);
   escrits++;
 });
+
+/* ── CAP PÀGINA AMB POLSOS SENSE EL QUE ELS MOU ───────────────────────────
+   Aquest generador escriu el mateix dibuix a dues pàgines, i l'estil que el fa
+   circular és **de cada pàgina**. Quan els polsos hi van entrar, `vna.html` va
+   rebre el marcatge i no l'estil: setze camins invisibles que no feien res, i
+   uns botons que apuntaven al dibuix de l'altra pàgina.
+
+   **No petava i no es veia**: la pàgina es llegia exactament igual que abans.
+   Es va trobar perquè algú va preguntar, que és la manera més cara.
+
+   Es comprova que tota pàgina amb `class="mv-p"` porti també l'animació que els
+   mou, els botons que els aturen, i que els botons sàpiguen a quin dibuix
+   manen. Si el dia de demà el dibuix va a una tercera pàgina, aquesta guarda
+   serà la que ho digui. */
+(() => {
+  const falta = [];
+  [...new Set(DESTINS.map(d => d.f))].forEach(f => {
+    if (!existsSync(f)) return;
+    const txt = cache[f] !== undefined ? cache[f] : readFileSync(f, 'utf8');
+    const nom = f.replace(ARREL + '/', '');
+    if (!/class="mv-p[\s"]/.test(txt)) return;      // aquesta pàgina no en porta
+    const li = [];
+    if (!/@keyframes mv-flueix/.test(txt)) li.push('l\'animació `mv-flueix`');
+    if (!/\.mv-svg\.encallat/.test(txt)) li.push('l\'estat `encallat`');
+    if (!/class="mv-pols-ui" data-svg=/.test(txt)) li.push('els botons que l\'aturen');
+    if (!/querySelectorAll\('\.mv-pols-ui'\)/.test(txt)) li.push('el codi que els escolta');
+    if (li.length) falta.push(`${nom}: hi falta ${li.join(', ')}`);
+  });
+  if (falta.length) bad('pàgines amb polsos que no es mouen: ' + falta.join(' · ')
+    + ' — no peta i no es veu: la pàgina es llegeix igual que abans');
+  else ok(`les ${[...new Set(DESTINS.map(d => d.f))].length} pàgines amb el dibuix porten el que el fa circular i el que l'atura`);
+})();
 
 if (CHECK) {
   if (vells.length) bad('blocs desactualitzats: ' + vells.join(', ') + ' — torna a executar build-mapavalor.js');

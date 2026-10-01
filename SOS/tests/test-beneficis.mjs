@@ -29,9 +29,13 @@ console.log('\n1 · El bloc hi és, i és el primer que es llegeix després del 
 const on = await page.evaluate(() => {
   const bl = document.querySelector('.ob-benef');
   if (!bl) return null;
-  const ordre = [...document.querySelectorAll('#onboarding .ob-pains, #onboarding .ob-benef, #onboarding .ob-paths')]
+  const rp = document.querySelector('.ob-repte');
+  const ordre = [...document.querySelectorAll('#onboarding .ob-pains, #onboarding .ob-repte, #onboarding .ob-benef, #onboarding .ob-paths')]
     .map(e => e.className.split(' ')[0]);
-  return { n: bl.querySelectorAll('.obb').length, ordre, xifres: bl.querySelectorAll('.obb-n').length };
+  return { n: bl.querySelectorAll('.obb').length, ordre, xifres: bl.querySelectorAll('.obb-n').length,
+    repte: !!rp, veus: rp ? rp.querySelectorAll('.obr-q').length : 0,
+    cols: rp ? rp.querySelectorAll('.obr-c').length : 0,
+    txt: rp ? rp.innerText : '' };
 });
 ok(!!on, 'la portada porta el bloc de beneficis');
 ok(on && on.n === 3, 'amb tres beneficis: el fons, el que s\'aprèn i el que s\'estalvia');
@@ -45,8 +49,25 @@ ok(on && on.xifres >= 5, `i ${on ? on.xifres : 0} xifres, no adjectius`);
    El que la prova segueix vigilant és el que no pot canviar: que el bloc
    existeixi, que sigui DESPRÉS del dolor (un benefici abans de nomenar el
    problema no vol dir res) i que les portes no quedin enterrades. */
-ok(on && on.ordre.join(',') === 'ob-pains,ob-paths,ob-benef',
-  'l\'ordre és dolor → portes → argumentari: primer per on s\'entra, i el perquè per a qui el vulgui');
+ok(on && on.ordre.join(',') === 'ob-pains,ob-paths,ob-repte,ob-benef',
+  'l\'ordre és dolor → portes → repte → argumentari: primer per on s\'entra, i el perquè per a qui el vulgui');
+
+/* EL REPTE, VINGUT DE LA PORTADA (01/10/2026).
+   Viu aquí perquè aquí és on és l'eina que el resol: a la portada competia amb
+   el que allà s'ha de dir —què venem i d'on surt—, i qui obre el SOS ja sap
+   que té un problema.
+
+   El que es prova és **que no s'hagi perdut res pel camí**, que és el que passa
+   sempre que una cosa canvia de pàgina: les dues frases, les dues columnes, i
+   que segueixi parlant dels dos mons. Una pàgina que es queda la meitat d'un
+   argument no peta i es llegeix bé. */
+ok(on && on.repte, 'el repte ha arribat al SOS');
+ok(on && on.veus === 2, `i les dues frases que el tanquen també (${on && on.veus})`);
+ok(on && on.cols === 2, 'amb les dues columnes: el que es veu i el que ho sosté de debò');
+ok(on && /comitè de direcció/i.test(on.txt) && /ajuntament/i.test(on.txt),
+  'i segueix parlant dels dos mons, no d\'un');
+ok(on && /qui dona què a qui/i.test(on.txt),
+  'i diu el que el mapa de valor resol, amb les seves paraules');
 
 console.log('\n2 · Les xifres de la pantalla són les que l\'app calcula');
 const x = await page.evaluate(() => {

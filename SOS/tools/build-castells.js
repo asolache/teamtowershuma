@@ -377,6 +377,54 @@ function bloc() {
   return f.join('\n');
 }
 
+/* ══ EL BLOC DE LA PÀGINA DEL MÈTODE ═════════════════════════════════════════
+   La portada ven i aquesta pàgina ensenya, i per això no és el mateix bloc: no
+   hi van les cinc construccions ni el tria-variables, sinó **l'anatomia** i la
+   regla que en surt. Qui és aquí ja ha decidit que li interessa; el que li
+   falta és saber llegir-ho.
+
+   Es genera de la mateixa declaració, que és tot el motiu de generar-ho: el dia
+   que els noms canviïn —i canviaran, perquè varien de colla a colla—, les dues
+   pàgines diran el mateix o no en dirà cap. */
+function blocVna() {
+  const q = FIGURES.find(x => x.baixos === 4);
+  const f = [];
+  f.push('<!--VNA-PINYA-->');
+  f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
+  f.push('<section class="mv-sec">');
+  f.push('<h2>I la mateixa casa, mirada des de dalt</h2>');
+  f.push('<p class="mv-sub">El graf de sobre diu <b>qui dona què a qui</b>. El que no diu és '
+    + '<b>on es concentra el pes</b>, perquè un graf no té base. Això ho diu la pinya, i només '
+    + 'es veu mirant-la des de dalt.</p>');
+  f.push('<div class="ct-wrap">');
+  f.push('  <div class="ct-pan ct-pv">');
+  f.push('    <figure class="ct-v"><div class="ct-viz">' + planta(q) + '</div>'
+    + `<figcaption>La planta d'un ${esc(q.nom.replace(/^El /, ''))} · ${4 * q.baixos} rengles</figcaption></figure>`);
+  f.push('    <div class="ct-txt">');
+  f.push('      <p class="ct-quan">Una <b>rengla</b> és cada filera de gent que surt del tronc cap '
+    + 'enfora. N\'hi ha de tres menes, i es diuen pel nom de la mà que les encapçala.</p>');
+  f.push('      <ul class="ct-ll ct-anat">' + MENES.map(m =>
+    `<li><i style="background:${COL_MENA[m.id]}"></i><b>${esc(m.nom)}</b> `
+    + `<span class="ct-n">${m.quantes(q.baixos)}</span> ${esc(m.diu)}</li>`).join('') + '</ul>');
+  f.push(`      <p class="ct-diu"><b>Una pinya de N baixos obre 4N rengles.</b> Un dos n'obre `
+    + `${4 * 2}, un tres ${4 * 3}, un quatre ${4 * 4} i un cinc ${4 * 5}. I per això un instrument `
+    + 'de setze factors cap en la planta d\'un quatre sense forçar res: un factor per rengla.</p>');
+  f.push('      <p class="ct-diu">De les tres menes, <b>el vent és l\'única que toca dues àrees '
+    + 'alhora</b> —una mà a cada pilar—, i per tant l\'única que impedeix que se separin. Una planta '
+    + 'amb els vents buits és una casa amb àrees que no es toquen.</p>');
+  f.push('      <p class="ct-avis">Això ordena i fa visible; <b>no puntua</b>. Un castell no diu si '
+    + 'una casa va bé: diu on es concentra el pes i quines rengles té buides.</p>');
+  f.push('    </div>');
+  f.push('  </div>');
+  f.push(`  <p class="ct-llei"><b>I la llei que lliga les dues mirades:</b> en castells no es guanya `
+    + 'alçada sense guanyar base. <b>La pinya creix més de pressa que el tronc</b>, i en una casa és '
+    + 'igual: cada pis d\'ambició demana més rengles obertes, no més gent a la mateixa.</p>');
+  f.push('</div>');
+  f.push('</section>');
+  f.push('<!--/VNA-PINYA-->');
+  return f.join('\n');
+}
+
 /* ══ LES GUARDES ═════════════════════════════════════════════════════════════ */
 
 /* 1 · LA QUE IMPORTA · una pinya de N baixos obre 4N direccions, i la planta
@@ -464,19 +512,21 @@ function bloc() {
 })();
 
 /* ══ ESCRIURE O COMPROVAR ════════════════════════════════════════════════════ */
-if (!existsSync(HOME)) bad('no existeix index.html');
-else if (!fails) {
-  const src = readFileSync(HOME, 'utf8');
-  const a = src.indexOf('<!--TT-CASTELLS-->'), b = src.indexOf('<!--/TT-CASTELLS-->');
-  if (a < 0 || b < 0 || b < a) bad('falten les marques <!--TT-CASTELLS--> a index.html');
-  else {
-    const out = src.slice(0, a) + bloc() + src.slice(b + '<!--/TT-CASTELLS-->'.length);
-    if (CHECK) {
-      if (out !== src) bad('index.html no correspon a la declaració de build-castells.js');
-      else ok('el bloc de la pinya està al dia');
-    } else if (out !== src) writeFileSync(HOME, out);
-  }
-}
+const DESTINS = [
+  { f: HOME, marca: 'TT-CASTELLS', fn: bloc, nom: 'index.html' },
+  { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-PINYA', fn: blocVna, nom: 'SOS/vna.html' }
+];
+if (!fails) DESTINS.forEach(d => {
+  if (!existsSync(d.f)) { bad('no existeix ' + d.nom); return; }
+  const src = readFileSync(d.f, 'utf8');
+  const a = src.indexOf(`<!--${d.marca}-->`), b = src.indexOf(`<!--/${d.marca}-->`);
+  if (a < 0 || b < 0 || b < a) { bad(`falten les marques <!--${d.marca}--> a ${d.nom}`); return; }
+  const out = src.slice(0, a) + d.fn() + src.slice(b + `<!--/${d.marca}-->`.length);
+  if (CHECK) {
+    if (out !== src) bad(`${d.nom} no correspon a la declaració de build-castells.js`);
+  } else if (out !== src) writeFileSync(d.f, out);
+});
+if (CHECK && !fails) ok('els blocs de la pinya estan al dia a les dues pàgines');
 
 if (CHECK) {
   console.log(fails ? '\n❌ Arregla-ho amb:  node SOS/tools/build-castells.js' : '\n✅ La pinya quadra.');

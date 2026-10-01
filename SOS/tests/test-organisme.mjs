@@ -75,11 +75,11 @@ console.log('\n2 · El mapa circula, i es pot aturar');
      llarga semblaria aturat: el mapa diria que unes coses circulen i d'altres
      no, que és el que només ha de dir quan és cert. */
   ok(r.norm === '100', 'tots a la mateixa velocitat, sigui quina sigui la llargada del camí');
-  await p.click('#mvPausa');
+  await p.click('.mv-pausa');
   const q = await p.evaluate(() => ({
     play: getComputedStyle(document.querySelector('.mv-p')).animationPlayState,
-    premut: document.querySelector('#mvPausa').getAttribute('aria-pressed'),
-    lbl: document.querySelector('#mvPausa').textContent }));
+    premut: document.querySelector('.mv-pausa').getAttribute('aria-pressed'),
+    lbl: document.querySelector('.mv-pausa').textContent }));
   ok(q.play === 'paused' && q.premut === 'true', 'el botó l\'atura · ' + q.lbl.trim());
   await ctx.close();
 }
@@ -88,8 +88,8 @@ console.log('\n2 · El mapa circula, i es pot aturar');
 console.log('\n3 · I si un node s\'encalla');
 {
   const { ctx, p } = await nova();
-  const abans = await p.evaluate(() => document.querySelector('#mvPolsTxt').textContent.trim());
-  await p.click('#mvEnc');
+  const abans = await p.evaluate(() => document.querySelector('.mv-pu-t').textContent.trim());
+  await p.click('.mv-enc');
   /* El canvi de color té mig segon de transició. Llegir-lo abans d'hora
      donava un resultat a mitges i una prova que fallava segons el dia. */
   await p.waitForTimeout(700);
@@ -102,8 +102,8 @@ console.log('\n3 · I si un node s\'encalla');
       total: s.querySelectorAll('.mv-f').length,
       grisos, apagats: s.querySelectorAll('.mv-n[data-sec]').length,
       marcat: s.querySelectorAll('.mv-n[data-para]').length,
-      txt: document.querySelector('#mvPolsTxt').textContent.trim(),
-      premut: document.querySelector('#mvEnc').getAttribute('aria-pressed') };
+      txt: document.querySelector('.mv-pu-t').textContent.trim(),
+      premut: document.querySelector('.mv-enc').getAttribute('aria-pressed') };
   });
   ok(r.encallat && r.premut === 'true', 'el botó encalla el node');
   ok(r.grisos === r.parats && r.parats > 0,
@@ -128,10 +128,10 @@ console.log('\n4 · Sense moviment, la informació hi és igual');
     visible: getComputedStyle(document.querySelector('.mv-p')).opacity }));
   ok(r.anim === 'none', 'res no es mou');
   ok(Number(r.visible) > 0, 'però els camins segueixen dibuixats: s\'apaga el moviment, no la informació');
-  await p.click('#mvEnc');
+  await p.click('.mv-enc');
   const q = await p.evaluate(() => ({
     encallat: document.querySelector('#mvCeller').classList.contains('encallat'),
-    txt: document.querySelector('#mvPolsTxt').textContent.trim() }));
+    txt: document.querySelector('.mv-pu-t').textContent.trim() }));
   ok(q.encallat && /lliuraments/.test(q.txt), 'i el diagnòstic segueix servint igual');
   await ctx.close();
 }
@@ -222,7 +222,7 @@ console.log('\n8 · Si el JavaScript no arriba, el contingut hi és igual');
   await p.goto(APP);
   const r = await p.evaluate(() => ({
     pols: document.querySelectorAll('.mv-p').length,
-    frase: (document.querySelector('#mvPolsTxt') || {}).textContent || '',
+    frase: (document.querySelector('.mv-pu-t') || {}).textContent || '',
     plantes: document.querySelectorAll('.pl-svg').length,
     alcats: document.querySelectorAll('.al-svg').length,
     llei: (document.querySelector('.ct-llei') || {}).textContent || '' }));
@@ -231,6 +231,45 @@ console.log('\n8 · Si el JavaScript no arriba, el contingut hi és igual');
   ok(r.plantes >= FIGURES.length && r.alcats === FIGURES.length,
     `i les ${r.alcats} construccions són dibuixades, no generades al navegador`);
   ok(/alçada sense guanyar base/.test(r.llei), 'i la llei que lliga les dues vistes també hi és');
+  await ctx.close();
+}
+
+/* ── 9 · La pàgina del mètode porta el mateix, i viu ────────────────────────
+   El dibuix del celler el genera el mateix fitxer per a dues pàgines, i l'estil
+   que el fa circular és de cada pàgina. Quan els polsos hi van entrar,
+   `vna.html` va rebre el marcatge i no l'estil: setze camins invisibles que no
+   feien res, i uns botons que apuntaven al dibuix de l'altra pàgina.
+
+   **No petava i no es veia.** Això ho prova que circuli de debò allà, no que
+   el marcatge hi sigui. */
+console.log('\n9 · I la pàgina del mètode, també viva');
+{
+  const ctx = await b.newContext({ viewport: { width: 1100, height: 900 } });
+  const p = await ctx.newPage();
+  p.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  const r = await p.evaluate(() => {
+    const u = document.querySelector('.mv-pols-ui'), pol = document.querySelector('.mv-p');
+    return { ui: !!u, svg: u && u.getAttribute('data-svg'),
+      anim: pol && getComputedStyle(pol).animationName,
+      play: pol && getComputedStyle(pol).animationPlayState,
+      polsos: document.querySelectorAll('.mv-p').length,
+      planta: document.querySelectorAll('.pl-svg').length,
+      rengles: document.querySelectorAll('.pl-l').length,
+      menes: document.querySelectorAll('.ct-anat li').length };
+  });
+  ok(r.polsos > 0 && r.anim !== 'none' && r.play === 'running',
+    `els ${r.polsos} polsos circulen de debò, no són marcatge mort`);
+  /* Els botons han de manar sobre el dibuix d'AQUESTA pàgina. Amb els
+     identificadors escrits a mà apuntaven al de la portada, que aquí no hi és. */
+  ok(r.ui && r.svg === 'mvCellerVna', 'i els botons manen sobre el dibuix d\'aquesta pàgina · ' + r.svg);
+  await p.click('.mv-enc');
+  const q = await p.evaluate(() => ({
+    encallat: document.getElementById('mvCellerVna').classList.contains('encallat'),
+    txt: (document.querySelector('.mv-pu-t') || {}).textContent || '' }));
+  ok(q.encallat && /lliuraments/.test(q.txt), 'l\'encallament hi funciona igual');
+  ok(r.planta === 1 && r.rengles === 16, `i hi ha la planta d'un 4 amb els seus ${r.rengles} rengles`);
+  ok(r.menes === 3, 'amb les tres menes explicades, que és el que aquesta pàgina ha d\'ensenyar');
   await ctx.close();
 }
 

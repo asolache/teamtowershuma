@@ -212,9 +212,11 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   const r = await p.evaluate(() => {
     const hero = document.querySelector('.hero');
     return {
-      /* Les tres veus eren al hero i ara són a «El repte», que és la secció
-         del problema. El que ha de ser cert no és on viuen: és que no s'hagin
-         perdut pel camí en moure-les, que és el que passa sempre. */
+      /* Les tres veus van passar del hero a «El repte», i el repte sencer ha
+         passat a `/SOS/`, que és on viu l'eina que el resol. El que ha de ser
+         cert no és on viuen —això canvia— sinó que **no s'hagin perdut pel
+         camí**, que és el que passa sempre quan una cosa es mou de pàgina.
+         Es comprova a la pàgina on són ara, no aquí. */
       dolor: document.querySelectorAll('#enfoc .repte-veus li').length,
       /* I el que el hero diu ara al seu lloc: d'on ve la casa. Sense els dos
          noms i el recorregut entre ells, «flux de valor» és una promesa com
@@ -235,7 +237,7 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
       ordre: [...document.querySelectorAll('section[id]')].map(s => s.id)
     };
   });
-  ok(r.dolor === 3, 'els tres dolors del principi no s\'han perdut pel camí');
+  ok(r.dolor === 0, 'el repte ja no és a la portada: ha marxat a /SOS/, on és l\'eina que el resol');
   ok(r.evo === 3, 'el hero explica d\'on ve la casa en tres passos');
   ok(r.llinatge, 'i nomena les dues cases i l\'any: TeamTowers → TeamTowers Humà');
   ok(r.flux, 'i diu què es mesura, que és el que es contracta');
