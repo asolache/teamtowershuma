@@ -445,6 +445,33 @@ else {
     else ok(`i els botons del pols manen sobre tots ${mana.length} els dibuixos alhora`);
   }
 
+  /* ── La xarxa ha de tenir les dues bandes ─────────────────────────────
+     Un mapa de valor amb una sola banda no és un mapa: és un organigrama. La
+     secció dibuixa els rols de la casa **i** els de qui contracta, i si un dia
+     se'n va una de les dues meitats quedarà una pàgina que es llegeix bé i que
+     ja no diu res —el mètode consisteix justament en els dos costats.
+
+     I una regla de marca: aquí no hi va cap nom d'empresa. Els nodes són rols;
+     els clients tenen la seva paret, amb la font escrita de cada un (regla 10).
+     Barrejar-los faria passar per client qualsevol rol dibuixat. */
+  const xarxa = bloc('<section class="xarxa" id="xarxa"', '</section>');
+  if (!xarxa) bad('no es troba el mapa de la xarxa (`#xarxa`)');
+  else {
+    const txt = sensTags(xarxa.replace(/<!--[\s\S]*?-->/g, ''));
+    const casa = /qui mapa|qui forma|qui ho fa passar|qui construeix/i.test(txt);
+    const fora = /ag[èe]ncies|empreses|institucions|administraci/i.test(txt);
+    const nodes = (xarxa.match(/class="mv-n"/g) || []).length;
+    if (!casa || !fora) bad('el mapa de la xarxa només té una banda ('
+      + (casa ? 'els oficis de la casa' : 'els de fora') + '): un mapa de valor amb un sol costat és un organigrama');
+    else if (nodes < 6) bad(`el mapa de la xarxa dibuixa ${nodes} nodes: amb menys no hi ha xarxa`);
+    else ok(`la xarxa té les dues bandes i ${nodes} rols dibuixats`);
+    /* I la frase que impedeix llegir-ho com una llista de clients. */
+    if (/no és una llista de clients|no es una lista de clientes/i.test(txt))
+      ok('i diu que els nodes són rols i no clients');
+    else bad("al mapa de la xarxa li falta dir que **no és una llista de clients**: "
+      + "qui el llegeixi pensarà que cada node és un contracte");
+  }
+
   /* El vocabulari: cada posició ha de dir què és en una casa. Es mira sobre el
      text visible perquè és el que llegeix qui no sap de castells. */
   const rols = bloc('<section class="rols" id="rols"', '</section>');

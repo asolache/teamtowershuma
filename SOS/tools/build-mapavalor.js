@@ -104,6 +104,13 @@ const PROCES = [
    contrast és l'argument, i si els dos camins es barregen no es veu. */
 const CELLER = {
   titol: 'Un celler del Penedès que mira el turisme de luxe',
+  /* El títol i la descripció del dibuix, que és el que llegeix qui no el veu.
+     Vivien escrits dins del dibuixant, i el dia que hi va haver un segon mapa
+     aquell deia que era un celler. */
+  titolSvg: 'Mapa de valor d\'un celler del Penedès',
+  descSvg: 'Set rols i setze lliuraments. A l\'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l\'operador de luxe i el visitant, on la meitat del que es lliura és intangible.',
+  /* El color diu de quin camí és cada node. El que no hi surt va d'indi. */
+  colors: { canal: '#82828d', visitant: '#00e676' },
   una: 'El mateix vi, el mateix poble i la mateixa família. El que canvia és qui rep què — i sobretot, quins lliuraments es paguen.',
   nodes: [
     { id: 'vi', nom: 'Qui fa el vi', x: 320, y: 58, cami: 'tots',
@@ -175,7 +182,84 @@ const CELLER = {
 
    El `return` és el mateix patró que `build-oferta.js`: qui requereix aquest
    fitxer se'n porta les dades i no n'executa ni les guardes ni l'escriptura. */
-module.exports = { CELLER };
+/* ══ EL SEGON CAS · LA XARXA DE TEAMTOWERS ═══════════════════════════════════
+   El mètode no s'aplicava a la casa que el ven. «TeamTowers» sortia a la
+   portada com a **reputació** —trenta-dos clients amb font escrita— i no com el
+   que de debò és: **un mapa de valor entre els rols que fa l'Àlvar i els de les
+   agències, les empreses i les institucions.**
+
+   Això no és una il·lustració: és la prova que el mètode val per a qualsevol
+   casa, feta sobre la que el ven. I com tot mapa d'aquest fitxer, **les
+   troballes les compta el generador**, no les escriu ningú.
+
+   Dues decisions que no són òbvies:
+
+   · **Els nodes són rols, no persones ni clients.** Un nom d'empresa és una
+     afirmació sobre un tercer i demana font escrita (`check-landing.js` regla
+     10); un rol és una descripció de com funciona la casa. Els clients ja
+     tenen la seva paret i la seva font, i no es barregen amb això.
+   · **Quatre dels set rols els fa la mateixa persona**, i el mapa ho diu en
+     comptes de dissimular-ho. És l'única manera que la lectura serveixi de res:
+     el que la xarxa ha de resoldre és que cada rol el pugui fer algú altre.
+
+   Les posicions són les mateixes del celler (viewBox 640 × 430) perquè el
+   dibuixant és el mateix i la retícula ja estava pensada: la casa a l'esquerra
+   i al centre, i qui contracta a la dreta. */
+const XARXA = {
+  titol: 'La xarxa de TeamTowers, mirada com un mapa de valor',
+  una: 'Set rols: els quatre que fa l\'Àlvar i els tres de l\'altra banda de la taula. El que es lliura en cada sentit, i el que es lliura i no es factura.',
+  titolSvg: 'Mapa de valor de la xarxa de TeamTowers',
+  descSvg: 'Set rols i setze lliuraments. A l\'esquerra i al centre, els quatre oficis de la casa: qui mapa, qui forma, qui ho fa passar i qui construeix la peça. A la dreta, les agències, les empreses i les institucions.',
+  colors: { casa: '#6366f1', fora: '#00e676', canal: '#82828d' },
+  nodes: [
+    { id: 'mapa', nom: 'Qui mapa el valor', x: 320, y: 58, cami: 'casa',
+      d: 'Dibuixa qui dona què a qui, també el que no es factura. És el node del qual pengen tots els altres oficis de la casa.' },
+    { id: 'forma', nom: 'Qui forma fent', x: 320, y: 200, cami: 'casa',
+      d: 'Setze mòduls sobre el cas de qui els fa, no sobre un d\'inventat. És el que fa que el mapa no se\'n vagi amb nosaltres.' },
+    { id: 'produeix', nom: 'Qui ho fa passar', x: 96, y: 128, cami: 'casa',
+      d: 'Jornades, diades i logística, amb una sola persona responsable de tot el que pot sortir malament.' },
+    { id: 'construeix', nom: 'Qui construeix la peça', x: 96, y: 300, cami: 'casa',
+      d: 'Les eines: el SOS, els fluxos amb IA, les guardes que comproven a cada canvi que allò segueix dient la veritat.' },
+    { id: 'agencies', nom: 'Agències i consultores', x: 320, y: 372, cami: 'canal',
+      d: 'Tenen la relació i el volum; no tenen el mètode. És una relació sana i té la mateixa particularitat que el distribuïdor del celler.' },
+    { id: 'empreses', nom: 'Empreses i cooperatives', x: 540, y: 128, cami: 'fora',
+      d: 'Compren decidir millor i que l\'equip ho sostingui. Paguen amb pressupost propi i a termini curt.' },
+    { id: 'institucions', nom: 'Institucions i administració', x: 540, y: 300, cami: 'fora',
+      d: 'Ajuntaments, consells i centres educatius. Compren el mateix i ho paguen d\'una altra manera, amb els seus temps i els seus límits.' }
+  ],
+  parells: [
+    ['mapa', 'empreses', 'tangible', 'el mapa dels intercanvis reals i on es perd valor',
+      'intangible', 'accés al que de debò passa dins de la casa'],
+    ['mapa', 'institucions', 'tangible', 'el mapa del teixit: qui sosté què i de qui penja tot',
+      'intangible', 'la porta al territori i la legitimitat de l\'encàrrec públic'],
+    ['forma', 'empreses', 'tangible', 'un equip format sobre el seu propi cas',
+      'tangible', 'pressupost de formació, que és el que té partida'],
+    ['forma', 'institucions', 'tangible', 'tècnics que poden replicar-ho sense nosaltres',
+      'intangible', 'una comunitat de pràctica que dura més que el contracte'],
+    ['produeix', 'institucions', 'tangible', 'la jornada muntada i una sola persona responsable',
+      'intangible', 'vint anys de confiança al Penedès, que no es compra'],
+    ['agencies', 'mapa', 'intangible', 'la confiança del seu client, que és el que de debò venen',
+      'tangible', 'un mètode que no tenen i que les diferencia'],
+    ['construeix', 'empreses', 'tangible', 'la peça funcionant, amb els fitxers seus i sense lligams',
+      'tangible', 'el que es paga per la peça'],
+    /* L'únic intercanvi **de dins cap a dins**: el mapa produeix el material
+       que la formació fa servir, i la formació torna els casos que milloren el
+       mapa. Que només n'hi hagi un és la troballa, i la compta el generador. */
+    ['mapa', 'forma', 'tangible', 'el cas real sobre el qual s\'aprèn',
+      'intangible', 'els casos que tornen i que fan millor el mètode']
+  ],
+  troballes: [
+    { t: 'Quatre oficis i una sola persona',
+      d: 'Els quatre rols de l\'esquerra i del centre <b>els fa la mateixa persona</b>. El mapa no ho dissimula perquè és el que la xarxa ha de resoldre: <b>que cada rol el pugui fer algú altre</b>, amb el nivell i l\'evidència que el registre ja sap acreditar.' },
+    { t: 'Les agències compren el mètode i venen la relació',
+      d: 'És l\'única banda on el que arriba és <b>intangible</b> —la confiança del seu client— i el que es dona és el mètode. Sana i necessària, i amb la mateixa particularitat que el distribuïdor del celler: <b>pel canal, el que no es pot facturar se\'n va de franc</b> si no es pacta.' },
+    { t: 'Les dues cases paguen amb diners diferents',
+      d: 'Empresa i administració compren el mateix i <b>no ho paguen igual</b>: una amb pressupost propi i a termini curt, l\'altra amb partides, contracte menor i els seus temps. És per això que el catàleg filtra per sector i cada paquet diu <b>amb quins diners es paga</b>.' }
+  ],
+  avis: 'Aquest mapa <b>no és una llista de clients</b>: els nodes són rols i el que es dibuixa és com funciona la casa. Els clients tenen la seva paret més amunt, amb la font escrita de cadascun.'
+};
+
+module.exports = { CELLER, XARXA };
 if (require.main !== module) return;
 
 /* ══ ELS ENTREGABLES ═════════════════════════════════════════════════════════
@@ -258,12 +342,40 @@ const FLUX_PARAT = flux.filter(tocaEnc).length;
    Generat de les posicions declarades. Es dibuixa amb les dues menes
    distingides per traç —plena i discontínua— i no per color sol: qui no
    distingeix el blau del magenta ha de poder llegir el mapa igualment. */
-function svgCeller(id) {
+/* El dibuixant **de qualsevol mapa**, no només del celler. Era `svgCeller` i
+   llegia `CELLER`, `flux`, `ENC` i `PERDUA` del voltant: perfecte mentre hi
+   hagués un sol cas, i impossible de reutilitzar el dia que n'hi hagués dos.
+
+   Ara pren el mapa i se'n deriva el que necessita. `svgCeller(id)` segueix
+   existint i dibuixa exactament el mateix que abans —byte a byte—, que és com
+   s'ha comprovat que aquest canvi no toca res del que ja hi havia. */
+function svgMapa(mapa, id) {
+  const fl = mapa.parells.flatMap(x => [
+    { de: x[0], a: x[1], mena: x[2], q: x[3] },
+    { de: x[1], a: x[0], mena: x[4], q: x[5] }
+  ]);
+  const node = i => mapa.nodes.find(n => n.id === i);
+  const enc = mapa.encallament ? mapa.encallament.node : null;
+  const toca = f => enc && (f.de === enc || f.a === enc);
+  /* Qui perd la meitat del que rep quan el node encallat s'atura. Només té
+     sentit si el mapa en declara un; un mapa sense encallament no marca res. */
+  const perd = !enc ? [] : mapa.nodes.filter(n => n.id !== enc).map(n => {
+    const rep = fl.filter(f => f.a === n.id);
+    const p = rep.filter(toca).length;
+    return { id: n.id, pct: rep.length ? p / rep.length : 0 };
+  });
+  const COL = Object.assign({}, mapa.colors);
+  return svgDe(mapa, id, fl, node, enc, toca, perd, COL);
+}
+
+const svgCeller = id => svgMapa(CELLER, id);
+
+function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL) {
   const R = 46, W = 640, H = 430;
   const p = [];
   p.push(`<svg id="${id}" class="mv-svg viu" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}T ${id}D">`);
-  p.push(`<title id="${id}T">Mapa de valor d'un celler del Penedès</title>`);
-  p.push(`<desc id="${id}D">Set rols i setze lliuraments. A l'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l'operador de luxe i el visitant, on la meitat del que es lliura és intangible.</desc>`);
+  p.push(`<title id="${id}T">${esc(mapa.titolSvg)}</title>`);
+  p.push(`<desc id="${id}D">${esc(mapa.descSvg)}</desc>`);
   p.push('<defs>' +
     '<marker id="mvT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00b0ff"/></marker>' +
     '<marker id="mvI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e040fb"/></marker>' +
@@ -304,10 +416,10 @@ function svgCeller(id) {
       ` style="animation-delay:${(i * .17).toFixed(2)}s"/>`);
   });
   p.push('<g class="mv-pols" aria-hidden="true">' + camins.join('') + '</g>');
-  CELLER.nodes.forEach(n => {
-    const col = n.cami === 'canal' ? '#82828d' : (n.cami === 'visitant' ? '#00e676' : '#6366f1');
-    const perd = PERDUA.find(x => x.n.id === n.id);
-    const marca = n.id === ENC.node ? ' data-para="1"'
+  mapa.nodes.forEach(n => {
+    const col = COL[n.cami] || '#6366f1';
+    const perd = PERDUA.find(x => x.id === n.id);
+    const marca = n.id === encN ? ' data-para="1"'
       : (perd && perd.pct >= .5 ? ' data-sec="1"' : '');
     p.push(`<g class="mv-n" data-id="${n.id}"${marca}>`);
     p.push(`<circle cx="${n.x}" cy="${n.y}" r="${R}" fill="#141420" stroke="${col}" stroke-width="1.6"/>`);
@@ -580,8 +692,60 @@ ok(`repartiment: ${cQui.maquina} de màquina · ${cQui.sense} sense tipus · ${c
 })();
 
 /* ══ ESCRIURE ════════════════════════════════════════════════════════════════ */
+/* ══ EL BLOC DE LA XARXA ═════════════════════════════════════════════════════
+   El mateix dibuixant i la mateixa disciplina: les xifres les compta aquí el
+   generador i no les escriu ningú. El que es diu de cada banda surt de comptar
+   els lliuraments, i per això el dia que la xarxa canviï, la lectura canviarà
+   amb ella. */
+function blocXarxa() {
+  const fl = XARXA.parells.flatMap(x => [
+    { de: x[0], a: x[1], mena: x[2] }, { de: x[1], a: x[0], mena: x[4] }
+  ]);
+  const nodeX = i => XARXA.nodes.find(n => n.id === i);
+  const casa = XARXA.nodes.filter(n => n.cami === 'casa').map(n => n.id);
+  const fora = XARXA.nodes.filter(n => n.cami !== 'casa').map(n => n.id);
+  const dins = fl.filter(x => casa.includes(x.de) && casa.includes(x.a));
+  const creuen = fl.filter(x => casa.includes(x.de) !== casa.includes(x.a));
+  const intang = a => a.filter(x => x.mena === 'intangible').length;
+  /* Els rols de la casa que no es lliuren res a cap altre rol de la casa. És la
+     troballa 1 comptada, i la que diu què ha de resoldre la xarxa. */
+  const aillats = casa.filter(id => !dins.some(x => x.de === id || x.a === id));
+  const f = [];
+  f.push('<div class="mv-grid fade-up">');
+  f.push('  <div class="mv-viz">');
+  f.push('    ' + svgMapa(XARXA, 'mvXarxa'));
+  f.push('    <div class="mv-leg">' +
+    '<span class="mv-lt">— tangible</span>' +
+    '<span class="mv-li">- - intangible</span>' +
+    `<span class="mv-lc">${fl.length} lliuraments · ${intang(fl)} intangibles</span>` +
+    '</div>');
+  f.push('  </div>');
+  f.push('  <div class="mv-txt">');
+  f.push(`    <h3>${esc(XARXA.titol)}</h3>`);
+  f.push(`    <p class="mv-lead">${esc(XARXA.una)}</p>`);
+  f.push('    <div class="mv-cmp">');
+  f.push(`      <div class="mv-c canal"><div class="mv-ck">Entre els oficis de la casa</div>`
+    + `<div class="mv-cv">${dins.length} de ${fl.length}</div>`
+    + `<div class="mv-cd">lliuraments. ${aillats.length} dels ${casa.length} oficis no es lliuren res a cap altre: `
+    + 'els fa la mateixa persona i per això no els cal.</div></div>');
+  f.push(`      <div class="mv-c visita"><div class="mv-ck">Cap a fora i cap a dins</div>`
+    + `<div class="mv-cv">${creuen.length} de ${fl.length}</div>`
+    + `<div class="mv-cd">lliuraments creuen la taula, i ${intang(creuen)} són intangibles: `
+    + 'accés, porta al territori, confiança i comunitat.</div></div>');
+  f.push('    </div>');
+  f.push('    <div class="mv-ts">' + XARXA.troballes.map((t, i) =>
+    `<div class="mv-t"><span class="mv-tn">0${i + 1}</span><b>${esc(t.t)}</b><p>${t.d}</p></div>`).join('') + '</div>');
+  f.push(`    <p class="mv-avis">${XARXA.avis}</p>`);
+  f.push('    <div class="mv-ctas"><a class="mv-cta pri" href="#cataleg">El catàleg sencer →</a>'
+    + '<a class="mv-cta" href="#trajectoria">Els clients, amb la font de cada un →</a></div>');
+  f.push('  </div>');
+  f.push('</div>');
+  return f.join('\n');
+}
+
 const DESTINS = [
   { f: join(ARREL, 'index.html'), marca: 'TT-MAPAVALOR', fn: blocPortada },
+  { f: join(ARREL, 'index.html'), marca: 'TT-XARXA', fn: blocXarxa },
   { f: join(SOS, 'vna.html'), marca: 'VNA-PROCES', fn: blocProces },
   { f: join(SOS, 'vna.html'), marca: 'VNA-EXEMPLE', fn: blocExemple }
 ];

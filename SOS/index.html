@@ -4088,6 +4088,44 @@ const ARCHETYPE_SETS={
     amaru:{name:'Amaru',ic:'📚',role:'Formació i coneixement',fn:'lms'},
     ayni:{name:'Ayni',ic:'💰',role:'Gestió del fons cooperatiu',fn:'fund'}
   }},
+  /* El joc casteller. No és un sisè sistema simbòlic com els altres: és
+     l'únic que ve d'una estructura que la gent d'aquí **ha viscut amb el cos**,
+     i per això serveix per posar nom als rols de casa seva —«el meu dos», «el
+     meu terç lateral»— sense haver d'explicar cap panteó.
+
+     Les posicions i el que volen dir viuen declarades a
+     `SOS/tools/build-castells.js` (`POSICIONS`), que és qui les escriu a la
+     portada i a `vna.html`; aquí hi ha **les vuit que ocupen una funció**, amb
+     el mateix joc de `fn` que els altres cinc, perquè un joc incomplet deixa
+     qui el triï sense aquella funció i no peta.
+
+     El mapatge posició → funció és interpretatiu i per això va amb el motiu al
+     costat. Una interpretació sense motiu escrit és una decisió que d'aquí a
+     sis mesos ningú podrà discutir. */
+  casteller:{label:'Casteller',archetypes:{
+    /* El vent és l'única posició que toca dues àrees alhora, i per tant l'única
+       que pot parlar del conjunt: la veu de la missió no és de qui mana sinó de
+       qui veu les dues bandes. */
+    vent:{name:'Vent',ic:'✨',role:'Veu de la missió',fn:'metaskill'},
+    /* El segon converteix el que arriba de dalt en pes repartit a baix: és
+       dissenyar una iniciativa, literalment. */
+    segon:{name:'Segon',ic:'🌱',role:'Disseny d\'iniciatives',fn:'design'},
+    /* El baix aguanta una àrea sencera i no es mou. */
+    baix:{name:'Baix',ic:'⚖',role:'Coordinació i operació',fn:'coord'},
+    /* El contrafort mira que allò no es desviï i ho diu a temps. */
+    contrafort:{name:'Contrafort',ic:'🔥',role:'Auditoria i renovació',fn:'audit'},
+    /* La primera mà entrega el que l'àrea ha promès. */
+    primera:{name:'Primera mà',ic:'💫',role:'Execució creativa',fn:'exec'},
+    /* La crossa treu pes de sobre abans que el baix es dobli: no fa la feina,
+       fa que es pugui fer. */
+    crossa:{name:'Crossa',ic:'🌿',role:'Facilitació i desbloqueig',fn:'facil'},
+    /* L'aixecador s'ajup perquè els altres passin. Fer pujar algú altre és
+       exactament això. */
+    aixecador:{name:'Aixecador',ic:'📚',role:'Formació i coneixement',fn:'lms'},
+    /* El cap de colla tria què s'intenta amb la gent que hi ha, que és la
+       decisió que no es pot delegar a l'estructura que l'ha d'aguantar. */
+    cap:{name:'Cap de colla',ic:'💰',role:'Gestió del fons cooperatiu',fn:'fund'}
+  }},
   secular:{label:'Secular',archetypes:{
     visioner:{name:'Visioner/a',ic:'✨',role:'Veu de la missió',fn:'metaskill'},
     dissenyador:{name:'Dissenyador/a',ic:'🌱',role:'Disseny d\'iniciatives',fn:'design'},

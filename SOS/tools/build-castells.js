@@ -295,7 +295,7 @@ const POSICIONS = [
    un error de dibuix: és un node que lliga tres àrees i només té lloc per a
    una. Les xifres no s'escriuen enlloc —es compten—, i el que surt és la
    lectura. */
-const { CELLER } = require('./build-mapavalor.js');
+const { CELLER, XARXA } = require('./build-mapavalor.js');
 
 const fluxosDe = mapa => mapa.parells.flatMap(p => [
   { de: p[0], a: p[1], mena: p[2], que: p[3], parell: p },
@@ -442,10 +442,12 @@ function plantaMapa(pinya, id) {
       const rad = rg.a * Math.PI / 180, cos = Math.cos(rad), sin = Math.sin(rad);
       const llarg = PM0 + (fons || 1) * PMPAS;
       const para = quins.some(pinya.tocaEnc) ? ' data-para="1"' : '';
-      const tit = quins.length
-        ? `${esc(m.nom.replace(/s$/, ''))} de ${esc(pil.node.nom)}: `
-          + quins.map(f => esc(f.que)).join(' · ')
-        : `${esc(m.nom.replace(/s$/, ''))} de ${esc(pil.node.nom)}: ningú`;
+      /* El nom en singular el diu `POSICIONS`, no una regla de plural: treure
+         la essa de «Primeres mans» dona «Primeres man». La biblioteca de rols
+         existeix justament per no haver d'endevinar com es diu una posició. */
+      const pos = POSICIONS.find(x => x.mena === rg.mena);
+      const tit = `${esc(pos.nom)} de ${esc(pil.node.nom)}: `
+        + (quins.length ? quins.map(f => esc(f.que)).join(' · ') : 'ningú');
       p.push(`<line class="pl-l pl-${rg.mena}" x1="${(PMC + cos * PM0).toFixed(1)}" y1="${(PMC + sin * PM0).toFixed(1)}" `
         + `x2="${(PMC + cos * llarg).toFixed(1)}" y2="${(PMC + sin * llarg).toFixed(1)}" `
         + `stroke="${COL_MENA[rg.mena]}" stroke-width="${m.gruix}" opacity="${fons ? m.op : .13}"${para}>`
@@ -664,6 +666,58 @@ function blocVista() {
   f.push('  </div>');
   f.push('</div>');
   f.push('<!--/TT-VISTA-CASTELL-->');
+  return f.join('\n');
+}
+
+/* ══ LA VISTA CASTELL DE LA XARXA ════════════════════════════════════════════
+   El mateix `pinyaDeMapa()` sobre el segon cas, i és aquí on es veu si la
+   derivació és general o estava afinada per al celler. No porta pols: la xarxa
+   no declara cap encallament, i inventar-n'hi un per tenir el botó seria
+   exactament el que aquest fitxer no fa.
+
+   El text el compta el generador. Si un dia la xarxa canvia un lliurament, la
+   lectura canviarà amb ella o el CI petarà. */
+function blocXarxaPinya() {
+  const pin = pinyaDeMapa(XARXA);
+  const f = [];
+  f.push('<!--TT-XARXA-PINYA-->');
+  f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
+  f.push('<div class="cv-grid xp-grid fade-up">');
+  f.push('  <div class="cv-viz">');
+  f.push('    ' + plantaMapa(pin, 'plXarxa'));
+  f.push('    <div class="ct-men cv-men">' + MENES.map(m => {
+    const pos = POSICIONS.find(x => x.mena === m.id);
+    return `<span class="ct-m"><i style="background:${COL_MENA[m.id]};height:${m.gruix}px"></i>`
+      + `<b>${esc(pos.nom)}</b> ${esc(pos.casa)}</span>`;
+  }).join('') + '</div>');
+  f.push('  </div>');
+  f.push('  <div class="cv-txt">');
+  f.push('    <h3>I la mateixa xarxa, des de dalt</h3>');
+  f.push('    <p class="mv-lead">La prova que la traducció no està feta a mida d\'un cas: '
+    + '<b>el mateix càlcul, sobre una altra casa</b>. Cada pilar és un rol de la xarxa i cada '
+    + 'rengla, un lliurament.</p>');
+  f.push(`    <div class="cv-k"><b>${pin.obertes} rengles obertes</b> · ${pin.ocupades} amb algú · `
+    + `${pin.obertes - pin.ocupades} buides</div>`);
+  const sols = pin.sols.map(p => p.node.nom);
+  const car = pin.carregats.sort((a, b) => b.quants - a.quants);
+  const li = [];
+  if (car.length) {
+    const c = car[0];
+    li.push(`<b>${esc(c.pilar.node.nom)} carrega ${c.quants} ${esc(c.mena.nom.toLowerCase())} `
+      + `sobre ${c.pilar.te[c.mena.id] === 1 ? 'una sola posició' : c.pilar.te[c.mena.id] + ' posicions'}.</b> `
+      + 'És el rol del qual pengen els altres, i la pinya no li dona lloc per a tants.');
+  }
+  if (sols.length) {
+    li.push(`<b>${sols.length === 1 ? sols[0] + ' no té cap vent' : sols.join(', ') + ' no tenen cap vent'}.</b> `
+      + 'Cap posició els lliga a una altra àrea: o es relacionen en una sola moneda, o no es '
+      + 'relacionen amb ningú de dins.');
+  }
+  li.push('<b>Això és el que la xarxa ha de resoldre</b>, i no amagar: que cada rol el pugui fer '
+    + 'algú altre, amb el nivell i l\'evidència que el registre ja sap acreditar.');
+  f.push('    <ul class="cv-ll">' + li.map(x => `<li>${x}</li>`).join('') + '</ul>');
+  f.push('  </div>');
+  f.push('</div>');
+  f.push('<!--/TT-XARXA-PINYA-->');
   return f.join('\n');
 }
 
@@ -960,10 +1014,48 @@ const FN_SOS = ['metaskill', 'design', 'coord', 'audit', 'exec', 'facil', 'lms',
   else ok(`les 3 menes tenen nom i les ${FN_SOS.length} funcions del SOS tenen posició, una cada una`);
 })();
 
+/* 14 · EL JOC D'ARQUETIPS DEL SOS HA DE DIR EL MATEIX QUE AQUÍ. L'app té un
+       joc `casteller` a `ARCHETYPE_SETS` i les posicions viuen aquí. Dues
+       llistes de noms castellers divergirien el dia que una es corregís —i els
+       noms **canvien de colla a colla**, o sigui que es corregiran— i no
+       petaria res: l'app oferiria un vocabulari i la web un altre, i ningú
+       compararia les dues pantalles.
+
+       Es comprova pel nom visible i per la funció: tota entrada del joc ha de
+       ser una posició declarada, i tota posició amb `fn` ha de sortir al joc. */
+(() => {
+  const APP = join(ARREL, 'SOS', 'index.html');
+  if (!existsSync(APP)) { bad('no existeix SOS/index.html'); return; }
+  const app = readFileSync(APP, 'utf8');
+  const i = app.indexOf("  casteller:{label:'Casteller',archetypes:{");
+  if (i < 0) { bad("l'app no porta el joc d'arquetips `casteller`: el pont cap al SOS no existeix"); return; }
+  const fi = app.indexOf('  }},', i);
+  const bloc = app.slice(i, fi < 0 ? i + 4000 : fi);
+  const joc = [...bloc.matchAll(/\{name:'((?:[^'\\]|\\.)*)',ic:'[^']*',role:'(?:[^'\\]|\\.)*',fn:'([a-z]+)'\}/g)]
+    .map(m => ({ nom: m[1].replace(/\\'/g, "'"), fn: m[2] }));
+  const ambFn = POSICIONS.filter(p => p.fn);
+  const forans = joc.filter(j => !POSICIONS.some(p => p.nom === j.nom));
+  const absents = ambFn.filter(p => !joc.some(j => j.nom === p.nom));
+  const malFn = joc.filter(j => {
+    const p = POSICIONS.find(x => x.nom === j.nom);
+    return p && p.fn !== j.fn;
+  });
+  if (joc.length !== FN_SOS.length)
+    bad(`el joc casteller de l'app té ${joc.length} entrades i les funcions del SOS són ${FN_SOS.length}`);
+  else if (forans.length) bad("el joc de l'app porta noms que no són posicions declarades: "
+    + forans.map(j => j.nom).join(', '));
+  else if (absents.length) bad('posicions amb funció que no surten al joc de l\'app: '
+    + absents.map(p => p.nom).join(', '));
+  else if (malFn.length) bad('posicions amb una funció diferent a l\'app i aquí: '
+    + malFn.map(j => `${j.nom} (${j.fn})`).join(', '));
+  else ok(`i el joc casteller de l'app diu les mateixes ${joc.length} posicions amb les mateixes funcions`);
+})();
+
 /* ══ ESCRIURE O COMPROVAR ════════════════════════════════════════════════════ */
 const DESTINS = [
   { f: HOME, marca: 'TT-VISTA-CASTELL', fn: blocVista, nom: 'index.html' },
   { f: HOME, marca: 'TT-CASTELLS', fn: bloc, nom: 'index.html' },
+  { f: HOME, marca: 'TT-XARXA-PINYA', fn: blocXarxaPinya, nom: 'index.html' },
   { f: HOME, marca: 'TT-ROLS', fn: blocRols, nom: 'index.html' },
   { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-PINYA', fn: blocVna, nom: 'SOS/vna.html' },
   { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-ROLS', fn: blocRols, nom: 'SOS/vna.html' }

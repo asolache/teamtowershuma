@@ -309,6 +309,177 @@ més.**
 
 ---
 
+### La portada, amb una sola jerarquia · fet (01/10/2026)
+
+**El que es venia era una trajectòria.** El hero deia «Dels castells al flux de
+valor» i les tres caselles d'evolució obrien amb TeamTowers el 2005: llegit de
+dalt a baix, el producte —anàlisi, disseny i desenvolupament de sistemes pels
+quals flueix el valor— no sortia fins a la quarta pantalla.
+
+Ara el hero nomena l'ofici, les caselles van etiquetades com el que són (*la
+prova que funciona*), i `#fentpinya` baixa al pis de la història. **Ordre nou:**
+`dues-vistes` · `rengles` · `rols` · `enfoc` · `glossari` · `fentpinya` ·
+`relat` · `xarxa` · `facilitador` · … *(`#mapaval` ja no existeix: és la primera
+pestanya de `#dues-vistes`.)*
+
+**La xarxa, dibuixada amb el propi mètode (`#xarxa`).** «TeamTowers» sortia com
+a reputació —trenta-dos clients amb font escrita— i no com el que és: un mapa de
+valor entre els quatre oficis de l'Àlvar i els rols d'agències, empreses i
+institucions. Set rols, setze lliuraments, i **les troballes les compta el
+generador**:
+
+- **Quatre oficis i una sola persona.** Només hi ha **un** intercanvi de dins
+  cap a dins (el mapa alimenta la formació i la formació torna els casos). El
+  mapa no ho dissimula perquè és el que la xarxa ha de resoldre: que cada rol el
+  pugui fer algú altre.
+- **Les agències compren el mètode i venen la relació** — la mateixa
+  particularitat que el distribuïdor del celler.
+- I té **la seva vista castell**, amb el mateix `pinyaDeMapa()`: «Qui mapa el
+  valor» carrega quatre vents sobre una sola posició. Era la prova que la
+  derivació és general i no estava afinada per al celler.
+
+`svgCeller` s'ha generalitzat a **`svgMapa(mapa, id)`**; el dibuix del celler
+surt **byte a byte igual que abans**, que és com s'ha comprovat que el canvi no
+toca res del que ja hi havia. Guarda nova: la xarxa ha de tenir **les dues
+bandes** i ha de dir que **no és una llista de clients**.
+
+**Els projectes de la xarxa (`#sos`).** La banda deia una cosa certa però curta
+—que el SOS és gratuït— i no deia què se n'endú qui no ens contracta mai. Ara
+són dos: el SOS (eina + setze mòduls) i el Comando (el relat obert).
+
+**L'alt tiquet, al catàleg.** `fent-pinya-vna`, 4.500–12.000 €, `punt: 'nou'` i
+`font: 'estimacio'`. Els vint anys de taller **no en són la prova**, i el camp
+`punt` existeix per impedir exactament això. Hi porten dos objectius del
+diagnòstic d'organització.
+
+**El joc d'arquetips casteller al SOS.** Sisè joc d'`ARCHETYPE_SETS`, vuit
+posicions amb les vuit mateixes `fn`, i el mapatge posició → funció declarat amb
+el motiu al costat. Vuit línies: 538 KB de 540. Guarda: l'app i
+`build-castells.js` han de dir **les mateixes posicions amb les mateixes
+funcions**, provada esborrant-ne una.
+
+**I l'arrel, que era un forat de 24 pàgines.** Hi ha 25 fitxers HTML publicats a
+la raíz i **24 no s'enllaçaven des de cap lloc**: ni portada, ni README, ni menú.
+Pàgines senceres —els clients, els esdeveniments del Penedès, el laboratori de
+VNA, la premsa— a les quals només hi arribava qui en sabia l'adreça.
+
+- `build-nav.js` té un grup nou **«La casa»** amb `arrel: true`, i aquelles
+  quatre ja surten al menú de les 23 pàgines del SOS i de la portada.
+- **`FORA_DEL_MENU_ARREL`**: les 21 restants, amb el motiu escrit. La majoria
+  són **una generació anterior del lloc** (consultoria de RRHH, «Sistema
+  Integral», tokenomics), publicades, indexables i signades «TeamTowers Humà»
+  parlant de món corporatiu. **Decidir què se'n fa no és feina de codi**
+  —actualitzar-les, posar-los `noindex` o retirar-les— i per això queda anotat.
+- `events.html` **ja la signa qui la signa**: era «TeamTowers Humà» al títol, a
+  l'autor, a l'`schema` i al peu d'una pàgina de producció corporativa.
+- ⚠ **Pendent, i bloqueja promocionar-la més:** `events.html` porta **tres
+  testimonis anònims** («Dirección de Recursos Humanos · Empresa Tecnológica
+  Internacional»). A la portada, `check-landing.js` regla 10 els petaria. O se'ls
+  posa font a `trajectoria.md`, o es retiren.
+
+---
+
+### El zoom · «més intuïtiu que un paper i un llapis» (demanat 01/10/2026)
+
+**Demanat per l'Àlvar**, i és una petició de **model d'interacció**, no de
+pantalla: la matriu (`/SOS/matriu.html`) i la nova UX d'usuari final del SOS han
+de ser **més intuïtives que un paper i un llapis** on dibuixes les teves xarxes
+de valor —rols, transaccions tangibles i intangibles, i entregables.
+
+> **La clau és el zoom.** Hi ha **un sol graf** amb el teu mapa de valor sencer,
+> i s'hi fa **zoom** sobre un entorn, un projecte o un edifici —la biblioteca,
+> el banc, la botiga, els serveis, el bar— i continues dins. Per a una empresa,
+> el mateix gest és **un zoom dins del graf del SOS**.
+
+**Per què això és una peça i no un retoc.** Avui el SOS té el mapa de valor en
+una portada (`homeView='mapa'`), Molekulandia com a model del poble sencer, i
+els edificis com a pàgines separades (`/SOS/compra.html`, `energia.html`,
+`habitatge.html`, `banc-temps.html`, `biblioteca.html`). **Són el mateix graf a
+escales diferents i avui es naveguen com a llocs diferents**: qui hi entra ha
+d'aprendre's un mapa de pàgines en comptes de moure's per un de sol.
+
+El zoom ho col·lapsa: **una sola superfície i un sol gest.** No és una vista
+nova —és la que hauria de fer innecessàries unes quantes, i per això encaixa amb
+el sostre (`check-kiss.js`: 5 portades de 5, 538 KB de 540) en comptes de
+lluitar-hi. *El criteri de sempre: es puja el sostre quan el que es compra són
+**menys** pantalles, no més.*
+
+**El que ja hi ha i s'hi ha de cosir, no escriure:**
+
+| Peça | On és | Què aporta al zoom |
+|---|---|---|
+| `expandPairs`, `mapFlowsOf` | l'app | el graf: rols i intercanvis amb les dues menes |
+| `ENTREGABLES`, `entregableDe` | l'app i `build-mapavalor.js` | els entregables, que són la tercera cosa que es dibuixa |
+| `pinyaDeMapa()` | `build-castells.js` | **la segona vista del mateix graf**, ja derivada i provada |
+| `DYNAMICS`, `EINES_SOS`, `einaDe` | `build-nav.js` i l'app | quin edifici correspon a quina dinàmica: **el destí de cada zoom** |
+| `descendants`, `subtreeIds`, `scopeIds`, `rollup` | l'app | l'escala ja existeix com a dada; el que falta és el gest |
+| `PROTOTYPE_MAPS`, `protoSuggerit` | l'app | què dibuixar quan encara no hi ha res |
+
+**El que no s'ha de fer:** un llenç nou al costat del que hi ha. Dos llocs on
+dibuixar el mateix graf divergirien el primer dia, i no petaria res —seria la
+mateixa classe de defecte que les dues vistes que no es parlaven.
+
+**La prova que no és automàtica, i que és el criteri que ha demanat ell:** posar
+algú davant amb un projecte seu i que **dibuixi el seu mapa sense que ningú li
+expliqui res**. Si necessita una explicació, el paper i el llapis guanyen.
+
+---
+
+### A qui es ven això · del ciutadà al family office
+
+**Dit per l'Àlvar el 01/10/2026**, i canvia el que es construeix: el mateix
+sistema serveix **empreses, cooperatives, xarxes, comunitats, autònoms,
+ciutadans i persones**, i a sobre s'hi poden muntar **productes de luxe per a
+client premium corporate o d'estil *family office***.
+
+**L'arquitectura ho aguanta i convé dir per què**: el graf i el zoom són els
+mateixos per a tots; el que canvia és **l'escala i l'acompanyament**. Un
+ciutadà dibuixa el seu mapa sol i de franc; un *family office* compra que algú
+el dissenyi, el sostingui i respongui. **El producte car no és un programa
+diferent: és el mateix amb una altra entrega** —i això és el que fa que el
+regal i el preu alt no es contradiguin.
+
+*El que falta per poder-ho vendre així: el tram alt del catàleg només té
+`fent-pinya-vna` (nou, 4.500–12.000 €). Un producte d'estil family office vol
+dir dir què s'entrega, quantes vegades s'ha fet i amb quins diners es paga —els
+set camps de sempre— i mentre no s'hagi entregat cap vegada, `punt: 'nou'`.*
+
+---
+
+### Desenvolupament de negoci · els fronts oberts (01/10/2026)
+
+**Llista de l'Àlvar**, per seguir desenvolupant negoci. No són clients
+entregats: són **fronts de desenvolupament**, i es diu perquè la diferència
+importa.
+
+| Front | Què és |
+|---|---|
+| **Fent pinya** | L'experiència castellera, i ara el paquet `fent-pinya-vna` |
+| **SOS** | L'eina i la formació-acció |
+| **Cal Segue** | Front obert al territori |
+| **Events Penedès** | Producció i dinamització · `events.html` |
+| **La bodega de Sara** | Front obert · celler |
+| **Elisa Solache** | Front obert |
+| **Vanguardia Vintage** | Front obert |
+| **La Teresita** | Front obert |
+
+> ⚠ **Cap d'aquests noms pot sortir a la portada com a client** fins que tingui
+> **fila a `SOS/knowledge/negoci/trajectoria.md`** amb qui ho ha dit i quan.
+> `check-landing.js` (regla 10) ho peta, i amb raó: un nom d'empresa a una
+> pàgina pública és una afirmació sobre un tercer. Aquí hi són com a **feina a
+> fer**, que és una altra cosa i no es publica.
+
+**El que cal de cada front, i és sempre el mateix:** què se li ven del catàleg,
+en quin estat està la conversa, i si ja hi ha entregat alguna cosa —perquè el
+dia que n'hi hagi, és el que converteix `punt: 'nou'` en `punt: 'provat'`, que
+és l'única manera honesta de fer-ho pujar.
+
+*Això és feina de CRM i el CRM ja existeix (`/SOS/crm.html`, fora del menú a
+posta perquè hi ha converses de gent real). L'entrada «Un CRM que s'actualitza
+sol» d'aquest mateix document és el que falta per no portar aquesta taula a mà.*
+
+---
+
 ### El dibuix de la colla i el graf declarat no diuen el mateix
 
 Arreglat el cas que es va veure —**les mans i els laterals sortien com a dos

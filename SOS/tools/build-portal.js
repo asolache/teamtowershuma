@@ -219,7 +219,12 @@ const TOTES = MUNTAR.concat(APREN, MON);
        peta mai, i el resultat és el que hi havia: vint-i-una pàgines i una
        porta que no en deia cap. */
 (() => {
-  const alMenu = GRUPS.flatMap(g => g.links.map(l => l[0]));
+  /* La porta del SOS parla de les pàgines **del SOS**. El menú té també un
+     grup de destins a l'arrel del lloc —els clients, els esdeveniments, el
+     laboratori de VNA— i exigir-los una entrada aquí voldria dir vendre'ls com
+     a eines de l'app, que no ho són. Qui els vigila és `build-nav.js`, amb el
+     seu propi registre de l'arrel. */
+  const alMenu = GRUPS.filter(g => !g.arrel).flatMap(g => g.links.map(l => l[0]));
   const posades = TOTES.map(x => x.p);
   const oblidades = alMenu.filter(p => !posades.includes(p) && !FORA[p]);
   if (oblidades.length) {
