@@ -25,21 +25,26 @@ p1.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); 
 await p1.goto(PORTADA);
 const port = await p1.evaluate(() => {
   const ids = [...document.querySelectorAll('section[id]')].map(s => s.id);
-  const mv = document.querySelector('#mapaval');
+  const mv = document.querySelector('#dues-vistes');
   return {
     ids,
-    /* El castell diu QUÈ ÉS un mapa i el celler QUÈ S'HI TROBA. Separats,
-       cadascun diu mitja cosa: el castell sol es llegeix com una metàfora i el
-       celler sol com una consultoria més. */
-    parella: ids.indexOf('mapaval') === ids.indexOf('fentpinya') + 1,
-    abansDelRepte: ids.indexOf('fentpinya') < ids.indexOf('enfoc'),
+    /* El cas obre la pàgina. Era `fentpinya` qui l'obria, i llavors el que
+       es comprava semblava la trajectòria i no el producte: el mapa no sortia
+       fins a la quarta pantalla.
+
+       `#mapaval` ja no és una secció: el graf és la primera pestanya de
+       `#dues-vistes`, amb la planta de la mateixa casa a la segona. */
+    primer: ids.indexOf('dues-vistes') === 1,
+    abansDelRepte: ids.indexOf('dues-vistes') < ids.indexOf('enfoc'),
+    castellDespres: ids.indexOf('fentpinya') > ids.indexOf('dues-vistes'),
     nodes: mv ? mv.querySelectorAll('.mv-n').length : 0,
     fletxes: mv ? mv.querySelectorAll('.mv-svg path[marker-end]').length : 0,
     text: mv ? mv.innerText : ''
   };
 });
-ok(port.abansDelRepte, 'el castell va abans del repte: primer es veu què venem');
-ok(port.parella, 'i el cas del celler va just darrere, no en una altra pantalla');
+ok(port.abansDelRepte, 'el cas va abans del repte: primer es veu què venem');
+ok(port.primer, 'i és la primera secció després del mur de clients: el producte obre la pàgina');
+ok(port.castellDespres, 'i els castells van a sota: són d\'on ve el mètode, no el mètode');
 ok(port.nodes === 7, `el mapa del celler porta ${port.nodes} nodes`);
 ok(port.fletxes === 16, `i ${port.fletxes} transaccions dibuixades, una per lliurament`);
 
@@ -60,7 +65,7 @@ ok(tesi.avis, 'i dient que el marge el calcula la casa amb els seus números');
 
 console.log('\n3 · Les dues menes es distingeixen sense dependre del color');
 const traç = await p1.evaluate(() => {
-  const ps = [...document.querySelectorAll('#mapaval .mv-svg path[marker-end]')];
+  const ps = [...document.querySelectorAll('#dv-mapa .mv-svg path[marker-end]')];
   const disc = ps.filter(x => x.getAttribute('stroke-dasharray'));
   return { total: ps.length, disc: disc.length, titols: ps.filter(x => x.querySelector('title')).length };
 });
@@ -106,7 +111,7 @@ const iguals = await p2.evaluate(() => {
 const aPortada = await (async () => {
   const p = await b.newPage();
   await p.goto(PORTADA);
-  const n = await p.evaluate(() => [...document.querySelectorAll('#mapaval .mv-n text')]
+  const n = await p.evaluate(() => [...document.querySelectorAll('#dv-mapa .mv-n text')]
     .map(t => t.closest('.mv-n').dataset.id));
   await p.close();
   return [...new Set(n)];

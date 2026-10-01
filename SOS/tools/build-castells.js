@@ -214,6 +214,147 @@ function repartiment(f, v) {
   return { dirs, mapa, caben: quines.length };
 }
 
+/* ══ ELS ROLS ARQUETÍPICS ════════════════════════════════════════════════════
+   Qui ha fet el taller surt sabent posar nom als rols de casa seva —«el meu
+   dos», «el meu terç lateral»— i això era **el producte que no es podia
+   comprar**, perquè el vocabulari no existia escrit enlloc. Vivia escampat:
+   tres noms a `MENES`, tres més escrits a mà dins del dibuix de la colla, i la
+   resta a cap lloc.
+
+   Cada posició diu quatre coses, i la que importa és la segona: **què és això
+   en una casa**. Una posició que només digui què fa en un castell és folklore,
+   i una guarda ho peta.
+
+   `fn` és el pont cap al SOS: vuit de les posicions ocupen les vuit funcions
+   que l'aplicació ja fa servir a `ARCHETYPE_SETS` (`metaskill`, `design`,
+   `coord`, `audit`, `exec`, `facil`, `lms`, `fund`), i per això un joc
+   d'arquetips castellers hi entra sense tocar res més. Les que no en porten no
+   són menys importants: són posicions d'estructura que no es corresponen amb
+   una funció d'organització, i inventar-los-hi una seria pitjor que deixar-les
+   sense.
+
+   `aport` és l'altra banda del pont: quina de les deu aportacions que el SOS ja
+   demana (`APORTS`) encaixa amb aquella posició. Es declara amb el nom tal com
+   el diu el SOS, i una guarda comprova que existeixi. */
+const POSICIONS = [
+  { id: 'baix', nom: 'Baix', on: 'tronc', pis: 1, fn: 'coord', aport: 'Temps constant',
+    castell: 'A terra, sota el tronc, amb el pes de tot el castell a les espatlles. No es mou i no mira amunt.',
+    casa: 'Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.' },
+  { id: 'crossa', nom: 'Crossa', on: 'pinya', fn: 'facil', aport: 'Cura i acollida',
+    castell: 'Apuntala l\'espatlla del baix des del costat i li treu pes de sobre abans que es dobli.',
+    casa: 'Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.' },
+  { id: 'contrafort', nom: 'Contrafort', on: 'pinya', fn: 'audit', aport: 'Ordre i seguiment',
+    castell: 'Darrere el baix, aguantant-lo per l\'esquena perquè no se li vagi enrere.',
+    casa: 'Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.' },
+  { id: 'primera', nom: 'Primera mà', on: 'pinya', mena: 'primera', fn: 'exec', aport: 'Un ofici o producció',
+    castell: 'Encapçala la rengla, darrere el contrafort, i subjecta el segon per darrere.',
+    casa: 'El suport directe d\'una àrea: la persona que entrega el que aquella àrea ha promès.' },
+  { id: 'lateral', nom: 'Lateral', on: 'pinya', mena: 'lateral', aport: 'Temps constant',
+    castell: 'Darrere les crosses, amb els braços estirats, subjecta les cuixes dels segons pels costats.',
+    casa: 'Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.' },
+  { id: 'vent', nom: 'Vent', on: 'pinya', mena: 'vent', fn: 'metaskill', aport: 'Contactes al territori',
+    castell: 'Entre crossa i crossa: amb una mà agafa un pilar i amb l\'altra, l\'altre.',
+    casa: 'L\'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.' },
+  { id: 'segon', nom: 'Segon', on: 'tronc', pis: 2, fn: 'design', aport: 'Un ofici o producció',
+    castell: 'Primer pis sobre el baix. Ha de ser ferm i lleuger alhora: transmet avall tot el que rep de dalt.',
+    casa: 'Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.' },
+  { id: 'terc', nom: 'Terç', on: 'tronc', pis: 3, aport: 'Vehicle i disponibilitat',
+    castell: 'Tercer pis. On el castell es decideix: ja és alt i encara ha de pujar gent per sobre.',
+    casa: 'El pis del mig d\'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.' },
+  { id: 'aixecador', nom: 'Aixecador', on: 'pom', fn: 'lms', aport: 'Cura i acollida',
+    castell: 'Fa de frontissa del pom de dalt: s\'ajup perquè els altres passin i aixeca quan toca.',
+    casa: 'Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.' },
+  { id: 'enxaneta', nom: 'Enxaneta', on: 'pom', aport: 'Veu i difusió',
+    castell: 'Corona, fa l\'aleta i baixa. És a dalt tres segons i és la foto.',
+    casa: 'Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.' },
+  { id: 'cap', nom: 'Cap de colla', on: 'fora', fn: 'fund', aport: 'Números i negociació',
+    castell: 'No és a l\'estructura: decideix quina figura es prova, en quin ordre i quan es desmunta.',
+    casa: 'Qui tria què s\'intenta amb la gent que hi ha. La decisió que no es pot delegar a l\'estructura que l\'ha d\'aguantar.' }
+];
+
+/* ══ EL MATEIX CAS, MIRAT DES DE DALT ════════════════════════════════════════
+   Aquí hi havia el forat. `build-mapavalor.js` dibuixava el celler i aquest
+   fitxer dibuixava plantes de `VARIABLES`, **casos declarats a mà que no tenien
+   res a veure amb el celler**: dos dibuixos bonics del mateix discurs, i cap
+   dels dos era una vista de l'altre.
+
+   Ara la planta **es deriva del mapa**, i la regla és aquesta:
+
+   · **Els baixos són els nodes.** Un mapa de N nodes obre 4N rengles, que és la
+     mateixa llei de sempre. El celler, amb set nodes, n'obre vint-i-vuit.
+   · **Un parell és un vent quan va i torna en menes diferents** —tangible cap
+     a un costat, intangible cap a l'altre. És literalment el que fa un vent:
+     una mà a cada pilar, i cada mà aguantant una cosa diferent. Si una de les
+     dues bandes plega, les dues àrees perden.
+   · **La resta de lliuraments tangibles són primeres mans** (el suport directe
+     d'una àrea: el que es factura) i **els intangibles, laterals** (reforcen
+     pel costat i no surten a cap factura).
+
+   I llavors es compara amb el que la pinya **té**: cada pilar obre una primera
+   mà, un vent i dos laterals. Tres vents sobre una sola posició de vent no és
+   un error de dibuix: és un node que lliga tres àrees i només té lloc per a
+   una. Les xifres no s'escriuen enlloc —es compten—, i el que surt és la
+   lectura. */
+const { CELLER } = require('./build-mapavalor.js');
+
+const fluxosDe = mapa => mapa.parells.flatMap(p => [
+  { de: p[0], a: p[1], mena: p[2], que: p[3], parell: p },
+  { de: p[1], a: p[0], mena: p[4], que: p[5], parell: p }
+]);
+
+/* Les quatre rengles que obre cada pilar, sense perdre de qui són. `direccions`
+   les torna ordenades per angle i això és el que vol la planta d'una variable;
+   aquí cal saber **quin node obre quina**, i una guarda comprova que les dues
+   maneres de dir-ho donen els mateixos angles i les mateixes menes. */
+function rengles(n) {
+  const pas = 360 / n, out = [];
+  for (let k = 0; k < n; k++) {
+    const a = -90 + k * pas;
+    out.push({
+      k, eix: a, rengles: [
+        { a, mena: 'primera' },
+        { a: a + pas / 4, mena: 'lateral' },
+        { a: a + pas / 2, mena: 'vent' },
+        { a: a + pas * 3 / 4, mena: 'lateral' }
+      ]
+    });
+  }
+  return out;
+}
+
+function pinyaDeMapa(mapa) {
+  const fl = fluxosDe(mapa);
+  const mixt = p => p[2] !== p[4];
+  fl.forEach(f => {
+    f.linia = mixt(f.parell) ? 'vent' : (f.mena === 'tangible' ? 'primera' : 'lateral');
+  });
+  const pilars = rengles(mapa.nodes.length).map(p => {
+    const node = mapa.nodes[p.k];
+    const rep = fl.filter(f => f.a === node.id);
+    const per = {};
+    MENES.forEach(m => { per[m.id] = rep.filter(f => f.linia === m.id); });
+    /* Quantes posicions d'aquella mena obre un sol pilar: 1 primera, 1 vent i
+       2 laterals. És el denominador de tota la lectura. */
+    const te = { primera: 1, vent: 1, lateral: 2 };
+    return { ...p, node, rebuts: rep, per, te };
+  });
+  const enc = mapa.encallament && mapa.encallament.node;
+  const tocaEnc = f => f.de === enc || f.a === enc;
+  return {
+    mapa, fl, pilars, enc, tocaEnc,
+    obertes: 4 * mapa.nodes.length,
+    ocupades: pilars.reduce((a, p) => a + MENES.reduce((b, m) =>
+      b + Math.min(p.per[m.id].length, p.te[m.id]), 0), 0),
+    /* Els pilars que no tenen cap vent: àrees que no toquen cap altra àrea.
+       És la definició de silo, dita amb el dibuix i no amb l'adjectiu. */
+    sols: pilars.filter(p => !p.per.vent.length),
+    /* I els que en tenen més dels que caben: massa relacions per a les
+       posicions que la pinya els dona. */
+    carregats: pilars.flatMap(p => MENES.filter(m => p.per[m.id].length > p.te[m.id])
+      .map(m => ({ pilar: p, mena: m, quants: p.per[m.id].length })))
+  };
+}
+
 /* ══ LA PLANTA · de dalt ═════════════════════════════════════════════════════ */
 const P = 260, PC = P / 2, R0 = 30, PAS = 15;
 
@@ -256,6 +397,89 @@ function planta(f, variable) {
     + `<title id="plT-${f.id}${variable ? '-' + variable.id : ''}">La pinya d'${esc(f.nom.toLowerCase())} vista des de dalt: `
     + `${f.baixos} ${f.baixos === 1 ? 'primera mà' : 'primeres mans'}, ${f.baixos} vents i ${2 * f.baixos} laterals, `
     + `${4 * f.baixos} rengles en total.${esc(q)}</title>${p.join('')}</svg>`;
+}
+
+/* ══ LA PLANTA D'UN MAPA · amb els noms ══════════════════════════════════════
+   La planta de `VARIABLES` no porta noms perquè no en té: les dimensions són
+   una llista al costat. Aquesta sí, i és la pregunta que es va fer en veu alta
+   —«on puc veure els noms»—: cada pilar porta escrit **el node que és**, i cada
+   rengla, el lliurament que hi cau, al `title`.
+
+   `data-para` marca el que s'atura quan s'encalla el node del cas. És el mateix
+   atribut que fa servir el graf, i per això els dos dibuixos s'apaguen alhora:
+   si el castell es quedés sencer mentre el graf es buida, la planta seria
+   decoració. */
+const PM = 400, PMC = PM / 2, PMR = 34, PM0 = 52, PMPAS = 22, PMET = 142;
+const ID_PLANTA = 'plCeller';
+
+const talla = (s, n) => {
+  const mots = String(s).split(' '), li = []; let l = '';
+  mots.forEach(m => {
+    if ((l + ' ' + m).trim().length > n && l) { li.push(l); l = m; }
+    else l = (l + ' ' + m).trim();
+  });
+  if (l) li.push(l);
+  return li.slice(0, 2);
+};
+
+function plantaMapa(pinya, id) {
+  const p = [], n = pinya.pilars.length;
+  for (let r = 1; r <= 3; r++) {
+    p.push(`<circle class="pl-anell" cx="${PMC}" cy="${PMC}" r="${PM0 + r * PMPAS}"/>`);
+  }
+
+  pinya.pilars.forEach(pil => {
+    pil.rengles.forEach(rg => {
+      const m = MENES.find(x => x.id === rg.mena);
+      /* Les rengles de la mateixa mena es reparteixen els lliuraments d'aquella
+         mena: la primera en té un, i els laterals, un cada un. El que no hi
+         cap no desapareix —s'apila a la primera posició— i això és justament el
+         que la lectura ha de dir. */
+      const iguals = pil.rengles.filter(x => x.mena === rg.mena);
+      const ordre = iguals.indexOf(rg);
+      const quins = pil.per[rg.mena].filter((_, k) => k % iguals.length === ordre);
+      const fons = quins.length;
+      const rad = rg.a * Math.PI / 180, cos = Math.cos(rad), sin = Math.sin(rad);
+      const llarg = PM0 + (fons || 1) * PMPAS;
+      const para = quins.some(pinya.tocaEnc) ? ' data-para="1"' : '';
+      const tit = quins.length
+        ? `${esc(m.nom.replace(/s$/, ''))} de ${esc(pil.node.nom)}: `
+          + quins.map(f => esc(f.que)).join(' · ')
+        : `${esc(m.nom.replace(/s$/, ''))} de ${esc(pil.node.nom)}: ningú`;
+      p.push(`<line class="pl-l pl-${rg.mena}" x1="${(PMC + cos * PM0).toFixed(1)}" y1="${(PMC + sin * PM0).toFixed(1)}" `
+        + `x2="${(PMC + cos * llarg).toFixed(1)}" y2="${(PMC + sin * llarg).toFixed(1)}" `
+        + `stroke="${COL_MENA[rg.mena]}" stroke-width="${m.gruix}" opacity="${fons ? m.op : .13}"${para}>`
+        + `<title>${tit}</title></line>`);
+      for (let k = 1; k <= fons; k++) {
+        p.push(`<circle class="pl-g" cx="${(PMC + cos * (PM0 + k * PMPAS)).toFixed(1)}" `
+          + `cy="${(PMC + sin * (PM0 + k * PMPAS)).toFixed(1)}" r="4" fill="${COL_MENA[rg.mena]}"${para}/>`);
+      }
+    });
+  });
+
+  // Els pilars, i el nom de cada node a fora de la seva rengla principal.
+  pinya.pilars.forEach(pil => {
+    const rad = pil.eix * Math.PI / 180, cos = Math.cos(rad), sin = Math.sin(rad);
+    const r = n === 1 ? 0 : PMR;
+    const encara = pinya.enc === pil.node.id ? ' data-para="1"' : '';
+    p.push(`<circle class="pl-baix" cx="${(PMC + cos * r).toFixed(1)}" `
+      + `cy="${(PMC + sin * r).toFixed(1)}" r="8"${encara}/>`);
+    const x = PMC + cos * PMET, y = PMC + sin * PMET;
+    const anc = cos > .25 ? 'start' : cos < -.25 ? 'end' : 'middle';
+    const li = talla(pil.node.nom, 15);
+    li.forEach((l, k) => {
+      p.push(`<text class="pl-nom" x="${x.toFixed(1)}" y="${(y + (k - (li.length - 1) / 2) * 11).toFixed(1)}" `
+        + `text-anchor="${anc}" dominant-baseline="middle"${encara}>${esc(l)}</text>`);
+    });
+  });
+
+  const t = `plmT-${id}`;
+  return `<svg id="${id}" class="pl-svg pl-mapa" viewBox="0 0 ${PM} ${PM}" role="img" aria-labelledby="${t}">`
+    + `<title id="${t}">La mateixa casa vista des de dalt: ${n} pilars —un per node del mapa— `
+    + `i ${4 * n} rengles obertes, de les quals ${pinya.ocupades} tenen algú. `
+    + `Cada rengla és un lliurament del mapa: les primeres mans, el que es factura; `
+    + `els laterals, el que no; i els vents, el que lliga dues àrees alhora.</title>`
+    + p.join('') + '</svg>';
 }
 
 /* ══ L'ALÇAT · de costat ═════════════════════════════════════════════════════ */
@@ -377,6 +601,116 @@ function bloc() {
   return f.join('\n');
 }
 
+/* ══ EL BLOC DE LA VISTA CASTELL DEL CAS ═════════════════════════════════════
+   La mateixa casa del graf, mirada des de dalt. No és una figura d'exemple: són
+   els set nodes i els setze lliuraments del celler, comptats. */
+function blocVista() {
+  const pin = pinyaDeMapa(CELLER);
+  const f = [];
+  f.push('<!--TT-VISTA-CASTELL-->');
+  f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
+  f.push('<div class="cv-grid">');
+  f.push('  <div class="cv-viz">');
+  f.push('    ' + plantaMapa(pin, ID_PLANTA));
+  f.push('    <div class="ct-men cv-men">' + MENES.map(m => {
+    const pos = POSICIONS.find(x => x.mena === m.id);
+    return `<span class="ct-m"><i style="background:${COL_MENA[m.id]};height:${m.gruix}px"></i>`
+      + `<b>${esc(pos.nom)}</b> ${esc(pos.casa)}</span>`;
+  }).join('') + '</div>');
+  f.push('  </div>');
+  f.push('  <div class="cv-txt">');
+  f.push(`    <h3>Els mateixos set nodes, mirats des de dalt</h3>`);
+  f.push('    <p class="mv-lead">El graf diu <b>qui dona què a qui</b>. La pinya diu una altra cosa que '
+    + 'el graf no pot dir: <b>on es concentra el pes</b>. Cada pilar és un node, i cada rengla, un '
+    + 'lliurament del mapa — no n\'hi ha cap de més ni cap de menys.</p>');
+  f.push(`    <div class="cv-k"><b>${pin.obertes} rengles obertes</b> · ${pin.ocupades} amb algú · `
+    + `${pin.obertes - pin.ocupades} buides</div>`);
+
+  // Qui rep què, pilar per pilar. És la taula que fa comprovable el dibuix.
+  f.push('    <table class="cv-t"><thead><tr><th>El node</th>'
+    + MENES.map(m => `<th>${esc(m.nom)}</th>`).join('') + '</tr></thead><tbody>');
+  pin.pilars.forEach(p => {
+    f.push('      <tr><td>' + esc(p.node.nom) + '</td>' + MENES.map(m => {
+      const q = p.per[m.id].length, cap = p.te[m.id];
+      const cls = !q ? ' class="cv-0"' : (q > cap ? ' class="cv-x"' : '');
+      return `<td${cls}>${q}${q > cap ? ` <span class="cv-sob">de ${cap}</span>` : ''}</td>`;
+    }).join('') + '</tr>');
+  });
+  f.push('    </tbody></table>');
+
+  const sols = pin.sols.map(p => p.node.nom);
+  const car = pin.carregats.sort((a, b) => b.quants - a.quants);
+  const lect = [];
+  if (car.length) {
+    const c = car[0];
+    lect.push(`<b>${esc(c.pilar.node.nom)} té ${c.quants} ${esc(c.mena.nom.toLowerCase())} `
+      + `sobre ${c.pilar.te[c.mena.id] === 1 ? 'una sola posició' : c.pilar.te[c.mena.id] + ' posicions'}.</b> `
+      + 'La pinya no li dona lloc per a tantes, i això no es veu al graf: al graf són fletxes, i les '
+      + 'fletxes no tenen base.');
+  }
+  if (sols.length) {
+    lect.push(`<b>${sols.length === 1 ? sols[0] + ' no té cap vent' : sols.join(' i ') + ' no tenen cap vent'}.</b> `
+      + 'No comparteix cap relació de doble moneda amb ningú: dona i rep sempre en la mateixa, i per '
+      + 'tant no hi ha cap posició que el lligui a una altra àrea. És un silo, dit amb el dibuix.');
+  }
+  const lat = pin.pilars.reduce((a, p) => a + Math.min(p.per.lateral.length, p.te.lateral), 0);
+  const latT = pin.pilars.reduce((a, p) => a + p.te.lateral, 0);
+  lect.push(`<b>${lat} laterals ocupats de ${latT}.</b> Gairebé no arriba reforç que no es facturi — `
+    + 'que és la mateixa cosa que diu el graf quan es compten els intangibles, trobada per un altre camí.');
+  f.push('    <ul class="cv-ll">' + lect.map(x => `<li>${x}</li>`).join('') + '</ul>');
+  f.push('    <p class="mv-avis">Les xifres d\'aquesta vista <b>no s\'escriuen enlloc</b>: surten de comptar '
+    + 'el mateix mapa de l\'altra pestanya. El dia que el cas canviï un lliurament, les dues vistes '
+    + 'canviaran alhora o el CI petarà.</p>');
+  f.push('  </div>');
+  f.push('</div>');
+  f.push('<!--/TT-VISTA-CASTELL-->');
+  return f.join('\n');
+}
+
+/* ══ EL BLOC DELS ROLS ARQUETÍPICS ═══════════════════════════════════════════
+   El vocabulari, escrit. Agrupat per on és la posició —la pinya, el tronc, el
+   pom i fora— perquè llegit en aquest ordre explica un castell sol: el que
+   aguanta, el que puja, el que corona i el que decideix.
+
+   La columna que importa és la segona. Qui no sap de castells ha de poder
+   llegir-la i dir «això és en Joan»; si no hi arriba, el vocabulari no serveix
+   per a un cas real. */
+const ON = [
+  { id: 'pinya', nom: 'A la pinya', diu: 'A terra. El que aguanta i no es veu a la foto.' },
+  { id: 'tronc', nom: 'Al tronc', diu: 'Els pisos. El que es puja i transmet el pes avall.' },
+  { id: 'pom', nom: 'Al pom de dalt', diu: 'Els de la canalla. Pesen poc i decideixen si el castell és carregat o descarregat.' },
+  { id: 'fora', nom: 'Fora de l\'estructura', diu: 'Qui no aguanta res i tria què s\'intenta.' }
+];
+
+function blocRols(marca) {
+  const f = [];
+  f.push(`<!--${marca || 'TT-ROLS'}-->`);
+  f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
+  f.push('<div class="rl-wrap">');
+  ON.forEach(g => {
+    const pos = POSICIONS.filter(p => p.on === g.id);
+    if (!pos.length) return;
+    f.push(`  <div class="rl-g">`);
+    f.push(`    <div class="rl-gk">${esc(g.nom)} <span>${esc(g.diu)}</span></div>`);
+    pos.forEach(p => {
+      f.push('    <div class="rl-p"' + (p.mena ? ` data-mena="${p.mena}"` : '') + '>');
+      f.push(`      <div class="rl-n"${p.mena ? ` style="border-color:${COL_MENA[p.mena]}"` : ''}>`
+        + `${esc(p.nom)}</div>`);
+      f.push(`      <div class="rl-c">${esc(p.castell)}</div>`);
+      f.push(`      <div class="rl-o"><b>A una casa:</b> ${esc(p.casa)}</div>`);
+      f.push(`      <div class="rl-a">Encaixa amb qui porta <b>${esc(p.aport.toLowerCase())}</b></div>`);
+      f.push('    </div>');
+    });
+    f.push('  </div>');
+  });
+  f.push('</div>');
+  f.push(`<p class="rl-avis">Els noms varien de colla a colla i aquests són els d'ús més estès. `
+    + 'El que no varia és per què hi és cada posició, que és l\'única cosa que es pot traslladar a una '
+    + 'organització. <b>Això posa nom, no puntua ningú.</b></p>');
+  f.push(`<!--/${marca || 'TT-ROLS'}-->`);
+  return f.join('\n');
+}
+
 /* ══ EL BLOC DE LA PÀGINA DEL MÈTODE ═════════════════════════════════════════
    La portada ven i aquesta pàgina ensenya, i per això no és el mateix bloc: no
    hi van les cinc construccions ni el tria-variables, sinó **l'anatomia** i la
@@ -424,6 +758,16 @@ function blocVna() {
   f.push('<!--/VNA-PINYA-->');
   return f.join('\n');
 }
+
+/* ══ EL QUE SE'N PORTA QUI HO REQUEREIX ══════════════════════════════════════
+   Les proves necessiten `pinyaDeMapa` per comprovar la cosa que de debò importa
+   —que treure un parell del cas mogui les dues vistes— i requerir aquest fitxer
+   no ha d'executar ni les guardes ni l'escriptura: una prova que escriu a
+   `index.html` deixa de ser una prova.
+
+   Mateix patró que `build-oferta.js` i `build-mapavalor.js`. */
+module.exports = { FIGURES, VARIABLES, MENES, POSICIONS, direccions, rengles, pinyaDeMapa };
+if (require.main !== module) return;
 
 /* ══ LES GUARDES ═════════════════════════════════════════════════════════════ */
 
@@ -507,21 +851,129 @@ function blocVna() {
 
 // 7 · Cap xifra d'euros: això ordena i fa visible, no pressuposta.
 (() => {
-  if (/\d[\d.]*\s*€/.test(bloc())) bad('el bloc porta xifres d\'euros: aquesta secció no ven cap preu');
-  else ok('cap preu al bloc: ordena i fa visible, no pressuposta');
+  if (/\d[\d.]*\s*€/.test(bloc() + blocVista() + blocRols()))
+    bad('el bloc porta xifres d\'euros: aquesta secció no ven cap preu');
+  else ok('cap preu als blocs: ordenen i fan visible, no pressuposten');
+})();
+
+/* 8 · UNA SOLA ANATOMIA. `direccions(n)` i `rengles(n)` han de dir el mateix:
+      els mateixos angles i les mateixes menes. Són dues maneres de recórrer la
+      pinya —per angle i per pilar— i el dia que una divergís, la planta d'una
+      variable i la planta d'un mapa dibuixarien dues pinyes diferents amb el
+      mateix nom i cap de les dues petaria. */
+(() => {
+  const mal = [1, 2, 3, 4, 5, 7].filter(n => {
+    const a = direccions(n).map(d => `${d.a.toFixed(4)}/${d.mena}`).sort();
+    const b = rengles(n).flatMap(p => p.rengles).map(d => `${d.a.toFixed(4)}/${d.mena}`).sort();
+    return a.join('|') !== b.join('|');
+  });
+  if (mal.length) bad('`rengles()` i `direccions()` descriuen pinyes diferents per a n = '
+    + mal.join(', ') + ' — dues anatomies amb el mateix nom');
+  else ok('`rengles()` per pilar i `direccions()` per angle descriuen la mateixa pinya');
+})();
+
+/* 9 · LA QUE FA QUE SIGUIN DUES VISTES I NO DOS DIBUIXOS. Tot lliurament del
+      mapa ha de caure a una rengla i a una sola. Si la traducció en perd un, el
+      castell dibuixa una casa que no és la del graf —i es veuria bonic
+      igualment, que és el que fa aquest defecte car de trobar. */
+(() => {
+  const pin = pinyaDeMapa(CELLER);
+  const total = CELLER.parells.length * 2;
+  const posats = pin.pilars.reduce((a, p) => a + p.rebuts.length, 0);
+  const cops = new Map();
+  pin.pilars.forEach(p => p.rebuts.forEach(f => cops.set(f, (cops.get(f) || 0) + 1)));
+  const dos = [...cops.values()].filter(x => x > 1).length;
+  if (posats !== total) bad(`el mapa té ${total} lliuraments i la pinya en col·loca ${posats}`
+    + ' — els que falten no es dibuixarien i la planta diria una casa més simple del que és');
+  else if (dos) bad(`${dos} lliuraments cauen a més d'una rengla: es comptarien dues vegades`);
+  else if (pin.fl.some(f => !MENES.some(m => m.id === f.linia)))
+    bad('hi ha lliuraments amb una mena de rengla que no existeix');
+  else ok(`els ${total} lliuraments del mapa cauen a una rengla i a una sola`);
+})();
+
+/* 10 · I el dibuix ha de portar-los. Les rengles dibuixades han de ser les 4N
+       que obre la pinya, i les rodones, un lliurament cada una. */
+(() => {
+  const pin = pinyaDeMapa(CELLER);
+  const svg = plantaMapa(pin, ID_PLANTA);
+  const nl = (svg.match(/class="pl-l /g) || []).length;
+  const ng = (svg.match(/class="pl-g"/g) || []).length;
+  const noms = (svg.match(/class="pl-nom"/g) || []).length;
+  if (nl !== pin.obertes) bad(`la planta del mapa dibuixa ${nl} rengles i la pinya n'obre ${pin.obertes}`);
+  else if (ng !== CELLER.parells.length * 2)
+    bad(`la planta dibuixa ${ng} persones i el mapa té ${CELLER.parells.length * 2} lliuraments`);
+  else if (noms < CELLER.nodes.length)
+    bad(`${noms} noms escrits per a ${CELLER.nodes.length} nodes: la vista castell ha de portar els noms`);
+  else ok(`i el dibuix en té ${ng} sobre ${nl} rengles, amb els ${CELLER.nodes.length} noms escrits`);
+})();
+
+/* 11 · El pols ha de poder apagar les dues vistes alhora. El graf marca amb
+       `data-para` el que s'atura quan s'encalla el node del cas; si la planta no
+       en marca res, aturar el graf la deixaria sencera i la planta seria
+       decoració. És el defecte que mirant la pàgina no es veu, perquè les dues
+       imatges són maques per separat. */
+(() => {
+  const pin = pinyaDeMapa(CELLER);
+  const svg = plantaMapa(pin, ID_PLANTA);
+  const n = (svg.match(/data-para="1"/g) || []).length;
+  const esperats = pin.fl.filter(pin.tocaEnc).length;
+  if (!CELLER.encallament) bad('el cas no declara cap encallament i la vista castell no pot apagar-se');
+  else if (!n) bad('la planta del mapa no marca res amb `data-para`: s\'encallaria el graf i el castell '
+    + 'es quedaria sencer');
+  else if (!svg.includes(`id="${ID_PLANTA}"`)) bad(`la planta no porta l'id ${ID_PLANTA}, que és el que els botons busquen`);
+  else ok(`la planta marca el que s'atura amb el node encallat (${esperats} lliuraments) i els botons la troben`);
+})();
+
+/* 12 · Cap posició sense la traducció a una casa. Una posició que només digui
+       què fa en un castell és folklore: el producte és la segona columna. */
+(() => {
+  const mal = POSICIONS.filter(p => !p.casa || p.casa.length < 60 || !p.castell || !p.nom);
+  const foraOn = POSICIONS.filter(p => !ON.some(g => g.id === p.on));
+  const menaMala = POSICIONS.filter(p => p.mena && !MENES.some(m => m.id === p.mena));
+  const aports = (VARIABLES.find(v => v.id === 'aports') || { dims: [] }).dims.map(d => d.nom);
+  const aportMal = POSICIONS.filter(p => !aports.includes(p.aport));
+  if (mal.length) bad('posicions sense dir què són en una casa: ' + mal.map(p => p.id).join(', ')
+    + ' — això és folklore, no un vocabulari que es pugui fer servir');
+  else if (foraOn.length) bad('posicions en un lloc que no existeix: ' + foraOn.map(p => p.id).join(', '));
+  else if (menaMala.length) bad('posicions amb una mena de rengla inexistent: ' + menaMala.map(p => p.id).join(', '));
+  else if (aportMal.length) bad('posicions amb una aportació que el SOS no demana: '
+    + aportMal.map(p => `${p.id} → «${p.aport}»`).join(', '));
+  else ok(`${POSICIONS.length} posicions, totes amb què fan al castell, què són a una casa i amb quina aportació encaixen`);
+})();
+
+/* 13 · Les tres menes de rengla han de tenir posició, i les vuit funcions del
+       SOS han d'estar cobertes exactament un cop. Un joc d'arquetips amb set
+       entrades no peta: qui el triï es queda sense una funció i ningú ho veu. */
+const FN_SOS = ['metaskill', 'design', 'coord', 'audit', 'exec', 'facil', 'lms', 'fund'];
+(() => {
+  const senseMena = MENES.filter(m => !POSICIONS.some(p => p.mena === m.id));
+  const fns = POSICIONS.filter(p => p.fn).map(p => p.fn);
+  const falten = FN_SOS.filter(x => !fns.includes(x));
+  const sobren = fns.filter(x => !FN_SOS.includes(x));
+  const rep = fns.filter((x, i) => fns.indexOf(x) !== i);
+  if (senseMena.length) bad('menes de rengla sense posició declarada: ' + senseMena.map(m => m.id).join(', ')
+    + ' — el dibuix les pintaria i la llegenda no les sabria anomenar');
+  else if (falten.length) bad('funcions del SOS sense posició castellera: ' + falten.join(', ')
+    + ' — un joc d\'arquetips incomplet deixa qui el triï sense aquella funció i no peta');
+  else if (sobren.length) bad('posicions amb una funció que el SOS no té: ' + sobren.join(', '));
+  else if (rep.length) bad('funcions repartides dues vegades: ' + [...new Set(rep)].join(', '));
+  else ok(`les 3 menes tenen nom i les ${FN_SOS.length} funcions del SOS tenen posició, una cada una`);
 })();
 
 /* ══ ESCRIURE O COMPROVAR ════════════════════════════════════════════════════ */
 const DESTINS = [
+  { f: HOME, marca: 'TT-VISTA-CASTELL', fn: blocVista, nom: 'index.html' },
   { f: HOME, marca: 'TT-CASTELLS', fn: bloc, nom: 'index.html' },
-  { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-PINYA', fn: blocVna, nom: 'SOS/vna.html' }
+  { f: HOME, marca: 'TT-ROLS', fn: blocRols, nom: 'index.html' },
+  { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-PINYA', fn: blocVna, nom: 'SOS/vna.html' },
+  { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-ROLS', fn: blocRols, nom: 'SOS/vna.html' }
 ];
 if (!fails) DESTINS.forEach(d => {
   if (!existsSync(d.f)) { bad('no existeix ' + d.nom); return; }
   const src = readFileSync(d.f, 'utf8');
   const a = src.indexOf(`<!--${d.marca}-->`), b = src.indexOf(`<!--/${d.marca}-->`);
   if (a < 0 || b < 0 || b < a) { bad(`falten les marques <!--${d.marca}--> a ${d.nom}`); return; }
-  const out = src.slice(0, a) + d.fn() + src.slice(b + `<!--/${d.marca}-->`.length);
+  const out = src.slice(0, a) + d.fn(d.marca) + src.slice(b + `<!--/${d.marca}-->`.length);
   if (CHECK) {
     if (out !== src) bad(`${d.nom} no correspon a la declaració de build-castells.js`);
   } else if (out !== src) writeFileSync(d.f, out);
@@ -536,4 +988,3 @@ if (fails) { console.log('\n❌ No s\'ha escrit res.'); process.exit(1); }
 console.log(`\n✅ index.html · ${FIGURES.length} plantes de ${4 * FIGURES[0].baixos} a `
   + `${4 * FIGURES[FIGURES.length - 1].baixos} direccions, i ${VARIABLES.length} variables`);
 
-module.exports = { FIGURES, VARIABLES, MENES, direccions };

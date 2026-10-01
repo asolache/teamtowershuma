@@ -2499,6 +2499,92 @@ menes amb el seu compte— i la regla 4N, que és el que li toca: la portada ven
 aquesta ensenya. Generat de la mateixa declaració, que és tot el motiu de
 generar-ho.
 
+**Punt 2 del que quedava, fet (01/10/2026): la planta surt del mapa.**
+
+Hi havia dos dibuixos i no dues vistes, i és el defecte més car d'aquesta
+entrada perquè **no petava i no es veia**: `build-mapavalor.js` dibuixava el
+celler i `build-castells.js` dibuixava plantes de **casos declarats a mà** que
+no tenien res a veure amb aquell celler. Dues il·lustracions maquíssimes del
+mateix discurs, i qui ho hauria trobat és un client en una visita preguntant «i
+això d'on surt?».
+
+`build-castells.js` importa ara `CELLER` de `build-mapavalor.js` i `pinyaDeMapa()`
+el tradueix a planta. La regla:
+
+| | |
+|---|---|
+| **Els baixos** | són els nodes. Set nodes, **4×7 = 28 rengles** |
+| **Un vent** | un parell que va i torna **en menes diferents** —tangible cap a un costat, intangible cap a l'altre—. És literalment una mà a cada pilar, i cada mà aguantant una cosa diferent |
+| **Una primera mà** | la resta de lliuraments tangibles: el suport directe d'una àrea, el que es factura |
+| **Un lateral** | la resta d'intangibles: reforcen pel costat i no surten a cap factura |
+
+I llavors es compara amb el que la pinya **té** —cada pilar obre una primera mà,
+un vent i dos laterals—, i el que surt és la lectura. **Les xifres no s'escriuen
+enlloc.** El que va sortir, i que no s'havia escrit a cap guió:
+
+- **«Qui rep i explica» té 3 vents sobre una sola posició de vent.** Lliga tres
+  àrees i la pinya li dona lloc per a una. És la troballa 3 d'aquell mateix cas
+  —avui no és el rol de ningú— **trobada per un altre camí**, el de la geometria.
+- **«El distribuïdor» i «El poble» no tenen cap vent.** Donen i reben sempre en
+  la mateixa moneda, i per tant no hi ha cap posició que els lligui a una altra
+  àrea. Silos, dit amb el dibuix. La troballa 1 del cas, altra vegada per un
+  altre camí.
+- **2 laterals ocupats de 14.** Gairebé no arriba reforç que no es facturi, que
+  és el que diu el graf quan es compten els intangibles.
+
+Que la derivació **reprodueixi sola les troballes escrites a mà** és la prova
+que les dues vistes són una. No es va buscar: va sortir de comptar.
+
+**A la portada, una secció i dues pestanyes.** `#mapaval` i `#rengles` eren dues
+seccions i tenir-les separades era el que les feia semblar dos dibuixos sense
+relació. Ara `#dues-vistes` les porta totes dues sobre el mateix cas, `#rengles`
+es queda com la part didàctica (les cinc construccions i les variables) i
+`#rols` és el vocabulari nou. Els botons del pols manen **sobre tots dos
+dibuixos**: `data-svg` pot nomenar més d'un.
+
+**Les guardes que ho sostenen** (tres a `build-castells.js`, una a
+`check-landing.js`, i una prova):
+
+1. **Tot lliurament cau a una rengla i a una sola.** Si la traducció en perd un,
+   el castell dibuixa una casa més simple del que és i es veu bonic igualment.
+2. **`rengles()` i `direccions()` han de descriure la mateixa pinya.** Dues
+   maneres de recórrer-la —per pilar i per angle— i el dia que una divergís
+   hi hauria dues anatomies amb el mateix nom.
+3. **La planta ha de marcar amb `data-para` el que s'atura.** Provada **traient
+   el CSS a posta**: amb la regla fora, el graf es buida i la planta es queda
+   sencera, i la prova ho caça. Sense ella, la segona vista seria decoració.
+4. **`check-landing.js`**: els botons del pols han de nomenar els dos dibuixos.
+   Provada canviant `data-svg` a un sol id.
+5. **`test-dues-vistes.mjs`**: treure un parell de `CELLER` en memòria ha de
+   moure les dues vistes. És la prova negativa que obliga que la font sigui una.
+
+**I el vocabulari de rols arquetípics (`POSICIONS`), que era el producte que no
+es podia comprar.** Qui ha fet el taller surt sabent dir «el meu dos» i «el meu
+terç lateral» de casa seva, i aquest vocabulari **no existia escrit en cap
+pantalla**: vivia a la memòria de qui hi havia estat, i al codi estava escampat
+—tres noms a `MENES`, tres més escrits a mà dins del dibuix de la colla, i la
+resta a cap lloc.
+
+Onze posicions, agrupades per on són (pinya, tronc, pom, fora), i cadascuna diu
+quatre coses. **La que importa és la segona: què és això en una casa.** Una
+guarda peta si una posició només diu què fa en un castell, perquè això és
+folklore i no es pot portar a una organització. Vuit d'elles porten `fn` i
+ocupen les vuit funcions que l'app ja fa servir a `ARCHETYPE_SETS`, que és el
+pont per a un joc d'arquetips castellers al SOS (encara no fet). I totes porten
+`aport`, una de les deu aportacions que `encaix()` ja demana.
+
+*La prova que no és automàtica: llegir la llista sense saber de castells i poder
+dir «això és en Joan». Si la traducció no hi arriba, el vocabulari no serveix.*
+
+**I la portada té ara una sola jerarquia.** El hero deia «Dels castells al flux
+de valor» i les tres caselles d'evolució posaven TeamTowers el 2005: llegit de
+dalt a baix, el que es comprava era **una trajectòria**. Ara el hero nomena
+l'ofici —anàlisi, disseny i desenvolupament de sistemes pels quals flueix el
+valor—, les tres caselles van etiquetades com el que són (*la prova que
+funciona*), i `#fentpinya` baixa al pis de la història, just abans de «D'on ve
+això». No és una degradació: obrint, els castells es llegien com la marca i el
+producte no sortia fins a la quarta pantalla.
+
 **El que queda, i és el que l'Àlvar vol de debò:**
 
 1. **Acolorir per una variable.** Avui el color d'una rengla diu de quin àmbit
@@ -2506,10 +2592,11 @@ generar-ho.
    una altra cosa** —16PF, estil, aportació— i veure la distribució. Al SOS ja
    hi ha el vocabulari: `APORTS`, deu aportacions declarades. La peça que falta
    no és el dibuix, és **el selector de variable**.
-2. **Que surti del mapa de debò i no d'un cas escrit.** El pas següent és que
-   `renderVNA` pugui ensenyar els rols del node en rengles, agrupats per
-   l'àmbit que ja tenen. El pont rol→persona (punt 1 de l'entrada del Kanban)
-   és el mateix que fa falta aquí: sense ell, una rengla no sap quanta gent té.
+2. **Que surti del mapa de l'usuari, no del cas de la portada.** ~~Que surti del
+   mapa de debò i no d'un cas escrit~~ — fet per al cas del celler (a dalt). El
+   que queda és **dins del SOS**: que `renderVNA` ensenyi els rols del node en
+   rengles amb `pinyaDeMapa()`, que ja hi és i ja està provat. El pont
+   rol→persona (fet) és el que fa que una rengla sàpiga quanta gent té.
 3. **Encallar un node del teu mapa, no només del cas.** El pols i l'aturada
    estan al generador de la portada. Al SOS, `vnaAudit` ja calcula salut i
    reciprocitat: el que falta és ensenyar-ho com un cos i no com una llista.

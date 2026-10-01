@@ -167,6 +167,17 @@ const CELLER = {
   avis: 'Aquest mapa és un exemple treballat, no el d\'un celler concret, i no porta cap xifra: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és <b>on mirar</b>, i quins lliuraments avui se\'n van sense cobrar.'
 };
 
+/* ══ EL CAS, CAP A FORA ══════════════════════════════════════════════════════
+   `build-castells.js` dibuixa **el mateix cas** mirat des de dalt, i per això
+   ha de llegir aquesta declaració i no una còpia. Dues còpies del celler
+   divergirien el primer dia que algú hi toqués un parell, i no petaria res: les
+   dues vistes seguirien sent maques per separat i dirien coses diferents.
+
+   El `return` és el mateix patró que `build-oferta.js`: qui requereix aquest
+   fitxer se'n porta les dades i no n'executa ni les guardes ni l'escriptura. */
+module.exports = { CELLER };
+if (require.main !== module) return;
+
 /* ══ ELS ENTREGABLES ═════════════════════════════════════════════════════════
    La durada i el que s'endú qui ho contracta es llegeixen del catàleg, que és
    qui ho ven. Escriure'ls aquí seria una segona veritat sobre el mateix tracte. */
@@ -327,15 +338,22 @@ function svgCeller(id) {
    Les xifres de la frase les compta el generador. Escrites a mà, el dia que
    s'afegís un lliurament el dibuix diria una cosa i la frase una altra, i la
    que es creuria el client seria la frase. */
-function blocPols(svgId) {
+function blocPols(svgId, tambe) {
   const n = nodeDe(ENC.node);
+  /* `data-svg` pot nomenar **més d'un dibuix**, separats per un espai. El cas
+     del celler es mira de dues maneres —el graf i la pinya des de dalt— i
+     aturar-ne una i deixar l'altra sencera seria dir que la segona vista és
+     decorativa. El JavaScript de la pàgina recorre la llista; amb un sol nom,
+     es comporta com abans. La planta la genera `build-castells.js`, i una
+     guarda d'allà comprova que porti aquest identificador. */
+  const mana = [svgId].concat(tambe || []).join(' ');
   const perduts = SENSE_REG.map(x => `${esc(x.n.nom)} (${x.perd} de ${x.total})`).join(' i ');
   /* El bloc diu **a quin dibuix mana** amb `data-svg`, i el JavaScript de cada
      pàgina recorre els blocs que hi hagi. Amb els identificadors escrits a mà,
      el dia que la segona pàgina va rebre els polsos els botons van quedar
      apuntant al dibuix de la primera —i la pàgina es va publicar amb setze
      camins invisibles que no feien res. */
-  return [`<div class="mv-pols-ui" data-svg="${svgId}">`,
+  return [`<div class="mv-pols-ui" data-svg="${mana}">`,
     '<div class="mv-pu-b">',
     `<button type="button" class="mv-b mv-pausa" aria-pressed="false" aria-controls="${svgId}">⏸ Atura el pols</button>`,
     `<button type="button" class="mv-b mv-enc" aria-pressed="false" aria-controls="${svgId}">🩺 I si «${esc(n.nom)}» s'encalla?</button>`,
@@ -359,7 +377,7 @@ function blocPortada() {
     '<span class="mv-li">- - intangible</span>' +
     `<span class="mv-lc">${cTot.n} lliuraments · ${cTot.i} intangibles</span>` +
     '</div>');
-  f.push('    ' + blocPols('mvCeller'));
+  f.push('    ' + blocPols('mvCeller', 'plCeller'));
   f.push('  </div>');
   f.push('  <div class="mv-txt">');
   f.push(`    <h3>${esc(CELLER.titol)}</h3>`);
