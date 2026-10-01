@@ -172,8 +172,40 @@ function rolsDe(f, txt) {
    pàgina nova que compartís el vocabulari —`molekulandia.html` va ser la
    primera— se li exigissin vuit funcions de l'aplicació que no li toquen. */
 const PECES = ['memberAports', 'roleCal', 'roleOwner', 'assignRoleMember',
-  'roleDelivers', 'suggestRoleMembers', 'autoAssignRoles', 'rolesSobrecarrega'];
+  'roleDelivers', 'suggestRoleMembers', 'autoAssignRoles', 'rolesSobrecarrega',
+  /* El pont. El mapa deia quin rol emet cada flux i `roleOwner` deia qui porta
+     cada rol, i durant mesos **ningú els encadenava**: una tasca sortida del
+     mapa no sabia de qui era i s'havia d'assignar a dit, que és tornar a fer
+     el mapa a mà i fer-lo pitjor. */
+  'intercanviDeTasca', 'personaDeTasca', 'tascaMeva'];
 const AMB_PECES = ['index.html'];
+
+/* ── L'ORDRE DEL PONT, QUE ÉS LA REGLA ────────────────────────────────────
+   Una proposta no pot desfer una decisió: si la carta ja porta `ownerId`, mana
+   això i no el que derivi el mapa. Invertir l'ordre **no petaria** —seguiria
+   sortint una persona a cada targeta— i aniria desfent assignacions fetes a mà
+   cada cop que algú toqués el mapa. És el defecte més car d'aquest pont i el
+   que menys es veuria.
+
+   També es comprova que quan el rol no té ningú **es proposi i no s'imposi**:
+   `suggestRoleMembers` ja pondera encaix i sobrecàrrega, i el pont només l'ha
+   de demanar, mai escriure'l. */
+(() => {
+  const app = (blocs.find(b => b.f === 'index.html') || {}).txt || '';
+  const fn = (app.match(/function personaDeTasca\(m\)\{[\s\S]*?\n\}/) || [''])[0];
+  if (!fn) { bad('no es troba `personaDeTasca`: el pont del mapa a la persona no es pot comprovar'); }
+  else {
+    const iCarta = fn.indexOf('m.card.ownerId'), iMapa = fn.indexOf('intercanviDeTasca');
+    if (iCarta < 0) bad('`personaDeTasca` no mira el que ja s\'havia decidit a la carta');
+    else if (iMapa < 0) bad('`personaDeTasca` no deriva res del mapa: llavors no és cap pont');
+    else if (iCarta > iMapa) bad('`personaDeTasca` deriva del mapa abans de mirar el que ja s\'havia '
+      + 'decidit: una proposta desfaria una decisió, i no petaria res');
+    else if (!/suggestRoleMembers/.test(fn)) bad('quan el rol no té ningú, `personaDeTasca` no proposa: '
+      + 'una tasca sense persona i sense proposta és una paret');
+    else if (/assignRoleMember/.test(fn)) bad('`personaDeTasca` assigna: ha de proposar i no imposar');
+    else ok('el pont mira primer el que s\'ha decidit, després el mapa, i proposa sense imposar');
+  }
+})();
 blocs.filter(b => AMB_PECES.includes(b.f)).forEach(({ f, txt }) => {
   const falten = PECES.filter(p => !new RegExp('(function|const)\\s+' + p + '\\b').test(txt));
   if (!falten.length) ok(`${f}: les peces per associar una persona a un rol hi són`);

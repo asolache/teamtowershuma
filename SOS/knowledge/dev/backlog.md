@@ -262,8 +262,23 @@ transaccions** d'un node o d'un projecte.
 
 **El que falta de debò, i és menys del que sembla:**
 
-1. **La tasca no té persona, té rol.** El pont hi és a mitges: el flux diu quin
-   rol el porta i `roleOwner` diu qui porta el rol, però ningú els encadena.
+1. ~~**La tasca no té persona, té rol.**~~ **FET (01/10/2026).** `personaDeTasca(m)`
+   encadena tasca → flux → rol emissor → persona, i l'ordre **és la regla**:
+   primer el que ja s'ha decidit a la carta (`ownerId`), després el que deriva
+   el mapa, i si el rol no té ningú **es proposa amb `suggestRoleMembers` i no
+   s'imposa**. Invertir aquest ordre no petaria i aniria desfent assignacions
+   fetes a mà cada cop que algú toqués el mapa: hi ha guarda a `check-perfil.js`
+   i està provada trencant-la.
+
+   A la targeta del tauler es diu **de qui és i d'on surt que és seva** —una
+   tasca assignada a dit és una opinió; una derivada del mapa és el mapa
+   funcionant—, i quan el rol és lliure el botó porta a `openRolePerson`, que
+   ja proposa. I **les missions que fas i les que vols assignar** són un filtre
+   de la mateixa llista i no una pantalla nova: «👤 Les meves» i «⚠ Per
+   assignar». Era el punt 3 de l'entrada de la UX, i fer aquest l'ha fet.
+
+   *El text original, per si cal: el flux diu quin rol el porta i `roleOwner`
+   diu qui porta el rol, però ningú els encadena.*
    L'assignació **hauria de derivar-se del mapa** (el rol que emet el flux) i
    només caure a una tria manual quan el rol no té ningú o en té més d'un —i
    llavors proposar amb `suggestRoleMembers`, que ja pondera càrrega i encaix.
