@@ -25,7 +25,7 @@ import { createRequire } from 'node:module';
 
 const DIR = dirname(fileURLToPath(import.meta.url));
 const APP = 'file://' + join(DIR, '..', '..', 'index.html');
-const { FIGURES, CAS } = createRequire(import.meta.url)('../tools/build-castells.js');
+const { FIGURES, VARIABLES } = createRequire(import.meta.url)('../tools/build-castells.js');
 
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
@@ -136,8 +136,8 @@ console.log('\n4 · Sense moviment, la informació hi és igual');
   await ctx.close();
 }
 
-/* ── 5 · Les figures dibuixen les rengles que diuen ──────────────────────── */
-console.log('\n5 · Cada construcció té les línies de força que diu');
+/* ── 5 · Les plantes obren les direccions que els toca ───────────────────── */
+console.log('\n5 · Una pinya de N baixos obre 4N direccions');
 {
   const { ctx, p } = await nova();
   for (const f of FIGURES) {
@@ -145,40 +145,68 @@ console.log('\n5 · Cada construcció té les línies de força que diu');
     const r = await p.evaluate(id => {
       const pan = document.querySelector('#ct-p-' + id);
       return { obert: !pan.hidden,
-        cols: new Set([...pan.querySelectorAll('.ct-p')].map(x => x.getAttribute('x'))).size,
-        pinya: pan.querySelectorAll('.ct-pi').length,
-        sols: [...document.querySelectorAll('.ct-pan')].filter(x => !x.hidden).length };
+        rengla: pan.querySelectorAll('.pl-rengla').length,
+        lateral: pan.querySelectorAll('.pl-lateral').length,
+        vent: pan.querySelectorAll('.pl-vent').length,
+        total: pan.querySelectorAll('.pl-l').length,
+        planta: !!pan.querySelector('.pl-svg'), alcat: !!pan.querySelector('.al-svg'),
+        sols: [...document.querySelectorAll('.ct-pan:not(.ct-pv)')].filter(x => !x.hidden).length };
     }, f.id);
-    ok(r.obert && r.sols === 1 && r.cols === f.rengles && r.pinya === f.pinya,
-      `${f.nom}: ${r.cols} ${r.cols === 1 ? 'rengla' : 'rengles'} i ${r.pinya} a la pinya`);
+    ok(r.obert && r.sols === 1 && r.rengla === f.baixos && r.lateral === f.baixos
+      && r.vent === 2 * f.baixos && r.total === 4 * f.baixos,
+      `${f.nom}: ${r.rengla} rengles + ${r.lateral} laterals + ${r.vent} vents = ${r.total}`);
+    /* Les dues vistes han d'anar juntes: la planta no sap d'alçada i l'alçat
+       no sap de direccions, i la lectura que es ven només surt creuant-les. */
+    ok(r.planta && r.alcat, '  i hi són les dues vistes, de dalt i de costat');
   }
   await ctx.close();
 }
 
-/* ── 6 · El cas treballat ha d'ensenyar la desigualtat ───────────────────── */
-console.log('\n6 · El cas diu on es concentra el pes');
+/* ── 6 · La variable es pinta sobre la planta ────────────────────────────── */
+console.log('\n6 · La mateixa planta, pintada per una altra cosa');
 {
   const { ctx, p } = await nova();
-  const r = await p.evaluate(() => {
-    const c = document.querySelector('.ct-cas');
-    return { plens: c.querySelectorAll('.ct-p:not(.buit)').length,
-      buits: c.querySelectorAll('.ct-p.buit').length,
-      txt: c.querySelector('.ct-diu').textContent,
-      avis: (c.querySelector('.ct-avis') || {}).textContent || '' };
-  });
-  const total = CAS.rengles.reduce((a, x) => a + x.n, 0);
-  const curta = CAS.rengles.slice().sort((a, x) => a.n - x.n)[0];
-  ok(r.plens === total, `els ${total} rols hi són dibuixats`);
-  /* Els forats són l'argument: una rengla curta es veu pel que li falta, no
-     per un número al costat. */
-  ok(r.buits > 0, `i ${r.buits} buits que ensenyen quina rengla va curta`);
-  ok(r.txt.includes(curta.nom), 'el text anomena la rengla més curta · ' + curta.nom);
-  ok(/no puntua/.test(r.avis), 'i es diu que això ordena i no puntua: no es promet cap mesura');
+  for (const v of VARIABLES) {
+    await p.click(`.ct-t[data-v="${v.id}"]`);
+    const r = await p.evaluate(id => {
+      const pan = document.querySelector('#ct-v-' + id);
+      return { obert: !pan.hidden, dims: pan.querySelectorAll('.ct-ll li').length,
+        gent: pan.querySelectorAll('.pl-g').length,
+        risc: (pan.querySelector('.ct-risc') || {}).textContent || '' };
+    }, v.id);
+    const total = v.dims.reduce((a, d) => a + d.n, 0);
+    ok(r.obert && r.dims === v.dims.length && r.gent === total,
+      `${v.nom}: ${r.dims} dimensions i ${r.gent} persones dibuixades`);
+  }
+  /* LA LECTURA QUE NOMÉS EXISTEIX CREUANT LES DUES COSES: gruix sobre una
+     línia fluixa. Amb la planta sola no es veu —la fondària es llegeix igual
+     a tot arreu— i amb l'alçat sol tampoc, perquè no sap de direccions. */
+  const risc = await p.evaluate(() =>
+    (document.querySelector('#ct-v-setze .ct-risc') || {}).textContent || '');
+  ok(/vent/.test(risc), 'i avisa del gruix que cau sobre un vent · ' + risc.trim().slice(0, 60));
   await ctx.close();
 }
 
-/* ── 7 · Si el JavaScript no arriba, el contingut hi és igual ────────────── */
-console.log('\n7 · El contingut és a l\'HTML, no l\'injecta ningú');
+/* ── 7 · El 16 no és una casualitat bonica ───────────────────────────────── */
+console.log('\n7 · Per què un instrument de setze factors cap en un 4');
+{
+  const q = FIGURES.find(x => 4 * x.baixos === 16);
+  const v = VARIABLES.find(x => x.dims.length === 16);
+  ok(!!q && q.baixos === 4, 'un castell de 4 obre 16 direccions: 4 rengles, 4 laterals i 8 vents');
+  ok(!!v && v.fig === q.id, 'i la variable de setze dimensions hi va a sobre, sense forçar res');
+  const { ctx, p } = await nova();
+  await p.click('.ct-t[data-v="setze"]');
+  const r = await p.evaluate(() => ({
+    dirs: document.querySelectorAll('#ct-v-setze .pl-l').length,
+    buides: [...document.querySelectorAll('#ct-v-setze .pl-l')]
+      .filter(x => Number(x.getAttribute('opacity')) < .2).length }));
+  ok(r.dirs === 16 && r.buides === 0,
+    `les setze direccions s'omplen i no en queda cap buida (${r.dirs}, ${r.buides} buides)`);
+  await ctx.close();
+}
+
+/* ── 8 · El contingut és a l'HTML, no l'injecta ningú ───────────────────── */
+console.log('\n8 · Si el JavaScript no arriba, el contingut hi és igual');
 {
   const ctx = await b.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
   const p = await ctx.newPage();
@@ -186,12 +214,14 @@ console.log('\n7 · El contingut és a l\'HTML, no l\'injecta ningú');
   const r = await p.evaluate(() => ({
     pols: document.querySelectorAll('.mv-p').length,
     frase: (document.querySelector('#mvPolsTxt') || {}).textContent || '',
-    figures: document.querySelectorAll('.ct-pan').length,
-    dibuix: document.querySelectorAll('.ct-svg').length }));
+    plantes: document.querySelectorAll('.pl-svg').length,
+    alcats: document.querySelectorAll('.al-svg').length,
+    llei: (document.querySelector('.ct-llei') || {}).textContent || '' }));
   ok(r.pols > 0, 'els polsos són SVG i CSS: circulen sense JavaScript');
   ok(/radiografia/.test(r.frase), 'la frase ja és escrita a la pàgina');
-  ok(r.figures === FIGURES.length && r.dibuix >= FIGURES.length,
-    `i les ${r.figures} construccions són dibuixades, no generades al navegador`);
+  ok(r.plantes >= FIGURES.length && r.alcats === FIGURES.length,
+    `i les ${r.alcats} construccions són dibuixades, no generades al navegador`);
+  ok(/alçada sense guanyar base/.test(r.llei), 'i la llei que lliga les dues vistes també hi és');
   await ctx.close();
 }
 

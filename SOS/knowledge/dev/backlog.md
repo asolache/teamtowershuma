@@ -2397,9 +2397,48 @@ decoració castellera. I un cas treballat: 12 rols en 4 àmbits, amb una rengla
 de 5 i una d'1, on els pisos que falten es dibuixen buits. La desigualtat es
 veu abans de llegir res.
 
-**La traducció, declarada:** un àmbit és una rengla; els seus rols, la gent que
-hi ha; qui sosté sense sortir enlloc, la pinya; i quants àmbits té la casa diu
-quina construcció és.
+**⚠ CORREGIT EL MATEIX DIA.** La primera versió deia «rengla» a les columnes
+del tronc. **És fals, i l'error era de dimensió, no de nom.** Una rengla és a
+la **pinya**: és la filera de gent que es posa **darrere de cada baix**, cap
+enfora. No es veu mirant un castell de front — es veu mirant la pinya **des de
+dalt**. Dir-li vertical es carregava justament el que fa que això valgui per a
+una organització.
+
+**L'anatomia, declarada (pendent de validar amb en Fèlix Miret).** Al voltant
+del tronc, una pinya de N baixos obre **quatre menes de línia radial**: N
+**rengles** (darrere de cada baix, per on baixa el pes de debò), N **laterals**
+(entre dues rengles) i 2N **vents** (entre una rengla i un lateral).
+
+**D'aquí surt la regla que ho ordena tot: una pinya de N baixos obre 4N
+direccions.** Un 2 n'obre 8, un 3 dotze, **un 4 setze** i un 5 vint. Que un 4
+n'obri setze **no és una casualitat bonica**: és el que fa que un instrument de
+setze factors càpiga exactament en una planta de castell de quatre, un factor
+per direcció. Hi ha una guarda que ho comprova, perquè és la tesi.
+
+*Els noms canvien de colla a colla —el que aquí es diu «vent» en algun lloc és
+«mà» o «crossa de rengla»—; el que no canvia és l'estructura, i la
+visualització fa servir l'estructura. Una correcció de noms no la trenca.*
+
+**Les dues dimensions, que és el que es demanava.** *Horitzontal · la planta*:
+quantes direccions té obertes la casa i quanta fondària té cadascuna — és on es
+posa la variable. *Vertical · l'alçat*: quants pisos s'intenta aguantar, que és
+l'ambició i la part que tothom mira. **Van juntes i no en dues pantalles**: la
+planta no sap d'alçada i l'alçat no sap de direccions.
+
+**I la llei que les lliga, que és el que es ven:** en castells no es guanya
+alçada sense guanyar base —un 4 de 8 demana folre; un de 9, folre i manilles—,
+i **la pinya creix més de pressa que el tronc**. En una casa és igual: cada pis
+d'ambició demana **més direccions obertes**, no més gent a la mateixa direcció.
+
+**La lectura que només existeix creuant les dues:** una direcció amb molt gruix
+**sobre un vent** és un risc —molta força per una línia que no és per
+carregar-hi—. Amb la planta sola no es veu, perquè la fondària es llegeix igual
+a tot arreu; amb l'alçat sol tampoc, perquè no sap de direccions.
+
+**I la variable ja hi és.** Tres declarades: els àmbits de la casa (4 sobre un
+4), les deu aportacions del SOS (sobre un 3, i **les dues direccions que queden
+buides són la lectura**) i un instrument de setze factors sobre la planta de
+setze. Era el punt 1 del que quedava pendent fa una hora.
 
 **Una guarda nova que val per tota la portada.** `check-landing.js` comprova
 ara que **cap `var(--…)` apunti a una variable que no existeix**: el navegador
