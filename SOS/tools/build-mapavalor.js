@@ -144,6 +144,25 @@ const CELLER = {
     { t: 'La vinya i el veïnat donen i no reben prou',
       d: 'Reben feina i camins; donen el que fa que allò sigui únic i irrepetible. <b>És el vincle que es trenca sense avisar</b> —un poble que es cansa dels visitants—, i és barat de cuidar mentre encara es pot.' }
   ],
+  /* ══ L'ENCALLAMENT ════════════════════════════════════════════════════
+     Un mapa de valor dibuixat és una radiografia: ensenya què hi ha. El que
+     ven la consultoria sistèmica és el pas següent —**mirar-ho com un cos**—,
+     i un cos no es diagnostica amb una foto sinó veient si allò circula.
+
+     Per això el mapa es pot aturar per un node. No és una animació decorativa:
+     és la pregunta que un metge fa davant d'una radiografia, «i si això no
+     passa?», i és la que el client ha de poder fer sobre la seva casa.
+
+     El node és `acollida` i no un altre perquè és la troballa 3 d'aquest mateix
+     cas: avui no existeix com a rol, el fa qui pot quan truquen, i sosté tot
+     el camí de la dreta. **Qui perd què ho compta el generador**, no aquesta
+     llista: una xifra escrita a mà aquí seria una xifra que el dibuix podria
+     desmentir sense que ningú se n'adonés. */
+  encallament: {
+    node: 'acollida',
+    per: 'Avui no és el rol de ningú: el fa qui pot quan sona el telèfon.',
+    diu: 'Un node que no és de ningú no s\'atura un dia dolent: s\'atura cada dia una estona, i no surt a cap informe.'
+  },
   /* La frase que impedeix que això es llegeixi com una promesa de marge. */
   avis: 'Aquest mapa és un exemple treballat, no el d\'un celler concret, i no porta cap xifra: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és <b>on mirar</b>, i quins lliuraments avui se\'n van sense cobrar.'
 };
@@ -205,6 +224,25 @@ const cQui = {
   sense: QUI.filter(x => x.qui === 'sense').length
 };
 
+/* ══ QUI PERD QUÈ SI AQUELL NODE S'ATURA ════════════════════════════════════
+   Es compta, no s'opina: per a cada node, quants dels seus lliuraments —els
+   que dona i els que rep— passen pel node que s'ha aturat. Un node que en
+   perd la meitat o més és el que al dibuix es queda sense reg.
+
+   Que això sigui un càlcul i no una llista escrita és el que fa que el dibuix
+   no pugui mentir: el dia que algú afegeixi un lliurament nou, el nombre canvia
+   sol i la frase de sota també. */
+const ENC = CELLER.encallament;
+const tocaEnc = f => f.de === ENC.node || f.a === ENC.node;
+const PERDUA = CELLER.nodes.filter(n => n.id !== ENC.node).map(n => {
+  const meus = flux.filter(f => f.de === n.id || f.a === n.id);
+  const parats = meus.filter(tocaEnc);
+  return { n, total: meus.length, perd: parats.length,
+    pct: meus.length ? parats.length / meus.length : 0 };
+}).sort((a, b) => b.pct - a.pct);
+const SENSE_REG = PERDUA.filter(x => x.pct >= .5);
+const FLUX_PARAT = flux.filter(tocaEnc).length;
+
 /* ══ EL DIBUIX ═══════════════════════════════════════════════════════════════
    Generat de les posicions declarades. Es dibuixa amb les dues menes
    distingides per traç —plena i discontínua— i no per color sol: qui no
@@ -212,7 +250,7 @@ const cQui = {
 function svgCeller(id) {
   const R = 46, W = 640, H = 430;
   const p = [];
-  p.push(`<svg id="${id}" class="mv-svg" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}T ${id}D">`);
+  p.push(`<svg id="${id}" class="mv-svg viu" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}T ${id}D">`);
   p.push(`<title id="${id}T">Mapa de valor d'un celler del Penedès</title>`);
   p.push(`<desc id="${id}D">Set rols i setze lliuraments. A l'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l'operador de luxe i el visitant, on la meitat del que es lliura és intangible.</desc>`);
   p.push('<defs>' +
@@ -220,7 +258,14 @@ function svgCeller(id) {
     '<marker id="mvI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e040fb"/></marker>' +
     '</defs>');
   // Les fletxes primer, perquè els nodes hi quedin a sobre i el text es llegeixi.
-  flux.forEach(f => {
+  /* Els polsos van a part i a sota de tot: són el mateix camí dibuixat una
+     segona vegada amb un traç curt que el recorre. Amb `pathLength="100"` tots
+     els camins es normalitzen a la mateixa llargada, i llavors una sola regla
+     de CSS els fa circular tots a la mateixa velocitat encara que un sigui el
+     doble de llarg que l'altre. Sense això, el pols de la fletxa curta aniria
+     disparat i el de la llarga semblaria aturat. */
+  const camins = [];
+  flux.forEach((f, i) => {
     const a = nodeDe(f.de), b = nodeDe(f.a);
     const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1;
     // Es retalla als marges del node perquè la punta no quedi amagada a sota.
@@ -238,13 +283,22 @@ function svgCeller(id) {
     const c = (f.mena === 'tangible' ? 1 : -1) * Math.min(34, lliure * .22);
     const mx = (ax + bx) / 2 - dy / d * c, my = (ay + by) / 2 + dx / d * c;
     const tang = f.mena === 'tangible';
-    p.push(`<path d="M${ax.toFixed(1)} ${ay.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}" fill="none" ` +
+    const cam = `M${ax.toFixed(1)} ${ay.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`;
+    const para = tocaEnc(f) ? ' data-para="1"' : '';
+    p.push(`<path class="mv-f" d="${cam}" fill="none" ` +
       `stroke="${tang ? '#00b0ff' : '#e040fb'}" stroke-width="${tang ? 2 : 1.6}" opacity="${tang ? .5 : .42}"` +
-      `${tang ? '' : ' stroke-dasharray="6 7"'} marker-end="url(#${tang ? 'mvT' : 'mvI'})"><title>${esc(nodeDe(f.de).nom)} → ${esc(nodeDe(f.a).nom)}: ${esc(f.q)} (${f.mena})</title></path>`);
+      `${tang ? '' : ' stroke-dasharray="6 7"'}${para} marker-end="url(#${tang ? 'mvT' : 'mvI'})"><title>${esc(nodeDe(f.de).nom)} → ${esc(nodeDe(f.a).nom)}: ${esc(f.q)} (${f.mena})</title></path>`);
+    // El retard reparteix els polsos: tots alhora serien un pampallugueig.
+    camins.push(`<path class="mv-p${tang ? '' : ' i'}" d="${cam}" pathLength="100"${para}` +
+      ` style="animation-delay:${(i * .17).toFixed(2)}s"/>`);
   });
+  p.push('<g class="mv-pols" aria-hidden="true">' + camins.join('') + '</g>');
   CELLER.nodes.forEach(n => {
     const col = n.cami === 'canal' ? '#82828d' : (n.cami === 'visitant' ? '#00e676' : '#6366f1');
-    p.push(`<g class="mv-n" data-id="${n.id}">`);
+    const perd = PERDUA.find(x => x.n.id === n.id);
+    const marca = n.id === ENC.node ? ' data-para="1"'
+      : (perd && perd.pct >= .5 ? ' data-sec="1"' : '');
+    p.push(`<g class="mv-n" data-id="${n.id}"${marca}>`);
     p.push(`<circle cx="${n.x}" cy="${n.y}" r="${R}" fill="#141420" stroke="${col}" stroke-width="1.6"/>`);
     // El nom es parteix en dues línies quan no hi cap: un node amb el text
     // sortint del cercle es llegeix com un error de dibuix.
@@ -261,6 +315,32 @@ function svgCeller(id) {
   return p.join('');
 }
 
+/* ══ EL POLS ═════════════════════════════════════════════════════════════════
+   Un mapa dibuixat és una radiografia: diu què hi ha. El que ven la consultoria
+   sistèmica és el pas següent, mirar-ho com un cos —i un cos no es diagnostica
+   amb una foto, sinó veient si allò circula i on deixa de fer-ho.
+
+   Per això hi ha dos botons i no un: **fer-lo circular** i **aturar-li un
+   node**. El segon és el que converteix el dibuix en una eina de decisió, i és
+   literalment la pregunta que un metge fa davant d'una radiografia.
+
+   Les xifres de la frase les compta el generador. Escrites a mà, el dia que
+   s'afegís un lliurament el dibuix diria una cosa i la frase una altra, i la
+   que es creuria el client seria la frase. */
+function blocPols() {
+  const n = nodeDe(ENC.node);
+  const perduts = SENSE_REG.map(x => `${esc(x.n.nom)} (${x.perd} de ${x.total})`).join(' i ');
+  return ['<div class="mv-pols-ui">',
+    '<div class="mv-pu-b">',
+    '<button type="button" class="mv-b" id="mvPausa" aria-pressed="false">⏸ Atura el pols</button>',
+    `<button type="button" class="mv-b" id="mvEnc" aria-pressed="false" aria-controls="mvCeller">🩺 I si «${esc(n.nom)}» s'encalla?</button>`,
+    '</div>',
+    `<p class="mv-pu-t" id="mvPolsTxt" data-sa="Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé." ` +
+    `data-enc="${esc(ENC.per)} Amb aquest node aturat es paren <b>${FLUX_PARAT} dels ${cTot.n} lliuraments</b>, i ${perduts} perden la meitat del que els arriba. ${esc(ENC.diu)}">` +
+    'Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l\'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé.</p>',
+    '</div>'].join('');
+}
+
 /* ══ ELS BLOCS ═══════════════════════════════════════════════════════════════ */
 
 // Portada · la versió curta: el dibuix, què s'hi veu i on és el marge.
@@ -274,6 +354,7 @@ function blocPortada() {
     '<span class="mv-li">- - intangible</span>' +
     `<span class="mv-lc">${cTot.n} lliuraments · ${cTot.i} intangibles</span>` +
     '</div>');
+  f.push('    ' + blocPols());
   f.push('  </div>');
   f.push('  <div class="mv-txt">');
   f.push(`    <h3>${esc(CELLER.titol)}</h3>`);
@@ -459,7 +540,16 @@ function blocExemple() {
   // I que el repartiment que es publica sigui el que surt del graf.
   if (cQui.maquina + cQui.persona + cQui.sense !== flux.length) bad('el repartiment no suma els lliuraments del graf');
   else if (cQui.persona !== cTot.i) bad('els de persona no coincideixen amb els intangibles: la regla no s\'està aplicant');
-  else ok(`repartiment: ${cQui.maquina} de màquina · ${cQui.sense} sense tipus · ${cQui.persona} de persona (= els ${cTot.i} intangibles)`);
+  else /* El node que s'atura ha d'existir i ha de moure alguna cosa. Un encallament
+   sobre un node que no hi és no petaria: el botó senzillament no faria res. */
+if (!nodeDe(ENC.node)) bad(`l'encallament apunta a «${ENC.node}», que no és cap node del mapa`);
+else if (!FLUX_PARAT) bad(`el node «${ENC.node}» no mou res: aturar-lo no ensenyaria res`);
+else if (!SENSE_REG.length) bad(`aturar «${ENC.node}» no deixa cap node sense la meitat del que rep: `
+  + 'el dibuix no ensenyaria cap conseqüència i el botó seria decoració');
+else ok(`aturar «${nodeDe(ENC.node).nom}» para ${FLUX_PARAT} dels ${cTot.n} lliuraments `
+  + `i deixa ${SENSE_REG.length} node(s) sense la meitat del que reben`);
+
+ok(`repartiment: ${cQui.maquina} de màquina · ${cQui.sense} sense tipus · ${cQui.persona} de persona (= els ${cTot.i} intangibles)`);
 })();
 
 /* ══ ESCRIURE ════════════════════════════════════════════════════════════════ */

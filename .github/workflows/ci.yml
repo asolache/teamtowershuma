@@ -334,6 +334,12 @@ jobs:
       - name: El diagnòstic d'organització apunta a paquets que existeixen
         run: node SOS/tools/build-diagnosi-org.js --check
 
+      # Un «4» dibuixat amb tres rengles és una figura que no existeix i que es
+      # llegeix com si existís. Les posicions les calcula el generador i la
+      # guarda compta el que n'ha sortit contra el que s'havia declarat.
+      - name: Les rengles dibuixen el que diuen
+        run: node SOS/tools/build-castells.js --check
+
       # Cada acció del llançador declara quan serveix. Una que no ho digui no
       # sortiria mai a la portada i no petaria res: seguiria al menú sencer i
       # semblaria que tot està bé. I si totes servissin sempre, la portada

@@ -296,7 +296,7 @@
         .tt-pagines > summary:hover, .tt-pagines[open] > summary { color:var(--white); }
         .tp-p { position:absolute; right:0; top:calc(100% + .6rem); z-index:80; width:min(92vw,620px);
             display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.2rem;
-            background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:12px;
+            background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px;
             padding:.9rem; box-shadow:0 18px 50px rgba(0,0,0,.6); }
         .tp-g { min-width:0; }
         .tp-g-l { font-family:var(--mono); font-size:.62rem; letter-spacing:.12em; text-transform:uppercase;
@@ -398,7 +398,7 @@
             color:var(--muted); background:transparent; border:1px solid var(--border);
             border-radius:100px; padding:.55rem 1.1rem; cursor:pointer; transition:.15s; }
         .pk-f:hover { color:var(--white); border-color:var(--muted); }
-        .pk-f.on { color:var(--bg); background:var(--accent-green); border-color:var(--accent-green);
+        .pk-f.on { color:var(--bg-dark); background:var(--accent-green); border-color:var(--accent-green);
             font-weight:600; }
         .pk-fam[hidden], .paquet[hidden] { display:none; }
 
@@ -474,13 +474,13 @@
         .clm-c { background:var(--bg-elevated,rgba(255,255,255,.025)); border:1px solid var(--border);
             border-top:2px solid var(--clc); border-radius:8px; padding:.6rem .7rem .55rem;
             display:flex; flex-direction:column; gap:.15rem; min-width:0; }
-        .clm-n { font-size:.93rem; font-weight:700; letter-spacing:.01em; color:var(--text);
+        .clm-n { font-size:.93rem; font-weight:700; letter-spacing:.01em; color:var(--white);
             overflow-wrap:anywhere; }
         .clm-c.dest .clm-n { font-size:1.06rem; }
         .clm-s { font-size:.66rem; line-height:1.4; color:var(--muted); }
         .clm-nota { font-size:.74rem; color:var(--muted); line-height:1.6; margin:1.4rem 0 0; max-width:66ch; }
         .clm-nota a { color:var(--muted); }
-        .clm-nota strong { color:var(--text); font-weight:600; }
+        .clm-nota strong { color:var(--white); font-weight:600; }
         @media (max-width:768px) {
             .cl-mur { padding:1.9rem 0 1.6rem; }
             .clm-h2 { font-size:1.2rem; margin-bottom:1.3rem; }
@@ -527,6 +527,99 @@
             font-family:var(--mono); font-size:.68rem; color:var(--muted); }
         .mv-lt { color:var(--accent-blue); } .mv-li { color:var(--accent-purple); }
         .mv-lc { margin-left:auto; }
+
+        /* ── EL POLS · el mapa com un cos, no com una foto ──────────────────
+           Un traç curt recorre el mateix camí que la fletxa. Amb
+           `pathLength="100"` tots els camins es normalitzen a la mateixa
+           llargada i una sola regla els mou tots a la mateixa velocitat: sense
+           això el pols de la fletxa curta aniria disparat i el de la llarga
+           semblaria aturat, i el mapa es llegiria com si unes coses circulessin
+           i d'altres no, que és justament el que ha de dir només quan és cert.
+
+           Els polsos no es toquen amb el ratolí: els `<title>` de les fletxes
+           de sota han de seguir sortint. */
+        .mv-pols { pointer-events:none; }
+        .mv-p { fill:none; stroke:var(--accent-blue); stroke-width:3.5; stroke-linecap:round;
+            stroke-dasharray:7 93; stroke-dashoffset:100;
+            animation:mv-flueix 3.4s linear infinite; }
+        .mv-p.i { stroke:var(--accent-purple); stroke-width:3; stroke-dasharray:5 95; }
+        @keyframes mv-flueix { to { stroke-dashoffset:0; } }
+        .mv-svg.aturat .mv-p { animation-play-state:paused; }
+
+        /* L'ENCALLAMENT. El que es para es queda gris i quiet; el que en depèn
+           baixa d'intensitat. No desapareix res: el mapa ha de seguir essent
+           el mateix mapa, o la comparació no es pot fer. */
+        .mv-svg.encallat .mv-p[data-para] { animation-play-state:paused; opacity:0; }
+        .mv-svg.encallat .mv-f[data-para] { stroke:#4a4a55 !important; opacity:.28 !important; }
+        .mv-svg.encallat .mv-n[data-para] circle { stroke:var(--accent-orange); stroke-width:2.4;
+            stroke-dasharray:5 4; }
+        .mv-svg.encallat .mv-n[data-sec] { opacity:.42; }
+        .mv-svg .mv-n, .mv-svg .mv-f, .mv-svg .mv-p { transition:opacity .45s ease, stroke .45s ease; }
+
+        .mv-pols-ui { margin-top:.7rem; }
+        .mv-pu-b { display:flex; flex-wrap:wrap; gap:.45rem; }
+        .mv-b { font-family:var(--mono); font-size:.72rem; color:var(--light); cursor:pointer;
+            background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px;
+            padding:.4rem .7rem; transition:border-color .2s, color .2s; }
+        .mv-b:hover { border-color:var(--accent-indigo); color:var(--white); }
+        .mv-b[aria-pressed="true"] { border-color:var(--accent-orange); color:var(--white);
+            background:rgba(255,145,0,.1); }
+        #mvPausa[aria-pressed="true"] { border-color:var(--accent-indigo); background:rgba(99,102,241,.1); }
+        .mv-pu-t { font-size:.76rem; line-height:1.65; color:var(--muted); margin:.55rem 0 0; }
+        .mv-pu-t b { color:var(--light); font-weight:600; }
+
+        /* Qui ha demanat que les coses no es moguin, no se li mouen. El mapa
+           es queda a l'estat de repòs i **el botó d'encallar segueix servint**:
+           el que s'apaga és el moviment, no la informació. */
+        @media (prefers-reduced-motion: reduce) {
+            .mv-p { animation:none; stroke-dashoffset:50; opacity:.75; }
+        }
+        /* ── LES RENGLES ───────────────────────────────────────────────────
+           Dibuix a l'esquerra i lectura a la dreta, com el mapa. A telèfon
+           s'apilen: el dibuix ha de poder-se veure sencer abans de llegir-ne
+           res, perquè el dibuix és l'argument. */
+        .rengles { padding:5rem 0; border-top:1px solid var(--border); }
+        .ct-wrap { max-width:960px; margin:0 auto; }
+        .ct-tria { display:flex; flex-wrap:wrap; gap:.45rem; justify-content:center; margin-bottom:1.6rem; }
+        .ct-t { font-family:var(--mono); font-size:.72rem; color:var(--muted); cursor:pointer;
+            background:var(--bg-elevated); border:1px solid var(--border); border-radius:999px;
+            padding:.42rem .85rem; display:inline-flex; align-items:center; gap:.4rem;
+            transition:border-color .2s, color .2s; }
+        .ct-t:hover { border-color:var(--accent-indigo); color:var(--white); }
+        .ct-t.on { border-color:var(--accent-indigo); color:var(--white);
+            background:rgba(99,102,241,.12); }
+        .ct-tn { font-size:.64rem; background:rgba(255,255,255,.08); border-radius:4px;
+            padding:0 .3rem; }
+        .ct-pan, .ct-cas { display:grid; grid-template-columns:minmax(0,300px) minmax(0,1fr);
+            gap:1.8rem; align-items:center; }
+        .ct-pan[hidden] { display:none; }
+        .ct-cas { margin-top:2.2rem; padding-top:2.2rem; border-top:1px solid var(--border); }
+        .ct-svg { width:100%; height:auto; display:block; }
+        /* La pinya és gris i petita a posta: el que ha de saltar a la vista és
+           quantes columnes hi ha, i després, que a sota n'hi ha molta més. */
+        .ct-pi { fill:var(--muted); opacity:.5; }
+        .ct-pom { fill:var(--light); opacity:.8; }
+        .ct-p { opacity:.9; }
+        .ct-k { font-family:var(--mono); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase;
+            color:var(--accent-green); margin-bottom:.5rem; }
+        .ct-quan { font-size:.92rem; color:var(--white); font-weight:600; margin:0 0 .6rem; line-height:1.5; }
+        .ct-diu { font-size:.88rem; color:var(--light); line-height:1.75; margin:0 0 .7rem; }
+        .ct-diu b { color:var(--white); }
+        .ct-avis { font-size:.76rem; color:var(--muted); line-height:1.6; margin:0; }
+        .ct-avis b { color:var(--light); font-weight:600; }
+        .ct-ll { list-style:none; display:flex; flex-wrap:wrap; gap:.4rem .9rem; margin:0 0 .8rem; padding:0;
+            font-size:.8rem; color:var(--light); }
+        .ct-ll li { display:inline-flex; align-items:center; gap:.4rem; }
+        .ct-ll i { width:9px; height:9px; border-radius:3px; display:inline-block; }
+        .ct-ll b { color:var(--white); }
+        .rg-peu { max-width:720px; margin:2.4rem auto 0; text-align:center; font-size:.9rem;
+            line-height:1.75; color:var(--light); }
+        .rg-peu b { color:var(--white); }
+        @media (max-width:860px) {
+            .ct-pan, .ct-cas { grid-template-columns:1fr; gap:1.2rem; }
+            .ct-viz { max-width:300px; margin:0 auto; }
+        }
+
         .mv-txt h3 { font-family:var(--sans); font-size:clamp(1.3rem,2.2vw,1.75rem); font-weight:700;
             line-height:1.2; margin-bottom:.8rem; }
         .mv-lead { color:var(--light); font-size:.95rem; line-height:1.7; margin:0 0 1.2rem; }
@@ -563,7 +656,7 @@
 
         .mv-ctas { display:flex; gap:.7rem; flex-wrap:wrap; }
         .mv-cta { font-size:.84rem; font-weight:600; text-decoration:none; padding:.55rem .95rem;
-            border-radius:9px; border:1px solid var(--border); background:var(--bg-card); color:var(--white); }
+            border-radius:9px; border:1px solid var(--border); background:var(--bg-elevated); color:var(--white); }
         .mv-cta.pri { background:var(--accent-indigo); border-color:var(--accent-indigo); }
         @media (max-width:1080px) { .mv-grid { grid-template-columns:1fr; gap:2rem; } }
         @media (max-width:520px) { .mv-cmp { grid-template-columns:1fr; } .mv-ck { min-height:0; } }
@@ -1383,8 +1476,9 @@
 <!--TT-MAPAVALOR-->
 <div class="mv-grid fade-up">
   <div class="mv-viz">
-    <svg id="mvCeller" class="mv-svg" viewBox="0 0 640 430" role="img" aria-labelledby="mvCellerT mvCellerD"><title id="mvCellerT">Mapa de valor d'un celler del Penedès</title><desc id="mvCellerD">Set rols i setze lliuraments. A l'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l'operador de luxe i el visitant, on la meitat del que es lliura és intangible.</desc><defs><marker id="mvT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00b0ff"/></marker><marker id="mvI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e040fb"/></marker></defs><path d="M320.0 104.0 Q309.0 127.0 320.0 150.0" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → Qui rep i explica: el vi, la verema i el celler obert (tangible)</title></path><path d="M320.0 154.0 Q309.0 131.0 320.0 108.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>Qui rep i explica → Qui fa el vi: saber què pregunta i què paga qui ve (intangible)</title></path><path d="M361.9 219.0 Q441.8 219.2 494.5 279.3" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>Qui rep i explica → El visitant: el relat de la casa: qui poda, per què aquell vessant (intangible)</title></path><path d="M498.1 281.0 Q445.4 220.9 365.5 220.7" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → Qui rep i explica: el que paga per l'experiència, no per l'ampolla (tangible)</title></path><path d="M496.3 142.3 Q441.4 192.5 367.5 184.4" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>L'operador de luxe → Qui rep i explica: la confiança del seu client, que és el que de debò ven (intangible)</title></path><path d="M363.7 185.7 Q437.6 193.8 492.5 143.6" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui rep i explica → L'operador de luxe: una experiència exclusiva i hores reservades (tangible)</title></path><path d="M540.0 254.0 Q557.6 216.0 540.0 178.0" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → L'operador de luxe: el que paga pel viatge sencer (tangible)</title></path><path d="M540.0 174.0 Q557.6 212.0 540.0 250.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>L'operador de luxe → El visitant: que algú hagi triat per ell i no s'hagi d'equivocar (intangible)</title></path><path d="M363.7 357.7 Q437.6 365.8 492.5 315.6" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El poble → El visitant: taula, llit i ofici obert (tangible)</title></path><path d="M496.3 314.3 Q422.4 306.2 367.5 356.4" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → El poble: despesa que es queda al municipi (tangible)</title></path><path d="M276.1 71.7 Q200.5 62.4 143.7 113.1" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → El distribuïdor: volum a preu de canal (tangible)</title></path><path d="M139.9 114.3 Q215.5 123.6 272.3 72.9" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El distribuïdor → Qui fa el vi: arribar on el celler no arriba (tangible)</title></path><path d="M127.2 266.2 Q181.7 157.4 286.0 94.7" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>La vinya i el veïnat → Qui fa el vi: el lloc que fa que aquell vi sigui d'allà (intangible)</title></path><path d="M288.8 91.8 Q184.4 154.4 130.0 263.3" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → La vinya i el veïnat: vinya treballada i camins oberts (tangible)</title></path><path d="M320.0 246.0 Q337.6 284.0 320.0 322.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>Qui rep i explica → El poble: visitants amb temps i ganes de quedar-se (intangible)</title></path><path d="M320.0 326.0 Q302.4 288.0 320.0 250.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>El poble → Qui rep i explica: que el poble els tracti com la casa ha promès (intangible)</title></path><g class="mv-n" data-id="vi"><circle cx="320" cy="58" r="46" fill="#141420" stroke="#6366f1" stroke-width="1.6"/><text x="320" y="58" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">Qui fa el vi</text></g><g class="mv-n" data-id="acollida"><circle cx="320" cy="200" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="320" y="194" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">Qui rep i</text><text x="320" y="206.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">explica</text></g><g class="mv-n" data-id="operador"><circle cx="540" cy="128" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="540" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">L'operador de</text><text x="540" y="134.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">luxe</text></g><g class="mv-n" data-id="visitant"><circle cx="540" cy="300" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="540" y="300" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El visitant</text></g><g class="mv-n" data-id="poble"><circle cx="320" cy="372" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="320" y="372" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El poble</text></g><g class="mv-n" data-id="canal"><circle cx="96" cy="128" r="46" fill="#141420" stroke="#82828d" stroke-width="1.6"/><text x="96" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El</text><text x="96" y="134.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">distribuïdor</text></g><g class="mv-n" data-id="terra"><circle cx="96" cy="300" r="46" fill="#141420" stroke="#6366f1" stroke-width="1.6"/><text x="96" y="294" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">La vinya i el</text><text x="96" y="306.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">veïnat</text></g></svg>
+    <svg id="mvCeller" class="mv-svg viu" viewBox="0 0 640 430" role="img" aria-labelledby="mvCellerT mvCellerD"><title id="mvCellerT">Mapa de valor d'un celler del Penedès</title><desc id="mvCellerD">Set rols i setze lliuraments. A l'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l'operador de luxe i el visitant, on la meitat del que es lliura és intangible.</desc><defs><marker id="mvT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00b0ff"/></marker><marker id="mvI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e040fb"/></marker></defs><path class="mv-f" d="M320.0 104.0 Q309.0 127.0 320.0 150.0" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" data-para="1" marker-end="url(#mvT)"><title>Qui fa el vi → Qui rep i explica: el vi, la verema i el celler obert (tangible)</title></path><path class="mv-f" d="M320.0 154.0 Q309.0 131.0 320.0 108.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" data-para="1" marker-end="url(#mvI)"><title>Qui rep i explica → Qui fa el vi: saber què pregunta i què paga qui ve (intangible)</title></path><path class="mv-f" d="M361.9 219.0 Q441.8 219.2 494.5 279.3" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" data-para="1" marker-end="url(#mvI)"><title>Qui rep i explica → El visitant: el relat de la casa: qui poda, per què aquell vessant (intangible)</title></path><path class="mv-f" d="M498.1 281.0 Q445.4 220.9 365.5 220.7" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" data-para="1" marker-end="url(#mvT)"><title>El visitant → Qui rep i explica: el que paga per l'experiència, no per l'ampolla (tangible)</title></path><path class="mv-f" d="M496.3 142.3 Q441.4 192.5 367.5 184.4" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" data-para="1" marker-end="url(#mvI)"><title>L'operador de luxe → Qui rep i explica: la confiança del seu client, que és el que de debò ven (intangible)</title></path><path class="mv-f" d="M363.7 185.7 Q437.6 193.8 492.5 143.6" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" data-para="1" marker-end="url(#mvT)"><title>Qui rep i explica → L'operador de luxe: una experiència exclusiva i hores reservades (tangible)</title></path><path class="mv-f" d="M540.0 254.0 Q557.6 216.0 540.0 178.0" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → L'operador de luxe: el que paga pel viatge sencer (tangible)</title></path><path class="mv-f" d="M540.0 174.0 Q557.6 212.0 540.0 250.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>L'operador de luxe → El visitant: que algú hagi triat per ell i no s'hagi d'equivocar (intangible)</title></path><path class="mv-f" d="M363.7 357.7 Q437.6 365.8 492.5 315.6" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El poble → El visitant: taula, llit i ofici obert (tangible)</title></path><path class="mv-f" d="M496.3 314.3 Q422.4 306.2 367.5 356.4" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El visitant → El poble: despesa que es queda al municipi (tangible)</title></path><path class="mv-f" d="M276.1 71.7 Q200.5 62.4 143.7 113.1" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → El distribuïdor: volum a preu de canal (tangible)</title></path><path class="mv-f" d="M139.9 114.3 Q215.5 123.6 272.3 72.9" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>El distribuïdor → Qui fa el vi: arribar on el celler no arriba (tangible)</title></path><path class="mv-f" d="M127.2 266.2 Q181.7 157.4 286.0 94.7" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" marker-end="url(#mvI)"><title>La vinya i el veïnat → Qui fa el vi: el lloc que fa que aquell vi sigui d'allà (intangible)</title></path><path class="mv-f" d="M288.8 91.8 Q184.4 154.4 130.0 263.3" fill="none" stroke="#00b0ff" stroke-width="2" opacity="0.5" marker-end="url(#mvT)"><title>Qui fa el vi → La vinya i el veïnat: vinya treballada i camins oberts (tangible)</title></path><path class="mv-f" d="M320.0 246.0 Q337.6 284.0 320.0 322.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" data-para="1" marker-end="url(#mvI)"><title>Qui rep i explica → El poble: visitants amb temps i ganes de quedar-se (intangible)</title></path><path class="mv-f" d="M320.0 326.0 Q302.4 288.0 320.0 250.0" fill="none" stroke="#e040fb" stroke-width="1.6" opacity="0.42" stroke-dasharray="6 7" data-para="1" marker-end="url(#mvI)"><title>El poble → Qui rep i explica: que el poble els tracti com la casa ha promès (intangible)</title></path><g class="mv-pols" aria-hidden="true"><path class="mv-p" d="M320.0 104.0 Q309.0 127.0 320.0 150.0" pathLength="100" data-para="1" style="animation-delay:0.00s"/><path class="mv-p i" d="M320.0 154.0 Q309.0 131.0 320.0 108.0" pathLength="100" data-para="1" style="animation-delay:0.17s"/><path class="mv-p i" d="M361.9 219.0 Q441.8 219.2 494.5 279.3" pathLength="100" data-para="1" style="animation-delay:0.34s"/><path class="mv-p" d="M498.1 281.0 Q445.4 220.9 365.5 220.7" pathLength="100" data-para="1" style="animation-delay:0.51s"/><path class="mv-p i" d="M496.3 142.3 Q441.4 192.5 367.5 184.4" pathLength="100" data-para="1" style="animation-delay:0.68s"/><path class="mv-p" d="M363.7 185.7 Q437.6 193.8 492.5 143.6" pathLength="100" data-para="1" style="animation-delay:0.85s"/><path class="mv-p" d="M540.0 254.0 Q557.6 216.0 540.0 178.0" pathLength="100" style="animation-delay:1.02s"/><path class="mv-p i" d="M540.0 174.0 Q557.6 212.0 540.0 250.0" pathLength="100" style="animation-delay:1.19s"/><path class="mv-p" d="M363.7 357.7 Q437.6 365.8 492.5 315.6" pathLength="100" style="animation-delay:1.36s"/><path class="mv-p" d="M496.3 314.3 Q422.4 306.2 367.5 356.4" pathLength="100" style="animation-delay:1.53s"/><path class="mv-p" d="M276.1 71.7 Q200.5 62.4 143.7 113.1" pathLength="100" style="animation-delay:1.70s"/><path class="mv-p" d="M139.9 114.3 Q215.5 123.6 272.3 72.9" pathLength="100" style="animation-delay:1.87s"/><path class="mv-p i" d="M127.2 266.2 Q181.7 157.4 286.0 94.7" pathLength="100" style="animation-delay:2.04s"/><path class="mv-p" d="M288.8 91.8 Q184.4 154.4 130.0 263.3" pathLength="100" style="animation-delay:2.21s"/><path class="mv-p i" d="M320.0 246.0 Q337.6 284.0 320.0 322.0" pathLength="100" data-para="1" style="animation-delay:2.38s"/><path class="mv-p i" d="M320.0 326.0 Q302.4 288.0 320.0 250.0" pathLength="100" data-para="1" style="animation-delay:2.55s"/></g><g class="mv-n" data-id="vi"><circle cx="320" cy="58" r="46" fill="#141420" stroke="#6366f1" stroke-width="1.6"/><text x="320" y="58" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">Qui fa el vi</text></g><g class="mv-n" data-id="acollida" data-para="1"><circle cx="320" cy="200" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="320" y="194" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">Qui rep i</text><text x="320" y="206.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">explica</text></g><g class="mv-n" data-id="operador" data-sec="1"><circle cx="540" cy="128" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="540" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">L'operador de</text><text x="540" y="134.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">luxe</text></g><g class="mv-n" data-id="visitant"><circle cx="540" cy="300" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="540" y="300" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El visitant</text></g><g class="mv-n" data-id="poble" data-sec="1"><circle cx="320" cy="372" r="46" fill="#141420" stroke="#00e676" stroke-width="1.6"/><text x="320" y="372" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El poble</text></g><g class="mv-n" data-id="canal"><circle cx="96" cy="128" r="46" fill="#141420" stroke="#82828d" stroke-width="1.6"/><text x="96" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">El</text><text x="96" y="134.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">distribuïdor</text></g><g class="mv-n" data-id="terra"><circle cx="96" cy="300" r="46" fill="#141420" stroke="#6366f1" stroke-width="1.6"/><text x="96" y="294" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">La vinya i el</text><text x="96" y="306.5" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">veïnat</text></g></svg>
     <div class="mv-leg"><span class="mv-lt">— tangible</span><span class="mv-li">- - intangible</span><span class="mv-lc">16 lliuraments · 7 intangibles</span></div>
+    <div class="mv-pols-ui"><div class="mv-pu-b"><button type="button" class="mv-b" id="mvPausa" aria-pressed="false">⏸ Atura el pols</button><button type="button" class="mv-b" id="mvEnc" aria-pressed="false" aria-controls="mvCeller">🩺 I si «Qui rep i explica» s'encalla?</button></div><p class="mv-pu-t" id="mvPolsTxt" data-sa="Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé." data-enc="Avui no és el rol de ningú: el fa qui pot quan sona el telèfon. Amb aquest node aturat es paren <b>8 dels 16 lliuraments</b>, i L'operador de luxe (2 de 4) i El poble (2 de 4) perden la meitat del que els arriba. Un node que no és de ningú no s'atura un dia dolent: s'atura cada dia una estona, i no surt a cap informe.">Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé.</p></div>
   </div>
   <div class="mv-txt">
     <h3>Un celler del Penedès que mira el turisme de luxe</h3>
@@ -1405,6 +1499,81 @@
   </div>
 </div>
 <!--/TT-MAPAVALOR-->
+    </div>
+</section>
+
+<!-- LES RENGLES ──────────────────────────────────────────────────────────────
+     Va just després del mapa i no abans: les rengles ordenen un mapa, i si
+     surten primer ordenen una cosa que el lector encara no ha vist. -->
+<section class="rengles" id="rengles">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="rg.eyebrow">La mateixa casa, vista com un cos</div>
+            <h2 data-i18n-html="rg.h2">On es concentra <em>el pes</em></h2>
+            <p data-i18n="rg.intro">Un mapa amb quinze rols és una bola de fletxes: es llegeix bé a la sala, amb algú explicant-lo, i malament tot sol —que és com el mira qui ha de decidir. Un castell resol això des de fa dos-cents anys amb les rengles: les línies per on baixa el pes. Un àmbit és una rengla; els seus rols, la gent que hi ha; i qui sosté sense sortir enlloc, la pinya.</p>
+        </div>
+<!--TT-CASTELLS-->
+<!-- GENERAT per SOS/tools/build-castells.js · no s'edita a mà -->
+<div class="ct-wrap fade-up">
+  <div class="ct-tria" role="tablist" aria-label="Construccions">
+    <button type="button" class="ct-t on" role="tab" aria-selected="true" aria-controls="ct-p-pilar" id="ct-t-pilar" data-f="pilar">El pilar <span class="ct-tn">1</span></button>
+    <button type="button" class="ct-t" role="tab" aria-selected="false" aria-controls="ct-p-torre" id="ct-t-torre" data-f="torre">La torre · el 2 <span class="ct-tn">2</span></button>
+    <button type="button" class="ct-t" role="tab" aria-selected="false" aria-controls="ct-p-tres" id="ct-t-tres" data-f="tres">El 3 <span class="ct-tn">3</span></button>
+    <button type="button" class="ct-t" role="tab" aria-selected="false" aria-controls="ct-p-quatre" id="ct-t-quatre" data-f="quatre">El 4 <span class="ct-tn">4</span></button>
+    <button type="button" class="ct-t" role="tab" aria-selected="false" aria-controls="ct-p-cinc" id="ct-t-cinc" data-f="cinc">El 5 <span class="ct-tn">5</span></button>
+  </div>
+  <div class="ct-pan" id="ct-p-pilar" role="tabpanel" aria-labelledby="ct-t-pilar">
+    <div class="ct-viz"><svg class="ct-svg" viewBox="0 0 300 250" role="img" aria-labelledby="ctT-pilar"><title id="ctT-pilar">El pilar: 1 rengla, 4 pisos de tronc i 9 persones a la pinya.</title><circle class="ct-pi" cx="71.7" cy="206" r="4.2"/><circle class="ct-pi" cx="228.3" cy="206" r="4.2"/><circle class="ct-pi" cx="44.4" cy="219" r="4.2"/><circle class="ct-pi" cx="150.0" cy="219" r="4.2"/><circle class="ct-pi" cx="255.6" cy="219" r="4.2"/><circle class="ct-pi" cx="15.0" cy="232" r="4.2"/><circle class="ct-pi" cx="105.0" cy="232" r="4.2"/><circle class="ct-pi" cx="195.0" cy="232" r="4.2"/><circle class="ct-pi" cx="285.0" cy="232" r="4.2"/><rect class="ct-p" x="142.0" y="190" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="142.0" y="164" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="142.0" y="138" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="142.0" y="112" width="16" height="21" rx="5" fill="#6366f1"/><circle class="ct-pom" cx="150.0" cy="105.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="92.0" r="5.5"/></svg></div>
+    <div class="ct-txt">
+      <div class="ct-k">1 línia de força · 9 persones a la pinya</div>
+      <p class="ct-quan">Tot passa per una sola àrea, o per una sola persona.</p>
+      <p class="ct-diu">Una sola línia de força. És la figura més alta per quanta gent hi ha a sota, i també la que cau més de pressa: si una persona falla, no hi ha ningú al costat que reculli el pes. A una casa, això és el projecte que aguanta perquè hi ha algú que no plega mai.</p>
+    </div>
+  </div>
+  <div class="ct-pan" id="ct-p-torre" role="tabpanel" aria-labelledby="ct-t-torre" hidden>
+    <div class="ct-viz"><svg class="ct-svg" viewBox="0 0 300 250" role="img" aria-labelledby="ctT-torre"><title id="ctT-torre">La torre · el 2: 2 rengles, 5 pisos de tronc i 16 persones a la pinya.</title><circle class="ct-pi" cx="71.7" cy="206" r="4.2"/><circle class="ct-pi" cx="123.9" cy="206" r="4.2"/><circle class="ct-pi" cx="176.1" cy="206" r="4.2"/><circle class="ct-pi" cx="228.3" cy="206" r="4.2"/><circle class="ct-pi" cx="44.4" cy="219" r="4.2"/><circle class="ct-pi" cx="97.2" cy="219" r="4.2"/><circle class="ct-pi" cx="150.0" cy="219" r="4.2"/><circle class="ct-pi" cx="202.8" cy="219" r="4.2"/><circle class="ct-pi" cx="255.6" cy="219" r="4.2"/><circle class="ct-pi" cx="15.0" cy="232" r="4.2"/><circle class="ct-pi" cx="60.0" cy="232" r="4.2"/><circle class="ct-pi" cx="105.0" cy="232" r="4.2"/><circle class="ct-pi" cx="150.0" cy="232" r="4.2"/><circle class="ct-pi" cx="195.0" cy="232" r="4.2"/><circle class="ct-pi" cx="240.0" cy="232" r="4.2"/><circle class="ct-pi" cx="285.0" cy="232" r="4.2"/><rect class="ct-p" x="130.5" y="190" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="130.5" y="164" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="130.5" y="138" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="130.5" y="112" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="130.5" y="86" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="153.5" y="190" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="153.5" y="164" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="153.5" y="138" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="153.5" y="112" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="153.5" y="86" width="16" height="21" rx="5" fill="#00e676"/><circle class="ct-pom" cx="150.0" cy="79.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="66.0" r="5.5"/></svg></div>
+    <div class="ct-txt">
+      <div class="ct-k">2 línies de força · 16 persones a la pinya</div>
+      <p class="ct-quan">Dues àrees que depenen l'una de l'altra i no tenen tercera.</p>
+      <p class="ct-diu">Dues línies que s'han de moure alhora. Guanya estabilitat i estrena una fragilitat nova: si una de les dues va tard, l'altra no pot compensar-ho, només esperar. És el clàssic «comercial i producció» quan no hi ha ningú entremig.</p>
+    </div>
+  </div>
+  <div class="ct-pan" id="ct-p-tres" role="tabpanel" aria-labelledby="ct-t-tres" hidden>
+    <div class="ct-viz"><svg class="ct-svg" viewBox="0 0 300 250" role="img" aria-labelledby="ctT-tres"><title id="ctT-tres">El 3: 3 rengles, 5 pisos de tronc i 28 persones a la pinya.</title><circle class="ct-pi" cx="71.7" cy="206" r="4.2"/><circle class="ct-pi" cx="103.0" cy="206" r="4.2"/><circle class="ct-pi" cx="134.3" cy="206" r="4.2"/><circle class="ct-pi" cx="165.7" cy="206" r="4.2"/><circle class="ct-pi" cx="197.0" cy="206" r="4.2"/><circle class="ct-pi" cx="228.3" cy="206" r="4.2"/><circle class="ct-pi" cx="44.4" cy="219" r="4.2"/><circle class="ct-pi" cx="74.6" cy="219" r="4.2"/><circle class="ct-pi" cx="104.7" cy="219" r="4.2"/><circle class="ct-pi" cx="134.9" cy="219" r="4.2"/><circle class="ct-pi" cx="165.1" cy="219" r="4.2"/><circle class="ct-pi" cx="195.3" cy="219" r="4.2"/><circle class="ct-pi" cx="225.4" cy="219" r="4.2"/><circle class="ct-pi" cx="255.6" cy="219" r="4.2"/><circle class="ct-pi" cx="15.0" cy="232" r="4.2"/><circle class="ct-pi" cx="35.8" cy="232" r="4.2"/><circle class="ct-pi" cx="56.5" cy="232" r="4.2"/><circle class="ct-pi" cx="77.3" cy="232" r="4.2"/><circle class="ct-pi" cx="98.1" cy="232" r="4.2"/><circle class="ct-pi" cx="118.8" cy="232" r="4.2"/><circle class="ct-pi" cx="139.6" cy="232" r="4.2"/><circle class="ct-pi" cx="160.4" cy="232" r="4.2"/><circle class="ct-pi" cx="181.2" cy="232" r="4.2"/><circle class="ct-pi" cx="201.9" cy="232" r="4.2"/><circle class="ct-pi" cx="222.7" cy="232" r="4.2"/><circle class="ct-pi" cx="243.5" cy="232" r="4.2"/><circle class="ct-pi" cx="264.2" cy="232" r="4.2"/><circle class="ct-pi" cx="285.0" cy="232" r="4.2"/><rect class="ct-p" x="119.0" y="190" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="119.0" y="164" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="119.0" y="138" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="119.0" y="112" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="119.0" y="86" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="142.0" y="190" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="142.0" y="164" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="142.0" y="138" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="142.0" y="112" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="142.0" y="86" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="165.0" y="190" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="165.0" y="164" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="165.0" y="138" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="165.0" y="112" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="165.0" y="86" width="16" height="21" rx="5" fill="#ff9100"/><circle class="ct-pom" cx="150.0" cy="79.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="66.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="53.0" r="5.5"/></svg></div>
+    <div class="ct-txt">
+      <div class="ct-k">3 línies de força · 28 persones a la pinya</div>
+      <p class="ct-quan">Tres àmbits que es reparteixen la feina.</p>
+      <p class="ct-diu">Amb tres, el pes ja es reparteix de debò i una rengla fluixa no tomba la figura. És la primera construcció on pots perdre algú i seguir. La contrapartida és que calen tres caps que es parlin, i això no surt sol.</p>
+    </div>
+  </div>
+  <div class="ct-pan" id="ct-p-quatre" role="tabpanel" aria-labelledby="ct-t-quatre" hidden>
+    <div class="ct-viz"><svg class="ct-svg" viewBox="0 0 300 250" role="img" aria-labelledby="ctT-quatre"><title id="ctT-quatre">El 4: 4 rengles, 5 pisos de tronc i 36 persones a la pinya.</title><circle class="ct-pi" cx="71.7" cy="206" r="4.2"/><circle class="ct-pi" cx="94.1" cy="206" r="4.2"/><circle class="ct-pi" cx="116.4" cy="206" r="4.2"/><circle class="ct-pi" cx="138.8" cy="206" r="4.2"/><circle class="ct-pi" cx="161.2" cy="206" r="4.2"/><circle class="ct-pi" cx="183.6" cy="206" r="4.2"/><circle class="ct-pi" cx="205.9" cy="206" r="4.2"/><circle class="ct-pi" cx="228.3" cy="206" r="4.2"/><circle class="ct-pi" cx="44.4" cy="219" r="4.2"/><circle class="ct-pi" cx="65.5" cy="219" r="4.2"/><circle class="ct-pi" cx="86.6" cy="219" r="4.2"/><circle class="ct-pi" cx="107.8" cy="219" r="4.2"/><circle class="ct-pi" cx="128.9" cy="219" r="4.2"/><circle class="ct-pi" cx="150.0" cy="219" r="4.2"/><circle class="ct-pi" cx="171.1" cy="219" r="4.2"/><circle class="ct-pi" cx="192.2" cy="219" r="4.2"/><circle class="ct-pi" cx="213.4" cy="219" r="4.2"/><circle class="ct-pi" cx="234.5" cy="219" r="4.2"/><circle class="ct-pi" cx="255.6" cy="219" r="4.2"/><circle class="ct-pi" cx="15.0" cy="232" r="4.2"/><circle class="ct-pi" cx="31.9" cy="232" r="4.2"/><circle class="ct-pi" cx="48.8" cy="232" r="4.2"/><circle class="ct-pi" cx="65.6" cy="232" r="4.2"/><circle class="ct-pi" cx="82.5" cy="232" r="4.2"/><circle class="ct-pi" cx="99.4" cy="232" r="4.2"/><circle class="ct-pi" cx="116.3" cy="232" r="4.2"/><circle class="ct-pi" cx="133.1" cy="232" r="4.2"/><circle class="ct-pi" cx="150.0" cy="232" r="4.2"/><circle class="ct-pi" cx="166.9" cy="232" r="4.2"/><circle class="ct-pi" cx="183.8" cy="232" r="4.2"/><circle class="ct-pi" cx="200.6" cy="232" r="4.2"/><circle class="ct-pi" cx="217.5" cy="232" r="4.2"/><circle class="ct-pi" cx="234.4" cy="232" r="4.2"/><circle class="ct-pi" cx="251.3" cy="232" r="4.2"/><circle class="ct-pi" cx="268.1" cy="232" r="4.2"/><circle class="ct-pi" cx="285.0" cy="232" r="4.2"/><rect class="ct-p" x="107.5" y="190" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="164" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="138" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="112" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="86" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="130.5" y="190" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="130.5" y="164" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="130.5" y="138" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="130.5" y="112" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="130.5" y="86" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="153.5" y="190" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="153.5" y="164" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="153.5" y="138" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="153.5" y="112" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="153.5" y="86" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="176.5" y="190" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="176.5" y="164" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="176.5" y="138" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="176.5" y="112" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="176.5" y="86" width="16" height="21" rx="5" fill="#00b0ff"/><circle class="ct-pom" cx="150.0" cy="79.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="66.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="53.0" r="5.5"/></svg></div>
+    <div class="ct-txt">
+      <div class="ct-k">4 línies de força · 36 persones a la pinya</div>
+      <p class="ct-quan">Quatre àrees, que és on acaba la majoria de cases que creixen.</p>
+      <p class="ct-diu">La construcció més feta, i per un motiu: reparteix prou i encara es pot coordinar. El problema d'un 4 mai és l'alçada, és que una de les quatre rengles vagi curta de gent i ningú ho digui fins que es carrega el pis de dalt.</p>
+    </div>
+  </div>
+  <div class="ct-pan" id="ct-p-cinc" role="tabpanel" aria-labelledby="ct-t-cinc" hidden>
+    <div class="ct-viz"><svg class="ct-svg" viewBox="0 0 300 250" role="img" aria-labelledby="ctT-cinc"><title id="ctT-cinc">El 5: 5 rengles, 5 pisos de tronc i 48 persones a la pinya.</title><circle class="ct-pi" cx="71.7" cy="206" r="4.2"/><circle class="ct-pi" cx="87.4" cy="206" r="4.2"/><circle class="ct-pi" cx="103.0" cy="206" r="4.2"/><circle class="ct-pi" cx="118.7" cy="206" r="4.2"/><circle class="ct-pi" cx="134.3" cy="206" r="4.2"/><circle class="ct-pi" cx="150.0" cy="206" r="4.2"/><circle class="ct-pi" cx="165.7" cy="206" r="4.2"/><circle class="ct-pi" cx="181.3" cy="206" r="4.2"/><circle class="ct-pi" cx="197.0" cy="206" r="4.2"/><circle class="ct-pi" cx="212.6" cy="206" r="4.2"/><circle class="ct-pi" cx="228.3" cy="206" r="4.2"/><circle class="ct-pi" cx="44.4" cy="219" r="4.2"/><circle class="ct-pi" cx="60.6" cy="219" r="4.2"/><circle class="ct-pi" cx="76.9" cy="219" r="4.2"/><circle class="ct-pi" cx="93.1" cy="219" r="4.2"/><circle class="ct-pi" cx="109.4" cy="219" r="4.2"/><circle class="ct-pi" cx="125.6" cy="219" r="4.2"/><circle class="ct-pi" cx="141.9" cy="219" r="4.2"/><circle class="ct-pi" cx="158.1" cy="219" r="4.2"/><circle class="ct-pi" cx="174.4" cy="219" r="4.2"/><circle class="ct-pi" cx="190.6" cy="219" r="4.2"/><circle class="ct-pi" cx="206.9" cy="219" r="4.2"/><circle class="ct-pi" cx="223.1" cy="219" r="4.2"/><circle class="ct-pi" cx="239.4" cy="219" r="4.2"/><circle class="ct-pi" cx="255.6" cy="219" r="4.2"/><circle class="ct-pi" cx="15.0" cy="232" r="4.2"/><circle class="ct-pi" cx="27.3" cy="232" r="4.2"/><circle class="ct-pi" cx="39.5" cy="232" r="4.2"/><circle class="ct-pi" cx="51.8" cy="232" r="4.2"/><circle class="ct-pi" cx="64.1" cy="232" r="4.2"/><circle class="ct-pi" cx="76.4" cy="232" r="4.2"/><circle class="ct-pi" cx="88.6" cy="232" r="4.2"/><circle class="ct-pi" cx="100.9" cy="232" r="4.2"/><circle class="ct-pi" cx="113.2" cy="232" r="4.2"/><circle class="ct-pi" cx="125.5" cy="232" r="4.2"/><circle class="ct-pi" cx="137.7" cy="232" r="4.2"/><circle class="ct-pi" cx="150.0" cy="232" r="4.2"/><circle class="ct-pi" cx="162.3" cy="232" r="4.2"/><circle class="ct-pi" cx="174.5" cy="232" r="4.2"/><circle class="ct-pi" cx="186.8" cy="232" r="4.2"/><circle class="ct-pi" cx="199.1" cy="232" r="4.2"/><circle class="ct-pi" cx="211.4" cy="232" r="4.2"/><circle class="ct-pi" cx="223.6" cy="232" r="4.2"/><circle class="ct-pi" cx="235.9" cy="232" r="4.2"/><circle class="ct-pi" cx="248.2" cy="232" r="4.2"/><circle class="ct-pi" cx="260.5" cy="232" r="4.2"/><circle class="ct-pi" cx="272.7" cy="232" r="4.2"/><circle class="ct-pi" cx="285.0" cy="232" r="4.2"/><rect class="ct-p" x="96.0" y="190" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="96.0" y="164" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="96.0" y="138" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="96.0" y="112" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="96.0" y="86" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="119.0" y="190" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="119.0" y="164" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="119.0" y="138" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="119.0" y="112" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="119.0" y="86" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="142.0" y="190" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="142.0" y="164" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="142.0" y="138" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="142.0" y="112" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="142.0" y="86" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p" x="165.0" y="190" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="165.0" y="164" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="165.0" y="138" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="165.0" y="112" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="165.0" y="86" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="188.0" y="190" width="16" height="21" rx="5" fill="#e040fb"/><rect class="ct-p" x="188.0" y="164" width="16" height="21" rx="5" fill="#e040fb"/><rect class="ct-p" x="188.0" y="138" width="16" height="21" rx="5" fill="#e040fb"/><rect class="ct-p" x="188.0" y="112" width="16" height="21" rx="5" fill="#e040fb"/><rect class="ct-p" x="188.0" y="86" width="16" height="21" rx="5" fill="#e040fb"/><circle class="ct-pom" cx="150.0" cy="79.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="66.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="53.0" r="5.5"/></svg></div>
+    <div class="ct-txt">
+      <div class="ct-k">5 línies de força · 48 persones a la pinya</div>
+      <p class="ct-quan">Cinc àmbits o més, amb una pinya que ha de créixer igual.</p>
+      <p class="ct-diu">Cinc línies demanen una pinya molt més gran, i aquí és on les cases s'equivoquen: creixen el tronc —més àrees, més caps— i deixen la base igual. El castell no cau per dalt, cau perquè a baix no hi havia prou gent.</p>
+    </div>
+  </div>
+  <div class="ct-cas">
+    <div class="ct-viz"><svg class="ct-svg" viewBox="0 0 300 250" role="img" aria-labelledby="ctT-quatre"><title id="ctT-quatre">El 4: 4 rengles, 5 pisos de tronc i 36 persones a la pinya. Al cas: Qui ven, 5; Qui produeix, 4; Qui entrega, 1; Qui administra, 2.</title><circle class="ct-pi" cx="71.7" cy="206" r="4.2"/><circle class="ct-pi" cx="94.1" cy="206" r="4.2"/><circle class="ct-pi" cx="116.4" cy="206" r="4.2"/><circle class="ct-pi" cx="138.8" cy="206" r="4.2"/><circle class="ct-pi" cx="161.2" cy="206" r="4.2"/><circle class="ct-pi" cx="183.6" cy="206" r="4.2"/><circle class="ct-pi" cx="205.9" cy="206" r="4.2"/><circle class="ct-pi" cx="228.3" cy="206" r="4.2"/><circle class="ct-pi" cx="44.4" cy="219" r="4.2"/><circle class="ct-pi" cx="65.5" cy="219" r="4.2"/><circle class="ct-pi" cx="86.6" cy="219" r="4.2"/><circle class="ct-pi" cx="107.8" cy="219" r="4.2"/><circle class="ct-pi" cx="128.9" cy="219" r="4.2"/><circle class="ct-pi" cx="150.0" cy="219" r="4.2"/><circle class="ct-pi" cx="171.1" cy="219" r="4.2"/><circle class="ct-pi" cx="192.2" cy="219" r="4.2"/><circle class="ct-pi" cx="213.4" cy="219" r="4.2"/><circle class="ct-pi" cx="234.5" cy="219" r="4.2"/><circle class="ct-pi" cx="255.6" cy="219" r="4.2"/><circle class="ct-pi" cx="15.0" cy="232" r="4.2"/><circle class="ct-pi" cx="31.9" cy="232" r="4.2"/><circle class="ct-pi" cx="48.8" cy="232" r="4.2"/><circle class="ct-pi" cx="65.6" cy="232" r="4.2"/><circle class="ct-pi" cx="82.5" cy="232" r="4.2"/><circle class="ct-pi" cx="99.4" cy="232" r="4.2"/><circle class="ct-pi" cx="116.3" cy="232" r="4.2"/><circle class="ct-pi" cx="133.1" cy="232" r="4.2"/><circle class="ct-pi" cx="150.0" cy="232" r="4.2"/><circle class="ct-pi" cx="166.9" cy="232" r="4.2"/><circle class="ct-pi" cx="183.8" cy="232" r="4.2"/><circle class="ct-pi" cx="200.6" cy="232" r="4.2"/><circle class="ct-pi" cx="217.5" cy="232" r="4.2"/><circle class="ct-pi" cx="234.4" cy="232" r="4.2"/><circle class="ct-pi" cx="251.3" cy="232" r="4.2"/><circle class="ct-pi" cx="268.1" cy="232" r="4.2"/><circle class="ct-pi" cx="285.0" cy="232" r="4.2"/><rect class="ct-p" x="107.5" y="190" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="164" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="138" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="112" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="107.5" y="86" width="16" height="21" rx="5" fill="#6366f1"/><rect class="ct-p" x="130.5" y="190" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="130.5" y="164" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="130.5" y="138" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p" x="130.5" y="112" width="16" height="21" rx="5" fill="#00e676"/><rect class="ct-p buit" x="130.5" y="86" width="16" height="21" rx="5" fill="none" stroke="#00e676" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><rect class="ct-p" x="153.5" y="190" width="16" height="21" rx="5" fill="#ff9100"/><rect class="ct-p buit" x="153.5" y="164" width="16" height="21" rx="5" fill="none" stroke="#ff9100" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><rect class="ct-p buit" x="153.5" y="138" width="16" height="21" rx="5" fill="none" stroke="#ff9100" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><rect class="ct-p buit" x="153.5" y="112" width="16" height="21" rx="5" fill="none" stroke="#ff9100" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><rect class="ct-p buit" x="153.5" y="86" width="16" height="21" rx="5" fill="none" stroke="#ff9100" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><rect class="ct-p" x="176.5" y="190" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p" x="176.5" y="164" width="16" height="21" rx="5" fill="#00b0ff"/><rect class="ct-p buit" x="176.5" y="138" width="16" height="21" rx="5" fill="none" stroke="#00b0ff" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><rect class="ct-p buit" x="176.5" y="112" width="16" height="21" rx="5" fill="none" stroke="#00b0ff" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><rect class="ct-p buit" x="176.5" y="86" width="16" height="21" rx="5" fill="none" stroke="#00b0ff" stroke-dasharray="3 3" stroke-width="1.2" opacity=".55"/><circle class="ct-pom" cx="150.0" cy="79.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="66.0" r="5.5"/><circle class="ct-pom" cx="150.0" cy="53.0" r="5.5"/></svg></div>
+    <div class="ct-txt">
+      <div class="ct-k">Dotze rols, quatre àmbits</div>
+      <ul class="ct-ll"><li><i style="background:#6366f1"></i>Qui ven <b>5</b></li><li><i style="background:#00e676"></i>Qui produeix <b>4</b></li><li><i style="background:#ff9100"></i>Qui entrega <b>1</b></li><li><i style="background:#00b0ff"></i>Qui administra <b>2</b></li></ul>
+      <p class="ct-diu">Els mateixos 12 rols en una llista no diuen res. Posats en rengles es veu en mig segon el que costa una tarda de reunions: <b>«Qui ven» en té 5 i «Qui entrega» en té 1</b>. No vol dir que estigui malament — vol dir que <b>tot el que es ven passa per una sola persona</b>, i que el dia que plegui no hi ha ningú al costat que reculli el pes.</p>
+      <p class="ct-avis">Això ordena i fa visible; no puntua. Un castell no diu si una casa va bé: diu <b>on es concentra el pes</b>, que és una altra cosa i és la que serveix per decidir.</p>
+    </div>
+  </div>
+</div>
+<!--/TT-CASTELLS-->
+        <p class="rg-peu fade-up" data-i18n-html="rg.peu">És la mateixa mirada que la del mapa de sobre amb el pols posat: <b>un metge no decideix amb una radiografia, decideix veient si allò circula i on deixa de fer-ho.</b> Això és el que vol dir consultoria sistèmica, i és el que es pot fer sobre una organització quan el mapa ja existeix.</p>
     </div>
 </section>
 
@@ -2656,6 +2825,10 @@ ca: {
   
   'fp.eyebrow':'Cohesió en acció',
   'fp.h2':'Els Castells:<br><em>una xarxa de valor de 200 anys</em>',
+  'rg.eyebrow':'La mateixa casa, vista com un cos',
+  'rg.h2':'On es concentra <em>el pes</em>',
+  'rg.intro':'Un mapa amb quinze rols és una bola de fletxes: es llegeix bé a la sala, amb algú explicant-lo, i malament tot sol —que és com el mira qui ha de decidir. Un castell resol això des de fa dos-cents anys amb les rengles: les línies per on baixa el pes. Un àmbit és una rengla; els seus rols, la gent que hi ha; i qui sosté sense sortir enlloc, la pinya.',
+  'rg.peu':'És la mateixa mirada que la del mapa de sobre amb el pols posat: <b>un metge no decideix amb una radiografia, decideix veient si allò circula i on deixa de fer-ho.</b> Això és el que vol dir consultoria sistèmica, i és el que es pot fer sobre una organització quan el mapa ja existeix.',
   'mv.eyebrow':'El mateix mapa, en una empresa',
   'mv.h2':'I ara amb una casa <em>que ven alguna cosa</em>',
   'mv.intro':'El castell ensenya què és un mapa de valor. Aquest ensenya què s\'hi troba: els rols que no consten enlloc, els lliuraments que ningú factura i el marge que ja hi és i no es cobra. És el mateix mètode i el mateix dibuix.',
@@ -2986,6 +3159,10 @@ es: {
   
   'fp.eyebrow':'Cohesión en acción',
   'fp.h2':'Los Castells:<br><em>una red de valor de 200 años</em>',
+  'rg.eyebrow':'La misma casa, vista como un cuerpo',
+  'rg.h2':'Dónde se concentra <em>el peso</em>',
+  'rg.intro':'Un mapa con quince roles es una bola de flechas: se lee bien en la sala, con alguien explicándolo, y mal a solas —que es como lo mira quien tiene que decidir. Un castell resuelve esto desde hace doscientos años con las rengles: las líneas por donde baja el peso. Un ámbito es una rengla; sus roles, la gente que hay; y quien sostiene sin aparecer en ningún sitio, la pinya.',
+  'rg.peu':'Es la misma mirada que la del mapa de arriba con el pulso puesto: <b>un médico no decide con una radiografía, decide viendo si aquello circula y dónde deja de hacerlo.</b> Eso es lo que quiere decir consultoría sistémica, y es lo que se puede hacer sobre una organización cuando el mapa ya existe.',
   'mv.eyebrow':'El mismo mapa, en una empresa',
   'mv.h2':'Y ahora con una casa <em>que vende algo</em>',
   'mv.intro':'El castell enseña qué es un mapa de valor. Este enseña qué se encuentra en él: los roles que no constan en ninguna parte, las entregas que nadie factura y el margen que ya está ahí y no se cobra. Es el mismo método y el mismo dibujo.',
@@ -3365,6 +3542,58 @@ document.querySelectorAll('.colla-node').forEach(function(node) {
         if (circle) { circle.style.filter = ''; circle.removeAttribute('stroke-width'); }
     });
 });
+
+/* ── LES RENGLES · triar construcció ───────────────────────────────────────
+   Pestanyes de tota la vida. El que fa el JavaScript és ensenyar-ne una i
+   amagar les altres; si no arriba a carregar-se, totes les construccions es
+   veuen una sota l'altra i no se'n perd cap. Un selector que falla i deixa la
+   pantalla buida seria pitjor que no tenir selector. */
+(function () {
+    var tria = document.querySelector('.ct-tria');
+    if (!tria) return;
+    var tabs = [].slice.call(tria.querySelectorAll('.ct-t'));
+    tabs.forEach(function (t) {
+        t.addEventListener('click', function () {
+            tabs.forEach(function (o) {
+                var on = o === t;
+                o.classList.toggle('on', on);
+                o.setAttribute('aria-selected', on ? 'true' : 'false');
+                var pan = document.getElementById(o.getAttribute('aria-controls'));
+                if (pan) pan.hidden = !on;
+            });
+        });
+    });
+})();
+
+/* ── EL POLS DEL MAPA ────────────────────────────────────────────────────────
+   Dos interruptors i prou: aturar el moviment i aturar un node. Tot el que fa
+   el JavaScript és posar o treure una classe —el que es veu ho decideix el CSS
+   i el que es diu ja és escrit al mateix HTML en dos atributs.
+
+   Està escrit així a posta: si el JavaScript no arriba a carregar-se, el mapa
+   es veu, circula i la frase hi és. El que es perd són els botons, no el
+   contingut. */
+(function () {
+    var svg = document.getElementById('mvCeller');
+    var txt = document.getElementById('mvPolsTxt');
+    var bP = document.getElementById('mvPausa');
+    var bE = document.getElementById('mvEnc');
+    if (!svg || !txt || !bP || !bE) return;
+    function prem(b, on) { b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+    bP.addEventListener('click', function () {
+        var on = svg.classList.toggle('aturat');
+        prem(bP, on);
+        bP.textContent = on ? '▶ Torna-li el pols' : '⏸ Atura el pols';
+    });
+    bE.addEventListener('click', function () {
+        var on = svg.classList.toggle('encallat');
+        prem(bE, on);
+        txt.innerHTML = on ? txt.getAttribute('data-enc') : txt.getAttribute('data-sa');
+        /* Un canvi que no es llegeix en veu alta no ha passat per a qui no el
+           veu. El `role="status"` del paràgraf el fa anunciar sol. */
+        txt.setAttribute('role', 'status');
+    });
+})();
 </script>
 </body>
 </html>

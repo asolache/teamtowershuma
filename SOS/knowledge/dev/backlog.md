@@ -2370,6 +2370,65 @@ agrupi per estat del node~~ — fet, i millor: el llançador **filtra**.
 
 ---
 
+### Veure l'organització com un cos · fet (01/10/2026), i cap on va
+
+**Demanat per l'Àlvar:** que el client pugui veure **una animació d'un mapa de
+valor com un sistema viu** —com un metge veu si la sang flueix pels òrgans—, i
+una sèrie de **mapes castellers** (pinya, pilar, torre, 3, 4, 5) per agrupar
+els rols d'un mapa **per línies de força**, les rengles. Ve d'un joc casteller
+que ja va fer: posant el grup sobre un mapa de pinya i acolorint per una
+variable (16PF, estil de personalitat), la distribució es veia d'un cop.
+
+**El pols del mapa (`build-mapavalor.js`).** El mapa del celler que ja hi havia
+**circula**: cada lliurament té un pols que recorre el seu camí. I té un segon
+botó, que és el que converteix el dibuix en una eina: **aturar-li un node**. El
+node és «Qui rep i explica» perquè és la troballa 3 d'aquell mateix cas —avui
+no és el rol de ningú— i aturar-lo para **8 dels 16 lliuraments** i deixa
+l'operador i el poble amb la meitat del que els arriba.
+
+**Les xifres les compta el generador.** Escrites a mà, el dia que s'afegís un
+lliurament el dibuix diria una cosa i la frase una altra, i la que es creuria
+el client seria la frase. Hi ha una asserció que les creua.
+
+**Les rengles (`build-castells.js`).** Cinc construccions d'1 a 5 rengles, amb
+la pinya dibuixada sencera (de 9 a 48 persones), i cadascuna diu **què vol dir
+aquella forma en una casa** —cap figura hi entra sense aquesta frase, o seria
+decoració castellera. I un cas treballat: 12 rols en 4 àmbits, amb una rengla
+de 5 i una d'1, on els pisos que falten es dibuixen buits. La desigualtat es
+veu abans de llegir res.
+
+**La traducció, declarada:** un àmbit és una rengla; els seus rols, la gent que
+hi ha; qui sosté sense sortir enlloc, la pinya; i quants àmbits té la casa diu
+quina construcció és.
+
+**Una guarda nova que val per tota la portada.** `check-landing.js` comprova
+ara que **cap `var(--…)` apunti a una variable que no existeix**: el navegador
+descarta la regla sense avisar i allò no es pinta. Es va trobar mirant una
+captura —la vora del node aturat no sortia— i de seguida va caçar-ne **quatre
+més que ja hi eren**: `--border-strong`, `--bg`, `--bg-card` i `--text`, dues
+de les quals les havia posat jo a la paret de clients.
+
+**El que queda, i és el que l'Àlvar vol de debò:**
+
+1. **Acolorir per una variable.** Avui el color d'una rengla diu de quin àmbit
+   és. El que ell descriu del joc casteller és **pintar la mateixa figura per
+   una altra cosa** —16PF, estil, aportació— i veure la distribució. Al SOS ja
+   hi ha el vocabulari: `APORTS`, deu aportacions declarades. La peça que falta
+   no és el dibuix, és **el selector de variable**.
+2. **Que surti del mapa de debò i no d'un cas escrit.** El pas següent és que
+   `renderVNA` pugui ensenyar els rols del node en rengles, agrupats per
+   l'àmbit que ja tenen. El pont rol→persona (punt 1 de l'entrada del Kanban)
+   és el mateix que fa falta aquí: sense ell, una rengla no sap quanta gent té.
+3. **Encallar un node del teu mapa, no només del cas.** El pols i l'aturada
+   estan al generador de la portada. Al SOS, `vnaAudit` ja calcula salut i
+   reciprocitat: el que falta és ensenyar-ho com un cos i no com una llista.
+
+**El que NO s'ha de fer:** prometre una mesura. Un castell **no diu si una casa
+va bé** —diu on es concentra el pes, que és una altra cosa i és la que serveix
+per decidir. Està escrit a la pantalla i hi ha una asserció que ho vigila.
+
+---
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.
