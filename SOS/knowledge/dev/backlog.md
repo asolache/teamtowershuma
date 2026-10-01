@@ -2482,6 +2482,23 @@ captura —la vora del node aturat no sortia— i de seguida va caçar-ne **quat
 més que ja hi eren**: `--border-strong`, `--bg`, `--bg-card` i `--text`, dues
 de les quals les havia posat jo a la paret de clients.
 
+**La pàgina del mètode (`SOS/vna.html`), al dia (01/10/2026).** I un defecte
+meu: el dibuix del celler el genera el mateix fitxer per a dues pàgines i
+l'estil que el fa circular és **de cada pàgina**. Quan els polsos hi van
+entrar, `vna.html` va rebre el marcatge i no l'estil —**setze camins
+invisibles que no feien res**, i uns botons que apuntaven al dibuix de l'altra
+pàgina. No petava i no es veia: la pàgina es llegia exactament igual que abans.
+
+Arreglat, i amb **guarda al generador**: tota pàgina amb `class="mv-p"` ha de
+portar l'animació, l'estat `encallat`, els botons i el codi que els escolta.
+Provada traient l'animació a posta. Els botons ja no tenen identificador propi
+sinó `data-svg`, perquè n'hi ha a dues pàgines.
+
+La pàgina té ara la **planta d'un quatre amb l'anatomia explicada** —les tres
+menes amb el seu compte— i la regla 4N, que és el que li toca: la portada ven i
+aquesta ensenya. Generat de la mateixa declaració, que és tot el motiu de
+generar-ho.
+
 **El que queda, i és el que l'Àlvar vol de debò:**
 
 1. **Acolorir per una variable.** Avui el color d'una rengla diu de quin àmbit
