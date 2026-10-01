@@ -85,6 +85,24 @@ else bad(`${pl(orfes.length, 'element traduïble', 'elements traduïbles')} sens
 if (!mortes.length) ok('cap clau del diccionari apunta a un element que ja no hi és');
 else bad(`${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')} res (${mostra(mortes)}) — fan creure que aquell text està cobert`);
 
+/* ── 3b · Cap color que no existeixi ──────────────────────────────────────
+   `var(--accent-red)` en una regla d'aquesta pàgina no peta ni avisa: el
+   navegador descarta la declaració i la vora que havia de marcar el node
+   aturat senzillament no es pinta. Es va trobar mirant una captura, que és la
+   manera més caral de trobar-ho.
+
+   Es comproven **les que es fan servir contra les que es declaren**. Les
+   variables amb valor per defecte —`var(--x, red)`— no entren: aquelles ja
+   diuen què fer si no hi són. */
+{
+  const declarades = new Set([...src.matchAll(/(--[\w-]+)\s*:/g)].map(m => m[1]));
+  const usades = [...src.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map(m => m[1]);
+  const orfes = [...new Set(usades.filter(v => !declarades.has(v)))];
+  if (!orfes.length) ok(`${declarades.size} variables de color i mida, totes les que es fan servir existeixen`);
+  else bad(`${pl(orfes.length, 'variable que no existeix', 'variables que no existeixen')} (${mostra(orfes)}) `
+    + '— el navegador descarta la regla sense avisar i allò no es pinta');
+}
+
 /* ── 4 · El catàleg no pot vendre serveis a mitges ─────────────────────────
    Un servei explica què és; un paquet diu qui el compra, quant dura, què
    s'endú, quant costa i quantes vegades s'ha fet. Sense les cinc coses, un

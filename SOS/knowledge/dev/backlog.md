@@ -2370,6 +2370,124 @@ agrupi per estat del node~~ — fet, i millor: el llançador **filtra**.
 
 ---
 
+### Veure l'organització com un cos · fet (01/10/2026), i cap on va
+
+**Demanat per l'Àlvar:** que el client pugui veure **una animació d'un mapa de
+valor com un sistema viu** —com un metge veu si la sang flueix pels òrgans—, i
+una sèrie de **mapes castellers** (pinya, pilar, torre, 3, 4, 5) per agrupar
+els rols d'un mapa **per línies de força**, les rengles. Ve d'un joc casteller
+que ja va fer: posant el grup sobre un mapa de pinya i acolorint per una
+variable (16PF, estil de personalitat), la distribució es veia d'un cop.
+
+**El pols del mapa (`build-mapavalor.js`).** El mapa del celler que ja hi havia
+**circula**: cada lliurament té un pols que recorre el seu camí. I té un segon
+botó, que és el que converteix el dibuix en una eina: **aturar-li un node**. El
+node és «Qui rep i explica» perquè és la troballa 3 d'aquell mateix cas —avui
+no és el rol de ningú— i aturar-lo para **8 dels 16 lliuraments** i deixa
+l'operador i el poble amb la meitat del que els arriba.
+
+**Les xifres les compta el generador.** Escrites a mà, el dia que s'afegís un
+lliurament el dibuix diria una cosa i la frase una altra, i la que es creuria
+el client seria la frase. Hi ha una asserció que les creua.
+
+**Les rengles (`build-castells.js`).** Cinc construccions d'1 a 5 rengles, amb
+la pinya dibuixada sencera (de 9 a 48 persones), i cadascuna diu **què vol dir
+aquella forma en una casa** —cap figura hi entra sense aquesta frase, o seria
+decoració castellera. I un cas treballat: 12 rols en 4 àmbits, amb una rengla
+de 5 i una d'1, on els pisos que falten es dibuixen buits. La desigualtat es
+veu abans de llegir res.
+
+**⚠ CORREGIT EL MATEIX DIA.** La primera versió deia «rengla» a les columnes
+del tronc. **És fals, i l'error era de dimensió, no de nom.** Una rengla és a
+la **pinya**: és la filera de gent que es posa **darrere de cada baix**, cap
+enfora. No es veu mirant un castell de front — es veu mirant la pinya **des de
+dalt**. Dir-li vertical es carregava justament el que fa que això valgui per a
+una organització.
+
+**L'anatomia, ara amb font (01/10/2026).** La primera versió també tenia la
+composició mal repartida. El glossari de termes castellers i la descripció
+d'estructures diuen això, i **l'Àlvar ho havia dit abans de buscar-ho**:
+*«el vent va entre dues rengles i agafa una mà de cadascun dels segons»*.
+
+**Rengla** és el nom genèric de cada filera radial. N'hi ha de tres menes:
+
+| | quantes | on va i què agafa |
+|---|---|---|
+| **Primeres mans** | N | darrere el contrafort; subjecten el segon per darrere |
+| **Laterals** | **2N** | darrere les crosses; subjecten les cuixes dels segons pels costats |
+| **Vents** | **N** | entre crossa i crossa: **una mà a cada pilar** |
+
+**I el vent canvia la lectura sencera.** La primera versió el tractava de
+farciment —«omple i estabilitza, no és per carregar-hi»— i **és al revés del
+que importa**: és l'únic que agafa dues columnes alhora, i per tant l'únic que
+impedeix que se separin. Traduït: la primera mà sosté una àrea per darrere, el
+lateral la reforça pel costat, i **el vent és l'única persona que toca dues
+àrees a la vegada**.
+
+D'aquí surt el diagnòstic que abans no existia: **una planta amb els vents
+buits és una casa amb àrees que no es toquen** —silos, dit sense dir-ho—, i es
+veu de cop mirant-la des de dalt. Al cas dels àmbits es dibuixa exactament
+això: quatre primeres mans amb gent i els quatre vents buits.
+
+**D'aquí surt la regla que ho ordena tot: una pinya de N baixos obre 4N
+direccions.** Un 2 n'obre 8, un 3 dotze, **un 4 setze** i un 5 vint. Que un 4
+n'obri setze **no és una casualitat bonica**: és el que fa que un instrument de
+setze factors càpiga exactament en una planta de castell de quatre, un factor
+per direcció. Hi ha una guarda que ho comprova, perquè és la tesi.
+
+*Els noms canvien de colla a colla —el que aquí es diu «vent» en algun lloc és
+«mà» o «crossa de rengla»—; el que no canvia és l'estructura, i la
+visualització fa servir l'estructura. Una correcció de noms no la trenca.*
+
+**Les dues dimensions, que és el que es demanava.** *Horitzontal · la planta*:
+quantes direccions té obertes la casa i quanta fondària té cadascuna — és on es
+posa la variable. *Vertical · l'alçat*: quants pisos s'intenta aguantar, que és
+l'ambició i la part que tothom mira. **Van juntes i no en dues pantalles**: la
+planta no sap d'alçada i l'alçat no sap de direccions.
+
+**I la llei que les lliga, que és el que es ven:** en castells no es guanya
+alçada sense guanyar base —un 4 de 8 demana folre; un de 9, folre i manilles—,
+i **la pinya creix més de pressa que el tronc**. En una casa és igual: cada pis
+d'ambició demana **més direccions obertes**, no més gent a la mateixa direcció.
+
+**La lectura que només existeix creuant les dues:** una direcció amb molt gruix
+**sobre un vent** és un risc —molta força per una línia que no és per
+carregar-hi—. Amb la planta sola no es veu, perquè la fondària es llegeix igual
+a tot arreu; amb l'alçat sol tampoc, perquè no sap de direccions.
+
+**I la variable ja hi és.** Tres declarades: els àmbits de la casa (4 sobre un
+4), les deu aportacions del SOS (sobre un 3, i **les dues direccions que queden
+buides són la lectura**) i un instrument de setze factors sobre la planta de
+setze. Era el punt 1 del que quedava pendent fa una hora.
+
+**Una guarda nova que val per tota la portada.** `check-landing.js` comprova
+ara que **cap `var(--…)` apunti a una variable que no existeix**: el navegador
+descarta la regla sense avisar i allò no es pinta. Es va trobar mirant una
+captura —la vora del node aturat no sortia— i de seguida va caçar-ne **quatre
+més que ja hi eren**: `--border-strong`, `--bg`, `--bg-card` i `--text`, dues
+de les quals les havia posat jo a la paret de clients.
+
+**El que queda, i és el que l'Àlvar vol de debò:**
+
+1. **Acolorir per una variable.** Avui el color d'una rengla diu de quin àmbit
+   és. El que ell descriu del joc casteller és **pintar la mateixa figura per
+   una altra cosa** —16PF, estil, aportació— i veure la distribució. Al SOS ja
+   hi ha el vocabulari: `APORTS`, deu aportacions declarades. La peça que falta
+   no és el dibuix, és **el selector de variable**.
+2. **Que surti del mapa de debò i no d'un cas escrit.** El pas següent és que
+   `renderVNA` pugui ensenyar els rols del node en rengles, agrupats per
+   l'àmbit que ja tenen. El pont rol→persona (punt 1 de l'entrada del Kanban)
+   és el mateix que fa falta aquí: sense ell, una rengla no sap quanta gent té.
+3. **Encallar un node del teu mapa, no només del cas.** El pols i l'aturada
+   estan al generador de la portada. Al SOS, `vnaAudit` ja calcula salut i
+   reciprocitat: el que falta és ensenyar-ho com un cos i no com una llista.
+
+**El que NO s'ha de fer:** prometre una mesura. Un castell **no diu si una casa
+va bé** —diu on es concentra el pes, que és una altra cosa i és la que serveix
+per decidir. Està escrit a la pantalla i hi ha una asserció que ho vigila.
+
+---
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.
