@@ -183,6 +183,59 @@ console.log('\n7 · Un rol només demana coses per al que el mapa diu que lliura
     'i una capacitat inventada no s\'hi queda: el vocabulari és tancat');
 }
 
+/* ── 8 · El pont · de la tasca a la persona, passant pel mapa ───────────────
+   El mapa deia quin rol emet cada flux i `roleOwner` deia qui porta cada rol, i
+   ningú els encadenava: una tasca sortida del mapa no sabia de qui era.
+
+   El que es prova no és que torni una persona —això seria fàcil i fals— sinó
+   **d'on la treu**, perquè és l'única cosa que es pot fer malament sense que
+   peti res:
+
+   · amb el rol assignat, la tasca és d'aquella persona i ho diu via «mapa»;
+   · amb el rol lliure, **no s'inventa ningú**: proposa;
+   · i una decisió escrita a la carta **mana sobre el que derivi el mapa**, que
+     és el defecte que aniria desfent assignacions fetes a mà cada cop que algú
+     toqués el mapa, i ningú ho veuria. */
+console.log('\n8 · De la tasca a la persona, passant pel mapa');
+{
+  const r = await page.evaluate(id => {
+    const S = window.__SOS, n = S.byId(id);
+    const x = (n.vna.exchanges || []).find(e => (e.label || '').length > 3);
+    if (!x) return { gens: true };
+    const rol = n.vna.roles.find(y => y.id === x.from);
+    const qui = S.membersOf(n)[0];
+    // Una tasca que serveix aquell flux: el text en porta l'etiqueta.
+    const t = { title: 'Fer ' + x.label, effect: 'per al mapa', _node: n };
+    S.assignRoleMember(n, rol, null);
+    const lliure = S.personaDeTasca(t);
+    S.assignRoleMember(n, rol, qui.id);
+    const amb = S.personaDeTasca(t);
+    // I una decisió escrita a la carta, amb una altra persona.
+    const altre = S.membersOf(n).find(p => p.id !== qui.id);
+    const ambCarta = altre ? S.personaDeTasca(Object.assign({}, t,
+      { card: { id: 'c1', col: 'todo', ownerId: altre.id } })) : null;
+    // I una tasca que no surt de cap flux.
+    const fora = S.personaDeTasca({ title: 'una cosa que no és al mapa', effect: '', _node: n });
+    return { etiqueta: x.label, rol: rol.name, qui: qui.name,
+      lliureVia: lliure && lliure.via, lliurePersona: !!(lliure && lliure.persona),
+      proposta: (lliure && lliure.proposta || []).length,
+      ambVia: amb && amb.via, ambNom: amb && amb.persona && amb.persona.name,
+      cartaVia: ambCarta && ambCarta.via, cartaNom: ambCarta && ambCarta.persona && ambCarta.persona.name,
+      altreNom: altre && altre.name, fora };
+  }, seed.id);
+  if (r.gens) { ok(false, 'el node de prova no té cap intercanvi amb etiqueta: el pont no es pot provar'); }
+  else {
+    ok(r.ambVia === 'mapa' && r.ambNom === r.qui,
+      `amb el rol assignat, la tasca és de «${r.ambNom}» i ho diu el mapa, no una tria`);
+    ok(r.lliureVia === 'sense' && !r.lliurePersona,
+      'amb el rol lliure no s\'inventa ningú');
+    ok(r.proposta > 0, `i proposa ${r.proposta}: proposar no és imposar`);
+    ok(r.cartaVia === 'carta' && r.cartaNom === r.altreNom,
+      `una decisió escrita a la carta mana sobre el mapa · ${r.cartaNom}`);
+    ok(r.fora === null, 'i una tasca que no surt de cap flux no s\'atribueix a ningú');
+  }
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);
