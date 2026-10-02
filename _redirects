@@ -121,3 +121,11 @@
 /tokenomics.html /#cataleg    301
 /tokenomics_config /#cataleg    301
 /tokenomics_config.html /#cataleg    301
+
+# `/clients` era una pàgina sencera de clients, retirada el 02/10/2026: deia el
+# mateix que la paret de la portada i ho deia pitjor —amb tres cites que ningú
+# havia dit i xifres sense font—. La paret de `#clients` i el detall de
+# `#trajectoria` ho diuen amb la font de cada nom escrita.
+/clients /#trajectoria    301
+/clients/* /#trajectoria    301
+/clients.html /#trajectoria    301

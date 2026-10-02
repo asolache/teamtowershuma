@@ -379,6 +379,95 @@ VNA, la premsa— a les quals només hi arribava qui en sabia l'adreça.
 
 ---
 
+### El cas d'IKEA, amb el detall (02/10/2026)
+
+**Dit per l'Àlvar:** a IKEA es van fer **dos mapes de valor: el de la direcció
+i el de l'àrea de serveis**. Abans la paret deia només «dues aplicacions de
+Value Network Analysis», que és la sigla i prou.
+
+La fila de `trajectoria.md` ho recull amb la data i qui ho ha dit, i d'allà
+surt a la paret de la portada. **La guarda que vigilava IKEA s'ha estret**: ja
+no n'hi ha prou que digui «VNA», ha de dir **quines dues àrees**. Qualsevol pot
+dir que ha aplicat un mètode; dir quines dues àrees es van mapar és el que ho
+fa comprovable per qui hi era.
+
+*Falten els anys.*
+
+**I `clients.html` fora.** L'Àlvar: *«ja surt a la landing, no la vull així»*.
+Deia el mateix que la paret de `#clients` i el detall de `#trajectoria` i ho
+deia pitjor. `/clients` → `/#trajectoria` amb 301.
+
+---
+
+### Les dues llengües no arribaven a la meitat de la portada (02/10/2026)
+
+**Demanat per l'Àlvar:** *«revisa que el form de pressupost i diagnòstic i la
+home surtin ben traduïdes al cat i a l'esp»*. El que es va trobar és pitjor que
+«mal traduïdes»:
+
+| Superfície | Estat trobat |
+|---|---|
+| Portada · seccions escrites a mà | ✅ traduïdes (468 claus, paritat vigilada) |
+| Portada · blocs **generats** | ❌ **només català** — `#rols`, `#xarxa`, `#rengles`, `#dues-vistes` senceres |
+| El menú (24 pàgines + portada) | ❌ **només català** |
+| `SOS/pressupost.html` | ❌ **sense cap mecanisme de traducció** |
+| `SOS/diagnostic.html` i les dues branques | ❌ **sense cap mecanisme de traducció** |
+
+**Per què no petava.** `check-landing.js` comprova que **les claus que hi ha**
+quadrin: cap repetida, les dues llengües amb les mateixes, cap òrfena, cap
+morta. Tot verd. *Una guarda que compta el que hi ha mai no troba el que no hi
+és*, i el que faltava era clau: els generadors declaraven el text només en
+català i l'escrivien a dins d'una pàgina amb dos diccionaris. Qui triava
+castellà llegia el hero en castellà i **el producte en català**.
+
+**Què s'ha fet.** El patró era a casa: `build-oferta.js` ja declarava les dues
+llengües i escrivia les claus als dos diccionaris de la portada entre marques.
+S'ha portat a tres generadors més:
+
+- **`build-nav.js`** — el menú, amb `T(ca, es)` per etiqueta. Les pàgines del
+  SOS són monolingües i s'hi escriu el català; la portada rep `data-i18n` i les
+  claus van als dos diccionaris. 51 claus.
+- **`build-castells.js`** — `POSICIONS` (11), `MENES` (3), `ON` (4), `FIGURES`
+  (5), `VARIABLES` (3) i les frases dels blocs, que vivien **escrites dins de
+  les funcions** i per això no es podien traduir sense declarar-les.
+- **`build-mapavalor.js`** — `XARXA`: títol, lead, les tres troballes i l'avís.
+
+De **654 claus** a la portada, amb paritat. `#rols` va de 22 fragments en
+català a 1.
+
+**On viu la mesura, i per què no és una guarda.** Es va intentar com a regla
+estàtica a `check-landing.js` i **comptava 61 falsos positius**: un `<strong>`
+dins d'un `<p data-i18n-html>` no té clau pròpia i no li fa falta —el
+diccionari substitueix l'HTML del pare— i una expressió regular no sap on acaba
+un paràgraf llarg. La mesura de debò demana el DOM i la llengua canviada, i
+això és `SOS/tests/test-i18n-home.mjs`, amb **el sostre a la xifra mesurada i
+una línia per secció** perquè una regressió en una no es pugui amagar darrere
+d'una millora en una altra. I una asserció que el total sol deixaria passar:
+**cap secció nova sense traduir**.
+
+**El que queda, comptat: 59 fragments.** Tres coses, i cap és prosa de venda:
+
+1. **Els `<title>` dels dibuixos** — text de ratolí a sobre. Surten dels noms
+   de node i de les etiquetes de cada lliurament de `CELLER` i `XARXA`: ~80
+   cadenes, i es tradueixen quan el cas es declari en dues llengües.
+2. **Les frases que el generador munta comptant** —«3 vents sobre una sola
+   posició»—, fetes amb trossos i una xifra. Traduir-les vol declarar cada tros.
+3. **Els noms de les dimensions** d'una variable, que vénen del SOS i ja tenen
+   el seu diccionari allà.
+
+⚠ **I el que NO s'ha fet, que és la meitat de la petició:** `pressupost.html` i
+els tres diagnòstics **no tenen cap mecanisme de traducció** —ni `data-i18n`,
+ni `data-ca`, ni botó de llengua, `<html lang="ca">` i prou—. No és que estiguin
+mal traduïts: **estan només en català**. I són justament les dues pantalles on
+algú demana un preu o explica el seu cas.
+
+Això no és posar-hi claus: és portar-hi el mecanisme sencer (diccionari, botó,
+`setLang`, i la memòria de la tria) a quatre pàgines autocontingudes, i decidir
+si el diccionari es declara a cada pàgina o es genera des d'un sol lloc —que és
+el que faria `build-formularis.js`, que ja les escriu.
+
+---
+
 ### Les pàgines de l'arrel només afirmen el que poden sostenir (02/10/2026)
 
 Quedaven tres pàgines a l'arrel —`clients.html`, `curs_vna.html`,
