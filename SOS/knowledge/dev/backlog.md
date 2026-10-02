@@ -399,6 +399,71 @@ deia pitjor. `/clients` → `/#trajectoria` amb 301.
 
 ---
 
+### El pressupost, en dues llengües · i l'abast del VNA (02/10/2026)
+
+**Tres coses demanades per l'Àlvar el mateix dia.**
+
+**1 · El pressupost ja es llegeix en castellà.** `pressupost.html` no tenia
+*cap* mecanisme —ni `data-i18n`, ni `data-ca`, ni botó—, i és la pantalla on
+algú demana un preu. Ara en té: **77 elements amb clau**, tres atributs
+(`data-i18n`, `-html` i **`-ph` per als `placeholder`**, que un diccionari de
+només `textContent` deixa en català sense avisar) i la **tria es recorda**.
+
+El diccionari es declara a **`build-formularis.js`** i no a la pàgina, i és la
+decisió que importa: **mitja pàgina la genera aquell fitxer** —tipus
+d'organització, rols, paquets, camps de mida— i tenir-lo en dos llocs voldria
+dir que un dia divergís una llengua sencera. `ORGS` (12) i `ROLS` (8) tenen ara
+els seus `*Es`; els paquets ja els tenien a `build-oferta.js`, que és qui els
+declara.
+
+*Un defecte que es va veure mirant i que no peta: **l'emoji fora del valor**.
+El marcatge escriu `🏛 Ajuntament` i el diccionari substitueix el `textContent`
+sencer — amb el valor sense emoji, canviar de llengua **esborrava dotze icones**
+de la pantalla.*
+
+`test-i18n-pressupost.mjs` (18 assercions) ho tanca, i inclou la que no és
+òbvia: **traduir no pot trencar el formulari**. Els `value` de les opcions són
+identificadors, no text, i han de seguir sent `curs`, `direccio`, `ajuntament`.
+
+**2 · L'abast del VNA: pas 0.** El procés començava per «qui hi ha a la sala» i
+**no deia a quina escala es mapa**. En una casa gran no es fa un sol mapa: es fa
+**amb zoom** —un nivell primer i els de dins a part—, perquè un mapa de quaranta
+nodes no es llegeix a cap sala i a la sala és on s'ha de llegir. I la
+conseqüència que ha de constar **abans de signar**: *segons la criticitat de
+l'anàlisi, pot caldre més d'una sessió*.
+
+Va a tres llocs, perquè és on es decideix: el pas 0 de `PROCES`
+(`build-mapavalor.js`, ara deu passos), el camp `perque` del paquet
+`mapa-organitzacio` —que és el que explica què fa pujar la forquilla— i la
+secció nova «L'abast» de `references/vna-verna-allee.md`.
+
+*I és el mateix gest que el zoom de l'eina: els llocs de dins surten al centre
+i clicar-hi els fa el mapa sencer. No és casualitat — l'un va sortir de l'altre.*
+
+**3 · La font nova.** «Cómo hacer tu primer análisis de la red de valor»,
+**Pantheon.work, 30/11/2018**, a les fonts de `vna-verna-allee.md`. Pantheon
+aplica el VNA de Verna Allee com a metodologia central i el descriu com un
+exercici **ràpid i no invasiu** que promou una **reflexió col·lectiva** i que
+**destapa els intangibles** —els intercanvis no regulats que marquen la
+diferència quan es genera valor.
+
+⚠ **No s'ha pogut llegir sencer:** `pantheon.work` està bloquejat pel proxy de
+sortida d'aquest entorn. Només consta el que es pot verificar des de fora
+—títol, data, autoria i el marc— i **el pas a pas que proposa l'article no
+s'ha incorporat**, o sigui que les coincidències i diferències amb el nostre
+`PROCES` de deu passos estan sense comparar. **L'Àlvar passarà un document amb
+més detall del flux**: és el que falta per tancar-ho.
+
+*Pantheon.work ja era font d'aquesta casa pel panteó de 12 (`pantheon-12.md`,
+CC BY). Dos documents del mateix lloc, i conviuen bé.*
+
+**El que queda de traduccions:** els **tres diagnòstics** (`diagnostic.html` i
+les dues branques) segueixen monolingües, i **el text de la proposta que el
+JavaScript munta** en prémer el botó del pressupost (`rLead`, `rMetode`, les
+línies del resum) també. El formulari —el que es llegeix mentre s'omple— ja no.
+
+---
+
 ### Les dues llengües no arribaven a la meitat de la portada (02/10/2026)
 
 **Demanat per l'Àlvar:** *«revisa que el form de pressupost i diagnòstic i la

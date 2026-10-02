@@ -149,8 +149,16 @@ footer a{color:var(--light)}
 <!--/SOS-NAV-->
 
 <header>
-<h1>Demana pressupost</h1>
-<p>Tria el que t'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: la forquilla de cada paquet, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l'enviïs.</strong></p>
+<!-- Les dues llengües. La pàgina era només en català i és la pantalla on algú
+     demana un preu: qui ve del castellà hi arribava i havia de desxifrar-la.
+     El diccionari el genera `build-formularis.js`, que és qui ja genera mitja
+     pàgina, i així hi ha un sol lloc on es tradueix el formulari. -->
+<div class="lang-sw">
+  <button type="button" class="lang-b on" data-lang="ca">CA</button>
+  <button type="button" class="lang-b" data-lang="es">ES</button>
+</div>
+<h1 data-i18n="pr.h1">Demana pressupost</h1>
+<p data-i18n-html="pr.intro">Tria el que t'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: la forquilla de cada paquet, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l'enviïs.</strong></p>
 </header>
 
 <main class="wrap">
@@ -163,46 +171,46 @@ footer a{color:var(--light)}
 
 <!-- ── Pas 1 · Qui ets ── (bloc compartit amb el diagnòstic) ── -->
 <section class="step" id="s1">
-<h2>1 · Qui ets</h2>
-<p class="sub">Per saber amb qui parlem i com adreçar-nos-hi. Si ja has fet el diagnòstic, això ja hauria de venir omplert.</p>
+<h2 data-i18n="pr.s1.h">1 · Qui ets</h2>
+<p class="sub" data-i18n="pr.s1.sub">Per saber amb qui parlem i com adreçar-nos-hi. Si ja has fet el diagnòstic, això ja hauria de venir omplert.</p>
 <!--FORM-QUI-->
 <div class="grid2">
-<div class="f"><label for="nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
-<div class="f"><label for="rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio">Direcció general o gerència</option><option value="persones">Direcció de persones o RRHH</option><option value="innovacio">Innovació, estratègia o projectes</option><option value="organitzacio">Organització, processos o qualitat</option><option value="tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic">Càrrec electe o de confiança</option><option value="coordinacio">Coordinació d'equip o de programa</option><option value="altre">Una altra cosa</option></select></div>
+<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
 </div>
 <div class="grid2">
-<div class="f"><label for="mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
-<div class="f"><label for="tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
 </div>
-<div class="f"><label for="carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
 <!--/FORM-QUI-->
 <div class="err" id="e1">Cal com a mínim el nom i un correu vàlid.</div>
-<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2">Següent →</button></div>
+<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-i18n="pr.seg" data-go="2">Següent →</button></div>
 </section>
 
 <!-- ── Pas 2 · D'on véns ── (bloc compartit amb el diagnòstic) ── -->
 <section class="step" id="s2" hidden>
-<h2>2 · D'on véns</h2>
+<h2 data-i18n="pr.s2.h">2 · D'on véns</h2>
 <p class="sub">El tipus d'organització canvia què us podem oferir i — sobretot — d'on poden sortir els diners.</p>
 <!--FORM-ORG-->
 <div class="f">
-<label>Tipus d'organització *</label>
+<label data-i18n="fo.l.tipus">Tipus d'organització *</label>
 <div class="opts" id="orgType">
-<button type="button" class="opt" data-v="ajuntament" data-sector="public" style="--c:var(--indigo)"><span class="o-t">🏛 Ajuntament</span><span class="o-d">Regidoria, àrea tècnica o servei municipal</span></button>
-<button type="button" class="opt" data-v="comarcal" data-sector="public" style="--c:var(--indigo)"><span class="o-t">🗺 Consell comarcal</span><span class="o-d">O mancomunitat de municipis</span></button>
-<button type="button" class="opt" data-v="entitat" data-sector="public" style="--c:var(--green)"><span class="o-t">🤝 Entitat o associació</span><span class="o-d">AVV, ateneu, casal, banc de temps</span></button>
-<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🚀 Cooperativa o empresa</span><span class="o-d">SCCL, SL, projecte econòmic</span></button>
-<button type="button" class="opt" data-v="grup" data-sector="public" style="--c:var(--blue)"><span class="o-t">🌱 Grup promotor</span><span class="o-d">Encara sense forma jurídica</span></button>
-<button type="button" class="opt" data-v="acompanyament" data-sector="privat" style="--c:var(--purple)"><span class="o-t">🎓 Entitat d'acompanyament</span><span class="o-d">Ateneu Cooperatiu, consultoria ESS</span></button>
-<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
-<button type="button" class="opt" data-v="particular" data-sector="tots" style="--c:var(--muted)"><span class="o-t">👤 A títol personal</span><span class="o-d">Professional o persona interessada</span></button>
-<button type="button" class="opt" data-v="agencia" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🎪 Agència o DMC</span><span class="o-d">Ho compres per a un client teu</span></button>
-<button type="button" class="opt" data-v="gran" data-sector="privat" style="--c:var(--blue)"><span class="o-t">🏢 Empresa gran</span><span class="o-d">Amb departament de formació i pressupost anual</span></button>
-<button type="button" class="opt" data-v="pime" data-sector="privat" style="--c:var(--green)"><span class="o-t">🔧 Pime</span><span class="o-d">La decisió la pren qui la dirigeix</span></button>
-<button type="button" class="opt" data-v="escola" data-sector="privat" style="--c:var(--indigo)"><span class="o-t">🎓 Escola de negoci o universitat</span><span class="o-d">Programa, màster o claustre</span></button>
+<button type="button" class="opt" data-v="ajuntament" data-sector="public" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.ajuntament.t">🏛 Ajuntament</span><span class="o-d" data-i18n="fo.org.ajuntament.d">Regidoria, àrea tècnica o servei municipal</span></button>
+<button type="button" class="opt" data-v="comarcal" data-sector="public" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.comarcal.t">🗺 Consell comarcal</span><span class="o-d" data-i18n="fo.org.comarcal.d">O mancomunitat de municipis</span></button>
+<button type="button" class="opt" data-v="entitat" data-sector="public" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.entitat.t">🤝 Entitat o associació</span><span class="o-d" data-i18n="fo.org.entitat.d">AVV, ateneu, casal, banc de temps</span></button>
+<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="grup" data-sector="public" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.grup.t">🌱 Grup promotor</span><span class="o-d" data-i18n="fo.org.grup.d">Encara sense forma jurídica</span></button>
+<button type="button" class="opt" data-v="acompanyament" data-sector="privat" style="--c:var(--purple)"><span class="o-t" data-i18n="fo.org.acompanyament.t">🎓 Entitat d'acompanyament</span><span class="o-d" data-i18n="fo.org.acompanyament.d">Ateneu Cooperatiu, consultoria ESS</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="particular" data-sector="tots" style="--c:var(--muted)"><span class="o-t" data-i18n="fo.org.particular.t">👤 A títol personal</span><span class="o-d" data-i18n="fo.org.particular.d">Professional o persona interessada</span></button>
+<button type="button" class="opt" data-v="agencia" data-sector="privat" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.agencia.t">🎪 Agència o DMC</span><span class="o-d" data-i18n="fo.org.agencia.d">Ho compres per a un client teu</span></button>
+<button type="button" class="opt" data-v="gran" data-sector="privat" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.gran.t">🏢 Empresa gran</span><span class="o-d" data-i18n="fo.org.gran.d">Amb departament de formació i pressupost anual</span></button>
+<button type="button" class="opt" data-v="pime" data-sector="privat" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.pime.t">🔧 Pime</span><span class="o-d" data-i18n="fo.org.pime.d">La decisió la pren qui la dirigeix</span></button>
+<button type="button" class="opt" data-v="escola" data-sector="privat" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.escola.t">🎓 Escola de negoci o universitat</span><span class="o-d" data-i18n="fo.org.escola.d">Programa, màster o claustre</span></button>
 </div>
 </div>
-<div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
 <div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
 <div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
@@ -214,12 +222,12 @@ footer a{color:var(--light)}
 <div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
 <!--/FORM-ORG-->
 <div class="err" id="e2">Tria el tipus d'organització i escriu el municipi.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-go="3">Següent →</button></div>
+<div class="nav-btns"><button type="button" class="btn" data-i18n="pr.enrere" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-i18n="pr.seg" data-go="3">Següent →</button></div>
 </section>
 
 <!-- ── Pas 3 · Què vols ── -->
 <section class="step" id="s3" hidden>
-<h2>3 · Què vols</h2>
+<h2 data-i18n="pr.s3.h">3 · Què vols</h2>
 <p class="sub">Marca'n els que t'interessin. Es poden combinar, i sovint el que en surt és millor que un de sol: el mateix mètode —mirar qui sosté què amb el <a href="vna.html">mapa de valor</a>, i després fer-ho passar— serveix per a un equip d'empresa, per a un poble o per a una xarxa d'entitats. El que canvia és la forma, no el fons.</p>
 <div class="pq-filtre" role="group" aria-label="Filtra per sector">
 <button type="button" class="pq-f on" data-sec="tot">Tot</button>
@@ -268,37 +276,37 @@ footer a{color:var(--light)}
 </div>
 <!--/FORM-PAQUETS-->
 <div class="err" id="e3">Marca com a mínim un paquet.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="2">← Enrere</button><button type="button" class="btn btn-primary" data-go="4">Següent →</button></div>
+<div class="nav-btns"><button type="button" class="btn" data-i18n="pr.enrere" data-go="2">← Enrere</button><button type="button" class="btn btn-primary" data-i18n="pr.seg" data-go="4">Següent →</button></div>
 </section>
 
 <!-- ── Pas 4 · Com i quan ── -->
 <section class="step" id="s4" hidden>
-<h2>4 · Com i quan</h2>
-<p class="sub">Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.</p>
+<h2 data-i18n="pr.s4.h">4 · Com i quan</h2>
+<p class="sub" data-i18n="pr.s4.sub">Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.</p>
 
-<div class="f"><label for="repte">Què voleu resoldre, en poques paraules</label><textarea id="repte" name="repte" placeholder="p.ex. L'equip directiu ha crescut de 6 a 14 persones en dos anys i les decisions s'encallen. Volem entendre per què abans de reorganitzar res."></textarea></div>
+<div class="f"><label for="repte" data-i18n="pr.repte">Què voleu resoldre, en poques paraules</label><textarea id="repte" name="repte" data-i18n-ph="pr.repte.ph" placeholder="p.ex. L'equip directiu ha crescut de 6 a 14 persones en dos anys i les decisions s'encallen. Volem entendre per què abans de reorganitzar res."></textarea></div>
 
 <div class="grid2">
-<div class="f"><label for="termini">Quan</label>
+<div class="f"><label for="termini" data-i18n="pr.quan">Quan</label>
 <select id="termini" name="termini">
-<option value="explorant">Estem explorant, sense presses</option>
-<option value="curs" selected>Aquest curs o semestre</option>
-<option value="data">Tenim una data concreta</option>
+<option value="explorant" data-i18n="pr.quan.explorant">Estem explorant, sense presses</option>
+<option value="curs" selected data-i18n="pr.quan.curs">Aquest curs o semestre</option>
+<option value="data" data-i18n="pr.quan.data">Tenim una data concreta</option>
 </select></div>
-<div class="f"><label for="diners">D'on sortirien els diners</label>
+<div class="f"><label for="diners" data-i18n="pr.diners">D'on sortirien els diners</label>
 <select id="diners" name="diners">
-<option value="propi" selected>Pressupost propi</option>
-<option value="partida">Partida ja assignada</option>
-<option value="subvencio">D'una subvenció que hem de demanar</option>
-<option value="perveure">Encara per veure</option>
+<option value="propi" selected data-i18n="pr.diners.propi">Pressupost propi</option>
+<option value="partida" data-i18n="pr.diners.partida">Partida ja assignada</option>
+<option value="subvencio" data-i18n="pr.diners.subvencio">D'una subvenció que hem de demanar</option>
+<option value="perveure" data-i18n="pr.diners.perveure">Encara per veure</option>
 </select></div>
 </div>
 
-<h3 style="font-size:.98rem;margin:1.6rem 0 .4rem">Si ho contracteu per hores</h3>
+<h3 style="font-size:.98rem;margin:1.6rem 0 .4rem" data-i18n="pr.hores.h">Si ho contracteu per hores</h3>
 <p class="sub" style="margin-bottom:.6rem">Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.</p>
 <div class="taula-scroll">
 <table class="esc" id="escala">
-<thead><tr><th>Nivell</th><th>Preu hora</th><th>Hores</th><th style="text-align:right">Subtotal</th></tr></thead>
+<thead><tr><th data-i18n="pr.esc.niv">Nivell</th><th data-i18n="pr.esc.preu">Preu hora</th><th data-i18n="pr.esc.hores">Hores</th><th style="text-align:right" data-i18n="pr.esc.sub">Subtotal</th></tr></thead>
 <tbody id="escBody"></tbody>
 </table>
 </div>
@@ -317,7 +325,7 @@ footer a{color:var(--light)}
 <p class="hint" id="midaCap" hidden>Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>
 <!--/FORM-MIDA-->
 
-<div class="nav-btns"><button type="button" class="btn" data-go="3">← Enrere</button><button type="button" class="btn btn-primary" id="doProp">Veure la proposta →</button></div>
+<div class="nav-btns"><button type="button" class="btn" data-i18n="pr.enrere" data-go="3">← Enrere</button><button type="button" class="btn btn-primary" id="doProp" data-i18n="pr.veure">Veure la proposta →</button></div>
 </section>
 
 </form>
@@ -325,7 +333,7 @@ footer a{color:var(--light)}
 <!-- ── El resultat ── -->
 <div id="result">
 <div class="prop">
-<h2 id="rTitle" style="margin-top:0">Proposta esborrany</h2>
+<h2 id="rTitle" style="margin-top:0" data-i18n="pr.prop.h">Proposta esborrany</h2>
 <p id="rLead" style="color:var(--light);margin:.3rem 0 0;font-size:.94rem"></p>
 
 <div class="tot">
@@ -334,9 +342,9 @@ footer a{color:var(--light)}
 <div class="t-d" id="rTotalD"></div>
 </div>
 
-<div class="sec"><h3>El que has triat</h3><ul class="lin" id="rLin"></ul></div>
-<div class="sec" id="rHoresBox" hidden><h3>Contractació per hores</h3><ul class="lin" id="rHores"></ul></div>
-<div class="sec"><h3>Com s'ha calculat</h3><p id="rMetode" style="font-size:.88rem;color:var(--muted);line-height:1.65"></p></div>
+<div class="sec"><h3 data-i18n="pr.prop.triat">El que has triat</h3><ul class="lin" id="rLin"></ul></div>
+<div class="sec" id="rHoresBox" hidden><h3 data-i18n="pr.prop.hores">Contractació per hores</h3><ul class="lin" id="rHores"></ul></div>
+<div class="sec"><h3 data-i18n="pr.prop.metode">Com s'ha calculat</h3><p id="rMetode" style="font-size:.88rem;color:var(--muted);line-height:1.65"></p></div>
 
 <div class="falta">
 <strong>Què falta per tancar-ho</strong>
@@ -651,6 +659,245 @@ $('#bAgain').onclick=()=>{
 if(llegeixPont()&&validate(1)&&validate(2)){ showStep(3); }
 else { $('#e1').classList.remove('on'); $('#e2').classList.remove('on'); showStep(1); }
 totalHores();
+
+/* ══ LES DUES LLENGÜES ═══════════════════════════════════════════════════
+   La pàgina era només en català i és on algú demana un preu. El diccionari
+   el genera `SOS/tools/build-formularis.js` entre les marques de sota: és
+   qui ja genera els tipus d'organització, els rols, els paquets i els camps
+   de mida, i tenir-lo en dos llocs voldria dir que un dia no coincidissin.
+
+   Tres atributs i no un: `data-i18n` pel text, `data-i18n-html` quan hi ha
+   marcatge a dins, i `data-i18n-ph` per als `placeholder` — que són text que
+   es llegeix igual i que un diccionari de només `textContent` deixa en
+   català sense que peti res.
+
+   La tria es recorda. Qui ha triat castellà per llegir el formulari no l'ha
+   de tornar a triar en recarregar després d'un error de validació. */
+var PR_I18N = {
+ca: {
+/*PRESSU-I18N-CA*/
+  'pr.h1':'Demana pressupost',
+  'pr.intro':'Tria el que t\'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: la forquilla de cada paquet, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l\'enviïs.</strong>',
+  'pr.s1.h':'1 · Qui ets',
+  'pr.s1.sub':'Per saber amb qui parlem i com adreçar-nos-hi. Si ja has fet el diagnòstic, això ja hauria de venir omplert.',
+  'pr.s1.err':'Cal com a mínim el nom i un correu vàlid.',
+  'pr.s2.h':'2 · D\'on véns',
+  'pr.s2.err':'Tria el tipus d\'organització i escriu el municipi.',
+  'pr.s3.h':'3 · Què vols',
+  'pr.s3.err':'Marca com a mínim un paquet.',
+  'pr.s4.h':'4 · Com i quan',
+  'pr.s4.sub':'Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.',
+  'pr.seg':'Següent →',
+  'pr.enrere':'← Enrere',
+  'pr.veure':'Veure la proposta →',
+  'pr.repte':'Què voleu resoldre, en poques paraules',
+  'pr.repte.ph':'p.ex. L\'equip directiu ha crescut de 6 a 14 persones en dos anys i les decisions s\'encallen. Volem entendre per què abans de reorganitzar res.',
+  'pr.quan':'Quan',
+  'pr.quan.explorant':'Estem explorant, sense presses',
+  'pr.quan.curs':'Aquest curs o semestre',
+  'pr.quan.data':'Tenim una data concreta',
+  'pr.diners':'D\'on sortirien els diners',
+  'pr.diners.propi':'Pressupost propi',
+  'pr.diners.partida':'Partida ja assignada',
+  'pr.diners.subvencio':'D\'una subvenció que hem de demanar',
+  'pr.diners.perveure':'Encara per veure',
+  'pr.hores.h':'Si ho contracteu per hores',
+  'pr.esc.niv':'Nivell',
+  'pr.esc.preu':'Preu hora',
+  'pr.esc.hores':'Hores',
+  'pr.esc.sub':'Subtotal',
+  'pr.prop.h':'Proposta esborrany',
+  'pr.prop.total':'Total orientatiu · sense IVA',
+  'pr.prop.triat':'El que has triat',
+  'pr.prop.hores':'Contractació per hores',
+  'pr.prop.metode':'Com s\'ha calculat',
+  'pr.prop.falta':'Què falta per tancar-ho',
+  'pr.prop.envia':'✉ Envia\'ns la petició',
+  'pr.prop.copia':'📋 Copia-la',
+  'pr.prop.baixa':'⬇ Descarrega-la (JSON)',
+  'pr.prop.torna':'↺ Torna-hi',
+  'pr.priv':'Aquest formulari no envia res sol.',
+  'pr.mida.part':'Quantes persones hi participaran',
+  'pr.mida.part.h':'Marca la diferència més gran del pressupost.',
+  'pr.mida.alc':'Alçada de la demostració',
+  'pr.mida.alc.h':'L\'alçada és quanta colla cal moure, i és el que fixa el cost.',
+  'pr.mida.lloc':'On es fa i a quina distància',
+  'pr.mida.lloc.h':'El desplaçament de l\'equip entra al pressupost al seu preu, sense marge a sobre.',
+  'pr.mida.cap':'Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.',
+  'pr.filtre.tots':'Tot',
+  'pr.filtre.privat':'Empreses i cooperatives',
+  'pr.filtre.public':'Administració i entitats',
+  'fo.l.nom':'Nom i cognoms *',
+  'fo.l.rol':'El teu paper a la casa',
+  'fo.l.mail':'Correu electrònic *',
+  'fo.l.tel':'Telèfon (opcional)',
+  'fo.l.carrec':'Com se\'n diu exactament',
+  'fo.ph.carrec':'p.ex. tècnica de participació',
+  'fo.h.carrec':'Opcional. Serveix per adreçar-nos-hi com toca.',
+  'fo.l.tipus':'Tipus d\'organització *',
+  'fo.l.orgnom':'Nom de l\'organització',
+  'fo.ph.orgnom':'deixa-ho en blanc si véns a títol personal',
+  'fo.org.ajuntament.t':'🏛 Ajuntament',
+  'fo.org.ajuntament.d':'Regidoria, àrea tècnica o servei municipal',
+  'fo.org.comarcal.t':'🗺 Consell comarcal',
+  'fo.org.comarcal.d':'O mancomunitat de municipis',
+  'fo.org.entitat.t':'🤝 Entitat o associació',
+  'fo.org.entitat.d':'AVV, ateneu, casal, banc de temps',
+  'fo.org.cooperativa.t':'🚀 Cooperativa o empresa',
+  'fo.org.cooperativa.d':'SCCL, SL, projecte econòmic',
+  'fo.org.grup.t':'🌱 Grup promotor',
+  'fo.org.grup.d':'Encara sense forma jurídica',
+  'fo.org.acompanyament.t':'🎓 Entitat d\'acompanyament',
+  'fo.org.acompanyament.d':'Ateneu Cooperatiu, consultoria ESS',
+  'fo.org.fundacio.t':'💛 Fundació o finançador',
+  'fo.org.fundacio.d':'Obra social, convocatòries',
+  'fo.org.particular.t':'👤 A títol personal',
+  'fo.org.particular.d':'Professional o persona interessada',
+  'fo.org.agencia.t':'🎪 Agència o DMC',
+  'fo.org.agencia.d':'Ho compres per a un client teu',
+  'fo.org.gran.t':'🏢 Empresa gran',
+  'fo.org.gran.d':'Amb departament de formació i pressupost anual',
+  'fo.org.pime.t':'🔧 Pime',
+  'fo.org.pime.d':'La decisió la pren qui la dirigeix',
+  'fo.org.escola.t':'🎓 Escola de negoci o universitat',
+  'fo.org.escola.d':'Programa, màster o claustre',
+  'fo.rol.direccio':'Direcció general o gerència',
+  'fo.rol.persones':'Direcció de persones o RRHH',
+  'fo.rol.innovacio':'Innovació, estratègia o projectes',
+  'fo.rol.organitzacio':'Organització, processos o qualitat',
+  'fo.rol.tecnic':'Tècnic/a de participació, promoció o serveis',
+  'fo.rol.politic':'Càrrec electe o de confiança',
+  'fo.rol.coordinacio':'Coordinació d\'equip o de programa',
+  'fo.rol.altre':'Una altra cosa',
+/*/PRESSU-I18N-CA*/
+},
+es: {
+/*PRESSU-I18N-ES*/
+  'pr.h1':'Pide presupuesto',
+  'pr.intro':'Elige lo que te interesa y sale una <strong>propuesta borrador</strong> con el desglose a la vista: la horquilla de cada paquete, las horas por nivel si lo contratas por horas, y qué falta para cerrarla. <strong>Te la puedes llevar aunque no nos la envíes.</strong>',
+  'pr.s1.h':'1 · Quién eres',
+  'pr.s1.sub':'Para saber con quién hablamos y cómo dirigirnos. Si ya has hecho el diagnóstico, esto ya debería venir rellenado.',
+  'pr.s1.err':'Hace falta como mínimo el nombre y un correo válido.',
+  'pr.s2.h':'2 · De dónde vienes',
+  'pr.s2.err':'Elige el tipo de organización y escribe el municipio.',
+  'pr.s3.h':'3 · Qué quieres',
+  'pr.s3.err':'Marca como mínimo un paquete.',
+  'pr.s4.h':'4 · Cómo y cuándo',
+  'pr.s4.sub':'Las tres cosas que acaban de determinar el presupuesto, y que una página no puede adivinar.',
+  'pr.seg':'Siguiente →',
+  'pr.enrere':'← Atrás',
+  'pr.veure':'Ver la propuesta →',
+  'pr.repte':'Qué queréis resolver, en pocas palabras',
+  'pr.repte.ph':'p.ej. El equipo directivo ha crecido de 6 a 14 personas en dos años y las decisiones se atascan. Queremos entender por qué antes de reorganizar nada.',
+  'pr.quan':'Cuándo',
+  'pr.quan.explorant':'Estamos explorando, sin prisas',
+  'pr.quan.curs':'Este curso o semestre',
+  'pr.quan.data':'Tenemos una fecha concreta',
+  'pr.diners':'De dónde saldría el dinero',
+  'pr.diners.propi':'Presupuesto propio',
+  'pr.diners.partida':'Partida ya asignada',
+  'pr.diners.subvencio':'De una subvención que tenemos que pedir',
+  'pr.diners.perveure':'Todavía por ver',
+  'pr.hores.h':'Si lo contratáis por horas',
+  'pr.esc.niv':'Nivel',
+  'pr.esc.preu':'Precio hora',
+  'pr.esc.hores':'Horas',
+  'pr.esc.sub':'Subtotal',
+  'pr.prop.h':'Propuesta borrador',
+  'pr.prop.total':'Total orientativo · sin IVA',
+  'pr.prop.triat':'Lo que has elegido',
+  'pr.prop.hores':'Contratación por horas',
+  'pr.prop.metode':'Cómo se ha calculado',
+  'pr.prop.falta':'Qué falta para cerrarlo',
+  'pr.prop.envia':'✉ Envíanos la petición',
+  'pr.prop.copia':'📋 Cópiala',
+  'pr.prop.baixa':'⬇ Descárgala (JSON)',
+  'pr.prop.torna':'↺ Vuelve',
+  'pr.priv':'Este formulario no envía nada solo.',
+  'pr.mida.part':'Cuántas personas participarán',
+  'pr.mida.part.h':'Marca la diferencia más grande del presupuesto.',
+  'pr.mida.alc':'Altura de la demostración',
+  'pr.mida.alc.h':'La altura es cuánta colla hay que mover, y es lo que fija el coste.',
+  'pr.mida.lloc':'Dónde se hace y a qué distancia',
+  'pr.mida.lloc.h':'El desplazamiento del equipo entra al presupuesto a su precio, sin margen encima.',
+  'pr.mida.cap':'Estas preguntas salen cuando pides una actividad con gente, fecha y lugar. Con lo que has elegido ahora, no hacen falta.',
+  'pr.filtre.tots':'Todo',
+  'pr.filtre.privat':'Empresas y cooperativas',
+  'pr.filtre.public':'Administración y entidades',
+  'fo.l.nom':'Nombre y apellidos *',
+  'fo.l.rol':'Tu papel en la casa',
+  'fo.l.mail':'Correo electrónico *',
+  'fo.l.tel':'Teléfono (opcional)',
+  'fo.l.carrec':'Cómo se llama exactamente',
+  'fo.ph.carrec':'p.ej. técnica de participación',
+  'fo.h.carrec':'Opcional. Sirve para dirigirnos como toca.',
+  'fo.l.tipus':'Tipo de organización *',
+  'fo.l.orgnom':'Nombre de la organización',
+  'fo.ph.orgnom':'déjalo en blanco si vienes a título personal',
+  'fo.org.ajuntament.t':'🏛 Ayuntamiento',
+  'fo.org.ajuntament.d':'Concejalía, área técnica o servicio municipal',
+  'fo.org.comarcal.t':'🗺 Consejo comarcal',
+  'fo.org.comarcal.d':'O mancomunidad de municipios',
+  'fo.org.entitat.t':'🤝 Entidad o asociación',
+  'fo.org.entitat.d':'AAVV, ateneo, casal, banco de tiempo',
+  'fo.org.cooperativa.t':'🚀 Cooperativa o empresa',
+  'fo.org.cooperativa.d':'SCCL, SL, proyecto económico',
+  'fo.org.grup.t':'🌱 Grupo promotor',
+  'fo.org.grup.d':'Todavía sin forma jurídica',
+  'fo.org.acompanyament.t':'🎓 Entidad de acompañamiento',
+  'fo.org.acompanyament.d':'Ateneu Cooperatiu, consultoría ESS',
+  'fo.org.fundacio.t':'💛 Fundación o financiador',
+  'fo.org.fundacio.d':'Obra social, convocatorias',
+  'fo.org.particular.t':'👤 A título personal',
+  'fo.org.particular.d':'Profesional o persona interesada',
+  'fo.org.agencia.t':'🎪 Agencia o DMC',
+  'fo.org.agencia.d':'Lo compras para un cliente tuyo',
+  'fo.org.gran.t':'🏢 Empresa grande',
+  'fo.org.gran.d':'Con departamento de formación y presupuesto anual',
+  'fo.org.pime.t':'🔧 Pyme',
+  'fo.org.pime.d':'La decisión la toma quien la dirige',
+  'fo.org.escola.t':'🎓 Escuela de negocio o universidad',
+  'fo.org.escola.d':'Programa, máster o claustro',
+  'fo.rol.direccio':'Dirección general o gerencia',
+  'fo.rol.persones':'Dirección de personas o RRHH',
+  'fo.rol.innovacio':'Innovación, estrategia o proyectos',
+  'fo.rol.organitzacio':'Organización, procesos o calidad',
+  'fo.rol.tecnic':'Técnico/a de participación, promoción o servicios',
+  'fo.rol.politic':'Cargo electo o de confianza',
+  'fo.rol.coordinacio':'Coordinación de equipo o de programa',
+  'fo.rol.altre':'Otra cosa',
+/*/PRESSU-I18N-ES*/
+}
+};
+var PR_LANG = 'ca';
+try { PR_LANG = localStorage.getItem('sos.lang') || 'ca'; } catch (e) {}
+
+function prAplicaLang(l) {
+  if (!PR_I18N[l]) l = 'ca';
+  PR_LANG = l;
+  try { localStorage.setItem('sos.lang', l); } catch (e) {}
+  document.documentElement.lang = l;
+  var t = PR_I18N[l];
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n-html');
+    if (t[k] !== undefined) el.innerHTML = t[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n-ph');
+    if (t[k] !== undefined) el.setAttribute('placeholder', t[k]);
+  });
+  document.querySelectorAll('.lang-b').forEach(function (b) {
+    b.classList.toggle('on', b.getAttribute('data-lang') === l);
+  });
+}
+document.querySelectorAll('.lang-b').forEach(function (b) {
+  b.addEventListener('click', function () { prAplicaLang(b.getAttribute('data-lang')); });
+});
+prAplicaLang(PR_LANG);
 </script>
 
 </body>

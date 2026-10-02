@@ -95,7 +95,7 @@ const v = await p2.evaluate(() => {
 });
 ok(v.castell, 'el castell segueix sent el primer que es veu: l\'essència no es toca');
 ok(v.notacio === 5, 'la notació explica les cinc coses del dibuix');
-ok(v.passos === 9, `el procés té ${v.passos} passos`);
+ok(v.passos === 10, `el procés té ${v.passos} passos, comptant l'abast`);
 ok(v.allee === 3, 'i tres van marcats com a anàlisis de Verna Allee');
 ok(/Anàlisi d'intercanvi/.test(v.t) && /Anàlisi d'impacte/.test(v.t) && /Anàlisi de creació de valor/.test(v.t),
   'les tres, pel seu nom');

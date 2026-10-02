@@ -186,14 +186,14 @@ footer a{color:var(--indigo);text-decoration:none}
 <p class="sub">Per poder-te respondre. No es crea cap compte i no surt res d'aquest navegador si tu no ho prems.</p>
 <!--FORM-QUI-->
 <div class="grid2">
-<div class="f"><label for="nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
-<div class="f"><label for="rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio">Direcció general o gerència</option><option value="persones">Direcció de persones o RRHH</option><option value="innovacio">Innovació, estratègia o projectes</option><option value="organitzacio">Organització, processos o qualitat</option><option value="tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic">Càrrec electe o de confiança</option><option value="coordinacio">Coordinació d'equip o de programa</option><option value="altre">Una altra cosa</option></select></div>
+<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
 </div>
 <div class="grid2">
-<div class="f"><label for="mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
-<div class="f"><label for="tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
 </div>
-<div class="f"><label for="carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
 <!--/FORM-QUI-->
 <p class="err" id="e1">Ens falta el nom i un correu que sembli un correu.</p>
 <div class="acts"><span></span><button type="button" class="btn" data-next="2">Següent →</button></div>
@@ -204,17 +204,17 @@ footer a{color:var(--indigo);text-decoration:none}
 <p class="sub">Això no canvia què et recomanem —això ho decideix el pas següent—: canvia què cal preguntar-te i com s'escriu la proposta.</p>
 <!--FORM-ORG-->
 <div class="f">
-<label>Tipus d'organització *</label>
+<label data-i18n="fo.l.tipus">Tipus d'organització *</label>
 <div class="opts" id="orgType">
-<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🚀 Cooperativa o empresa</span><span class="o-d">SCCL, SL, projecte econòmic</span></button>
-<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t">💛 Fundació o finançador</span><span class="o-d">Obra social, convocatòries</span></button>
-<button type="button" class="opt" data-v="agencia" data-sector="privat" style="--c:var(--orange)"><span class="o-t">🎪 Agència o DMC</span><span class="o-d">Ho compres per a un client teu</span></button>
-<button type="button" class="opt" data-v="gran" data-sector="privat" style="--c:var(--blue)"><span class="o-t">🏢 Empresa gran</span><span class="o-d">Amb departament de formació i pressupost anual</span></button>
-<button type="button" class="opt" data-v="pime" data-sector="privat" style="--c:var(--green)"><span class="o-t">🔧 Pime</span><span class="o-d">La decisió la pren qui la dirigeix</span></button>
-<button type="button" class="opt" data-v="escola" data-sector="privat" style="--c:var(--indigo)"><span class="o-t">🎓 Escola de negoci o universitat</span><span class="o-d">Programa, màster o claustre</span></button>
+<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="agencia" data-sector="privat" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.agencia.t">🎪 Agència o DMC</span><span class="o-d" data-i18n="fo.org.agencia.d">Ho compres per a un client teu</span></button>
+<button type="button" class="opt" data-v="gran" data-sector="privat" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.gran.t">🏢 Empresa gran</span><span class="o-d" data-i18n="fo.org.gran.d">Amb departament de formació i pressupost anual</span></button>
+<button type="button" class="opt" data-v="pime" data-sector="privat" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.pime.t">🔧 Pime</span><span class="o-d" data-i18n="fo.org.pime.d">La decisió la pren qui la dirigeix</span></button>
+<button type="button" class="opt" data-v="escola" data-sector="privat" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.escola.t">🎓 Escola de negoci o universitat</span><span class="o-d" data-i18n="fo.org.escola.d">Programa, màster o claustre</span></button>
 </div>
 </div>
-<div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
 <div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
 <div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>

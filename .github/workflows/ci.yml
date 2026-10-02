@@ -277,6 +277,13 @@ jobs:
       - name: Els formularis no envien res sols i venen el mateix catàleg
         run: node SOS/tools/check-formularis.js
 
+      # El pressupost era només en català i és on algú demana un preu. El
+      # diccionari el genera `build-formularis.js`, que ja genera mitja pàgina:
+      # tenir-lo en dos llocs voldria dir que un dia divergís una llengua
+      # sencera.
+      - name: El pressupost diu el mateix en les dues llengües
+        run: node SOS/tools/build-formularis.js --check
+
       # `ia.html` és l'única pàgina que ven el que fem amb IA, i diu que els
       # frens es poden anar a mirar. Cada porta que obre ha de portar on diu.
       - name: La pàgina d'IA compleix el que promet

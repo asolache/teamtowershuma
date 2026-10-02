@@ -74,6 +74,23 @@ const NOTACIO = [
    feia dues —el pas 6 és l'anàlisi d'intercanvi i el 7 la de creació de valor—
    i no les anomenava, de manera que qui buscava el mètode no el reconeixia. */
 const PROCES = [
+  /* ══ L'ABAST, QUE ÉS EL PAS ZERO ═══════════════════════════════════════
+     Hi faltava. El procés començava per «qui hi ha a la sala» i **no deia a
+     quina escala es mapa**, i en una organització gran això no és un detall:
+     un sol mapa de tota la casa surt amb quaranta nodes i no es llegeix a cap
+     sala, que és on s'ha de llegir.
+
+     La manera de fer-ho és la mateixa que l'eina ja fa servir: **zoom**. Es
+     mapa un nivell, i el que hi ha a dins de cada node es mapa a part si cal.
+     Precisat per l'Àlvar el 02/10/2026, i a IKEA és exactament el que es va
+     fer: dos mapes, el de la direcció i el de l'àrea de serveis.
+
+     I la conseqüència que ha de constar abans de signar res: **segons la
+     criticitat de l'anàlisi, pot caldre més d'una sessió**. No és un extra
+     que es descobreix a mitja feina; és el que decideix la mida de l'encàrrec,
+     i per això va al pas 0 i a `perque` del paquet. */
+  { n: 0, t: 'L\'abast: a quina escala es mapa', tip: 'preparació',
+    d: 'Si la casa és gran, no es fa un sol mapa: es fa **amb zoom**. Un nivell primer —la direcció, el comitè, el consell— i el que hi ha dins de cada node es mapa a part si la decisió ho demana. Un mapa de quaranta nodes no es llegeix a una sala, i a la sala és on s\'ha de llegir. **Segons la criticitat de l\'anàlisi, això vol més d\'una sessió**, i es diu abans i no a mitges.' },
   { n: 1, t: 'Qui hi ha a la sala', tip: 'preparació',
     d: 'El mapa el dibuixa qui hi és, no el consultor. Si falta un rol a la sala, el seu tros de mapa serà el que algú altre creu que fa — i aquest és el tros que sempre surt malament.' },
   { n: 2, t: 'Els nodes: rols, no càrrecs', tip: 'dibuix',
@@ -540,7 +557,7 @@ function blocProces() {
 
   f.push('<section class="mv-sec">');
   f.push('<h2>Com es fa</h2>');
-  f.push(`<p class="mv-sub">Nou passos en ${esc(PAQUET ? PAQUET.dura : '3 sessions')}. Els tres del mig marcats són <b>les tres anàlisis de Verna Allee</b>, que són el mètode i no una manera nostra de mirar-ho.</p>`);
+  f.push(`<p class="mv-sub">${PROCES.length} passos en ${esc(PAQUET ? PAQUET.dura : '3 sessions')}. Els tres del mig marcats són <b>les tres anàlisis de Verna Allee</b>, que són el mètode i no una manera nostra de mirar-ho.</p>`);
   f.push('<ol class="mv-pas">');
   PROCES.forEach(p => {
     f.push(`<li class="${p.tip}${p.allee ? ' allee' : ''}"><span class="mv-pk">${p.tip}</span>` +
