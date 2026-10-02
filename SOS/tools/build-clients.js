@@ -81,7 +81,7 @@ const GRUPS = [
     id: 'empreses', color: 'indigo',
     nom: { ca: 'Empreses', es: 'Empresas' },
     clients: [
-      { n: 'IKEA', destacat: true, font: FONT_WEB, sec: { ca: 'Retail i sostenibilitat', es: 'Retail y sostenibilidad' }, nota: 'dues aplicacions de Value Network Analysis' },
+      { n: 'IKEA', destacat: true, font: FONT_WEB, sec: { ca: 'Retail i sostenibilitat', es: 'Retail y sostenibilidad' }, nota: 'dos mapes de valor: la direcció i l\'àrea de serveis' },
       { n: 'Telefónica', destacat: true, font: FONT_WEB, sec: { ca: 'Comunicacions', es: 'Comunicaciones' } },
       { n: 'BBVA', destacat: true, font: FONT_WEB, sec: { ca: 'Banca digital', es: 'Banca digital' } },
       { n: 'Novartis', destacat: true, font: FONT_WEB, sec: { ca: 'Farmacèutica', es: 'Farmacéutica' } },
@@ -151,8 +151,8 @@ const GRUPS = [
 /* La nota de procedència, un cop i en les dues llengües. Surt als dos blocs
    perquè cap dels dos es pugui llegir sol i dir més del que hem dit. */
 const NOTA = {
-  ca: 'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dues aplicacions de Value Network Analysis.</strong>',
-  es: 'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos aplicaciones de Value Network Analysis.</strong>'
+  ca: 'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dos mapes de valor: el de la direcció i el de l\'àrea de serveis.</strong>',
+  es: 'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos mapas de valor: el de la dirección y el del área de servicios.</strong>'
 };
 const CAP = {
   lbl: { ca: 'Han estat clients de TeamTowers', es: 'Han sido clientes de TeamTowers' },
@@ -300,8 +300,13 @@ if (!fails) {
   const ikea = TOTS.find(c => c.n === 'IKEA');
   if (!ikea) bad('IKEA no és a la llista: és el client que prova el que es ven');
   else if (!ikea.destacat) bad('IKEA no surt destacada');
-  else if (!/Value Network Analysis/i.test(ikea.nota || '')) bad('IKEA no diu què s\'hi va fer');
-  else ok('IKEA surt destacada, i es diu què s\'hi va aplicar');
+  /* I no «VNA» en general: **quins dos mapes**. És l'única entrega de VNA amb
+     client anomenat que tenim, i dir-ne només la sigla deixa la prova a mitges
+     —qualsevol pot dir que ha aplicat un mètode; dir quines dues àrees es van
+     mapar és el que la fa comprovable per qui hi era. */
+  else if (!/direcci|serveis/i.test(ikea.nota || ''))
+    bad('IKEA no diu **quins** dos mapes van ser: sense les dues àrees, la prova es queda a mitges');
+  else ok('IKEA surt destacada, i es diu quins dos mapes de valor s\'hi van fer');
 
   /* 6 · El grup d'agències no es pot buidar. El diagnòstic d'organització té
          un segment sencer per a elles —«ho compres per a un client teu»— i una

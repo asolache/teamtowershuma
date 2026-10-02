@@ -39,56 +39,102 @@ const CHECK = process.argv.includes('--check');
    llegir cada vegada, que és el que això ve a arreglar. L'ordre no és
    alfabètic — és el camí que fa la gent: primer saber on ets, després les
    eines, després aprendre'n, i al final la xarxa. */
+/* ══ L'ARQUITECTURA ══════════════════════════════════════════════════════
+   Quatre grups i una acció. Quatre i no set: un menú amb set grups es torna a
+   llegir cada vegada, que és el que això ve a arreglar. L'ordre no és
+   alfabètic — és el camí que fa la gent: primer saber on ets, després les
+   eines, després aprendre'n, i al final la xarxa.
+
+   ── I EN DUES LLENGÜES (02/10/2026) ──────────────────────────────────────
+   El menú es declarava **només en català** i s'escrivia a vint-i-quatre
+   pàgines i al desplegable de la portada. La portada té dos diccionaris amb
+   paritat vigilada, i aquest bloc hi anava **a dins**: qui triava castellà
+   llegia el hero en castellà i el menú sencer en català, i no petava res.
+
+   Cada etiqueta porta ara les dues, i és el mateix patró que `build-oferta.js`:
+   el marcatge duu `data-i18n` i el generador escriu les claus **als dos
+   diccionaris** de la portada. A les pàgines del SOS, que són monolingües, s'hi
+   escriu el català i prou.
+
+   El format de cada enllaç és `[fitxer, títol, descripció]`, on el títol i la
+   descripció són `{ca, es}` o una cadena quan no hi ha res a traduir (un nom
+   propi com «Molekulandia» o «Blog»). */
+const T = (ca, es) => ({ ca, es });
 const GRUPS = [
-  { id: 'comenca', lbl: 'Comença', ic: '🧭', links: [
+  { id: 'comenca', lbl: T('Comença', 'Empieza'), ic: '🧭', links: [
     /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
        pregunta si ets una organització o un territori. Posar-hi els dos
        diagnòstics obligaria a triar abans de saber què els distingeix. */
-    ['diagnostic.html', 'Diagnòstic', 'On ets i què et falta, en 3 minuts'],
-    ['pressupost.html', 'Demana pressupost', 'Tria què vols i en surt la proposta'],
-    ['intro.html', 'La intro', 'De què va tot això'],
-    ['uneix-te.html', 'Uneix-t\'hi', 'El que ja fas al barri, comptat']
+    ['diagnostic.html', T('Diagnòstic', 'Diagnóstico'),
+      T('On ets i què et falta, en 3 minuts', 'Dónde estás y qué te falta, en 3 minutos')],
+    ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
+      T('Tria què vols i en surt la proposta', 'Elige qué quieres y sale la propuesta')],
+    ['intro.html', T('La intro', 'La intro'),
+      T('De què va tot això', 'De qué va todo esto')],
+    ['uneix-te.html', T('Uneix-t\'hi', 'Únete'),
+      T('El que ja fas al barri, comptat', 'Lo que ya haces en el barrio, contado')]
   ] },
-  { id: 'eines', lbl: 'Eines', ic: '🛠', links: [
-    ['vna.html', 'Mapa de valor', 'Rols i intercanvis d\'un projecte'],
-    ['matriu.html', 'La MATRIU', 'La incubadora: etapes, portes i propietat'],
-    ['compra.html', 'La Compra', 'Grup de consum i compra col·lectiva'],
-    ['energia.html', 'L\'Energia', 'Comunitat energètica i autoconsum compartit'],
-    ['habitatge.html', 'L\'Habitatge', 'Cessió d\'ús: quota, entrada i sortida'],
-    ['banc-temps.html', 'El Banc de Temps', 'Una hora val una hora, i el saldo que ho diu'],
-    ['biblioteca.html', 'La Biblioteca de les Coses', 'Donar o deixar, i què val cada préstec'],
-    ['molekulandia.html', 'Molekulandia', 'El poble sencer i les nou professions'],
-    ['joc.html', 'El joc', 'La plaça, a ritme']
+  { id: 'eines', lbl: T('Eines', 'Herramientas'), ic: '🛠', links: [
+    ['vna.html', T('Mapa de valor', 'Mapa de valor'),
+      T('Rols i intercanvis d\'un projecte', 'Roles e intercambios de un proyecto')],
+    ['matriu.html', T('La MATRIU', 'La MATRIU'),
+      T('La incubadora: etapes, portes i propietat', 'La incubadora: etapas, puertas y propiedad')],
+    ['compra.html', T('La Compra', 'La Compra'),
+      T('Grup de consum i compra col·lectiva', 'Grupo de consumo y compra colectiva')],
+    ['energia.html', T('L\'Energia', 'La Energía'),
+      T('Comunitat energètica i autoconsum compartit', 'Comunidad energética y autoconsumo compartido')],
+    ['habitatge.html', T('L\'Habitatge', 'La Vivienda'),
+      T('Cessió d\'ús: quota, entrada i sortida', 'Cesión de uso: cuota, entrada y salida')],
+    ['banc-temps.html', T('El Banc de Temps', 'El Banco de Tiempo'),
+      T('Una hora val una hora, i el saldo que ho diu', 'Una hora vale una hora, y el saldo que lo dice')],
+    ['biblioteca.html', T('La Biblioteca de les Coses', 'La Biblioteca de las Cosas'),
+      T('Donar o deixar, i què val cada préstec', 'Dar o dejar, y qué vale cada préstamo')],
+    ['molekulandia.html', 'Molekulandia',
+      T('El poble sencer i les nou professions', 'El pueblo entero y las nueve profesiones')],
+    ['joc.html', T('El joc', 'El juego'),
+      T('La plaça, a ritme', 'La plaza, a ritmo')]
   ] },
-  { id: 'apren', lbl: 'Aprèn', ic: '🎓', links: [
-    ['formacio.html', 'Formació', '16 mòduls, de N0 a N3'],
-    ['ia.html', 'Fluxos amb IA', 'Automatitzar el tangible, valorar l\'intangible'],
-    ['escola.html', 'Escoles', 'El SOS a mida d\'aula'],
-    ['vedes.html', 'Les vedes', 'Les regles, amb el motiu al costat'],
-    ['blog.html', 'Blog', 'Cada capacitat, explicada']
+  { id: 'apren', lbl: T('Aprèn', 'Aprende'), ic: '🎓', links: [
+    ['formacio.html', T('Formació', 'Formación'),
+      T('16 mòduls, de N0 a N3', '16 módulos, de N0 a N3')],
+    ['ia.html', T('Fluxos amb IA', 'Flujos con IA'),
+      T('Automatitzar el tangible, valorar l\'intangible', 'Automatizar lo tangible, valorar lo intangible')],
+    ['escola.html', T('Escoles', 'Escuelas'),
+      T('El SOS a mida d\'aula', 'El SOS a medida de aula')],
+    ['vedes.html', T('Les vedes', 'Las vedas'),
+      T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
+    ['blog.html', 'Blog',
+      T('Cada capacitat, explicada', 'Cada capacidad, explicada')]
   ] },
   /* ══ EL GRUP DE L'ARREL ══════════════════════════════════════════════
      `arrel: true` vol dir que aquests destins **no viuen a `/SOS/`** sinó a la
      raíz del lloc. Fins avui el menú només sabia nomenar pàgines del SOS, i el
-     resultat és que **cap de les 25 pàgines de l'arrel es podia trobar des de
-     cap lloc**: ni des de la portada, ni des del README, ni des del menú.
-     Pàgines senceres i publicades —els clients, els esdeveniments del Penedès,
-     el laboratori de VNA— que només hi arribava qui en sabia l'adreça.
+     resultat és que **cap de les pàgines de l'arrel es podia trobar des de cap
+     lloc**: ni des de la portada, ni des del README, ni des del menú. Pàgines
+     senceres i publicades a les quals només hi arribava qui en sabia l'adreça.
 
      La resta de l'arrel segueix fora, i ara **amb el motiu escrit**
      (`FORA_DEL_MENU_ARREL`): una pàgina publicada i no enllaçada ha de ser una
      decisió, no un oblit. */
-  { id: 'casa', lbl: 'La casa', ic: '🏛', arrel: true, links: [
-    ['clients.html', 'Els clients', 'Amb qui s\'ha treballat, i què s\'hi va fer'],
-    ['curs_vna.html', 'El laboratori de VNA', 'El curs d\'anàlisi de xarxes de valor'],
-    ['premsa.html', 'Premsa', 'El que se n\'ha dit a fora']
+  { id: 'casa', lbl: T('La casa', 'La casa'), ic: '🏛', arrel: true, links: [
+    ['curs_vna.html', T('El laboratori de VNA', 'El laboratorio de VNA'),
+      T('El curs d\'anàlisi de xarxes de valor', 'El curso de análisis de redes de valor')],
+    ['premsa.html', T('Premsa', 'Prensa'),
+      T('El que se n\'ha dit a fora', 'Lo que se ha dicho fuera')]
   ] },
-  { id: 'xarxa', lbl: 'Xarxa', ic: '🏘', links: [
-    ['comando.html', 'El Comando', 'La pel·lícula que farem 150.000'],
-    ['molekulon.html', 'Molekulon', 'Molekulandia, un estat líquid'],
-    ['online.html', 'Directori', 'Qui hi ha, per territori']
+  { id: 'xarxa', lbl: T('Xarxa', 'Red'), ic: '🏘', links: [
+    ['comando.html', T('El Comando', 'El Comando'),
+      T('La pel·lícula que farem 150.000', 'La película que haremos 150.000')],
+    ['molekulon.html', 'Molekulon',
+      T('Molekulandia, un estat líquid', 'Molekulandia, un estado líquido')],
+    ['online.html', T('Directori', 'Directorio'),
+      T('Qui hi ha, per territori', 'Quién hay, por territorio')]
   ] }
 ];
+/* Llegir una etiqueta en una llengua. Una cadena simple val per a totes dues:
+   és el cas dels noms propis, que no es tradueixen. */
+const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
+
 const CTA = ['index.html', 'Obre SOS'];
 const MARCA = ['../index.html', 'TeamTowers', 'Humà'];
 
@@ -195,6 +241,42 @@ const A_OBRE = '<!--SOS-EINES-->', A_TANCA = '<!--/SOS-EINES-->';
 const PORTADA = join(ARREL, 'index.html');
 const P_OBRE = '<!--TT-PAGINES-->', P_TANCA = '<!--/TT-PAGINES-->';
 
+/* ══ LES CLAUS DEL DICCIONARI ════════════════════════════════════════════
+   La clau surt del nom del fitxer, que és l'únic identificador que un destí ja
+   té: `banc-temps.html` → `nv.t.banc-temps`. Inventar-ne un altre voldria dir
+   mantenir-ne dos i que un dia no coincidissin.
+
+   El SOS i l'arrel poden tenir un fitxer amb el mateix nom —`ia.html` existeix
+   als dos llocs— i per això els de l'arrel porten prefix. Sense ell, les dues
+   entrades compartirien clau i la segona guanyaria en silenci. */
+const clauDe = (g, h) => (g.arrel ? 'arrel-' : '') + h.replace(/\.html$/, '');
+
+/* El bloc del diccionari d'una llengua, per enganxar entre les marques de la
+   portada. Mateix patró que `build-oferta.js`: es declara un cop aquí i
+   s'escriu a les dues llengües, i `--check` peta si s'han desviat. */
+function diccionari(l) {
+  const f = [];
+  GRUPS.forEach(g => {
+    f.push(`  'nv.g.${g.id}':'${esc2(g.ic + ' ' + txt(g.lbl, l))}',`);
+    g.links.forEach(([h, t, d]) => {
+      const id = clauDe(g, h);
+      f.push(`  'nv.t.${id}':'${esc2(txt(t, l))}',`);
+      f.push(`  'nv.d.${id}':'${esc2(txt(d, l))}',`);
+    });
+  });
+  /* Les tres que no surten de `GRUPS`: el resum del desplegable i l'entrada de
+     l'aplicació, que es declara al marcatge perquè no és una pàgina del menú. */
+  const fix = {
+    'nv.totes': { ca: 'Totes les pàgines', es: 'Todas las páginas' },
+    'nv.g.eina': { ca: '🖥 L\'eina', es: '🖥 La herramienta' },
+    'nv.t.sos': { ca: 'El SOS', es: 'El SOS' },
+    'nv.d.sos': { ca: 'L\'aplicació sencera, al navegador', es: 'La aplicación entera, en el navegador' }
+  };
+  Object.entries(fix).forEach(([k, v]) => f.push(`  '${k}':'${esc2(v[l])}',`));
+  return f.join('\n');
+}
+const esc2 = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
 /* ══ El marcatge ═════════════════════════════════════════════════════════ */
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -202,10 +284,13 @@ function nav(pagina) {
   const aqui = h => h === pagina;
   const grup = g => {
     const dins = g.links.some(l => aqui(l[0]));
-    return `<details class="sn-g${dins ? ' sn-here' : ''}"><summary>${g.ic} ${esc(g.lbl)}</summary>` +
+    /* Les pàgines del SOS són monolingües i no tenen diccionari: s'hi escriu
+       el català. Qui porta les dues llengües és la portada, i allà el marcatge
+       surt amb `data-i18n` i les claus van als dos diccionaris. */
+    return `<details class="sn-g${dins ? ' sn-here' : ''}"><summary>${g.ic} ${esc(txt(g.lbl, 'ca'))}</summary>` +
       `<div class="sn-p">` + g.links.map(([h, t, d]) =>
         /* Des d'una pàgina del SOS, l'arrel és un nivell amunt. */
-        `<a href="${g.arrel ? '../' + h : h}"${!g.arrel && aqui(h) ? ' aria-current="page"' : ''}><b>${esc(t)}</b><span>${esc(d)}</span></a>`
+        `<a href="${g.arrel ? '../' + h : h}"${!g.arrel && aqui(h) ? ' aria-current="page"' : ''}><b>${esc(txt(t, 'ca'))}</b><span>${esc(txt(d, 'ca'))}</span></a>`
       ).join('') + `</div></details>`;
   };
   /* El CSS va DINS de les marques. A fora, el bloc de substitució el tornava a
@@ -325,18 +410,22 @@ function blocApp() {
    Les rutes van amb `/SOS/` al davant perquè la portada viu a l'arrel. */
 function blocPortada() {
   const grup = g => `      <div class="tp-g">
-        <div class="tp-g-l">${g.ic} ${esc(g.lbl)}</div>
-` + g.links.map(([h, t, d]) =>
-    `        <a href="/${g.arrel ? '' : 'SOS/'}${h}"><b>${esc(t)}</b><span>${esc(d)}</span></a>`).join('\n') +
+        <div class="tp-g-l" data-i18n="nv.g.${g.id}">${g.ic} ${esc(txt(g.lbl, 'ca'))}</div>
+` + g.links.map(([h, t, d]) => {
+    const id = clauDe(g, h);
+    return `        <a href="/${g.arrel ? '' : 'SOS/'}${h}">`
+      + `<b data-i18n="nv.t.${id}">${esc(txt(t, 'ca'))}</b>`
+      + `<span data-i18n="nv.d.${id}">${esc(txt(d, 'ca'))}</span></a>`;
+  }).join('\n') +
     `\n      </div>`;
   return P_OBRE + `
 <details class="tt-pagines">
-  <summary>Totes les pàgines</summary>
+  <summary data-i18n="nv.totes">Totes les pàgines</summary>
   <div class="tp-p">
 ` + GRUPS.map(grup).join('\n') + `
       <div class="tp-g">
-        <div class="tp-g-l">🖥 L'eina</div>
-        <a href="/SOS/"><b>El SOS</b><span>L'aplicació sencera, al navegador</span></a>
+        <div class="tp-g-l" data-i18n="nv.g.eina">🖥 L'eina</div>
+        <a href="/SOS/"><b data-i18n="nv.t.sos">El SOS</b><span data-i18n="nv.d.sos">L'aplicació sencera, al navegador</span></a>
       </div>
   </div>
 </details>
@@ -345,7 +434,17 @@ function blocPortada() {
 function posaPortada(html) {
   const i = html.indexOf(P_OBRE), j = html.indexOf(P_TANCA);
   if (i < 0 || j <= i) return null;
-  return html.slice(0, i) + blocPortada() + html.slice(j + P_TANCA.length);
+  let out = html.slice(0, i) + blocPortada() + html.slice(j + P_TANCA.length);
+  /* I les claus als dos diccionaris. El marcatge sol no tradueix res: una clau
+     a l'HTML sense entrada al diccionari deixa el text escrit a mà, que és
+     justament el que passava amb el menú sencer. */
+  [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
+    const a = `/*TT-NAV-I18N-${M}*/`, b = `/*/TT-NAV-I18N-${M}*/`;
+    const x = out.indexOf(a), y = out.indexOf(b);
+    if (x < 0 || y <= x) { out = null; return; }
+    out = out.slice(0, x + a.length) + '\n' + diccionari(l) + '\n' + out.slice(y);
+  });
+  return out;
 }
 function posaApp(html) {
   const i = html.indexOf(A_OBRE), j = html.indexOf(A_TANCA);

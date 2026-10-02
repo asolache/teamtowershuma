@@ -97,12 +97,15 @@ const pl = (n, u, m) => `${n} ${n === 1 ? u : m}`;
    càrrega aguanta aquella mena. El `pes` no és decoració: és el que permet dir
    que una direcció carregada sobre un vent és un risc. */
 const MENES = [
-  { id: 'primera', nom: 'Primeres mans', quantes: n => n, toca: 1, gruix: 3.2, op: 1,
-    diu: 'Darrere el contrafort. Subjecten el segon per darrere: és el suport directe d\'una àrea.' },
-  { id: 'lateral', nom: 'Laterals', quantes: n => 2 * n, toca: 1, gruix: 2, op: .75,
-    diu: 'Darrere les crosses, amb els braços estirats, subjecten les cuixes pels costats. Reforcen una àrea de costat.' },
-  { id: 'vent', nom: 'Vents', quantes: n => n, toca: 2, gruix: 2.4, op: .9,
-    diu: 'Entre crossa i crossa: una mà a cada pilar. Són els únics que toquen dues àrees alhora i eviten que se separin.' }
+  { id: 'primera', nom: 'Primeres mans', nomEs: 'Primeras manos', quantes: n => n, toca: 1, gruix: 3.2, op: 1,
+    diu: 'Darrere el contrafort. Subjecten el segon per darrere: és el suport directe d\'una àrea.',
+    diuEs: 'Detrás del contrafort. Sujetan al segon por detrás: es el soporte directo de un área.' },
+  { id: 'lateral', nom: 'Laterals', nomEs: 'Laterales', quantes: n => 2 * n, toca: 1, gruix: 2, op: .75,
+    diu: 'Darrere les crosses, amb els braços estirats, subjecten les cuixes pels costats. Reforcen una àrea de costat.',
+    diuEs: 'Detrás de las crosses, con los brazos estirados, sujetan los muslos por los lados. Refuerzan un área de lado.' },
+  { id: 'vent', nom: 'Vents', nomEs: 'Vents', quantes: n => n, toca: 2, gruix: 2.4, op: .9,
+    diu: 'Entre crossa i crossa: una mà a cada pilar. Són els únics que toquen dues àrees alhora i eviten que se separin.',
+    diuEs: 'Entre crossa y crossa: una mano en cada pilar. Son los únicos que tocan dos áreas a la vez y evitan que se separen.' }
 ];
 /* El vent va de taronja i no de gris: no és farciment, és l'única línia que
    lliga dues columnes, i el color ho ha de dir abans que el text. */
@@ -113,29 +116,39 @@ const COL_MENA = { primera: '#6366f1', lateral: '#00e676', vent: '#ff9100' };
    direccions de la planta. `pisos` és l'alçada que s'intenta. */
 const FIGURES = [
   {
-    id: 'pilar', nom: 'El pilar', baixos: 1, pisos: 4, pinya: 9, pom: 2,
+    id: 'pilar', nom: 'El pilar', nomEs: 'El pilar', baixos: 1, pisos: 4, pinya: 9, pom: 2,
     quan: 'Tot passa per una sola àrea.',
-    diu: 'Quatre rengles i una sola primera mà. És la figura més alta per quanta gent té a sota i la que cau més de pressa: si falla una persona, no hi ha ningú al costat que reculli el pes. A una casa, és el projecte que s\'aguanta perquè hi ha algú que no plega mai.'
+    quanEs: 'Todo pasa por una sola área.',
+    diu: 'Quatre rengles i una sola primera mà. És la figura més alta per quanta gent té a sota i la que cau més de pressa: si falla una persona, no hi ha ningú al costat que reculli el pes. A una casa, és el projecte que s\'aguanta perquè hi ha algú que no plega mai.',
+    diuEs: 'Cuatro rengles y una sola primera mano. Es la figura más alta para la gente que tiene debajo y la que cae más rápido: si falla una persona, no hay nadie al lado que recoja el peso. En una casa, es el proyecto que se aguanta porque hay alguien que no falla nunca.'
   },
   {
-    id: 'torre', nom: 'La torre · el 2', baixos: 2, pisos: 5, pinya: 16, pom: 2,
+    id: 'torre', nom: 'La torre · el 2', nomEs: 'La torre · el 2', baixos: 2, pisos: 5, pinya: 16, pom: 2,
     quan: 'Dues àrees que depenen l\'una de l\'altra i no tenen tercera.',
-    diu: 'Vuit rengles, dues primeres mans i dos vents que les lliguen. Guanya estabilitat i estrena una fragilitat nova: si una de les dues va tard, l\'altra no pot compensar-ho, només esperar. És el clàssic «comercial i producció» quan no hi ha ningú entremig.'
+    quanEs: 'Dos áreas que dependen una de la otra y no tienen tercera.',
+    diu: 'Vuit rengles, dues primeres mans i dos vents que les lliguen. Guanya estabilitat i estrena una fragilitat nova: si una de les dues va tard, l\'altra no pot compensar-ho, només esperar. És el clàssic «comercial i producció» quan no hi ha ningú entremig.',
+    diuEs: 'Ocho rengles, dos primeras manos y dos vents que las unen. Gana estabilidad y estrena una fragilidad nueva: si una de las dos va tarde, la otra no puede compensarlo, solo esperar. Es el clásico «comercial y producción» cuando no hay nadie en medio.'
   },
   {
-    id: 'tres', nom: 'El 3', baixos: 3, pisos: 5, pinya: 28, pom: 3,
+    id: 'tres', nom: 'El 3', nomEs: 'El 3', baixos: 3, pisos: 5, pinya: 28, pom: 3,
     quan: 'Tres àmbits que es reparteixen la feina.',
-    diu: 'Dotze rengles: tres primeres mans, tres vents i sis laterals. Amb tres àrees el pes ja es reparteix de debò i una que vagi fluixa no tomba la figura: és la primera on pots perdre algú i seguir. La contrapartida és que calen tres caps que es parlin, i això no surt sol.'
+    quanEs: 'Tres ámbitos que se reparten el trabajo.',
+    diu: 'Dotze rengles: tres primeres mans, tres vents i sis laterals. Amb tres àrees el pes ja es reparteix de debò i una que vagi fluixa no tomba la figura: és la primera on pots perdre algú i seguir. La contrapartida és que calen tres caps que es parlin, i això no surt sol.',
+    diuEs: 'Doce rengles: tres primeras manos, tres vents y seis laterales. Con tres áreas el peso ya se reparte de verdad y una que vaya flojo no tumba la figura: es la primera donde puedes perder a alguien y seguir. La contrapartida es que hacen falta tres cabezas que se hablen, y eso no sale solo.'
   },
   {
-    id: 'quatre', nom: 'El 4', baixos: 4, pisos: 5, pinya: 36, pom: 3,
+    id: 'quatre', nom: 'El 4', nomEs: 'El 4', baixos: 4, pisos: 5, pinya: 36, pom: 3,
     quan: 'Quatre àrees, que és on acaba la majoria de cases que creixen.',
-    diu: 'Setze rengles —quatre primeres mans, quatre vents i vuit laterals—, i per això és la planta on cap un instrument de setze factors sense forçar res. La més feta i per un motiu: reparteix prou i encara es pot coordinar. El problema d\'un 4 mai és l\'alçada — és que una de les quatre rengles vagi curta i ningú ho digui fins que es carrega el pis de dalt.'
+    quanEs: 'Cuatro áreas, que es donde acaba la mayoría de casas que crecen.',
+    diu: 'Setze rengles —quatre primeres mans, quatre vents i vuit laterals—, i per això és la planta on cap un instrument de setze factors sense forçar res. La més feta i per un motiu: reparteix prou i encara es pot coordinar. El problema d\'un 4 mai és l\'alçada — és que una de les quatre rengles vagi curta i ningú ho digui fins que es carrega el pis de dalt.',
+    diuEs: 'Dieciséis rengles —cuatro primeras manos, cuatro vents y ocho laterales—, y por eso es la planta donde cabe un instrumento de dieciséis factores sin forzar nada. La más hecha y por un motivo: reparte bastante y todavía se puede coordinar. El problema de un 4 nunca es la altura — es que una de las cuatro rengles vaya corta y nadie lo diga hasta que se carga el piso de arriba.'
   },
   {
-    id: 'cinc', nom: 'El 5', baixos: 5, pisos: 5, pinya: 48, pom: 3,
+    id: 'cinc', nom: 'El 5', nomEs: 'El 5', baixos: 5, pisos: 5, pinya: 48, pom: 3,
     quan: 'Cinc àmbits o més, amb una planta que ha de créixer igual.',
-    diu: 'Vint rengles i una pinya molt més gran. Aquí és on les cases s\'equivoquen: creixen el tronc —més àrees, més caps— i deixen la base igual. El castell no cau per dalt: cau perquè a baix no hi havia prou gent.'
+    quanEs: 'Cinco ámbitos o más, con una planta que tiene que crecer igual.',
+    diu: 'Vint rengles i una pinya molt més gran. Aquí és on les cases s\'equivoquen: creixen el tronc —més àrees, més caps— i deixen la base igual. El castell no cau per dalt: cau perquè a baix no hi havia prou gent.',
+    diuEs: 'Veinte rengles y una pinya mucho más grande. Aquí es donde las casas se equivocan: crecen el tronco —más áreas, más cabezas— y dejan la base igual. El castell no cae por arriba: cae porque abajo no había bastante gente.'
   }
 ];
 
@@ -150,18 +163,22 @@ const FIGURES = [
    una planta que n'obri setze, i una guarda ho comprova. */
 const VARIABLES = [
   {
-    id: 'ambits', nom: 'Els àmbits de la casa', fig: 'quatre', sobre: 'primera',
+    id: 'ambits', nom: 'Els àmbits de la casa', nomEs: 'Los ámbitos de la casa', fig: 'quatre', sobre: 'primera',
     quees: 'Les àrees que ja tens: qui ven, qui produeix, qui entrega, qui administra.',
+    queesEs: 'Las áreas que ya tienes: quién vende, quién produce, quién entrega, quién administra.',
     llegeix: 'Els quatre àmbits van a les <b>primeres mans</b>, que és el seu lloc: el suport directe de cada àrea. I llavors es veu el que una llista d\'àrees no pot dir — <b>tot el que hi ha entre elles és buit</b>: ni laterals que les reforcin pel costat ni vents que les lliguin entre si. És una casa amb departaments i res més.',
+    llegeixEs: 'Los cuatro ámbitos van a las <b>primeras manos</b>, que es su sitio: el soporte directo de cada área. Y entonces se ve lo que una lista de áreas no puede decir — <b>todo lo que hay entre ellas está vacío</b>: ni laterales que las refuercen por el lado ni vents que las aten entre sí. Es una casa con departamentos y nada más.',
     dims: [
       { nom: 'Qui ven', n: 5 }, { nom: 'Qui produeix', n: 4 },
       { nom: 'Qui entrega', n: 1 }, { nom: 'Qui administra', n: 2 }
     ]
   },
   {
-    id: 'aports', nom: 'El que cadascú hi posa', fig: 'tres', sobre: 'totes',
+    id: 'aports', nom: 'El que cadascú hi posa', nomEs: 'Lo que cada uno pone', fig: 'tres', sobre: 'totes',
     quees: 'Les deu aportacions que el SOS ja fa servir per encaixar persones i rols.',
+    queesEs: 'Las diez aportaciones que el SOS ya usa para encajar personas y roles.',
     llegeix: 'Dotze rengles i deu aportacions: <b>les dues que sobren són la lectura</b>. Una rengla buida no és un error de dibuix — és una casa que no sap qui li posa allò, i normalment no ho sap perquè no ho ha demanat mai.',
+    llegeixEs: 'Doce rengles y diez aportaciones: <b>las dos que sobran son la lectura</b>. Una rengla vacía no es un error de dibujo — es una casa que no sabe quién le pone aquello, y normalmente no lo sabe porque no lo ha pedido nunca.',
     dims: [
       { nom: 'Temps constant', n: 6 }, { nom: 'Ordre i seguiment', n: 2 },
       { nom: 'Contactes al territori', n: 4 }, { nom: 'Un espai o un local', n: 1 },
@@ -171,9 +188,11 @@ const VARIABLES = [
     ]
   },
   {
-    id: 'setze', nom: 'Un instrument de setze factors', fig: 'quatre', sobre: 'totes',
+    id: 'setze', nom: 'Un instrument de setze factors', nomEs: 'Un instrumento de dieciséis factores', fig: 'quatre', sobre: 'totes',
     quees: 'Setze dimensions de perfil, una per direcció. És el cas que va encendre això: posar el grup sobre la planta i veure la distribució de cop.',
+    queesEs: 'Dieciséis dimensiones de perfil, una por dirección. Es el caso que encendió esto: poner al grupo sobre la planta y ver la distribución de golpe.',
     llegeix: 'Setze factors en una taula no diuen res a ningú. A la planta es veu en mig segon <b>cap on s\'inclina l\'equip i quines rengles no cobreix</b>. I una cosa que la taula no pot dir: <b>què cau sobre els vents</b> —les quatre úniques posicions que toquen dues àrees alhora, i per tant els factors que decideixen si les àrees es parlen o no.',
+    llegeixEs: 'Dieciséis factores en una tabla no dicen nada a nadie. En la planta se ve en medio segundo <b>hacia dónde se inclina el equipo y qué rengles no cubre</b>. Y una cosa que la tabla no puede decir: <b>qué cae sobre los vents</b> —las cuatro únicas posiciones que tocan dos áreas a la vez, y por tanto los factores que deciden si las áreas se hablan o no.',
     dims: [
       { nom: 'A', n: 5 }, { nom: 'B', n: 3 }, { nom: 'C', n: 4 }, { nom: 'E', n: 6 },
       { nom: 'F', n: 2 }, { nom: 'G', n: 5 }, { nom: 'H', n: 1 }, { nom: 'I', n: 3 },
@@ -237,39 +256,61 @@ function repartiment(f, v) {
    demana (`APORTS`) encaixa amb aquella posició. Es declara amb el nom tal com
    el diu el SOS, i una guarda comprova que existeixi. */
 const POSICIONS = [
-  { id: 'baix', nom: 'Baix', on: 'tronc', pis: 1, fn: 'coord', aport: 'Temps constant',
+  { id: 'baix', nom: 'Baix', nomEs: 'Baix', on: 'tronc', pis: 1, fn: 'coord', aport: 'Temps constant',
     castell: 'A terra, sota el tronc, amb el pes de tot el castell a les espatlles. No es mou i no mira amunt.',
-    casa: 'Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.' },
-  { id: 'crossa', nom: 'Crossa', on: 'pinya', fn: 'facil', aport: 'Cura i acollida',
+    castellEs: 'En el suelo, bajo el tronco, con el peso de todo el castell a los hombros. No se mueve y no mira arriba.',
+    casa: 'Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.',
+    casaEs: 'Quien aguanta un área entera y está siempre. Si se va, no cae lo que hacía él: cae lo que hay encima.' },
+  { id: 'crossa', nom: 'Crossa', nomEs: 'Crossa', on: 'pinya', fn: 'facil', aport: 'Cura i acollida',
     castell: 'Apuntala l\'espatlla del baix des del costat i li treu pes de sobre abans que es dobli.',
-    casa: 'Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.' },
-  { id: 'contrafort', nom: 'Contrafort', on: 'pinya', fn: 'audit', aport: 'Ordre i seguiment',
+    castellEs: 'Apuntala el hombro del baix desde el lado y le quita peso antes de que se doble.',
+    casa: 'Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.',
+    casaEs: 'Quien descarga a quien sostiene un área justo cuando empieza a ir apurado. No hace el trabajo: hace que se pueda hacer.' },
+  { id: 'contrafort', nom: 'Contrafort', nomEs: 'Contrafort', on: 'pinya', fn: 'audit', aport: 'Ordre i seguiment',
     castell: 'Darrere el baix, aguantant-lo per l\'esquena perquè no se li vagi enrere.',
-    casa: 'Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.' },
-  { id: 'primera', nom: 'Primera mà', on: 'pinya', mena: 'primera', fn: 'exec', aport: 'Un ofici o producció',
+    castellEs: 'Detrás del baix, aguantándolo por la espalda para que no se le vaya atrás.',
+    casa: 'Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.',
+    casaEs: 'Quien vigila que aquello no se desvíe y lo dice a tiempo. Es la posición que nadie encuentra imprescindible hasta que falta.' },
+  { id: 'primera', nom: 'Primera mà', nomEs: 'Primera mano', on: 'pinya', mena: 'primera', fn: 'exec', aport: 'Un ofici o producció',
     castell: 'Encapçala la rengla, darrere el contrafort, i subjecta el segon per darrere.',
-    casa: 'El suport directe d\'una àrea: la persona que entrega el que aquella àrea ha promès.' },
-  { id: 'lateral', nom: 'Lateral', on: 'pinya', mena: 'lateral', aport: 'Temps constant',
+    castellEs: 'Encabeza la rengla, detrás del contrafort, y sujeta al segon por detrás.',
+    casa: 'El suport directe d\'una àrea: la persona que entrega el que aquella àrea ha promès.',
+    casaEs: 'El soporte directo de un área: la persona que entrega lo que esa área ha prometido.' },
+  { id: 'lateral', nom: 'Lateral', nomEs: 'Lateral', on: 'pinya', mena: 'lateral', aport: 'Temps constant',
     castell: 'Darrere les crosses, amb els braços estirats, subjecta les cuixes dels segons pels costats.',
-    casa: 'Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.' },
-  { id: 'vent', nom: 'Vent', on: 'pinya', mena: 'vent', fn: 'metaskill', aport: 'Contactes al territori',
+    castellEs: 'Detrás de las crosses, con los brazos estirados, sujeta los muslos de los segons por los lados.',
+    casa: 'Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.',
+    casaEs: 'Quien refuerza un área de lado sin formar parte de ella. No sale en ninguna factura y se nota el día que no está.' },
+  { id: 'vent', nom: 'Vent', nomEs: 'Vent', on: 'pinya', mena: 'vent', fn: 'metaskill', aport: 'Contactes al territori',
     castell: 'Entre crossa i crossa: amb una mà agafa un pilar i amb l\'altra, l\'altre.',
-    casa: 'L\'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.' },
-  { id: 'segon', nom: 'Segon', on: 'tronc', pis: 2, fn: 'design', aport: 'Un ofici o producció',
+    castellEs: 'Entre crossa y crossa: con una mano agarra un pilar y con la otra, el otro.',
+    casa: 'L\'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.',
+    casaEs: 'La única posición que toca dos áreas a la vez. Quien falta cuando dos áreas «no se hablan», y la primera que nadie presupuesta.' },
+  { id: 'segon', nom: 'Segon', nomEs: 'Segon', on: 'tronc', pis: 2, fn: 'design', aport: 'Un ofici o producció',
     castell: 'Primer pis sobre el baix. Ha de ser ferm i lleuger alhora: transmet avall tot el que rep de dalt.',
-    casa: 'Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.' },
-  { id: 'terc', nom: 'Terç', on: 'tronc', pis: 3, aport: 'Vehicle i disponibilitat',
+    castellEs: 'Primer piso sobre el baix. Tiene que ser firme y ligero a la vez: transmite abajo todo lo que recibe de arriba.',
+    casa: 'Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.',
+    casaEs: 'Quien convierte una decisión en algo que se puede hacer, y la devuelve abajo en forma de trabajo repartido.' },
+  { id: 'terc', nom: 'Terç', nomEs: 'Tercio', on: 'tronc', pis: 3, aport: 'Vehicle i disponibilitat',
     castell: 'Tercer pis. On el castell es decideix: ja és alt i encara ha de pujar gent per sobre.',
-    casa: 'El pis del mig d\'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.' },
-  { id: 'aixecador', nom: 'Aixecador', on: 'pom', fn: 'lms', aport: 'Cura i acollida',
+    castellEs: 'Tercer piso. Donde el castell se decide: ya es alto y todavía tiene que subir gente por encima.',
+    casa: 'El pis del mig d\'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.',
+    casaEs: 'El piso de en medio de una organización. Recibe presión de arriba y de abajo y no tiene ninguna de las dos autoridades.' },
+  { id: 'aixecador', nom: 'Aixecador', nomEs: 'Aixecador', on: 'pom', fn: 'lms', aport: 'Cura i acollida',
     castell: 'Fa de frontissa del pom de dalt: s\'ajup perquè els altres passin i aixeca quan toca.',
-    casa: 'Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.' },
-  { id: 'enxaneta', nom: 'Enxaneta', on: 'pom', aport: 'Veu i difusió',
+    castellEs: 'Hace de bisagra del pom de arriba: se agacha para que los demás pasen y levanta cuando toca.',
+    casa: 'Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.',
+    casaEs: 'Quien hace subir a otro. No es su figura la que se ve, y sin él no hay pom.' },
+  { id: 'enxaneta', nom: 'Enxaneta', nomEs: 'Enxaneta', on: 'pom', aport: 'Veu i difusió',
     castell: 'Corona, fa l\'aleta i baixa. És a dalt tres segons i és la foto.',
-    casa: 'Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.' },
-  { id: 'cap', nom: 'Cap de colla', on: 'fora', fn: 'fund', aport: 'Números i negociació',
+    castellEs: 'Corona, hace la aleta y baja. Está arriba tres segundos y es la foto.',
+    casa: 'Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.',
+    casaEs: 'Quien se ve. Dura poco arriba, no aguanta nada y es lo que todo el mundo recuerda — y por eso se confunde con quien ha hecho el castell.' },
+  { id: 'cap', nom: 'Cap de colla', nomEs: 'Cap de colla', on: 'fora', fn: 'fund', aport: 'Números i negociació',
     castell: 'No és a l\'estructura: decideix quina figura es prova, en quin ordre i quan es desmunta.',
-    casa: 'Qui tria què s\'intenta amb la gent que hi ha. La decisió que no es pot delegar a l\'estructura que l\'ha d\'aguantar.' }
+    castellEs: 'No está en la estructura: decide qué figura se intenta, en qué orden y cuándo se desmonta.',
+    casa: 'Qui tria què s\'intenta amb la gent que hi ha. La decisió que no es pot delegar a l\'estructura que l\'ha d\'aguantar.',
+    casaEs: 'Quien elige qué se intenta con la gente que hay. La decisión que no se puede delegar a la estructura que la tiene que aguantar.' }
 ];
 
 /* ══ EL MATEIX CAS, MIRAT DES DE DALT ════════════════════════════════════════
@@ -524,21 +565,22 @@ function bloc() {
   f.push('  <div class="ct-tria" role="tablist" aria-label="Construccions">');
   FIGURES.forEach((x, i) => f.push(`    <button type="button" class="ct-t${i === 3 ? ' on' : ''}" `
     + `role="tab" aria-selected="${i === 3}" aria-controls="ct-p-${x.id}" id="ct-t-${x.id}" `
-    + `data-f="${x.id}">${esc(x.nom)} <span class="ct-tn">${4 * x.baixos}</span></button>`));
+    + `data-f="${x.id}"><span data-i18n="ct.f.${x.id}.n">${esc(x.nom)}</span> `
+    + `<span class="ct-tn">${4 * x.baixos}</span></button>`));
   f.push('  </div>');
 
   FIGURES.forEach((x, i) => {
     f.push(`  <div class="ct-pan" id="ct-p-${x.id}" role="tabpanel" aria-labelledby="ct-t-${x.id}"${i === 3 ? '' : ' hidden'}>`);
     f.push('    <figure class="ct-v"><div class="ct-viz">' + planta(x) + '</div>'
-      + '<figcaption>De dalt · la planta de la pinya</figcaption></figure>');
+      + `<figcaption data-i18n="ct.cap1">${FRASES['ct.cap1'].ca}</figcaption></figure>`);
     f.push('    <figure class="ct-v"><div class="ct-viz">' + alcat(x) + '</div>'
-      + '<figcaption>De costat · el tronc</figcaption></figure>');
+      + `<figcaption data-i18n="ct.cap2">${FRASES['ct.cap2'].ca}</figcaption></figure>`);
     f.push('    <div class="ct-txt">');
     f.push(`      <div class="ct-k">${4 * x.baixos} rengles · ${x.baixos} `
       + `${x.baixos === 1 ? 'primera mà' : 'primeres mans'} · ${x.baixos} `
       + `${x.baixos === 1 ? 'vent' : 'vents'} · ${2 * x.baixos} laterals</div>`);
-    f.push(`      <p class="ct-quan">${esc(x.quan)}</p>`);
-    f.push(`      <p class="ct-diu">${esc(x.diu)}</p>`);
+    f.push(`      <p class="ct-quan" data-i18n="ct.f.${x.id}.q">${esc(x.quan)}</p>`);
+    f.push(`      <p class="ct-diu" data-i18n="ct.f.${x.id}.d">${esc(x.diu)}</p>`);
     f.push('    </div>');
     f.push('  </div>');
   });
@@ -546,20 +588,19 @@ function bloc() {
   // La llegenda de les tres menes, que és el que fa llegible tota la resta.
   f.push('  <div class="ct-men">' + MENES.map(m =>
     `<span class="ct-m"><i style="background:${COL_MENA[m.id]};height:${m.gruix}px"></i>`
-    + `<b>${esc(m.nom)}</b> ${esc(m.diu)}</span>`).join('') + '</div>');
+    + `<b data-i18n="${kMena(m.id, 'n')}">${esc(m.nom)}</b> `
+    + `<span data-i18n="${kMena(m.id, 'd')}">${esc(m.diu)}</span></span>`).join('') + '</div>');
 
-  f.push(`  <p class="ct-llei"><b>La llei que lliga les dues vistes:</b> en castells no es guanya `
-    + 'alçada sense guanyar base — un 4 de 8 demana folre, i un de 9, folre i manilles. '
-    + '<b>La pinya creix més de pressa que el tronc.</b> En una casa és igual: cada pis d\'ambició '
-    + 'que s\'afegeix demana <b>més direccions obertes</b>, no més gent a la mateixa direcció.</p>');
+  f.push(`  <p class="ct-llei" data-i18n-html="ct.llei">${FRASES['ct.llei'].ca}</p>`);
 
   /* ── 2 · La variable · la mateixa planta, pintada per una altra cosa ───── */
   f.push('  <div class="ct-var">');
-  f.push('    <div class="ct-k">I ara, què hi poses</div>');
+  f.push(`    <div class="ct-k" data-i18n="ct.quehiposes">${FRASES['ct.quehiposes'].ca}</div>`);
   f.push('    <div class="ct-tria ct-tv" role="tablist" aria-label="Variables">');
   VARIABLES.forEach((v, i) => f.push(`      <button type="button" class="ct-t${i === 0 ? ' on' : ''}" `
     + `role="tab" aria-selected="${i === 0}" aria-controls="ct-v-${v.id}" id="ct-tv-${v.id}" `
-    + `data-v="${v.id}">${esc(v.nom)} <span class="ct-tn">${v.dims.length}</span></button>`));
+    + `data-v="${v.id}"><span data-i18n="ct.v.${v.id}.n">${esc(v.nom)}</span> `
+    + `<span class="ct-tn">${v.dims.length}</span></button>`));
   f.push('    </div>');
   VARIABLES.forEach((v, i) => {
     const fig = FIGURES.find(x => x.id === v.fig);
@@ -574,8 +615,8 @@ function bloc() {
     f.push('      <figure class="ct-v"><div class="ct-viz">' + planta(fig, v) + '</div>'
       + `<figcaption>${v.dims.length} dimensions sobre ${dirs.length} rengles</figcaption></figure>`);
     f.push('      <div class="ct-txt">');
-    f.push(`        <p class="ct-quan">${esc(v.quees)}</p>`);
-    f.push(`        <p class="ct-diu">${v.llegeix}</p>`);
+    f.push(`        <p class="ct-quan" data-i18n="ct.v.${v.id}.q">${esc(v.quees)}</p>`);
+    f.push(`        <p class="ct-diu" data-i18n-html="ct.v.${v.id}.l">${v.llegeix}</p>`);
     f.push('        <ul class="ct-ll">' + v.dims.map((d, k) => {
       const idx = [...mapa.keys()].find(x => mapa.get(x) === d);
       const mena = idx == null ? 'primera' : dirs[idx].mena;
@@ -595,9 +636,7 @@ function bloc() {
   });
   f.push('  </div>');
 
-  f.push('  <p class="ct-avis">Això ordena i fa visible; <b>no puntua</b>. Un castell no diu si una casa '
-    + 'va bé: diu on es concentra el pes i quines direccions té tancades, que és una altra cosa i és '
-    + 'la que serveix per decidir.</p>');
+  f.push(`  <p class="ct-avis" data-i18n-html="ct.avis">${FRASES['ct.avis'].ca}</p>`);
   f.push('</div>');
   f.push('<!--/TT-CASTELLS-->');
   return f.join('\n');
@@ -617,16 +656,16 @@ function blocVista() {
   f.push('    <div class="ct-men cv-men">' + MENES.map(m => {
     const pos = POSICIONS.find(x => x.mena === m.id);
     return `<span class="ct-m"><i style="background:${COL_MENA[m.id]};height:${m.gruix}px"></i>`
-      + `<b>${esc(pos.nom)}</b> ${esc(pos.casa)}</span>`;
+      + `<b data-i18n="${kPos(pos.id, 'n')}">${esc(pos.nom)}</b> `
+      + `<span data-i18n="${kPos(pos.id, 'o')}">${esc(pos.casa)}</span></span>`;
   }).join('') + '</div>');
   f.push('  </div>');
   f.push('  <div class="cv-txt">');
-  f.push(`    <h3>Els mateixos set nodes, mirats des de dalt</h3>`);
-  f.push('    <p class="mv-lead">El graf diu <b>qui dona què a qui</b>. La pinya diu una altra cosa que '
-    + 'el graf no pot dir: <b>on es concentra el pes</b>. Cada pilar és un node, i cada rengla, un '
-    + 'lliurament del mapa — no n\'hi ha cap de més ni cap de menys.</p>');
-  f.push(`    <div class="cv-k"><b>${pin.obertes} rengles obertes</b> · ${pin.ocupades} amb algú · `
-    + `${pin.obertes - pin.ocupades} buides</div>`);
+  f.push(`    <h3 data-i18n="cv.h3">${FRASES['cv.h3'].ca}</h3>`);
+  f.push(`    <p class="mv-lead" data-i18n-html="cv.lead">${FRASES['cv.lead'].ca}</p>`);
+  f.push(`    <div class="cv-k"><b>${pin.obertes} <span data-i18n="cv.obertes">rengles obertes</span></b> · `
+    + `${pin.ocupades} <span data-i18n="cv.ambalgu">amb algú</span> · `
+    + `${pin.obertes - pin.ocupades} <span data-i18n="cv.buides">buides</span></div>`);
 
   // Qui rep què, pilar per pilar. És la taula que fa comprovable el dibuix.
   f.push('    <table class="cv-t"><thead><tr><th>El node</th>'
@@ -660,9 +699,7 @@ function blocVista() {
   lect.push(`<b>${lat} laterals ocupats de ${latT}.</b> Gairebé no arriba reforç que no es facturi — `
     + 'que és la mateixa cosa que diu el graf quan es compten els intangibles, trobada per un altre camí.');
   f.push('    <ul class="cv-ll">' + lect.map(x => `<li>${x}</li>`).join('') + '</ul>');
-  f.push('    <p class="mv-avis">Les xifres d\'aquesta vista <b>no s\'escriuen enlloc</b>: surten de comptar '
-    + 'el mateix mapa de l\'altra pestanya. El dia que el cas canviï un lliurament, les dues vistes '
-    + 'canviaran alhora o el CI petarà.</p>');
+  f.push(`    <p class="mv-avis" data-i18n-html="cv.avis">${FRASES['cv.avis'].ca}</p>`);
   f.push('  </div>');
   f.push('</div>');
   f.push('<!--/TT-VISTA-CASTELL-->');
@@ -688,16 +725,16 @@ function blocXarxaPinya() {
   f.push('    <div class="ct-men cv-men">' + MENES.map(m => {
     const pos = POSICIONS.find(x => x.mena === m.id);
     return `<span class="ct-m"><i style="background:${COL_MENA[m.id]};height:${m.gruix}px"></i>`
-      + `<b>${esc(pos.nom)}</b> ${esc(pos.casa)}</span>`;
+      + `<b data-i18n="${kPos(pos.id, 'n')}">${esc(pos.nom)}</b> `
+      + `<span data-i18n="${kPos(pos.id, 'o')}">${esc(pos.casa)}</span></span>`;
   }).join('') + '</div>');
   f.push('  </div>');
   f.push('  <div class="cv-txt">');
-  f.push('    <h3>I la mateixa xarxa, des de dalt</h3>');
-  f.push('    <p class="mv-lead">La prova que la traducció no està feta a mida d\'un cas: '
-    + '<b>el mateix càlcul, sobre una altra casa</b>. Cada pilar és un rol de la xarxa i cada '
-    + 'rengla, un lliurament.</p>');
-  f.push(`    <div class="cv-k"><b>${pin.obertes} rengles obertes</b> · ${pin.ocupades} amb algú · `
-    + `${pin.obertes - pin.ocupades} buides</div>`);
+  f.push(`    <h3 data-i18n="xp.h3">${FRASES['xp.h3'].ca}</h3>`);
+  f.push(`    <p class="mv-lead" data-i18n-html="xp.lead">${FRASES['xp.lead'].ca}</p>`);
+  f.push(`    <div class="cv-k"><b>${pin.obertes} <span data-i18n="cv.obertes">rengles obertes</span></b> · `
+    + `${pin.ocupades} <span data-i18n="cv.ambalgu">amb algú</span> · `
+    + `${pin.obertes - pin.ocupades} <span data-i18n="cv.buides">buides</span></div>`);
   const sols = pin.sols.map(p => p.node.nom);
   const car = pin.carregats.sort((a, b) => b.quants - a.quants);
   const li = [];
@@ -712,8 +749,7 @@ function blocXarxaPinya() {
       + 'Cap posició els lliga a una altra àrea: o es relacionen en una sola moneda, o no es '
       + 'relacionen amb ningú de dins.');
   }
-  li.push('<b>Això és el que la xarxa ha de resoldre</b>, i no amagar: que cada rol el pugui fer '
-    + 'algú altre, amb el nivell i l\'evidència que el registre ja sap acreditar.');
+  li.push(`<span data-i18n-html="xp.resol">${FRASES['xp.resol'].ca}</span>`);
   f.push('    <ul class="cv-ll">' + li.map(x => `<li>${x}</li>`).join('') + '</ul>');
   f.push('  </div>');
   f.push('</div>');
@@ -730,13 +766,74 @@ function blocXarxaPinya() {
    llegir-la i dir «això és en Joan»; si no hi arriba, el vocabulari no serveix
    per a un cas real. */
 const ON = [
-  { id: 'pinya', nom: 'A la pinya', diu: 'A terra. El que aguanta i no es veu a la foto.' },
-  { id: 'tronc', nom: 'Al tronc', diu: 'Els pisos. El que es puja i transmet el pes avall.' },
-  { id: 'pom', nom: 'Al pom de dalt', diu: 'Els de la canalla. Pesen poc i decideixen si el castell és carregat o descarregat.' },
-  { id: 'fora', nom: 'Fora de l\'estructura', diu: 'Qui no aguanta res i tria què s\'intenta.' }
+  { id: 'pinya', nom: 'A la pinya', nomEs: 'En la pinya',
+    diu: 'A terra. El que aguanta i no es veu a la foto.',
+    diuEs: 'En el suelo. Lo que aguanta y no se ve en la foto.' },
+  { id: 'tronc', nom: 'Al tronc', nomEs: 'En el tronco',
+    diu: 'Els pisos. El que es puja i transmet el pes avall.',
+    diuEs: 'Los pisos. Lo que se sube y transmite el peso hacia abajo.' },
+  { id: 'pom', nom: 'Al pom de dalt', nomEs: 'En el pom de arriba',
+    diu: 'Els de la canalla. Pesen poc i decideixen si el castell és carregat o descarregat.',
+    diuEs: 'Los de la chiquillería. Pesan poco y deciden si el castell es carregat o descarregat.' },
+  { id: 'fora', nom: 'Fora de l\'estructura', nomEs: 'Fuera de la estructura',
+    diu: 'Qui no aguanta res i tria què s\'intenta.',
+    diuEs: 'Quien no aguanta nada y elige qué se intenta.' }
 ];
 
+/* Les frases del bloc que no surten de cap declaració. Vivien escrites dins de
+   la funció i per això el bloc sencer es quedava en català quan algú triava
+   castellà: la portada té dos diccionaris i aquest bloc hi anava a dins.
+   Declarades aquí, el generador les escriu a les dues. */
+const FRASES = {
+  /* Les del bloc de la vista castell d'un cas i de la xarxa. */
+  'cv.h3': { ca: 'Els mateixos set nodes, mirats des de dalt',
+    es: 'Los mismos siete nodos, mirados desde arriba' },
+  'cv.lead': {
+    ca: 'El graf diu <b>qui dona què a qui</b>. La pinya diu una altra cosa que el graf no pot dir: <b>on es concentra el pes</b>. Cada pilar és un node, i cada rengla, un lliurament del mapa — no n\'hi ha cap de més ni cap de menys.',
+    es: 'El grafo dice <b>quién da qué a quién</b>. La pinya dice otra cosa que el grafo no puede decir: <b>dónde se concentra el peso</b>. Cada pilar es un nodo, y cada rengla, una entrega del mapa — no hay ninguna de más ni ninguna de menos.' },
+  'cv.obertes': { ca: 'rengles obertes', es: 'rengles abiertas' },
+  'cv.ambalgu': { ca: 'amb algú', es: 'con alguien' },
+  'cv.buides': { ca: 'buides', es: 'vacías' },
+  'cv.avis': {
+    ca: 'Les xifres d\'aquesta vista <b>no s\'escriuen enlloc</b>: surten de comptar el mateix mapa de l\'altra pestanya. El dia que el cas canviï un lliurament, les dues vistes canviaran alhora o el CI petarà.',
+    es: 'Las cifras de esta vista <b>no se escriben en ningún sitio</b>: salen de contar el mismo mapa de la otra pestaña. El día que el caso cambie una entrega, las dos vistas cambiarán a la vez o el CI fallará.' },
+  'xp.h3': { ca: 'I la mateixa xarxa, des de dalt', es: 'Y la misma red, desde arriba' },
+  'xp.lead': {
+    ca: 'La prova que la traducció no està feta a mida d\'un cas: <b>el mateix càlcul, sobre una altra casa</b>. Cada pilar és un rol de la xarxa i cada rengla, un lliurament.',
+    es: 'La prueba de que la traducción no está hecha a medida de un caso: <b>el mismo cálculo, sobre otra casa</b>. Cada pilar es un rol de la red y cada rengla, una entrega.' },
+  'xp.resol': {
+    ca: '<b>Això és el que la xarxa ha de resoldre</b>, i no amagar: que cada rol el pugui fer algú altre, amb el nivell i l\'evidència que el registre ja sap acreditar.',
+    es: '<b>Esto es lo que la red tiene que resolver</b>, y no esconder: que cada rol lo pueda hacer otra persona, con el nivel y la evidencia que el registro ya sabe acreditar.' },
+  'ct.cap1': { ca: 'De dalt · la planta de la pinya', es: 'Desde arriba · la planta de la pinya' },
+  'ct.cap2': { ca: 'De costat · el tronc', es: 'De lado · el tronco' },
+  'ct.llei': {
+    ca: '<b>La llei que lliga les dues vistes:</b> en castells no es guanya alçada sense guanyar base — un 4 de 8 demana folre, i un de 9, folre i manilles. <b>La pinya creix més de pressa que el tronc.</b> En una casa és igual: cada pis d\'ambició que s\'afegeix demana <b>més direccions obertes</b>, no més gent a la mateixa direcció.',
+    es: '<b>La ley que une las dos vistas:</b> en castells no se gana altura sin ganar base — un 4 de 8 pide folre, y uno de 9, folre y manilles. <b>La pinya crece más rápido que el tronco.</b> En una casa es igual: cada piso de ambición que se añade pide <b>más direcciones abiertas</b>, no más gente en la misma dirección.' },
+  'ct.avis': {
+    ca: 'Això ordena i fa visible; <b>no puntua</b>. Un castell no diu si una casa va bé: diu on es concentra el pes i quines direccions té tancades, que és una altra cosa i és la que serveix per decidir.',
+    es: 'Esto ordena y hace visible; <b>no puntúa</b>. Un castell no dice si una casa va bien: dice dónde se concentra el peso y qué direcciones tiene cerradas, que es otra cosa y es la que sirve para decidir.' },
+  'ct.quehiposes': { ca: 'I ara, què hi poses', es: 'Y ahora, qué le pones' },
+  'rl.casa': { ca: 'A una casa:', es: 'En una casa:' },
+  'rl.encaixa': { ca: 'Encaixa amb qui porta', es: 'Encaja con quien aporta' },
+  'rl.avis': {
+    ca: 'Els noms varien de colla a colla i aquests són els d\'ús més estès. El que no varia és per què hi és cada posició, que és l\'única cosa que es pot traslladar a una organització. <b>Això posa nom, no puntua ningú.</b>',
+    es: 'Los nombres varían de colla a colla y estos son los de uso más extendido. Lo que no varía es por qué está cada posición, que es lo único que se puede trasladar a una organización. <b>Esto pone nombre, no puntúa a nadie.</b>'
+  }
+};
+/* Les claus d'una posició i d'un grup. Surten de l'`id`, que ja és l'únic
+   identificador que tenen: inventar-ne un altre voldria mantenir-ne dos. */
+const kPos = (id, c) => `rl.p.${id}.${c}`;
+const kOn = (id, c) => `rl.g.${id}.${c}`;
+const kMena = (id, c) => `ct.m.${id}.${c}`;
+
+/* El `data-i18n` només s'escriu a la portada: les pàgines del SOS no tenen
+   diccionari i allà el text va escrit, en català. Un atribut que apunta a un
+   diccionari que no existeix deixa el text tal com és, que és correcte, però
+   dir-ho a posta val més que confiar-hi. */
 function blocRols(marca) {
+  const port = (marca || 'TT-ROLS') === 'TT-ROLS';
+  const i18 = k => port ? ` data-i18n="${k}"` : '';
+  const i18h = k => port ? ` data-i18n-html="${k}"` : '';
   const f = [];
   f.push(`<!--${marca || 'TT-ROLS'}-->`);
   f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
@@ -745,23 +842,62 @@ function blocRols(marca) {
     const pos = POSICIONS.filter(p => p.on === g.id);
     if (!pos.length) return;
     f.push(`  <div class="rl-g">`);
-    f.push(`    <div class="rl-gk">${esc(g.nom)} <span>${esc(g.diu)}</span></div>`);
+    f.push(`    <div class="rl-gk"><span${i18(kOn(g.id, 'n'))}>${esc(g.nom)}</span> `
+      + `<span${i18(kOn(g.id, 'd'))}>${esc(g.diu)}</span></div>`);
     pos.forEach(p => {
       f.push('    <div class="rl-p"' + (p.mena ? ` data-mena="${p.mena}"` : '') + '>');
-      f.push(`      <div class="rl-n"${p.mena ? ` style="border-color:${COL_MENA[p.mena]}"` : ''}>`
-        + `${esc(p.nom)}</div>`);
-      f.push(`      <div class="rl-c">${esc(p.castell)}</div>`);
-      f.push(`      <div class="rl-o"><b>A una casa:</b> ${esc(p.casa)}</div>`);
-      f.push(`      <div class="rl-a">Encaixa amb qui porta <b>${esc(p.aport.toLowerCase())}</b></div>`);
+      f.push(`      <div class="rl-n"${p.mena ? ` style="border-color:${COL_MENA[p.mena]}"` : ''}`
+        + `${i18(kPos(p.id, 'n'))}>${esc(p.nom)}</div>`);
+      f.push(`      <div class="rl-c"${i18(kPos(p.id, 'c'))}>${esc(p.castell)}</div>`);
+      f.push(`      <div class="rl-o"><b${i18('rl.casa')}>A una casa:</b> `
+        + `<span${i18(kPos(p.id, 'o'))}>${esc(p.casa)}</span></div>`);
+      f.push(`      <div class="rl-a"><span${i18('rl.encaixa')}>Encaixa amb qui porta</span> `
+        + `<b${i18(kPos(p.id, 'a'))}>${esc(p.aport.toLowerCase())}</b></div>`);
       f.push('    </div>');
     });
     f.push('  </div>');
   });
   f.push('</div>');
-  f.push(`<p class="rl-avis">Els noms varien de colla a colla i aquests són els d'ús més estès. `
-    + 'El que no varia és per què hi és cada posició, que és l\'única cosa que es pot traslladar a una '
-    + 'organització. <b>Això posa nom, no puntua ningú.</b></p>');
+  f.push(`<p class="rl-avis"${i18h('rl.avis')}>${FRASES['rl.avis'].ca}</p>`);
   f.push(`<!--/${marca || 'TT-ROLS'}-->`);
+  return f.join('\n');
+}
+
+/* ══ EL DICCIONARI D'AQUESTS BLOCS ═══════════════════════════════════════════
+   Mateix patró que `build-oferta.js` i `build-nav.js`: es declara un cop i
+   s'escriu a les dues llengües de la portada, i `--check` peta si s'han
+   desviat. L'aportació no es tradueix aquí: les deu són del SOS i ja les
+   tradueix el seu propi diccionari, o sigui que s'hi escriu igual a les dues
+   —i es nota, i per això la guarda 15 ho deixa dit. */
+function dicCastells(l) {
+  const q = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const f = [];
+  const tria = (o, c) => l === 'es' ? (o[c + 'Es'] || o[c]) : o[c];
+  ON.forEach(g => {
+    f.push(`  '${kOn(g.id, 'n')}':'${q(tria(g, 'nom'))}',`);
+    f.push(`  '${kOn(g.id, 'd')}':'${q(tria(g, 'diu'))}',`);
+  });
+  POSICIONS.forEach(p => {
+    f.push(`  '${kPos(p.id, 'n')}':'${q(tria(p, 'nom'))}',`);
+    f.push(`  '${kPos(p.id, 'c')}':'${q(tria(p, 'castell'))}',`);
+    f.push(`  '${kPos(p.id, 'o')}':'${q(tria(p, 'casa'))}',`);
+    f.push(`  '${kPos(p.id, 'a')}':'${q(p.aport.toLowerCase())}',`);
+  });
+  MENES.forEach(m => {
+    f.push(`  '${kMena(m.id, 'n')}':'${q(tria(m, 'nom'))}',`);
+    f.push(`  '${kMena(m.id, 'd')}':'${q(tria(m, 'diu'))}',`);
+  });
+  FIGURES.forEach(x => {
+    f.push(`  'ct.f.${x.id}.n':'${q(tria(x, 'nom'))}',`);
+    f.push(`  'ct.f.${x.id}.q':'${q(tria(x, 'quan'))}',`);
+    f.push(`  'ct.f.${x.id}.d':'${q(tria(x, 'diu'))}',`);
+  });
+  VARIABLES.forEach(v => {
+    f.push(`  'ct.v.${v.id}.n':'${q(tria(v, 'nom'))}',`);
+    f.push(`  'ct.v.${v.id}.q':'${q(tria(v, 'quees'))}',`);
+    f.push(`  'ct.v.${v.id}.l':'${q(tria(v, 'llegeix'))}',`);
+  });
+  Object.entries(FRASES).forEach(([k, v]) => f.push(`  '${k}':'${q(v[l])}',`));
   return f.join('\n');
 }
 
@@ -1060,6 +1196,26 @@ const DESTINS = [
   { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-PINYA', fn: blocVna, nom: 'SOS/vna.html' },
   { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-ROLS', fn: blocRols, nom: 'SOS/vna.html' }
 ];
+/* Els diccionaris de la portada. Van abans dels blocs i a part: una clau al
+   marcatge sense entrada al diccionari deixa el text escrit a mà —que és
+   exactament el que passava amb aquests blocs sencers. */
+if (!fails) {
+  const f = HOME;
+  if (!existsSync(f)) bad('no existeix index.html');
+  else {
+    let src = readFileSync(f, 'utf8'), tocat = false;
+    [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
+      const a = `/*TT-CT-I18N-${M}*/`, b = `/*/TT-CT-I18N-${M}*/`;
+      const x = src.indexOf(a), y = src.indexOf(b);
+      if (x < 0 || y <= x) { bad(`falten les marques ${a} a index.html`); return; }
+      const out = src.slice(0, x + a.length) + '\n' + dicCastells(l) + '\n' + src.slice(y);
+      if (out !== src) { src = out; tocat = true; }
+    });
+    if (CHECK) { if (tocat) bad('el diccionari dels castells no correspon a la declaració'); }
+    else if (tocat) writeFileSync(f, src);
+  }
+}
+
 if (!fails) DESTINS.forEach(d => {
   if (!existsSync(d.f)) { bad('no existeix ' + d.nom); return; }
   const src = readFileSync(d.f, 'utf8');

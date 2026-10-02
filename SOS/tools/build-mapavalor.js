@@ -207,7 +207,9 @@ const CELLER = {
    i al centre, i qui contracta a la dreta. */
 const XARXA = {
   titol: 'La xarxa de TeamTowers, mirada com un mapa de valor',
+  titolEs: 'La red de TeamTowers, mirada como un mapa de valor',
   una: 'Set rols: els quatre que fa l\'Àlvar i els tres de l\'altra banda de la taula. El que es lliura en cada sentit, i el que es lliura i no es factura.',
+  unaEs: 'Siete roles: los cuatro que hace Álvaro y los tres del otro lado de la mesa. Lo que se entrega en cada sentido, y lo que se entrega y no se factura.',
   titolSvg: 'Mapa de valor de la xarxa de TeamTowers',
   descSvg: 'Set rols i setze lliuraments. A l\'esquerra i al centre, els quatre oficis de la casa: qui mapa, qui forma, qui ho fa passar i qui construeix la peça. A la dreta, les agències, les empreses i les institucions.',
   colors: { casa: '#6366f1', fora: '#00e676', canal: '#82828d' },
@@ -250,13 +252,20 @@ const XARXA = {
   ],
   troballes: [
     { t: 'Quatre oficis i una sola persona',
-      d: 'Els quatre rols de l\'esquerra i del centre <b>els fa la mateixa persona</b>. El mapa no ho dissimula perquè és el que la xarxa ha de resoldre: <b>que cada rol el pugui fer algú altre</b>, amb el nivell i l\'evidència que el registre ja sap acreditar.' },
+      tEs: 'Cuatro oficios y una sola persona',
+      d: 'Els quatre rols de l\'esquerra i del centre <b>els fa la mateixa persona</b>. El mapa no ho dissimula perquè és el que la xarxa ha de resoldre: <b>que cada rol el pugui fer algú altre</b>, amb el nivell i l\'evidència que el registre ja sap acreditar.',
+      dEs: 'Los cuatro roles de la izquierda y del centro <b>los hace la misma persona</b>. El mapa no lo disimula porque es lo que la red tiene que resolver: <b>que cada rol lo pueda hacer otra persona</b>, con el nivel y la evidencia que el registro ya sabe acreditar.' },
     { t: 'Les agències compren el mètode i venen la relació',
-      d: 'És l\'única banda on el que arriba és <b>intangible</b> —la confiança del seu client— i el que es dona és el mètode. Sana i necessària, i amb la mateixa particularitat que el distribuïdor del celler: <b>pel canal, el que no es pot facturar se\'n va de franc</b> si no es pacta.' },
+      tEs: 'Las agencias compran el método y venden la relación',
+      d: 'És l\'única banda on el que arriba és <b>intangible</b> —la confiança del seu client— i el que es dona és el mètode. Sana i necessària, i amb la mateixa particularitat que el distribuïdor del celler: <b>pel canal, el que no es pot facturar se\'n va de franc</b> si no es pacta.',
+      dEs: 'Es el único lado donde lo que llega es <b>intangible</b> —la confianza de su cliente— y lo que se da es el método. Sana y necesaria, y con la misma particularidad que el distribuidor de la bodega: <b>por el canal, lo que no se puede facturar se va gratis</b> si no se pacta.' },
     { t: 'Les dues cases paguen amb diners diferents',
-      d: 'Empresa i administració compren el mateix i <b>no ho paguen igual</b>: una amb pressupost propi i a termini curt, l\'altra amb partides, contracte menor i els seus temps. És per això que el catàleg filtra per sector i cada paquet diu <b>amb quins diners es paga</b>.' }
+      tEs: 'Las dos casas pagan con dinero distinto',
+      d: 'Empresa i administració compren el mateix i <b>no ho paguen igual</b>: una amb pressupost propi i a termini curt, l\'altra amb partides, contracte menor i els seus temps. És per això que el catàleg filtra per sector i cada paquet diu <b>amb quins diners es paga</b>.',
+      dEs: 'Empresa y administración compran lo mismo y <b>no lo pagan igual</b>: una con presupuesto propio y a plazo corto, la otra con partidas, contrato menor y sus tiempos. Por eso el catálogo filtra por sector y cada paquete dice <b>con qué dinero se paga</b>.' }
   ],
-  avis: 'Aquest mapa <b>no és una llista de clients</b>: els nodes són rols i el que es dibuixa és com funciona la casa. Els clients tenen la seva paret més amunt, amb la font escrita de cadascun.'
+  avis: 'Aquest mapa <b>no és una llista de clients</b>: els nodes són rols i el que es dibuixa és com funciona la casa. Els clients tenen la seva paret més amunt, amb la font escrita de cadascun.',
+  avisEs: 'Este mapa <b>no es una lista de clientes</b>: los nodos son roles y lo que se dibuja es cómo funciona la casa. Los clientes tienen su pared más arriba, con la fuente escrita de cada uno.'
 };
 
 module.exports = { CELLER, XARXA };
@@ -697,6 +706,39 @@ ok(`repartiment: ${cQui.maquina} de màquina · ${cQui.sense} sense tipus · ${c
    generador i no les escriu ningú. El que es diu de cada banda surt de comptar
    els lliuraments, i per això el dia que la xarxa canviï, la lectura canviarà
    amb ella. */
+/* Les frases del bloc de la xarxa que no surten de `XARXA`. Vivien escrites
+   dins de la funció, i per això la secció sencera es quedava en català quan
+   algú triava castellà: la portada té dos diccionaris i aquest bloc hi va a
+   dins. Les xifres no hi són —les compta el generador i no es tradueixen. */
+const FR = {
+  'xa.dins.k': { ca: 'Entre els oficis de la casa', es: 'Entre los oficios de la casa' },
+  'xa.dins.d': { ca: 'oficis no es lliuren res a cap altre: els fa la mateixa persona i per això no els cal.',
+    es: 'oficios no se entregan nada a ningún otro: los hace la misma persona y por eso no les hace falta.' },
+  'xa.lliur': { ca: 'lliuraments.', es: 'entregas.' },
+  'xa.fora.k': { ca: 'Cap a fora i cap a dins', es: 'Hacia fuera y hacia dentro' },
+  'xa.fora.d': { ca: 'dels que creuen la taula són intangibles: accés, porta al territori, confiança i comunitat.',
+    es: 'de los que cruzan la mesa son intangibles: acceso, puerta al territorio, confianza y comunidad.' },
+  'xa.cta1': { ca: 'El catàleg sencer →', es: 'El catálogo completo →' },
+  'xa.cta2': { ca: 'Els clients, amb la font de cada un →', es: 'Los clientes, con la fuente de cada uno →' }
+};
+
+/* El diccionari de la xarxa, per a les dues llengües de la portada. Mateix
+   patró que `build-oferta.js`, `build-nav.js` i `build-castells.js`. */
+function dicXarxa(l) {
+  const q = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const tria = (o, c) => l === 'es' ? (o[c + 'Es'] || o[c]) : o[c];
+  const f = [];
+  f.push(`  'xa.titol':'${q(tria(XARXA, 'titol'))}',`);
+  f.push(`  'xa.una':'${q(tria(XARXA, 'una'))}',`);
+  f.push(`  'xa.avis':'${q(tria(XARXA, 'avis'))}',`);
+  XARXA.troballes.forEach((t, i) => {
+    f.push(`  'xa.t${i}.t':'${q(tria(t, 't'))}',`);
+    f.push(`  'xa.t${i}.d':'${q(tria(t, 'd'))}',`);
+  });
+  Object.entries(FR).forEach(([k, v]) => f.push(`  '${k}':'${q(v[l])}',`));
+  return f.join('\n');
+}
+
 function blocXarxa() {
   const fl = XARXA.parells.flatMap(x => [
     { de: x[0], a: x[1], mena: x[2] }, { de: x[1], a: x[0], mena: x[4] }
@@ -721,23 +763,31 @@ function blocXarxa() {
     '</div>');
   f.push('  </div>');
   f.push('  <div class="mv-txt">');
-  f.push(`    <h3>${esc(XARXA.titol)}</h3>`);
-  f.push(`    <p class="mv-lead">${esc(XARXA.una)}</p>`);
+  f.push(`    <h3 data-i18n="xa.titol">${esc(XARXA.titol)}</h3>`);
+  f.push(`    <p class="mv-lead" data-i18n="xa.una">${esc(XARXA.una)}</p>`);
   f.push('    <div class="mv-cmp">');
-  f.push(`      <div class="mv-c canal"><div class="mv-ck">Entre els oficis de la casa</div>`
+  /* Les xifres no van al diccionari: les compta el generador i són les
+     mateixes en les dues llengües. El que es tradueix és el que les envolta,
+     i va en un element a part perquè la xifra no hi quedi a dins. */
+  f.push(`      <div class="mv-c canal"><div class="mv-ck" data-i18n="xa.dins.k">`
+    + `${esc(FR['xa.dins.k'].ca)}</div>`
     + `<div class="mv-cv">${dins.length} de ${fl.length}</div>`
-    + `<div class="mv-cd">lliuraments. ${aillats.length} dels ${casa.length} oficis no es lliuren res a cap altre: `
-    + 'els fa la mateixa persona i per això no els cal.</div></div>');
-  f.push(`      <div class="mv-c visita"><div class="mv-ck">Cap a fora i cap a dins</div>`
+    + `<div class="mv-cd"><span data-i18n="xa.lliur">lliuraments.</span> `
+    + `${aillats.length}/${casa.length} <span data-i18n="xa.dins.d">${esc(FR['xa.dins.d'].ca)}</span></div></div>`);
+  f.push(`      <div class="mv-c visita"><div class="mv-ck" data-i18n="xa.fora.k">`
+    + `${esc(FR['xa.fora.k'].ca)}</div>`
     + `<div class="mv-cv">${creuen.length} de ${fl.length}</div>`
-    + `<div class="mv-cd">lliuraments creuen la taula, i ${intang(creuen)} són intangibles: `
-    + 'accés, porta al territori, confiança i comunitat.</div></div>');
+    + `<div class="mv-cd">${intang(creuen)} `
+    + `<span data-i18n="xa.fora.d">${esc(FR['xa.fora.d'].ca)}</span></div></div>`);
   f.push('    </div>');
   f.push('    <div class="mv-ts">' + XARXA.troballes.map((t, i) =>
-    `<div class="mv-t"><span class="mv-tn">0${i + 1}</span><b>${esc(t.t)}</b><p>${t.d}</p></div>`).join('') + '</div>');
-  f.push(`    <p class="mv-avis">${XARXA.avis}</p>`);
-  f.push('    <div class="mv-ctas"><a class="mv-cta pri" href="#cataleg">El catàleg sencer →</a>'
-    + '<a class="mv-cta" href="#trajectoria">Els clients, amb la font de cada un →</a></div>');
+    `<div class="mv-t"><span class="mv-tn">0${i + 1}</span>`
+    + `<b data-i18n="xa.t${i}.t">${esc(t.t)}</b>`
+    + `<p data-i18n-html="xa.t${i}.d">${t.d}</p></div>`).join('') + '</div>');
+  f.push(`    <p class="mv-avis" data-i18n-html="xa.avis">${XARXA.avis}</p>`);
+  f.push('    <div class="mv-ctas">'
+    + `<a class="mv-cta pri" href="#cataleg" data-i18n="xa.cta1">${esc(FR['xa.cta1'].ca)}</a>`
+    + `<a class="mv-cta" href="#trajectoria" data-i18n="xa.cta2">${esc(FR['xa.cta2'].ca)}</a></div>`);
   f.push('  </div>');
   f.push('</div>');
   return f.join('\n');
@@ -795,6 +845,29 @@ DESTINS.forEach(d => {
     + ' — no peta i no es veu: la pàgina es llegeix igual que abans');
   else ok(`les ${[...new Set(DESTINS.map(d => d.f))].length} pàgines amb el dibuix porten el que el fa circular i el que l'atura`);
 })();
+
+/* El diccionari de la xarxa a la portada. Va a part dels blocs: una clau al
+   marcatge sense entrada al diccionari deixa el text escrit a mà, que és
+   exactament el que passava amb aquesta secció sencera. */
+{
+  const f = join(ARREL, 'index.html');
+  if (!existsSync(f)) bad('no existeix index.html');
+  else {
+    let src = cache[f] !== undefined ? cache[f] : readFileSync(f, 'utf8');
+    let tocat = false;
+    [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
+      const a = `/*TT-XA-I18N-${M}*/`, b = `/*/TT-XA-I18N-${M}*/`;
+      const x = src.indexOf(a), y = src.indexOf(b);
+      if (x < 0 || y <= x) { bad(`falten les marques ${a} a index.html`); return; }
+      const out = src.slice(0, x + a.length) + '\n' + dicXarxa(l) + '\n' + src.slice(y);
+      if (out !== src) { src = out; tocat = true; }
+    });
+    if (tocat) {
+      if (CHECK) vells.push('el diccionari de la xarxa');
+      else { cache[f] = src; escrits++; }
+    }
+  }
+}
 
 if (CHECK) {
   if (vells.length) bad('blocs desactualitzats: ' + vells.join(', ') + ' — torna a executar build-mapavalor.js');

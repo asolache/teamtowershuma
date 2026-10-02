@@ -91,7 +91,7 @@ en una línia sota els logos.
 
 | Client | On es diu | Nota |
 |---|---|---|
-| **IKEA** | `#trajectoria` · `#facilitador`, tram de consultoria | **Les dues coses**: Fent Pinya amb TeamTowers **i Value Network Analysis, dues vegades**. És l'única entrega de VNA amb client anomenat que tenim, i per això surt també al perfil: fa que el mètode deixi de ser una idea |
+| **IKEA** | `#trajectoria` · `#facilitador`, tram de consultoria | **Les dues coses**: Fent Pinya amb TeamTowers **i Value Network Analysis, dues vegades**. Els dos mapes van ser **el de la direcció i el de l'àrea de serveis** — precisat per l'Àlvar el 02/10/2026. És l'única entrega de VNA amb client anomenat que tenim, i per això surt també al perfil: fa que el mètode deixi de ser una idea. *Falten els anys.* |
 | Telefónica · Vodafone · BBVA · Novartis · Porsche · Mercedes · John Deere · La Caixa | `#trajectoria`, grup «Empreses» | Clients de TeamTowers. **No consta quina entrega concreta** va ser cadascun dins d'aquesta línia |
 | **InfoJobs** | `#trajectoria` · `#facilitador` | **Les dues coses**, i per això surt dos cops: hi va ser manager de RRHH (2000–2001) **i després va ser client de Fent Pinya**. Precisat per ell el 10/09/2026 |
 | **Softonic** | `#trajectoria`, grup «Empreses» | Client de Fent Pinya. L'Álvaro, 10/09/2026 |

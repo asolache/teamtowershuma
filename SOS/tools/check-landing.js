@@ -486,6 +486,20 @@ else {
   }
 }
 
+/* ── 7f · On viu la mesura de la cobertura ────────────────────────────────
+   Aquí hi va haver una regla que comptava text visible sense clau, i es va
+   treure el mateix dia: **comptava 61 falsos positius**. Un `<strong>` dins
+   d'un `<p data-i18n-html>` no té clau pròpia i no li fa falta —el diccionari
+   substitueix l'HTML del pare— i una expressió regular no sap on acaba un
+   paràgraf llarg.
+
+   La mesura de debò demana el DOM i la llengua canviada, i això és una prova
+   de navegador: `SOS/tests/test-i18n-home.mjs`. Hi viu el sostre, i hi viu amb
+   la xifra mesurada en comptes d'una d'inventada.
+
+   Es deixa escrit perquè la pròxima persona que vulgui aquesta guarda sàpiga
+   que ja es va intentar aquí i per què no hi va. */
+
 // ── 8 · Informatiu ───────────────────────────────────────────────────────
 const seccions = (cos.match(/<section/g) || []).length;
 const detalls = (cos.match(/<details class="faq-item"/g) || []).length;
