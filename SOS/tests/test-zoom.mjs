@@ -101,6 +101,11 @@ console.log('\n2 · Abans d\'entrar, es diu què hi ha a dins');
   const bar = t.find(x => /Bar/.test(x)) || '';
   ok(/1 rol/.test(bib) && /1 lloc a dins/.test(bib),
     'la biblioteca diu el que té: ' + bib.replace('Entra a ', ''));
+  /* I el que el clic **no** fa. La icona diu que aquell lloc té pàgina pròpia i
+     el clic entra al lloc; la pàgina s'ofereix a dins. Prometre-la al retolet
+     era prometre una cosa que el clic no compleix. */
+  ok(!/té la seva pàgina/.test(bib + bar),
+    'i cap retolet promet obrir una pàgina que el clic no obre');
   /* I el cas que importa més: un lloc buit ho ha de dir. Entrar-hi sense
      saber-ho és el que fa que la gent deixi de clicar. */
   ok(/encara sense mapa/.test(bar), 'i el bar diu que encara no en té: ' + bar.replace('Entra a ', ''));

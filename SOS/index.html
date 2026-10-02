@@ -10798,7 +10798,12 @@ function buildVNASvg(node){
       t.textContent=(ei?'⬚ ':'')+nm;
       gi.appendChild(t);
       const tt=mk('title',{});
-      tt.textContent='Entra a '+c.name+' · '+zoomDins(c)+(ei?' · té la seva pàgina: '+ei.nom:'');
+      /* La icona diu que aquell lloc té pàgina pròpia, i el clic **no la obre**:
+         entra al lloc, i la pàgina s'ofereix a dins (`dd-eina`). Dir «té la seva
+         pàgina» aquí feia pensar que el clic hi portava, i una promesa que el
+         clic no compleix és pitjor que no dir res. */
+      tt.textContent='Entra a '+c.name+' · '+zoomDins(c)
+        +(ei?' · a dins hi trobaràs '+ei.nom:'');
       gi.appendChild(tt);
       const va=()=>selectNode(c.id);
       gi.addEventListener('click',va);
