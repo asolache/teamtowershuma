@@ -246,6 +246,55 @@ button[disabled]{opacity:.35;cursor:default}
   .rl-p{grid-template-columns:1fr;gap:.35rem}
   .rl-a{grid-column:auto}
 }
+/* ══ EL FULL D'UNA SESSIÓ ════════════════════════════════════════════════
+   És paper: fons clar, i tot el que hi ha a sobre es llegeix com un post-it.
+   Les dues menes d'entregable van de verd i de rosa —els mateixos colors que
+   el guió de la sessió fa servir amb els post-its de debò— i els gomets, de
+   blau i de groc. Qui ha fet una sessió ha de reconèixer el seu full. */
+.se-svg{width:100%;height:auto;display:block}
+.se-full{fill:#f6f3ec;stroke:#d8d2c4;stroke-width:1}
+.se-abast{font-family:var(--mono);font-size:11px;font-weight:700;fill:#3a3528}
+.se-peu{font-family:var(--mono);font-size:8px;fill:#8a8172}
+.se-fl{stroke:#b9b2a2;stroke-width:1.2}
+.se-po rect{fill:#fff8c9;stroke:#ddd089;stroke-width:1}
+.se-po text{font-family:var(--mono);font-size:9px;font-weight:700;fill:#2f2b20;text-anchor:middle}
+.se-po.centre rect{fill:#ffe9a8;stroke:#d9b64e;stroke-width:1.6}
+.se-po.centre text{font-size:10px}
+.se-et rect{stroke-width:0}
+.se-et text{font-family:var(--mono);font-size:7.5px;text-anchor:middle}
+.se-et.must rect{fill:#bff0cf}
+.se-et.must text{fill:#17502f}
+.se-et.extra rect{fill:#fbd0e8}
+.se-et.extra text{fill:#6b1248}
+.se-go{stroke:#fff;stroke-width:1.2}
+.se-go.blau{fill:#2f7fd4}
+.se-go.groc{fill:#e8b33a}
+.se-cor{font-size:11px;fill:#d64550;text-anchor:middle}
+.se-leg{display:grid;gap:.45rem;margin:1rem 0 0;font-size:.8rem;color:var(--clar);line-height:1.6}
+.se-l{display:flex;align-items:baseline;gap:.5rem}
+.se-l b{color:var(--text);font-weight:600;flex-shrink:0}
+.se-i{width:13px;height:13px;border-radius:3px;flex-shrink:0;position:relative;top:2px}
+.se-i.must{background:#bff0cf}
+.se-i.extra{background:#fbd0e8}
+.se-i.blau{background:#2f7fd4;border-radius:50%}
+.se-i.groc{background:#e8b33a;border-radius:50%}
+.se-i.cor{background:#d64550;border-radius:50%}
+
+/* Les quatre passes grans, i les vuit preguntes. */
+.mv-fa{list-style:none;counter-reset:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem}
+.mv-fa li{background:var(--card);border:1px solid var(--vora);border-radius:10px;padding:.9rem 1rem}
+.mv-fn{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--tang);
+  display:block;line-height:1;margin-bottom:.35rem}
+.mv-fa b{display:block;font-size:.9rem;color:var(--text);margin-bottom:.35rem}
+.mv-fa p{margin:0 0 .6rem;font-size:.8rem;line-height:1.65;color:var(--clar)}
+.mv-fp{font-family:var(--mono);font-size:.64rem;color:var(--apagat);line-height:1.5;display:block}
+.mv-pre{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.5rem .9rem}
+.mv-pre li{font-size:.84rem;line-height:1.6;color:var(--clar);padding-left:1.1rem;position:relative}
+.mv-pre li::before{content:'?';position:absolute;left:0;color:var(--tang);
+  font-family:var(--mono);font-weight:700}
+
 .ct-llei{max-width:720px;margin:1.6rem auto 0;text-align:center;font-size:.88rem;line-height:1.75;
   color:var(--clar);padding-top:1.3rem;border-top:1px solid var(--vora)}
 .ct-llei b{color:var(--text)}
@@ -407,8 +456,8 @@ posar-t'hi tu.</p>
 <li class="preparació"><span class="mv-pk">preparació</span><b>L'abast: a quina escala es mapa</b><p>Si la casa és gran, no es fa un sol mapa: es fa **amb zoom**. Un nivell primer —la direcció, el comitè, el consell— i el que hi ha dins de cada node es mapa a part si la decisió ho demana. Un mapa de quaranta nodes no es llegeix a una sala, i a la sala és on s'ha de llegir. **Segons la criticitat de l'anàlisi, això vol més d'una sessió**, i es diu abans i no a mitges.</p></li>
 <li class="preparació"><span class="mv-pk">preparació</span><b>Qui hi ha a la sala</b><p>El mapa el dibuixa qui hi és, no el consultor. Si falta un rol a la sala, el seu tros de mapa serà el que algú altre creu que fa — i aquest és el tros que sempre surt malament.</p></li>
 <li class="dibuix"><span class="mv-pk">dibuix</span><b>Els nodes: rols, no càrrecs</b><p>Es llisten les funcions que algú fa de debò. Surten sempre rols que no consten a cap lloc: qui desencalla, qui recorda com es feia, qui truca quan ningú vol trucar.</p></li>
-<li class="dibuix"><span class="mv-pk">dibuix</span><b>Les transaccions tangibles</b><p>Qui lliura què a qui, del que es podria facturar. És la part fàcil i la que tothom ja sap, i encara no explica per què la casa funciona.</p></li>
-<li class="dibuix"><span class="mv-pk">dibuix</span><b>Les transaccions intangibles</b><p>La mateixa pregunta per al que no consta. Aquí és on apareix la meitat del mapa que no havia vist mai ningú junta.</p></li>
+<li class="dibuix"><span class="mv-pk">dibuix</span><b>Les transaccions tangibles · els «must»</b><p>Qui lliura què a qui, del que es podria facturar. És la part fàcil i la que tothom ja sap, i encara no explica per què la casa funciona.</p></li>
+<li class="dibuix"><span class="mv-pk">dibuix</span><b>Les transaccions intangibles · els «extra»</b><p>La mateixa pregunta per al que no consta. Aquí és on apareix la meitat del mapa que no havia vist mai ningú junta.</p></li>
 <li class="anàlisi allee"><span class="mv-pk">anàlisi</span><b>Anàlisi d'intercanvi</b><p>Es mira el patró sencer: qui dona i no rep, quins vincles van en un sol sentit, quins nodes estan carregats de més. Un rol amb totes les fletxes sortint no és generós: és el que es cremarà primer.</p></li>
 <li class="anàlisi allee"><span class="mv-pk">anàlisi</span><b>Anàlisi d'impacte</b><p>Node per node: què rep, què li costa rebre-ho i què hi guanya. És la que ensenya si a algú li surt a compte seguir-hi, i la que explica per què hi ha gent que se'n va sense queixar-se.</p></li>
 <li class="anàlisi allee"><span class="mv-pk">anàlisi</span><b>Anàlisi de creació de valor</b><p>Què aporta cada node i què costaria no tenir-lo. És la que troba el valor que ja es produeix i no es cobra — i la que troba la feina que es fa i no aprofita ningú.</p></li>
@@ -428,6 +477,42 @@ posar-t'hi tu.</p>
 <p class="mv-nota">El mapa no és l'entregable: el mapa és l'eina. L'entregable és <b>el que se'n decideix</b>. Un mapa preciós del qual no surt cap moviment és una feina ben feta que no ha servit de res.</p>
 </section>
 <!--/VNA-PROCES-->
+
+<!--VNA-SESSIO-->
+<!--VNA-SESSIO-->
+<!-- GENERAT per SOS/tools/build-mapavalor.js · no s'edita a mà -->
+<section class="mv-sec">
+<h2>I com és, a la sala</h2>
+<p class="mv-sub">No es fa amb un programa: es fa amb <b>un full gran, post-its i gomets</b>, i el programa ve després per mantenir-ho viu. Això és com queda el full — i tot el que hi surt té un motiu que es pot explicar en una frase.</p>
+<div class="mv-viz gran">
+<svg id="mvSessio" class="mv-svg se-svg" viewBox="0 0 640 430" role="img" aria-labelledby="mvSessioT mvSessioD"><title id="mvSessioT">Com queda el full d'una sessió de mapa de valor</title><desc id="mvSessioD">Un full gran amb l'àmbit escrit a dalt, el rol central al mig i sis rols al voltant. Entre ells, etiquetes verdes pels entregables «must» i roses pels «extra», gomets blaus i grocs de satisfacció, i cors als llocs on cal mirar el pols del flux.</desc><rect class="se-full" x="8" y="8" width="624" height="414" rx="4"/><text class="se-abast" x="24" y="34">Àmbit: la xarxa de venda i devolucions</text><text class="se-peu" x="24" y="50">Noms dels participants · data</text><line class="se-fl" x1="320.0" y1="208.0" x2="320.0" y2="130.6"/><g class="se-et must"><rect x="289.0" y="154.3" width="62.0" height="13" rx="2"/><text x="320.0" y="163.8">la comanda</text></g><g class="se-et extra"><rect x="269.0" y="171.3" width="102.0" height="13" rx="2"/><text x="320.0" y="180.8">què demana la gent</text></g><circle class="se-go blau" cx="379.0" cy="161.3" r="5"/><line class="se-fl" x1="369.3" y1="224.4" x2="458.4" y2="177.6"/><g class="se-et must"><rect x="375.3" y="186.0" width="77.0" height="13" rx="2"/><text x="413.8" y="195.5">el lliurament</text></g><g class="se-et extra"><rect x="370.3" y="203.0" width="87.0" height="13" rx="2"/><text x="413.8" y="212.5">avisar si falla</text></g><circle class="se-go groc" cx="465.3" cy="193.0" r="5"/><line class="se-fl" x1="369.3" y1="239.6" x2="458.4" y2="286.4"/><g class="se-et must"><rect x="382.8" y="248.0" width="62.0" height="13" rx="2"/><text x="413.8" y="257.5">la factura</text></g><line class="se-fl" x1="320.0" y1="256.0" x2="320.0" y2="333.4"/><g class="se-et must"><rect x="284.0" y="279.7" width="72.0" height="13" rx="2"/><text x="320.0" y="289.2">la devolució</text></g><g class="se-et extra"><rect x="261.5" y="296.7" width="117.0" height="13" rx="2"/><text x="320.0" y="306.2">el to en què es resol</text></g><circle class="se-go blau" cx="386.5" cy="286.7" r="5"/><line class="se-fl" x1="270.7" y1="239.6" x2="181.6" y2="286.4"/><g class="se-et must"><rect x="192.7" y="248.0" width="67.0" height="13" rx="2"/><text x="226.2" y="257.5">el que paga</text></g><g class="se-et extra"><rect x="170.2" y="265.0" width="112.0" height="13" rx="2"/><text x="226.2" y="274.5">que torni i ho digui</text></g><line class="se-fl" x1="270.7" y1="224.4" x2="181.6" y2="177.6"/><g class="se-et must"><rect x="182.7" y="186.0" width="87.0" height="13" rx="2"/><text x="226.2" y="195.5">l'estoc a temps</text></g><g class="se-et extra"><rect x="170.2" y="203.0" width="112.0" height="13" rx="2"/><text x="226.2" y="212.5">avisar de la ruptura</text></g><g class="se-po centre"><rect x="268" y="210" width="104" height="44" rx="3"/><text x="320" y="236">El nostre equip</text></g><g class="se-po"><rect x="274.0" y="92.6" width="92" height="36" rx="3"/><text x="320.0" y="114.6">Qui ven</text><text class="se-cor" x="358.0" y="98.6">♥</text></g><g class="se-po"><rect x="456.0" y="153.3" width="92" height="36" rx="3"/><text x="502.0" y="175.3">Qui entrega</text></g><g class="se-po"><rect x="456.0" y="274.7" width="92" height="36" rx="3"/><text x="502.0" y="296.7">Qui cobra</text></g><g class="se-po"><rect x="274.0" y="335.4" width="92" height="36" rx="3"/><text x="320.0" y="357.4">Qui atén</text><text class="se-cor" x="358.0" y="341.4">♥</text></g><g class="se-po"><rect x="92.0" y="274.7" width="92" height="36" rx="3"/><text x="138.0" y="296.7">Qui compra</text></g><g class="se-po"><rect x="92.0" y="153.3" width="92" height="36" rx="3"/><text x="138.0" y="175.3">Qui proveeix</text></g></svg>
+</div>
+<div class="se-leg"><span class="se-l"><i class="se-i must"></i><b>«Must» · verd</b> Contractual i exigible: el que es dona per fet que arribarà.</span><span class="se-l"><i class="se-i extra"></i><b>«Extra» · rosa</b> El que es dona per construir la relació i que ningú pot reclamar.</span><span class="se-l"><i class="se-i blau"></i><b>Gomet blau</b> Qui ho rep n'està satisfet.</span><span class="se-l"><i class="se-i groc"></i><b>Gomet groc</b> Qui ho rep no n'està satisfet. Aquí és on hi ha feina.</span><span class="se-l"><i class="se-i cor"></i><b>Cor</b> De dos a quatre llocs on cal mirar el pols del flux de valor.</span></div>
+<p class="mv-nota"><b>Els entregables es diuen amb noms, no amb verbs.</b> «La comanda», no «comandar»; «avisar abans que falli» és una cosa que arriba o no arriba. El criteri és aquest: un entregable es diu entregable perquè <b>es pot comprovar si ha arribat</b>.</p>
+</section>
+<section class="mv-sec">
+<h2>Les quatre passes grans</h2>
+<p class="mv-sub">10 passos són per executar; <b>quatre són per recordar</b>. Aquesta és l'agrupació del guió de sessió, i és la que es fa servir a la sala.</p>
+<ol class="mv-fa">
+<li><span class="mv-fn">1</span><b>Definir l'abast i les fronteres</b><p>De quina activitat parlem i on s'acaba. És el que decideix si surt un mapa que es llegeix o un de quaranta nodes que no es llegeix a cap sala.</p><span class="mv-fp">1 pas: L'abast: a quina escala es mapa</span></li>
+<li><span class="mv-fn">2</span><b>Decidir qui convidem</b><p>Un grup divers de la casa i del seu entorn, o com a mínim gent que conegui qui hi ha a fora. Amb trenta persones es fa en dos o tres grups en paral·lel.</p><span class="mv-fp">1 pas: Qui hi ha a la sala</span></li>
+<li><span class="mv-fn">3</span><b>Identificar els rols i les seves transaccions</b><p>Els noms primer, els rols després, i llavors què s'intercanvien. Entre 8 i 10 rols, i els que tenen més intercanvis van més al centre.</p><span class="mv-fp">3 passos: Els nodes: rols, no càrrecs · Les transaccions tangibles · els «must» · Les transaccions intangibles · els «extra»</span></li>
+<li><span class="mv-fn">4</span><b>Validar el mapa seqüenciant transaccions</b><p>En quin ordre passen les coses. No per reduir-ho a un procés lineal, sinó per comprovar que el mapa és complet i fer aflorar els fluxos principals.</p><span class="mv-fp">5 passos: Anàlisi d'intercanvi · Anàlisi d'impacte · Anàlisi de creació de valor · Els moviments · El mapa queda viu</span></li>
+</ol>
+</section>
+<section class="mv-sec">
+<h2>I les vuit preguntes que el fan servir</h2>
+<p class="mv-sub">El mapa <b>no diu res sol</b>. El que diu alguna cosa és el grup responent aquestes vuit preguntes amb el dibuix al davant, i per això la sessió no s'acaba quan el full està ple.</p>
+<ul class="mv-pre"><li>Qui és més actiu a la xarxa? Per què?</li><li>Qui és menys actiu? Per què?</li><li>Qui hi hauria de sortir i no hi surt? Per què?</li><li>Quines relacions caldria començar, enfortir o reprendre?</li><li>Tots els entregables aporten valor, o en generen un altre com a resposta?</li><li>Hi ha algun intercanvi dèbil o en risc?</li><li>La xarxa aporta valor a tots els rols?</li><li>Algú rep molt més del que aporta, o aporta molt més del que rep?</li></ul>
+</section>
+<!--/VNA-SESSIO-->
+<!--/VNA-SESSIO-->
+<!--/VNA-SESSIO-->
+<!--/VNA-SESSIO-->
+<!--/VNA-SESSIO-->
+<!--/VNA-SESSIO-->
+<!--/VNA-SESSIO-->
+<!--/VNA-SESSIO-->
 
 <!--VNA-EXEMPLE-->
 <section class="mv-sec">

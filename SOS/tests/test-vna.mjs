@@ -204,6 +204,51 @@ for (const [w, h] of [[390, 844], [1280, 1000]]) {
   await ctx.close();
 }
 
+
+/* ── El full d'una sessió ─────────────────────────────────────────────────
+   La pàgina explicava el mètode i **no ensenyava com es fa**. Qui ha de
+   decidir si contracta una sessió vol veure què passarà a la sala, i això no
+   ho diu una llista de passos: ho diu el full.
+
+   Les tres coses que es proven són les que, si desapareixen, deixen un dibuix
+   maco que diu la meitat — i cap peta. */
+console.log('\n· El full de la sessió, i el que hi ha de sortir');
+{
+  const { ctx, p } = await nova();
+  const r = await p.evaluate(() => {
+    const s = document.getElementById('mvSessio');
+    if (!s) return null;
+    const cs = c => getComputedStyle(s.querySelector(c) || document.body);
+    return {
+      must: s.querySelectorAll('.se-et.must').length,
+      extra: s.querySelectorAll('.se-et.extra').length,
+      gomets: s.querySelectorAll('.se-go').length,
+      cors: s.querySelectorAll('.se-cor').length,
+      abast: (s.querySelector('.se-abast') || {}).textContent || '',
+      /* L'estil ha d'existir a la pàgina i no només el marcatge: és el defecte
+         que ja va passar amb els polsos —marcatge viu i CSS a l'altra pàgina. */
+      pintat: cs('.se-full').fill,
+      fases: document.querySelectorAll('.mv-fa li').length,
+      preguntes: document.querySelectorAll('.mv-pre li').length,
+      txt: s.closest('section').innerText
+    };
+  });
+  ok(!!r, 'el full hi és');
+  if (r) {
+    ok(r.must > 0 && r.extra > 0,
+      `les dues menes d'entregable (${r.must} «must», ${r.extra} «extra») — només amb els must, `
+      + 'el dibuix diria que això és un diagrama de processos');
+    ok(r.gomets > 0, `${r.gomets} gomets de satisfacció: és el que converteix un dibuix en un diagnòstic`);
+    ok(r.cors >= 2 && r.cors <= 4, `${r.cors} cors de pols, que és el que diu el guió (de dos a quatre)`);
+    ok(/Àmbit/i.test(r.abast), 'i l\'abast escrit a dalt del full: ' + r.abast);
+    ok(r.pintat !== 'rgb(0, 0, 0)' && r.pintat !== '', 'el full té el seu estil, no és marcatge sense CSS');
+    ok(/noms, no amb verbs/i.test(r.txt), 'i es diu per què els entregables es diuen amb noms');
+    ok(r.fases === 4, `les quatre passes grans (${r.fases})`);
+    ok(r.preguntes === 8, `i les vuit preguntes de l'anàlisi (${r.preguntes})`);
+  }
+  await ctx.close();
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

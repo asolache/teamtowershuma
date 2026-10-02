@@ -399,6 +399,78 @@ deia pitjor. `/clients` → `/#trajectoria` amb 301.
 
 ---
 
+### El procés de VNA, explicat com es fa de debò (02/10/2026)
+
+**L'Àlvar va passar dos PDF**: l'article sencer de Pantheon —Antonio
+Blanco-Gracia i Ingrid Astiz, 30/11/2018— i **el guió real de la sessió
+d'IKEA** (19 pàgines). La petició: *«millora la comunicació del procés de VNA,
+sobretot amb les imatges de la pàgina de sos/vna»*.
+
+**El que faltava era la imatge.** La pàgina explicava el mètode i **no ensenyava
+com es fa**. Qui ha de decidir si contracta una sessió vol veure què passarà a
+la sala, i això no ho diu una llista de deu passos.
+
+**El full.** Ara hi ha un dibuix del full de paper d'estrassa tal com queda, i
+tot el que hi surt és del guió real: l'**abast escrit a dalt** amb els noms i
+la data, el rol central al mig i la resta al voltant, els entregables en dos
+colors, els **gomets de satisfacció** i els **cors del pols**.
+
+**Tres coses que el guió porta i nosaltres no teníem:**
+
+1. **Els «must» i els «extra».** És la nostra parella tangible/intangible dita
+   amb les paraules de la sala, i **els colors ja coincidien** (verd i rosa).
+   La diferència de les dues maneres de dir-ho: *tangible/intangible* diu de
+   quina matèria és; ***must/extra* diu si el pots reclamar**. La segona fa
+   saltar la conversa, perquè tothom sap immediatament quins extres està donant
+   i ningú li ha agraït mai.
+2. **Els gomets de satisfacció** (blau satisfet, groc no). És **la capa que
+   converteix un dibuix en un diagnòstic**: un full sense gomets diu què hi ha
+   i no diu on hi ha feina. No en teníem res.
+3. **Les vuit preguntes de l'anàlisi.** El mapa no diu res sol; el que diu
+   alguna cosa és el grup responent-les amb el dibuix al davant.
+
+**I una validació que val la pena dir en veu alta: el pols ve d'allà.** El guió
+té un pas, «el pols de la xarxa de valor», que demana marcar amb un cor **de
+dos a quatre llocs** on cal mirar la salut del flux, amb dues preguntes: *quin
+rol és més essencial per a la supervivència de la xarxa, i què passaria si
+aquella persona la substituís una altra*. El pols animat de la portada i el
+botó «i si aquest node s'encalla?» **són exactament això**, i fins avui ho
+dèiem com si fos una idea de disseny nostra. Ara consta d'on ve.
+
+**Les quatre passes grans.** Els deu passos eren plans i una llista de deu no es
+recorda. El guió els agrupa en quatre —abast, qui convidem, rols i
+transaccions, validar seqüenciant— i aquesta és la forma que es comunica:
+**quatre per recordar, deu per executar**.
+
+**Altres coses que el document aporta i que han entrat al coneixement:**
+8–10 rols per mapa i el sostre pràctic de **12 rols i 50 transaccions a mà**
+(que és, dit d'una altra manera, per què existeix el zoom); els entregables
+**amb noms i no amb verbs**, perquè un entregable és una cosa que es pot
+comprovar si ha arribat; la **seqüència** per validar el mapa i l'observació
+que *els intangibles sovint no hi entren perquè passen «tot el temps»*; la
+**llei de Conway**; i **Kaizen contra Kaikaku** — el VNA va més enllà de la
+millora contínua perquè habilita el salt.
+
+**La guarda i la prova.** `build-mapavalor.js` comprova que el full porti les
+dues menes d'entregable, els gomets, de dos a quatre cors i l'abast escrit —i
+que **cap etiqueta surti de la seva caixa**, que és un defecte d'ofici que es
+va veure mirant el dibuix i no executant res: amb una amplada fixa en sortien
+sis. Provada posant-hi l'amplada fixa: en caça onze. `test-vna.mjs` hi afegeix
+nou assercions, entre elles que el full **té el seu CSS** —el defecte que ja va
+passar amb els polsos.
+
+⚠ **I una fila de `trajectoria.md` que ara és més forta:** el guió **confirma
+l'equip d'IKEA** —Álvaro Solache com a **director del VNA**, Bep Moll a
+comunicació, Antonio Blanco i Sergio Salgado com a consultors i analistes— i
+que l'àmbit d'una de les sessions era **la xarxa de venda i devolucions**.
+*Encara falten els anys.*
+
+**El que queda:** l'article anuncia una segona part amb el cas d'una escola de
+postgrau; no s'ha comprovat si existeix (`pantheon.work` segueix bloquejat pel
+proxy d'aquest entorn).
+
+---
+
 ### El pressupost, en dues llengües · i l'abast del VNA (02/10/2026)
 
 **Tres coses demanades per l'Àlvar el mateix dia.**
