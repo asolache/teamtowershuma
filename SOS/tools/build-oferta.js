@@ -233,6 +233,45 @@ const PAQUETS = [
     diners: 'Pressupost propi de millora o de formació',
     dinersEs: 'Presupuesto propio de mejora o de formación' },
 
+  /* ── L'ALT TIQUET ─────────────────────────────────────────────────────
+     Això no és el taller Fent Pinya, i la distinció és el producte.
+
+     El taller funciona: s'arriba, et munten com a colla, i en hora i mitja
+     aprens les posicions, aprens a pujar, et subjecten, t'expliquen per què la
+     música canvia a cada fase, i acabes fent una estructura de cinc pisos que
+     es viu com a èpica. El que en queda és el valor: **havent viscut un
+     sistema viu i efímer, posar nom als rols de casa teva es torna fàcil.**
+
+     El que es ven aquí és aquell impacte **sobre el cas real de la casa**, i
+     el pont és el vocabulari de `POSICIONS` (`build-castells.js`): el seu dos,
+     el seu terç lateral. Àgil i amb resultat immediat, com el taller — no una
+     consultoria de sis mesos.
+
+     `punt: 'nou'` i no `provat`, i això és una decisió i no un descuit: **els
+     vint anys de taller no són la prova d'això.** El camp `punt` existeix
+     precisament per impedir que una trajectòria avali un producte que encara
+     no s'ha entregat mai, que és el que feia el README abans del catàleg.
+
+     `font: 'estimacio'`, pel mateix motiu. I `sector: 'tots'` amb entrada per
+     sota dels 5.000 € perquè una administració ho pugui contractar com a
+     contracte menor: sense l'entrada baixa, la guarda ho peta i té raó. */
+  { id: 'fent-pinya-vna', sector: 'tots', fam: 'consultoria', ve: 'README', punt: 'nou',
+    preuMin: 4500, preuMax: 12000, font: 'estimacio', publica: true, enllac: '/SOS/vna.html',
+    nom: 'Fent pinya amb el mapa de valor',
+    nomEs: 'Haciendo piña con el mapa de valor',
+    qui: 'Comitès de direcció, equips de govern i consells rectors · de 12 a 40 persones',
+    quiEs: 'Comités de dirección, equipos de gobierno y consejos rectores · de 12 a 40 personas',
+    dura: '1 jornada + 2 sessions · 3-5 setmanes',
+    duraEs: '1 jornada + 2 sesiones · 3-5 semanas',
+    endus: 'Els rols de la casa amb nom arquetípic —qui és el baix de cada àrea, qui fa de vent entre dues— i el seu flux de valor en les dues vistes: el mapa i la pinya. Amb la desviació entre el mapa òptim i el que hi ha, i els rols redistribuïts.',
+    endusEs: 'Los roles de la casa con nombre arquetípico —quién es el baix de cada área, quién hace de vent entre dos— y su flujo de valor en las dos vistas: el mapa y la piña. Con la desviación entre el mapa óptimo y el que hay, y los roles redistribuidos.',
+    valor: 'L\'equip s\'alinea dient en veu alta quina és la seva organització real, i la veu com un sistema i no com la suma del que fa cadascú. Això no s\'aconsegueix amb un informe: es viu una vegada i després ja no es desfà.',
+    valorEs: 'El equipo se alinea diciendo en voz alta cuál es su organización real, y la ve como un sistema y no como la suma de lo que hace cada uno. Eso no se consigue con un informe: se vive una vez y después ya no se deshace.',
+    perque: 'Puja amb la gent a la jornada —cal colla i monitors per sostenir una estructura— i amb els àmbits a mapar; baixa si la jornada es fa sense estructura castellera i només amb la dinàmica de rols.',
+    perqueEs: 'Sube con la gente en la jornada —hace falta colla y monitores para sostener una estructura— y con los ámbitos a mapear; baja si la jornada se hace sin estructura castellera y solo con la dinámica de roles.',
+    diners: 'Pressupost de formació o de desenvolupament organitzatiu · Fundae a empresa',
+    dinersEs: 'Presupuesto de formación o de desarrollo organizativo · Fundae en empresa' },
+
   { id: 'mapa-comarcal', sector: 'public', fam: 'consultoria', ve: 'S1', punt: 'nou',
     preuMin: 3500, preuMax: 6000, font: 'negoci', publica: true, enllac: '/SOS/vna.html',
     nom: 'Mapa comarcal i assemblea federativa',

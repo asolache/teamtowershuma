@@ -73,3 +73,51 @@
 # L'aplicació mateixa, en minúscules.
 /sos /SOS/    200
 /sos/ /SOS/    200
+
+# `/events` era una pàgina de producció d'esdeveniments corporatius, retirada
+# l'01/10/2026. L'adreça havia estat pública i s'enllaçava des de fora, i deixar
+# -la en un 404 perdria qui hi arribi amb un enllaç vell. Va al catàleg, que és
+# on ara viu aquella oferta: la família de producció i dinamització.
+/events /#cataleg    301
+/events/* /#cataleg    301
+/events.html /#cataleg    301
+
+# ══ LA GENERACIÓ ANTERIOR DEL LLOC · retirada l'01/10/2026 ══════════════════
+# Hi havia catorze pàgines publicades i indexables d'una generació anterior
+# —consultoria de RRHH, «Sistema Integral», tokenomics, dues apps de VNA— que
+# **no s'enllaçaven des de cap lloc** i deien una altra cosa sobre el mateix
+# que diu la portada d'avui. Un lloc que diu dues coses no en diu cap.
+#
+# Es retiren i **cada adreça va on viu ara allò**, no a la portada per defecte:
+# una redirecció a l'arrel és una manera elegant de dir «ja no hi és», i qui
+# buscava mapes de valor ha d'arribar als mapes de valor.
+/valor /SOS/vna.html    301
+/valor.html /SOS/vna.html    301
+/mapas /SOS/vna.html    301
+/mapas.html /SOS/vna.html    301
+/app /SOS/vna.html    301
+/app.html /SOS/vna.html    301
+/comptabilitat /SOS/    301
+/comptabilitat.html /SOS/    301
+/comptabilitat_de_valor /SOS/formacio.html    301
+/comptabilitat_de_valor.html /SOS/formacio.html    301
+/coops /#cataleg    301
+/coops.html /#cataleg    301
+/app_coops /#cataleg    301
+/app_coops.html /#cataleg    301
+/rrhh /#cataleg    301
+/rrhh.html /#cataleg    301
+/sistema_integral /#cataleg    301
+/sistema_integral.html /#cataleg    301
+/equip /#facilitador    301
+/equip.html /#facilitador    301
+/colla /SOS/    301
+/colla.html /SOS/    301
+/lacolla /SOS/    301
+/lacolla.html /SOS/    301
+# Tokenomics no té substitut i no és oferta d'avui: va al catàleg, que és on es
+# diu què es ven de debò i què encara no està construït.
+/tokenomics /#cataleg    301
+/tokenomics.html /#cataleg    301
+/tokenomics_config /#cataleg    301
+/tokenomics_config.html /#cataleg    301

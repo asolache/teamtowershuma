@@ -251,18 +251,24 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   /* `cost` va just després del catàleg i no abans: primer es veu què es ven i
      amb quina forquilla, i llavors d'on surt el número. A l'inrevés seria
      explicar una comptabilitat a algú que encara no sap què li ofereixes. */
-  /* `fentpinya` i `mapaval` han pujat al davant de tot. El que la pàgina ven
-     és el mapa de valor, i qui acaba de llegir al hero que això va «dels
-     castells al flux de valor» ha de poder veure què és un flux de valor a la
-     pantalla següent — no tres pantalles de problema abans. Van en parella i en
-     aquest ordre: el castell diu QUÈ ÉS un mapa i el celler QUÈ S'HI TROBA. */
+  /* UNA SOLA JERARQUIA: el producte primer, i d'on ve, a sota.
+     `fentpinya` obria la pàgina i ara va al pis de la història, just abans de
+     «D'on ve això». No és una degradació: obrint, els castells es llegien com
+     la marca —comprar una trajectòria— i el producte no sortia fins a la
+     quarta pantalla.
+
+     Ara obren `dues-vistes` (el mateix cas mirat de dues maneres), `rengles`
+     (com es llegeix una pinya) i `rols` (el vocabulari), i els castells són la
+     prova del mètode i no el mètode. `mapaval` ja no existeix com a secció:
+     és la primera pestanya de `dues-vistes`. */
   /* `beneficis` ha marxat a /sos/ sencer, i `aprenent` i `sos` s'hi han quedat
      com a ponts: el que ajuda a decidir una compra es queda a la portada i el
      que ajuda a fer servir el model viu a l'app. Els dos ponts segueixen a
      l'espina perquè el camí cap al SOS no es pugui perdre —això ho vigila
      `check-landing.js` regla 7d—, però ja no són seccions de contingut. */
-  const ESPINA = ['fentpinya', 'mapaval', 'enfoc', 'glossari', 'relat', 'com',
-                  'aprenent', 'cataleg', 'cost', 'sos', 'trajectoria', 'objeccions'];
+  const ESPINA = ['dues-vistes', 'rengles', 'rols', 'enfoc', 'glossari', 'fentpinya',
+                  'relat', 'com', 'aprenent', 'cataleg', 'cost', 'sos',
+                  'trajectoria', 'objeccions'];
   const pos = id => r.ordre.indexOf(id);
   const falten = ESPINA.filter(id => pos(id) < 0);
   ok(!falten.length, 'l\'espina de la pàgina hi és sencera' + (falten.length ? ': falta ' + falten.join(', ') : ''));

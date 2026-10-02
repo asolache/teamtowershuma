@@ -67,14 +67,18 @@ const OBJECTIUS = [
     id: 'cohesio', ic: '🤝', c: 'green', preguntes: 'format',
     t: 'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',
     diu: 'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',
-    paquets: ['fent-pinya', 'formacio-equips'],
+    paquets: ['fent-pinya', 'fent-pinya-vna', 'formacio-equips'],
     llegim: 'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.'
   },
   {
     id: 'mapa', ic: '🕸️', c: 'indigo', preguntes: 'dolor',
     t: 'Entendre com flueix el valor i de qui depenem de debò',
     diu: 'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',
-    paquets: ['mapa-organitzacio', 'persones-cultura'],
+    /* `fent-pinya-vna` hi va i va primer: és el mateix mapa, entregat amb la
+       jornada que fa que l'equip s'alineï dient en veu alta quina és la seva
+       organització real. Qui ve per aquest objectiu i té equip per moure és
+       justament qui el compra. */
+    paquets: ['fent-pinya-vna', 'mapa-organitzacio', 'persones-cultura'],
     llegim: 'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.',
     despres: ['fluxos-ia', 'web-ia']
   },

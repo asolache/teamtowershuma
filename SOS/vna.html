@@ -222,6 +222,30 @@ button[disabled]{opacity:.35;cursor:default}
   border-radius:4px;padding:0 .3rem}
 .ct-avis{font-size:.76rem;color:var(--apagat);line-height:1.6;margin:0}
 .ct-avis b{color:var(--clar)}
+/* ══ ELS ROLS ARQUETÍPICS ════════════════════════════════════════════════
+   El mateix bloc que a la portada, i el mateix generador. Aquí hi va perquè
+   és la pàgina on s'explica el mètode: el vocabulari és el que converteix la
+   pinya en una cosa que es pot fer servir dilluns. */
+.rl-wrap{max-width:900px;margin:2.2rem auto 0;display:grid;gap:1.4rem}
+.rl-g{border:1px solid var(--vora);border-radius:12px;padding:1rem 1.1rem;background:var(--card)}
+.rl-gk{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text);margin-bottom:.8rem}
+.rl-gk span{text-transform:none;letter-spacing:0;color:var(--apagat);font-size:.68rem}
+.rl-p{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr) minmax(0,1.5fr);gap:.85rem;
+  padding:.7rem 0;border-top:1px solid var(--vora);align-items:start}
+.rl-n{font-size:.86rem;color:var(--text);font-weight:600;padding-left:.6rem;
+  border-left:3px solid var(--vora)}
+.rl-c,.rl-o{font-size:.76rem;line-height:1.65;color:var(--clar)}
+.rl-o b{color:var(--verd);font-weight:600}
+.rl-a{grid-column:2 / -1;font-family:var(--mono);font-size:.64rem;color:var(--apagat)}
+.rl-a b{color:var(--clar);font-weight:400}
+.rl-avis{max-width:680px;margin:1.4rem auto 0;text-align:center;font-size:.76rem;line-height:1.7;
+  color:var(--apagat)}
+.rl-avis b{color:var(--clar)}
+@media (max-width:860px){
+  .rl-p{grid-template-columns:1fr;gap:.35rem}
+  .rl-a{grid-column:auto}
+}
 .ct-llei{max-width:720px;margin:1.6rem auto 0;text-align:center;font-size:.88rem;line-height:1.75;
   color:var(--clar);padding-top:1.3rem;border-top:1px solid var(--vora)}
 .ct-llei b{color:var(--text)}
@@ -308,7 +332,7 @@ button[disabled]{opacity:.35;cursor:default}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html" aria-current="page"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html" aria-current="page"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏛 La casa</summary><div class="sn-p"><a href="../clients.html"><b>Els clients</b><span>Amb qui s'ha treballat, i què s'hi va fer</span></a><a href="../curs_vna.html"><b>El laboratori de VNA</b><span>El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b>Premsa</b><span>El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
@@ -474,6 +498,91 @@ posar-t'hi tu.</p>
 </div>
 </section>
 <!--/VNA-PINYA-->
+
+<!--VNA-ROLS-->
+<!-- GENERAT per SOS/tools/build-castells.js · no s'edita a mà -->
+<div class="rl-wrap">
+  <div class="rl-g">
+    <div class="rl-gk">A la pinya <span>A terra. El que aguanta i no es veu a la foto.</span></div>
+    <div class="rl-p">
+      <div class="rl-n">Crossa</div>
+      <div class="rl-c">Apuntala l'espatlla del baix des del costat i li treu pes de sobre abans que es dobli.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>cura i acollida</b></div>
+    </div>
+    <div class="rl-p">
+      <div class="rl-n">Contrafort</div>
+      <div class="rl-c">Darrere el baix, aguantant-lo per l'esquena perquè no se li vagi enrere.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>ordre i seguiment</b></div>
+    </div>
+    <div class="rl-p" data-mena="primera">
+      <div class="rl-n" style="border-color:#6366f1">Primera mà</div>
+      <div class="rl-c">Encapçala la rengla, darrere el contrafort, i subjecta el segon per darrere.</div>
+      <div class="rl-o"><b>A una casa:</b> El suport directe d'una àrea: la persona que entrega el que aquella àrea ha promès.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>un ofici o producció</b></div>
+    </div>
+    <div class="rl-p" data-mena="lateral">
+      <div class="rl-n" style="border-color:#00e676">Lateral</div>
+      <div class="rl-c">Darrere les crosses, amb els braços estirats, subjecta les cuixes dels segons pels costats.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>temps constant</b></div>
+    </div>
+    <div class="rl-p" data-mena="vent">
+      <div class="rl-n" style="border-color:#ff9100">Vent</div>
+      <div class="rl-c">Entre crossa i crossa: amb una mà agafa un pilar i amb l'altra, l'altre.</div>
+      <div class="rl-o"><b>A una casa:</b> L'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>contactes al territori</b></div>
+    </div>
+  </div>
+  <div class="rl-g">
+    <div class="rl-gk">Al tronc <span>Els pisos. El que es puja i transmet el pes avall.</span></div>
+    <div class="rl-p">
+      <div class="rl-n">Baix</div>
+      <div class="rl-c">A terra, sota el tronc, amb el pes de tot el castell a les espatlles. No es mou i no mira amunt.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>temps constant</b></div>
+    </div>
+    <div class="rl-p">
+      <div class="rl-n">Segon</div>
+      <div class="rl-c">Primer pis sobre el baix. Ha de ser ferm i lleuger alhora: transmet avall tot el que rep de dalt.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>un ofici o producció</b></div>
+    </div>
+    <div class="rl-p">
+      <div class="rl-n">Terç</div>
+      <div class="rl-c">Tercer pis. On el castell es decideix: ja és alt i encara ha de pujar gent per sobre.</div>
+      <div class="rl-o"><b>A una casa:</b> El pis del mig d'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>vehicle i disponibilitat</b></div>
+    </div>
+  </div>
+  <div class="rl-g">
+    <div class="rl-gk">Al pom de dalt <span>Els de la canalla. Pesen poc i decideixen si el castell és carregat o descarregat.</span></div>
+    <div class="rl-p">
+      <div class="rl-n">Aixecador</div>
+      <div class="rl-c">Fa de frontissa del pom de dalt: s'ajup perquè els altres passin i aixeca quan toca.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>cura i acollida</b></div>
+    </div>
+    <div class="rl-p">
+      <div class="rl-n">Enxaneta</div>
+      <div class="rl-c">Corona, fa l'aleta i baixa. És a dalt tres segons i és la foto.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>veu i difusió</b></div>
+    </div>
+  </div>
+  <div class="rl-g">
+    <div class="rl-gk">Fora de l'estructura <span>Qui no aguanta res i tria què s'intenta.</span></div>
+    <div class="rl-p">
+      <div class="rl-n">Cap de colla</div>
+      <div class="rl-c">No és a l'estructura: decideix quina figura es prova, en quin ordre i quan es desmunta.</div>
+      <div class="rl-o"><b>A una casa:</b> Qui tria què s'intenta amb la gent que hi ha. La decisió que no es pot delegar a l'estructura que l'ha d'aguantar.</div>
+      <div class="rl-a">Encaixa amb qui porta <b>números i negociació</b></div>
+    </div>
+  </div>
+</div>
+<p class="rl-avis">Els noms varien de colla a colla i aquests són els d'ús més estès. El que no varia és per què hi és cada posició, que és l'única cosa que es pot traslladar a una organització. <b>Això posa nom, no puntua ningú.</b></p>
+<!--/VNA-ROLS-->
 
 <div class="peu">
 <p><strong>D'on surt això.</strong> És l'anàlisi de xarxes de valor de <strong>Verna Allee</strong>:

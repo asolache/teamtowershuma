@@ -67,6 +67,22 @@ const GRUPS = [
     ['vedes.html', 'Les vedes', 'Les regles, amb el motiu al costat'],
     ['blog.html', 'Blog', 'Cada capacitat, explicada']
   ] },
+  /* ══ EL GRUP DE L'ARREL ══════════════════════════════════════════════
+     `arrel: true` vol dir que aquests destins **no viuen a `/SOS/`** sinó a la
+     raíz del lloc. Fins avui el menú només sabia nomenar pàgines del SOS, i el
+     resultat és que **cap de les 25 pàgines de l'arrel es podia trobar des de
+     cap lloc**: ni des de la portada, ni des del README, ni des del menú.
+     Pàgines senceres i publicades —els clients, els esdeveniments del Penedès,
+     el laboratori de VNA— que només hi arribava qui en sabia l'adreça.
+
+     La resta de l'arrel segueix fora, i ara **amb el motiu escrit**
+     (`FORA_DEL_MENU_ARREL`): una pàgina publicada i no enllaçada ha de ser una
+     decisió, no un oblit. */
+  { id: 'casa', lbl: 'La casa', ic: '🏛', arrel: true, links: [
+    ['clients.html', 'Els clients', 'Amb qui s\'ha treballat, i què s\'hi va fer'],
+    ['curs_vna.html', 'El laboratori de VNA', 'El curs d\'anàlisi de xarxes de valor'],
+    ['premsa.html', 'Premsa', 'El que se n\'ha dit a fora']
+  ] },
   { id: 'xarxa', lbl: 'Xarxa', ic: '🏘', links: [
     ['comando.html', 'El Comando', 'La pel·lícula que farem 150.000'],
     ['molekulon.html', 'Molekulon', 'Molekulandia, un estat líquid'],
@@ -105,6 +121,43 @@ const FORA_DEL_MENU = {
   'diagnostic-org.html': 'Branca del diagnòstic. S\'hi entra per la tria de `diagnostic.html`, que és qui explica quina et toca.',
   'diagnostic-territori.html': 'Branca del diagnòstic. S\'hi entra per la tria de `diagnostic.html`, que és qui explica quina et toca.'
 };
+
+/* ══ L'ARREL, I EL QUE NO SURT AL MENÚ ═══════════════════════════════════
+   A l'arrel del lloc hi ha vint-i-cinc fitxers HTML publicats i, fins avui,
+   **vint-i-quatre no s'enllaçaven des de cap lloc**: ni des de la portada, ni
+   des del README, ni des del menú. S'hi arribava sabent-ne l'adreça.
+
+   Això no petava perquè no hi havia cap registre que ho comptés: el SOS tenia
+   `FORA_DEL_MENU` des del dia que es va fer el menú, i l'arrel no en tenia cap.
+   Ara en té, i la regla és la mateixa: **una pàgina publicada i no enllaçada ha
+   de ser una decisió amb el motiu escrit, no un oblit.**
+
+   ⚠ La majoria d'aquestes pàgines són **una generació anterior del lloc**
+   —consultoria de RRHH, «Sistema Integral», tokenomics— i estan publicades,
+   indexables i signades «TeamTowers Humà» parlant de món corporatiu, que és
+   justament el que la guia de marca separa. Decidir què se'n fa (actualitzar-les,
+   posar-los `noindex` o retirar-les) **no és una decisió de codi** i per això
+   aquí només queda anotat, amb el motiu de cada una. */
+const FORA_DEL_MENU_ARREL = {
+  'index.html': 'És la portada: té la seva pròpia barra i el desplegable sencer.',
+  'home-nova.html': 'Esborrany de redisseny de portada, amb `noindex`. El genera `build-vitrina.js`.',
+  /* ── Eines internes ─────────────────────────────────────────────────── */
+  'finances.html': 'Eina interna de comptes. No és una pàgina per passejar-hi.',
+  'ia.html': 'Prova d\'assistent. La pàgina pública dels fluxos amb IA és `/SOS/ia.html`.'
+};
+
+/* ⚠ **La generació anterior se n'ha anat (01/10/2026).** Aquí hi havia catorze
+   motius escrits per a catorze pàgines publicades i indexables —consultoria de
+   RRHH, «Sistema Integral», tokenomics, dues apps de VNA— que no s'enllaçaven
+   des de cap lloc i deien una altra cosa sobre el mateix que diu la portada.
+
+   Un registre d'orfes no és una solució: és una llista d'un problema, i
+   escriure-hi el motiu només el feia visible. Les pàgines s'han retirat i cada
+   adreça té la seva redirecció 301 a `_redirects`, cap a **on viu ara allò** i
+   no a la portada per defecte. L'historial de git les guarda senceres.
+
+   El registre es queda, i és el que impedeix que això torni a passar. */
+
 
 /* ══ QUINA EINA SERVEIX QUINA DINÀMICA ═══════════════════════════════════
    Set de les dotze dinàmiques del catàleg tenen una pàgina que fa la seva
@@ -151,7 +204,8 @@ function nav(pagina) {
     const dins = g.links.some(l => aqui(l[0]));
     return `<details class="sn-g${dins ? ' sn-here' : ''}"><summary>${g.ic} ${esc(g.lbl)}</summary>` +
       `<div class="sn-p">` + g.links.map(([h, t, d]) =>
-        `<a href="${h}"${aqui(h) ? ' aria-current="page"' : ''}><b>${esc(t)}</b><span>${esc(d)}</span></a>`
+        /* Des d'una pàgina del SOS, l'arrel és un nivell amunt. */
+        `<a href="${g.arrel ? '../' + h : h}"${!g.arrel && aqui(h) ? ' aria-current="page"' : ''}><b>${esc(t)}</b><span>${esc(d)}</span></a>`
       ).join('') + `</div></details>`;
   };
   /* El CSS va DINS de les marques. A fora, el bloc de substitució el tornava a
@@ -250,7 +304,13 @@ function posa(html, pagina) {
    als setze llocs i a dins de l'app, i no cal recordar-se'n. */
 function blocApp() {
   const dades = {
-    grups: GRUPS.map(g => ({ lbl: g.lbl, ic: g.ic,
+    /* Només els grups del SOS. Aquesta llista és **les eines de l'aplicació**,
+       i les pàgines de l'arrel —els clients, els esdeveniments, el laboratori—
+       no ho són: oferir-les aquí seria vendre marketing com a eina i deixaria
+       qui hi clica fora de l'app sense avisar. A la barra de les pàgines del
+       SOS i al desplegable de la portada sí que hi van, perquè allà la feina
+       de la llista és dir **on és tot**. */
+    grups: GRUPS.filter(g => !g.arrel).map(g => ({ lbl: g.lbl, ic: g.ic,
       links: g.links.filter(l => l[0] !== APP).map(([h, t, d]) => ({ h, t, d })) }))
       .filter(g => g.links.length),
     eines: EINES
@@ -267,7 +327,7 @@ function blocPortada() {
   const grup = g => `      <div class="tp-g">
         <div class="tp-g-l">${g.ic} ${esc(g.lbl)}</div>
 ` + g.links.map(([h, t, d]) =>
-    `        <a href="/SOS/${h}"><b>${esc(t)}</b><span>${esc(d)}</span></a>`).join('\n') +
+    `        <a href="/${g.arrel ? '' : 'SOS/'}${h}"><b>${esc(t)}</b><span>${esc(d)}</span></a>`).join('\n') +
     `\n      </div>`;
   return P_OBRE + `
 <details class="tt-pagines">
@@ -291,6 +351,27 @@ function posaApp(html) {
   const i = html.indexOf(A_OBRE), j = html.indexOf(A_TANCA);
   if (i < 0 || j <= i) return null;
   return html.slice(0, i) + blocApp() + html.slice(j + A_TANCA.length);
+}
+
+/* ══ LA GUARDA DE L'ARREL ════════════════════════════════════════════════
+   Tota pàgina de l'arrel o surt al menú o té el motiu escrit. I al revés: un
+   motiu escrit per a una pàgina que ja no existeix és un registre que menteix,
+   i el dia que calgui decidir alguna cosa es decidirà amb una llista vella. */
+{
+  const { readdirSync } = require('node:fs');
+  const arrel = readdirSync(ARREL).filter(f => /\.html$/.test(f)).sort();
+  const alMenu = GRUPS.filter(g => g.arrel).flatMap(g => g.links.map(l => l[0]));
+  const orfes = arrel.filter(f => !alMenu.includes(f) && !FORA_DEL_MENU_ARREL[f]);
+  const fantasmes = Object.keys(FORA_DEL_MENU_ARREL).filter(f => !arrel.includes(f));
+  if (orfes.length) bad(`${orfes.length} pàgines de l'arrel sense menú ni motiu: ${orfes.join(', ')}`
+    + ' — publicades i no enllaçades des de cap lloc, que és un dels errors que la guia de marca documenta');
+  else ok(`les ${arrel.length} pàgines de l'arrel: ${alMenu.length} al menú i `
+    + `${Object.keys(FORA_DEL_MENU_ARREL).length} fora amb el motiu escrit`);
+  if (fantasmes.length) bad(`motius escrits per a pàgines que no existeixen: ${fantasmes.join(', ')}`);
+  /* I que els destins del menú existeixin de debò. Un enllaç a una pàgina que
+     no hi és no peta: dona un 404 a qui el clica. */
+  const morts = alMenu.filter(f => !existsSync(join(ARREL, f)));
+  if (morts.length) bad(`destins del menú a l'arrel que no existeixen: ${morts.join(', ')}`);
 }
 
 if (CHECK) console.log('\nGuarda del menú · una sola arquitectura a totes les pàgines');
@@ -363,8 +444,12 @@ if (CHECK) {
   else bad(`${solapa.join(', ')} és alhora excepció i pàgina amb menú`);
   /* Cap enllaç del menú pot apuntar a una pàgina que no existeix: un menú amb
      un forat és pitjor que un menú curt. */
-  const morts = GRUPS.flatMap(g => g.links.map(l => l[0])).concat([CTA[0]])
-    .filter(h => !existsSync(join(SOS, h)));
+  /* Cada grup diu on viuen els seus destins: els de `arrel: true` a la raíz
+     del lloc i la resta a `SOS/`. Comprovar-los tots contra `SOS/` donava per
+     morts els quatre de l'arrel, que existeixen. */
+  const morts = GRUPS.flatMap(g => g.links.map(l => [g.arrel ? ARREL : SOS, l[0]]))
+    .concat([[SOS, CTA[0]]])
+    .filter(([base, h]) => !existsSync(join(base, h))).map(([, h]) => h);
   if (!morts.length) ok(`i els ${GRUPS.reduce((a, g) => a + g.links.length, 0) + 1} destins existeixen tots`);
   else bad(`el menú porta a pàgines que no hi són: ${morts.join(', ')}`);
 

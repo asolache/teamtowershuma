@@ -406,6 +406,86 @@ else {
   else bad("els ponts cap al SOS no diuen què s'hi troba: un botó sense motiu no el clica ningú");
 }
 
+/* ── 7e · Les dues vistes han de ser dues vistes ───────────────────────────
+   Hi havia dos dibuixos del mateix discurs —el graf del celler i plantes de
+   castell de casos declarats a mà— i cap dels dos era una vista de l'altre.
+   Ara surten del mateix cas, i el que això ha de seguir sent és comprovable
+   amb el text de la pàgina:
+
+   · els dos dibuixos hi són i es poden commutar,
+   · el commutador mana sobre panells que existeixen —una pestanya que apunta
+     a un `id` inexistent no peta i deixa la segona vista inabastable—,
+   · i **els botons del pols manen sobre tots dos**: si només nomenessin el
+     graf, encallar el node el buidaria i deixaria la pinya sencera. Això no
+     peta i no es veu, perquè els dos dibuixos són maquíssims per separat.
+
+   La guarda no mira si el dibuix és bonic: mira que les dues vistes no es
+   puguin separar sense que algú ho sàpiga. */
+{
+  const sec = bloc('<section class="dues-vistes" id="dues-vistes"', '</section>');
+  if (!sec) bad('no es troba la secció de les dues vistes (`#dues-vistes`)');
+  else {
+    const tabs = [...sec.matchAll(/class="dv-t[^"]*"[^>]*aria-controls="([^"]+)"/g)].map(m => m[1]);
+    const orfes = tabs.filter(id => !sec.includes(`id="${id}"`));
+    const dibuixos = ['mvCeller', 'plCeller'].filter(id => sec.includes(`id="${id}"`));
+    if (tabs.length < 2) bad(`només ${pl(tabs.length, 'pestanya', 'pestanyes')} a les dues vistes: `
+      + 'sense commutador és una vista i mitja');
+    else if (orfes.length) bad('pestanyes que manen sobre un panell que no existeix: ' + mostra(orfes)
+      + ' — no peta, i aquella vista no s\'hi pot arribar');
+    else if (dibuixos.length < 2) bad(`hi ha ${dibuixos.length} dels dos dibuixos (${dibuixos.join(', ') || 'cap'}): `
+      + 'el graf i la planta del mateix cas han d\'anar junts o no són dues vistes');
+    else ok(`les dues vistes hi són (${dibuixos.join(' i ')}) amb ${tabs.length} pestanyes que manen sobre panells que existeixen`);
+
+    /* El pols: `data-svg` ha de nomenar els dos dibuixos. */
+    const mana = (sec.match(/class="mv-pols-ui" data-svg="([^"]+)"/) || [, ''])[1].split(' ').filter(Boolean);
+    const fora = dibuixos.filter(id => !mana.includes(id));
+    if (!mana.length) bad('la secció no porta els botons del pols');
+    else if (fora.length) bad('els botons del pols no manen sobre ' + fora.join(', ')
+      + " — encallar el node buidaria un dibuix i deixaria l'altre sencer, i la segona vista seria decoració");
+    else ok(`i els botons del pols manen sobre tots ${mana.length} els dibuixos alhora`);
+  }
+
+  /* ── La xarxa ha de tenir les dues bandes ─────────────────────────────
+     Un mapa de valor amb una sola banda no és un mapa: és un organigrama. La
+     secció dibuixa els rols de la casa **i** els de qui contracta, i si un dia
+     se'n va una de les dues meitats quedarà una pàgina que es llegeix bé i que
+     ja no diu res —el mètode consisteix justament en els dos costats.
+
+     I una regla de marca: aquí no hi va cap nom d'empresa. Els nodes són rols;
+     els clients tenen la seva paret, amb la font escrita de cada un (regla 10).
+     Barrejar-los faria passar per client qualsevol rol dibuixat. */
+  const xarxa = bloc('<section class="xarxa" id="xarxa"', '</section>');
+  if (!xarxa) bad('no es troba el mapa de la xarxa (`#xarxa`)');
+  else {
+    const txt = sensTags(xarxa.replace(/<!--[\s\S]*?-->/g, ''));
+    const casa = /qui mapa|qui forma|qui ho fa passar|qui construeix/i.test(txt);
+    const fora = /ag[èe]ncies|empreses|institucions|administraci/i.test(txt);
+    const nodes = (xarxa.match(/class="mv-n"/g) || []).length;
+    if (!casa || !fora) bad('el mapa de la xarxa només té una banda ('
+      + (casa ? 'els oficis de la casa' : 'els de fora') + '): un mapa de valor amb un sol costat és un organigrama');
+    else if (nodes < 6) bad(`el mapa de la xarxa dibuixa ${nodes} nodes: amb menys no hi ha xarxa`);
+    else ok(`la xarxa té les dues bandes i ${nodes} rols dibuixats`);
+    /* I la frase que impedeix llegir-ho com una llista de clients. */
+    if (/no és una llista de clients|no es una lista de clientes/i.test(txt))
+      ok('i diu que els nodes són rols i no clients');
+    else bad("al mapa de la xarxa li falta dir que **no és una llista de clients**: "
+      + "qui el llegeixi pensarà que cada node és un contracte");
+  }
+
+  /* El vocabulari: cada posició ha de dir què és en una casa. Es mira sobre el
+     text visible perquè és el que llegeix qui no sap de castells. */
+  const rols = bloc('<section class="rols" id="rols"', '</section>');
+  if (!rols) bad('no es troba el vocabulari de rols (`#rols`)');
+  else {
+    const n = (rols.match(/class="rl-p"/g) || []).length;
+    const casa = (rols.match(/class="rl-o"/g) || []).length;
+    if (n < 8) bad(`només ${n} posicions al vocabulari: amb menys no s'hi pot llegir una organització`);
+    else if (casa !== n) bad(`${n} posicions i ${casa} traduccions a una casa: `
+      + 'una posició que només digui què fa en un castell és folklore');
+    else ok(`${n} posicions al vocabulari, totes amb la seva traducció a una casa`);
+  }
+}
+
 // ── 8 · Informatiu ───────────────────────────────────────────────────────
 const seccions = (cos.match(/<section/g) || []).length;
 const detalls = (cos.match(/<details class="faq-item"/g) || []).length;

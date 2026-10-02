@@ -41,18 +41,27 @@ const nova = async opts => {
 };
 
 /* ── 1 · On és, i per què allà ───────────────────────────────────────────── */
-console.log('\n1 · Les rengles van després del mapa, no abans');
+console.log('\n1 · Les rengles van després de les dues vistes, no abans');
 {
   const { ctx, p } = await nova();
   const r = await p.evaluate(() => {
     const ids = [...document.querySelectorAll('section[id]')].map(s => s.id);
-    return { hi: ids.indexOf('rengles'), mapa: ids.indexOf('mapaval'), enfoc: ids.indexOf('enfoc') };
+    return { hi: ids.indexOf('rengles'), mapa: ids.indexOf('dues-vistes'),
+             rols: ids.indexOf('rols'), enfoc: ids.indexOf('enfoc') };
   });
   ok(r.hi >= 0, 'la secció hi és');
-  /* Les rengles ordenen un mapa. Si sortissin primer, ordenarien una cosa que
-     qui llegeix encara no ha vist. */
+  /* `#mapaval` s'ha fusionat amb `#rengles` dins de `#dues-vistes`: el graf i
+     la planta són dues pestanyes del **mateix cas**, i tenir-los en dues
+     seccions era el que els feia semblar dos dibuixos sense relació.
+
+     `#rengles` es queda com la part didàctica —les cinc construccions i les
+     variables— i per això va després: ordena una cosa que qui llegeix acaba
+     de veure sobre un cas de debò. */
   ok(r.mapa >= 0 && r.hi === r.mapa + 1,
-    'i va just després del mapa: ordena una cosa que acabes de veure');
+    'i va just després de les dues vistes: ordena una cosa que acabes de veure');
+  /* I el vocabulari, l'últim dels tres: els noms ordenen una pinya, i si
+     sortissin primer anomenarien posicions que encara no s'han vist. */
+  ok(r.rols === r.hi + 1, 'i els rols arquetípics, just darrere');
   await ctx.close();
 }
 
