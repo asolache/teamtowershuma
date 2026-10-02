@@ -140,6 +140,22 @@ millorar el seu propi mètode.
 *Per què*: converteix el checklist en un expedient defensable davant d'una
 administració que finança.
 
+### Fase 9 · El zoom entra a la MATRIU
+
+Petició de l'Àlvar (01/10/2026), anotada sencera a `../dev/backlog.md` («El zoom
+· *més intuïtiu que un paper i un llapis*»): aquesta pàgina i la UX nova
+d'usuari final han de deixar entrar al mapa **dibuixant i fent zoom**, no
+canviant de pantalla. El primer tram del gest ja està fet entre nodes.
+
+Aquí toca un punt que no és d'interfície: **cada venture porta el seu `vna`
+propi amb identificadors nous**, així que el mapa de dins ja existeix però **no
+té cap aresta amb el de fora**. Cal fixar la regla de frontera —què travessa el
+límit i com es compta— abans del gest, perquè la reciprocitat i les slices no
+comptin dues vegades.
+
+*Per què*: és el que fa que el mapa de valor el pugui mantenir qui el viu, i no
+només qui sap on és el desplegable.
+
 ---
 
 ## Part III · Ordre recomanat
@@ -161,6 +177,10 @@ la resta són millores sobre una base incompleta.
 
 **Fase 4 immediatament després**: és la que dona a la coordinació una raó per
 obrir l'app cada setmana.
+
+**La Fase 9 queda fora d'aquesta cadena a posta**: no depèn de cap de les altres
+i cap no depèn d'ella, però sí d'una decisió de model —la regla de frontera—
+que s'ha de prendre abans d'escriure'n una línia.
 
 ---
 
