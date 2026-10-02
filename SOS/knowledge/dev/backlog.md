@@ -379,6 +379,69 @@ VNA, la premsa— a les quals només hi arribava qui en sabia l'adreça.
 
 ---
 
+### Les pàgines de l'arrel només afirmen el que poden sostenir (02/10/2026)
+
+Quedaven tres pàgines a l'arrel —`clients.html`, `curs_vna.html`,
+`premsa.html`— de la maqueta anterior, al menú i **sense cap guarda**.
+`check-landing.js` només mira `index.html`. Mirant-les una per una:
+
+**`clients.html` publicava tres cites que ningú ha dit.** Atribuïdes a un
+«Director de Transformación Digital» de **Telefónica**, una «Directora de
+RRHH» de **Novartis** i un **CEO de BBVA**, amb inicials d'avatar i tot, i amb
+afirmacions concretes («optimizar procesos clave en solo tres meses»).
+
+Els **noms d'empresa sí que tenen font** —fila a `trajectoria.md`, que diu que
+van ser clients de TeamTowers— però **les cites no en tenien cap**. És una
+distinció que importa: dir que algú va ser client és una cosa; posar-li paraules
+a la boca a un càrrec d'un banc és una altra, i molt més forta.
+
+I amb elles, «100+ organitzacions transformades», «25+ països», «94 % de
+satisfacció». A `premsa.html`, «50+ aparicions», «15+ països», «5M+ d'abast».
+**Cap amb font.** Xifres rodones, que són les que més fàcil es repeteixen i les
+que menys es poden defensar.
+
+**Què s'ha fet.** Les cites, fora. Les xifres agregades, fora, i al seu lloc
+les tres que es poden defensar —32 clients amb font, 20 anys, 2 aplicacions de
+VNA a IKEA— més la frase que diu **el que no consta**: «de cada client consta
+que ho va ser; de la majoria no consta quina entrega concreta va ser».
+
+I els enllaços: les tres pàgines apuntaven a mitja generació retirada
+(`/valor`, `/app`, `/coops`, `/rrhh`, `/equip`, `/colla`) i a tres adreces que
+**no han existit mai** (`/contacto`, `/masia`, `/prensa`). Ara van on viu ara
+allò, no a una redirecció que diu «ja no hi és».
+
+**La guarda: `check-arrel.js`** (a CI). Quatre regles, i la primera no és la
+que semblaria:
+
+1. **Cap cita.** No «cap cita sense font»: **cap cita**. Al coneixement de la
+   casa no hi ha ni una sola declaració de client recollida, o sigui que
+   qualsevol que aparegui l'ha escrit algú de dins. El dia que n'hi hagi una de
+   debò es posa la fila a `trajectoria.md` i es relaxa **a posta**, que és
+   diferent de no tenir la regla.
+2. **Cap xifra agregada sense font.** Les permeses es declaren a `XIFRES` amb
+   la fila que les sosté. Afegir-ne una vol dir afegir la font primer.
+3. **Cap enllaç intern cap a enlloc** — val un fitxer o una redirecció
+   declarada a `_redirects`, i res més.
+4. **Tota pàgina diu qui la signa** (`<meta name="author">`): una pàgina sense
+   autor no es pot revisar.
+
+Provada trencant-la per les dues bandes: posant una xifra de 5M+ i posant una
+cita. Les dues petan.
+
+> **El que de debò hi havia aquí**: *una pàgina que no té guarda no és una
+> pàgina que estigui bé, és una pàgina que ningú ha mirat.* Tres pàgines al
+> menú i cap regla, i el que hi havia a dins eren cites inventades a nom de
+> tres empreses reals.
+
+⚠ **El que queda, i és per a l'Àlvar:** `premsa.html` llista **aparicions
+datades concretes** —«Quarts de Nou (TV3), 22/10/2022», i quatre més— que **no
+tenen fila a `trajectoria.md`**. Són prou específiques per ser reals i per això
+no s'han tocat; l'únic mitjà documentat al coneixement és l'article d'*El
+Periódico* del 2007. Cada aparició vol la seva fila: mitjà, data i enllaç o
+«només en emissió».
+
+---
+
 ### L'arrel, neta (01/10/2026)
 
 **Decidit per l'Àlvar**, després que el registre d'orfes fes visible el

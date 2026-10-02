@@ -31,6 +31,13 @@ jobs:
       - name: Guarda de la portada (i18n de l'arrel)
         run: node SOS/tools/check-landing.js
 
+      # `check-landing.js` només mira la portada, i les pàgines de l'arrel són
+      # d'una maqueta anterior: publicaven tres cites atribuïdes a càrrecs de
+      # Telefónica, Novartis i BBVA que ningú havia dit, i xifres rodones sense
+      # procedència. No petava perquè no hi havia res que ho mirés.
+      - name: Les pàgines de l'arrel només afirmen el que poden sostenir
+        run: node SOS/tools/check-arrel.js
+
       # El Comando es va escriure en llocs i moments diferents i cap d'ells
       # sabia dels altres: el mateix personatge tenia quatre grafies repartides
       # per l'app. Això no peta mai —només fa que qui llegeixi dues pantalles
