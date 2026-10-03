@@ -87,6 +87,27 @@ hi siguin els tres.
   n'emetés una de pròpia tindríem dues qualitats de mapa, que és el que
   `auditoria-mapes.md` §3 ja va pagar una vegada: quatre fonts, quatre
   expanders, salut de 13 a 100.
+- **I la IA que el proposa, que avui crida a cegues.** `aiPlanValueFlows()` i
+  `aiSuggestMap()` envien a l'API la demanda, el territori, el tipus de
+  projecte i **els noms** dels prototips — i cap coneixement del mètode. Se li
+  demana a un model que faci un VNA sense dir-li què és un VNA, i s'accepta el
+  que torni si té la forma correcta. **Un mapa sintàcticament vàlid i
+  metodològicament fals és pitjor que cap mapa**: neix ambre i ensenya que
+  ambre és normal.
+
+  El contracte ja està escrit a **`for-ai/mapa-de-valor.md`** (03/10/2026): què
+  és un rol, per què tangible es decideix pel contracte i no per la matèria,
+  les deu regles que la proposta ha de complir, la forma canònica de la
+  resposta, i **què li ha d'anar al context** —el prototip sencer i no el nom,
+  el mapa que ja hi ha, el vocabulari de la casa—. Falta **endollar-ho**: que
+  el context de la crida el llegeixi d'allà i que la resposta es validi contra
+  les mateixes regles abans d'ensenyar-se com a mapa. Si no passa, no s'ensenya
+  el mapa: s'ensenya el que li falta.
+
+  I la pregunta que el fa valer més que un dibuix: **quin intangible que la
+  casa ja produeix i regala es pot convertir en forma negociable.** És la
+  «conversió de valor» de l'article de 2008, i és literalment el que ven el cas
+  del celler.
 - **El diagnòstic, declarat un cop.** `vnaAudit` (`SOS/index.html:11051`) ja
   calcula reciprocitat, densitat, diversitat, rols aïllats, concentració i
   salut amb els llindars d'`auditoria-mapes.md` §4. **No se'n fa una còpia**:

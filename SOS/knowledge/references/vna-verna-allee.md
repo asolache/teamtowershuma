@@ -9,17 +9,108 @@ Metodologia per analitzar xarxes de valor multi-actor, més enllà de la cadena 
 - **Densitat** distribuïda — evitar topologia estrella (tot passant pel nucli)
 - **Diversitat** de rols i de tipus d'intercanvis
 
+## La conversió de valor · el que el mètode és de debò
+
+**Afegit el 03/10/2026, de l'article de 2008.** El títol del paper no és «anàlisi
+de xarxes de valor» i prou: és «*Value Network Analysis **and value conversion**
+of tangible and intangible assets*». La pregunta que l'obre és aquesta, i és
+una altra de la que fèiem:
+
+> «Com convertim actius intangibles —coneixement humà, estructures internes,
+> maneres de treballar, reputació, relacions de negoci— en **formes de valor
+> negociables**?»
+
+Dibuixar qui dona què a qui és **el mitjà**. El que es ven és **la conversió**:
+posar en forma negociable allò que la casa ja produeix i regala. La pregunta va
+en dos sentits:
+
+| | |
+|---|---|
+| **Realització de valor** (entrades) | Com converteixo el que rebo en actius, tangibles i intangibles? Què em costa rebre-ho? |
+| **Creació de valor** (sortides) | Com faig servir els meus actius per crear valor per a altres rols? Quin d'aquests valors pot passar a ser tangible i generar ingressos? |
+
+**I l'exemple que l'article posa és el nostre cas del celler, escrit per
+l'autora el 2008**: una empresa de serveis financers donava als seus clients
+una sèrie d'informes estàndard **de franc**; en mirar les oportunitats de
+conversió va veure que molts d'aquells informes es podien empaquetar millor,
+enriquir amb anàlisi experta i **vendre**. Això és, paraula per paraula, el que
+el mapa del celler diu del relat, del lloc i del vessant.
+
+> ⚠ **Això encara no és a la pàgina.** `/vna` ven la conclusió —«el marge surt
+> de cobrar els intangibles que ja produeixes»— i **no diu el nom del
+> mecanisme**, que és el que la converteix en mètode i no en consell. Entrada
+> oberta al backlog.
+
+**I la frase que justifica mirar el sistema sencer abans que cap procés:**
+
+> «El valor és una **propietat emergent de la xarxa**. No es pot determinar
+> sumant tots els rols i les seves sortides.»
+
+Amb el corol·lari que val per a la venda: un lliurament **és** valor en un
+context i no en un altre, i una oferta no és una conversió fins que **un altre
+rol l'accepta**.
+
 ## Les tres anàlisis
 El que fa que això sigui un mètode i no una manera de dibuixar. Van pel seu nom
 a `/SOS/vna` i a `SOS/tools/build-mapavalor.js`, perquè qui busca el mètode
-l'ha de poder reconèixer:
+l'ha de poder reconèixer. **Els noms i l'ordre són els de l'article de 2008**, i
+el que hi ha entre parèntesis és l'estructura que l'article els dona i que
+nosaltres encara no fem:
 
 - **Anàlisi d'intercanvi** — el patró sencer: qui dona i no rep, quins vincles
-  van en un sol sentit, quins nodes estan carregats de més.
+  van en un sol sentit, quins nodes estan carregats de més. *Les preguntes
+  textuals: hi ha una lògica coherent en com es mou el valor? Les dues menes
+  són sanes o en domina una? Hi ha reciprocitat? Hi ha vincles morts, dèbils,
+  culs-de-sac o colls d'ampolla? **S'optimitza el sistema sencer, o hi ha rols
+  que en surten guanyant a costa d'altres?***
 - **Anàlisi d'impacte** — node per node: què rep, què li costa rebre-ho i què hi
   guanya. És la que explica per què hi ha gent que plega sense queixar-se.
+  *(L'article en dona una taula: per cada transacció, quines activitats
+  genera, els costos i riscos —tangibles i intangibles—, els beneficis en tres
+  nivells (valor tangible / capacitat actual / capacitat futura) i una última
+  columna, **el valor percebut pel qui ho rep**, de −2 a +2.)*
 - **Anàlisi de creació de valor** — què aporta cada node i què costaria no
   tenir-lo. És la que troba **el valor que ja es produeix i no es cobra**.
+  *(Taula pròpia: ús d'actius tangibles i intangibles en alt/mitjà/baix, costos
+  de cada mena, nivell de risc, com hi afegim valor, i cost/risc contra
+  benefici.)*
+
+**Els gomets tenen font i escala.** La columna «valor percebut per qui ho rep»
+de la taula d'impacte **és** el gomet blau i groc del full, i l'article li dona
+una escala de cinc punts. La frase que ho justifica: *«sovint dona idees, perquè
+els participants poden percebre una mateixa transacció de maneres força
+diferents»* — que és exactament per què els grups en posen dos, o un de cada
+color.
+
+**I les tres categories d'actiu intangible** que estructuren aquelles taules són
+les de **Karl-Erik Sveiby**: *competència humana, estructura interna i relacions
+externes*. No les fem servir enlloc.
+
+## Els llindars són nostres, i convé dir-ho
+
+L'article és explícit: comparar la **proporció** de transaccions tangibles i
+intangibles dona idees, però
+
+> «la recerca **encara no ha determinat quines són les proporcions ideals**».
+
+Els llindars de `vnaAudit` —reciprocitat 100 %, densitat ≥ 40 %, concentració
+≤ 40 %, salut ≥ 80— i els de `auditoria-mapes.md` §4 **són d'aquesta casa**,
+mesurats sobre els nostres 36 mapes sembrats. Són defensables i són útils; el
+que no són és de Verna Allee, i atribuir-los-hi seria el mateix error que
+inventar una xifra d'euros al celler.
+
+## On s'ha fet, segons la font
+
+Noms que l'article publica, i per tant citables: **Boeing** i la **Mayo Clinic**
+(combinant-ho amb Lean Manufacturing), el grup de sistemes adaptatius complexos
+de Boeing (amb dinàmica de sistemes), **Cisco** i **Telenor** (amb anàlisi de
+xarxes organitzatives), i l'avaluació **SMART de la Comissió Europea**, que fa
+servir VNA i indicadors de capital intel·lectual per avaluar xarxes de
+desplegament d'innovació als estats membres.
+
+El que els de Boeing i la Mayo en diuen, i que val per a la venda: **la vista de
+sistema sencer assegura el context abans de passar a l'anàlisi de processos, i
+els salts grossos surten al nivell de xarxa, no al de procés.**
 
 ## La notació
 Quatre paraules i prou. Un mapa amb quinze símbols no el llegeix ningú a una
@@ -27,15 +118,31 @@ sala, i a la sala és on s'ha de llegir.
 
 | | Què és |
 |---|---|
-| **Node** | Un rol, no una persona ni un càrrec |
-| **Transacció** | Una fletxa amb direcció, d'un node a un altre |
-| **Tangible** | Línia plena: el que es podria facturar |
+| **Rol** | Un rol, no una persona ni un càrrec |
+| **Transacció** | Una fletxa amb direcció, d'un rol a un altre |
+| **Tangible** | Línia plena: **el que és contractual** |
 | **Intangible** | Línia discontínua: el que no consta i sense el qual res funciona |
-| **Entregable** | El que se'n decideix. El mapa és l'eina, no l'entregable |
+| **Entregable** | La cosa que es mou. El mapa és l'eina, no l'entregable |
 
 Les dues menes es distingeixen **pel traç i no només pel color**: un mapa que
 només es llegeix distingint el blau del magenta deixa fora qui més necessita
 que el dibuix sigui clar.
+
+> ⚠ **El criteri és contractual, no físic**, i això és de l'article de 2008
+> paraula per paraula: *«que un entregable es consideri tangible o intangible
+> depèn de la seva **naturalesa contractual**, no de la seva naturalesa
+> física»*. Un informe escrit que el contracte preveu és **tangible**; el
+> mateix informe donat de franc per quedar bé és **intangible**. Dèiem «el que
+> es podria facturar», que s'hi acosta i es trenca al cas que importa: tot el
+> que la casa regala *es podria* facturar —aquesta és justament la tesi del
+> celler— i per tant «podria» no distingeix res. El que distingeix és si
+> **avui** algú el pot reclamar, que és exactament el «must» i l'«extra» de la
+> sala.
+
+I els tres elements són **només tres**, també de la font: *rols, transaccions i
+entregables*. L'«entregable» no és el que la casa s'endú de la consultoria
+—això ho diem nosaltres i està bé dir-ho— sinó **la cosa que viatja per la
+fletxa**: un document, un missatge, un favor, un accés.
 
 ## Les quatre passes grans
 
@@ -222,9 +329,21 @@ camí del visitant, 8 i 3 intangibles.
 
 ## Fonts
 
-**L'original.** Verna Allee, *The Future of Knowledge: Increasing Prosperity
-through Value Networks* (2003) i *Value Networks and the True Nature of
-Collaboration* (2011).
+**L'original, i llegit** (03/10/2026). Verna Allee, **«Value Network Analysis
+and value conversion of tangible and intangible assets»**, *Journal of
+Intellectual Capital*, vol. 9, núm. 1, 2008, pp. 5-24. Vint-i-una pàgines,
+aportades per l'Àlvar en PDF.
+
+Fins avui aquesta fila deia «l'original» i citava **dos llibres que no havia
+llegit ningú d'aquesta casa**: *The Future of Knowledge* (2003) i *Value
+Networks and the True Nature of Collaboration* (2011). Seguien sent certs com a
+referència i eren una cita de biblioteca, no una font: tot el que la casa sabia
+del mètode venia de l'article de Pantheon i del guió d'IKEA, que són pràctica i
+no el text de l'autora. Ara hi ha el text, i els dos llibres queden on els
+toca: **lectura de fons, pendent**.
+
+El que aquest article confirma paraula per paraula i el que hi afegeix, a la
+secció **«La conversió de valor»** de més amunt.
 
 **La pràctica en castellà.** **Antonio Blanco-Gracia i Ingrid Astiz**, «Value
 Network Analysis: ¿qué es? ¿para qué sirve? ¿cómo hacerlo?» —
