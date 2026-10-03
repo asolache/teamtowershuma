@@ -142,52 +142,86 @@ const PROCES = [
    contrast és l'argument, i si els dos camins es barregen no es veu. */
 const CELLER = {
   titol: 'Un celler del Penedès que mira el turisme de luxe',
+  titolEs: 'Una bodega del Penedès que mira al turismo de lujo',
   /* El títol i la descripció del dibuix, que és el que llegeix qui no el veu.
      Vivien escrits dins del dibuixant, i el dia que hi va haver un segon mapa
      aquell deia que era un celler. */
   titolSvg: 'Mapa de valor d\'un celler del Penedès',
+  titolSvgEs: 'Mapa de valor de una bodega del Penedès',
   descSvg: 'Set rols i setze lliuraments. A l\'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l\'operador de luxe i el visitant, on la meitat del que es lliura és intangible.',
+  descSvgEs: 'Siete roles y dieciséis entregas. A la izquierda el distribuidor, con quien todo lo que se entrega es tangible. A la derecha el operador de lujo y el visitante, donde la mitad de lo que se entrega es intangible.',
   /* El color diu de quin camí és cada node. El que no hi surt va d'indi. */
   colors: { canal: '#82828d', visitant: '#00e676' },
   una: 'El mateix vi, el mateix poble i la mateixa família. El que canvia és qui rep què — i sobretot, quins lliuraments es paguen.',
+  unaEs: 'El mismo vino, el mismo pueblo y la misma familia. Lo que cambia es quién recibe qué — y sobre todo, qué entregas se pagan.',
+  /* El nom va al dibuix i és **text visible**, no només de passar-hi el ratolí:
+     per això cada node porta el seu `nomEs`, i el dibuixant escriu les dues
+     versions amb el seu salt de línia calculat. Una sola etiqueta traduïda al
+     vol es partiria on no toca, perquè el castellà no fa les mateixes síl·labes. */
   nodes: [
-    { id: 'vi', nom: 'Qui fa el vi', x: 320, y: 58, cami: 'tots',
-      d: 'Vinya, verema i celler. Produeix el tangible que tothom veu i, de passada, tot el que després es podrà explicar.' },
-    { id: 'acollida', nom: 'Qui rep i explica', x: 320, y: 200, cami: 'visitant',
-      d: 'Obre la porta, ensenya la casa i posa nom a les coses. És el node que avui sovint no existeix com a rol, i el fa qui pot quan truquen.' },
-    { id: 'operador', nom: 'L\'operador de luxe', x: 540, y: 128, cami: 'visitant',
-      d: 'Conserge d\'hotel, agència especialitzada o qui tria el viatge d\'algú altre. No compra vi: compra no equivocar-se.' },
-    { id: 'visitant', nom: 'El visitant', x: 540, y: 300, cami: 'visitant',
-      d: 'Ve amb temps i amb ganes de quedar-se. Paga per haver-hi estat, i s\'endú ampolles perquè ha estat allà, no al revés.' },
-    { id: 'poble', nom: 'El poble', x: 320, y: 372, cami: 'visitant',
-      d: 'Restaurants, allotjament i oficis. No és decorat: és el que fa que la visita duri dos dies en comptes d\'una hora.' },
-    { id: 'canal', nom: 'El distribuïdor', x: 96, y: 128, cami: 'canal',
-      d: 'Arriba on el celler no arriba. És una relació sana i necessària, i té una particularitat que el mapa ensenya de seguida.' },
-    { id: 'terra', nom: 'La vinya i el veïnat', x: 96, y: 300, cami: 'tots',
-      d: 'El paisatge, el camí, la gent que hi viu. És el que fa que aquell vi sigui d\'allà i no de qualsevol lloc, i no cobra per això.' }
+    { id: 'vi', nom: 'Qui fa el vi', nomEs: 'Quién hace el vino', x: 320, y: 58, cami: 'tots',
+      d: 'Vinya, verema i celler. Produeix el tangible que tothom veu i, de passada, tot el que després es podrà explicar.',
+      dEs: 'Viña, vendimia y bodega. Produce el tangible que todo el mundo ve y, de paso, todo lo que después se podrá contar.' },
+    { id: 'acollida', nom: 'Qui rep i explica', nomEs: 'Quién recibe y explica', x: 320, y: 200, cami: 'visitant',
+      d: 'Obre la porta, ensenya la casa i posa nom a les coses. És el node que avui sovint no existeix com a rol, i el fa qui pot quan truquen.',
+      dEs: 'Abre la puerta, enseña la casa y pone nombre a las cosas. Es el nodo que hoy a menudo no existe como rol, y lo hace quien puede cuando llaman.' },
+    { id: 'operador', nom: 'L\'operador de luxe', nomEs: 'El operador de lujo', x: 540, y: 128, cami: 'visitant',
+      d: 'Conserge d\'hotel, agència especialitzada o qui tria el viatge d\'algú altre. No compra vi: compra no equivocar-se.',
+      dEs: 'Conserje de hotel, agencia especializada o quien elige el viaje de otra persona. No compra vino: compra no equivocarse.' },
+    { id: 'visitant', nom: 'El visitant', nomEs: 'El visitante', x: 540, y: 300, cami: 'visitant',
+      d: 'Ve amb temps i amb ganes de quedar-se. Paga per haver-hi estat, i s\'endú ampolles perquè ha estat allà, no al revés.',
+      dEs: 'Viene con tiempo y con ganas de quedarse. Paga por haber estado, y se lleva botellas porque ha estado allí, no al revés.' },
+    { id: 'poble', nom: 'El poble', nomEs: 'El pueblo', x: 320, y: 372, cami: 'visitant',
+      d: 'Restaurants, allotjament i oficis. No és decorat: és el que fa que la visita duri dos dies en comptes d\'una hora.',
+      dEs: 'Restaurantes, alojamiento y oficios. No es decorado: es lo que hace que la visita dure dos días en vez de una hora.' },
+    { id: 'canal', nom: 'El distribuïdor', nomEs: 'El distribuidor', x: 96, y: 128, cami: 'canal',
+      d: 'Arriba on el celler no arriba. És una relació sana i necessària, i té una particularitat que el mapa ensenya de seguida.',
+      dEs: 'Llega donde la bodega no llega. Es una relación sana y necesaria, y tiene una particularidad que el mapa enseña enseguida.' },
+    { id: 'terra', nom: 'La vinya i el veïnat', nomEs: 'La viña y el vecindario', x: 96, y: 300, cami: 'tots',
+      d: 'El paisatge, el camí, la gent que hi viu. És el que fa que aquell vi sigui d\'allà i no de qualsevol lloc, i no cobra per això.',
+      dEs: 'El paisaje, el camino, la gente que vive allí. Es lo que hace que ese vino sea de allí y no de cualquier sitio, y no cobra por ello.' }
   ],
-  /* [de, a, mena d'anada, què, mena de tornada, què] */
+  /* [de, a, mena d'anada, què, mena de tornada, què, **què en castellà**,
+     **què de tornada en castellà**]. Els dos últims es van afegir el
+     03/10/2026: el que es llegeix passant el ratolí per sobre d'una fletxa és
+     **setze frases**, i es quedaven totes en català amb el castellà posat. */
   parells: [
-    ['vi', 'acollida', 'tangible', 'el vi, la verema i el celler obert', 'intangible', 'saber què pregunta i què paga qui ve'],
-    ['acollida', 'visitant', 'intangible', 'el relat de la casa: qui poda, per què aquell vessant', 'tangible', 'el que paga per l\'experiència, no per l\'ampolla'],
-    ['operador', 'acollida', 'intangible', 'la confiança del seu client, que és el que de debò ven', 'tangible', 'una experiència exclusiva i hores reservades'],
-    ['visitant', 'operador', 'tangible', 'el que paga pel viatge sencer', 'intangible', 'que algú hagi triat per ell i no s\'hagi d\'equivocar'],
-    ['poble', 'visitant', 'tangible', 'taula, llit i ofici obert', 'tangible', 'despesa que es queda al municipi'],
-    ['vi', 'canal', 'tangible', 'volum a preu de canal', 'tangible', 'arribar on el celler no arriba'],
-    ['terra', 'vi', 'intangible', 'el lloc que fa que aquell vi sigui d\'allà', 'tangible', 'vinya treballada i camins oberts'],
-    ['acollida', 'poble', 'intangible', 'visitants amb temps i ganes de quedar-se', 'intangible', 'que el poble els tracti com la casa ha promès']
+    ['vi', 'acollida', 'tangible', 'el vi, la verema i el celler obert', 'intangible', 'saber què pregunta i què paga qui ve',
+      'el vino, la vendimia y la bodega abierta', 'saber qué pregunta y qué paga quien viene'],
+    ['acollida', 'visitant', 'intangible', 'el relat de la casa: qui poda, per què aquell vessant', 'tangible', 'el que paga per l\'experiència, no per l\'ampolla',
+      'el relato de la casa: quién poda, por qué esa ladera', 'lo que paga por la experiencia, no por la botella'],
+    ['operador', 'acollida', 'intangible', 'la confiança del seu client, que és el que de debò ven', 'tangible', 'una experiència exclusiva i hores reservades',
+      'la confianza de su cliente, que es lo que de verdad vende', 'una experiencia exclusiva y horas reservadas'],
+    ['visitant', 'operador', 'tangible', 'el que paga pel viatge sencer', 'intangible', 'que algú hagi triat per ell i no s\'hagi d\'equivocar',
+      'lo que paga por el viaje entero', 'que alguien haya elegido por él y no se tenga que equivocar'],
+    ['poble', 'visitant', 'tangible', 'taula, llit i ofici obert', 'tangible', 'despesa que es queda al municipi',
+      'mesa, cama y oficio abierto', 'gasto que se queda en el municipio'],
+    ['vi', 'canal', 'tangible', 'volum a preu de canal', 'tangible', 'arribar on el celler no arriba',
+      'volumen a precio de canal', 'llegar donde la bodega no llega'],
+    ['terra', 'vi', 'intangible', 'el lloc que fa que aquell vi sigui d\'allà', 'tangible', 'vinya treballada i camins oberts',
+      'el lugar que hace que ese vino sea de allí', 'viña trabajada y caminos abiertos'],
+    ['acollida', 'poble', 'intangible', 'visitants amb temps i ganes de quedar-se', 'intangible', 'que el poble els tracti com la casa ha promès',
+      'visitantes con tiempo y ganas de quedarse', 'que el pueblo los trate como la casa ha prometido']
   ],
   /* El que el mapa ensenya, i que no és una opinió: surt de comptar les
      fletxes. Els números els posa el generador, no aquesta llista. */
   troballes: [
     { t: 'El canal no compra res que no es pugui facturar',
-      d: 'Tots els lliuraments amb el distribuïdor són tangibles. No és un retret —és la seva feina—, però vol dir que <b>tot el que la casa produeix i no es pot facturar, per aquí se\'n va de franc</b>: el relat, el lloc, la família, el vessant.' },
+      tEs: 'El canal no compra nada que no se pueda facturar',
+      d: 'Tots els lliuraments amb el distribuïdor són tangibles. No és un retret —és la seva feina—, però vol dir que <b>tot el que la casa produeix i no es pot facturar, per aquí se\'n va de franc</b>: el relat, el lloc, la família, el vessant.',
+      dEs: 'Todas las entregas con el distribuidor son tangibles. No es un reproche —es su trabajo—, pero quiere decir que <b>todo lo que la casa produce y no se puede facturar, por aquí se va gratis</b>: el relato, el lugar, la familia, la ladera.' },
     { t: 'El camí del visitant sí que els paga',
-      d: 'Aquí els intangibles no són un extra: <b>són el producte</b>. L\'operador no ven vi, ven no equivocar-se; el visitant no paga l\'ampolla, paga haver-hi estat. I això la casa ja ho produeix cada dia sense cobrar-ho.' },
+      tEs: 'El camino del visitante sí que los paga',
+      d: 'Aquí els intangibles no són un extra: <b>són el producte</b>. L\'operador no ven vi, ven no equivocar-se; el visitant no paga l\'ampolla, paga haver-hi estat. I això la casa ja ho produeix cada dia sense cobrar-ho.',
+      dEs: 'Aquí los intangibles no son un extra: <b>son el producto</b>. El operador no vende vino, vende no equivocarse; el visitante no paga la botella, paga haber estado. Y eso la casa ya lo produce cada día sin cobrarlo.' },
     { t: 'Hi ha un node que no existeix com a rol',
-      d: '«Qui rep i explica» avui sol ser qui pot quan truquen. <b>És el node que sosté tot el camí de la dreta</b>, i mentre no sigui el rol d\'algú amb temps assignat, el marge que hi ha a la dreta no s\'hi arriba.' },
+      tEs: 'Hay un nodo que no existe como rol',
+      d: '«Qui rep i explica» avui sol ser qui pot quan truquen. <b>És el node que sosté tot el camí de la dreta</b>, i mentre no sigui el rol d\'algú amb temps assignat, el marge que hi ha a la dreta no s\'hi arriba.',
+      dEs: '«Quién recibe y explica» hoy suele ser quien puede cuando llaman. <b>Es el nodo que sostiene todo el camino de la derecha</b>, y mientras no sea el rol de alguien con tiempo asignado, al margen que hay a la derecha no se llega.' },
     { t: 'La vinya i el veïnat donen i no reben prou',
-      d: 'Reben feina i camins; donen el que fa que allò sigui únic i irrepetible. <b>És el vincle que es trenca sense avisar</b> —un poble que es cansa dels visitants—, i és barat de cuidar mentre encara es pot.' }
+      tEs: 'La viña y el vecindario dan y no reciben bastante',
+      d: 'Reben feina i camins; donen el que fa que allò sigui únic i irrepetible. <b>És el vincle que es trenca sense avisar</b> —un poble que es cansa dels visitants—, i és barat de cuidar mentre encara es pot.',
+      dEs: 'Reciben trabajo y caminos; dan lo que hace que aquello sea único e irrepetible. <b>Es el vínculo que se rompe sin avisar</b> —un pueblo que se cansa de los visitantes—, y es barato de cuidar mientras todavía se puede.' }
   ],
   /* ══ L'ENCALLAMENT ════════════════════════════════════════════════════
      Un mapa de valor dibuixat és una radiografia: ensenya què hi ha. El que
@@ -206,10 +240,13 @@ const CELLER = {
   encallament: {
     node: 'acollida',
     per: 'Avui no és el rol de ningú: el fa qui pot quan sona el telèfon.',
-    diu: 'Un node que no és de ningú no s\'atura un dia dolent: s\'atura cada dia una estona, i no surt a cap informe.'
+    perEs: 'Hoy no es el rol de nadie: lo hace quien puede cuando suena el teléfono.',
+    diu: 'Un node que no és de ningú no s\'atura un dia dolent: s\'atura cada dia una estona, i no surt a cap informe.',
+    diuEs: 'Un nodo que no es de nadie no se para un día malo: se para cada día un rato, y no sale en ningún informe.'
   },
   /* La frase que impedeix que això es llegeixi com una promesa de marge. */
-  avis: 'Aquest mapa és un exemple treballat, no el d\'un celler concret, i no porta cap xifra: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és <b>on mirar</b>, i quins lliuraments avui se\'n van sense cobrar.'
+  avis: 'Aquest mapa és un exemple treballat, no el d\'un celler concret, i no porta cap xifra: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és <b>on mirar</b>, i quins lliuraments avui se\'n van sense cobrar.',
+  avisEs: 'Este mapa es un ejemplo trabajado, no el de una bodega concreta, y no lleva ninguna cifra: el margen lo calcula la casa con sus números. Lo que el mapa aporta no es una previsión — es <b>dónde mirar</b>, y qué entregas hoy se van sin cobrar.'
 };
 
 /* ══ EL CAS, CAP A FORA ══════════════════════════════════════════════════════
@@ -557,44 +594,63 @@ const XARXA = {
   una: 'Set rols: els quatre que fa l\'Àlvar i els tres de l\'altra banda de la taula. El que es lliura en cada sentit, i el que es lliura i no es factura.',
   unaEs: 'Siete roles: los cuatro que hace Álvaro y los tres del otro lado de la mesa. Lo que se entrega en cada sentido, y lo que se entrega y no se factura.',
   titolSvg: 'Mapa de valor de la xarxa de TeamTowers',
+  titolSvgEs: 'Mapa de valor de la red de TeamTowers',
   descSvg: 'Set rols i setze lliuraments. A l\'esquerra i al centre, els quatre oficis de la casa: qui mapa, qui forma, qui ho fa passar i qui construeix la peça. A la dreta, les agències, les empreses i les institucions.',
+  descSvgEs: 'Siete roles y dieciséis entregas. A la izquierda y en el centro, los cuatro oficios de la casa: quién mapea, quién forma, quién lo hace pasar y quién construye la pieza. A la derecha, las agencias, las empresas y las instituciones.',
   colors: { casa: '#6366f1', fora: '#00e676', canal: '#82828d' },
   nodes: [
-    { id: 'mapa', nom: 'Qui mapa el valor', x: 320, y: 58, cami: 'casa',
-      d: 'Dibuixa qui dona què a qui, també el que no es factura. És el node del qual pengen tots els altres oficis de la casa.' },
-    { id: 'forma', nom: 'Qui forma fent', x: 320, y: 200, cami: 'casa',
-      d: 'Setze mòduls sobre el cas de qui els fa, no sobre un d\'inventat. És el que fa que el mapa no se\'n vagi amb nosaltres.' },
-    { id: 'produeix', nom: 'Qui ho fa passar', x: 96, y: 128, cami: 'casa',
-      d: 'Jornades, diades i logística, amb una sola persona responsable de tot el que pot sortir malament.' },
-    { id: 'construeix', nom: 'Qui construeix la peça', x: 96, y: 300, cami: 'casa',
-      d: 'Les eines: el SOS, els fluxos amb IA, les guardes que comproven a cada canvi que allò segueix dient la veritat.' },
-    { id: 'agencies', nom: 'Agències i consultores', x: 320, y: 372, cami: 'canal',
-      d: 'Tenen la relació i el volum; no tenen el mètode. És una relació sana i té la mateixa particularitat que el distribuïdor del celler.' },
-    { id: 'empreses', nom: 'Empreses i cooperatives', x: 540, y: 128, cami: 'fora',
-      d: 'Compren decidir millor i que l\'equip ho sostingui. Paguen amb pressupost propi i a termini curt.' },
-    { id: 'institucions', nom: 'Institucions i administració', x: 540, y: 300, cami: 'fora',
-      d: 'Ajuntaments, consells i centres educatius. Compren el mateix i ho paguen d\'una altra manera, amb els seus temps i els seus límits.' }
+    { id: 'mapa', nom: 'Qui mapa el valor', nomEs: 'Quién mapea el valor', x: 320, y: 58, cami: 'casa',
+      d: 'Dibuixa qui dona què a qui, també el que no es factura. És el node del qual pengen tots els altres oficis de la casa.',
+      dEs: 'Dibuja quién da qué a quién, también lo que no se factura. Es el nodo del que cuelgan todos los demás oficios de la casa.' },
+    { id: 'forma', nom: 'Qui forma fent', nomEs: 'Quién forma haciendo', x: 320, y: 200, cami: 'casa',
+      d: 'Setze mòduls sobre el cas de qui els fa, no sobre un d\'inventat. És el que fa que el mapa no se\'n vagi amb nosaltres.',
+      dEs: 'Dieciséis módulos sobre el caso de quien los hace, no sobre uno inventado. Es lo que hace que el mapa no se vaya con nosotros.' },
+    { id: 'produeix', nom: 'Qui ho fa passar', nomEs: 'Quién lo hace pasar', x: 96, y: 128, cami: 'casa',
+      d: 'Jornades, diades i logística, amb una sola persona responsable de tot el que pot sortir malament.',
+      dEs: 'Jornadas, diadas y logística, con una sola persona responsable de todo lo que puede salir mal.' },
+    { id: 'construeix', nom: 'Qui construeix la peça', nomEs: 'Quién construye la pieza', x: 96, y: 300, cami: 'casa',
+      d: 'Les eines: el SOS, els fluxos amb IA, les guardes que comproven a cada canvi que allò segueix dient la veritat.',
+      dEs: 'Las herramientas: el SOS, los flujos con IA, las guardas que comprueban en cada cambio que aquello sigue diciendo la verdad.' },
+    { id: 'agencies', nom: 'Agències i consultores', nomEs: 'Agencias y consultoras', x: 320, y: 372, cami: 'canal',
+      d: 'Tenen la relació i el volum; no tenen el mètode. És una relació sana i té la mateixa particularitat que el distribuïdor del celler.',
+      dEs: 'Tienen la relación y el volumen; no tienen el método. Es una relación sana y tiene la misma particularidad que el distribuidor de la bodega.' },
+    { id: 'empreses', nom: 'Empreses i cooperatives', nomEs: 'Empresas y cooperativas', x: 540, y: 128, cami: 'fora',
+      d: 'Compren decidir millor i que l\'equip ho sostingui. Paguen amb pressupost propi i a termini curt.',
+      dEs: 'Compran decidir mejor y que el equipo lo sostenga. Pagan con presupuesto propio y a plazo corto.' },
+    { id: 'institucions', nom: 'Institucions i administració', nomEs: 'Instituciones y administración', x: 540, y: 300, cami: 'fora',
+      d: 'Ajuntaments, consells i centres educatius. Compren el mateix i ho paguen d\'una altra manera, amb els seus temps i els seus límits.',
+      dEs: 'Ayuntamientos, consejos y centros educativos. Compran lo mismo y lo pagan de otra manera, con sus tiempos y sus límites.' }
   ],
+  /* Com a `CELLER`: els dos últims elements de cada parell són el que es
+     llegeix passant el ratolí, en castellà. */
   parells: [
     ['mapa', 'empreses', 'tangible', 'el mapa dels intercanvis reals i on es perd valor',
-      'intangible', 'accés al que de debò passa dins de la casa'],
+      'intangible', 'accés al que de debò passa dins de la casa',
+      'el mapa de los intercambios reales y dónde se pierde valor', 'acceso a lo que de verdad pasa dentro de la casa'],
     ['mapa', 'institucions', 'tangible', 'el mapa del teixit: qui sosté què i de qui penja tot',
-      'intangible', 'la porta al territori i la legitimitat de l\'encàrrec públic'],
+      'intangible', 'la porta al territori i la legitimitat de l\'encàrrec públic',
+      'el mapa del tejido: quién sostiene qué y de quién cuelga todo', 'la puerta al territorio y la legitimidad del encargo público'],
     ['forma', 'empreses', 'tangible', 'un equip format sobre el seu propi cas',
-      'tangible', 'pressupost de formació, que és el que té partida'],
+      'tangible', 'pressupost de formació, que és el que té partida',
+      'un equipo formado sobre su propio caso', 'presupuesto de formación, que es el que tiene partida'],
     ['forma', 'institucions', 'tangible', 'tècnics que poden replicar-ho sense nosaltres',
-      'intangible', 'una comunitat de pràctica que dura més que el contracte'],
+      'intangible', 'una comunitat de pràctica que dura més que el contracte',
+      'técnicos que pueden replicarlo sin nosotros', 'una comunidad de práctica que dura más que el contrato'],
     ['produeix', 'institucions', 'tangible', 'la jornada muntada i una sola persona responsable',
-      'intangible', 'vint anys de confiança al Penedès, que no es compra'],
+      'intangible', 'vint anys de confiança al Penedès, que no es compra',
+      'la jornada montada y una sola persona responsable', 'veinte años de confianza en el Penedès, que no se compran'],
     ['agencies', 'mapa', 'intangible', 'la confiança del seu client, que és el que de debò venen',
-      'tangible', 'un mètode que no tenen i que les diferencia'],
+      'tangible', 'un mètode que no tenen i que les diferencia',
+      'la confianza de su cliente, que es lo que de verdad venden', 'un método que no tienen y que las diferencia'],
     ['construeix', 'empreses', 'tangible', 'la peça funcionant, amb els fitxers seus i sense lligams',
-      'tangible', 'el que es paga per la peça'],
+      'tangible', 'el que es paga per la peça',
+      'la pieza funcionando, con sus ficheros y sin ataduras', 'lo que se paga por la pieza'],
     /* L'únic intercanvi **de dins cap a dins**: el mapa produeix el material
        que la formació fa servir, i la formació torna els casos que milloren el
        mapa. Que només n'hi hagi un és la troballa, i la compta el generador. */
     ['mapa', 'forma', 'tangible', 'el cas real sobre el qual s\'aprèn',
-      'intangible', 'els casos que tornen i que fan millor el mètode']
+      'intangible', 'els casos que tornen i que fan millor el mètode',
+      'el caso real sobre el que se aprende', 'los casos que vuelven y que hacen mejor el método']
   ],
   troballes: [
     { t: 'Quatre oficis i una sola persona',
@@ -704,10 +760,10 @@ const FLUX_PARAT = flux.filter(tocaEnc).length;
    Ara pren el mapa i se'n deriva el que necessita. `svgCeller(id)` segueix
    existint i dibuixa exactament el mateix que abans —byte a byte—, que és com
    s'ha comprovat que aquest canvi no toca res del que ja hi havia. */
-function svgMapa(mapa, id) {
+function svgMapa(mapa, id, clau) {
   const fl = mapa.parells.flatMap(x => [
-    { de: x[0], a: x[1], mena: x[2], q: x[3] },
-    { de: x[1], a: x[0], mena: x[4], q: x[5] }
+    { de: x[0], a: x[1], mena: x[2], q: x[3], qEs: x[6] || x[3] },
+    { de: x[1], a: x[0], mena: x[4], q: x[5], qEs: x[7] || x[5] }
   ]);
   const node = i => mapa.nodes.find(n => n.id === i);
   const enc = mapa.encallament ? mapa.encallament.node : null;
@@ -720,17 +776,28 @@ function svgMapa(mapa, id) {
     return { id: n.id, pct: rep.length ? p / rep.length : 0 };
   });
   const COL = Object.assign({}, mapa.colors);
-  return svgDe(mapa, id, fl, node, enc, toca, perd, COL);
+  return svgDe(mapa, id, fl, node, enc, toca, perd, COL, clau);
 }
 
-const svgCeller = id => svgMapa(CELLER, id);
+/* `clau` només la passa la portada: és l'única pàgina amb els dos
+   diccionaris. A `vna.html` el mateix dibuix s'escriu sense claus i només
+   amb el text català, que és el correcte mentre aquella pàgina sigui
+   monolingüe — i evita que hi surtin les dues etiquetes una sobre l'altra. */
+const svgCeller = (id, clau) => svgMapa(CELLER, id, clau);
 
-function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL) {
+/* `clau` és el prefix de les claus de diccionari del dibuix. Hi va perquè
+   **el text del mapa és text**: els noms dels nodes es llegeixen a sobre del
+   dibuix i les setze frases de les fletxes es llegeixen passant el ratolí, i
+   totes es quedaven en català amb el castellà posat. Sense prefix no s'hi
+   escriu cap clau, que és el que han de fer els dibuixos d'una pàgina sense
+   diccionari. */
+function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL, clau) {
+  const i18 = k => clau ? ` data-i18n="${clau}.${k}"` : '';
   const R = 46, W = 640, H = 430;
   const p = [];
   p.push(`<svg id="${id}" class="mv-svg viu" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}T ${id}D">`);
-  p.push(`<title id="${id}T">${esc(mapa.titolSvg)}</title>`);
-  p.push(`<desc id="${id}D">${esc(mapa.descSvg)}</desc>`);
+  p.push(`<title id="${id}T"${i18('tit')}>${esc(mapa.titolSvg)}</title>`);
+  p.push(`<desc id="${id}D"${i18('desc')}>${esc(mapa.descSvg)}</desc>`);
   p.push('<defs>' +
     '<marker id="mvT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00b0ff"/></marker>' +
     '<marker id="mvI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e040fb"/></marker>' +
@@ -765,7 +832,8 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL) {
     const para = tocaEnc(f) ? ' data-para="1"' : '';
     p.push(`<path class="mv-f" d="${cam}" fill="none" ` +
       `stroke="${tang ? '#00b0ff' : '#e040fb'}" stroke-width="${tang ? 2 : 1.6}" opacity="${tang ? .5 : .42}"` +
-      `${tang ? '' : ' stroke-dasharray="6 7"'}${para} marker-end="url(#${tang ? 'mvT' : 'mvI'})"><title>${esc(nodeDe(f.de).nom)} → ${esc(nodeDe(f.a).nom)}: ${esc(f.q)} (${f.mena})</title></path>`);
+      `${tang ? '' : ' stroke-dasharray="6 7"'}${para} marker-end="url(#${tang ? 'mvT' : 'mvI'})">` +
+      `<title${i18('f' + i)}>${esc(nodeDe(f.de).nom)} → ${esc(nodeDe(f.a).nom)}: ${esc(f.q)} (${f.mena})</title></path>`);
     // El retard reparteix els polsos: tots alhora serien un pampallugueig.
     camins.push(`<path class="mv-p${tang ? '' : ' i'}" d="${cam}" pathLength="100"${para}` +
       ` style="animation-delay:${(i * .17).toFixed(2)}s"/>`);
@@ -778,15 +846,31 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL) {
       : (perd && perd.pct >= .5 ? ' data-sec="1"' : '');
     p.push(`<g class="mv-n" data-id="${n.id}"${marca}>`);
     p.push(`<circle cx="${n.x}" cy="${n.y}" r="${R}" fill="#141420" stroke="${col}" stroke-width="1.6"/>`);
-    // El nom es parteix en dues línies quan no hi cap: un node amb el text
-    // sortint del cercle es llegeix com un error de dibuix.
-    const mots = n.nom.split(' ');
-    const linies = [];
-    let l = '';
-    mots.forEach(m => { if ((l + ' ' + m).trim().length > 13) { linies.push(l.trim()); l = m; } else l += ' ' + m; });
-    if (l.trim()) linies.push(l.trim());
-    const y0 = n.y - (linies.length - 1) * 6;
-    linies.forEach((t, k) => p.push(`<text x="${n.x}" y="${y0 + k * 12.5}" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">${esc(t)}</text>`));
+    /* El nom es parteix en dues línies quan no hi cap: un node amb el text
+       sortint del cercle es llegeix com un error de dibuix.
+
+       I s'escriu **un cop per llengua**, no un cop i traduït al vol: el salt de
+       línia es calcula aquí, i «Institucions i administració» i «Instituciones
+       y administración» no es parteixen pel mateix lloc. Amb una sola etiqueta
+       i el text canviat pel diccionari, la versió castellana sortiria del
+       cercle. Les ensenya el CSS segons l'atribut `lang` de la pàgina; en una
+       pàgina sense diccionari només s'hi escriu la catalana. */
+    const parteix = nom => {
+      const mots = nom.split(' ');
+      const linies = [];
+      let l = '';
+      mots.forEach(m => { if ((l + ' ' + m).trim().length > 13) { linies.push(l.trim()); l = m; } else l += ' ' + m; });
+      if (l.trim()) linies.push(l.trim());
+      return linies;
+    };
+    const escriu = (nom, cls) => {
+      const linies = parteix(nom);
+      const y0 = n.y - (linies.length - 1) * 6;
+      return linies.map((t, k) => `<text class="${cls}" x="${n.x}" y="${(y0 + k * 12.5).toFixed(1)}" `
+        + `text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="#f5f5f7">${esc(t)}</text>`).join('');
+    };
+    p.push(escriu(n.nom, 'mv-ca'));
+    if (clau && n.nomEs && n.nomEs !== n.nom) p.push(escriu(n.nomEs, 'mv-es'));
     p.push('</g>');
   });
   p.push('</svg>');
@@ -815,60 +899,163 @@ function blocPols(svgId, tambe) {
      guarda d'allà comprova que porti aquest identificador. */
   const mana = [svgId].concat(tambe || []).join(' ');
   const perduts = SENSE_REG.map(x => `${esc(x.n.nom)} (${x.perd} de ${x.total})`).join(' i ');
+  const perdutsEs = SENSE_REG.map(x => `${esc(x.n.nomEs || x.n.nom)} (${x.perd} de ${x.total})`).join(' y ');
   /* El bloc diu **a quin dibuix mana** amb `data-svg`, i el JavaScript de cada
      pàgina recorre els blocs que hi hagi. Amb els identificadors escrits a mà,
      el dia que la segona pàgina va rebre els polsos els botons van quedar
      apuntant al dibuix de la primera —i la pàgina es va publicar amb setze
      camins invisibles que no feien res. */
+  /* Les dues llengües van **als atributs** i no al diccionari: el text d'aquests
+     botons i d'aquest paràgraf canvia en prémer-los, i una clau de diccionari
+     el tornaria a l'estat de repòs cada cop que algú canviés de llengua amb el
+     pols aturat. El JavaScript de la pàgina tria l'atribut segons `lang`. */
+  const SA = 'Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l\'altra cosa '
+    + '—<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé.';
+  const SA_ES = 'Un mapa dibujado es una radiografía: dice qué hay. Con el pulso puesto se ve la otra cosa '
+    + '—<b>si aquello circula</b>—, que es lo que de verdad decide si una casa va bien.';
+  const ENC_CA = `${esc(ENC.per)} Amb aquest node aturat es paren <b>${FLUX_PARAT} dels ${cTot.n} lliuraments</b>, `
+    + `i ${perduts} perden la meitat del que els arriba. ${esc(ENC.diu)}`;
+  const ENC_ES = `${esc(ENC.perEs || ENC.per)} Con este nodo parado se paran <b>${FLUX_PARAT} de las ${cTot.n} entregas</b>, `
+    + `y ${perdutsEs} pierden la mitad de lo que les llega. ${esc(ENC.diuEs || ENC.diu)}`;
   return [`<div class="mv-pols-ui" data-svg="${mana}">`,
     '<div class="mv-pu-b">',
-    `<button type="button" class="mv-b mv-pausa" aria-pressed="false" aria-controls="${svgId}">⏸ Atura el pols</button>`,
-    `<button type="button" class="mv-b mv-enc" aria-pressed="false" aria-controls="${svgId}">🩺 I si «${esc(n.nom)}» s'encalla?</button>`,
+    `<button type="button" class="mv-b mv-pausa" aria-pressed="false" aria-controls="${svgId}"`
+    + ' data-ca="⏸ Atura el pols" data-ca-on="▶ Torna-li el pols"'
+    + ' data-es="⏸ Para el pulso" data-es-on="▶ Devuélvele el pulso">⏸ Atura el pols</button>',
+    `<button type="button" class="mv-b mv-enc" aria-pressed="false" aria-controls="${svgId}"`
+    + ` data-ca="🩺 I si «${esc(n.nom)}» s'encalla?"`
+    + ` data-es="🩺 ¿Y si «${esc(n.nomEs || n.nom)}» se atasca?">🩺 I si «${esc(n.nom)}» s'encalla?</button>`,
     '</div>',
-    `<p class="mv-pu-t" data-sa="Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé." ` +
-    `data-enc="${esc(ENC.per)} Amb aquest node aturat es paren <b>${FLUX_PARAT} dels ${cTot.n} lliuraments</b>, i ${perduts} perden la meitat del que els arriba. ${esc(ENC.diu)}">` +
-    'Un mapa dibuixat és una radiografia: diu què hi ha. Amb el pols posat es veu l\'altra cosa —<b>si allò circula</b>—, que és el que de debò decideix si una casa va bé.</p>',
+    `<p class="mv-pu-t" data-sa="${SA}" data-sa-es="${SA_ES}" `
+    + `data-enc="${ENC_CA}" data-enc-es="${ENC_ES}">${SA}</p>`,
     '</div>'].join('');
 }
 
 /* ══ ELS BLOCS ═══════════════════════════════════════════════════════════════ */
 
 // Portada · la versió curta: el dibuix, què s'hi veu i on és el marge.
+/* Totes les claus als dos diccionaris des del primer dia. Aquest bloc no en
+   portava **cap**: el títol, el lead, les dues caselles de comparació, la tesi
+   del marge, les tres files de qui fa cada lliurament, l'avís i els dos botons
+   es llegien en català amb el castellà posat, i les guardes donaven verd
+   perquè les claus que hi havia —zero— quadraven perfectament.
+
+   Les xifres no són al diccionari: les compta el graf i s'escriuen a part del
+   text, perquè una xifra dins d'una frase traduïda és una xifra que es pot
+   quedar vella en una llengua i no en l'altra. */
 function blocPortada() {
+  const i18 = k => ` data-i18n="mv.${k}"`;
+  const i18h = k => ` data-i18n-html="mv.${k}"`;
   const f = [];
   f.push('<div class="mv-grid fade-up">');
   f.push('  <div class="mv-viz">');
-  f.push('    ' + svgCeller('mvCeller'));
+  f.push('    ' + svgCeller('mvCeller', 'mc'));
   f.push('    <div class="mv-leg">' +
-    '<span class="mv-lt">— tangible</span>' +
-    '<span class="mv-li">- - intangible</span>' +
-    `<span class="mv-lc">${cTot.n} lliuraments · ${cTot.i} intangibles</span>` +
+    `<span class="mv-lt"${i18('lt')}>— tangible</span>` +
+    `<span class="mv-li"${i18('li')}>- - intangible</span>` +
+    `<span class="mv-lc"><b>${cTot.n}</b> <span${i18('lc1')}>lliuraments</span> · <b>${cTot.i}</b> <span${i18('lc2')}>intangibles</span></span>` +
     '</div>');
   f.push('    ' + blocPols('mvCeller', 'plCeller'));
   f.push('  </div>');
   f.push('  <div class="mv-txt">');
-  f.push(`    <h3>${esc(CELLER.titol)}</h3>`);
-  f.push(`    <p class="mv-lead">${esc(CELLER.una)}</p>`);
+  f.push(`    <h3${i18('titol')}>${esc(CELLER.titol)}</h3>`);
+  f.push(`    <p class="mv-lead"${i18('una')}>${esc(CELLER.una)}</p>`);
   f.push('    <div class="mv-cmp">');
-  f.push(`      <div class="mv-c canal"><div class="mv-ck">Pel distribuïdor</div><div class="mv-cv">${cCanal.i} de ${cCanal.n}</div><div class="mv-cd">lliuraments intangibles. Tot el que no es pot facturar, per aquí se\'n va de franc.</div></div>`);
-  f.push(`      <div class="mv-c visita"><div class="mv-ck">Pel visitant i l'operador</div><div class="mv-cv">${cVisita.i} de ${cVisita.n}</div><div class="mv-cd">lliuraments intangibles. Aquí no són un extra: són el producte que es paga.</div></div>`);
+  f.push(`      <div class="mv-c canal"><div class="mv-ck"${i18('canal.k')}>Pel distribuïdor</div>`
+    + `<div class="mv-cv">${cCanal.i} <span${i18('de')}>de</span> ${cCanal.n}</div>`
+    + `<div class="mv-cd"${i18('canal.d')}>lliuraments intangibles. Tot el que no es pot facturar, per aquí se'n va de franc.</div></div>`);
+  f.push(`      <div class="mv-c visita"><div class="mv-ck"${i18('visita.k')}>Pel visitant i l'operador</div>`
+    + `<div class="mv-cv">${cVisita.i} <span${i18('de')}>de</span> ${cVisita.n}</div>`
+    + `<div class="mv-cd"${i18('visita.d')}>lliuraments intangibles. Aquí no són un extra: són el producte que es paga.</div></div>`);
   f.push('    </div>');
-  f.push('    <p class="mv-tesi"><b>El marge no surt d\'apujar el preu de l\'ampolla.</b> Surt de <b>cobrar els intangibles que la casa ja produeix</b> —el relat, el lloc, la família, el vessant— i que avui se\'n van amb el camió. El mapa no els inventa: ensenya que hi són i que no es cobren.</p>');
+  f.push(`    <p class="mv-tesi"${i18h('tesi')}><b>El marge no surt d'apujar el preu de l'ampolla.</b> Surt de <b>cobrar els intangibles que la casa ja produeix</b> —el relat, el lloc, la família, el vessant— i que avui se'n van amb el camió. El mapa no els inventa: ensenya que hi són i que no es cobren.</p>`);
   /* I el que el mapa habilita després: saber què pot preparar una màquina.
      Va aquí i no en una secció a part perquè és la conseqüència del mapa, no
      un servei diferent — i perquè el número el dona el graf, no nosaltres. */
   f.push('    <div class="mv-qui">');
-  f.push('      <div class="mv-qk">I després, qui fa cada lliurament</div>');
-  f.push(`      <div class="mv-qr"><b class="mq">${cQui.maquina}</b><span>els pot preparar una màquina: tangibles amb un entregable conegut —comandes, reserves, liquidacions—</span></div>`);
-  f.push(`      <div class="mv-qr"><b class="ms">${cQui.sense}</b><span>són tangibles però encara no sabem quin entregable produeixen</span></div>`);
-  f.push(`      <div class="mv-qr"><b class="mp">${cQui.persona}</b><span>són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera</span></div>`);
+  f.push(`      <div class="mv-qk"${i18('qui.k')}>I després, qui fa cada lliurament</div>`);
+  f.push(`      <div class="mv-qr"><b class="mq">${cQui.maquina}</b><span${i18('qui.maquina')}>els pot preparar una màquina: tangibles amb un entregable conegut —comandes, reserves, liquidacions—</span></div>`);
+  f.push(`      <div class="mv-qr"><b class="ms">${cQui.sense}</b><span${i18('qui.sense')}>són tangibles però encara no sabem quin entregable produeixen</span></div>`);
+  f.push(`      <div class="mv-qr"><b class="mp">${cQui.persona}</b><span${i18h('qui.persona')}>són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera</span></div>`);
   f.push('    </div>');
-  f.push(`    <p class="mv-avis">${CELLER.avis}</p>`);
-  f.push('    <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html">Com es fa un mapa, pas a pas →</a>' +
-    '<a class="mv-cta" href="#cataleg" data-sec="privat">El paquet i el preu →</a></div>');
+  f.push(`    <p class="mv-avis"${i18h('avis')}>${CELLER.avis}</p>`);
+  f.push(`    <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html"${i18('cta1')}>Com es fa un mapa, pas a pas →</a>`
+    + `<a class="mv-cta" href="#cataleg" data-sec="privat"${i18('cta2')}>El paquet i el preu →</a></div>`);
   f.push('  </div>');
   f.push('</div>');
   return f.join('\n');
+}
+
+/* El diccionari del mapa del celler: el que declara `CELLER` amb el seu germà
+   castellà, i el que viu escrit dins d'aquest bloc. Les setze frases de les
+   fletxes i els dos texts del dibuix hi van també, perquè el dibuix és text. */
+function dicMapa(l) {
+  const q = x => String(x).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const tria = (o, c) => l === 'es' ? (o[c + 'Es'] || o[c]) : o[c];
+  const f = [];
+  const FIX = {
+    'mv.lt': { ca: '— tangible', es: '— tangible' },
+    'mv.li': { ca: '- - intangible', es: '- - intangible' },
+    'mv.lc1': { ca: 'lliuraments', es: 'entregas' },
+    'mv.lc2': { ca: 'intangibles', es: 'intangibles' },
+    'mv.de': { ca: 'de', es: 'de' },
+    'mv.canal.k': { ca: 'Pel distribuïdor', es: 'Por el distribuidor' },
+    'mv.canal.d': {
+      ca: 'lliuraments intangibles. Tot el que no es pot facturar, per aquí se\'n va de franc.',
+      es: 'entregas intangibles. Todo lo que no se puede facturar, por aquí se va gratis.'
+    },
+    'mv.visita.k': { ca: 'Pel visitant i l\'operador', es: 'Por el visitante y el operador' },
+    'mv.visita.d': {
+      ca: 'lliuraments intangibles. Aquí no són un extra: són el producte que es paga.',
+      es: 'entregas intangibles. Aquí no son un extra: son el producto que se paga.'
+    },
+    'mv.tesi': {
+      ca: '<b>El marge no surt d\'apujar el preu de l\'ampolla.</b> Surt de <b>cobrar els intangibles que la casa ja produeix</b> —el relat, el lloc, la família, el vessant— i que avui se\'n van amb el camió. El mapa no els inventa: ensenya que hi són i que no es cobren.',
+      es: '<b>El margen no sale de subir el precio de la botella.</b> Sale de <b>cobrar los intangibles que la casa ya produce</b> —el relato, el lugar, la familia, la ladera— y que hoy se van con el camión. El mapa no los inventa: enseña que están y que no se cobran.'
+    },
+    'mv.qui.k': { ca: 'I després, qui fa cada lliurament', es: 'Y después, quién hace cada entrega' },
+    'mv.qui.maquina': {
+      ca: 'els pot preparar una màquina: tangibles amb un entregable conegut —comandes, reserves, liquidacions—',
+      es: 'los puede preparar una máquina: tangibles con un entregable conocido —pedidos, reservas, liquidaciones—'
+    },
+    'mv.qui.sense': {
+      ca: 'són tangibles però encara no sabem quin entregable produeixen',
+      es: 'son tangibles pero todavía no sabemos qué entregable producen'
+    },
+    'mv.qui.persona': {
+      ca: 'són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera',
+      es: 'son de persona, siempre. <b>La máquina no toca ningún intangible</b> — y no por criterio nuestro: el sistema no tiene manera'
+    },
+    'mv.cta1': { ca: 'Com es fa un mapa, pas a pas →', es: 'Cómo se hace un mapa, paso a paso →' },
+    'mv.cta2': { ca: 'El paquet i el preu →', es: 'El paquete y el precio →' }
+  };
+  Object.entries(FIX).forEach(([k, v]) => f.push(`  '${k}':'${q(v[l])}',`));
+  f.push(`  'mv.titol':'${q(tria(CELLER, 'titol'))}',`);
+  f.push(`  'mv.una':'${q(tria(CELLER, 'una'))}',`);
+  f.push(`  'mv.avis':'${q(tria(CELLER, 'avis'))}',`);
+  /* I el dibuix. El títol i la descripció els llegeix qui no el veu; les setze
+     frases, qui hi passa el ratolí per sobre. */
+  f.push(`  'mc.tit':'${q(tria(CELLER, 'titolSvg'))}',`);
+  f.push(`  'mc.desc':'${q(tria(CELLER, 'descSvg'))}',`);
+  f.push(clausFletxes(CELLER, 'mc', l, q));
+  return f.join('\n');
+}
+
+/* Les claus de les fletxes d'un mapa. El text és «qui → qui: què (mena)», i els
+   dos noms també es tradueixen: una fletxa que digués «Quién recibe y explica →
+   El poble» seria mitja frase en cada llengua. */
+function clausFletxes(mapa, clau, l, q) {
+  const nom = id => {
+    const n = mapa.nodes.find(x => x.id === id);
+    return l === 'es' ? (n.nomEs || n.nom) : n.nom;
+  };
+  const MENA = { tangible: { ca: 'tangible', es: 'tangible' }, intangible: { ca: 'intangible', es: 'intangible' } };
+  const fl = mapa.parells.flatMap(x => [
+    { de: x[0], a: x[1], mena: x[2], q: l === 'es' ? (x[6] || x[3]) : x[3] },
+    { de: x[1], a: x[0], mena: x[4], q: l === 'es' ? (x[7] || x[5]) : x[5] }
+  ]);
+  return fl.map((f, i) =>
+    `  '${clau}.f${i}':'${q(nom(f.de) + ' → ' + nom(f.a) + ': ' + f.q + ' (' + MENA[f.mena][l] + ')')}',`).join('\n');
 }
 
 // VNA · la notació, el procés amb les tres anàlisis, i els entregables.
@@ -1082,6 +1269,11 @@ function dicXarxa(l) {
     f.push(`  'xa.t${i}.d':'${q(tria(t, 'd'))}',`);
   });
   Object.entries(FR).forEach(([k, v]) => f.push(`  '${k}':'${q(v[l])}',`));
+  /* I el dibuix, que també és text: el títol, la descripció i les setze
+     frases de les fletxes es quedaven en català. */
+  f.push(`  'mx.tit':'${q(l === 'es' ? XARXA.titolSvgEs : XARXA.titolSvg)}',`);
+  f.push(`  'mx.desc':'${q(l === 'es' ? XARXA.descSvgEs : XARXA.descSvg)}',`);
+  f.push(clausFletxes(XARXA, 'mx', l, q));
   return f.join('\n');
 }
 
@@ -1101,11 +1293,12 @@ function blocXarxa() {
   const f = [];
   f.push('<div class="mv-grid fade-up">');
   f.push('  <div class="mv-viz">');
-  f.push('    ' + svgMapa(XARXA, 'mvXarxa'));
+  f.push('    ' + svgMapa(XARXA, 'mvXarxa', 'mx'));
   f.push('    <div class="mv-leg">' +
-    '<span class="mv-lt">— tangible</span>' +
-    '<span class="mv-li">- - intangible</span>' +
-    `<span class="mv-lc">${fl.length} lliuraments · ${intang(fl)} intangibles</span>` +
+    '<span class="mv-lt" data-i18n="mv.lt">— tangible</span>' +
+    '<span class="mv-li" data-i18n="mv.li">- - intangible</span>' +
+    `<span class="mv-lc"><b>${fl.length}</b> <span data-i18n="mv.lc1">lliuraments</span> · `
+    + `<b>${intang(fl)}</b> <span data-i18n="mv.lc2">intangibles</span></span>` +
     '</div>');
   f.push('  </div>');
   f.push('  <div class="mv-txt">');
@@ -1117,12 +1310,12 @@ function blocXarxa() {
      i va en un element a part perquè la xifra no hi quedi a dins. */
   f.push(`      <div class="mv-c canal"><div class="mv-ck" data-i18n="xa.dins.k">`
     + `${esc(FR['xa.dins.k'].ca)}</div>`
-    + `<div class="mv-cv">${dins.length} de ${fl.length}</div>`
+    + `<div class="mv-cv">${dins.length} <span data-i18n="mv.de">de</span> ${fl.length}</div>`
     + `<div class="mv-cd"><span data-i18n="xa.lliur">lliuraments.</span> `
     + `${aillats.length}/${casa.length} <span data-i18n="xa.dins.d">${esc(FR['xa.dins.d'].ca)}</span></div></div>`);
   f.push(`      <div class="mv-c visita"><div class="mv-ck" data-i18n="xa.fora.k">`
     + `${esc(FR['xa.fora.k'].ca)}</div>`
-    + `<div class="mv-cv">${creuen.length} de ${fl.length}</div>`
+    + `<div class="mv-cv">${creuen.length} <span data-i18n="mv.de">de</span> ${fl.length}</div>`
     + `<div class="mv-cd">${intang(creuen)} `
     + `<span data-i18n="xa.fora.d">${esc(FR['xa.fora.d'].ca)}</span></div></div>`);
   f.push('    </div>');
@@ -1236,7 +1429,7 @@ DESTINS.forEach(d => {
   else {
     let src = cache[f] !== undefined ? cache[f] : readFileSync(f, 'utf8');
     let tocat = false;
-    [['TT-XA-I18N', dicXarxa], ['TT-VD-I18N', dicValor]].forEach(([marca, fn]) => {
+    [['TT-XA-I18N', dicXarxa], ['TT-VD-I18N', dicValor], ['TT-MV-I18N', dicMapa]].forEach(([marca, fn]) => {
       [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
         const a = `/*${marca}-${M}*/`, b = `/*/${marca}-${M}*/`;
         const x = src.indexOf(a), y = src.indexOf(b);
@@ -1302,6 +1495,37 @@ DESTINS.forEach(d => {
   if (orfes.length) bad(`${orfes.length} passos sense fase: ${orfes.map(x => x.t).join(', ')}`);
   else if (buides.length) bad(`${buides.length} fases sense cap pas: ${buides.map(f => f.t).join(', ')}`);
   else ok(`les ${FASES.length} fases cobreixen els ${PROCES.length} passos, i cap en queda fora`);
+}
+
+/* ── CAP TEXT DEL MAPA SENSE EL SEU GERMÀ CASTELLÀ ─────────────────────────
+   Un mapa de valor **és text**: els noms dels nodes es llegeixen sobre el
+   dibuix i les setze frases de cada mapa, passant-hi el ratolí. Si un node o un
+   parell es declara sense la seva versió castellana, el generador cau al català
+   i aquella etiqueta es queda en una llengua, enmig d'una pàgina que està en
+   l'altra. **No peta**, i la prova de navegador tampoc el troba sempre: «el vi,
+   la verema i el celler obert» no porta cap paraula que una expressió regular
+   reconegui com a catalana.
+
+   Per això es compta aquí, a la declaració, que és on es pot dir del cert. */
+{
+  const falten = [];
+  [['CELLER', CELLER], ['XARXA', XARXA]].forEach(([nom, m]) => {
+    if (!m.titolSvgEs) falten.push(nom + '.titolSvgEs');
+    if (!m.descSvgEs) falten.push(nom + '.descSvgEs');
+    m.nodes.forEach(n => {
+      if (!n.nomEs) falten.push(`${nom}.${n.id}.nomEs`);
+      if (n.d && !n.dEs) falten.push(`${nom}.${n.id}.dEs`);
+    });
+    m.parells.forEach((p, i) => {
+      if (!p[6]) falten.push(`${nom}.parell[${i}] sense el què en castellà`);
+      if (!p[7]) falten.push(`${nom}.parell[${i}] sense el què de tornada en castellà`);
+    });
+  });
+  if (falten.length) bad(`${falten.length} text(s) del mapa sense castellà: ${falten.slice(0, 6).join(', ')}`
+    + (falten.length > 6 ? ` … (+${falten.length - 6})` : '')
+    + ' — el dibuix es llegiria en una llengua enmig d\'una pàgina en l\'altra, sense petar');
+  else ok(`els ${CELLER.nodes.length + XARXA.nodes.length} nodes i els `
+    + `${(CELLER.parells.length + XARXA.parells.length) * 2} lliuraments dels dos mapes, en les dues llengües`);
 }
 
 if (CHECK) {
