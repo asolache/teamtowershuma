@@ -682,6 +682,46 @@
         .bs-c p b { color:var(--light); font-weight:600; }
         .bs-c .bs-cta { display:inline-block; margin:0; }
 
+        /* ══ EL QUE DECIDEIXES ═════════════════════════════════════════════
+           Dues columnes i prou: a l'esquerra la frase que es reconeix, a la
+           dreta el que canvia. Qui decideix llegeix la primera columna sencera
+           i s'atura a la fila que és la seva. */
+        .decideix { padding:5rem 0; border-top:1px solid var(--border); }
+        .vd-wrap { max-width:1000px; margin:0 auto; }
+        .vd-t { width:100%; border-collapse:collapse; }
+        .vd-t th { font-family:var(--mono); font-size:.62rem; letter-spacing:.1em;
+            text-transform:uppercase; color:var(--muted); text-align:left; font-weight:400;
+            padding:.5rem .8rem; border-bottom:1px solid var(--border); width:50%; }
+        .vd-t td { padding:.85rem .8rem; border-bottom:1px solid var(--border);
+            font-size:.86rem; line-height:1.65; vertical-align:top; }
+        /* L'esquerra apagada i la dreta encesa: es llegeix sola de quin costat
+           vols estar, sense haver-ho d'escriure. */
+        .vd-c { color:var(--muted); }
+        .vd-a { color:var(--light); }
+        .vd-a b { color:var(--white); font-weight:600; }
+        .vd-avis { max-width:70ch; margin:1.4rem auto 0; text-align:center; font-size:.8rem;
+            line-height:1.7; color:var(--muted); }
+        .vd-avis b { color:var(--light); font-weight:600; }
+        .vd-prova { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+            gap:1rem; margin-top:2.4rem; padding-top:2rem; border-top:1px solid var(--border); }
+        .vd-p { border:1px solid var(--border); border-radius:12px; padding:1.1rem 1.2rem;
+            background:var(--bg-panel); }
+        .vd-pk { font-family:var(--mono); font-size:.62rem; letter-spacing:.11em;
+            text-transform:uppercase; color:var(--accent-green); margin-bottom:.5rem; }
+        .vd-p b { display:block; font-size:.95rem; color:var(--white); margin-bottom:.5rem; }
+        .vd-p p { margin:0; font-size:.8rem; line-height:1.7; color:var(--muted); }
+        .vd-p p b { display:inline; font-size:inherit; color:var(--light); }
+        @media (max-width:700px) {
+            .vd-t, .vd-t tbody, .vd-t tr, .vd-t td { display:block; width:100%; }
+            .vd-t thead { display:none; }
+            .vd-t tr { border-bottom:1px solid var(--border); padding:.6rem 0; }
+            .vd-t td { border:none; padding:.2rem 0; }
+            .vd-c::before { content:'Avui: '; font-family:var(--mono); font-size:.62rem;
+                text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
+            .vd-a::before { content:'Amb el mapa: '; font-family:var(--mono); font-size:.62rem;
+                text-transform:uppercase; letter-spacing:.08em; color:var(--accent-green); }
+        }
+
         .mv-pols-ui { margin-top:.7rem; }
         .mv-pu-b { display:flex; flex-wrap:wrap; gap:.45rem; }
         .mv-b { font-family:var(--mono); font-size:.72rem; color:var(--light); cursor:pointer;
@@ -1542,6 +1582,42 @@
             </ol>
             <p class="dv-fr" data-i18n-html="dv.fr"><b>I la regla:</b> avança per defecte. El que l’atura és que algú el corregeixi, el matisi o el millori — i cada vegada que algú ho fa, el sistema que en surt és una mica més seu. Qui no diu res no bloqueja: deixa que es construeixi.</p>
         </div>
+    </div>
+</section>
+
+<!-- EL QUE DECIDEIXES ──────────────────────────────────────────────────────
+     La portada explicava el mètode i gairebé no deia **què en treus**. Qui
+     decideix una compra no és un metodòleg: és algú amb un problema i un
+     pressupost, i llegia tres pantalles de com es dibuixa un graf abans de
+     trobar cap frase que parlés de la seva feina.
+
+     Va aquí i no més avall: just després de veure què és un mapa de valor i
+     **abans** d'explicar com es fa. Primer per a què serveix, després com. -->
+<section class="decideix" id="decideix">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="vd.eyebrow">I això, per a què em serveix</div>
+            <h2 data-i18n-html="vd.h2">Sis decisions que avui prens <em>a ulls clucs</em></h2>
+            <p data-i18n="vd.intro">Un mapa de valor no és un diagrama bonic: és el que et deixa decidir coses que ara decideixes per intuïció. Aquestes són les sis que més se senten a la sala, i el que canvia quan tens el dibuix al davant.</p>
+        </div>
+<!--TT-VALOR-->
+<div class="vd-wrap fade-up">
+  <table class="vd-t"><thead><tr><th data-i18n="vd.cap1">El que avui es decideix a ulls clucs</th><th data-i18n="vd.cap2">El que decideixes amb el mapa al davant</th></tr></thead><tbody>
+    <tr><td class="vd-c" data-i18n="vd.0.c">Qui és imprescindible de debò, i què passa si plega</td><td class="vd-a" data-i18n-html="vd.0.a">Es veu qui sosté què i quants fils passen per una sola persona. No és una intuïció: es compta al dibuix.</td></tr>
+    <tr><td class="vd-c" data-i18n="vd.1.c">Per què les decisions s'encallen entre dues àrees</td><td class="vd-a" data-i18n-html="vd.1.a">Surt qui toca les dues alhora — i si no hi ha ningú, surt el buit. Un buit es cobreix; una mala relació, no.</td></tr>
+    <tr><td class="vd-c" data-i18n="vd.2.c">Quina feina es fa i no l'aprofita ningú</td><td class="vd-a" data-i18n-html="vd.2.a">Cada entregable es puntua: qui el rep n'està satisfet o no. El que ningú marca és feina que es podria deixar de fer.</td></tr>
+    <tr><td class="vd-c" data-i18n="vd.3.c">Què esteu donant de franc sense haver-ho decidit</td><td class="vd-a" data-i18n-html="vd.3.a">Els «extra» —el que es dona i ningú pot reclamar— surten al full amb nom. Llavors es decideix: es cobra, es pacta o es deixa de donar.</td></tr>
+    <tr><td class="vd-c" data-i18n="vd.4.c">Per on començar, quan tot sembla urgent</td><td class="vd-a" data-i18n-html="vd.4.a">De dos a quatre punts marcats amb un cor: on cal mirar perquè d'allà depèn que la resta flueixi.</td></tr>
+    <tr><td class="vd-c" data-i18n="vd.5.c">Si el que heu muntat sobreviurà a qui el va muntar</td><td class="vd-a" data-i18n-html="vd.5.a">El mapa queda a la casa i es pot tornar a mirar d'aquí a sis mesos. Un PDF caduca el primer dia que algú canvia de rol.</td></tr>
+  </tbody></table>
+  <p class="vd-avis" data-i18n-html="vd.avis">Cap d'aquestes files promet un resultat amb una xifra. Prometre «un 30 % menys de temps d'entrega» seria un número sense d'on surt, i això aquí no es fa. <b>El que es promet és què podràs decidir</b> — i es comprova el mateix dia de la sessió.</p>
+  <div class="vd-prova">
+    <div class="vd-p"><div class="vd-pk" data-i18n="vd.p0.k">Per què funciona</div><b data-i18n="vd.p0.t">Perquè el dibuixeu vosaltres</b><p data-i18n-html="vd.p0.d">El mapa no el porta el consultor acabat: el fa el grup, amb post-its, dient en veu alta qui dona què a qui. <b>Aquesta conversa és el producte.</b> Un informe es llegeix i s'arxiva; el que s'ha dit en veu alta davant de tothom ja no es desdiu, i l'endemà l'equip parla amb les mateixes paraules.</p></div>
+    <div class="vd-p"><div class="vd-pk" data-i18n="vd.p1.k">De qui és el mètode</div><b data-i18n="vd.p1.t">De Verna Allee, i no nostre</b><p data-i18n-html="vd.p1.d">Value Network Analysis, de <i>The Future of Knowledge</i> (2003) i <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No ens l'hem inventat i no el venem com a propietari</b>: el pots llegir, el pot facilitar un altre, i el que compres és que surti bé a la primera.</p></div>
+    <div class="vd-p"><div class="vd-pk" data-i18n="vd.p2.k">On s'ha fet</div><b data-i18n="vd.p2.t">A IKEA, dos mapes</b><p data-i18n-html="vd.p2.d">El de la <b>direcció</b> i el de l'<b>àrea de serveis</b>, amb l'Álvaro Solache com a director del VNA. Una de les sessions mapava la xarxa de venda i devolucions. <b>És l'única entrega de VNA amb client anomenat que tenim</b>, i es diu amb nom perquè es pugui comprovar.</p></div>
+  </div>
+</div>
+<!--/TT-VALOR-->
     </div>
 </section>
 
@@ -3307,6 +3383,32 @@ ca: {
   'xa.cta1':'El catàleg sencer →',
   'xa.cta2':'Els clients, amb la font de cada un →',
 /*/TT-XA-I18N-CA*/
+/*TT-VD-I18N-CA*/
+  'vd.cap1':'El que avui es decideix a ulls clucs',
+  'vd.cap2':'El que decideixes amb el mapa al davant',
+  'vd.avis':'Cap d\'aquestes files promet un resultat amb una xifra. Prometre «un 30 % menys de temps d\'entrega» seria un número sense d\'on surt, i això aquí no es fa. <b>El que es promet és què podràs decidir</b> — i es comprova el mateix dia de la sessió.',
+  'vd.0.c':'Qui és imprescindible de debò, i què passa si plega',
+  'vd.0.a':'Es veu qui sosté què i quants fils passen per una sola persona. No és una intuïció: es compta al dibuix.',
+  'vd.1.c':'Per què les decisions s\'encallen entre dues àrees',
+  'vd.1.a':'Surt qui toca les dues alhora — i si no hi ha ningú, surt el buit. Un buit es cobreix; una mala relació, no.',
+  'vd.2.c':'Quina feina es fa i no l\'aprofita ningú',
+  'vd.2.a':'Cada entregable es puntua: qui el rep n\'està satisfet o no. El que ningú marca és feina que es podria deixar de fer.',
+  'vd.3.c':'Què esteu donant de franc sense haver-ho decidit',
+  'vd.3.a':'Els «extra» —el que es dona i ningú pot reclamar— surten al full amb nom. Llavors es decideix: es cobra, es pacta o es deixa de donar.',
+  'vd.4.c':'Per on començar, quan tot sembla urgent',
+  'vd.4.a':'De dos a quatre punts marcats amb un cor: on cal mirar perquè d\'allà depèn que la resta flueixi.',
+  'vd.5.c':'Si el que heu muntat sobreviurà a qui el va muntar',
+  'vd.5.a':'El mapa queda a la casa i es pot tornar a mirar d\'aquí a sis mesos. Un PDF caduca el primer dia que algú canvia de rol.',
+  'vd.p0.k':'Per què funciona',
+  'vd.p0.t':'Perquè el dibuixeu vosaltres',
+  'vd.p0.d':'El mapa no el porta el consultor acabat: el fa el grup, amb post-its, dient en veu alta qui dona què a qui. <b>Aquesta conversa és el producte.</b> Un informe es llegeix i s\'arxiva; el que s\'ha dit en veu alta davant de tothom ja no es desdiu, i l\'endemà l\'equip parla amb les mateixes paraules.',
+  'vd.p1.k':'De qui és el mètode',
+  'vd.p1.t':'De Verna Allee, i no nostre',
+  'vd.p1.d':'Value Network Analysis, de <i>The Future of Knowledge</i> (2003) i <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No ens l\'hem inventat i no el venem com a propietari</b>: el pots llegir, el pot facilitar un altre, i el que compres és que surti bé a la primera.',
+  'vd.p2.k':'On s\'ha fet',
+  'vd.p2.t':'A IKEA, dos mapes',
+  'vd.p2.d':'El de la <b>direcció</b> i el de l\'<b>àrea de serveis</b>, amb l\'Álvaro Solache com a director del VNA. Una de les sessions mapava la xarxa de venda i devolucions. <b>És l\'única entrega de VNA amb client anomenat que tenim</b>, i es diu amb nom perquè es pugui comprovar.',
+/*/TT-VD-I18N-CA*/
   'faq.q6':'Com se signa això, administrativament?',
   'faq.a6':'Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.',
   'faq.q7':'Som una empresa. Com es contracta i d\'on surt el pressupost?',
@@ -3396,6 +3498,9 @@ ca: {
   'rg.h2':'De dalt i de costat: <em>on es concentra el pes</em>',
   'rg.intro':'Una rengla no és vertical: és a la pinya, i és cada filera de gent que surt del tronc cap enfora. N\'hi ha de tres menes —primeres mans darrere el contrafort, laterals darrere les crosses, i vents entre crossa i crossa agafant un pilar amb cada mà— i no es veuen mirant un castell de front: es veuen mirant la pinya des de dalt. D\'aquí surt la regla que ho ordena tot: una pinya de N baixos obre 4N rengles. Un 3 n\'obre dotze; un 4, setze.',
   'rg.peu':'És la mateixa mirada que la del mapa de sobre amb el pols posat: <b>un metge no decideix amb una radiografia, decideix veient si allò circula i on deixa de fer-ho.</b> Això és el que vol dir consultoria sistèmica, i és el que es pot fer sobre una organització quan el mapa ja existeix.',
+  'vd.eyebrow':'I això, per a què em serveix',
+  'vd.h2':'Sis decisions que avui prens <em>a ulls clucs</em>',
+  'vd.intro':'Un mapa de valor no és un diagrama bonic: és el que et deixa decidir coses que ara decideixes per intuïció. Aquestes són les sis que més se senten a la sala, i el que canvia quan tens el dibuix al davant.',
   'xa.eyebrow':'I la casa, amb el seu propi mètode',
   'xa.h2':'La xarxa de TeamTowers, <em>dibuixada com qualsevol altra</em>',
   'xa.intro':'Si el mapa de valor serveix, ha de servir també per a qui el ven. Aquests són els set rols de la xarxa —els quatre oficis de la casa i els tres de l’altra banda de la taula— amb el que es lliura en cada sentit, tangible i intangible. Les troballes les compta el dibuix, no les escrivim nosaltres.',
@@ -3802,6 +3907,32 @@ es: {
   'xa.cta1':'El catálogo completo →',
   'xa.cta2':'Los clientes, con la fuente de cada uno →',
 /*/TT-XA-I18N-ES*/
+/*TT-VD-I18N-ES*/
+  'vd.cap1':'Lo que hoy se decide a ciegas',
+  'vd.cap2':'Lo que decides con el mapa delante',
+  'vd.avis':'Ninguna de estas filas promete un resultado con una cifra. Prometer «un 30 % menos de tiempo de entrega» sería un número sin de dónde sale, y eso aquí no se hace. <b>Lo que se promete es qué podrás decidir</b> — y se comprueba el mismo día de la sesión.',
+  'vd.0.c':'Quién es imprescindible de verdad, y qué pasa si se va',
+  'vd.0.a':'Se ve quién sostiene qué y cuántos hilos pasan por una sola persona. No es una intuición: se cuenta en el dibujo.',
+  'vd.1.c':'Por qué las decisiones se atascan entre dos áreas',
+  'vd.1.a':'Sale quien toca las dos a la vez — y si no hay nadie, sale el hueco. Un hueco se cubre; una mala relación, no.',
+  'vd.2.c':'Qué trabajo se hace y no lo aprovecha nadie',
+  'vd.2.a':'Cada entregable se puntúa: quien lo recibe está satisfecho o no. Lo que nadie marca es trabajo que se podría dejar de hacer.',
+  'vd.3.c':'Qué estáis dando gratis sin haberlo decidido',
+  'vd.3.a':'Los «extra» —lo que se da y nadie puede reclamar— salen en la hoja con nombre. Entonces se decide: se cobra, se pacta o se deja de dar.',
+  'vd.4.c':'Por dónde empezar, cuando todo parece urgente',
+  'vd.4.a':'De dos a cuatro puntos marcados con un corazón: dónde hay que mirar porque de ahí depende que lo demás fluya.',
+  'vd.5.c':'Si lo que habéis montado sobrevivirá a quien lo montó',
+  'vd.5.a':'El mapa se queda en la casa y se puede volver a mirar dentro de seis meses. Un PDF caduca el primer día que alguien cambia de rol.',
+  'vd.p0.k':'Por qué funciona',
+  'vd.p0.t':'Porque lo dibujáis vosotros',
+  'vd.p0.d':'El mapa no lo trae el consultor acabado: lo hace el grupo, con post-its, diciendo en voz alta quién da qué a quién. <b>Esa conversación es el producto.</b> Un informe se lee y se archiva; lo que se ha dicho en voz alta delante de todos ya no se desdice, y al día siguiente el equipo habla con las mismas palabras.',
+  'vd.p1.k':'De quién es el método',
+  'vd.p1.t':'De Verna Allee, y no nuestro',
+  'vd.p1.d':'Value Network Analysis, de <i>The Future of Knowledge</i> (2003) y <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No nos lo hemos inventado y no lo vendemos como propietario</b>: lo puedes leer, lo puede facilitar otro, y lo que compras es que salga bien a la primera.',
+  'vd.p2.k':'Dónde se ha hecho',
+  'vd.p2.t':'En IKEA, dos mapas',
+  'vd.p2.d':'El de <b>dirección</b> y el del <b>área de servicios</b>, con Álvaro Solache como director del VNA. Una de las sesiones mapeaba la red de venta y devoluciones. <b>Es la única entrega de VNA con cliente nombrado que tenemos</b>, y se dice con nombre para que se pueda comprobar.',
+/*/TT-VD-I18N-ES*/
   'faq.q6':'¿Cómo se firma esto, administrativamente?',
   'faq.a6':'Cada paquete del catálogo lleva el precio cerrado y todos los que van a administración pública quedan <strong>por debajo de los 5.000 €</strong>. Con la propuesta y el presupuesto en la mano, la contratación menor lo resuelve sin abrir un expediente largo. Si lo que necesitáis es más grande, se parte en fases o se plantea como un contrato de servicios: os decimos qué vía os conviene antes de haceros perder el tiempo.',
   'faq.q7':'Somos una empresa. ¿Cómo se contrata y de dónde sale el presupuesto?',
@@ -3891,6 +4022,9 @@ es: {
   'rg.h2':'Desde arriba y de lado: <em>dónde se concentra el peso</em>',
   'rg.intro':'Una rengla no es vertical: está en la pinya, y es cada fila de gente que sale del tronco hacia fuera. Las hay de tres clases —primeres mans detrás del contrafort, laterals detrás de las crosses, y vents entre crossa y crossa agarrando un pilar con cada mano— y no se ven mirando un castell de frente: se ven mirando la pinya desde arriba. De ahí sale la regla que lo ordena todo: una pinya de N baixos abre 4N rengles. Un 3 abre doce; un 4, dieciséis.',
   'rg.peu':'Es la misma mirada que la del mapa de arriba con el pulso puesto: <b>un médico no decide con una radiografía, decide viendo si aquello circula y dónde deja de hacerlo.</b> Eso es lo que quiere decir consultoría sistémica, y es lo que se puede hacer sobre una organización cuando el mapa ya existe.',
+  'vd.eyebrow':'Y esto, ¿para qué me sirve?',
+  'vd.h2':'Seis decisiones que hoy tomas <em>a ciegas</em>',
+  'vd.intro':'Un mapa de valor no es un diagrama bonito: es lo que te deja decidir cosas que ahora decides por intuición. Estas son las seis que más se oyen en la sala, y lo que cambia cuando tienes el dibujo delante.',
   'xa.eyebrow':'Y la casa, con su propio método',
   'xa.h2':'La red de TeamTowers, <em>dibujada como cualquier otra</em>',
   'xa.intro':'Si el mapa de valor sirve, tiene que servir también para quien lo vende. Estos son los siete roles de la red —los cuatro oficios de la casa y los tres del otro lado de la mesa— con lo que se entrega en cada sentido, tangible e intangible. Los hallazgos los cuenta el dibujo, no los escribimos nosotros.',

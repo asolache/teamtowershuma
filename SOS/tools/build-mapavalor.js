@@ -220,6 +220,76 @@ const CELLER = {
 
    El `return` és el mateix patró que `build-oferta.js`: qui requereix aquest
    fitxer se'n porta les dades i no n'executa ni les guardes ni l'escriptura. */
+/* ══ EL QUE DECIDEIXES AMB EL MAPA ═══════════════════════════════════════════
+   La portada explicava **el mètode** i gairebé no deia **què en treus**. Qui
+   decideix una compra no és un metodòleg: és algú amb un problema i un
+   pressupost, i llegia tres pantalles de com es dibuixa un graf abans de
+   trobar cap frase que parlés de la seva feina.
+
+   Això ho inverteix: primer la decisió que avui es pren a cegues, després el
+   que el mapa hi posa. Cada parella és una situació que es reconeix sense
+   saber res de xarxes de valor.
+
+   ⚠ **Cap d'aquestes files promet un resultat**, i és una decisió: prometre
+   «un 30 % menys de temps d'entrega» seria una xifra sense font, que és el que
+   la casa no fa. El que es promet és **què podràs decidir**, que és comprovable
+   el mateix dia de la sessió. */
+const DECIDEIX = [
+  { cegues: 'Qui és imprescindible de debò, i què passa si plega',
+    cegaEs: 'Quién es imprescindible de verdad, y qué pasa si se va',
+    amb: 'Es veu qui sosté què i quants fils passen per una sola persona. No és una intuïció: es compta al dibuix.',
+    ambEs: 'Se ve quién sostiene qué y cuántos hilos pasan por una sola persona. No es una intuición: se cuenta en el dibujo.' },
+  { cegues: 'Per què les decisions s\'encallen entre dues àrees',
+    cegaEs: 'Por qué las decisiones se atascan entre dos áreas',
+    amb: 'Surt qui toca les dues alhora — i si no hi ha ningú, surt el buit. Un buit es cobreix; una mala relació, no.',
+    ambEs: 'Sale quien toca las dos a la vez — y si no hay nadie, sale el hueco. Un hueco se cubre; una mala relación, no.' },
+  { cegues: 'Quina feina es fa i no l\'aprofita ningú',
+    cegaEs: 'Qué trabajo se hace y no lo aprovecha nadie',
+    amb: 'Cada entregable es puntua: qui el rep n\'està satisfet o no. El que ningú marca és feina que es podria deixar de fer.',
+    ambEs: 'Cada entregable se puntúa: quien lo recibe está satisfecho o no. Lo que nadie marca es trabajo que se podría dejar de hacer.' },
+  { cegues: 'Què esteu donant de franc sense haver-ho decidit',
+    cegaEs: 'Qué estáis dando gratis sin haberlo decidido',
+    amb: 'Els «extra» —el que es dona i ningú pot reclamar— surten al full amb nom. Llavors es decideix: es cobra, es pacta o es deixa de donar.',
+    ambEs: 'Los «extra» —lo que se da y nadie puede reclamar— salen en la hoja con nombre. Entonces se decide: se cobra, se pacta o se deja de dar.' },
+  { cegues: 'Per on començar, quan tot sembla urgent',
+    cegaEs: 'Por dónde empezar, cuando todo parece urgente',
+    amb: 'De dos a quatre punts marcats amb un cor: on cal mirar perquè d\'allà depèn que la resta flueixi.',
+    ambEs: 'De dos a cuatro puntos marcados con un corazón: dónde hay que mirar porque de ahí depende que lo demás fluya.' },
+  { cegues: 'Si el que heu muntat sobreviurà a qui el va muntar',
+    cegaEs: 'Si lo que habéis montado sobrevivirá a quien lo montó',
+    amb: 'El mapa queda a la casa i es pot tornar a mirar d\'aquí a sis mesos. Un PDF caduca el primer dia que algú canvia de rol.',
+    ambEs: 'El mapa se queda en la casa y se puede volver a mirar dentro de seis meses. Un PDF caduca el primer día que alguien cambia de rol.' }
+];
+
+/* ══ PER QUÈ FUNCIONA, I QUÈ HO PROVA ════════════════════════════════════════
+   Tres coses, i van en aquest ordre perquè és l'ordre en què les pregunta qui
+   ha de decidir: què el fa funcionar, de qui és el mètode, i on s'ha fet.
+
+   La fila d'IKEA surt de `trajectoria.md` i del guió de la sessió. La de
+   Pantheon diu el que **ells** diuen de la seva experiència, no el que diem
+   nosaltres de la nostra: la distinció és la diferència entre citar i
+   apropiar-se. */
+const PROVA = [
+  { k: 'Per què funciona',
+    kEs: 'Por qué funciona',
+    t: 'Perquè el dibuixeu vosaltres',
+    tEs: 'Porque lo dibujáis vosotros',
+    d: 'El mapa no el porta el consultor acabat: el fa el grup, amb post-its, dient en veu alta qui dona què a qui. <b>Aquesta conversa és el producte.</b> Un informe es llegeix i s\'arxiva; el que s\'ha dit en veu alta davant de tothom ja no es desdiu, i l\'endemà l\'equip parla amb les mateixes paraules.',
+    dEs: 'El mapa no lo trae el consultor acabado: lo hace el grupo, con post-its, diciendo en voz alta quién da qué a quién. <b>Esa conversación es el producto.</b> Un informe se lee y se archiva; lo que se ha dicho en voz alta delante de todos ya no se desdice, y al día siguiente el equipo habla con las mismas palabras.' },
+  { k: 'De qui és el mètode',
+    kEs: 'De quién es el método',
+    t: 'De Verna Allee, i no nostre',
+    tEs: 'De Verna Allee, y no nuestro',
+    d: 'Value Network Analysis, de <i>The Future of Knowledge</i> (2003) i <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No ens l\'hem inventat i no el venem com a propietari</b>: el pots llegir, el pot facilitar un altre, i el que compres és que surti bé a la primera.',
+    dEs: 'Value Network Analysis, de <i>The Future of Knowledge</i> (2003) y <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No nos lo hemos inventado y no lo vendemos como propietario</b>: lo puedes leer, lo puede facilitar otro, y lo que compras es que salga bien a la primera.' },
+  { k: 'On s\'ha fet',
+    kEs: 'Dónde se ha hecho',
+    t: 'A IKEA, dos mapes',
+    tEs: 'En IKEA, dos mapas',
+    d: 'El de la <b>direcció</b> i el de l\'<b>àrea de serveis</b>, amb l\'Álvaro Solache com a director del VNA. Una de les sessions mapava la xarxa de venda i devolucions. <b>És l\'única entrega de VNA amb client anomenat que tenim</b>, i es diu amb nom perquè es pugui comprovar.',
+    dEs: 'El de <b>dirección</b> y el del <b>área de servicios</b>, con Álvaro Solache como director del VNA. Una de las sesiones mapeaba la red de venta y devoluciones. <b>Es la única entrega de VNA con cliente nombrado que tenemos</b>, y se dice con nombre para que se pueda comprobar.' }
+];
+
 /* ══ COM ÉS UNA SESSIÓ · el full, els post-its i els gomets ══════════════════
    La pàgina explicava el mètode i **no ensenyava com es fa**. Qui ha de decidir
    si contracta una sessió vol veure què passarà a la sala, i això no ho diu una
@@ -388,6 +458,69 @@ function blocSessio() {
   f.push('<ul class="mv-pre">' + PREGUNTES.map(q => `<li>${esc(q)}</li>`).join('') + '</ul>');
   f.push('</section>');
   f.push('<!--/VNA-SESSIO-->');
+  return f.join('\n');
+}
+
+/* ══ EL BLOC DEL VALOR · per a qui decideix, no per a qui estudia ════════════
+   Va a la portada i va **alt**: just després de veure què és un mapa de valor
+   i abans d'explicar com es fa. L'ordre importa — qui decideix una compra vol
+   saber què en treu abans de saber com es dibuixa, i fins ara era al revés.
+
+   Les claus van als dos diccionaris de la portada des del primer dia. És la
+   lliçó del 02/10/2026: un bloc generat que es declara en una sola llengua
+   **passa totes les guardes** i deixa mitja secció en català per a qui llegeix
+   en castellà. */
+function blocValor() {
+  const i18 = k => ` data-i18n="${k}"`;
+  const i18h = k => ` data-i18n-html="${k}"`;
+  const f = [];
+  f.push('<div class="vd-wrap fade-up">');
+  f.push('  <table class="vd-t"><thead><tr>'
+    + `<th${i18('vd.cap1')}>El que avui es decideix a ulls clucs</th>`
+    + `<th${i18('vd.cap2')}>El que decideixes amb el mapa al davant</th>`
+    + '</tr></thead><tbody>');
+  DECIDEIX.forEach((d, i) => {
+    f.push(`    <tr><td class="vd-c"${i18(`vd.${i}.c`)}>${esc(d.cegues)}</td>`
+      + `<td class="vd-a"${i18h(`vd.${i}.a`)}>${d.amb}</td></tr>`);
+  });
+  f.push('  </tbody></table>');
+  f.push(`  <p class="vd-avis"${i18h('vd.avis')}>Cap d\'aquestes files promet un resultat amb una xifra. `
+    + 'Prometre «un 30 % menys de temps d\'entrega» seria un número sense d\'on surt, i això aquí no es fa. '
+    + '<b>El que es promet és què podràs decidir</b> — i es comprova el mateix dia de la sessió.</p>');
+  f.push('  <div class="vd-prova">');
+  PROVA.forEach((x, i) => {
+    f.push(`    <div class="vd-p"><div class="vd-pk"${i18(`vd.p${i}.k`)}>${esc(x.k)}</div>`
+      + `<b${i18(`vd.p${i}.t`)}>${esc(x.t)}</b>`
+      + `<p${i18h(`vd.p${i}.d`)}>${x.d}</p></div>`);
+  });
+  f.push('  </div>');
+  f.push('</div>');
+  return f.join('\n');
+}
+
+/* El diccionari d'aquest bloc, per a les dues llengües. */
+function dicValor(l) {
+  const q = x => String(x).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const tria = (o, c, cEs) => l === 'es' ? (o[cEs] || o[c]) : o[c];
+  const f = [];
+  const FIX = {
+    'vd.cap1': { ca: 'El que avui es decideix a ulls clucs', es: 'Lo que hoy se decide a ciegas' },
+    'vd.cap2': { ca: 'El que decideixes amb el mapa al davant', es: 'Lo que decides con el mapa delante' },
+    'vd.avis': {
+      ca: 'Cap d\'aquestes files promet un resultat amb una xifra. Prometre «un 30 % menys de temps d\'entrega» seria un número sense d\'on surt, i això aquí no es fa. <b>El que es promet és què podràs decidir</b> — i es comprova el mateix dia de la sessió.',
+      es: 'Ninguna de estas filas promete un resultado con una cifra. Prometer «un 30 % menos de tiempo de entrega» sería un número sin de dónde sale, y eso aquí no se hace. <b>Lo que se promete es qué podrás decidir</b> — y se comprueba el mismo día de la sesión.'
+    }
+  };
+  Object.entries(FIX).forEach(([k, v]) => f.push(`  '${k}':'${q(v[l])}',`));
+  DECIDEIX.forEach((d, i) => {
+    f.push(`  'vd.${i}.c':'${q(tria(d, 'cegues', 'cegaEs'))}',`);
+    f.push(`  'vd.${i}.a':'${q(tria(d, 'amb', 'ambEs'))}',`);
+  });
+  PROVA.forEach((x, i) => {
+    f.push(`  'vd.p${i}.k':'${q(tria(x, 'k', 'kEs'))}',`);
+    f.push(`  'vd.p${i}.t':'${q(tria(x, 't', 'tEs'))}',`);
+    f.push(`  'vd.p${i}.d':'${q(tria(x, 'd', 'dEs'))}',`);
+  });
   return f.join('\n');
 }
 
@@ -1005,6 +1138,7 @@ function blocXarxa() {
 const DESTINS = [
   { f: join(ARREL, 'index.html'), marca: 'TT-MAPAVALOR', fn: blocPortada },
   { f: join(ARREL, 'index.html'), marca: 'TT-XARXA', fn: blocXarxa },
+  { f: join(ARREL, 'index.html'), marca: 'TT-VALOR', fn: blocValor },
   { f: join(SOS, 'vna.html'), marca: 'VNA-PROCES', fn: blocProces },
   { f: join(SOS, 'vna.html'), marca: 'VNA-SESSIO', fn: blocSessio },
   { f: join(SOS, 'vna.html'), marca: 'VNA-EXEMPLE', fn: blocExemple }
@@ -1065,12 +1199,14 @@ DESTINS.forEach(d => {
   else {
     let src = cache[f] !== undefined ? cache[f] : readFileSync(f, 'utf8');
     let tocat = false;
-    [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
-      const a = `/*TT-XA-I18N-${M}*/`, b = `/*/TT-XA-I18N-${M}*/`;
-      const x = src.indexOf(a), y = src.indexOf(b);
-      if (x < 0 || y <= x) { bad(`falten les marques ${a} a index.html`); return; }
-      const out = src.slice(0, x + a.length) + '\n' + dicXarxa(l) + '\n' + src.slice(y);
-      if (out !== src) { src = out; tocat = true; }
+    [['TT-XA-I18N', dicXarxa], ['TT-VD-I18N', dicValor]].forEach(([marca, fn]) => {
+      [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
+        const a = `/*${marca}-${M}*/`, b = `/*/${marca}-${M}*/`;
+        const x = src.indexOf(a), y = src.indexOf(b);
+        if (x < 0 || y <= x) { bad(`falten les marques ${a} a index.html`); return; }
+        const out = src.slice(0, x + a.length) + '\n' + fn(l) + '\n' + src.slice(y);
+        if (out !== src) { src = out; tocat = true; }
+      });
     });
     if (tocat) {
       if (CHECK) vells.push('el diccionari de la xarxa');
