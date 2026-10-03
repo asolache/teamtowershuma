@@ -640,6 +640,56 @@ queda són **els tres forats mesurats de la portada**.
 
 ---
 
+### Els mapes de valor, que es llegien en català (03/10/2026)
+
+**Vist per l'Àlvar:** *«hay partes de la home que no se traducen al castellano,
+concretamente los mapas de valor del celler de luxe»*. Tenia raó, i era més que
+els dibuixos: **el bloc sencer del celler a la portada no portava ni una clau**
+—el títol, el lead, les dues caselles de comparació, la tesi del marge, les
+tres files de qui fa cada lliurament, l'avís i els dos botons—, i les guardes
+donaven verd perquè *les claus que hi havia, zero, quadraven perfectament*.
+
+| Superfície | Estat trobat |
+|---|---|
+| El bloc de text del celler a `#dues-vistes` | ❌ **cap clau** |
+| Els noms dels set nodes de cada dibuix | ❌ només català |
+| Les 32 frases de les fletxes dels dos mapes | ❌ només català |
+| Els títols de les plantes i els alçats | ❌ només català |
+| Les lectures que es munten comptant | ❌ només català |
+| La taula de la vista castell | ❌ noms de node i capçalera |
+| Els noms de les dimensions de `VARIABLES` | ❌ només català |
+
+**Dues coses que no es fan amb una clau de diccionari, i per què.**
+
+1. **Els noms dels nodes al dibuix.** El salt de línia el calcula el generador,
+   i «Institucions i administració» i «Instituciones y administración» no es
+   parteixen pel mateix lloc: amb una sola etiqueta i el text canviat pel
+   diccionari, la castellana sortiria del cercle. S'escriuen **les dues**, amb
+   el seu salt, i el CSS n'ensenya una segons `lang`.
+2. **El bloc del pols.** El seu text canvia en prémer el botó; una clau el
+   tornaria a l'estat de repòs cada cop que algú canviés de llengua amb el pols
+   aturat. Les dues versions viuen als atributs i el JavaScript tria.
+
+**El límit que això va ensenyar, i la guarda que el tanca.** La prova mesurava
+*fragments en català* amb una llista de paraules. La taula de la vista castell
+deia «Qui fa el vi», «El poble», «El distribuïdor» amb el castellà posat i
+**cap regla ho trobava**: cap d'aquells noms porta una paraula que una
+expressió regular reconegui com a catalana. La regla nova no mira la llengua,
+mira si **algú pot traduir aquell text**: dins dels blocs generats, tot text ha
+d'estar cobert per una clau, per la parella d'etiquetes del dibuix o pels
+atributs del pols, i prou. Provada esborrant la clau de la taula: la caça.
+
+I una a la declaració, perquè la del navegador no ho veu tot: **cap node ni cap
+parell dels dos mapes sense el seu castellà**. «el vi, la verema i el celler
+obert» no porta cap paraula que una expressió regular reconegui, i sense aquesta
+regla es quedaria en català sense que res ho digués.
+
+El sostre de `test-i18n-home.mjs` baixa de **59 a 34**, i el que queda són
+**falsos positius declarats**: `rengla`, `pinya` i `vent` són noms de posició i
+el castellà de la casa els manté, com fa amb «Baix» o «Enxaneta».
+
+---
+
 ### La proposta del pressupost, i les claus que no llegia ningú (03/10/2026)
 
 El formulari de pressupost es va donar per traduït el 02/10/2026. Omplint-lo en

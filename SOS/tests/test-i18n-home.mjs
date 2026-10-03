@@ -18,20 +18,25 @@
  * demana el DOM i la llengua canviada, i això només ho pot fer un navegador.
  *
  * ── El sostre, i per què no és zero ─────────────────────────────────────────
- * El que queda fora són tres coses, i es diuen:
+ * El 03/10/2026 el que quedava es va tancar: els **mapes de valor** —els dos
+ * dibuixos, els noms dels nodes, les 32 frases de les fletxes, els títols de les
+ * plantes i les lectures que es munten comptant— ja es llegeixen en castellà.
+ * Era el que l'Àlvar va veure: *«hay partes de la home que no se traducen al
+ * castellano, concretamente los mapas de valor del celler de luxe»*.
  *
- *   · **Els `<title>` dels dibuixos** — text de passar-hi el ratolí per sobre.
- *     Surten dels noms de node i de les etiquetes de cada lliurament del cas:
- *     són ~80 cadenes i es tradueixen quan el cas es declari en dues llengües.
- *   · **Les frases que el generador munta comptant** —«3 vents sobre una sola
- *     posició»—, que es fan amb trossos i una xifra. Traduir-les vol declarar
- *     cada tros, i és la pròxima tanda.
- *   · **Els noms de les dimensions** d'una variable (A, B, C… o «Temps
- *     constant»), que vénen del SOS i ja tenen el seu propi diccionari allà.
+ * **El que queda són falsos positius, i per això el sostre no és zero.** Aquesta
+ * xarxa caça paraules catalanes, i el castellà de la casa en manté unes quantes
+ * a posta: `rengla`, `rengles`, `pinya` i `vent` són **noms de posició**, i el
+ * diccionari de `#rols` ja els deixa igual en castellà —com «Baix», «Crossa» o
+ * «Enxaneta»—. Una frase traduïda que digui «4 rengles · 1 primera mano» hi cau
+ * i no és un defecte.
  *
- * El sostre és **la xifra mesurada**, no una d'inventada, i baixa quan es
- * tradueix alguna d'aquestes tres. Puja només amb el motiu escrit, com el del
- * pes: un sostre que es relaxa sol no és un sostre.
+ * La mesura que sí que ha de ser zero i que es comprova a part és
+ * **cap fragment sense clau** (secció 5): un text que no té `data-i18n` no el
+ * pot traduir ningú, i és el defecte que les altres regles no veuen.
+ *
+ * El sostre és **la xifra mesurada**, no una d'inventada. Puja només amb el
+ * motiu escrit, com el del pes: un sostre que es relaxa sol no és un sostre.
  *
  * Ús:  node SOS/tests/test-i18n-home.mjs
  */
@@ -43,7 +48,7 @@ const PORTADA = pathToFileURL(join(import.meta.dirname, '..', '..', 'index.html'
 
 /* Les mesures d'avui. Cada secció té la seva perquè una regressió en una no
    s'ha de poder amagar darrere d'una millora en una altra. */
-const SOSTRE = { rengles: 29, 'dues-vistes': 19, xarxa: 10, rols: 1 };
+const SOSTRE = { rengles: 27, 'dues-vistes': 3, xarxa: 3, rols: 1 };
 const TOTAL = Object.values(SOSTRE).reduce((a, b) => a + b, 0);
 
 /* Paraules que només existeixen en català. No és un detector de llengua: és
@@ -152,6 +157,95 @@ console.log('\n4 · I es pot tornar');
   }));
   ok(r.lang === 'ca', 'l\'atribut `lang` torna a ca');
   ok(r.es === 0, `i no queda cap element amb el castellà posat (${r.es})`);
+}
+
+/* ── 5 · LA QUE HA DE SER ZERO · el que no té clau ────────────────────────
+   Les regles de dalt compten **fragments en català**, i amb el vocabulari
+   casteller mantingut a posta mai arribaran a zero. La que sí que hi ha
+   d'arribar és aquesta: **un text sense `data-i18n` no el pot traduir ningú**.
+
+   És el defecte que va deixar els dos mapes de valor sencers en català —el
+   bloc del celler no en portava ni una, i les guardes donaven verd perquè les
+   claus que hi havia, zero, quadraven perfectament. */
+console.log('\n5 · I cap text de les seccions sense clau');
+{
+  await p.click('.lang-btn[data-lang="es"]');
+  await p.waitForTimeout(400);
+  const sense = await p.evaluate(sCA => {
+    const re = new RegExp(sCA, 'i');
+    const out = [];
+    document.querySelectorAll('section[id]').forEach(s => {
+      const w = document.createTreeWalker(s, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = w.nextNode())) {
+        const t = n.textContent.trim();
+        if (t.length < 12 || !re.test(t)) continue;
+        let e = n.parentElement, k = null;
+        while (e && !k) {
+          k = e.getAttribute && (e.getAttribute('data-i18n') || e.getAttribute('data-i18n-html'));
+          e = e.parentElement;
+        }
+        if (!k) out.push('#' + s.id + ' · ' + t.slice(0, 56));
+      }
+    });
+    return out;
+  }, CA.source);
+  ok(!sense.length, `cap fragment sense clau (${sense.length})`
+    + (sense.length ? ':\n      ' + sense.slice(0, 6).join('\n      ') : ''));
+}
+
+/* ── 6 · LA MÉS FORTA · tot el text dels blocs generats, cobert ───────────
+   Les regles de dalt busquen **paraules catalanes**, i això té un límit que es
+   va veure el 03/10/2026: la taula de la vista castell deia «Qui fa el vi»,
+   «El poble», «El distribuïdor» amb el castellà posat, i **cap regla ho
+   trobava** — cap d'aquells noms porta una paraula que una expressió regular
+   reconegui com a catalana.
+
+   Aquesta no mira la llengua: mira si **algú pot traduir aquell text**. Dins
+   dels blocs generats, tot text ha d'estar cobert d'una d'aquestes tres
+   maneres, i no n'hi ha cap altra:
+
+   · una clau de diccionari (`data-i18n`),
+   · una etiqueta per llengua al dibuix (`.mv-ca` / `.mv-es`), que es fa així
+     perquè el salt de línia es calcula al generador,
+   · els atributs del bloc del pols (`data-ca` / `data-es` / `data-sa-es`), que
+     va així perquè el seu text canvia en prémer el botó.
+
+   `#fentpinya` en queda fora a posta: el seu dibuix és **escrit a mà** i el que
+   hi ha són els noms de les posicions —POM, PINYA, CROSSES—, que el castellà
+   de la casa manté igual, com fa el diccionari de `#rols` amb «Baix» o
+   «Enxaneta». */
+console.log('\n6 · I tot el text dels blocs generats es pot traduir');
+{
+  const sense = await p.evaluate(() => {
+    const out = [];
+    ['dues-vistes', 'xarxa', 'rengles', 'rols'].forEach(id => {
+      const s = document.getElementById(id);
+      if (!s) return;
+      const w = document.createTreeWalker(s, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = w.nextNode())) {
+        const t = n.textContent.trim();
+        if (t.length < 3) continue;
+        /* Xifres i separadors: no són text a traduir. Res més: el «de» d'una
+           comparació sí que porta clau, encara que es digui igual, perquè una
+           excepció aquí és el lloc per on entraria el pròxim tros sense
+           traduir. */
+        if (/^[\d\s·,.%–—:|()\/+-]+$/.test(t)) continue;
+        let e = n.parentElement, k = null, altre = false;
+        while (e && !k) {
+          if (e.classList && (e.classList.contains('mv-ca') || e.classList.contains('mv-es')
+            || e.classList.contains('mv-pols-ui'))) altre = true;
+          k = e.getAttribute && (e.getAttribute('data-i18n') || e.getAttribute('data-i18n-html'));
+          e = e.parentElement;
+        }
+        if (!k && !altre) out.push('#' + id + ' · ' + t.slice(0, 54));
+      }
+    });
+    return [...new Set(out)];
+  });
+  ok(!sense.length, `tot el text dels quatre blocs generats es pot traduir (${sense.length} fora)`
+    + (sense.length ? ':\n      ' + sense.slice(0, 8).join('\n      ') : ''));
 }
 
 await ctx.close();
