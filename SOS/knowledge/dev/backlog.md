@@ -634,10 +634,52 @@ més detall del flux**: és el que falta per tancar-ho.
 *Pantheon.work ja era font d'aquesta casa pel panteó de 12 (`pantheon-12.md`,
 CC BY). Dos documents del mateix lloc, i conviuen bé.*
 
-**El que queda de traduccions:** *(actualitzat el 03/10/2026, vegeu l'entrada
-de sota)* els tres diagnòstics ja no. El que queda és **el text de la proposta
-que el JavaScript munta** en prémer el botó del pressupost (`rLead`, `rMetode`,
-les línies del resum), i els tres forats mesurats de la portada.
+**El que queda de traduccions:** *(actualitzat el 03/10/2026, vegeu les dues
+entrades de sota)* ni els diagnòstics ni la proposta del pressupost. El que
+queda són **els tres forats mesurats de la portada**.
+
+---
+
+### La proposta del pressupost, i les claus que no llegia ningú (03/10/2026)
+
+El formulari de pressupost es va donar per traduït el 02/10/2026. Omplint-lo en
+castellà i prement el botó, el que sortia era **la proposta sencera en
+català**: el total, el desglossament, «com s'ha calculat» —la frase que sosté
+el preu— i «què falta per tancar-ho». És l'última pantalla abans de trucar.
+
+**I el formulari tampoc estava traduït del tot.** El que ho va destapar no va
+ser mirar: va ser preguntar-li a la pàgina **què es queda en català tingui clau
+o no**, en comptes de preguntar-li quines claus es queden sense valor. Les dues
+preguntes no troben el mateix:
+
+| Trobat | Per què no petava |
+|---|---|
+| Els **24 noms de paquet** del triador i les 5 capçaleres de família | `blocPaquets()` els escrivia sense clau |
+| El subtítol del pas 3 i el paràgraf de la contractació per hores | sense clau |
+| **18 claus declarades que no llegia ningú** (`pr.s1.err`, `pr.prop.falta`, tot el bloc `pr.mida.*`, els tres filtres de sector…) | el diccionari les tenia en les dues llengües i el marcatge no les demanava |
+| La promesa de privacitat | la clau existia amb **només la primera frase** |
+
+Triaves en una llengua i et responien en una altra.
+
+**Les dues guardes que ho haurien dit, i que ara hi són:**
+
+1. **Cap clau que no llegeixi ningú** (`check-formularis.js`). Una clau pot
+   venir del marcatge o del JavaScript, i per això no es busca l'atribut sinó
+   el nom **en qualsevol altre lloc del fitxer**: si només surt als dos
+   diccionaris, no la demana ningú. `fo.*` i `nv.*` en queden fora perquè són
+   blocs compartits que el generador escriu sencers a totes les pàgines.
+2. **Cap fragment en català a tota la pàgina, tingui clau o no** (les dues
+   proves de navegador). És la que troba el que no té clau, i per tant la que
+   hauria trobat les 24 files del triador.
+
+**El resum en text pla segueix en català**, com als dos diagnòstics: `p.nomCa`
+i `eurCa()` hi són justament per això. I el format de números i dates segueix
+la llengua —en castellà «3050» no porta punt i la data és «3/10/2026».
+
+I dues coses que es veien mirant: el commutador de llengua **no tenia estil** en
+aquesta pàgina (dos botons blancs del navegador, sense marcar quin hi havia
+posat), i els noms de paquet que ja porten cometes sortien amb cometes dobles
+—«Taller de castells «Fent Pinya»»—.
 
 ---
 
