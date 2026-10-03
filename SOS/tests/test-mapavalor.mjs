@@ -80,7 +80,13 @@ p2.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); 
 await p2.goto(VNA);
 const v = await p2.evaluate(() => {
   const secs = [...document.querySelectorAll('.mv-sec')];
-  const t = secs.map(s => s.innerText).join('\n');
+  /* El text que es mira és **el de la pàgina sencera** i no el de les seccions
+     de mètode. Des del 03/10/2026 el cas no és una secció més: el títol del
+     celler va al peu del llenç —`.lz-cas`—, que és on el llegeix qui mira el
+     dibuix, i les lectures viuen al costat del llenç i no dins de cap
+     `.mv-sec`. Comptar només les seccions diria que la pàgina ha deixat de
+     dir de quin cas parla, i el que ha passat és que ho diu més amunt. */
+  const t = document.body.innerText;
   return {
     secs: secs.length,
     notacio: document.querySelectorAll('.mv-nt').length,
