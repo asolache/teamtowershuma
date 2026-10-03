@@ -640,6 +640,48 @@ queda són **els tres forats mesurats de la portada**.
 
 ---
 
+### El perfil, amb els tres nivells (03/10/2026)
+
+**Demanat:** *«revisa mi currículum y actualiza la sección de la home donde
+habla de mi background y skills multidisciplinares operativas, tácticas y
+estratégicas»*, amb un CV nou.
+
+**El que el CV afegia i la portada no deia enlloc** —sis anys de feina—:
+
+| Anys | On | Per què importa aquí |
+|---|---|---|
+| 2019 – avui | **Pantheon Work · director de projectes de consultoria** | La web deia «beta-tester i coach». És el càrrec, i és el que sosté el pla estratègic d'IKEA |
+| 2019 – 2020 | **Rescoio · project manager de programari** | El programari era de les **Biblioteques de les Coses** — la mateixa dinàmica que avui és una eina del SOS |
+| 2021 – 2022 | **CryptoMarketing · smart contracts officer** | El catàleg ven «contractes intel·ligents · estudi de viabilitat» i no tenia qui el signés |
+| 2021 – 2023 | **SAE Institute · professor de Web 3.0 i pensament sistèmic** | Igual |
+| 2023 – 2024 | **Complot · innovació digital** | Currículums de blockchain |
+
+**I els tres nivells, que és el que es demanava.** La secció llistava quatre
+trams —quatre llocs des d'on ha fet el mateix ofici— i **no deia a quina altura
+treballa a cada un**. Qui compra consultoria pregunta justament això. Ara hi ha
+tres caselles, i cada una porta on consta:
+
+- **Estratègic** · director estratègic de RRHH a GEC–UOC amb el pla de la UOC
+  implantat, i el pla estratègic organitzatiu i de RRHH d'IKEA.
+- **Tàctic** · direcció de projectes de consultoria, product owner, project
+  manager de programari, currículums formatius.
+- **Operatiu** · selecció per a la planta d'HP, programes a Myrurgia, team coach
+  a Mondragon i la facilitació del taller, que segueix fent ell.
+
+Sense l'exemple al costat seria una llista d'adjectius, que és el que diu
+tothom.
+
+**Dues dates corregides i una precisió**, totes a `trajectoria.md` §1 quater:
+comunitats.org passa de 2012–2014 a **2010–2015**, Foment del Treball de 2001 a
+**2001–2005**, i els quatre multinacionals de la fila «no consta quina entrega
+concreta» ara sí que consten: **formació i desenvolupament d'equips directius**.
+
+**El que segueix fora a posta:** Euromanager, Adbraintage i la llista sencera
+d'anys. El criteri no canvia: *una portada comercial no és un currículum*. El
+que hi entra és el que fa decidir i el que cobreix una cosa que ja es ven.
+
+---
+
 ### Posar nom als rols, i el titular que no deia res (03/10/2026)
 
 **Dues peticions de l'Àlvar el mateix dia.**

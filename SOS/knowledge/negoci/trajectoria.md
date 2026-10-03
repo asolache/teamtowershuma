@@ -181,6 +181,60 @@ les organitzacions (UB, 1999).
 > Adbraintage i els idiomes. No hi són perquè una portada comercial no és un
 > currículum: hi entra el que fa decidir, no tot el que és cert.
 
+## 1 quater · El CV del 3 d'octubre de 2026
+
+Un currículum nou, més complet que el del 10 de setembre. **No el contradiu en
+res del que la web ja deia**; hi afegeix sis anys de feina que no hi eren i
+tanca dues dates.
+
+### El que afegeix, i que la web no deia enlloc
+
+| Anys | On | Què |
+|---|---|---|
+| 2019 – avui | **Pantheon Work** | **Director de projectes de consultoria.** Venda, planificació, producció i formació amb la metodologia VNA. Fita: **pla estratègic organitzatiu i de RRHH per a IKEA** |
+| 2019 – 2020 | **Rescoio** | Project manager de programari. Fita: **el desenvolupament de les «Biblioteques de les Coses»** |
+| 2021 – 2022 | **CryptoMarketing** | Cofundador i *smart contracts officer* |
+| 2021 – 2023 | **SAE Institute** | Professor de **Web 3.0 i pensament sistèmic** |
+| 2023 – 2024 | **Complot Escuela** | Professor d'innovació digital. Fita: currículums formatius d'innovació digital i blockchain |
+
+### Dues dates que es corregeixen
+
+| Què | Deia la web | Diu el CV del 03/10/2026 | Es queda |
+|---|---|---|---|
+| comunitats.org | 2012 – 2014 | **nov. 2010 – gen. 2015** | El CV nou: és la seva pròpia declaració, i és la més recent |
+| Foment del Treball | 2001 | **mar. 2001 – set. 2005** | El CV nou, pel mateix motiu |
+
+### I una precisió que fa més fort el que ja hi havia
+
+La fila de `Telefónica · Vodafone · BBVA · Novartis…` deia «**no consta quina
+entrega concreta** va ser cadascun». Ara sí que consta per a quatre d'ells: el
+CV diu **«formació i desenvolupament d'equips directius»** per a IKEA, Novartis,
+Vodafone i Telefónica. Segueix sense constar per a la resta.
+
+### Els tres nivells, i què els sosté
+
+És com ell mateix demana que es llegeixi la seva trajectòria —**operativa,
+tàctica i estratègica**—, i cada nivell té on agafar-se al CV. Això és el que
+entra a `#facilitador`; la resta es queda aquí.
+
+| Nivell | Què vol dir | On consta |
+|---|---|---|
+| **Estratègic** | Dissenyar el sistema abans que hi hagi feina | Director estratègic de RRHH a **GEC–UOC** (2002–2005), amb el pla estratègic de RRHH de la UOC implantat · **pla estratègic organitzatiu i de RRHH per a IKEA** des de Pantheon Work |
+| **Tàctic** | Convertir-ho en projectes que algú pugui portar | Director de projectes de consultoria (Pantheon Work) · product owner (comunitats.org) · project manager de programari (Rescoio) · currículums formatius (Complot, SAE) |
+| **Operatiu** | Fer-ho a la sala i a peu de planta | Recruiting manager de la planta d'**HP** (Manpower) · programes formatius i normatius a **Myrurgia** · team coach a **Mondragon Team Academy** · facilitació del taller Fent Pinya |
+
+> **El que segueix fora de la portada a posta:** Euromanager, Adbraintage i la
+> llista sencera d'anys. El criteri no canvia: *una portada comercial no és un
+> currículum, hi entra el que fa decidir*. El que sí que hi entra d'aquest CV és
+> el que **cobreix una cosa que ja es ven i no tenia qui la signés** —el paquet
+> de contractes intel·ligents i el de fluxos amb IA— i el que dona nom als tres
+> nivells.
+
+**Font:** CV «Álvaro Solache — Clean Design», lliurat per ell el **3 d'octubre
+de 2026**.
+
+---
+
 ## 2 · Referències externes que es poden enllaçar
 
 | Què | On |
