@@ -204,13 +204,32 @@ console.log('\n7 · El filtre no amaga res que no s\'hagi demanat');
     const total = document.querySelectorAll('.pq').length;
     const visibles = () => [...document.querySelectorAll('.pq')].filter(l => !l.hidden).length;
     const abans = visibles();
-    document.querySelector('.pq-f[data-sec="privat"]').click();
-    const privats = visibles();
+    /* Els sectors es llegeixen **dels botons** i no d'una llista escrita aquí:
+       la prova anava a buscar `data-sec="privat"`, que va deixar d'existir el
+       dia que les portes van passar de dues a tres, i petava amb un `null` en
+       comptes de dir què havia canviat. */
+    const secs = [...document.querySelectorAll('.pq-f')].map(b => b.dataset.sec)
+      .filter(x => x !== 'tot');
+    const per = {};
+    secs.forEach(sec => {
+      document.querySelector('.pq-f[data-sec="' + sec + '"]').click();
+      per[sec] = visibles();
+    });
+    /* I que cada paquet visible porti de debò el sector demanat: `data-sector`
+       és una llista, i comparant la cadena sencera «admin tercer» no és ni
+       l'un ni l'altre. */
+    document.querySelector('.pq-f[data-sec="' + secs[0] + '"]').click();
+    const tots = [...document.querySelectorAll('.pq')].filter(l => !l.hidden)
+      .every(l => l.dataset.sector.split(' ').includes(secs[0]));
     document.querySelector('.pq-f[data-sec="tot"]').click();
-    return { total, abans, privats, tornen: visibles() };
+    return { total, abans, secs, per, tots, tornen: visibles() };
   });
   ok(r.abans === r.total, 'en obrir, hi són tots: un filtre que amaga per defecte oculta oferta');
-  ok(r.privats > 0 && r.privats < r.total, 'filtrant per empresa en queden menys, i en queden');
+  ok(r.secs.length === 3, `hi ha ${r.secs.length} portes de sector: ${r.secs.join(', ')}`);
+  Object.entries(r.per).forEach(([sec, n]) =>
+    ok(n > 0 && n < r.total, `filtrant per «${sec}» en queden ${n} de ${r.total}: menys, i en queden`));
+  ok(r.tots, `i els que queden porten de debò el sector demanat (${r.secs[0]})`);
+  ok(new Set(Object.values(r.per)).size > 1, 'i els tres no donen el mateix número');
   ok(r.tornen === r.total, 'i «tot» els torna a mostrar');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();

@@ -1343,7 +1343,11 @@ function blocPortada() {
   f.push('    </div>');
   f.push(`    <p class="mv-avis"${i18h('avis')}>${CELLER.avis}</p>`);
   f.push(`    <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html"${i18('cta1')}>Com es fa un mapa, pas a pas →</a>`
-    + `<a class="mv-cta" href="#cataleg" data-sec="privat"${i18('cta2')}>El paquet i el preu →</a></div>`);
+    /* Porta **al paquet** i no al catàleg filtrat per un sector. Duia
+       `data-sec="privat"`, que era arbitrari: el mapa de valor es declara per
+       als tres sectors, i filtrar-ne un amagava el paquet a qui venia dels
+       altres dos. El que vol qui prem «el paquet i el preu» és aquell paquet. */
+    + `<a class="mv-cta" href="#pk-fent-pinya-vna"${i18('cta2')}>El paquet i el preu →</a></div>`);
   f.push('  </div>');
   f.push('</div>');
   return f.join('\n');

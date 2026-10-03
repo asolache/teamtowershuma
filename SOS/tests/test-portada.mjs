@@ -395,48 +395,67 @@ console.log('\n8 · El que encara no existeix, es diu');
 }
 
 console.log('\n9 · Les dues portes porten a dos llocs diferents de debò');
-/* El hero convida empreses i administració, i el repte s'explicava només per
-   a una. La guarda ja mira que el text anomeni els dos; aquí es comprova el
-   que un text no pot: **que clicar cada porta canviï el que es veu**.
+/* **Tres portes, i cadascuna ha de canviar el que es veu.**
 
    Una porta que baixa al catàleg sense filtrar no peta ni es nota —l'àncora
-   funciona igual— i deixa qui hi entra davant de vint-i-tres paquets, la
-   meitat dels quals no són per a ell. Era el cas real: el codi enganxava el
-   filtre a `.hero-portes a[data-sec]` i les portes noves del repte queien
-   fora del selector. */
+   funciona igual— i deixa qui hi entra davant de vint-i-un paquets, la meitat
+   dels quals no són per a ell. Ja va passar: el codi enganxava el filtre a
+   `.hero-portes a[data-sec]` i les portes noves del repte queien fora del
+   selector.
+
+   I la trampa d'ara, que és nova: `data-sector` ha passat a ser **una
+   llista**. Comparant la cadena sencera, «admin tercer» no és ni «admin» ni
+   «tercer» i el paquet desapareix de les dues portes alhora — amb la fitxa
+   correcta i la pàgina sencera funcionant. Per això es comprova que cada
+   llista visible **contingui** el sector demanat, i que els paquets de dos
+   compradors surtin a les dues portes. */
 {
   const { ctx, p } = await nova();
-  const r = await p.evaluate(() => {
+  const SECS = ['admin', 'tercer', 'empresa'];
+  const r = await p.evaluate(secs => {
     const q = s => [...document.querySelectorAll(s)];
     const bandes = q('.banda');
-    const visibles = () => q('.paquet[data-sector]').filter(x => !x.hidden);
+    const visibles = () => q('.paquet[data-sector]').filter(x => !x.hidden)
+      .map(x => x.dataset.sector.split(' '));
     const porta = s => document.querySelector('.banda-cta[data-sec="' + s + '"]');
     const tot = visibles().length;
-    porta('privat').click();
-    const privat = visibles().map(x => x.dataset.sector);
-    porta('public').click();
-    const pub = visibles().map(x => x.dataset.sector);
+    const per = {};
+    secs.forEach(s => { const b = porta(s); if (b) { b.click(); per[s] = visibles(); } });
+    /* I una porta del hero, que viu en un altre contenidor: és exactament el
+       lloc pel qual el filtre es va trencar una vegada. */
+    const h = document.querySelector('.hero-portes a[data-sec="admin"]');
+    if (h) h.click();
+    const heroAdmin = visibles().length;
     const repte = (document.querySelector('#enfoc') || {}).innerText || '';
     return {
       bandes: bandes.length,
-      claus: bandes.map(x => (x.querySelector('.banda-k') || {}).textContent || ''),
       files: bandes.map(x => x.querySelectorAll('.banda-dl dt').length),
-      tot, privat, pub, repte
+      secBandes: bandes.map(x => x.dataset.sec),
+      tot, per, heroAdmin, repte,
+      dobles: q('.paquet[data-sector]').filter(x => x.dataset.sector.split(' ').length > 1).length
     };
-  });
-  ok(r.bandes === 2, 'el repte ensenya les dues bandes del mateix patró');
+  }, SECS);
+  ok(r.bandes === 3, `el repte ensenya les ${r.bandes} bandes del mateix patró, una per sector`);
+  ok(SECS.every(s => r.secBandes.includes(s)),
+    'i cada banda diu de quin sector és, que és el que li dona el color');
   ok(r.files.every(n => n === 3),
-    'i totes dues responen les mateixes tres preguntes: qui ho sosté, què no es veu, què passa quan marxen');
-  ok(/empresa|cooperativa/i.test(r.repte) && /ajuntament|comunitari|veïn/i.test(r.repte),
-    'el text del repte anomena els dos mons, no un');
+    'i totes tres responen les mateixes tres preguntes: qui ho sosté, què no es veu, què passa quan marxen');
+  ok(/empresa|cooperativa/i.test(r.repte) && /ajuntament|regidor|plec|mandat/i.test(r.repte)
+    && /entitat|voluntàri|veïn|junta/i.test(r.repte),
+    'el text del repte anomena els tres mons, no un ni dos');
   ok(/mateix objectiu/i.test(r.repte) && /fluxos de valor/i.test(r.repte),
     'i diu l\'objectiu compartit i com es mesura');
-  ok(r.privat.length > 0 && r.privat.length < r.tot && r.privat.every(s => s === 'privat' || s === 'tots'),
-    `la porta privada filtra de debò: ${r.privat.length} paquets de ${r.tot}`);
-  ok(r.pub.length > 0 && r.pub.length < r.tot && r.pub.every(s => s === 'public' || s === 'tots'),
-    `i la pública, la seva: ${r.pub.length} de ${r.tot}`);
-  ok(r.privat.length !== r.pub.length || r.privat.join() !== r.pub.join(),
-    'i les dues portes no donen la mateixa llista, que seria no filtrar');
+  SECS.forEach(s => {
+    const v = r.per[s] || [];
+    ok(v.length > 0 && v.length < r.tot && v.every(l => l.includes(s)),
+      `la porta «${s}» filtra de debò: ${v.length} paquets de ${r.tot}, tots seus`);
+  });
+  const llistes = SECS.map(s => (r.per[s] || []).map(l => l.join('+')).join(','));
+  ok(new Set(llistes).size === SECS.length,
+    'i les tres portes donen tres llistes diferents, que és el que vol dir filtrar');
+  ok(r.dobles > 0, `${r.dobles} paquets tenen més d'un comprador declarat, que és el motiu de la llista`);
+  ok(r.heroAdmin === (r.per.admin || []).length && r.heroAdmin > 0,
+    `i la porta del hero filtra igual que la del repte: ${r.heroAdmin} paquets`);
   await ctx.close();
 }
 
