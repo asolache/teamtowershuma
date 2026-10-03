@@ -648,6 +648,17 @@
         .rl-n { font-size:.88rem; color:var(--white); font-weight:600; padding-left:.6rem;
             border-left:3px solid var(--border); }
         .rl-c, .rl-o { font-size:.78rem; line-height:1.65; color:var(--muted); }
+        /* LA CAPÇALERA DE COLUMNES. Abans cada fila repetia «A una casa:»;
+           ara el títol ho diu un cop i el lloc de la fila el guanya el nom
+           del rol, que és el que algú s'ha d'endur de la taula. */
+        .rl-head { display:grid; grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr) minmax(0,1.5fr);
+            gap:.8rem 1rem; padding:0 0 .2rem .6rem; font-family:var(--mono); font-size:.62rem;
+            letter-spacing:.12em; text-transform:uppercase; color:var(--accent-indigo); }
+        .rl-o { display:flex; flex-direction:column; gap:.18rem; }
+        .rl-on { color:var(--white); font-weight:700; font-size:.92rem; line-height:1.3; }
+        .rl-od { color:var(--muted); }
+        .rl-ex { font-family:var(--mono); font-size:.64rem; line-height:1.6; color:var(--accent-green); }
+        .rl-q { display:block; margin-top:.2rem; color:var(--muted); opacity:.85; }
         .rl-o b { color:var(--accent-green); font-weight:600; }
         .rl-a { grid-column:2 / -1; font-family:var(--mono); font-size:.66rem; color:var(--muted);
             opacity:.75; }
@@ -659,6 +670,7 @@
         @media (max-width:860px) {
             .cv-grid { grid-template-columns:1fr; }
             .rl-p { grid-template-columns:1fr; gap:.4rem; }
+            .rl-head { display:none; }
             .rl-a { grid-column:auto; }
             .rl-n { border-left-width:3px; }
         }
@@ -1269,8 +1281,8 @@
                      Ara diu el recorregut i l'objecte: **dels castells al flux
                      de valor**. El recorregut és el que fa creïble el mètode i
                      l'objecte és el que es compra. -->
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Dibuixem el <em>flux de valor</em> de la teva casa, i el fem fluir</h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Qui dona què a qui, també els favors i la confiança; on s'encalla i qui el sosté. Es mira de dues maneres —<strong>el mapa i la pinya</strong>—, es redissenya amb la gent que hi ha, i l'equip se'l queda.</p>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Qui sosté la teva organització, i què doneu de franc</h1>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">En una sessió, l'equip sencer diu en veu alta qui dona què a qui —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. El <em>flux de valor</em> es redissenya amb la gent que hi ha, i l'equip se'l queda.</p>
             </div>
             <div class="hero-cos">
                 <!-- Les dues portes. Existeixen perquè la pàgina venia a dues
@@ -1756,82 +1768,83 @@
 <!--TT-ROLS-->
 <!-- GENERAT per SOS/tools/build-castells.js · no s'edita a mà -->
 <div class="rl-wrap">
+  <div class="rl-head"><div data-i18n="rl.col1">La posició</div><div data-i18n="rl.col2">Al castell</div><div data-i18n="rl.col3">A una organització</div></div>
   <div class="rl-g">
-    <div class="rl-gk"><span data-i18n="rl.g.pinya.n">A la pinya</span> <span data-i18n="rl.g.pinya.d">A terra. El que aguanta i no es veu a la foto.</span></div>
+    <div class="rl-gk"><span data-i18n="rl.g.pinya.n">A la pinya</span><span class="rl-gs"> · </span><span data-i18n="rl.g.pinya.d">A terra. El que aguanta i no es veu a la foto.</span></div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.crossa.n">Crossa</div>
       <div class="rl-c" data-i18n="rl.p.crossa.c">Apuntala l'espatlla del baix des del costat i li treu pes de sobre abans que es dobli.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.crossa.o">Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.crossa.a">cura i acollida</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.crossa.org">El suport que descarrega</b><span class="rl-od" data-i18n="rl.p.crossa.o">Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.</span><span class="rl-ex" data-i18n="rl.p.crossa.ex">administració que treu feina · el segon de cuina · qui cobreix les guàrdies</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.crossa.a">cura i acollida</b><span class="rl-q">🍶 <span data-i18n="rl.p.crossa.q">Com resolem la intendència</span></span></div>
     </div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.contrafort.n">Contrafort</div>
       <div class="rl-c" data-i18n="rl.p.contrafort.c">Darrere el baix, aguantant-lo per l'esquena perquè no se li vagi enrere.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.contrafort.o">Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.contrafort.a">ordre i seguiment</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.contrafort.org">Qui mira que no es desviï</b><span class="rl-od" data-i18n="rl.p.contrafort.o">Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.</span><span class="rl-ex" data-i18n="rl.p.contrafort.ex">qualitat · control de gestió · qui porta el seguiment d'un projecte</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.contrafort.a">ordre i seguiment</b><span class="rl-q">🦉 <span data-i18n="rl.p.contrafort.q">Com protegim el nostre flux de valor</span></span></div>
     </div>
     <div class="rl-p" data-mena="primera">
       <div class="rl-n" style="border-color:#6366f1" data-i18n="rl.p.primera.n">Primera mà</div>
       <div class="rl-c" data-i18n="rl.p.primera.c">Encapçala la rengla, darrere el contrafort, i subjecta el segon per darrere.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.primera.o">El suport directe d'una àrea: la persona que entrega el que aquella àrea ha promès.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.primera.a">un ofici o producció</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.primera.org">Qui entrega</b><span class="rl-od" data-i18n="rl.p.primera.o">El suport directe d'una àrea: la persona que entrega el que aquella àrea ha promès.</span><span class="rl-ex" data-i18n="rl.p.primera.ex">el comercial que tanca · el tècnic que instal·la · qui fa la peça</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.primera.a">un ofici o producció</b><span class="rl-q">🌾 <span data-i18n="rl.p.primera.q">Com generem valor i en tenim cura</span></span></div>
     </div>
     <div class="rl-p" data-mena="lateral">
       <div class="rl-n" style="border-color:#00e676" data-i18n="rl.p.lateral.n">Lateral</div>
       <div class="rl-c" data-i18n="rl.p.lateral.c">Darrere les crosses, amb els braços estirats, subjecta les cuixes dels segons pels costats.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.lateral.o">Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.lateral.a">temps constant</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.lateral.org">El reforç de costat</b><span class="rl-od" data-i18n="rl.p.lateral.o">Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.</span><span class="rl-ex" data-i18n="rl.p.lateral.ex">qui d'una altra àrea sempre ajuda · l'exsoci que encara agafa el telèfon · qui fa de pont amb un proveïdor</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.lateral.a">temps constant</b><span class="rl-q">🔥 <span data-i18n="rl.p.lateral.q">Com acollim i sostenim els espais</span></span></div>
     </div>
     <div class="rl-p" data-mena="vent">
       <div class="rl-n" style="border-color:#ff9100" data-i18n="rl.p.vent.n">Vent</div>
       <div class="rl-c" data-i18n="rl.p.vent.c">Entre crossa i crossa: amb una mà agafa un pilar i amb l'altra, l'altre.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.vent.o">L'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.vent.a">contactes al territori</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.vent.org">Qui lliga dues àrees</b><span class="rl-od" data-i18n="rl.p.vent.o">L'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.</span><span class="rl-ex" data-i18n="rl.p.vent.ex">el cap de projecte entre producció i comercial · la tècnica que parla amb l'ajuntament i amb les entitats</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.vent.a">contactes al territori</b><span class="rl-q">🪽 <span data-i18n="rl.p.vent.q">Com connectem les persones</span></span></div>
     </div>
   </div>
   <div class="rl-g">
-    <div class="rl-gk"><span data-i18n="rl.g.tronc.n">Al tronc</span> <span data-i18n="rl.g.tronc.d">Els pisos. El que es puja i transmet el pes avall.</span></div>
+    <div class="rl-gk"><span data-i18n="rl.g.tronc.n">Al tronc</span><span class="rl-gs"> · </span><span data-i18n="rl.g.tronc.d">Els pisos. El que es puja i transmet el pes avall.</span></div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.baix.n">Baix</div>
       <div class="rl-c" data-i18n="rl.p.baix.c">A terra, sota el tronc, amb el pes de tot el castell a les espatlles. No es mou i no mira amunt.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.baix.o">Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.baix.a">temps constant</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.baix.org">El que aguanta l'àrea</b><span class="rl-od" data-i18n="rl.p.baix.o">Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.</span><span class="rl-ex" data-i18n="rl.p.baix.ex">cap d'operacions · responsable de producció · qui porta la cuina</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.baix.a">temps constant</b><span class="rl-q">🔨 <span data-i18n="rl.p.baix.q">Amb quin ofici i quines eines produïm</span></span></div>
     </div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.segon.n">Segon</div>
       <div class="rl-c" data-i18n="rl.p.segon.c">Primer pis sobre el baix. Ha de ser ferm i lleuger alhora: transmet avall tot el que rep de dalt.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.segon.o">Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.segon.a">un ofici o producció</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.segon.org">Qui converteix la decisió en feina</b><span class="rl-od" data-i18n="rl.p.segon.o">Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.</span><span class="rl-ex" data-i18n="rl.p.segon.ex">cap de projecte · coordinació d'equip · qui fa el pla a partir del comitè</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.segon.a">un ofici o producció</b><span class="rl-q">📚 <span data-i18n="rl.p.segon.q">Com estructurem el que sabem</span></span></div>
     </div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.terc.n">Terç</div>
       <div class="rl-c" data-i18n="rl.p.terc.c">Tercer pis. On el castell es decideix: ja és alt i encara ha de pujar gent per sobre.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.terc.o">El pis del mig d'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.terc.a">vehicle i disponibilitat</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.terc.org">El pis del mig</b><span class="rl-od" data-i18n="rl.p.terc.o">El pis del mig d'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.</span><span class="rl-ex" data-i18n="rl.p.terc.ex">comandament intermedi · responsable d'equip sense pressupost · encarregat de torn</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.terc.a">vehicle i disponibilitat</b><span class="rl-q">🌊 <span data-i18n="rl.p.terc.q">Com sostenim la tensió del canvi</span></span></div>
     </div>
   </div>
   <div class="rl-g">
-    <div class="rl-gk"><span data-i18n="rl.g.pom.n">Al pom de dalt</span> <span data-i18n="rl.g.pom.d">Els de la canalla. Pesen poc i decideixen si el castell és carregat o descarregat.</span></div>
+    <div class="rl-gk"><span data-i18n="rl.g.pom.n">Al pom de dalt</span><span class="rl-gs"> · </span><span data-i18n="rl.g.pom.d">Els de la canalla. Pesen poc i decideixen si el castell és carregat o descarregat.</span></div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.aixecador.n">Aixecador</div>
       <div class="rl-c" data-i18n="rl.p.aixecador.c">Fa de frontissa del pom de dalt: s'ajup perquè els altres passin i aixeca quan toca.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.aixecador.o">Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.aixecador.a">cura i acollida</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.aixecador.org">Qui fa pujar algú altre</b><span class="rl-od" data-i18n="rl.p.aixecador.o">Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.</span><span class="rl-ex" data-i18n="rl.p.aixecador.ex">qui forma el relleu · la mentora · qui prepara qui el substituirà</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.aixecador.a">cura i acollida</b><span class="rl-q">👑 <span data-i18n="rl.p.aixecador.q">Com generem confiança i compromís</span></span></div>
     </div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.enxaneta.n">Enxaneta</div>
       <div class="rl-c" data-i18n="rl.p.enxaneta.c">Corona, fa l'aleta i baixa. És a dalt tres segons i és la foto.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.enxaneta.o">Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.enxaneta.a">veu i difusió</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.enxaneta.org">La cara visible</b><span class="rl-od" data-i18n="rl.p.enxaneta.o">Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.</span><span class="rl-ex" data-i18n="rl.p.enxaneta.ex">qui presenta · qui recull el premi · la portaveu</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.enxaneta.a">veu i difusió</b><span class="rl-q">💗 <span data-i18n="rl.p.enxaneta.q">Com es veu el valor que aportem</span></span></div>
     </div>
   </div>
   <div class="rl-g">
-    <div class="rl-gk"><span data-i18n="rl.g.fora.n">Fora de l'estructura</span> <span data-i18n="rl.g.fora.d">Qui no aguanta res i tria què s'intenta.</span></div>
+    <div class="rl-gk"><span data-i18n="rl.g.fora.n">Fora de l'estructura</span><span class="rl-gs"> · </span><span data-i18n="rl.g.fora.d">Qui no aguanta res i tria què s'intenta.</span></div>
     <div class="rl-p">
       <div class="rl-n" data-i18n="rl.p.cap.n">Cap de colla</div>
       <div class="rl-c" data-i18n="rl.p.cap.c">No és a l'estructura: decideix quina figura es prova, en quin ordre i quan es desmunta.</div>
-      <div class="rl-o"><b data-i18n="rl.casa">A una casa:</b> <span data-i18n="rl.p.cap.o">Qui tria què s'intenta amb la gent que hi ha. La decisió que no es pot delegar a l'estructura que l'ha d'aguantar.</span></div>
-      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.cap.a">números i negociació</b></div>
+      <div class="rl-o"><b class="rl-on" data-i18n="rl.p.cap.org">Qui decideix què s'intenta</b><span class="rl-od" data-i18n="rl.p.cap.o">Qui tria què s'intenta amb la gent que hi ha. La decisió que no es pot delegar a l'estructura que l'ha d'aguantar.</span><span class="rl-ex" data-i18n="rl.p.cap.ex">direcció general · la propietat · el comitè que aprova</span></div>
+      <div class="rl-a"><span data-i18n="rl.encaixa">Encaixa amb qui porta</span> <b data-i18n="rl.p.cap.a">números i negociació</b><span class="rl-q">⚡ <span data-i18n="rl.p.cap.q">Com prenem les decisions i com repartim el valor</span></span></div>
     </div>
   </div>
 </div>
@@ -3410,46 +3423,79 @@ ca: {
   'rl.p.baix.n':'Baix',
   'rl.p.baix.c':'A terra, sota el tronc, amb el pes de tot el castell a les espatlles. No es mou i no mira amunt.',
   'rl.p.baix.o':'Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.',
+  'rl.p.baix.org':'El que aguanta l\'àrea',
+  'rl.p.baix.ex':'cap d\'operacions · responsable de producció · qui porta la cuina',
+  'rl.p.baix.q':'Amb quin ofici i quines eines produïm',
   'rl.p.baix.a':'temps constant',
   'rl.p.crossa.n':'Crossa',
   'rl.p.crossa.c':'Apuntala l\'espatlla del baix des del costat i li treu pes de sobre abans que es dobli.',
   'rl.p.crossa.o':'Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.',
+  'rl.p.crossa.org':'El suport que descarrega',
+  'rl.p.crossa.ex':'administració que treu feina · el segon de cuina · qui cobreix les guàrdies',
+  'rl.p.crossa.q':'Com resolem la intendència',
   'rl.p.crossa.a':'cura i acollida',
   'rl.p.contrafort.n':'Contrafort',
   'rl.p.contrafort.c':'Darrere el baix, aguantant-lo per l\'esquena perquè no se li vagi enrere.',
   'rl.p.contrafort.o':'Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.',
+  'rl.p.contrafort.org':'Qui mira que no es desviï',
+  'rl.p.contrafort.ex':'qualitat · control de gestió · qui porta el seguiment d\'un projecte',
+  'rl.p.contrafort.q':'Com protegim el nostre flux de valor',
   'rl.p.contrafort.a':'ordre i seguiment',
   'rl.p.primera.n':'Primera mà',
   'rl.p.primera.c':'Encapçala la rengla, darrere el contrafort, i subjecta el segon per darrere.',
   'rl.p.primera.o':'El suport directe d\'una àrea: la persona que entrega el que aquella àrea ha promès.',
+  'rl.p.primera.org':'Qui entrega',
+  'rl.p.primera.ex':'el comercial que tanca · el tècnic que instal·la · qui fa la peça',
+  'rl.p.primera.q':'Com generem valor i en tenim cura',
   'rl.p.primera.a':'un ofici o producció',
   'rl.p.lateral.n':'Lateral',
   'rl.p.lateral.c':'Darrere les crosses, amb els braços estirats, subjecta les cuixes dels segons pels costats.',
   'rl.p.lateral.o':'Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.',
+  'rl.p.lateral.org':'El reforç de costat',
+  'rl.p.lateral.ex':'qui d\'una altra àrea sempre ajuda · l\'exsoci que encara agafa el telèfon · qui fa de pont amb un proveïdor',
+  'rl.p.lateral.q':'Com acollim i sostenim els espais',
   'rl.p.lateral.a':'temps constant',
   'rl.p.vent.n':'Vent',
   'rl.p.vent.c':'Entre crossa i crossa: amb una mà agafa un pilar i amb l\'altra, l\'altre.',
   'rl.p.vent.o':'L\'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.',
+  'rl.p.vent.org':'Qui lliga dues àrees',
+  'rl.p.vent.ex':'el cap de projecte entre producció i comercial · la tècnica que parla amb l\'ajuntament i amb les entitats',
+  'rl.p.vent.q':'Com connectem les persones',
   'rl.p.vent.a':'contactes al territori',
   'rl.p.segon.n':'Segon',
   'rl.p.segon.c':'Primer pis sobre el baix. Ha de ser ferm i lleuger alhora: transmet avall tot el que rep de dalt.',
   'rl.p.segon.o':'Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.',
+  'rl.p.segon.org':'Qui converteix la decisió en feina',
+  'rl.p.segon.ex':'cap de projecte · coordinació d\'equip · qui fa el pla a partir del comitè',
+  'rl.p.segon.q':'Com estructurem el que sabem',
   'rl.p.segon.a':'un ofici o producció',
   'rl.p.terc.n':'Terç',
   'rl.p.terc.c':'Tercer pis. On el castell es decideix: ja és alt i encara ha de pujar gent per sobre.',
   'rl.p.terc.o':'El pis del mig d\'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.',
+  'rl.p.terc.org':'El pis del mig',
+  'rl.p.terc.ex':'comandament intermedi · responsable d\'equip sense pressupost · encarregat de torn',
+  'rl.p.terc.q':'Com sostenim la tensió del canvi',
   'rl.p.terc.a':'vehicle i disponibilitat',
   'rl.p.aixecador.n':'Aixecador',
   'rl.p.aixecador.c':'Fa de frontissa del pom de dalt: s\'ajup perquè els altres passin i aixeca quan toca.',
   'rl.p.aixecador.o':'Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.',
+  'rl.p.aixecador.org':'Qui fa pujar algú altre',
+  'rl.p.aixecador.ex':'qui forma el relleu · la mentora · qui prepara qui el substituirà',
+  'rl.p.aixecador.q':'Com generem confiança i compromís',
   'rl.p.aixecador.a':'cura i acollida',
   'rl.p.enxaneta.n':'Enxaneta',
   'rl.p.enxaneta.c':'Corona, fa l\'aleta i baixa. És a dalt tres segons i és la foto.',
   'rl.p.enxaneta.o':'Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.',
+  'rl.p.enxaneta.org':'La cara visible',
+  'rl.p.enxaneta.ex':'qui presenta · qui recull el premi · la portaveu',
+  'rl.p.enxaneta.q':'Com es veu el valor que aportem',
   'rl.p.enxaneta.a':'veu i difusió',
   'rl.p.cap.n':'Cap de colla',
   'rl.p.cap.c':'No és a l\'estructura: decideix quina figura es prova, en quin ordre i quan es desmunta.',
   'rl.p.cap.o':'Qui tria què s\'intenta amb la gent que hi ha. La decisió que no es pot delegar a l\'estructura que l\'ha d\'aguantar.',
+  'rl.p.cap.org':'Qui decideix què s\'intenta',
+  'rl.p.cap.ex':'direcció general · la propietat · el comitè que aprova',
+  'rl.p.cap.q':'Com prenem les decisions i com repartim el valor',
   'rl.p.cap.a':'números i negociació',
   'ct.m.primera.n':'Primeres mans',
   'ct.m.primera.d':'Darrere el contrafort. Subjecten el segon per darrere: és el suport directe d\'una àrea.',
@@ -3495,7 +3541,9 @@ ca: {
   'ct.llei':'<b>La llei que lliga les dues vistes:</b> en castells no es guanya alçada sense guanyar base — un 4 de 8 demana folre, i un de 9, folre i manilles. <b>La pinya creix més de pressa que el tronc.</b> En una casa és igual: cada pis d\'ambició que s\'afegeix demana <b>més direccions obertes</b>, no més gent a la mateixa direcció.',
   'ct.avis':'Això ordena i fa visible; <b>no puntua</b>. Un castell no diu si una casa va bé: diu on es concentra el pes i quines direccions té tancades, que és una altra cosa i és la que serveix per decidir.',
   'ct.quehiposes':'I ara, què hi poses',
-  'rl.casa':'A una casa:',
+  'rl.col1':'La posició',
+  'rl.col2':'Al castell',
+  'rl.col3':'A una organització',
   'rl.encaixa':'Encaixa amb qui porta',
   'rl.avis':'Els noms varien de colla a colla i aquests són els d\'ús més estès. El que no varia és per què hi és cada posició, que és l\'única cosa que es pot traslladar a una organització. <b>Això posa nom, no puntua ningú.</b>',
 /*/TT-CT-I18N-CA*/
@@ -3634,8 +3682,8 @@ ca: {
   'cm.h2':'Quatre passos, <em>i el mapa a la vista</em>',
   'cm.intro':'No hi ha tarifa secreta ni marge amagat. Un pressupost nostre és una suma que podeu refer: les hores surten dels fluxos del mapa de valor, cada rol es cobra al preu del seu nivell, i les despeses directes van al seu preu de factura.',
   'nav.beneficis':'Beneficis','nav.sos':'El SOS','nav.traj':'Trajectòria','nav.demo':'Viu-ho →',
-  'hero.h1':'Dibuixem el <em>flux de valor</em> de la teva casa, i el fem fluir',
-  'hero.desc':'Qui dona què a qui, també els favors i la confiança; on s\'encalla i qui el sosté. Es mira de dues maneres —<strong>el mapa i la pinya</strong>—, es redissenya amb la gent que hi ha, i l\'equip se\'l queda.',
+  'hero.h1':'Qui sosté la teva organització, i què doneu de franc',
+  'hero.desc':'En una sessió, l\'equip sencer diu en veu alta qui dona què a qui —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. El <em>flux de valor</em> es redissenya amb la gent que hi ha, i l\'equip se\'l queda.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
   'hero.evo3.k':'Avui · TeamTowers Humà','hero.evo3.d':'El mateix a empreses, ajuntaments i barris, amb una eina lliure que ho manté viu.',
@@ -4117,47 +4165,80 @@ es: {
   'rl.p.baix.n':'Baix',
   'rl.p.baix.c':'En el suelo, bajo el tronco, con el peso de todo el castell a los hombros. No se mueve y no mira arriba.',
   'rl.p.baix.o':'Quien aguanta un área entera y está siempre. Si se va, no cae lo que hacía él: cae lo que hay encima.',
-  'rl.p.baix.a':'temps constant',
+  'rl.p.baix.org':'El que aguanta el área',
+  'rl.p.baix.ex':'jefe de operaciones · responsable de producción · quien lleva la cocina',
+  'rl.p.baix.q':'Con qué oficio y qué herramientas producimos',
+  'rl.p.baix.a':'tiempo constante',
   'rl.p.crossa.n':'Crossa',
   'rl.p.crossa.c':'Apuntala el hombro del baix desde el lado y le quita peso antes de que se doble.',
   'rl.p.crossa.o':'Quien descarga a quien sostiene un área justo cuando empieza a ir apurado. No hace el trabajo: hace que se pueda hacer.',
-  'rl.p.crossa.a':'cura i acollida',
+  'rl.p.crossa.org':'El apoyo que descarga',
+  'rl.p.crossa.ex':'administración que quita trabajo · el segundo de cocina · quien cubre las guardias',
+  'rl.p.crossa.q':'Cómo resolvemos la intendencia',
+  'rl.p.crossa.a':'cuidado y acogida',
   'rl.p.contrafort.n':'Contrafort',
   'rl.p.contrafort.c':'Detrás del baix, aguantándolo por la espalda para que no se le vaya atrás.',
   'rl.p.contrafort.o':'Quien vigila que aquello no se desvíe y lo dice a tiempo. Es la posición que nadie encuentra imprescindible hasta que falta.',
-  'rl.p.contrafort.a':'ordre i seguiment',
+  'rl.p.contrafort.org':'Quien vigila que no se desvíe',
+  'rl.p.contrafort.ex':'calidad · control de gestión · quien lleva el seguimiento de un proyecto',
+  'rl.p.contrafort.q':'Cómo protegemos nuestro flujo de valor',
+  'rl.p.contrafort.a':'orden y seguimiento',
   'rl.p.primera.n':'Primera mano',
   'rl.p.primera.c':'Encabeza la rengla, detrás del contrafort, y sujeta al segon por detrás.',
   'rl.p.primera.o':'El soporte directo de un área: la persona que entrega lo que esa área ha prometido.',
-  'rl.p.primera.a':'un ofici o producció',
+  'rl.p.primera.org':'Quien entrega',
+  'rl.p.primera.ex':'el comercial que cierra · el técnico que instala · quien hace la pieza',
+  'rl.p.primera.q':'Cómo generamos valor y lo cuidamos',
+  'rl.p.primera.a':'un oficio o producción',
   'rl.p.lateral.n':'Lateral',
   'rl.p.lateral.c':'Detrás de las crosses, con los brazos estirados, sujeta los muslos de los segons por los lados.',
   'rl.p.lateral.o':'Quien refuerza un área de lado sin formar parte de ella. No sale en ninguna factura y se nota el día que no está.',
-  'rl.p.lateral.a':'temps constant',
+  'rl.p.lateral.org':'El refuerzo de lado',
+  'rl.p.lateral.ex':'quien de otra área siempre ayuda · el exsocio que todavía coge el teléfono · quien hace de puente con un proveedor',
+  'rl.p.lateral.q':'Cómo acogemos y sostenemos los espacios',
+  'rl.p.lateral.a':'tiempo constante',
   'rl.p.vent.n':'Vent',
   'rl.p.vent.c':'Entre crossa y crossa: con una mano agarra un pilar y con la otra, el otro.',
   'rl.p.vent.o':'La única posición que toca dos áreas a la vez. Quien falta cuando dos áreas «no se hablan», y la primera que nadie presupuesta.',
-  'rl.p.vent.a':'contactes al territori',
+  'rl.p.vent.org':'Quien ata dos áreas',
+  'rl.p.vent.ex':'el jefe de proyecto entre producción y comercial · la técnica que habla con el ayuntamiento y con las entidades',
+  'rl.p.vent.q':'Cómo conectamos a las personas',
+  'rl.p.vent.a':'contactos en el territorio',
   'rl.p.segon.n':'Segon',
   'rl.p.segon.c':'Primer piso sobre el baix. Tiene que ser firme y ligero a la vez: transmite abajo todo lo que recibe de arriba.',
   'rl.p.segon.o':'Quien convierte una decisión en algo que se puede hacer, y la devuelve abajo en forma de trabajo repartido.',
-  'rl.p.segon.a':'un ofici o producció',
+  'rl.p.segon.org':'Quien convierte la decisión en trabajo',
+  'rl.p.segon.ex':'jefe de proyecto · coordinación de equipo · quien hace el plan a partir del comité',
+  'rl.p.segon.q':'Cómo estructuramos lo que sabemos',
+  'rl.p.segon.a':'un oficio o producción',
   'rl.p.terc.n':'Tercio',
   'rl.p.terc.c':'Tercer piso. Donde el castell se decide: ya es alto y todavía tiene que subir gente por encima.',
   'rl.p.terc.o':'El piso de en medio de una organización. Recibe presión de arriba y de abajo y no tiene ninguna de las dos autoridades.',
-  'rl.p.terc.a':'vehicle i disponibilitat',
+  'rl.p.terc.org':'El piso de en medio',
+  'rl.p.terc.ex':'mando intermedio · responsable de equipo sin presupuesto · encargado de turno',
+  'rl.p.terc.q':'Cómo sostenemos la tensión del cambio',
+  'rl.p.terc.a':'vehículo y disponibilidad',
   'rl.p.aixecador.n':'Aixecador',
   'rl.p.aixecador.c':'Hace de bisagra del pom de arriba: se agacha para que los demás pasen y levanta cuando toca.',
   'rl.p.aixecador.o':'Quien hace subir a otro. No es su figura la que se ve, y sin él no hay pom.',
-  'rl.p.aixecador.a':'cura i acollida',
+  'rl.p.aixecador.org':'Quien hace subir a otro',
+  'rl.p.aixecador.ex':'quien forma el relevo · la mentora · quien prepara a quien le sustituirá',
+  'rl.p.aixecador.q':'Cómo generamos confianza y compromiso',
+  'rl.p.aixecador.a':'cuidado y acogida',
   'rl.p.enxaneta.n':'Enxaneta',
   'rl.p.enxaneta.c':'Corona, hace la aleta y baja. Está arriba tres segundos y es la foto.',
   'rl.p.enxaneta.o':'Quien se ve. Dura poco arriba, no aguanta nada y es lo que todo el mundo recuerda — y por eso se confunde con quien ha hecho el castell.',
-  'rl.p.enxaneta.a':'veu i difusió',
+  'rl.p.enxaneta.org':'La cara visible',
+  'rl.p.enxaneta.ex':'quien presenta · quien recoge el premio · la portavoz',
+  'rl.p.enxaneta.q':'Cómo se ve el valor que aportamos',
+  'rl.p.enxaneta.a':'voz y difusión',
   'rl.p.cap.n':'Cap de colla',
   'rl.p.cap.c':'No está en la estructura: decide qué figura se intenta, en qué orden y cuándo se desmonta.',
   'rl.p.cap.o':'Quien elige qué se intenta con la gente que hay. La decisión que no se puede delegar a la estructura que la tiene que aguantar.',
-  'rl.p.cap.a':'números i negociació',
+  'rl.p.cap.org':'Quien decide qué se intenta',
+  'rl.p.cap.ex':'dirección general · la propiedad · el comité que aprueba',
+  'rl.p.cap.q':'Cómo tomamos las decisiones y cómo repartimos el valor',
+  'rl.p.cap.a':'números y negociación',
   'ct.m.primera.n':'Primeras manos',
   'ct.m.primera.d':'Detrás del contrafort. Sujetan al segon por detrás: es el soporte directo de un área.',
   'ct.m.lateral.n':'Laterales',
@@ -4202,7 +4283,9 @@ es: {
   'ct.llei':'<b>La ley que une las dos vistas:</b> en castells no se gana altura sin ganar base — un 4 de 8 pide folre, y uno de 9, folre y manilles. <b>La pinya crece más rápido que el tronco.</b> En una casa es igual: cada piso de ambición que se añade pide <b>más direcciones abiertas</b>, no más gente en la misma dirección.',
   'ct.avis':'Esto ordena y hace visible; <b>no puntúa</b>. Un castell no dice si una casa va bien: dice dónde se concentra el peso y qué direcciones tiene cerradas, que es otra cosa y es la que sirve para decidir.',
   'ct.quehiposes':'Y ahora, qué le pones',
-  'rl.casa':'En una casa:',
+  'rl.col1':'La posición',
+  'rl.col2':'En el castell',
+  'rl.col3':'En una organización',
   'rl.encaixa':'Encaja con quien aporta',
   'rl.avis':'Los nombres varían de colla a colla y estos son los de uso más extendido. Lo que no varía es por qué está cada posición, que es lo único que se puede trasladar a una organización. <b>Esto pone nombre, no puntúa a nadie.</b>',
 /*/TT-CT-I18N-ES*/
@@ -4341,9 +4424,9 @@ es: {
   'cm.h2':'Cuatro pasos, <em>y el mapa a la vista</em>',
   'cm.intro':'No hay tarifa secreta ni margen escondido. Un presupuesto nuestro es una suma que podéis rehacer: las horas salen de los flujos del mapa de valor, cada rol se cobra al precio de su nivel, y los gastos directos van a su precio de factura.',
   'nav.beneficis':'Beneficios','nav.sos':'El SOS','nav.traj':'Trayectoria','nav.demo':'Verlo en vivo →',
-  'hero.h1':'Dibujamos el <em>flujo de valor</em> de tu casa, y lo hacemos fluir',
-  'hero.desc':'Quién da qué a quién, también los favores y la confianza; dónde se atasca y quién lo sostiene. Se mira de dos maneras —<strong>el mapa y la piña</strong>—, se rediseña con la gente que hay, y el equipo se lo queda.',
-  'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vive que el peso o se reparte o no se aguanta.',
+  'hero.h1':'Quién sostiene tu organización, y qué dais gratis',
+  'hero.desc':'En una sesión, el equipo entero dice en voz alta quién da qué a quién —también los favores y la confianza— y lo mira <strong>como un sistema, no como la suma de lo que hace cada uno</strong>. El <em>flujo de valor</em> se rediseña con la gente que hay, y el equipo se lo queda.',
+  'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vivo donde el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
   'hero.evo3.k':'Hoy · TeamTowers Humà','hero.evo3.d':'Lo mismo en empresas, ayuntamientos y barrios, con una herramienta libre que lo mantiene vivo.',
   /*TT-CL-I18N-ES*/

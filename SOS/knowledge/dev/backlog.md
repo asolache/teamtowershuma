@@ -640,6 +640,61 @@ queda són **els tres forats mesurats de la portada**.
 
 ---
 
+### Posar nom als rols, i el titular que no deia res (03/10/2026)
+
+**Dues peticions de l'Àlvar el mateix dia.**
+
+**1 · «Poner nombre a los roles».** La taula de `#rols` tenia tres columnes i la
+tercera era **una frase**, no un nom: «Qui reforça una àrea de costat sense
+formar-ne part». Una frase no es pot repetir en veu alta, i el que fa útil el
+taller és sortir dient **«tu ets el meu dos, tu el meu terç lateral»**. Ara cada
+posició porta:
+
+- **el nom del rol a una organització**, destacat i al lloc que abans ocupava
+  l'etiqueta repetida;
+- **dos o tres exemples concrets** —«cap d'operacions · responsable de producció
+  · qui porta la cuina»— perquè una casa s'hi reconegui sense traduir res;
+- **de quina de les dotze preguntes del panteó de Pantheon.work és resposta**.
+
+Això últim és el que evita que els noms siguin un invent nostre:
+`pantheon-12.md` (CC BY) són **dotze preguntes que qualsevol organització ha de
+saber respondre**, i ancorar-hi cada posició diu *per què* aquell rol existeix.
+El mapatge és un a un i la guarda no deixa repetir-ne cap.
+
+**Dionís es queda sense posició, i és una troballa.** La celebració no la fa
+ningú en concret al castell —la fa la colla quan està descarregat—, i a una
+organització passa igual: és justament el que ningú té assignat.
+
+**I «A una casa:» surt de cada fila i puja al títol de la columna**, que és el
+que es va demanar. Onze repeticions menys i el lloc el guanya el nom.
+
+**2 · El titular.** Deia *«Dibuixem el flux de valor de la teva casa, i el fem
+fluir»* — una tautologia que no promet res i que es pot dir de qualsevol cosa.
+Ara diu **què veuràs**, que és el que `DECIDEIX` ja sostenia fila a fila:
+
+> **Qui sosté la teva organització, i què doneu de franc**
+
+Les dues meitats surten de dues files de `DECIDEIX`, que ja les sostenia: «qui
+és imprescindible de debò» i «què esteu donant de franc sense haver-ho decidit».
+
+I el text de sota passa de descriure el mètode a dir **on és el valor**: que
+l'equip sencer ho digui en veu alta i ho miri com un sistema i no com la suma
+del que fa cadascú. És la frase que fa que això sigui consultoria sistèmica, i
+estava enterrada a mitja pàgina.
+
+Cap promesa amb xifra, com sempre: el que es promet és **què podràs decidir**.
+
+**I una lliçó de mida.** La primera versió era més llarga —hi deia també què en
+surt i per on començar— i `test-portada.mjs` la va aturar: a 1440 el botó de
+diagnòstic queia per sota del plec i a 390 el dibuix no cabia a la primera
+pantalla. La prova mesura la pàgina, no el text, i per això ho va veure. El
+titular hi cap perquè és més curt que el que hi havia, no perquè s'hagi
+mesurat després.
+
+I un error de traducció pel camí: «un grup viu» deia «un grupo vive».
+
+---
+
 ### Els mapes de valor, que es llegien en català (03/10/2026)
 
 **Vist per l'Àlvar:** *«hay partes de la home que no se traducen al castellano,

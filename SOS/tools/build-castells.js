@@ -260,58 +260,124 @@ function repartiment(f, v) {
    `aport` és l'altra banda del pont: quina de les deu aportacions que el SOS ja
    demana (`APORTS`) encaixa amb aquella posició. Es declara amb el nom tal com
    el diu el SOS, i una guarda comprova que existeixi. */
+/* ══ EL PANTEÓ DE 12, PER FONAMENTAR LA TRADUCCIÓ ═══════════════════════════
+   La columna «a una casa» era una frase per posició, i una frase no és un nom.
+   El que fa útil el taller és que algú surti dient **«tu ets el meu dos, tu el
+   meu terç lateral»**, i per dir-ho el rol de l'organització ha de **tenir
+   nom**. Ara cada posició en porta un, amb exemples concrets perquè una casa
+   s'hi reconegui sense haver de traduir res.
+
+   I no estan triats a ull. Cada posició s'ancora a un dels **dotze arquetips de
+   Pantheon.work** (`SOS/knowledge/references/pantheon-12.md`, CC BY), que són
+   dotze preguntes que qualsevol organització ha de saber respondre. L'arquetip
+   diu **de quina pregunta és resposta aquella posició**, i és el que fa que el
+   nom encaixi amb el cas de qui el llegeix i no amb el nostre.
+
+   **Dionís no hi surt**, i és una troballa i no un oblit: la celebració no té
+   posició al castell perquè no la fa ningú en concret —la fa la colla sencera
+   quan el castell és descarregat—. A una organització passa igual, i és
+   justament el que ningú té assignat. */
+const PANTEO = {
+  zeus: { ic: '⚡', nom: 'Zeus', q: 'Com prenem les decisions i com repartim el valor',
+    qEs: 'Cómo tomamos las decisiones y cómo repartimos el valor' },
+  hera: { ic: '👑', nom: 'Hera', q: 'Com generem confiança i compromís',
+    qEs: 'Cómo generamos confianza y compromiso' },
+  posido: { ic: '🌊', nom: 'Posidó', q: 'Com sostenim la tensió del canvi',
+    qEs: 'Cómo sostenemos la tensión del cambio' },
+  demeter: { ic: '🌾', nom: 'Demèter', q: 'Com generem valor i en tenim cura',
+    qEs: 'Cómo generamos valor y lo cuidamos' },
+  atenea: { ic: '🦉', nom: 'Atenea', q: 'Com protegim el nostre flux de valor',
+    qEs: 'Cómo protegemos nuestro flujo de valor' },
+  apollo: { ic: '📚', nom: 'Apol·lo', q: 'Com estructurem el que sabem',
+    qEs: 'Cómo estructuramos lo que sabemos' },
+  hebe: { ic: '🍶', nom: 'Hebe', q: 'Com resolem la intendència',
+    qEs: 'Cómo resolvemos la intendencia' },
+  dionis: { ic: '🍇', nom: 'Dionís', q: 'Com celebrem el que surt bé',
+    qEs: 'Cómo celebramos lo que sale bien' },
+  afrodita: { ic: '💗', nom: 'Afrodita', q: 'Com es veu el valor que aportem',
+    qEs: 'Cómo se ve el valor que aportamos' },
+  hefest: { ic: '🔨', nom: 'Hefest', q: 'Amb quin ofici i quines eines produïm',
+    qEs: 'Con qué oficio y qué herramientas producimos' },
+  hermes: { ic: '🪽', nom: 'Hermes', q: 'Com connectem les persones',
+    qEs: 'Cómo conectamos a las personas' },
+  hestia: { ic: '🔥', nom: 'Hèstia', q: 'Com acollim i sostenim els espais',
+    qEs: 'Cómo acogemos y sostenemos los espacios' }
+};
+
 const POSICIONS = [
   { id: 'baix', nom: 'Baix', nomEs: 'Baix', on: 'tronc', pis: 1, fn: 'coord', aport: 'Temps constant',
+    org: 'El que aguanta l\'àrea', orgEs: 'El que aguanta el área',
+    ex: 'cap d\'operacions · responsable de producció · qui porta la cuina', exEs: 'jefe de operaciones · responsable de producción · quien lleva la cocina', arq: 'hefest',
     castell: 'A terra, sota el tronc, amb el pes de tot el castell a les espatlles. No es mou i no mira amunt.',
     castellEs: 'En el suelo, bajo el tronco, con el peso de todo el castell a los hombros. No se mueve y no mira arriba.',
     casa: 'Qui aguanta una àrea sencera i hi és sempre. Si plega, no cau el que fa ell: cau el que hi ha a sobre.',
     casaEs: 'Quien aguanta un área entera y está siempre. Si se va, no cae lo que hacía él: cae lo que hay encima.' },
   { id: 'crossa', nom: 'Crossa', nomEs: 'Crossa', on: 'pinya', fn: 'facil', aport: 'Cura i acollida',
+    org: 'El suport que descarrega', orgEs: 'El apoyo que descarga',
+    ex: 'administració que treu feina · el segon de cuina · qui cobreix les guàrdies', exEs: 'administración que quita trabajo · el segundo de cocina · quien cubre las guardias', arq: 'hebe',
     castell: 'Apuntala l\'espatlla del baix des del costat i li treu pes de sobre abans que es dobli.',
     castellEs: 'Apuntala el hombro del baix desde el lado y le quita peso antes de que se doble.',
     casa: 'Qui descarrega el que sosté una àrea just quan comença a anar-hi just. No fa la feina: fa que es pugui fer.',
     casaEs: 'Quien descarga a quien sostiene un área justo cuando empieza a ir apurado. No hace el trabajo: hace que se pueda hacer.' },
   { id: 'contrafort', nom: 'Contrafort', nomEs: 'Contrafort', on: 'pinya', fn: 'audit', aport: 'Ordre i seguiment',
+    org: 'Qui mira que no es desviï', orgEs: 'Quien vigila que no se desvíe',
+    ex: 'qualitat · control de gestió · qui porta el seguiment d\'un projecte', exEs: 'calidad · control de gestión · quien lleva el seguimiento de un proyecto', arq: 'atenea',
     castell: 'Darrere el baix, aguantant-lo per l\'esquena perquè no se li vagi enrere.',
     castellEs: 'Detrás del baix, aguantándolo por la espalda para que no se le vaya atrás.',
     casa: 'Qui mira que allò no es desviï i ho diu a temps. És la posició que ningú troba imprescindible fins que falta.',
     casaEs: 'Quien vigila que aquello no se desvíe y lo dice a tiempo. Es la posición que nadie encuentra imprescindible hasta que falta.' },
   { id: 'primera', nom: 'Primera mà', nomEs: 'Primera mano', on: 'pinya', mena: 'primera', fn: 'exec', aport: 'Un ofici o producció',
+    org: 'Qui entrega', orgEs: 'Quien entrega',
+    ex: 'el comercial que tanca · el tècnic que instal·la · qui fa la peça', exEs: 'el comercial que cierra · el técnico que instala · quien hace la pieza', arq: 'demeter',
     castell: 'Encapçala la rengla, darrere el contrafort, i subjecta el segon per darrere.',
     castellEs: 'Encabeza la rengla, detrás del contrafort, y sujeta al segon por detrás.',
     casa: 'El suport directe d\'una àrea: la persona que entrega el que aquella àrea ha promès.',
     casaEs: 'El soporte directo de un área: la persona que entrega lo que esa área ha prometido.' },
   { id: 'lateral', nom: 'Lateral', nomEs: 'Lateral', on: 'pinya', mena: 'lateral', aport: 'Temps constant',
+    org: 'El reforç de costat', orgEs: 'El refuerzo de lado',
+    ex: 'qui d\'una altra àrea sempre ajuda · l\'exsoci que encara agafa el telèfon · qui fa de pont amb un proveïdor', exEs: 'quien de otra área siempre ayuda · el exsocio que todavía coge el teléfono · quien hace de puente con un proveedor', arq: 'hestia',
     castell: 'Darrere les crosses, amb els braços estirats, subjecta les cuixes dels segons pels costats.',
     castellEs: 'Detrás de las crosses, con los brazos estirados, sujeta los muslos de los segons por los lados.',
     casa: 'Qui reforça una àrea de costat sense formar-ne part. No surt a cap factura i es nota el dia que no hi és.',
     casaEs: 'Quien refuerza un área de lado sin formar parte de ella. No sale en ninguna factura y se nota el día que no está.' },
   { id: 'vent', nom: 'Vent', nomEs: 'Vent', on: 'pinya', mena: 'vent', fn: 'metaskill', aport: 'Contactes al territori',
+    org: 'Qui lliga dues àrees', orgEs: 'Quien ata dos áreas',
+    ex: 'el cap de projecte entre producció i comercial · la tècnica que parla amb l\'ajuntament i amb les entitats', exEs: 'el jefe de proyecto entre producción y comercial · la técnica que habla con el ayuntamiento y con las entidades', arq: 'hermes',
     castell: 'Entre crossa i crossa: amb una mà agafa un pilar i amb l\'altra, l\'altre.',
     castellEs: 'Entre crossa y crossa: con una mano agarra un pilar y con la otra, el otro.',
     casa: 'L\'única posició que toca dues àrees alhora. Qui falta quan dues àrees «no es parlen», i la primera que ningú pressuposta.',
     casaEs: 'La única posición que toca dos áreas a la vez. Quien falta cuando dos áreas «no se hablan», y la primera que nadie presupuesta.' },
   { id: 'segon', nom: 'Segon', nomEs: 'Segon', on: 'tronc', pis: 2, fn: 'design', aport: 'Un ofici o producció',
+    org: 'Qui converteix la decisió en feina', orgEs: 'Quien convierte la decisión en trabajo',
+    ex: 'cap de projecte · coordinació d\'equip · qui fa el pla a partir del comitè', exEs: 'jefe de proyecto · coordinación de equipo · quien hace el plan a partir del comité', arq: 'apollo',
     castell: 'Primer pis sobre el baix. Ha de ser ferm i lleuger alhora: transmet avall tot el que rep de dalt.',
     castellEs: 'Primer piso sobre el baix. Tiene que ser firme y ligero a la vez: transmite abajo todo lo que recibe de arriba.',
     casa: 'Qui converteix una decisió en una cosa que es pot fer, i la torna a baix en forma de feina repartida.',
     casaEs: 'Quien convierte una decisión en algo que se puede hacer, y la devuelve abajo en forma de trabajo repartido.' },
   { id: 'terc', nom: 'Terç', nomEs: 'Tercio', on: 'tronc', pis: 3, aport: 'Vehicle i disponibilitat',
+    org: 'El pis del mig', orgEs: 'El piso de en medio',
+    ex: 'comandament intermedi · responsable d\'equip sense pressupost · encarregat de torn', exEs: 'mando intermedio · responsable de equipo sin presupuesto · encargado de turno', arq: 'posido',
     castell: 'Tercer pis. On el castell es decideix: ja és alt i encara ha de pujar gent per sobre.',
     castellEs: 'Tercer piso. Donde el castell se decide: ya es alto y todavía tiene que subir gente por encima.',
     casa: 'El pis del mig d\'una organització. Rep pressió de dalt i de baix i no té cap de les dues autoritats.',
     casaEs: 'El piso de en medio de una organización. Recibe presión de arriba y de abajo y no tiene ninguna de las dos autoridades.' },
   { id: 'aixecador', nom: 'Aixecador', nomEs: 'Aixecador', on: 'pom', fn: 'lms', aport: 'Cura i acollida',
+    org: 'Qui fa pujar algú altre', orgEs: 'Quien hace subir a otro',
+    ex: 'qui forma el relleu · la mentora · qui prepara qui el substituirà', exEs: 'quien forma el relevo · la mentora · quien prepara a quien le sustituirá', arq: 'hera',
     castell: 'Fa de frontissa del pom de dalt: s\'ajup perquè els altres passin i aixeca quan toca.',
     castellEs: 'Hace de bisagra del pom de arriba: se agacha para que los demás pasen y levanta cuando toca.',
     casa: 'Qui fa pujar algú altre. No és la seva figura la que es veu, i sense ell no hi ha pom.',
     casaEs: 'Quien hace subir a otro. No es su figura la que se ve, y sin él no hay pom.' },
   { id: 'enxaneta', nom: 'Enxaneta', nomEs: 'Enxaneta', on: 'pom', aport: 'Veu i difusió',
+    org: 'La cara visible', orgEs: 'La cara visible',
+    ex: 'qui presenta · qui recull el premi · la portaveu', exEs: 'quien presenta · quien recoge el premio · la portavoz', arq: 'afrodita',
     castell: 'Corona, fa l\'aleta i baixa. És a dalt tres segons i és la foto.',
     castellEs: 'Corona, hace la aleta y baja. Está arriba tres segundos y es la foto.',
     casa: 'Qui es veu. Dura poc a dalt, no aguanta res i és el que tothom recorda — i per això es confon amb el que ha fet el castell.',
     casaEs: 'Quien se ve. Dura poco arriba, no aguanta nada y es lo que todo el mundo recuerda — y por eso se confunde con quien ha hecho el castell.' },
   { id: 'cap', nom: 'Cap de colla', nomEs: 'Cap de colla', on: 'fora', fn: 'fund', aport: 'Números i negociació',
+    org: 'Qui decideix què s\'intenta', orgEs: 'Quien decide qué se intenta',
+    ex: 'direcció general · la propietat · el comitè que aprova', exEs: 'dirección general · la propiedad · el comité que aprueba', arq: 'zeus',
     castell: 'No és a l\'estructura: decideix quina figura es prova, en quin ordre i quan es desmunta.',
     castellEs: 'No está en la estructura: decide qué figura se intenta, en qué orden y cuándo se desmonta.',
     casa: 'Qui tria què s\'intenta amb la gent que hi ha. La decisió que no es pot delegar a l\'estructura que l\'ha d\'aguantar.',
@@ -953,7 +1019,11 @@ const FRASES = {
     ca: 'Això ordena i fa visible; <b>no puntua</b>. Un castell no diu si una casa va bé: diu on es concentra el pes i quines direccions té tancades, que és una altra cosa i és la que serveix per decidir.',
     es: 'Esto ordena y hace visible; <b>no puntúa</b>. Un castell no dice si una casa va bien: dice dónde se concentra el peso y qué direcciones tiene cerradas, que es otra cosa y es la que sirve para decidir.' },
   'ct.quehiposes': { ca: 'I ara, què hi poses', es: 'Y ahora, qué le pones' },
-  'rl.casa': { ca: 'A una casa:', es: 'En una casa:' },
+  /* Les tres capçaleres de columna. «A una casa:» era a cada fila —onze cops—
+     i ara és aquí, un cop, perquè el lloc de la fila el guanyi el nom del rol. */
+  'rl.col1': { ca: 'La posició', es: 'La posición' },
+  'rl.col2': { ca: 'Al castell', es: 'En el castell' },
+  'rl.col3': { ca: 'A una organització', es: 'En una organización' },
   'rl.encaixa': { ca: 'Encaixa amb qui porta', es: 'Encaja con quien aporta' },
   'rl.avis': {
     ca: 'Els noms varien de colla a colla i aquests són els d\'ús més estès. El que no varia és per què hi és cada posició, que és l\'única cosa que es pot traslladar a una organització. <b>Això posa nom, no puntua ningú.</b>',
@@ -964,6 +1034,18 @@ const FRASES = {
    identificador que tenen: inventar-ne un altre voldria mantenir-ne dos. */
 const kPos = (id, c) => `rl.p.${id}.${c}`;
 const kOn = (id, c) => `rl.g.${id}.${c}`;
+/* El nom d'una aportació en la llengua que toca. Les deu aportacions són les
+   mateixes que les dimensions de la variable `aports`, que ja les declara amb
+   el seu castellà: buscar-les-hi evita una segona llista que un dia diria una
+   altra cosa. «Encaixa amb qui porta cura i acollida» es llegia en català amb
+   el castellà posat. */
+const APORTS_DIMS = (VARIABLES.find(v => v.id === 'aports') || { dims: [] }).dims;
+const aportL = (nom, l) => {
+  if (l !== 'es') return nom;
+  const d = APORTS_DIMS.find(x => x.nom.toLowerCase() === String(nom).toLowerCase());
+  return d && d.nomEs ? d.nomEs : nom;
+};
+
 const kMena = (id, c) => `ct.m.${id}.${c}`;
 
 /* El `data-i18n` només s'escriu a la portada: les pàgines del SOS no tenen
@@ -978,21 +1060,40 @@ function blocRols(marca) {
   f.push(`<!--${marca || 'TT-ROLS'}-->`);
   f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
   f.push('<div class="rl-wrap">');
+  /* La capçalera, un cop. Abans cada fila repetia «A una casa:» —onze vegades—
+     i el nom del rol no hi era: hi havia una frase. Ara el títol de la columna
+     ho diu un cop, i el lloc de la fila el guanya **el nom**, que és el que
+     algú s'ha d'endur per poder dir «tu ets el meu dos». */
+  f.push('  <div class="rl-head">'
+    + `<div${i18('rl.col1')}>La posició</div>`
+    + `<div${i18('rl.col2')}>Al castell</div>`
+    + `<div${i18('rl.col3')}>A una organització</div></div>`);
   ON.forEach(g => {
     const pos = POSICIONS.filter(p => p.on === g.id);
     if (!pos.length) return;
     f.push(`  <div class="rl-g">`);
-    f.push(`    <div class="rl-gk"><span${i18(kOn(g.id, 'n'))}>${esc(g.nom)}</span> `
+    /* El separador va al marcatge i no dins del text: els dos trossos són dues
+       claus i sense ell es llegien enganxats —«A la pinya A terra. El que
+       aguanta…»—. */
+    f.push(`    <div class="rl-gk"><span${i18(kOn(g.id, 'n'))}>${esc(g.nom)}</span>`
+      + `<span class="rl-gs"> · </span>`
       + `<span${i18(kOn(g.id, 'd'))}>${esc(g.diu)}</span></div>`);
     pos.forEach(p => {
       f.push('    <div class="rl-p"' + (p.mena ? ` data-mena="${p.mena}"` : '') + '>');
       f.push(`      <div class="rl-n"${p.mena ? ` style="border-color:${COL_MENA[p.mena]}"` : ''}`
         + `${i18(kPos(p.id, 'n'))}>${esc(p.nom)}</div>`);
       f.push(`      <div class="rl-c"${i18(kPos(p.id, 'c'))}>${esc(p.castell)}</div>`);
-      f.push(`      <div class="rl-o"><b${i18('rl.casa')}>A una casa:</b> `
-        + `<span${i18(kPos(p.id, 'o'))}>${esc(p.casa)}</span></div>`);
+      /* El nom del rol primer i destacat; la frase i els exemples, a sota. El
+         nom és el que s'ha de poder repetir en veu alta a la sala. */
+      f.push(`      <div class="rl-o"><b class="rl-on"${i18(kPos(p.id, 'org'))}>${esc(p.org)}</b>`
+        + `<span class="rl-od"${i18(kPos(p.id, 'o'))}>${esc(p.casa)}</span>`
+        + `<span class="rl-ex"${i18(kPos(p.id, 'ex'))}>${esc(p.ex)}</span></div>`);
       f.push(`      <div class="rl-a"><span${i18('rl.encaixa')}>Encaixa amb qui porta</span> `
-        + `<b${i18(kPos(p.id, 'a'))}>${esc(p.aport.toLowerCase())}</b></div>`);
+        + `<b${i18(kPos(p.id, 'a'))}>${esc(p.aport.toLowerCase())}</b>`
+        /* I de quina de les dotze preguntes del panteó és resposta. És el que
+           fa que el nom encaixi amb el cas de qui el llegeix. */
+        + `<span class="rl-q">${PANTEO[p.arq].ic} <span${i18(kPos(p.id, 'q'))}>`
+        + `${esc(PANTEO[p.arq].q)}</span></span></div>`);
       f.push('    </div>');
     });
     f.push('  </div>');
@@ -1069,7 +1170,10 @@ function dicCastells(l) {
     f.push(`  '${kPos(p.id, 'n')}':'${q(tria(p, 'nom'))}',`);
     f.push(`  '${kPos(p.id, 'c')}':'${q(tria(p, 'castell'))}',`);
     f.push(`  '${kPos(p.id, 'o')}':'${q(tria(p, 'casa'))}',`);
-    f.push(`  '${kPos(p.id, 'a')}':'${q(p.aport.toLowerCase())}',`);
+    f.push(`  '${kPos(p.id, 'org')}':'${q(tria(p, 'org'))}',`);
+    f.push(`  '${kPos(p.id, 'ex')}':'${q(tria(p, 'ex'))}',`);
+    f.push(`  '${kPos(p.id, 'q')}':'${q(l === 'es' ? PANTEO[p.arq].qEs : PANTEO[p.arq].q)}',`);
+    f.push(`  '${kPos(p.id, 'a')}':'${q(aportL(p.aport, l).toLowerCase())}',`);
   });
   MENES.forEach(m => {
     f.push(`  '${kMena(m.id, 'n')}':'${q(tria(m, 'nom'))}',`);
@@ -1320,6 +1424,40 @@ if (require.main !== module) return;
   else if (aportMal.length) bad('posicions amb una aportació que el SOS no demana: '
     + aportMal.map(p => `${p.id} → «${p.aport}»`).join(', '));
   else ok(`${POSICIONS.length} posicions, totes amb què fan al castell, què són a una casa i amb quina aportació encaixen`);
+})();
+
+/* 12b · I cap posició sense **nom de rol**, sense exemples i sense arquetip.
+       La traducció era una frase, i una frase no es pot repetir en veu alta: el
+       que ha de sortir de la taula és «tu ets el meu dos», i per dir-ho cal un
+       nom. Els exemples són el que fa que una casa s'hi reconegui sense haver
+       de traduir res, i l'arquetip és el que lliga el nom a una de les dotze
+       preguntes del panteó —si no hi fos, el nom seria un invent nostre.
+
+       Una posició sense `org` no peta: la columna es queda amb la frase d'abans
+       i sembla que hi és tot. */
+(() => {
+  const falten = [];
+  POSICIONS.forEach(p => {
+    if (!p.org) falten.push(`${p.id}.org`);
+    if (!p.orgEs) falten.push(`${p.id}.orgEs`);
+    if (!p.ex || p.ex.split('·').length < 2) falten.push(`${p.id}.ex (menys de dos exemples)`);
+    if (!p.exEs) falten.push(`${p.id}.exEs`);
+    if (!p.arq) falten.push(`${p.id}.arq`);
+    else if (!PANTEO[p.arq]) falten.push(`${p.id}.arq → «${p.arq}» no és del panteó`);
+  });
+  /* I que els arquetips no es repeteixin: dues posicions responent la mateixa
+     pregunta vol dir que una de les dues no s'ha pensat. */
+  const usats = POSICIONS.map(p => p.arq);
+  const rep = usats.filter((x, i) => usats.indexOf(x) !== i);
+  if (falten.length) bad('posicions sense nom de rol, exemples o arquetip: ' + falten.slice(0, 6).join(', ')
+    + (falten.length > 6 ? ` … (+${falten.length - 6})` : '')
+    + ' — sense nom no es pot dir «tu ets el meu dos», que és el que fa útil la taula');
+  else if (rep.length) bad('arquetips repetits: ' + [...new Set(rep)].join(', ')
+    + ' — dues posicions responent la mateixa pregunta vol dir que una no s\'ha pensat');
+  else ok(`${POSICIONS.length} rols amb nom, exemples i la pregunta del panteó de què són resposta`
+    + ` · ${Object.keys(PANTEO).length - POSICIONS.length} arquetip sense posició: `
+    + Object.keys(PANTEO).filter(k => !usats.includes(k)).map(k => PANTEO[k].nom).join(', ')
+    + ' (la celebració no la fa ningú en concret)');
 })();
 
 /* 13 · Les tres menes de rengla han de tenir posició, i les vuit funcions del
